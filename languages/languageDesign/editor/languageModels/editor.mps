@@ -4832,6 +4832,17 @@
           </node>
           <node concept="2iRfu4" id="i2IxuUI" role="2iSdaV" />
         </node>
+        <node concept="3EZMnI" id="2k7jEhm4XXU" role="3EZMnx">
+          <node concept="VPM3Z" id="2k7jEhm4XXW" role="3F10Kt" />
+          <node concept="3F0ifn" id="2k7jEhm4Y19" role="3EZMnx">
+            <property role="3F0ifm" value="alignWithText" />
+            <ref role="1k5W1q" node="hF4H1c8" resolve="property" />
+          </node>
+          <node concept="2iRfu4" id="2k7jEhm4XXZ" role="2iSdaV" />
+          <node concept="3F0A7n" id="2k7jEhm4Y1c" role="3EZMnx">
+            <ref role="1NtTu8" to="tpc2:2k7jEhm4XLr" resolve="alignWithText" />
+          </node>
+        </node>
         <node concept="2EHx9g" id="2jfAk2Larnb" role="2iSdaV" />
       </node>
       <node concept="VPM3Z" id="hEU$Q0Q" role="3F10Kt">

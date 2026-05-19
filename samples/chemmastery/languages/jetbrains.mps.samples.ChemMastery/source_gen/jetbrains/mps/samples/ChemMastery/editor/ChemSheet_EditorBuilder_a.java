@@ -207,6 +207,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Image editorCell = fromImageCellProvider0();
     editorCell.setCellId("Image_8qm7p9_a0d0");
     editorCell.setDescent(-1);
+    editorCell.setAlignWithText(true);
     return editorCell;
   }
   private EditorCell_Image fromImageCellProvider0() {
@@ -217,6 +218,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     EditorCell_Image editorCell = fromImageCellProvider1();
     editorCell.setCellId("Image_8qm7p9_a0d0_0");
     editorCell.setDescent(-1);
+    editorCell.setAlignWithText(true);
     return editorCell;
   }
   private EditorCell_Image fromImageCellProvider1() {

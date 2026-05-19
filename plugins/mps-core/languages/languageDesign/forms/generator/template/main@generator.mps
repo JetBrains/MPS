@@ -57,6 +57,7 @@
       <concept id="1139535439104" name="jetbrains.mps.lang.editor.structure.CellActionMap_ExecuteFunction" flags="in" index="1hAIg9" />
       <concept id="1139744628335" name="jetbrains.mps.lang.editor.structure.CellModel_Image" flags="sg" stub="8104358048506731195" index="1u4HXA">
         <property id="1139858284555" name="descent" index="1$Qi42" />
+        <property id="2668187771966053467" name="alignWithText" index="1N59bZ" />
         <child id="1176899909521" name="imagePathProvider" index="4GRq3" />
       </concept>
       <concept id="1073389214265" name="jetbrains.mps.lang.editor.structure.EditorCellModel" flags="ng" index="3EYTF0" />
@@ -863,6 +864,7 @@
           <property role="1QpmdY" value="true" />
           <node concept="1u4HXA" id="65VHHDM1OpO" role="1QoS34">
             <property role="1$Qi42" value="-1" />
+            <property role="1N59bZ" value="true" />
             <node concept="20u1Yu" id="7k$14oQsmov" role="4GRq3">
               <property role="26rObG" value="${module}/icons/checkBoxSelected.png" />
               <node concept="1dCxOk" id="7k$14oQwgE5" role="26rObI">
@@ -924,6 +926,7 @@
           </node>
           <node concept="1u4HXA" id="65VHHDM1Oqd" role="1QoVPY">
             <property role="1$Qi42" value="-1" />
+            <property role="1N59bZ" value="true" />
             <node concept="20u1Yu" id="7k$14oQwgYc" role="4GRq3">
               <property role="26rObG" value="${module}/icons/checkBox.png" />
               <node concept="1dCxOk" id="7k$14oQwgYg" role="26rObI">

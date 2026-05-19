@@ -17,8 +17,11 @@ package jetbrains.mps.nodeEditor.cells;
 
 import com.intellij.openapi.util.IconLoader;
 import jetbrains.mps.editor.runtime.style.StyleAttributes;
+import jetbrains.mps.nodeEditor.EditorComponent;
 import jetbrains.mps.nodeEditor.EditorSettings;
+import jetbrains.mps.openapi.editor.EditorComponentSettings;
 import jetbrains.mps.openapi.editor.EditorContext;
+import jetbrains.mps.openapi.editor.cells.EditorFontMetrics;
 import jetbrains.mps.project.AbstractModule;
 import jetbrains.mps.smodel.language.LanguageRegistry;
 import jetbrains.mps.util.FileUtil;
@@ -33,6 +36,7 @@ import org.jetbrains.mps.openapi.module.SModuleReference;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -49,6 +53,7 @@ public class EditorCell_Image extends EditorCell_Basic {
   private Icon myIcon;
 
   private int myDescent = -1;
+  private boolean myAlignWithText;
 
   protected EditorCell_Image(EditorContext editorContext, SNode node) {
     super(editorContext, node);
@@ -145,18 +150,36 @@ public class EditorCell_Image extends EditorCell_Basic {
     }
     if (myAlignment == ImageAlignment.justify) {
       int width = myIcon.getIconWidth();
-      if (width != -1) {
-        myWidth = width;
-      }
       int height = myIcon.getIconHeight();
+      double scale = myAlignWithText ? fontSizeScale() : 1.0;
+      if (width != -1) {
+        myWidth = (int) Math.round(width * scale);
+      }
       if (height != -1) {
-        myHeight = height;
+        myHeight = (int) Math.round(height * scale);
       }
     }
 
-    if (myDescent < 0) {
+    if (!myAlignWithText && myDescent < 0) {
       myDescent = EditorSettings.getInstance().getDefaultEditorFontMetrics().getDescent();
     }
+  }
+
+  /**
+   * Opt the cell into font-aware sizing and vertical alignment (MPS-32245).
+   *
+   * <p>When {@code true}:
+   * <ul>
+   *   <li>The icon is scaled by {@code currentFontSize / 13} so it grows or shrinks
+   *       proportionally with the effective editor font size.</li>
+   *   <li>The cell's ascent/descent are computed so the icon's vertical center aligns with
+   *       the visual center of the surrounding text glyphs.</li>
+   * </ul>
+   *
+   * @param enabled the default is false
+   */
+  public void setAlignWithText(boolean enabled) {
+    myAlignWithText = enabled;
   }
 
   @Override
@@ -166,7 +189,31 @@ public class EditorCell_Image extends EditorCell_Basic {
 
   @Override
   public int getDescent() {
+    if (myAlignWithText) {
+      EditorFontMetrics fm = getCurrentEditorFontMetrics();
+      return fm.getDescent() + (myHeight - fm.getHeight() + 1/*round up*/) / 2;
+    }
     return Math.max(myDescent, 0);
+  }
+
+  private EditorFontMetrics getCurrentEditorFontMetrics() {
+    EditorSettings settings = EditorSettings.getInstance();
+    EditorComponent editor = getEditor();
+    if (editor != null) {
+      EditorComponentSettings ecs = editor.getEditorComponentSettings();
+      return ecs.getFontMetrics(settings.getFontFamily(), Font.PLAIN, ecs.getFontSize());
+    }
+    return settings.getDefaultEditorFontMetrics();
+  }
+
+  private double fontSizeScale() {
+    EditorComponent editor = getEditor();
+    if (editor == null) {
+      return 1.0;
+    }
+    int currentFontSize = editor.getEditorComponentSettings().getFontSize();
+    // icons to be aligned with text are originally designed for fort size 13
+    return (double) currentFontSize / 13;
   }
 
   public void setDescent(int descent) {
