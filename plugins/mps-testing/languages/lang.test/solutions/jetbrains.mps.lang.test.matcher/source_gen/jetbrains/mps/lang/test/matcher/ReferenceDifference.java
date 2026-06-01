@@ -21,7 +21,7 @@ public final class ReferenceDifference extends DifferenceItem {
   @Override
   public String toString() {
     String fmt = "Different %s reference of role %s. One target is %s, while other is %s";
-    return String.format(fmt, (myInternal ? "internal" : "external"), myRole.getName(), myTarget1, myTarget2);
+    return String.format(fmt, ((myInternal ? "internal" : "external")), myRole.getName(), DifferenceItem.describe(myTarget1), DifferenceItem.describe(myTarget2));
   }
 
   @Override

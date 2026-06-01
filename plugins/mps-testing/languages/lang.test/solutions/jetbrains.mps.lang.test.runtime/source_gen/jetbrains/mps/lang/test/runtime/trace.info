@@ -757,84 +757,87 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895903a2(jetbrains.mps.lang.test.runtime)/1226949310940">
     <file name="CellReference.java">
-      <node id="1226951588600" at="27,0,28,0" concept="7" trace="myNode" />
-      <node id="1228589322273" at="28,0,29,0" concept="7" trace="myAnnotation" />
-      <node id="2209739309055569245" at="29,0,30,0" concept="7" trace="myMap" />
-      <node id="1226951588619" at="30,77,31,18" concept="6" />
-      <node id="1228589344562" at="31,18,32,89" concept="6" />
-      <node id="2209739309055597279" at="32,89,33,16" concept="6" />
-      <node id="1227009797309" at="36,26,37,23" concept="12" />
-      <node id="1228580487321" at="41,28,42,133" concept="12" />
-      <node id="9120953217344718018" at="45,78,46,137" concept="12" />
-      <node id="2145983575383434867" at="50,81,51,65" concept="0" />
-      <node id="7556920020845005333" at="52,5,53,79" concept="11" />
-      <node id="7556920020845005341" at="53,79,54,79" concept="0" />
-      <node id="7556920020845005365" at="55,49,56,80" concept="11" />
-      <node id="7556920020845005386" at="56,80,57,90" concept="6" />
-      <node id="7556920020845005401" at="57,90,58,116" concept="6" />
-      <node id="7556920020845005412" at="59,53,60,65" concept="11" />
-      <node id="7556920020845005418" at="60,65,61,162" concept="6" />
-      <node id="7556920020845005425" at="61,162,62,158" concept="6" />
-      <node id="7556920020845005508" at="63,7,64,101" concept="6" />
-      <node id="7556920020845005519" at="64,101,65,99" concept="6" />
-      <node id="7556920020845005447" at="66,57,67,73" concept="11" />
-      <node id="7556920020845005528" at="67,73,68,104" concept="6" />
-      <node id="7556920020845005537" at="68,104,69,102" concept="6" />
-      <node id="7556920020845005463" at="69,102,70,196" concept="6" />
-      <node id="7556920020845005474" at="70,196,71,193" concept="6" />
-      <node id="5097407566122005890" at="72,12,73,76" concept="6" />
-      <node id="1226949310940" at="78,0,79,0" concept="15" trace="AnonymousCellAnnotation$hB" />
-      <node id="1226949310940" at="82,0,83,0" concept="15" trace="cellId$W9jv" />
-      <node id="1226949310940" at="83,0,84,0" concept="15" trace="isInInspector$WnYM" />
-      <node id="1226949310940" at="84,0,85,0" concept="15" trace="selectionStart$arQq" />
-      <node id="1226949310940" at="85,0,86,0" concept="15" trace="selectionEnd$asks" />
-      <node id="1226949310940" at="89,0,90,0" concept="15" trace="nodeRangeSelectionStart$Qss5" />
-      <node id="1226949310940" at="90,0,91,0" concept="15" trace="nodeRangeSelectionEnd$QsF6" />
-      <node id="5097407566121991608" at="72,10,74,5" concept="1" />
-      <node id="1227009788555" at="36,0,39,0" concept="10" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
-      <node id="1228589548291" at="45,0,48,0" concept="10" trace="setupSelection#(Ljetbrains/mps/nodeEditor/NodeEditorComponent;)Ljetbrains/mps/openapi/editor/EditorComponent;" />
-      <node id="5681471431307948567" at="49,96,52,5" concept="9" />
-      <node id="1228580480145" at="40,0,44,0" concept="10" trace="toString#()Ljava/lang/String;" />
-      <node id="1226949310942" at="30,0,35,0" concept="3" trace="CellReference#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/util/Map;)V" />
-      <node id="7556920020845005410" at="58,116,63,7" concept="9" />
-      <node id="7556920020845005349" at="54,79,74,5" concept="9" />
-      <node id="6268941039745719501" at="49,0,76,0" concept="10" trace="assertSelectionIsTheSame#(Ljetbrains/mps/openapi/editor/EditorComponent;Ljava/util/Map;)V" />
-      <scope id="1227009788558" at="36,26,37,23" />
-      <scope id="1228580480148" at="41,28,42,133" />
-      <scope id="1228589548294" at="45,78,46,137" />
-      <scope id="5681471431307948568" at="50,81,51,65" />
-      <scope id="5097407566121991609" at="72,12,73,76" />
-      <scope id="1226949310945" at="30,77,33,16" />
-      <scope id="1227009788555" at="36,0,39,0" />
-      <scope id="1228589548291" at="45,0,48,0">
+      <node id="1226951588600" at="28,0,29,0" concept="7" trace="myNode" />
+      <node id="1228589322273" at="29,0,30,0" concept="7" trace="myAnnotation" />
+      <node id="2209739309055569245" at="30,0,31,0" concept="7" trace="myMap" />
+      <node id="1226951588619" at="31,77,32,18" concept="6" />
+      <node id="1228589344562" at="32,18,33,89" concept="6" />
+      <node id="2209739309055597279" at="33,89,34,16" concept="6" />
+      <node id="1227009797309" at="37,26,38,23" concept="12" />
+      <node id="5584454068671373523" at="42,28,43,62" concept="11" />
+      <node id="1228580487321" at="43,62,44,120" concept="12" />
+      <node id="9120953217344718018" at="47,78,48,137" concept="12" />
+      <node id="2145983575383434867" at="52,81,53,65" concept="0" />
+      <node id="7556920020845005333" at="54,5,55,79" concept="11" />
+      <node id="7556920020845005341" at="55,79,56,79" concept="0" />
+      <node id="7556920020845005365" at="57,49,58,80" concept="11" />
+      <node id="5584454068684654444" at="58,80,59,279" concept="6" />
+      <node id="7556920020845005401" at="59,279,60,304" concept="6" />
+      <node id="7556920020845005412" at="61,53,62,65" concept="11" />
+      <node id="7556920020845005418" at="62,65,63,242" concept="6" />
+      <node id="7556920020845005425" at="63,242,64,236" concept="6" />
+      <node id="7556920020845005508" at="65,7,66,101" concept="6" />
+      <node id="7556920020845005519" at="66,101,67,99" concept="6" />
+      <node id="7556920020845005447" at="68,57,69,73" concept="11" />
+      <node id="7556920020845005528" at="69,73,70,104" concept="6" />
+      <node id="7556920020845005537" at="70,104,71,102" concept="6" />
+      <node id="7556920020845005463" at="71,102,72,439" concept="6" />
+      <node id="7556920020845005474" at="72,439,73,430" concept="6" />
+      <node id="5097407566122005890" at="74,12,75,76" concept="6" />
+      <node id="1226949310940" at="80,0,81,0" concept="15" trace="AnonymousCellAnnotation$hB" />
+      <node id="1226949310940" at="84,0,85,0" concept="15" trace="cellId$W9jv" />
+      <node id="1226949310940" at="85,0,86,0" concept="15" trace="isInInspector$WnYM" />
+      <node id="1226949310940" at="86,0,87,0" concept="15" trace="selectionStart$arQq" />
+      <node id="1226949310940" at="87,0,88,0" concept="15" trace="selectionEnd$asks" />
+      <node id="1226949310940" at="91,0,92,0" concept="15" trace="nodeRangeSelectionStart$Qss5" />
+      <node id="1226949310940" at="92,0,93,0" concept="15" trace="nodeRangeSelectionEnd$QsF6" />
+      <node id="5097407566121991608" at="74,10,76,5" concept="1" />
+      <node id="1227009788555" at="37,0,40,0" concept="10" trace="getNode#()Lorg/jetbrains/mps/openapi/model/SNode;" />
+      <node id="1228589548291" at="47,0,50,0" concept="10" trace="setupSelection#(Ljetbrains/mps/nodeEditor/NodeEditorComponent;)Ljetbrains/mps/openapi/editor/EditorComponent;" />
+      <node id="5681471431307948567" at="51,96,54,5" concept="9" />
+      <node id="1226949310942" at="31,0,36,0" concept="3" trace="CellReference#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Ljava/util/Map;)V" />
+      <node id="1228580480145" at="41,0,46,0" concept="10" trace="toString#()Ljava/lang/String;" />
+      <node id="7556920020845005410" at="60,304,65,7" concept="9" />
+      <node id="7556920020845005349" at="56,79,76,5" concept="9" />
+      <node id="6268941039745719501" at="51,0,78,0" concept="10" trace="assertSelectionIsTheSame#(Ljetbrains/mps/openapi/editor/EditorComponent;Ljava/util/Map;)V" />
+      <scope id="1227009788558" at="37,26,38,23" />
+      <scope id="1228589548294" at="47,78,48,137" />
+      <scope id="5681471431307948568" at="52,81,53,65" />
+      <scope id="5097407566121991609" at="74,12,75,76" />
+      <scope id="1228580480148" at="42,28,44,120">
+        <var name="nodePresentation" id="5584454068671373524" />
+      </scope>
+      <scope id="1226949310945" at="31,77,34,16" />
+      <scope id="1227009788555" at="37,0,40,0" />
+      <scope id="1228589548291" at="47,0,50,0">
         <var name="editorComponent" id="1229529333669" />
       </scope>
-      <scope id="7556920020845005411" at="59,53,62,158">
+      <scope id="7556920020845005411" at="61,53,64,236">
         <var name="label" id="7556920020845005413" />
       </scope>
-      <scope id="1228580480145" at="40,0,44,0" />
-      <scope id="1226949310942" at="30,0,35,0">
+      <scope id="1226949310942" at="31,0,36,0">
         <var name="annotation" id="1228589305145" />
         <var name="map" id="2209739309055569238" />
         <var name="node" id="1226951564280" />
       </scope>
-      <scope id="7556920020845005439" at="66,57,71,193">
+      <scope id="1228580480145" at="41,0,46,0" />
+      <scope id="7556920020845005439" at="68,57,73,430">
         <var name="rangeSelection" id="7556920020845005448" />
       </scope>
-      <scope id="7556920020845005350" at="55,49,65,99">
+      <scope id="7556920020845005350" at="57,49,67,99">
         <var name="selectedCell" id="7556920020845005366" />
       </scope>
-      <scope id="6268941039745719504" at="49,96,74,5">
+      <scope id="6268941039745719504" at="51,96,76,5">
         <var name="selection" id="7556920020845005334" />
       </scope>
-      <scope id="6268941039745719501" at="49,0,76,0">
+      <scope id="6268941039745719501" at="51,0,78,0">
         <var name="editorComponent" id="6268941039745719506" />
         <var name="map" id="1932269937152492149" />
       </scope>
-      <unit id="1226949310940" at="77,0,80,0" name="jetbrains.mps.lang.test.runtime.CellReference$CONCEPTS" />
-      <unit id="1226949310940" at="88,0,92,0" name="jetbrains.mps.lang.test.runtime.CellReference$LINKS" />
-      <unit id="1226949310940" at="81,0,87,0" name="jetbrains.mps.lang.test.runtime.CellReference$PROPS" />
-      <unit id="1226949310940" at="26,0,93,0" name="jetbrains.mps.lang.test.runtime.CellReference" />
+      <unit id="1226949310940" at="79,0,82,0" name="jetbrains.mps.lang.test.runtime.CellReference$CONCEPTS" />
+      <unit id="1226949310940" at="90,0,94,0" name="jetbrains.mps.lang.test.runtime.CellReference$LINKS" />
+      <unit id="1226949310940" at="83,0,89,0" name="jetbrains.mps.lang.test.runtime.CellReference$PROPS" />
+      <unit id="1226949310940" at="27,0,95,0" name="jetbrains.mps.lang.test.runtime.CellReference" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895903a2(jetbrains.mps.lang.test.runtime)/1302453276762085176">

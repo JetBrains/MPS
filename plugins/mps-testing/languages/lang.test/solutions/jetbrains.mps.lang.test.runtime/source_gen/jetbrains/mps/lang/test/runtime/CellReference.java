@@ -5,6 +5,7 @@ package jetbrains.mps.lang.test.runtime;
 import org.jetbrains.mps.openapi.model.SNode;
 import java.util.Map;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
+import jetbrains.mps.lang.test.matcher.DifferenceItem;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.openapi.editor.EditorComponent;
 import jetbrains.mps.nodeEditor.NodeEditorComponent;
@@ -39,7 +40,8 @@ public class CellReference {
 
   @Override
   public String toString() {
-    return "(node " + myNode.getNodeId().toString() + ", id " + SPropertyOperations.getString(myAnnotation, PROPS.cellId$W9jv) + ")";
+    String nodePresentation = DifferenceItem.describe(myNode);
+    return "(node " + nodePresentation + ", id " + SPropertyOperations.getString(myAnnotation, PROPS.cellId$W9jv) + ")";
   }
 
   public EditorComponent setupSelection(NodeEditorComponent editorComponent) {
@@ -54,12 +56,12 @@ public class CellReference {
     assert selection != null : "Selection was not set in the resulting editor";
     if (selection instanceof SingularSelection) {
       EditorCell selectedCell = ((SingularSelection) selection).getEditorCell();
-      Assert.assertSame(getNode(), MapSequence.fromMap(map).get(selectedCell.getSNode()));
-      Assert.assertEquals(SPropertyOperations.getString(myAnnotation, PROPS.cellId$W9jv), selectedCell.getCellId());
+      Assert.assertTrue("Selection is on the wrong node. Expected the editor cell of " + DifferenceItem.describe(getNode()) + ", but the selected cell shows " + DifferenceItem.describe(selectedCell.getSNode()), getNode() == MapSequence.fromMap(map).get(selectedCell.getSNode()));
+      Assert.assertEquals("Difference in cellId of " + DifferenceItem.describe(getNode()) + ". Expected " + SPropertyOperations.getString(myAnnotation, PROPS.cellId$W9jv) + ", but got " + selectedCell.getCellId(), SPropertyOperations.getString(myAnnotation, PROPS.cellId$W9jv), selectedCell.getCellId());
       if (selectedCell instanceof EditorCell_Label) {
         EditorCell_Label label = (EditorCell_Label) selectedCell;
-        Assert.assertEquals(Integer.valueOf(SPropertyOperations.getInteger(myAnnotation, PROPS.selectionStart$arQq)), Integer.valueOf(label.getSelectionStart()));
-        Assert.assertEquals(Integer.valueOf(SPropertyOperations.getInteger(myAnnotation, PROPS.selectionEnd$asks)), Integer.valueOf(label.getSelectionEnd()));
+        Assert.assertEquals("Difference in selection start index of " + DifferenceItem.describe(getNode()), Integer.valueOf(SPropertyOperations.getInteger(myAnnotation, PROPS.selectionStart$arQq)), Integer.valueOf(label.getSelectionStart()));
+        Assert.assertEquals("Difference in selection end index of " + DifferenceItem.describe(getNode()), Integer.valueOf(SPropertyOperations.getInteger(myAnnotation, PROPS.selectionEnd$asks)), Integer.valueOf(label.getSelectionEnd()));
       }
       Assert.assertNull(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionStart$Qss5));
       Assert.assertNull(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionEnd$QsF6));
@@ -67,8 +69,8 @@ public class CellReference {
       NodeRangeSelection rangeSelection = (NodeRangeSelection) selection;
       Assert.assertNotNull(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionStart$Qss5));
       Assert.assertNotNull(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionEnd$QsF6));
-      Assert.assertEquals(MapSequence.fromMap(myMap).get(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionStart$Qss5)), MapSequence.fromMap(map).get(rangeSelection.getFirstNode()));
-      Assert.assertEquals(MapSequence.fromMap(myMap).get(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionEnd$QsF6)), MapSequence.fromMap(map).get(rangeSelection.getLastNode()));
+      Assert.assertEquals("Range-selection start mismatch. Expected " + DifferenceItem.describe(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionStart$Qss5)) + ", but the first selected node is " + DifferenceItem.describe(rangeSelection.getFirstNode()), MapSequence.fromMap(myMap).get(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionStart$Qss5)), MapSequence.fromMap(map).get(rangeSelection.getFirstNode()));
+      Assert.assertEquals("Range-selection end mismatch. Expected " + DifferenceItem.describe(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionEnd$QsF6)) + ", but the last selected node is " + DifferenceItem.describe(rangeSelection.getLastNode()), MapSequence.fromMap(myMap).get(SLinkOperations.getTarget(myAnnotation, LINKS.nodeRangeSelectionEnd$QsF6)), MapSequence.fromMap(map).get(rangeSelection.getLastNode()));
     } else {
       Assert.fail("Selection of unsupported type: " + selection.getClass());
     }

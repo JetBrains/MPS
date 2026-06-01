@@ -31,24 +31,33 @@
   </root>
   <root nodeRef="r:4464540a-9650-433f-b716-ed95bbac5a69(jetbrains.mps.lang.test.matcher)/8984393347190225578">
     <file name="DifferenceItem.java">
-      <node id="3632441343770676757" at="11,38,12,34" concept="4" />
-      <node id="3632441343770683640" at="13,5,14,27" concept="4" />
-      <node id="6612382978211955493" at="14,27,15,21" concept="4" />
-      <node id="8984393347190225580" at="7,0,9,0" concept="2" trace="DifferenceItem#()V" />
-      <node id="3632441343770671208" at="10,55,13,5" concept="6" />
-      <node id="3632441343770665711" at="10,0,17,0" concept="9" trace="print#(Ljava/lang/StringBuilder;I)V" />
-      <scope id="8984393347190225583" at="7,27,7,27" />
-      <scope id="3632441343770671210" at="11,38,12,34" />
-      <scope id="8984393347190225580" at="7,0,9,0" />
-      <scope id="3632441343770671208" at="10,55,13,5">
+      <node id="3632441343770676757" at="12,38,13,34" concept="4" />
+      <node id="3632441343770683640" at="14,5,15,27" concept="4" />
+      <node id="6612382978211955493" at="15,27,16,21" concept="4" />
+      <node id="8668115711031379467" at="19,23,20,27" concept="11" />
+      <node id="8668115711031379469" at="21,5,22,104" concept="11" />
+      <node id="8984393347190225580" at="8,0,10,0" concept="2" trace="DifferenceItem#()V" />
+      <node id="3632441343770671208" at="11,55,14,5" concept="6" />
+      <node id="8668115711031379461" at="18,45,21,5" concept="8" />
+      <node id="8668115711031379457" at="18,0,24,0" concept="14" trace="describe#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/lang/String;" />
+      <node id="3632441343770665711" at="11,0,18,0" concept="9" trace="print#(Ljava/lang/StringBuilder;I)V" />
+      <scope id="8984393347190225583" at="8,27,8,27" />
+      <scope id="3632441343770671210" at="12,38,13,34" />
+      <scope id="8668115711031379466" at="19,23,20,27" />
+      <scope id="8984393347190225580" at="8,0,10,0" />
+      <scope id="3632441343770671208" at="11,55,14,5">
         <var name="i" id="3632441343770671209" />
       </scope>
-      <scope id="3632441343770665714" at="10,55,15,21" />
-      <scope id="3632441343770665711" at="10,0,17,0">
+      <scope id="8668115711031379460" at="18,45,22,104" />
+      <scope id="3632441343770665714" at="11,55,16,21" />
+      <scope id="8668115711031379457" at="18,0,24,0">
+        <var name="node" id="8668115711031379458" />
+      </scope>
+      <scope id="3632441343770665711" at="11,0,18,0">
         <var name="buf" id="3632441343770666765" />
         <var name="indent" id="3632441343770665737" />
       </scope>
-      <unit id="8984393347190225578" at="6,0,18,0" name="jetbrains.mps.lang.test.matcher.DifferenceItem" />
+      <unit id="8984393347190225578" at="7,0,25,0" name="jetbrains.mps.lang.test.matcher.DifferenceItem" />
     </file>
   </root>
   <root nodeRef="r:4464540a-9650-433f-b716-ed95bbac5a69(jetbrains.mps.lang.test.matcher)/8984393347190225584">
@@ -511,8 +520,8 @@
       <node id="5558461639824399883" at="15,18,16,26" concept="4" />
       <node id="5558461639824404064" at="16,26,17,24" concept="4" />
       <node id="5558461639824408494" at="17,24,18,24" concept="4" />
-      <node id="5558461639824409832" at="22,28,23,90" concept="10" />
-      <node id="5558461639824411283" at="23,90,24,110" concept="11" />
+      <node id="5584454068671272222" at="22,28,23,90" concept="10" />
+      <node id="5584454068671272225" at="23,90,24,162" concept="11" />
       <node id="3632441343770932400" at="28,25,29,56" concept="11" />
       <node id="8984393347190228388" at="34,22,35,19" concept="11" />
       <node id="8984393347190228397" at="37,48,38,19" concept="11" />
@@ -521,18 +530,18 @@
       <node id="8984393347190228383" at="33,37,36,5" concept="8" />
       <node id="8984393347190228390" at="36,5,39,5" concept="8" />
       <node id="3632441343770932393" at="27,0,31,0" concept="9" trace="hashCode#()I" />
-      <node id="8984393347190228360" at="21,0,26,0" concept="9" trace="toString#()Ljava/lang/String;" />
+      <node id="5584454068671272218" at="21,0,26,0" concept="9" trace="toString#()Ljava/lang/String;" />
       <node id="5558461639824399871" at="14,0,20,0" concept="2" trace="ReferenceDifference#(Lorg/jetbrains/mps/openapi/language/SReferenceLink;ZLorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;)V" />
       <node id="8984393347190228377" at="32,0,43,0" concept="9" trace="equals#(Ljava/lang/Object;)Z" />
       <scope id="3632441343770932397" at="28,25,29,56" />
       <scope id="8984393347190228387" at="34,22,35,19" />
       <scope id="8984393347190228396" at="37,48,38,19" />
-      <scope id="8984393347190228363" at="22,28,24,110">
-        <var name="fmt" id="5558461639824409833" />
+      <scope id="5584454068671272220" at="22,28,24,162">
+        <var name="fmt" id="5584454068671272221" />
       </scope>
       <scope id="5558461639824399878" at="14,99,18,24" />
       <scope id="3632441343770932393" at="27,0,31,0" />
-      <scope id="8984393347190228360" at="21,0,26,0" />
+      <scope id="5584454068671272218" at="21,0,26,0" />
       <scope id="5558461639824399871" at="14,0,20,0">
         <var name="internal" id="5558461639824399876" />
         <var name="role" id="5558461639824399874" />

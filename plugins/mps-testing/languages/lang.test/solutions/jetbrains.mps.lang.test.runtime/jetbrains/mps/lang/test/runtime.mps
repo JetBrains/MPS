@@ -10,6 +10,9 @@
     <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples" version="1" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
+    <use id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core" version="2" />
   </languages>
   <imports>
     <import index="tp5g" ref="r:00000000-0000-4000-0000-011c89590388(jetbrains.mps.lang.test.structure)" />
@@ -84,7 +87,7 @@
     <import index="ze1i" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.runtime(MPS.Core/)" />
     <import index="82uw" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.function(JDK/)" />
     <import index="ifj7" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.vfs.util(MPS.Core/)" />
-    <import index="35tq" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.scope(MPS.Core/)" implicit="true" />
+    <import index="35tq" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.scope(MPS.Core/)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -454,7 +457,6 @@
       <concept id="1171981022339" name="jetbrains.mps.baseLanguage.unitTest.structure.AssertTrue" flags="nn" index="3vwNmj">
         <child id="1171981057159" name="condition" index="3vwVQn" />
       </concept>
-      <concept id="1171985735491" name="jetbrains.mps.baseLanguage.unitTest.structure.AssertSame" flags="nn" index="3vMLTj" />
       <concept id="1172017222794" name="jetbrains.mps.baseLanguage.unitTest.structure.Fail" flags="nn" index="3xETmq" />
       <concept id="1172028177041" name="jetbrains.mps.baseLanguage.unitTest.structure.AssertIsNull" flags="nn" index="3ykFI1">
         <child id="1172028236559" name="expression" index="3ykU8v" />
@@ -6927,6 +6929,19 @@
       <property role="TrG5h" value="toString" />
       <node concept="3Tm1VV" id="hSd6Aij" role="1B3o_S" />
       <node concept="3clFbS" id="hSd6Aik" role="3clF47">
+        <node concept="3cpWs8" id="4PZXQd3D63j" role="3cqZAp">
+          <node concept="3cpWsn" id="4PZXQd3D63k" role="3cpWs9">
+            <property role="TrG5h" value="nodePresentation" />
+            <node concept="17QB3L" id="4PZXQd3D4sn" role="1tU5fm" />
+            <node concept="2YIFZM" id="4PZXQd3D63l" role="33vP2m">
+              <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+              <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+              <node concept="37vLTw" id="4PZXQd3D63m" role="37wK5m">
+                <ref role="3cqZAo" node="hQG0RFS" resolve="myNode" />
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="3cpWs6" id="hSd6C2p" role="3cqZAp">
           <node concept="3cpWs3" id="ORe5oE805Z" role="3cqZAk">
             <node concept="Xl_RD" id="ORe5oE8060" role="3uHU7w">
@@ -6938,20 +6953,8 @@
                   <node concept="Xl_RD" id="ORe5oE8064" role="3uHU7B">
                     <property role="Xl_RC" value="(node " />
                   </node>
-                  <node concept="2OqwBi" id="ORe5oE8065" role="3uHU7w">
-                    <node concept="liA8E" id="ORe5oE8066" role="2OqNvi">
-                      <ref role="37wK5l" to="wyt6:~Object.toString()" resolve="toString" />
-                    </node>
-                    <node concept="2OqwBi" id="ORe5oE8067" role="2Oq$k0">
-                      <node concept="liA8E" id="ORe5oE8068" role="2OqNvi">
-                        <ref role="37wK5l" to="mhbf:~SNode.getNodeId()" resolve="getNodeId" />
-                      </node>
-                      <node concept="2JrnkZ" id="ORe5oE8069" role="2Oq$k0">
-                        <node concept="37vLTw" id="ORe5oE806a" role="2JrQYb">
-                          <ref role="3cqZAo" node="hQG0RFS" resolve="myNode" />
-                        </node>
-                      </node>
-                    </node>
+                  <node concept="37vLTw" id="4PZXQd3D9id" role="3uHU7w">
+                    <ref role="3cqZAo" node="4PZXQd3D63k" resolve="nodePresentation" />
                   </node>
                 </node>
                 <node concept="Xl_RD" id="ORe5oE806b" role="3uHU7w">
@@ -7155,6 +7158,44 @@
                     <ref role="3cqZAo" node="1UE$z6yumPt" resolve="myMap" />
                   </node>
                 </node>
+                <node concept="3_1$Yv" id="4PZXQd3ECJJ" role="3_9lra">
+                  <node concept="3cpWs3" id="4PZXQd3G56p" role="3_1BAH">
+                    <node concept="3cpWs3" id="4PZXQd3G56q" role="3uHU7B">
+                      <node concept="3cpWs3" id="4PZXQd3G56r" role="3uHU7B">
+                        <node concept="Xl_RD" id="4PZXQd3G56s" role="3uHU7B">
+                          <property role="Xl_RC" value="Range-selection start mismatch. Expected " />
+                        </node>
+                        <node concept="2YIFZM" id="4PZXQd3G56K" role="3uHU7w">
+                          <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                          <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                          <node concept="2OqwBi" id="4PZXQd3G6Tt" role="37wK5m">
+                            <node concept="37vLTw" id="4PZXQd3G6Tw" role="2Oq$k0">
+                              <ref role="3cqZAo" node="hSdCl0x" resolve="myAnnotation" />
+                            </node>
+                            <node concept="3TrEf2" id="4PZXQd3G6Tx" role="2OqNvi">
+                              <ref role="3Tt5mk" to="tp5g:1FgNkkI7TFc" resolve="nodeRangeSelectionStart" />
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                      <node concept="Xl_RD" id="4PZXQd3G56x" role="3uHU7w">
+                        <property role="Xl_RC" value=", but the first selected node is " />
+                      </node>
+                    </node>
+                    <node concept="2YIFZM" id="4PZXQd3G570" role="3uHU7w">
+                      <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                      <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                      <node concept="2OqwBi" id="4PZXQd3G57q" role="37wK5m">
+                        <node concept="37vLTw" id="4PZXQd3G57e" role="2Oq$k0">
+                          <ref role="3cqZAo" node="6zv$FxYwgE8" resolve="rangeSelection" />
+                        </node>
+                        <node concept="liA8E" id="4PZXQd3G57r" role="2OqNvi">
+                          <ref role="37wK5l" to="b8lf:~AbstractMultipleSelection.getFirstNode()" resolve="getFirstNode" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
               </node>
               <node concept="3vlDli" id="6zv$FxYwgEy" role="3cqZAp">
                 <node concept="3EllGN" id="6zv$FxYwgEC" role="3tpDZB">
@@ -7181,6 +7222,44 @@
                   </node>
                   <node concept="37vLTw" id="2BHiRxgmbAh" role="3ElQJh">
                     <ref role="3cqZAo" node="1FgNkkI909P" resolve="map" />
+                  </node>
+                </node>
+                <node concept="3_1$Yv" id="4PZXQd3ED7H" role="3_9lra">
+                  <node concept="3cpWs3" id="4PZXQd3G5Qz" role="3_1BAH">
+                    <node concept="3cpWs3" id="4PZXQd3G5Q$" role="3uHU7B">
+                      <node concept="3cpWs3" id="4PZXQd3G5Q_" role="3uHU7B">
+                        <node concept="Xl_RD" id="4PZXQd3G5QA" role="3uHU7B">
+                          <property role="Xl_RC" value="Range-selection end mismatch. Expected " />
+                        </node>
+                        <node concept="2YIFZM" id="4PZXQd3G5QU" role="3uHU7w">
+                          <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                          <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                          <node concept="2OqwBi" id="4PZXQd3G7N_" role="37wK5m">
+                            <node concept="37vLTw" id="4PZXQd3G7NC" role="2Oq$k0">
+                              <ref role="3cqZAo" node="hSdCl0x" resolve="myAnnotation" />
+                            </node>
+                            <node concept="3TrEf2" id="4PZXQd3G7ND" role="2OqNvi">
+                              <ref role="3Tt5mk" to="tp5g:1FgNkkI7TFd" resolve="nodeRangeSelectionEnd" />
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                      <node concept="Xl_RD" id="4PZXQd3G5QF" role="3uHU7w">
+                        <property role="Xl_RC" value=", but the last selected node is " />
+                      </node>
+                    </node>
+                    <node concept="2YIFZM" id="4PZXQd3G5Ra" role="3uHU7w">
+                      <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                      <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                      <node concept="2OqwBi" id="4PZXQd3G5R$" role="37wK5m">
+                        <node concept="37vLTw" id="4PZXQd3G5Ro" role="2Oq$k0">
+                          <ref role="3cqZAo" node="6zv$FxYwgE8" resolve="rangeSelection" />
+                        </node>
+                        <node concept="liA8E" id="4PZXQd3G5R_" role="2OqNvi">
+                          <ref role="37wK5l" to="b8lf:~AbstractMultipleSelection.getLastNode()" resolve="getLastNode" />
+                        </node>
+                      </node>
+                    </node>
                   </node>
                 </node>
               </node>
@@ -7210,20 +7289,55 @@
                 </node>
               </node>
             </node>
-            <node concept="3vMLTj" id="6zv$FxYwgDa" role="3cqZAp">
-              <node concept="1rXfSq" id="ORe5oEaqHQ" role="3tpDZB">
-                <ref role="37wK5l" node="hQJuSEb" resolve="getNode" />
-              </node>
-              <node concept="3EllGN" id="6zv$FxYwgDc" role="3tpDZA">
-                <node concept="37vLTw" id="2BHiRxgm8ht" role="3ElQJh">
-                  <ref role="3cqZAo" node="1FgNkkI909P" resolve="map" />
-                </node>
-                <node concept="2OqwBi" id="6zv$FxYwgDd" role="3ElVtu">
-                  <node concept="37vLTw" id="3GM_nagT_ml" role="2Oq$k0">
-                    <ref role="3cqZAo" node="6zv$FxYwgCQ" resolve="selectedCell" />
+            <node concept="3vwNmj" id="4PZXQd4rKtG" role="3cqZAp">
+              <node concept="3clFbC" id="4PZXQd4rLl9" role="3vwVQn">
+                <node concept="3EllGN" id="4PZXQd4rLla" role="3uHU7w">
+                  <node concept="2OqwBi" id="4PZXQd4rLlb" role="3ElVtu">
+                    <node concept="37vLTw" id="4PZXQd4rLlc" role="2Oq$k0">
+                      <ref role="3cqZAo" node="6zv$FxYwgCQ" resolve="selectedCell" />
+                    </node>
+                    <node concept="liA8E" id="4PZXQd4rLld" role="2OqNvi">
+                      <ref role="37wK5l" to="f4zo:~EditorCell.getSNode()" resolve="getSNode" />
+                    </node>
                   </node>
-                  <node concept="liA8E" id="6zv$FxYwgDh" role="2OqNvi">
-                    <ref role="37wK5l" to="f4zo:~EditorCell.getSNode()" resolve="getSNode" />
+                  <node concept="37vLTw" id="4PZXQd4rLle" role="3ElQJh">
+                    <ref role="3cqZAo" node="1FgNkkI909P" resolve="map" />
+                  </node>
+                </node>
+                <node concept="1rXfSq" id="4PZXQd4rLlf" role="3uHU7B">
+                  <ref role="37wK5l" node="hQJuSEb" resolve="getNode" />
+                </node>
+              </node>
+              <node concept="3_1$Yv" id="4PZXQd4rLTx" role="3_9lra">
+                <node concept="3cpWs3" id="4PZXQd4rMrF" role="3_1BAH">
+                  <node concept="3cpWs3" id="4PZXQd4rMrG" role="3uHU7B">
+                    <node concept="3cpWs3" id="4PZXQd4rMrH" role="3uHU7B">
+                      <node concept="Xl_RD" id="4PZXQd4rMrI" role="3uHU7B">
+                        <property role="Xl_RC" value="Selection is on the wrong node. Expected the editor cell of " />
+                      </node>
+                      <node concept="2YIFZM" id="4PZXQd4rMrJ" role="3uHU7w">
+                        <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                        <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                        <node concept="1rXfSq" id="4PZXQd4rMrK" role="37wK5m">
+                          <ref role="37wK5l" node="hQJuSEb" resolve="getNode" />
+                        </node>
+                      </node>
+                    </node>
+                    <node concept="Xl_RD" id="4PZXQd4rMrL" role="3uHU7w">
+                      <property role="Xl_RC" value=", but the selected cell shows " />
+                    </node>
+                  </node>
+                  <node concept="2YIFZM" id="4PZXQd4rMrM" role="3uHU7w">
+                    <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                    <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                    <node concept="2OqwBi" id="4PZXQd4rMrN" role="37wK5m">
+                      <node concept="37vLTw" id="4PZXQd4rMrO" role="2Oq$k0">
+                        <ref role="3cqZAo" node="6zv$FxYwgCQ" resolve="selectedCell" />
+                      </node>
+                      <node concept="liA8E" id="4PZXQd4rMrP" role="2OqNvi">
+                        <ref role="37wK5l" to="f4zo:~EditorCell.getSNode()" resolve="getSNode" />
+                      </node>
+                    </node>
                   </node>
                 </node>
               </node>
@@ -7243,6 +7357,50 @@
                 </node>
                 <node concept="3TrcHB" id="1xCYTpJE6XZ" role="2OqNvi">
                   <ref role="3TsBF5" to="tp5g:hSLIFSj" resolve="cellId" />
+                </node>
+              </node>
+              <node concept="3_1$Yv" id="4PZXQd4kttL" role="3_9lra">
+                <node concept="3cpWs3" id="4PZXQd4kued" role="3_1BAH">
+                  <node concept="3cpWs3" id="4PZXQd4kuee" role="3uHU7B">
+                    <node concept="3cpWs3" id="4PZXQd4kuef" role="3uHU7B">
+                      <node concept="3cpWs3" id="4PZXQd4o5DP" role="3uHU7B">
+                        <node concept="3cpWs3" id="4PZXQd4o67n" role="3uHU7B">
+                          <node concept="Xl_RD" id="4PZXQd4o5DV" role="3uHU7B">
+                            <property role="Xl_RC" value="Difference in cellId of " />
+                          </node>
+                          <node concept="2YIFZM" id="4PZXQd4o6zv" role="3uHU7w">
+                            <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                            <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                            <node concept="1rXfSq" id="4PZXQd4o6zw" role="37wK5m">
+                              <ref role="37wK5l" node="hQJuSEb" resolve="getNode" />
+                            </node>
+                          </node>
+                        </node>
+                        <node concept="Xl_RD" id="4PZXQd4o5DX" role="3uHU7w">
+                          <property role="Xl_RC" value=". Expected " />
+                        </node>
+                      </node>
+                      <node concept="2OqwBi" id="4PZXQd4kuei" role="3uHU7w">
+                        <node concept="37vLTw" id="4PZXQd4kuej" role="2Oq$k0">
+                          <ref role="3cqZAo" node="hSdCl0x" resolve="myAnnotation" />
+                        </node>
+                        <node concept="3TrcHB" id="4PZXQd4kx8b" role="2OqNvi">
+                          <ref role="3TsBF5" to="tp5g:hSLIFSj" resolve="cellId" />
+                        </node>
+                      </node>
+                    </node>
+                    <node concept="Xl_RD" id="4PZXQd4kuel" role="3uHU7w">
+                      <property role="Xl_RC" value=", but got " />
+                    </node>
+                  </node>
+                  <node concept="2OqwBi" id="4PZXQd4k$_J" role="3uHU7w">
+                    <node concept="37vLTw" id="4PZXQd4kzZK" role="2Oq$k0">
+                      <ref role="3cqZAo" node="6zv$FxYwgCQ" resolve="selectedCell" />
+                    </node>
+                    <node concept="liA8E" id="4PZXQd4k_wO" role="2OqNvi">
+                      <ref role="37wK5l" to="f4zo:~EditorCell.getCellId()" resolve="getCellId" />
+                    </node>
+                  </node>
                 </node>
               </node>
             </node>
@@ -7289,6 +7447,20 @@
                       <ref role="3cqZAo" node="hSdCl0x" resolve="myAnnotation" />
                     </node>
                   </node>
+                  <node concept="3_1$Yv" id="4PZXQd4leuP" role="3_9lra">
+                    <node concept="3cpWs3" id="4PZXQd4pyGV" role="3_1BAH">
+                      <node concept="Xl_RD" id="4PZXQd4lf8x" role="3uHU7B">
+                        <property role="Xl_RC" value="Difference in selection start index of " />
+                      </node>
+                      <node concept="2YIFZM" id="4PZXQd4o2Tu" role="3uHU7w">
+                        <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                        <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                        <node concept="1rXfSq" id="4PZXQd4o2Tv" role="37wK5m">
+                          <ref role="37wK5l" node="hQJuSEb" resolve="getNode" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
                 </node>
                 <node concept="3vlDli" id="6zv$FxYwgDL" role="3cqZAp">
                   <node concept="2OqwBi" id="6zv$FxYwgDM" role="3tpDZA">
@@ -7305,6 +7477,20 @@
                     </node>
                     <node concept="37vLTw" id="2BHiRxeukEr" role="2Oq$k0">
                       <ref role="3cqZAo" node="hSdCl0x" resolve="myAnnotation" />
+                    </node>
+                  </node>
+                  <node concept="3_1$Yv" id="4PZXQd4lmsK" role="3_9lra">
+                    <node concept="3cpWs3" id="4PZXQd4o3QG" role="3_1BAH">
+                      <node concept="Xl_RD" id="4PZXQd4ln7I" role="3uHU7B">
+                        <property role="Xl_RC" value="Difference in selection end index of " />
+                      </node>
+                      <node concept="2YIFZM" id="4PZXQd4o4ik" role="3uHU7w">
+                        <ref role="1Pybhc" to="y5e1:7MIYyntDZEE" resolve="DifferenceItem" />
+                        <ref role="37wK5l" to="y5e1:7xbll140wo1" resolve="describe" />
+                        <node concept="1rXfSq" id="4PZXQd4o4il" role="37wK5m">
+                          <ref role="37wK5l" node="hQJuSEb" resolve="getNode" />
+                        </node>
+                      </node>
                     </node>
                   </node>
                 </node>
