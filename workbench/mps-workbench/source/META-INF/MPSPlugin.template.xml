@@ -166,11 +166,12 @@
 
     <editorTabTitleProvider implementation="jetbrains.mps.ide.editor.tabs.EditorTabTitleProviderImpl"/>
 
-    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteNodeProvider"/>
-    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteReferenceProvider"/>
-    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteModelProvider"/>
-    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteModuleProvider"/>
-    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoritePropertyProvider"/>
+<!--    FIXME enable favorites view-->
+<!--    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteNodeProvider"/>-->
+<!--    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteReferenceProvider"/>-->
+<!--    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteModelProvider"/>-->
+<!--    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoriteModuleProvider"/>-->
+<!--    <favoriteNodeProvider implementation="jetbrains.mps.ide.projectPane.favorites.providers.MPSFavoritePropertyProvider"/>-->
 
     <!-- Seems like we should set platform prefix different from IDEA/community so this scope will not be necessary anymore -->
     <customScopesProvider implementation="com.intellij.packageDependencies.TestScopeProvider"/>
