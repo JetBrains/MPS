@@ -19,7 +19,7 @@ public class RawLineEditorComponent extends TextFieldWithBrowseButton {
         Messages.showTextAreaDialog(RawLineEditorComponent.this.getTextField(), RawLineEditorComponent.this.myDialogCaption, "EditParametersPopupWindow");
       }
     });
-    setButtonIcon(AllIcons.Actions.ShowViewer);
+    setButtonIcon(AllIcons.Actions.ShowCode);
     this.setDescriptor(null);
   }
   public void setDialogCaption(String value) {

@@ -1407,9 +1407,9 @@
         <node concept="3clFbF" id="3HvR9IHMW23" role="3cqZAp">
           <node concept="1rXfSq" id="3HvR9IHMW22" role="3clFbG">
             <ref role="37wK5l" to="jkm4:~ComponentWithBrowseButton.setButtonIcon(javax.swing.Icon)" resolve="setButtonIcon" />
-            <node concept="10M0yZ" id="6WRuqF8ShfN" role="37wK5m">
+            <node concept="10M0yZ" id="2bADoQZf7cv" role="37wK5m">
+              <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.ShowCode" resolve="ShowCode" />
               <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
-              <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.ShowViewer" resolve="ShowViewer" />
             </node>
           </node>
         </node>

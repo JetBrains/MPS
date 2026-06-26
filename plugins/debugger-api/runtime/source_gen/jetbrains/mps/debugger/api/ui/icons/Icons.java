@@ -23,7 +23,7 @@ public class Icons {
   public static final Icon BREAKPOINTS_DIALOG_GROUP_BY_MODEL = MPSIcons.Actions.GroupByModel;
   public static final Icon BREAKPOINTS_DIALOG_GROUP_BY_MODULE = MPSIcons.Actions.GroupByModule;
   public static final Icon BREAKPOINTS_DIALOG_GROUP_BY_ROOT = MPSIcons.Actions.GroupByRoot;
-  public static final Icon BREAKPOINTS_DIALOG_VIEW_SOURCE = AllIcons.Actions.ShowViewer;
+  public static final Icon BREAKPOINTS_DIALOG_VIEW_SOURCE = AllIcons.Actions.ShowCode;
   public static final Icon BREAKPOINTS_DIALOG_TREE_VIEW = AllIcons.Actions.ShowAsTree;
   public Icons() {
   }

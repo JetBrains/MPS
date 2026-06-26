@@ -172,8 +172,8 @@
     <file name="RawLineEditorComponent.java">
       <node id="1240470842553500474" at="14,0,15,0" concept="4" trace="myDialogCaption" />
       <node id="1240470842553500502" at="18,51,19,154" concept="3" />
-      <node id="4278380732219113603" at="21,7,22,47" concept="3" />
-      <node id="1240470842553500542" at="22,47,23,29" concept="3" />
+      <node id="4278380732219113603" at="21,7,22,45" concept="3" />
+      <node id="1240470842553500542" at="22,45,23,29" concept="3" />
       <node id="1240470842553500432" at="25,46,26,33" concept="3" />
       <node id="1240470842553500444" at="28,36,29,32" concept="9" />
       <node id="1240470842553500452" at="31,63,32,55" concept="3" />
