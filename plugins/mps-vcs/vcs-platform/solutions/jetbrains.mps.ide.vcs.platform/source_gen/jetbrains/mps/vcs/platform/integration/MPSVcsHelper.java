@@ -4,10 +4,11 @@ package jetbrains.mps.vcs.platform.integration;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import com.intellij.openapi.vcs.impl.AbstractVcsHelperImpl;
-import com.intellij.openapi.project.Project;
-import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.vcs.AbstractVcsHelper;
 import java.util.List;
 import com.intellij.openapi.vfs.VirtualFile;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.merge.MergeProvider;
 import com.intellij.openapi.vcs.merge.MergeDialogCustomizer;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
@@ -20,19 +21,36 @@ import com.intellij.openapi.progress.ProgressManager;
 
 @GeneratedClass(nodeId = "3906168775482822123", model = "r:f7252e75-44f2-46f6-9600-c9b291e7dd5f(jetbrains.mps.vcs.platform.integration)")
 public class MPSVcsHelper extends AbstractVcsHelperImpl {
+
+  public static class MPSMergeDialogResult implements AbstractVcsHelper.MergeDialogResult {
+    private final List<VirtualFile> myFiles;
+    public MPSMergeDialogResult(List<VirtualFile> files) {
+      myFiles = files;
+    }
+    @Override
+    @NotNull
+    public List<VirtualFile> getProcessedFiles() {
+      return myFiles;
+    }
+    @Override
+    public boolean shouldFinishMerge() {
+      // FIXME default implementation
+      return false;
+    }
+  }
+
   public MPSVcsHelper(Project project) {
     super(project);
   }
 
   @NotNull
-  @Override
-  public List<VirtualFile> showMergeDialog(List<? extends VirtualFile> files, MergeProvider provider, @NotNull MergeDialogCustomizer customizer) {
+  public AbstractVcsHelper.MergeDialogResult showMergeDialog(List<? extends VirtualFile> files, MergeProvider provider, @NotNull MergeDialogCustomizer customizer) {
 
     if (ConflictingModelsUtil.hasResolvableConflicts(myProject, provider, ListSequence.fromList(((List<VirtualFile>) files)).where((f) -> SetSequence.fromSet(ModelMergeTool.SUPPORTED_TYPES).contains(f.getFileType())))) {
 
       int answer = Messages.showYesNoCancelDialog(myProject, "Conflicting changes have been detected. Some conflicts in the models can be autoresolved.\nResolve these conflicts automatically?", "Conflict Resolver", Messages.getQuestionIcon());
       if (answer == Messages.CANCEL) {
-        return Collections.<VirtualFile>emptyList();
+        return new MPSMergeDialogResult(Collections.<VirtualFile>emptyList());
       }
       if (answer == Messages.YES) {
         MergeSession session = (provider instanceof MergeProvider2 ? ((MergeProvider2) provider).createMergeSession((List<VirtualFile>) files) : null);
@@ -49,15 +67,15 @@ public class MPSVcsHelper extends AbstractVcsHelperImpl {
           message += "This happens when you merge in models in an old persistence format and have not merged and re-generated all of their used languages." + " It is recommended to first merge and re-generate the used languages, and then try to auto resolve the conflicts again.\n" + "Continue with merge?";
           int ans = Messages.showYesNoDialog(myProject, message, "Conflict Resolver", Messages.getWarningIcon());
           if (ans == Messages.NO) {
-            return autoResolvedFiles;
+            return new MPSMergeDialogResult(autoResolvedFiles);
           }
         }
         List<VirtualFile> toResolve = ListSequence.fromList(((List<VirtualFile>) files)).subtract(ListSequence.fromList(autoResolvedFiles)).toList();
-        List<VirtualFile> resolvedFiles = super.showMergeDialog(toResolve, provider, customizer);
-        return ListSequence.fromList(autoResolvedFiles).addSequence(ListSequence.fromList(resolvedFiles));
+        AbstractVcsHelper.MergeDialogResult resolvedResult = super.showMergeDialogWithResult(toResolve, provider, customizer);
+        return new MPSMergeDialogResult(ListSequence.fromList(autoResolvedFiles).addSequence(ListSequence.fromList(resolvedResult.getProcessedFiles())));
       }
     }
 
-    return super.showMergeDialog(files, provider, customizer);
+    return super.showMergeDialogWithResult(files, provider, customizer);
   }
 }
