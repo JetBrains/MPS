@@ -272,12 +272,12 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
             McpToolSchema.DEFAULT_DEFINITIONS_PATH,
         )
         val descriptor = McpToolDescriptor(
-            "mps_mcp_integration_test",
-            "",
-            McpToolCategory("test", "jetbrains.mps.agents.mcp.tools.test"),
-            "mps_mcp_integration_test",
-            emptySchema,
-            emptySchema,
+            name = "mps_mcp_integration_test",
+            description = "",
+            category = McpToolCategory("test", "jetbrains.mps.agents.mcp.tools.test"),
+            fullyQualifiedName = "jetbrains.mps.agents.mcp.tools.test.MpsMcpIntegrationTestTool",
+            inputSchema = emptySchema,
+            outputSchema = emptySchema,
         )
         val sessionOptions = McpServerService.McpSessionOptions(
             McpServerService.AskCommandExecutionMode.DONT_ASK,
