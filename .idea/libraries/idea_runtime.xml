@@ -5,6 +5,12 @@
       <root url="jar://$PROJECT_DIR$/lib/external-system-rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/externalProcess-rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/opentelemetry.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/modules/intellij.java.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/modules/intellij.java.backend.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/modules/intellij.java.compiler.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/modules/intellij.java.compiler.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/modules/intellij.java.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java-aetherDependencyResolver-plugin/lib/modules/intellij.java.aetherDependencyResolver.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

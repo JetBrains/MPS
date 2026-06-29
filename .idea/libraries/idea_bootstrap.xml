@@ -1,9 +1,9 @@
 <component name="libraryTable">
   <library name="idea-bootstrap">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/app.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/platform-loader.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/util-8.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.bootstrap.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

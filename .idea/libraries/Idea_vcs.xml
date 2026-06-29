@@ -5,6 +5,16 @@
       <root url="jar://$PROJECT_DIR$/plugins/vcs-svn/lib/vcs-svn.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/git4idea-rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.frontend.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.shared.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.log.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.impl.shared.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.log.graph.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.shared.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.log.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.dvcs.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.dvcs.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lvcs.impl.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

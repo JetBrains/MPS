@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/java-impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/modules/intellij.java.compiler.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/modules/intellij.java.indexing.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.psi.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.frontback.psi.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
