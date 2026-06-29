@@ -5067,7 +5067,7 @@
                     <node concept="1eOMI4" id="6GoDrz9uzPd" role="3uHU7B">
                       <node concept="3K4zz7" id="6GoDrz9uj$r" role="1eOMHV">
                         <node concept="Xl_RD" id="6GoDrz9upfn" role="3K4E3e">
-                          <property role="Xl_RC" value="../MacOS/bin/" />
+                          <property role="Xl_RC" value="../MacOS/" />
                         </node>
                         <node concept="Xl_RD" id="6GoDrz9uvoh" role="3K4GZi">
                           <property role="Xl_RC" value="bin/" />

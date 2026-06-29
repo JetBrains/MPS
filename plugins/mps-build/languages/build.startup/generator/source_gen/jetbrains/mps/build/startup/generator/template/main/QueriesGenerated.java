@@ -361,7 +361,7 @@ public class QueriesGenerated extends QueryProviderBase {
   }
   public static Object propertyMacro_GetValue_6_7(final PropertyMacroContext _context) {
     String runnable = ((SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), LINKS.script$MlVT) != null) ? BuildString__BehaviorDescriptor.getText_id3NagsOfTioI.invoke(SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), LINKS.script$MlVT), null) : ((SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), LINKS.product$RfQu) != null) ? BuildString__BehaviorDescriptor.getText_id3NagsOfTioI.invoke(SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), LINKS.product$RfQu), null).toLowerCase() : "mps"));
-    runnable = (("macOS".equals(((String) _context.getVariable("os"))) ? "../MacOS/bin/" : "bin/")) + runnable;
+    runnable = (("macOS".equals(((String) _context.getVariable("os"))) ? "../MacOS/" : "bin/")) + runnable;
     runnable += ("Windows".equals(((String) _context.getVariable("os"))) ? "64.exe" : "");
     return String.format(_context.getTemplateValue(), runnable);
   }
