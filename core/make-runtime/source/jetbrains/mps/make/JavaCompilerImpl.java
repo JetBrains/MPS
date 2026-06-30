@@ -290,7 +290,7 @@ final class JavaCompilerImpl implements AutoCloseable {
   private ErrorRecord createErrorRecord(String compiledModuleName, MessageSender sender, ErrorCollector diagnostics) {
     // XXX perhaps, shall sender.trace() all jfm.location values?
     final ErrorRecord errorRecord = new ErrorRecord(MAX_ERRORS);
-    for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
+    for (Diagnostic<? extends JavaFileObject> d : List.copyOf(diagnostics.getDiagnostics())) {
       if (errorRecord.errorMax()) {
         break;
       }
