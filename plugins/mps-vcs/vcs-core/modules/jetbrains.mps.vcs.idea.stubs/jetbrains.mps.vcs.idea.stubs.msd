@@ -7,7 +7,6 @@
       <sourceRoot location="intellij.platform.vcs.dvcs.impl.shared.jar" />
       <sourceRoot location="intellij.platform.vcs.dvcs.jar" />
       <sourceRoot location="intellij.platform.vcs.impl.exec.jar" />
-      <sourceRoot location="intellij.platform.vcs.impl.frontend.jar" />
       <sourceRoot location="intellij.platform.vcs.impl.jar" />
       <sourceRoot location="intellij.platform.vcs.impl.lang.actions.jar" />
       <sourceRoot location="intellij.platform.vcs.impl.lang.jar" />
@@ -27,7 +26,6 @@
       <library location="${mps_home}/lib/intellij.platform.vcs.dvcs.impl.shared.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.dvcs.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.impl.exec.jar" />
-      <library location="${mps_home}/lib/intellij.platform.vcs.impl.frontend.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.impl.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.impl.lang.actions.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.impl.lang.jar" />

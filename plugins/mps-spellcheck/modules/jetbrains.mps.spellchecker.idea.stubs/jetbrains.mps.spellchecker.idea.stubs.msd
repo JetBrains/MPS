@@ -11,6 +11,7 @@
     </modelRoot>
     <modelRoot contentPath="${mps_home}/plugins/grazie/lib" type="java_classes">
       <sourceRoot location="grazie.jar" />
+      <sourceRoot location="intellij.grazie.core.jar" />
       <sourceRoot location="org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
     </modelRoot>
   </models>
@@ -19,6 +20,7 @@
       <library location="${mps_home}/lib/intellij.spellchecker.jar" />
       <library location="${mps_home}/lib/intellij.spellchecker.xml.jar" />
       <library location="${mps_home}/plugins/grazie/lib/grazie.jar" />
+      <library location="${mps_home}/plugins/grazie/lib/intellij.grazie.core.jar" />
       <library location="${mps_home}/plugins/grazie/lib/org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
     </facet>
   </facets>

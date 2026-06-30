@@ -4,6 +4,7 @@
     <modelRoot contentPath="${mps_home}/plugins/vcs-git/lib" type="java_classes">
       <sourceRoot location="git4idea-rt.jar" />
       <sourceRoot location="vcs-git.jar" />
+      <sourceRoot location="modules/intellij.vcs.git.shared.jar" />
     </modelRoot>
   </models>
   <facets>
@@ -11,6 +12,7 @@
       <classes generated="true" />
       <library location="${mps_home}/plugins/vcs-git/lib/git4idea-rt.jar" />
       <library location="${mps_home}/plugins/vcs-git/lib/vcs-git.jar" />
+      <library location="${mps_home}/plugins/vcs-git/lib/modules/intellij.vcs.git.shared.jar" />
     </facet>
   </facets>
   <dependencies>
