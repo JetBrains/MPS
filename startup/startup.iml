@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
+    <orderEntry type="library" name="KotlinCoreLibs" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="library" name="idea-bootstrap" level="project" />
