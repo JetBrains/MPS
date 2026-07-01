@@ -56,8 +56,19 @@
     <applicationService serviceImplementation="jetbrains.mps.plugins.applicationplugins.ApplicationPluginManager"/>
 
     <toolWindow factoryClass="jetbrains.mps.ide.bookmark.BookmarksTool$Factory"
-                id="Bookmarks tool" anchor="left" canCloseContents="true" secondary="false"
-                icon="AllIcons.Toolwindows.ToolWindowBookmarks" doNotActivateOnStart="true"/>
+                id="Bookmarks tool" anchor="left" secondary="false" canCloseContents="true"
+                icon="AllIcons.Toolwindows.ToolWindowBookmarks"/>
+
+    <!-- MPS tool windows, declared via the platform EP and connected to their BaseTool through MpsToolWindowFactory (MPS-39764). -->
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Inspector" anchor="bottom" secondary="true" canCloseContents="false"
+                icon="jetbrains.mps.ide.icons.IdeIcons.INSPECTOR_ICON"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Hierarchy" anchor="right" secondary="false" canCloseContents="false"
+                icon="AllIcons.Toolwindows.ToolWindowHierarchy"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Class Hierarchy" anchor="right" secondary="false" canCloseContents="false"
+                icon="AllIcons.Toolwindows.ToolWindowHierarchy"/>
     <applicationService serviceImplementation="jetbrains.mps.smodel.ModelValidationSettings" />
     <applicationService serviceImplementation="jetbrains.mps.ide.generator.GenerationSettings" />
 

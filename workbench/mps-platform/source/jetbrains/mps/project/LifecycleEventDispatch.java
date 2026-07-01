@@ -5,6 +5,7 @@ package jetbrains.mps.project;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.extensions.ExtensionPointName;
+import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.logging.Logger;
 import jetbrains.mps.project.ProjectLifecycleListener.Bean;
 import org.jetbrains.annotations.NotNull;
@@ -72,18 +73,33 @@ final class LifecycleEventDispatch {
       Logger.getLogger(getClass()).warning("Unexpected state on project close, now %s, expected %s".formatted(Transitions.values()[myStateTransition.get()].name(), Transitions.READY.name()));
       return;
     }
-    // dispatches events and returns immediately
-    ApplicationManager.getApplication().executeOnPooledThread(() -> ep.forEachExtensionSafe(this::goneAsync));
-    // waits for each listener to finish, and then returns
-    Future<?> notify = ApplicationManager.getApplication().executeOnPooledThread(() -> ep.forEachExtensionSafe(this::gone));
     try {
-      // I don't expect listeners to perform any heavy-duty tasks. The number is wild guess, though.
-      // Well, perhaps ProjectPluginManager could cause timeout here, as it needs to make sure plugin parts' dispose() goes in EDT.
-      notify.get(5000, TimeUnit.MILLISECONDS);
-    } catch (InterruptedException | ExecutionException ex) {
-      Logger.getLogger(getClass()).error("Failed to dispatch 'project discarded' event", ex);
-    } catch (TimeoutException ex) {
-      Logger.getLogger(getClass()).error("Dispatching 'project discarded' event takes too long, aborted", ex);
+      // dispatches events and returns immediately
+      ApplicationManager.getApplication().executeOnPooledThread(() -> ep.forEachExtensionSafe(this::goneAsync));
+      // The synchronous 'gone' listeners need care about the thread they run on. This method is normally invoked on
+      // the EDT (project close arrives through ProjectCloseListener.projectClosing on the EDT). Some listeners -
+      // notably ProjectPluginManager - have to release UI-bound state (tools, editor extensions, highlighters) on
+      // the EDT, and they must do so while the project is still alive. Dispatching them on a pooled thread and then
+      // blocking the EDT for the result (Future.get) deadlocks any such listener that marshals back to the EDT: it
+      // cannot proceed until the wait times out, by which point the project is already being disposed. That is the
+      // cause of the 'project discarded takes too long' timeout, the NPEs from now-null project components, and the
+      // dangling editor/Disposer extensions seen at shutdown. So when we are already on the EDT, run the listeners
+      // inline; only fall back to the pooled-thread-and-wait scheme off the EDT (e.g. headless), where blocking the
+      // calling thread is harmless.
+      if (ThreadUtils.isInEDT()) {
+        ep.forEachExtensionSafe(this::gone);
+      } else {
+        // waits for each listener to finish, and then returns
+        Future<?> notify = ApplicationManager.getApplication().executeOnPooledThread(() -> ep.forEachExtensionSafe(this::gone));
+        try {
+          // I don't expect listeners to perform any heavy-duty tasks. The number is wild guess, though.
+          notify.get(5000, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException | ExecutionException ex) {
+          Logger.getLogger(getClass()).error("Failed to dispatch 'project discarded' event", ex);
+        } catch (TimeoutException ex) {
+          Logger.getLogger(getClass()).error("Dispatching 'project discarded' event takes too long, aborted", ex);
+        }
+      }
     } finally {
       if (!myStateTransition.compareAndSet(Transitions.DISCARD_BEFORE.ordinal(), Transitions.DISCARDED.ordinal())) {
         Logger.getLogger(getClass()).error("Unexpected state on project close, now %s, expected %s".formatted(Transitions.values()[myStateTransition.get()].name(), Transitions.DISCARD_BEFORE.name()));

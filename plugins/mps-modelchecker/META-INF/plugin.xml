@@ -32,5 +32,8 @@
     <registryKey key="mps.check.model.genplan" defaultValue="true" description="Check languages used in a model against associated generation plan, if any" restartRequired="false"/>
     <registryKey key="mps.vcs.commit.check.models.all" defaultValue="true" description="Include dependent models in VCS pre-commit check " restartRequired="false"/>
     <registryKey key="mps.make.check.models.all" defaultValue="true" description="Include dependent models in pre-Make check " restartRequired="false"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="ModelChecker" anchor="bottom" secondary="false" canCloseContents="true"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.ModelChecker"/>
   </extensions>
 </idea-plugin>

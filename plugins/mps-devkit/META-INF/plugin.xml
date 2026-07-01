@@ -35,6 +35,26 @@
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter" />
     <spellchecker.bundledDictionaryProvider implementation="jetbrains.mps.spellchecker.MPSBundledDictionariesProvider"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Typesystem Trace" anchor="right" secondary="false" canCloseContents="false"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.TypeTraceView"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Generation Tracer" anchor="bottom" secondary="false" canCloseContents="true"
+                icon="jetbrains.mps.ide.icons.IdeIcons.DEFAULT_ICON"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Menu Trace" anchor="bottom" secondary="false" canCloseContents="true"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.Default"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Cell Explorer" anchor="bottom" secondary="false" canCloseContents="true"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.CellExplorer"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Node Explorer" anchor="bottom" secondary="false" canCloseContents="true"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Dependencies Viewer" anchor="bottom" secondary="false" canCloseContents="false"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.DependencyAnalyzer"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Module Dependencies" anchor="bottom" secondary="false" canCloseContents="false"
+                icon="AllIcons.Toolwindows.ToolWindowModuleDependencies"/>
   </extensions>
 
   <extensions defaultExtensionNs="com.intellij">

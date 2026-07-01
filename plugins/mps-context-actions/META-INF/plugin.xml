@@ -13,6 +13,8 @@
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
     <mps.LanguageLibrary dir="/" hide="true"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Context Actions" anchor="right" secondary="false" canCloseContents="false"/>
   </extensions>
 
 </idea-plugin>

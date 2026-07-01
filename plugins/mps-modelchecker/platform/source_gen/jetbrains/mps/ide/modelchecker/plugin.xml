@@ -10,4 +10,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <mps.PluginComponentContributor project="jetbrains.mps.ide.modelchecker.Platform_ProjectPlugin" />
   </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory" id="ModelChecker" anchor="bottom" secondary="false" canCloseContents="true" icon="jetbrains.mps.icons.MPSIcons.ToolWindows.ModelChecker" />
+  </extensions>
 </idea-plugin>

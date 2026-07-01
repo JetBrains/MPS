@@ -15,4 +15,9 @@
   <extensions defaultExtensionNs="com.intellij">
     <mps.PluginComponentContributor application="jetbrains.mps.ide.actions.Ide_ApplicationPlugin" project="jetbrains.mps.ide.actions.Ide_ProjectPlugin" />
   </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory" id="Hierarchy" anchor="right" secondary="false" canCloseContents="false" icon="com.intellij.icons.AllIcons.Toolwindows.ToolWindowHierarchy" />
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory" id="Class Hierarchy" anchor="right" secondary="false" canCloseContents="false" icon="com.intellij.icons.AllIcons.Toolwindows.ToolWindowHierarchy" />
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory" id="Inspector" anchor="bottom" secondary="true" canCloseContents="false" icon="jetbrains.mps.ide.icons.IdeIcons.INSPECTOR_ICON" />
+  </extensions>
 </idea-plugin>

@@ -21,18 +21,18 @@ import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.keymap.Keymap;
 import com.intellij.openapi.keymap.KeymapManager;
+import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import com.intellij.openapi.util.Disposer;
+import com.intellij.openapi.wm.RegisterToolWindowTask;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
+import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
-import com.intellij.util.ui.update.UiNotifyConnector;
 import jetbrains.mps.ide.ThreadUtils;
-import kotlin.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,13 +51,15 @@ public abstract class BaseTool {
 
   private final Project myProject;
   private final String myId;
-  private Icon myIcon;
-  private Map<String, KeyStroke> myShortcutsByKeymap;
+  private final Icon myIcon;
   private final ToolWindowAnchor myAnchor;
   private final boolean mySideTool;
-  private boolean myCanCloseContent;
+  private final boolean myCanCloseContent;
+  private final Map<String, KeyStroke> myShortcutsByKeymap;
   private boolean myIsRegistered;
   private boolean myIsDisposed = false;
+  /** True when {@link #ensureToolWindowRegistered()} registered the platform window itself (no EP entry). */
+  private boolean myFallbackToolWindowRegistered = false;
 
   private JComponent myComponent = null;
 
@@ -74,13 +76,13 @@ public abstract class BaseTool {
 
   public BaseTool(Project project, String id, Map<String, KeyStroke> shortcutsByKeymap, Icon icon, ToolWindowAnchor anchor, boolean sideTool,
                   boolean canCloseContent) {
-    myAnchor = anchor;
-    mySideTool = sideTool;
     myShortcutsByKeymap = shortcutsByKeymap;
     myId = id;
     myIcon = icon;
-    myCanCloseContent = canCloseContent;
     myProject = project;
+    myAnchor = anchor == null ? ToolWindowAnchor.BOTTOM : anchor;
+    mySideTool = sideTool;
+    myCanCloseContent = canCloseContent;
     myIsRegistered = false;
   }
 
@@ -98,7 +100,8 @@ public abstract class BaseTool {
 
   public boolean toolIsOpened() {
     ThreadUtils.assertEDT();
-    return getToolWindow().isVisible();
+    ToolWindow toolWindow = getToolWindow();
+    return toolWindow != null && toolWindow.isVisible();
   }
 
   /**
@@ -119,10 +122,13 @@ public abstract class BaseTool {
   public void openTool(boolean setActive) {
     ThreadUtils.assertEDT();
     ToolWindow window = getToolWindow();
-    if (!isAvailable()) {
+    if (window == null) {
+      return;
+    }
+    if (!window.isAvailable()) {
       makeAvailable();
     }
-    if (!toolIsOpened()) {
+    if (!window.isVisible()) {
       window.show(null);
     }
     if (setActive) {
@@ -170,8 +176,9 @@ public abstract class BaseTool {
    */
   public void makeAvailable() {
     ThreadUtils.assertEDT();
-    if (!isAvailable()) {
-      getToolWindow().setAvailable(true, null);
+    ToolWindow toolWindow = getToolWindow();
+    if (toolWindow != null && !toolWindow.isAvailable()) {
+      toolWindow.setAvailable(true, null);
     }
   }
 
@@ -187,18 +194,16 @@ public abstract class BaseTool {
    */
   public void makeUnavailable() {
     ThreadUtils.assertEDT();
-    if (isAvailable()) {
-      getToolWindow().setAvailable(false, null);
+    ToolWindow toolWindow = getToolWindow();
+    if (toolWindow != null && toolWindow.isAvailable()) {
+      toolWindow.setAvailable(false, null);
     }
   }
 
   public ToolWindow getToolWindow() {
     ThreadUtils.assertEDT();
-
-    if (!isRegistered()) {
-      register();
-    }
-    // register() may fail if myProject hasn't been initialized - ToolWindowManager is a ProjectComponent
+    // The tool window is declared via the com.intellij.toolWindow EP and owned by the platform,
+    // so we just read the pre-existing window instead of creating it imperatively.
     final ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(myProject);
     return toolWindowManager == null ? null : toolWindowManager.getToolWindow(myId);
   }
@@ -223,65 +228,162 @@ public abstract class BaseTool {
     ThreadUtils.assertEDT();
     myIsRegistered = true;
 
-    final ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(myProject);
+    installShortcuts();
 
-    if (myShortcutsByKeymap != null) {
-      String actionId = ActivateToolWindowAction.getActionIdForToolWindow(myId);
-
-      List<Keymap> keymaps = new ArrayList<>(myShortcutsByKeymap.size());
-      for (Entry<String, KeyStroke> keymapItem : myShortcutsByKeymap.entrySet()) {
-        Keymap keymap = KeymapManager.getInstance().getKeymap(keymapItem.getKey());
-        if (keymap != null) {
-          keymaps.add(keymap);
-        }
-      }
-      // keymaps topsort here is needed because we need to remove inherited shortcuts if they are overwritten
-      Collections.sort(keymaps, (o1, o2) -> {
-        for (Keymap parent = o1.getParent(); parent != null; parent = parent.getParent()) {
-          if (parent.equals(o2)) {
-            return 1;
-          }
-        }
-        for (Keymap parent = o2.getParent(); parent != null; parent = parent.getParent()) {
-          if (parent.equals(o1)) {
-            return -1;
-          }
-        }
-        return 0;
-      });
-
-      for (Keymap keymap : keymaps) {
-        KeyboardShortcut defShortcut = new KeyboardShortcut(myShortcutsByKeymap.get(keymap.getName()), null);
-        keymap.removeAllActionShortcuts(actionId);
-        keymap.addShortcut(actionId, defShortcut);
-      }
-    }
-
-
-    //if we create a new project, tool windows are created for it automatically
-    ToolWindow toolWindow = toolWindowManager.getToolWindow(myId);
-    if (toolWindow == null) {
-      toolWindow = toolWindowManager.registerToolWindow(myId, builder -> {
-        builder.icon = myIcon;
-        builder.canCloseContent = myCanCloseContent;
-        builder.anchor = myAnchor;
-        builder.sideTool = mySideTool;
-        return Unit.INSTANCE;
-      });
-    }
-    toolWindow.installWatcher(toolWindow.getContentManager());
+    // The tool window itself is owned by the platform (declared via the com.intellij.toolWindow EP); we drive
+    // only its initial availability. setAvailable(true) lazily triggers MpsToolWindowFactory -> attachTo(), which
+    // builds the tool's UI; on-demand tools stay hidden until openTool()/setAvailable(true) is invoked elsewhere.
+    // The two helpers below cover the non-EP and post-reload edge cases; see their Javadoc.
+    ensureToolWindowRegistered();
+    reattachContentIfReloaded();
     setAvailable(isInitiallyAvailable());
+  }
 
+  /**
+   * Re-adds this tool's content to an already-existing, platform-owned (EP-declared) tool window after a plugin
+   * reload. The platform builds a tool window's content exactly once and then discards the content factory, so
+   * once a tool has been shown, {@link #unregister()}'s content removal leaves the persistent window empty and
+   * {@code MpsToolWindowFactory} will not fire again for it — the window would stay blank for the rest of the
+   * session. We rebuild the content ourselves via {@link #rebuildContent()} (not {@link #attachTo}, to avoid
+   * installing a duplicate content watcher on the surviving window).
+   * <p>
+   * No-op in the normal cases: the fallback window (no EP entry) is re-created fresh by {@link #unregister()} so
+   * it is skipped here; and before a tool's first show its content manager does not exist yet
+   * ({@link ToolWindow#getContentManagerIfCreated()} is {@code null}), so the factory still builds the content
+   * lazily as designed.
+   */
+  private void reattachContentIfReloaded() {
+    if (myFallbackToolWindowRegistered) {
+      return;
+    }
+    ToolWindow toolWindow = getToolWindow();
+    if (toolWindow == null) {
+      return;
+    }
+    ContentManager contentManager = toolWindow.getContentManagerIfCreated();
+    if (contentManager != null && contentManager.isEmpty()) {
+      rebuildContent();
+    }
+  }
+
+  /**
+   * Ensures the platform tool window backing this tool exists before {@link #setAvailable(boolean)} drives it.
+   * <p>
+   * Bundled MPS tools declare the window through the {@code com.intellij.toolWindow} extension point, so it is
+   * already present here and this is a no-op. Third-party / standalone plugins hand-write their {@code plugin.xml}
+   * and are not regenerated by MPS; after the MPS-39764 migration removed imperative registration from
+   * {@link #register()}, such a plugin whose descriptor lacks the EP entry would get no tool window at all. For
+   * that case we register the window programmatically, backed by a factory that reconnects it to this
+   * {@link BaseTool} exactly the way {@code jetbrains.mps.plugins.tool.MpsToolWindowFactory} does for the EP path
+   * (kept local because that class lives in mps-workbench, which this module must not depend on).
+   */
+  private void ensureToolWindowRegistered() {
+    if (getToolWindow() != null) {
+      // Declared via the com.intellij.toolWindow EP (all bundled MPS tools) -> nothing to do.
+      return;
+    }
+    ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(myProject);
+    if (toolWindowManager == null) {
+      return;
+    }
+    toolWindowManager.registerToolWindow(new RegisterToolWindowTask(myId, myAnchor, null, mySideTool, myCanCloseContent,
+        true, false, new ToolWindowContentFactory(), myIcon, null));
+    myFallbackToolWindowRegistered = true;
+  }
+
+  /**
+   * Content factory for a tool window registered programmatically by {@link #ensureToolWindowRegistered()}. Mirrors
+   * {@code jetbrains.mps.plugins.tool.MpsToolWindowFactory}: the platform owns the window's lifecycle; this only
+   * connects the freshly built window to its owning {@link BaseTool}. {@link #shouldBeAvailable(Project)} returns
+   * {@code false} so the stripe stays hidden until {@link #register()} drives {@link #setAvailable(boolean)}.
+   */
+  private final class ToolWindowContentFactory implements ToolWindowFactory, DumbAware {
+    @Override
+    public boolean shouldBeAvailable(@NotNull Project project) {
+      return false;
+    }
+
+    @Override
+    public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
+      attachTo(toolWindow);
+    }
+  }
+
+  /**
+   * Installs the tool window activation shortcuts (Alt+number, ...) into the relevant keymaps.
+   * Invoked once when the owning project plugin registers the tool.
+   */
+  private void installShortcuts() {
+    if (myShortcutsByKeymap == null) {
+      return;
+    }
+    String actionId = ActivateToolWindowAction.Manager.getActionIdForToolWindow(myId);
+
+    List<Keymap> keymaps = new ArrayList<>(myShortcutsByKeymap.size());
+    for (Entry<String, KeyStroke> keymapItem : myShortcutsByKeymap.entrySet()) {
+      Keymap keymap = KeymapManager.getInstance().getKeymap(keymapItem.getKey());
+      if (keymap != null) {
+        keymaps.add(keymap);
+      }
+    }
+    // keymaps topsort here is needed because we need to remove inherited shortcuts if they are overwritten
+    keymaps.sort((o1, o2) -> {
+      for (Keymap parent = o1.getParent(); parent != null; parent = parent.getParent()) {
+        if (parent.equals(o2)) {
+          return 1;
+        }
+      }
+      for (Keymap parent = o2.getParent(); parent != null; parent = parent.getParent()) {
+        if (parent.equals(o1)) {
+          return -1;
+        }
+      }
+      return 0;
+    });
+
+    for (Keymap keymap : keymaps) {
+      KeyboardShortcut defShortcut = new KeyboardShortcut(myShortcutsByKeymap.get(keymap.getName()), null);
+      keymap.removeAllActionShortcuts(actionId);
+      keymap.addShortcut(actionId, defShortcut);
+    }
+  }
+
+  /**
+   * Connects the EP-declared platform tool window to this tool: installs the content watcher, performs
+   * implementation-specific registration ({@link #doRegister()}) and attaches the tool's component as content.
+   * Invoked by {@code jetbrains.mps.plugins.tool.MpsToolWindowFactory} when the platform builds the window content.
+   */
+  public void attachTo(@NotNull ToolWindow toolWindow) {
+    ThreadUtils.assertEDT();
+
+    rebuildContent();
+
+    // The content watcher must be installed only AFTER the content has been added.
+    // ContentManagerWatcher.watchContentManager() eagerly calls toolWindow.setAvailable(!contentManager.isEmpty());
+    // installing it on a still-empty content manager - which is exactly the state while the platform builds the
+    // window during its very first show - would immediately flip the window unavailable in the middle of that show
+    // (setAvailable(false) -> toolWindowUnavailable -> hide). The window would then stay closed until the tool
+    // button is clicked a second time. Adding the content first guarantees the watcher sees a non-empty manager.
+    // watchContentManager() adds a listener unconditionally, so it must run exactly once per window: attachTo is
+    // the single install site (invoked once per ToolWindow by the platform's content factory); reload re-adds
+    // content through rebuildContent() alone, reusing the persistent window's existing watcher.
+    toolWindow.installWatcher(toolWindow.getContentManager());
+  }
+
+  /**
+   * (Re)builds this tool's component and adds it as the tool window's content, WITHOUT installing the
+   * {@link com.intellij.ide.impl.ContentManagerWatcher}. {@link #attachTo} installs the watcher once per window;
+   * on a plugin reload the tool window (and its watcher) persist, so only the content has to be rebuilt.
+   */
+  private void rebuildContent() {
     doRegister();
 
-    UiNotifyConnector.doWhenFirstShown(toolWindow.getComponent(), () -> {
-      if (myComponent == null) {
-        myComponent = getComponent();
-      }
-      if (myComponent != null) {
-        addContent(myComponent, "", null, false);
-      }
-    });
+    if (myComponent == null) {
+      myComponent = getComponent();
+    }
+    if (myComponent != null) {
+      addContent(myComponent, "", null, false);
+    }
   }
 
   /**
@@ -308,24 +410,13 @@ public abstract class BaseTool {
 
 
   /**
-   * Runs {@link jetbrains.mps.ide.tools.BaseTool#unregister instead} later in EDT event pool.
-   */
-  // TODO: remove unused?
-  public void unregisterLater() {
-    ThreadUtils.runInUIThreadNoWait(this::unregister);
-  }
-
-  /**
-   * Unregister Tool and removes all shortcuts in case of reload.
+   * Unregisters the tool and removes its shortcuts in case of reload.
    * Need to be called in EDT.
    * <p>
-   * If project is closing (== not in opened projects) {
-   * <p>
-   * }, but there are some other opened projects,
-   * than shortcuts must not be removed - instance of BaseTool still exists for other projects
-   * and shortcuts are global (registered by ActionId).
-   * In case of BaseTool reload (unregister on opened project) we need do this,
-   * because it will register (probably changed) shortcuts back on load.
+   * Shortcuts are global (registered by action id), so if this project is closing while other projects are still
+   * open, the shortcuts must not be removed - a BaseTool instance still exists for those projects. On a reload
+   * (unregister on an open project) we do remove them, because {@link #register()} will re-install the (possibly
+   * changed) shortcuts on load.
    */
   public final void unregister() {
     if (!isRegistered()) {
@@ -341,23 +432,39 @@ public abstract class BaseTool {
       for (Entry<String, KeyStroke> keymapItem : myShortcutsByKeymap.entrySet()) {
         Keymap keymap = KeymapManager.getInstance().getKeymap(keymapItem.getKey());
         if (keymap != null) {
-          keymap.removeAllActionShortcuts(ActivateToolWindowAction.getActionIdForToolWindow(myId));
+          keymap.removeAllActionShortcuts(ActivateToolWindowAction.Manager.getActionIdForToolWindow(myId));
         }
       }
     }
-    
+
+    myIsRegistered = false;
+    myComponent = null;
+
     if (myProject.isDisposed()) {
       return;
     }
     final ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(myProject);
-    ToolWindow toolWindow = toolWindowManager == null ? null : toolWindowManager.getToolWindow(myId);
-    if (toolWindow != null) {
-      //noinspection deprecation
-      toolWindowManager.unregisterToolWindow(myId);
-      ContentManager contentManager = toolWindow.getContentManager();
-      Disposer.dispose(contentManager);
+    if (toolWindowManager == null) {
+      return;
     }
-    myIsRegistered = false;
+    if (myFallbackToolWindowRegistered) {
+      // This window has no com.intellij.toolWindow EP entry; we registered it programmatically in
+      // ensureToolWindowRegistered(). The platform consumes a tool window's content factory exactly once, so
+      // merely detaching the content would leave a re-registered window permanently empty on the next
+      // register() (e.g. after a plugin reload). Unregister the whole window instead, so register() recreates
+      // it with a fresh factory.
+      myFallbackToolWindowRegistered = false;
+      toolWindowManager.unregisterToolWindow(myId);
+      return;
+    }
+    // The platform owns the EP-declared tool window, so we do not unregister it; we only detach our content.
+    ToolWindow toolWindow = toolWindowManager.getToolWindow(myId);
+    if (toolWindow != null) {
+      ContentManager contentManager = toolWindow.getContentManager();
+      if (!contentManager.isDisposed()) {
+        contentManager.removeAllContents(true);
+      }
+    }
   }
 
   /**
@@ -394,9 +501,6 @@ public abstract class BaseTool {
 
   @Nullable
   protected ContentManager getContentManager() {
-    if (!isRegistered()) {
-      register();
-    }
     if (myProject.isDisposed()) {
       return null;
     }

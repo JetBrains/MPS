@@ -20,5 +20,13 @@
   <extensions defaultExtensionNs="com.intellij">
     <mps.LanguageLibrary dir="/" hide="true"/>
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"></errorHandler>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="ToDo" anchor="bottom" secondary="false" canCloseContents="false"
+                icon="AllIcons.Toolwindows.ToolWindowTodo"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Documentation" anchor="right" secondary="false" canCloseContents="true"
+                icon="AllIcons.Toolwindows.Documentation"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Migration" anchor="bottom" secondary="false" canCloseContents="true"/>
   </extensions>
 </idea-plugin>

@@ -6542,7 +6542,7 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895904a4(jetbrains.mps.ide.actions)/3531023421907756759">
     <file name="plugin.xml">
-      <unit id="3531023421907756759" at="1,0,18,14" name="jetbrains.mps.ide.actions.plugin" />
+      <unit id="3531023421907756759" at="1,0,23,14" name="jetbrains.mps.ide.actions.plugin" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895904a4(jetbrains.mps.ide.actions)/3538501397189789300">

@@ -37,5 +37,8 @@
     <mps.VisibleModuleMask mask="jetbrains\.mps\.ant"/>
     <mps.VisibleModuleMask mask="jetbrains\.mps\.baseLanguage.*"/>
     <mps.VisibleModuleMask mask="jetbrains\.mps\.devkit\.general-purpose"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Classpath Explorer" anchor="bottom" secondary="false" canCloseContents="false"
+                icon="jetbrains.mps.ide.icons.IdeIcons.DEFAULT_ICON"/>
   </extensions>
 </idea-plugin>

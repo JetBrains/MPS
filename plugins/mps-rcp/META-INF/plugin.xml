@@ -19,5 +19,8 @@
   <extensions defaultExtensionNs="com.intellij">
     <mps.LanguageLibrary dir="/" hide="true"/>
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"></errorHandler>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="RefactoringView" anchor="bottom" secondary="false" canCloseContents="true"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.Default"/>
   </extensions>
 </idea-plugin>

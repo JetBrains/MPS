@@ -14,6 +14,9 @@
   <extensions defaultExtensionNs="com.intellij">
     <mps.LanguageLibrary dir="" hide="true"/>
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
+    <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
+                id="Console" anchor="bottom" secondary="false" canCloseContents="true"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.Console"/>
   </extensions>
 
 </idea-plugin>

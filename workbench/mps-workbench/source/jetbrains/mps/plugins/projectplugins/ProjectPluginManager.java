@@ -119,6 +119,30 @@ public final class ProjectPluginManager extends BasePluginManager<BaseProjectPlu
     }
   }
 
+  /**
+   * Looks up a registered {@link BaseTool} by its tool window id. Invoked by
+   * {@link jetbrains.mps.plugins.tool.MpsToolWindowFactory#createToolWindowContent(Project,
+   * com.intellij.openapi.wm.ToolWindow)} on EDT, when the platform builds the content of an MPS tool window
+   * declared via the {@code com.intellij.toolWindow} EP — the lookup matches the window's id against
+   * {@link BaseTool#getId()}.
+   *
+   * @param id the tool window id, see {@link BaseTool#getId()}
+   * @return the matching tool, or {@code null} if no tool with such id is registered
+   */
+  @Nullable
+  public BaseTool getTool(String id) {
+    synchronized (myPluginsLock) {
+      for (BaseProjectPlugin plugin : getPlugins()) {
+        for (BaseTool tool : plugin.getTools()) {
+          if (id.equals(tool.getId())) {
+            return tool;
+          }
+        }
+      }
+      return null;
+    }
+  }
+
   public <T extends BaseProjectPrefsComponent> T getPrefsComponent(Class<T> componentClass) {
     synchronized (myPluginsLock) {
       for (BaseProjectPlugin plugin : getPlugins()) {
