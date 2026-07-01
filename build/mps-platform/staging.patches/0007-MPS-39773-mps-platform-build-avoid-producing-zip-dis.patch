@@ -1,0 +1,71 @@
+From 8b02c339abc02945b8791af4c3e213f863edf55c Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Mon, 13 Jul 2026 12:51:26 +0200
+Subject: [PATCH 7/8] MPS-39773 mps-platform build: avoid producing zip dist
+ and installers for windows
+
+Zipped distribution and installers are not needed to build mps-platform.
+---
+ community/mps/build/build/build.xml           | 19 ++++---------------
+ .../intellij/build/mps/MPSBuilder.kt          |  8 ++++++--
+ 2 files changed, 10 insertions(+), 17 deletions(-)
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 56db99a448d3b..c3b012a5cd72f 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -3,6 +3,8 @@
+   <property name="platform.root" location="${basedir}/../../.."/>
+   <property name="target.root" value="${platform.root}/out/mps"/>
+   <property name="target.dist" value="${target.root}/dist.all"/>
++  <property name="target.win.x64" value="${target.root}/dist.win.x64"/>
++  <property name="target.win.aarch64" value="${target.root}/dist.win.aarch64"/>
+   <property name="target.artifacts" value="${target.root}/artifacts"/>
+ 
+   <condition property="is.windows">
+@@ -81,21 +83,8 @@
+ 
+   <!-- Build contains exe files with proper MPS icons -->
+   <target name="extract-win-exe" description="Extract customized Windows executables">
+-    <unzip src="${target.artifacts}/platform.win.zip" dest="${target.artifacts}/" overwrite="true">
+-      <patternset>
+-        <include name="bin/mps64.exe"/>
+-      </patternset>
+-      <mapper type="flatten"/>
+-    </unzip>
+-    <move file="${target.artifacts}/mps64.exe" tofile="${target.dist}/build/resources/mps-win-64.exe"/>
+-
+-    <unzip src="${target.artifacts}/platform-aarch64.win.zip" dest="${target.artifacts}/" overwrite="true">
+-      <patternset>
+-        <include name="bin/mps64.exe"/>
+-      </patternset>
+-      <mapper type="flatten"/>
+-    </unzip>
+-    <move file="${target.artifacts}/mps64.exe" tofile="${target.dist}/build/resources/mps-win-aarch64.exe"/>
++    <copy file="${target.win.x64}/bin/mps64.exe" tofile="${target.dist}/build/resources/mps-win-64.exe"/>
++    <copy file="${target.win.aarch64}/bin/mps64.exe" tofile="${target.dist}/build/resources/mps-win-aarch64.exe"/>
+   </target>
+ 
+   <!-- plugin.xml built by JPS contains all needed embedded module descriptors. Extract them for MPS build to later include them in MPSPlugin.xml -->
+diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
+index 9f00d34505a35..86a7b19d897b1 100644
+--- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
++++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
+@@ -39,8 +39,12 @@ class MPSBuilder {
+             options.incrementalCompilation = true
+             options.useCompiledClassesFromProjectOutput = false
+             options.targetOs = OsFamily.ALL
+-            options.buildStepsToSkip += listOf(BuildOptions.MAC_SIGN_STEP, BuildOptions.MAC_NOTARIZE_STEP,
+-                BuildOptions.WIN_SIGN_STEP)
++            options.buildStepsToSkip += listOf(
++                BuildOptions.MAC_SIGN_STEP,
++                BuildOptions.MAC_NOTARIZE_STEP,
++                BuildOptions.WIN_SIGN_STEP,
++                BuildOptions.WINDOWS_ZIP_STEP,
++                BuildOptions.WINDOWS_EXE_INSTALLER_STEP)
+             // needed to package JPS tests
+             options.useTestCompilationOutput = true
+ 
+-- 
+2.53.0
+

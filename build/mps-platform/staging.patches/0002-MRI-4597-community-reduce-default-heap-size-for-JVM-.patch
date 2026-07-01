@@ -1,7 +1,8 @@
-From 9828e29ead9de7b052e87eea117cad4a344d3985 Mon Sep 17 00:00:00 2001
+From d2e64df678dcd6624d4241decb4e0e2392c36efd Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
-Date: Wed, 24 Jun 2026 16:26:48 +0200
-Subject: [PATCH 2/2] Reduce default heap size for JVM compilation to 10 GB
+Date: Thu, 25 Jun 2026 09:54:16 +0200
+Subject: [PATCH 2/8] MRI-4597 community: reduce default heap size for JVM
+ compilation to 10 GB
 
 The previously used unrealistic 20 GB value was causing MPS platform builds to fail.
 ---

@@ -1,0 +1,43 @@
+From 6ccc8047150d8727a458e7e868a1e27506efa258 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Wed, 8 Jul 2026 13:34:17 +0200
+Subject: [PATCH 5/8] MPS-39773 Fix custom java plugin
+
+Add necessary module declarations to plugin.xml manifest of MPS-vendored Java plugin.
+---
+ .../build/build/manifests/java-impl.jar/META-INF/plugin.xml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml b/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
+index b622cb6139ee0..23bf600ffa8e9 100644
+--- a/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
++++ b/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
+@@ -17,21 +17,23 @@
+   <xi:include href="/META-INF/JavaPlugin.xml"/>
+ 
+   <content namespace="jetbrains">
+-    <module name="intellij.java.frontback.psi.impl" loading="embedded"/>
+-
+     <module name="intellij.java" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.analysis"  loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.analysis.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
++    <module name="intellij.java.backend" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.compiler" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.compiler.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.debugger" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.debugger.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
++    <module name="intellij.java.execution.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.frontback.psi" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
++    <module name="intellij.java.frontback.psi.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.indexing" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.psi" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.psi.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.syntax" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
++    <module name="intellij.java.ui" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.jsp" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.compiler.instrumentationUtil" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.platform.jps.build.javac.rt" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+-- 
+2.53.0
+

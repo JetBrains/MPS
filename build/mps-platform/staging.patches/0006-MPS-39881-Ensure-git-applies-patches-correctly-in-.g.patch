@@ -1,0 +1,33 @@
+From 377f87c711d90489b3e9d045d42fa37aabbe09ac Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Wed, 8 Jul 2026 13:34:32 +0200
+Subject: [PATCH 6/8] MPS-39881 Ensure git applies patches correctly in .git
+ repo
+
+The command `git apply` silently skips patches if launched in a context of .git repository.
+Passing environment variable `GIT_DIR=/dev/null` helps alleviate this pain.
+---
+ community/mps/build/build/build.xml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 81237c8e1ed10..56db99a448d3b 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -14,10 +14,13 @@
+     <sequential>
+       <echo message="Applying @{file}"/>
+       <exec executable="git" dir="${platform.root}" failonerror="true">
++        <env key="GIT_DIR" file="/dev/null"/>
+         <arg value="apply"/>
+         <!-- Remove this argument to apply patches directly in the master repository (mostly for testing purposes) -->
+         <arg value="-p2"/>
+         <arg value="&#45;-ignore-space-change"/>
++        <arg value="--verbose"/>
++        <arg value="--no-index"/>
+         <arg value="@{file}"/>
+       </exec>
+     </sequential>
+-- 
+2.53.0
+

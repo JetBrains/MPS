@@ -1,0 +1,37 @@
+From ff354058c2719a3b435ab9f35b36a5c38c0213aa Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Wed, 1 Jul 2026 10:20:41 +0200
+Subject: [PATCH 3/8] MRI-4612 Enable packaging of test output in
+ JarPackager#buildJar
+
+Introduce another parameter `forTests` to function `JarPackager#buildJar` defaulting to `false`,
+which is passed to `ModuleOutputProvider#getModuleOutputRoots` in order to package "test" output.
+---
+ .../src/org/jetbrains/intellij/build/impl/JarPackager.kt      | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/JarPackager.kt b/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/JarPackager.kt
+index d4ca46f9a1c2a..7c17677dbaf56 100644
+--- a/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/JarPackager.kt
++++ b/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/JarPackager.kt
+@@ -1113,7 +1113,7 @@ private class NativeFileHandlerImpl(private val context: BuildContext) : NativeF
+   }
+ }
+ 
+-suspend fun buildJar(targetFile: Path, moduleNames: List<String>, context: CompilationContext, dryRun: Boolean = false) {
++suspend fun buildJar(targetFile: Path, moduleNames: List<String>, context: CompilationContext, dryRun: Boolean = false, forTests: Boolean = false) {
+   if (dryRun) {
+     return
+   }
+@@ -1123,7 +1123,7 @@ suspend fun buildJar(targetFile: Path, moduleNames: List<String>, context: Compi
+       targetFile = targetFile,
+       sources = moduleNames.flatMap { moduleName ->
+         val module = context.outputProvider.findRequiredModule(moduleName)
+-        context.outputProvider.getModuleOutputRoots(module).mapNotNull { output ->
++        context.outputProvider.getModuleOutputRoots(module, forTests).mapNotNull { output ->
+           createModuleSource(module = module, outputDir = output, excludes = commonModuleExcludes)
+         }
+       },
+-- 
+2.53.0
+
