@@ -106,6 +106,7 @@
       <modulePath path="$PROJECT_DIR$/languages/core/stub/MPS.Editor/MPS.Editor.msd" folder="core.stub" />
       <modulePath path="$PROJECT_DIR$/languages/core/stub/MPS.Generator/MPS.Generator.msd" folder="core.stub" />
       <modulePath path="$PROJECT_DIR$/languages/core/stub/MPS.IDEA.Modules/MPS.IDEA.Modules.msd" folder="core.stub" />
+      <modulePath path="$PROJECT_DIR$/languages/core/stub/MPS.IDEA.Plugins/MPS.IDEA.Plugins.msd" folder="core.stub" />
       <modulePath path="$PROJECT_DIR$/languages/core/stub/MPS.IDEA/MPS.IDEA.msd" folder="core.stub" />
       <modulePath path="$PROJECT_DIR$/languages/core/stub/MPS.OpenAPI/MPS.OpenAPI.msd" folder="core.stub" />
       <modulePath path="$PROJECT_DIR$/languages/core/stub/MPS.Platform/MPS.Platform.msd" folder="core.stub" />
