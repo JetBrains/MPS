@@ -34,7 +34,7 @@ public class RunConfigurationsInitializer_AppPluginPart extends ApplicationPlugi
     // add foreign factories
 
     // register creators
-    ExtensionPoint<RuntimeConfigurationProducer> producerExtensionPoint = Extensions.getArea(null).getExtensionPoint(RuntimeConfigurationProducer.RUNTIME_CONFIGURATION_PRODUCER);
+    ExtensionPoint<RuntimeConfigurationProducer> producerExtensionPoint = Extensions.getRootArea().getExtensionPoint(RuntimeConfigurationProducer.RUNTIME_CONFIGURATION_PRODUCER);
     for (ConfigurationType ext : configurationExtensionPoint.getExtensions()) {
       if ("Build Script".equals(ext.getId())) {
         List<RuntimeConfigurationProducer> configurationProducers = BuildScript_Producer.getProducers(ext);

@@ -4031,10 +4031,9 @@
               </node>
             </node>
             <node concept="2OqwBi" id="3uNEAUKw0O3" role="33vP2m">
-              <node concept="2YIFZM" id="3uNEAUKw0O1" role="2Oq$k0">
+              <node concept="2YIFZM" id="2bADoQZeRsK" role="2Oq$k0">
+                <ref role="37wK5l" to="9ti4:~Extensions.getRootArea()" resolve="getRootArea" />
                 <ref role="1Pybhc" to="9ti4:~Extensions" resolve="Extensions" />
-                <ref role="37wK5l" to="9ti4:~Extensions.getArea(com.intellij.openapi.extensions.AreaInstance)" resolve="getArea" />
-                <node concept="10Nm6u" id="3uNEAUKw0O2" role="37wK5m" />
               </node>
               <node concept="liA8E" id="3uNEAUKw0Vh" role="2OqNvi">
                 <ref role="37wK5l" to="9ti4:~ExtensionsArea.getExtensionPoint(com.intellij.openapi.extensions.ExtensionPointName)" resolve="getExtensionPoint" />
