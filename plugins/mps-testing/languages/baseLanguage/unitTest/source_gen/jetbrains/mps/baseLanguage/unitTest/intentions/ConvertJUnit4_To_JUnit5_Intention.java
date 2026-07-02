@@ -122,37 +122,37 @@ public final class ConvertJUnit4_To_JUnit5_Intention extends AbstractIntentionDe
   private static SNode createAnnotationInstance_abiijm_a0a0a0a0c0a() {
     PersistenceFacade facade = PersistenceFacade.getInstance();
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.AnnotationInstance$yl);
-    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)"), facade.createNodeId("~Test")));
+    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)"), facade.createNodeId("~Test")));
     return n0.getResult();
   }
   private static SNode createAnnotationInstance_abiijm_a0a0a0a0e0a() {
     PersistenceFacade facade = PersistenceFacade.getInstance();
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.AnnotationInstance$yl);
-    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)"), facade.createNodeId("~Disabled")));
+    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)"), facade.createNodeId("~Disabled")));
     return n0.getResult();
   }
   private static SNode createAnnotationInstance_abiijm_a0a0a0a0g0a() {
     PersistenceFacade facade = PersistenceFacade.getInstance();
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.AnnotationInstance$yl);
-    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)"), facade.createNodeId("~BeforeEach")));
+    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)"), facade.createNodeId("~BeforeEach")));
     return n0.getResult();
   }
   private static SNode createAnnotationInstance_abiijm_a0a0a0a0i0a() {
     PersistenceFacade facade = PersistenceFacade.getInstance();
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.AnnotationInstance$yl);
-    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)"), facade.createNodeId("~AfterEach")));
+    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)"), facade.createNodeId("~AfterEach")));
     return n0.getResult();
   }
   private static SNode createAnnotationInstance_abiijm_a0a0a0a0k0a() {
     PersistenceFacade facade = PersistenceFacade.getInstance();
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.AnnotationInstance$yl);
-    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)"), facade.createNodeId("~BeforeAll")));
+    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)"), facade.createNodeId("~BeforeAll")));
     return n0.getResult();
   }
   private static SNode createAnnotationInstance_abiijm_a0a0a0a0m0a() {
     PersistenceFacade facade = PersistenceFacade.getInstance();
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.AnnotationInstance$yl);
-    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)"), facade.createNodeId("~AfterAll")));
+    n0.setReference(LINKS.annotation$12Ek, new SNodePointer(facade.createModelReference("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)"), facade.createNodeId("~AfterAll")));
     return n0.getResult();
   }
 

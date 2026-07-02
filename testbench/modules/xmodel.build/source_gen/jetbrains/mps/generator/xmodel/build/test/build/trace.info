@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:c038eee7-4c1b-499b-b130-c7394a2f3517(jetbrains.mps.generator.xmodel.build.test.build)/4147559706650342950">
     <file name="p1.xml">
-      <unit id="4147559706650342950" at="1,0,456,10" name="jetbrains.mps.generator.xmodel.build.test.build.p1" />
+      <unit id="4147559706650342950" at="1,0,642,10" name="jetbrains.mps.generator.xmodel.build.test.build.p1" />
     </file>
   </root>
   <root nodeRef="r:c038eee7-4c1b-499b-b130-c7394a2f3517(jetbrains.mps.generator.xmodel.build.test.build)/4147559706650342953">

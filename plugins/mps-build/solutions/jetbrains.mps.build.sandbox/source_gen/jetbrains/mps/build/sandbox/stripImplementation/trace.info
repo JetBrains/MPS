@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:02e26212-728e-46cb-bbf3-c544990b3781(jetbrains.mps.build.sandbox.stripImplementation)/3389822811992714254">
     <file name="buildPlugin.xml">
-      <unit id="3389822811992714254" at="1,0,484,10" name="jetbrains.mps.build.sandbox.stripImplementation.buildPlugin" />
+      <unit id="3389822811992714254" at="1,0,706,10" name="jetbrains.mps.build.sandbox.stripImplementation.buildPlugin" />
     </file>
   </root>
 </debug-info>

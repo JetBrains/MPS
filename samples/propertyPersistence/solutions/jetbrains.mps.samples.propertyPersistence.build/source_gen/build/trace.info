@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:88143911-1b91-4fcf-ae80-2502562c8aa9(build)/5586542675088810179">
     <file name="propertyPersistence.xml">
-      <unit id="5586542675088810179" at="1,0,652,10" name="build.propertyPersistence" />
+      <unit id="5586542675088810179" at="1,0,1068,10" name="build.propertyPersistence" />
     </file>
   </root>
 </debug-info>

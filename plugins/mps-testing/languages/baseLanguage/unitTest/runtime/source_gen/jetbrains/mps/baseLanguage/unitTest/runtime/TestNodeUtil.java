@@ -91,11 +91,11 @@ public class TestNodeUtil {
     if (!((boolean) BaseMethodDeclaration__BehaviorDescriptor.isAnAbstractMethod_id28P2dHxCoRl.invoke(method)) && ((SLinkOperations.getTarget(method, LINKS.visibility$Yyua) == null) || SNodeOperations.isInstanceOf(SLinkOperations.getTarget(method, LINKS.visibility$Yyua), CONCEPTS.PublicVisibility$R0) || SNodeOperations.isInstanceOf(SLinkOperations.getTarget(method, LINKS.visibility$Yyua), CONCEPTS.ProtectedVisibility$hr)) && (SPropertyOperations.getString(method, PROPS.name$MnvL) != null)) {
       boolean hasTestAnnotation = false;
       for (SNode annotation : Sequence.fromIterable(SLinkOperations.collect(SLinkOperations.getChildren(method, LINKS.annotation$K49I), LINKS.annotation$12Ek))) {
-        if (SNodeOperations.is(annotation, new SNodePointer("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)", "~Disabled"))) {
+        if (SNodeOperations.is(annotation, new SNodePointer("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)", "~Disabled"))) {
           return false;
         }
         // the reference below is to org.junit.jupiter.api.Test
-        if (SNodeOperations.is(annotation, new SNodePointer("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.api(org.junit.junit5/)", "~Test")) || SNodeOperations.is(annotation, new SNodePointer("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.params(org.junit.junit5/)", "~ParameterizedTest"))) {
+        if (SNodeOperations.is(annotation, new SNodePointer("49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.jupiter.api(JUnit/)", "~Test")) || SNodeOperations.is(annotation, new SNodePointer("63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.jupiter.params(org.junit.junit5/)", "~ParameterizedTest"))) {
           hasTestAnnotation = true;
         }
       }

@@ -14,6 +14,6 @@
   <uses module="134ef213-c518-42b0-b12c-c109aa13d320(collections_trove.runtime)" kind="dp" />
   <uses module="b5660d3a-8a0d-4815-881b-7c884f61c9c7(internalCollections.test)" kind="dp" />
   <uses module="52b81ac7-93fd-4e9e-b972-4995882da6d4(jetbrains.mps.baseLanguage.references.runtime)" kind="rt" />
-  <uses module="63b449db-0918-4a4a-a891-2c430ab133e4(org.junit.junit5)" kind="rt+dp" />
+  <uses module="63b449db-0918-4a4a-a891-2c430ab133e4(org.junit.junit5)" kind="rt" />
 </dependenciesRoot>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="etjjts196uksetvbyb99l5j6dqqw5m6">
+<product version="3" modelHash="-2v0fld2qiimqwoat7tluvpkjzrm3eoo">
   <files names="BaseEditorTestBody.java:BaseMigrationTestBody.java:BaseTestBody.java:BaseTransformationTest.java:CellReference.java:CheckErrorMessagesRunnable.java:CheckExpectedMessageRunnable.java:CheckScopesAction.java:CheckTypesAction.java:CouldNotFindModelException.java:EditorTestUtil.java:EnvironmentIsNullException.java:ExecuteCommandExtension.java:ExpandedProjectPathIsNullException.java:Fixture.java:FixtureTestable.java:IntentionTester.java:KeyEventsDispatcher.java:LanguageTestDiscoveryParticipants.java:MPSTestModelInitializationException.java:MatchIntentionById.java:MatchIntentionByIdAndParameter.java:ModuleActivator.java:MouseEventsDispatcher.java:NodeCheckerUtil.java:ProjectPathIsNullException.java:ProjectTestHelper.java:TestParametersCache.java:TestParametersCacheBuilder.java:TestParametersCacheExtension.java:Testable.java:TestsErrorsChecker.java:TransformationTest.java" />
 </product>
 

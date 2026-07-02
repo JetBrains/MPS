@@ -2,12 +2,12 @@
 <debug-info version="2">
   <root nodeRef="r:12897c41-1d23-444a-8c3d-8a254e74f9b6(jetbrains.mps.ide.build.tests.generatedTests)/8806036443185005266">
     <file name="mpsTestModules.xml">
-      <unit id="8806036443185005266" at="1,0,1319,10" name="jetbrains.mps.ide.build.tests.generatedTests.mpsTestModules" />
+      <unit id="8806036443185005266" at="1,0,2883,10" name="jetbrains.mps.ide.build.tests.generatedTests.mpsTestModules" />
     </file>
   </root>
   <root nodeRef="r:12897c41-1d23-444a-8c3d-8a254e74f9b6(jetbrains.mps.ide.build.tests.generatedTests)/8806036443185005938">
     <file name="mpsTestRefactoring.xml">
-      <unit id="8806036443185005938" at="1,0,384,10" name="jetbrains.mps.ide.build.tests.generatedTests.mpsTestRefactoring" />
+      <unit id="8806036443185005938" at="1,0,606,10" name="jetbrains.mps.ide.build.tests.generatedTests.mpsTestRefactoring" />
     </file>
   </root>
 </debug-info>

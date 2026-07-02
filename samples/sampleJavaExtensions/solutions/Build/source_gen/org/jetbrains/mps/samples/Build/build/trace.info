@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:91fb18c7-a74a-4784-95fb-46b200b2b62a(org.jetbrains.mps.samples.Build.build)/8968584541678373554">
     <file name="buildOfSampleJavaExtensions.xml">
-      <unit id="8968584541678373554" at="1,0,1632,10" name="org.jetbrains.mps.samples.Build.build.buildOfSampleJavaExtensions" />
+      <unit id="8968584541678373554" at="1,0,2376,10" name="org.jetbrains.mps.samples.Build.build.buildOfSampleJavaExtensions" />
     </file>
   </root>
 </debug-info>

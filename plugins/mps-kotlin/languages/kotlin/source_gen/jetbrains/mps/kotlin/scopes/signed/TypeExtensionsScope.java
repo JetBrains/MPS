@@ -43,7 +43,7 @@ public class TypeExtensionsScope implements SignatureScope {
       
       It is also not desirable to have only a subset of the possible results, since it would be additional approximative code (checking exact type match) but unprecise results (missing values).
       
-      Instead of dealing with that at this level, class user should be responsible for using '''KotlinScopes.scopeWithLegacyTypesystemFallback()''' which allows having such set that includes all valid cases.
+      Instead of dealing with that at this level, class user should be responsible for using '''KotlinScopes.scopeWithLegacyTypesystemFallback(SNode,SAbstractConcept,_return_P0_E0<? extends SignatureScope>):Scope''' which allows having such set that includes all valid cases.
 
     */
 

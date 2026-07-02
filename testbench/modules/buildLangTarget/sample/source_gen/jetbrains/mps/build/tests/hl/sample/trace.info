@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:2a370cfb-cabe-4b28-922f-483a55ca7c4f(jetbrains.mps.build.tests.hl.sample)/729402675091085952">
     <file name="TryBuildLangAsTarget_BuildProject.xml">
-      <unit id="729402675091085952" at="1,0,166,10" name="jetbrains.mps.build.tests.hl.sample.TryBuildLangAsTarget_BuildProject" />
+      <unit id="729402675091085952" at="1,0,396,10" name="jetbrains.mps.build.tests.hl.sample.TryBuildLangAsTarget_BuildProject" />
     </file>
   </root>
 </debug-info>

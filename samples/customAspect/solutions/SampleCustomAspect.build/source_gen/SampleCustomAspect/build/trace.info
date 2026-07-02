@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:a8841710-3165-4117-a7de-5485d8fc9d23(SampleCustomAspect.build)/5397364291408930696">
     <file name="SampleCustomAspect.xml">
-      <unit id="5397364291408930696" at="1,0,944,10" name="SampleCustomAspect.build.SampleCustomAspect" />
+      <unit id="5397364291408930696" at="1,0,1864,10" name="SampleCustomAspect.build.SampleCustomAspect" />
     </file>
   </root>
 </debug-info>

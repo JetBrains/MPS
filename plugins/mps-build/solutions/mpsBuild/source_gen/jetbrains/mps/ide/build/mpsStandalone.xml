@@ -64,10 +64,6 @@
     <copy todir="${build.layout}/plugins/platform-images">
       <fileset dir="${basedir}/plugins/platform-images" />
     </copy>
-    <mkdir dir="${build.layout}/plugins/tasks" />
-    <copy todir="${build.layout}/plugins/tasks">
-      <fileset dir="${basedir}/plugins/tasks" />
-    </copy>
     <mkdir dir="${build.layout}/plugins/terminal" />
     <copy todir="${build.layout}/plugins/terminal">
       <fileset dir="${basedir}/plugins/terminal" />

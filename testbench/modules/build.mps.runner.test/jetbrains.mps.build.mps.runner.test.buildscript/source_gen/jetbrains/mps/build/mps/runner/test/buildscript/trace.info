@@ -2,22 +2,22 @@
 <debug-info version="2">
   <root nodeRef="r:1df60b02-4b01-4931-9ed0-efa7ab133a2f(jetbrains.mps.build.mps.runner.test.buildscript)/1101389554473443113">
     <file name="testDummyPlugin.xml">
-      <unit id="1101389554473443113" at="1,0,235,10" name="jetbrains.mps.build.mps.runner.test.buildscript.testDummyPlugin" />
+      <unit id="1101389554473443113" at="1,0,465,10" name="jetbrains.mps.build.mps.runner.test.buildscript.testDummyPlugin" />
     </file>
   </root>
   <root nodeRef="r:1df60b02-4b01-4931-9ed0-efa7ab133a2f(jetbrains.mps.build.mps.runner.test.buildscript)/138593292063253314">
     <file name="test3.xml">
-      <unit id="138593292063253314" at="1,0,232,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test3" />
+      <unit id="138593292063253314" at="1,0,462,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test3" />
     </file>
   </root>
   <root nodeRef="r:1df60b02-4b01-4931-9ed0-efa7ab133a2f(jetbrains.mps.build.mps.runner.test.buildscript)/2304492758936981542">
     <file name="test4.xml">
-      <unit id="2304492758936981542" at="1,0,306,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test4" />
+      <unit id="2304492758936981542" at="1,0,536,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test4" />
     </file>
   </root>
   <root nodeRef="r:1df60b02-4b01-4931-9ed0-efa7ab133a2f(jetbrains.mps.build.mps.runner.test.buildscript)/3307120220351780865">
     <file name="test5.xml">
-      <unit id="3307120220351780865" at="1,0,303,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test5" />
+      <unit id="3307120220351780865" at="1,0,533,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test5" />
     </file>
   </root>
   <root nodeRef="r:1df60b02-4b01-4931-9ed0-efa7ab133a2f(jetbrains.mps.build.mps.runner.test.buildscript)/5712055271175299542">

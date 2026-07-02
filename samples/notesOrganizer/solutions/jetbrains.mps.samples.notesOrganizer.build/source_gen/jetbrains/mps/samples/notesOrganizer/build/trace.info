@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:e3c79067-ec7e-47a1-835b-793d50730a6a(jetbrains.mps.samples.notesOrganizer.build)/3892287256990148316">
     <file name="notesOrganizer.xml">
-      <unit id="3892287256990148316" at="1,0,473,10" name="jetbrains.mps.samples.notesOrganizer.build.notesOrganizer" />
+      <unit id="3892287256990148316" at="1,0,659,10" name="jetbrains.mps.samples.notesOrganizer.build.notesOrganizer" />
     </file>
   </root>
 </debug-info>
