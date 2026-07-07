@@ -168,6 +168,7 @@
     <import index="r99j" ref="215c4c45-ba99-49f5-9ab7-4b6901a63cfd/java:jetbrains.mps.generator.runtime(MPS.Generator/)" />
     <import index="alof" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.project(MPS.Platform/)" />
     <import index="emwx" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.lang.model(JDK/)" />
+    <import index="jmi9" ref="8d17ee87-2ea6-4f4a-9bd4-751928af5412/java:com.intellij.ide.util(MPS.IDEA.Plugins/)" />
     <import index="4nm9" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.project(MPS.IDEA/)" implicit="true" />
   </imports>
   <registry>
@@ -8261,11 +8262,11 @@
           <node concept="3cpWsn" id="2N3bPQ3DobV" role="3cpWs9">
             <property role="TrG5h" value="popup" />
             <node concept="3uibUv" id="7hPfx88rFr$" role="1tU5fm">
-              <ref role="3uigEE" to="jmi8:~FileStructurePopup" resolve="FileStructurePopup" />
+              <ref role="3uigEE" to="jmi9:~FileStructurePopup" resolve="FileStructurePopup" />
             </node>
             <node concept="2ShNRf" id="2N3bPQ3DobY" role="33vP2m">
               <node concept="1pGfFk" id="2N3bPQ3Doc0" role="2ShVmc">
-                <ref role="37wK5l" to="jmi8:~FileStructurePopup.&lt;init&gt;(com.intellij.openapi.project.Project,com.intellij.openapi.fileEditor.FileEditor,com.intellij.ide.structureView.StructureViewModel)" resolve="FileStructurePopup" />
+                <ref role="37wK5l" to="jmi9:~FileStructurePopup.&lt;init&gt;(com.intellij.openapi.project.Project,com.intellij.openapi.fileEditor.FileEditor,com.intellij.ide.structureView.StructureViewModel)" resolve="FileStructurePopup" />
                 <node concept="2OqwBi" id="2N3bPQ3Doc$" role="37wK5m">
                   <node concept="2WthIp" id="2N3bPQ3Docf" role="2Oq$k0" />
                   <node concept="1DTwFV" id="2N3bPQ3Dodm" role="2OqNvi">
@@ -8359,7 +8360,7 @@
                   <ref role="3cqZAo" node="2N3bPQ3DobV" resolve="popup" />
                 </node>
                 <node concept="liA8E" id="12Xh7JlccoM" role="2OqNvi">
-                  <ref role="37wK5l" to="jmi8:~FileStructurePopup.setTitle(java.lang.String)" resolve="setTitle" />
+                  <ref role="37wK5l" to="jmi9:~FileStructurePopup.setTitle(java.lang.String)" resolve="setTitle" />
                   <node concept="2OqwBi" id="12Xh7JlccoN" role="37wK5m">
                     <node concept="2OqwBi" id="12Xh7JlccoO" role="2Oq$k0">
                       <node concept="2WthIp" id="12Xh7JlccoP" role="2Oq$k0" />
@@ -8382,7 +8383,7 @@
               <ref role="3cqZAo" node="2N3bPQ3DobV" resolve="popup" />
             </node>
             <node concept="liA8E" id="12Xh7JlccoV" role="2OqNvi">
-              <ref role="37wK5l" to="jmi8:~FileStructurePopup.show()" resolve="show" />
+              <ref role="37wK5l" to="jmi9:~FileStructurePopup.show()" resolve="show" />
             </node>
           </node>
         </node>

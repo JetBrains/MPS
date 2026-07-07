@@ -77,6 +77,7 @@
     <import index="1p3" ref="r:79655025-bd36-445f-8b79-189312ab627e(jetbrains.mps.smodel.undo)" />
     <import index="ntzd" ref="r:bf32fdbc-530f-4631-ba64-3e7b620ac47f(jetbrains.mps.baseLanguage.util)" />
     <import index="m373" ref="r:4095af4f-a097-4799-aaa9-03df087ddfa6(jetbrains.mps.baseLanguage.javadoc.structure)" />
+    <import index="jmi9" ref="8d17ee87-2ea6-4f4a-9bd4-751928af5412/java:com.intellij.ide.util(MPS.IDEA.Plugins/)" />
     <import index="4hrd" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.vfs(MPS.Platform/)" implicit="true" />
     <import index="lwvz" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.openapi.editor.selection(MPS.Editor/)" implicit="true" />
   </imports>
@@ -17819,11 +17820,11 @@
           <node concept="3cpWsn" id="2_WbLwRd$JP" role="3cpWs9">
             <property role="TrG5h" value="popup" />
             <node concept="3uibUv" id="7hPfx88r4BT" role="1tU5fm">
-              <ref role="3uigEE" to="jmi8:~FileStructurePopup" resolve="FileStructurePopup" />
+              <ref role="3uigEE" to="jmi9:~FileStructurePopup" resolve="FileStructurePopup" />
             </node>
             <node concept="2ShNRf" id="2_WbLwRd$JS" role="33vP2m">
               <node concept="1pGfFk" id="2_WbLwRd$O7" role="2ShVmc">
-                <ref role="37wK5l" to="jmi8:~FileStructurePopup.&lt;init&gt;(com.intellij.openapi.project.Project,com.intellij.openapi.fileEditor.FileEditor,com.intellij.ide.structureView.StructureViewModel)" resolve="FileStructurePopup" />
+                <ref role="37wK5l" to="jmi9:~FileStructurePopup.&lt;init&gt;(com.intellij.openapi.project.Project,com.intellij.openapi.fileEditor.FileEditor,com.intellij.ide.structureView.StructureViewModel)" resolve="FileStructurePopup" />
                 <node concept="2OqwBi" id="2_WbLwRd$TZ" role="37wK5m">
                   <node concept="2WthIp" id="2_WbLwRd$Oa" role="2Oq$k0" />
                   <node concept="1DTwFV" id="2_WbLwRd$UL" role="2OqNvi">
@@ -17854,7 +17855,7 @@
               <ref role="3cqZAo" node="2_WbLwRd$JP" resolve="popup" />
             </node>
             <node concept="liA8E" id="5hB0G_qDMX6" role="2OqNvi">
-              <ref role="37wK5l" to="jmi8:~FileStructurePopup.setTitle(java.lang.String)" resolve="setTitle" />
+              <ref role="37wK5l" to="jmi9:~FileStructurePopup.setTitle(java.lang.String)" resolve="setTitle" />
               <node concept="37vLTw" id="3GM_nagTzcj" role="37wK5m">
                 <ref role="3cqZAo" node="5hB0G_qDMX9" resolve="title" />
               </node>
@@ -17867,7 +17868,7 @@
               <ref role="3cqZAo" node="2_WbLwRd$JP" resolve="popup" />
             </node>
             <node concept="liA8E" id="LsBDj_ck$1" role="2OqNvi">
-              <ref role="37wK5l" to="jmi8:~FileStructurePopup.show()" resolve="show" />
+              <ref role="37wK5l" to="jmi9:~FileStructurePopup.show()" resolve="show" />
             </node>
           </node>
         </node>

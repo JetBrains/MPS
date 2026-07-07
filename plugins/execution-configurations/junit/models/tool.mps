@@ -54,7 +54,7 @@
     <import index="tsn" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ui.components.panels(MPS.IDEA/)" />
     <import index="lhc4" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.annotations(MPS.OpenAPI/)" />
     <import index="33ny" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util(JDK/)" />
-    <import index="yiza" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.execution.testframework.ui(MPS.IDEA/)" />
+    <import index="yiza" ref="8d17ee87-2ea6-4f4a-9bd4-751928af5412/java:com.intellij.execution.testframework.ui(MPS.IDEA.Plugins/)" />
     <import index="9z78" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.swing.border(JDK/)" />
     <import index="drih" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.editor.colors(MPS.IDEA/)" />
     <import index="exr9" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.nodeEditor(MPS.Editor/)" />
@@ -65,10 +65,11 @@
     <import index="fpru" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.psi.search(MPS.IDEA/)" />
     <import index="dj99" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.execution.configurations(MPS.IDEA/)" />
     <import index="3vr8" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.util.config(MPS.IDEA/)" />
-    <import index="jgl2" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.execution.testframework.export(MPS.IDEA/)" />
+    <import index="jgl2" ref="8d17ee87-2ea6-4f4a-9bd4-751928af5412/java:com.intellij.execution.testframework.export(MPS.IDEA.Plugins/)" />
     <import index="qq03" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.actions(MPS.Platform/)" />
     <import index="lxc5" ref="r:b25f8540-4e18-427d-a8ac-60f947a3fbc1(jetbrains.mps.baselanguage.unitTest.execution)" />
     <import index="l7us" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.icons(MPS.Platform/)" />
+    <import index="8enh" ref="8d17ee87-2ea6-4f4a-9bd4-751928af5412/java:com.intellij.execution.testframework(MPS.IDEA.Plugins/)" />
   </imports>
   <registry>
     <language id="28f9e497-3b42-4291-aeba-0a1039153ab1" name="jetbrains.mps.lang.plugin">
@@ -4852,13 +4853,13 @@
       <property role="1EXbeo" value="true" />
       <node concept="3Tm6S6" id="4LTxumxZyjd" role="1B3o_S" />
       <node concept="3uibUv" id="4LTxumxZyje" role="EKbjA">
-        <ref role="3uigEE" to="8eng:~TestFrameworkRunningModel" resolve="TestFrameworkRunningModel" />
+        <ref role="3uigEE" to="8enh:~TestFrameworkRunningModel" resolve="TestFrameworkRunningModel" />
       </node>
       <node concept="312cEg" id="4LTxumxZyjf" role="jymVt">
         <property role="TrG5h" value="myRoot" />
         <property role="3TUv4t" value="true" />
         <node concept="3uibUv" id="4LTxumxZyjh" role="1tU5fm">
-          <ref role="3uigEE" to="8eng:~AbstractTestProxy" resolve="AbstractTestProxy" />
+          <ref role="3uigEE" to="8enh:~AbstractTestProxy" resolve="AbstractTestProxy" />
         </node>
         <node concept="3Tm6S6" id="4LTxumxZyji" role="1B3o_S" />
       </node>
@@ -4867,7 +4868,7 @@
         <node concept="37vLTG" id="4LTxumxZyjl" role="3clF46">
           <property role="TrG5h" value="root" />
           <node concept="3uibUv" id="4LTxumxZyjm" role="1tU5fm">
-            <ref role="3uigEE" to="8eng:~AbstractTestProxy" resolve="AbstractTestProxy" />
+            <ref role="3uigEE" to="8enh:~AbstractTestProxy" resolve="AbstractTestProxy" />
           </node>
         </node>
         <node concept="3clFbS" id="4LTxumxZyjn" role="3clF47">
@@ -4916,8 +4917,8 @@
             <node concept="2ShNRf" id="4LTxumxZyjB" role="3cqZAk">
               <node concept="YeOm9" id="4LTxumxZyjC" role="2ShVmc">
                 <node concept="1Y3b0j" id="4LTxumxZyjD" role="YeSDq">
-                  <ref role="1Y3XeK" to="8eng:~TestConsoleProperties" resolve="TestConsoleProperties" />
-                  <ref role="37wK5l" to="8eng:~TestConsoleProperties.&lt;init&gt;(com.intellij.util.config.Storage,com.intellij.openapi.project.Project,com.intellij.execution.Executor)" resolve="TestConsoleProperties" />
+                  <ref role="1Y3XeK" to="8enh:~TestConsoleProperties" resolve="TestConsoleProperties" />
+                  <ref role="37wK5l" to="8enh:~TestConsoleProperties.&lt;init&gt;(com.intellij.util.config.Storage,com.intellij.openapi.project.Project,com.intellij.execution.Executor)" resolve="TestConsoleProperties" />
                   <node concept="3clFb_" id="4LTxumxZyjE" role="jymVt">
                     <property role="TrG5h" value="getConfiguration" />
                     <node concept="2AHcQZ" id="4LTxumxZyjF" role="2AJF6D">
@@ -4953,7 +4954,7 @@
         </node>
         <node concept="3Tm1VV" id="4LTxumxZyjO" role="1B3o_S" />
         <node concept="3uibUv" id="4LTxumxZyjP" role="3clF45">
-          <ref role="3uigEE" to="8eng:~TestConsoleProperties" resolve="TestConsoleProperties" />
+          <ref role="3uigEE" to="8enh:~TestConsoleProperties" resolve="TestConsoleProperties" />
         </node>
       </node>
       <node concept="2tJIrI" id="4LTxumy0Fyq" role="jymVt" />
@@ -4968,7 +4969,7 @@
             <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
           </node>
           <node concept="3uibUv" id="4LTxumxZyjU" role="1tU5fm">
-            <ref role="3uigEE" to="8eng:~Filter" resolve="Filter" />
+            <ref role="3uigEE" to="8enh:~Filter" resolve="Filter" />
             <node concept="3qTvmN" id="4LTxumxZyjV" role="11_B2D" />
           </node>
         </node>
@@ -5024,7 +5025,7 @@
         </node>
         <node concept="3Tm1VV" id="4LTxumxZyke" role="1B3o_S" />
         <node concept="3uibUv" id="4LTxumxZykf" role="3clF45">
-          <ref role="3uigEE" to="8eng:~TestTreeView" resolve="TestTreeView" />
+          <ref role="3uigEE" to="8enh:~TestTreeView" resolve="TestTreeView" />
         </node>
       </node>
       <node concept="2tJIrI" id="4LTxumy0Fyt" role="jymVt" />
@@ -5077,7 +5078,7 @@
         </node>
         <node concept="3Tm1VV" id="4LTxumxZyk$" role="1B3o_S" />
         <node concept="3uibUv" id="4LTxumxZyk_" role="3clF45">
-          <ref role="3uigEE" to="8eng:~AbstractTestProxy" resolve="AbstractTestProxy" />
+          <ref role="3uigEE" to="8enh:~AbstractTestProxy" resolve="AbstractTestProxy" />
         </node>
       </node>
       <node concept="2tJIrI" id="4LTxumy0Fyw" role="jymVt" />
@@ -5089,7 +5090,7 @@
         <node concept="37vLTG" id="4LTxumxZykC" role="3clF46">
           <property role="TrG5h" value="testProxy" />
           <node concept="3uibUv" id="4LTxumxZykD" role="1tU5fm">
-            <ref role="3uigEE" to="8eng:~AbstractTestProxy" resolve="AbstractTestProxy" />
+            <ref role="3uigEE" to="8enh:~AbstractTestProxy" resolve="AbstractTestProxy" />
           </node>
         </node>
         <node concept="3clFbS" id="4LTxumxZykE" role="3clF47">
@@ -21135,7 +21136,7 @@
       </node>
       <node concept="3Tm1VV" id="4LTxumxXnuf" role="1B3o_S" />
       <node concept="3uibUv" id="4LTxumxXnug" role="3clF45">
-        <ref role="3uigEE" to="8eng:~AbstractTestProxy" resolve="AbstractTestProxy" />
+        <ref role="3uigEE" to="8enh:~AbstractTestProxy" resolve="AbstractTestProxy" />
       </node>
     </node>
     <node concept="2tJIrI" id="4LTxumxY88R" role="jymVt" />
@@ -21356,7 +21357,7 @@
           <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
         </node>
         <node concept="3uibUv" id="4LTxumxXnv$" role="1tU5fm">
-          <ref role="3uigEE" to="8eng:~TestConsoleProperties" resolve="TestConsoleProperties" />
+          <ref role="3uigEE" to="8enh:~TestConsoleProperties" resolve="TestConsoleProperties" />
         </node>
       </node>
       <node concept="3clFbS" id="4LTxumxXnv_" role="3clF47">
@@ -21573,8 +21574,8 @@
     </node>
     <node concept="2tJIrI" id="4LTxumxXnsQ" role="jymVt" />
     <node concept="3Tm1VV" id="4LTxumxWE1m" role="1B3o_S" />
-    <node concept="3uibUv" id="4LTxumxXnsO" role="1zkMxy">
-      <ref role="3uigEE" to="8eng:~AbstractTestProxy" resolve="AbstractTestProxy" />
+    <node concept="3uibUv" id="7QPDfKaJKB4" role="1zkMxy">
+      <ref role="3uigEE" to="8enh:~AbstractTestProxy" resolve="AbstractTestProxy" />
     </node>
   </node>
   <node concept="312cEu" id="4LTxumxYAFt">

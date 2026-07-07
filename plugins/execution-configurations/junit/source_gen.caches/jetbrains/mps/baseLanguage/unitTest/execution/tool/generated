@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="6bcxzl3nlcwgj2dyuaw5cafy0hl7wde">
+<product version="3" modelHash="-dpjbse2w9qx6dfa7ag2ufod810iid7z">
   <files names="BaseMPSTestProxy.java:BaseTestOccurenceNavigator.java:FailedTestOccurrenceNavigator.java:LeafTestMessage.java:MPSClassTestProxy.java:MPSMethodTestProxy.java:MPSRootTestProxy.java:MessageContainerBase.java:MessageFilter.java:MessagesContainer.java:MethodMessageContainer.java:NonRootTestTreeNode.java:Printable.java:Printer.java:RootMessageContainer.java:RootTestTreeNode.java:StatisticsRowRenderer.java:StatisticsTableModel.java:TestCaseMessageContainer.java:TestCaseRow.java:TestCaseTreeNode.java:TestContainerRow.java:TestMessage.java:TestMethodRow.java:TestMethodTreeNode.java:TestOutputContainer.java:TestProgressLine.java:TestState.java:TestStateInfoAdapter.java:TestStatisticsRow.java:TestToolbarPanel.java:TestTree.java:TestTreeIconRepainter.java:TestTreeNode.java:TestTreeRootMouseListener.java:TestTreeSelectionListener.java:TotalRow.java:UnitTestOptions.java:UnitTestViewComponent.java" />
 </product>
 
