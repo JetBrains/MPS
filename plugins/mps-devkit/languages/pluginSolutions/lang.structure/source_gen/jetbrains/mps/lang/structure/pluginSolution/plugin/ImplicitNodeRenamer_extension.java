@@ -6,12 +6,16 @@ import jetbrains.mps.smodel.structure.Extension;
 import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
 import jetbrains.mps.openapi.editor.EditorContext;
 import org.jetbrains.mps.openapi.model.SNode;
-import com.intellij.openapi.application.ApplicationManager;
-import org.jetbrains.mps.openapi.module.SRepository;
 import java.util.List;
-import jetbrains.mps.refactoring.participant.RefactoringParticipant;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
+import org.jetbrains.mps.openapi.module.SearchScope;
+import jetbrains.mps.ide.findusages.model.scopes.ModulesScope;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
+import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.application.ApplicationManager;
+import org.jetbrains.mps.openapi.module.SRepository;
+import jetbrains.mps.refactoring.participant.RefactoringParticipant;
 import jetbrains.mps.lang.core.pluginSolution.plugin.RenameReferencesParticipant;
 import jetbrains.mps.refactoring.participant.RefactoringUI;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
@@ -19,9 +23,6 @@ import jetbrains.mps.progress.EmptyProgressMonitor;
 import jetbrains.mps.ide.findusages.model.SearchResults;
 import jetbrains.mps.ide.findusages.model.SearchTask;
 import jetbrains.mps.refactoring.participant.RefactoringSession;
-import org.jetbrains.mps.openapi.module.SearchScope;
-import jetbrains.mps.ide.findusages.model.scopes.ModulesScope;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.refactoring.participant.RefactoringSessionImpl;
 import java.util.Map;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
@@ -34,10 +35,13 @@ public class ImplicitNodeRenamer_extension extends Extension.Default<_FunctionTy
   }
   public _FunctionTypes._return_P4_E0<? extends Boolean, ? super EditorContext, ? super SNode, ? super String, ? super String> get() {
     return (final EditorContext context, final SNode node, String oldName, final String newName) -> {
+      final List<SNode> initialStates = ListSequence.fromListAndArray(new ArrayList<SNode>(), node);
+      final SearchScope scope = new ModulesScope(SNodeOperations.getModel(node).getModule());
+      Condition<?> editorDisposed = (Object p) -> ApplicationManager.getApplication().isDisposed() || context.getEditorComponent().isDisposed();
       ApplicationManager.getApplication().invokeLater(() -> {
-        final SRepository repository = context.getRepository();
-        final List<? extends RefactoringParticipant<?, ?, SNode, String>> participants = ListSequence.fromListAndArray(new ArrayList<RefactoringParticipant<?, ?, SNode, String>>(), new RenameReferencesParticipant());
-        final RefactoringUI refactoringUI = new RefactoringUI() {
+        SRepository repository = context.getRepository();
+        List<? extends RefactoringParticipant<?, ?, SNode, String>> participants = ListSequence.fromListAndArray(new ArrayList<RefactoringParticipant<?, ?, SNode, String>>(), new RenameReferencesParticipant());
+        RefactoringUI refactoringUI = new RefactoringUI() {
           public void prepare(Runnable task) {
             task.run();
           }
@@ -52,19 +56,14 @@ public class ImplicitNodeRenamer_extension extends Extension.Default<_FunctionTy
           }
         };
 
-        final String refactoringName = "Rename Node Inline";
-        repository.getModelAccess().executeCommand(() -> {
-          List<SNode> initialStates = ListSequence.fromListAndArray(new ArrayList<SNode>(), node);
-          SearchScope scope = new ModulesScope(SNodeOperations.getModel(node).getModule());
-
-          final RefactoringSessionImpl refactoringSession = new RefactoringSessionImpl(refactoringName);
-          _FunctionTypes._return_P1_E0<? extends Map<SNode, String>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, String, SNode, String>>> doRefactor = (Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, String, SNode, String>> participantStates) -> {
-            Map<SNode, String> m = MapSequence.fromMapAndEntryArray(new HashMap<SNode, String>(), Map.entry(node, newName));
-            return m;
-          };
-          RefactoringProcessor.performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<SNode, String>(), refactoringUI, refactoringSession, repository, scope, participants, initialStates, null, doRefactor, () -> refactoringSession.performAllRegistered());
-        });
-      });
+        String refactoringName = "Rename Node Inline";
+        final RefactoringSessionImpl refactoringSession = new RefactoringSessionImpl(refactoringName);
+        _FunctionTypes._return_P1_E0<? extends Map<SNode, String>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, String, SNode, String>>> doRefactor = (Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, String, SNode, String>> participantStates) -> {
+          Map<SNode, String> m = MapSequence.fromMapAndEntryArray(new HashMap<SNode, String>(), Map.entry(node, newName));
+          return m;
+        };
+        RefactoringProcessor.performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<SNode, String>(), refactoringUI, refactoringSession, repository, scope, participants, initialStates, null, doRefactor, () -> refactoringSession.performAllRegistered());
+      }, editorDisposed);
       return false;
     };
   }
