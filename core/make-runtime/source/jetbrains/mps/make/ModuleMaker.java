@@ -292,47 +292,44 @@ public final class ModuleMaker {
 
     // requires SModule knowledge
     // FIXME use stateful dep calculation logic + cached dependencies to speed this up
-    public Collection<SModule> walkDependencies(JM jm, @Nullable BLDependenciesCache deps) {
+    public Collection<SModule> walkDependencies(@NotNull JM jm, @NotNull BLDependenciesCache deps) {
       SModule m = toOriginChecked(jm);
       // FIXME meed to decide if SModule *without* JMF could be among dependencies.
       // On one hand, we are not going to use it e.g. for classpath calculation. On the other, it may affect cycles module is part of. Does it matter?
-      if (deps != null) {
-        boolean withNewRT = true;
-        ArrayList<SModuleReference> rv = new ArrayList<>(20);
-        // pretty much what Dependencies.collectDependencies() does
-        for (SModel model : m.getModels()) {
-          if (SModelStereotype.isStubModel(model)) {
-            // FIXME this logic comes from Dependencies.collectDependencies() but I'm not 100% sure it's correct.
-            //    E.g. Make action takes GenerationFacade.canGenerate() models only, which might be ok for IDE Make action
-            //    but generally not perfect either. I'd like to transform any model I like (even if it's stub), and see no
-            //    reason to assume any model was excluded here. Provided we silently ignore missing ModelDependencies (which
-            //    IMO may happen when some of the models were not generated), we can just walk all models here.
-            //    However, for the first round I'd like to stick to legacy logic as close as possible not to address
-            //    unexpected differences in behavior.
-            continue;
-          }
-          final ModelDependencies modelDependencies = deps.get(model);
-          if (modelDependencies == null) {
-            continue;
-          }
-          if (!modelDependencies.hasRuntimeDeps()) {
-            withNewRT = false;
-            break;
-          }
-          rv.addAll(modelDependencies.getModuleDependencies());
-          rv.addAll(modelDependencies.getLanguageRuntimeModules());
+      ArrayList<SModuleReference> rv = new ArrayList<>(20);
+      // pretty much what Dependencies.collectDependencies() does
+      for (SModel model : m.getModels()) {
+        if (SModelStereotype.isStubModel(model)) {
+          // FIXME this logic comes from Dependencies.collectDependencies() but I'm not 100% sure it's correct.
+          //    E.g. Make action takes GenerationFacade.canGenerate() models only, which might be ok for IDE Make action
+          //    but generally not perfect either. I'd like to transform any model I like (even if it's stub), and see no
+          //    reason to assume any model was excluded here. Provided we silently ignore missing ModelDependencies (which
+          //    IMO may happen when some of the models were not generated), we can just walk all models here.
+          //    However, for the first round I'd like to stick to legacy logic as close as possible not to address
+          //    unexpected differences in behavior.
+          continue;
         }
-        if (withNewRT) {
-          // XXX GMDM implicitly uses module's repository; don't see a reason why not to do the same here
-          //     Besides, GMDM doesn't care too much about modules missing in a repo (reports to log), hence the
-          //     same logic seems fine here (at least for the first round)
-          final SRepository repository = m.getRepository();
-          return rv.stream().distinct().map(r -> r.resolve(repository)).filter(Objects::nonNull).collect(Collectors.toUnmodifiableList());
+        final ModelDependencies modelDependencies = deps.get(model);
+        if (modelDependencies == null) {
+          continue;
         }
-        // else fall through, resort to default logic
+        rv.addAll(modelDependencies.getModuleDependencies());
+        rv.addAll(modelDependencies.getLanguageRuntimeModules());
       }
-      return new GlobalModuleDependenciesManager(m).getModules(Deptype.COMPILE);
+      // XXX GMDM implicitly uses module's repository; don't see a reason why not to do the same here
+      //     Besides, GMDM doesn't care too much about modules missing in a repo (reports to log), hence the
+      //     same logic seems fine here (at least for the first round)
+      final SRepository repository = m.getRepository();
+      return rv.stream().distinct().map(r -> r.resolve(repository)).filter(Objects::nonNull).collect(Collectors.toUnmodifiableList());
     }
+
+    /**
+     * There's a regression in Java 25, that may need complete classpath for compilation, see https://bugs.openjdk.org/browse/JDK-8370800.
+     */
+    public Collection<SModule> transitiveCompileDepsHack(JM javaModule) {
+      return new GlobalModuleDependenciesManager(toOriginChecked(javaModule)).getModules(Deptype.COMPILE);
+    }
+
 
     // requires SModule knowledge, but can deal with source location(s) recorded beforehand
     void detectDirtySources(JM jm) {
@@ -837,6 +834,7 @@ public final class ModuleMaker {
     // depJM - one of requested modules depend on a module which is not among requested. we keep these targets in depJM
     MC depJM = newModuleChunk();
     for (JM jm : initial.allJavaModules()) {
+      // we walk each model once, no reason to reuse new BLDependenciesCache() instance
       final BLDependenciesCache depCache = myDependenciesCache == null ? new BLDependenciesCache() : myDependenciesCache;
       Collection<SModule> deps = initial.walkDependencies(jm, depCache);
       for (SModule d : deps) {
@@ -855,6 +853,30 @@ public final class ModuleMaker {
           }
         }
         jm.dependsFrom(djm);
+      }
+    }
+    // very ineffective per-module activity to collect transitive dependencies. However, we need to fill dependencies of each module independently
+    // to get a tailored classpath.
+    // XXX don't want to create another MC, hence protective copy of allJavaModules(), we modify depJM inside the loop
+    for (JM dep : new ArrayList<>(depJM.allJavaModules())) {
+      for (SModule trdep : depJM.transitiveCompileDepsHack(dep)) {
+        if (initial.findJM(trdep) != null) {
+          // just in case, not to create dependency loop
+          continue;
+        }
+        JM trjm = depJM.findJM(trdep);
+        if (trjm == dep) {
+          // transitiveCompileDepsHack result is inclusive, don't need dependency to self
+          continue;
+        }
+        if (trdep.getFacet(JavaModuleFacet.class) == null) {
+          // GMDM from transitiveCompileDepsHack() doesn't filter modules, while subsequent calculateClasspath() expects JMF presence
+          continue;
+        }
+        if (trjm == null) {
+          trjm = depJM.createJM(trdep);
+        }
+        dep.dependsFrom(trjm);
       }
     }
     MC withDeps = newModuleChunk();
