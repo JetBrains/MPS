@@ -15,6 +15,7 @@
  */
 package jetbrains.mps.make;
 
+import jetbrains.mps.RuntimeFlags;
 import jetbrains.mps.compiler.JavaCompilerOptions;
 import jetbrains.mps.make.BaseModuleContainer.JavaModule;
 import jetbrains.mps.make.ModuleAnalyzer.ModuleAnalyzerResult;
@@ -28,7 +29,6 @@ import org.jetbrains.annotations.TestOnly;
 
 import javax.tools.Diagnostic;
 import javax.tools.Diagnostic.Kind;
-import javax.tools.DiagnosticCollector;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
@@ -246,13 +246,14 @@ final class JavaCompilerImpl implements AutoCloseable {
     List<? extends JavaModule> modules2 = modules.collect(Collectors.toList());
     configureSourcePath(modules2.stream().map(BaseModuleContainer.JavaModule::getAllSourcePaths).flatMap(Collection::stream).<Path>map(Path::of));
     final Iterable<JavaFileObject> cu = cuFromSourcePath();
-    DiagnosticCollector<JavaFileObject> diagnostic = new DiagnosticCollector<>();
-    final CompilationTask task = myJavaCompiler.getTask(Writer.nullWriter(), myFileManager, diagnostic, javacOptions(true), null, cu);
+    ErrorCollector diagnostics = new ErrorCollector(sender);
+    final CompilationTask task = myJavaCompiler.getTask(Writer.nullWriter(), myFileManager, diagnostics, javacOptions(true), null, cu);
     if (task.call()) {
       return null;
     }
+    diagnostics.seal();
     sender.error("Failed to compile module cycle, individual modules won't get compiled");
-    return createErrorRecord(modules2.stream().map(JavaModule::name).map(NameUtil::compactNamespace).collect(Collectors.joining(",")), sender, diagnostic);
+    return createErrorRecord(modules2.stream().map(JavaModule::name).map(NameUtil::compactNamespace).collect(Collectors.joining(",")), sender, diagnostics);
   }
 
   @Nullable
@@ -276,16 +277,17 @@ final class JavaCompilerImpl implements AutoCloseable {
     configureOutput(jm);
     configureSourcePath(jm.getAllSourcePaths().stream().map(Path::of));
     final Iterable<JavaFileObject> cu = cuFromSourcePath();
-    DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+    ErrorCollector diagnostics = new ErrorCollector(sender);
     final CompilationTask task = myJavaCompiler.getTask(Writer.nullWriter(), myFileManager, diagnostics, javacOptions(false), null, cu);
     if (!task.call()) {
+      diagnostics.seal();
       return createErrorRecord(NameUtil.compactNamespace(jm.name()), sender, diagnostics);
     }
     return null;
   }
 
   @NotNull
-  private ErrorRecord createErrorRecord(String compiledModuleName, MessageSender sender, DiagnosticCollector<JavaFileObject> diagnostics) {
+  private ErrorRecord createErrorRecord(String compiledModuleName, MessageSender sender, ErrorCollector diagnostics) {
     // XXX perhaps, shall sender.trace() all jfm.location values?
     final ErrorRecord errorRecord = new ErrorRecord(MAX_ERRORS);
     for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
@@ -503,6 +505,38 @@ final class JavaCompilerImpl implements AutoCloseable {
     public void add(ErrorRecord other) {
       errors += other.errors;
       warnings += other.warnings;
+    }
+  }
+
+  private static class ErrorCollector implements DiagnosticListener<JavaFileObject> {
+    private final MessageSender myLog;
+    private final List<Diagnostic<? extends JavaFileObject>> myDiagnostics = Collections.synchronizedList(new ArrayList<>());
+    private volatile boolean mySealed = false;
+
+    public ErrorCollector(MessageSender log) {
+      myLog = log;
+    }
+
+    @Override
+    public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
+      if (mySealed) {
+        String msg = "Diagnostic %s:%s arrived after collector was sealed, ignored".formatted(diagnostic.getKind(), diagnostic.getMessage(null));
+        if (RuntimeFlags.isInternalMode()) {
+          myLog.error(msg, new Throwable());
+        } else {
+          myLog.warn(msg, null);
+        }
+        return;
+      }
+      myDiagnostics.add(diagnostic);
+    }
+
+    public void seal() {
+      mySealed = true;
+    }
+
+    public List<Diagnostic<? extends JavaFileObject>> getDiagnostics() {
+      return Collections.unmodifiableList(myDiagnostics);
     }
   }
 }
