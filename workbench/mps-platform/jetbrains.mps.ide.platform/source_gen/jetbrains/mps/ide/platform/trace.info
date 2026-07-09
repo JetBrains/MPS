@@ -21,19 +21,31 @@
       <node id="2977095070785710899" at="17,57,18,118" concept="7" />
       <node id="2977095070785721722" at="20,59,21,120" concept="7" />
       <node id="2977095070785722302" at="23,61,24,122" concept="7" />
+      <node id="8481880751328574277" at="27,61,28,35" concept="7" />
+      <node id="8481880751328574263" at="30,63,31,37" concept="7" />
+      <node id="8481880751328574249" at="33,65,34,39" concept="7" />
       <node id="2977095070785683381" at="14,0,17,0" concept="10" trace="getAllOpenedPackages#()Ljava/lang/Iterable;" />
       <node id="2977095070785710625" at="17,0,20,0" concept="10" trace="getMacOpenedPackages#()Ljava/lang/Iterable;" />
       <node id="2977095070785721720" at="20,0,23,0" concept="10" trace="getLinuxOpenedPackages#()Ljava/lang/Iterable;" />
       <node id="2977095070785722300" at="23,0,26,0" concept="10" trace="getWindowsOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="8481880751328574275" at="27,0,30,0" concept="10" trace="getMacOnlyOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="8481880751328574261" at="30,0,33,0" concept="10" trace="getLinuxOnlyOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="8481880751328574247" at="33,0,36,0" concept="10" trace="getWindowsOnlyOpenedPackages#()Ljava/lang/Iterable;" />
       <scope id="2977095070785683384" at="14,57,15,234" />
       <scope id="2977095070785710628" at="17,57,18,118" />
       <scope id="2977095070785721721" at="20,59,21,120" />
       <scope id="2977095070785722301" at="23,61,24,122" />
+      <scope id="8481880751328574276" at="27,61,28,35" />
+      <scope id="8481880751328574262" at="30,63,31,37" />
+      <scope id="8481880751328574248" at="33,65,34,39" />
       <scope id="2977095070785683381" at="14,0,17,0" />
       <scope id="2977095070785710625" at="17,0,20,0" />
       <scope id="2977095070785721720" at="20,0,23,0" />
       <scope id="2977095070785722300" at="23,0,26,0" />
-      <unit id="3150057390452330126" at="8,0,28,0" name="jetbrains.mps.ide.platform.OpenedPackages" />
+      <scope id="8481880751328574275" at="27,0,30,0" />
+      <scope id="8481880751328574261" at="30,0,33,0" />
+      <scope id="8481880751328574247" at="33,0,36,0" />
+      <unit id="3150057390452330126" at="8,0,38,0" name="jetbrains.mps.ide.platform.OpenedPackages" />
     </file>
   </root>
   <root nodeRef="r:c3f8847b-5450-45d4-8ef0-445954b1dc9e(jetbrains.mps.ide.platform)/4475567139869328645">

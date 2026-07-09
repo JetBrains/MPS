@@ -18,10 +18,11 @@ import jetbrains.mps.ide.platform.OpenedPackages;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.generator.template.IfMacroContext;
 import jetbrains.mps.generator.template.SourceSubstituteMacroNodesContext;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
+import java.util.List;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.Map;
 import jetbrains.mps.generator.impl.query.SourceNodesQuery;
 import java.util.HashMap;
@@ -403,28 +404,28 @@ public class QueriesGenerated extends QueryProviderBase {
     return String.format("        \"%s\",", library);
   }
   public static Object propertyMacro_GetValue_6_12(final PropertyMacroContext _context) {
-    return SPropertyOperations.getString(_context.getNode(), PROPS.text$DMB3);
-  }
-  public static Object propertyMacro_GetValue_6_13(final PropertyMacroContext _context) {
     return String.format(_context.getTemplateValue(), BuildMps_Branding__BehaviorDescriptor.getVendor_id6RvRF8fBDEC.invoke(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), null));
   }
-  public static Object propertyMacro_GetValue_6_14(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_13(final PropertyMacroContext _context) {
     String jnaPath = "lib/jna";
     jnaPath = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + jnaPath;
     return String.format(_context.getTemplateValue(), jnaPath);
   }
-  public static Object propertyMacro_GetValue_6_15(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_14(final PropertyMacroContext _context) {
     String path = "lib/skiko-awt-runtime-all";
     path = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + path;
     return String.format(_context.getTemplateValue(), path);
   }
-  public static Object propertyMacro_GetValue_6_16(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_15(final PropertyMacroContext _context) {
     String pty4jFolder = "lib/pty4j";
     pty4jFolder = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + pty4jFolder;
     return String.format(_context.getTemplateValue(), pty4jFolder);
   }
-  public static Object propertyMacro_GetValue_6_17(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_16(final PropertyMacroContext _context) {
     return String.format(_context.getTemplateValue(), SPropertyOperations.getString(SNodeOperations.as(_context.getNode(), CONCEPTS.SimpleVmOptions$48), PROPS.options$D2Jv));
+  }
+  public static Object propertyMacro_GetValue_6_17(final PropertyMacroContext _context) {
+    return SPropertyOperations.getString(_context.getNode(), PROPS.text$DMB3);
   }
   public static boolean ifMacro_Condition_6_0(final IfMacroContext _context) {
     return "macOS".equals(((String) _context.getVariable("os")));
@@ -451,15 +452,34 @@ public class QueriesGenerated extends QueryProviderBase {
     return SLinkOperations.getChildren(_context.getNode(), LINKS.extBootClasspath$1tL0);
   }
   public static Iterable<SNode> sourceNodesQuery_6_2(final SourceSubstituteMacroNodesContext _context) {
-    Iterable<String> openedPackages = (("macOS".equals(((String) _context.getVariable("os"))) ? OpenedPackages.getMacOpenedPackages() : ("Windows".equals(((String) _context.getVariable("os"))) ? OpenedPackages.getWindowsOpenedPackages() : OpenedPackages.getLinuxOpenedPackages())));
-    return Sequence.fromIterable(openedPackages).select((it) -> {
+    return ListSequence.fromList(SLinkOperations.getChildren(_context.getNode(), LINKS.additionalJvmOptions$uDnf)).where((it) -> SPropertyOperations.getBoolean(SNodeOperations.as(it, CONCEPTS.SimpleVmOptions$48), PROPS.commented$92Mp) == false);
+  }
+  public static Iterable<SNode> sourceNodesQuery_6_3(final SourceSubstituteMacroNodesContext _context) {
+    Iterable<String> OsOpenedPackages;
+    switch (((String) _context.getVariable("os"))) {
+      case "macOS":
+        OsOpenedPackages = OpenedPackages.getMacOnlyOpenedPackages();
+        break;
+
+      case "Windows":
+        OsOpenedPackages = OpenedPackages.getWindowsOnlyOpenedPackages();
+        break;
+
+      case "Linux":
+        // fall through
+      default:
+        OsOpenedPackages = OpenedPackages.getLinuxOnlyOpenedPackages();
+
+    }
+
+    List<SNode> lines = Sequence.fromIterable(OsOpenedPackages).select((it) -> {
       SNode n = SConceptOperations.createNewNode(MetaAdapterFactory.getConcept(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, "jetbrains.mps.build.startup.structure.TextLine"));
       SPropertyOperations.assign(n, PROPS.text$DMB3, String.format("        \"--add-opens=%s=ALL-UNNAMED\",", it));
       return n;
-    });
-  }
-  public static Iterable<SNode> sourceNodesQuery_6_3(final SourceSubstituteMacroNodesContext _context) {
-    return ListSequence.fromList(SLinkOperations.getChildren(_context.getNode(), LINKS.additionalJvmOptions$uDnf)).where((it) -> SPropertyOperations.getBoolean(SNodeOperations.as(it, CONCEPTS.SimpleVmOptions$48), PROPS.commented$92Mp) == false);
+    }).toList();
+    SNode lastTextLine = SNodeOperations.cast(ListSequence.fromList(lines).last(), CONCEPTS.TextLine$zd);
+    SPropertyOperations.assign(lastTextLine, PROPS.text$DMB3, SPropertyOperations.getString(lastTextLine, PROPS.text$DMB3).substring(0, SPropertyOperations.getString(lastTextLine, PROPS.text$DMB3).length() - 1));
+    return lines;
   }
   private final Map<String, SourceNodesQuery> snsqMethods = new HashMap<String, SourceNodesQuery>();
   {
@@ -470,8 +490,8 @@ public class QueriesGenerated extends QueryProviderBase {
     snsqMethods.put("2693344784288504085", new SNsQ(i++));
     snsqMethods.put("7717100174560616426", new SNsQ(i++));
     snsqMethods.put("8481880751316231817", new SNsQ(i++));
-    snsqMethods.put("7717100174560616467", new SNsQ(i++));
     snsqMethods.put("8481880751319476746", new SNsQ(i++));
+    snsqMethods.put("7717100174560616467", new SNsQ(i++));
   }
   @NotNull
   @Override
@@ -573,12 +593,12 @@ public class QueriesGenerated extends QueryProviderBase {
     pvqMethods.put("7717100174560616378", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "      \"vmOptionsFilePath\": \"%s\","));
     pvqMethods.put("7717100174560616432", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"annotations.jar\","));
     pvqMethods.put("8481880751316231788", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"annotations.jar\","));
-    pvqMethods.put("7717100174560616493", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"--add-opens=java.base/java.io=ALL-UNNAMED\","));
     pvqMethods.put("7717100174560616512", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Didea.vendor.name=%s\","));
     pvqMethods.put("4782412228687886522", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Djna.boot.library.path=%s\","));
     pvqMethods.put("2935038219003853520", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Dskiko.library.path=%s\","));
     pvqMethods.put("4782412228687941343", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Dpty4j.preferred.native.folder=%s\","));
     pvqMethods.put("8481880751319476737", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"%s\","));
+    pvqMethods.put("7717100174560616493", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"--add-opens=%s=ALL-UNNAMED\","));
   }
   @NotNull
   @Override
@@ -780,12 +800,13 @@ public class QueriesGenerated extends QueryProviderBase {
   private static final class PROPS {
     /*package*/ static final SProperty path$jtyZ = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437509L, 0x35ebd6e5b343750aL, "path");
     /*package*/ static final SProperty startupClass$Z6$U = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x35ebd6e5b3443492L, "startupClass");
-    /*package*/ static final SProperty text$DMB3 = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text");
     /*package*/ static final SProperty options$D2Jv = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343774cL, 0x35ebd6e5b343774dL, "options");
+    /*package*/ static final SProperty text$DMB3 = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text");
     /*package*/ static final SProperty commented$92Mp = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343774cL, 0x5115dda8df7dfca2L, "commented");
   }
 
   private static final class CONCEPTS {
     /*package*/ static final SConcept SimpleVmOptions$48 = MetaAdapterFactory.getConcept(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343774cL, "jetbrains.mps.build.startup.structure.SimpleVmOptions");
+    /*package*/ static final SConcept TextLine$zd = MetaAdapterFactory.getConcept(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, "jetbrains.mps.build.startup.structure.TextLine");
   }
 }

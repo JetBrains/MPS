@@ -24,4 +24,14 @@ public class OpenedPackages {
     return Sequence.fromIterable(Sequence.fromArray(packages)).concat(Sequence.fromIterable(Sequence.fromArray(windows)));
   }
 
+  public static Iterable<String> getMacOnlyOpenedPackages() {
+    return Sequence.fromArray(mac);
+  }
+  public static Iterable<String> getLinuxOnlyOpenedPackages() {
+    return Sequence.fromArray(linux);
+  }
+  public static Iterable<String> getWindowsOnlyOpenedPackages() {
+    return Sequence.fromArray(windows);
+  }
+
 }
