@@ -15,11 +15,13 @@ import jetbrains.mps.build.mps.behavior.BuildMps_Branding__BehaviorDescriptor;
 import java.text.MessageFormat;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.ide.platform.OpenedPackages;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.generator.template.IfMacroContext;
 import jetbrains.mps.generator.template.SourceSubstituteMacroNodesContext;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.Map;
 import jetbrains.mps.generator.impl.query.SourceNodesQuery;
 import java.util.HashMap;
@@ -34,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.generator.impl.query.IfMacroCondition;
 import org.jetbrains.mps.openapi.language.SReferenceLink;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
+import org.jetbrains.mps.openapi.language.SConcept;
 
 @Generated
 public class QueriesGenerated extends QueryProviderBase {
@@ -420,6 +423,9 @@ public class QueriesGenerated extends QueryProviderBase {
     pty4jFolder = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + pty4jFolder;
     return String.format(_context.getTemplateValue(), pty4jFolder);
   }
+  public static Object propertyMacro_GetValue_6_17(final PropertyMacroContext _context) {
+    return String.format(_context.getTemplateValue(), SPropertyOperations.getString(SNodeOperations.as(_context.getNode(), CONCEPTS.SimpleVmOptions$48), PROPS.options$D2Jv));
+  }
   public static boolean ifMacro_Condition_6_0(final IfMacroContext _context) {
     return "macOS".equals(((String) _context.getVariable("os")));
   }
@@ -452,6 +458,9 @@ public class QueriesGenerated extends QueryProviderBase {
       return n;
     });
   }
+  public static Iterable<SNode> sourceNodesQuery_6_3(final SourceSubstituteMacroNodesContext _context) {
+    return ListSequence.fromList(SLinkOperations.getChildren(_context.getNode(), LINKS.additionalJvmOptions$uDnf)).where((it) -> SPropertyOperations.getBoolean(SNodeOperations.as(it, CONCEPTS.SimpleVmOptions$48), PROPS.commented$92Mp) == false);
+  }
   private final Map<String, SourceNodesQuery> snsqMethods = new HashMap<String, SourceNodesQuery>();
   {
     int i = 0;
@@ -462,6 +471,7 @@ public class QueriesGenerated extends QueryProviderBase {
     snsqMethods.put("7717100174560616426", new SNsQ(i++));
     snsqMethods.put("8481880751316231817", new SNsQ(i++));
     snsqMethods.put("7717100174560616467", new SNsQ(i++));
+    snsqMethods.put("8481880751319476746", new SNsQ(i++));
   }
   @NotNull
   @Override
@@ -491,6 +501,8 @@ public class QueriesGenerated extends QueryProviderBase {
           return IterableUtil.asCollection(QueriesGenerated.sourceNodesQuery_6_1(ctx));
         case 6:
           return IterableUtil.asCollection(QueriesGenerated.sourceNodesQuery_6_2(ctx));
+        case 7:
+          return IterableUtil.asCollection(QueriesGenerated.sourceNodesQuery_6_3(ctx));
         default:
           throw new GenerationFailureException(String.format("Inconsistent QueriesGenerated: there's no method for query %s (key: #%d)", ctx.getTemplateReference(), methodKey));
       }
@@ -566,6 +578,7 @@ public class QueriesGenerated extends QueryProviderBase {
     pvqMethods.put("4782412228687886522", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Djna.boot.library.path=%s\","));
     pvqMethods.put("2935038219003853520", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Dskiko.library.path=%s\","));
     pvqMethods.put("4782412228687941343", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Dpty4j.preferred.native.folder=%s\","));
+    pvqMethods.put("8481880751319476737", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"%s\","));
   }
   @NotNull
   @Override
@@ -716,6 +729,8 @@ public class QueriesGenerated extends QueryProviderBase {
           return QueriesGenerated.propertyMacro_GetValue_6_15(ctx);
         case 66:
           return QueriesGenerated.propertyMacro_GetValue_6_16(ctx);
+        case 67:
+          return QueriesGenerated.propertyMacro_GetValue_6_17(ctx);
         default:
           throw new GenerationFailureException(String.format("Inconsistent QueriesGenerated: there's no method for query %s (key: #%d)", ctx.getTemplateReference(), methodKey));
       }
@@ -759,11 +774,18 @@ public class QueriesGenerated extends QueryProviderBase {
     /*package*/ static final SContainmentLink vendor$kK9e = MetaAdapterFactory.getContainmentLink(0xcf935df46994e9cL, 0xa132fa109541cba3L, 0x6b9a2011083b778dL, 0x565a3894500dd6d9L, "vendor");
     /*package*/ static final SContainmentLink bootClasspath$_ysz = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x35ebd6e5b3437728L, "bootClasspath");
     /*package*/ static final SContainmentLink extBootClasspath$1tL0 = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x75b5b19ab96b3f01L, "extBootClasspath");
+    /*package*/ static final SContainmentLink additionalJvmOptions$uDnf = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x75b5b19ab99e10c2L, "additionalJvmOptions");
   }
 
   private static final class PROPS {
     /*package*/ static final SProperty path$jtyZ = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437509L, 0x35ebd6e5b343750aL, "path");
     /*package*/ static final SProperty startupClass$Z6$U = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x35ebd6e5b3443492L, "startupClass");
     /*package*/ static final SProperty text$DMB3 = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text");
+    /*package*/ static final SProperty options$D2Jv = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343774cL, 0x35ebd6e5b343774dL, "options");
+    /*package*/ static final SProperty commented$92Mp = MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343774cL, 0x5115dda8df7dfca2L, "commented");
+  }
+
+  private static final class CONCEPTS {
+    /*package*/ static final SConcept SimpleVmOptions$48 = MetaAdapterFactory.getConcept(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343774cL, "jetbrains.mps.build.startup.structure.SimpleVmOptions");
   }
 }

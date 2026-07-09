@@ -217,6 +217,21 @@
           <property role="VOm3f" value="false" />
         </node>
       </node>
+      <node concept="3F0ifn" id="7mPGpETBxsE" role="3EZMnx">
+        <property role="3F0ifm" value="additionalJvmOptions" />
+      </node>
+      <node concept="3EZMnI" id="7mPGpETBxsF" role="3EZMnx">
+        <node concept="VPM3Z" id="7mPGpETBxsG" role="3F10Kt">
+          <property role="VOm3f" value="false" />
+        </node>
+        <node concept="3XFhqQ" id="7mPGpETBxsH" role="3EZMnx" />
+        <node concept="3F2HdR" id="7mPGpETBxsI" role="3EZMnx">
+          <ref role="1NtTu8" to="s7om:7mPGpETBx32" resolve="additionalJvmOptions" />
+          <node concept="2iRkQZ" id="7mPGpETBxsJ" role="2czzBx" />
+        </node>
+        <node concept="2iRfu4" id="7mPGpETBxsK" role="2iSdaV" />
+      </node>
+      <node concept="3F0ifn" id="7mPGpETBxrS" role="3EZMnx" />
       <node concept="3F0ifn" id="2lwFGYOQF3d" role="3EZMnx">
         <property role="3F0ifm" value="vm options (64 bit)" />
       </node>

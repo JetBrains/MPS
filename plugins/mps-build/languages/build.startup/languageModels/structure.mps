@@ -88,6 +88,13 @@
       <property role="20lbJX" value="fLJekj5/_0__n" />
       <ref role="20lvS9" node="3nFPImNgRk9" resolve="ClassPathItem" />
     </node>
+    <node concept="1TJgyj" id="7mPGpETBx32" role="1TKVEi">
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <property role="20kJfa" value="additionalJvmOptions" />
+      <property role="20lbJX" value="fLJekj5/0..n" />
+      <property role="IQ2ns" value="8481880751319421122" />
+      <ref role="20lvS9" node="3nFPImNgRkd" resolve="VmOptions" />
+    </node>
     <node concept="1TJgyi" id="3nFPImNgRkb" role="1TKVEl">
       <property role="TrG5h" value="startupFolder" />
       <property role="IQ2nx" value="3885435385580582155" />
