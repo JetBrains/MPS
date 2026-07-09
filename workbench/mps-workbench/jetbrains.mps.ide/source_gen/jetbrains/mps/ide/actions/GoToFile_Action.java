@@ -8,6 +8,7 @@ import javax.swing.Icon;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.Map;
+import com.intellij.openapi.application.impl.LaterInvocator;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.featureStatistics.FeatureUsageTracker;
@@ -30,6 +31,9 @@ public class GoToFile_Action extends BaseAction {
   }
   @Override
   public boolean isApplicable(AnActionEvent event, final Map<String, Object> _params) {
+    if (LaterInvocator.isInModalContext()) {
+      return false;
+    }
     ActionUtil.updateAction(GoToFile_Action.this.action, event);
     return GoToFile_Action.this.action.getTemplatePresentation().isEnabledAndVisible();
   }

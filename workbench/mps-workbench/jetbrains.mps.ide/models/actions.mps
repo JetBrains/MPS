@@ -196,6 +196,7 @@
     <import index="iwsx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.fileEditor(MPS.IDEA/)" />
     <import index="wvnl" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.openapi.editor.extensions(MPS.Editor/)" />
     <import index="8rsk" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.actionSystem.ex(MPS.IDEA/)" />
+    <import index="3fye" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.application.impl(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="982eb8df-2c96-4bd7-9963-11712ea622e5" name="jetbrains.mps.lang.resources">
@@ -17722,6 +17723,17 @@
     </node>
     <node concept="2ScWuX" id="4$lKlQJd86z" role="tmbBb">
       <node concept="3clFbS" id="4$lKlQJd86$" role="2VODD2">
+        <node concept="3clFbJ" id="78nBORj8yNB" role="3cqZAp">
+          <node concept="2YIFZM" id="78nBORj8yNH" role="3clFbw">
+            <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
+            <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+          </node>
+          <node concept="3clFbS" id="78nBORj8yNE" role="3clFbx">
+            <node concept="3cpWs6" id="78nBORj8yNF" role="3cqZAp">
+              <node concept="3clFbT" id="78nBORj8yNG" role="3cqZAk" />
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="5yproddXVmn" role="3cqZAp">
           <node concept="2YIFZM" id="5yproddXVCK" role="3clFbG">
             <ref role="37wK5l" to="8rsk:~ActionUtil.updateAction(com.intellij.openapi.actionSystem.AnAction,com.intellij.openapi.actionSystem.AnActionEvent)" resolve="updateAction" />
@@ -18269,6 +18281,18 @@
         </node>
       </node>
     </node>
+    <node concept="2ScWuX" id="78nBORjaLfx" role="tmbBb">
+      <node concept="3clFbS" id="78nBORjaLfz" role="2VODD2">
+        <node concept="3cpWs6" id="78nBORjaLf$" role="3cqZAp">
+          <node concept="3fqX7Q" id="78nBORjaLf_" role="3cqZAk">
+            <node concept="2YIFZM" id="78nBORjaLfB" role="3fr31v">
+              <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
+              <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="sE7Ow" id="3oS0mv1G9Xb">
     <property role="TrG5h" value="GoToNamedNode" />
@@ -18610,6 +18634,18 @@
         </node>
       </node>
     </node>
+    <node concept="2ScWuX" id="78nBORjaHN8" role="tmbBb">
+      <node concept="3clFbS" id="78nBORjaHNa" role="2VODD2">
+        <node concept="3cpWs6" id="78nBORjaHNb" role="3cqZAp">
+          <node concept="3fqX7Q" id="78nBORjaHNc" role="3cqZAk">
+            <node concept="2YIFZM" id="78nBORjaHNe" role="3fr31v">
+              <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
+              <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="sE7Ow" id="3oS0mv1G9YQ">
     <property role="TrG5h" value="GoToModule" />
@@ -18932,6 +18968,18 @@
                 <ref role="37wK5l" to="bd8o:~ModalityState.current()" resolve="current" />
               </node>
               <node concept="3clFbT" id="7ydPRstN8l8" role="37wK5m" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="2ScWuX" id="78nBORjaLff" role="tmbBb">
+      <node concept="3clFbS" id="78nBORjaLfh" role="2VODD2">
+        <node concept="3cpWs6" id="78nBORjaLfi" role="3cqZAp">
+          <node concept="3fqX7Q" id="78nBORjaLfj" role="3cqZAk">
+            <node concept="2YIFZM" id="78nBORjaLfl" role="3fr31v">
+              <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
+              <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
             </node>
           </node>
         </node>
@@ -19948,6 +19996,17 @@
     </node>
     <node concept="2ScWuX" id="3zY2KvK2I4f" role="tmbBb">
       <node concept="3clFbS" id="3zY2KvK2I4g" role="2VODD2">
+        <node concept="3clFbJ" id="78nBORj6orQ" role="3cqZAp">
+          <node concept="2YIFZM" id="78nBORj8ybA" role="3clFbw">
+            <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
+            <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+          </node>
+          <node concept="3clFbS" id="78nBORj6orT" role="3clFbx">
+            <node concept="3cpWs6" id="78nBORj6orU" role="3cqZAp">
+              <node concept="3clFbT" id="78nBORj6orV" role="3cqZAk" />
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="5yproddXZLG" role="3cqZAp">
           <node concept="2YIFZM" id="5yproddXZLH" role="3clFbG">
             <ref role="37wK5l" to="8rsk:~ActionUtil.updateAction(com.intellij.openapi.actionSystem.AnAction,com.intellij.openapi.actionSystem.AnActionEvent)" resolve="updateAction" />
