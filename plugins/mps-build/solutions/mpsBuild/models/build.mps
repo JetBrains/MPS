@@ -278,6 +278,7 @@
         <child id="3885435385580582696" name="bootClasspath" index="26Ea7d" />
         <child id="3885435385580627556" name="vmOptions" index="26FZ21" />
         <child id="2693344784283221851" name="vmOptions64" index="2hID6k" />
+        <child id="8481880751319421122" name="additionalJvmOptions" index="3caU5o" />
         <child id="8481880751316090625" name="extBootClasspath" index="3cRCUr" />
       </concept>
       <concept id="1731640411964205218" name="jetbrains.mps.build.startup.structure.TextLine" flags="ng" index="2DRAP_">
@@ -50515,6 +50516,188 @@
     <property role="3GE5qa" value="ide.data" />
     <property role="26EafI" value="bin" />
     <ref role="1_kbm$" node="6Iq8148fw_a" resolve="JetBrains MPS ${version.major}.${version.minor}" />
+    <node concept="26Ea6D" id="7mPGpETCyuH" role="3caU5o">
+      <property role="26Ea6C" value="-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuG" role="3caU5o">
+      <property role="26Ea6C" value="-Didea.vendor.name=JetBrains" />
+      <property role="2eq24a" value="true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuF" role="3caU5o">
+      <property role="26Ea6C" value="-Didea.paths.selector=MPS2026.2" />
+      <property role="2eq24a" value="true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuE" role="3caU5o">
+      <property role="26Ea6C" value="-Djna.boot.library.path=%IDE_HOME%/lib/jna/aarch64" />
+      <property role="2eq24a" value="true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuD" role="3caU5o">
+      <property role="26Ea6C" value="-Djna.nosys=true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuC" role="3caU5o">
+      <property role="26Ea6C" value="-Djna.noclasspath=true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuB" role="3caU5o">
+      <property role="26Ea6C" value="-Dpty4j.preferred.native.folder=%IDE_HOME%/lib/pty4j" />
+      <property role="2eq24a" value="true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuA" role="3caU5o">
+      <property role="26Ea6C" value="-Dio.netty.allocator.type=pooled" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu_" role="3caU5o">
+      <property role="26Ea6C" value="-Dskiko.library.path=%IDE_HOME%/lib/skiko-awt-runtime-all" />
+      <property role="2eq24a" value="true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu$" role="3caU5o">
+      <property role="26Ea6C" value="-Dintellij.platform.runtime.repository.path=%IDE_HOME%/modules/module-descriptors.dat" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuz" role="3caU5o">
+      <property role="26Ea6C" value="-Didea.platform.prefix=MPS" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuy" role="3caU5o">
+      <property role="26Ea6C" value="-Daether.connector.resumeDownloads=false" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyux" role="3caU5o">
+      <property role="26Ea6C" value="-Dcompose.swing.render.on.graphics=true" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuw" role="3caU5o">
+      <property role="26Ea6C" value="--enable-native-access=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuv" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.io=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuu" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.lang=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyut" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.lang.ref=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyus" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.lang.reflect=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyur" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.net=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuq" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.nio=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyup" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.nio.charset=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuo" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.text=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyun" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.time=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyum" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.util=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyul" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.util.concurrent=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuk" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuj" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/java.util.concurrent.locks=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyui" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuh" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/jdk.internal.vm=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyug" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/sun.net.dns=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuf" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/sun.nio=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyue" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/sun.nio.ch=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyud" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/sun.nio.fs=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyuc" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/sun.security.ssl=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyub" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.base/sun.security.util=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyua" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/com.sun.java.swing=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu9" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/java.awt=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu8" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/java.awt.dnd.peer=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu7" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/java.awt.event=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu6" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/java.awt.font=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu5" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/java.awt.image=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu4" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/java.awt.peer=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu3" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/javax.swing=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu2" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/javax.swing.plaf.basic=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu1" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/javax.swing.text=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCyu0" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/javax.swing.text.html=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytZ" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/javax.swing.text.html.parser=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytY" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/sun.awt=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytX" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/sun.awt.datatransfer=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytW" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/sun.awt.image=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytU" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/sun.font=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytT" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/sun.java2d=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytS" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/sun.swing=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytR" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.desktop/sun.swing.text=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytQ" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=java.management/sun.management=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytP" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=jdk.attach/sun.tools.attach=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytO" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytN" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=jdk.internal.jvmstat/sun.jvmstat.monitor=ALL-UNNAMED" />
+    </node>
+    <node concept="26Ea6D" id="7mPGpETCytM" role="3caU5o">
+      <property role="26Ea6C" value="--add-opens=jdk.jdi/com.sun.tools.jdi=ALL-UNNAMED" />
+    </node>
     <node concept="26EafG" id="7mPGpETrKMa" role="26Ea7d">
       <property role="26EafJ" value="lib/annotations.jar" />
     </node>
