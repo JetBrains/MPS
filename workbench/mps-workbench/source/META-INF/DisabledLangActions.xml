@@ -75,18 +75,19 @@
     <group id="ShowRecentFindUsagesGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
     <!--    </group>-->
 
-    <group id="EditBookmarksGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
+<!--    TMP MPS-39908 comment out disabled actions &#45;&#45; to be moved to a separate plugin-->
+<!--    <group id="EditBookmarksGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>-->
     <!--    <group id="EditBookmarksGroup" popup="true">-->
-    <action id="ToggleBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmarkWithMnemonic" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ShowBookmarks" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoNextBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoPreviousBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
+<!--    <action id="ToggleBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmarkWithMnemonic" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ShowBookmarks" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoNextBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoPreviousBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
     <!--    </group>-->
 
-    <group id="popup@BookmarkContextMenu" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
+<!--    <group id="popup@BookmarkContextMenu" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>-->
 <!--    <group id="popup@BookmarkContextMenu">-->
-      <action id="EditBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
+<!--      <action id="EditBookmark" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
 <!--    </group>-->
 
     <action id="GotoDeclarationOnly" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
@@ -281,29 +282,31 @@
     <group id="ToolbarFindGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
 
 
-    <group id="Bookmarks" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
-    <!--    <group id="Bookmarks">-->
-    <action id="GotoBookmark0" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark1" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark2" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark3" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark4" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark5" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark6" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark7" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark8" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="GotoBookmark9" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
+    <!--    TMP MPS-39908 comment out disabled actions &#45;&#45; to be moved to a separate plugin-->
 
-    <action id="ToggleBookmark0" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark1" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark2" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark3" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark4" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark5" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark6" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark7" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark8" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
-    <action id="ToggleBookmark9" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
+    <!--    <group id="Bookmarks" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>-->
+    <!--    <group id="Bookmarks">-->
+<!--    <action id="GotoBookmark0" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark1" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark2" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark3" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark4" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark5" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark6" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark7" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark8" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="GotoBookmark9" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+
+<!--    <action id="ToggleBookmark0" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark1" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark2" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark3" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark4" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark5" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark6" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark7" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark8" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
+<!--    <action id="ToggleBookmark9" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
     <!--    </group>-->
 
     <group id="ProjectViewPopupMenuRefactoringGroup"  class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
@@ -405,9 +408,10 @@
 
     <group id="EditorPopupMenuDebug" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
 
-    <group id="TestTreePopupMenu" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
+    <!--    TMP MPS-39914 comment out disabled actions &#45;&#45; to be moved to a separate plugin-->
+<!--    <group id="TestTreePopupMenu" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>-->
 
-    <action id="openAssertEqualsDiff" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
+<!--    <action id="openAssertEqualsDiff" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
     <group id="RunTestGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
 
     <action id="DumpLookupElementWeights" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
