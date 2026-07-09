@@ -196,6 +196,22 @@
           <node concept="2iRkQZ" id="3nFPImNgRsF" role="2czzBx" />
         </node>
       </node>
+      <node concept="3F0ifn" id="7mPGpETqOk3" role="3EZMnx">
+        <node concept="VPM3Z" id="7mPGpETqOk4" role="3F10Kt">
+          <property role="VOm3f" value="false" />
+        </node>
+      </node>
+      <node concept="3F0ifn" id="7mPGpETqO8$" role="3EZMnx">
+        <property role="3F0ifm" value="ext boot classpath" />
+      </node>
+      <node concept="3EZMnI" id="7mPGpETqO8v" role="3EZMnx">
+        <node concept="3XFhqQ" id="7mPGpETqO8w" role="3EZMnx" />
+        <node concept="2iRfu4" id="7mPGpETqO8x" role="2iSdaV" />
+        <node concept="3F2HdR" id="7mPGpETqO8y" role="3EZMnx">
+          <ref role="1NtTu8" to="s7om:7mPGpETqNW1" resolve="extBootClasspath" />
+          <node concept="2iRkQZ" id="7mPGpETqO8z" role="2czzBx" />
+        </node>
+      </node>
       <node concept="3F0ifn" id="2lwFGYOQF3b" role="3EZMnx">
         <node concept="VPM3Z" id="2lwFGYOQF3c" role="3F10Kt">
           <property role="VOm3f" value="false" />

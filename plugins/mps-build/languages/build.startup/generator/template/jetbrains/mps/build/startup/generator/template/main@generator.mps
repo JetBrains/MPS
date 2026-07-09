@@ -5506,6 +5506,92 @@
           </node>
         </node>
       </node>
+      <node concept="2DRAP_" id="7mPGpETrmpF" role="2DRAPQ">
+        <property role="2DPR8u" value="        &quot;annotations.jar&quot;," />
+        <node concept="17Uvod" id="7mPGpETrmpG" role="lGtFl">
+          <property role="2qtEX9" value="text" />
+          <property role="P4ACc" value="d5033cee-f632-44b6-b308-89d4fbde34ff/1731640411964205218/1731640411964798937" />
+          <node concept="3zFVjK" id="7mPGpETrmpH" role="3zH0cK">
+            <node concept="3clFbS" id="7mPGpETrmpI" role="2VODD2">
+              <node concept="3cpWs8" id="7mPGpETrmpJ" role="3cqZAp">
+                <node concept="3cpWsn" id="7mPGpETrmpK" role="3cpWs9">
+                  <property role="TrG5h" value="library" />
+                  <node concept="17QB3L" id="7mPGpETrmpL" role="1tU5fm" />
+                  <node concept="2OqwBi" id="7mPGpETrmpM" role="33vP2m">
+                    <node concept="30H73N" id="7mPGpETrmpN" role="2Oq$k0" />
+                    <node concept="3TrcHB" id="7mPGpETrmpO" role="2OqNvi">
+                      <ref role="3TsBF5" to="s7om:3nFPImNgRka" resolve="path" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbJ" id="7mPGpETrmpP" role="3cqZAp">
+                <node concept="3clFbS" id="7mPGpETrmpQ" role="3clFbx">
+                  <node concept="3clFbF" id="7mPGpETrmpR" role="3cqZAp">
+                    <node concept="37vLTI" id="7mPGpETrmpS" role="3clFbG">
+                      <node concept="2OqwBi" id="7mPGpETrmpT" role="37vLTx">
+                        <node concept="37vLTw" id="7mPGpETrmpU" role="2Oq$k0">
+                          <ref role="3cqZAo" node="7mPGpETrmpK" resolve="library" />
+                        </node>
+                        <node concept="liA8E" id="7mPGpETrmpV" role="2OqNvi">
+                          <ref role="37wK5l" to="wyt6:~String.replaceFirst(java.lang.String,java.lang.String)" resolve="replaceFirst" />
+                          <node concept="Xl_RD" id="7mPGpETrmpW" role="37wK5m">
+                            <property role="Xl_RC" value="lib/" />
+                          </node>
+                          <node concept="Xl_RD" id="7mPGpETrmpX" role="37wK5m">
+                            <property role="Xl_RC" value="" />
+                          </node>
+                        </node>
+                      </node>
+                      <node concept="37vLTw" id="7mPGpETrmpY" role="37vLTJ">
+                        <ref role="3cqZAo" node="7mPGpETrmpK" resolve="library" />
+                      </node>
+                    </node>
+                  </node>
+                </node>
+                <node concept="2OqwBi" id="7mPGpETrmpZ" role="3clFbw">
+                  <node concept="37vLTw" id="7mPGpETrmq0" role="2Oq$k0">
+                    <ref role="3cqZAo" node="7mPGpETrmpK" resolve="library" />
+                  </node>
+                  <node concept="liA8E" id="7mPGpETrmq1" role="2OqNvi">
+                    <ref role="37wK5l" to="wyt6:~String.startsWith(java.lang.String)" resolve="startsWith" />
+                    <node concept="Xl_RD" id="7mPGpETrmq2" role="37wK5m">
+                      <property role="Xl_RC" value="lib/" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbF" id="7mPGpETrmq3" role="3cqZAp">
+                <node concept="2YIFZM" id="7mPGpETrmq4" role="3clFbG">
+                  <ref role="37wK5l" to="wyt6:~String.format(java.lang.String,java.lang.Object...)" resolve="format" />
+                  <ref role="1Pybhc" to="wyt6:~String" resolve="String" />
+                  <node concept="Xl_RD" id="7mPGpETrmq5" role="37wK5m">
+                    <property role="Xl_RC" value="        \&quot;%s\&quot;," />
+                  </node>
+                  <node concept="37vLTw" id="7mPGpETrmq6" role="37wK5m">
+                    <ref role="3cqZAo" node="7mPGpETrmpK" resolve="library" />
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="raruj" id="7mPGpETrmq7" role="lGtFl" />
+        <node concept="1WS0z7" id="7mPGpETrmq8" role="lGtFl">
+          <node concept="3JmXsc" id="7mPGpETrmq9" role="3Jn$fo">
+            <node concept="3clFbS" id="7mPGpETrmqa" role="2VODD2">
+              <node concept="3clFbF" id="7mPGpETrmqb" role="3cqZAp">
+                <node concept="2OqwBi" id="7mPGpETrmqc" role="3clFbG">
+                  <node concept="3Tsc0h" id="7mPGpETrmqd" role="2OqNvi">
+                    <ref role="3TtcxE" to="s7om:7mPGpETqNW1" resolve="extBootClasspath" />
+                  </node>
+                  <node concept="30H73N" id="7mPGpETrmqe" role="2Oq$k0" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
       <node concept="2DRAP_" id="6GoDrz8MA0b" role="2DRAPQ">
         <property role="2DPR8u" value="        &quot;boot-macos.jar&quot;" />
         <node concept="raruj" id="6GoDrz8MJ2e" role="lGtFl" />

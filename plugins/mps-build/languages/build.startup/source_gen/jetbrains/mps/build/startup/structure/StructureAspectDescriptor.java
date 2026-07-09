@@ -82,6 +82,7 @@ public class StructureAspectDescriptor extends BaseStructureAspectDescriptor {
     b.aggregate("bootClasspath", 0x35ebd6e5b3437728L).target(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437509L).optional(true).ordered(true).multiple(true).origin("3885435385580582696").done();
     b.aggregate("vmOptions", 0x35ebd6e5b3442664L).target(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343750dL).optional(true).ordered(true).multiple(true).origin("3885435385580627556").done();
     b.aggregate("vmOptions64", 0x2560aecfb4da3f5bL).target(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b343750dL).optional(true).ordered(true).multiple(true).origin("2693344784283221851").done();
+    b.aggregate("extBootClasspath", 0x75b5b19ab96b3f01L).target(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437509L).optional(true).ordered(true).multiple(true).origin("8481880751316090625").done();
     return b.create();
   }
   private static ConceptDescriptor createDescriptorForSimpleVmOptions() {

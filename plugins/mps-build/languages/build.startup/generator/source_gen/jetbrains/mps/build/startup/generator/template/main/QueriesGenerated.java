@@ -393,22 +393,29 @@ public class QueriesGenerated extends QueryProviderBase {
     return String.format("        \"%s\",", library);
   }
   public static Object propertyMacro_GetValue_6_11(final PropertyMacroContext _context) {
-    return SPropertyOperations.getString(_context.getNode(), PROPS.text$DMB3);
+    String library = SPropertyOperations.getString(_context.getNode(), PROPS.path$jtyZ);
+    if (library.startsWith("lib/")) {
+      library = library.replaceFirst("lib/", "");
+    }
+    return String.format("        \"%s\",", library);
   }
   public static Object propertyMacro_GetValue_6_12(final PropertyMacroContext _context) {
-    return String.format(_context.getTemplateValue(), BuildMps_Branding__BehaviorDescriptor.getVendor_id6RvRF8fBDEC.invoke(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), null));
+    return SPropertyOperations.getString(_context.getNode(), PROPS.text$DMB3);
   }
   public static Object propertyMacro_GetValue_6_13(final PropertyMacroContext _context) {
+    return String.format(_context.getTemplateValue(), BuildMps_Branding__BehaviorDescriptor.getVendor_id6RvRF8fBDEC.invoke(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), null));
+  }
+  public static Object propertyMacro_GetValue_6_14(final PropertyMacroContext _context) {
     String jnaPath = "lib/jna";
     jnaPath = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + jnaPath;
     return String.format(_context.getTemplateValue(), jnaPath);
   }
-  public static Object propertyMacro_GetValue_6_14(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_15(final PropertyMacroContext _context) {
     String path = "lib/skiko-awt-runtime-all";
     path = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + path;
     return String.format(_context.getTemplateValue(), path);
   }
-  public static Object propertyMacro_GetValue_6_15(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_16(final PropertyMacroContext _context) {
     String pty4jFolder = "lib/pty4j";
     pty4jFolder = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + pty4jFolder;
     return String.format(_context.getTemplateValue(), pty4jFolder);
@@ -435,6 +442,9 @@ public class QueriesGenerated extends QueryProviderBase {
     return SLinkOperations.getChildren(_context.getNode(), LINKS.bootClasspath$_ysz);
   }
   public static Iterable<SNode> sourceNodesQuery_6_1(final SourceSubstituteMacroNodesContext _context) {
+    return SLinkOperations.getChildren(_context.getNode(), LINKS.extBootClasspath$1tL0);
+  }
+  public static Iterable<SNode> sourceNodesQuery_6_2(final SourceSubstituteMacroNodesContext _context) {
     Iterable<String> openedPackages = (("macOS".equals(((String) _context.getVariable("os"))) ? OpenedPackages.getMacOpenedPackages() : ("Windows".equals(((String) _context.getVariable("os"))) ? OpenedPackages.getWindowsOpenedPackages() : OpenedPackages.getLinuxOpenedPackages())));
     return Sequence.fromIterable(openedPackages).select((it) -> {
       SNode n = SConceptOperations.createNewNode(MetaAdapterFactory.getConcept(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, "jetbrains.mps.build.startup.structure.TextLine"));
@@ -450,6 +460,7 @@ public class QueriesGenerated extends QueryProviderBase {
     snsqMethods.put("4487788881657835967", new SNsQ(i++));
     snsqMethods.put("2693344784288504085", new SNsQ(i++));
     snsqMethods.put("7717100174560616426", new SNsQ(i++));
+    snsqMethods.put("8481880751316231817", new SNsQ(i++));
     snsqMethods.put("7717100174560616467", new SNsQ(i++));
   }
   @NotNull
@@ -478,6 +489,8 @@ public class QueriesGenerated extends QueryProviderBase {
           return IterableUtil.asCollection(QueriesGenerated.sourceNodesQuery_6_0(ctx));
         case 5:
           return IterableUtil.asCollection(QueriesGenerated.sourceNodesQuery_6_1(ctx));
+        case 6:
+          return IterableUtil.asCollection(QueriesGenerated.sourceNodesQuery_6_2(ctx));
         default:
           throw new GenerationFailureException(String.format("Inconsistent QueriesGenerated: there's no method for query %s (key: #%d)", ctx.getTemplateReference(), methodKey));
       }
@@ -547,6 +560,7 @@ public class QueriesGenerated extends QueryProviderBase {
     pvqMethods.put("7717100174572154090", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "      \"javaExecutablePath\": \"%s\","));
     pvqMethods.put("7717100174560616378", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "      \"vmOptionsFilePath\": \"%s\","));
     pvqMethods.put("7717100174560616432", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"annotations.jar\","));
+    pvqMethods.put("8481880751316231788", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"annotations.jar\","));
     pvqMethods.put("7717100174560616493", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"--add-opens=java.base/java.io=ALL-UNNAMED\","));
     pvqMethods.put("7717100174560616512", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Didea.vendor.name=%s\","));
     pvqMethods.put("4782412228687886522", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Djna.boot.library.path=%s\","));
@@ -700,6 +714,8 @@ public class QueriesGenerated extends QueryProviderBase {
           return QueriesGenerated.propertyMacro_GetValue_6_14(ctx);
         case 65:
           return QueriesGenerated.propertyMacro_GetValue_6_15(ctx);
+        case 66:
+          return QueriesGenerated.propertyMacro_GetValue_6_16(ctx);
         default:
           throw new GenerationFailureException(String.format("Inconsistent QueriesGenerated: there's no method for query %s (key: #%d)", ctx.getTemplateReference(), methodKey));
       }
@@ -742,6 +758,7 @@ public class QueriesGenerated extends QueryProviderBase {
     /*package*/ static final SContainmentLink product$RfQu = MetaAdapterFactory.getContainmentLink(0xcf935df46994e9cL, 0xa132fa109541cba3L, 0x6b9a2011083b778dL, 0x54c4eb89feb230afL, "product");
     /*package*/ static final SContainmentLink vendor$kK9e = MetaAdapterFactory.getContainmentLink(0xcf935df46994e9cL, 0xa132fa109541cba3L, 0x6b9a2011083b778dL, 0x565a3894500dd6d9L, "vendor");
     /*package*/ static final SContainmentLink bootClasspath$_ysz = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x35ebd6e5b3437728L, "bootClasspath");
+    /*package*/ static final SContainmentLink extBootClasspath$1tL0 = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x75b5b19ab96b3f01L, "extBootClasspath");
   }
 
   private static final class PROPS {
