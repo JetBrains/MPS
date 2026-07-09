@@ -33,6 +33,7 @@ import jetbrains.mps.workbench.actions.OpenMPSProjectFileChooserDescriptor;
 import jetbrains.mps.workbench.actions.OpenMPSProjectTrustProjectHelper;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.Component;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -57,10 +58,11 @@ public class OpenSampleProjectAction extends AnAction {
     }
 
     final Project currentProject = PlatformDataKeys.PROJECT.getData(e.getDataContext());
+    final Component parent = PlatformDataKeys.CONTEXT_COMPONENT.getData(e.getDataContext());
     final FileChooserDescriptor descriptor = new OpenMPSProjectFileChooserDescriptor(true);
     descriptor.setTitle("Samples");
 
-    final VirtualFile @NotNull [] virtualFiles = FileChooser.chooseFiles(descriptor, currentProject, samplesFolder);
+    final VirtualFile @NotNull [] virtualFiles = FileChooser.chooseFiles(descriptor, parent, currentProject, samplesFolder);
     for (VirtualFile virtualFile : virtualFiles) {
       if (virtualFile == null) {
         continue;

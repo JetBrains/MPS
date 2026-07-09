@@ -44,6 +44,7 @@ import com.intellij.openapi.wm.impl.welcomeScreen.NewWelcomeScreen;
 import com.intellij.ui.ExperimentalUI;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.Component;
 import java.io.File;
 
 public class OpenMPSProjectAction extends AnAction {
@@ -72,6 +73,7 @@ public class OpenMPSProjectAction extends AnAction {
   @Override
   public void actionPerformed(@NotNull AnActionEvent e) {
     final Project currentProject = PlatformDataKeys.PROJECT.getData(e.getDataContext());
+    final Component parent = PlatformDataKeys.CONTEXT_COMPONENT.getData(e.getDataContext());
 
     final FileChooserDescriptor descriptor = createFileChooserDescriptor();
     descriptor.setTitle(IdeBundle.message("title.open.project"));
@@ -86,7 +88,7 @@ public class OpenMPSProjectAction extends AnAction {
 
     descriptor.putUserData(FileChooserDialogImpl.PREFER_LAST_OVER_TO_SELECT, Boolean.TRUE);
 
-    final VirtualFile @NotNull [] virtualFiles = FileChooser.chooseFiles(descriptor, currentProject, userHomeDir);
+    final VirtualFile @NotNull [] virtualFiles = FileChooser.chooseFiles(descriptor, parent, currentProject, userHomeDir);
     for (VirtualFile virtualFile : virtualFiles) {
       if (virtualFile == null) {
         continue;
