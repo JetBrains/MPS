@@ -9,7 +9,7 @@ A test model must have:
   - The language(s) under test, so you can write valid sample code in `TestNode` snippets.
   - `jetbrains.mps.baseLanguage`, `jetbrains.mps.baseLanguage.collections`, `jetbrains.mps.lang.smodel`, `jetbrains.mps.lang.text` as needed for assertion code.
 - **Containing module**: a Solution carrying the **`tests` facet** so it gets compiled and runs JUnit. Place it under `<lang>/tests/` or `<lang>.test/` next to the language module.
-  - Create through MCP: `mps_mcp_create_module(type="solution", name="…", directory="…", facets=["tests"])`. The response is self-describing:
+  - Create through MCP: `mps_mcp_create_module(type="solution", name="…", directory="…", facets="[\"tests\"]")`. The response is self-describing:
     ```json
     {"ok": true,
      "data": {"name": "…", "reference": "…", "kind": "Solution",

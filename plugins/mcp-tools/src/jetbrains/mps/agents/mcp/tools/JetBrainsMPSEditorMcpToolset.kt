@@ -103,11 +103,41 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
         @McpDescription("Optional: A persistent reference to a StyleClass to automatically apply to constant cells like the concept alias.") keywordStyle: String? = null,
         @McpDescription("Optional: A persistent reference to a StyleClass to apply to reference cells.") referenceStyle: String? = null,
         @McpDescription("Whether to automatically detect and include existing suitable editor components.") detectComponents: Boolean = false,
-        @McpDescription("Optional: A list of persistent references to existing EditorComponentDeclarations to be included.") includeComponents: List<String>? = null,
+        @McpDescription("Optional: A persistent reference to an existing EditorComponentDeclaration, or a JSON array of references. Omit or pass [] for no explicit components.") includeComponents: String? = null,
         @McpDescription("Optional: The type of editor to create: 'editor' (default) or 'component'.") type: String = "editor",
-        @McpDescription("Optional: A list of property names to include. If null, all properties are included.") includeProperties: List<String>? = null,
-        @McpDescription("Optional: A list of reference names to include. If null, all references are included.") includeReferences: List<String>? = null,
-        @McpDescription("Optional: A list of containment link names to include. If null, all children are included.") includeChildren: List<String>? = null
+        @McpDescription("Optional: A property name or JSON array of property names to include. Omit for all; [] for none.") includeProperties: String? = null,
+        @McpDescription("Optional: A reference name or JSON array of reference names to include. Omit for all; [] for none.") includeReferences: String? = null,
+        @McpDescription("Optional: A containment link name or JSON array of containment link names to include. Omit for all; [] for none.") includeChildren: String? = null
+    ): String = mps_mcp_scaffold_editor(
+        conceptRef,
+        modelReference,
+        keywordStyle,
+        referenceStyle,
+        detectComponents,
+        parseNullableStringOrJsonArray(includeComponents),
+        type,
+        parseNullableStringOrJsonArray(includeProperties),
+        parseNullableStringOrJsonArray(includeReferences),
+        parseNullableStringOrJsonArray(includeChildren),
+    )
+
+    /**
+     * Internal list-typed entry point for [mps_mcp_scaffold_editor]. Deliberately *not*
+     * annotated with `@McpTool`: the String-typed overload above accepts a single value or a
+     * JSON array while preserving the underlying null-versus-empty-list semantics.
+     * Retained as a direct entry point for in-process callers and tests.
+     */
+    suspend fun mps_mcp_scaffold_editor(
+        conceptRef: String,
+        modelReference: String,
+        keywordStyle: String? = null,
+        referenceStyle: String? = null,
+        detectComponents: Boolean = false,
+        includeComponents: List<String>?,
+        type: String = "editor",
+        includeProperties: List<String>? = null,
+        includeReferences: List<String>? = null,
+        includeChildren: List<String>? = null
     ): String {
         if (type != "editor" && type != "component") {
             return errJson("Invalid 'type' parameter '$type': expected 'editor' or 'component'")

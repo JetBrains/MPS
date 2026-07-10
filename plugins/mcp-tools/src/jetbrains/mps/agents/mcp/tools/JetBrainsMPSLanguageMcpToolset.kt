@@ -68,8 +68,22 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_get_concept_details(
-        @McpDescription("List of persistent references (SAbstractConcept) or fully qualified names of the concepts and interface concepts") conceptRefs: List<String> = emptyList(),
-        @McpDescription("List of persistent references (SLanguage) or qualified names of the languages. All concepts and interface concepts of these languages will be returned.") languageRefs: List<String> = emptyList()
+        @McpDescription("A persistent reference (SAbstractConcept) or fully qualified name of a concept/interface concept, or a JSON array of them.") conceptRefs: String = "",
+        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them. All concepts and interface concepts of these languages will be returned.") languageRefs: String = ""
+    ): String = mps_mcp_get_concept_details(
+        parseStringOrJsonArray(conceptRefs),
+        parseStringOrJsonArray(languageRefs),
+    )
+
+    /**
+     * Internal list-typed entry point for [mps_mcp_get_concept_details]. Deliberately *not*
+     * annotated with `@McpTool`: the String-typed overload above accepts either a single value
+     * or a JSON array without requiring the MCP bridge to decode a scalar as a list. Retained as
+     * a direct entry point for in-process callers and tests.
+     */
+    suspend fun mps_mcp_get_concept_details(
+        conceptRefs: List<String>,
+        languageRefs: List<String> = emptyList()
     ): String {
         if (conceptRefs.isEmpty() && languageRefs.isEmpty()) {
             return errJson("No concepts nor languages have been provided")
@@ -181,8 +195,30 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_search_concepts(
-        @McpDescription("The list of strings to search for. Multiple words in a string are treated as multiple required terms.") searchTexts: List<String>,
+        @McpDescription("The text(s) to search for. Either a single search string or a JSON array: [\"Term1\", \"Term2\"]. Multiple words within a string are AND-combined (all required); multiple strings are OR-combined.") searchTexts: String = "",
         @McpDescription("Optional model reference (preferred) or model name to limit search to languages used by this model") modelReference: String? = null
+    ): String {
+        val terms = parseStringOrJsonArray(searchTexts)
+        if (terms.all { it.isBlank() }) {
+            return errJson(
+                "searchTexts is required: provide a single search string or a JSON array of strings.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        return mps_mcp_search_concepts(terms, modelReference)
+    }
+
+    /**
+     * Internal list-typed entry point for [mps_mcp_search_concepts]. Deliberately *not* annotated
+     * with `@McpTool`: the String-typed overload above is the registered tool, so a client may pass
+     * either a single search string or a JSON array, and an omitted `searchTexts` is reported as a
+     * classified INVALID_REQUEST error instead of crashing the MCP framework's required-parameter
+     * decode (see [parseStringOrJsonArray]). Retained as a direct entry point for in-process callers
+     * and tests.
+     */
+    suspend fun mps_mcp_search_concepts(
+        searchTexts: List<String>,
+        modelReference: String? = null
     ): String = withMpsProject("Searching for MPS concepts") { mpsProject ->
         executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository

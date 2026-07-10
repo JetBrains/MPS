@@ -2,6 +2,14 @@
 
 Gets detailed information about a list of MPS concepts, including their properties, references, and children. Saves the result to a local JSON file (path returned in `data`). Concepts can be specified individually (`conceptRefs`) or by language (`languageRefs`) — every concept and interface concept of each listed language is included.
 
+## Input form
+
+Each selector accepts either one value or a JSON-array string. For example, use
+`conceptRefs = "jetbrains.mps.baseLanguage.structure.ClassConcept"` for one concept, or
+`conceptRefs = "[\"…ClassConcept\", \"…InterfaceConcept\"]"` for several. `languageRefs`
+uses the same form. Omit an unused selector; when both are absent or blank, the tool preserves its
+existing `No concepts nor languages have been provided` error.
+
 ## Unresolved refs are never silently dropped
 
 The tool distinguishes three response shapes:

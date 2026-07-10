@@ -317,6 +317,40 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
+     * Parses a string parameter that may be a JSON array, a JSON-encoded primitive string, or a
+     * bare string into the list of string values it represents. A JSON array maps each element
+     * to its string value; a JSON-encoded string (e.g. "\"Foo\"") unwraps to "Foo"; anything
+     * else, including invalid JSON (common for persistent module/model references), is treated
+     * as a single bare value. A blank value maps to an empty list. Lets list-typed MCP parameters
+     * accept either a single value or an array without the framework rejecting a scalar during
+     * JSON→Kotlin decode.
+     */
+    protected fun parseStringOrJsonArray(raw: String): List<String> {
+        if (raw.isBlank()) return emptyList()
+        return try {
+            val elem = JsonParser.parseString(raw)
+            when {
+                elem.isJsonArray -> elem.asJsonArray.map { it.asString }
+                elem.isJsonPrimitive && elem.asJsonPrimitive.isString -> listOf(elem.asString)
+                else -> listOf(raw)
+            }
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            listOf(raw)
+        }
+    }
+
+    /**
+     * Nullable variant of [parseStringOrJsonArray] for optional list parameters whose absence
+     * is semantically distinct from an empty list. Returns null when [raw] is null or blank,
+     * otherwise the parsed values (which may be an empty list for an explicit "[]").
+     */
+    protected fun parseNullableStringOrJsonArray(raw: String?): List<String>? {
+        if (raw.isNullOrBlank()) return null
+        return parseStringOrJsonArray(raw)
+    }
+
+    /**
      * Runs [block]; on a non-cancellation, non-Error throwable returns the exception's message
      * (or `toString()`) as a warning string. Cancellation and [Error] propagate. Used by tool
      * methods that want to surface a secondary failure as a `warnings` payload entry rather than
@@ -2967,6 +3001,13 @@ abstract class AbstractOps : McpToolset {
             val targetLanguageModuleRefs = preparation.targetLanguageModuleRefs
             val targetLanguageNamespaces = preparation.targetLanguageNamespaces
 
+            // Do not open a session for a no-op make. A session-open notification blocks
+            // migrations, while this return path does not call makeService.make(), which is
+            // responsible for closing the session again.
+            if (resourcesList.isEmpty()) {
+                return MakeResult(true, "Nothing to make (no inputs resolved)")
+            }
+
             // Open the make session OUTSIDE the model read action. WorkbenchMakeService.openNewSession
             // calls DumbService.waitForSmartMode() on non-EDT threads, and the platform asserts that
             // waitForSmartMode must not be invoked from inside a read action while in dumb mode.
@@ -2975,11 +3016,6 @@ abstract class AbstractOps : McpToolset {
             }
             if (!openNewSessionFlag) {
                 return MakeResult(false, "Opening the make session failed", runtimeReady = false)
-            }
-
-            // Default runtimeReady=true: nothing mutated, so the runtime is unchanged-ready.
-            if (resourcesList.isEmpty()) {
-                return MakeResult(true, "Nothing to make (no inputs resolved)")
             }
 
             // Register the listener BEFORE starting the make so no afterLanguagesLoaded

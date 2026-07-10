@@ -16,7 +16,7 @@ Workflow for inspecting an MPS language from a name (e.g. `jetbrains.mps.lang.co
 ## Analyzing a Language by Name
 
 1. **Verify Language**: call `mps_mcp_get_project_structure` with the language name as a filter (`startingPoint: My_Language`). This confirms existence and provides the UUID.
-2. **Retrieve Concepts**: use `mps_mcp_get_concept_details` with the language name in `languageRefs`.
+2. **Retrieve Concepts**: use `mps_mcp_get_concept_details` with the language name in `languageRefs`. Both `conceptRefs` and `languageRefs` accept either one value or a JSON-array string; omit the unused selector.
 3. **Extract Data**: the response includes:
     * **Name**: concept FQN.
     * **Description**: found in `shortDescription`.
