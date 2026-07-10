@@ -2504,6 +2504,9 @@
             <node concept="1bldCd" id="6Mwky1B4umx" role="39821P">
               <ref role="3$exzV" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
             </node>
+            <node concept="1bldCd" id="72kDWjnsO7a" role="39821P">
+              <ref role="3$exzV" node="2GzIqorFzWp" resolve="MPS.IDEA.Plugins" />
+            </node>
             <node concept="1bldCd" id="2cUAfn2XNNH" role="39821P">
               <ref role="3$exzV" node="1uyFnK9vtIN" resolve="MPS.IDEA.testFramework" />
             </node>

@@ -225,6 +225,7 @@
       <zipfileset file="${mps_home}/languages/core/stub/MPS.Platform/MPS.Platform.msd" prefix="modules/MPS.Platform" />
       <zipfileset file="${mps_home}/languages/core/stub/MPS.IDEA/MPS.IDEA.msd" prefix="modules/MPS.IDEA" />
       <zipfileset file="${mps_home}/languages/core/stub/MPS.IDEA.Modules/MPS.IDEA.Modules.msd" prefix="modules/MPS.IDEA.Modules" />
+      <zipfileset file="${mps_home}/languages/core/stub/MPS.IDEA.Plugins/MPS.IDEA.Plugins.msd" prefix="modules/MPS.IDEA.Plugins" />
       <zipfileset file="${mps_home}/languages/core/stub/MPS.testFramework/MPS.IDEA.testFramework.msd" prefix="modules/MPS.IDEA.testFramework" />
       <zipfileset file="${mps_home}/languages/core/stub/MPS.Core/MPS.Core.msd" prefix="modules/MPS.Core" />
       <zipfileset file="${mps_home}/languages/core/stub/MPS.Boot/MPS.Boot.msd" prefix="modules/MPS.Boot" />

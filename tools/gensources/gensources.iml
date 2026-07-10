@@ -1355,14 +1355,6 @@
       <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testClassLoading/languages/L1/generator/classes_gen" />
       <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testClassLoading/languages/L2/classes_gen" />
       <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testClassLoading/languages/L2/generator/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCloneModule/languages/TestLanguage/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCloneModule/languages/TestLanguage/generator/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCloneModule/languages/TestLanguage_ACCESORIES/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCloneModule/solutions/BINARY/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCloneModule/solutions/FACETS/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCloneModule/solutions/PER_ROOT/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCloneModule/solutions/XML/classes_gen" />
-      <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testCompilation/solutions/TestCompileSolution/classes_gen" />
       <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testConstraints/languages/constraints.rules.test/classes_gen" />
       <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testConstraints/languages/constraints.rules.test/generator/classes_gen" />
       <excludeFolder url="file://$MODULE_DIR$/../../testbench/modules/testConstraints/languages/constraints.test/classes_gen" />
@@ -1653,3 +1645,4 @@
     <orderEntry type="library" name="idea.grazie" level="project" />
   </component>
 </module>
+
