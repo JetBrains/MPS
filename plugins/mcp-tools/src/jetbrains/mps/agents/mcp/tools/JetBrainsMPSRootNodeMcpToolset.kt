@@ -237,25 +237,6 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
         return JsonArray().apply { parseStringOrJsonArray(raw).forEach { add(it) } }
     }
 
-    // Parses a string parameter that may be a JSON array, a JSON-encoded primitive string, or a
-    // bare string into the list of string values it represents. A JSON array maps each element
-    // to its string value; a JSON-encoded string (e.g. "\"Foo\"") unwraps to "Foo"; anything
-    // else, including invalid JSON (common for persistent module/model references), is treated
-    // as a single bare value.
-    private fun parseStringOrJsonArray(raw: String): List<String> {
-        return try {
-            val elem = JsonParser.parseString(raw)
-            when {
-                elem.isJsonArray -> elem.asJsonArray.map { it.asString }
-                elem.isJsonPrimitive && elem.asJsonPrimitive.isString -> listOf(elem.asString)
-                else -> listOf(raw)
-            }
-        } catch (e: Exception) {
-            rethrowIfCancellation(e)
-            listOf(raw)
-        }
-    }
-
     @McpTool
     @McpDescription("""
         Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays insert atomically with batch rollback on failure). Returns the new node's info envelope, or an array of envelopes when the input was an array. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.

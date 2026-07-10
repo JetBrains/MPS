@@ -181,8 +181,30 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_search_concepts(
-        @McpDescription("The list of strings to search for. Multiple words in a string are treated as multiple required terms.") searchTexts: List<String>,
+        @McpDescription("The text(s) to search for. Either a single search string or a JSON array: [\"Term1\", \"Term2\"]. Multiple words within a string are AND-combined (all required); multiple strings are OR-combined.") searchTexts: String = "",
         @McpDescription("Optional model reference (preferred) or model name to limit search to languages used by this model") modelReference: String? = null
+    ): String {
+        val terms = parseStringOrJsonArray(searchTexts)
+        if (terms.all { it.isBlank() }) {
+            return errJson(
+                "searchTexts is required: provide a single search string or a JSON array of strings.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        return mps_mcp_search_concepts(terms, modelReference)
+    }
+
+    /**
+     * Internal list-typed entry point for [mps_mcp_search_concepts]. Deliberately *not* annotated
+     * with `@McpTool`: the String-typed overload above is the registered tool, so a client may pass
+     * either a single search string or a JSON array, and an omitted `searchTexts` is reported as a
+     * classified INVALID_REQUEST error instead of crashing the MCP framework's required-parameter
+     * decode (see [parseStringOrJsonArray]). Retained as a direct entry point for in-process callers
+     * and tests.
+     */
+    suspend fun mps_mcp_search_concepts(
+        searchTexts: List<String>,
+        modelReference: String? = null
     ): String = withMpsProject("Searching for MPS concepts") { mpsProject ->
         executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository

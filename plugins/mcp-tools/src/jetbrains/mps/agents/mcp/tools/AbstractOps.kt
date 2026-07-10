@@ -317,6 +317,28 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
+     * Parses a string parameter that may be a JSON array, a JSON-encoded primitive string, or a
+     * bare string into the list of string values it represents. A JSON array maps each element
+     * to its string value; a JSON-encoded string (e.g. "\"Foo\"") unwraps to "Foo"; anything
+     * else, including invalid JSON (common for persistent module/model references), is treated
+     * as a single bare value. Lets list-typed MCP parameters accept either a single value or an
+     * array without the framework rejecting a scalar during JSON→Kotlin decode.
+     */
+    protected fun parseStringOrJsonArray(raw: String): List<String> {
+        return try {
+            val elem = JsonParser.parseString(raw)
+            when {
+                elem.isJsonArray -> elem.asJsonArray.map { it.asString }
+                elem.isJsonPrimitive && elem.asJsonPrimitive.isString -> listOf(elem.asString)
+                else -> listOf(raw)
+            }
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            listOf(raw)
+        }
+    }
+
+    /**
      * Runs [block]; on a non-cancellation, non-Error throwable returns the exception's message
      * (or `toString()`) as a warning string. Cancellation and [Error] propagate. Used by tool
      * methods that want to surface a secondary failure as a `warnings` payload entry rather than

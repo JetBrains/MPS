@@ -16,8 +16,10 @@ Common namespace prefixes such as `jetbrains`, `mps`, or `lang` are **NOT** part
 
 ## Query composition
 
+`searchTexts` accepts **either a single search string or a JSON array of strings** — a lone value is wrapped automatically, so `"Foo"` and `["Foo"]` behave identically. Omitting it (or passing only blanks) returns an `INVALID_REQUEST` error rather than an empty result.
+
 - **Multiple words in a single search string** are treated as required terms — the concept matches when EVERY word matches.
-- **Multiple search strings** in the `searchTexts` list are OR-combined.
+- **Multiple search strings** are OR-combined.
 
 ## Subtoken splitting
 

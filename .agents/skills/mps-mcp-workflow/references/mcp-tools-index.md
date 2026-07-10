@@ -45,7 +45,7 @@
 ## Language Definition
 
 - `mps_mcp_get_concept_details`: provides properties, children, and references for a list of concepts and/or concepts of specified languages. Make/rebuild languages with `mps_mcp_alter_nodes` (`MAKE` with `rebuild=true`) if descriptors are hollow or stale. For the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
-- `mps_mcp_search_concepts`: global search for concepts by name, alias or description using a list of search strings.
+- `mps_mcp_search_concepts`: global search for concepts by name, alias or description using a single search string or a JSON array of search strings.
 - `mps_mcp_alter_structure`: write operations on language structure — `CREATE_CONCEPTS`, `CREATE_ENUM`, `UPDATE_CONCEPT_PROPERTY`, `UPDATE_CONCEPT_CHILD`, `UPDATE_CONCEPT_REFERENCE`, `RENAME_CONCEPT_PROPERTY`, `RENAME_CONCEPT_CHILD`, `RENAME_CONCEPT_REFERENCE`. Reports a `makeStatus` where `"runtime_stale"` indicates reload failure, requiring a clean rebuild (`MAKE rebuild=true`).
 - `mps_mcp_query_structure`: read-only structure queries — `GET_SUB_CONCEPTS`, `GET_ASSIGNABLE_CONCEPTS`, `GET_ALL_SUPERCONCEPTS`, `IS_SUBCONCEPT_OF`, `GET_ENUMERATION_LITERALS`, `LIST_CONCEPT_ASPECTS`, `GET_ASSIGNABLE_REFERENCES`, `IS_SMART_REFERENCE`.
 - `mps_mcp_scaffold_editor`: generates a default `ConceptEditorDeclaration` for a specified concept, automatically wiring relation declarations properties, children, references to default cell models. If the target concept is uncompiled or its structure is out of date, this tool automatically attempts to build (make) the structure model (self-healing), failing if compilation fails or runtime remains stale/hollow.

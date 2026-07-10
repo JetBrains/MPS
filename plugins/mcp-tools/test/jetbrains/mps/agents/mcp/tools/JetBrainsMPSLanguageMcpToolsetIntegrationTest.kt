@@ -560,6 +560,57 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `search-concepts accepts a single search string, not only a JSON array`() {
+        // The registered String-typed overload must wrap a bare single value into a one-element
+        // list so a client is not forced to send a JSON array for the common single-term case.
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = "ConceptDeclaration")
+        }
+
+        val qualifiedNames = readSearchArray(response)
+            .map { it.asJsonObject.get("qualifiedName").asString }.toSet()
+        assertTrue(
+            "a single bare search string must find ConceptDeclaration; got=$qualifiedNames",
+            qualifiedNames.contains("jetbrains.mps.lang.structure.structure.ConceptDeclaration")
+        )
+    }
+
+    @Test
+    fun `search-concepts accepts a JSON array string`() {
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = "[\"ConceptDeclaration\"]")
+        }
+
+        val qualifiedNames = readSearchArray(response)
+            .map { it.asJsonObject.get("qualifiedName").asString }.toSet()
+        assertTrue(
+            "a JSON array string must find ConceptDeclaration; got=$qualifiedNames",
+            qualifiedNames.contains("jetbrains.mps.lang.structure.structure.ConceptDeclaration")
+        )
+    }
+
+    @Test
+    fun `search-concepts with an omitted searchTexts returns a classified INVALID_REQUEST error`() {
+        // An omitted required parameter used to reach the MCP framework's reflective bridge and
+        // crash with a raw IllegalStateException before the tool body ran. The defaulted String
+        // parameter plus body validation now turns that into a clean error envelope instead.
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts()
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals(
+            "missing searchTexts must be classified INVALID_REQUEST",
+            AbstractOps.McpErrorCode.INVALID_REQUEST.name, obj.get("code").asString
+        )
+        assertTrue(
+            "error must name the missing parameter: ${obj.get("error").asString}",
+            obj.get("error").asString.contains("searchTexts")
+        )
+    }
+
+    @Test
     fun `search-concepts scoped to a real model resolves through that model's used languages`() {
         // The base class creates a writable language with a structure model loaded into the test
         // project. Scoping the search by that model exercises the modelReference branch end to
