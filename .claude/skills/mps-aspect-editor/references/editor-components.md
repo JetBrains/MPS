@@ -102,7 +102,7 @@ mps_mcp_scaffold_editor(
   conceptRef        = "AbstractCommand",
   modelReference    = "<lang>.editor",
   type              = "component",
-  includeProperties = ["label", "comment"]   // restrict to chosen properties; omit/null = all
+  includeProperties = "[\"label\", \"comment\"]" // JSON-array string; omit = all, "[]" = none
 )
 ```
 
@@ -114,12 +114,13 @@ This produces an `EditorComponentDeclaration` bound to `AbstractCommand` with de
 mps_mcp_scaffold_editor(
   conceptRef        = "Step",
   modelReference    = "<lang>.editor",
-  includeComponents = ["<ref of AbstractCommand_PropertiesComponent>"],  // explicit list
+  includeComponents = "[\"<ref of AbstractCommand_PropertiesComponent>\"]", // explicit list
   detectComponents  = true                                               // or auto-detect suitable ones
 )
 ```
 
-- `includeComponents` — a list of persistent references to existing `EditorComponentDeclaration`s to embed; each becomes a `CellModel_Component` in the generated editor.
+- `includeComponents` — one persistent reference or a JSON-array string of references to existing `EditorComponentDeclaration`s to embed; each becomes a `CellModel_Component` in the generated editor. Omit it for no explicit components, or pass `"[]"` for none.
+- `includeProperties`, `includeReferences`, `includeChildren` — each accepts one name or a JSON-array string. Omit a selector to include all of that kind; pass `"[]"` to include none.
 - `detectComponents` — when `true`, the scaffolder automatically finds and embeds suitable existing components (those bound to the concept or one of its super-concepts / implemented interfaces — the inheritance rule).
 - `type` defaults to `"editor"`, so omit it here to generate a `ConceptEditorDeclaration` (not a component).
 
@@ -130,8 +131,8 @@ Scaffolding generates a *fresh* default editor. If a concept already has a hand-
 Goal: factor the properties of `AbstractCommand` into a component and reuse it in the `Step` and `LeftTurn` editors. (`AbstractCommand` is the super-concept of `Step` and `LeftTurn`; their editors live in `jetbrains.mps.samples.Kaja.editor`.)
 
 1. **Setup** — ensure `AbstractCommand` has one or two properties (e.g. `label`, `comment`), then rebuild the language so the scaffolder/runtime sees them.
-2. **Create the component** `AbstractCommand_PropertiesComponent` — either insert the `EditorComponentDeclaration` blueprint above, or `mps_mcp_scaffold_editor(conceptRef="AbstractCommand", type="component", includeProperties=["label","comment"], modelReference="jetbrains.mps.samples.Kaja.editor")`.
-3. **Embed it** in `Step_Editor` and `LeftTurn_Editor`. Print each editor first: in the Kaja sample each one's `cellModel` is a single bare `CellModel_Component` that references the built-in `alias` component (i.e. **Case B** above) — so wrap that cell in a new `CellModel_Collection` containing the original cell plus a `CellModel_Component` that references `AbstractCommand_PropertiesComponent`. (Alternatively re-scaffold each editor with `includeComponents=[<component ref>]` / `detectComponents=true`, which regenerates the editor with the component already wired in.)
+2. **Create the component** `AbstractCommand_PropertiesComponent` — either insert the `EditorComponentDeclaration` blueprint above, or `mps_mcp_scaffold_editor(conceptRef="AbstractCommand", type="component", includeProperties="[\"label\",\"comment\"]", modelReference="jetbrains.mps.samples.Kaja.editor")`.
+3. **Embed it** in `Step_Editor` and `LeftTurn_Editor`. Print each editor first: in the Kaja sample each one's `cellModel` is a single bare `CellModel_Component` that references the built-in `alias` component (i.e. **Case B** above) — so wrap that cell in a new `CellModel_Collection` containing the original cell plus a `CellModel_Component` that references `AbstractCommand_PropertiesComponent`. (Alternatively re-scaffold each editor with `includeComponents="[\"<component ref>\"]"` / `detectComponents=true`, which regenerates the editor with the component already wired in.)
 4. Because the component is bound to the super-concept `AbstractCommand`, both the `Step` and `LeftTurn` editors (sub-concepts) accept it — the inheritance rule in action.
 
 ## Validation

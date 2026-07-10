@@ -12,6 +12,26 @@ parameters accept **either a single value or an array**, mirroring the fix alrea
 **Do not start coding.** Step 0 below is a mandatory empirical check against a live MPS MCP
 server. Its result decides whether this work is needed at all, and for which parameters.
 
+## Empirical finding — 2026-07-10
+
+The live server was available with the `Projectxx3` MPS project open. The required scalar probe
+was rejected before the tool body ran:
+
+```
+mps_mcp_get_concept_details(conceptRefs = "jetbrains.mps.lang.structure.structure.ConceptDeclaration")
+→ MCP tool call has been failed: Expected JsonArray, but had JsonLiteral as the serialized body
+  of kotlin.collections.ArrayList at element: $.primitive
+```
+
+The array control succeeded and returned the normal `{"ok":true,"data":"/tmp/...json"}` envelope.
+This proves that scalar tolerance was required. No `*/log/idea.log` file was present beneath
+`/Users/vaclav` at the time of the probe, so there was no corresponding server-log entry to
+capture. The server is currently running a different checkout/project; restart or reload an MPS
+instance built from this checkout before performing the post-change live verification. A second
+probe after the source build returned the same pre-body decode error, confirming that the connected
+server still has the pre-change tool class loaded; source compilation alone cannot validate the
+new runtime behavior until that server is restarted.
+
 ---
 
 ## Background — why this exists

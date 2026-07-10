@@ -240,7 +240,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
     @McpTool
     @McpDescription("""
-        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` list is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`). See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
+        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`). See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
     """
     )
     suspend fun mps_mcp_create_module(
@@ -252,7 +252,35 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         @McpDescription("For language: also create a generator") withGenerator: Boolean = false,
         @McpDescription("For language: also create a sandbox solution") withSandbox: Boolean = false,
         @McpDescription("For language: also create a runtime solution") withRuntime: Boolean = false,
-        @McpDescription("Optional list of additional facet types to attach (e.g. [\"tests\"] for a test-container Solution). See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: List<String>? = null
+        @McpDescription("Optional additional facet type or JSON array of facet types (e.g. `tests` or [\"tests\"] for a test-container Solution). Omit or pass [] for no additional facets. See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: String? = null
+    ): String = mps_mcp_create_module(
+        type,
+        name,
+        directory,
+        virtualFolder,
+        parentLanguage,
+        withGenerator,
+        withSandbox,
+        withRuntime,
+        parseNullableStringOrJsonArray(facets),
+    )
+
+    /**
+     * Internal list-typed entry point for [mps_mcp_create_module]. Deliberately *not* annotated
+     * with `@McpTool`: the String-typed overload above accepts either a single facet type or a
+     * JSON array without requiring the MCP bridge to decode a scalar as a list. Retained as a
+     * direct entry point for in-process callers and tests.
+     */
+    suspend fun mps_mcp_create_module(
+        type: String,
+        name: String,
+        @Nullable directory: String? = null,
+        @Nullable virtualFolder: String? = null,
+        @Nullable parentLanguage: String? = null,
+        withGenerator: Boolean = false,
+        withSandbox: Boolean = false,
+        withRuntime: Boolean = false,
+        @Nullable facets: List<String>?
     ): String = withMpsProject("Create MPS module") { mpsProject ->
         // Holds either the created module or an error string. The block sets exactly one.
         var created: SModule? = null

@@ -57,7 +57,7 @@ Source of truth for the IDs: each language's generated `LanguageAspectsEP_extens
 Caveats:
 
 - Pass these to `mps_mcp_create_model` as `modelName: "<name>@<stereotype>"`. Example: `"jetbrains.mps.tests@genplan"`, `"mylang.editor.scopes@tests"`.
-- A `tests` model also requires the **tests facet** on the hosting solution. Manage it via `mps_mcp_get_module_facets` / `mps_mcp_update_module_facet`, or pass `facets=["tests"]` to `mps_mcp_create_module`.
+- A `tests` model also requires the **tests facet** on the hosting solution. Manage it via `mps_mcp_get_module_facets` / `mps_mcp_update_module_facet`, or pass `facets="[\"tests\"]"` to `mps_mcp_create_module`.
 - The `RENAME` path of `mps_mcp_update_model` accepts the `@stereotype` form too (same `validateModelName`), so a misnamed model can be relabelled without delete + recreate.
 
 ## Common pitfalls

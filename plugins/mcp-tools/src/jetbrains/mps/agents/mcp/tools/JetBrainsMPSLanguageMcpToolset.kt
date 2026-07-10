@@ -68,8 +68,22 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_get_concept_details(
-        @McpDescription("List of persistent references (SAbstractConcept) or fully qualified names of the concepts and interface concepts") conceptRefs: List<String> = emptyList(),
-        @McpDescription("List of persistent references (SLanguage) or qualified names of the languages. All concepts and interface concepts of these languages will be returned.") languageRefs: List<String> = emptyList()
+        @McpDescription("A persistent reference (SAbstractConcept) or fully qualified name of a concept/interface concept, or a JSON array of them.") conceptRefs: String = "",
+        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them. All concepts and interface concepts of these languages will be returned.") languageRefs: String = ""
+    ): String = mps_mcp_get_concept_details(
+        parseStringOrJsonArray(conceptRefs),
+        parseStringOrJsonArray(languageRefs),
+    )
+
+    /**
+     * Internal list-typed entry point for [mps_mcp_get_concept_details]. Deliberately *not*
+     * annotated with `@McpTool`: the String-typed overload above accepts either a single value
+     * or a JSON array without requiring the MCP bridge to decode a scalar as a list. Retained as
+     * a direct entry point for in-process callers and tests.
+     */
+    suspend fun mps_mcp_get_concept_details(
+        conceptRefs: List<String>,
+        languageRefs: List<String> = emptyList()
     ): String {
         if (conceptRefs.isEmpty() && languageRefs.isEmpty()) {
             return errJson("No concepts nor languages have been provided")

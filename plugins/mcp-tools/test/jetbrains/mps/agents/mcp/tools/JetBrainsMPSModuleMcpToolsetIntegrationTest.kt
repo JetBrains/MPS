@@ -96,6 +96,39 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `create_module accepts a single facet type string`() {
+        val solutionName = "test.single.facet${System.nanoTime()}"
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                type = "solution",
+                name = solutionName,
+                directory = freshPathInProject(solutionName),
+                facets = "tests",
+            )
+        }
+
+        val facets = expectOk(response).getAsJsonArray("facets").map { it.asString }.toSet()
+        assertTrue("a single facet type must be attached: $response", "tests" in facets)
+    }
+
+    @Test
+    fun `create_module accepts a JSON array string of facet types`() {
+        val solutionName = "test.array.facets${System.nanoTime()}"
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module(
+                type = "solution",
+                name = solutionName,
+                directory = freshPathInProject(solutionName),
+                facets = "[\"tests\", \"documentation\"]",
+            )
+        }
+
+        val facets = expectOk(response).getAsJsonArray("facets").map { it.asString }.toSet()
+        assertTrue("the tests facet must be attached: $response", "tests" in facets)
+        assertTrue("the documentation facet must be attached: $response", "documentation" in facets)
+    }
+
+    @Test
     fun `facets are rejected for devkit and generator module types`() {
         // DevKits carry no JavaModuleFacet by default and Generators inherit their facet
         // shape from the parent Language — neither has a canonical use case for layering

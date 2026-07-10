@@ -321,10 +321,12 @@ abstract class AbstractOps : McpToolset {
      * bare string into the list of string values it represents. A JSON array maps each element
      * to its string value; a JSON-encoded string (e.g. "\"Foo\"") unwraps to "Foo"; anything
      * else, including invalid JSON (common for persistent module/model references), is treated
-     * as a single bare value. Lets list-typed MCP parameters accept either a single value or an
-     * array without the framework rejecting a scalar during JSON→Kotlin decode.
+     * as a single bare value. A blank value maps to an empty list. Lets list-typed MCP parameters
+     * accept either a single value or an array without the framework rejecting a scalar during
+     * JSON→Kotlin decode.
      */
     protected fun parseStringOrJsonArray(raw: String): List<String> {
+        if (raw.isBlank()) return emptyList()
         return try {
             val elem = JsonParser.parseString(raw)
             when {
@@ -336,6 +338,16 @@ abstract class AbstractOps : McpToolset {
             rethrowIfCancellation(e)
             listOf(raw)
         }
+    }
+
+    /**
+     * Nullable variant of [parseStringOrJsonArray] for optional list parameters whose absence
+     * is semantically distinct from an empty list. Returns null when [raw] is null or blank,
+     * otherwise the parsed values (which may be an empty list for an explicit "[]").
+     */
+    protected fun parseNullableStringOrJsonArray(raw: String?): List<String>? {
+        if (raw.isNullOrBlank()) return null
+        return parseStringOrJsonArray(raw)
     }
 
     /**

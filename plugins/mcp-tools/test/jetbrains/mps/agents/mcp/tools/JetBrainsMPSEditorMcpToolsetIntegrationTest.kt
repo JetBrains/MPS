@@ -310,6 +310,76 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     // ── element filtering ────────────────────────────────────────────────────────────────
 
     @Test
+    fun `scaffold-editor accepts scalar include selectors`() {
+        val componentRef = expectOk(scaffold(type = "component")).get("editorNodeRef").asString
+        val response = runTool(toolset) {
+            it.mps_mcp_scaffold_editor(
+                conceptRef = targetConceptFqn,
+                modelReference = structureModelRef,
+                includeComponents = componentRef,
+                includeProperties = "rootable",
+                includeReferences = "extends",
+                includeChildren = "icon",
+            )
+        }
+
+        val editorRef = expectOk(response).get("editorNodeRef").asString
+        val componentTargets = readOnRepo { collectComponentCellTargets(resolveStructureNode(editorRef)) }
+        assertTrue(
+            "the scalar component reference must be included; got targets: $componentTargets",
+            componentRef in componentTargets,
+        )
+    }
+
+    @Test
+    fun `scaffold-editor accepts JSON array include selectors`() {
+        val componentRef = expectOk(scaffold(type = "component")).get("editorNodeRef").asString
+        val response = runTool(toolset) {
+            it.mps_mcp_scaffold_editor(
+                conceptRef = targetConceptFqn,
+                modelReference = structureModelRef,
+                includeComponents = "[\"$componentRef\"]",
+                includeProperties = "[\"rootable\"]",
+                includeReferences = "[\"extends\"]",
+                includeChildren = "[\"icon\"]",
+            )
+        }
+
+        val editorRef = expectOk(response).get("editorNodeRef").asString
+        val componentTargets = readOnRepo { collectComponentCellTargets(resolveStructureNode(editorRef)) }
+        assertTrue(
+            "the JSON-array component reference must be included; got targets: $componentTargets",
+            componentRef in componentTargets,
+        )
+    }
+
+    @Test
+    fun `scaffold-editor keeps omitted includes distinct from explicit empty arrays`() {
+        val allEditorRef = expectOk(runTool(toolset) {
+            it.mps_mcp_scaffold_editor(
+                conceptRef = targetConceptFqn,
+                modelReference = structureModelRef,
+            )
+        }).get("editorNodeRef").asString
+        val noPropertiesEditorRef = expectOk(runTool(toolset) {
+            it.mps_mcp_scaffold_editor(
+                conceptRef = targetConceptFqn,
+                modelReference = structureModelRef,
+                includeProperties = "[]",
+            )
+        }).get("editorNodeRef").asString
+
+        assertTrue(
+            "omitting includeProperties must include the concept's properties",
+            topLevelPropertyNames(allEditorRef).isNotEmpty(),
+        )
+        assertTrue(
+            "includeProperties=[] must omit every property cell",
+            topLevelPropertyNames(noPropertiesEditorRef).isEmpty(),
+        )
+    }
+
+    @Test
     fun `includeProperties limits scaffolded property cells to the listed names`() {
         // ConceptDeclaration declares (own + inherited) properties: name, virtualPackage,
         // shortDescription, conceptId, conceptShortDescription, final, abstract, conceptAlias,
