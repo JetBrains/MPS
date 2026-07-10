@@ -47,6 +47,7 @@ import java.lang.reflect.Field;
     JetBrainsMPSProjectMcpToolsetIntegrationTest.class,
     JetBrainsMPSConsoleMcpToolsetIntegrationTest.class,
     JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest.class,
+    AbstractOpsMakeTest.class,
     AbstractOpsPropertyProblemsTest.class,
     AssignableReferenceServiceTest.class,
     JetBrainsMPSInitMcpToolsetTest.class,

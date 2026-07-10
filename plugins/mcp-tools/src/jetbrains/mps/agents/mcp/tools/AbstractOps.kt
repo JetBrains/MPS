@@ -3001,6 +3001,13 @@ abstract class AbstractOps : McpToolset {
             val targetLanguageModuleRefs = preparation.targetLanguageModuleRefs
             val targetLanguageNamespaces = preparation.targetLanguageNamespaces
 
+            // Do not open a session for a no-op make. A session-open notification blocks
+            // migrations, while this return path does not call makeService.make(), which is
+            // responsible for closing the session again.
+            if (resourcesList.isEmpty()) {
+                return MakeResult(true, "Nothing to make (no inputs resolved)")
+            }
+
             // Open the make session OUTSIDE the model read action. WorkbenchMakeService.openNewSession
             // calls DumbService.waitForSmartMode() on non-EDT threads, and the platform asserts that
             // waitForSmartMode must not be invoked from inside a read action while in dumb mode.
@@ -3009,11 +3016,6 @@ abstract class AbstractOps : McpToolset {
             }
             if (!openNewSessionFlag) {
                 return MakeResult(false, "Opening the make session failed", runtimeReady = false)
-            }
-
-            // Default runtimeReady=true: nothing mutated, so the runtime is unchanged-ready.
-            if (resourcesList.isEmpty()) {
-                return MakeResult(true, "Nothing to make (no inputs resolved)")
             }
 
             // Register the listener BEFORE starting the make so no afterLanguagesLoaded
