@@ -291,6 +291,12 @@ public class MPSFileNodeEditor extends UserDataHolderBase implements DocumentsEd
 
     myComponent.add(((BaseNodeEditor) myNodeEditor).getComponent(), BorderLayout.CENTER);
     myComponent.validate();
+
+    // TabbedEditor.showNode() must be called as a last step to show the content (as MPSEditorOpener.openEditor does).
+    // Note: Maybe put this directly into TabbedEditor constructor instead of relying on external call?
+    if (myNodeEditor.isTabbed()) {
+      myNodeEditor.showNode(myFile.getNode(), false);
+    }
   }
 
   private void initEditor() {
