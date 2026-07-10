@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root>
     <file name="ConstraintsAspectDescriptor.java">
-      <unit at="10,0,20,0" name="jetbrains.mps.test.testMigrationAdditionalPlugin.constraints.ConstraintsAspectDescriptor" />
+      <unit at="12,0,23,0" name="jetbrains.mps.test.testMigrationAdditionalPlugin.constraints.ConstraintsAspectDescriptor" />
     </file>
   </root>
 </debug-info>

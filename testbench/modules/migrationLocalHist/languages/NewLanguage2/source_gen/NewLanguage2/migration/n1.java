@@ -7,16 +7,19 @@ import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.module.SModule;
 import org.jetbrains.mps.openapi.module.SearchScope;
 import jetbrains.mps.lang.smodel.query.runtime.CommandUtil;
+import jetbrains.mps.project.EditableFilteringScope;
 import jetbrains.mps.lang.smodel.query.runtime.QueryExecutionContext;
 import jetbrains.mps.internal.collections.runtime.CollectionSequence;
-import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
-import jetbrains.mps.internal.collections.runtime.IVisitor;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.lang.migration.runtime.base.MigrationScriptReference;
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
+import org.jetbrains.mps.openapi.language.SConcept;
+import org.jetbrains.mps.openapi.language.SProperty;
 
 public class n1 extends MigrationScriptBase {
+  private final String description = "n1";
   public String getCaption() {
-    return "n1";
+    return description;
   }
   @Override
   public boolean isRerunnable() {
@@ -28,21 +31,21 @@ public class n1 extends MigrationScriptBase {
   }
   public void doExecute(final SModule m) {
     {
-      final SearchScope scope = CommandUtil.createScope(m);
-      QueryExecutionContext context = new QueryExecutionContext() {
-        public SearchScope getDefaultSearchScope() {
-          return scope;
-        }
-      };
-      CollectionSequence.fromCollection(CommandUtil.instances(CommandUtil.createConsoleScope(null, false, context), MetaAdapterFactory.getConcept(0x9d4153a9a1004911L, 0x9688094a7ba99d12L, 0x41516ee9df6334a3L, "NewLanguage2.structure.ABC2"), false)).visitAll(new IVisitor<SNode>() {
-        public void visit(SNode it) {
-          SPropertyOperations.set(it, MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L, 0x110396ec041L, "name"), SPropertyOperations.getString(it, MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L, 0x110396ec041L, "name")) + "_n1");
-        }
-      });
+      SearchScope scope_1c1_a0e = CommandUtil.createScope(m);
+      final SearchScope scope_1c1_a0e_0 = new EditableFilteringScope(scope_1c1_a0e);
+      QueryExecutionContext context = () -> scope_1c1_a0e_0;
+      CollectionSequence.fromCollection(CommandUtil.instances(CommandUtil.selectScope(null, context), CONCEPTS.ABC2$j, false)).visitAll((it) -> SPropertyOperations.assign(it, PROPS.name$MnvL, SPropertyOperations.getString(it, PROPS.name$MnvL) + "_n1"));
     }
   }
-  public MigrationScriptReference getDescriptor() {
+  public MigrationScriptReference getReference() {
     return new MigrationScriptReference(MetaAdapterFactory.getLanguage(0x9d4153a9a1004911L, 0x9688094a7ba99d12L, "NewLanguage2"), 0);
   }
 
+  private static final class CONCEPTS {
+    /*package*/ static final SConcept ABC2$j = MetaAdapterFactory.getConcept(0x9d4153a9a1004911L, 0x9688094a7ba99d12L, 0x41516ee9df6334a3L, "NewLanguage2.structure.ABC2");
+  }
+
+  private static final class PROPS {
+    /*package*/ static final SProperty name$MnvL = MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L, 0x110396ec041L, "name");
+  }
 }

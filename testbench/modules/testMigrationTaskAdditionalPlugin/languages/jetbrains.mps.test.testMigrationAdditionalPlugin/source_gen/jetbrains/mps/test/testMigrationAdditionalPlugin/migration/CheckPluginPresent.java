@@ -36,7 +36,7 @@ public class CheckPluginPresent extends MigrationScriptBase {
     } catch (IOException e) {
     }
   }
-  public MigrationScriptReference getDescriptor() {
+  public MigrationScriptReference getReference() {
     return new MigrationScriptReference(MetaAdapterFactory.getLanguage(0x115a3c6ae413499cL, 0xbc5e20895049058eL, "jetbrains.mps.test.testMigrationAdditionalPlugin"), 0);
   }
 
