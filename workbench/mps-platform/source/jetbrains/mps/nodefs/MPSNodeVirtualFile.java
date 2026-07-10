@@ -135,6 +135,7 @@ public final class MPSNodeVirtualFile extends VirtualFile implements ProjectAwar
     myRepoFiles = properOwner;
     myNode = node.getReference();
     // here I assume we never adopt a node from transient module, and don't care to update presentation name
+    myForTransientNode = false;
     myName = myPresentationName = String.valueOf(node.getPresentation());
     myTimeStamp = node.getModel().getSource().getTimestamp();
     myValid = true;
