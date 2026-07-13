@@ -1555,7 +1555,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
     }
 
-    private fun isSameOrDescendantOf(node: SNode, ancestor: SNode): Boolean {
+    protected fun isSameOrDescendantOf(node: SNode, ancestor: SNode): Boolean {
         // Compare by node reference rather than instance identity: resolve() and the parent walk
         // are not guaranteed to hand back the same SNode wrapper instance for one logical node
         // (adapter/attribute wrappers can differ), so `==` is unreliable. SNodeReference equality

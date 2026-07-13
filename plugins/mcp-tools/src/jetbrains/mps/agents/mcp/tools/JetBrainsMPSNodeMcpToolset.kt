@@ -7,6 +7,7 @@ import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.item.ModelReportItem
+import jetbrains.mps.errors.item.NodeReportItem
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.validation.ModelValidator
@@ -502,17 +503,14 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 val node = sNodeRef?.resolve(repo)
                     ?: return@executeShortReadOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
 
-                val component = HeadlessEditorComponent(repo)
-                try {
-                    component.editNode(node)
+                withHeadlessEditor(repo, node) { ctx ->
+                    val component = ctx.editorComponent as HeadlessEditorComponent
                     val text = if (asHtml) {
                         component.rootCell.renderHtml().htmlText
                     } else {
                         component.rootCell.renderText().getText()
                     }
                     saveToTempFileResult(JsonPrimitive(text).toString())
-                } finally {
-                    component.dispose()
                 }
             }
         }
@@ -521,69 +519,157 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, or a path to a temp file containing the problem tree. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
+        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, or a path to a temp file containing the problem tree. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
         @McpDescription("Persistent form of SNodeReference or SModelReference") nodeReference: String,
-        @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true
+        @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true,
+        @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false
     ): String {
         return withMpsProject("Checking MPS problems") { mpsProject ->
-            executeShortReadOnEdt(mpsProject) {
-                    val repo = mpsProject.repository
-                    val host = mpsProject.platform
-                    val monitor = EmptyProgressMonitor()
+            // Auto-apply mutates the model, so it needs a write command; the default (report-only)
+            // mode keeps the read wrapper to avoid needless write locks.
+            if (autoApplyQuickFixes) {
+                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true) }
+            } else {
+                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false) }
+            }
+        }
+    }
 
-                    // Try resolving as node reference
-                    val sNodeRef = try {
-                        PersistenceFacade.getInstance().createNodeReference(nodeReference)
-                    } catch (e: Exception) {
-                        rethrowIfCancellation(e)
-                        null
-                    }
-                    val node = sNodeRef?.resolve(repo)
+    private fun checkRootNodeProblemsBody(
+        mpsProject: MPSProject,
+        nodeReference: String,
+        onlyNodesWithProblems: Boolean,
+        applyFixes: Boolean,
+    ): String {
+        val repo = mpsProject.repository
+        val host = mpsProject.platform
+        val monitor = EmptyProgressMonitor()
 
-                    if (node != null) {
-                        val root = node.containingRoot
-                        val problems = runRootCheckers(mpsProject, root, repo)
+        // Try resolving as node reference
+        val sNodeRef = try {
+            PersistenceFacade.getInstance().createNodeReference(nodeReference)
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            null
+        }
+        val node = sNodeRef?.resolve(repo)
 
-                        // hasAnyProblems / hasLocalProblems live in AbstractOps so this fast-path
-                        // and nodeWithProblemsListToJson share the exact same definition of
-                        // "node has a problem" — preventing drift where one says green and the
-                        // other still finds something to print.
-                        if (!hasAnyProblems(node, problems)) {
-                            okJson("\"no problems found\"")
-                        } else {
-                            val json = if (onlyNodesWithProblems) {
-                                nodeWithProblemsListToJson(node, problems, mpsProject)
-                            } else {
-                                nodeWithProblemsToJson(node, problems, currentProject = mpsProject)
-                            }
-                            saveToTempFileResult(json)
-                        }
+        if (node != null) {
+            val nodeRef = node.reference
+            val root = node.containingRoot
+            val rootRef = root.reference
+            var problems: Map<SNode, List<NodeReportItem>> = runRootCheckers(mpsProject, root, repo)
+
+            // Auto-apply the auto-applicable fixes, then re-check once so the returned report is the
+            // final ground truth. The agent is the outer loop: if the fresh report still exposes
+            // auto-applicable fixes, it calls again.
+            val details: MutableMap<String, Any?> = if (applyFixes) {
+                // Auto-apply writes the model, so guard editability + project membership like the
+                // other write tools before mutating anything.
+                val model = root.model
+                if (model !is EditableSModel) {
+                    return errJson(
+                        "Cannot auto-apply quick fixes: the model containing '$nodeReference' is not editable",
+                        McpErrorCode.NOT_EDITABLE,
+                    )
+                }
+                // Detect the console case before the cross-project guard: the console temp model
+                // belongs to no project, so isModelInSelectedProject would yield a misleading
+                // "belongs to a different project" error.
+                val isConsole = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
+                    is ConsoleResolution.Ok -> r.consoleModel.reference == model.reference
+                    is ConsoleResolution.Err -> false
+                }
+                if (isConsole) {
+                    return errJson(
+                        "Auto-apply is not supported for MPS Console content; apply fixes individually with mps_mcp_apply_intention",
+                        McpErrorCode.INVALID_REQUEST,
+                    )
+                }
+                if (!isModelInSelectedProject(mpsProject, model)) {
+                    return crossProjectErr("Node '$nodeReference'")
+                }
+                // Scope auto-apply to the requested node's subtree: the checkers run root-wide, but
+                // the returned report is scoped to `node`, so applying fixes on sibling/ancestor
+                // nodes outside the subtree would mutate and save changes the report never shows.
+                val scopedProblems = problems.filterKeys { isSameOrDescendantOf(it, node) }
+                val result = autoApplyQuickFixes(scopedProblems.values.flatten(), repo)
+                // Flush the applied fixes to the .mps file so the on-disk state matches the report
+                // below — executeShortCommandOnEdt only makes the writes undoable, it does not save.
+                if (result.applied.isNotEmpty()) {
+                    saveModelAndModule(model)
+                }
+                // Re-resolve node and root after the fixes ran; a fix may have deleted/replaced them.
+                val freshNode = nodeRef.resolve(repo)
+                val freshRoot = rootRef.resolve(repo)
+                if (freshNode == null || freshRoot == null) {
+                    val detailsMap = mutableMapOf<String, Any?>("appliedQuickFixes" to result.applied)
+                    if (result.failed.isNotEmpty()) detailsMap["failedQuickFixes"] = result.failed
+                    return okJson(
+                        JsonPrimitive("node no longer exists after applied quick fixes — re-run the check on the containing root"),
+                        details = detailsMap,
+                    )
+                }
+                problems = runRootCheckers(mpsProject, freshRoot, repo)
+                val detailsMap = mutableMapOf<String, Any?>("appliedQuickFixes" to result.applied)
+                if (result.failed.isNotEmpty()) detailsMap["failedQuickFixes"] = result.failed
+                detailsMap
+            } else {
+                mutableMapOf()
+            }
+
+            // Re-resolve node in case fixes ran (when applyFixes=false the original instance is fine).
+            val reportNode = if (applyFixes) nodeRef.resolve(repo) ?: node else node
+
+            // hasAnyProblems / hasLocalProblems live in AbstractOps so this fast-path
+            // and nodeWithProblemsListToJson share the exact same definition of
+            // "node has a problem" — preventing drift where one says green and the
+            // other still finds something to print.
+            return if (!hasAnyProblems(reportNode, problems)) {
+                if (details.isEmpty()) okJson("\"no problems found\"")
+                else okJson(JsonPrimitive("no problems found"), details = details)
+            } else {
+                val json = if (onlyNodesWithProblems) {
+                    nodeWithProblemsListToJson(reportNode, problems, mpsProject)
+                } else {
+                    nodeWithProblemsToJson(reportNode, problems, currentProject = mpsProject)
+                }
+                saveToTempFileResult(json, details)
+            }
+        } else {
+            // Try resolving as model reference
+            val sModelRef = try {
+                PersistenceFacade.getInstance().createModelReference(nodeReference)
+            } catch (e: Exception) {
+                rethrowIfCancellation(e)
+                null
+            }
+            val model = sModelRef?.resolve(repo)
+            return if (model != null) {
+                val problems = mutableListOf<ModelReportItem>()
+                ModelValidator(host, model).validate({ problems.add(it) }, monitor)
+
+                val modelBranchWarnings = if (applyFixes) {
+                    listOf("autoApplyQuickFixes applies only to node references; ignored for a model reference")
+                } else {
+                    emptyList()
+                }
+                if (problems.isEmpty()) {
+                    okJson(JsonPrimitive("no problems found"), warnings = modelBranchWarnings)
+                } else {
+                    if (applyFixes) {
+                        saveToTempFileResult(modelWithProblemsToJson(model, problems, mpsProject),
+                            details = mapOf("warning" to modelBranchWarnings.first()))
                     } else {
-                        // Try resolving as model reference
-                        val sModelRef = try {
-                            PersistenceFacade.getInstance().createModelReference(nodeReference)
-                        } catch (e: Exception) {
-                            rethrowIfCancellation(e)
-                            null
-                        }
-                        val model = sModelRef?.resolve(repo)
-                        if (model != null) {
-                            val problems = mutableListOf<ModelReportItem>()
-                            ModelValidator(host, model).validate({ problems.add(it) }, monitor)
-
-                            if (problems.isEmpty()) {
-                                okJson("\"no problems found\"")
-                            } else {
-                                saveToTempFileResult(modelWithProblemsToJson(model, problems, mpsProject))
-                            }
-                        } else {
-                            errJson("Reference '$nodeReference' resolved to neither node nor model", McpErrorCode.NOT_FOUND)
-                        }
+                        saveToTempFileResult(modelWithProblemsToJson(model, problems, mpsProject))
                     }
                 }
+            } else {
+                errJson("Reference '$nodeReference' resolved to neither node nor model", McpErrorCode.NOT_FOUND)
+            }
         }
     }
 

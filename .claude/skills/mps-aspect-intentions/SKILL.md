@@ -25,7 +25,7 @@ Intentions are user-invoked transformations shown in the Alt+Enter popup on a no
 3. Fill `descriptionFunction` (returns a short label String), `executeFunction` (the transformation), and optionally `isApplicableFunction` (gate predicate) and `childFilterFunction` (per-descendant filter when `isAvailableInChildNodes=true`).
 4. For multiple menu entries per blueprint use `ParameterizedIntentionDeclaration` with `paramType` + `queryFunction`; use `IntentionParameter` wherever you want "the current value" inside other blocks.
 5. For wrap-the-selection transforms use `SurroundWithIntentionDeclaration` and read `editorContext.getSelectedNodes()`.
-6. Validate (`mps_mcp_check_root_node_problems`), rebuild the language, exercise via Alt+Enter on a sandbox instance.
+6. Validate (`mps_mcp_check_root_node_problems`), rebuild the language, exercise via Alt+Enter on a sandbox instance. Headlessly: after MAKE, call `mps_mcp_list_node_intentions` on a sandbox node to confirm the intention is registered and shows the expected description, then `mps_mcp_apply_intention(nodeReference = <the entry's targetNode>, intentionId = <the entry's id>)` to smoke-test `executeFunction` (for parameterized declarations also pass the row `description`). Surround-with intentions are not covered by these tools.
 
 ## Implicit parameters available in every block
 

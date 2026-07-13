@@ -109,7 +109,7 @@ Open `references/reference-formats.md` for the reference-format protocol: node r
 
 Open `references/bulk-creation.md` for the print-shallow-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
 
-Open `references/analysis-tools.md` for the inventory of analysis operations (`mps_mcp_print_node`, `mps_mcp_check_root_node_problems`, `mps_mcp_alter_nodes FIX_REFERENCES`, etc.).
+Open `references/analysis-tools.md` for the inventory of analysis operations (`mps_mcp_print_node`, `mps_mcp_check_root_node_problems` with its `quickFixes`/`autoApplyQuickFixes`, `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention`, `mps_mcp_alter_nodes FIX_REFERENCES`, etc.).
 
 Open `references/editor-workflow.md` for the MPS Concept Editor workflow (scaffold → componentize → refine → validate) and the editor procedural guidelines.
 

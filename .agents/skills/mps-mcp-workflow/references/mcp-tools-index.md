@@ -32,7 +32,9 @@
   - `DELETE`/`REFERENCE` — clear a reference (`nodeReference` + `referenceRole`).
   - `ADD`/`PROPERTY` and `ADD`/`REFERENCE` are not valid combinations and return an error.
   - `childJson` accepts either an inline JSON string (max 4 KB) **or** an absolute path to a file containing the JSON blueprint — use the file form for large blueprints to avoid MCP-transport truncation.
-- `mps_mcp_check_root_node_problems`: validation tool. Use this frequently to ensure your changes are correct.
+- `mps_mcp_check_root_node_problems`: validation tool. Use this frequently to ensure your changes are correct. Each reported problem may carry a `quickFixes` array; `autoApplyQuickFixes=true` applies the fix of every problem carrying exactly one auto-applicable fix before returning the final report.
+- `mps_mcp_list_node_intentions`: lists the intentions and quick-fixes available on a node — the headless equivalent of the editor's Alt+Enter menu.
+- `mps_mcp_apply_intention`: applies one intention or quick-fix (from `mps_mcp_list_node_intentions` or a `quickFixes` entry of `mps_mcp_check_root_node_problems`) inside an undoable command.
 
 ## Console
 

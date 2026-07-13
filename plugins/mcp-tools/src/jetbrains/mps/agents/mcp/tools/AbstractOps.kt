@@ -12,11 +12,16 @@ import jetbrains.mps.checkers.ConstraintsChecker
 import jetbrains.mps.checkers.RefScopeChecker
 import jetbrains.mps.checkers.TargetConceptChecker2
 import jetbrains.mps.classloading.ClassLoaderManager
+import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.MessageStatus
+import jetbrains.mps.errors.item.EditorQuickFix
 import jetbrains.mps.errors.item.IssueKindReportItem
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
 import jetbrains.mps.errors.item.NodeReportItemBase
+import jetbrains.mps.errors.item.QuickFixBase
+import jetbrains.mps.errors.item.QuickFixReportItem
+import jetbrains.mps.errors.item.QuickFixRuntimeAdapter
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
 import jetbrains.mps.ide.MPSCoreComponents
@@ -27,6 +32,7 @@ import jetbrains.mps.make.MakeSession
 import jetbrains.mps.messages.IMessage
 import jetbrains.mps.messages.IMessageHandler
 import jetbrains.mps.messages.MessageKind
+import jetbrains.mps.openapi.editor.EditorContext
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
@@ -1017,6 +1023,24 @@ abstract class AbstractOps : McpToolset {
         }
     }
 
+    /**
+     * Like [saveToTempFileResult] but attaches [details] to the ok envelope, sharing the same
+     * temp-file IO error handling so a write failure degrades to a clean errJson on both paths
+     * (a caller that inlined `saveToTempFile` for the details case would leak the raw IO exception
+     * as an INTERNAL_ERROR and lose the details). Falls back to the plain form when [details] is empty.
+     */
+    protected fun saveToTempFileResult(json: String, details: Map<String, Any?>): String {
+        if (details.isEmpty()) return saveToTempFileResult(json)
+        return try {
+            val tempFile = saveToTempFile(json)
+            okJson(JsonPrimitive(tempFile.absolutePath), details = details)
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            logger.warn("Failed to save MCP tool result to a temporary file", e)
+            errJson("Failed to save result to a temporary file: ${e.message}")
+        }
+    }
+
     class AssignabilityException(
         val jsonPath: String,
         val actualConcept: String,
@@ -1365,6 +1389,36 @@ abstract class AbstractOps : McpToolset {
         return obj
     }
 
+    /**
+     * Enriched variant of [problemJsonObject] that appends a `quickFixes` array when [item] carries
+     * attached quick-fixes and [repo] is available (the model branch and synthetic MCP problems keep
+     * the plain form). The key is omitted when empty, to keep reports compact. Each entry mirrors a
+     * listing from `mps_mcp_list_node_intentions` — `id` (quick-fix runtime-class FQN, always present),
+     * `description`, `autoApplicable` — and is applied via `mps_mcp_apply_intention`.
+     */
+    private fun problemJsonObject(item: NodeReportItem, repo: SRepository?): JsonObject {
+        val obj = problemJsonObject(item.severity, item.message)
+        if (repo != null) {
+            val fixes = quickFixesJsonArray(item, repo)
+            if (fixes.size() > 0) {
+                obj.add("quickFixes", fixes)
+            }
+        }
+        return obj
+    }
+
+    private fun quickFixesJsonArray(item: NodeReportItem, repo: SRepository): JsonArray {
+        val arr = JsonArray()
+        for (qf in quickFixInfos(item, repo)) {
+            val o = JsonObject()
+            o.addProperty("id", qf.id)
+            o.addProperty("description", qf.description)
+            o.addProperty("autoApplicable", qf.autoApplicable)
+            arr.add(o)
+        }
+        return arr
+    }
+
     private fun errorProblemJsonObject(message: String): JsonObject {
         val obj = JsonObject()
         obj.addProperty("severity", "error")
@@ -1372,10 +1426,10 @@ abstract class AbstractOps : McpToolset {
         return obj
     }
 
-    private fun nodeProblemsJsonArray(problems: Iterable<NodeReportItem>): JsonArray {
+    private fun nodeProblemsJsonArray(problems: Iterable<NodeReportItem>, repo: SRepository?): JsonArray {
         val result = JsonArray()
         for (problem in problems) {
-            result.add(problemJsonObject(problem.severity, problem.message))
+            result.add(problemJsonObject(problem, repo))
         }
         return result
     }
@@ -1446,7 +1500,7 @@ abstract class AbstractOps : McpToolset {
             .filter { it.key !is PropertyMessageTarget && it.key !is ReferenceMessageTarget }
             .values
             .flatten()
-        obj.add("problems", nodeProblemsJsonArray(nodeLevelProblems))
+        obj.add("problems", nodeProblemsJsonArray(nodeLevelProblems, repository))
 
         val properties = JsonArray()
         for (prop in node.concept.properties) {
@@ -1461,7 +1515,7 @@ abstract class AbstractOps : McpToolset {
             propObj.addProperty("type", getPropertyType(prop))
             propObj.addProperty("doc", getDoc(prop.sourceNode?.resolve(repository)))
             propObj.addProperty("value", value ?: "")
-            val problemArray = nodeProblemsJsonArray(propProblems)
+            val problemArray = nodeProblemsJsonArray(propProblems, repository)
             if (propertyState.isEmptyEnum) {
                 problemArray.add(errorProblemJsonObject("Empty enumeration property"))
             }
@@ -1500,7 +1554,7 @@ abstract class AbstractOps : McpToolset {
                 refObj.add("target", JsonNull.INSTANCE)
                 refObj.add("targetReference", JsonNull.INSTANCE)
             }
-            refObj.add("problems", nodeProblemsJsonArray(refProblems))
+            refObj.add("problems", nodeProblemsJsonArray(refProblems, repository))
             references.add(refObj)
         }
         obj.add("references", references)
@@ -1516,7 +1570,7 @@ abstract class AbstractOps : McpToolset {
             if (childrenInRole.isEmpty() && link.isOptional && roleProblems.isEmpty()) continue
 
             val roleObj = containmentLinkInfoJsonObject(link, repository, includeDeprecated = false, currentProject = currentProject, cache = c)
-            roleObj.add("problems", nodeProblemsJsonArray(roleProblems))
+            roleObj.add("problems", nodeProblemsJsonArray(roleProblems, repository))
             if (deep) {
                 val nodes = JsonArray()
                 for (child in childrenInRole) {
@@ -1752,6 +1806,235 @@ abstract class AbstractOps : McpToolset {
         }
         traverse(node)
         return arr
+    }
+
+    /**
+     * Creates a [HeadlessEditorComponent] editing [node], hands its [EditorContext] to [block],
+     * and disposes the component afterwards — the create/`editNode`/`dispose` lifecycle already
+     * proven by `mps_mcp_print_node`'s `showNodeAppearance`.
+     *
+     * Must be called from inside a model-access action on the EDT (`executeShortReadOnEdt` /
+     * `executeShortCommandOnEdt`): `editNode` takes its own read lock and requests the typechecking
+     * session synchronously, so on return `getTypecheckingSession()` is non-null. This asserts that
+     * (a missing session would otherwise NPE inside `IntentionsManager.computeWithSession`) and
+     * fails as a clean [McpUserException] instead. For intention listing/apply, pass the containing
+     * root so ancestor intentions and full-root typechecking are available.
+     */
+    protected fun <T> withHeadlessEditor(repo: SRepository, node: SNode, block: (EditorContext) -> T): T {
+        val component = HeadlessEditorComponent(repo)
+        try {
+            component.editNode(node)
+            if (component.typecheckingSession == null) {
+                throw McpUserException(
+                    McpErrorCode.INTERNAL_ERROR,
+                    "Could not obtain a typechecking session for a headless editor on " +
+                        "'${PersistenceFacade.getInstance().asString(node.reference)}'.",
+                )
+            }
+            return block(component.editorContext)
+        } finally {
+            component.dispose()
+        }
+    }
+
+    /**
+     * A quick-fix attached to a checker [NodeReportItem], normalised into the fields the MCP tools
+     * expose. [fix] is the live, executable object from the current checker snapshot (executing it
+     * is exactly how the Model Checker consumes its own snapshot); [id] is a stable class FQN used to
+     * match the fix on apply — the underlying [jetbrains.mps.errors.QuickFix_Runtime] class for a
+     * [QuickFixRuntimeAdapter], else the fix's own class — so every listed fix is always addressable;
+     * [description] is the human-legible Alt+Enter text, sanitized to null for the `"<ERROR>: <class>"`
+     * placeholder a fix with no description block produces; [autoApplicable] is
+     * `isExecutedImmediately()`; [declarationNode] points at the `QuickFixDeclaration` so an agent can
+     * inspect its `execute` body.
+     */
+    protected data class QuickFixInfo(
+        val fix: QuickFixBase,
+        val id: String,
+        val description: String?,
+        val autoApplicable: Boolean,
+        val declarationNode: SNodeReference?,
+    )
+
+    /**
+     * Extracts the quick-fixes attached to [item] via [QuickFixReportItem.FLAVOUR_QUICKFIX]
+     * (empty for items carrying none — safe on any [NodeReportItem]). Fix identity and description
+     * come from the underlying [jetbrains.mps.errors.QuickFix_Runtime] when the fix is a
+     * [QuickFixRuntimeAdapter] (the shape produced by typesystem / checking-rule fixes); other
+     * [QuickFixBase] implementations are still listed, with best-effort fields.
+     */
+    protected fun quickFixInfos(item: NodeReportItem, repo: SRepository): List<QuickFixInfo> {
+        val fixes = QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item)
+        val result = ArrayList<QuickFixInfo>(fixes.size)
+        for (fix in fixes) {
+            val runtime = (fix as? QuickFixRuntimeAdapter)?.let {
+                try {
+                    it.fixRuntime
+                } catch (e: Exception) {
+                    rethrowIfCancellation(e)
+                    null
+                }
+            }
+            // Prefer the runtime QuickFix_Runtime class (the *_QuickFix FQN a checking rule names) so
+            // the id matches what the editor menu / declaration reveals; fall back to the fix's own
+            // class for non-adapter fixes so every listed fix stays addressable by mps_mcp_apply_intention.
+            // Degenerate case, kept deliberately: an adapter whose getFixRuntime() threw (broken
+            // language runtime) falls back to the non-unique QuickFixRuntimeAdapter FQN — the id stays
+            // always-present as documented, apply matches the same fallback, and execute then fails
+            // with a contained error.
+            val id = runtime?.javaClass?.name ?: fix.javaClass.name
+            val declarationNode = runtime?.declarationNode
+            val rawDescription = (fix as? EditorQuickFix)?.let {
+                try {
+                    it.getDescription(repo)
+                } catch (e: Exception) {
+                    rethrowIfCancellation(e)
+                    null
+                }
+            }
+            result.add(QuickFixInfo(fix, id, sanitizeQuickFixDescription(rawDescription), fix.isExecutedImmediately, declarationNode))
+        }
+        return result
+    }
+
+    /**
+     * Guards [EditorQuickFix.isApplicable] (language-author code) with a try/catch so a throwing
+     * implementation cannot abort a listing or apply. Non-[EditorQuickFix] fixes always return true
+     * (they have no applicability gate beyond [safeIsAlive]).
+     */
+    protected fun safeIsApplicable(fix: QuickFixBase, repo: SRepository): Boolean =
+        (fix as? EditorQuickFix)?.let {
+            try {
+                it.isApplicable(repo)
+            } catch (e: Exception) {
+                rethrowIfCancellation(e)
+                true
+            }
+        } ?: true
+
+    /**
+     * Guards [QuickFixBase.isAlive] (language-author code) with a try/catch so a throwing
+     * implementation cannot abort a listing or apply. Returns false on throw (treat as not alive).
+     */
+    protected fun safeIsAlive(fix: QuickFixBase, repo: SRepository): Boolean =
+        try {
+            fix.isAlive(repo)
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            false
+        }
+
+    /**
+     * A [jetbrains.mps.errors.QuickFix_Runtime] with no description block returns the placeholder
+     * `"<ERROR>: <fully.qualified.ClassName>"` (see `QuickFix_Runtime.getDescription`); surface that
+     * as `null` rather than leaking the sentinel to clients.
+     */
+    private fun sanitizeQuickFixDescription(description: String?): String? =
+        description?.takeUnless { it.isBlank() || it.startsWith("<ERROR>: ") }
+
+    /** Error/warning counts over a checker result map, for the before/after summary of an apply. */
+    protected data class SeverityCounts(val errors: Int, val warnings: Int)
+
+    protected fun countSeverities(problems: Map<SNode, List<NodeReportItem>>): SeverityCounts {
+        var errors = 0
+        var warnings = 0
+        for (list in problems.values) {
+            for (item in list) {
+                when (item.severity) {
+                    MessageStatus.ERROR -> errors++
+                    MessageStatus.WARNING -> warnings++
+                    else -> {}
+                }
+            }
+        }
+        return SeverityCounts(errors, warnings)
+    }
+
+    protected fun severityCountsJson(counts: SeverityCounts): JsonObject =
+        jsonObject {
+            addProperty("errors", counts.errors)
+            addProperty("warnings", counts.warnings)
+        }
+
+    /** Result of [autoApplyQuickFixes]: fixes applied and fixes that threw on execution. */
+    protected data class AutoApplyResult(val applied: List<String>, val failed: List<String>)
+
+    /**
+     * Applies every auto-applicable quick-fix in [problems], adapted from
+     * `ModelCheckerViewer.performQuickFixes`, with the following deliberate differences from that
+     * precedent:
+     *  (a) Per-item guard against [QuickFixReportItem.FLAVOUR_QUICKFIX.getAutoApplicable]'s
+     *      `>1` [IllegalStateException] (the precedent would throw there).
+     *  (b) Per-fix throw containment (see below) — a throwing fix lands in [AutoApplyResult.failed]
+     *      rather than aborting the whole tool call.
+     *  (c) Liveness check on the problem node itself before [safeIsAlive]: each worklist entry
+     *      carries its source [NodeReportItem] so the node can be re-resolved each pass, restoring
+     *      the `PATH_OBJECT.get(issue).resolve(repo) != null` guard from the precedent.
+     *
+     * Snapshot semantics guarantee termination:
+     *  - The worklist is built **once**: items with exactly one auto-applicable fix.
+     *  - Each pass iterates a **copy** of the worklist. A fix whose problem-node resolves and which
+     *    [safeIsAlive] is executed and removed; one not yet alive stays for a later pass. A pass with
+     *    no progress ends the loop.
+     *  - The worklist never grows, so at most `n` productive passes for `n` initial items.
+     *
+     * **Note:** partial mutations made by a fix that then threw are still saved with the rest; the
+     * final re-check reports the resulting state (MPS write commands do not roll back).
+     *
+     * Must be called from inside a command (`executeShortCommandOnEdt`) — the fixes write the model.
+     * There is deliberately no per-fix verification that the problem disappeared; auto-applicability
+     * is the language author's contract and a follow-up re-check reports ground truth.
+     */
+    protected fun autoApplyQuickFixes(problems: Collection<NodeReportItem>, repo: SRepository): AutoApplyResult {
+        // Each worklist entry: (source item for liveness check, fix, display description).
+        val worklist = ArrayList<Triple<NodeReportItem, QuickFixBase, String>>()
+        for (item in problems) {
+            val auto = try {
+                QuickFixReportItem.FLAVOUR_QUICKFIX.getAutoApplicable(item)
+            } catch (e: IllegalStateException) {
+                null // more than one auto-applicable fix ⇒ not auto-fixable, guard like the precedent
+            } ?: continue
+            val rawDesc = (auto as? EditorQuickFix)?.let {
+                try {
+                    it.getDescription(repo)
+                } catch (e: Exception) {
+                    rethrowIfCancellation(e)
+                    null
+                }
+            }
+            // Route through the same sanitizer as the listing/report path so the
+            // "<ERROR>: <FQN>" placeholder a description-less fix returns never leaks into
+            // details.appliedQuickFixes; fall back to the fix class name when it sanitizes to null.
+            val desc = sanitizeQuickFixDescription(rawDesc) ?: auto.javaClass.simpleName
+            worklist.add(Triple(item, auto, desc))
+        }
+
+        val applied = ArrayList<String>()
+        val failed = ArrayList<String>()
+        while (true) {
+            val appliedBefore = applied.size
+            for (entry in ArrayList(worklist)) {
+                val (item, fix, desc) = entry
+                // Restore the precedent's problem-node liveness guard before isAlive.
+                if (item.node.resolve(repo) == null) continue
+                try {
+                    if (safeIsAlive(fix, repo)) {
+                        fix.execute(repo)
+                        applied.add(desc)
+                        worklist.remove(entry)
+                    }
+                } catch (e: Exception) {
+                    rethrowIfCancellation(e)
+                    logger.warn("autoApplyQuickFixes: fix '$desc' threw during execution", e)
+                    failed.add("$desc: ${e.message ?: e.javaClass.name}")
+                    worklist.remove(entry) // never retry a throwing fix
+                }
+            }
+            if (applied.size == appliedBefore) {
+                break
+            }
+        }
+        return AutoApplyResult(applied, failed)
     }
 
     protected fun modelWithProblemsToJson(model: SModel, problems: List<ModelReportItem>, currentProject: MPSProject? = null): String {

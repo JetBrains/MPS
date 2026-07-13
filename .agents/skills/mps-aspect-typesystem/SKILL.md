@@ -37,7 +37,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 5. Add `NonTypesystemRule` roots for checks that are not about types (see `references/non-typesystem-checking.md`).
 6. Add `TypesystemQuickFix` roots for any fix you want to attach to reports; wire them via a `helginsIntention`/`TypesystemIntention` child of the `warning`/`error`/`info` statement (see `references/quick-fixes.md`).
 7. Write bodies with BaseLanguage + smodel. Use `when concrete` (`references/when-concrete.md`) when you need resolved types before checking. For helper code, place a `ClassConcept` root directly in the typesystem model and call it from rules.
-8. Validate: `mps_mcp_check_root_node_problems` plus compile the language and test on sample models.
+8. Validate: `mps_mcp_check_root_node_problems` plus compile the language and test on sample models. A `helginsIntention`-wired quick fix now surfaces in the check report's `quickFixes` array and can be applied with `mps_mcp_apply_intention(nodeReference = <problem node>, intentionId = <fix id>)`; an auto-applicable fix runs under `autoApplyQuickFixes=true`.
 
 ## Related Skills
 
