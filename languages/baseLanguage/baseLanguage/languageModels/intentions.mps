@@ -45,6 +45,7 @@
     <import index="z1c3" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.project(MPS.Core/)" />
     <import index="qx6f" ref="r:670849b7-16c0-48d8-82da-52656f3bd77d(jetbrains.mps.baseLanguage.refactorings)" />
     <import index="alof" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.project(MPS.Platform/)" />
+    <import index="fnmy" ref="r:89c0fb70-0977-4113-a076-5906f9d8630f(jetbrains.mps.baseLanguage.scopes)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -2572,6 +2573,15 @@
               <node concept="37vLTw" id="3GM_nagTr3m" role="1P9ThW">
                 <ref role="3cqZAo" node="htbfFRf" resolve="equalsExpression" />
               </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="1Nw2Wlu2PEQ" role="3cqZAp">
+          <node concept="2YIFZM" id="1Nw2Wlu2PES" role="3clFbG">
+            <ref role="37wK5l" to="fnmy:KgjTrC3DEQ" resolve="replaceFromEditor" />
+            <ref role="1Pybhc" to="fnmy:2Jvt1sWfvHp" resolve="MethodResolveUtil" />
+            <node concept="37vLTw" id="1Nw2Wlu2PET" role="37wK5m">
+              <ref role="3cqZAo" node="hyItZGP" resolve="operation" />
             </node>
           </node>
         </node>

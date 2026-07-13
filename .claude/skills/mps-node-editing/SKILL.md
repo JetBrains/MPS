@@ -53,7 +53,7 @@ All child, property, and reference operations on existing nodes go through `mps_
 2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET`/`DELETE` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
 3. **Author the JSON** following the unified blueprint format.
 4. **Insert** with `dryRun: true` first if the blueprint is large. Check the response: an empty `warnings` array means staging was clean; a non-empty list means the production write will produce dynamic (unresolved) references for the listed targets — resolve those first or expect broken refs.
-5. **Validate** with `mps_mcp_check_root_node_problems`.
+5. **Validate** with `mps_mcp_check_root_node_problems`. Reported problems may carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.
 6. **Repair** broken refs with `mps_mcp_alter_nodes FIX_REFERENCES` if validation surfaces resolvable-but-unresolved targets.
 
 ## Related Skills

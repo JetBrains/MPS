@@ -16,6 +16,7 @@ import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
 import jetbrains.mps.smodel.action.SNodeFactoryOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
+import jetbrains.mps.baseLanguage.scopes.MethodResolveUtil;
 import jetbrains.mps.openapi.intentions.IntentionDescriptor;
 import jetbrains.mps.smodel.builder.SNodeBuilder;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
@@ -65,6 +66,7 @@ public final class ReplaceEqualityWithEquals_Intention extends AbstractIntention
       SLinkOperations.setTarget(operation, LINKS.baseMethodDeclaration$pyYw, SLinkOperations.getTarget(SNodeOperations.cast(SLinkOperations.getTarget(_quotation_createNode_1rm795_a0a0a0f0a(), LINKS.operation$gs9E), CONCEPTS.InstanceMethodCallOperation$uu), LINKS.baseMethodDeclaration$pyYw));
       ListSequence.fromList(SLinkOperations.getChildren(operation, LINKS.actualArgument$pzdx)).insertElement(0, rightExpression);
       SNodeOperations.replaceWithAnother(node, equalsExpression);
+      MethodResolveUtil.replaceFromEditor(operation);
     }
 
     @Override
