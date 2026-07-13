@@ -104,6 +104,26 @@
     <copy todir="${build.layout}/plugins/grazie">
       <fileset dir="${basedir}/plugins/grazie" />
     </copy>
+    <mkdir dir="${build.layout}/plugins/libraries-misc-plugin" />
+    <copy todir="${build.layout}/plugins/libraries-misc-plugin">
+      <fileset dir="${basedir}/plugins/libraries-misc-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/platform-bookmarks-plugin" />
+    <copy todir="${build.layout}/plugins/platform-bookmarks-plugin">
+      <fileset dir="${basedir}/plugins/platform-bookmarks-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/platform-structureView-plugin" />
+    <copy todir="${build.layout}/plugins/platform-structureView-plugin">
+      <fileset dir="${basedir}/plugins/platform-structureView-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/platform-structuralSearch-plugin" />
+    <copy todir="${build.layout}/plugins/platform-structuralSearch-plugin">
+      <fileset dir="${basedir}/plugins/platform-structuralSearch-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/platform-testRunner-plugin" />
+    <copy todir="${build.layout}/plugins/platform-testRunner-plugin">
+      <fileset dir="${basedir}/plugins/platform-testRunner-plugin" />
+    </copy>
     <echo file="${build.layout}/build.properties">mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major}${line.separator}mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor}${line.separator}mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr}${line.separator}mpsBootstrapCore.version.eap=${mpsBootstrapCore.version.eap}${line.separator}mpsBootstrapCore.version=${mpsBootstrapCore.version}</echo>
   </target>
   

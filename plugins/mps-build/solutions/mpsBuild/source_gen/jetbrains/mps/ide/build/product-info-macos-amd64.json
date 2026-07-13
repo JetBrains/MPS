@@ -332,6 +332,7 @@
         "stats.jar",
         "testFramework.jar",
         "ant/lib/ant.jar",
+        "branding.jar",
         "boot-macos.jar"
       ],
       "additionalJvmArguments": [

@@ -51652,6 +51652,9 @@
     <node concept="26EafG" id="68rp5VxCl2R" role="3cRCUr">
       <property role="26EafJ" value="lib/ant/lib/ant.jar" />
     </node>
+    <node concept="26EafG" id="6EyFT7bdZI1" role="3cRCUr">
+      <property role="26EafJ" value="lib/branding.jar" />
+    </node>
     <node concept="26Ea6D" id="1t_0ZyxyXAT" role="26FZ21">
       <property role="2eq24a" value="true" />
       <property role="26Ea6C" value="MPS no longer uses 32-bit version of mps.vmoptions" />
@@ -54259,6 +54262,91 @@
                 <property role="2Ry0Am" value="plugins" />
                 <node concept="2Ry0Ak" id="6jr5_GHtHEt" role="2Ry0An">
                   <property role="2Ry0Am" value="grazie" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="398223" id="6EyFT7bdZIB" role="39821P">
+          <node concept="3_J27D" id="6EyFT7bdZIC" role="Nbhlr">
+            <node concept="3Mxwew" id="6EyFT7bdZID" role="3MwsjC">
+              <property role="3MwjfP" value="libraries-misc-plugin" />
+            </node>
+          </node>
+          <node concept="2HvfSZ" id="6EyFT7bdZIE" role="39821P">
+            <node concept="55IIr" id="6EyFT7bdZIF" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="6EyFT7bdZIG" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="6EyFT7bdZII" role="2Ry0An">
+                  <property role="2Ry0Am" value="libraries-misc-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="398223" id="6EyFT7bdZIJ" role="39821P">
+          <node concept="3_J27D" id="6EyFT7bdZIK" role="Nbhlr">
+            <node concept="3Mxwew" id="6EyFT7bdZIL" role="3MwsjC">
+              <property role="3MwjfP" value="platform-bookmarks-plugin" />
+            </node>
+          </node>
+          <node concept="2HvfSZ" id="6EyFT7bdZIM" role="39821P">
+            <node concept="55IIr" id="6EyFT7bdZIN" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="6EyFT7bdZIO" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="6EyFT7bdZIQ" role="2Ry0An">
+                  <property role="2Ry0Am" value="platform-bookmarks-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="398223" id="6EyFT7bdZIR" role="39821P">
+          <node concept="3_J27D" id="6EyFT7bdZIS" role="Nbhlr">
+            <node concept="3Mxwew" id="6EyFT7bdZIT" role="3MwsjC">
+              <property role="3MwjfP" value="platform-structureView-plugin" />
+            </node>
+          </node>
+          <node concept="2HvfSZ" id="6EyFT7bdZIU" role="39821P">
+            <node concept="55IIr" id="6EyFT7bdZIV" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="6EyFT7bdZIW" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="6EyFT7bdZIX" role="2Ry0An">
+                  <property role="2Ry0Am" value="platform-structureView-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="398223" id="38hn18hQeW$" role="39821P">
+          <node concept="3_J27D" id="38hn18hQeW_" role="Nbhlr">
+            <node concept="3Mxwew" id="38hn18hQeWA" role="3MwsjC">
+              <property role="3MwjfP" value="platform-structuralSearch-plugin" />
+            </node>
+          </node>
+          <node concept="2HvfSZ" id="38hn18hQeWB" role="39821P">
+            <node concept="55IIr" id="38hn18hQeWC" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="38hn18hQeWD" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="38hn18hQeWI" role="2Ry0An">
+                  <property role="2Ry0Am" value="platform-structuralSearch-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="398223" id="5f5DhuJRV_$" role="39821P">
+          <node concept="3_J27D" id="5f5DhuJRV__" role="Nbhlr">
+            <node concept="3Mxwew" id="5f5DhuJRV_A" role="3MwsjC">
+              <property role="3MwjfP" value="platform-testRunner-plugin" />
+            </node>
+          </node>
+          <node concept="2HvfSZ" id="5f5DhuJRV_B" role="39821P">
+            <node concept="55IIr" id="5f5DhuJRV_C" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="5f5DhuJRV_D" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="5f5DhuJRV_E" role="2Ry0An">
+                  <property role="2Ry0Am" value="platform-testRunner-plugin" />
                 </node>
               </node>
             </node>
