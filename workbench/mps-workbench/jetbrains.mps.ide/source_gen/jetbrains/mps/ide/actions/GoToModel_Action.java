@@ -7,8 +7,9 @@ import jetbrains.mps.workbench.action.BaseAction;
 import javax.swing.Icon;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.Map;
-import jetbrains.mps.project.MPSProject;
+import com.intellij.openapi.application.impl.LaterInvocator;
 import org.jetbrains.annotations.NotNull;
+import jetbrains.mps.project.MPSProject;
 import com.intellij.featureStatistics.FeatureUsageTracker;
 import org.jetbrains.mps.openapi.module.SRepository;
 import org.jetbrains.mps.openapi.module.SearchScope;
@@ -36,6 +37,14 @@ public class GoToModel_Action extends BaseAction {
   @Override
   public boolean isDumbAware() {
     return true;
+  }
+  @Override
+  public boolean isApplicable(AnActionEvent event, final Map<String, Object> _params) {
+    return !(LaterInvocator.isInModalContext());
+  }
+  @Override
+  public void doUpdate(@NotNull AnActionEvent event, final Map<String, Object> _params) {
+    this.setEnabledState(event.getPresentation(), this.isApplicable(event, _params));
   }
   @Override
   protected boolean collectActionData(AnActionEvent event, final Map<String, Object> _params) {
