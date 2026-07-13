@@ -12,8 +12,9 @@ import java.io.File;
 import jetbrains.mps.project.AbstractModule;
 
 public class FirstMigration extends MigrationScriptBase {
+  private final String description = "FirstMigration";
   public String getCaption() {
-    return "FirstMigration";
+    return description;
   }
   @Override
   public boolean isRerunnable() {
@@ -29,7 +30,7 @@ public class FirstMigration extends MigrationScriptBase {
     } catch (IOException e) {
     }
   }
-  public MigrationScriptReference getDescriptor() {
+  public MigrationScriptReference getReference() {
     return new MigrationScriptReference(MetaAdapterFactory.getLanguage(0xca03d2f0cb014ae7L, 0xb688d32e45bbfcc1L, "jetbrains.mps.test.mainLang"), 0);
   }
 

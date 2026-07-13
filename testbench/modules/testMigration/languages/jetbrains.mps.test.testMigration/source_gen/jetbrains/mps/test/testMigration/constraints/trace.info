@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<debug-info version="2">
-  <root>
-    <file name="ConstraintsAspectDescriptor.java">
-      <unit at="10,0,20,0" name="jetbrains.mps.test.testMigration.constraints.ConstraintsAspectDescriptor" />
-    </file>
-  </root>
-</debug-info>
-

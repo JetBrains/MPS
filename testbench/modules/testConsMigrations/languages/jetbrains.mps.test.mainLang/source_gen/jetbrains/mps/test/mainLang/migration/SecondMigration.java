@@ -11,8 +11,9 @@ import jetbrains.mps.lang.migration.runtime.base.MigrationScriptReference;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
 public class SecondMigration extends MigrationScriptBase {
+  private final String description = "SecondMigration";
   public String getCaption() {
-    return "SecondMigration";
+    return description;
   }
   @Override
   public boolean isRerunnable() {
@@ -30,7 +31,7 @@ public class SecondMigration extends MigrationScriptBase {
     } catch (IOException e) {
     }
   }
-  public MigrationScriptReference getDescriptor() {
+  public MigrationScriptReference getReference() {
     return new MigrationScriptReference(MetaAdapterFactory.getLanguage(0xca03d2f0cb014ae7L, 0xb688d32e45bbfcc1L, "jetbrains.mps.test.mainLang"), 1);
   }
 

@@ -21,10 +21,10 @@
       <node id="5071186108540654187" at="27,17,28,16" concept="5" />
       <node id="5071186108540687804" at="31,9,32,105" concept="4" />
       <node id="2002619181442788769" at="33,41,34,136" concept="0" />
-      <node id="5071186108540654187" at="39,51,40,169" concept="5" />
+      <node id="5071186108540654187" at="39,50,40,169" concept="5" />
       <node id="5071186108540654187" at="19,0,22,0" concept="3" trace="getCaption#()Ljava/lang/String;" />
       <node id="7287088426769171540" at="32,105,35,7" concept="2" />
-      <node id="5071186108540654187" at="39,0,42,0" concept="3" trace="getDescriptor#()Ljetbrains/mps/lang/migration/runtime/base/MigrationScriptReference;" />
+      <node id="5071186108540654187" at="39,0,42,0" concept="3" trace="getReference#()Ljetbrains/mps/lang/migration/runtime/base/MigrationScriptReference;" />
       <node id="5071186108540654187" at="22,0,26,0" concept="3" trace="isRerunnable#()Z" />
       <node id="5071186108540654187" at="26,0,30,0" concept="3" trace="execute#(Lorg/jetbrains/mps/openapi/module/SModule;)Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="7287088426769168683" at="30,42,37,5" concept="6" />
@@ -36,7 +36,7 @@
       <scope id="5071186108540654187" at="19,30,20,23" />
       <scope id="5071186108540654187" at="23,33,24,16" />
       <scope id="7287088426769171542" at="33,41,34,136" />
-      <scope id="5071186108540654187" at="39,51,40,169" />
+      <scope id="5071186108540654187" at="39,50,40,169" />
       <scope id="5071186108540654187" at="26,41,28,16" />
       <scope id="5071186108540654187" at="19,0,22,0" />
       <scope id="5071186108540654187" at="39,0,42,0" />

@@ -1,32 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dependenciesRoot>
-  <dependency className="jetbrains.mps.test.testMigrationAdditionalPlugin.structure.ConceptPresentationAspectImpl">
-    <classNode dependClassName="java.lang.Override" />
-    <classNode dependClassName="jetbrains.mps.smodel.runtime.ConceptPresentation" />
-    <classNode dependClassName="jetbrains.mps.smodel.runtime.StructureAspectDescriptor" />
-    <classNode dependClassName="jetbrains.mps.test.testMigrationAdditionalPlugin.structure.StructureAspectDescriptor" />
-    <classNode dependClassName="org.jetbrains.annotations.Nullable" />
-    <classNode dependClassName="org.jetbrains.mps.openapi.language.SAbstractConcept" />
-    <classNode extendsClassName="jetbrains.mps.smodel.runtime.ConceptPresentationAspectBase" />
-  </dependency>
-  <dependency className="jetbrains.mps.test.testMigrationAdditionalPlugin.structure.LanguageConceptSwitch">
-    <classNode dependClassName="jetbrains.mps.lang.smodel.LanguageConceptIndex" />
-    <classNode dependClassName="jetbrains.mps.lang.smodel.LanguageConceptIndexBuilder" />
-    <classNode dependClassName="jetbrains.mps.smodel.adapter.ids.SConceptId" />
-    <classNode dependClassName="org.jetbrains.mps.openapi.language.SAbstractConcept" />
-  </dependency>
-  <dependency className="jetbrains.mps.test.testMigrationAdditionalPlugin.structure.StructureAspectDescriptor">
-    <classNode dependClassName="java.lang.Override" />
-    <classNode dependClassName="java.util.Arrays" />
-    <classNode dependClassName="java.util.Collection" />
-    <classNode dependClassName="jetbrains.mps.smodel.adapter.ids.SConceptId" />
-    <classNode dependClassName="jetbrains.mps.smodel.runtime.ConceptDescriptor" />
-    <classNode dependClassName="jetbrains.mps.smodel.runtime.DataTypeDescriptor" />
-    <classNode dependClassName="jetbrains.mps.smodel.runtime.StructureAspectDescriptor" />
-    <classNode dependClassName="jetbrains.mps.test.testMigrationAdditionalPlugin.structure.LanguageConceptSwitch" />
-    <classNode dependClassName="org.jetbrains.annotations.Nullable" />
-    <classNode dependClassName="org.jetbrains.mps.openapi.language.SAbstractConcept" />
-    <classNode extendsClassName="jetbrains.mps.smodel.runtime.BaseStructureAspectDescriptor" />
-  </dependency>
-</dependenciesRoot>
+<dependenciesRoot />
 

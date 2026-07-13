@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<checkpoints>
-  <plan id="AspectCPS">
-    <checkpoint id="DescriptorClasses" file="aspectcps-descriptorclasses.mps" />
-  </plan>
-</checkpoints>
-
