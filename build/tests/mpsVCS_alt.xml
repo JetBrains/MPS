@@ -225,7 +225,8 @@
     </copy>
   </target>
   
-  <target name="run.jetbrains.mps.vcs.tests" depends="assemble">
+  <target name="run.jetbrains.mps.vcs.tests" depends="assemble" if="false">
+<!--    MPS-39928 Test disabled-->
     <echo message="Running code from jetbrains.mps.vcs.tests solution in MPS" />
     <!--
         here comes a change to use a worker that starts MpsEnvironment, as the goal of CheckGit4IdeaStubs code
