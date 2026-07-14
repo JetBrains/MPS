@@ -2269,9 +2269,15 @@ abstract class AbstractOps : McpToolset {
      *
      * Any EDT-dispatching tool entry point must go through this helper (or one of the other three
      * below) instead of a bare `withContext(Dispatchers.EDT)`.
+     *
+     * [timeoutMs] defaults to [MODEL_OPERATION_TIMEOUT_MS] for every production call site (all of
+     * which call this with the trailing-lambda form and never pass it explicitly). It exists so
+     * tests can shrink the budget and deterministically simulate a blocked EDT (e.g. via
+     * `LaterInvocator.enterModal`/`leaveModal`) without waiting out the real 30s production
+     * timeout; see `AbstractOpsModalTimeoutTest`.
      */
-    protected suspend fun <T> withModalTimeoutOnEdt(block: suspend () -> T): T {
-        return withModalTimeout(MODEL_OPERATION_TIMEOUT_MS) {
+    protected suspend fun <T> withModalTimeoutOnEdt(timeoutMs: Long = MODEL_OPERATION_TIMEOUT_MS, block: suspend () -> T): T {
+        return withModalTimeout(timeoutMs) {
             withContext(Dispatchers.EDT + ModalityState.nonModal().asContextElement()) {
                 block()
             }
