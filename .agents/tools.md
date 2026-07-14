@@ -15,6 +15,12 @@
   * `for: me #Unresolved Fix versions: 2026.1*`
   * `project: MPS #Unresolved <search terms>`
   * `links: MPS-39848`
+* **Creating an issue:** always call `get_issue_fields_schema` for the target project first and copy the field names verbatim from its `properties` keys — do not guess names or add your own quoting around them (e.g. the key is `Fix versions`, not `"Fix versions"`).
+  * Array-typed fields (`Fix versions`, `Affected versions`, `Fixed in builds`, …) must be passed as a JSON array of strings even for a single value, e.g. `"Fix versions": ["2026.1.1"]`.
+  * The schema's top-level `"required": []` is **not reliable** — a project can still enforce a field (e.g. `Affected versions`) at creation time via workflow rules that aren't reflected in the schema. If `create_issue` fails with `"<Field> is required"`, just add that field and retry; don't assume the schema is complete.
+  * The default YouTrack project field's value is `MPS`. Confirm the exact project key with the user (or `find_projects`) before creating — don't assume; a fuzzy `find_projects` query can match several similarly named projects (e.g. `MPS`, `MPSJetPad`, `MPS_exceptions`).
+  * There is no dedicated API field for the mandatory `Co-Authored-By` trailer (see above) — append it as the last line of the `description` text itself.
+  * After creation, `get_issue` the new ID once to confirm the fields actually landed as intended (custom field updates can silently partially fail; check `failedToUpdateFields` in the `create_issue` response too).
 
 ## JetBrains IntelliJ IDEA
 
