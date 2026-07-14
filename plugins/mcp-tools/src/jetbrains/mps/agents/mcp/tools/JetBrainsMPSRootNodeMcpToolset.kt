@@ -7,7 +7,6 @@ import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import jetbrains.mps.ide.editor.MPSEditorUtil
@@ -18,9 +17,7 @@ import jetbrains.mps.openapi.navigation.EditorNavigator
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.action.SNodeFactoryOperations
 import jetbrains.mps.smodel.constraints.ModelConstraints
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.withContext
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
@@ -87,24 +84,28 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
             "Getting current editor root node did not complete",
             McpErrorCode.INTERNAL_ERROR
         )
-        withContext(Dispatchers.EDT) {
+        // withModalTimeoutOnEdt: reading the active editor/model must not run under an arbitrary
+        // modal dialog, and a modal-blocked dispatch must surface as a clear McpModalBlockedException
+        // asking the user to close the dialog, instead of silently hanging until the outer MCP
+        // transport timeout fires with a generic, unhelpful message.
+        withModalTimeoutOnEdt {
             val editorManager = FileEditorManager.getInstance(project)
             val selectedEditors = editorManager.selectedEditors
             val mpsEditor = selectedEditors.filterIsInstance<MPSFileNodeEditor>().firstOrNull()
             if (mpsEditor == null) {
                 reply = errJson("No MPS editor is currently open")
-                return@withContext
+                return@withModalTimeoutOnEdt
             }
 
             val nvf = mpsEditor.file as? MPSNodeVirtualFile
             if (nvf == null) {
                 reply = errJson("Could not detect the current root node")
-                return@withContext
+                return@withModalTimeoutOnEdt
             }
 
             val mpsProject = ProjectHelper.fromIdeaProject(project) ?: run {
                 reply = errJson("No MPS project available")
-                return@withContext
+                return@withModalTimeoutOnEdt
             }
 
             mpsProject.repository.modelAccess.runReadAction {
@@ -151,17 +152,20 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
             "Getting current MPS console command did not complete",
             McpErrorCode.INTERNAL_ERROR
         )
-        withContext(Dispatchers.EDT) {
+        // withModalTimeoutOnEdt: see currentFileEditorRootNode above for the rationale — a
+        // modal-blocked dispatch surfaces as a clear McpModalBlockedException instead of a silent
+        // hang until the outer MCP transport timeout.
+        withModalTimeoutOnEdt {
             val consoleModel = when (val r = resolveConsoleEditableTab(project)) {
                 is ConsoleResolution.Ok -> r.consoleModel
                 is ConsoleResolution.Err -> {
                     reply = r.errJson
-                    return@withContext
+                    return@withModalTimeoutOnEdt
                 }
             }
             val mpsProject = ProjectHelper.fromIdeaProject(project) ?: run {
                 reply = errJson("No MPS project available", McpErrorCode.NOT_FOUND)
-                return@withContext
+                return@withModalTimeoutOnEdt
             }
             mpsProject.repository.modelAccess.runReadAction {
                 val command = currentConsoleCommand(consoleModel)

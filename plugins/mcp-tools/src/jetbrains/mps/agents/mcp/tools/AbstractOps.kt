@@ -5,6 +5,8 @@ import com.intellij.mcpserver.McpToolset
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
 import com.intellij.openapi.application.EDT
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.ProjectManager
@@ -83,6 +85,7 @@ abstract class AbstractOps : McpToolset {
         NOT_FOUND,
         NOT_EDITABLE,
         MAKE_INPUT_INVALID,
+        MODAL_BLOCKED,
         INTERNAL_ERROR
     }
 
@@ -110,10 +113,22 @@ abstract class AbstractOps : McpToolset {
     class McpInvalidRequestException(message: String, details: Map<String, Any?> = emptyMap()) :
         McpUserException(McpErrorCode.INVALID_REQUEST, message, details)
 
+    class McpModalBlockedException(message: String, details: Map<String, Any?> = emptyMap()) :
+        McpUserException(McpErrorCode.MODAL_BLOCKED, message, details)
+
     companion object {
         private const val TEMP_JSON_PREFIX = "mps-node-"
         private const val TEMP_JSON_SUFFIX = ".json"
         private const val MAX_INPUT_FILE_SIZE_BYTES = 10L * 1024 * 1024
+
+        /**
+         * Timeout for model operations; acts as a safety net for unexpected blocking (e.g. a
+         * modal dialog). Protected, not private: every EDT-dispatching tool entry point should
+         * route through [withModalTimeoutOnEdt] (or [withModalTimeout] directly for a non-EDT
+         * dispatch) with this budget, not just the helpers below — see [withModalTimeout]'s doc
+         * for the failure mode this guards against.
+         */
+        protected const val MODEL_OPERATION_TIMEOUT_MS: Long = 30_000
 
         /**
          * Maximum time `performMake` waits, after the build completes, for the
@@ -2212,8 +2227,59 @@ abstract class AbstractOps : McpToolset {
         }
     }
 
+    /**
+     * Wraps a suspending block with a timeout.  On timeout, throws [McpModalBlockedException]
+     * with a user-friendly message instead of the raw [TimeoutCancellationException].
+     *
+     * Protected, not private: any tool entry point that dispatches to the EDT (whether or not
+     * it goes through [withModalTimeoutOnEdt] / [executeShortReadOnEdt] / [executeBackgroundRead] /
+     * [executeShortCommandOnEdt]) must wrap that dispatch with this helper. Without it, a blocked
+     * EDT (e.g. behind a modal dialog) hangs until some unrelated outer timeout (the MCP
+     * transport's) fires with a generic, unhelpful message instead of this method's actionable
+     * one. For a plain EDT dispatch (no separate read/write action of its own), prefer
+     * [withModalTimeoutOnEdt] over calling this directly — it already combines the timeout with
+     * the correct [ModalityState].
+     */
+    protected suspend fun <T> withModalTimeout(timeoutMs: Long, block: suspend () -> T): T {
+        return try {
+            withTimeout(timeoutMs) { block() }
+        } catch (e: TimeoutCancellationException) {
+            throw McpModalBlockedException(
+                "Operation timed out after ${timeoutMs}ms. " +
+                "This may indicate a modal dialog or a long-running operation blocking MPS. " +
+                "Please close any open dialogs (Find Usages, Search, confirmation prompts, etc.) and try again.",
+                mapOf("timeoutMs" to timeoutMs)
+            )
+        }
+    }
+
+    /**
+     * Combines [withModalTimeout] with the EDT dispatch itself: runs [block] on the EDT under
+     * [ModalityState.nonModal()] and the [MODEL_OPERATION_TIMEOUT_MS] budget. This is the raw
+     * building block for entry points whose body manages its own model access — a mix of
+     * `executeCommand`, `WriteAction.runAndWait`, `mpsProject.save()`, or similar calls — rather
+     * than a single read/write action, so it can't reuse [executeShortReadOnEdt] /
+     * [executeShortCommandOnEdt] below.
+     *
+     * NON_MODAL modality (never ModalityState.any()): dispatching to the EDT under an arbitrary
+     * modal dialog risks reentrancy/deadlock or unsafe model access — the platform contract
+     * forbids it. With NON_MODAL, if a modal dialog is open the continuation is deferred until it
+     * closes, and withModalTimeout turns any resulting wait into a clear McpModalBlockedException
+     * instead of a silent hang until the outer MCP transport timeout fires with a generic message.
+     *
+     * Any EDT-dispatching tool entry point must go through this helper (or one of the other three
+     * below) instead of a bare `withContext(Dispatchers.EDT)`.
+     */
+    protected suspend fun <T> withModalTimeoutOnEdt(block: suspend () -> T): T {
+        return withModalTimeout(MODEL_OPERATION_TIMEOUT_MS) {
+            withContext(Dispatchers.EDT + ModalityState.nonModal().asContextElement()) {
+                block()
+            }
+        }
+    }
+
     protected suspend fun <T> executeShortReadOnEdt(mpsProject: MPSProject, action: () -> T): T {
-        return withContext(Dispatchers.EDT) {
+        return withModalTimeoutOnEdt {
             mpsProject.modelAccess.computeReadAction {
                 action()
             }
@@ -2221,15 +2287,17 @@ abstract class AbstractOps : McpToolset {
     }
 
     protected suspend fun <T> executeBackgroundRead(mpsProject: MPSProject, action: () -> T): T {
-        return withContext(Dispatchers.Default) {
-            mpsProject.modelAccess.computeReadAction {
-                action()
+        return withModalTimeout(MODEL_OPERATION_TIMEOUT_MS) {
+            withContext(Dispatchers.Default) {
+                mpsProject.modelAccess.computeReadAction {
+                    action()
+                }
             }
         }
     }
 
     protected suspend fun <T> executeShortCommandOnEdt(mpsProject: MPSProject, action: () -> T): T {
-        return withContext(Dispatchers.EDT) {
+        return withModalTimeoutOnEdt {
             var result: T? = null
             var ran = false
             // A McpUserException raised inside the command is expected control flow for bad client
