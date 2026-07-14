@@ -51,6 +51,7 @@ import java.lang.reflect.Field;
     AbstractOpsMakeTest.class,
     AbstractOpsPropertyProblemsTest.class,
     AbstractOpsAutoApplyQuickFixesTest.class,
+    AbstractOpsModalTimeoutTest.class,
     IntentionsCandidateSelectionTest.class,
     AssignableReferenceServiceTest.class,
     JetBrainsMPSInitMcpToolsetTest.class,

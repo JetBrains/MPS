@@ -7,13 +7,10 @@ import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
-import com.intellij.openapi.application.EDT
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.smodel.CopyUtil
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.withContext
 import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SRepository
@@ -302,17 +299,21 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 "Running the current MPS console command did not complete",
                 McpErrorCode.INTERNAL_ERROR
             )
-            withContext(Dispatchers.EDT) {
+            // withModalTimeoutOnEdt: this is a write/execute path (runs an arbitrary console command
+            // with side effects), so a modal-blocked dispatch must surface as a clear
+            // McpModalBlockedException instead of silently hanging until the outer MCP transport
+            // timeout fires with a generic, unhelpful message.
+            withModalTimeoutOnEdt {
                 val console = when (val r = resolveConsoleEditableTab(project)) {
                     is ConsoleResolution.Ok -> r
                     is ConsoleResolution.Err -> {
                         reply = r.errJson
-                        return@withContext
+                        return@withModalTimeoutOnEdt
                     }
                 }
                 val mpsProject = ProjectHelper.fromIdeaProject(project) ?: run {
                     reply = errJson("No MPS project available", McpErrorCode.NOT_FOUND)
-                    return@withContext
+                    return@withModalTimeoutOnEdt
                 }
                 // executeCurrentCommand silently no-ops on empty input, so check first to give the agent
                 // a clear error instead of a misleading success. The presence check takes a read action;
@@ -325,14 +326,14 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                         "The MPS Console input editor is empty (no current command to run).",
                         McpErrorCode.NOT_FOUND
                     )
-                    return@withContext
+                    return@withModalTimeoutOnEdt
                 }
                 if (dryRun) {
                     reply = okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful: a console command is present and ready to run.")
                     })
-                    return@withContext
+                    return@withModalTimeoutOnEdt
                 }
                 // Mirror ConsoleExecute_Action's UNDO_PROJECT access: executeCurrentCommand reads the
                 // current command while scheduling execution, and relies on its caller to provide
@@ -346,7 +347,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                         "Failed to run the command in the MPS Console: ${reflectionFailureDetail(e)}",
                         McpErrorCode.INTERNAL_ERROR
                     )
-                    return@withContext
+                    return@withModalTimeoutOnEdt
                 }
                 reply = okJson(jsonObject {
                     addProperty("executed", true)

@@ -157,6 +157,14 @@ The primary way for agents to build the project is through the IntelliJ IDEA MCP
 - Verified to use **JDK 25**.
 - Run configurations such as `CoreTestSuite` or `MPS` can be found via `get_run_configurations`.
 
+### Running test suites
+
+- **Pre-flight check**: before starting any test suite, verify no other test JVM is already running: `ps aux | grep JUnitStarter`. Starting a second suite while one is running will cause failures due to shared MPS environments, project locks, and state.
+- **Timeout behavior**: `execute_run_configuration` has an internal timeout (~60s) that may be shorter than the requested `timeout` parameter. A "Timed out" error means the MCP tool stopped waiting — **the JVM test process continues running in the background**. This is not a test failure.
+- **Recommended workflow for long-running suites**: use `waitForExit=false` to start the test without blocking. Then monitor the process with `ps aux | grep <suite-class-name>` until it exits. After it finishes, read the output log file (path returned by `execute_run_configuration` in `fullOutputPath`) and search for `testFailed` entries (TeamCity service message format). Zero `testFailed` matches means all tests passed.
+- **Mutual exclusion**: never run multiple test suites concurrently — they share MPS environments, project locks, and state, causing contention failures.
+- **MCP tools tests require the whole suite**: individual `*McpToolset*IntegrationTest` classes (e.g. `JetBrainsMPSRootNodeMcpToolsetIntegrationTest`) cannot be run standalone — their shared test environment is created once by the `McpToolsIntegrationTestSuite` run configuration, not per class. Running a single class or method directly fails every test with `java.lang.NullPointerException: ... this.myEnv is null` / `this.myProject is null` in `ModuleInProjectTest.before()`/`after()`, which is an environment-setup failure, not a real test failure. Always run the `McpToolsIntegrationTestSuite` (or `McpToolsIntegrationTestSuite (1)`) run configuration to validate mcp-tools plugin changes, then search its output log for the specific test name(s) you care about.
+
 ## Global rules
 
 These rules are **mandatory** — always follow them, not just when a skill is active.
