@@ -10,10 +10,10 @@
               class="jetbrains.mps.workbench.actions.NewMPSProjectAction"
               text="New Project"
               description="You can create a new project with this action"/>
-      <action id="WelcomeScreen.OpenProject"
-              class="jetbrains.mps.workbench.actions.OpenMPSProjectAction$OnMPSWelcomeScreen"
-              text="Open"
-              description="You can open existing project with this action"/>
+<!--      <action id="WelcomeScreen.OpenProject"-->
+<!--              class="jetbrains.mps.workbench.actions.OpenMPSProjectAction$OnMPSWelcomeScreen"-->
+<!--              text="Open"-->
+<!--              description="You can open existing project with this action"/>-->
       <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
   </actions>

@@ -30,10 +30,10 @@
     <!-- The standard NewElement ID is used for MPS-specific action that delegates to this one -->
     <!-- See NewElement action in jetbrains.mps.ide.actions model -->
     <action id="NewElementFile" class="com.intellij.ide.actions.NewElementAction"/>
-    <group id="OpenProjectGroup">
-      <group id="NewElementInMenuGroup" class="com.intellij.ide.actions.NewActionGroup" text="New" popup="true"/>
-      <add-to-group group-id="FileOpenGroup" anchor="first"/>
-    </group>
+<!--    <group id="OpenProjectGroup">-->
+<!--      <group id="NewElementInMenuGroup" class="com.intellij.ide.actions.NewActionGroup" text="New" popup="true"/>-->
+<!--      <add-to-group group-id="FileOpenGroup" anchor="first"/>-->
+<!--    </group>-->
     <group id="MPSNewProjectOrModuleGroup">
       <action id="NewProject" class="jetbrains.mps.workbench.actions.NewMPSProjectAction" text="New MPS Project">
         <override-text place="ProjectWidgetPopup" text="New Project..."/>
