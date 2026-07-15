@@ -38,6 +38,7 @@ public class SelectAllAndSelectDown_Test extends BaseTransformationTest {
       invokeAction("jetbrains.mps.ide.editor.actions.SelectDown_Action");
       invokeAction("jetbrains.mps.ide.editor.actions.SelectDown_Action");
       invokeAction("jetbrains.mps.ide.editor.actions.SelectDown_Action");
+      invokeAction("jetbrains.mps.ide.editor.actions.SelectDown_Action");
     }
   }
 }
