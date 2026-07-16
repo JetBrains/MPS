@@ -39,11 +39,51 @@ When in doubt, open the generated `<Concept>_EditorBuilder_a.java` and grep for 
 
 **Prefer `invoke action` over raw `press` for editor commands.** `PressKeyStatement` simulates a key chord but does not always reach the named-action dispatcher used by the production editor. For Enter-driven insertion, completion, etc., use `InvokeActionStatement` referencing the registered action by its `MPSActionReference`. Common targets live in the `jetbrains.mps.ide.editor.actions` model — e.g. `Insert` (the action behind Enter in list/collection cells). The model reference is `r:9832fb5f-2578-4b58-8014-a5de79da988e(jetbrains.mps.ide.editor.actions)`.
 
-The inspector panel also exposes expressions usable inside `code`:
+## Editor expressions (in the `code` block)
 
-- `EditorComponentExpression` (`369mXd`) — `editor component`, the active editor.
-- `IsIntentionApplicableExpression` (`2bRw2S`) — `is intention <Name> applicable`.
-- `ProjectExpression` (`1jxXqW`) / `ModelExpression` (`1jGwE1`) — `project`, `model`.
+Inside the `code` block (written as BaseLanguage/Java snippet), four expressions are available as implicit variables. They are exposed by `BaseEditorTestBody` and map to protected methods in the generated test class. Use them when you need programmatic access to the editor state, project, or model — for example, to assert editor UI state, check intention applicability, or query model data beyond the tree comparison.
+
+| Expression | Generated Java call | Return type | When to use |
+|---|---|---|---|
+| `EditorComponentExpression` (`369mXd`) | `getEditorComponent()` | `jetbrains.mps.nodeEditor.EditorComponent` | Query or assert editor UI state: substitute menus, selection, cell data, context. |
+| `IsIntentionApplicableExpression` (`2bRw2S`) | `isIntentionApplicable(String id, SNode node)` | `boolean` | Assert whether an intention is applicable (or not) before invoking it. |
+| `ProjectExpression` (`1jxXqW`) | `getProject()` | `Project` | Access the test project's model access, repository, platform services. |
+| `ModelExpression` (`1jGwE1`) | resolves to the edited node's `SModel` | `SModel` | Query the model containing the node under edit. |
+
+**`EditorComponentExpression`** — Use `getEditorComponent()` to access the active editor component. Common methods:
+- `getEditorContext()` — access the `EditorContext` for repository, selection, and node operations.
+- `getSelectedNode()` — the currently selected `SNode`.
+- `getEditedNode()` — the node being displayed in the editor.
+- `getNodeSubstituteChooser()` — access the substitute menu state (e.g., `isVisible()`).
+- `getData(String key)` — retrieve platform data keys from the editor context.
+
+Example from `TestEditorMenuTraceCellMenuReplaceNode_Test`:
+```java
+Assert.assertTrue(getEditorComponent().getNodeSubstituteChooser().isVisible());
+SubstituteAction action = (SubstituteAction) getEditorComponent().getData(PlatformDataKeys.SELECTED_ITEM.getName());
+```
+
+**`IsIntentionApplicableExpression`** — Use `isIntentionApplicable()` to verify whether an intention can execute. The first argument is the intention's fully qualified ID, the second is the target `SNode` (often `myStart.getNode()` — the node at the caret position marked by the `AnonymousCellAnnotation`).
+
+Example from `TestNotApplicableConvertToTernaryOperatorIntention_Test`:
+```java
+Assert.assertFalse(isIntentionApplicable("jetbrains.mps.baseLanguage.intentions.ConvertIfConditionToTernaryOperator_Intention", myStart.getNode()));
+```
+
+Example from `Test_CreatePropertyPatternIntention_Test` (positive check + invoke):
+```java
+Assert.assertTrue(isIntentionApplicable("jetbrains.mps.lang.pattern.intentions.CreatePropertyPatternVariable_Intention", myStart.getNode()));
+invokeIntention("jetbrains.mps.lang.pattern.intentions.CreatePropertyPatternVariable_Intention", myStart.getNode());
+```
+
+**`ProjectExpression`** — Use `getProject()` to access the test project. Typical use is `getProject().getModelAccess().runReadAction(...)` or `.runWriteAction(...)` for model operations.
+
+Example from VCS merge tests:
+```java
+getProject().getModelAccess().runReadAction(() -> myBaseModel = MergeTemporaryModel.readonlyCloneOf(getTestModel()));
+```
+
+**`ModelExpression`** — The `model` expression resolves to the `SModel` of the node under edit. Use it to query model-level properties or roots. Since `getEditorComponent().getEditorContext().getSelectedNode().getModel()` achieves the same result, `model` is a shorthand for accessing the edited node's model.
 
 After the `code` runs, MPS compares the resulting editor state to the `result` section. Caret/selection must match too.
 
