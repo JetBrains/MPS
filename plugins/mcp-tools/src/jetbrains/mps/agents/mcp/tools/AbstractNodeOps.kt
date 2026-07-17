@@ -11,6 +11,16 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import jetbrains.mps.findUsages.InstanceLookup
 import jetbrains.mps.findUsages.NodeUsageLookup
+import jetbrains.mps.nodeEditor.cells.EditorCell_Property
+import jetbrains.mps.nodeEditor.cells.PropertyAccessor
+import jetbrains.mps.nodeEditor.cells.SPropertyAccessor
+import jetbrains.mps.nodeEditor.selection.EditorCellLabelSelection
+import jetbrains.mps.openapi.editor.EditorComponent
+import jetbrains.mps.openapi.editor.cells.EditorCell
+import jetbrains.mps.openapi.editor.cells.EditorCell_Label
+import jetbrains.mps.openapi.editor.message.SimpleEditorMessage
+import jetbrains.mps.openapi.editor.selection.Selection
+import jetbrains.mps.openapi.editor.selection.SingularSelection
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.EditableFilteringScope
 import jetbrains.mps.project.MPSProject
@@ -27,6 +37,7 @@ import jetbrains.mps.smodel.constraints.ModelConstraints
 import kotlinx.coroutines.currentCoroutineContext
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.language.SConcept
+import org.jetbrains.mps.openapi.language.SConceptFeature
 import org.jetbrains.mps.openapi.language.SContainmentLink
 import org.jetbrains.mps.openapi.language.SEnumeration
 import org.jetbrains.mps.openapi.language.SProperty
@@ -1315,6 +1326,10 @@ abstract class AbstractNodeOps : AbstractOps() {
     // jetbrains.mps.console.tool.DialogConsoleTab.{LINKS,CONCEPTS}.
 
     private companion object {
+        /** Shared cap on the number of nodes/cells serialized for one selection region (see [selectionInfoJsonObject]). */
+        private const val MAX_SELECTION_ITEMS = 20
+        /** Shared cap on the number of editor messages serialized per cell (see [cellMessagesJsonArray]). */
+        private const val MAX_CELL_MESSAGES = 5
         private const val CONSOLE_PLUGIN_ID = "jetbrains.mps.console"
         private const val CONSOLE_TOOL_FQN = "jetbrains.mps.console.plugin.ConsoleTool_Tool"
         private const val PROJECT_PLUGIN_MANAGER_FQN = "jetbrains.mps.plugins.projectplugins.ProjectPluginManager"
@@ -1599,5 +1614,360 @@ abstract class AbstractNodeOps : AbstractOps() {
             historyEntry.getChildren(CONSOLE_MODIFIED_COMMAND_LINK).firstOrNull()?.let { return it }
         }
         return historyEntry.getChildren(CONSOLE_COMMAND_LINK).firstOrNull()
+    }
+
+    // ── editor caret / selection serialization ─────────────────────────────────────────────
+    // Shared, testable serializers for the caret and selection state of an MPS editor, used by
+    // mps_mcp_get_current_editor_root_node (source='editor'). Kept here (rather than private in the
+    // toolset) so an integration-test probe can drive them directly against a HeadlessEditorComponent.
+    // Must be called under a model read action on the editor's repository.
+
+    /**
+     * The caret (cursor) position, as an always-present skeleton object: `present` plus the shared
+     * cell descriptor (see [cellJsonObject]) of the cell the caret sits in. Every field is emitted
+     * even when unavailable, so an agent can read the object and see explicitly that the cursor is
+     * outside any node (or no editor cell holds it) instead of inferring it from a missing key.
+     *
+     * Derived from [EditorComponent.getDeepestSelectedCell]: the deepest (leaf) editor cell the caret
+     * sits in. Note MPS returns `null` here while a multi-node range is selected (the deepest selection
+     * is then not a single cell), in which case `present` is `false` and the region is reported under
+     * `selection` instead.
+     */
+    protected fun caretInfoJsonObject(editorComponent: EditorComponent?): JsonObject {
+        val cell: EditorCell? = editorComponent?.deepestSelectedCell
+        val cellObj = cellJsonObject(cell)
+        return jsonObject {
+            addProperty("present", cell?.sNode != null)
+            for ((key, value) in cellObj.entrySet()) {
+                add(key, value)
+            }
+        }
+    }
+
+    /**
+     * A single editor cell described as JSON — reused by [caretInfoJsonObject] and by every cell of a
+     * selection region ([selectionInfoJsonObject]). Always a full skeleton (empty strings / `-1` /
+     * `false` / an empty [feature][cellFeatureJsonObject]) when [cell] is `null`, so absence is explicit.
+     *
+     * Fields: `cellId`; `cellType` (the cell's runtime class, e.g. `EditorCell_Property` /
+     * `EditorCell_Constant` / `EditorCell_Collection`); the cell's *semantic* node (`nodeReference` /
+     * `nodeConcept` / `nodeName`, plus `nodeConceptQualifiedName` and the persistent `nodeConceptReference`);
+     * the cell's *contextual* node (`contextualNodeReference` / `contextualNodeConcept` / `contextualNodeName`,
+     * plus `contextualNodeConceptQualifiedName` / `contextualNodeConceptReference`) — the node whose
+     * projection built the cell, which differs from the semantic node inside a RefCell; `cellText` and the
+     * label offsets `caretPosition` / `selectionStart` / `selectionEnd` (label cells only, `-1` otherwise);
+     * the cell flags `isBig` (a whole-node cell) / `editable` (an editable label) / `referenceCell` (a genuine
+     * reference cell) / `errorState`; the interaction flags `selectable` ([EditorCell.isSelectable]) and
+     * `selected` ([EditorCell.isSelected]) (a `readOnly` flag is deliberately omitted — the openapi cell
+     * exposes no stable read-only accessor); the projected `feature`; and the editor `messages` attached to
+     * the cell (see [cellMessagesJsonArray], `[]` when there are none or [cell] is `null`).
+     */
+    protected fun cellJsonObject(cell: EditorCell?): JsonObject {
+        val node: SNode? = cell?.sNode
+        val contextualNode: SNode? = cell?.contextualNode
+        val labelCell = cell as? EditorCell_Label
+        return jsonObject {
+            addProperty("cellId", cell?.cellId ?: "")
+            addProperty("cellType", cell?.javaClass?.simpleName ?: "")
+            // The semantic node (used for selection and editor actions) and its concept identity.
+            addProperty("nodeReference", node?.let { PersistenceFacade.getInstance().asString(it.reference) } ?: "")
+            addProperty("nodeConcept", node?.concept?.name ?: "")
+            addProperty("nodeName", node?.let { it.name ?: it.presentation } ?: "")
+            addProperty("nodeConceptQualifiedName", node?.let { structureQualifiedName(it.concept) } ?: "")
+            addProperty("nodeConceptReference", node?.let { PersistenceFacade.getInstance().asString(it.concept) } ?: "")
+            // The contextual node: the node whose projection built the cell. Differs from the semantic
+            // node inside a RefCell (semantic == the referencing node, contextual == the referenced
+            // target). Empty strings when there is no contextual node; may equal the semantic node.
+            addProperty("contextualNodeReference", contextualNode?.let { PersistenceFacade.getInstance().asString(it.reference) } ?: "")
+            addProperty("contextualNodeConcept", contextualNode?.concept?.name ?: "")
+            addProperty("contextualNodeName", contextualNode?.let { it.name ?: it.presentation } ?: "")
+            addProperty("contextualNodeConceptQualifiedName", contextualNode?.let { structureQualifiedName(it.concept) } ?: "")
+            addProperty("contextualNodeConceptReference", contextualNode?.let { PersistenceFacade.getInstance().asString(it.concept) } ?: "")
+            // The projected text of the label cell, and the caret / character-selection offsets within
+            // it. Empty / -1 for a non-label cell (e.g. a collection cell) or no cell.
+            addProperty("cellText", labelCell?.text ?: "")
+            addProperty("caretPosition", labelCell?.caretPosition ?: -1)
+            addProperty("selectionStart", labelCell?.selectionStart ?: -1)
+            addProperty("selectionEnd", labelCell?.selectionEnd ?: -1)
+            addProperty("isBig", cell?.isBig ?: false)
+            addProperty("editable", labelCell?.isEditable ?: false)
+            addProperty("referenceCell", cell?.isReferenceCell ?: false)
+            addProperty("errorState", cell?.isErrorState ?: false)
+            // Interaction flags: whether the cell can be selected and whether it currently is. No stable
+            // openapi read-only accessor exists, so a readOnly flag is intentionally not emitted.
+            addProperty("selectable", cell?.isSelectable ?: false)
+            addProperty("selected", cell?.isSelected ?: false)
+            add("feature", cellFeatureJsonObject(cell))
+            add("messages", cellMessagesJsonArray(cell))
+        }
+    }
+
+    /**
+     * The editor messages attached to [cell] ([EditorCell.getMessages]) as a compact JSON array — see
+     * [messagesJsonArray] for the per-entry shape. Returns an empty array (`[]`) when the cell has no
+     * messages or [cell] is `null`.
+     */
+    private fun cellMessagesJsonArray(cell: EditorCell?): JsonArray =
+        messagesJsonArray(cell?.messages ?: emptyList())
+
+    /**
+     * Maps editor [messages] to a compact JSON array, each entry `{ status, message, priority }`: `status`
+     * is the shared severity string ([problemSeverity] over [SimpleEditorMessage.getStatus]), `message` the
+     * message text ([SimpleEditorMessage.getMessage]) and `priority` its integer priority
+     * ([SimpleEditorMessage.getPriority]). Entries with a `null`/blank message are skipped, and at most
+     * [MAX_CELL_MESSAGES] are emitted so a heavily-annotated cell cannot blow the inline-result budget.
+     * Deliberately omits color / formatting / gutter data, which is not useful to an agent.
+     */
+    protected fun messagesJsonArray(messages: List<SimpleEditorMessage>): JsonArray {
+        val array = JsonArray()
+        for (message in messages) {
+            val text = message.message
+            if (text.isNullOrBlank()) continue
+            array.add(jsonObject {
+                addProperty("status", problemSeverity(message.status))
+                addProperty("message", text)
+                addProperty("priority", message.priority)
+            })
+            if (array.size() >= MAX_CELL_MESSAGES) break
+        }
+        return array
+    }
+
+    /**
+     * The concept feature the cell projects. Uses [EditorCell.getSRole] first — set for reference and child
+     * cells, and for property cells in generated editors — then falls back to the property behind an
+     * [EditorCell_Property]'s model accessor for property cells whose `sRole` is `null`. The latter happens
+     * in MPS's own hand-written bootstrap editors (e.g. the `ConceptDeclaration` editor), where the `name`
+     * / `rootable` / … property cells carry no `sRole`; without this fallback the caret's projected property
+     * would be reported as `""` there.
+     */
+    protected fun cellProjectedFeature(cell: EditorCell?): SConceptFeature? {
+        if (cell == null) return null
+        cell.sRole?.let { return it }
+        return when (val accessor = (cell as? EditorCell_Property)?.modelAccessor) {
+            // PropertyAccessor exposes the SProperty directly; SPropertyAccessor only exposes the property
+            // name, so resolve it against the accessor's node concept (falling back to the cell's node).
+            is PropertyAccessor -> accessor.property
+            is SPropertyAccessor -> {
+                val node = accessor.node ?: cell.sNode
+                node?.concept?.properties?.firstOrNull { it.name == accessor.propertyName }
+            }
+            else -> null
+        }
+    }
+
+    /**
+     * The node whose concept declares [feature] (the cell's projected role), so property/reference values
+     * are read from the correct node even in a nested RefCell projection — where the semantic node
+     * ([EditorCell.getSNode], used for selection) differs from the contextual node
+     * ([EditorCell.getContextualNode], the node the cell was built from). Node choice, using concept
+     * assignability (inherited features included, via [SAbstractConcept.isSubConceptOf] against
+     * [SConceptFeature.getOwner]):
+     *  - For a genuine reference cell ([EditorCell.isReferenceCell]) the projected reference role is edited
+     *    on the *semantic* (referencing) node, while the contextual node is the reference *target*; the
+     *    semantic node is therefore preferred, so a self-referential link (target sharing the referencing
+     *    concept) still reads the reference from the source rather than the target.
+     *  - Otherwise (nested target-property/reference cells, navigation-only references, plain cells) the
+     *    *contextual* node is preferred, then the semantic node — so a nested RefCell target cell reads its
+     *    value from the referenced target.
+     * Returns `null` when neither node supports the feature — the feature metadata is still emitted, but
+     * with no value read from an incompatible node.
+     */
+    private fun featureNodeFor(cell: EditorCell?, feature: SConceptFeature?): SNode? {
+        if (cell == null || feature == null) return null
+        val owner = feature.owner
+        val semantic = cell.sNode
+        val contextual = cell.contextualNode
+        val preferred = if (cell.isReferenceCell) semantic else contextual
+        val fallback = if (cell.isReferenceCell) contextual else semantic
+        if (preferred != null && preferred.concept.isSubConceptOf(owner)) return preferred
+        if (fallback != null && fallback.concept.isSubConceptOf(owner)) return fallback
+        return null
+    }
+
+    /**
+     * Describes the concept feature the cell projects: `kind` (`property` / `reference` / `child`, or
+     * `""` when the cell maps to no feature, e.g. a punctuation constant), the feature `name`, the
+     * concept it is declared in (`declaredIn` simple name, plus `declaredInQualifiedName` and the
+     * persistent `declaredInConceptReference`), its current `value`, the `valueNodeReference` of the node
+     * the value was read from, and — for a reference role — the `targetReference` and the target concept
+     * (`targetConcept` simple name, plus `targetConceptQualifiedName` and `targetConceptReference`). Every
+     * field is always present.
+     *
+     * The value is read from [featureNodeFor] — the node whose concept actually declares the feature
+     * (contextual node preferred, then semantic) — so a nested RefCell target-property/reference cell
+     * reads its value from the referenced target rather than the referencing node; `valueNodeReference`
+     * identifies that node.
+     *
+     * `navigational` distinguishes the *editing* role from a *navigation* role, addressing that
+     * [EditorCell.getSRole] returns the `NAVIGATABLE_SREFERENCE` style (a Ctrl+click navigation target,
+     * e.g. the constructor a `this(` keyword points at) *before* the edited role: it is `true` iff the
+     * role is a reference the cell does not actually edit (a reference role on a cell whose
+     * [EditorCell.isReferenceCell] is `false`). A genuine reference cell has `referenceCell == true` and
+     * `navigational == false`.
+     *
+     * For a property cell `value` is the property's display value (enum properties resolved to the
+     * literal name, matching `print_node`, via [propertyDisplayValue]); for a reference role `value` is
+     * the target node's presentation, `targetReference` the target's persistent reference (or the raw
+     * target reference when unresolved), and the target-concept fields the target's concept — for a child
+     * cell (and when no feature applies) all target/value fields are `""`. The `kind` classification comes
+     * from the shared [featureKind]; the reference resolution mirrors the node-hierarchy printout.
+     */
+    protected fun cellFeatureJsonObject(cell: EditorCell?): JsonObject {
+        val feature: SConceptFeature? = cellProjectedFeature(cell)
+        val kind = if (feature != null) featureKind(feature) else ""
+        // The node whose concept actually declares the feature — contextual preferred, then semantic.
+        val featureNode: SNode? = featureNodeFor(cell, feature)
+        var value = ""
+        // The persistent reference of the node the value was read from (empty when no compatible node).
+        var valueNodeReference = ""
+        // For a reference role, the persistent reference and concept of the target node — resolved when
+        // possible, otherwise the raw (dangling) target reference so an agent can still diagnose it.
+        // Empty for property / child cells and when no feature applies.
+        var targetReference = ""
+        var targetConcept = ""
+        var targetConceptQualifiedName = ""
+        var targetConceptReference = ""
+        // A reference the cell only navigates to (not edits): getSRole() returns the NAVIGATABLE_SREFERENCE
+        // style before the edited role, but only a genuine reference cell (isReferenceCell) edits it.
+        val navigational = feature is SReferenceLink && cell != null && !cell.isReferenceCell
+        if (feature != null && featureNode != null) {
+            valueNodeReference = PersistenceFacade.getInstance().asString(featureNode.reference)
+            when (feature) {
+                is SProperty -> value = propertyDisplayValue(featureNode, feature) ?: ""
+                is SReferenceLink -> {
+                    val reference = featureNode.getReference(feature)
+                    val target = reference?.targetNode
+                    if (target != null) {
+                        value = target.name ?: target.presentation
+                        targetReference = PersistenceFacade.getInstance().asString(target.reference)
+                        targetConcept = target.concept.name
+                        targetConceptQualifiedName = structureQualifiedName(target.concept)
+                        targetConceptReference = PersistenceFacade.getInstance().asString(target.concept)
+                    }
+                    else if (reference != null) {
+                        targetReference = PersistenceFacade.getInstance().asString(reference.targetNodeReference)
+                    }
+                }
+            }
+        }
+        return jsonObject {
+            addProperty("kind", kind)
+            addProperty("name", feature?.name ?: "")
+            addProperty("declaredIn", feature?.owner?.name ?: "")
+            addProperty("declaredInQualifiedName", feature?.let { structureQualifiedName(it.owner) } ?: "")
+            addProperty("declaredInConceptReference", feature?.let { PersistenceFacade.getInstance().asString(it.owner) } ?: "")
+            addProperty("value", value)
+            addProperty("valueNodeReference", valueNodeReference)
+            addProperty("targetReference", targetReference)
+            addProperty("targetConcept", targetConcept)
+            addProperty("targetConceptQualifiedName", targetConceptQualifiedName)
+            addProperty("targetConceptReference", targetConceptReference)
+            addProperty("navigational", navigational)
+        }
+    }
+
+    /** Shared cap on the number of selection nodes/cells serialized (see [selectionInfoJsonObject]); exposed for tests. */
+    protected val selectionItemLimit: Int get() = MAX_SELECTION_ITEMS
+
+    /** Shared cap on the number of editor messages serialized per cell (see [messagesJsonArray]); exposed for tests. */
+    protected val cellMessageLimit: Int get() = MAX_CELL_MESSAGES
+
+    /**
+     * The active selection region, as an always-present skeleton object. `present` is `true` only for a
+     * genuine region — a non-trivial character range inside a single label cell, or one/more whole cells
+     * (nodes) selected — and `false` for a bare caret. `kind` is `"text"` / `"nodes"` / `""`, and
+     * `direction` the selection direction (`LEFT` / `RIGHT` / `NONE`; `""` when there is no region).
+     * `nodes` lists the nodes in the region ([Selection.getSelectedNodes]) and `cells` the selected cells
+     * ([Selection.getSelectedCells], via [cellJsonObject]); both are empty (`[]`) when there is no region
+     * and are capped at [MAX_SELECTION_ITEMS] to keep the response inline-bounded. `nodeCount` /
+     * `cellCount` are the true totals of the selection; `nodesReturned` / `cellsReturned` are the array
+     * sizes and `nodesTruncated` / `cellsTruncated` flag whether the arrays were capped. `text` carries
+     * the selected characters for a character range, `""` otherwise. Kept empty rather than omitted so an
+     * agent can read the object and see explicitly that no region is selected.
+     */
+    protected fun selectionInfoJsonObject(editorComponent: EditorComponent?): JsonObject {
+        val selection: Selection? = editorComponent?.selectionManager?.selection
+        val selectedNodes: List<SNode> = selection?.selectedNodes ?: emptyList()
+        val selectedCells: List<EditorCell> = selection?.selectedCells ?: emptyList()
+
+        // A non-trivial character selection lives inside a single label cell (its start != end offset).
+        val labelCell = selectedCells.singleOrNull() as? EditorCell_Label
+        val hasTextRange = labelCell != null && labelCell.selectionStart != labelCell.selectionEnd
+        val selectedText = if (hasTextRange) (labelCell.selectedText ?: "") else ""
+
+        // A node/cell selection is any selection carrying nodes that is not a caret/text-in-label
+        // selection (EditorCellLabelSelection covers the bare-caret and text-range cases). This makes a
+        // single whole-node ("big" cell) selection a genuine region too, not just a multi-node range.
+        val isNodeSelection = selection != null && selection !is EditorCellLabelSelection && selectedNodes.isNotEmpty()
+
+        val present = hasTextRange || isNodeSelection
+        val kind = when {
+            hasTextRange -> "text"
+            isNodeSelection -> "nodes"
+            else -> ""
+        }
+
+        // Totals reflect the whole selection; the arrays are capped at MAX_SELECTION_ITEMS so a large
+        // selection cannot blow the inline-result budget, and the capping is reported explicitly.
+        val nodeCount = if (present) selectedNodes.size else 0
+        val cellCount = if (present) selectedCells.size else 0
+        val nodesArray = JsonArray()
+        val cellsArray = JsonArray()
+        if (present) {
+            for (n in selectedNodes.take(MAX_SELECTION_ITEMS)) {
+                nodesArray.add(jsonObject {
+                    addProperty("name", n.name ?: n.presentation)
+                    addProperty("concept", n.concept.name)
+                    addProperty("reference", PersistenceFacade.getInstance().asString(n.reference))
+                })
+            }
+            for (c in selectedCells.take(MAX_SELECTION_ITEMS)) {
+                // A range selection only sets EditorCell.isSelected() while painting. Membership in
+                // Selection.selectedCells is the stable selection signal exposed to MCP consumers.
+                cellsArray.add(cellJsonObject(c).apply { addProperty("selected", true) })
+            }
+        }
+
+        return jsonObject {
+            addProperty("present", present)
+            addProperty("kind", kind)
+            addProperty("direction", if (present) (selection?.direction?.name ?: "") else "")
+            addProperty("nodeCount", nodeCount)
+            addProperty("nodesReturned", nodesArray.size())
+            addProperty("nodesTruncated", nodeCount > nodesArray.size())
+            add("nodes", nodesArray)
+            addProperty("cellCount", cellCount)
+            addProperty("cellsReturned", cellsArray.size())
+            addProperty("cellsTruncated", cellCount > cellsArray.size())
+            add("cells", cellsArray)
+            addProperty("text", selectedText)
+        }
+    }
+
+    /**
+     * Attaches the editor-specific state to the node-info [info] object and returns it:
+     * `selectedNodeReference` (the selected cell's node — present for an ordinary caret too, NOT only a
+     * whole-node selection; kept for backward compatibility), `bigCellSelected` (whether the current
+     * top-level selection is a genuine whole-node/"big" cell), and the always-present `caret` / `selection`
+     * skeletons ([caretInfoJsonObject] / [selectionInfoJsonObject]). Mutates and returns [info]; otherwise
+     * side-effect free. Shared by `mps_mcp_get_current_editor_root_node` and the headless test probe. Must
+     * be called under a model read action on the editor's repository.
+     */
+    protected fun addEditorState(info: JsonObject, editorComponent: EditorComponent?): JsonObject {
+        // NOTE: EditorComponent.getSelectedNode() returns the selected cell's node without an isBig() check,
+        // so it is present for an ordinary caret too (e.g. a caret inside a property cell). Use
+        // bigCellSelected to tell whether the whole node is actually selected.
+        val selectedNode = editorComponent?.selectedNode
+        if (selectedNode != null) {
+            info.addProperty("selectedNodeReference", PersistenceFacade.getInstance().asString(selectedNode.reference))
+        }
+        // Whether the current (top-level) selection is a genuine whole-node ("big") cell selection, rather
+        // than a caret / text selection inside a leaf cell.
+        val topSelectionCell = (editorComponent?.selectionManager?.selection as? SingularSelection)?.editorCell
+        info.addProperty("bigCellSelected", topSelectionCell?.isBig == true)
+        info.add("caret", caretInfoJsonObject(editorComponent))
+        info.add("selection", selectionInfoJsonObject(editorComponent))
+        return info
     }
 }

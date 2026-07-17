@@ -129,6 +129,49 @@ visible read-only dependency closure).
 ```
 - Validation: `ok==true`; `data.name=="GearboxStateChart"` (the node opened in 08.20). This is
   the success counterpart to the empty-state failure in Step 01.04.
+- Also assert the always-present caret/selection skeletons. `data.caret` is an always-present
+  cell descriptor: a boolean `present`, `cellId`, `cellType`, the cell's **semantic** node
+  (`nodeReference`/`nodeConcept`/`nodeName`, plus `nodeConceptQualifiedName`/`nodeConceptReference`),
+  its **contextual** node (`contextualNodeReference`/`contextualNodeConcept`/`contextualNodeName`,
+  plus `contextualNodeConceptQualifiedName`/`contextualNodeConceptReference`), `cellText`,
+  `caretPosition`/`selectionStart`/`selectionEnd`, the flags `isBig`/`editable`/`referenceCell`/
+  `errorState`, the interaction flags `selectable`/`selected`, a `feature` object (`kind`, `name`,
+  `declaredIn`, `declaredInQualifiedName`, `declaredInConceptReference`, `value`, `valueNodeReference`,
+  `targetReference`, `targetConcept`, `targetConceptQualifiedName`, `targetConceptReference`,
+  `navigational`) naming the property/reference/child under the cursor, and a `messages` array (each
+  entry `{status, message, priority}`, capped per cell; `[]` when the cell has no editor messages).
+  `data.selection` is an object with `present`, `kind`,
+  `direction`, `nodeCount`, `nodesReturned`, `nodesTruncated`, a `nodes` array, `cellCount`,
+  `cellsReturned`, `cellsTruncated`, a `cells` array (each a cell descriptor), and `text` — the
+  arrays are capped (default 20) while the counts stay the true totals. The envelope also carries
+  `data.selectedNodeReference` (the currently selected cell's node — present for an ordinary
+  caret too) and `data.bigCellSelected` (whether a whole node is selected). With only a freshly
+  opened root and no manual selection, expect `data.selection.present==false`,
+  `data.selection.nodes==[]`, `data.selection.cells==[]`, and both `*Truncated` flags `false`.
+
+### Step 08.21a — deterministic caret / text / node selection `[MANUAL]`
+This step needs real UI interaction (the headless bench cannot place a caret), so run it by hand
+in the MPS instance, re-issuing the 08.21 call after each action:
+1. Click into the `GearboxStateChart` **name** label to place a caret there, then re-run 08.21:
+   expect `data.caret.present==true`, `data.caret.feature.kind=="property"`,
+   `data.caret.feature.name=="name"`, `data.caret.editable==true`, `data.caret.selectable==true`,
+   `data.caret.messages==[]` (unless the node has an editor message), and
+   `data.caret.caretPosition>=0`; `data.selection.present==false`.
+2. Select part of the name text (drag across a few characters), then re-run: expect
+   `data.selection.present==true`, `data.selection.kind=="text"`, `data.selection.text` equal to
+   the highlighted characters, and `data.selection.direction` one of `LEFT`/`RIGHT`/`NONE`.
+3. Press Escape to select the whole node, then re-run: expect `data.bigCellSelected==true`,
+   `data.selection.present==true`, `data.selection.kind=="nodes"`, `data.selection.nodeCount>=1`,
+   and one entry in `data.selection.cells` with `isBig==true` and `selected==true`.
+4. (Optional) A cell that only *navigates* a reference (e.g. a keyword whose Ctrl+click jumps to
+   another node) reports `data.caret.feature.kind=="reference"` with
+   `data.caret.feature.navigational==true` and `data.caret.referenceCell==false`, distinct from a
+   genuine editable reference cell (`referenceCell==true`, `navigational==false`).
+
+> The deterministic, automated counterpart of 08.21a — property/reference/navigation cells, text
+> ranges, node ranges, and the empty skeletons — is covered by
+> `EditorCaretSelectionSerializerTest` (run via `McpToolsIntegrationTestSuite`), which drives a
+> `HeadlessEditorComponent` directly.
 
 ---
 

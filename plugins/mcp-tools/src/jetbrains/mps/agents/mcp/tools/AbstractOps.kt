@@ -1362,14 +1362,25 @@ abstract class AbstractOps : McpToolset {
         val isInvalid: Boolean,
     )
 
-    private fun getPropertyState(node: SNode, prop: SProperty): PropertyState {
+    /**
+     * The display value of [prop] on [node] — the same string `print_node` shows — with an enum-typed
+     * property resolved to its literal *name* (not the stored literal id). Returns `null` when the
+     * property has no value. Shared so callers (e.g. the editor caret's feature value) report property
+     * values consistently with the node-hierarchy printout.
+     */
+    protected fun propertyDisplayValue(node: SNode, prop: SProperty): String? {
         val rawValue = SNodeAccessUtil.getPropertyValue(node, prop)
-        val isEnum = prop.type is SEnumeration
-        val value = if (isEnum && rawValue is SEnumerationLiteral) {
+        return if (prop.type is SEnumeration && rawValue is SEnumerationLiteral) {
             rawValue.getName()
         } else {
             rawValue?.let { prop.type.toString(it) }
         }
+    }
+
+    private fun getPropertyState(node: SNode, prop: SProperty): PropertyState {
+        val rawValue = SNodeAccessUtil.getPropertyValue(node, prop)
+        val isEnum = prop.type is SEnumeration
+        val value = propertyDisplayValue(node, prop)
         val hasValue = !value.isNullOrEmpty()
         val isEmptyEnum = isEnum && rawValue !is SEnumerationLiteral
         val isInvalid = hasValue && !prop.isValid(value)
@@ -1386,6 +1397,17 @@ abstract class AbstractOps : McpToolset {
 
     protected fun getCardinality(link: SReferenceLink): String {
         return if (link.isOptional) "0..1" else "1"
+    }
+
+    /**
+     * Classifies a concept feature into `"property"` / `"reference"` / `"child"`, or `""` for anything
+     * else. Shared so every feature-kind dispatch (e.g. the editor caret's feature) uses one mapping.
+     */
+    protected fun featureKind(feature: SConceptFeature): String = when (feature) {
+        is SProperty -> "property"
+        is SReferenceLink -> "reference"
+        is SContainmentLink -> "child"
+        else -> ""
     }
 
     protected fun addDocAndDeprecated(obj: JsonObject, doc: String, deprecated: String) {
@@ -1472,7 +1494,7 @@ abstract class AbstractOps : McpToolset {
         return obj
     }
 
-    private fun problemSeverity(severity: MessageStatus): String {
+    protected fun problemSeverity(severity: MessageStatus): String {
         return when (severity) {
             MessageStatus.ERROR -> "error"
             MessageStatus.WARNING -> "warning"

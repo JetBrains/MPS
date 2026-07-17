@@ -14,6 +14,7 @@ The core workflow for mutating MPS nodes through MCP tools. JSON blueprints desc
 - **Resolve before editing** — call `mps_mcp_get_current_editor_root_node` (for the user's focus) or `mps_mcp_search_root_node_by_name` (by name) to lock onto the target. Don't guess refs.
 - **Prefer surgical edits** — `mps_mcp_update_node` (`ADD`/`CHILD` or `SET`/`CHILD`) preserves persistent IDs. `mps_mcp_update_root_node_from_json` rewrites the entire root and is wasteful when only one subtree changed.
 - **Don't delete-and-reinsert** to make a small change — deletion destroys persistent IDs and breaks incoming references.
+- **Cloning an existing node? Use `mps_mcp_alter_nodes` `COPY_NODE`, not a JSON blueprint.** It clones the subtree natively — correct concept, properties, refs, nested structure — as the next sibling (multi-child role) or new root, then tweak with `mps_mcp_update_node`. Reserve JSON blueprints for nodes with no close match to copy from.
 - **Validate frequently** — call `mps_mcp_check_root_node_problems` immediately after inserting or modifying a complex node. `"ok": true` from insert does not mean the AST is semantically valid.
 
 ## `mps_mcp_update_node` — Unified Node-Mutation Tool
@@ -32,7 +33,7 @@ All child, property, and reference operations on existing nodes go through `mps_
 
 `ADD` × `PROPERTY` and `ADD` × `REFERENCE` are not valid combinations and return an error envelope.
 
-`mps_mcp_update_node` (PROPERTY / REFERENCE / CHILD) and `mps_mcp_alter_nodes` MOVE_CHILD / MOVE_NODE_TO_PARENT also work on nodes inside the **current MPS Console input command** — pass the node's normal persistent reference; no extra parameter is needed. The node must be inside the current unexecuted console input (not history/stale). MOVE_NODE_TO_PARENT only relocates a node *within* the current console command — moving a node between the console and a project model, or making a console node a root, is refused. Edits to console nodes skip disk-persistence and refresh the console's imports instead. Nodes outside the selected project are rejected as before.
+`mps_mcp_update_node` (PROPERTY / REFERENCE / CHILD) and `mps_mcp_alter_nodes` MOVE_CHILD / MOVE_NODE_TO_PARENT / COPY_NODE also work on nodes inside the **current MPS Console input command** — pass the node's normal persistent reference; no extra parameter is needed. The node must be inside the current unexecuted console input (not history/stale). MOVE_NODE_TO_PARENT only relocates a node *within* the current console command — moving a node between the console and a project model, or making a console node a root, is refused. Edits to console nodes skip disk-persistence and refresh the console's imports instead. Nodes outside the selected project are rejected as before.
 
 `childJson` accepts either an inline JSON string (max 4 KB) **or** an absolute path to a file containing the JSON blueprint. Use the file form for large blueprints to avoid MCP-transport truncation.
 

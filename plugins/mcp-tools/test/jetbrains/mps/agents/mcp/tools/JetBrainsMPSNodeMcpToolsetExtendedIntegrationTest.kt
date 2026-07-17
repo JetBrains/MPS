@@ -894,6 +894,156 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
     }
 
+    // ── alter_nodes: COPY_NODE ─────────────────────────────────────────────────────
+
+    @Test
+    fun `alter_nodes COPY_NODE creates a deep copy of a root node`() {
+        val originalRef = createConceptRoot("CopyRootOriginal")
+        addPropertyChild(originalRef, "child", "string")
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.COPY_NODE, """{ "nodeReference": "$originalRef" }""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val copiedRef = obj.getAsJsonObject("data").get("reference").asString
+        assertNotEquals("copy should have a different reference", originalRef, copiedRef)
+
+        readOnRepo {
+            val original = resolveNode(originalRef)
+            val copied = resolveNode(copiedRef)
+            assertEquals("CopyRootOriginal", copied.name)
+            // Verify the copy has the same structure: one property child
+            val originalKids = original.children.filter { it.containmentLink?.name == "propertyDeclaration" }
+            val copiedKids = copied.children.filter { it.containmentLink?.name == "propertyDeclaration" }
+            assertEquals("copy should have the same number of children", originalKids.size, copiedKids.size)
+            assertEquals("child", copiedKids.single().name)
+        }
+    }
+
+    @Test
+    fun `alter_nodes COPY_NODE creates a deep copy of a collection child`() {
+        val parentRef = createConceptRoot("CopyCollectionParent")
+        addPropertyChild(parentRef, "first", "string")
+        addPropertyChild(parentRef, "second", "string")
+
+        val childRef = readOnRepo {
+            val kids = resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+            val first = kids.single { it.name == "first" }
+            PersistenceFacade.getInstance().asString(first.reference)
+        }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.COPY_NODE, """{ "nodeReference": "$childRef" }""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val data = obj.getAsJsonObject("data")
+        val copiedRef = data.get("reference").asString
+        val index = data.get("index").asInt
+
+        assertNotEquals("copy should have a different reference", childRef, copiedRef)
+        assertEquals("copy should be inserted immediately after the original at index 1", 1, index)
+
+        readOnRepo {
+            val kids = resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+            assertEquals("parent should now have 3 children", 3, kids.size)
+            assertEquals(listOf("first", "first", "second"), kids.mapNotNull { it.name })
+        }
+    }
+
+    @Test
+    fun `alter_nodes COPY_NODE rejects copying a single-cardinality child`() {
+        // `helpURL` is a 0..1 child role on AbstractConceptDeclaration.
+        val parentRef = createConceptRoot("SingleChildParent")
+
+        val helpUrlJson = """
+            {
+              "concept": "jetbrains.mps.lang.resources.structure.HelpURL",
+              "properties": [{"name": "url", "value": "https://example.org/help"}]
+            }
+        """.trimIndent()
+        val addResp = runTool(toolset) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD,
+                nodeReference = parentRef, childRole = "helpURL", childJson = helpUrlJson
+            )
+        }
+        assertTrue("setup: adding child must succeed: $addResp",
+            JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
+
+        val childRef = readOnRepo {
+            val p = resolveNode(parentRef).children.single { it.containmentLink?.name == "helpURL" }
+            PersistenceFacade.getInstance().asString(p.reference)
+        }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.COPY_NODE, """{ "nodeReference": "$childRef" }""")
+        }
+        val err = expectErr(response)
+        assertTrue("error must mention single-child role, got: $err", err.contains("single-child"))
+    }
+
+    @Test
+    fun `alter_nodes COPY_NODE rejects missing nodeReference parameter`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.COPY_NODE, "{}")
+        }
+        assertTrue(expectErr(response).contains("nodeReference"))
+    }
+
+    @Test
+    fun `alter_nodes COPY_NODE rejects unknown nodeReference`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.COPY_NODE,
+                """{ "nodeReference": "r:00000000-0000-0000-0000-000000000000(ghost)/0" }""",
+            )
+        }
+        assertTrue(expectErr(response).contains("not found"))
+    }
+
+    @Test
+    fun `alter_nodes COPY_NODE rejects node from non-editable model`() {
+        // Resolves a platform concept declaration node (BaseConcept) whose serialized model is
+        // not an EditableSModel, exercising the console/non-editable rejection path.
+        // Platform module models are loaded as read-only serialized models, so the check
+        // `sourceModel !is EditableSModel` triggers the same error branch used for console
+        // node rejection.
+        val langToolset = JetBrainsMPSLanguageMcpToolset()
+        val conceptResp = runTool(langToolset) {
+            it.mps_mcp_get_concept_details(
+                conceptRefs = listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
+            )
+        }
+        // get_concept_details saves to a temp file; unwrap both layers to get the concept array.
+        val outer = JsonParser.parseString(conceptResp).asJsonObject
+        assertTrue("expected ok envelope from get_concept_details: $conceptResp", outer.get("ok").asBoolean)
+        val filePath = outer.get("data").asString
+        val innerEnvelope = JsonParser.parseString(java.io.File(filePath).readText()).asJsonObject
+        assertTrue("file envelope must be ok", innerEnvelope.get("ok").asBoolean)
+        val dataArray = innerEnvelope.get("data")
+        val innerArray = if (dataArray.isJsonArray) dataArray.asJsonArray
+        else JsonParser.parseString(dataArray.asString).asJsonArray
+        val conceptObj = innerArray.get(0).asJsonObject
+        val sourceNodeRef = conceptObj.get("sourceNode").asString
+        assertTrue("sourceNode reference should not be empty", sourceNodeRef.isNotEmpty())
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.COPY_NODE,
+                """{ "nodeReference": "$sourceNodeRef" }""",
+            )
+        }
+        val err = expectErr(response)
+        assertTrue(
+            "expected rejection for platform node, got: $err",
+            err.contains("not editable") || err.contains("Console") || err.contains("not part of the project")
+        )
+    }
+
     // ── alter_nodes: FIX_REFERENCES ────────────────────────────────────────────────
 
     @Test

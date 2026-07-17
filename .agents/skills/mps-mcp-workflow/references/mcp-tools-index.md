@@ -16,10 +16,10 @@
 ## Root Nodes and Nodes
 
 - `mps_mcp_open_node`: opens a node in the editor; non-root references open the containing root and select the target.
-- `mps_mcp_get_current_editor_root_node`: identifies the node the user is currently looking at.
+- `mps_mcp_get_current_editor_root_node`: identifies the node the user is currently looking at. With `source="editor"` it also reports the caret's cell as a cell descriptor — its node, `cellType`, and the property/reference/child the cell edits, where `feature.navigational` distinguishes a navigation-only reference from an edited one, plus the cell's `selectable` / `selected` interaction flags and any editor `messages` on the cell (`caret`) — plus the selected region's nodes and cells with its `direction` (`selection`), and the `selectedNodeReference` / `bigCellSelected` flags, always as skeleton objects so emptiness is explicit.
 - `mps_mcp_create_root_node`, `mps_mcp_update_root_node_from_json`
 - `mps_mcp_query_nodes`: read-only node queries — FIND_INSTANCES (find nodes of a concept; `sampleOnly` for one example), FIND_USAGES (nodes referencing a given node), GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE. Default scopes are selected-project based; explicit model/module/root scopes may target another open project read-only.
-- `mps_mcp_alter_nodes`: structural node mutations and code generation — MOVE_CHILD, MOVE_NODE_TO_PARENT, MAKE, FIX_REFERENCES.
+- `mps_mcp_alter_nodes`: structural node mutations and code generation — MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES.
 - `mps_mcp_print_node`: shows the underlying JSON structure or it shows the "visual" projection of a node.
 - `mps_mcp_insert_root_node_from_json`: bulk node creation. Leave the references empty if target nodes do not exist. Remember to set them later with `mps_mcp_update_node` (`SET`/`REFERENCE`).
 - `mps_mcp_update_node`: unified node-mutation tool. One call covers add/set/delete on child, property, and reference roles. The node being mutated must belong to the selected project; reference targets may point to another open project if the target is in scope/imported. Selected via `operation` (`ADD`/`SET`/`DELETE`) × `kind` (`CHILD`/`PROPERTY`/`REFERENCE`). Valid combinations:

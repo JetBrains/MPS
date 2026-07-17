@@ -10,6 +10,7 @@ import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.smodel.CopyUtil
 import jetbrains.mps.project.validation.ModelValidator
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SNode
@@ -30,6 +31,7 @@ enum class MPSQueryOperation {
 enum class MPSAlterOperation {
     MOVE_CHILD,
     MOVE_NODE_TO_PARENT,
+    COPY_NODE,
     MAKE,
     FIX_REFERENCES,
 }
@@ -142,11 +144,14 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     @McpTool
-    @McpDescription("""
-        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object string. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved node's actual resulting index. MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool; node references are not accepted — resolve the node's module or model first. Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+    @McpDescription("""        
+        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object string. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
+         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool; node references are not accepted — resolve the node's module or model first. Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+         For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
+         Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
     suspend fun mps_mcp_alter_nodes(
-        @McpDescription("The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, MAKE, FIX_REFERENCES)") operation: String,
+        @McpDescription("The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES)") operation: String,
         @McpDescription("JSON string representing the parameters for the operation") parameters: String
     ): String {
         val op = resolveOperationOrNull<MPSAlterOperation>(operation)
@@ -169,6 +174,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             when (operation) {
                 MPSAlterOperation.MOVE_CHILD -> opMoveChild(params)
                 MPSAlterOperation.MOVE_NODE_TO_PARENT -> opMoveNodeToParent(params)
+                MPSAlterOperation.COPY_NODE -> opCopyNode(params)
                 MPSAlterOperation.MAKE -> opMake(mpsProject, params)
                 MPSAlterOperation.FIX_REFERENCES -> opFixReferences(mpsProject, params)
             }
@@ -283,6 +289,62 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         val position = if (params.has("position")) params.get("position").asInt else null
         val modelReference = params.get("modelReference")?.asString
         return moveNodeToParent(nodeReference, newParentRef, role, position, modelReference)
+    }
+
+    private suspend fun opCopyNode(params: JsonObject): String {
+        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        return withMpsProject("Copying MPS node") { mpsProject ->
+            executeShortCommandOnEdt(mpsProject) {
+                val repo = mpsProject.repository
+                val sNodeRef = resolveNodeReference(mpsProject, nodeReference) ?: resolveNodeReference(repo, nodeReference)
+                val node = sNodeRef?.resolve(repo)
+                    ?: return@executeShortCommandOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
+
+                // Refuse console nodes: the console model is throwaway, copying doesn't make sense.
+                val sourceModel = node.model
+                if (sourceModel != null && sourceModel !is EditableSModel) {
+                    val module = sourceModel.module
+                    val isConsole = module != null && !isModuleInProject(repo, sourceModel)
+                    return@executeShortCommandOnEdt errJson(
+                        if (isConsole) "Cannot copy a node from the MPS Console — console models are transient and do not support copy operations"
+                        else "Source model is not editable",
+                        McpErrorCode.NOT_EDITABLE
+                    )
+                }
+                if (sourceModel != null && !isModelInSelectedProject(mpsProject, sourceModel)) {
+                    return@executeShortCommandOnEdt crossProjectErr("Node '$nodeReference'")
+                }
+
+                // Create deep copy
+                val copiedNode = CopyUtil.copy(node)
+
+                val parentNode = node.parent
+                if (parentNode == null) {
+                    // Root node: add copy as a new root in the same model
+                    val model = sourceModel
+                        ?: return@executeShortCommandOnEdt errJson("Root node is not in an editable model", McpErrorCode.NOT_EDITABLE)
+                    model.addRootNode(copiedNode)
+                    saveModelAndModule(model)
+                    okJson(nodeInfoJson(copiedNode, mpsProject))
+                } else {
+                    // Child node: check cardinality
+                    val link = node.containmentLink
+                    if (link == null || !link.isMultiple) {
+                        return@executeShortCommandOnEdt errJson(
+                            "Cannot copy a node in a single-child role '${link?.name ?: "unknown"}' — " +
+                                "COPY_NODE is only supported for nodes in a multi-child collection role (cardinality 0..* or 1..*)",
+                            McpErrorCode.INVALID_REQUEST
+                        )
+                    }
+                    // Insert copy immediately after the original
+                    parentNode.insertChildAfter(link, copiedNode, node)
+                    val model = sourceModel
+                        ?: return@executeShortCommandOnEdt errJson("Parent node is not in an editable model", McpErrorCode.NOT_EDITABLE)
+                    saveModelAndModule(model)
+                    okJson(nodeInfoJsonObjectWithIndex(copiedNode, mpsProject))
+                }
+            }
+        }
     }
 
     internal sealed class MakeTargetResolution<M, U> {
@@ -678,6 +740,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         """
         Saves a JSON printout of the specified node to a temp file (path returned in `data`). `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The saved envelope is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
         Alternatively, if HTML or PLAIN TEXT format is required, it saves the editor-projected representation of the specified node to a temp file (path returned in `data`).
+        If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
@@ -973,7 +1036,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 // not currently in any model is also valid (rare but possible).
                 val sourceModel = node.model
                 if (sourceModel != null && sourceModel !is EditableSModel) {
-                    return@executeShortCommandOnEdt errJson("Source model is not editable", McpErrorCode.NOT_EDITABLE)
+                    val isConsole = sourceModel.module?.let { !isModuleInProject(repo, sourceModel) } ?: false
+                    return@executeShortCommandOnEdt errJson(
+                        if (isConsole) "Cannot move a node from the MPS Console — console models are transient and do not support move operations"
+                        else "Source model is not editable",
+                        McpErrorCode.NOT_EDITABLE
+                    )
                 }
                 if (sourceModel != null && !isModelInSelectedProject(mpsProject, sourceModel)) {
                     return@executeShortCommandOnEdt crossProjectErr("Node '$nodeReference'")
