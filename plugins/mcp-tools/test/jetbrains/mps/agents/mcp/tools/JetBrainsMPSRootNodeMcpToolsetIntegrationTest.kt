@@ -20,7 +20,8 @@ import org.junit.Test
  * Covers lifecycle (`create_root_node`, `insert_root_node_from_json` single/array/dry-run,
  * `update_root_node_from_json` happy + dry-run, `delete_root_node`),
  * navigation/queries (`search_root_node_by_name`, `get_current_editor_root_node` with no
- * editor open, an unknown `source`, and the `console` source when the console is unavailable),
+ * editor open, an unknown `source`, the `console` source when the console is unavailable,
+ * and the `inspector` source when the inspector is unavailable),
  * and the basic error envelopes for each.
  *
  * Concepts used are picked from `jetbrains.mps.lang.structure` so they are
@@ -578,6 +579,16 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) { it.mps_mcp_get_current_editor_root_node(source = "console") }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope when the console is unavailable: $response", obj.get("ok").asBoolean)
+    }
+
+    @Test
+    fun `get_current_editor_root_node with inspector source returns an error envelope when the inspector is unavailable`() {
+        // The headless fixture never initializes the Inspector tool window, so source='inspector'
+        // exercises the inspector-resolution branch and must return a structured error rather than
+        // crashing. The happy path requires a live Inspector and is verified manually.
+        val response = runTool(toolset) { it.mps_mcp_get_current_editor_root_node(source = "inspector") }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope when the inspector is unavailable: $response", obj.get("ok").asBoolean)
     }
 
 }

@@ -12,6 +12,7 @@ import com.intellij.openapi.project.Project
 import jetbrains.mps.ide.editor.MPSEditorUtil
 import jetbrains.mps.ide.editor.MPSFileNodeEditor
 import jetbrains.mps.ide.project.ProjectHelper
+import jetbrains.mps.nodeEditor.InspectorTool
 import jetbrains.mps.nodefs.MPSNodeVirtualFile
 import jetbrains.mps.openapi.navigation.EditorNavigator
 import jetbrains.mps.smodel.SNodeUtil
@@ -51,14 +52,18 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Returns a node currently focused in the MPS UI as a node info envelope (see `mps-mcp-workflow/references/reference-formats.md`). `source` selects the editor: `editor` (default) returns the root node open in the active MPS file editor; `console` returns the current (unexecuted) command node in the MPS Console input editor (requires the Console plugin; errors if the input is empty). Use this to anchor on the user's focus before editing. The returned `reference` can be passed to `mps_mcp_print_node` to obtain the node's JSON blueprint or its notational (PLAIN TEXT / HTML) printout — but a console command's reference is only valid until the next console interaction (execute / clear / history navigation), so print it promptly and do not cache it.
-        For `source='editor'` the envelope additionally carries the caret and selection state, always as skeleton objects so their emptiness is explicit. `selectedNodeReference` is the currently selected cell's node (present for an ordinary caret too, NOT only a whole-node selection); `bigCellSelected` (boolean) tells whether the current selection is a genuine whole-node ("big") cell. `caret` = the cursor's cell as a cell descriptor: `{present, cellId, cellType, nodeReference, nodeConcept, nodeName, nodeConceptQualifiedName, nodeConceptReference, contextualNodeReference, contextualNodeConcept, contextualNodeName, contextualNodeConceptQualifiedName, contextualNodeConceptReference, cellText, caretPosition, selectionStart, selectionEnd, isBig, editable, referenceCell, errorState, selectable, selected, feature, messages}` (empty strings / -1 / false / present=false when the cursor is outside any node or holds no cell). The `node*` fields describe the cell's semantic node (used for selection); the `contextualNode*` fields describe the node whose projection built the cell — they differ inside a reference cell, where the semantic node is the referencing node and the contextual node is the referenced target. `feature` = the concept feature the cell projects: `{kind (property|reference|child|""), name, declaredIn, declaredInQualifiedName, declaredInConceptReference, value, valueNodeReference, targetReference, targetConcept, targetConceptQualifiedName, targetConceptReference, navigational}` — for a property cell `value` is the property's display value (enums resolved to the literal name); for a reference role `value` is the target's presentation, `targetReference` its persistent reference (or the raw target reference when unresolved) and `targetConcept*` its concept; `valueNodeReference` is the node the value was read from (the contextual target inside a reference cell); `navigational=true` marks a reference the cell only navigates to but does NOT edit (e.g. a keyword like `this` — distinguished from a genuine reference cell, which has `referenceCell=true`). `selectable`/`selected` are the cell's interaction flags (whether it can be and currently is selected); `messages` is a compact array of the editor messages on the cell, each `{status (error|warning|info), message, priority}`, capped per cell and `[]` when none. `selection` = the selected region — `{present, kind (nodes|text|""), direction (LEFT|RIGHT|NONE|""), nodeCount, nodesReturned, nodesTruncated, nodes[{reference, concept, name}], cellCount, cellsReturned, cellsTruncated, cells[<cell descriptor>], text}` (present=true only for a genuine region: a character range inside one label cell, or one/more whole cells/nodes selected; otherwise empty with nodes=[]/cells=[]). `nodeCount`/`cellCount` are the true totals; the `nodes`/`cells` arrays are capped (default 20) with `nodesReturned`/`cellsReturned` the array sizes and `nodesTruncated`/`cellsTruncated` set when the arrays were capped.
+        Returns a node currently focused in the MPS UI as a node info envelope (see `mps-mcp-workflow/references/reference-formats.md`). `source` selects the editor: `editor` (default) returns the root node open in the active MPS file editor; `console` returns the current (unexecuted) command node in the MPS Console input editor (requires the Console plugin; errors if the input is empty); `inspector` returns the node currently being inspected in the Inspector tool window (errors if the Inspector is not open or has no node). Use this to anchor on the user's focus before editing. The returned `reference` can be passed to `mps_mcp_print_node` to obtain the node's JSON blueprint or its notational (PLAIN TEXT / HTML) printout — but a console command's reference is only valid until the next console interaction (execute / clear / history navigation), so print it promptly and do not cache it.
+        For `source='editor'` and `source='inspector'` the envelope additionally carries the caret and selection state, always as skeleton objects so their emptiness is explicit. `selectedNodeReference` is the currently selected cell's node (present for an ordinary caret too, NOT only a whole-node selection); `bigCellSelected` (boolean) tells whether the current selection is a genuine whole-node ("big") cell. `caret` = the cursor's cell as a cell descriptor: `{present, cellId, cellType, nodeReference, nodeConcept, nodeName, nodeConceptQualifiedName, nodeConceptReference, contextualNodeReference, contextualNodeConcept, contextualNodeName, contextualNodeConceptQualifiedName, contextualNodeConceptReference, cellText, caretPosition, selectionStart, selectionEnd, isBig, editable, referenceCell, errorState, selectable, selected, feature, messages}` (empty strings / -1 / false / present=false when the cursor is outside any node or holds no cell). The `node*` fields describe the cell's semantic node (used for selection); the `contextualNode*` fields describe the node whose projection built the cell — they differ inside a reference cell, where the semantic node is the referencing node and the contextual node is the referenced target. `feature` = the concept feature the cell projects: `{kind (property|reference|child|""), name, declaredIn, declaredInQualifiedName, declaredInConceptReference, value, valueNodeReference, targetReference, targetConcept, targetConceptQualifiedName, targetConceptReference, navigational}` — for a property cell `value` is the property's display value (enums resolved to the literal name); for a reference role `value` is the target's presentation, `targetReference` its persistent reference (or the raw target reference when unresolved) and `targetConcept*` its concept; `valueNodeReference` is the node the value was read from (the contextual target inside a reference cell); `navigational=true` marks a reference the cell only navigates to but does NOT edit (e.g. a keyword like `this` — distinguished from a genuine reference cell, which has `referenceCell=true`). `selectable`/`selected` are the cell's interaction flags (whether it can be and currently is selected); `messages` is a compact array of the editor messages on the cell, each `{status (error|warning|info), message, priority}`, capped per cell and `[]` when none. `selection` = the selected region — `{present, kind (nodes|text|""), direction (LEFT|RIGHT|NONE|""), nodeCount, nodesReturned, nodesTruncated, nodes[{reference, concept, name}], cellCount, cellsReturned, cellsTruncated, cells[<cell descriptor>], text}` (present=true only for a genuine region: a character range inside one label cell, or one/more whole cells/nodes selected; otherwise empty with nodes=[]/cells=[]). `nodeCount`/`cellCount` are the true totals; the `nodes`/`cells` arrays are capped (default 20) with `nodesReturned`/`cellsReturned` the array sizes and `nodesTruncated`/`cellsTruncated` set when the arrays were capped.
     """)
     suspend fun mps_mcp_get_current_editor_root_node(
-        @McpDescription("Which editor to read: 'editor' (default) for the active MPS file editor's root node, or 'console' for the current command in the MPS Console input editor.") source: String = "editor"
+        @McpDescription("Which editor to read: 'editor' (default) for the active MPS file editor's root node, 'console' for the current command in the MPS Console input editor, or 'inspector' for the node currently inspected in the Inspector tool window.") source: String = "editor"
     ): String {
         val normalizedSource = source.trim().lowercase()
-        val activity = if (normalizedSource == "console") "Getting current MPS console command" else "Getting current editor root node"
+        val activity = when (normalizedSource) {
+            "console" -> "Getting current MPS console command"
+            "inspector" -> "Getting current Inspector node"
+            else -> "Getting current editor root node"
+        }
         currentCoroutineContext().reportToolActivity(activity)
         val project = currentCoroutineContext().project
 
@@ -66,14 +71,50 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
             when (normalizedSource) {
                 "editor" -> currentFileEditorRootNode(project)
                 "console" -> currentConsoleCommandNode(project)
+                "inspector" -> currentInspectorNode(project)
                 else -> errJson(
-                    "Invalid source '$source'. Allowed values: 'editor' (default), 'console'.",
+                    "Invalid source '$source'. Allowed values: 'editor' (default), 'console', 'inspector'.",
                     McpErrorCode.INVALID_REQUEST
                 )
             }
         } catch (e: Exception) {
             toolFailure(activity, e)
         }
+    }
+
+    /**
+     * The node currently being inspected in the Inspector tool window, as a node info envelope.
+     * Carries the same caret/selection state as `source='editor'`. Errors when the Inspector
+     * tool window has never been opened, or when the inspector is open but has no node selected.
+     * Reads Inspector state from the EDT under a model read action.
+     */
+    private suspend fun currentInspectorNode(project: Project): String {
+        var reply: String = errJson(
+            "Getting current Inspector node did not complete",
+            McpErrorCode.INTERNAL_ERROR
+        )
+        withModalTimeoutOnEdt {
+            val mpsProject = ProjectHelper.fromIdeaProject(project) ?: run {
+                reply = errJson("No MPS project available")
+                return@withModalTimeoutOnEdt
+            }
+            val inspectorTool = InspectorTool.getInstance(mpsProject) ?: run {
+                reply = errJson("The Inspector tool window is not currently available")
+                return@withModalTimeoutOnEdt
+            }
+            mpsProject.repository.modelAccess.runReadAction {
+                val editorComponent = inspectorTool.getInspector()
+                val node = editorComponent?.editedNode
+                if (node == null) {
+                    reply = errJson("No node is currently being inspected")
+                } else {
+                    val info = nodeInfoJsonObject(node, mpsProject)
+                    addEditorState(info, editorComponent)
+                    reply = okJson(info.toString())
+                }
+            }
+        }
+        return reply
     }
 
     /**
