@@ -2,6 +2,12 @@
   <id>com.intellij</id>
   <name>IDEA CORE</name>
 
+  <!--  these modules are missing from module-descriptors.xml -->
+  <content namespace="jetbrains">
+    <module name="intellij.libraries.javax.activation"><![CDATA[<idea-plugin visibility="internal" />]]></module>
+    <module name="intellij.libraries.lucene.common"><![CDATA[<idea-plugin visibility="public" />]]></module>
+    <module name="intellij.libraries.commons.text" loading="required"><![CDATA[<idea-plugin visibility="public" />]]></module>
+  </content>
   @@MODULE_DESCRIPTORS@@
 
   <module value="com.intellij.modules.mps"/>
