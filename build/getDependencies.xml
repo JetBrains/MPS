@@ -117,17 +117,10 @@
     <condition property="junit.libs.missing" value="true" else="false">
       <not>
         <and>
+          <available file="${junit5.lib}/junit-jupiter-params-${junit.jupiter.version}.jar"/>
           <available file="${junit5.lib}/apiguardian-api-${apiguardian.version}.jar"/>
           <available file="${junit5.lib}/opentest4j-${opentest4j.version}.jar"/>
-          <available file="${junit5.lib}/junit-jupiter-api-${junit.jupiter.version}.jar"/>
-          <available file="${junit5.lib}/junit-jupiter-engine-${junit.jupiter.version}.jar"/>
-          <available file="${junit5.lib}/junit-jupiter-params-${junit.jupiter.version}.jar"/>
-          <available file="${junit5.lib}/junit-jupiter-migrationsupport-${junit.jupiter.version}.jar"/>
-          <available file="${junit5.lib}/junit-platform-commons-${junit.platform.version}.jar"/>
-          <available file="${junit5.lib}/junit-platform-engine-${junit.platform.version}.jar"/>
-          <available file="${junit5.lib}/junit-platform-launcher-${junit.platform.version}.jar"/>
           <available file="${junit5.lib}/junit-platform-reporting-${junit.platform.version}.jar"/>
-          <available file="${junit5.lib}/junit-vintage-engine-${junit.vintage.version}.jar"/>
         </and>
       </not>
     </condition>

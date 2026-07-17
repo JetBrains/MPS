@@ -1,15 +1,8 @@
 <ivy-module version="2.0">
   <info organisation="org.jetbrains.mps" module="mps-junit"/>
   <dependencies>
-    <dependency org="org.junit.platform" name="junit-platform-engine" rev="${junit.platform.version}"/>
-    <dependency org="org.junit.platform" name="junit-platform-commons" rev="${junit.platform.version}"/>
-    <dependency org="org.junit.platform" name="junit-platform-launcher" rev="${junit.platform.version}"/>
     <dependency org="org.junit.platform" name="junit-platform-reporting" rev="${junit.platform.version}"/>
-    <dependency org="org.junit.jupiter" name="junit-jupiter-api" rev="${junit.jupiter.version}"/>
-    <dependency org="org.junit.jupiter" name="junit-jupiter-engine" rev="${junit.jupiter.version}"/>
     <dependency org="org.junit.jupiter" name="junit-jupiter-params" rev="${junit.jupiter.version}"/>
-    <dependency org="org.junit.jupiter" name="junit-jupiter-migrationsupport" rev="${junit.jupiter.version}"/>
-    <dependency org="org.junit.vintage" name="junit-vintage-engine" rev="${junit.vintage.version}"/>
     <!-- Recursive dependencies -->
     <dependency org="org.apiguardian" name="apiguardian-api" rev="${apiguardian.version}"/>
     <dependency org="org.opentest4j" name="opentest4j" rev="${opentest4j.version}"/>
