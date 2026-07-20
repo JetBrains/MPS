@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-e57k9jk3w64ixdjfo8q605u75iakpwf">
+<product version="3" modelHash="8v3lgznys5x5hd7iqcnozoxlb8pnu5k">
   <files names="ActionLookupUtils.java:ApplicableIntention_IncludedInMenu_Test.java:InapplicableIntention_NotIncludedInMenu_Test.java:PluginActionMenuItemBase_InapplicableAction_CannotExecute_Test.java:RefactoringMenuItemBase_ApplicableRefactoring_CanExecute_Test.java:RefactoringMenuItemBase_InapplicableRefactoring_CannotExecute_Test.java" />
 </product>
 

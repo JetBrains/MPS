@@ -35,6 +35,7 @@
     <import index="v23q" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi(MPS.IDEA/)" />
     <import index="zn9m" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util(MPS.IDEA/)" />
     <import index="qq03" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.actions(MPS.Platform/)" />
+    <import index="anz7" ref="320a7d92-2f09-4a63-9adc-ee2fc4d9ea30/java:com.intellij.testFramework(MPS.IDEA.testFramework/)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" implicit="true" />
     <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" implicit="true" />
     <import index="tp3m" ref="r:00000000-0000-4000-0000-011c8959034e(jetbrains.mps.lang.intentions.behavior)" implicit="true" />
@@ -424,12 +425,12 @@
       </node>
       <node concept="3clFbF" id="FV_t59JF6P" role="3cqZAp">
         <node concept="2OqwBi" id="FV_t59JFqo" role="3clFbG">
-          <node concept="2YIFZM" id="FV_t59JFh8" role="2Oq$k0">
-            <ref role="37wK5l" to="anz6:~TestApplicationManager.getInstance()" resolve="getInstance" />
-            <ref role="1Pybhc" to="anz6:~TestApplicationManager" resolve="TestApplicationManager" />
+          <node concept="2YIFZM" id="62cpFJvSwL6" role="2Oq$k0">
+            <ref role="37wK5l" to="anz7:~TestApplicationManager.getInstance()" resolve="getInstance" />
+            <ref role="1Pybhc" to="anz7:~TestApplicationManager" resolve="TestApplicationManager" />
           </node>
           <node concept="liA8E" id="FV_t59JFGc" role="2OqNvi">
-            <ref role="37wK5l" to="anz6:~TestApplicationManager.setDataProvider(com.intellij.openapi.actionSystem.DataProvider,com.intellij.openapi.Disposable)" resolve="setDataProvider" />
+            <ref role="37wK5l" to="anz7:~TestApplicationManager.setDataProvider(com.intellij.openapi.actionSystem.DataProvider,com.intellij.openapi.Disposable)" resolve="setDataProvider" />
             <node concept="2ShNRf" id="FV_t59JLRx" role="37wK5m">
               <node concept="YeOm9" id="FV_t59JVNh" role="2ShVmc">
                 <node concept="1Y3b0j" id="FV_t59JVNk" role="YeSDq">

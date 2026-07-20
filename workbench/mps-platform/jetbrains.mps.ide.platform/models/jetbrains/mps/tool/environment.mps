@@ -52,6 +52,7 @@
     <import index="qmvx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.project.impl(MPS.IDEA/)" />
     <import index="jlff" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vfs(MPS.IDEA/)" />
     <import index="8902" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.util.indexing(MPS.IDEA/)" />
+    <import index="anz7" ref="320a7d92-2f09-4a63-9adc-ee2fc4d9ea30/java:com.intellij.testFramework(MPS.IDEA.testFramework/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -2375,8 +2376,8 @@
                   <ref role="3cqZAo" node="65UowUML3$Q" resolve="myIdeaApplication" />
                 </node>
                 <node concept="2YIFZM" id="6BY6fCdVnFz" role="37vLTx">
-                  <ref role="37wK5l" to="anz6:~TestApplicationManager.getInstance()" resolve="getInstance" />
-                  <ref role="1Pybhc" to="anz6:~TestApplicationManager" resolve="TestApplicationManager" />
+                  <ref role="37wK5l" to="anz7:~TestApplicationManager.getInstance()" resolve="getInstance" />
+                  <ref role="1Pybhc" to="anz7:~TestApplicationManager" resolve="TestApplicationManager" />
                 </node>
               </node>
             </node>
@@ -2670,12 +2671,12 @@
             </node>
             <node concept="3clFbF" id="2dqaY0Ct9V4" role="3cqZAp">
               <node concept="2OqwBi" id="2dqaY0CtpqC" role="3clFbG">
-                <node concept="10M0yZ" id="2dqaY0CtkMF" role="2Oq$k0">
-                  <ref role="3cqZAo" to="anz6:~IndexingTestUtil.Companion" resolve="Companion" />
-                  <ref role="1PxDUh" to="anz6:~IndexingTestUtil" resolve="IndexingTestUtil" />
+                <node concept="10M0yZ" id="7ITB3PTC3Mk" role="2Oq$k0">
+                  <ref role="3cqZAo" to="anz7:~IndexingTestUtil.Companion" resolve="Companion" />
+                  <ref role="1PxDUh" to="anz7:~IndexingTestUtil" resolve="IndexingTestUtil" />
                 </node>
                 <node concept="liA8E" id="2dqaY0Ctv8c" role="2OqNvi">
-                  <ref role="37wK5l" to="anz6:~IndexingTestUtil$Companion.waitUntilIndexesAreReady(com.intellij.openapi.project.Project)" resolve="waitUntilIndexesAreReady" />
+                  <ref role="37wK5l" to="anz7:~IndexingTestUtil$Companion.waitUntilIndexesAreReady(com.intellij.openapi.project.Project)" resolve="waitUntilIndexesAreReady" />
                   <node concept="2OqwBi" id="2dqaY0CtAXz" role="37wK5m">
                     <node concept="37vLTw" id="2dqaY0CtAX$" role="2Oq$k0">
                       <ref role="3cqZAo" node="3qbI1lNoBDX" resolve="openedProject" />
@@ -3337,9 +3338,9 @@
                         <node concept="3clFbJ" id="7DdU2IfcwMX" role="3cqZAp">
                           <node concept="3clFbS" id="7DdU2IfcwMZ" role="3clFbx">
                             <node concept="3clFbF" id="2aedWm2WZF_" role="3cqZAp">
-                              <node concept="2YIFZM" id="2aedWm2X5m4" role="3clFbG">
-                                <ref role="37wK5l" to="anz6:~PlatformTestUtil.dispatchAllEventsInIdeEventQueue()" resolve="dispatchAllEventsInIdeEventQueue" />
-                                <ref role="1Pybhc" to="anz6:~PlatformTestUtil" resolve="PlatformTestUtil" />
+                              <node concept="2YIFZM" id="7ITB3PTCp2P" role="3clFbG">
+                                <ref role="37wK5l" to="anz7:~PlatformTestUtil.dispatchAllEventsInIdeEventQueue()" resolve="dispatchAllEventsInIdeEventQueue" />
+                                <ref role="1Pybhc" to="anz7:~PlatformTestUtil" resolve="PlatformTestUtil" />
                               </node>
                             </node>
                             <node concept="3clFbF" id="2aedWm2Xbxx" role="3cqZAp">
@@ -4880,8 +4881,8 @@
                 <node concept="3clFbS" id="2LiUEk8pil5" role="1bW5cS">
                   <node concept="3clFbF" id="2P80UC067dX" role="3cqZAp">
                     <node concept="2YIFZM" id="2P80UC06cWN" role="3clFbG">
-                      <ref role="1Pybhc" to="anz6:~PlatformTestUtil" resolve="PlatformTestUtil" />
-                      <ref role="37wK5l" to="anz6:~PlatformTestUtil.dispatchAllEventsInIdeEventQueue()" resolve="dispatchAllEventsInIdeEventQueue" />
+                      <ref role="1Pybhc" to="anz7:~PlatformTestUtil" resolve="PlatformTestUtil" />
+                      <ref role="37wK5l" to="anz7:~PlatformTestUtil.dispatchAllEventsInIdeEventQueue()" resolve="dispatchAllEventsInIdeEventQueue" />
                     </node>
                   </node>
                 </node>
