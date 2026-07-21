@@ -59,6 +59,23 @@ public abstract class AssociationLink {
   }
 
   public static AssociationLink create(SReferenceLink link, SNode source, ResolveInfo target) {
+    return create(link, source, target, /* requireResolve = */ true);
+  }
+
+  /**
+   * @param requireResolve when {@code false}, the reference keeps exactly the target described by {@code target} and is
+   *                       <em>not</em> re-resolved by name on paste; pass {@code false} for references to importable
+   *                       (root) nodes so a same-named node already present in the target model does not silently steal
+   *                       the reference (MPS-39034). When {@code true}, the reference is re-resolved within its new scope
+   *                       (the historical behaviour, e.g. for scoped/local targets such as variables).
+   *                       <p>
+   *                       Callers passing {@code false} must supply a <em>persistent, pointer-backed</em> {@code target}
+   *                       (e.g. {@code ResolveInfo.of(SNodeReference, String)}) rather than a live-node
+   *                       {@code ResolveInfo} ({@code ResolveInfo.of(SNode)}), so the recorded target stays valid across
+   *                       the (separate) copy and paste actions.
+   * @return {@code requireResolve}, indicating whether the reference should be re-resolved according to scopes after paste
+   */
+  public static AssociationLink create(SReferenceLink link, SNode source, ResolveInfo target, boolean requireResolve) {
     return new AssociationLink(source, link) {
       final ResolveInfo myTarget = target;
 
@@ -66,7 +83,7 @@ public abstract class AssociationLink {
       public boolean establish(Map<SNode, SNode> sourceNodesToNewNodes) {
         final SNode newSourceNode = sourceNodesToNewNodes.get(source());
         newSourceNode.setReference(link(), myTarget);
-        return true;
+        return requireResolve;
       }
     };
   }

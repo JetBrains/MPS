@@ -25,6 +25,7 @@ import org.jetbrains.mps.openapi.model.SReference;
 import org.jetbrains.mps.openapi.language.SReferenceLink;
 import org.jetbrains.mps.openapi.language.SScope;
 import org.jetbrains.mps.openapi.model.ResolveInfo;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
 import jetbrains.mps.internal.collections.runtime.CollectionSequence;
 import com.intellij.ide.CopyPasteManagerEx;
 import java.awt.datatransfer.StringSelection;
@@ -42,6 +43,9 @@ import jetbrains.mps.datatransfer.SNodeClip;
 import java.util.Collection;
 import org.jetbrains.mps.openapi.language.SLanguage;
 import jetbrains.mps.project.Project;
+import jetbrains.mps.smodel.ModelImports;
+import org.jetbrains.mps.openapi.module.SModule;
+import jetbrains.mps.smodel.ModelDependencyUpdate;
 
 @GeneratedClass(nodeId = "6299533519672638253", model = "r:84719e1a-99f6-4297-90ba-8ad2a947fa4a(jetbrains.mps.ide.datatransfer)")
 public final class CopyPasteUtil {
@@ -114,15 +118,23 @@ public final class CopyPasteUtil {
             // XXX oldTargetNode.model can be null in case it comes from generation process, see MPS-24188; this may be fixed when MPS-23902 is fixed
             // MPS-38564 - get an updated resolve info of the original node to hand it over to the copied reference
             SScope assocScope = (link != null && sourceNode != null ? link.getScope(sourceNode) : null);
-            String resolveInfo = null;
+            String resolveInfoStr = null;
             try {
-              resolveInfo = (assocScope != null ? assocScope.getReferenceText(targetNode) : null);
+              resolveInfoStr = (assocScope != null ? assocScope.getReferenceText(targetNode) : null);
             } catch (Exception e) {
               if (LOG.isWarningLevel()) {
                 LOG.warning(String.format("CopyPasteUtil: Error obtaining %s from the scope %s", targetNode, assocScope.toString()), e);
               }
             }
-            copiedLinks.add(AssociationLink.create(link, copiedSourceNode, (resolveInfo != null ? ResolveInfo.of(targetNode.getReference(), resolveInfo) : assoc.describeTarget())));
+            boolean isTargetNodeRoot = targetNode.getModel() != null && targetNode.getParent() == null;
+            ResolveInfo resolveInfo;
+            if (isTargetNodeRoot) {
+              resolveInfoStr = (resolveInfoStr != null ? resolveInfoStr : SLinkOperations.getResolveInfo(assoc));
+              resolveInfo = ResolveInfo.of(targetNode.getReference(), resolveInfoStr);
+            } else {
+              resolveInfo = (resolveInfoStr != null ? ResolveInfo.of(targetNode.getReference(), resolveInfoStr) : assoc.describeTarget());
+            }
+            copiedLinks.add(AssociationLink.create(link, copiedSourceNode, resolveInfo, !(isTargetNodeRoot)));
             targetModel = targetNode.getReference().getModelReference();
           }
         }
@@ -336,5 +348,19 @@ public final class CopyPasteUtil {
       break;
     }
     return false;
+  }
+  public static void applyRequiredImports(SModel targetModel, Collection<SLanguage> languages, Collection<SModelReference> models) {
+    ModelImports mi = new ModelImports(targetModel);
+    for (SModelReference imported : models) {
+      mi.addModelImport(imported);
+    }
+    for (SLanguage language : languages) {
+      mi.addUsedLanguage(language);
+    }
+    SModule targetModule = targetModel.getModule();
+    if (targetModule == null || targetModule.getRepository() == null) {
+      return;
+    }
+    new ModelDependencyUpdate(targetModel).updateModuleDependencies(targetModule.getRepository());
   }
 }
