@@ -59,6 +59,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.ide.ModuleIDETests1.class,
     jetbrains.mps.ide.ModuleIDETests2.class,
     jetbrains.mps.ide.FSTests.class,
+    jetbrains.mps.ide.PasteNodeActionTest.class,
     jetbrains.mps.migration.MigrationsTest.class,
     jetbrains.mps.workbench.ProjectCreationTest.class,
     // Needs a live ConceptRegistry to read a node's virtual-package property; see its javadoc.
