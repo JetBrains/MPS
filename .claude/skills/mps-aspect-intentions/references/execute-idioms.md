@@ -48,6 +48,110 @@ The trickiest fragment is the final caret placement. Verbatim JSON:
 
 Always end an `ExecuteBlock` that creates a new node with a `SelectInEditorOperation` so the caret lands where the user can keep typing.
 
+## Attach an Annotation (Node Attribute) to the Current Node
+
+Intentions are the canonical UI for adding an **annotation** (node attribute) to arbitrary nodes: declare the intention `for concept BaseConcept` (the attribute can attach to any node) and gate it by *context* in `isApplicable`. From `jetbrains.mps.lang.test` (`MarkUnorderedChildrenInResultMatch`):
+
+```
+intention MarkUnorderedChildrenInResultMatch for concept BaseConcept {
+  available in child nodes : false
+
+  isApplicable(node, editorContext)->boolean {
+    // gate by context, not by concept: only offered inside the result fixture of an editor test
+    if (!node.ancestor<concept = TestNode>.parent.isInstanceOf(EditorTestCase)) { return false; }
+    return true;
+  }
+
+  execute(node, editorContext)->void {
+    node<UnorderedChildrenMark> m = new initialized node<UnorderedChildrenMark>();
+    node.@unorderedChildren.add(m);      // attribute declared `multiple` → the .@ access is a list
+    m.select[in: editorContext, cell: FIRST_EDITABLE];
+  }
+}
+```
+
+- **`forConcept = BaseConcept` + context-checking `isApplicable`** is the standard combination for attribute-attaching intentions — the attribute is placeable anywhere, so the surrounding context (ancestors, containing root) decides where offering it makes sense.
+- For an attribute declared **`multiple`**, `node.@<role>` yields a list — append with `.add(...)`. For a single (non-`multiple`) attribute, assign instead: `node.@MyMark = m;`. JSON blueprints for the `.@` operator are in `mps-model-manipulation/references/attribute-access.md`.
+- `new initialized node<...>()` runs the concept's NodeFactory — requires `jetbrains.mps.lang.actions` as used language (see `factory-initialized.md`).
+- End by selecting the new attribute node (`FIRST_EDITABLE`) so the user can immediately fill in its cells (e.g. a mark's `link` reference).
+- Pair the intention with a `delete_action_id` action map on the annotation's own editor cell so `Delete`/`Backspace` removes the mark again — see `mps-aspect-editor-menus-and-keymaps/references/action-maps.md` §"Keyboard-Deletable Annotation".
+
+Verbatim JSON of the `executeFunction` body (the `body` → `StatementList`), extracted from the live intention. After insertion, point the two `variableDeclaration` references at the freshly created `m` local variable:
+
+```json
+{
+  "concept": "jetbrains.mps.baseLanguage.structure.StatementList",
+  "children": [{
+    "role": "statement",
+    "nodes": [
+      { "concept": "jetbrains.mps.baseLanguage.structure.LocalVariableDeclarationStatement",
+        "children": [{ "role": "localVariableDeclaration", "nodes": [{
+          "concept": "jetbrains.mps.baseLanguage.structure.LocalVariableDeclaration",
+          "properties": [{ "name": "name", "value": "m" }],
+          "children": [
+            { "role": "type", "nodes": [{
+              "concept": "jetbrains.mps.lang.smodel.structure.SNodeType",
+              "references": [{ "role": "concept", "target": "<UnorderedChildrenMark concept>" }] }]},
+            { "role": "initializer", "nodes": [{
+              "concept": "jetbrains.mps.baseLanguage.structure.GenericNewExpression",
+              "children": [{ "role": "creator", "nodes": [{
+                "concept": "jetbrains.mps.lang.actions.structure.SNodeCreatorAndInitializer",
+                "children": [{ "role": "createdType", "nodes": [{
+                  "concept": "jetbrains.mps.lang.smodel.structure.SNodeType",
+                  "references": [{ "role": "concept", "target": "<UnorderedChildrenMark concept>" }] }]}]
+              }]}]
+            }]}
+          ]}]}]},
+      { "concept": "jetbrains.mps.baseLanguage.structure.ExpressionStatement",
+        "children": [{ "role": "expression", "nodes": [{
+          "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
+          "children": [
+            { "role": "operand", "nodes": [{
+              "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
+              "children": [
+                { "role": "operand",   "nodes": [{ "concept": "jetbrains.mps.lang.intentions.structure.ConceptFunctionParameter_node" }]},
+                { "role": "operation", "nodes": [{
+                  "concept": "jetbrains.mps.lang.smodel.structure.AttributeAccess",
+                  "children": [{ "role": "qualifier", "nodes": [{
+                    "concept": "jetbrains.mps.lang.smodel.structure.NodeAttributeQualifier",
+                    "references": [{ "role": "attributeConcept", "target": "<UnorderedChildrenMark concept>" }] }]}]
+                }]}
+              ]}]},
+            { "role": "operation", "nodes": [{
+              "concept": "jetbrains.mps.baseLanguage.collections.structure.AddElementOperation",
+              "children": [{ "role": "argument", "nodes": [{
+                "concept": "jetbrains.mps.baseLanguage.structure.VariableReference",
+                "references": [{ "role": "variableDeclaration", "target": "<m-local-var-node-ref>" }] }]}]
+            }]}
+          ]}]}]},
+      { "concept": "jetbrains.mps.baseLanguage.structure.ExpressionStatement",
+        "children": [{ "role": "expression", "nodes": [{
+          "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
+          "children": [
+            { "role": "operand", "nodes": [{
+              "concept": "jetbrains.mps.baseLanguage.structure.VariableReference",
+              "references": [{ "role": "variableDeclaration", "target": "<m-local-var-node-ref>" }] }]},
+            { "role": "operation", "nodes": [{
+              "concept": "jetbrains.mps.lang.editor.structure.SelectInEditorOperation",
+              "children": [
+                { "role": "editorContext", "nodes": [{ "concept": "jetbrains.mps.lang.sharedConcepts.structure.ConceptFunctionParameter_editorContext" }]},
+                { "role": "cellSelector", "nodes": [{
+                  "concept": "jetbrains.mps.lang.editor.structure.PredefinedSelector",
+                  "properties": [{ "name": "cellId", "value": "1S2pyLby17G/firstEditable" }] }]}
+              ]}]}
+          ]}]}]}
+    ]
+  }]
+}
+```
+
+FQN traps in this blueprint (verified against the live node):
+
+- `new initialized node<C>()` is a `GenericNewExpression` whose `creator` is `jetbrains.mps.lang.actions.structure.SNodeCreatorAndInitializer` (needs `jetbrains.mps.lang.actions` as used language) — *not* `SNodeCreator` (the plain `new node<C>()`, no factory) and *not* `NF_Concept_NewInstance` (`c.new initialized()` on a concept value).
+- The multiple-attribute append is `AttributeAccess` + `NodeAttributeQualifier` chained into a collections `AddElementOperation` — the whole `.@` chain is parser-blind, always blueprint it.
+- `FIRST_EDITABLE` is the qualified enum member `1S2pyLby17G/firstEditable` on `PredefinedSelector.cellId`; omitting `cellId` means `FIRST`.
+- In intention bodies `editorContext` is `jetbrains.mps.lang.sharedConcepts.structure.ConceptFunctionParameter_editorContext` — unlike action-map bodies, which use the editor language's own parameter concept.
+
 ## Concept FQN quick-reference
 
 | Concept | FQN |

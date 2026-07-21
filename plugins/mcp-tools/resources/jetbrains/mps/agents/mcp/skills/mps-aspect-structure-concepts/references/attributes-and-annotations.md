@@ -37,6 +37,34 @@ on a template node, a property macro is a `PropertyMacro` (a `PropertyAttribute`
 and a reference macro is a `ReferenceMacro` (a `LinkAttribute`) on one reference. The template
 tree never declares them — they hang off `smodelAttribute`.
 
+### Choosing the kind: feature-pinned attributes need a visible feature cell
+
+A feature-pinned attribute (`PropertyAttribute` / `ChildAttribute` / `LinkAttribute`) can only be
+attached — and only projects — where the pinned feature has a **selectable cell** in the host's
+editor. For properties and references that is nearly always true. For **child links it often is
+not**: an *empty* child collection typically has no selectable per-role cell, so a `ChildAttribute`
+meant to mark "this whole role" cannot even be placed there, and where it can, it hangs off one
+arbitrary child instead of the role as a whole.
+
+Lesson from `jetbrains.mps.lang.test`'s match-relaxation marks (MPSSPRT-472): a marker that
+relaxes matching for a whole containment role started as a `ChildAttribute` and had to be
+reworked. The working design is:
+
+- make it a **`NodeAttribute` on the host node** (the node that owns the role), and
+- name the role explicitly with a **reference `link : LinkDeclaration`** on the attribute concept —
+  type-safe, refactoring-friendly, and completable (constrain the referent scope to the host
+  concept's own multi-valued containment links; see
+  `mps-aspect-constraints/references/referent-constraints.md` §"Meta-level scope").
+
+At runtime, convert the referenced declaration node to the meta-object with
+`jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getContainmentLink(linkDeclarationNode)`
+(sibling methods exist for properties and reference links), then compare against
+`SContainmentLink`s as usual.
+
+Rule of thumb: pin to a feature only when the attribute decorates **one occurrence** of a value
+(one property cell, one reference cell, one child). For "this node" or "this role as a whole",
+use a `NodeAttribute` plus, when a role must be named, an explicit reference to the declaration.
+
 ## Declaring an attribute = concept + extension-point spec
 
 An attribute is declared in **two** parts on its `ConceptDeclaration`:
@@ -118,7 +146,13 @@ with `deep=true` on its `ConceptDeclaration` (the print format is a valid mutati
 Structure only declares *that* a node may be attributed and *with what shape*. To make it usable:
 
 - **Editor** — write an editor for the attribute concept so it projects around/above the attributed
-  cell; without one the annotation is invisible. See `mps-aspect-editor`.
+  cell; without one the annotation is invisible. The editor must include a
+  `CellModel_AttributedNodeCell` (`attributed node`) that re-embeds the host node's editor — the
+  full pattern (guillemet labels, attributed-node placement, keyboard-deletability) is in
+  `mps-aspect-editor/references/editor-patterns.md` §"Annotation (Node Attribute) Editor". Users
+  add annotations via an intention (`mps-aspect-intentions/references/execute-idioms.md`) and
+  remove them via a `delete_action_id` action map
+  (`mps-aspect-editor-menus-and-keymaps/references/action-maps.md`).
 - **Constraints** — `canBeChild`/`canBeParent` can further gate placement beyond `attributed`.
 - **Behavior / smodel** — read or attach an attribute on a node with the smodel **`.@` operator**
   (`node.@MyAttribute`), then reach the children/refs/properties it grafts on with ordinary smodel
@@ -132,5 +166,3 @@ Structure only declares *that* a node may be attributed and *with what shape*. T
   `ConceptDeclaration` and confirm `attributed` resolves and `role` is set.
 - Rebuild the language; then a node of an `attributed` concept should offer the attribute in its
   context menu / completion, stored under `smodelAttribute`.
-</content>
-</invoke>
