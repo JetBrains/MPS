@@ -102,10 +102,10 @@ public final class NodesMatcher {
       }
     }
     while (iteratorA.hasNext()) {
-      ret.add(new NodeDifference(iteratorA.next().getPresentation(), Collections.singletonList(new UnmatchedNode())));
+      ret.add(new NodeDifference(DifferenceItem.describe(iteratorA.next()), Collections.singletonList(new UnmatchedNode())));
     }
     while (iteratorB.hasNext()) {
-      ret.add(new NodeDifference(iteratorB.next().getPresentation(), Collections.singletonList(new UnmatchedNode())));
+      ret.add(new NodeDifference(DifferenceItem.describe(iteratorB.next()), Collections.singletonList(new UnmatchedNode())));
     }
     return ret;
   }
@@ -237,7 +237,7 @@ public final class NodesMatcher {
       final int after = myDifferences.size();
       if (after != before) {
         assert after > before;
-        NodeDifference nd = new NodeDifference(a.getPresentation(), new ArrayList<DifferenceItem>(myDifferences.subList(before, after)));
+        NodeDifference nd = new NodeDifference(DifferenceItem.describe(a), new ArrayList<DifferenceItem>(myDifferences.subList(before, after)));
         for (int i = after - 1; i > before; i--) {
           myDifferences.remove(i);
         }
