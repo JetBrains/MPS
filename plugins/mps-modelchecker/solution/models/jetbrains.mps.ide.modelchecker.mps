@@ -3225,7 +3225,7 @@
                     <node concept="liA8E" id="4ascWT9h02E" role="2OqNvi">
                       <ref role="37wK5l" to="yyf4:~Consumer.accept(java.lang.Object)" resolve="accept" />
                       <node concept="1rXfSq" id="4ascWT9hwAe" role="37wK5m">
-                        <ref role="37wK5l" node="4ascWT9hpIB" resolve="error" />
+                        <ref role="37wK5l" node="3nbHAhd1FOK" resolve="error" />
                         <node concept="37vLTw" id="4ascWT9hxa8" role="37wK5m">
                           <ref role="3cqZAo" node="4ascWT9gdxX" resolve="toCheck" />
                         </node>
@@ -3400,7 +3400,7 @@
                       <ref role="3cqZAo" node="7qKLZZ2ZyXs" resolve="isDescriptorModel" />
                     </node>
                     <node concept="1rXfSq" id="4ascWT9hJ5$" role="3K4GZi">
-                      <ref role="37wK5l" node="4ascWT9hpIB" resolve="error" />
+                      <ref role="37wK5l" node="4ascWT9hpIB" resolve="warning" />
                       <node concept="37vLTw" id="4ascWT9hJvK" role="37wK5m">
                         <ref role="3cqZAo" node="4ascWT9gdxX" resolve="toCheck" />
                       </node>
@@ -3468,8 +3468,55 @@
       </node>
     </node>
     <node concept="2tJIrI" id="4ascWT9ho6A" role="jymVt" />
-    <node concept="3clFb_" id="4ascWT9hpIB" role="jymVt">
+    <node concept="3clFb_" id="3nbHAhd1FOK" role="jymVt">
       <property role="TrG5h" value="error" />
+      <node concept="3clFbS" id="3nbHAhd1FOL" role="3clF47">
+        <node concept="3clFbF" id="3nbHAhd1FOM" role="3cqZAp">
+          <node concept="2ShNRf" id="3nbHAhd1FON" role="3clFbG">
+            <node concept="1pGfFk" id="3nbHAhd1FOO" role="2ShVmc">
+              <ref role="37wK5l" node="4ascWT9h7aO" resolve="ProperGenPlanChecker.Item" />
+              <node concept="37vLTw" id="3nbHAhd1FOP" role="37wK5m">
+                <ref role="3cqZAo" node="3nbHAhd1FOX" resolve="model" />
+              </node>
+              <node concept="Rm8GO" id="3nbHAhd1FOQ" role="37wK5m">
+                <ref role="Rm8GQ" to="2gg1:~MessageStatus.ERROR" resolve="ERROR" />
+                <ref role="1Px2BO" to="2gg1:~MessageStatus" resolve="MessageStatus" />
+              </node>
+              <node concept="37vLTw" id="3nbHAhd1FOR" role="37wK5m">
+                <ref role="3cqZAo" node="3nbHAhd1FOZ" resolve="message" />
+              </node>
+              <node concept="2OqwBi" id="3nbHAhd1FOS" role="37wK5m">
+                <node concept="37vLTw" id="3nbHAhd1FOT" role="2Oq$k0">
+                  <ref role="3cqZAo" node="4ascWT9fPMt" resolve="myCategory" />
+                </node>
+                <node concept="liA8E" id="3nbHAhd1FOU" role="2OqNvi">
+                  <ref role="37wK5l" to="d6hs:~IssueKindReportItem$CheckerCategory.deriveItemKind()" resolve="deriveItemKind" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3Tm6S6" id="3nbHAhd1FOV" role="1B3o_S" />
+      <node concept="3uibUv" id="3nbHAhd1FOW" role="3clF45">
+        <ref role="3uigEE" to="d6hs:~IssueKindReportItem" resolve="IssueKindReportItem" />
+      </node>
+      <node concept="37vLTG" id="3nbHAhd1FOX" role="3clF46">
+        <property role="TrG5h" value="model" />
+        <node concept="3uibUv" id="3nbHAhd1FOY" role="1tU5fm">
+          <ref role="3uigEE" to="mhbf:~SModel" resolve="SModel" />
+        </node>
+      </node>
+      <node concept="37vLTG" id="3nbHAhd1FOZ" role="3clF46">
+        <property role="TrG5h" value="message" />
+        <node concept="3uibUv" id="3nbHAhd1FP0" role="1tU5fm">
+          <ref role="3uigEE" to="wyt6:~String" resolve="String" />
+        </node>
+      </node>
+    </node>
+    <node concept="2tJIrI" id="4ascWT9huJ4" role="jymVt" />
+    <node concept="3clFb_" id="4ascWT9hpIB" role="jymVt">
+      <property role="TrG5h" value="warning" />
       <node concept="3clFbS" id="4ascWT9hpIE" role="3clF47">
         <node concept="3clFbF" id="4ascWT9hrLu" role="3cqZAp">
           <node concept="2ShNRf" id="4ascWT9hrLw" role="3clFbG">
@@ -3478,8 +3525,8 @@
               <node concept="37vLTw" id="4ascWT9ht$s" role="37wK5m">
                 <ref role="3cqZAo" node="4ascWT9hqtc" resolve="model" />
               </node>
-              <node concept="Rm8GO" id="4ascWT9hrLz" role="37wK5m">
-                <ref role="Rm8GQ" to="2gg1:~MessageStatus.ERROR" resolve="ERROR" />
+              <node concept="Rm8GO" id="3nbHAhd23Wo" role="37wK5m">
+                <ref role="Rm8GQ" to="2gg1:~MessageStatus.WARNING" resolve="WARNING" />
                 <ref role="1Px2BO" to="2gg1:~MessageStatus" resolve="MessageStatus" />
               </node>
               <node concept="37vLTw" id="4ascWT9htlP" role="37wK5m">
@@ -3514,7 +3561,7 @@
         </node>
       </node>
     </node>
-    <node concept="2tJIrI" id="4ascWT9huJ4" role="jymVt" />
+    <node concept="2tJIrI" id="3nbHAhd20r8" role="jymVt" />
     <node concept="3clFb_" id="4ascWT9hu3G" role="jymVt">
       <property role="TrG5h" value="info" />
       <node concept="3clFbS" id="4ascWT9hu3H" role="3clF47">

@@ -86,7 +86,7 @@ public class ProperGenPlanChecker extends SpecificChecker {
       }
       String m = String.format("Model uses language %s with %d generator(s), none of which is engaged with the active generation plan", lr.getNamespace(), nGeneratorsOfLanguageInUse);
       // XXX not sure whether this is an error or a warning. However, Make doesn't stop unless it's an error, hence I stick to that.
-      errorCollector.accept((isDescriptorModel ? info(toCheck, m) : error(toCheck, m)));
+      errorCollector.accept((isDescriptorModel ? info(toCheck, m) : warning(toCheck, m)));
     }
     monitor.advance(2);
     monitor.done();
@@ -99,6 +99,10 @@ public class ProperGenPlanChecker extends SpecificChecker {
 
   private IssueKindReportItem error(SModel model, String message) {
     return new Item(model, MessageStatus.ERROR, message, myCategory.deriveItemKind());
+  }
+
+  private IssueKindReportItem warning(SModel model, String message) {
+    return new Item(model, MessageStatus.WARNING, message, myCategory.deriveItemKind());
   }
 
   private IssueKindReportItem info(SModel model, String message) {
