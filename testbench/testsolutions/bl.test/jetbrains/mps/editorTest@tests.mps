@@ -90412,7 +90412,7 @@
               <node concept="10QFUN" id="1EyN1AHrSik" role="1eOMHV">
                 <node concept="10QFUN" id="1EyN1AHrSil" role="10QFUP">
                   <node concept="3xONca" id="1EyN1AHrSim" role="10QFUP">
-                    <ref role="3xOPvv" node="1EyN1AHrFz8" />
+                    <ref role="3xOPvv" node="1EyN1AHrFz8" resolve="fieldTypeString" />
                   </node>
                   <node concept="3uibUv" id="1EyN1AHrSin" role="10QFUM">
                     <ref role="3uigEE" to="wyt6:~Object" resolve="Object" />
@@ -90435,7 +90435,7 @@
               <node concept="10QFUN" id="1EyN1AHrSit" role="1eOMHV">
                 <node concept="10QFUN" id="1EyN1AHrSiu" role="10QFUP">
                   <node concept="3xONca" id="1EyN1AHrSiv" role="10QFUP">
-                    <ref role="3xOPvv" node="1EyN1AHrJsu" />
+                    <ref role="3xOPvv" node="1EyN1AHrJsu" resolve="fieldTypeInteger" />
                   </node>
                   <node concept="3uibUv" id="1EyN1AHrSiw" role="10QFUM">
                     <ref role="3uigEE" to="wyt6:~Object" resolve="Object" />
@@ -90620,7 +90620,7 @@
               <node concept="10QFUN" id="1EyN1AHrNhL" role="1eOMHV">
                 <node concept="10QFUN" id="1EyN1AHrNhM" role="10QFUP">
                   <node concept="3xONca" id="1EyN1AHrNhN" role="10QFUP">
-                    <ref role="3xOPvv" node="18QbqATIo64" />
+                    <ref role="3xOPvv" node="18QbqATIo64" resolve="singleFieldA" />
                   </node>
                   <node concept="3uibUv" id="1EyN1AHrNhO" role="10QFUM">
                     <ref role="3uigEE" to="wyt6:~Object" resolve="Object" />

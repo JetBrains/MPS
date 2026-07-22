@@ -1905,7 +1905,7 @@
       </node>
       <node concept="3clFbS" id="60ggPToHY0R" role="3clF47">
         <node concept="1VxSAg" id="60ggPToHY0Z" role="3cqZAp">
-          <ref role="37wK5l" node="60ggPToHDMN" />
+          <ref role="37wK5l" node="60ggPToHDMN" resolve="NodesMatcher" />
           <node concept="2YIFZM" id="60ggPToHY17" role="37wK5m">
             <ref role="1Pybhc" to="33ny:~Collections" resolve="Collections" />
             <ref role="37wK5l" to="33ny:~Collections.singletonList(java.lang.Object)" resolve="singletonList" />
@@ -2033,7 +2033,7 @@
       </node>
       <node concept="3clFbS" id="60ggPToHDN0" role="3clF47">
         <node concept="1VxSAg" id="60ggPToHDNb" role="3cqZAp">
-          <ref role="37wK5l" node="39D1ywqVAMq" />
+          <ref role="37wK5l" node="39D1ywqVAMq" resolve="NodesMatcher" />
           <node concept="37vLTw" id="60ggPToHDNc" role="37wK5m">
             <ref role="3cqZAo" node="60ggPToHDMP" resolve="a" />
           </node>
@@ -2648,11 +2648,11 @@
           <node concept="3cpWsn" id="39D1ywr1WJ2" role="3cpWs9">
             <property role="TrG5h" value="mi" />
             <node concept="3uibUv" id="39D1ywr1WJ3" role="1tU5fm">
-              <ref role="3uigEE" node="60ggPToIjIH" />
+              <ref role="3uigEE" node="60ggPToIjIH" resolve="NodesMatcher.MatcherImpl" />
             </node>
             <node concept="2ShNRf" id="39D1ywr1Yuz" role="33vP2m">
               <node concept="1pGfFk" id="39D1ywr1YLU" role="2ShVmc">
-                <ref role="37wK5l" node="60ggPToIjJ4" />
+                <ref role="37wK5l" node="60ggPToIjJ4" resolve="NodesMatcher.MatcherImpl" />
                 <node concept="37vLTw" id="39D1ywr1YRi" role="37wK5m">
                   <ref role="3cqZAo" node="39D1ywqWsg3" resolve="nodeMap" />
                 </node>
@@ -2692,7 +2692,7 @@
                   <ref role="3cqZAo" node="39D1ywr1WJ2" resolve="mi" />
                 </node>
                 <node concept="liA8E" id="39D1ywr1Zmd" role="2OqNvi">
-                  <ref role="37wK5l" node="60ggPToIjJt" />
+                  <ref role="37wK5l" node="60ggPToIjJt" resolve="match" />
                   <node concept="2OqwBi" id="39D1ywqWG$2" role="37wK5m">
                     <node concept="37vLTw" id="39D1ywqWG$3" role="2Oq$k0">
                       <ref role="3cqZAo" node="39D1ywqXhKc" resolve="iteratorA" />
@@ -2832,7 +2832,7 @@
               <ref role="3cqZAo" node="39D1ywr1WJ2" resolve="mi" />
             </node>
             <node concept="2OwXpG" id="39D1ywr2g_P" role="2OqNvi">
-              <ref role="2Oxat5" node="60ggPToIjII" />
+              <ref role="2Oxat5" node="60ggPToIjII" resolve="myDifferences" />
             </node>
           </node>
         </node>
@@ -3267,7 +3267,7 @@
                 <ref role="3cqZAo" node="60ggPToHlDX" resolve="myOptions" />
               </node>
               <node concept="liA8E" id="60ggPToILnU" role="2OqNvi">
-                <ref role="37wK5l" node="18QbqASt1J$" />
+                <ref role="37wK5l" node="18QbqASt1J$" resolve="hasAnyUnordered" />
               </node>
             </node>
           </node>
@@ -4496,7 +4496,7 @@
           <node concept="3cpWsn" id="60ggPToIJrR" role="3cpWs9">
             <property role="TrG5h" value="trial" />
             <node concept="3uibUv" id="60ggPToIJrT" role="1tU5fm">
-              <ref role="3uigEE" node="60ggPToIjIH" resolve="MatcherImpl" />
+              <ref role="3uigEE" node="60ggPToIjIH" resolve="NodesMatcher.MatcherImpl" />
             </node>
             <node concept="2ShNRf" id="60ggPToILdc" role="33vP2m">
               <node concept="1pGfFk" id="60ggPToILjk" role="2ShVmc">
