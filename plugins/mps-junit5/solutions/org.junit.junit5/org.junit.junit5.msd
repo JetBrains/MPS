@@ -5,21 +5,20 @@
     <modelRoot type="java_classes" contentPath="${mps_home}/plugins/mps-junit5/lib">
       <sourceRoot location="." />
     </modelRoot>
+    <modelRoot type="java_classes" contentPath="${mps_home}/lib">
+      <sourceRoot location="intellij.libraries.junit5.jar" />
+      <sourceRoot location="intellij.libraries.junit5.jupiter.jar" />
+      <sourceRoot location="intellij.libraries.junit5.launcher.jar" />
+      <sourceRoot location="intellij.libraries.junit5.vintage.jar" />
+    </modelRoot>
   </models>
   <facets>
     <facet compile="ext" classes="provided" ext="no" type="java" languageLevel="JAVA_10">
       <classes generated="true" />
       <library location="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
       <library location="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/junit-platform-commons-1.13.4.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/junit-platform-engine-1.13.4.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/junit-platform-launcher-1.13.4.jar" />
       <library location="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-api-5.13.4.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-engine-5.13.4.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-migrationsupport-5.13.4.jar" />
       <library location="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/junit-vintage-engine-5.13.4.jar" />
     </facet>
   </facets>
   <dependencies>
