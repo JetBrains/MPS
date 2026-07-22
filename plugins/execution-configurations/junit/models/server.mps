@@ -36,8 +36,8 @@
     <import index="fhz7" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.execution.runners(MPS.IDEA/)" />
     <import index="gsia" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.swing.event(JDK/)" />
     <import index="kz9k" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.openapi.navigation(MPS.Editor/)" />
-    <import index="n4ib" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine(org.junit.junit5/)" />
-    <import index="s3rp" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine.discovery(org.junit.junit5/)" />
+    <import index="n4ib" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine(JUnit/)" />
+    <import index="s3rp" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine.discovery(JUnit/)" />
     <import index="34h4" ref="r:263b648a-3e00-426c-ab4b-ba47ccd788c9(jetbrains.mps.baselanguage.unitTest.execution.launcher)" />
     <import index="uemk" ref="r:e59b0550-8a55-4ba7-959c-684743b5ee3c(jetbrains.mps.lang.test.junit5)" />
   </imports>

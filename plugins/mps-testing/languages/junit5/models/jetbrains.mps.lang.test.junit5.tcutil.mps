@@ -15,11 +15,11 @@
     <import index="t6h5" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang.reflect(JDK/)" />
     <import index="guwi" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.io(JDK/)" />
     <import index="7x5y" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.nio.charset(JDK/)" />
-    <import index="bws1" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.launcher(org.junit.junit5/)" />
-    <import index="l503" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine.reporting(org.junit.junit5/)" />
-    <import index="n4ib" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine(org.junit.junit5/)" />
+    <import index="bws1" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.launcher(JUnit/)" />
+    <import index="l503" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine.reporting(JUnit/)" />
+    <import index="n4ib" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine(JUnit/)" />
     <import index="mti4" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.opentest4j(org.junit.junit5/)" />
-    <import index="9pnt" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine.support.descriptor(org.junit.junit5/)" />
+    <import index="9pnt" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine.support.descriptor(JUnit/)" />
     <import index="lhc4" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.annotations(MPS.OpenAPI/)" />
   </imports>
   <registry>

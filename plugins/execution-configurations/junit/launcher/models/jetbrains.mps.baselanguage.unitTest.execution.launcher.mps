@@ -28,11 +28,11 @@
     <import index="456n" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.internal.builders(JUnit/)" />
     <import index="k76n" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.runner.notification(JUnit/)" />
     <import index="lxc5" ref="r:b25f8540-4e18-427d-a8ac-60f947a3fbc1(jetbrains.mps.baselanguage.unitTest.execution)" />
-    <import index="n4ib" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine(org.junit.junit5/)" />
-    <import index="bws1" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.launcher(org.junit.junit5/)" />
-    <import index="z4cc" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.launcher.core(org.junit.junit5/)" />
-    <import index="s3rp" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine.discovery(org.junit.junit5/)" />
-    <import index="9pnt" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine.support.descriptor(org.junit.junit5/)" />
+    <import index="n4ib" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine(JUnit/)" />
+    <import index="bws1" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.launcher(JUnit/)" />
+    <import index="z4cc" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.launcher.core(JUnit/)" />
+    <import index="s3rp" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine.discovery(JUnit/)" />
+    <import index="9pnt" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine.support.descriptor(JUnit/)" />
     <import index="wwqx" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.logging(MPS.Core/)" />
     <import index="v9gs" ref="r:a139668a-5a0e-46e2-a802-102190e497e5(jetbrains.mps.core.tool.environment.util)" />
   </imports>

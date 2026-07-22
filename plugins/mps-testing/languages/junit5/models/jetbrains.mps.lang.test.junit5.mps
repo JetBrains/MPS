@@ -26,20 +26,20 @@
     <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" />
     <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
     <import index="w1kc" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel(MPS.Core/)" />
-    <import index="n4ib" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine(org.junit.junit5/)" />
-    <import index="s3rp" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine.discovery(org.junit.junit5/)" />
-    <import index="z4cc" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.launcher.core(org.junit.junit5/)" />
-    <import index="bws1" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.launcher(org.junit.junit5/)" />
+    <import index="n4ib" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine(JUnit/)" />
+    <import index="s3rp" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine.discovery(JUnit/)" />
+    <import index="z4cc" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.launcher.core(JUnit/)" />
+    <import index="bws1" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.launcher(JUnit/)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" />
     <import index="pzze" ref="r:c7043e16-5749-4bab-81f7-bab46752ca63(jetbrains.mps.lang.test.junit5.tcutil)" />
-    <import index="zi5z" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.commons(org.junit.junit5/)" />
+    <import index="zi5z" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.commons(JUnit/)" />
     <import index="7c1v" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.reporting.legacy.xml(org.junit.junit5/)" />
-    <import index="4u8o" ref="r:a7abd5f1-5d9a-4c90-a542-3e14c173186d(jetbrains.mps.baseLanguage.unitTest.platform)" />
     <import index="fojo" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.reporting.open.xml(org.junit.junit5/)" />
+    <import index="4u8o" ref="r:a7abd5f1-5d9a-4c90-a542-3e14c173186d(jetbrains.mps.baseLanguage.unitTest.platform)" />
     <import index="3qmy" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.classloading(MPS.Core/)" />
     <import index="pa15" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.persistence(MPS.Core/)" />
     <import index="b0pz" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.project.facets(MPS.Core/)" />
-    <import index="canb" ref="63b449db-0918-4a4a-a891-2c430ab133e4/java:org.junit.platform.engine.support.store(org.junit.junit5/)" />
+    <import index="canb" ref="49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit.platform.engine.support.store(JUnit/)" />
     <import index="anz6" ref="320a7d92-2f09-4a63-9adc-ee2fc4d9ea30/java:com.intellij.testFramework(MPS.IDEA.testFramework/)" />
   </imports>
   <registry>
