@@ -6,6 +6,10 @@
       <sourceRoot location="junit4.jar" />
       <sourceRoot location="lib.jar" />
       <sourceRoot location="hamcrest.jar" />
+      <sourceRoot location="intellij.libraries.junit5.jar" />
+      <sourceRoot location="intellij.libraries.junit5.jupiter.jar" />
+      <sourceRoot location="intellij.libraries.junit5.launcher.jar" />
+      <sourceRoot location="intellij.libraries.junit5.vintage.jar" />
       <PackageScope>
         <include prefix="junit."/>
         <include prefix="org.junit."/>
@@ -16,9 +20,13 @@
   <facets>
     <facet type="java" compile="ext" classes="provided" ext="no">
       <classes generated="true" />
-      <library location="${mps_home}/lib//junit4.jar" />
-      <library location="${mps_home}/lib//lib.jar" />
-      <library location="${mps_home}/lib//hamcrest.jar" />
+      <library location="${mps_home}/lib/junit4.jar" />
+      <library location="${mps_home}/lib/lib.jar" />
+      <library location="${mps_home}/lib/hamcrest.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit5.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit5.jupiter.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit5.launcher.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit5.vintage.jar" />
     </facet>
   </facets>
   <sourcePath />
