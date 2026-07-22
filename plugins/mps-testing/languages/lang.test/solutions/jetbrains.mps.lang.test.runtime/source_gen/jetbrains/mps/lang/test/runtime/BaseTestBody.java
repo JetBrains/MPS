@@ -20,10 +20,17 @@ import jetbrains.mps.smodel.SNodeId;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.util.Reference;
 import jetbrains.mps.ide.ThreadUtils;
+import jetbrains.mps.lang.test.matcher.MatchOptions;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
+import org.jetbrains.mps.openapi.language.SContainmentLink;
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration;
+import org.jetbrains.mps.openapi.language.SProperty;
+import jetbrains.mps.lang.core.behavior.PropertyAttribute__BehaviorDescriptor;
+import org.jetbrains.mps.openapi.language.SReferenceLink;
+import jetbrains.mps.lang.core.behavior.LinkAttribute__BehaviorDescriptor;
 import org.jetbrains.mps.openapi.language.SInterfaceConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 import org.jetbrains.mps.openapi.language.SConcept;
-import org.jetbrains.mps.openapi.language.SProperty;
 
 public class BaseTestBody {
   protected final SModel myModel;
@@ -101,6 +108,7 @@ public class BaseTestBody {
   }
 
   private void cleanTestAnnotations(SNode testNode) {
+    this.harvestRelaxationMarkers(testNode);
     for (SNode a : ListSequence.fromList(SNodeOperations.getNodeDescendants(testNode, CONCEPTS.AbstractTestNodeAnnotation$lh, false, new SAbstractConcept[]{}))) {
       if (SNodeOperations.isInstanceOf(a, CONCEPTS.TestNodeAnnotation$27)) {
         String an = SPropertyOperations.getString(SNodeOperations.cast(a, CONCEPTS.TestNodeAnnotation$27), PROPS.name$MnvL);
@@ -190,14 +198,53 @@ public class BaseTestBody {
   public interface ExceptionRunnable {
     void run() throws Exception;
   }
+  protected final MatchOptions myMatchRelaxations = new MatchOptions();
+  private void harvestRelaxationMarkers(SNode testNode) {
+    for (SNode m : ListSequence.fromList(SNodeOperations.getNodeDescendants(testNode, CONCEPTS.IMatchRelaxationMark$Uo, false, new SAbstractConcept[]{}))) {
+      SNode host = SNodeOperations.getParent(m);
+      if (SNodeOperations.isInstanceOf(m, CONCEPTS.IgnoreNodeMark$TT)) {
+        myMatchRelaxations.ignoreSubtree(host);
+      } else if (SNodeOperations.isInstanceOf(m, CONCEPTS.UnorderedChildrenMark$Ss)) {
+        SNode ld = SLinkOperations.getTarget(SNodeOperations.cast(m, CONCEPTS.UnorderedChildrenMark$Ss), LINKS.link$HJ90);
+        if (ld != null) {
+          SContainmentLink l = MetaAdapterByDeclaration.getContainmentLink(ld);
+          if (l != null) {
+            myMatchRelaxations.unorderedOn(host, l);
+          }
+        }
+      } else if (SNodeOperations.isInstanceOf(m, CONCEPTS.IgnorePropertyMark$SV)) {
+        SProperty p = PropertyAttribute__BehaviorDescriptor.getProperty_id1avfQ4BBzOo.invoke(SNodeOperations.cast(m, CONCEPTS.PropertyAttribute$Gb));
+        if (p != null) {
+          myMatchRelaxations.ignorePropertyOn(host, p);
+        }
+      } else if (SNodeOperations.isInstanceOf(m, CONCEPTS.IgnoreReferenceMark$Tq)) {
+        SReferenceLink r = LinkAttribute__BehaviorDescriptor.getLink_id1avfQ4BEFo6.invoke(SNodeOperations.cast(m, CONCEPTS.LinkAttribute$v_));
+        if (r != null) {
+          myMatchRelaxations.ignoreReferenceOn(host, r);
+        }
+      }
+      SNodeOperations.deleteNode(m);
+    }
+  }
 
   private static final class CONCEPTS {
     /*package*/ static final SInterfaceConcept ITestCase$Fp = MetaAdapterFactory.getInterfaceConcept(0xf61473f9130f42f6L, 0xb98d6c438812c2f6L, 0x11b2709bd56L, "jetbrains.mps.baseLanguage.unitTest.structure.ITestCase");
     /*package*/ static final SConcept TestNodeAnnotation$27 = MetaAdapterFactory.getConcept(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x119e1c6609cL, "jetbrains.mps.lang.test.structure.TestNodeAnnotation");
     /*package*/ static final SConcept AbstractTestNodeAnnotation$lh = MetaAdapterFactory.getConcept(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x11e0d52da47L, "jetbrains.mps.lang.test.structure.AbstractTestNodeAnnotation");
+    /*package*/ static final SConcept IgnoreNodeMark$TT = MetaAdapterFactory.getConcept(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x12362da9b8610b91L, "jetbrains.mps.lang.test.structure.IgnoreNodeMark");
+    /*package*/ static final SConcept UnorderedChildrenMark$Ss = MetaAdapterFactory.getConcept(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x12362da9b8610b8eL, "jetbrains.mps.lang.test.structure.UnorderedChildrenMark");
+    /*package*/ static final SConcept IgnorePropertyMark$SV = MetaAdapterFactory.getConcept(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x12362da9b8610b8fL, "jetbrains.mps.lang.test.structure.IgnorePropertyMark");
+    /*package*/ static final SConcept PropertyAttribute$Gb = MetaAdapterFactory.getConcept(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x2eb1ad060897da56L, "jetbrains.mps.lang.core.structure.PropertyAttribute");
+    /*package*/ static final SConcept IgnoreReferenceMark$Tq = MetaAdapterFactory.getConcept(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x12362da9b8610b90L, "jetbrains.mps.lang.test.structure.IgnoreReferenceMark");
+    /*package*/ static final SConcept LinkAttribute$v_ = MetaAdapterFactory.getConcept(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x2eb1ad060897da51L, "jetbrains.mps.lang.core.structure.LinkAttribute");
+    /*package*/ static final SInterfaceConcept IMatchRelaxationMark$Uo = MetaAdapterFactory.getInterfaceConcept(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x12362da9b8610b92L, "jetbrains.mps.lang.test.structure.IMatchRelaxationMark");
   }
 
   private static final class PROPS {
     /*package*/ static final SProperty name$MnvL = MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L, 0x110396ec041L, "name");
+  }
+
+  private static final class LINKS {
+    /*package*/ static final SReferenceLink link$HJ90 = MetaAdapterFactory.getReferenceLink(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x12362da9b8610b8eL, 0x12362da9b8dce85aL, "link");
   }
 }

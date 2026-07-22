@@ -3,6 +3,7 @@
   <persistence version="9" />
   <languages>
     <use id="982eb8df-2c96-4bd7-9963-11712ea622e5" name="jetbrains.mps.lang.resources" version="4" />
+    <use id="c72da2b9-7cce-4447-8389-f407dc1158b7" name="jetbrains.mps.lang.structure" version="9" />
     <devkit ref="78434eb8-b0e5-444b-850d-e7c4ad2da9ab(jetbrains.mps.devkit.aspect.structure)" />
   </languages>
   <imports>
@@ -14,8 +15,8 @@
     <import index="tp4k" ref="r:00000000-0000-4000-0000-011c89590368(jetbrains.mps.lang.plugin.structure)" />
     <import index="tpd4" ref="r:00000000-0000-4000-0000-011c895902b4(jetbrains.mps.lang.typesystem.structure)" />
     <import index="rliy" ref="r:00a69138-8767-4011-a710-463511eae7a6(jetbrains.mps.lang.test.plugin)" />
+    <import index="tpce" ref="r:00000000-0000-4000-0000-011c89590292(jetbrains.mps.lang.structure.structure)" />
     <import index="53vh" ref="r:53885008-7612-46ff-8b11-27f1d42c3adb(jetbrains.mps.lang.migration.structure)" implicit="true" />
-    <import index="tpce" ref="r:00000000-0000-4000-0000-011c89590292(jetbrains.mps.lang.structure.structure)" implicit="true" />
   </imports>
   <registry>
     <language id="982eb8df-2c96-4bd7-9963-11712ea622e5" name="jetbrains.mps.lang.resources">
@@ -40,6 +41,9 @@
       <concept id="7862711839422615209" name="jetbrains.mps.lang.structure.structure.DocumentedNodeAnnotation" flags="ng" index="t5JxF">
         <property id="7862711839422615217" name="text" index="t5JxN" />
       </concept>
+      <concept id="6054523464626862044" name="jetbrains.mps.lang.structure.structure.AttributeInfo_IsMultiple" flags="ng" index="tn0Fv">
+        <property id="6054523464626875854" name="value" index="tnX3d" />
+      </concept>
       <concept id="6054523464627964745" name="jetbrains.mps.lang.structure.structure.AttributeInfo_AttributedConcept" flags="ng" index="trNpa">
         <reference id="6054523464627965081" name="concept" index="trN6q" />
       </concept>
@@ -49,6 +53,7 @@
       <concept id="2992811758677295509" name="jetbrains.mps.lang.structure.structure.AttributeInfo" flags="ng" index="M6xJ_">
         <property id="7588428831955550663" name="role" index="Hh88m" />
         <child id="7588428831947959310" name="attributed" index="EQaZv" />
+        <child id="7588428831955550186" name="multiple" index="HhnKV" />
       </concept>
       <concept id="1169125787135" name="jetbrains.mps.lang.structure.structure.AbstractConceptDeclaration" flags="ig" index="PkWjJ">
         <property id="6714410169261853888" name="conceptId" index="EcuMT" />
@@ -1390,7 +1395,7 @@
     <property role="34LRSv" value="node matching rules" />
     <property role="R4oN_" value="relaxations of the strict node comparison in an editor test" />
     <property role="3GE5qa" value="editor" />
-    <ref role="1TJDcQ" to="tpck:gw2VY9q" />
+    <ref role="1TJDcQ" to="tpck:gw2VY9q" resolve="BaseConcept" />
     <node concept="t5JxF" id="60ggPToKIi_" role="lGtFl">
       <property role="t5JxN" value="Holds the node-matching rules of an EditorTestCase. Without rules the resulting node must match the expected node exactly; each rule relaxes one aspect of the comparison." />
     </node>
@@ -1408,7 +1413,7 @@
     <property role="R4oN_" value="a single relaxation of the strict node comparison" />
     <property role="R5$K7" value="true" />
     <property role="3GE5qa" value="editor" />
-    <ref role="1TJDcQ" to="tpck:gw2VY9q" />
+    <ref role="1TJDcQ" to="tpck:gw2VY9q" resolve="BaseConcept" />
   </node>
   <node concept="1TIwiD" id="60ggPToKIiB">
     <property role="EcuMT" value="6922106699763606695" />
@@ -1465,6 +1470,85 @@
       <property role="20lbJX" value="fLJekj4/_1" />
       <ref role="20lvS9" to="tpce:f_TJgxF" resolve="PropertyDeclaration" />
     </node>
+  </node>
+  <node concept="1TIwiD" id="18QbqASogIe">
+    <property role="EcuMT" value="1312286548391168910" />
+    <property role="TrG5h" value="UnorderedChildrenMark" />
+    <property role="34LRSv" value="unordered" />
+    <property role="R4oN_" value="Marks a containment role of a result node whose children match regardless of order" />
+    <ref role="1TJDcQ" to="tpck:2ULFgo8_XDk" resolve="NodeAttribute" />
+    <node concept="PrWs8" id="18QbqASogIj" role="PzmwI">
+      <ref role="PrY4T" node="18QbqASogIi" resolve="IMatchRelaxationMark" />
+    </node>
+    <node concept="M6xJ_" id="18QbqASogPG" role="lGtFl">
+      <property role="Hh88m" value="unorderedChildren" />
+      <node concept="trNpa" id="18QbqASogPH" role="EQaZv">
+        <ref role="trN6q" to="tpck:gw2VY9q" resolve="BaseConcept" />
+      </node>
+      <node concept="tn0Fv" id="18QbqAT36_J" role="HhnKV">
+        <property role="tnX3d" value="true" />
+      </node>
+    </node>
+    <node concept="1TJgyj" id="18QbqASRexq" role="1TKVEi">
+      <property role="IQ2ns" value="1312286548399286362" />
+      <property role="TrG5h" value="link" />
+      <property role="20kJfa" value="link" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" to="tpce:f_TJgxE" resolve="LinkDeclaration" />
+    </node>
+  </node>
+  <node concept="1TIwiD" id="18QbqASogIf">
+    <property role="EcuMT" value="1312286548391168911" />
+    <property role="TrG5h" value="IgnorePropertyMark" />
+    <property role="34LRSv" value="ignored" />
+    <property role="R4oN_" value="Marks a property of a result node whose value is not compared" />
+    <ref role="1TJDcQ" to="tpck:2ULFgo8_XDm" resolve="PropertyAttribute" />
+    <node concept="PrWs8" id="18QbqASogIk" role="PzmwI">
+      <ref role="PrY4T" node="18QbqASogIi" resolve="IMatchRelaxationMark" />
+    </node>
+    <node concept="M6xJ_" id="18QbqASogUk" role="lGtFl">
+      <property role="Hh88m" value="ignoreProperty" />
+      <node concept="trNpa" id="18QbqASogUl" role="EQaZv">
+        <ref role="trN6q" to="tpck:gw2VY9q" resolve="BaseConcept" />
+      </node>
+    </node>
+  </node>
+  <node concept="1TIwiD" id="18QbqASogIg">
+    <property role="EcuMT" value="1312286548391168912" />
+    <property role="TrG5h" value="IgnoreReferenceMark" />
+    <property role="34LRSv" value="ignored" />
+    <property role="R4oN_" value="Marks a reference link of a result node whose target is not compared" />
+    <ref role="1TJDcQ" to="tpck:2ULFgo8_XDh" resolve="LinkAttribute" />
+    <node concept="PrWs8" id="18QbqASogIl" role="PzmwI">
+      <ref role="PrY4T" node="18QbqASogIi" resolve="IMatchRelaxationMark" />
+    </node>
+    <node concept="M6xJ_" id="18QbqASogYW" role="lGtFl">
+      <property role="Hh88m" value="ignoreReference" />
+      <node concept="trNpa" id="18QbqASogYX" role="EQaZv">
+        <ref role="trN6q" to="tpck:gw2VY9q" resolve="BaseConcept" />
+      </node>
+    </node>
+  </node>
+  <node concept="1TIwiD" id="18QbqASogIh">
+    <property role="EcuMT" value="1312286548391168913" />
+    <property role="TrG5h" value="IgnoreNodeMark" />
+    <property role="34LRSv" value="ignored" />
+    <property role="R4oN_" value="Marks a result node whose entire subtree is excluded from comparison" />
+    <ref role="1TJDcQ" to="tpck:2ULFgo8_XDk" resolve="NodeAttribute" />
+    <node concept="PrWs8" id="18QbqASogIm" role="PzmwI">
+      <ref role="PrY4T" node="18QbqASogIi" resolve="IMatchRelaxationMark" />
+    </node>
+    <node concept="M6xJ_" id="18QbqASoh3Z" role="lGtFl">
+      <property role="Hh88m" value="ignoreNode" />
+      <node concept="trNpa" id="18QbqASoh40" role="EQaZv">
+        <ref role="trN6q" to="tpck:gw2VY9q" resolve="BaseConcept" />
+      </node>
+    </node>
+  </node>
+  <node concept="PlHQZ" id="18QbqASogIi">
+    <property role="EcuMT" value="1312286548391168914" />
+    <property role="TrG5h" value="IMatchRelaxationMark" />
+    <property role="R4oN_" value="Marker interface for annotation-based match relaxations in a result fixture" />
   </node>
 </model>
 

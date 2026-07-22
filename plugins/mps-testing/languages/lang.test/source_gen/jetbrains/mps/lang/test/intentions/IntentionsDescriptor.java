@@ -36,7 +36,7 @@ public final class IntentionsDescriptor extends AbstractIntentionAspectDescripto
       case 0:
         if (true) {
           // concept
-          intentions = new IntentionFactory[8];
+          intentions = new IntentionFactory[12];
           intentions[0] = new AddTestAnnotation_Intention();
           intentions[1] = new AddOperationsAnnotation_Intention();
           intentions[2] = new AddCellAnnotation_Intention();
@@ -45,6 +45,10 @@ public final class IntentionsDescriptor extends AbstractIntentionAspectDescripto
           intentions[5] = new AddScopeTestAnnotation_Intention();
           intentions[6] = new AddNodeHasWarningAnnotation_Intention();
           intentions[7] = new SpecifyRuleReferences_Intention();
+          intentions[8] = new MarkIgnoreNodeInResultMatch_Intention();
+          intentions[9] = new MarkIgnorePropertyInResultMatch_Intention();
+          intentions[10] = new MarkIgnoreReferenceInResultMatch_Intention();
+          intentions[11] = new MarkUnorderedChildrenInResultMatch_Intention();
         }
         break;
       case 1:
@@ -84,7 +88,7 @@ public final class IntentionsDescriptor extends AbstractIntentionAspectDescripto
   @NotNull
   @Override
   public Collection<IntentionFactory> getAllIntentions() {
-    IntentionFactory[] rv = new IntentionFactory[12];
+    IntentionFactory[] rv = new IntentionFactory[16];
     rv[0] = new AddTestAnnotation_Intention();
     rv[1] = new AddOperationsAnnotation_Intention();
     rv[2] = new AddCellAnnotation_Intention();
@@ -96,7 +100,11 @@ public final class IntentionsDescriptor extends AbstractIntentionAspectDescripto
     rv[8] = new SpecifyRuleReferences_Intention();
     rv[9] = new GenerateOutput_Intention();
     rv[10] = new MoveToContainedNode_Intention();
-    rv[11] = new NodeTransformerBasedIntentionFactory(new MoveCheckToContainedNode(), NodeTransformer.Kind.ERROR_FIX);
+    rv[11] = new MarkIgnoreNodeInResultMatch_Intention();
+    rv[12] = new MarkIgnorePropertyInResultMatch_Intention();
+    rv[13] = new MarkIgnoreReferenceInResultMatch_Intention();
+    rv[14] = new MarkUnorderedChildrenInResultMatch_Intention();
+    rv[15] = new NodeTransformerBasedIntentionFactory(new MoveCheckToContainedNode(), NodeTransformer.Kind.ERROR_FIX);
     return Arrays.asList(rv);
   }
   private static final ConceptSwitchIndex conceptIndex = new ConceptSwitchIndexBuilder().put(MetaIdFactory.conceptId(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x10802efe25aL), MetaIdFactory.conceptId(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x4c010b30d9be4be7L), MetaIdFactory.conceptId(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x11b07a3d4b5L), MetaIdFactory.conceptId(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x7181d929c720809L), MetaIdFactory.conceptId(0x8585453e6bfb4d80L, 0x98deb16074f1d86cL, 0x119e1c6609cL)).seal();

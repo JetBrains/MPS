@@ -1991,6 +1991,141 @@
       <unit id="1287827457547501276" at="14,0,42,0" name="jetbrains.mps.editorTest.PreviousDeprecationTest4_Test" />
     </file>
   </root>
+  <root nodeRef="r:914ee49a-537d-44b2-a5fb-bac87a54743d(jetbrains.mps.editorTest@tests)/1312286548393682943">
+    <file name="MarkUnorderedChildren_Test.java">
+      <node id="1312286548393682943" at="19,39,20,60" concept="12" />
+      <node id="1312286548393682943" at="24,61,25,36" concept="2" />
+      <node id="1312286548393682943" at="30,52,31,19" concept="12" />
+      <node id="1312286548393682943" at="35,51,36,72" concept="2" />
+      <node id="1312286548393682943" at="16,0,18,0" concept="10" trace="ourParametersCacheExtension" />
+      <node id="1312286548393682943" at="19,0,22,0" concept="1" trace="MarkUnorderedChildren_Test#()V" />
+      <node id="1312286548393682943" at="30,0,33,0" concept="1" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="1312286548393682943" at="23,0,27,0" concept="5" trace="test_MarkUnorderedChildren#()V" />
+      <node id="1312286548393682943" at="34,0,38,0" concept="5" trace="testMethodImpl#()V" />
+      <scope id="1312286548393682943" at="19,39,20,60" />
+      <scope id="1312286548393682943" at="24,61,25,36" />
+      <scope id="1312286548393682943" at="30,52,31,19" />
+      <scope id="1312286548393682943" at="35,51,36,72" />
+      <scope id="1312286548393682943" at="19,0,22,0" />
+      <scope id="1312286548393682943" at="30,0,33,0">
+        <var name="owner" id="1312286548393682943" />
+      </scope>
+      <scope id="1312286548393682943" at="23,0,27,0" />
+      <scope id="1312286548393682943" at="34,0,38,0" />
+      <unit id="1312286548393682943" at="28,0,39,0" name="jetbrains.mps.editorTest.MarkUnorderedChildren_Test$TestBody" />
+      <unit id="1312286548393682943" at="14,0,40,0" name="jetbrains.mps.editorTest.MarkUnorderedChildren_Test" />
+    </file>
+  </root>
+  <root nodeRef="r:914ee49a-537d-44b2-a5fb-bac87a54743d(jetbrains.mps.editorTest@tests)/1312286548393682961">
+    <file name="MarkIgnoreReference_Test.java">
+      <node id="1312286548393682961" at="19,37,20,60" concept="12" />
+      <node id="1312286548393682961" at="24,59,25,36" concept="2" />
+      <node id="1312286548393682961" at="30,52,31,19" concept="12" />
+      <node id="1312286548393682961" at="35,51,36,72" concept="2" />
+      <node id="1312286548393682961" at="16,0,18,0" concept="10" trace="ourParametersCacheExtension" />
+      <node id="1312286548393682961" at="19,0,22,0" concept="1" trace="MarkIgnoreReference_Test#()V" />
+      <node id="1312286548393682961" at="30,0,33,0" concept="1" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="1312286548393682961" at="23,0,27,0" concept="5" trace="test_MarkIgnoreReference#()V" />
+      <node id="1312286548393682961" at="34,0,38,0" concept="5" trace="testMethodImpl#()V" />
+      <scope id="1312286548393682961" at="19,37,20,60" />
+      <scope id="1312286548393682961" at="24,59,25,36" />
+      <scope id="1312286548393682961" at="30,52,31,19" />
+      <scope id="1312286548393682961" at="35,51,36,72" />
+      <scope id="1312286548393682961" at="19,0,22,0" />
+      <scope id="1312286548393682961" at="30,0,33,0">
+        <var name="owner" id="1312286548393682961" />
+      </scope>
+      <scope id="1312286548393682961" at="23,0,27,0" />
+      <scope id="1312286548393682961" at="34,0,38,0" />
+      <unit id="1312286548393682961" at="28,0,39,0" name="jetbrains.mps.editorTest.MarkIgnoreReference_Test$TestBody" />
+      <unit id="1312286548393682961" at="14,0,40,0" name="jetbrains.mps.editorTest.MarkIgnoreReference_Test" />
+    </file>
+  </root>
+  <root nodeRef="r:914ee49a-537d-44b2-a5fb-bac87a54743d(jetbrains.mps.editorTest@tests)/1312286548393683066">
+    <file name="MarkIgnoreProperty_Test.java">
+      <node id="1312286548393683066" at="19,36,20,60" concept="12" />
+      <node id="1312286548393683066" at="24,58,25,36" concept="2" />
+      <node id="1312286548393683066" at="30,52,31,19" concept="12" />
+      <node id="1312286548393683066" at="35,51,36,72" concept="2" />
+      <node id="1312286548393683066" at="16,0,18,0" concept="10" trace="ourParametersCacheExtension" />
+      <node id="1312286548393683066" at="19,0,22,0" concept="1" trace="MarkIgnoreProperty_Test#()V" />
+      <node id="1312286548393683066" at="30,0,33,0" concept="1" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="1312286548393683066" at="23,0,27,0" concept="5" trace="test_MarkIgnoreProperty#()V" />
+      <node id="1312286548393683066" at="34,0,38,0" concept="5" trace="testMethodImpl#()V" />
+      <scope id="1312286548393683066" at="19,36,20,60" />
+      <scope id="1312286548393683066" at="24,58,25,36" />
+      <scope id="1312286548393683066" at="30,52,31,19" />
+      <scope id="1312286548393683066" at="35,51,36,72" />
+      <scope id="1312286548393683066" at="19,0,22,0" />
+      <scope id="1312286548393683066" at="30,0,33,0">
+        <var name="owner" id="1312286548393683066" />
+      </scope>
+      <scope id="1312286548393683066" at="23,0,27,0" />
+      <scope id="1312286548393683066" at="34,0,38,0" />
+      <unit id="1312286548393683066" at="28,0,39,0" name="jetbrains.mps.editorTest.MarkIgnoreProperty_Test$TestBody" />
+      <unit id="1312286548393683066" at="14,0,40,0" name="jetbrains.mps.editorTest.MarkIgnoreProperty_Test" />
+    </file>
+  </root>
+  <root nodeRef="r:914ee49a-537d-44b2-a5fb-bac87a54743d(jetbrains.mps.editorTest@tests)/1312286548393695403">
+    <file name="MarkIgnoreNode_Test.java">
+      <node id="1312286548393695403" at="19,32,20,60" concept="12" />
+      <node id="1312286548393695403" at="24,54,25,36" concept="2" />
+      <node id="1312286548393695403" at="30,52,31,19" concept="12" />
+      <node id="1312286548393695403" at="35,51,36,72" concept="2" />
+      <node id="1312286548393695403" at="16,0,18,0" concept="10" trace="ourParametersCacheExtension" />
+      <node id="1312286548393695403" at="19,0,22,0" concept="1" trace="MarkIgnoreNode_Test#()V" />
+      <node id="1312286548393695403" at="30,0,33,0" concept="1" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="1312286548393695403" at="23,0,27,0" concept="5" trace="test_MarkIgnoreNode#()V" />
+      <node id="1312286548393695403" at="34,0,38,0" concept="5" trace="testMethodImpl#()V" />
+      <scope id="1312286548393695403" at="19,32,20,60" />
+      <scope id="1312286548393695403" at="24,54,25,36" />
+      <scope id="1312286548393695403" at="30,52,31,19" />
+      <scope id="1312286548393695403" at="35,51,36,72" />
+      <scope id="1312286548393695403" at="19,0,22,0" />
+      <scope id="1312286548393695403" at="30,0,33,0">
+        <var name="owner" id="1312286548393695403" />
+      </scope>
+      <scope id="1312286548393695403" at="23,0,27,0" />
+      <scope id="1312286548393695403" at="34,0,38,0" />
+      <unit id="1312286548393695403" at="28,0,39,0" name="jetbrains.mps.editorTest.MarkIgnoreNode_Test$TestBody" />
+      <unit id="1312286548393695403" at="14,0,40,0" name="jetbrains.mps.editorTest.MarkIgnoreNode_Test" />
+    </file>
+  </root>
+  <root nodeRef="r:914ee49a-537d-44b2-a5fb-bac87a54743d(jetbrains.mps.editorTest@tests)/1312286548393697668">
+    <file name="MarkCoexistence_Test.java">
+      <node id="1312286548393697668" at="22,33,23,60" concept="12" />
+      <node id="1312286548393697668" at="27,55,28,36" concept="2" />
+      <node id="1312286548393697668" at="33,52,34,19" concept="12" />
+      <node id="1312286548393697668" at="38,51,39,72" concept="2" />
+      <node id="1312286548393697668" at="42,46,43,48" concept="6" />
+      <node id="1312286548393703418" at="43,48,44,46" concept="2" />
+      <node id="1312286548393697668" at="44,46,45,21" concept="7" />
+      <node id="1312286548393697668" at="50,0,51,0" concept="10" trace="name$MnvL" />
+      <node id="1312286548393697668" at="19,0,21,0" concept="10" trace="ourParametersCacheExtension" />
+      <node id="1312286548393697668" at="22,0,25,0" concept="1" trace="MarkCoexistence_Test#()V" />
+      <node id="1312286548393697668" at="33,0,36,0" concept="1" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="1312286548393697668" at="26,0,30,0" concept="5" trace="test_MarkCoexistence#()V" />
+      <node id="1312286548393697668" at="37,0,41,0" concept="5" trace="testMethodImpl#()V" />
+      <node id="1312286548393697668" at="41,0,47,0" concept="5" trace="getMatchOptions#()Ljetbrains/mps/lang/test/matcher/MatchOptions;" />
+      <scope id="1312286548393697668" at="22,33,23,60" />
+      <scope id="1312286548393697668" at="27,55,28,36" />
+      <scope id="1312286548393697668" at="33,52,34,19" />
+      <scope id="1312286548393697668" at="38,51,39,72" />
+      <scope id="1312286548393697668" at="22,0,25,0" />
+      <scope id="1312286548393697668" at="33,0,36,0">
+        <var name="owner" id="1312286548393697668" />
+      </scope>
+      <scope id="1312286548393697668" at="42,46,45,21">
+        <var name="options" id="1312286548393697668" />
+      </scope>
+      <scope id="1312286548393697668" at="26,0,30,0" />
+      <scope id="1312286548393697668" at="37,0,41,0" />
+      <scope id="1312286548393697668" at="41,0,47,0" />
+      <unit id="1312286548393697668" at="49,0,52,0" name="jetbrains.mps.editorTest.MarkCoexistence_Test$PROPS" />
+      <unit id="1312286548393697668" at="31,0,48,0" name="jetbrains.mps.editorTest.MarkCoexistence_Test$TestBody" />
+      <unit id="1312286548393697668" at="17,0,53,0" name="jetbrains.mps.editorTest.MarkCoexistence_Test" />
+    </file>
+  </root>
   <root nodeRef="r:914ee49a-537d-44b2-a5fb-bac87a54743d(jetbrains.mps.editorTest@tests)/1413941122942910870">
     <file name="LT_PostfixIncrement_with_Plus_Test.java">
       <node id="1413941122942910870" at="19,47,20,60" concept="12" />

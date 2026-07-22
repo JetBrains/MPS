@@ -7,6 +7,9 @@ import org.jetbrains.mps.openapi.language.SProperty;
 import java.util.HashSet;
 import org.jetbrains.mps.openapi.language.SReferenceLink;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
+import java.util.Map;
+import org.jetbrains.mps.openapi.model.SNode;
+import java.util.HashMap;
 
 /**
  * 
@@ -22,6 +25,10 @@ public final class MatchOptions {
   private final Set<SReferenceLink> myIgnoredReferences = new HashSet<SReferenceLink>();
   private final Set<SContainmentLink> myIgnoredChildRoles = new HashSet<SContainmentLink>();
   private final Set<SContainmentLink> myUnorderedRoles = new HashSet<SContainmentLink>();
+  private final Map<SNode, Set<SProperty>> myNodeIgnoredProperties = new HashMap<SNode, Set<SProperty>>();
+  private final Map<SNode, Set<SReferenceLink>> myNodeIgnoredReferences = new HashMap<SNode, Set<SReferenceLink>>();
+  private final Map<SNode, Set<SContainmentLink>> myNodeUnorderedRoles = new HashMap<SNode, Set<SContainmentLink>>();
+  private final Set<SNode> myIgnoredSubtrees = new HashSet<SNode>();
   public MatchOptions ignoreProperty(SProperty property) {
     checkMutable();
     myIgnoredProperties.add(property);
@@ -61,5 +68,103 @@ public final class MatchOptions {
     if (this == STRICT) {
       throw new IllegalStateException("MatchOptions.STRICT cannot be modified");
     }
+  }
+  public MatchOptions ignorePropertyOn(SNode node, SProperty property) {
+    checkMutable();
+    Set<SProperty> s = myNodeIgnoredProperties.get(node);
+    if (s == null) {
+      s = new HashSet<SProperty>();
+      myNodeIgnoredProperties.put(node, s);
+    }
+    s.add(property);
+    return this;
+  }
+  public MatchOptions ignoreReferenceOn(SNode node, SReferenceLink link) {
+    checkMutable();
+    Set<SReferenceLink> s = myNodeIgnoredReferences.get(node);
+    if (s == null) {
+      s = new HashSet<SReferenceLink>();
+      myNodeIgnoredReferences.put(node, s);
+    }
+    s.add(link);
+    return this;
+  }
+  public MatchOptions unorderedOn(SNode node, SContainmentLink link) {
+    checkMutable();
+    Set<SContainmentLink> s = myNodeUnorderedRoles.get(node);
+    if (s == null) {
+      s = new HashSet<SContainmentLink>();
+      myNodeUnorderedRoles.put(node, s);
+    }
+    s.add(link);
+    return this;
+  }
+  public MatchOptions ignoreSubtree(SNode node) {
+    checkMutable();
+    myIgnoredSubtrees.add(node);
+    return this;
+  }
+  public boolean isIgnored(SNode node, SProperty property) {
+    if (isIgnored(property)) {
+      return true;
+    }
+    Set<SProperty> s = myNodeIgnoredProperties.get(node);
+    return s != null && s.contains(property);
+  }
+  public boolean isIgnored(SNode node, SReferenceLink link) {
+    if (isIgnored(link)) {
+      return true;
+    }
+    Set<SReferenceLink> s = myNodeIgnoredReferences.get(node);
+    return s != null && s.contains(link);
+  }
+  public boolean isUnordered(SNode node, SContainmentLink link) {
+    if (isUnordered(link)) {
+      return true;
+    }
+    Set<SContainmentLink> s = myNodeUnorderedRoles.get(node);
+    return s != null && s.contains(link);
+  }
+  public boolean isIgnoredSubtree(SNode node) {
+    return myIgnoredSubtrees.contains(node);
+  }
+  public boolean hasAnyUnordered() {
+    return hasUnorderedRoles() || !(myNodeUnorderedRoles.isEmpty());
+  }
+  public MatchOptions addAll(MatchOptions other) {
+    checkMutable();
+    myIgnoredProperties.addAll(other.myIgnoredProperties);
+    myIgnoredReferences.addAll(other.myIgnoredReferences);
+    myIgnoredChildRoles.addAll(other.myIgnoredChildRoles);
+    myUnorderedRoles.addAll(other.myUnorderedRoles);
+    for (SNode n : other.myNodeIgnoredProperties.keySet()) {
+      Set<SProperty> s = myNodeIgnoredProperties.get(n);
+      if (s == null) {
+        s = new HashSet<SProperty>();
+        myNodeIgnoredProperties.put(n, s);
+      }
+      s.addAll(other.myNodeIgnoredProperties.get(n));
+    }
+    for (SNode n : other.myNodeIgnoredReferences.keySet()) {
+      Set<SReferenceLink> s = myNodeIgnoredReferences.get(n);
+      if (s == null) {
+        s = new HashSet<SReferenceLink>();
+        myNodeIgnoredReferences.put(n, s);
+      }
+      s.addAll(other.myNodeIgnoredReferences.get(n));
+    }
+    for (SNode n : other.myNodeUnorderedRoles.keySet()) {
+      Set<SContainmentLink> s = myNodeUnorderedRoles.get(n);
+      if (s == null) {
+        s = new HashSet<SContainmentLink>();
+        myNodeUnorderedRoles.put(n, s);
+      }
+      s.addAll(other.myNodeUnorderedRoles.get(n));
+    }
+    myIgnoredSubtrees.addAll(other.myIgnoredSubtrees);
+    return this;
+  }
+  public boolean isIgnored(SNode node, SContainmentLink link) {
+    return isIgnored(link);
   }
 }

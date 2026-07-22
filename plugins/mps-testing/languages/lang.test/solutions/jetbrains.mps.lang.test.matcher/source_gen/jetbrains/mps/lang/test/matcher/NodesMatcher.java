@@ -141,7 +141,7 @@ public final class NodesMatcher {
    */
   private void repairUnordered(Map<SNode, SNode> map) {
     myUnorderedPairing.clear();
-    if (!(myOptions.hasUnorderedRoles())) {
+    if (!(myOptions.hasAnyUnordered())) {
       return;
     }
     Iterator<SNode> iteratorA = myFirst.iterator();
@@ -164,7 +164,7 @@ public final class NodesMatcher {
     for (SContainmentLink role : roles) {
       List<SNode> children1 = toList(a.getChildren(role));
       List<SNode> children2 = toList(b.getChildren(role));
-      if (myOptions.isUnordered(role) && children1.size() == children2.size() && children1.size() > 1) {
+      if (myOptions.isUnordered(b, role) && children1.size() == children2.size() && children1.size() > 1) {
         children2 = pairUnorderedChildren(children1, children2, map);
       }
       Iterator<SNode> iterator1 = children1.iterator();
@@ -225,6 +225,9 @@ public final class NodesMatcher {
       myPairing = pairing;
     }
     /*package*/ void match(SNode a, SNode b) {
+      if (myOptions.isIgnoredSubtree(b)) {
+        return;
+      }
       final int before = myDifferences.size();
       if (matchConcepts(a, b)) {
         matchProperties(a, b);
@@ -257,7 +260,7 @@ public final class NodesMatcher {
         roles.add(nextReference.getLink());
       }
       for (SReferenceLink role : roles) {
-        if (myOptions.isIgnored(role)) {
+        if (myOptions.isIgnored(b, role)) {
           continue;
         }
         final SReference reference1 = a.getReference(role);
@@ -307,7 +310,7 @@ public final class NodesMatcher {
         roles.add(child.getContainmentLink());
       }
       for (SContainmentLink role : roles) {
-        if (myOptions.isIgnored(role)) {
+        if (myOptions.isIgnored(b, role)) {
           continue;
         }
         Iterable<? extends SNode> children1 = a.getChildren(role);
@@ -319,7 +322,7 @@ public final class NodesMatcher {
           continue;
         }
         Iterator<? extends SNode> iterator2 = children2.iterator();
-        if (myOptions.isUnordered(role)) {
+        if (myOptions.isUnordered(b, role)) {
           List<SNode> reordered = new ArrayList<SNode>();
           boolean complete = true;
           for (SNode child : children1) {
@@ -349,7 +352,7 @@ public final class NodesMatcher {
         properties.add(property);
       }
       for (SProperty property : properties) {
-        if (myOptions.isIgnored(property)) {
+        if (myOptions.isIgnored(b, property)) {
           continue;
         }
         SDataType type = property.getType();

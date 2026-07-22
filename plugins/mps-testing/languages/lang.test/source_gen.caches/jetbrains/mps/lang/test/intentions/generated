@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-3xr0ggfhcw68224weoy0q7pdw32xshv">
-  <files names="AddCellAnnotation_Intention.java:AddMockAnnotation_Intention.java:AddNodeHasErrorAnnotation_Intention.java:AddNodeHasWarningAnnotation_Intention.java:AddOperationsAnnotation_Intention.java:AddScopeExpectedNodes_Intention.java:AddScopeTestAnnotation_Intention.java:AddTestAnnotation_Intention.java:GenerateOutput_Intention.java:IntentionsDescriptor.java:MoveCheckToContainedNode.java:MoveToContainedNode_Intention.java:SpecifyRuleReferences_Intention.java" />
+<product version="3" modelHash="-4gr728dc2tsyvduj9qyze2df1itvgsn">
+  <files names="AddCellAnnotation_Intention.java:AddMockAnnotation_Intention.java:AddNodeHasErrorAnnotation_Intention.java:AddNodeHasWarningAnnotation_Intention.java:AddOperationsAnnotation_Intention.java:AddScopeExpectedNodes_Intention.java:AddScopeTestAnnotation_Intention.java:AddTestAnnotation_Intention.java:GenerateOutput_Intention.java:IntentionsDescriptor.java:MarkIgnoreNodeInResultMatch_Intention.java:MarkIgnorePropertyInResultMatch_Intention.java:MarkIgnoreReferenceInResultMatch_Intention.java:MarkUnorderedChildrenInResultMatch_Intention.java:MoveCheckToContainedNode.java:MoveToContainedNode_Intention.java:SpecifyRuleReferences_Intention.java" />
 </product>
 

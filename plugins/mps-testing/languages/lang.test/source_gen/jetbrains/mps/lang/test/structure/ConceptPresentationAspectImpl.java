@@ -29,13 +29,17 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_EditorTestCase;
   private ConceptPresentation props_ExpectedMessageContainer;
   private ConceptPresentation props_ExpressionContainer;
+  private ConceptPresentation props_IMatchRelaxationMark;
   private ConceptPresentation props_INodesTestMethod;
   private ConceptPresentation props_IReferenceAttachable;
   private ConceptPresentation props_IRuleReference;
   private ConceptPresentation props_ITestAnnotationsContainer;
   private ConceptPresentation props_IgnoreChildrenRule;
   private ConceptPresentation props_IgnoreMigrationDataOption;
+  private ConceptPresentation props_IgnoreNodeMark;
+  private ConceptPresentation props_IgnorePropertyMark;
   private ConceptPresentation props_IgnorePropertyRule;
+  private ConceptPresentation props_IgnoreReferenceMark;
   private ConceptPresentation props_IgnoreReferenceRule;
   private ConceptPresentation props_InfoStatementReference;
   private ConceptPresentation props_InvokeActionStatement;
@@ -89,6 +93,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_TypeKeyStatement;
   private ConceptPresentation props_TypesystemEquationReference;
   private ConceptPresentation props_UnknownRuleReference;
+  private ConceptPresentation props_UnorderedChildrenMark;
   private ConceptPresentation props_UnorderedChildrenRule;
   private ConceptPresentation props_UntypedExpression;
   private ConceptPresentation props_WarningStatementReference;
@@ -229,6 +234,13 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_ExpressionContainer = cpb.create();
         }
         return props_ExpressionContainer;
+      case LanguageConceptSwitch.IMatchRelaxationMark:
+        if (props_IMatchRelaxationMark == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("Marker interface for annotation-based match relaxations in a result fixture");
+          props_IMatchRelaxationMark = cpb.create();
+        }
+        return props_IMatchRelaxationMark;
       case LanguageConceptSwitch.INodesTestMethod:
         if (props_INodesTestMethod == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
@@ -268,6 +280,22 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_IgnoreMigrationDataOption = cpb.create();
         }
         return props_IgnoreMigrationDataOption;
+      case LanguageConceptSwitch.IgnoreNodeMark:
+        if (props_IgnoreNodeMark == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("Marks a result node whose entire subtree is excluded from comparison");
+          cpb.rawPresentation("ignored");
+          props_IgnoreNodeMark = cpb.create();
+        }
+        return props_IgnoreNodeMark;
+      case LanguageConceptSwitch.IgnorePropertyMark:
+        if (props_IgnorePropertyMark == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("Marks a property of a result node whose value is not compared");
+          cpb.rawPresentation("ignored");
+          props_IgnorePropertyMark = cpb.create();
+        }
+        return props_IgnorePropertyMark;
       case LanguageConceptSwitch.IgnorePropertyRule:
         if (props_IgnorePropertyRule == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
@@ -276,6 +304,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_IgnorePropertyRule = cpb.create();
         }
         return props_IgnorePropertyRule;
+      case LanguageConceptSwitch.IgnoreReferenceMark:
+        if (props_IgnoreReferenceMark == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("Marks a reference link of a result node whose target is not compared");
+          cpb.rawPresentation("ignored");
+          props_IgnoreReferenceMark = cpb.create();
+        }
+        return props_IgnoreReferenceMark;
       case LanguageConceptSwitch.IgnoreReferenceRule:
         if (props_IgnoreReferenceRule == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
@@ -652,6 +688,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_UnknownRuleReference = cpb.create();
         }
         return props_UnknownRuleReference;
+      case LanguageConceptSwitch.UnorderedChildrenMark:
+        if (props_UnorderedChildrenMark == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("Marks a containment role of a result node whose children match regardless of order");
+          cpb.rawPresentation("unordered");
+          props_UnorderedChildrenMark = cpb.create();
+        }
+        return props_UnorderedChildrenMark;
       case LanguageConceptSwitch.UnorderedChildrenRule:
         if (props_UnorderedChildrenRule == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();

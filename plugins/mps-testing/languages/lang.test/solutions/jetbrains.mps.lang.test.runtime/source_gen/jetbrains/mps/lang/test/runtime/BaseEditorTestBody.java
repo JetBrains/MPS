@@ -20,10 +20,10 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.concurrent.atomic.AtomicReference;
 import jetbrains.mps.smodel.ModelWriteRunnable;
 import jetbrains.mps.lang.test.matcher.NodesMatcher;
+import jetbrains.mps.lang.test.matcher.MatchOptions;
 import jetbrains.mps.lang.test.matcher.NodeDifference;
 import org.junit.Assert;
 import java.util.Map;
-import jetbrains.mps.lang.test.matcher.MatchOptions;
 import jetbrains.mps.testbench.util.CachingAppender;
 import jetbrains.mps.testbench.junit.UncleanTestExecutionException;
 import com.intellij.openapi.command.impl.UndoManagerImpl;
@@ -151,7 +151,7 @@ public abstract class BaseEditorTestBody extends BaseTestBody {
       if (myResult != null) {
         try {
           SNode editedNode = myBefore;
-          NodesMatcher nm = new NodesMatcher(editedNode, myResult, getMatchOptions());
+          NodesMatcher nm = new NodesMatcher(editedNode, myResult, new MatchOptions().addAll(getMatchOptions()).addAll(myMatchRelaxations));
           List<NodeDifference> diff = nm.diff();
           if (!(diff.isEmpty())) {
             StringBuilder sb = new StringBuilder();
