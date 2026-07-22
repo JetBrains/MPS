@@ -5,9 +5,9 @@ package jetbrains.mps.lang.test.matcher;
 import java.util.Map;
 import org.jetbrains.mps.openapi.model.SNode;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Collections;
 import org.jetbrains.annotations.NotNull;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -35,15 +35,24 @@ public final class NodesMatcher {
   private final Map<SNode, SNode> myMap;
   private final List<SNode> myFirst;
   private final List<SNode> mySecond;
+  private MatchOptions myOptions = MatchOptions.STRICT;
+  private final Map<SNode, SNode> myUnorderedPairing = new HashMap<SNode, SNode>();
 
   public NodesMatcher(SNode a, SNode b) {
     this(Collections.singletonList(a), Collections.singletonList(b));
+  }
+  public NodesMatcher(SNode a, SNode b, @NotNull MatchOptions options) {
+    this(Collections.singletonList(a), Collections.singletonList(b), options);
   }
 
   public NodesMatcher(@NotNull List<SNode> a, @NotNull List<SNode> b) {
     myMap = new HashMap<SNode, SNode>();
     myFirst = a;
     mySecond = b;
+  }
+  public NodesMatcher(@NotNull List<SNode> a, @NotNull List<SNode> b, @NotNull MatchOptions options) {
+    this(a, b);
+    myOptions = options;
   }
 
   public Map<SNode, SNode> getMap() {
@@ -70,6 +79,7 @@ public final class NodesMatcher {
     while (iteratorA.hasNext() && iteratorB.hasNext()) {
       populateMap(iteratorA.next(), iteratorB.next(), map);
     }
+    repairUnordered(map);
     myMap.clear();
     myMap.putAll(map);
     return diff(map);
@@ -80,7 +90,7 @@ public final class NodesMatcher {
     ArrayList<NodeDifference> ret = new ArrayList<NodeDifference>(myFirst.size());
     Iterator<SNode> iteratorA = myFirst.iterator();
     Iterator<SNode> iteratorB = mySecond.iterator();
-    MatcherImpl mi = new MatcherImpl(nodeMap);
+    MatcherImpl mi = new MatcherImpl(nodeMap, myOptions, myUnorderedPairing);
     while (iteratorA.hasNext() && iteratorB.hasNext()) {
       mi.match(iteratorA.next(), iteratorB.next());
     }
@@ -120,26 +130,100 @@ public final class NodesMatcher {
     }
     map.put(a, b);
   }
-
   /**
    * 
-   * @deprecated use cons with args and {@link jetbrains.mps.lang.test.matcher.NodesMatcher#diff()} 
+   * Second pass over the compared trees: for every containment role declared unordered in
+   * {@link jetbrains.mps.lang.test.matcher.MatchOptions} , re-pairs the children of that role by structural similarity instead of
+   * by position, records the chosen pairing for the subsequent matching pass and fixes the
+   * correspondence map accordingly. Pairing is greedy: each child of the first node takes the first
+   * still unpaired child of the second node it fully matches; children with no full match are then
+   * paired positionally so that genuine differences are still reported in a readable way.
    */
-  @Deprecated
-  public NodeDifference match(SNode a, SNode b) {
-    MatcherImpl mi = new MatcherImpl(myMap);
-    mi.match(a, b);
-    return (mi.myDifferences.isEmpty() ? null : ((NodeDifference) mi.myDifferences.get(0)));
+  private void repairUnordered(Map<SNode, SNode> map) {
+    myUnorderedPairing.clear();
+    if (!(myOptions.hasUnorderedRoles())) {
+      return;
+    }
+    Iterator<SNode> iteratorA = myFirst.iterator();
+    Iterator<SNode> iteratorB = mySecond.iterator();
+    while (iteratorA.hasNext() && iteratorB.hasNext()) {
+      repairUnordered(iteratorA.next(), iteratorB.next(), map);
+    }
   }
+  private void repairUnordered(SNode a, SNode b, Map<SNode, SNode> map) {
+    if (!(a.getConcept().equals(b.getConcept()))) {
+      return;
+    }
+    HashSet<SContainmentLink> roles = new HashSet<SContainmentLink>();
+    for (SNode child : a.getChildren()) {
+      roles.add(child.getContainmentLink());
+    }
+    for (SNode child : b.getChildren()) {
+      roles.add(child.getContainmentLink());
+    }
+    for (SContainmentLink role : roles) {
+      List<SNode> children1 = toList(a.getChildren(role));
+      List<SNode> children2 = toList(b.getChildren(role));
+      if (myOptions.isUnordered(role) && children1.size() == children2.size() && children1.size() > 1) {
+        children2 = pairUnorderedChildren(children1, children2, map);
+      }
+      Iterator<SNode> iterator1 = children1.iterator();
+      Iterator<SNode> iterator2 = children2.iterator();
+      while (iterator1.hasNext() && iterator2.hasNext()) {
+        repairUnordered(iterator1.next(), iterator2.next(), map);
+      }
+    }
+  }
+  private List<SNode> pairUnorderedChildren(List<SNode> children1, List<SNode> children2, Map<SNode, SNode> map) {
+    SNode[] matched = new SNode[children1.size()];
+    List<SNode> remaining = new ArrayList<SNode>(children2);
+    for (int i = 0; i < children1.size(); i++) {
+      SNode child = children1.get(i);
+      for (Iterator<SNode> candidates = remaining.iterator(); candidates.hasNext();) {
+        SNode candidate = candidates.next();
+        if (structurallyMatches(child, candidate, map)) {
+          matched[i] = candidate;
+          candidates.remove();
+          break;
+        }
+      }
+    }
+    List<SNode> result = new ArrayList<SNode>(children1.size());
+    Iterator<SNode> leftover = remaining.iterator();
+    for (int i = 0; i < children1.size(); i++) {
+      SNode counterpart = ((matched[i] != null ? matched[i] : leftover.next()));
+      result.add(counterpart);
+      myUnorderedPairing.put(children1.get(i), counterpart);
+      populateMap(children1.get(i), counterpart, map);
+    }
+    return result;
+  }
+  private boolean structurallyMatches(SNode a, SNode b, Map<SNode, SNode> map) {
+    HashMap<SNode, SNode> trialMap = new HashMap<SNode, SNode>(map);
+    populateMap(a, b, trialMap);
+    MatcherImpl trial = new MatcherImpl(trialMap, myOptions, Collections.<SNode,SNode>emptyMap());
+    trial.match(a, b);
+    return trial.myDifferences.isEmpty();
+  }
+  private static List<SNode> toList(Iterable<? extends SNode> nodes) {
+    List<SNode> result = new ArrayList<SNode>();
+    for (SNode node : nodes) {
+      result.add(node);
+    }
+    return result;
+  }
+
 
   /*package*/ static class MatcherImpl {
     /*package*/ final List<DifferenceItem> myDifferences = new ArrayList<DifferenceItem>();
     private final Map<SNode, SNode> myMap;
-
-    /*package*/ MatcherImpl(Map<SNode, SNode> nodeMap) {
+    private final MatchOptions myOptions;
+    private final Map<SNode, SNode> myPairing;
+    /*package*/ MatcherImpl(Map<SNode, SNode> nodeMap, MatchOptions options, Map<SNode, SNode> pairing) {
       myMap = nodeMap;
+      myOptions = options;
+      myPairing = pairing;
     }
-
     /*package*/ void match(SNode a, SNode b) {
       final int before = myDifferences.size();
       if (matchConcepts(a, b)) {
@@ -151,14 +235,12 @@ public final class NodesMatcher {
       if (after != before) {
         assert after > before;
         NodeDifference nd = new NodeDifference(a.getPresentation(), new ArrayList<DifferenceItem>(myDifferences.subList(before, after)));
-        // i>before, not >=, as we replace element @before with nd afterwards
         for (int i = after - 1; i > before; i--) {
           myDifferences.remove(i);
         }
         myDifferences.set(before, nd);
       }
     }
-
     private boolean matchConcepts(SNode a, SNode b) {
       if (a.getConcept().equals(b.getConcept())) {
         return true;
@@ -166,7 +248,6 @@ public final class NodesMatcher {
       myDifferences.add(new ConceptDifference(a.getConcept(), b.getConcept()));
       return false;
     }
-
     private void matchReferences(SNode a, SNode b) {
       HashSet<SReferenceLink> roles = new HashSet<SReferenceLink>();
       for (SReference nextReference : a.getReferences()) {
@@ -176,21 +257,20 @@ public final class NodesMatcher {
         roles.add(nextReference.getLink());
       }
       for (SReferenceLink role : roles) {
+        if (myOptions.isIgnored(role)) {
+          continue;
+        }
         final SReference reference1 = a.getReference(role);
         SNode referenceTarget1 = null;
         if (reference1 != null) {
           referenceTarget1 = reference1.getTargetNode();
         }
-
         final SReference reference2 = b.getReference(role);
         SNode referenceTarget2 = null;
         if (reference2 != null) {
           referenceTarget2 = reference2.getTargetNode();
         }
-
         assert reference1 != null || reference2 != null;
-
-        // handle scenario when 1 node doesn't have an association set, and another got an unresolved link (referenceTarget1 == referenceTarget2 == null)
         if (reference1 == null && reference2 != null) {
           myDifferences.add(new ReferenceDifference(role, false, null, referenceTarget2));
           continue;
@@ -199,7 +279,6 @@ public final class NodesMatcher {
           myDifferences.add(new ReferenceDifference(role, false, referenceTarget1, null));
           continue;
         }
-
         if (myMap.containsKey(referenceTarget1)) {
           if (myMap.get(referenceTarget1) != referenceTarget2) {
             myDifferences.add(new ReferenceDifference(role, true, myMap.get(referenceTarget1), referenceTarget2));
@@ -211,7 +290,6 @@ public final class NodesMatcher {
         }
       }
     }
-
     private static int countElements(Iterator<?> it) {
       int counter = 0;
       while (it.hasNext()) {
@@ -220,7 +298,6 @@ public final class NodesMatcher {
       }
       return counter;
     }
-
     private void matchChildren(SNode a, SNode b) {
       HashSet<SContainmentLink> roles = new HashSet<SContainmentLink>();
       for (SNode child : a.getChildren()) {
@@ -230,6 +307,9 @@ public final class NodesMatcher {
         roles.add(child.getContainmentLink());
       }
       for (SContainmentLink role : roles) {
+        if (myOptions.isIgnored(role)) {
+          continue;
+        }
         Iterable<? extends SNode> children1 = a.getChildren(role);
         Iterable<? extends SNode> children2 = b.getChildren(role);
         int size1 = countElements(children1.iterator());
@@ -238,15 +318,28 @@ public final class NodesMatcher {
           myDifferences.add(new ChildrenCountDifference(role, size1, size2));
           continue;
         }
-
-        Iterator<? extends SNode> iterator1 = children1.iterator();
         Iterator<? extends SNode> iterator2 = children2.iterator();
+        if (myOptions.isUnordered(role)) {
+          List<SNode> reordered = new ArrayList<SNode>();
+          boolean complete = true;
+          for (SNode child : children1) {
+            SNode counterpart = myPairing.get(child);
+            if (counterpart == null) {
+              complete = false;
+              break;
+            }
+            reordered.add(counterpart);
+          }
+          if (complete) {
+            iterator2 = reordered.iterator();
+          }
+        }
+        Iterator<? extends SNode> iterator1 = children1.iterator();
         while (iterator1.hasNext() && iterator2.hasNext()) {
           match(iterator1.next(), iterator2.next());
         }
       }
     }
-
     private void matchProperties(SNode a, SNode b) {
       HashSet<SProperty> properties = new HashSet<SProperty>();
       for (SProperty property : a.getProperties()) {
@@ -256,6 +349,9 @@ public final class NodesMatcher {
         properties.add(property);
       }
       for (SProperty property : properties) {
+        if (myOptions.isIgnored(property)) {
+          continue;
+        }
         SDataType type = property.getType();
         Object pa = type.fromString(a.getProperty(property));
         Object pb = type.fromString(b.getProperty(property));
@@ -264,7 +360,6 @@ public final class NodesMatcher {
         }
       }
     }
-
   }
 
 }

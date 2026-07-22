@@ -13,7 +13,7 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1070475587102:jetbrains.mps.baseLanguage.structure.SuperConstructorInvocation" />
   <root>
     <file name="ConstraintsAspectDescriptor.java">
-      <unit at="15,0,44,0" name="jetbrains.mps.lang.test.constraints.ConstraintsAspectDescriptor" />
+      <unit at="15,0,50,0" name="jetbrains.mps.lang.test.constraints.ConstraintsAspectDescriptor" />
     </file>
     <file name="GeneratedFeedbackAspectConstraints.java">
       <unit at="10,0,17,0" name="jetbrains.mps.lang.test.constraints.GeneratedFeedbackAspectConstraints" />
@@ -393,6 +393,151 @@
       <unit id="6626913010124378670" at="47,0,51,0" name="jetbrains.mps.lang.test.constraints.MigrationReference_Constraints$LINKS" />
       <unit id="6626913010124378671" at="26,0,41,0" name="jetbrains.mps.lang.test.constraints.MigrationReference_Constraints$RD1" />
       <unit id="6626913010124378670" at="20,0,56,0" name="jetbrains.mps.lang.test.constraints.MigrationReference_Constraints" />
+    </file>
+  </root>
+  <root nodeRef="r:00000000-0000-4000-0000-011c89590382(jetbrains.mps.lang.test.constraints)/6922106699764123715">
+    <file name="UnorderedChildrenRule_Constraints.java">
+      <node id="6922106699764123715" at="27,95,28,58" concept="10" />
+      <node id="6922106699764123716" at="28,58,29,26" concept="1" />
+      <node id="6922106699764123716" at="33,54,34,53" concept="10" />
+      <node id="6922106699764123716" at="41,61,42,136" concept="6" />
+      <node id="6922106699764123740" at="47,51,48,487" concept="6" />
+      <node id="6922106699764123715" at="57,0,58,0" concept="8" trace="UnorderedChildrenRule$so" />
+      <node id="6922106699764123715" at="58,0,59,0" concept="8" trace="LinkDeclaration$1p" />
+      <node id="6922106699764123715" at="62,0,63,0" concept="8" trace="link$7Hiz" />
+      <node id="6922106699764123715" at="66,0,67,0" concept="8" trace="metaClass$PeKc" />
+      <node id="6922106699764123715" at="67,0,68,0" concept="8" trace="sourceCardinality$cxYK" />
+      <node id="6922106699764123716" at="33,0,36,0" concept="0" trace="RD1#(Ljetbrains/mps/smodel/runtime/ConstraintsDescriptor;)V" />
+      <node id="6922106699764123730" at="47,0,50,0" concept="4" trace="isExcluded#(Lorg/jetbrains/mps/openapi/model/SNode;)Z" />
+      <node id="6922106699764123715" at="27,0,31,0" concept="0" trace="UnorderedChildrenRule_Constraints#(Ljetbrains/mps/smodel/runtime/ConstraintsDescriptorInitContext;)V" />
+      <node id="6922106699764123716" at="40,0,44,0" concept="4" trace="getSearchScopeValidatorNode#()Lorg/jetbrains/mps/openapi/model/SNodeReference;" />
+      <node id="6922106699764123720" at="45,78,50,12" concept="6" />
+      <node id="6922106699764123716" at="44,0,52,0" concept="4" trace="createScope#(Ljetbrains/mps/smodel/runtime/ReferenceConstraintsContext;)Ljetbrains/mps/scope/Scope;" />
+      <node id="6922106699764123716" at="38,54,52,8" concept="6" />
+      <node id="6922106699764123716" at="36,0,54,0" concept="4" trace="getScopeProvider#()Ljetbrains/mps/smodel/runtime/ReferenceScopeProvider;" />
+      <scope id="6922106699764123716" at="33,54,34,53" />
+      <scope id="6922106699764123716" at="41,61,42,136" />
+      <scope id="6922106699764123739" at="47,51,48,487" />
+      <scope id="6922106699764123715" at="27,95,29,26" />
+      <scope id="6922106699764123716" at="33,0,36,0">
+        <var name="container" id="6922106699764123716" />
+      </scope>
+      <scope id="6922106699764123730" at="47,0,50,0">
+        <var name="node" id="6922106699764123736" />
+      </scope>
+      <scope id="6922106699764123715" at="27,0,31,0">
+        <var name="initContext" id="6922106699764123715" />
+      </scope>
+      <scope id="6922106699764123716" at="40,0,44,0" />
+      <scope id="6922106699764123716" at="45,78,50,12" />
+      <scope id="6922106699764123716" at="44,0,52,0">
+        <var name="_context" id="6922106699764123716" />
+      </scope>
+      <scope id="6922106699764123716" at="38,54,52,8" />
+      <scope id="6922106699764123716" at="36,0,54,0" />
+      <unit id="6922106699764123715" at="61,0,64,0" name="jetbrains.mps.lang.test.constraints.UnorderedChildrenRule_Constraints$LINKS" />
+      <unit id="6922106699764123727" at="46,21,50,11" name="jetbrains.mps.lang.test.constraints.UnorderedChildrenRule_Constraints$RD1$1$1" />
+      <unit id="6922106699764123715" at="56,0,60,0" name="jetbrains.mps.lang.test.constraints.UnorderedChildrenRule_Constraints$CONCEPTS" />
+      <unit id="6922106699764123715" at="65,0,69,0" name="jetbrains.mps.lang.test.constraints.UnorderedChildrenRule_Constraints$PROPS" />
+      <unit id="6922106699764123716" at="39,17,52,7" name="jetbrains.mps.lang.test.constraints.UnorderedChildrenRule_Constraints$RD1$1" />
+      <unit id="6922106699764123716" at="32,0,55,0" name="jetbrains.mps.lang.test.constraints.UnorderedChildrenRule_Constraints$RD1" />
+      <unit id="6922106699764123715" at="26,0,70,0" name="jetbrains.mps.lang.test.constraints.UnorderedChildrenRule_Constraints" />
+    </file>
+  </root>
+  <root nodeRef="r:00000000-0000-4000-0000-011c89590382(jetbrains.mps.lang.test.constraints)/6922106699764129638">
+    <file name="IgnoreChildrenRule_Constraints.java">
+      <node id="6922106699764129638" at="27,92,28,55" concept="10" />
+      <node id="6922106699764129639" at="28,55,29,26" concept="1" />
+      <node id="6922106699764129639" at="33,54,34,53" concept="10" />
+      <node id="6922106699764129639" at="41,61,42,136" concept="6" />
+      <node id="6922106699764129663" at="47,51,48,169" concept="6" />
+      <node id="6922106699764129638" at="57,0,58,0" concept="8" trace="IgnoreChildrenRule$sR" />
+      <node id="6922106699764129638" at="58,0,59,0" concept="8" trace="LinkDeclaration$1p" />
+      <node id="6922106699764129638" at="62,0,63,0" concept="8" trace="link$7Hy3" />
+      <node id="6922106699764129638" at="66,0,67,0" concept="8" trace="metaClass$PeKc" />
+      <node id="6922106699764129639" at="33,0,36,0" concept="0" trace="RD1#(Ljetbrains/mps/smodel/runtime/ConstraintsDescriptor;)V" />
+      <node id="6922106699764129653" at="47,0,50,0" concept="4" trace="isExcluded#(Lorg/jetbrains/mps/openapi/model/SNode;)Z" />
+      <node id="6922106699764129638" at="27,0,31,0" concept="0" trace="IgnoreChildrenRule_Constraints#(Ljetbrains/mps/smodel/runtime/ConstraintsDescriptorInitContext;)V" />
+      <node id="6922106699764129639" at="40,0,44,0" concept="4" trace="getSearchScopeValidatorNode#()Lorg/jetbrains/mps/openapi/model/SNodeReference;" />
+      <node id="6922106699764129643" at="45,78,50,12" concept="6" />
+      <node id="6922106699764129639" at="44,0,52,0" concept="4" trace="createScope#(Ljetbrains/mps/smodel/runtime/ReferenceConstraintsContext;)Ljetbrains/mps/scope/Scope;" />
+      <node id="6922106699764129639" at="38,54,52,8" concept="6" />
+      <node id="6922106699764129639" at="36,0,54,0" concept="4" trace="getScopeProvider#()Ljetbrains/mps/smodel/runtime/ReferenceScopeProvider;" />
+      <scope id="6922106699764129639" at="33,54,34,53" />
+      <scope id="6922106699764129639" at="41,61,42,136" />
+      <scope id="6922106699764129662" at="47,51,48,169" />
+      <scope id="6922106699764129638" at="27,92,29,26" />
+      <scope id="6922106699764129639" at="33,0,36,0">
+        <var name="container" id="6922106699764129639" />
+      </scope>
+      <scope id="6922106699764129653" at="47,0,50,0">
+        <var name="node" id="6922106699764129659" />
+      </scope>
+      <scope id="6922106699764129638" at="27,0,31,0">
+        <var name="initContext" id="6922106699764129638" />
+      </scope>
+      <scope id="6922106699764129639" at="40,0,44,0" />
+      <scope id="6922106699764129639" at="45,78,50,12" />
+      <scope id="6922106699764129639" at="44,0,52,0">
+        <var name="_context" id="6922106699764129639" />
+      </scope>
+      <scope id="6922106699764129639" at="38,54,52,8" />
+      <scope id="6922106699764129639" at="36,0,54,0" />
+      <unit id="6922106699764129638" at="61,0,64,0" name="jetbrains.mps.lang.test.constraints.IgnoreChildrenRule_Constraints$LINKS" />
+      <unit id="6922106699764129638" at="65,0,68,0" name="jetbrains.mps.lang.test.constraints.IgnoreChildrenRule_Constraints$PROPS" />
+      <unit id="6922106699764129650" at="46,21,50,11" name="jetbrains.mps.lang.test.constraints.IgnoreChildrenRule_Constraints$RD1$1$1" />
+      <unit id="6922106699764129638" at="56,0,60,0" name="jetbrains.mps.lang.test.constraints.IgnoreChildrenRule_Constraints$CONCEPTS" />
+      <unit id="6922106699764129639" at="39,17,52,7" name="jetbrains.mps.lang.test.constraints.IgnoreChildrenRule_Constraints$RD1$1" />
+      <unit id="6922106699764129639" at="32,0,55,0" name="jetbrains.mps.lang.test.constraints.IgnoreChildrenRule_Constraints$RD1" />
+      <unit id="6922106699764129638" at="26,0,69,0" name="jetbrains.mps.lang.test.constraints.IgnoreChildrenRule_Constraints" />
+    </file>
+  </root>
+  <root nodeRef="r:00000000-0000-4000-0000-011c89590382(jetbrains.mps.lang.test.constraints)/6922106699764135498">
+    <file name="IgnoreReferenceRule_Constraints.java">
+      <node id="6922106699764135498" at="27,93,28,56" concept="10" />
+      <node id="6922106699764135499" at="28,56,29,26" concept="1" />
+      <node id="6922106699764135499" at="33,54,34,53" concept="10" />
+      <node id="6922106699764135499" at="41,61,42,136" concept="6" />
+      <node id="6922106699764135523" at="47,51,48,169" concept="6" />
+      <node id="6922106699764135498" at="57,0,58,0" concept="8" trace="IgnoreReferenceRule$tm" />
+      <node id="6922106699764135498" at="58,0,59,0" concept="8" trace="LinkDeclaration$1p" />
+      <node id="6922106699764135498" at="62,0,63,0" concept="8" trace="link$7HLz" />
+      <node id="6922106699764135498" at="66,0,67,0" concept="8" trace="metaClass$PeKc" />
+      <node id="6922106699764135499" at="33,0,36,0" concept="0" trace="RD1#(Ljetbrains/mps/smodel/runtime/ConstraintsDescriptor;)V" />
+      <node id="6922106699764135513" at="47,0,50,0" concept="4" trace="isExcluded#(Lorg/jetbrains/mps/openapi/model/SNode;)Z" />
+      <node id="6922106699764135498" at="27,0,31,0" concept="0" trace="IgnoreReferenceRule_Constraints#(Ljetbrains/mps/smodel/runtime/ConstraintsDescriptorInitContext;)V" />
+      <node id="6922106699764135499" at="40,0,44,0" concept="4" trace="getSearchScopeValidatorNode#()Lorg/jetbrains/mps/openapi/model/SNodeReference;" />
+      <node id="6922106699764135503" at="45,78,50,12" concept="6" />
+      <node id="6922106699764135499" at="44,0,52,0" concept="4" trace="createScope#(Ljetbrains/mps/smodel/runtime/ReferenceConstraintsContext;)Ljetbrains/mps/scope/Scope;" />
+      <node id="6922106699764135499" at="38,54,52,8" concept="6" />
+      <node id="6922106699764135499" at="36,0,54,0" concept="4" trace="getScopeProvider#()Ljetbrains/mps/smodel/runtime/ReferenceScopeProvider;" />
+      <scope id="6922106699764135499" at="33,54,34,53" />
+      <scope id="6922106699764135499" at="41,61,42,136" />
+      <scope id="6922106699764135522" at="47,51,48,169" />
+      <scope id="6922106699764135498" at="27,93,29,26" />
+      <scope id="6922106699764135499" at="33,0,36,0">
+        <var name="container" id="6922106699764135499" />
+      </scope>
+      <scope id="6922106699764135513" at="47,0,50,0">
+        <var name="node" id="6922106699764135519" />
+      </scope>
+      <scope id="6922106699764135498" at="27,0,31,0">
+        <var name="initContext" id="6922106699764135498" />
+      </scope>
+      <scope id="6922106699764135499" at="40,0,44,0" />
+      <scope id="6922106699764135499" at="45,78,50,12" />
+      <scope id="6922106699764135499" at="44,0,52,0">
+        <var name="_context" id="6922106699764135499" />
+      </scope>
+      <scope id="6922106699764135499" at="38,54,52,8" />
+      <scope id="6922106699764135499" at="36,0,54,0" />
+      <unit id="6922106699764135498" at="61,0,64,0" name="jetbrains.mps.lang.test.constraints.IgnoreReferenceRule_Constraints$LINKS" />
+      <unit id="6922106699764135498" at="65,0,68,0" name="jetbrains.mps.lang.test.constraints.IgnoreReferenceRule_Constraints$PROPS" />
+      <unit id="6922106699764135510" at="46,21,50,11" name="jetbrains.mps.lang.test.constraints.IgnoreReferenceRule_Constraints$RD1$1$1" />
+      <unit id="6922106699764135498" at="56,0,60,0" name="jetbrains.mps.lang.test.constraints.IgnoreReferenceRule_Constraints$CONCEPTS" />
+      <unit id="6922106699764135499" at="39,17,52,7" name="jetbrains.mps.lang.test.constraints.IgnoreReferenceRule_Constraints$RD1$1" />
+      <unit id="6922106699764135499" at="32,0,55,0" name="jetbrains.mps.lang.test.constraints.IgnoreReferenceRule_Constraints$RD1" />
+      <unit id="6922106699764135498" at="26,0,69,0" name="jetbrains.mps.lang.test.constraints.IgnoreReferenceRule_Constraints" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c89590382(jetbrains.mps.lang.test.constraints)/7896212496293418436">

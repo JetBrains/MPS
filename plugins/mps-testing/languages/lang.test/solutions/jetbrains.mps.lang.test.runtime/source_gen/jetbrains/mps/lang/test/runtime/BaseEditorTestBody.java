@@ -23,6 +23,7 @@ import jetbrains.mps.lang.test.matcher.NodesMatcher;
 import jetbrains.mps.lang.test.matcher.NodeDifference;
 import org.junit.Assert;
 import java.util.Map;
+import jetbrains.mps.lang.test.matcher.MatchOptions;
 import jetbrains.mps.testbench.util.CachingAppender;
 import jetbrains.mps.testbench.junit.UncleanTestExecutionException;
 import com.intellij.openapi.command.impl.UndoManagerImpl;
@@ -150,7 +151,7 @@ public abstract class BaseEditorTestBody extends BaseTestBody {
       if (myResult != null) {
         try {
           SNode editedNode = myBefore;
-          NodesMatcher nm = new NodesMatcher(editedNode, myResult);
+          NodesMatcher nm = new NodesMatcher(editedNode, myResult, getMatchOptions());
           List<NodeDifference> diff = nm.diff();
           if (!(diff.isEmpty())) {
             StringBuilder sb = new StringBuilder();
@@ -170,6 +171,15 @@ public abstract class BaseEditorTestBody extends BaseTestBody {
     if (throwable.get() != null) {
       throw throwable.get();
     }
+  }
+  /**
+   * 
+   * Extension point for editor tests with custom node-matching rules: the returned options are passed
+   * to the {@link jetbrains.mps.lang.test.matcher.NodesMatcher}  that compares the resulting node with the expected one. The default is
+   * {@link MatchOptions#STRICT} , i.e. the full strict comparison.
+   */
+  protected MatchOptions getMatchOptions() {
+    return MatchOptions.STRICT;
   }
 
   public void testMethod() throws Throwable {

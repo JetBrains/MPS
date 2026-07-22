@@ -33,7 +33,10 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_IReferenceAttachable;
   private ConceptPresentation props_IRuleReference;
   private ConceptPresentation props_ITestAnnotationsContainer;
+  private ConceptPresentation props_IgnoreChildrenRule;
   private ConceptPresentation props_IgnoreMigrationDataOption;
+  private ConceptPresentation props_IgnorePropertyRule;
+  private ConceptPresentation props_IgnoreReferenceRule;
   private ConceptPresentation props_InfoStatementReference;
   private ConceptPresentation props_InvokeActionStatement;
   private ConceptPresentation props_InvokeIntentionStatement;
@@ -42,6 +45,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_IsIntentionApplicableExpression;
   private ConceptPresentation props_LogEvent;
   private ConceptPresentation props_MPSActionReference;
+  private ConceptPresentation props_MatchingRule;
   private ConceptPresentation props_MigrationReference;
   private ConceptPresentation props_MigrationTestCase;
   private ConceptPresentation props_MigrationTestOption;
@@ -55,6 +59,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_NodeErrorCheckOperation;
   private ConceptPresentation props_NodeExpectedTypeCheckOperation;
   private ConceptPresentation props_NodeInfoCheckOperation;
+  private ConceptPresentation props_NodeMatchingRules;
   private ConceptPresentation props_NodeOperationsContainer;
   private ConceptPresentation props_NodeRuleCheckOperation;
   private ConceptPresentation props_NodeTypeCheckOperation;
@@ -84,6 +89,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_TypeKeyStatement;
   private ConceptPresentation props_TypesystemEquationReference;
   private ConceptPresentation props_UnknownRuleReference;
+  private ConceptPresentation props_UnorderedChildrenRule;
   private ConceptPresentation props_UntypedExpression;
   private ConceptPresentation props_WarningStatementReference;
 
@@ -247,6 +253,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_ITestAnnotationsContainer = cpb.create();
         }
         return props_ITestAnnotationsContainer;
+      case LanguageConceptSwitch.IgnoreChildrenRule:
+        if (props_IgnoreChildrenRule == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("children in the role are excluded from the comparison");
+          cpb.rawPresentation("ignore children");
+          props_IgnoreChildrenRule = cpb.create();
+        }
+        return props_IgnoreChildrenRule;
       case LanguageConceptSwitch.IgnoreMigrationDataOption:
         if (props_IgnoreMigrationDataOption == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
@@ -254,6 +268,22 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_IgnoreMigrationDataOption = cpb.create();
         }
         return props_IgnoreMigrationDataOption;
+      case LanguageConceptSwitch.IgnorePropertyRule:
+        if (props_IgnorePropertyRule == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("the property is excluded from the comparison");
+          cpb.rawPresentation("ignore property");
+          props_IgnorePropertyRule = cpb.create();
+        }
+        return props_IgnorePropertyRule;
+      case LanguageConceptSwitch.IgnoreReferenceRule:
+        if (props_IgnoreReferenceRule == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("the reference is excluded from the comparison");
+          cpb.rawPresentation("ignore reference");
+          props_IgnoreReferenceRule = cpb.create();
+        }
+        return props_IgnoreReferenceRule;
       case LanguageConceptSwitch.InfoStatementReference:
         if (props_InfoStatementReference == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
@@ -310,6 +340,13 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_MPSActionReference = cpb.create();
         }
         return props_MPSActionReference;
+      case LanguageConceptSwitch.MatchingRule:
+        if (props_MatchingRule == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("a single relaxation of the strict node comparison");
+          props_MatchingRule = cpb.create();
+        }
+        return props_MatchingRule;
       case LanguageConceptSwitch.MigrationReference:
         if (props_MigrationReference == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
@@ -402,6 +439,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_NodeInfoCheckOperation = cpb.create();
         }
         return props_NodeInfoCheckOperation;
+      case LanguageConceptSwitch.NodeMatchingRules:
+        if (props_NodeMatchingRules == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("relaxations of the strict node comparison in an editor test");
+          cpb.rawPresentation("node matching rules");
+          props_NodeMatchingRules = cpb.create();
+        }
+        return props_NodeMatchingRules;
       case LanguageConceptSwitch.NodeOperationsContainer:
         if (props_NodeOperationsContainer == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
@@ -607,6 +652,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_UnknownRuleReference = cpb.create();
         }
         return props_UnknownRuleReference;
+      case LanguageConceptSwitch.UnorderedChildrenRule:
+        if (props_UnorderedChildrenRule == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("children in the role are compared as an unordered set");
+          cpb.rawPresentation("unordered children");
+          props_UnorderedChildrenRule = cpb.create();
+        }
+        return props_UnorderedChildrenRule;
       case LanguageConceptSwitch.UntypedExpression:
         if (props_UntypedExpression == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();

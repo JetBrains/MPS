@@ -15,6 +15,7 @@
     <import index="tpd4" ref="r:00000000-0000-4000-0000-011c895902b4(jetbrains.mps.lang.typesystem.structure)" />
     <import index="rliy" ref="r:00a69138-8767-4011-a710-463511eae7a6(jetbrains.mps.lang.test.plugin)" />
     <import index="53vh" ref="r:53885008-7612-46ff-8b11-27f1d42c3adb(jetbrains.mps.lang.migration.structure)" implicit="true" />
+    <import index="tpce" ref="r:00000000-0000-4000-0000-011c89590292(jetbrains.mps.lang.structure.structure)" implicit="true" />
   </imports>
   <registry>
     <language id="982eb8df-2c96-4bd7-9963-11712ea622e5" name="jetbrains.mps.lang.resources">
@@ -547,6 +548,12 @@
     <node concept="1QGGSu" id="4Q8sAA5iJSv" role="rwd14">
       <property role="1iqoE4" value="${module}/icons/nodesTest.png" />
       <property role="uyjgh" value="${module}/icons/editorTest_newui.svg" />
+    </node>
+    <node concept="1TJgyj" id="60ggPToKMy5" role="1TKVEi">
+      <property role="IQ2ns" value="6922106699763624069" />
+      <property role="20kJfa" value="nodeMatching" />
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <ref role="20lvS9" node="60ggPToKIi$" resolve="NodeMatchingRules" />
     </node>
   </node>
   <node concept="1TIwiD" id="hSLIFSi">
@@ -1375,6 +1382,88 @@
     <node concept="25R33" id="2hh8MJdVwqX" role="25R1y">
       <property role="3tVfz5" value="2616911529524463293" />
       <property role="TrG5h" value="command" />
+    </node>
+  </node>
+  <node concept="1TIwiD" id="60ggPToKIi$">
+    <property role="EcuMT" value="6922106699763606692" />
+    <property role="TrG5h" value="NodeMatchingRules" />
+    <property role="34LRSv" value="node matching rules" />
+    <property role="R4oN_" value="relaxations of the strict node comparison in an editor test" />
+    <property role="3GE5qa" value="editor" />
+    <ref role="1TJDcQ" to="tpck:gw2VY9q" />
+    <node concept="t5JxF" id="60ggPToKIi_" role="lGtFl">
+      <property role="t5JxN" value="Holds the node-matching rules of an EditorTestCase. Without rules the resulting node must match the expected node exactly; each rule relaxes one aspect of the comparison." />
+    </node>
+    <node concept="1TJgyj" id="60ggPToKIiF" role="1TKVEi">
+      <property role="IQ2ns" value="6922106699763606699" />
+      <property role="20kJfa" value="rules" />
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <property role="20lbJX" value="fLJekj5/_0__n" />
+      <ref role="20lvS9" node="60ggPToKIiA" resolve="MatchingRule" />
+    </node>
+  </node>
+  <node concept="1TIwiD" id="60ggPToKIiA">
+    <property role="EcuMT" value="6922106699763606694" />
+    <property role="TrG5h" value="MatchingRule" />
+    <property role="R4oN_" value="a single relaxation of the strict node comparison" />
+    <property role="R5$K7" value="true" />
+    <property role="3GE5qa" value="editor" />
+    <ref role="1TJDcQ" to="tpck:gw2VY9q" />
+  </node>
+  <node concept="1TIwiD" id="60ggPToKIiB">
+    <property role="EcuMT" value="6922106699763606695" />
+    <property role="TrG5h" value="UnorderedChildrenRule" />
+    <property role="34LRSv" value="unordered children" />
+    <property role="R4oN_" value="children in the role are compared as an unordered set" />
+    <property role="3GE5qa" value="editor" />
+    <ref role="1TJDcQ" node="60ggPToKIiA" resolve="MatchingRule" />
+    <node concept="1TJgyj" id="60ggPToKIiG" role="1TKVEi">
+      <property role="IQ2ns" value="6922106699763606700" />
+      <property role="20kJfa" value="link" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" to="tpce:f_TJgxE" resolve="LinkDeclaration" />
+    </node>
+  </node>
+  <node concept="1TIwiD" id="60ggPToKIiC">
+    <property role="EcuMT" value="6922106699763606696" />
+    <property role="TrG5h" value="IgnoreChildrenRule" />
+    <property role="34LRSv" value="ignore children" />
+    <property role="R4oN_" value="children in the role are excluded from the comparison" />
+    <property role="3GE5qa" value="editor" />
+    <ref role="1TJDcQ" node="60ggPToKIiA" resolve="MatchingRule" />
+    <node concept="1TJgyj" id="60ggPToKIiH" role="1TKVEi">
+      <property role="IQ2ns" value="6922106699763606701" />
+      <property role="20kJfa" value="link" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" to="tpce:f_TJgxE" resolve="LinkDeclaration" />
+    </node>
+  </node>
+  <node concept="1TIwiD" id="60ggPToKIiD">
+    <property role="EcuMT" value="6922106699763606697" />
+    <property role="TrG5h" value="IgnoreReferenceRule" />
+    <property role="34LRSv" value="ignore reference" />
+    <property role="R4oN_" value="the reference is excluded from the comparison" />
+    <property role="3GE5qa" value="editor" />
+    <ref role="1TJDcQ" node="60ggPToKIiA" resolve="MatchingRule" />
+    <node concept="1TJgyj" id="60ggPToKIiI" role="1TKVEi">
+      <property role="IQ2ns" value="6922106699763606702" />
+      <property role="20kJfa" value="link" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" to="tpce:f_TJgxE" resolve="LinkDeclaration" />
+    </node>
+  </node>
+  <node concept="1TIwiD" id="60ggPToKIiE">
+    <property role="EcuMT" value="6922106699763606698" />
+    <property role="TrG5h" value="IgnorePropertyRule" />
+    <property role="34LRSv" value="ignore property" />
+    <property role="R4oN_" value="the property is excluded from the comparison" />
+    <property role="3GE5qa" value="editor" />
+    <ref role="1TJDcQ" node="60ggPToKIiA" resolve="MatchingRule" />
+    <node concept="1TJgyj" id="60ggPToKIiJ" role="1TKVEi">
+      <property role="IQ2ns" value="6922106699763606703" />
+      <property role="20kJfa" value="property" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" to="tpce:f_TJgxF" resolve="PropertyDeclaration" />
     </node>
   </node>
 </model>
