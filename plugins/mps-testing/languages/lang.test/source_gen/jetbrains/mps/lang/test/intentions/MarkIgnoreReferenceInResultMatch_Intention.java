@@ -56,7 +56,7 @@ public final class MarkIgnoreReferenceInResultMatch_Intention extends AbstractIn
 
     @Override
     public String getDescription(final SNode node, final EditorContext editorContext) {
-      return "MarkIgnore Reference in Result Match";
+      return "Mark Ignore Reference in Result Match";
     }
 
     @Override
