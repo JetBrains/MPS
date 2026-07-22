@@ -8668,6 +8668,58 @@
             </node>
           </node>
         </node>
+        <node concept="1SiIV0" id="5yInWDRFXhd" role="3bR37C">
+          <node concept="1BurEX" id="5yInWDRFXhe" role="1SiIV1">
+            <node concept="398BVA" id="5yInWDRFXha" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="5yInWDRFXhb" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="5yInWDRFXhc" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.junit5.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="5yInWDRFXhi" role="3bR37C">
+          <node concept="1BurEX" id="5yInWDRFXhj" role="1SiIV1">
+            <node concept="398BVA" id="5yInWDRFXhf" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="5yInWDRFXhg" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="5yInWDRFXhh" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.junit5.jupiter.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="5yInWDRFXhn" role="3bR37C">
+          <node concept="1BurEX" id="5yInWDRFXho" role="1SiIV1">
+            <node concept="398BVA" id="5yInWDRFXhk" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="5yInWDRFXhl" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="5yInWDRFXhm" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.junit5.launcher.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="5yInWDRFXhs" role="3bR37C">
+          <node concept="1BurEX" id="5yInWDRFXht" role="1SiIV1">
+            <node concept="398BVA" id="5yInWDRFXhp" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="5yInWDRFXhq" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="5yInWDRFXhr" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.junit5.vintage.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
       </node>
       <node concept="1E1JtA" id="6U$p2g0pj3R" role="2G$12L">
         <property role="BnDLt" value="true" />
@@ -55736,6 +55788,11 @@
               <ref role="3bR37D" node="1ULLXZL0gZG" resolve="org.junit.junit5" />
             </node>
           </node>
+          <node concept="1SiIV0" id="5yInWDRFYXC" role="3bR37C">
+            <node concept="3bR9La" id="5yInWDRFYXD" role="1SiIV1">
+              <ref role="3bR37D" node="1xb0AuwN7WS" resolve="JUnit" />
+            </node>
+          </node>
         </node>
         <node concept="398BVA" id="ymnOULAU0I" role="3LF7KH">
           <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
@@ -56140,6 +56197,11 @@
         <node concept="1SiIV0" id="4rQ9_5dPt0X" role="3bR37C">
           <node concept="3bR9La" id="4rQ9_5dPt0Y" role="1SiIV1">
             <ref role="3bR37D" node="2Oogzg3vg0R" resolve="jetbrains.mps.baseLanguage.unitTest.platform" />
+          </node>
+        </node>
+        <node concept="1SiIV0" id="5yInWDRFYXS" role="3bR37C">
+          <node concept="3bR9La" id="5yInWDRFYXT" role="1SiIV1">
+            <ref role="3bR37D" node="1xb0AuwN7WS" resolve="JUnit" />
           </node>
         </node>
       </node>

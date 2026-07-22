@@ -11243,6 +11243,11 @@
             </node>
           </node>
         </node>
+        <node concept="1SiIV0" id="5yInWDRFZyI" role="3bR37C">
+          <node concept="3bR9La" id="5yInWDRFZyJ" role="1SiIV1">
+            <ref role="3bR37D" to="ffeo:1uyFnK9vtIN" resolve="MPS.IDEA.testFramework" />
+          </node>
+        </node>
       </node>
     </node>
     <node concept="2G$12M" id="4Sf$XywNuax" role="3989C9">
@@ -15225,6 +15230,11 @@
         <node concept="1SiIV0" id="6vgd21jZ32P" role="3bR37C">
           <node concept="3bR9La" id="6vgd21jZ32Q" role="1SiIV1">
             <ref role="3bR37D" to="ffeo:7MSVDs3$Uns" resolve="jetbrains.mps.baseLanguage.unitTest.runtime" />
+          </node>
+        </node>
+        <node concept="1SiIV0" id="5yInWDRG084" role="3bR37C">
+          <node concept="3bR9La" id="5yInWDRG085" role="1SiIV1">
+            <ref role="3bR37D" to="ffeo:1xb0AuwN7WS" resolve="JUnit" />
           </node>
         </node>
       </node>

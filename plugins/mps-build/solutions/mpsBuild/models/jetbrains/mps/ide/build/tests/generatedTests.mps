@@ -315,6 +315,11 @@
             </node>
           </node>
         </node>
+        <node concept="1SiIV0" id="5yInWDRG0FT" role="3bR37C">
+          <node concept="3bR9La" id="5yInWDRG0FU" role="1SiIV1">
+            <ref role="3bR37D" to="ffeo:1xb0AuwN7WS" resolve="JUnit" />
+          </node>
+        </node>
       </node>
       <node concept="1E1JtA" id="7CPkROrbWa7" role="2G$12L">
         <property role="TrG5h" value="CloneModule.test" />
@@ -409,6 +414,11 @@
             <node concept="3qWCbU" id="7CPkROrbWcw" role="3LXTna">
               <property role="3qWCbO" value="**/*.mps, **/*.mpsr, **/.model" />
             </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="5yInWDRG0G0" role="3bR37C">
+          <node concept="3bR9La" id="5yInWDRG0G1" role="1SiIV1">
+            <ref role="3bR37D" to="ffeo:1xb0AuwN7WS" resolve="JUnit" />
           </node>
         </node>
       </node>
