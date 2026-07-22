@@ -122,7 +122,7 @@
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/7763823021514561033">
     <file name="mpsTest.xml">
-      <unit id="7763823021514561033" at="1,0,2639,10" name="jetbrains.mps.ide.build.tests.mpsTest" />
+      <unit id="7763823021514561033" at="1,0,2631,10" name="jetbrains.mps.ide.build.tests.mpsTest" />
     </file>
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/9064011936883918541">

@@ -90,7 +90,6 @@
     <import index="35tq" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.scope(MPS.Core/)" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" />
     <import index="pjrh" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.adapter(MPS.Core/)" />
-    <import index="tpce" ref="r:00000000-0000-4000-0000-011c89590292(jetbrains.mps.lang.structure.structure)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -3301,8 +3300,8 @@
                   <node concept="3cpWs8" id="18QbqASYSS6" role="3cqZAp">
                     <node concept="3cpWsn" id="18QbqASYSS9" role="3cpWs9">
                       <property role="TrG5h" value="ld" />
-                      <node concept="3Tqbb2" id="18QbqASYSSb" role="1tU5fm">
-                        <ref role="ehGHo" to="tpce:f_TJgxE" resolve="LinkDeclaration" />
+                      <node concept="3uibUv" id="2nckueFubrF" role="1tU5fm">
+                        <ref role="3uigEE" to="mhbf:~SNode" resolve="SNode" />
                       </node>
                       <node concept="2OqwBi" id="18QbqASYSSc" role="33vP2m">
                         <node concept="1PxgMI" id="18QbqASYSSf" role="2Oq$k0">
