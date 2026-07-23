@@ -24,7 +24,7 @@
     <plugin id="jetbrains.mps.core"/>
   </dependencies>
   <depends>jetbrains.mps.ide.devkit</depends>
-  <idea-version since-build="203.5981.155"/>
+  <idea-version since-build="262.1"/>
   <resource-bundle>messages.MPSSamplesBundle</resource-bundle>
 
   <actions>
