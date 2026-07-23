@@ -1,7 +1,7 @@
 <ivy-module version="2.0">
   <info organisation="org.jetbrains.mps" module="openJDK/jbr-linux-x64.tar.gz"/>
   <dependencies>
-    <dependency org="org" name="MPS_20261_Distribution_Platform" rev="${mps.platform.build}">
+    <dependency org="org" name="MPS_20262_Distribution_Platform" rev="${mps.platform.build}">
       <include name="openJDK/jbr-linux-x64" ext="tar.gz"/>
     </dependency>
   </dependencies>
