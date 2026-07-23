@@ -8,8 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.project.Project;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import org.jetbrains.mps.openapi.language.SLanguage;
-import javax.swing.JList;
+import com.intellij.ui.CheckBoxList;
 import jetbrains.mps.ide.project.ProjectHelper;
+import java.util.List;
+import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -18,7 +20,7 @@ import javax.swing.BorderFactory;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
-import com.intellij.ui.components.JBList;
+import org.jetbrains.mps.openapi.module.SModuleReference;
 import com.intellij.ui.ScrollPaneFactory;
 import java.awt.Dimension;
 import org.jetbrains.mps.openapi.model.SModel;
@@ -29,9 +31,9 @@ import java.awt.Font;
 import com.intellij.openapi.editor.colors.EditorColorsScheme;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
 import java.awt.Component;
+import javax.swing.JList;
 import jetbrains.mps.ide.icons.GlobalIconManager;
 import com.intellij.ui.SimpleTextAttributes;
-import org.jetbrains.mps.openapi.module.SModuleReference;
 import jetbrains.mps.ide.icons.IdeIcons;
 
 /**
@@ -43,8 +45,8 @@ public class AddRequiredImportsDialog extends DialogWrapper {
   private final Project myProject;
   private final SModelReference[] myRequiredImports;
   private final SLanguage[] myRequiredLanguages;
-  private JList<SModelReference> myModelsList;
-  private JList<SLanguage> myLanguagesList;
+  private CheckBoxList<SModelReference> myModelsList;
+  private CheckBoxList<SLanguage> myLanguagesList;
   private SModelReference[] mySelectedImports;
   private SLanguage[] mySelectedLanguages;
 
@@ -66,14 +68,24 @@ public class AddRequiredImportsDialog extends DialogWrapper {
 
   @Override
   protected void doOKAction() {
-    mySelectedImports = new SModelReference[0];
+    List<SModelReference> selectedImports = new ArrayList<SModelReference>();
     if (myModelsList != null) {
-      mySelectedImports = myModelsList.getSelectedValuesList().toArray(mySelectedImports);
+      for (int i = 0; i < myModelsList.getItemsCount(); i++) {
+        if (myModelsList.isItemSelected(i)) {
+          selectedImports.add(myModelsList.getItemAt(i));
+        }
+      }
     }
-    mySelectedLanguages = new SLanguage[0];
+    mySelectedImports = selectedImports.toArray(new SModelReference[0]);
+    List<SLanguage> selectedLanguages = new ArrayList<SLanguage>();
     if (myLanguagesList != null) {
-      mySelectedLanguages = myLanguagesList.getSelectedValuesList().toArray(mySelectedLanguages);
+      for (int i = 0; i < myLanguagesList.getItemsCount(); i++) {
+        if (myLanguagesList.isItemSelected(i)) {
+          selectedLanguages.add(myLanguagesList.getItemAt(i));
+        }
+      }
     }
+    mySelectedLanguages = selectedLanguages.toArray(new SLanguage[0]);
     super.doOKAction();
   }
 
@@ -92,23 +104,28 @@ public class AddRequiredImportsDialog extends DialogWrapper {
       label.setBackground(this.getContentPane().getBackground());
       label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
       center.add(label, new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-      myModelsList = new JBList<>(myRequiredImports);
-      myModelsList.setCellRenderer(new MyCellRenderer(myProject));
+      myModelsList = new CheckBoxList<SModelReference>();
+      for (SModelReference ref : myRequiredImports) {
+        SModuleReference module = ref.getModuleReference();
+        String moduleName = ((module == null ? null : module.getModuleName()));
+        String text = ((moduleName == null || moduleName.isEmpty() ? ref.getModelName() : ref.getModelName() + " (" + moduleName + ")"));
+        myModelsList.addItem(ref, text, true);
+      }
       myModelsList.setBorder(BorderFactory.createEtchedBorder());
       center.add(ScrollPaneFactory.createScrollPane(myModelsList), new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-      myModelsList.setSelectionInterval(0, myRequiredImports.length - 1);
     }
     if (myRequiredLanguages.length > 0) {
       JTextArea label = new JTextArea("Use languages:");
       label.setEditable(false);
       label.setBackground(this.getContentPane().getBackground());
       label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      center.add(label, new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets((myRequiredImports.length > 0 ? 5 : 0), 0, 0, 0), 0, 0));
-      myLanguagesList = new JBList<>(myRequiredLanguages);
-      myLanguagesList.setCellRenderer(new MyCellRenderer(myProject));
+      center.add(label, new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(((myRequiredImports.length > 0 ? 5 : 0)), 0, 0, 0), 0, 0));
+      myLanguagesList = new CheckBoxList<SLanguage>();
+      for (SLanguage lang : myRequiredLanguages) {
+        myLanguagesList.addItem(lang, lang.getQualifiedName(), true);
+      }
       myLanguagesList.setBorder(BorderFactory.createEtchedBorder());
       center.add(ScrollPaneFactory.createScrollPane(myLanguagesList), new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-      myLanguagesList.setSelectionInterval(0, myRequiredLanguages.length - 1);
     }
     panel.add(center, BorderLayout.CENTER);
     panel.setPreferredSize(new Dimension(500, 400));
@@ -128,20 +145,19 @@ public class AddRequiredImportsDialog extends DialogWrapper {
   }
 
   public Runnable asUpdateCommand(@NotNull final SModel targetModel) {
-    if (mySelectedLanguages == null || myRequiredImports == null) {
+    if (mySelectedLanguages == null || mySelectedImports == null) {
+      // only valid after the dialog was closed with OK
       throw new IllegalStateException();
     }
-    if (mySelectedLanguages.length == 0 && myRequiredImports.length == 0) {
-      return new Runnable() {
-        @Override
-        public void run() {
-        }
+    if (mySelectedLanguages.length == 0 && mySelectedImports.length == 0) {
+      return () -> {
       };
     }
+
     return new Runnable() {
       @Override
       public void run() {
-        CopyPasteUtil.applyRequiredImports(targetModel, Arrays.asList(myRequiredLanguages), Arrays.asList(myRequiredImports));
+        CopyPasteUtil.applyRequiredImports(targetModel, Arrays.asList(mySelectedLanguages), Arrays.asList(mySelectedImports));
       }
     };
   }
