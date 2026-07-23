@@ -85,6 +85,19 @@ teamcity-info.xml
 /plugins/grazie
 /plugins/space
 /plugins/mcpserver
+/plugins/grid-core-plugin/lib
+/plugins/java-aetherDependencyResolver-plugin/lib
+/plugins/libraries-misc-plugin/lib
+/plugins/mermaid/lib
+/plugins/platform-acp-plugin/lib
+/plugins/platform-bookmarks-plugin/lib
+/plugins/platform-execution-serviceView-plugin/lib
+/plugins/platform-navbar-plugin/lib
+/plugins/platform-recentFiles-plugin/lib
+/plugins/platform-structuralSearch-plugin/lib
+/plugins/platform-structureView-plugin/lib
+/plugins/platform-testRunner-plugin/lib
+/plugins/platform-todo-plugin/lib
 # some default plugins (not mentioned in MPSProperties.groovy)
 /plugins/platform-images
 /plugins/mps-devkit/lib
