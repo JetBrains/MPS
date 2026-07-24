@@ -24773,8 +24773,8 @@
     <property role="9BnSP" value="http://www.jetbrains.com/mps/" />
     <property role="9BnSM" value="JetBrains" />
     <property role="TrG5h" value="IDE" />
-    <property role="9BnSO" value="253.1" />
-    <property role="9BnSK" value="2026.1" />
+    <property role="9BnSO" value="261.1" />
+    <property role="9BnSK" value="2026.1.1" />
   </node>
   <node concept="sE7Ow" id="1JAxb5h3N20">
     <property role="TrG5h" value="EditGivenNode" />
