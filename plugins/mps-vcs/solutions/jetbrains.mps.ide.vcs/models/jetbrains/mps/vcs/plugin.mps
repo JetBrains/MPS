@@ -2948,7 +2948,7 @@
     <property role="9BnSM" value="JetBrains" />
     <property role="TrG5h" value="VCS Integration for MPS" />
     <property role="9BnSO" value="252.1" />
-    <property role="9BnSK" value="2025.2.3" />
+    <property role="9BnSK" value="2025.2.4" />
   </node>
   <node concept="1ESbSp" id="10cWl49AXwe">
     <property role="TrG5h" value="IDEAChangesViewPopup" />

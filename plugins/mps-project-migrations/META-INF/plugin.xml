@@ -7,7 +7,7 @@
   <id>jetbrains.mps.ide.mpsmigration</id>
   <name>Migration 2025.2</name>
   <description>Provides actions to migrate models and languages developed using previous versions of MPS</description>
-  <version>2025.2.3</version>
+  <version>2025.2.4</version>
   <vendor url="http://www.jetbrains.com/mps/" email="support@jetbrains.com">JetBrains</vendor>
   <idea-version since-build="252.1" until-build="253.1"/>
   <dependencies>

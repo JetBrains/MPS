@@ -4,7 +4,7 @@
   <id>jetbrains.mps.ide.make</id>
   <name>Make</name>
   <description>Make IDE Integration</description>
-  <version>2025.2.3</version>
+  <version>2025.2.4</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <idea-version since-build="252.1" />
   
