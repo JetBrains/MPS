@@ -4,7 +4,7 @@
   <id>jetbrains.mps.vcs</id>
   <name>VCS Integration for MPS</name>
   <description>VCS features in MPS</description>
-  <version>2025.3.1</version>
+  <version>2025.3.2</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <idea-version since-build="253.1" />
   

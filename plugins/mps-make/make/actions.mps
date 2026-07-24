@@ -614,7 +614,7 @@
     <property role="9BnSM" value="JetBrains" />
     <property role="TrG5h" value="Make" />
     <property role="9BnSO" value="253.1" />
-    <property role="9BnSK" value="2025.3.1" />
+    <property role="9BnSK" value="2025.3.2" />
     <property role="2PJ1tZ" value="true" />
     <node concept="2Tc6Op" id="7_yYGx27If5" role="2Tc6Ou">
       <property role="2Tc6Oq" value="com.intellij.modules.mps" />

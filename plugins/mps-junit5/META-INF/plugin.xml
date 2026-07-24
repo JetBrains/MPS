@@ -7,7 +7,7 @@
   <name>MPS JUnit5 support</name>
   <category>Custom Languages</category>
   <description>JUnit5 libraries and stub models for use in MPS tests</description>
-  <version>2025.3.1</version>
+  <version>2025.3.2</version>
   <vendor url="http://www.jetbrains.com/mps/" email="support@jetbrains.com">JetBrains</vendor>
   <idea-version since-build="253.1" until-build="261.1"/>
   <dependencies>

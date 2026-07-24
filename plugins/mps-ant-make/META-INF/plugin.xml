@@ -4,7 +4,7 @@
   <name>MPS Ant Integration: Make</name>
   <description>Provides implementation of Generate/Make tasks for MPS Ant scripts</description>
   <category>Custom Languages</category>
-  <version>2025.3.1</version>
+  <version>2025.3.2</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <idea-version since-build="253.1" until-build="261.1"/>
   <!-- intentionally no depends, as I find 'j.m.core' dependency simply wrong,
