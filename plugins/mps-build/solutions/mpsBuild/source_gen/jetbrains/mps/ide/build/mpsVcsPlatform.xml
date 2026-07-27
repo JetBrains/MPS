@@ -122,7 +122,6 @@
       <module namespace="jetbrains.mps.vcs.idea.stubs" type="solution" uuid="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b">
         <dependencies>
           <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
-          <module ref="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="cl" />
         </dependencies>
         <uses />
         <library jar="/lib/intellij.platform.vcs.dvcs.impl.jar" />
@@ -137,6 +136,7 @@
         <library jar="/lib/intellij.platform.vcs.log.graph.jar" />
         <library jar="/lib/intellij.platform.vcs.log.impl.jar" />
         <library jar="/lib/intellij.platform.vcs.log.jar" />
+        <library jar="/lib/intellij.platform.vcs.jar" />
         <sources jar="." descriptor="jetbrains.mps.vcs.idea.stubs.msd" />
       </module>
     </echoxml>
