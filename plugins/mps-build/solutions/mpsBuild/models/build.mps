@@ -55783,6 +55783,15 @@
     <node concept="26EafG" id="7mPGpETrKHR" role="26Ea7d">
       <property role="26EafJ" value="lib/util.jar" />
     </node>
+    <node concept="26EafG" id="4nX__hM7qC8" role="3cRCUr">
+      <property role="26EafJ" value="lib/kotlin-compiler-client-embeddable-2.3.0.jar" />
+    </node>
+    <node concept="26EafG" id="4nX__hM7qCy" role="3cRCUr">
+      <property role="26EafJ" value="lib/kotlin-metadata-jvm-2.3.0-mps.jar" />
+    </node>
+    <node concept="26EafG" id="3vFdno4LV98" role="3cRCUr">
+      <property role="26EafJ" value="lib/kotlinx-metadata-klib-2.3.0-mps.jar" />
+    </node>
     <node concept="26EafG" id="4nX__hM7qCX" role="3cRCUr">
       <property role="26EafJ" value="lib/mps-annotations.jar" />
     </node>
