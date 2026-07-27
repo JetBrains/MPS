@@ -15,6 +15,7 @@
       <sourceRoot location="intellij.platform.vcs.log.graph.jar" />
       <sourceRoot location="intellij.platform.vcs.log.impl.jar" />
       <sourceRoot location="intellij.platform.vcs.log.jar" />
+      <sourceRoot location="intellij.platform.vcs.jar" />
       <PackageScope skip-private="false">
         <include prefix="com.intellij." />
       </PackageScope>
@@ -34,11 +35,11 @@
       <library location="${mps_home}/lib/intellij.platform.vcs.log.graph.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.log.impl.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.log.jar" />
+      <library location="${mps_home}/lib/intellij.platform.vcs.jar" />
     </facet>
   </facets>
   <dependencies>
     <dependency reexport="false">498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)</dependency>
-    <dependency reexport="false">b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)</dependency>
   </dependencies>
   <languageVersions />
 </solution>
