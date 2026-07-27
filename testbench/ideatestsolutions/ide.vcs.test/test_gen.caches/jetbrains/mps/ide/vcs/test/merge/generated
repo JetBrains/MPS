@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-mwtqfl75nqv22d3qjmqbif0bkvjtv0">
+<product version="3" modelHash="-d4z9lfa4o1d96q802ee4aa2u4grlhv0">
   <files names="AfterMergeChildrenOrderTest.java:ChangesCalculationTest.java:ChangesManagerTestWaitHelper.java:ChangesRollbackTest.java:ChangesTestBase.java:ChangesTestUtil.java:ConflictsBuilderTest.java:IncrementalChangeUpdateTest_Model.java:IncrementalChangeUpdateTest_Nodes.java:MergeTest.java:MoveChangeConflictsTest.java:NotMoveChangeConflictsTest.java:RootStatusItem.java:RootStatusTest.java:StructuredChangesCalculationTest.java:WrapChangeConflictsTest.java:_Adapters.java" />
 </product>
 

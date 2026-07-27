@@ -72,6 +72,7 @@
     <import index="4zvo" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.ui(MPS.IDEA.Modules/)" />
     <import index="ov6m" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.ui.messages(MPS.IDEA/)" />
     <import index="yt4g" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.diff(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="jlcw" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" implicit="true" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -4309,7 +4310,7 @@
                   <ref role="1Pybhc" to="jkm4:~Messages" resolve="Messages" />
                   <ref role="37wK5l" to="jkm4:~Messages.showYesNoCancelDialog(com.intellij.openapi.project.Project,java.lang.String,java.lang.String,javax.swing.Icon)" resolve="showYesNoCancelDialog" />
                   <node concept="37vLTw" id="7UDnPJKkDIt" role="37wK5m">
-                    <ref role="3cqZAo" to="jlcv:~AbstractVcsHelper.myProject" resolve="myProject" />
+                    <ref role="3cqZAo" to="jlcw:~AbstractVcsHelper.myProject" resolve="myProject" />
                   </node>
                   <node concept="Xl_RD" id="7UDnPJKkDIu" role="37wK5m">
                     <property role="Xl_RC" value="Conflicting changes have been detected. Some conflicts in the models can be autoresolved.\nResolve these conflicts automatically?" />
@@ -4409,7 +4410,7 @@
                       <ref role="37wK5l" node="68MS4n2MKAn" resolve="getModelConflictResolverTask" />
                       <ref role="1Pybhc" node="68MS4n2I8HR" resolve="ConflictingModelsUtil" />
                       <node concept="37vLTw" id="4CUd3ljV4qz" role="37wK5m">
-                        <ref role="3cqZAo" to="jlcv:~AbstractVcsHelper.myProject" resolve="myProject" />
+                        <ref role="3cqZAo" to="jlcw:~AbstractVcsHelper.myProject" resolve="myProject" />
                       </node>
                       <node concept="37vLTw" id="4CUd3ljV4q$" role="37wK5m">
                         <ref role="3cqZAo" node="3oPvWSRpVEZ" resolve="provider" />
@@ -4563,7 +4564,7 @@
                           <ref role="1Pybhc" to="jkm4:~Messages" resolve="Messages" />
                           <ref role="37wK5l" to="jkm4:~Messages.showYesNoDialog(com.intellij.openapi.project.Project,java.lang.String,java.lang.String,javax.swing.Icon)" resolve="showYesNoDialog" />
                           <node concept="37vLTw" id="3dMY8lFLNTZ" role="37wK5m">
-                            <ref role="3cqZAo" to="jlcv:~AbstractVcsHelper.myProject" resolve="myProject" />
+                            <ref role="3cqZAo" to="jlcw:~AbstractVcsHelper.myProject" resolve="myProject" />
                           </node>
                           <node concept="37vLTw" id="3dMY8lFLNU0" role="37wK5m">
                             <ref role="3cqZAo" node="29lH0gvZB5d" resolve="message" />
@@ -4701,7 +4702,7 @@
             <ref role="37wK5l" node="68MS4n2NqGe" resolve="hasResolvableConflicts" />
             <ref role="1Pybhc" node="68MS4n2I8HR" resolve="ConflictingModelsUtil" />
             <node concept="37vLTw" id="7UDnPJKk2S4" role="37wK5m">
-              <ref role="3cqZAo" to="jlcv:~AbstractVcsHelper.myProject" resolve="myProject" />
+              <ref role="3cqZAo" to="jlcw:~AbstractVcsHelper.myProject" resolve="myProject" />
             </node>
             <node concept="37vLTw" id="68MS4n2NW7A" role="37wK5m">
               <ref role="3cqZAo" node="3oPvWSRpVEZ" resolve="provider" />
