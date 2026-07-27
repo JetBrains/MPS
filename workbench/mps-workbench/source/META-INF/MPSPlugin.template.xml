@@ -82,24 +82,25 @@
   actions-->
   <xi:include href="/jetbrains/mps/ide/editor/actions/MPSEditorActions.xml"/> <!--only MPS editor actions-->
 
-  <extensions defaultExtensionNs="com.intellij">
-    <postStartupActivity implementation="com.intellij.platform.whatsNew.WhatsNewShowOnStartCheckService" order="last"/>
-    <applicationService serviceImplementation="com.intellij.platform.whatsNew.WhatsNewInVisionContentProvider" open="true"/>
-    <projectService serviceImplementation="com.intellij.platform.whatsNew.WhatsNewMultipageStartIdProvider" open="true"/>
-    <statistics.counterUsagesCollector implementationClass="com.intellij.platform.whatsNew.reaction.ReactionCollector"/>
-    <statistics.counterUsagesCollector implementationClass="com.intellij.platform.whatsNew.collectors.WhatsNewCounterUsageCollector"/>
-    <statistics.validation.customValidationRule implementation="com.intellij.platform.whatsNew.collectors.WhatsNewMultipageIdValidationRule"/>
+  TODO the commented out section has been moved to intellij.platform.whatsNew module
+<!--  <extensions defaultExtensionNs="com.intellij">-->
+<!--    <postStartupActivity implementation="com.intellij.platform.whatsNew.WhatsNewShowOnStartCheckService" order="last"/>-->
+<!--    <applicationService serviceImplementation="com.intellij.platform.whatsNew.WhatsNewInVisionContentProvider" open="true"/>-->
+<!--    <projectService serviceImplementation="com.intellij.platform.whatsNew.WhatsNewMultipageStartIdProvider" open="true"/>-->
+<!--    <statistics.counterUsagesCollector implementationClass="com.intellij.platform.whatsNew.reaction.ReactionCollector"/>-->
+<!--    <statistics.counterUsagesCollector implementationClass="com.intellij.platform.whatsNew.collectors.WhatsNewCounterUsageCollector"/>-->
+<!--    <statistics.validation.customValidationRule implementation="com.intellij.platform.whatsNew.collectors.WhatsNewMultipageIdValidationRule"/>-->
 
-    <applicationService serviceInterface="com.intellij.platform.ide.customization.ExternalProductResourceUrls"
-                        serviceImplementation="jetbrains.mps.intellij.integration.MPSExternalResourceUrls"
-                        overrides="true"/>
+<!--    <applicationService serviceInterface="com.intellij.platform.ide.customization.ExternalProductResourceUrls"-->
+<!--                        serviceImplementation="jetbrains.mps.intellij.integration.MPSExternalResourceUrls"-->
+<!--                        overrides="true"/>-->
 
-    <registryKey defaultValue="false" description="Whats new test mode" key="whats.new.test.mode" restartRequired="false" />
-    <registryKey key="csat.survey.enabled" defaultValue="false" description="Enables periodic CSAT survey" overrides="true"/>
-  </extensions>
-  <actions resource-bundle="messages.ActionsBundle">
-    <action id="WhatsNewAction" class="com.intellij.platform.whatsNew.WhatsNewAction" overrides="true"/>
-  </actions>
+<!--    <registryKey defaultValue="false" description="Whats new test mode" key="whats.new.test.mode" restartRequired="false" />-->
+<!--    <registryKey key="csat.survey.enabled" defaultValue="false" description="Enables periodic CSAT survey" overrides="true"/>-->
+<!--  </extensions>-->
+<!--  <actions resource-bundle="messages.ActionsBundle">-->
+<!--    <action id="WhatsNewAction" class="com.intellij.platform.whatsNew.WhatsNewAction" overrides="true"/>-->
+<!--  </actions>-->
 
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
