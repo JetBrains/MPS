@@ -42,7 +42,7 @@ public class ThisConstructorDelegationCall_Constraints extends BaseConstraintsDe
         @Override
         public Scope createScope(final ReferenceConstraintsContext _context) {
           // Could be the following, but the added complexity does not seem necessary here (needed for automatic resolution though)
-          //  '''KotlinScopes.forKotlinFunction(concept<IFunctionCall>,node<IFunctionCall>,node<>,aggregation,concept<INamedConcept>):Scope'''
+          //  '''KotlinScopes.forKotlinFunction(CONCEPTS.AbstractConstructorDelegationCall$RC, [Object] _context.getReferenceNode(), [Object] _context.getContextNode(), [Object] _context.getContainmentLink(), CONCEPTS.IConstructorDeclaration$rR)'''
           return new NamedElementsScope(AbstractConstructorDelegationCall__BehaviorDescriptor.getAvailableConstructors_id4DC0lWpsin.invoke(SNodeOperations.asSConcept(CONCEPTS.ThisConstructorDelegationCall$nG), _context.getContextNode()));
         }
       };

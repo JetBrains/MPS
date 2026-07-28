@@ -229,7 +229,7 @@
 }, {
   "name" : "IntelliJ IDEA Test Discovery Agent",
   "url" : "https://github.com/JetBrains/intellij-coverage/tree/master/test-discovery",
-  "version" : "1.0.777",
+  "version" : "1.0.776",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/intellij-coverage/blob/master/LICENSE"
 }, {
@@ -884,14 +884,14 @@
   "name" : "jediterm-core",
   "url" : "https://github.com/JetBrains/jediterm",
   "version" : "3.72",
-  "license" : "Apache 2.0",
-  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-APACHE-2.0.txt"
+  "license" : "LGPL 3.0",
+  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-LGPLv3.txt"
 }, {
   "name" : "jediterm-ui",
   "url" : "https://github.com/JetBrains/jediterm",
   "version" : "3.72",
-  "license" : "Apache 2.0",
-  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-APACHE-2.0.txt"
+  "license" : "LGPL 3.0",
+  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-LGPLv3.txt"
 }, {
   "name" : "jetCheck",
   "url" : "https://github.com/JetBrains/jetCheck",
@@ -1093,7 +1093,7 @@
 }, {
   "name" : "opencsv",
   "url" : "https://opencsv.sourceforge.net/",
-  "version" : "5.11.2",
+  "version" : "5.10",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://sourceforge.net/p/opencsv/source/ci/master/tree/LICENSE"
 }, {

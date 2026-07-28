@@ -166,6 +166,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.impl.log.graph.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.impl.log.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.log.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-structureView-plugin/lib/modules/intellij.platform.structureView.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-testRunner-plugin/lib/modules/intellij.platform.testRunner.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-bookmarks-plugin/lib/modules/intellij.platform.bookmarks.jar" />
@@ -240,7 +241,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.xml.impl.jar" />
