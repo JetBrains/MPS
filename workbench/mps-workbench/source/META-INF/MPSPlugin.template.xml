@@ -82,7 +82,7 @@
   actions-->
   <xi:include href="/jetbrains/mps/ide/editor/actions/MPSEditorActions.xml"/> <!--only MPS editor actions-->
 
-  TODO the commented out section has been moved to intellij.platform.whatsNew module
+<!--  TODO the commented out section has been moved to intellij.platform.whatsNew module-->
 <!--  <extensions defaultExtensionNs="com.intellij">-->
 <!--    <postStartupActivity implementation="com.intellij.platform.whatsNew.WhatsNewShowOnStartCheckService" order="last"/>-->
 <!--    <applicationService serviceImplementation="com.intellij.platform.whatsNew.WhatsNewInVisionContentProvider" open="true"/>-->
@@ -140,9 +140,10 @@
     <applicationService serviceInterface="com.intellij.openapi.fileEditor.impl.EditorEmptyTextPainter"
                         serviceImplementation="jetbrains.mps.ide.ui.fileEditor.MPSEditorEmptyTextPainter"
                         overrides="true"/>
-    <applicationService serviceInterface="com.intellij.platform.whatsNew.WhatsNewInVisionContentProvider"
-                        serviceImplementation="jetbrains.mps.MPSWhatsNewInVisionContentProvider"
-                        overrides="true"/>
+    <!--MPS-39970 Disabled until fixed-->
+<!--    <applicationService serviceInterface="com.intellij.platform.whatsNew.WhatsNewInVisionContentProvider"-->
+<!--                        serviceImplementation="jetbrains.mps.MPSWhatsNewInVisionContentProvider"-->
+<!--                        overrides="true"/>-->
     <!-- Similar to community/java/ide-customization/resources/META-INF/plugin.xml -->
     <!-- preload because in any case will be requested to reopen last projects -->
     <applicationService serviceInterface="com.intellij.ide.RecentProjectsManager"
