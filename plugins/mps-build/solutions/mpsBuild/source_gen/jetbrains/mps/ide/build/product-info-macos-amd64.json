@@ -11,7 +11,7 @@
     {
       "os": "macOS",
       "arch": "amd64",
-      "launcherPath": "../MacOS/bin/mps",
+      "launcherPath": "../MacOS/mps",
       "javaExecutablePath": "../jbr/Contents/Home/bin/java",
       "vmOptionsFilePath": "../bin/mps.vmoptions",
       "bootClassPathJarNames": [
