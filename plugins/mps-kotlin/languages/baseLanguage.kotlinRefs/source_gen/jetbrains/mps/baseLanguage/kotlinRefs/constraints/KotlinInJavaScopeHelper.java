@@ -109,7 +109,7 @@ public class KotlinInJavaScopeHelper {
 
       ExtensionsHelper.withTypesystem(contextNode, () -> {
         // Extension scopes in Java are a special case: instance types are sure to be known (legacy typesystem is there) so we can safely use all receiver members to get a set that includes all possible cases
-        // If that proves not to be the case anymore, please wrap the whole method with '''KotlinScopes.scopeWithLegacyTypesystemFallback(node<>,concept<INamedConcept>,{=>SignatureScope}):Scope''' .
+        // If that proves not to be the case anymore, please wrap the whole method with '''KotlinScopes.scopeWithLegacyTypesystemFallback()''' .
         ScopeCollector collector = new ScopeCollector(new ReceiverTypeFilter(signatureFilter, instanceType));
         SignatureScope.collectHierarchyScopes(context, collector);
         return ListSequence.fromList(scopes).addSequence(ListSequence.fromList(collector.getScopes()));
