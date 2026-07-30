@@ -661,6 +661,9 @@ public class IdeaFile implements IFile, CachingFile {
   @Nullable
   private VirtualFile findVirtualFile0(boolean withRefresh) {
     VirtualFileSystem fileSystem = myFS.getUnderlyingFS();
+    if (fileSystem == null) {
+      return null;
+    }
     if (withRefresh) {
       return fileSystem.refreshAndFindFileByPath(myPath);
     } else {
