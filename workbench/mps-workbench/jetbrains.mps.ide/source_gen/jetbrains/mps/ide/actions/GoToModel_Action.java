@@ -7,7 +7,7 @@ import jetbrains.mps.workbench.action.BaseAction;
 import javax.swing.Icon;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.Map;
-import com.intellij.openapi.application.impl.LaterInvocator;
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.project.MPSProject;
 import com.intellij.featureStatistics.FeatureUsageTracker;
@@ -40,7 +40,7 @@ public class GoToModel_Action extends BaseAction {
   }
   @Override
   public boolean isApplicable(AnActionEvent event, final Map<String, Object> _params) {
-    return !(LaterInvocator.isInModalContext());
+    return !(Boolean.TRUE.equals(event.getData(PlatformCoreDataKeys.IS_MODAL_CONTEXT)));
   }
   @Override
   public void doUpdate(@NotNull AnActionEvent event, final Map<String, Object> _params) {

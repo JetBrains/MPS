@@ -17724,9 +17724,24 @@
     <node concept="2ScWuX" id="4$lKlQJd86z" role="tmbBb">
       <node concept="3clFbS" id="4$lKlQJd86$" role="2VODD2">
         <node concept="3clFbJ" id="78nBORj8yNB" role="3cqZAp">
-          <node concept="2YIFZM" id="78nBORj8yNH" role="3clFbw">
-            <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
-            <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+          <node concept="2OqwBi" id="41RTSbkHKJ6" role="3clFbw">
+            <node concept="10M0yZ" id="41RTSbkHKJ9" role="2Oq$k0">
+              <ref role="1PxDUh" to="wyt6:~Boolean" resolve="Boolean" />
+              <ref role="3cqZAo" to="wyt6:~Boolean.TRUE" resolve="TRUE" />
+            </node>
+            <node concept="liA8E" id="41RTSbkHKJa" role="2OqNvi">
+              <ref role="37wK5l" to="wyt6:~Boolean.equals(java.lang.Object)" resolve="equals" />
+              <node concept="2OqwBi" id="41RTSbkHKJb" role="37wK5m">
+                <node concept="tl45R" id="41RTSbkHKJe" role="2Oq$k0" />
+                <node concept="liA8E" id="41RTSbkHKJf" role="2OqNvi">
+                  <ref role="37wK5l" to="qkt:~AnActionEvent.getData(com.intellij.openapi.actionSystem.DataKey)" resolve="getData" />
+                  <node concept="10M0yZ" id="41RTSbkHKJg" role="37wK5m">
+                    <ref role="1PxDUh" to="qkt:~PlatformCoreDataKeys" resolve="PlatformCoreDataKeys" />
+                    <ref role="3cqZAo" to="qkt:~PlatformCoreDataKeys.IS_MODAL_CONTEXT" resolve="IS_MODAL_CONTEXT" />
+                  </node>
+                </node>
+              </node>
+            </node>
           </node>
           <node concept="3clFbS" id="78nBORj8yNE" role="3clFbx">
             <node concept="3cpWs6" id="78nBORj8yNF" role="3cqZAp">
@@ -18285,9 +18300,24 @@
       <node concept="3clFbS" id="78nBORjaLfz" role="2VODD2">
         <node concept="3cpWs6" id="78nBORjaLf$" role="3cqZAp">
           <node concept="3fqX7Q" id="78nBORjaLf_" role="3cqZAk">
-            <node concept="2YIFZM" id="78nBORjaLfB" role="3fr31v">
-              <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
-              <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+            <node concept="2OqwBi" id="41RTSbkHKHK" role="3fr31v">
+              <node concept="10M0yZ" id="41RTSbkHKHN" role="2Oq$k0">
+                <ref role="1PxDUh" to="wyt6:~Boolean" resolve="Boolean" />
+                <ref role="3cqZAo" to="wyt6:~Boolean.TRUE" resolve="TRUE" />
+              </node>
+              <node concept="liA8E" id="41RTSbkHKHO" role="2OqNvi">
+                <ref role="37wK5l" to="wyt6:~Boolean.equals(java.lang.Object)" resolve="equals" />
+                <node concept="2OqwBi" id="41RTSbkHKHP" role="37wK5m">
+                  <node concept="tl45R" id="41RTSbkHKHS" role="2Oq$k0" />
+                  <node concept="liA8E" id="41RTSbkHKHT" role="2OqNvi">
+                    <ref role="37wK5l" to="qkt:~AnActionEvent.getData(com.intellij.openapi.actionSystem.DataKey)" resolve="getData" />
+                    <node concept="10M0yZ" id="41RTSbkHKHU" role="37wK5m">
+                      <ref role="1PxDUh" to="qkt:~PlatformCoreDataKeys" resolve="PlatformCoreDataKeys" />
+                      <ref role="3cqZAo" to="qkt:~PlatformCoreDataKeys.IS_MODAL_CONTEXT" resolve="IS_MODAL_CONTEXT" />
+                    </node>
+                  </node>
+                </node>
+              </node>
             </node>
           </node>
         </node>
@@ -18638,9 +18668,24 @@
       <node concept="3clFbS" id="78nBORjaHNa" role="2VODD2">
         <node concept="3cpWs6" id="78nBORjaHNb" role="3cqZAp">
           <node concept="3fqX7Q" id="78nBORjaHNc" role="3cqZAk">
-            <node concept="2YIFZM" id="78nBORjaHNe" role="3fr31v">
-              <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
-              <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+            <node concept="2OqwBi" id="41RTSbkHKIr" role="3fr31v">
+              <node concept="10M0yZ" id="41RTSbkHKIu" role="2Oq$k0">
+                <ref role="1PxDUh" to="wyt6:~Boolean" resolve="Boolean" />
+                <ref role="3cqZAo" to="wyt6:~Boolean.TRUE" resolve="TRUE" />
+              </node>
+              <node concept="liA8E" id="41RTSbkHKIv" role="2OqNvi">
+                <ref role="37wK5l" to="wyt6:~Boolean.equals(java.lang.Object)" resolve="equals" />
+                <node concept="2OqwBi" id="41RTSbkHKIw" role="37wK5m">
+                  <node concept="tl45R" id="41RTSbkHKIz" role="2Oq$k0" />
+                  <node concept="liA8E" id="41RTSbkHKI$" role="2OqNvi">
+                    <ref role="37wK5l" to="qkt:~AnActionEvent.getData(com.intellij.openapi.actionSystem.DataKey)" resolve="getData" />
+                    <node concept="10M0yZ" id="41RTSbkHKI_" role="37wK5m">
+                      <ref role="1PxDUh" to="qkt:~PlatformCoreDataKeys" resolve="PlatformCoreDataKeys" />
+                      <ref role="3cqZAo" to="qkt:~PlatformCoreDataKeys.IS_MODAL_CONTEXT" resolve="IS_MODAL_CONTEXT" />
+                    </node>
+                  </node>
+                </node>
+              </node>
             </node>
           </node>
         </node>
@@ -18977,9 +19022,24 @@
       <node concept="3clFbS" id="78nBORjaLfh" role="2VODD2">
         <node concept="3cpWs6" id="78nBORjaLfi" role="3cqZAp">
           <node concept="3fqX7Q" id="78nBORjaLfj" role="3cqZAk">
-            <node concept="2YIFZM" id="78nBORjaLfl" role="3fr31v">
-              <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
-              <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+            <node concept="2OqwBi" id="41RTSbkHoja" role="3fr31v">
+              <node concept="10M0yZ" id="41RTSbkHo5b" role="2Oq$k0">
+                <ref role="1PxDUh" to="wyt6:~Boolean" resolve="Boolean" />
+                <ref role="3cqZAo" to="wyt6:~Boolean.TRUE" resolve="TRUE" />
+              </node>
+              <node concept="liA8E" id="41RTSbkHojb" role="2OqNvi">
+                <ref role="37wK5l" to="wyt6:~Boolean.equals(java.lang.Object)" resolve="equals" />
+                <node concept="2OqwBi" id="41RTSbkHojs" role="37wK5m">
+                  <node concept="tl45R" id="41RTSbkHG4A" role="2Oq$k0" />
+                  <node concept="liA8E" id="41RTSbkHojt" role="2OqNvi">
+                    <ref role="37wK5l" to="qkt:~AnActionEvent.getData(com.intellij.openapi.actionSystem.DataKey)" resolve="getData" />
+                    <node concept="10M0yZ" id="41RTSbkHojv" role="37wK5m">
+                      <ref role="1PxDUh" to="qkt:~PlatformCoreDataKeys" resolve="PlatformCoreDataKeys" />
+                      <ref role="3cqZAo" to="qkt:~PlatformCoreDataKeys.IS_MODAL_CONTEXT" resolve="IS_MODAL_CONTEXT" />
+                    </node>
+                  </node>
+                </node>
+              </node>
             </node>
           </node>
         </node>
@@ -19997,9 +20057,24 @@
     <node concept="2ScWuX" id="3zY2KvK2I4f" role="tmbBb">
       <node concept="3clFbS" id="3zY2KvK2I4g" role="2VODD2">
         <node concept="3clFbJ" id="78nBORj6orQ" role="3cqZAp">
-          <node concept="2YIFZM" id="78nBORj8ybA" role="3clFbw">
-            <ref role="1Pybhc" to="3fye:~LaterInvocator" resolve="LaterInvocator" />
-            <ref role="37wK5l" to="3fye:~LaterInvocator.isInModalContext()" resolve="isInModalContext" />
+          <node concept="2OqwBi" id="41RTSbkHKJL" role="3clFbw">
+            <node concept="10M0yZ" id="41RTSbkHKJO" role="2Oq$k0">
+              <ref role="1PxDUh" to="wyt6:~Boolean" resolve="Boolean" />
+              <ref role="3cqZAo" to="wyt6:~Boolean.TRUE" resolve="TRUE" />
+            </node>
+            <node concept="liA8E" id="41RTSbkHKJP" role="2OqNvi">
+              <ref role="37wK5l" to="wyt6:~Boolean.equals(java.lang.Object)" resolve="equals" />
+              <node concept="2OqwBi" id="41RTSbkHKJQ" role="37wK5m">
+                <node concept="tl45R" id="41RTSbkHKJT" role="2Oq$k0" />
+                <node concept="liA8E" id="41RTSbkHKJU" role="2OqNvi">
+                  <ref role="37wK5l" to="qkt:~AnActionEvent.getData(com.intellij.openapi.actionSystem.DataKey)" resolve="getData" />
+                  <node concept="10M0yZ" id="41RTSbkHKJV" role="37wK5m">
+                    <ref role="1PxDUh" to="qkt:~PlatformCoreDataKeys" resolve="PlatformCoreDataKeys" />
+                    <ref role="3cqZAo" to="qkt:~PlatformCoreDataKeys.IS_MODAL_CONTEXT" resolve="IS_MODAL_CONTEXT" />
+                  </node>
+                </node>
+              </node>
+            </node>
           </node>
           <node concept="3clFbS" id="78nBORj6orT" role="3clFbx">
             <node concept="3cpWs6" id="78nBORj6orU" role="3cqZAp">
