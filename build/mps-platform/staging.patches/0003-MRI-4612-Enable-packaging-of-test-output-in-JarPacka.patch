@@ -1,7 +1,7 @@
-From ff354058c2719a3b435ab9f35b36a5c38c0213aa Mon Sep 17 00:00:00 2001
+From 7be6733bee52a64fce0402be453ee4e25e7e3422 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Wed, 1 Jul 2026 10:20:41 +0200
-Subject: [PATCH 3/8] MRI-4612 Enable packaging of test output in
+Subject: [PATCH 03/11] MRI-4612 Enable packaging of test output in
  JarPackager#buildJar
 
 Introduce another parameter `forTests` to function `JarPackager#buildJar` defaulting to `false`,
@@ -33,5 +33,5 @@ index d4ca46f9a1c2a..7c17677dbaf56 100644
          }
        },
 -- 
-2.53.0
+2.55.0
 

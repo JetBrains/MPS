@@ -1,0 +1,330 @@
+From 4d0641085389b68b3d26d2dc50cc4217e5d66d5b Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Thu, 30 Jul 2026 17:18:14 +0200
+Subject: [PATCH 10/11] MPS-39681 MPS build: patch Java plugin manifest during
+ build
+
+Avoid patching the resulting jar file from ant build file,
+instead patch the manifest during build.
+---
+ community/mps/build/build/build.xml           | 13 +--
+ .../java-impl.jar/META-INF/JavaPlugin.xml     | 94 ------------------
+ .../java-impl.jar/META-INF/plugin.xml         | 96 ++++++++++++++++++-
+ .../intellij/build/mps/MPSBuilder.kt          |  2 +-
+ .../intellij/build/mps/MPSProperties.kt       | 31 ++++--
+ 5 files changed, 115 insertions(+), 121 deletions(-)
+ delete mode 100644 community/mps/build/build/manifests/java-impl.jar/META-INF/JavaPlugin.xml
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 824b819cbd4a9..1a307e8207e64 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -60,18 +60,7 @@
+   </target>
+ 
+   <!-- Post-compile customizations required for final platform artifacts used by MPS -->
+-  <target name="repackage" depends="repackage-app-jar,repackage-java-plugin,extract-plugin-xml,extract-win-exe"/>
+-
+-  <!--In java-impl.jar, we remove META-INF contents for Idea not to try loading plugins from it (see MPS-30538) -->
+-  <!--In java-impl.jar, we we then replace META-INF/plugin.xml with a minimal set of modules -->
+-  <!--In java-impl.jar, we replace META-INF/JavaPlugin.xml with a minimal configuration (see MPS-39633)-->
+-  <target name="repackage-java-plugin" description="Remove IDEA specific descriptors">
+-    <jar destfile="${target.dist}/plugins/java/lib/stripped.jar">
+-      <zipfileset src="${target.dist}/plugins/java/lib/java-impl.jar" excludes="META-INF/**" />
+-      <fileset dir="${basedir}/manifests/java-impl.jar" includes="META-INF/**"/>
+-    </jar>
+-    <move file="${target.dist}/plugins/java/lib/stripped.jar" tofile="${target.dist}/plugins/java/lib/java-impl.jar"/>
+-  </target>
++  <target name="repackage" depends="repackage-app-jar,extract-plugin-xml,extract-win-exe"/>
+ 
+   <!-- Remove IdeaApplicationInfo.xml and IdeaPlugin.xml. These will be provided during MPS build later -->
+   <target name="repackage-app-jar" description="Remove IDEA specific descriptors">
+diff --git a/community/mps/build/build/manifests/java-impl.jar/META-INF/JavaPlugin.xml b/community/mps/build/build/manifests/java-impl.jar/META-INF/JavaPlugin.xml
+deleted file mode 100644
+index d36e7b73ab4f4..0000000000000
+--- a/community/mps/build/build/manifests/java-impl.jar/META-INF/JavaPlugin.xml
++++ /dev/null
+@@ -1,94 +0,0 @@
+-<!--suppress PluginXmlRegistrationCheck -->
+-<idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
+-
+-  <extensionPoints>
+-    <extensionPoint qualifiedName="com.intellij.compiler" area="IDEA_PROJECT" interface="com.intellij.openapi.compiler.Compiler"
+-                    dynamic="true"/>
+-    <extensionPoint qualifiedName="com.intellij.compilerFactory" area="IDEA_PROJECT"
+-                    interface="com.intellij.openapi.compiler.CompilerFactory" dynamic="true"/>
+-    <extensionPoint qualifiedName="com.intellij.compilableFileTypesProvider" area="IDEA_PROJECT"
+-                    interface="com.intellij.openapi.compiler.CompilableFileTypesProvider" dynamic="true"/>
+-    <extensionPoint qualifiedName="com.intellij.compiler.task" area="IDEA_PROJECT" beanClass="com.intellij.compiler.CompileTaskBean"
+-                    dynamic="true">
+-      <with attribute="implementation" implements="com.intellij.openapi.compiler.CompileTask"/>
+-    </extensionPoint>
+-    <extensionPoint qualifiedName="com.intellij.compileServer.plugin" beanClass="com.intellij.compiler.server.CompileServerPlugin"
+-                    dynamic="true"/>
+-    <extensionPoint qualifiedName="com.intellij.buildProcess.parametersProvider" area="IDEA_PROJECT"
+-                    interface="com.intellij.compiler.server.BuildProcessParametersProvider" dynamic="true"/>
+-    <extensionPoint qualifiedName="com.intellij.compiler.buildIssueContributor" dynamic="true"
+-                    interface="com.intellij.compiler.progress.BuildIssueContributor"/>
+-
+-    <extensionPoint qualifiedName="com.intellij.attachSourcesProvider" interface="com.intellij.codeInsight.AttachSourcesProvider"
+-                    dynamic="true"/>
+-
+-    <extensionPoint qualifiedName="com.intellij.java.compiler" area="IDEA_PROJECT"
+-                    interface="com.intellij.compiler.impl.javaCompiler.BackendCompiler" dynamic="true"/>
+-  </extensionPoints>
+-  
+-  <extensions defaultExtensionNs="com.intellij">
+-    <sdkType implementation="com.intellij.openapi.projectRoots.impl.JavaSdkImpl"/>
+-
+-    <applicationService serviceInterface="com.intellij.openapi.projectRoots.ProjectJdkTable"
+-                        serviceImplementation="com.intellij.openapi.projectRoots.impl.JavaAwareProjectJdkTableImpl"
+-                        overrides="true"/>
+-
+-    <applicationService serviceInterface="com.intellij.execution.runners.ProcessProxyFactory"
+-                        serviceImplementation="com.intellij.execution.runners.ProcessProxyFactoryImpl"/>
+-
+-    <applicationService serviceImplementation="com.intellij.debugger.settings.NodeRendererSettings"/>
+-    <applicationService serviceImplementation="com.intellij.debugger.settings.ViewsGeneralSettings"/>
+-    <projectService serviceImplementation="com.intellij.debugger.settings.DebuggerProjectSettings"/>
+-    <applicationService serviceImplementation="com.intellij.debugger.settings.ThreadsViewSettings"/>
+-    <applicationService serviceImplementation="com.intellij.debugger.settings.TraceSettings"/>
+-    <projectService serviceInterface="com.intellij.debugger.ui.HotSwapUI" serviceImplementation="com.intellij.debugger.ui.HotSwapUIImpl"/>
+-    <projectService serviceInterface="com.intellij.debugger.DebuggerManager" serviceImplementation="com.intellij.debugger.impl.DebuggerManagerImpl"/>
+-
+-    <statistics.counterUsagesCollector groupId="java.find.usages" version="1"/>
+-    <statistics.counterUsagesCollector groupId="java.extract.method" version="1"/>
+-
+-    <applicationService serviceInterface="com.intellij.packaging.elements.PackagingElementFactory"
+-                        serviceImplementation="com.intellij.packaging.impl.elements.PackagingElementFactoryImpl"/>
+-
+-    <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
+-                        serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
+-
+-    <projectService serviceInterface="com.intellij.packaging.artifacts.ArtifactPointerManager"
+-                    serviceImplementation="com.intellij.packaging.impl.artifacts.ArtifactPointerManagerImpl"/>
+-    <projectService serviceInterface="com.intellij.packaging.impl.artifacts.ArtifactBySourceFileFinder"
+-                    serviceImplementation="com.intellij.packaging.impl.artifacts.ArtifactBySourceFileFinderImpl"/>
+-    <applicationService serviceImplementation="com.intellij.packaging.impl.artifacts.InvalidArtifactType"/>
+-
+-    <applicationService serviceImplementation="com.intellij.compiler.server.BuildManager" preload="true"/>
+-
+-    <projectService serviceInterface="com.intellij.compiler.CompilerConfiguration"
+-                    serviceImplementation="com.intellij.compiler.CompilerConfigurationImpl" preload="await"/>
+-
+-    <virtualFileSystem implementationClass="com.intellij.openapi.vfs.impl.jrt.JrtFileSystemImpl" key="jrt" physical="true"/>
+-
+-    <registryKey key="jps.build.use.workspace.model" description="Use workspace model inside JPS build process. The implementation isn't finished yet, refer to https://youtrack.jetbrains.com/issue/IJPL-409 for details." defaultValue="false"/>
+-
+-    <sdkType implementation="com.intellij.openapi.projectRoots.impl.JavaSdkImpl"/>
+-    <applicationService serviceInterface="com.intellij.openapi.projectRoots.DefaultJdkConfigurator"
+-                        serviceImplementation="com.intellij.openapi.projectRoots.impl.DefaultJdkConfiguratorImpl"/>
+-    <orderRootType implementation="com.intellij.openapi.roots.JavadocOrderRootType"/>
+-    <orderRootType implementation="com.intellij.openapi.roots.AnnotationOrderRootType"/>
+-
+-    <projectService serviceImplementation="com.intellij.compiler.CompilerConfigurationSettings" configurationSchemaKey="compiler"/>
+-
+-    <advancedSetting id="compiler.automake.allow.when.app.running" groupKey="advanced.settings.group.compiler" default="false"
+-                     bundle="messages.JavaBundle"/>
+-    <advancedSetting id="compiler.lower.process.priority" groupKey="advanced.settings.group.compiler" default="true"
+-                     bundle="messages.JavaBundle"/>
+-    <advancedSetting id="compiler.unified.ic.implementation" groupKey="advanced.settings.group.compiler" default="true"
+-                     bundle="messages.JavaBundle"/>
+-    <advancedSetting id="compiler.inMemoryLogger" groupKey="advanced.settings.group.compiler" default="false"
+-                     bundle="messages.JavaBundle"/>
+-    <advancedSetting id="code.vision.java.minimal.usages" groupKey="advanced.settings.group.java" default="0" bundle="messages.JavaBundle"/>
+-    <advancedSetting id="java.completion.qualifier.as.argument" groupKey="advanced.settings.group.java" default="true"
+-                     bundle="messages.JavaBundle"/>
+-    <advancedSetting id="java.sdkmanrc.watcher" groupKey="advanced.settings.group.java" default="true" bundle="messages.JavaBundle"/>
+-
+-  </extensions>
+-
+-</idea-plugin>
+\ No newline at end of file
+diff --git a/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml b/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
+index 23bf600ffa8e9..785212753e616 100644
+--- a/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
++++ b/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
+@@ -1,7 +1,5 @@
+ <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude" allow-bundled-update="false">
+   <id>com.intellij.java</id>
+-  <version>261.23567.999-mps</version>
+-  <idea-version since-build="261.22158" until-build="263.*" />
+   <name>Java</name>
+   <description><![CDATA[
+     Adds support for the Java language, including Java projects, language syntax highlighting, inspections, and all other coding assistance features.
+@@ -14,7 +12,7 @@
+     <plugin id="com.intellij.modules.lang"/>
+   </dependencies>
+ 
+-  <xi:include href="/META-INF/JavaPlugin.xml"/>
++  <module value="com.intellij.modules.java" />
+ 
+   <content namespace="jetbrains">
+     <module name="intellij.java" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+@@ -36,11 +34,101 @@
+     <module name="intellij.java.ui" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.jsp" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.compiler.instrumentationUtil" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
++    <module name="intellij.platform.jps.build.dependencyGraph" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.platform.jps.build.javac.rt" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.platform.jps.build" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.platform.uast" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.platform.uast.ide" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+   </content>
+ 
+-  <module value="com.intellij.modules.java" />
++  <extensionPoints>
++    <extensionPoint qualifiedName="com.intellij.compiler" area="IDEA_PROJECT" interface="com.intellij.openapi.compiler.Compiler"
++                    dynamic="true"/>
++    <extensionPoint qualifiedName="com.intellij.compilerFactory" area="IDEA_PROJECT"
++                    interface="com.intellij.openapi.compiler.CompilerFactory" dynamic="true"/>
++    <extensionPoint qualifiedName="com.intellij.compilableFileTypesProvider" area="IDEA_PROJECT"
++                    interface="com.intellij.openapi.compiler.CompilableFileTypesProvider" dynamic="true"/>
++    <extensionPoint qualifiedName="com.intellij.compiler.task" area="IDEA_PROJECT" beanClass="com.intellij.compiler.CompileTaskBean"
++                    dynamic="true">
++      <with attribute="implementation" implements="com.intellij.openapi.compiler.CompileTask"/>
++    </extensionPoint>
++    <extensionPoint qualifiedName="com.intellij.compileServer.plugin" beanClass="com.intellij.compiler.server.CompileServerPlugin"
++                    dynamic="true"/>
++    <extensionPoint qualifiedName="com.intellij.buildProcess.parametersProvider" area="IDEA_PROJECT"
++                    interface="com.intellij.compiler.server.BuildProcessParametersProvider" dynamic="true"/>
++    <extensionPoint qualifiedName="com.intellij.compiler.buildIssueContributor" dynamic="true"
++                    interface="com.intellij.compiler.progress.BuildIssueContributor"/>
++
++    <extensionPoint qualifiedName="com.intellij.attachSourcesProvider" interface="com.intellij.codeInsight.AttachSourcesProvider"
++                    dynamic="true"/>
++
++    <extensionPoint qualifiedName="com.intellij.java.compiler" area="IDEA_PROJECT"
++                    interface="com.intellij.compiler.impl.javaCompiler.BackendCompiler" dynamic="true"/>
++  </extensionPoints>
++
++  <extensions defaultExtensionNs="com.intellij">
++    <sdkType implementation="com.intellij.openapi.projectRoots.impl.JavaSdkImpl"/>
++
++    <applicationService serviceInterface="com.intellij.openapi.projectRoots.ProjectJdkTable"
++                        serviceImplementation="com.intellij.openapi.projectRoots.impl.JavaAwareProjectJdkTableImpl"
++                        overrides="true"/>
++
++    <applicationService serviceInterface="com.intellij.execution.runners.ProcessProxyFactory"
++                        serviceImplementation="com.intellij.execution.runners.ProcessProxyFactoryImpl"/>
++
++    <applicationService serviceImplementation="com.intellij.debugger.settings.NodeRendererSettings"/>
++    <applicationService serviceImplementation="com.intellij.debugger.settings.ViewsGeneralSettings"/>
++    <projectService serviceImplementation="com.intellij.debugger.settings.DebuggerProjectSettings"/>
++    <applicationService serviceImplementation="com.intellij.debugger.settings.ThreadsViewSettings"/>
++    <applicationService serviceImplementation="com.intellij.debugger.settings.TraceSettings"/>
++    <projectService serviceInterface="com.intellij.debugger.ui.HotSwapUI" serviceImplementation="com.intellij.debugger.ui.HotSwapUIImpl"/>
++    <projectService serviceInterface="com.intellij.debugger.DebuggerManager" serviceImplementation="com.intellij.debugger.impl.DebuggerManagerImpl"/>
++
++    <statistics.counterUsagesCollector groupId="java.find.usages" version="1"/>
++    <statistics.counterUsagesCollector groupId="java.extract.method" version="1"/>
++
++    <applicationService serviceInterface="com.intellij.packaging.elements.PackagingElementFactory"
++                        serviceImplementation="com.intellij.packaging.impl.elements.PackagingElementFactoryImpl"/>
++
++    <applicationService serviceInterface="com.intellij.openapi.roots.ui.OrderEntryAppearanceService"
++                        serviceImplementation="com.intellij.openapi.roots.ui.OrderEntryAppearanceServiceImpl"/>
++
++    <projectService serviceInterface="com.intellij.packaging.artifacts.ArtifactPointerManager"
++                    serviceImplementation="com.intellij.packaging.impl.artifacts.ArtifactPointerManagerImpl"/>
++    <projectService serviceInterface="com.intellij.packaging.impl.artifacts.ArtifactBySourceFileFinder"
++                    serviceImplementation="com.intellij.packaging.impl.artifacts.ArtifactBySourceFileFinderImpl"/>
++    <applicationService serviceImplementation="com.intellij.packaging.impl.artifacts.InvalidArtifactType"/>
++
++    <applicationService serviceImplementation="com.intellij.compiler.server.BuildManager" preload="true"/>
++
++    <projectService serviceInterface="com.intellij.compiler.CompilerConfiguration"
++                    serviceImplementation="com.intellij.compiler.CompilerConfigurationImpl" preload="await"/>
++
++    <virtualFileSystem implementationClass="com.intellij.openapi.vfs.impl.jrt.JrtFileSystemImpl" key="jrt" physical="true"/>
++
++    <registryKey key="jps.build.use.workspace.model" description="Use workspace model inside JPS build process. The implementation isn't finished yet, refer to https://youtrack.jetbrains.com/issue/IJPL-409 for details." defaultValue="false"/>
++
++    <sdkType implementation="com.intellij.openapi.projectRoots.impl.JavaSdkImpl"/>
++    <applicationService serviceInterface="com.intellij.openapi.projectRoots.DefaultJdkConfigurator"
++                        serviceImplementation="com.intellij.openapi.projectRoots.impl.DefaultJdkConfiguratorImpl"/>
++    <orderRootType implementation="com.intellij.openapi.roots.JavadocOrderRootType"/>
++    <orderRootType implementation="com.intellij.openapi.roots.AnnotationOrderRootType"/>
++
++    <projectService serviceImplementation="com.intellij.compiler.CompilerConfigurationSettings" configurationSchemaKey="compiler"/>
++
++    <advancedSetting id="compiler.automake.allow.when.app.running" groupKey="advanced.settings.group.compiler" default="false"
++                     bundle="messages.JavaBundle"/>
++    <advancedSetting id="compiler.lower.process.priority" groupKey="advanced.settings.group.compiler" default="true"
++                     bundle="messages.JavaBundle"/>
++    <advancedSetting id="compiler.unified.ic.implementation" groupKey="advanced.settings.group.compiler" default="true"
++                     bundle="messages.JavaBundle"/>
++    <advancedSetting id="compiler.inMemoryLogger" groupKey="advanced.settings.group.compiler" default="false"
++                     bundle="messages.JavaBundle"/>
++    <advancedSetting id="code.vision.java.minimal.usages" groupKey="advanced.settings.group.java" default="0" bundle="messages.JavaBundle"/>
++    <advancedSetting id="java.completion.qualifier.as.argument" groupKey="advanced.settings.group.java" default="true"
++                     bundle="messages.JavaBundle"/>
++    <advancedSetting id="java.sdkmanrc.watcher" groupKey="advanced.settings.group.java" default="true" bundle="messages.JavaBundle"/>
++
++  </extensions>
++
+ </idea-plugin>
+diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
+index 86a7b19d897b1..2934f3c4a327e 100644
+--- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
++++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
+@@ -58,7 +58,7 @@ class MPSBuilder {
+ 
+                 val buildContext = BuildContextImpl.createContext(
+                     projectHome = home,
+-                    productProperties = MPSProperties(),
++                    productProperties = MPSProperties(MPS_HOME),
+                     proprietaryBuildTools = buildTools,
+                     options = options
+                 )
+diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+index 715ad6e65aed9..5a24f34ebb6e5 100644
+--- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
++++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+@@ -40,7 +40,7 @@ private val javaCompiler: (PlatformLayout, BuildContext) -> Unit = { layout, _ -
+     }
+ }
+ 
+-class MPSProperties : JetBrainsProductProperties() {
++class MPSProperties(val buildDir: Path? = null) : JetBrainsProductProperties() {
+ 
+     init {
+         platformPrefix = "MPS"
+@@ -230,14 +230,25 @@ class MPSProperties : JetBrainsProductProperties() {
+             installerImagesPath = projectHome.resolve("build/resources")
+         }
+     }
+-}
+ 
+-private fun patchPluginXml(): (PluginLayout.PluginLayoutSpec) -> Unit = { spec ->
+-  spec.withPluginXmlPatcher { text, _ ->
+-    checkedReplace(
+-      oldText = text,
+-      regex = """<version>([^.]+)\.([^.]+)\.?(.*)</version>""",
+-      newText = """<version>$1.100$2.$3-MPS</version>""",
+-    )
+-  }
++    private fun patchPluginXml(): (PluginLayout.PluginLayoutSpec) -> Unit = { spec ->
++      spec.withPluginXmlPatcher { text, _ ->
++        val newText = checkedReplace(
++          oldText = text,
++          regex = """<version>([^.]+)\.([^.]+)\.?(.*)</version>""",
++          newText = """<version>$1.100$2.$3-MPS</version>""",
++        )
++        
++        val regex = """(?m)(?s)(.*)<content namespace="jetbrains">(.+)</idea-plugin>([\n]*)"""
++        val patchedManifest = buildDir?.resolve("build/manifests/java-impl.jar/META-INF/plugin.xml") ?:
++                                throw IllegalStateException("Failed to resolve plugin xml")
++        val matchResult = Regex(regex,).matchEntire(Files.readString(patchedManifest)) ?:
++                              throw IllegalStateException("Failed to match regex")
++        checkedReplace(
++          oldText = newText,
++          regex = regex,
++          newText = """$1<content namespace="jetbrains">${matchResult.groups[2]?.value}</idea-plugin>$3""",
++        )
++      }
++    }
+ }
+-- 
+2.55.0
+
