@@ -38549,17 +38549,10 @@
               <property role="3MwjfP" value="lib" />
             </node>
           </node>
-          <node concept="398223" id="49FzP8Dz3Di" role="39821P">
-            <node concept="3_J27D" id="49FzP8Dz3Dk" role="Nbhlr">
-              <node concept="3Mxwew" id="49FzP8Dz3Dn" role="3MwsjC">
-                <property role="3MwjfP" value="modules" />
-              </node>
-            </node>
-            <node concept="13uQ2_" id="49FzP8Dz3Do" role="39821P">
-              <node concept="3_J27D" id="49FzP8Dz3Dp" role="13uQ07">
-                <node concept="3Mxwew" id="49FzP8Dz3Dq" role="3MwsjC">
-                  <property role="3MwjfP" value="intellij.platform.jps.build.jar" />
-                </node>
+          <node concept="13uQ2_" id="49FzP8Dz3Do" role="39821P">
+            <node concept="3_J27D" id="49FzP8Dz3Dp" role="13uQ07">
+              <node concept="3Mxwew" id="49FzP8Dz3Dq" role="3MwsjC">
+                <property role="3MwjfP" value="intellij.platform.jps.build.jar" />
               </node>
             </node>
           </node>
