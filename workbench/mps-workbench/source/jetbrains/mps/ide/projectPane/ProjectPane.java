@@ -442,7 +442,7 @@ public class ProjectPane extends BaseLogicalViewProjectPane {
     IdeaFileSystem fileSystem = myProjectMPS.getFileSystem();
     VirtualFile virtualFile = fileSystem.asVirtualFile(descriptorFile);
     if (virtualFile == null) {
-      IdeaFile ideaFile = fileSystem.getFile(descriptorFile.getPath());
+      IdeaFile ideaFile = fileSystem.getArchiveAwareFile(descriptorFile.getPath());
       if (ideaFile != null) {
         virtualFile = ideaFile.getVirtualFile();
       }

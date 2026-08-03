@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -70,7 +71,7 @@ public final class ProjectRootListenerComponent implements Disposable {
     String basePath = myProject.getBasePath();
     if (basePath != null) {
       myFileSystem = fs;
-      IFile projectBase = fs.getFile(basePath);
+      IFile projectBase = fs.getFile(Path.of(basePath));
       List<EmptyFSListener> newListeners = new ArrayList<>();
       ApplicationManager.getApplication().runReadAction(() -> {
         List<IFile> children = projectBase.getChildren();

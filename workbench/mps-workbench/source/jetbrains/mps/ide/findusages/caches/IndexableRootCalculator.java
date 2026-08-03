@@ -138,7 +138,7 @@ final class IndexableRootCalculator implements Disposable {
             //     MPSModelsFastFindSupport assumes any model available through ProjectRepository is indexed
             //     and without this code it may yield wrong results (i.e. consume a model that has not been
             //     indexed, omitting some instances)
-            final IdeaFile ideaFile = fs.getFile(f.getPath());
+            final IdeaFile ideaFile = fs.getArchiveAwareFile(f.getPath());
             VirtualFile vf = ideaFile == null ? null : ideaFile.getVirtualFile();
             if (vf != null) {
               files.add(vf);

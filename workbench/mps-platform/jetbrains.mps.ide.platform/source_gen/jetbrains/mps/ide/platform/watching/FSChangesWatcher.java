@@ -16,6 +16,7 @@ import jetbrains.mps.nodefs.NodeVirtualFileSystem;
 import java.util.function.Supplier;
 import jetbrains.mps.ide.vfs.IdeaFileSystem;
 import com.intellij.openapi.vfs.LocalFileSystem;
+import java.nio.file.Path;
 import com.intellij.openapi.vfs.newvfs.events.VFileContentChangeEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileCreateEvent;
 import com.intellij.openapi.vfs.newvfs.events.VFileDeleteEvent;
@@ -60,7 +61,7 @@ public final class FSChangesWatcher implements BulkFileListener {
       return;
     }
 
-    String path = event.getPath();
+    Path path = Path.of(event.getPath());
     if (LOG.isDebugLevel()) {
       LOG.debug("Process after event for " + path);
     }
@@ -79,9 +80,8 @@ public final class FSChangesWatcher implements BulkFileListener {
       processor.processCreate(path);
     } else if (event instanceof VFileMoveEvent) {
       VFileMoveEvent re = (VFileMoveEvent) event;
-      String name = re.getFile().getName();
-      processor.processDelete(re.getFile().getPath());
-      processor.processCreate(re.getNewParent().findChild(name).getPath());
+      processor.processDelete(Path.of(re.getOldPath()));
+      processor.processCreate(Path.of(re.getNewPath()));
     }
   }
 }

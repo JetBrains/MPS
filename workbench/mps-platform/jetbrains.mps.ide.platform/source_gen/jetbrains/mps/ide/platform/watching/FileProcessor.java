@@ -19,6 +19,7 @@ import org.jetbrains.mps.openapi.util.SubProgressKind;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
+import java.nio.file.Path;
 import jetbrains.mps.fileTypes.MPSFileTypesManager;
 import jetbrains.mps.vfs.IFile;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
@@ -104,23 +105,23 @@ import java.util.Arrays;
     return result;
   }
 
-  /*package*/ boolean accepts(String path) {
-    return !(MPSFileTypesManager.isFileIgnored(path));
+  /*package*/ boolean accepts(Path path) {
+    return !(MPSFileTypesManager.isFileIgnored(path.toString()));
   }
 
-  /*package*/ void processDelete(String path) {
+  /*package*/ void processDelete(Path path) {
     final IFile file = FS.getFile(path);
-    ListSequence.fromList(getData(path, EventKind.REMOVED)).visitAll((it) -> it.removed.add(file));
+    ListSequence.fromList(getData(file.getPath(), EventKind.REMOVED)).visitAll((it) -> it.removed.add(file));
   }
 
-  /*package*/ void processCreate(String path) {
+  /*package*/ void processCreate(Path path) {
     final IFile file = FS.getFile(path);
-    ListSequence.fromList(getData(path, EventKind.CREATED)).visitAll((it) -> it.added.add(file));
+    ListSequence.fromList(getData(file.getPath(), EventKind.CREATED)).visitAll((it) -> it.added.add(file));
   }
 
-  /*package*/ void processContentChanged(String path) {
+  /*package*/ void processContentChanged(Path path) {
     final IFile file = FS.getFile(path);
-    ListSequence.fromList(getData(path, EventKind.CONTENT_CHANGED)).visitAll((it) -> it.changed.add(file));
+    ListSequence.fromList(getData(file.getPath(), EventKind.CONTENT_CHANGED)).visitAll((it) -> it.changed.add(file));
   }
 
   @Override

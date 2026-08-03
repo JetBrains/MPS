@@ -17,6 +17,7 @@ package jetbrains.mps.vfs;
 
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
+import com.intellij.openapi.vfs.VirtualFile;
 import jetbrains.mps.core.platform.Platform;
 import jetbrains.mps.ide.vfs.IdeaFileSystem;
 import jetbrains.mps.tool.environment.Environment;
@@ -25,6 +26,7 @@ import jetbrains.mps.util.IFileUtil;
 import jetbrains.mps.util.ReadUtil;
 import jetbrains.mps.vfs.openapi.FileSystem;
 import jetbrains.mps.vfs.path.Path;
+import jetbrains.mps.vfs.util.PathFormatChecker.PathFormatException;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -45,6 +47,7 @@ import static org.junit.Assert.fail;
 /**
  * @author Evgeny Gerashchenko
  */
+@SuppressWarnings("removal")
 public class VfsTest implements EnvironmentAware {
   private static final int FILE_SIZE = 20000;
 
@@ -58,7 +61,7 @@ public class VfsTest implements EnvironmentAware {
     testRunnable.accept(vfsManager.getUmbrellaFileSystemJavaIO());
   }
 
-  private static void IDEA_FS_TEST(final Consumer<FileSystem> testRunnable) {
+  private static void IDEA_FS_TEST(final Consumer<? super IdeaFileSystem> testRunnable) {
     final Throwable[] ex = new Throwable[1];
     ApplicationManager.getApplication().invokeAndWait(() -> ApplicationManager.getApplication().runWriteAction(() -> {
       try {
@@ -132,6 +135,35 @@ public class VfsTest implements EnvironmentAware {
     assertFalse(tmpDir.exists());
   }
 
+  private static void doPathVfsTest(@NotNull IdeaFileSystem fs) {
+    IFile tmpDir = IFileUtil.createTmpDir(fs);
+    try {
+      java.nio.file.Path tmpPath = java.nio.file.Path.of(tmpDir.getPath());
+      IFile fileFromPath = fs.getFile(tmpPath);
+      assertEquals(tmpDir, fileFromPath);
+      assertEquals(tmpDir, fs.findExistingFile(tmpPath));
+
+      java.nio.file.Path missingPath = tmpPath.resolve("subdir").resolve("..").resolve("missing");
+      IFile missingFile = fs.getFile(missingPath);
+      assertEquals(tmpDir.findChild("missing"), missingFile);
+      assertFalse(missingFile.exists());
+      assertNull(fs.findExistingFile(missingPath));
+
+      VirtualFile virtualFile = fs.asVirtualFile(fileFromPath);
+      assertNotNull(virtualFile);
+      assertEquals(fileFromPath, fs.fromVirtualFile(virtualFile));
+
+      try {
+        fs.getFile(java.nio.file.Path.of("relative"));
+        fail("Relative paths are not supported");
+      } catch (PathFormatException expected) {
+        // expected
+      }
+    } finally {
+      assertTrue(tmpDir.delete());
+    }
+  }
+
   private static void doJarVfsTest(@NotNull FileSystem fileSystem) {
     String testJarPath = VfsTest.class.getResource(JAR_NAME).getPath();
     IFile jarRoot1 = fileSystem.getFile(testJarPath + Path.ARCHIVE_SEPARATOR + JAR_FOLDER);
@@ -154,6 +186,16 @@ public class VfsTest implements EnvironmentAware {
       testJarRoot(jarRoot2);
 
       assertEquals(jarRoot1, jarRoot2);
+
+      if (fileSystem instanceof IdeaFileSystem) {
+        IdeaFileSystem ideaFileSystem = (IdeaFileSystem) fileSystem;
+        VirtualFile virtualFile = ideaFileSystem.asVirtualFile(jarRoot1);
+        assertNotNull(virtualFile);
+        assertEquals(jarRoot1, ideaFileSystem.fromVirtualFile(virtualFile));
+
+        assertEquals(jarRoot1, ideaFileSystem.getArchiveAwareFile(testJarPath + Path.ARCHIVE_SEPARATOR + JAR_FOLDER));
+        assertEquals(testJarFile, ideaFileSystem.getArchiveAwareFile(testJarPath));
+      }
 
       // stepUpToArchive
       assertTrue(zipRoot.stepUpToArchive().isZipArchive());
@@ -207,6 +249,11 @@ public class VfsTest implements EnvironmentAware {
   @Test
   public void baseIoVfsTest() {
     IO_FS_TEST(VfsTest::doBaseVfsTest);
+  }
+
+  @Test
+  public void pathIdeaVfsTest() {
+    IDEA_FS_TEST(VfsTest::doPathVfsTest);
   }
 
   @Test

@@ -601,7 +601,7 @@ public class IdeaFile implements IFile, CachingFile {
   @NotNull
   public IFile stepIntoArchive() {
     if (isZipArchive()) {
-      return myFS.getUmbrellaFileSystem().getFile(myPath + Path.ARCHIVE_SEPARATOR);
+      return myFS.getUmbrellaFileSystem().getArchiveAwareFile(myPath + Path.ARCHIVE_SEPARATOR);
     } else {
       return this;
     }

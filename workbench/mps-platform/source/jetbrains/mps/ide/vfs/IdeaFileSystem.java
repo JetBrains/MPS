@@ -39,6 +39,7 @@ import jetbrains.mps.vfs.refresh.FileSystemListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
 
@@ -70,9 +71,26 @@ public final class IdeaFileSystem implements FileSystem, CachingFileSystem, File
   public IdeaFileSystem() {
   }
 
+  /**
+   * @deprecated use {@link #getFile(Path)} for local paths, {@link #getArchiveAwareFile(String)} for paths that may point inside an archive
+   */
   @NotNull
   @Override
+  @Deprecated(since = "2026.2")
   public IdeaFile getFile(@NotNull String path) {
+    return getArchiveAwareFile(path);
+  }
+
+  /**
+   * Gives an MPS file abstraction for an absolute path that may denote an entry inside an archive, e.g. {@code /path/to/lib.jar!/entry}.
+   * The path is dispatched to the archive or to the local file system depending on the presence of the {@code !/} separator.
+   * <p>
+   * Prefer {@link #getFile(Path)} whenever the path is known to be a local one.
+   *
+   * @since 2026.2
+   */
+  @NotNull
+  public IdeaFile getArchiveAwareFile(@NotNull String path) {
     path = FileUtil.normalizeAndResolveParentDirs(path);
     if (path.endsWith("!")) {
       path += "/";
@@ -83,17 +101,50 @@ public final class IdeaFileSystem implements FileSystem, CachingFileSystem, File
     return ((BaseIdeaFileSystem) fileSystem).getFile(path);
   }
 
+  /**
+   * Gives an MPS file abstraction for an absolute local path.
+   * <p>
+   * Archive entries are not represented by {@link Path}; use {@link IFile#stepIntoArchive()} for them.
+   *
+   * @since 2026.2
+   */
+  @NotNull
+  public IdeaFile getFile(@NotNull Path path) {
+    String normalizedPath = FileUtil.normalize(path.normalize().toString());
+    IFileSystem fileSystem = MPSCoreComponents.getInstance().getPlatform().findComponent(VFSManager.class).getFileSystem(VFSManager.FILE_FS);
+    assert fileSystem instanceof BaseIdeaFileSystem;
+    return ((BaseIdeaFileSystem) fileSystem).getFile(normalizedPath);
+  }
+
   @Override
   public boolean isFileIgnored(@NotNull String name) {
     return FileTypeManager.getInstance().isFileIgnored(name);
   }
 
+  /**
+   * @deprecated use {@link #findExistingFile(Path)} for local paths, {@link #getArchiveAwareFile(String)} for paths that may point inside an archive
+   */
   @Override
+  @Deprecated(since = "2026.2")
   public IFile findExistingFile(@NotNull String path) {
     // copied from IoFileSystem/IFileSystem
     try {
-      IFile f = getFile(path);
+      IFile f = getArchiveAwareFile(path);
       return f.exists() ? f : null;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
+   * @return the existing file at {@code path}, or {@code null}
+   * @since 2026.2
+   */
+  @Nullable
+  public IFile findExistingFile(@NotNull Path path) {
+    try {
+      IFile file = getFile(path);
+      return file.exists() ? file : null;
     } catch (Exception e) {
       return null;
     }
@@ -121,6 +172,14 @@ public final class IdeaFileSystem implements FileSystem, CachingFileSystem, File
   @NotNull
   public IFile fromVirtualFile(@NotNull VirtualFile virtualFile) {
     assert canConvert(virtualFile) : "Only local/jar platform file systems are supported by IdeaFileSystem: " + virtualFile.getPath();
+    if (virtualFile.getFileSystem() instanceof LocalFileSystem) {
+      // not every LocalFileSystem is backed by java.nio (e.g. the in-memory TempFileSystem of platform tests),
+      // and toNioPath() would throw for those, while canConvert() promises they are convertible
+      Path nioPath = virtualFile.getFileSystem().getNioPath(virtualFile);
+      if (nioPath != null) {
+        return getFile(nioPath);
+      }
+    }
     return getFile(FileUtil.normalize(virtualFile.getPath()));
   }
 

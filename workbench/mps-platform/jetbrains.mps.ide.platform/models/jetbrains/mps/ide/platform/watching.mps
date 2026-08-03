@@ -56,6 +56,7 @@
     <import index="iwsx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.fileEditor(MPS.IDEA/)" />
     <import index="s9o5" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.editor(MPS.IDEA/)" />
     <import index="jlcu" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
+    <import index="eoo2" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.nio.file(JDK/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -1784,15 +1785,21 @@
         <node concept="3cpWs8" id="7QxwFodac0H" role="3cqZAp">
           <node concept="3cpWsn" id="7QxwFodac0I" role="3cpWs9">
             <property role="TrG5h" value="path" />
-            <node concept="2OqwBi" id="7QxwFodac0J" role="33vP2m">
-              <node concept="37vLTw" id="7QxwFodac0K" role="2Oq$k0">
-                <ref role="3cqZAo" node="7mrRUyVUv8N" resolve="event" />
-              </node>
-              <node concept="liA8E" id="7QxwFodac0L" role="2OqNvi">
-                <ref role="37wK5l" to="p3o1:~VFileEvent.getPath()" resolve="getPath" />
+            <node concept="3uibUv" id="7zS7QpO$6N" role="1tU5fm">
+              <ref role="3uigEE" to="eoo2:~Path" resolve="Path" />
+            </node>
+            <node concept="2YIFZM" id="7zS7QpOBr7" role="33vP2m">
+              <ref role="37wK5l" to="eoo2:~Path.of(java.lang.String,java.lang.String...)" resolve="of" />
+              <ref role="1Pybhc" to="eoo2:~Path" resolve="Path" />
+              <node concept="2OqwBi" id="7QxwFodac0J" role="37wK5m">
+                <node concept="37vLTw" id="7QxwFodac0K" role="2Oq$k0">
+                  <ref role="3cqZAo" node="7mrRUyVUv8N" resolve="event" />
+                </node>
+                <node concept="liA8E" id="7QxwFodac0L" role="2OqNvi">
+                  <ref role="37wK5l" to="p3o1:~VFileEvent.getPath()" resolve="getPath" />
+                </node>
               </node>
             </node>
-            <node concept="17QB3L" id="4_rZUNaWOUm" role="1tU5fm" />
           </node>
         </node>
         <node concept="RRSsy" id="3jYQuSB36CC" role="3cqZAp">
@@ -1950,25 +1957,6 @@
                   </node>
                 </node>
               </node>
-              <node concept="3cpWs8" id="3pk0olxI9nf" role="3cqZAp">
-                <node concept="3cpWsn" id="3pk0olxI9ng" role="3cpWs9">
-                  <property role="TrG5h" value="name" />
-                  <node concept="17QB3L" id="2X7HGNkreKv" role="1tU5fm" />
-                  <node concept="2OqwBi" id="3pk0olxI9ni" role="33vP2m">
-                    <node concept="2OqwBi" id="3pk0olxI9nj" role="2Oq$k0">
-                      <node concept="37vLTw" id="3GM_nagTy_o" role="2Oq$k0">
-                        <ref role="3cqZAo" node="3pk0olxI8Nx" resolve="re" />
-                      </node>
-                      <node concept="liA8E" id="3pk0olxI9nl" role="2OqNvi">
-                        <ref role="37wK5l" to="p3o1:~VFileMoveEvent.getFile()" resolve="getFile" />
-                      </node>
-                    </node>
-                    <node concept="liA8E" id="3pk0olxI9nm" role="2OqNvi">
-                      <ref role="37wK5l" to="jlff:~VirtualFile.getName()" resolve="getName" />
-                    </node>
-                  </node>
-                </node>
-              </node>
               <node concept="3clFbF" id="3pk0olxI8N2" role="3cqZAp">
                 <node concept="2OqwBi" id="3pk0olxI8N3" role="3clFbG">
                   <node concept="37vLTw" id="1ALhHrV0VGv" role="2Oq$k0">
@@ -1976,17 +1964,16 @@
                   </node>
                   <node concept="liA8E" id="3pk0olxI8N5" role="2OqNvi">
                     <ref role="37wK5l" node="6KWQXOSpcPZ" resolve="processDelete" />
-                    <node concept="2OqwBi" id="7QxwFodak3s" role="37wK5m">
-                      <node concept="2OqwBi" id="3pk0olxI9pd" role="2Oq$k0">
-                        <node concept="37vLTw" id="2aUbUKfIrtf" role="2Oq$k0">
+                    <node concept="2YIFZM" id="7zS7QpOFHA" role="37wK5m">
+                      <ref role="37wK5l" to="eoo2:~Path.of(java.lang.String,java.lang.String...)" resolve="of" />
+                      <ref role="1Pybhc" to="eoo2:~Path" resolve="Path" />
+                      <node concept="2OqwBi" id="7zS7QpOGW6" role="37wK5m">
+                        <node concept="37vLTw" id="7zS7QpOGlC" role="2Oq$k0">
                           <ref role="3cqZAo" node="3pk0olxI8Nx" resolve="re" />
                         </node>
-                        <node concept="liA8E" id="3pk0olxI9pi" role="2OqNvi">
-                          <ref role="37wK5l" to="p3o1:~VFileMoveEvent.getFile()" resolve="getFile" />
+                        <node concept="liA8E" id="7zS7QpOHWm" role="2OqNvi">
+                          <ref role="37wK5l" to="p3o1:~VFileMoveEvent.getOldPath()" resolve="getOldPath" />
                         </node>
-                      </node>
-                      <node concept="liA8E" id="7QxwFodakg0" role="2OqNvi">
-                        <ref role="37wK5l" to="jlff:~VirtualFile.getPath()" resolve="getPath" />
                       </node>
                     </node>
                   </node>
@@ -1999,25 +1986,16 @@
                   </node>
                   <node concept="liA8E" id="3pk0olxI8Nd" role="2OqNvi">
                     <ref role="37wK5l" node="6KWQXOSpcQ6" resolve="processCreate" />
-                    <node concept="2OqwBi" id="7QxwFodajJO" role="37wK5m">
-                      <node concept="2OqwBi" id="3pk0olxI9nK" role="2Oq$k0">
-                        <node concept="2OqwBi" id="3pk0olxI9nL" role="2Oq$k0">
-                          <node concept="37vLTw" id="3GM_nagTuZ3" role="2Oq$k0">
-                            <ref role="3cqZAo" node="3pk0olxI8Nx" resolve="re" />
-                          </node>
-                          <node concept="liA8E" id="3pk0olxI9nN" role="2OqNvi">
-                            <ref role="37wK5l" to="p3o1:~VFileMoveEvent.getNewParent()" resolve="getNewParent" />
-                          </node>
+                    <node concept="2YIFZM" id="7zS7QpOLyU" role="37wK5m">
+                      <ref role="37wK5l" to="eoo2:~Path.of(java.lang.String,java.lang.String...)" resolve="of" />
+                      <ref role="1Pybhc" to="eoo2:~Path" resolve="Path" />
+                      <node concept="2OqwBi" id="7zS7QpOLyV" role="37wK5m">
+                        <node concept="37vLTw" id="7zS7QpOLyW" role="2Oq$k0">
+                          <ref role="3cqZAo" node="3pk0olxI8Nx" resolve="re" />
                         </node>
-                        <node concept="liA8E" id="3pk0olxI9nO" role="2OqNvi">
-                          <ref role="37wK5l" to="jlff:~VirtualFile.findChild(java.lang.String)" resolve="findChild" />
-                          <node concept="37vLTw" id="3GM_nagTuEU" role="37wK5m">
-                            <ref role="3cqZAo" node="3pk0olxI9ng" resolve="name" />
-                          </node>
+                        <node concept="liA8E" id="7zS7QpOLyX" role="2OqNvi">
+                          <ref role="37wK5l" to="p3o1:~VFileMoveEvent.getNewPath()" resolve="getNewPath" />
                         </node>
-                      </node>
-                      <node concept="liA8E" id="7QxwFodajXj" role="2OqNvi">
-                        <ref role="37wK5l" to="jlff:~VirtualFile.getPath()" resolve="getPath" />
                       </node>
                     </node>
                   </node>
@@ -2722,7 +2700,9 @@
       <node concept="10P_77" id="6KWQXOSpcPR" role="3clF45" />
       <node concept="37vLTG" id="6KWQXOSpcPU" role="3clF46">
         <property role="TrG5h" value="path" />
-        <node concept="17QB3L" id="7QxwFodb59m" role="1tU5fm" />
+        <node concept="3uibUv" id="7zS7QpLDOd" role="1tU5fm">
+          <ref role="3uigEE" to="eoo2:~Path" resolve="Path" />
+        </node>
       </node>
       <node concept="3clFbS" id="6KWQXOSpcPW" role="3clF47">
         <node concept="3cpWs6" id="7QxwFodbiEc" role="3cqZAp">
@@ -2730,8 +2710,13 @@
             <node concept="2YIFZM" id="7QxwFodblCF" role="3fr31v">
               <ref role="37wK5l" to="tcg7:~MPSFileTypesManager.isFileIgnored(java.lang.String)" resolve="isFileIgnored" />
               <ref role="1Pybhc" to="tcg7:~MPSFileTypesManager" resolve="MPSFileTypesManager" />
-              <node concept="37vLTw" id="7QxwFodblCG" role="37wK5m">
-                <ref role="3cqZAo" node="6KWQXOSpcPU" resolve="path" />
+              <node concept="2OqwBi" id="7zS7QpMI5K" role="37wK5m">
+                <node concept="37vLTw" id="7QxwFodblCG" role="2Oq$k0">
+                  <ref role="3cqZAo" node="6KWQXOSpcPU" resolve="path" />
+                </node>
+                <node concept="liA8E" id="7zS7QpMN5A" role="2OqNvi">
+                  <ref role="37wK5l" to="eoo2:~Path.toString()" resolve="toString" />
+                </node>
               </node>
             </node>
           </node>
@@ -2745,7 +2730,9 @@
       <node concept="3cqZAl" id="6KWQXOSpcQ1" role="3clF45" />
       <node concept="37vLTG" id="6KWQXOSpcQ2" role="3clF46">
         <property role="TrG5h" value="path" />
-        <node concept="17QB3L" id="7QxwFodaN76" role="1tU5fm" />
+        <node concept="3uibUv" id="7zS7QpLJqH" role="1tU5fm">
+          <ref role="3uigEE" to="eoo2:~Path" resolve="Path" />
+        </node>
       </node>
       <node concept="3clFbS" id="6KWQXOSpcQ5" role="3clF47">
         <node concept="3cpWs8" id="3Fdn9B$W_K1" role="3cqZAp">
@@ -2756,7 +2743,7 @@
                 <ref role="3cqZAo" node="2CbzOko76qO" resolve="FS" />
               </node>
               <node concept="liA8E" id="7121Ns6wC78" role="2OqNvi">
-                <ref role="37wK5l" to="4hrd:~IdeaFileSystem.getFile(java.lang.String)" resolve="getFile" />
+                <ref role="37wK5l" to="4hrd:~IdeaFileSystem.getFile(java.nio.file.Path)" resolve="getFile" />
                 <node concept="37vLTw" id="7121Ns6wC$3" role="37wK5m">
                   <ref role="3cqZAo" node="6KWQXOSpcQ2" resolve="path" />
                 </node>
@@ -2799,8 +2786,13 @@
             </node>
             <node concept="1rXfSq" id="3Fdn9B$W_Km" role="2Oq$k0">
               <ref role="37wK5l" node="5gUstTWicHy" resolve="getData" />
-              <node concept="37vLTw" id="6w1R7bIZ6jf" role="37wK5m">
-                <ref role="3cqZAo" node="6KWQXOSpcQ2" resolve="path" />
+              <node concept="2OqwBi" id="7zS7QpM72B" role="37wK5m">
+                <node concept="37vLTw" id="6w1R7bIZ6jf" role="2Oq$k0">
+                  <ref role="3cqZAo" node="3Fdn9B$W_K2" resolve="file" />
+                </node>
+                <node concept="liA8E" id="7zS7QpMaYZ" role="2OqNvi">
+                  <ref role="37wK5l" to="3ju5:~IFile.getPath()" resolve="getPath" />
+                </node>
               </node>
               <node concept="Rm8GO" id="50BC9x8icDx" role="37wK5m">
                 <ref role="1Px2BO" node="1KBpXr44zJz" resolve="FileProcessor.EventKind" />
@@ -2818,7 +2810,9 @@
       <node concept="3cqZAl" id="6KWQXOSpcQ8" role="3clF45" />
       <node concept="37vLTG" id="6KWQXOSpcQ9" role="3clF46">
         <property role="TrG5h" value="path" />
-        <node concept="17QB3L" id="7QxwFodaH78" role="1tU5fm" />
+        <node concept="3uibUv" id="7zS7QpLVu6" role="1tU5fm">
+          <ref role="3uigEE" to="eoo2:~Path" resolve="Path" />
+        </node>
       </node>
       <node concept="3clFbS" id="6KWQXOSpcQc" role="3clF47">
         <node concept="3cpWs8" id="3Fdn9B$W$HT" role="3cqZAp">
@@ -2826,7 +2820,7 @@
             <property role="TrG5h" value="file" />
             <node concept="2OqwBi" id="3Fdn9B$W$HV" role="33vP2m">
               <node concept="liA8E" id="3Fdn9B$W$HW" role="2OqNvi">
-                <ref role="37wK5l" to="4hrd:~IdeaFileSystem.getFile(java.lang.String)" resolve="getFile" />
+                <ref role="37wK5l" to="4hrd:~IdeaFileSystem.getFile(java.nio.file.Path)" resolve="getFile" />
                 <node concept="37vLTw" id="7QxwFodaMFY" role="37wK5m">
                   <ref role="3cqZAo" node="6KWQXOSpcQ9" resolve="path" />
                 </node>
@@ -2872,8 +2866,13 @@
             </node>
             <node concept="1rXfSq" id="3Fdn9B$W$Ie" role="2Oq$k0">
               <ref role="37wK5l" node="5gUstTWicHy" resolve="getData" />
-              <node concept="37vLTw" id="7QxwFodaMVd" role="37wK5m">
-                <ref role="3cqZAo" node="6KWQXOSpcQ9" resolve="path" />
+              <node concept="2OqwBi" id="7zS7QpMiM6" role="37wK5m">
+                <node concept="37vLTw" id="7QxwFodaMVd" role="2Oq$k0">
+                  <ref role="3cqZAo" node="3Fdn9B$W$HU" resolve="file" />
+                </node>
+                <node concept="liA8E" id="7zS7QpMmDU" role="2OqNvi">
+                  <ref role="37wK5l" to="3ju5:~IFile.getPath()" resolve="getPath" />
+                </node>
               </node>
               <node concept="Rm8GO" id="50BC9x8icSV" role="37wK5m">
                 <ref role="1Px2BO" node="1KBpXr44zJz" resolve="FileProcessor.EventKind" />
@@ -2891,7 +2890,9 @@
       <node concept="3cqZAl" id="6KWQXOSpcQf" role="3clF45" />
       <node concept="37vLTG" id="6KWQXOSpcQg" role="3clF46">
         <property role="TrG5h" value="path" />
-        <node concept="17QB3L" id="7QxwFodakgC" role="1tU5fm" />
+        <node concept="3uibUv" id="7zS7QpMr45" role="1tU5fm">
+          <ref role="3uigEE" to="eoo2:~Path" resolve="Path" />
+        </node>
       </node>
       <node concept="3clFbS" id="6KWQXOSpcQj" role="3clF47">
         <node concept="3cpWs8" id="5gUstTWjrcm" role="3cqZAp">
@@ -2899,7 +2900,7 @@
             <property role="TrG5h" value="file" />
             <node concept="2OqwBi" id="3Fdn9B$Wl_o" role="33vP2m">
               <node concept="liA8E" id="3Fdn9B$WlLP" role="2OqNvi">
-                <ref role="37wK5l" to="4hrd:~IdeaFileSystem.getFile(java.lang.String)" resolve="getFile" />
+                <ref role="37wK5l" to="4hrd:~IdeaFileSystem.getFile(java.nio.file.Path)" resolve="getFile" />
                 <node concept="37vLTw" id="7QxwFodaEHR" role="37wK5m">
                   <ref role="3cqZAo" node="6KWQXOSpcQg" resolve="path" />
                 </node>
@@ -2945,8 +2946,13 @@
             </node>
             <node concept="1rXfSq" id="5gUstTWjmb6" role="2Oq$k0">
               <ref role="37wK5l" node="5gUstTWicHy" resolve="getData" />
-              <node concept="37vLTw" id="7QxwFodaEXL" role="37wK5m">
-                <ref role="3cqZAo" node="6KWQXOSpcQg" resolve="path" />
+              <node concept="2OqwBi" id="7zS7QpMAuD" role="37wK5m">
+                <node concept="37vLTw" id="7QxwFodaEXL" role="2Oq$k0">
+                  <ref role="3cqZAo" node="5gUstTWjrcn" resolve="file" />
+                </node>
+                <node concept="liA8E" id="7zS7QpMEac" role="2OqNvi">
+                  <ref role="37wK5l" to="3ju5:~IFile.getPath()" resolve="getPath" />
+                </node>
               </node>
               <node concept="Rm8GO" id="50BC9x8ic24" role="37wK5m">
                 <ref role="1Px2BO" node="1KBpXr44zJz" resolve="FileProcessor.EventKind" />
