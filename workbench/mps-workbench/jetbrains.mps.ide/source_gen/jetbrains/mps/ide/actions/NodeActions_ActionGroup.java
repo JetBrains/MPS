@@ -15,7 +15,6 @@ public class NodeActions_ActionGroup extends GeneratedActionGroup {
   public static final String LABEL_ID_copy = ID + "copy";
   public static final String LABEL_ID_find = ID + "find";
   public static final String LABEL_ID_refactoring = ID + "refactoring";
-  public static final String LABEL_ID_favorites = ID + "favorites";
   public static final String LABEL_ID_deletion = ID + "deletion";
   public static final String LABEL_ID_debug = ID + "debug";
   public static final String LABEL_ID_diff = ID + "diff";
@@ -47,8 +46,6 @@ public class NodeActions_ActionGroup extends GeneratedActionGroup {
     addNamedAnchor(LABEL_ID_find);
     NodeActions_ActionGroup.this.addSeparator();
     addNamedAnchor(LABEL_ID_refactoring);
-    NodeActions_ActionGroup.this.addSeparator();
-    addNamedAnchor(LABEL_ID_favorites);
     NodeActions_ActionGroup.this.addSeparator();
     addNamedAnchor(LABEL_ID_deletion);
     NodeActions_ActionGroup.this.addSeparator();

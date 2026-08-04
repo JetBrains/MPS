@@ -15,7 +15,6 @@ public class DevkitActions_ActionGroup extends GeneratedActionGroup {
   public static final String LABEL_ID_delete = ID + "delete";
   public static final String LABEL_ID_refactoring = ID + "refactoring";
   public static final String LABEL_ID_find_usages = ID + "find_usages";
-  public static final String LABEL_ID_favorites = ID + "favorites";
 
   public DevkitActions_ActionGroup(@NotNull ApplicationPlugin plugin) {
     super("DevkitActions", ID, plugin);
@@ -33,8 +32,6 @@ public class DevkitActions_ActionGroup extends GeneratedActionGroup {
     addNamedAnchor(LABEL_ID_refactoring);
     DevkitActions_ActionGroup.this.addSeparator();
     addNamedAnchor(LABEL_ID_find_usages);
-    DevkitActions_ActionGroup.this.addSeparator();
-    addNamedAnchor(LABEL_ID_favorites);
     DevkitActions_ActionGroup.this.addSeparator();
     DevkitActions_ActionGroup.this.addAction("jetbrains.mps.ide.actions.ModuleProperties_Action");
   }
