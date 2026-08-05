@@ -757,6 +757,9 @@
         <property id="1757699476691236116" name="role_DebugInfo" index="2qtEX8" />
         <property id="1341860900488019036" name="linkId" index="P3scX" />
       </concept>
+      <concept id="1196978630214" name="jetbrains.mps.lang.core.structure.IResolveInfo" flags="ngI" index="2Lv6Xg">
+        <property id="1196978656277" name="resolveInfo" index="2Lvdk3" />
+      </concept>
       <concept id="1169194658468" name="jetbrains.mps.lang.core.structure.INamedConcept" flags="ngI" index="TrEIO">
         <property id="1169194664001" name="name" index="TrG5h" />
       </concept>
@@ -6326,6 +6329,51 @@
               </node>
             </node>
             <node concept="37vLTw" id="3tqOpo7_r9K" role="37vLTJ">
+              <ref role="3cqZAo" node="75c$k6X2Pup" resolve="virtualMachineParameters" />
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs8" id="4uMOHlNXkkF" role="3cqZAp">
+          <node concept="3cpWsn" id="4uMOHlNXkkG" role="3cpWs9">
+            <property role="TrG5h" value="pty4jLibPath" />
+            <property role="2Lvdk3" value="pty4jLibPath" />
+            <node concept="17QB3L" id="4uMOHlNXkkH" role="1tU5fm" />
+            <node concept="2OqwBi" id="4uMOHlNXkkI" role="33vP2m">
+              <node concept="2ShNRf" id="4uMOHlNXkkJ" role="2Oq$k0">
+                <node concept="1pGfFk" id="4uMOHlNXkkK" role="2ShVmc">
+                  <property role="373rjd" value="true" />
+                  <ref role="37wK5l" to="guwi:~File.&lt;init&gt;(java.lang.String,java.lang.String)" resolve="File" />
+                  <node concept="2YIFZM" id="4uMOHlNXkkL" role="37wK5m">
+                    <ref role="37wK5l" to="bd8o:~PathManager.getLibPath()" resolve="getLibPath" />
+                    <ref role="1Pybhc" to="bd8o:~PathManager" resolve="PathManager" />
+                  </node>
+                  <node concept="Xl_RD" id="4uMOHlNXkkM" role="37wK5m">
+                    <property role="Xl_RC" value="pty4j" />
+                  </node>
+                </node>
+              </node>
+              <node concept="liA8E" id="4uMOHlNXkkN" role="2OqNvi">
+                <ref role="37wK5l" to="guwi:~File.getAbsolutePath()" resolve="getAbsolutePath" />
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="4uMOHlNXkkz" role="3cqZAp">
+          <node concept="37vLTI" id="4uMOHlNXkk$" role="3clFbG">
+            <node concept="2OqwBi" id="4uMOHlNXkk_" role="37vLTx">
+              <node concept="Xl_RD" id="4uMOHlNXkkA" role="2Oq$k0">
+                <property role="Xl_RC" value="-Dpty4j.preferred.native.folder=\&quot;%s\&quot; %s" />
+              </node>
+              <node concept="2cAKMz" id="4uMOHlNXkkB" role="2OqNvi">
+                <node concept="37vLTw" id="4uMOHlNXkkC" role="2cAKU6">
+                  <ref role="3cqZAo" node="4uMOHlNXkkG" resolve="pty4jLibPath" />
+                </node>
+                <node concept="37vLTw" id="4uMOHlNXkkD" role="2cAKU6">
+                  <ref role="3cqZAo" node="75c$k6X2Pup" resolve="virtualMachineParameters" />
+                </node>
+              </node>
+            </node>
+            <node concept="37vLTw" id="4uMOHlNXkkE" role="37vLTJ">
               <ref role="3cqZAo" node="75c$k6X2Pup" resolve="virtualMachineParameters" />
             </node>
           </node>
