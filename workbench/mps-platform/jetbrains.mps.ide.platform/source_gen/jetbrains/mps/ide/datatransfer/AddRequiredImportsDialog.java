@@ -66,12 +66,12 @@ public class AddRequiredImportsDialog extends DialogWrapper {
       }
     });
     if (requiredImports.length == 0) {
-      setTitle("Select languages to import");
+      setTitle("Select Languages to Import");
     } else
     if (requiredLanguages.length == 0) {
-      setTitle("Select models to import");
+      setTitle("Select Models to Import");
     } else {
-      setTitle("Select models and languages to import");
+      setTitle("Select Models and Languages to Import");
     }
     setOKButtonText("Import");
     setCancelButtonText("Don't Import");

@@ -8286,7 +8286,7 @@
                   <node concept="1rXfSq" id="5glnhittf5r" role="3clFbG">
                     <ref role="37wK5l" to="jkm4:~DialogWrapper.setTitle(java.lang.String)" resolve="setTitle" />
                     <node concept="Xl_RD" id="5glnhittf5s" role="37wK5m">
-                      <property role="Xl_RC" value="Select models and languages to import" />
+                      <property role="Xl_RC" value="Select Models and Languages to Import" />
                     </node>
                   </node>
                 </node>
@@ -8297,7 +8297,7 @@
                 <node concept="1rXfSq" id="5glnhittf5m" role="3clFbG">
                   <ref role="37wK5l" to="jkm4:~DialogWrapper.setTitle(java.lang.String)" resolve="setTitle" />
                   <node concept="Xl_RD" id="5glnhittf5n" role="37wK5m">
-                    <property role="Xl_RC" value="Select models to import" />
+                    <property role="Xl_RC" value="Select Models to Import" />
                   </node>
                 </node>
               </node>
@@ -8308,7 +8308,7 @@
               <node concept="1rXfSq" id="5glnhittf5d" role="3clFbG">
                 <ref role="37wK5l" to="jkm4:~DialogWrapper.setTitle(java.lang.String)" resolve="setTitle" />
                 <node concept="Xl_RD" id="5glnhittf5e" role="37wK5m">
-                  <property role="Xl_RC" value="Select languages to import" />
+                  <property role="Xl_RC" value="Select Languages to Import" />
                 </node>
               </node>
             </node>
