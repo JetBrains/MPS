@@ -114,11 +114,14 @@ public class AddRequiredImportsDialogTest implements EnvironmentAware {
   }
 
   private SModel createTargetModel(Project project) {
-    TestModuleFactoryBase factory = new TestModuleFactoryBase(myEnvironment, (SRepositoryExt) project.getRepository());
+    SRepositoryExt repository = (SRepositoryExt) project.getRepository();
+    TestModuleFactoryBase factory = new TestModuleFactoryBase(myEnvironment, repository);
     IFileSystem fs = myEnvironment.getPlatform().findComponent(VFSManager.class).getFileSystem(VFSManager.FILE_FS);
     IFile descriptorFile = fs.getFile(FileUtil.createTmpFile().getPath());
     SModule module = factory.createSolution(descriptorFile);
-    project.getModelAccess().runWriteAction(() -> project.addModule(module));
+    // createSolution only instantiates the module; asUpdateCommand needs it in a repository, as
+    // ModelDependencyUpdate consults targetModule.getRepository()
+    project.getModelAccess().runWriteAction(() -> repository.registerModule(module, TestModuleFactoryBase.OWNER));
     SModel[] found = new SModel[1];
     project.getModelAccess().runReadAction(() -> {
       for (SModel m : module.getModels()) {
