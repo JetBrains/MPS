@@ -60,6 +60,11 @@ public interface MissionControl {
 
   SModelReference lookupProjectModel(IFile descriptionFile);
 
+  default ProjectFileLookup lookupProjectFile(IFile descriptionFile) {
+    Collection<SModuleReference> moduleReferences = lookupProjectModule(descriptionFile);
+    return new ProjectFileLookup(moduleReferences, moduleReferences.isEmpty() ? lookupProjectModel(descriptionFile) : null);
+  }
+
   MessagesContainer getMessagesContainer();
 
   void refresh();
@@ -112,12 +117,17 @@ public interface MissionControl {
 
     @Override
     public Collection<SModuleReference> lookupProjectModule(IFile descriptionFile) {
-      return Collections.unmodifiableCollection(myChangesMonitor.lookupProjectModule(descriptionFile));
+      return myChangesMonitor.lookupProjectModule(descriptionFile);
     }
 
     @Override
     public SModelReference lookupProjectModel(IFile descriptionFile) {
       return myChangesMonitor.lookupProjectModel(descriptionFile);
+    }
+
+    @Override
+    public ProjectFileLookup lookupProjectFile(IFile descriptionFile) {
+      return myChangesMonitor.lookupProjectFile(descriptionFile);
     }
 
     @Override
@@ -247,6 +257,24 @@ public interface MissionControl {
       }
     }
 
+  }
+
+  final class ProjectFileLookup {
+    private final Collection<SModuleReference> myModuleReferences;
+    private final SModelReference myModelReference;
+
+    ProjectFileLookup(Collection<SModuleReference> moduleReferences, SModelReference modelReference) {
+      myModuleReferences = moduleReferences;
+      myModelReference = modelReference;
+    }
+
+    public Collection<SModuleReference> getModuleReferences() {
+      return myModuleReferences;
+    }
+
+    public SModelReference getModelReference() {
+      return myModelReference;
+    }
   }
 
   /**

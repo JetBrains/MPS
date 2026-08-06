@@ -8,7 +8,6 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Producer;
-import com.intellij.util.SmartList;
 import jetbrains.mps.components.ComponentHost;
 import jetbrains.mps.errors.MessageStatus;
 import jetbrains.mps.errors.item.IssueKindReportItem;
@@ -45,7 +44,6 @@ import org.jetbrains.mps.openapi.module.SRepositoryContentAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +66,8 @@ import java.util.function.Predicate;
   private final Project myProject;
   private final MessagesContainer myMessagesContainer;
   private final ModelGenerationStatusManager myGenerationStatusManager;
+  private final SModelFileTracker myModelFileTracker;
+  private final VFSManager myVfsManager;
   private final MyLoadingListener myProjectListener = new MyLoadingListener();
   private final MyGenerationStatusListener myGenerationStatusListener = new MyGenerationStatusListener();
   private final MyRepositoryObserver myRepositoryObserver = new MyRepositoryObserver();
@@ -75,7 +75,7 @@ import java.util.function.Predicate;
   private final AtomicBoolean myEnqueueAllModulesInRepository = new AtomicBoolean(true);
   private final Queue<SObject> myUpdatesQueue = new ConcurrentLinkedQueue<>();
   private final Map<SObject, AtomicInteger> myUpdateCardinality = new ConcurrentHashMap<>();
-  private final Map<IFile, List<SModuleReference>> myModuleReferencesCache = new ConcurrentHashMap<>();
+  private final ModuleReferencesCache myModuleReferencesCache = new ModuleReferencesCache();
 
   private boolean myDisposed = false;
 
@@ -85,6 +85,8 @@ import java.util.function.Predicate;
     MPSProject mpsProject = ProjectHelper.fromIdeaProject(project);
     mpsProject.addListener(myProjectListener);
     new RepoListenerRegistrar(mpsProject.getRepository(), myRepositoryObserver).attach();
+    myModelFileTracker = SModelFileTracker.getInstance(mpsProject.getRepository());
+    myVfsManager = mpsProject.getPlatform().findComponent(VFSManager.class);
     myGenerationStatusManager = mpsProject.getComponent(ModelGenerationStatusManager.class);
     if (myGenerationStatusManager != null) {
       myGenerationStatusManager.addGenerationStatusListener(myGenerationStatusListener);
@@ -114,55 +116,99 @@ import java.util.function.Predicate;
   }
 
   protected Collection<SModuleReference> lookupProjectModule(IFile descriptionFile) {
-    Collection<SModuleReference> result = myModuleReferencesCache.getOrDefault(descriptionFile, createCache());
-    if (result.isEmpty()) {
+    List<SModuleReference> result = myModuleReferencesCache.get(descriptionFile);
+    if (result == null || result.isEmpty()) {
       // module descriptor file might have been loaded with the "default" file system (java.io.File-based)
-      result = myModuleReferencesCache.getOrDefault(extractIoFile(descriptionFile), createCache());
+      result = myModuleReferencesCache.get(extractIoFile(descriptionFile));
     }
-    return new SmartList<>(result);
+    return result == null ? List.of() : result;
   }
 
   protected SModelReference lookupProjectModel(IFile descriptionFile) {
-    SModelFileTracker fileTracker = SModelFileTracker.getInstance(ProjectHelper.fromIdeaProject(myProject).getRepository());
-    SModelReference result = fileTracker.modelFor(descriptionFile);
+    SModelReference result = myModelFileTracker.modelFor(descriptionFile);
     if (result == null) {
       // model descriptor file might have been loaded with the "default" file system (java.io.File-based)
-      result = fileTracker.modelFor(extractIoFile(descriptionFile));
+      result = myModelFileTracker.modelFor(extractIoFile(descriptionFile));
     }
     return result;
   }
 
+  protected MissionControl.ProjectFileLookup lookupProjectFile(IFile descriptionFile) {
+    List<SModuleReference> moduleReferences = myModuleReferencesCache.get(descriptionFile);
+    IFile alternativeFile = null;
+    if (moduleReferences == null || moduleReferences.isEmpty()) {
+      alternativeFile = extractIoFile(descriptionFile);
+      moduleReferences = myModuleReferencesCache.get(alternativeFile);
+    }
+    if (moduleReferences != null && !moduleReferences.isEmpty()) {
+      return new MissionControl.ProjectFileLookup(moduleReferences, null);
+    }
+
+    SModelReference modelReference = myModelFileTracker.modelFor(descriptionFile);
+    if (modelReference == null) {
+      modelReference = myModelFileTracker.modelFor(alternativeFile);
+    }
+    return new MissionControl.ProjectFileLookup(List.of(), modelReference);
+  }
+
   @Nullable
   private IFile extractIoFile(IFile descriptionFile) {
-    VFSManager vfsManager = ProjectHelper.fromIdeaProject(myProject).getPlatform().findComponent(VFSManager.class);
     QualifiedPath qp = descriptionFile.getQualifiedPath();
     // try to find an alternative handle for the specified file
     IFile altFile;
     if (VFSManager.JAR_FS.equals(qp.getFsId())) {
-      altFile = vfsManager.getFileSystem(VFSManager.JAVA_IO_JAR_FS).getFile(qp.getPath());
+      altFile = myVfsManager.getFileSystem(VFSManager.JAVA_IO_JAR_FS).getFile(qp.getPath());
     } else if (VFSManager.FILE_FS.equals(qp.getFsId())) {
-      altFile = vfsManager.getFileSystem(VFSManager.JAVA_IO_FILE_FS).getFile(qp.getPath());
+      altFile = myVfsManager.getFileSystem(VFSManager.JAVA_IO_FILE_FS).getFile(qp.getPath());
     } else {
-      altFile = vfsManager.getFile(qp);
+      altFile = myVfsManager.getFile(qp);
     }
     return altFile;
   }
 
   private void cacheModuleReference(@NotNull IFile descriptionFile, @NotNull SModuleReference moduleReference) {
-    List<SModuleReference> cache = myModuleReferencesCache.computeIfAbsent(descriptionFile, (__) -> createCache());
-    cache.add(moduleReference);
+    myModuleReferencesCache.add(descriptionFile, moduleReference);
   }
 
   private void clearModuleReference(@NotNull IFile descriptionFile, @NotNull SModuleReference moduleReference) {
-    myModuleReferencesCache.computeIfPresent(descriptionFile, (k, cache) -> {
-      cache.remove(moduleReference);
-      return cache.isEmpty() ? null : cache;
-    });
+    myModuleReferencesCache.remove(descriptionFile, moduleReference);
   }
 
-  @NotNull
-  private static List<SModuleReference> createCache() {
-    return Collections.synchronizedList(new ArrayList<>(2));
+  static final class ModuleReferencesCache {
+    private final Map<IFile, List<SModuleReference>> myReferences = new ConcurrentHashMap<>();
+
+    List<SModuleReference> get(IFile file) {
+      return myReferences.get(file);
+    }
+
+    void add(IFile file, SModuleReference moduleReference) {
+      myReferences.compute(file, (__, references) -> {
+        if (references == null) {
+          return List.of(moduleReference);
+        }
+        if (references.contains(moduleReference)) {
+          return references;
+        }
+        List<SModuleReference> result = new ArrayList<>(references.size() + 1);
+        result.addAll(references);
+        result.add(moduleReference);
+        return List.copyOf(result);
+      });
+    }
+
+    void remove(IFile file, SModuleReference moduleReference) {
+      myReferences.computeIfPresent(file, (__, references) -> {
+        if (!references.contains(moduleReference)) {
+          return references;
+        }
+        if (references.size() == 1) {
+          return null;
+        }
+        List<SModuleReference> result = new ArrayList<>(references);
+        result.remove(moduleReference);
+        return List.copyOf(result);
+      });
+    }
   }
 
   protected MissionControlRefreshRequest pumpQueue(MessagesContainer messagesContainer, ProgressIndicator progressIndicator) {

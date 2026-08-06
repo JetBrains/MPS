@@ -38,16 +38,16 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import org.jetbrains.mps.openapi.model.SNode;
+import org.jetbrains.mps.openapi.module.SModule;
 import org.jetbrains.mps.openapi.module.SModuleReference;
 
 import javax.swing.Icon;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Defines basic structure of the project view nodes hierarchy.
@@ -109,18 +109,26 @@ public abstract class LogicalProjectViewNode<Value> extends ProjectViewNode<Valu
       SNode node = ((MPSNodeVirtualFile) virtualFile).getNode();
       return node != null ? Collections.singletonList(SObject.of(node)) : Collections.emptyList();
     }
-    IFile file = toIFile(virtualFile);
+    IFile file = toIFile(virtualFile, mpsProject.getFileSystem());
     if (file != null) {
-      Collection<SModuleReference> sModuleReferences = MissionControl.getInstance(getProject()).lookupProjectModule(file);
+      MissionControl.ProjectFileLookup lookup = MissionControl.getInstance(getProject()).lookupProjectFile(file);
+      Collection<SModuleReference> sModuleReferences = lookup.getModuleReferences();
       if (!sModuleReferences.isEmpty()) {
-        return sModuleReferences.stream()
-                         .map(ref -> ref.resolve(mpsProject.getRepository()))
-                         .filter(Objects::nonNull)
-                         .map(SObject::of)
-                         .collect(Collectors.toList());
+        if (sModuleReferences.size() == 1) {
+          SModule module = sModuleReferences.iterator().next().resolve(mpsProject.getRepository());
+          return module == null ? Collections.emptyList() : Collections.singletonList(SObject.of(module));
+        }
+        List<SObject> result = new ArrayList<>(sModuleReferences.size());
+        for (SModuleReference reference : sModuleReferences) {
+          SModule module = reference.resolve(mpsProject.getRepository());
+          if (module != null) {
+            result.add(SObject.of(module));
+          }
+        }
+        return result;
       }
 
-      SModelReference modelRef = MissionControl.getInstance(getProject()).lookupProjectModel(file);
+      SModelReference modelRef = lookup.getModelReference();
       if (modelRef != null) {
         SModel model = modelRef.resolve(mpsProject.getRepository());
         return model != null ?  Collections.singletonList(SObject.of(model)) : Collections.emptyList();
@@ -247,7 +255,13 @@ public abstract class LogicalProjectViewNode<Value> extends ProjectViewNode<Valu
     MPSProject mpsProject = ProjectHelper.fromIdeaProject(getProject());
     return mpsProject.getModelAccess()
              .computeReadAction(() -> {
-                 boolean contains = extractSObjects(file).stream().anyMatch(this::containsSObject);
+                 boolean contains = false;
+                 for (SObject sObject : extractSObjects(file)) {
+                   if (containsSObject(sObject)) {
+                     contains = true;
+                     break;
+                   }
+                 }
                  if (LOG.isDebugEnabled() && contains) {
                    LOG.debug(String.format("%s(%s) contains %s", this.getClass().getSimpleName(), getValue(), file));
                  }
@@ -291,8 +305,14 @@ public abstract class LogicalProjectViewNode<Value> extends ProjectViewNode<Valu
   public boolean canRepresent(Object element) {
     if (element instanceof VirtualFile) {
       MPSProject mpsProject = ProjectHelper.fromIdeaProject(getProject());
-      return mpsProject.getModelAccess()
-               .computeReadAction(() ->  extractSObjects(((VirtualFile) element)).stream().anyMatch(this::canRepresentSObject));
+      return mpsProject.getModelAccess().computeReadAction(() -> {
+        for (SObject sObject : extractSObjects((VirtualFile) element)) {
+          if (canRepresentSObject(sObject)) {
+            return true;
+          }
+        }
+        return false;
+      });
     }
     return false;
   }
@@ -309,9 +329,8 @@ public abstract class LogicalProjectViewNode<Value> extends ProjectViewNode<Valu
   }
 
   @SuppressWarnings({"removal"})
-  private IFile toIFile(VirtualFile virtualFile) {
+  private IFile toIFile(VirtualFile virtualFile, IdeaFileSystem fs) {
     // FIXME this code is kept around only for the lack of a better alternative
-    IdeaFileSystem fs = ProjectHelper.fromIdeaProject(getProject()).getFileSystem();
     if (!fs.canConvert(virtualFile)) {
       return null;
     }
