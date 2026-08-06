@@ -126,13 +126,13 @@ public abstract class EvaluationUi extends JPanel {
         if ((unitName != null && unitName.length() > 0)) {
           myTree.updateLocation(uiState.getThread().getThread());
         }
-        ApplicationManager.getApplication().invokeLater(new Runnable() {
+        myDebugSession.getProject().getModelAccess().executeCommandInEDT(new Runnable() {
           @Override
           public void run() {
             setErrorText("");
             update();
             if (myAutoUpdate) {
-              evaluate();
+              ApplicationManager.getApplication().invokeLater(() -> evaluate());
             }
           }
         });

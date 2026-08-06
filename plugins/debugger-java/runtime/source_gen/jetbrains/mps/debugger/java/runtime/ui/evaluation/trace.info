@@ -707,7 +707,7 @@
       <node id="55706870180663535" at="126,58,127,65" concept="2" />
       <node id="3196684409400996602" at="131,29,132,29" concept="2" />
       <node id="3196684409400996628" at="132,29,133,21" concept="2" />
-      <node id="3196684409400996611" at="134,31,135,25" concept="2" />
+      <node id="9151965549573604497" at="134,31,135,80" concept="2" />
       <node id="3196684409400996688" at="146,29,147,21" concept="2" />
       <node id="2999655953941673857" at="154,38,155,30" concept="2" />
       <node id="3463439403357129892" at="160,36,161,43" concept="9" />
@@ -722,7 +722,7 @@
       <node id="7406771907178600422" at="107,44,110,5" concept="6" />
       <node id="7406771907178600450" at="112,0,115,0" concept="7" trace="setErrorTextListener#(Ljetbrains/mps/debugger/java/runtime/ui/evaluation/EvaluationUi/IErrorTextListener;)V" />
       <node id="280922463090944340" at="125,98,128,9" concept="6" />
-      <node id="3196684409400996609" at="133,21,136,13" concept="6" />
+      <node id="9151965549573604494" at="133,21,136,13" concept="6" />
       <node id="612015978684720999" at="153,55,156,7" concept="6" />
       <node id="3463439403357129892" at="159,93,162,5" concept="6" />
       <node id="280922463090935117" at="165,80,168,5" concept="6" />
@@ -742,9 +742,9 @@
       <node id="280922463090926271" at="171,0,177,0" concept="13" trace="check_4q63yg_a0a1a0a1v#(Ljetbrains/mps/debugger/java/api/state/proxy/JavaStackFrame;)Ljetbrains/mps/debugger/java/api/state/proxy/JavaLocation;" />
       <node id="7406771907178600110" at="38,0,45,0" concept="1" trace="EvaluationUi#(Ljetbrains/mps/debugger/java/runtime/state/DebugSession;Z)V" />
       <node id="7406771907178600200" at="66,64,73,15" concept="6" />
-      <node id="3196684409400996598" at="130,0,138,0" concept="7" trace="run#()V" />
+      <node id="9151965549573604486" at="130,0,138,0" concept="7" trace="run#()V" />
       <node id="3196684409400996674" at="142,60,150,7" concept="6" />
-      <node id="3196684409400996590" at="128,9,138,11" concept="2" />
+      <node id="9151965549573999809" at="128,9,138,11" concept="2" />
       <node id="3196684409400996654" at="141,0,152,0" concept="7" trace="stateChanged#(Ljetbrains/mps/debug/api/AbstractDebugSession;)V" />
       <node id="8197435796639340845" at="63,72,79,13" concept="17" />
       <node id="3196684409400996588" at="122,54,139,7" concept="6" />
@@ -766,7 +766,7 @@
         <var name="text" id="7406771907178600443" />
       </scope>
       <scope id="280922463090944342" at="126,58,127,65" />
-      <scope id="3196684409400996610" at="134,31,135,25" />
+      <scope id="9151965549573604496" at="134,31,135,80" />
       <scope id="3196684409400996687" at="146,29,147,21" />
       <scope id="612015978684721000" at="154,38,155,30" />
       <scope id="3463439403357129892" at="160,36,161,43" />
@@ -825,7 +825,7 @@
       <scope id="7406771907178600416" at="107,0,112,0">
         <var name="text" id="7406771907178600419" />
       </scope>
-      <scope id="3196684409400996601" at="131,29,136,13" />
+      <scope id="9151965549573604488" at="131,29,136,13" />
       <scope id="3196684409400996675" at="143,38,149,11" />
       <scope id="612015978684720989" at="152,0,158,0">
         <var name="session" id="612015978684720992" />
@@ -843,7 +843,7 @@
         <var name="autoUpdate" id="3196684409400996636" />
         <var name="session" id="7406771907178600460" />
       </scope>
-      <scope id="3196684409400996598" at="130,0,138,0" />
+      <scope id="9151965549573604486" at="130,0,138,0" />
       <scope id="3196684409400996659" at="142,60,150,7" />
       <scope id="7406771907178600188" at="64,17,73,15">
         <var name="evaluatedValue" id="7406771907178600195" />
@@ -873,7 +873,7 @@
       </scope>
       <unit id="7406771907178600438" at="115,0,118,0" name="jetbrains.mps.debugger.java.runtime.ui.evaluation.EvaluationUi$IErrorTextListener" />
       <unit id="3196684409400996682" at="144,60,149,9" name="jetbrains.mps.debugger.java.runtime.ui.evaluation.EvaluationUi$MySessionChangeAdapter$2" />
-      <unit id="3196684409400996596" at="129,60,138,9" name="jetbrains.mps.debugger.java.runtime.ui.evaluation.EvaluationUi$MySessionChangeAdapter$1" />
+      <unit id="9151965549573604485" at="129,77,138,9" name="jetbrains.mps.debugger.java.runtime.ui.evaluation.EvaluationUi$MySessionChangeAdapter$1" />
       <unit id="1520732075331891376" at="56,8,88,5" name="jetbrains.mps.debugger.java.runtime.ui.evaluation.EvaluationUi$1" />
       <unit id="3196684409401005392" at="118,0,159,0" name="jetbrains.mps.debugger.java.runtime.ui.evaluation.EvaluationUi$MySessionChangeAdapter" />
       <unit id="7406771907178600108" at="27,0,178,0" name="jetbrains.mps.debugger.java.runtime.ui.evaluation.EvaluationUi" />
