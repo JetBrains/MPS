@@ -2813,5 +2813,38 @@
       </node>
     </node>
   </node>
+  <node concept="18kY7G" id="3zf55DMrtOe">
+    <property role="TrG5h" value="check_BuildMps_Branding" />
+    <property role="3GE5qa" value="Project.Branding" />
+    <node concept="3clFbS" id="3zf55DMrtOf" role="18ibNy">
+      <node concept="3clFbJ" id="3zf55DMrtPw" role="3cqZAp">
+        <node concept="2OqwBi" id="3zf55DMruUi" role="3clFbw">
+          <node concept="2OqwBi" id="3zf55DMru1l" role="2Oq$k0">
+            <node concept="1YBJjd" id="3zf55DMrtPD" role="2Oq$k0">
+              <ref role="1YBMHb" node="3zf55DMrtOh" resolve="branding" />
+            </node>
+            <node concept="3TrEf2" id="3zf55DMruvo" role="2OqNvi">
+              <ref role="3Tt5mk" to="kdzh:FnaIS$F2cd" resolve="company" />
+            </node>
+          </node>
+          <node concept="3w_OXm" id="3zf55DMrvj$" role="2OqNvi" />
+        </node>
+        <node concept="3clFbS" id="3zf55DMrtPy" role="3clFbx">
+          <node concept="a7r0C" id="3zf55DMrvoQ" role="3cqZAp">
+            <node concept="Xl_RD" id="3zf55DMrvp0" role="a7wSD">
+              <property role="Xl_RC" value="Company information is not specified; the standalone application will fail to start" />
+            </node>
+            <node concept="1YBJjd" id="3zf55DMrvpJ" role="1urrMF">
+              <ref role="1YBMHb" node="3zf55DMrtOh" resolve="branding" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="1YaCAy" id="3zf55DMrtOh" role="1YuTPh">
+      <property role="TrG5h" value="branding" />
+      <ref role="1YaFvo" to="kdzh:6Iq8148eRud" resolve="BuildMps_Branding" />
+    </node>
+  </node>
 </model>
 
