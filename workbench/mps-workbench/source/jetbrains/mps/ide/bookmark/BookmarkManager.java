@@ -15,15 +15,13 @@
  */
 package jetbrains.mps.ide.bookmark;
 
-import com.intellij.ide.bookmarks.Bookmark;
-import com.intellij.openapi.Disposable;
 import com.intellij.openapi.components.PersistentStateComponent;
-import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.components.StoragePathMacros;
 import com.intellij.openapi.editor.colors.EditorColors;
 import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.openapi.editor.colors.EditorFontType;
 import com.intellij.openapi.project.Project;
 import com.intellij.ui.ColorUtil;
 import com.intellij.ui.JBColor;
@@ -33,7 +31,6 @@ import com.intellij.util.PlatformIcons;
 import com.intellij.util.ui.JBCachingScalableIcon;
 import jetbrains.mps.ide.bookmark.BookmarkManager.MyState;
 import jetbrains.mps.ide.project.ProjectHelper;
-import jetbrains.mps.ide.util.MPSProjectActivity;
 import jetbrains.mps.logging.Logger;
 import jetbrains.mps.nodeEditor.Highlighter;
 import jetbrains.mps.nodeEditor.HighlighterContribution;
@@ -431,7 +428,7 @@ public class BookmarkManager implements PersistentStateComponent<MyState>, Highl
       g.setColor(EditorColorsManager.getInstance().getGlobalScheme().getDefaultForeground());
 
       float startingFontSize = 40f;  // large font for smaller rounding error
-      Font font = Bookmark.getBookmarkFont().deriveFont(startingFontSize);
+      Font font = EditorFontType.getGlobalPlainFont().deriveFont(startingFontSize);
       FontRenderContext fontRenderContext = ((Graphics2D) g).getFontRenderContext();
       double height40 = font.createGlyphVector(fontRenderContext, new char[]{'A'}).getVisualBounds().getHeight();
       font = font.deriveFont((float) (startingFontSize * height / height40 * 0.7));
