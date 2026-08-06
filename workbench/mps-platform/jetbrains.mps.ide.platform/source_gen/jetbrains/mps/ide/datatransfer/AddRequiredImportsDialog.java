@@ -4,47 +4,49 @@ package jetbrains.mps.ide.datatransfer;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import com.intellij.openapi.ui.DialogWrapper;
-import org.jetbrains.annotations.NotNull;
-import jetbrains.mps.project.Project;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import org.jetbrains.mps.openapi.language.SLanguage;
+import java.util.Map;
+import javax.swing.Icon;
+import java.util.HashMap;
 import com.intellij.ui.CheckBoxList;
+import org.jetbrains.annotations.NotNull;
+import jetbrains.mps.project.Project;
 import jetbrains.mps.ide.project.ProjectHelper;
+import org.jetbrains.mps.openapi.model.SModel;
+import jetbrains.mps.ide.icons.IdeIcons;
+import jetbrains.mps.ide.icons.GlobalIconManager;
 import java.util.List;
 import java.util.ArrayList;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JTextArea;
-import javax.swing.BorderFactory;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import org.jetbrains.mps.openapi.module.SModuleReference;
-import com.intellij.ui.ScrollPaneFactory;
-import java.awt.Dimension;
-import org.jetbrains.mps.openapi.model.SModel;
+import com.intellij.util.ui.StartupUiUtil;
+import com.intellij.util.ui.JBUI;
+import javax.swing.JCheckBox;
+import com.intellij.ui.JBSplitter;
 import java.util.Arrays;
-import com.intellij.ui.SimpleColoredComponent;
-import javax.swing.ListCellRenderer;
-import java.awt.Font;
-import com.intellij.openapi.editor.colors.EditorColorsScheme;
-import com.intellij.openapi.editor.colors.EditorColorsManager;
-import java.awt.Component;
-import javax.swing.JList;
-import jetbrains.mps.ide.icons.GlobalIconManager;
-import com.intellij.ui.SimpleTextAttributes;
-import jetbrains.mps.ide.icons.IdeIcons;
+import com.intellij.util.ui.ThreeStateCheckBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import com.intellij.ui.CheckBoxListListener;
+import javax.swing.JScrollPane;
+import com.intellij.ui.ScrollPaneFactory;
+import javax.swing.BorderFactory;
+import com.intellij.util.ui.accessibility.AccessibleContextUtil;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import org.jetbrains.mps.openapi.module.SModuleReference;
 
 /**
  * evgeny, 11/15/11
  */
 @GeneratedClass(nodeId = "6058851216819286114", model = "r:84719e1a-99f6-4297-90ba-8ad2a947fa4a(jetbrains.mps.ide.datatransfer)")
 public class AddRequiredImportsDialog extends DialogWrapper {
-  @NotNull
-  private final Project myProject;
   private final SModelReference[] myRequiredImports;
   private final SLanguage[] myRequiredLanguages;
+  private final Map<SModelReference, Icon> myModelIcons = new HashMap<SModelReference, Icon>();
   private CheckBoxList<SModelReference> myModelsList;
   private CheckBoxList<SLanguage> myLanguagesList;
   private SModelReference[] mySelectedImports;
@@ -52,9 +54,17 @@ public class AddRequiredImportsDialog extends DialogWrapper {
 
   public AddRequiredImportsDialog(@NotNull final Project project, @NotNull SModelReference[] requiredImports, @NotNull SLanguage[] requiredLanguages) {
     super(ProjectHelper.toIdeaProject(project), true);
-    myProject = project;
     myRequiredImports = requiredImports;
     myRequiredLanguages = requiredLanguages;
+    // icons resolved once here because a cell renderer must not open a read action per paint
+    project.getModelAccess().runReadAction(new Runnable() {
+      public void run() {
+        for (SModelReference ref : myRequiredImports) {
+          SModel model = ref.resolve(project.getRepository());
+          myModelIcons.put(ref, ((model == null ? IdeIcons.MODEL_ICON : GlobalIconManager.getInstance().getIconFor(model))));
+        }
+      }
+    });
     if (requiredImports.length == 0) {
       setTitle("Select languages to import");
     } else
@@ -63,6 +73,8 @@ public class AddRequiredImportsDialog extends DialogWrapper {
     } else {
       setTitle("Select models and languages to import");
     }
+    setOKButtonText("Import");
+    setCancelButtonText("Don't Import");
     init();
   }
 
@@ -92,43 +104,62 @@ public class AddRequiredImportsDialog extends DialogWrapper {
   @Override
   protected JComponent createCenterPanel() {
     final JPanel panel = new JPanel(new BorderLayout());
-    JTextArea area = new JTextArea("The code fragment which you have pasted requires model imports\n and languages that are not accessible in the new context.");
-    area.setEditable(false);
-    area.setBackground(this.getContentPane().getBackground());
-    area.setBorder(BorderFactory.createEmptyBorder(5, 5, 3, 5));
-    panel.add(area, BorderLayout.NORTH);
-    JPanel center = new JPanel(new GridBagLayout());
+    JTextArea message = new JTextArea("The pasted fragment requires model imports and languages that are not accessible in the new context.");
+    message.setEditable(false);
+    message.setFocusable(false);
+    message.setOpaque(false);
+    message.setFont(StartupUiUtil.getLabelFont());
+    message.setLineWrap(true);
+    message.setWrapStyleWord(true);
+    // wrapping alone leaves the preferred height at a single row until the first re-layout
+    message.setRows(2);
+    message.setBorder(JBUI.Borders.empty(5, 5, 10, 5));
+    panel.add(message, BorderLayout.NORTH);
+    JComponent modelsPanel = null;
     if (myRequiredImports.length > 0) {
-      JTextArea label = new JTextArea("Select models that you want to import:");
-      label.setEditable(false);
-      label.setBackground(this.getContentPane().getBackground());
-      label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      center.add(label, new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
-      myModelsList = new CheckBoxList<SModelReference>();
+      myModelsList = new CheckBoxList<SModelReference>() {
+        @Override
+        protected JComponent adjustRendering(JComponent rootComponent, JCheckBox checkBox, int index, boolean selected, boolean hasFocus) {
+          return renderRow(checkBox, myModelIcons.getOrDefault(getItemAt(index), IdeIcons.MODEL_ICON), presentation(getItemAt(index)));
+        }
+      };
       for (SModelReference ref : myRequiredImports) {
-        SModuleReference module = ref.getModuleReference();
-        String moduleName = ((module == null ? null : module.getModuleName()));
-        String text = ((moduleName == null || moduleName.isEmpty() ? ref.getModelName() : ref.getModelName() + " (" + moduleName + ")"));
-        myModelsList.addItem(ref, text, true);
+        myModelsList.addItem(ref, presentation(ref), true);
       }
-      myModelsList.setBorder(BorderFactory.createEtchedBorder());
-      center.add(ScrollPaneFactory.createScrollPane(myModelsList), new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+      modelsPanel = createListPanel("Models", myModelsList);
     }
+    JComponent languagesPanel = null;
     if (myRequiredLanguages.length > 0) {
-      JTextArea label = new JTextArea("Use languages:");
-      label.setEditable(false);
-      label.setBackground(this.getContentPane().getBackground());
-      label.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-      center.add(label, new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 0.0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(((myRequiredImports.length > 0 ? 5 : 0)), 0, 0, 0), 0, 0));
-      myLanguagesList = new CheckBoxList<SLanguage>();
+      myLanguagesList = new CheckBoxList<SLanguage>() {
+        @Override
+        protected JComponent adjustRendering(JComponent rootComponent, JCheckBox checkBox, int index, boolean selected, boolean hasFocus) {
+          SLanguage language = getItemAt(index);
+          return renderRow(checkBox, IdeIcons.LANGUAGE_ICON, ((language == null ? "" : language.getQualifiedName())));
+        }
+      };
       for (SLanguage lang : myRequiredLanguages) {
         myLanguagesList.addItem(lang, lang.getQualifiedName(), true);
       }
-      myLanguagesList.setBorder(BorderFactory.createEtchedBorder());
-      center.add(ScrollPaneFactory.createScrollPane(myLanguagesList), new GridBagConstraints(0, GridBagConstraints.RELATIVE, 2, 1, 1.0, 1.0, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
+      languagesPanel = createListPanel("Languages", myLanguagesList);
+    }
+    JComponent center;
+    if (modelsPanel != null && languagesPanel != null) {
+      JBSplitter splitter = new JBSplitter(true, 0.5f);
+      splitter.setDividerWidth(JBUI.scale(20));
+      splitter.setFirstComponent(modelsPanel);
+      splitter.setSecondComponent(languagesPanel);
+      center = splitter;
+    } else
+    if (modelsPanel != null) {
+      center = modelsPanel;
+    } else
+    if (languagesPanel != null) {
+      center = languagesPanel;
+    } else {
+      center = new JPanel();
     }
     panel.add(center, BorderLayout.CENTER);
-    panel.setPreferredSize(new Dimension(500, 400));
+    panel.setPreferredSize(JBUI.size(500, 400));
     return panel;
   }
   @Override
@@ -163,51 +194,77 @@ public class AddRequiredImportsDialog extends DialogWrapper {
   }
 
 
-  private static class MyCellRenderer extends SimpleColoredComponent implements ListCellRenderer<Object> {
-    private final Font FONT;
-    private final Project myProject;
-
-    public MyCellRenderer(Project mpsProject) {
-      myProject = mpsProject;
-      EditorColorsScheme scheme = EditorColorsManager.getInstance().getGlobalScheme();
-      FONT = new Font(scheme.getEditorFontName(), Font.PLAIN, scheme.getEditorFontSize());
-      setOpaque(true);
-    }
-    @Override
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-      clear();
-      if (value instanceof SModelReference) {
-        final SModelReference ref = (SModelReference) value;
-        // FIXME likely, IconManager shall take project argument
-        myProject.getModelAccess().runReadAction(() -> {
-          {
-            SModel model = ref.resolve(myProject.getRepository());
-            setIcon(GlobalIconManager.getInstance().getIconFor(model));
-          }
-        });
-        append(ref.getModelName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-        SModuleReference module = ref.getModuleReference();
-        String moduleName = (module == null ? null : module.getModuleName());
-        if (moduleName != null && !(moduleName.isEmpty())) {
-          append(" (" + moduleName + ")", SimpleTextAttributes.GRAY_ATTRIBUTES);
+  private JComponent createListPanel(String title, final CheckBoxList list) {
+    final ThreeStateCheckBox selectAll = new ThreeStateCheckBox(title, selectionState(list));
+    selectAll.setThirdStateEnabled(false);
+    selectAll.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        boolean selected = selectAll.isSelected();
+        for (int i = 0; i < list.getItemsCount(); i++) {
+          list.setItemSelected(list.getItemAt(i), selected);
         }
-      } else
-      if (value instanceof SLanguage) {
-        setIcon(IdeIcons.LANGUAGE_ICON);
-        append(((SLanguage) value).getQualifiedName(), SimpleTextAttributes.REGULAR_ATTRIBUTES);
-      } else {
-        setIcon(IdeIcons.DEFAULT_ICON);
-        append("unknown", SimpleTextAttributes.REGULAR_ATTRIBUTES);
+        list.repaint();
       }
-      setFont(FONT);
-      if (isSelected) {
-        setBackground(list.getSelectionBackground());
-        setForeground(list.getSelectionForeground());
-      } else {
-        setBackground(list.getBackground());
-        setForeground(list.getForeground());
+    });
+    list.setCheckBoxListListener(new CheckBoxListListener() {
+      public void checkBoxSelectionChanged(int index, boolean value) {
+        selectAll.setState(selectionState(list));
       }
-      return this;
+    });
+    JPanel header = new JPanel(new BorderLayout());
+    header.add(selectAll, BorderLayout.WEST);
+    header.setBorder(JBUI.Borders.empty(5));
+    JScrollPane scrollPane = ScrollPaneFactory.createScrollPane(list);
+    // tuned 1px so list checkboxes align under the header's checkbox
+    scrollPane.setViewportBorder(JBUI.Borders.empty(3));
+    JPanel result = new JPanel(new BorderLayout());
+    result.add(header, BorderLayout.NORTH);
+    result.add(scrollPane, BorderLayout.CENTER);
+    // the minimum size shows at least one row
+    result.setMinimumSize(JBUI.size(0, 85));
+    result.setBorder(BorderFactory.createEtchedBorder());
+    return result;
+  }
+
+  private static JComponent renderRow(JCheckBox checkBox, Icon icon, String text) {
+    checkBox.setText("");
+    AccessibleContextUtil.setName(checkBox, text);
+    JLabel content = new JLabel(text, icon, SwingConstants.LEADING);
+    content.setFont(checkBox.getFont());
+    content.setForeground(checkBox.getForeground());
+    content.setBackground(checkBox.getBackground());
+    content.setEnabled(checkBox.isEnabled());
+    content.setOpaque(true);
+    JPanel row = new JPanel(new BorderLayout());
+    row.add(checkBox, BorderLayout.WEST);
+    row.add(content, BorderLayout.CENTER);
+    row.setBackground(checkBox.getBackground());
+    row.setOpaque(true);
+    // the list puts the focus border on the checkbox so move it out to frame the whole row
+    row.setBorder(checkBox.getBorder());
+    checkBox.setBorder(null);
+    return row;
+  }
+
+  private static String presentation(SModelReference ref) {
+    if (ref == null) {
+      return "";
     }
+    SModuleReference module = ref.getModuleReference();
+    String moduleName = ((module == null ? null : module.getModuleName()));
+    return ((moduleName == null || moduleName.isEmpty() ? ref.getModelName() : ref.getModelName() + " (" + moduleName + ")"));
+  }
+
+  private static ThreeStateCheckBox.State selectionState(CheckBoxList list) {
+    int selected = 0;
+    for (int i = 0; i < list.getItemsCount(); i++) {
+      if (list.isItemSelected(i)) {
+        selected++;
+      }
+    }
+    if (selected == 0) {
+      return ThreeStateCheckBox.State.NOT_SELECTED;
+    }
+    return ((selected == list.getItemsCount() ? ThreeStateCheckBox.State.SELECTED : ThreeStateCheckBox.State.DONT_CARE));
   }
 }

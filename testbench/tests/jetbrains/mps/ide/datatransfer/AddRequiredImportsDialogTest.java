@@ -18,6 +18,8 @@ package jetbrains.mps.ide.datatransfer;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.ui.CheckBoxList;
+import com.intellij.util.ui.ThreeStateCheckBox;
 import com.intellij.util.ui.UIUtil;
 import jetbrains.mps.extapi.module.SRepositoryExt;
 import jetbrains.mps.project.Project;
@@ -40,21 +42,30 @@ import org.jetbrains.mps.openapi.module.SModule;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 /**
- * Regression test for MPS-39042: the "Select models and languages to import" dialog must apply only the subset
- * the user actually selected. Before the fix, {@link AddRequiredImportsDialog#asUpdateCommand} iterated over the
- * full set of <em>suggested</em> imports/languages and ignored the selection, so de-selected entries were still
- * silently imported.
- * <p>
- * {@link AddRequiredImportsDialog} is a {@link com.intellij.openapi.ui.DialogWrapper} whose {@code createCenterPanel()}
- * dereferences {@code getContentPane()}, which is unavailable in the headless test environment. We therefore build the
- * dialog with its UI-building {@code init()} suppressed (the constructor still records the suggested imports/languages),
- * populate the "selected" subset the way {@code doOKAction()} would, and exercise the real {@code asUpdateCommand}.
+ * Tests for the "Select models and languages to import" dialog:
+ * <ul>
+ *   <li>MPS-39042 — {@link AddRequiredImportsDialog#asUpdateCommand} must apply only the subset the user selected.
+ *       Before the fix it iterated over the full set of <em>suggested</em> imports/languages and ignored the
+ *       selection, so de-selected entries were still silently imported.</li>
+ *   <li>MPS-39189 — the per-list header checkbox drives and reflects the selection of its list, and the list
+ *       renderer wraps the list's own checkbox instead of a look-alike copy.</li>
+ * </ul>
+ * {@link AddRequiredImportsDialog} is a {@link com.intellij.openapi.ui.DialogWrapper}, and these tests never show it,
+ * so they build it with its UI-building {@code init()} suppressed — the constructor still records the suggested
+ * imports/languages. A test that needs the UI calls {@code createCenterPanel()} explicitly.
  */
 public class AddRequiredImportsDialogTest implements EnvironmentAware {
   // the in-memory model registered into a test module by TestModuleFactoryBase
@@ -113,6 +124,68 @@ public class AddRequiredImportsDialogTest implements EnvironmentAware {
     }
   }
 
+  @Test
+  public void headerCheckBoxDrivesAndReflectsListSelection() {
+    Project project = myEnvironment.createEmptyProject();
+    try {
+      SModelReference importA = modelRef("test.import.A");
+      AddRequiredImportsDialog dialog = createDialogWithoutUi(project,
+          new SModelReference[]{importA, modelRef("test.import.B")}, new SLanguage[0]);
+      try {
+        UIUtil.invokeAndWaitIfNeeded(() -> {
+          JComponent center = dialog.createCenterPanel();
+          ThreeStateCheckBox header = findComponent(center, ThreeStateCheckBox.class);
+          CheckBoxList<?> list = findComponent(center, CheckBoxList.class);
+          Assert.assertNotNull("the models list must have a header checkbox", header);
+          Assert.assertNotNull("the center panel must contain the models list", list);
+
+          // every suggested import starts checked, so does the header
+          Assert.assertEquals(ThreeStateCheckBox.State.SELECTED, header.getState());
+
+          // the renderer must wrap the list's own checkbox: a copy would break click handling and accessibility
+          JCheckBox itemCheckBox = list.getModel().getElementAt(0);
+          Component row = list.getCellRenderer().getListCellRendererComponent(list, itemCheckBox, 0, false, false);
+          Assert.assertTrue("the rendered row must contain the list's own checkbox",
+              row instanceof Container container && SwingUtilities.isDescendingFrom(itemCheckBox, container));
+
+          // The row's text lives on a sibling label, so the checkbox has to carry it as its accessible name:
+          // blanking its text alone would leave it unnamed, as AccessibleAbstractButton falls back to the
+          // button text before consulting LABELED_BY, and "" satisfies that fallback.
+          Assert.assertEquals("the rendered checkbox must keep an accessible name",
+              importA.getModelName(), itemCheckBox.getAccessibleContext().getAccessibleName());
+
+          // header -> list
+          header.doClick();
+          Assert.assertFalse("clicking the header must de-select every item", list.isItemSelected(0));
+          Assert.assertFalse("clicking the header must de-select every item", list.isItemSelected(1));
+          Assert.assertEquals(ThreeStateCheckBox.State.NOT_SELECTED, header.getState());
+
+          header.doClick();
+          Assert.assertTrue("clicking the header again must select every item", list.isItemSelected(0));
+          Assert.assertTrue("clicking the header again must select every item", list.isItemSelected(1));
+          Assert.assertEquals(ThreeStateCheckBox.State.SELECTED, header.getState());
+
+          // list -> header: a partially selected list leaves the header indeterminate. The row must be toggled the
+          // way the user does it, so that CheckBoxList notifies its listener — setItemSelected changes it silently.
+          // Dispatching through AWT would need a focus owner, which a never-shown dialog has not, so the space bar
+          // goes straight to the list's own key handler.
+          list.setSelectedIndex(0);
+          KeyEvent spaceBar = new KeyEvent(list, KeyEvent.KEY_TYPED, System.currentTimeMillis(), 0, KeyEvent.VK_UNDEFINED, ' ');
+          for (KeyListener keyListener : list.getKeyListeners()) {
+            keyListener.keyTyped(spaceBar);
+          }
+          Assert.assertFalse(list.isItemSelected(0));
+          Assert.assertTrue(list.isItemSelected(1));
+          Assert.assertEquals(ThreeStateCheckBox.State.DONT_CARE, header.getState());
+        });
+      } finally {
+        dispose(dialog);
+      }
+    } finally {
+      myEnvironment.closeProject(project);
+    }
+  }
+
   private SModel createTargetModel(Project project) {
     SRepositoryExt repository = (SRepositoryExt) project.getRepository();
     TestModuleFactoryBase factory = new TestModuleFactoryBase(myEnvironment, repository);
@@ -153,16 +226,16 @@ public class AddRequiredImportsDialogTest implements EnvironmentAware {
     return false;
   }
 
-  // --- dialog helpers (dialog is never shown; its Swing UI is not built in the headless test env) ---
+  // --- dialog helpers (dialog is never shown; its Swing UI is not built unless a test asks for it) ---
 
   private static AddRequiredImportsDialog createDialogWithoutUi(Project project, SModelReference[] imports, SLanguage[] languages) {
     AddRequiredImportsDialog[] holder = new AddRequiredImportsDialog[1];
     UIUtil.invokeAndWaitIfNeeded((Runnable) () -> holder[0] = new AddRequiredImportsDialog(project, imports, languages) {
       @Override
       protected void init() {
-        // Headless test: skip DialogWrapper's Swing UI construction. AddRequiredImportsDialog#createCenterPanel
-        // dereferences getContentPane(), which is null without a display. The suggested imports/languages are
-        // already recorded by the superclass constructor before this call.
+        // The dialog is never shown, so there is no reason to build its Swing UI here. The suggested
+        // imports/languages are already recorded by the superclass constructor before this call; a test that
+        // needs the UI calls createCenterPanel() itself.
       }
     });
     return holder[0];
@@ -186,5 +259,22 @@ public class AddRequiredImportsDialogTest implements EnvironmentAware {
         // best-effort cleanup of a dialog that was never shown
       }
     });
+  }
+
+  // --- Swing helpers ---
+
+  private static <T extends Component> T findComponent(Component root, Class<T> type) {
+    if (type.isInstance(root)) {
+      return type.cast(root);
+    }
+    if (root instanceof Container) {
+      for (Component child : ((Container) root).getComponents()) {
+        T found = findComponent(child, type);
+        if (found != null) {
+          return found;
+        }
+      }
+    }
+    return null;
   }
 }
