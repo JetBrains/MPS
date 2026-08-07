@@ -50,8 +50,8 @@
     <import index="33ny" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util(JDK/)" />
     <import index="z1c4" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.project(MPS.Platform/)" />
     <import index="wwqx" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.logging(MPS.Core/)" />
-    <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" implicit="true" />
-    <import index="lzb2" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ui(MPS.IDEA/)" implicit="true" />
+    <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" />
+    <import index="lzb2" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ui(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="28f9e497-3b42-4291-aeba-0a1039153ab1" name="jetbrains.mps.lang.plugin">
@@ -4525,27 +4525,34 @@
                   </node>
                 </node>
               </node>
-              <node concept="3clFbF" id="2LsTSypo3bI" role="3cqZAp">
-                <node concept="2OqwBi" id="2LsTSypo3bJ" role="3clFbG">
-                  <node concept="2YIFZM" id="2LsTSypo3bK" role="2Oq$k0">
-                    <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
-                    <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
+              <node concept="3clFbF" id="7W2k2QqY8N1" role="3cqZAp">
+                <node concept="2OqwBi" id="7W2k2QqWCi1" role="3clFbG">
+                  <node concept="2OqwBi" id="7W2k2QqWCg4" role="2Oq$k0">
+                    <node concept="2OqwBi" id="7W2k2QqWyBb" role="2Oq$k0">
+                      <node concept="37vLTw" id="7W2k2QqWy_4" role="2Oq$k0">
+                        <ref role="3cqZAo" node="6ra8WUbIhv9" resolve="myDebugSession" />
+                      </node>
+                      <node concept="liA8E" id="7W2k2QqWyBc" role="2OqNvi">
+                        <ref role="37wK5l" to="1l1h:OqYxEjSoee" resolve="getProject" />
+                      </node>
+                    </node>
+                    <node concept="liA8E" id="7W2k2QqWCg5" role="2OqNvi">
+                      <ref role="37wK5l" to="z1c3:~Project.getModelAccess()" resolve="getModelAccess" />
+                    </node>
                   </node>
-                  <node concept="liA8E" id="2LsTSypo3bL" role="2OqNvi">
-                    <ref role="37wK5l" to="bd8o:~Application.invokeLater(java.lang.Runnable)" resolve="invokeLater" />
-                    <node concept="2ShNRf" id="2LsTSypo3bM" role="37wK5m">
-                      <node concept="YeOm9" id="2LsTSypo3bN" role="2ShVmc">
-                        <node concept="1Y3b0j" id="2LsTSypo3bO" role="YeSDq">
-                          <property role="2bfB8j" value="true" />
+                  <node concept="liA8E" id="7W2k2QqWCi2" role="2OqNvi">
+                    <ref role="37wK5l" to="lui2:~ModelAccess.executeCommandInEDT(java.lang.Runnable)" resolve="executeCommandInEDT" />
+                    <node concept="2ShNRf" id="7W2k2QqWCi3" role="37wK5m">
+                      <node concept="YeOm9" id="7W2k2QqWCi4" role="2ShVmc">
+                        <node concept="1Y3b0j" id="7W2k2QqWCi5" role="YeSDq">
                           <ref role="1Y3XeK" to="wyt6:~Runnable" resolve="Runnable" />
                           <ref role="37wK5l" to="wyt6:~Object.&lt;init&gt;()" resolve="Object" />
-                          <node concept="3Tm1VV" id="2LsTSypo3bP" role="1B3o_S" />
-                          <node concept="3clFb_" id="2LsTSypo3bQ" role="jymVt">
-                            <property role="1EzhhJ" value="false" />
+                          <node concept="3clFb_" id="7W2k2QqWCi6" role="jymVt">
                             <property role="TrG5h" value="run" />
-                            <node concept="3Tm1VV" id="2LsTSypo3bR" role="1B3o_S" />
-                            <node concept="3cqZAl" id="2LsTSypo3bS" role="3clF45" />
-                            <node concept="3clFbS" id="2LsTSypo3bT" role="3clF47">
+                            <node concept="2AHcQZ" id="7W2k2QqWCi7" role="2AJF6D">
+                              <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
+                            </node>
+                            <node concept="3clFbS" id="7W2k2QqWCi8" role="3clF47">
                               <node concept="3clFbF" id="2LsTSypo3bU" role="3cqZAp">
                                 <node concept="1rXfSq" id="4hiugqyzfwX" role="3clFbG">
                                   <ref role="37wK5l" node="6ra8WUbIhvw" resolve="setErrorText" />
@@ -4559,22 +4566,36 @@
                                   <ref role="37wK5l" node="2LsTSypo3cd" resolve="update" />
                                 </node>
                               </node>
-                              <node concept="3clFbJ" id="2LsTSypo3c1" role="3cqZAp">
-                                <node concept="3clFbS" id="2LsTSypo3c2" role="3clFbx">
-                                  <node concept="3clFbF" id="2LsTSypo3c3" role="3cqZAp">
-                                    <node concept="1rXfSq" id="4hiugqyzhN3" role="3clFbG">
-                                      <ref role="37wK5l" node="2LsTSypo3cA" resolve="evaluate" />
+                              <node concept="3clFbJ" id="7W2k2QqWCie" role="3cqZAp">
+                                <node concept="37vLTw" id="7W2k2QqWCif" role="3clFbw">
+                                  <ref role="3cqZAo" node="2LsTSypo3cp" resolve="myAutoUpdate" />
+                                </node>
+                                <node concept="3clFbS" id="7W2k2QqWCig" role="3clFbx">
+                                  <node concept="3clFbF" id="7W2k2QqWCih" role="3cqZAp">
+                                    <node concept="2OqwBi" id="7W2k2QqWCii" role="3clFbG">
+                                      <node concept="2YIFZM" id="7W2k2QqWCij" role="2Oq$k0">
+                                        <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
+                                        <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
+                                      </node>
+                                      <node concept="liA8E" id="7W2k2QqWCik" role="2OqNvi">
+                                        <ref role="37wK5l" to="bd8o:~Application.invokeLater(java.lang.Runnable)" resolve="invokeLater" />
+                                        <node concept="1bVj0M" id="7W2k2QqYcww" role="37wK5m">
+                                          <node concept="3clFbS" id="7W2k2QqYcwz" role="1bW5cS">
+                                            <node concept="3clFbF" id="2LsTSypo3c3" role="3cqZAp">
+                                              <node concept="1rXfSq" id="4hiugqyzhN3" role="3clFbG">
+                                                <ref role="37wK5l" node="2LsTSypo3cA" resolve="evaluate" />
+                                              </node>
+                                            </node>
+                                          </node>
+                                        </node>
+                                      </node>
                                     </node>
                                   </node>
                                 </node>
-                                <node concept="37vLTw" id="2BHiRxeuoKL" role="3clFbw">
-                                  <ref role="3cqZAo" node="2LsTSypo3cp" resolve="myAutoUpdate" />
-                                </node>
                               </node>
                             </node>
-                            <node concept="2AHcQZ" id="3tYsUK_SfdJ" role="2AJF6D">
-                              <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
-                            </node>
+                            <node concept="3Tm1VV" id="7W2k2QqWCi_" role="1B3o_S" />
+                            <node concept="3cqZAl" id="7W2k2QqWCiA" role="3clF45" />
                           </node>
                         </node>
                       </node>
@@ -4613,8 +4634,8 @@
               <node concept="3clFbF" id="2LsTSypo3d4" role="3cqZAp">
                 <node concept="2OqwBi" id="2LsTSypo3d5" role="3clFbG">
                   <node concept="2YIFZM" id="2LsTSypo3d6" role="2Oq$k0">
-                    <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
                     <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
+                    <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
                   </node>
                   <node concept="liA8E" id="2LsTSypo3d7" role="2OqNvi">
                     <ref role="37wK5l" to="bd8o:~Application.invokeLater(java.lang.Runnable)" resolve="invokeLater" />
