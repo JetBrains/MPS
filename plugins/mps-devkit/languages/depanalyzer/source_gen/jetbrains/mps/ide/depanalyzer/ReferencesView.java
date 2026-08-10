@@ -22,6 +22,7 @@ public class ReferencesView extends UsagesView {
     UsagesTree usagesTree = getTreeComponent().getTree();
     usagesTree.setSelectionRow(0);
     usagesTree.setShowPopupMenu(false);
+    setActions();
   }
 
   /*package*/ static class MyNodeRepresentator extends NodeRepresentatorBase<SNode> {

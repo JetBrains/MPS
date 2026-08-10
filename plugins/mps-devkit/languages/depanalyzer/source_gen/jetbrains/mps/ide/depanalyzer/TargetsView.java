@@ -40,6 +40,7 @@ public class TargetsView extends UsagesView {
     setCustomNodeRepresentator(new MyNodeRepresentator());
     usagesTree.setSelectionRow(0);
     usagesTree.setShowPopupMenu(false);
+    setActions();
   }
 
   /**

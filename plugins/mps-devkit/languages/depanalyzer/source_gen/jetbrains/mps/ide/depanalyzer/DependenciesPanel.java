@@ -54,7 +54,7 @@ public class DependenciesPanel extends JPanel {
     JBScrollPane leftPane = new JBScrollPane(myInitTree);
     Splitter treeSplitter = new Splitter(false);
     treeSplitter.setFirstComponent(leftPane);
-    treeSplitter.setSecondComponent(myTargetsView.getTreeComponent());
+    treeSplitter.setSecondComponent(myTargetsView.getComponent());
     Splitter splitter = new Splitter(true);
     splitter.setFirstComponent(treeSplitter);
     splitter.setSecondComponent(myReferencesView.getComponent());
