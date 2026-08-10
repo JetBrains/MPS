@@ -26,6 +26,7 @@ public class ViewOptions implements IExternalizeable {
   private static final String CATEGORY_OPTION = "category_option";
   private static final String MODULE_OPTION = "module_option";
   private static final String MODEL_OPTION = "model_option";
+  private static final String VIRTUAL_PACKAGE_OPTION = "virtual_package_option";
   private static final String ROOT_OPTION = "root_option";
   private static final String PATH_OPTION = "path_option";
 
@@ -42,6 +43,7 @@ public class ViewOptions implements IExternalizeable {
   public boolean myCategory = false;
   public boolean myModule = true,
     myModel = true,
+    myVirtualPackage = false,
     myRoot = true,
     myNamedPath = false;
 
@@ -84,6 +86,10 @@ public class ViewOptions implements IExternalizeable {
     myCategory = Boolean.valueOf(viewOptionsXML.getAttributeValue(CATEGORY_OPTION));
     myModule = Boolean.valueOf(viewOptionsXML.getAttributeValue(MODULE_OPTION));
     myModel = Boolean.valueOf(viewOptionsXML.getAttributeValue(MODEL_OPTION));
+    String virtualPackageOption = viewOptionsXML.getAttributeValue(VIRTUAL_PACKAGE_OPTION);
+    // Attribute absent means state saved before this option existed: grant the default-on
+    // behaviour that fresh Find Usages views get. Only Find Usages persists ViewOptions.
+    myVirtualPackage = virtualPackageOption == null || Boolean.parseBoolean(virtualPackageOption);
     myRoot = Boolean.valueOf(viewOptionsXML.getAttributeValue(ROOT_OPTION));
     myNamedPath = Boolean.valueOf(viewOptionsXML.getAttributeValue(PATH_OPTION));
 
@@ -104,6 +110,7 @@ public class ViewOptions implements IExternalizeable {
     viewOptionsXML.setAttribute(CATEGORY_OPTION, Boolean.toString(myCategory));
     viewOptionsXML.setAttribute(MODULE_OPTION, Boolean.toString(myModule));
     viewOptionsXML.setAttribute(MODEL_OPTION, Boolean.toString(myModel));
+    viewOptionsXML.setAttribute(VIRTUAL_PACKAGE_OPTION, Boolean.toString(myVirtualPackage));
     viewOptionsXML.setAttribute(ROOT_OPTION, Boolean.toString(myRoot));
     viewOptionsXML.setAttribute(PATH_OPTION, Boolean.toString(myNamedPath));
 
@@ -125,6 +132,7 @@ public class ViewOptions implements IExternalizeable {
     myCategory = options.myCategory;
     myModule = options.myModule;
     myModel = options.myModel;
+    myVirtualPackage = options.myVirtualPackage;
     myRoot = options.myRoot;
     myNamedPath = options.myNamedPath;
     myCategories = Arrays.copyOf(options.myCategories, options.myCategories.length);

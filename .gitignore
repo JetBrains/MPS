@@ -29,6 +29,9 @@
 **/.idea/shelf
 **/.mps/shelf
 
+# Junie agent workspace
+/.junie/
+
 # Build artifacts
 /workbench/mps-workbench/source/META-INF/MPSPlugin.xml
 /MPSPlugin/apiclasses

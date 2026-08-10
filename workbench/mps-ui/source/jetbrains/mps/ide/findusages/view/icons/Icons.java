@@ -17,6 +17,7 @@ package jetbrains.mps.ide.findusages.view.icons;
 
 import com.intellij.icons.AllIcons.Actions;
 import com.intellij.icons.AllIcons.General;
+import com.intellij.icons.AllIcons.Nodes;
 import jetbrains.mps.icons.MPSIcons;
 
 import javax.swing.Icon;
@@ -29,6 +30,7 @@ public class Icons {
   public static final Icon CATEGORY_ICON = MPSIcons.Actions.GroupByCategory;
   public static final Icon MODULE_ICON = MPSIcons.Actions.GroupByModule;
   public static final Icon MODEL_ICON = MPSIcons.Actions.GroupByModel;
+  public static final Icon VIRTUAL_PACKAGE_ICON = Nodes.Folder;
   public static final Icon ROOT_ICON = MPSIcons.Actions.GroupByRoot;
   public static final Icon PATH_ICON = Actions.GroupByPackage;
 }

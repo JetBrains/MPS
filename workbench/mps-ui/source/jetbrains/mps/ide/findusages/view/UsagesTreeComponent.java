@@ -346,6 +346,7 @@ public class UsagesTreeComponent extends JPanel implements IChangeListener {
       private List<MyBaseToggleAction> myCategoryPathButtons = new ArrayList<>();
       private MyBaseToggleAction myModulePathButton;
       private MyBaseToggleAction myModelPathButton;
+      private MyBaseToggleAction myVirtualPackagePathButton;
       private MyBaseToggleAction myRootPathButton;
       private MyBaseToggleAction myNamedConceptPathButton;
       private DefaultActionGroup myActions;
@@ -376,6 +377,7 @@ public class UsagesTreeComponent extends JPanel implements IChangeListener {
 
         myModulePathButton = new MyBasePathToggleAction(PathItemRole.ROLE_MODULE, "Group by module", Icons.MODULE_ICON);
         myModelPathButton = new MyBasePathToggleAction(PathItemRole.ROLE_MODEL, "Group by model", Icons.MODEL_ICON);
+        myVirtualPackagePathButton = new MyBasePathToggleAction(PathItemRole.ROLE_VIRTUAL_PACKAGE, "Group by virtual package", Icons.VIRTUAL_PACKAGE_ICON);
 
         myRootPathButton = new MyBaseToggleAction("Group by root node", "", Icons.ROOT_ICON) {
           @Override
@@ -425,6 +427,7 @@ public class UsagesTreeComponent extends JPanel implements IChangeListener {
         }
         myActions.addAction(myModulePathButton);
         myActions.addAction(myModelPathButton);
+        myActions.addAction(myVirtualPackagePathButton);
         myActions.addAction(myRootPathButton);
         myActions.addAction(myNamedConceptPathButton);
       }
@@ -437,6 +440,7 @@ public class UsagesTreeComponent extends JPanel implements IChangeListener {
 
         myModulePathButton.doSetSelected(null, options.myModule);
         myModelPathButton.doSetSelected(null, options.myModel);
+        myVirtualPackagePathButton.doSetSelected(null, options.myVirtualPackage);
         myRootPathButton.doSetSelected(null, options.myRoot);
         myNamedConceptPathButton.doSetSelected(null, options.myNamedPath);
       }
@@ -449,6 +453,7 @@ public class UsagesTreeComponent extends JPanel implements IChangeListener {
 
         options.myModule = myModulePathButton.isSelected();
         options.myModel = myModelPathButton.isSelected();
+        options.myVirtualPackage = myVirtualPackagePathButton.isSelected();
         options.myRoot = myRootPathButton.isSelected();
         options.myNamedPath = myNamedConceptPathButton.isSelected();
       }
