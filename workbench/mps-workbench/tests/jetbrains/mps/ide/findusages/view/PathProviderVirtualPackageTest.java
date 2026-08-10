@@ -5,14 +5,11 @@ import jetbrains.mps.ide.findusages.view.treeholder.tree.nodedatatypes.BaseNodeD
 import jetbrains.mps.ide.findusages.view.treeholder.treeview.path.PathItem;
 import jetbrains.mps.ide.findusages.view.treeholder.treeview.path.PathItemRole;
 import jetbrains.mps.ide.findusages.view.treeholder.treeview.path.PathProvider;
-import jetbrains.mps.smodel.SNodeAccessUtilImpl;
 import jetbrains.mps.smodel.SNodeUtil;
-import jetbrains.mps.smodel.adapter.BootstrapAdapterFactory;
 import org.jetbrains.mps.openapi.language.SConcept;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
 import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeAccessUtil;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -27,34 +24,30 @@ import static org.junit.Assert.assertTrue;
  * item per dot-separated segment, outermost segment closest to the model, innermost segment
  * closest to the node's root, exactly as {@code ModelTreeBuilder} nests project-pane folders.
  *
- * <p><b>Not runnable headless yet.</b> {@code PathProvider} reads the virtual-package property via
- * {@link SNodeAccessUtil#getProperty}, which (for a real {@code SProperty} such as
- * {@link SNodeUtil#property_BaseConcept_virtualPackage}) resolves the property's declared data type
- * through {@code ConceptFeatureHelper.getOwnerDescriptor(...)} -&gt;
- * {@code ConceptRegistry.getInstance()}. {@code NoPlatformTestSuite} never boots a
- * {@code ConceptRegistry} (that needs a live {@code LanguageRegistry}, i.e. a much larger platform
- * fixture), so that call always throws a {@code NullPointerException}, which
- * {@code SNodeAccessUtilImpl.getPropertyValueImpl} swallows and turns into {@code null} -
- * regardless of what was actually stored on the node. That makes every case that depends on
- * reading back a real virtual-package value unverifiable in this environment: the two cases that
- * merely expect "no virtual-package items" (null/blank property) accidentally pass for the wrong
- * reason, and the cases that expect real segments fail. Wiring a working {@code ConceptRegistry}
- * would require a live {@code LanguageRegistry}/structure aspect - the same class of heavyweight
- * fixture ({@code ModuleInProjectTest}/IDEA project) this test suite is meant to avoid. Left
- * unregistered in {@code NoPlatformTestSuite} until this class can run against a real platform
- * environment (e.g. {@code PlatformTestSuite}). See MPSSPRT-481 review follow-up plan, Step 5b.
+ * <p><b>Needs a live platform, hence {@code PlatformTestSuite}.</b> {@code PathProvider} reads the
+ * virtual-package property via {@link SNodeAccessUtil#getProperty}, which (for a real
+ * {@code SProperty} such as {@link SNodeUtil#property_BaseConcept_virtualPackage}) resolves the
+ * property's declared data type through {@code ConceptFeatureHelper.getOwnerDescriptor(...)} -&gt;
+ * {@code ConceptRegistry.getInstance()}. A suite that boots no platform has no
+ * {@code ConceptRegistry}, so that call throws a {@code NullPointerException} which
+ * {@code SNodeAccessUtilImpl.getPropertyValueImpl} swallows into {@code null} regardless of what
+ * was stored on the node - the "no virtual-package items" cases would then pass for the wrong
+ * reason and the rest would fail. {@code PlatformTestSuite} boots one {@code IdeaEnvironment} for
+ * the whole suite, which is what makes the property read (and the concept presentation lookups in
+ * {@code NodeNodeData}) resolve for real here. {@code PathProviderVirtualPackageSegmentsTest}
+ * covers the pure segment-splitting logic headlessly in {@code NoPlatformTestSuite}.
+ *
+ * <p>The nodes below deliberately use real {@code jetbrains.mps.lang.core} meta-objects rather than
+ * fabricated ids: with a live registry, an unknown concept makes {@code SNodeUtil.getPresentation}
+ * and the constraints lookup log errors, and {@code PlatformTestSuite} (an
+ * {@code OutputWatchingTestSuite}) fails any test that logs at error level.
  */
 public class PathProviderVirtualPackageTest {
-  private static final SConcept ourConcept = BootstrapAdapterFactory.getConcept(0, 0, 0, "Mock");
-  private static final SContainmentLink ourChildRole = BootstrapAdapterFactory.getContainmentLink(1, 2, 3, 4, "L");
-
-  @BeforeClass
-  public static void setUpSNodeAccessUtil() {
-    // PathProvider reads the virtual-package property via the deprecated SNodeAccessUtil facade, whose
-    // static delegate is normally wired by MPSCore.init() during platform startup. NoPlatformTestSuite
-    // never starts the platform, so wire the same plain implementation directly.
-    SNodeAccessUtil.setInstance(new SNodeAccessUtilImpl());
-  }
+  // TypeAnnotated is a concrete lang.core concept whose 'annotation' child is a plain (non-attribute)
+  // containment link, so the two-node tree below is built entirely from meta-objects the registry knows.
+  private static final SConcept ourRootConcept = SNodeUtil.concept_TypeAnnotated;
+  private static final SConcept ourChildConcept = SNodeUtil.concept_BaseConcept;
+  private static final SContainmentLink ourChildRole = SNodeUtil.link_TypeAnnotated_annotation;
 
   @Test
   public void noVirtualPackagePropertyYieldsNoVirtualPackageItems() {
@@ -113,8 +106,8 @@ public class PathProviderVirtualPackageTest {
   }
 
   private static List<PathItem<?>> pathFor(String virtualPackage) {
-    SNode root = newNode();
-    SNode target = newNode();
+    SNode root = newNode(ourRootConcept);
+    SNode target = newNode(ourChildConcept);
     root.addChild(ourChildRole, target);
     if (virtualPackage != null) {
       SNodeAccessUtil.setPropertyValue(root, SNodeUtil.property_BaseConcept_virtualPackage, virtualPackage);
@@ -124,8 +117,8 @@ public class PathProviderVirtualPackageTest {
     return new PathProvider(false).getPathForSearchResult(result);
   }
 
-  private static SNode newNode() {
-    return new jetbrains.mps.smodel.SNode(ourConcept);
+  private static SNode newNode(SConcept concept) {
+    return new jetbrains.mps.smodel.SNode(concept);
   }
 
   private static List<BaseNodeData> virtualPackageItems(List<PathItem<?>> path) {

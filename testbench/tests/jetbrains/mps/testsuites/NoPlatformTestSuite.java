@@ -56,11 +56,8 @@ import org.junit.runners.Suite.SuiteClasses;
     jetbrains.mps.ide.projectPane.logicalview.VirtualFolderHelperTest.class,
     jetbrains.mps.ide.findusages.view.ViewOptionsTest.class,
     jetbrains.mps.ide.findusages.view.treeholder.treeview.path.PathProviderVirtualPackageSegmentsTest.class
-    // jetbrains.mps.ide.findusages.view.PathProviderVirtualPackageTest is intentionally NOT registered
-    // here: it drives the same virtual-package expansion through a real node, which needs a live
-    // ConceptRegistry to resolve the property's data type, and NoPlatformTestSuite does not boot one.
-    // PathProviderVirtualPackageSegmentsTest covers the expansion logic itself headlessly meanwhile.
-    // See both classes' javadoc.
+    // The node-level counterpart, jetbrains.mps.ide.findusages.view.PathProviderVirtualPackageTest,
+    // needs a live ConceptRegistry and therefore lives in PlatformTestSuite. See both classes' javadoc.
 })
 public class NoPlatformTestSuite {
 }
