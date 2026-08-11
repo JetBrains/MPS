@@ -97,7 +97,7 @@
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/617882099353331886">
     <file name="mpsJava.xml">
-      <unit id="617882099353331886" at="1,0,641,10" name="jetbrains.mps.ide.build.tests.mpsJava" />
+      <unit id="617882099353331886" at="1,0,642,10" name="jetbrains.mps.ide.build.tests.mpsJava" />
     </file>
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/6238501899265293051">

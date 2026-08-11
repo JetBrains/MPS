@@ -58557,17 +58557,14 @@
             </node>
           </node>
         </node>
-        <node concept="398223" id="6EyFT7bdZIR" role="39821P">
-          <node concept="3_J27D" id="6EyFT7bdZIS" role="Nbhlr">
-            <node concept="3Mxwew" id="6EyFT7bdZIT" role="3MwsjC">
-              <property role="3MwjfP" value="platform-structureView-plugin" />
-            </node>
-          </node>
-          <node concept="2HvfSZ" id="6EyFT7bdZIU" role="39821P">
-            <node concept="55IIr" id="6EyFT7bdZIV" role="2HvfZ0">
-              <node concept="2Ry0Ak" id="6EyFT7bdZIW" role="iGT6I">
+        <node concept="m$_wl" id="5ziJCXcgBVW" role="39821P">
+          <ref role="m_rDy" node="5ziJCXbfbGU" resolve="intellij.structureView.plugin" />
+          <node concept="pUk6x" id="5ziJCXcgBYg" role="pUk7w" />
+          <node concept="2HvfSZ" id="5ziJCXcgC0y" role="39821P">
+            <node concept="55IIr" id="5ziJCXcgC0z" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="5ziJCXcgC3A" role="iGT6I">
                 <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="6EyFT7bdZIX" role="2Ry0An">
+                <node concept="2Ry0Ak" id="5ziJCXcgC5T" role="2Ry0An">
                   <property role="2Ry0Am" value="platform-structureView-plugin" />
                 </node>
               </node>
@@ -58612,6 +58609,25 @@
     </node>
     <node concept="10PD9b" id="1diLdO26mQa" role="10PD9s" />
     <node concept="3b7kt6" id="1diLdO26mQc" role="10PD9s" />
+    <node concept="m$_wf" id="5ziJCXbfbGU" role="3989C9">
+      <property role="1NdglO" value="true" />
+      <property role="m$_wk" value="intellij.structureView.plugin" />
+      <node concept="3_J27D" id="5ziJCXbfbGV" role="m$_yQ">
+        <node concept="3Mxwew" id="5ziJCXbfbT0" role="3MwsjC">
+          <property role="3MwjfP" value="Structure View" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5ziJCXbfbGW" role="m_cZH">
+        <node concept="3Mxwew" id="5ziJCXbfbVh" role="3MwsjC">
+          <property role="3MwjfP" value="platform-structureView-plugin" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5ziJCXbfbGX" role="m$_w8">
+        <node concept="3Mxwew" id="5ziJCXbfcMj" role="3MwsjC">
+          <property role="3MwjfP" value="&lt;empty&gt;" />
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="1l3spW" id="5rNMDvYzelV">
     <property role="TrG5h" value="mpsMakePlugin" />
