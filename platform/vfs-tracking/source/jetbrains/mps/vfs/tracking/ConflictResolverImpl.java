@@ -41,6 +41,7 @@ import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SaveOptions;
 import org.jetbrains.mps.openapi.model.SaveResult;
 import org.jetbrains.mps.openapi.module.ModelAccess;
+import org.jetbrains.mps.openapi.persistence.ContentOption;
 import org.jetbrains.mps.openapi.persistence.ModelLoadException;
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade;
 import org.jetbrains.mps.openapi.persistence.UnsupportedDataSourceException;
@@ -214,9 +215,8 @@ public final class ConflictResolverImpl implements StorageMemoryConflictResolver
     SModel onDisk = null;
     try {
       if (source.exists()) {
-        onDisk = myPersistenceFacade.getModelFactory(source.getType()).load(source);
         // make sure there are no subsequent attempts to alter the model's content (e.g. in case DS type supports partial/lazy loading)
-        onDisk.load();
+        onDisk = myPersistenceFacade.getModelFactory(source.getType()).load(source, ContentOption.CONTENT_ONLY);
       }
     } catch (UnsupportedDataSourceException | ModelLoadException e) {
       // properly reflect this case
