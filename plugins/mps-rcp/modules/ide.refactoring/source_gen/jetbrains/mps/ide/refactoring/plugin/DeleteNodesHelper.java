@@ -47,6 +47,7 @@ public class DeleteNodesHelper {
     myProject = project;
     myRepository = myProject.getRepository();
     myNodesToDelete = ListSequence.fromListWithValues(new ArrayList<SNode>(), nodes);
+    assert ListSequence.fromList(nodes).all((it) -> it.getModel() != null);
   }
   public boolean hasAspectOption() {
     return ListSequence.fromList(myNodesToDelete).translate((final SNode node) -> {
