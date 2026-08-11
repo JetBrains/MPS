@@ -66,7 +66,7 @@ of each address in order to include their values in the validation expression. T
 ## fluent-editing
 
 An example of creating a text-like editing experience and implements many of the recommendations mentioned in
-the Editor cookbook (https://www.jetbrains.com/help/mps/2020.3/editor-cookbook.html). It implements a simple language for specifying drawing commands (line, rectangle):
+the Editor cookbook (https://www.jetbrains.com/help/mps/editor-cookbook.html). It implements a simple language for specifying drawing commands (line, rectangle):
 * an empty line is inserted upon hitting Enter, empty lines can be placed anywhere thanks to a default node factory specified for the child collection
 * empty line does not appear as an option in the completion menu thanks to implementing the IDontSubstituteByDefault concept interface
 * typing on an empty line will insert the desired item (line or rectangle)
