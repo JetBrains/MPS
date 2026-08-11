@@ -16560,6 +16560,9 @@
         <node concept="24YFd4" id="6S_FNWXEKAv" role="24YFd7">
           <ref role="24YFd5" to="ffeo:4O0hKJpjIV3" resolve="jetbrains.mps.ide.devkit" />
         </node>
+        <node concept="24YFd4" id="4xgF4dWwu8G" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5ziJCXbfbGU" resolve="intellij.structureView.plugin" />
+        </node>
       </node>
     </node>
     <node concept="398rNT" id="2KA2zfKHPmS" role="1l3spd">

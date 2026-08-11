@@ -24,6 +24,7 @@
   <idea-version since-build="262.1" until-build="262.*"/>
   <dependencies>
     <plugin id="jetbrains.mps.core"/>
+    <module name="intellij.platform.structureView"/>
     <module name="intellij.spellchecker"/>
     <!-- Necessary dependency to be able to override actions from the module  -->
     <module name="intellij.xml.impl"/>
