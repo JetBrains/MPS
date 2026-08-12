@@ -41,7 +41,7 @@
   </path>
   
   <path id="path.java.library.jps-builders-lib">
-    <fileset file="${artifacts.IDEA}/plugins/java/lib/modules/intellij.platform.jps.build.jar" />
+    <fileset file="${artifacts.IDEA}/plugins/java/lib/intellij.platform.jps.build.jar" />
   </path>
   
   <path id="path.mps.ant.path">

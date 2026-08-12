@@ -240,6 +240,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     EditorCell_Image editorCell = fromImageCellProvider0();
     editorCell.setCellId("Image_3jyf1k_a0g0");
     editorCell.setDescent(-1);
+    editorCell.setAlignWithText(true);
     return editorCell;
   }
   private EditorCell_Image fromImageCellProvider0() {
@@ -250,6 +251,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     EditorCell_Image editorCell = fromImageCellProvider1();
     editorCell.setCellId("Image_3jyf1k_a0g0_0");
     editorCell.setDescent(-1);
+    editorCell.setAlignWithText(true);
     return editorCell;
   }
   private EditorCell_Image fromImageCellProvider1() {

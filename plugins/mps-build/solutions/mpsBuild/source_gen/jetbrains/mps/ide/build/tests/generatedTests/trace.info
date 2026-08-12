@@ -7,7 +7,7 @@
   </root>
   <root nodeRef="r:12897c41-1d23-444a-8c3d-8a254e74f9b6(jetbrains.mps.ide.build.tests.generatedTests)/8806036443185005938">
     <file name="mpsTestRefactoring.xml">
-      <unit id="8806036443185005938" at="1,0,606,10" name="jetbrains.mps.ide.build.tests.generatedTests.mpsTestRefactoring" />
+      <unit id="8806036443185005938" at="1,0,607,10" name="jetbrains.mps.ide.build.tests.generatedTests.mpsTestRefactoring" />
     </file>
   </root>
 </debug-info>

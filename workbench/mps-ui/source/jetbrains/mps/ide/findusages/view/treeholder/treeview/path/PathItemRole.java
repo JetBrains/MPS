@@ -31,6 +31,7 @@ public final class PathItemRole {
   public static final PathItemRole ROLE_TARGET_NODE = new PathItemRole("target");
   public static final PathItemRole ROLE_ROOT_TO_TARGET_NODE = new PathItemRole("root to target");
   public static final PathItemRole ROLE_ROOT = new PathItemRole("root");
+  public static final PathItemRole ROLE_VIRTUAL_PACKAGE = new PathItemRole("virtual package");
   public static final PathItemRole ROLE_MODEL = new PathItemRole("model");
   public static final PathItemRole ROLE_MODULE = new PathItemRole("module");
   public static final PathItemRole ROLE_LANGUAGE = new PathItemRole("language");
@@ -45,6 +46,7 @@ public final class PathItemRole {
       ROLE_TARGET_NODE,
       ROLE_ROOT_TO_TARGET_NODE,
       ROLE_ROOT,
+      ROLE_VIRTUAL_PACKAGE,
       ROLE_MODEL,
       ROLE_MODULE,
       ROLE_LANGUAGE,

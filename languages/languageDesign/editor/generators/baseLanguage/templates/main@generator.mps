@@ -5414,6 +5414,33 @@
               </node>
             </node>
           </node>
+          <node concept="3clFbF" id="2k7jEhm4Zy1" role="3cqZAp">
+            <node concept="2OqwBi" id="2k7jEhm4Zy2" role="3clFbG">
+              <node concept="37vLTw" id="2k7jEhm4Zyc" role="2Oq$k0">
+                <ref role="3cqZAo" node="g_ulJfm" resolve="editorCell" />
+              </node>
+              <node concept="liA8E" id="2k7jEhm540v" role="2OqNvi">
+                <ref role="37wK5l" to="g51k:~EditorCell_Image.setAlignWithText(boolean)" resolve="setAlignWithText" />
+                <node concept="3clFbT" id="4o2eXXW_Vp" role="37wK5m">
+                  <property role="3clFbU" value="true" />
+                </node>
+              </node>
+            </node>
+            <node concept="1W57fq" id="4o2eXXWBgi" role="lGtFl">
+              <node concept="3IZrLx" id="4o2eXXWBgl" role="3IZSJc">
+                <node concept="3clFbS" id="4o2eXXWBgm" role="2VODD2">
+                  <node concept="3clFbF" id="4o2eXXWBgs" role="3cqZAp">
+                    <node concept="2OqwBi" id="4o2eXXWBgn" role="3clFbG">
+                      <node concept="3TrcHB" id="4o2eXXWBgq" role="2OqNvi">
+                        <ref role="3TsBF5" to="tpc2:2k7jEhm4XLr" resolve="alignWithText" />
+                      </node>
+                      <node concept="30H73N" id="4o2eXXWBgr" role="2Oq$k0" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
           <node concept="3clFbF" id="13c7lpEz_AH" role="3cqZAp">
             <node concept="5jKBG" id="13c7lpEz_AM" role="lGtFl">
               <ref role="v9R2y" node="5t2DUc51aVQ" resolve="template_cellSetSubstituteInfo" />

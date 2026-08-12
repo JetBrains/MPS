@@ -6118,6 +6118,9 @@
         <node concept="24YFd4" id="7CxlxzFvXqH" role="24YFd7">
           <ref role="24YFd5" to="ffeo:6WtY9M1bDO_" resolve="jetbrains.mps.ide.java" />
         </node>
+        <node concept="24YFd4" id="5ziJCXb$ysL" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5ziJCXbfbGU" resolve="intellij.structureView.plugin" />
+        </node>
         <node concept="NbPM2" id="33YWcaLmKPH" role="XX84c">
           <node concept="3Mxwew" id="33YWcaLmKPG" role="3MwsjC">
             <property role="3MwjfP" value="true" />
@@ -16556,6 +16559,9 @@
       <node concept="24cAiW" id="6S_FNWXEKAt" role="24cAkG">
         <node concept="24YFd4" id="6S_FNWXEKAv" role="24YFd7">
           <ref role="24YFd5" to="ffeo:4O0hKJpjIV3" resolve="jetbrains.mps.ide.devkit" />
+        </node>
+        <node concept="24YFd4" id="4xgF4dWwu8G" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5ziJCXbfbGU" resolve="intellij.structureView.plugin" />
         </node>
       </node>
     </node>

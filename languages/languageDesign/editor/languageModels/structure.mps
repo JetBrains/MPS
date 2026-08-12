@@ -1043,6 +1043,11 @@
       <property role="IQ2nx" value="1139858284555" />
       <ref role="AX2Wp" to="tpck:fKAQMTA" resolve="integer" />
     </node>
+    <node concept="1TJgyi" id="2k7jEhm4XLr" role="1TKVEl">
+      <property role="IQ2nx" value="2668187771966053467" />
+      <property role="TrG5h" value="alignWithText" />
+      <ref role="AX2Wp" to="tpck:fKAQMTB" resolve="boolean" />
+    </node>
     <node concept="PrWs8" id="7x0o_8QO9$O" role="PzmwI">
       <ref role="PrY4T" to="tpck:64$4ecGX64Q" resolve="ImplementationWithStubPart" />
     </node>

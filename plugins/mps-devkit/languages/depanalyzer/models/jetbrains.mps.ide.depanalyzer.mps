@@ -11072,7 +11072,7 @@
                   <ref role="3cqZAo" node="7ctIhG_bUtn" resolve="myTargetsView" />
                 </node>
                 <node concept="liA8E" id="6C_eVWCBkTK" role="2OqNvi">
-                  <ref role="37wK5l" to="ngmm:~UsagesView.getTreeComponent()" resolve="getTreeComponent" />
+                  <ref role="37wK5l" to="ngmm:~UsagesView.getComponent()" />
                 </node>
               </node>
             </node>
@@ -16280,6 +16280,11 @@
             </node>
           </node>
         </node>
+        <node concept="3clFbF" id="4aJJTCuaron" role="3cqZAp">
+          <node concept="1rXfSq" id="4aJJTCuaroo" role="3clFbG">
+            <ref role="37wK5l" to="ngmm:~UsagesView.setActions(com.intellij.openapi.actionSystem.AnAction...)" resolve="setActions" />
+          </node>
+        </node>
       </node>
     </node>
     <node concept="2tJIrI" id="1O8DjCq_rCe" role="jymVt" />
@@ -16509,6 +16514,11 @@
                 <property role="3clFbU" value="false" />
               </node>
             </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="4aJJTCuaUFb" role="3cqZAp">
+          <node concept="1rXfSq" id="4aJJTCuaUFc" role="3clFbG">
+            <ref role="37wK5l" to="ngmm:~UsagesView.setActions(com.intellij.openapi.actionSystem.AnAction...)" resolve="setActions" />
           </node>
         </node>
       </node>

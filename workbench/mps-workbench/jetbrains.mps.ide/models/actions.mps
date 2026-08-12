@@ -1082,10 +1082,6 @@
         <property role="TrG5h" value="refactoring" />
       </node>
       <node concept="2a7GMi" id="hyac0eA" role="ftvYc" />
-      <node concept="10WQ6h" id="2tmN3ZB4Vsm" role="ftvYc">
-        <property role="TrG5h" value="favorites" />
-      </node>
-      <node concept="2a7GMi" id="hyac280" role="ftvYc" />
       <node concept="tCFHf" id="hGnMFMX" role="ftvYc">
         <ref role="tCJdB" node="hGnLICq" resolve="CloneModel" />
       </node>
@@ -1320,10 +1316,6 @@
         <property role="TrG5h" value="find_usages" />
       </node>
       <node concept="2a7GMi" id="6gJrPYfWcnE" role="ftvYc" />
-      <node concept="10WQ6h" id="2tmN3ZB4Vst" role="ftvYc">
-        <property role="TrG5h" value="favorites" />
-      </node>
-      <node concept="2a7GMi" id="2tmN3ZB4Vsu" role="ftvYc" />
       <node concept="tCFHf" id="2nOFRhml1H8" role="ftvYc">
         <ref role="tCJdB" node="hGANgqU" resolve="ModuleProperties" />
       </node>
@@ -25264,10 +25256,6 @@
         <property role="TrG5h" value="refactoring" />
       </node>
       <node concept="2a7GMi" id="6I71fHozdi8" role="ftvYc" />
-      <node concept="10WQ6h" id="2tmN3ZB4Vsy" role="ftvYc">
-        <property role="TrG5h" value="favorites" />
-      </node>
-      <node concept="2a7GMi" id="6xSeqtv67Qy" role="ftvYc" />
       <node concept="10WQ6h" id="5G5kXQMOIcJ" role="ftvYc">
         <property role="TrG5h" value="deletion" />
       </node>
@@ -25383,10 +25371,6 @@
         <property role="TrG5h" value="refactoring" />
       </node>
       <node concept="2a7GMi" id="miYJQArh7m" role="ftvYc" />
-      <node concept="10WQ6h" id="miYJQArh7n" role="ftvYc">
-        <property role="TrG5h" value="favorites" />
-      </node>
-      <node concept="2a7GMi" id="miYJQAr2Us" role="ftvYc" />
       <node concept="tCFHf" id="miYJQAr2Uv" role="ftvYc">
         <ref role="tCJdB" node="i3M_Wbp" resolve="DeleteModules" />
       </node>

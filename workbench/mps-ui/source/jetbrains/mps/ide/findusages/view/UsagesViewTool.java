@@ -96,7 +96,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
   private static final String TOOL_WINDOW_ID = "Usages";
 
   private final List<UsageViewData> myUsageViewsData = new ArrayList<>();
-  private final ViewOptions myDefaultViewOptions = new ViewOptions();
+  private final ViewOptions myDefaultViewOptions = createFindUsagesDefaults();
   private final DataTreeChangesNotifier myChangeTracker = new DataTreeChangesNotifier();
 
   private volatile Runnable loadedTabInitializer = null;
@@ -105,6 +105,13 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
 
   public UsagesViewTool(Project project) {
     super(project, TOOL_WINDOW_ID, shortcutsFromNumber(3), Toolwindows.ToolWindowFind, ToolWindowAnchor.BOTTOM, true);
+  }
+
+  private static ViewOptions createFindUsagesDefaults() {
+    ViewOptions options = new ViewOptions();
+    // Virtual-package grouping is a Find Usages default; other UsagesView consumers keep it off.
+    options.myVirtualPackage = true;
+    return options;
   }
 
   public static UsagesViewTool getInstance(Project project) {

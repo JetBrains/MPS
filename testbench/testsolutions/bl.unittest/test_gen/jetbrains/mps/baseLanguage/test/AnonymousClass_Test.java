@@ -66,7 +66,7 @@ public class AnonymousClass_Test extends BaseTransformationTest {
       initTestNodes();
       runWithinCommand(() -> {
         // Check statement was moved to node annotation
-        // check '''getAnnotatedNode(string):node<>''' error messages
+        // check '''getAnnotatedNode("method")''' error messages
       });
     }
     public void test_NodeVariableInitializerIsRedundantWarningCheck6923385624927142051() throws Exception {

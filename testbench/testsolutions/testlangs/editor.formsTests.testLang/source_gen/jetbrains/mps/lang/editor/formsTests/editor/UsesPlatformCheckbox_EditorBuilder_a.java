@@ -65,6 +65,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     EditorCell_Image editorCell = fromImageCellProvider0();
     editorCell.setCellId("Image_7xa7wl_a0a");
     editorCell.setDescent(-1);
+    editorCell.setAlignWithText(true);
     return editorCell;
   }
   private EditorCell_Image fromImageCellProvider0() {
@@ -75,6 +76,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     EditorCell_Image editorCell = fromImageCellProvider1();
     editorCell.setCellId("Image_7xa7wl_a0a_0");
     editorCell.setDescent(-1);
+    editorCell.setAlignWithText(true);
     return editorCell;
   }
   private EditorCell_Image fromImageCellProvider1() {

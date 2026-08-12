@@ -14,7 +14,6 @@ public class CommonModuleActions_ActionGroup extends GeneratedActionGroup {
   public static final String LABEL_ID_check = ID + "check";
   public static final String LABEL_ID_analyze = ID + "analyze";
   public static final String LABEL_ID_refactoring = ID + "refactoring";
-  public static final String LABEL_ID_favorites = ID + "favorites";
   public static final String LABEL_ID_delete = ID + "delete";
   public static final String LABEL_ID_scripts = ID + "scripts";
   public static final String LABEL_ID_compileJava = ID + "compileJava";
@@ -37,8 +36,6 @@ public class CommonModuleActions_ActionGroup extends GeneratedActionGroup {
     addNamedAnchor(LABEL_ID_analyze);
     CommonModuleActions_ActionGroup.this.addSeparator();
     addNamedAnchor(LABEL_ID_refactoring);
-    CommonModuleActions_ActionGroup.this.addSeparator();
-    addNamedAnchor(LABEL_ID_favorites);
     CommonModuleActions_ActionGroup.this.addSeparator();
     CommonModuleActions_ActionGroup.this.addAction("jetbrains.mps.ide.actions.DeleteModules_Action");
     addNamedAnchor(LABEL_ID_delete);

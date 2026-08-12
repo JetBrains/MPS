@@ -1,7 +1,7 @@
-From d97e8d23f15a04fe0048e7b49908457c8bf10600 Mon Sep 17 00:00:00 2001
+From ed8778ebda1cb06bd964609f37dbc9e5e6f25e4d Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Wed, 8 Jul 2026 13:34:03 +0200
-Subject: [PATCH 4/8] MPS-39773 Package jps-build-test.jar
+Subject: [PATCH 04/11] MPS-39773 Package jps-build-test.jar
 
 Restore the functionality of packaging jps-build-test.jar artifact that is used
 in MPS JPS integration tests.
@@ -60,5 +60,5 @@ index 1b7ab72278d6a..9f00d34505a35 100644
              }
          }
 -- 
-2.53.0
+2.55.0
 

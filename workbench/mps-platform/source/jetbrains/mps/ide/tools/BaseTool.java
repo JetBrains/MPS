@@ -218,6 +218,16 @@ public abstract class BaseTool {
     });
   }
 
+  /**
+   * Marks this tool registered and installs shortcuts immediately, then ensures the platform tool window and
+   * initial availability once the tool-window set is ready.
+   * <p>
+   * On project restore at startup, {@code runWhenSmart} can run before the platform finishes creating EP tool
+   * windows and the default tool-window pane. Calling {@link ToolWindowManager#registerToolWindow} in that window
+   * throws {@code IllegalStateException}. When the window is not present yet we therefore complete registration via
+   * {@link ToolWindowManager#invokeLater(Runnable)}, which runs after {@code ToolWindowSetInitializer} (pane + EP
+   * registration). If the window already exists, completion is synchronous for late callers such as Usages.
+   */
   public final void register() {
     if (myProject.isDisposed() || myIsDisposed) {
       return;
@@ -226,17 +236,36 @@ public abstract class BaseTool {
       return;
     }
     ThreadUtils.assertEDT();
-    myIsRegistered = true;
 
+    // Resolve TWM before committing registration state: a null manager must leave the tool unregistered so a
+    // later register() can still succeed once the service is available.
+    ToolWindowManager toolWindowManager = ToolWindowManager.getInstance(myProject);
+    if (toolWindowManager == null) {
+      return;
+    }
+
+    myIsRegistered = true;
     installShortcuts();
 
     // The tool window itself is owned by the platform (declared via the com.intellij.toolWindow EP); we drive
     // only its initial availability. setAvailable(true) lazily triggers MpsToolWindowFactory -> attachTo(), which
     // builds the tool's UI; on-demand tools stay hidden until openTool()/setAvailable(true) is invoked elsewhere.
-    // The two helpers below cover the non-EP and post-reload edge cases; see their Javadoc.
-    ensureToolWindowRegistered();
-    reattachContentIfReloaded();
-    setAvailable(isInitiallyAvailable());
+    // The helpers below cover the non-EP and post-reload edge cases; see their Javadoc. Must not run until the
+    // default tool-window pane exists (see method Javadoc).
+    Runnable completeRegistration = () -> {
+      if (myProject.isDisposed() || myIsDisposed || !isRegistered()) {
+        return;
+      }
+      ensureToolWindowRegistered();
+      reattachContentIfReloaded();
+      setAvailable(isInitiallyAvailable());
+    };
+
+    if (getToolWindow() != null) {
+      completeRegistration.run();
+    } else {
+      toolWindowManager.invokeLater(completeRegistration);
+    }
   }
 
   /**
@@ -268,6 +297,8 @@ public abstract class BaseTool {
 
   /**
    * Ensures the platform tool window backing this tool exists before {@link #setAvailable(boolean)} drives it.
+   * Must only run after the tool-window set is initialized (default pane ready); {@link #register()} gates that via
+   * {@link ToolWindowManager#invokeLater(Runnable)} when needed.
    * <p>
    * Bundled MPS tools declare the window through the {@code com.intellij.toolWindow} extension point, so it is
    * already present here and this is a no-op. Third-party / standalone plugins hand-write their {@code plugin.xml}

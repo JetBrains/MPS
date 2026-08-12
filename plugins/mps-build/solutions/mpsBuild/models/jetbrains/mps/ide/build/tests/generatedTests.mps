@@ -18,7 +18,12 @@
         <child id="4560297596904469360" name="modules" index="22LTRK" />
         <child id="6593674873639474544" name="options" index="24cAkG" />
       </concept>
-      <concept id="6593674873639474400" name="jetbrains.mps.build.mps.tests.structure.BuildMps_TestModules_Options" flags="ng" index="24cAiW" />
+      <concept id="6593674873639474400" name="jetbrains.mps.build.mps.tests.structure.BuildMps_TestModules_Options" flags="ng" index="24cAiW">
+        <child id="6593674873635848987" name="requiredPlugins" index="24YFd7" />
+      </concept>
+      <concept id="6593674873635848984" name="jetbrains.mps.build.mps.tests.structure.RequiredPlugin" flags="ng" index="24YFd4">
+        <reference id="6593674873635848985" name="plugin" index="24YFd5" />
+      </concept>
       <concept id="4005526075820600484" name="jetbrains.mps.build.mps.tests.structure.BuildModuleTestsPlugin" flags="ng" index="1gjT0q" />
     </language>
     <language id="798100da-4f0a-421a-b991-71f8c50ce5d2" name="jetbrains.mps.build">
@@ -1130,7 +1135,11 @@
       <node concept="22LTRF" id="7CPkROrbWlL" role="22LTRK">
         <ref role="22LTRG" node="7CPkROrbWlQ" resolve="mpsTestRefactoring-tests" />
       </node>
-      <node concept="24cAiW" id="7CPkROrbWma" role="24cAkG" />
+      <node concept="24cAiW" id="7CPkROrbWma" role="24cAkG">
+        <node concept="24YFd4" id="4xgF4dWvZ92" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5ziJCXbfbGU" resolve="intellij.structureView.plugin" />
+        </node>
+      </node>
     </node>
     <node concept="55IIr" id="7CPkROrbWmb" role="auvoZ">
       <node concept="2Ry0Ak" id="7CPkROrbWmc" role="iGT6I">

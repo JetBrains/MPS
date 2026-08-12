@@ -53,7 +53,11 @@ import org.junit.runners.Suite.SuiteClasses;
     jetbrains.mps.ide.ThreadUtilsTest.class,
     jetbrains.mps.java.stub.GenericArrayParametersTest.class,
     jetbrains.mps.java.stub.ParameterizedInnerClassTest.class,
-    jetbrains.mps.ide.projectPane.logicalview.VirtualFolderHelperTest.class
+    jetbrains.mps.ide.projectPane.logicalview.VirtualFolderHelperTest.class,
+    jetbrains.mps.ide.findusages.view.ViewOptionsTest.class,
+    jetbrains.mps.ide.findusages.view.treeholder.treeview.path.PathProviderVirtualPackageSegmentsTest.class
+    // The node-level counterpart, jetbrains.mps.ide.findusages.view.PathProviderVirtualPackageTest,
+    // needs a live ConceptRegistry and therefore lives in PlatformTestSuite. See both classes' javadoc.
 })
 public class NoPlatformTestSuite {
 }

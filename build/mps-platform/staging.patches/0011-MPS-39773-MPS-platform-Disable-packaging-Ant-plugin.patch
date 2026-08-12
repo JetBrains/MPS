@@ -1,0 +1,36 @@
+From a6651ac3c4d153b567cc86a26578b756928507d4 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Fri, 31 Jul 2026 11:00:52 +0200
+Subject: [PATCH 11/11] MPS-39773 MPS platform: Disable packaging Ant plugin
+
+Ant plugin is not essential for MPS, and its functionality is broken
+by dependencies on Java actions not available in MPS.
+---
+ .../src/org/jetbrains/intellij/build/mps/MPSProperties.kt     | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+index 5a24f34ebb6e5..3deaa15297af0 100644
+--- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
++++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+@@ -85,7 +85,7 @@ class MPSProperties(val buildDir: Path? = null) : JetBrainsProductProperties() {
+             "intellij.vcs.svn",
+             "intellij.vcs.github",
+             "intellij.vcs.git.commit.modal",
+-            "intellij.ant",
++            //"intellij.ant",
+             "intellij.sh.plugin",
+             "intellij.markdown",
+             "intellij.mermaid",
+@@ -120,7 +120,7 @@ class MPSProperties(val buildDir: Path? = null) : JetBrainsProductProperties() {
+             layout.withProjectLibrary("JUnit4", LibraryPackMode.STANDALONE_MERGED)
+             layout.withProjectLibrary("http-client", LibraryPackMode.MERGED)
+             layout.withModuleLibrary("hamcrest", "intellij.libraries.hamcrest", "hamcrest.jar")
+-            layout.withoutProjectLibrary("Ant")
++            //layout.withoutProjectLibrary("Ant")
+             layout.withoutProjectLibrary("Gradle")
+             layout.withProjectLibrary("maven-resolver-provider", LibraryPackMode.STANDALONE_MERGED)
+         }
+-- 
+2.55.0
+

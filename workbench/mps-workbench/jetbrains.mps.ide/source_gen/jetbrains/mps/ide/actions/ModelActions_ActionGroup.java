@@ -16,7 +16,6 @@ public class ModelActions_ActionGroup extends GeneratedActionGroup {
   public static final String LABEL_ID_check = ID + "check";
   public static final String LABEL_ID_analyze = ID + "analyze";
   public static final String LABEL_ID_refactoring = ID + "refactoring";
-  public static final String LABEL_ID_favorites = ID + "favorites";
   public static final String LABEL_ID_scripts = ID + "scripts";
   public static final String LABEL_ID_mpsvcs = ID + "mpsvcs";
   public static final String LABEL_ID_idealocalhistory = ID + "idealocalhistory";
@@ -43,8 +42,6 @@ public class ModelActions_ActionGroup extends GeneratedActionGroup {
     addNamedAnchor(LABEL_ID_analyze);
     ModelActions_ActionGroup.this.addSeparator();
     addNamedAnchor(LABEL_ID_refactoring);
-    ModelActions_ActionGroup.this.addSeparator();
-    addNamedAnchor(LABEL_ID_favorites);
     ModelActions_ActionGroup.this.addSeparator();
     ModelActions_ActionGroup.this.addAction("jetbrains.mps.ide.actions.CloneModel_Action");
     ModelActions_ActionGroup.this.addParameterizedAction(new DeleteModels_Action(false), false);

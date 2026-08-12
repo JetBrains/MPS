@@ -22,12 +22,15 @@ import jetbrains.mps.ide.findusages.view.treeholder.tree.nodedatatypes.DeployedL
 import jetbrains.mps.ide.findusages.view.treeholder.tree.nodedatatypes.ModelNodeData;
 import jetbrains.mps.ide.findusages.view.treeholder.tree.nodedatatypes.ModuleNodeData;
 import jetbrains.mps.ide.findusages.view.treeholder.tree.nodedatatypes.NodeNodeData;
+import jetbrains.mps.ide.findusages.view.treeholder.tree.nodedatatypes.VirtualPackageNodeData;
 import jetbrains.mps.logging.Logger;
+import jetbrains.mps.smodel.SNodeUtil;
 import jetbrains.mps.util.Pair;
 import org.jetbrains.mps.openapi.language.SLanguage;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import org.jetbrains.mps.openapi.model.SNode;
+import org.jetbrains.mps.openapi.model.SNodeAccessUtil;
 import org.jetbrains.mps.openapi.module.SModule;
 import org.jetbrains.mps.openapi.module.SModuleReference;
 
@@ -41,6 +44,7 @@ public class PathProvider {
   private final PathItem.Factory<SModuleReference> myModuleElementFactory;
   private final PathItem.Factory<SLanguage> myLanguageElementFactory;
   private final PathItem.Factory<Pair<CategoryKind, String>> myCategoryElementFactory;
+  private final PathItem.Factory<Pair<String, String>> myVirtualPackageElementFactory;
 
   public PathProvider(final boolean resultsSection) {
     myNodeElementFactory = c -> new NodeNodeData(c.getRole(), c.getIdObject(), c.getPresentationObject(), c.isTail(), resultsSection);
@@ -51,6 +55,8 @@ public class PathProvider {
       Pair<CategoryKind, String> category = creator.getIdObject();
       return new CategoryNodeData(creator.getRole(), category.o1, category.o2, resultsSection);
     };
+    myVirtualPackageElementFactory = c -> new VirtualPackageNodeData(
+        c.getRole(), c.getIdObject().o1, c.getIdObject().o2, resultsSection);
   }
 
   public List<PathItem<?>> getPathForSearchResult(SearchResult<?> result) {
@@ -77,6 +83,11 @@ public class PathProvider {
       SNode rootNode = node.getContainingRoot();
       if (node != rootNode || showingExternalObjects) {
         res.add(new PathItem<>(PathItemRole.ROLE_ROOT, rootNode, null, false, myNodeElementFactory));
+      }
+
+      String virtualPackage = SNodeAccessUtil.getProperty(rootNode, SNodeUtil.property_BaseConcept_virtualPackage);
+      for (Pair<String, String> segment : expandVirtualPackage(virtualPackage)) {
+        res.add(new PathItem<>(PathItemRole.ROLE_VIRTUAL_PACKAGE, segment, null, false, myVirtualPackageElementFactory));
       }
 
       o = node.getModel();
@@ -125,6 +136,40 @@ public class PathProvider {
     Collections.reverse(res);
 
     return res;
+  }
+
+  /**
+   * Expands a node's virtual package into one entry per dot-separated segment, so that usage results nest
+   * the way the project pane nests virtual folders (see {@code ModelTreeBuilder}) instead of showing a
+   * single node captioned with the whole dotted name.
+   * <p/>
+   * {@code o1} is the cumulative qualified name, used as node identity so that sibling branches ending in
+   * the same segment (e.g. {@code p.common} and {@code q.common}) don't collapse into one tree node;
+   * {@code o2} is the bare segment, used as caption. Blank segments are skipped, hence {@code "a..b"},
+   * {@code ".a"} and {@code "a."} are tolerated.
+   * <p/>
+   * The result is ordered <em>deepest segment first</em>, ready to append to the tail-first path list that
+   * {@link #getPathForSearchResult} reverses at the end: after the reverse, the outermost segment sits
+   * closest to the model and the root node sits under the innermost segment.
+   */
+  /*package*/ static List<Pair<String, String>> expandVirtualPackage(String virtualPackage) {
+    if (virtualPackage == null || virtualPackage.trim().isEmpty()) {
+      return Collections.emptyList();
+    }
+    List<Pair<String, String>> segments = new ArrayList<>();
+    StringBuilder qualified = new StringBuilder();
+    for (String segment : virtualPackage.split("\\.")) {
+      if (segment.trim().isEmpty()) {
+        continue;
+      }
+      if (qualified.length() > 0) {
+        qualified.append('.');
+      }
+      qualified.append(segment);
+      segments.add(new Pair<>(qualified.toString(), segment));
+    }
+    Collections.reverse(segments);
+    return segments;
   }
 
   private void appendNodePathThroughNamedConcepts(List<PathItem<?>> path, SNode node) {

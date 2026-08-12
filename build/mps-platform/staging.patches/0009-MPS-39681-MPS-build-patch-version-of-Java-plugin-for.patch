@@ -1,0 +1,70 @@
+From ce3ec00c3cbc740706f60d16c3d18ac6f4ad7b52 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Thu, 30 Jul 2026 17:18:14 +0200
+Subject: [PATCH 09/11] MPS-39681 MPS build: patch version of Java plugin for
+ MPS
+
+The version of Java plugin shipped with MPS is not meant to be used
+for Java development. Set the version to a value that prevents
+updating the shipped plugin.
+---
+ .../jetbrains/intellij/build/mps/MPSProperties.kt  | 14 +++++++++++++-
+ .../jetbrains/intellij/build/impl/PluginLayout.kt  |  4 ++++
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+index 477416fda91ab..715ad6e65aed9 100644
+--- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
++++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+@@ -16,8 +16,10 @@ import org.jetbrains.intellij.build.MacDistributionCustomizer
+ import org.jetbrains.intellij.build.NativeBinaryDownloader
+ import org.jetbrains.intellij.build.OsFamily
+ import org.jetbrains.intellij.build.WindowsDistributionCustomizer
++import org.jetbrains.intellij.build.impl.BuildUtils.checkedReplace
+ import org.jetbrains.intellij.build.impl.LibraryPackMode
+ import org.jetbrains.intellij.build.impl.PlatformLayout
++import org.jetbrains.intellij.build.impl.PluginLayout
+ import org.jetbrains.intellij.build.productLayout.CommunityModuleSets
+ import org.jetbrains.intellij.build.productLayout.ProductModulesContentSpec
+ import org.jetbrains.intellij.build.productLayout.productModules
+@@ -98,7 +100,7 @@ class MPSProperties : JetBrainsProductProperties() {
+         productLayout.buildAllCompatiblePlugins = false
+         productLayout.compatiblePluginsToIgnore = persistentListOf("intellij.java.plugin")
+ 
+-        val pluginLayouts = productLayout.pluginLayouts + JavaPluginLayout.javaPlugin()
++        val pluginLayouts = productLayout.pluginLayouts + JavaPluginLayout.javaPlugin(patchPluginXml())
+         productLayout.pluginLayouts = pluginLayouts.toPersistentList()
+ 
+         productLayout.addPlatformSpec { layout, _ ->
+@@ -229,3 +231,13 @@ class MPSProperties : JetBrainsProductProperties() {
+         }
+     }
+ }
++
++private fun patchPluginXml(): (PluginLayout.PluginLayoutSpec) -> Unit = { spec ->
++  spec.withPluginXmlPatcher { text, _ ->
++    checkedReplace(
++      oldText = text,
++      regex = """<version>([^.]+)\.([^.]+)\.?(.*)</version>""",
++      newText = """<version>$1.100$2.$3-MPS</version>""",
++    )
++  }
++}
+diff --git a/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/PluginLayout.kt b/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/PluginLayout.kt
+index f28e5c5ae62c9..56953d0b13136 100644
+--- a/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/PluginLayout.kt
++++ b/community/platform/build-scripts/src/org/jetbrains/intellij/build/impl/PluginLayout.kt
+@@ -398,6 +398,10 @@ class PluginLayout(val mainModule: String, @Internal @JvmField val auto: Boolean
+       layout.rawPluginXmlPatcher = pluginXmlPatcher
+     }
+ 
++    fun withPluginXmlPatcher(pluginXmlPatcher: (String, BuildContext) -> String) {
++      layout.pluginXmlPatcher = pluginXmlPatcher
++    }
++
+     fun withDeprecatedPostProcessor(layoutPatcher: LayoutPatcher, pluginXmlPatcher: DeprecatedPostScrambleProcessor) {
+       // if scrambling is not performed, we need to execute layout patcher (no idea why as we cannot investigate and fix Gateway error)
+       layout.withPatch { moduleOutputPatcher, platformLayout, context ->
+-- 
+2.55.0
+

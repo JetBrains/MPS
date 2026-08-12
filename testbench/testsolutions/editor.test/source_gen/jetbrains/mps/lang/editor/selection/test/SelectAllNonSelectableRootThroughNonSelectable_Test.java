@@ -36,6 +36,7 @@ public class SelectAllNonSelectableRootThroughNonSelectable_Test extends BaseTra
     public void testMethodImpl() throws Exception {
       initEditorComponent("3756708898179594225", "3756708898179594401");
       invokeAction("jetbrains.mps.ide.editor.actions.SelectAll_Action");
+      invokeAction("jetbrains.mps.ide.editor.actions.SelectDown_Action");
       getEditorComponent().getEditorContext().getRepository().getModelAccess().runReadAction(() -> Assert.assertEquals(getAnnotatedNode("intermediateCell"), getEditorComponent().getSelectedNode()));
       invokeAction("jetbrains.mps.ide.editor.actions.SelectDown_Action");
     }

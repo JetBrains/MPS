@@ -194,6 +194,10 @@ public class DefaultEditorMessage implements EditorMessage {
   }
 
   protected void paintWithColor(Graphics g, EditorCell cell, Color color) {
+    // Guard here not to break existing clients. Treat null as transparent.
+    if (color == null) {
+      return;
+    }
     int x = cell.getX() + cell.getLeftInset();
     int y = cell.getY();
     int width = cell.getWidth() - cell.getLeftInset() - cell.getRightInset() - 1;

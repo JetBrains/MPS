@@ -619,6 +619,7 @@
       <plugin id="jetbrains.mps.ide.java" path="${artifacts.mps}/plugins/mps-java" />
       <plugin id="jetbrains.mps.junit5" path="${artifacts.mps}/plugins/mps-junit5" />
       <plugin id="jetbrains.mps.testing" path="${artifacts.mps}/plugins/mps-testing" />
+      <plugin id="intellij.structureView.plugin" path="${artifacts.mps}/plugins/platform-structureView-plugin" />
       <project path="${basedir}" />
       <testmodules>        
         <path refid="mps.tests.path" />

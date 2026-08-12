@@ -2536,6 +2536,7 @@ public class StructureAspectDescriptor extends BaseStructureAspectDescriptor {
     b.stub(0x707876b4d5d25abbL);
     b.property("imageFile", 0x1095e2f7e63L).type(PrimitiveTypeId.STRING).origin("1139746504291").done();
     b.property("descent", 0x10964d9200bL).type(PrimitiveTypeId.INTEGER).origin("1139858284555").done();
+    b.property("alignWithText", 0x25074ea45613dc5bL).type(PrimitiveTypeId.BOOLEAN).origin("2668187771966053467").done();
     b.aggregate("imagePathProvider", 0x11204b37791L).target(0x18bc659203a64e29L, 0xa83a7ff23bde13baL, 0x511249404d30c46aL).optional(true).ordered(true).multiple(false).origin("1176899909521").done();
     b.kind(ConceptKind.IMPLEMENTATION_WITH_STUB, StaticScope.GLOBAL);
     b.alias("image");

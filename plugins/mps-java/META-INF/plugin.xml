@@ -21,6 +21,10 @@
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <depends>com.intellij.modules.mps</depends>
 
+  <dependencies>
+    <module name="intellij.platform.structureView"/>
+  </dependencies>
+
   <xi:include href="JavaPlatform.xml"/>
 
   <extensions defaultExtensionNs="com.intellij">

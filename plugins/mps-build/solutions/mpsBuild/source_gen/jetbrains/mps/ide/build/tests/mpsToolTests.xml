@@ -943,6 +943,7 @@
       <plugin id="jetbrains.mps.ide.modelchecker" path="${artifacts.mps}/plugins/mps-modelchecker" />
       <plugin id="jetbrains.mps.rcp" path="${artifacts.mps}/plugins/mps-rcp" />
       <plugin id="jetbrains.mps.testing" path="${artifacts.mps}/plugins/mps-testing" />
+      <plugin id="intellij.structureView.plugin" path="${artifacts.mps}/plugins/platform-structureView-plugin" />
       <project path="${basedir}" />
       <testmodules>        
         <path refid="mps.tests.path" />
