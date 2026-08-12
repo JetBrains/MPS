@@ -8,7 +8,7 @@ import javax.swing.Icon;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.Map;
-import com.intellij.openapi.application.impl.LaterInvocator;
+import com.intellij.openapi.actionSystem.PlatformCoreDataKeys;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.featureStatistics.FeatureUsageTracker;
@@ -31,7 +31,7 @@ public class GoToAction_Action extends BaseAction {
   }
   @Override
   public boolean isApplicable(AnActionEvent event, final Map<String, Object> _params) {
-    if (LaterInvocator.isInModalContext()) {
+    if (Boolean.TRUE.equals(event.getData(PlatformCoreDataKeys.IS_MODAL_CONTEXT))) {
       return false;
     }
     ActionUtil.updateAction(GoToAction_Action.this.action, event);
