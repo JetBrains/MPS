@@ -128,6 +128,9 @@
     <action id="GotoFile" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true">
       <keyboard-shortcut keymap="Mac OS X 10.5+" remove="true" first-keystroke="meta shift O"/>
     </action>
+    <action id="GotoClass" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true">
+      <keyboard-shortcut keymap="Mac OS X 10.5+" remove="true" first-keystroke="meta O"/>
+    </action>
 
     <group id="GoToCodeGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
 
