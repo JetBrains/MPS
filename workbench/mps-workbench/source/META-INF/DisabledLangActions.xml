@@ -122,6 +122,14 @@
     <action id="GotoFile" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true">
       <keyboard-shortcut keymap="Mac OS X 10.5+" remove="true" first-keystroke="meta shift O"/>
     </action>
+    <!-- MPS-40019: GotoClass used to disable itself in MPS, as GotoClassAction is only enabled while some
+         gotoClassContributor is registered and MPS had none. Since 2026.2 the platform bundles
+         intellij.platform.lsp.impl, which registers one unconditionally, so GotoClass became enabled and started
+         to shadow the MPS GoToRootNode action bound to the very same keystrokes. MPS registers no LSP server, so
+         the Classes tab stays empty here anyway. -->
+    <action id="GotoClass" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true">
+      <keyboard-shortcut keymap="Mac OS X 10.5+" remove="true" first-keystroke="meta O"/>
+    </action>
 
     <group id="GoToCodeGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
 
