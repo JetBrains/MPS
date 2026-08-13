@@ -22,9 +22,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.ui.ScrollPaneFactory;
 import java.awt.Dimension;
 import org.jetbrains.mps.openapi.model.SModel;
-import jetbrains.mps.smodel.ModelImports;
-import org.jetbrains.mps.openapi.module.SModule;
-import jetbrains.mps.smodel.ModelDependencyUpdate;
+import java.util.Arrays;
 import com.intellij.ui.SimpleColoredComponent;
 import javax.swing.ListCellRenderer;
 import java.awt.Font;
@@ -131,31 +129,19 @@ public class AddRequiredImportsDialog extends DialogWrapper {
 
   public Runnable asUpdateCommand(@NotNull final SModel targetModel) {
     if (mySelectedLanguages == null || myRequiredImports == null) {
-      // !dialog.isOk(), perhaps
       throw new IllegalStateException();
     }
     if (mySelectedLanguages.length == 0 && myRequiredImports.length == 0) {
-      return () -> {
+      return new Runnable() {
+        @Override
+        public void run() {
+        }
       };
     }
-
     return new Runnable() {
       @Override
       public void run() {
-        ModelImports mi = new ModelImports(targetModel);
-        for (SModelReference imported : myRequiredImports) {
-          mi.addModelImport(imported);
-        }
-        for (SLanguage language : myRequiredLanguages) {
-          mi.addUsedLanguage(language);
-        }
-        //  model's module properties
-        SModule targetModule = targetModel.getModule();
-        if (targetModule == null || targetModule.getRepository() == null) {
-          return;
-        }
-        // perhaps, myProject.getRepository instead of module's repo?
-        new ModelDependencyUpdate(targetModel).updateModuleDependencies(targetModule.getRepository());
+        CopyPasteUtil.applyRequiredImports(targetModel, Arrays.asList(myRequiredLanguages), Arrays.asList(myRequiredImports));
       }
     };
   }
