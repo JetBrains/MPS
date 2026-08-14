@@ -38,8 +38,9 @@ import jetbrains.mps.editor.runtime.impl.cellActions.CellAction_DeleteSmart;
 import jetbrains.mps.openapi.editor.cells.DefaultSubstituteInfo;
 import jetbrains.mps.nodeEditor.cellMenu.SEmptyContainmentSubstituteInfo;
 import jetbrains.mps.nodeEditor.cellMenu.SChildSubstituteInfo;
-import java.awt.Color;
 import jetbrains.mps.openapi.editor.menus.transformation.SNodeLocation;
+import jetbrains.mps.util.Pair;
+import java.awt.Color;
 import jetbrains.mps.nodeEditor.cells.EditorCell_Constant;
 import org.jetbrains.mps.openapi.language.SProperty;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
@@ -180,7 +181,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
         editorCell.setSRole(LINKS.start$hBjS);
       }
       Style style = new StyleImpl();
-      style.set(StyleAttributes.NULL_TEXT_COLOR, getStyleRegistry().getSimpleColor(new Color(0)));
+      style.set(StyleAttributes.NULL_TEXT_COLOR, (!(getStyleRegistry().isDarkTheme()) ? _StyleParameter_QueryFunction_yq81ip_a0b0().o1 : _StyleParameter_QueryFunction_yq81ip_a0b0().o2));
       editorCell.getStyle().putAll(style);
     }
     @Override
@@ -199,6 +200,9 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     protected String getNoTargetText() {
       return "-∞";
+    }
+    private Pair<Color, Color> _StyleParameter_QueryFunction_yq81ip_a0b0() {
+      return new Pair<Color, Color>(new Color(0x000000), new Color(0xbcbec4));
     }
   }
   private EditorCell createConstant_0() {
@@ -247,7 +251,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
         editorCell.setSRole(LINKS.end$hGue);
       }
       Style style = new StyleImpl();
-      style.set(StyleAttributes.NULL_TEXT_COLOR, getStyleRegistry().getSimpleColor(new Color(0)));
+      style.set(StyleAttributes.NULL_TEXT_COLOR, (!(getStyleRegistry().isDarkTheme()) ? _StyleParameter_QueryFunction_yq81ip_a0d0().o1 : _StyleParameter_QueryFunction_yq81ip_a0d0().o2));
       style.set(StyleAttributes.PUNCTUATION_RIGHT, false);
       editorCell.getStyle().putAll(style);
     }
@@ -267,6 +271,9 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
     protected String getNoTargetText() {
       return "+∞";
+    }
+    private Pair<Color, Color> _StyleParameter_QueryFunction_yq81ip_a0d0() {
+      return new Pair<Color, Color>(new Color(0x000000), new Color(0xbcbec4));
     }
   }
   private EditorCell createReadOnlyModelAccessor_1() {

@@ -28,6 +28,8 @@ import jetbrains.mps.openapi.editor.menus.transformation.SNodeLocation;
 import jetbrains.mps.openapi.editor.cells.DefaultSubstituteInfo;
 import jetbrains.mps.nodeEditor.cellMenu.SEmptyContainmentSubstituteInfo;
 import jetbrains.mps.nodeEditor.cellMenu.SChildSubstituteInfo;
+import jetbrains.mps.util.Pair;
+import java.awt.Color;
 import jetbrains.mps.lang.editor.cellProviders.RefNodeListHandlerElementKeyMap;
 import jetbrains.mps.nodeEditor.cells.EditorCell_Constant;
 import org.jetbrains.mps.openapi.language.SProperty;
@@ -98,6 +100,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.DRAW_BRACKETS, true);
     style.set(StyleAttributes.DEFAULT_BASE_LINE, DefaultBaseLine.CENTER);
     style.set(StyleAttributes.TABLE_COMPONENT, TableComponent.VERTICAL_COLLECTION);
+    style.set(StyleAttributes.BRACKETS_COLOR, (!(getStyleRegistry().isDarkTheme()) ? _StyleParameter_QueryFunction_lhhqxl_a3b0a().o1 : _StyleParameter_QueryFunction_lhhqxl_a3b0a().o2));
     editorCell.getStyle().putAll(style);
     editorCell.setSRole(handler.getElementSRole());
     return editorCell;
@@ -169,6 +172,9 @@ import org.jetbrains.mps.openapi.language.SConcept;
       }
     }
   }
+  private Pair<Color, Color> _StyleParameter_QueryFunction_lhhqxl_a3b0a() {
+    return new Pair<Color, Color>(new Color(0x000000), new Color(0xbcbec4));
+  }
   private EditorCell createEmpty_1() {
     EditorCell_Empty editorCell = new EditorCell_Empty(getEditorContext(), myNode);
     editorCell.setAction(CellActionType.DELETE, new CellAction_DeleteNode(editorCell.getSNode(), CellAction_DeleteNode.DeleteDirection.FORWARD));
@@ -205,6 +211,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
     style.set(StyleAttributes.DRAW_BRACKETS, true);
     style.set(StyleAttributes.DEFAULT_BASE_LINE, DefaultBaseLine.CENTER);
     style.set(StyleAttributes.TABLE_COMPONENT, TableComponent.HORIZONTAL_COLLECTION);
+    style.set(StyleAttributes.BRACKETS_COLOR, (!(getStyleRegistry().isDarkTheme()) ? _StyleParameter_QueryFunction_lhhqxl_a3b0a_0().o1 : _StyleParameter_QueryFunction_lhhqxl_a3b0a_0().o2));
     editorCell.getStyle().putAll(style);
     editorCell.setSRole(handler.getElementSRole());
     return editorCell;
@@ -288,6 +295,9 @@ import org.jetbrains.mps.openapi.language.SConcept;
       editorCell.setAction(CellActionType.BACKSPACE, new CellAction_DeleteNode(prevNode, CellAction_DeleteNode.DeleteDirection.BACKWARD));
       return editorCell;
     }
+  }
+  private Pair<Color, Color> _StyleParameter_QueryFunction_lhhqxl_a3b0a_0() {
+    return new Pair<Color, Color>(new Color(0x000000), new Color(0xbcbec4));
   }
   private EditorCell createEmpty_3() {
     EditorCell_Empty editorCell = new EditorCell_Empty(getEditorContext(), myNode);

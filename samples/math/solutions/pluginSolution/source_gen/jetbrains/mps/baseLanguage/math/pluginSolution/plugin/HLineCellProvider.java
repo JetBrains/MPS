@@ -9,7 +9,7 @@ import jetbrains.mps.openapi.editor.EditorContext;
 import jetbrains.mps.nodeEditor.cells.EditorCell_Basic;
 import java.awt.Graphics;
 import jetbrains.mps.nodeEditor.cells.ParentSettings;
-import java.awt.Color;
+import jetbrains.mps.editor.runtime.style.StyleAttributes;
 import jetbrains.mps.openapi.editor.cells.CellTraversalUtil;
 
 public class HLineCellProvider extends AbstractCellProvider {
@@ -22,11 +22,7 @@ public class HLineCellProvider extends AbstractCellProvider {
     EditorCell_Basic result = new EditorCell_Basic(context, getSNode()) {
       @Override
       protected void paintContent(Graphics g, ParentSettings parentSettings) {
-        if (this.isSelectionPaintedOnAncestor(parentSettings).isSelectionPainted()) {
-          g.setColor(Color.WHITE);
-        } else {
-          g.setColor(Color.BLACK);
-        }
+        g.setColor(this.getStyle().get(StyleAttributes.TEXT_COLOR));
         int x = this.getParent().getX();
         int width = this.getParent().getWidth();
         this.setWidth(width);

@@ -7,7 +7,7 @@ import jetbrains.mps.openapi.editor.EditorContext;
 import org.jetbrains.mps.openapi.model.SNode;
 import java.awt.Graphics;
 import jetbrains.mps.nodeEditor.cells.ParentSettings;
-import java.awt.Color;
+import jetbrains.mps.editor.runtime.style.StyleAttributes;
 import jetbrains.mps.openapi.editor.cells.EditorCell_Collection;
 
 public class EditorCell_VerticalLine extends EditorCell_Basic {
@@ -18,7 +18,7 @@ public class EditorCell_VerticalLine extends EditorCell_Basic {
   @Override
   protected void paintContent(Graphics g, ParentSettings parentSettings) {
     if (this.isSelected()) {
-      g.setColor(Color.BLACK);
+      g.setColor(this.getStyle().get(StyleAttributes.TEXT_COLOR));
       EditorCell_Collection parent = this.getParent();
       int x = parent.getX();
       int y = parent.getY();
