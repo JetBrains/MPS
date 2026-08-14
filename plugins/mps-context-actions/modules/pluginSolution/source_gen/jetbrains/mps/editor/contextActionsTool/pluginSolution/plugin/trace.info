@@ -117,195 +117,195 @@
   </root>
   <root nodeRef="r:e1663f0e-a433-4acc-be78-d50e0f2be978(jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin)/1108075632710645931">
     <file name="Folder.java">
-      <node id="2573399587957385087" at="24,0,25,0" concept="13" trace="TITLE_BACKGROUND_COLOR" />
-      <node id="2573399587957403569" at="25,0,26,0" concept="13" trace="TITLE_BORDER_COLOR" />
-      <node id="1108075632710645932" at="27,0,28,0" concept="13" trace="ourCollapsedStates" />
-      <node id="1108075632710645940" at="29,0,30,0" concept="5" trace="myName" />
-      <node id="1108075632710645943" at="30,0,31,0" concept="5" trace="myComponent" />
-      <node id="1108075632710645946" at="31,0,32,0" concept="5" trace="myItemContainer" />
-      <node id="1108075632710645960" at="35,49,36,23" concept="4" />
-      <node id="1108075632710645966" at="36,23,37,53" concept="4" />
-      <node id="1108075632710645985" at="37,53,38,0" concept="12" />
-      <node id="1108075632710645988" at="39,44,40,42" concept="4" />
-      <node id="1108075632710646007" at="43,52,44,41" concept="4" />
-      <node id="1108075632710646012" at="46,9,47,60" concept="4" />
-      <node id="1108075632710646027" at="48,5,49,61" concept="4" />
-      <node id="8009069486210116465" at="53,67,54,40" concept="4" />
-      <node id="8009069486210007833" at="54,40,55,54" concept="10" />
-      <node id="8009069486210121360" at="58,65,59,40" concept="4" />
-      <node id="8009069486210118196" at="59,40,60,52" concept="10" />
-      <node id="8009069486210125753" at="63,58,64,40" concept="4" />
-      <node id="8009069486210122495" at="64,40,65,43" concept="4" />
-      <node id="8009069486210019030" at="67,61,68,104" concept="9" />
-      <node id="8009069486210053578" at="68,104,69,50" concept="9" />
-      <node id="8009069486210057234" at="69,50,70,24" concept="4" />
-      <node id="8009069486210080434" at="71,96,72,41" concept="4" />
-      <node id="8009069486210088441" at="73,11,74,52" concept="4" />
-      <node id="8645458101907840318" at="77,5,78,0" concept="12" />
-      <node id="1108075632710646038" at="78,0,79,76" concept="4" />
-      <node id="1108075632710646047" at="79,76,80,56" concept="4" />
-      <node id="1108075632710646053" at="80,56,81,0" concept="12" />
-      <node id="1108075632710646054" at="81,0,82,33" concept="4" />
-      <node id="1108075632710646059" at="82,33,83,37" concept="4" />
-      <node id="1108075632710646064" at="83,37,84,0" concept="12" />
-      <node id="1108075632710646065" at="84,0,85,33" concept="4" />
-      <node id="1108075632710646073" at="88,40,89,30" concept="4" />
-      <node id="1108075632710646085" at="92,36,93,23" concept="10" />
-      <node id="1108075632710646092" at="96,27,97,18" concept="10" />
-      <node id="1108075632710646099" at="100,32,101,42" concept="10" />
-      <node id="1108075632710646111" at="104,47,105,45" concept="4" />
-      <node id="1108075632710646117" at="105,45,106,52" concept="4" />
-      <node id="1108075632710646126" at="107,20,108,75" concept="4" />
-      <node id="1108075632710646133" at="109,12,110,78" concept="4" />
-      <node id="1108075632710646142" at="114,33,115,78" concept="10" />
-      <node id="2573399587959065312" at="118,48,119,36" concept="9" />
-      <node id="2573399587959065318" at="119,36,120,84" concept="9" />
-      <node id="2573399587959065333" at="120,84,121,101" concept="4" />
-      <node id="2573399587959065343" at="121,101,122,28" concept="4" />
-      <node id="2573399587959065348" at="122,28,123,48" concept="4" />
-      <node id="2573399587959065355" at="123,48,124,26" concept="4" />
-      <node id="2573399587959071597" at="124,26,125,17" concept="10" />
-      <node id="1108075632710646118" at="128,36,129,67" concept="4" />
-      <node id="1108075632710646118" at="130,5,131,0" concept="12" />
-      <node id="1108075632710645949" at="32,0,34,0" concept="5" trace="myTitleComponent" />
-      <node id="1108075632710646131" at="109,10,111,5" concept="0" />
-      <node id="8009069486210058415" at="70,24,73,11" concept="20" />
-      <node id="1108075632710646069" at="88,0,91,0" concept="8" trace="addItem#(Ljavax/swing/JComponent;)V" />
-      <node id="1108075632710646081" at="92,0,95,0" concept="8" trace="getComponent#()Ljavax/swing/JComponent;" />
-      <node id="1108075632710646088" at="96,0,99,0" concept="8" trace="getName#()Ljava/lang/String;" />
-      <node id="1108075632710646095" at="100,0,103,0" concept="8" trace="isCollapsed#()Z" />
-      <node id="1108075632710646138" at="114,0,117,0" concept="8" trace="wasCollapsed#()Z" />
-      <node id="1108075632710646118" at="127,87,130,5" concept="7" />
-      <node id="1108075632710646001" at="42,0,46,0" concept="8" trace="mouseClicked#(Ljava/awt/event/MouseEvent;)V" />
-      <node id="8009069486210007822" at="52,0,57,0" concept="8" trace="preferredLayoutSize#(Ljava/awt/Container;)Ljava/awt/Dimension;" />
-      <node id="8009069486210118185" at="57,0,62,0" concept="8" trace="minimumLayoutSize#(Ljava/awt/Container;)Ljava/awt/Dimension;" />
-      <node id="8009069486210122484" at="62,0,67,0" concept="8" trace="layoutContainer#(Ljava/awt/Container;)V" />
-      <node id="1108075632710646124" at="106,52,111,5" concept="7" />
-      <node id="1108075632710645993" at="40,42,46,9" concept="4" />
-      <node id="1108075632710646118" at="127,0,133,0" concept="14" trace="check_hg2wcn_a1a02#(Ljavax/swing/JLabel;Ljava/lang/Boolean;)V" />
-      <node id="8009069486210097250" at="67,0,76,0" concept="8" trace="updateColumnNumber#(Ljava/awt/Container;)V" />
-      <node id="1108075632710646105" at="104,0,113,0" concept="8" trace="setCollapsed#(Z)V" />
-      <node id="1779623201569855419" at="118,0,127,0" concept="14" trace="buildTitle#(Ljava/lang/String;)Ljavax/swing/JLabel;" />
-      <node id="1108075632710645986" at="38,0,48,5" concept="7" />
-      <node id="8645458101907410077" at="50,39,76,9" concept="4" />
-      <node id="8645458101907402793" at="49,61,77,5" concept="7" />
-      <node id="1108075632710645954" at="35,0,87,0" concept="2" trace="Folder#(Ljava/lang/String;Ljetbrains/mps/editor/contextActionsTool/pluginSolution/plugin/ViewType;)V" />
-      <scope id="1108075632710646006" at="43,52,44,41" />
-      <scope id="8009069486210058417" at="71,96,72,41" />
-      <scope id="1108075632710646072" at="88,40,89,30" />
-      <scope id="1108075632710646084" at="92,36,93,23" />
-      <scope id="1108075632710646091" at="96,27,97,18" />
-      <scope id="1108075632710646098" at="100,32,101,42" />
-      <scope id="1108075632710646125" at="107,20,108,75" />
-      <scope id="1108075632710646132" at="109,12,110,78" />
-      <scope id="1108075632710646141" at="114,33,115,78" />
-      <scope id="1108075632710646118" at="128,36,129,67" />
-      <scope id="8009069486210007829" at="53,67,55,54" />
-      <scope id="8009069486210118192" at="58,65,60,52" />
-      <scope id="8009069486210122491" at="63,58,65,43" />
-      <scope id="1108075632710646069" at="88,0,91,0">
+      <node id="2573399587957385087" at="26,0,27,0" concept="13" trace="TITLE_FOREGROUND_COLOR" />
+      <node id="2573399587957403569" at="27,0,28,0" concept="13" trace="TITLE_SEPARATOR_COLOR" />
+      <node id="1108075632710645932" at="29,0,30,0" concept="13" trace="ourCollapsedStates" />
+      <node id="1108075632710645940" at="31,0,32,0" concept="5" trace="myName" />
+      <node id="1108075632710645943" at="32,0,33,0" concept="5" trace="myComponent" />
+      <node id="1108075632710645946" at="33,0,34,0" concept="5" trace="myItemContainer" />
+      <node id="1108075632710645960" at="37,49,38,23" concept="4" />
+      <node id="1108075632710645966" at="38,23,39,53" concept="4" />
+      <node id="1108075632710645985" at="39,53,40,0" concept="12" />
+      <node id="1108075632710645988" at="41,44,42,42" concept="4" />
+      <node id="1108075632710646007" at="45,52,46,41" concept="4" />
+      <node id="1108075632710646012" at="48,9,49,60" concept="4" />
+      <node id="1108075632710646027" at="50,5,51,61" concept="4" />
+      <node id="8009069486210116465" at="55,67,56,40" concept="4" />
+      <node id="8009069486210007833" at="56,40,57,54" concept="10" />
+      <node id="8009069486210121360" at="60,65,61,40" concept="4" />
+      <node id="8009069486210118196" at="61,40,62,52" concept="10" />
+      <node id="8009069486210125753" at="65,58,66,40" concept="4" />
+      <node id="8009069486210122495" at="66,40,67,43" concept="4" />
+      <node id="8009069486210019030" at="69,61,70,104" concept="9" />
+      <node id="8009069486210053578" at="70,104,71,50" concept="9" />
+      <node id="8009069486210057234" at="71,50,72,24" concept="4" />
+      <node id="8009069486210080434" at="73,96,74,41" concept="4" />
+      <node id="8009069486210088441" at="75,11,76,52" concept="4" />
+      <node id="8645458101907840318" at="79,5,80,0" concept="12" />
+      <node id="1108075632710646038" at="80,0,81,76" concept="4" />
+      <node id="1108075632710646047" at="81,76,82,56" concept="4" />
+      <node id="1108075632710646053" at="82,56,83,0" concept="12" />
+      <node id="1108075632710646054" at="83,0,84,33" concept="4" />
+      <node id="1108075632710646059" at="84,33,85,37" concept="4" />
+      <node id="1108075632710646064" at="85,37,86,0" concept="12" />
+      <node id="1108075632710646065" at="86,0,87,33" concept="4" />
+      <node id="1108075632710646073" at="90,40,91,30" concept="4" />
+      <node id="1108075632710646085" at="94,36,95,23" concept="10" />
+      <node id="1108075632710646092" at="98,27,99,18" concept="10" />
+      <node id="1108075632710646099" at="102,32,103,42" concept="10" />
+      <node id="1108075632710646111" at="106,47,107,45" concept="4" />
+      <node id="1108075632710646117" at="107,45,108,52" concept="4" />
+      <node id="1108075632710646126" at="109,20,110,75" concept="4" />
+      <node id="1108075632710646133" at="111,12,112,78" concept="4" />
+      <node id="1108075632710646142" at="116,33,117,78" concept="10" />
+      <node id="2573399587959065312" at="120,48,121,36" concept="9" />
+      <node id="5856988183237548344" at="121,36,122,87" concept="9" />
+      <node id="5856988183237573416" at="122,87,123,101" concept="4" />
+      <node id="5856988183237597165" at="123,101,124,28" concept="4" />
+      <node id="5856988183237617242" at="124,28,125,48" concept="4" />
+      <node id="5856988183237640999" at="125,48,126,47" concept="4" />
+      <node id="2573399587959071597" at="126,47,127,17" concept="10" />
+      <node id="1108075632710646118" at="130,36,131,67" concept="4" />
+      <node id="1108075632710646118" at="132,5,133,0" concept="12" />
+      <node id="1108075632710645949" at="34,0,36,0" concept="5" trace="myTitleComponent" />
+      <node id="1108075632710646131" at="111,10,113,5" concept="0" />
+      <node id="8009069486210058415" at="72,24,75,11" concept="20" />
+      <node id="1108075632710646069" at="90,0,93,0" concept="8" trace="addItem#(Ljavax/swing/JComponent;)V" />
+      <node id="1108075632710646081" at="94,0,97,0" concept="8" trace="getComponent#()Ljavax/swing/JComponent;" />
+      <node id="1108075632710646088" at="98,0,101,0" concept="8" trace="getName#()Ljava/lang/String;" />
+      <node id="1108075632710646095" at="102,0,105,0" concept="8" trace="isCollapsed#()Z" />
+      <node id="1108075632710646138" at="116,0,119,0" concept="8" trace="wasCollapsed#()Z" />
+      <node id="1108075632710646118" at="129,87,132,5" concept="7" />
+      <node id="1108075632710646001" at="44,0,48,0" concept="8" trace="mouseClicked#(Ljava/awt/event/MouseEvent;)V" />
+      <node id="8009069486210007822" at="54,0,59,0" concept="8" trace="preferredLayoutSize#(Ljava/awt/Container;)Ljava/awt/Dimension;" />
+      <node id="8009069486210118185" at="59,0,64,0" concept="8" trace="minimumLayoutSize#(Ljava/awt/Container;)Ljava/awt/Dimension;" />
+      <node id="8009069486210122484" at="64,0,69,0" concept="8" trace="layoutContainer#(Ljava/awt/Container;)V" />
+      <node id="1108075632710646124" at="108,52,113,5" concept="7" />
+      <node id="1108075632710645993" at="42,42,48,9" concept="4" />
+      <node id="1108075632710646118" at="129,0,135,0" concept="14" trace="check_hg2wcn_a1a02#(Ljavax/swing/JLabel;Ljava/lang/Boolean;)V" />
+      <node id="8009069486210097250" at="69,0,78,0" concept="8" trace="updateColumnNumber#(Ljava/awt/Container;)V" />
+      <node id="1108075632710646105" at="106,0,115,0" concept="8" trace="setCollapsed#(Z)V" />
+      <node id="1779623201569855419" at="120,0,129,0" concept="14" trace="buildTitle#(Ljava/lang/String;)Ljavax/swing/JLabel;" />
+      <node id="1108075632710645986" at="40,0,50,5" concept="7" />
+      <node id="8645458101907410077" at="52,39,78,9" concept="4" />
+      <node id="8645458101907402793" at="51,61,79,5" concept="7" />
+      <node id="1108075632710645954" at="37,0,89,0" concept="2" trace="Folder#(Ljava/lang/String;Ljetbrains/mps/editor/contextActionsTool/pluginSolution/plugin/ViewType;)V" />
+      <scope id="1108075632710646006" at="45,52,46,41" />
+      <scope id="8009069486210058417" at="73,96,74,41" />
+      <scope id="1108075632710646072" at="90,40,91,30" />
+      <scope id="1108075632710646084" at="94,36,95,23" />
+      <scope id="1108075632710646091" at="98,27,99,18" />
+      <scope id="1108075632710646098" at="102,32,103,42" />
+      <scope id="1108075632710646125" at="109,20,110,75" />
+      <scope id="1108075632710646132" at="111,12,112,78" />
+      <scope id="1108075632710646141" at="116,33,117,78" />
+      <scope id="1108075632710646118" at="130,36,131,67" />
+      <scope id="8009069486210007829" at="55,67,57,54" />
+      <scope id="8009069486210118192" at="60,65,62,52" />
+      <scope id="8009069486210122491" at="65,58,67,43" />
+      <scope id="1108075632710646069" at="90,0,93,0">
         <var name="item" id="1108075632710646078" />
       </scope>
-      <scope id="1108075632710646081" at="92,0,95,0" />
-      <scope id="1108075632710646088" at="96,0,99,0" />
-      <scope id="1108075632710646095" at="100,0,103,0" />
-      <scope id="1108075632710646138" at="114,0,117,0" />
-      <scope id="1108075632710646001" at="42,0,46,0">
+      <scope id="1108075632710646081" at="94,0,97,0" />
+      <scope id="1108075632710646088" at="98,0,101,0" />
+      <scope id="1108075632710646095" at="102,0,105,0" />
+      <scope id="1108075632710646138" at="116,0,119,0" />
+      <scope id="1108075632710646001" at="44,0,48,0">
         <var name="event" id="1108075632710646004" />
       </scope>
-      <scope id="1108075632710646118" at="127,87,131,0" />
-      <scope id="8009069486210007822" at="52,0,57,0">
+      <scope id="1108075632710646118" at="129,87,133,0" />
+      <scope id="8009069486210007822" at="54,0,59,0">
         <var name="container" id="8009069486210007826" />
       </scope>
-      <scope id="8009069486210118185" at="57,0,62,0">
+      <scope id="8009069486210118185" at="59,0,64,0">
         <var name="container" id="8009069486210118189" />
       </scope>
-      <scope id="8009069486210122484" at="62,0,67,0">
+      <scope id="8009069486210122484" at="64,0,69,0">
         <var name="container" id="8009069486210122488" />
       </scope>
-      <scope id="1108075632710646118" at="127,0,133,0">
+      <scope id="1108075632710646118" at="129,0,135,0">
         <var name="checkedDotOperand" id="1108075632710646118" />
         <var name="collapsed" id="1108075632710646123" />
       </scope>
-      <scope id="8009069486210097254" at="67,61,74,52">
+      <scope id="8009069486210097254" at="69,61,76,52">
         <var name="maxWidth" id="8009069486210053579" />
         <var name="toolComponent" id="8009069486210019031" />
       </scope>
-      <scope id="1108075632710646110" at="104,47,111,5" />
-      <scope id="2573399587959029067" at="118,48,125,17">
-        <var name="border" id="2573399587959065319" />
+      <scope id="1108075632710646110" at="106,47,113,5" />
+      <scope id="2573399587959029067" at="120,48,127,17">
+        <var name="border" id="5856988183237548343" />
         <var name="label" id="2573399587959065313" />
       </scope>
-      <scope id="1108075632710645987" at="39,44,47,60" />
-      <scope id="8009069486210097250" at="67,0,76,0">
+      <scope id="1108075632710645987" at="41,44,49,60" />
+      <scope id="8009069486210097250" at="69,0,78,0">
         <var name="container" id="8009069486210110695" />
       </scope>
-      <scope id="1108075632710646105" at="104,0,113,0">
+      <scope id="1108075632710646105" at="106,0,115,0">
         <var name="collapsed" id="1108075632710646106" />
       </scope>
-      <scope id="1779623201569855419" at="118,0,127,0">
+      <scope id="1779623201569855419" at="120,0,129,0">
         <var name="text" id="2573399587959070003" />
       </scope>
-      <scope id="8645458101907402795" at="50,39,76,9" />
-      <scope id="1108075632710645959" at="35,49,85,33" />
-      <scope id="1108075632710645954" at="35,0,87,0">
+      <scope id="8645458101907402795" at="52,39,78,9" />
+      <scope id="1108075632710645959" at="37,49,87,33" />
+      <scope id="1108075632710645954" at="37,0,89,0">
         <var name="name" id="1108075632710645955" />
         <var name="viewType" id="8645458101904742161" />
       </scope>
-      <unit id="1108075632710645999" at="41,44,46,7" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.Folder$1" />
-      <unit id="8009069486210007598" at="51,36,76,7" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.Folder$2" />
-      <unit id="1108075632710645931" at="23,0,134,0" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.Folder" />
+      <unit id="1108075632710645999" at="43,44,48,7" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.Folder$1" />
+      <unit id="8009069486210007598" at="53,36,78,7" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.Folder$2" />
+      <unit id="1108075632710645931" at="25,0,136,0" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.Folder" />
     </file>
   </root>
   <root nodeRef="r:e1663f0e-a433-4acc-be78-d50e0f2be978(jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin)/1108075632710704251">
     <file name="ExpandCollapseIcon.java">
-      <node id="1108075632710704252" at="13,0,14,0" concept="5" trace="collapsed" />
-      <node id="1108075632710704259" at="14,49,15,27" concept="4" />
-      <node id="1108075632710704271" at="18,30,19,13" concept="10" />
-      <node id="1108075632710704277" at="22,29,23,27" concept="10" />
-      <node id="1108075632710704291" at="26,73,27,37" concept="9" />
-      <node id="1108075632710704298" at="27,37,28,42" concept="9" />
-      <node id="1108075632710704303" at="28,42,29,23" concept="4" />
-      <node id="1108075632710704309" at="29,23,30,27" concept="9" />
-      <node id="1108075632710704313" at="30,27,31,28" concept="9" />
-      <node id="1108075632710704319" at="32,20,33,10" concept="4" />
-      <node id="1108075632710704322" at="33,10,34,39" concept="4" />
-      <node id="1108075632710704334" at="34,39,35,29" concept="4" />
-      <node id="1108075632710704345" at="36,12,37,10" concept="4" />
-      <node id="1108075632710704348" at="37,10,38,29" concept="4" />
-      <node id="1108075632710704356" at="38,29,39,39" concept="4" />
-      <node id="1108075632710704368" at="40,5,41,22" concept="4" />
-      <node id="1108075632710704372" at="41,22,42,31" concept="4" />
-      <node id="1108075632710704377" at="42,31,43,18" concept="4" />
-      <node id="1108075632710704255" at="14,0,17,0" concept="2" trace="ExpandCollapseIcon#(Z)V" />
-      <node id="1108075632710704267" at="17,0,21,0" concept="8" trace="getIconHeight#()I" />
-      <node id="1108075632710704273" at="21,0,25,0" concept="8" trace="getIconWidth#()I" />
-      <node id="1108075632710704343" at="36,10,40,5" concept="0" />
-      <node id="1108075632710704317" at="31,28,40,5" concept="7" />
-      <node id="1108075632710704279" at="25,0,45,0" concept="8" trace="paintIcon#(Ljava/awt/Component;Ljava/awt/Graphics;II)V" />
-      <scope id="1108075632710704258" at="14,49,15,27" />
-      <scope id="1108075632710704270" at="18,30,19,13" />
-      <scope id="1108075632710704276" at="22,29,23,27" />
-      <scope id="1108075632710704255" at="14,0,17,0">
+      <node id="1108075632710704252" at="12,0,13,0" concept="5" trace="collapsed" />
+      <node id="1108075632710704259" at="13,49,14,27" concept="4" />
+      <node id="1108075632710704271" at="17,30,18,13" concept="10" />
+      <node id="1108075632710704277" at="21,29,22,27" concept="10" />
+      <node id="1108075632710704291" at="25,73,26,37" concept="9" />
+      <node id="1108075632710704298" at="26,37,27,42" concept="9" />
+      <node id="1108075632710704303" at="27,42,28,23" concept="4" />
+      <node id="1108075632710704309" at="28,23,29,27" concept="9" />
+      <node id="1108075632710704313" at="29,27,30,28" concept="9" />
+      <node id="1108075632710704319" at="31,20,32,10" concept="4" />
+      <node id="1108075632710704322" at="32,10,33,39" concept="4" />
+      <node id="1108075632710704334" at="33,39,34,29" concept="4" />
+      <node id="1108075632710704345" at="35,12,36,10" concept="4" />
+      <node id="1108075632710704348" at="36,10,37,29" concept="4" />
+      <node id="1108075632710704356" at="37,29,38,39" concept="4" />
+      <node id="1108075632710704368" at="39,5,40,22" concept="4" />
+      <node id="5856988183237739494" at="40,22,41,42" concept="4" />
+      <node id="1108075632710704377" at="41,42,42,18" concept="4" />
+      <node id="1108075632710704255" at="13,0,16,0" concept="2" trace="ExpandCollapseIcon#(Z)V" />
+      <node id="1108075632710704267" at="16,0,20,0" concept="8" trace="getIconHeight#()I" />
+      <node id="1108075632710704273" at="20,0,24,0" concept="8" trace="getIconWidth#()I" />
+      <node id="1108075632710704343" at="35,10,39,5" concept="0" />
+      <node id="1108075632710704317" at="30,28,39,5" concept="7" />
+      <node id="1108075632710704279" at="24,0,44,0" concept="8" trace="paintIcon#(Ljava/awt/Component;Ljava/awt/Graphics;II)V" />
+      <scope id="1108075632710704258" at="13,49,14,27" />
+      <scope id="1108075632710704270" at="17,30,18,13" />
+      <scope id="1108075632710704276" at="21,29,22,27" />
+      <scope id="1108075632710704255" at="13,0,16,0">
         <var name="collapsed1" id="1108075632710704263" />
       </scope>
-      <scope id="1108075632710704318" at="32,20,35,29" />
-      <scope id="1108075632710704344" at="36,12,39,39" />
-      <scope id="1108075632710704267" at="17,0,21,0" />
-      <scope id="1108075632710704273" at="21,0,25,0" />
-      <scope id="1108075632710704290" at="26,73,43,18">
+      <scope id="1108075632710704318" at="31,20,34,29" />
+      <scope id="1108075632710704344" at="35,12,38,39" />
+      <scope id="1108075632710704267" at="16,0,20,0" />
+      <scope id="1108075632710704273" at="20,0,24,0" />
+      <scope id="1108075632710704290" at="25,73,42,18">
         <var name="g" id="1108075632710704292" />
         <var name="h" id="1108075632710704314" />
         <var name="shape" id="1108075632710704299" />
         <var name="w" id="1108075632710704310" />
       </scope>
-      <scope id="1108075632710704279" at="25,0,45,0">
+      <scope id="1108075632710704279" at="24,0,44,0">
         <var name="component" id="1108075632710704282" />
         <var name="g_" id="1108075632710704284" />
         <var name="x" id="1108075632710704286" />
         <var name="y" id="1108075632710704288" />
       </scope>
-      <unit id="1108075632710704251" at="12,0,46,0" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.ExpandCollapseIcon" />
+      <unit id="1108075632710704251" at="11,0,45,0" name="jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin.ExpandCollapseIcon" />
     </file>
   </root>
   <root nodeRef="r:e1663f0e-a433-4acc-be78-d50e0f2be978(jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin)/1118923038130638300">

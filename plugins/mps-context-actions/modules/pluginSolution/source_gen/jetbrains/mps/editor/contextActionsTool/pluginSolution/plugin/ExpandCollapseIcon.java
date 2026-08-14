@@ -7,7 +7,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
-import jetbrains.mps.nodeEditor.MPSColors;
 
 public class ExpandCollapseIcon implements Icon {
   private boolean collapsed;
@@ -39,7 +38,7 @@ public class ExpandCollapseIcon implements Icon {
       shape.lineTo(x + 0.5 * w, y + h);
     }
     shape.closePath();
-    g.setColor(MPSColors.GRAY);
+    g.setColor(component.getForeground());
     g.fill(shape);
   }
 }
