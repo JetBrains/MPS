@@ -2,6 +2,12 @@
   <id>com.intellij</id>
   <name>IDEA CORE</name>
 
+  <!--  MPS-39970: hosts the WhatsNewInVisionContentProvider override, which cannot live in this descriptor.
+        The descriptor is /jetbrains.mps.ide.whatsNew.xml - the module name plus '.xml' at the class path root is
+        where the platform looks it up; an embedded <![CDATA[...]]> descriptor is not read on this loading path. -->
+  <content namespace="jetbrains">
+    <module name="jetbrains.mps.ide.whatsNew"/>
+  </content>
   @@MODULE_DESCRIPTORS@@
 
   <module value="com.intellij.modules.mps"/>
@@ -134,10 +140,7 @@
     <applicationService serviceInterface="com.intellij.openapi.fileEditor.impl.EditorEmptyTextPainter"
                         serviceImplementation="jetbrains.mps.ide.ui.fileEditor.MPSEditorEmptyTextPainter"
                         overrides="true"/>
-    <!--MPS-39970 Disabled until fixed-->
-<!--    <applicationService serviceInterface="com.intellij.platform.whatsNew.WhatsNewInVisionContentProvider"-->
-<!--                        serviceImplementation="jetbrains.mps.MPSWhatsNewInVisionContentProvider"-->
-<!--                        overrides="true"/>-->
+    <!-- MPS-39970: the WhatsNewInVisionContentProvider override lives in the jetbrains.mps.ide.whatsNew content module above -->
     <!-- Similar to community/java/ide-customization/resources/META-INF/plugin.xml -->
     <!-- preload because in any case will be requested to reopen last projects -->
     <applicationService serviceInterface="com.intellij.ide.RecentProjectsManager"

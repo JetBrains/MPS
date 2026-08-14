@@ -1,4 +1,4 @@
-package jetbrains.mps
+package jetbrains.mps.ide.whatsnew
 
 import com.intellij.openapi.application.ApplicationInfo
 import com.intellij.openapi.components.serviceAsync

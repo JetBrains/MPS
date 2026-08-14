@@ -1,0 +1,39 @@
+<!--
+  Descriptor of the jetbrains.mps.ide.whatsNew content module declared by MPSPlugin.template.xml.
+
+  MPS-39970: since 262 the platform declares WhatsNewInVisionContentProvider in the intellij.platform.whatsNew
+  content module. Content modules are registered after the main plugin descriptor, so overriding that service from
+  MPSPlugin.template.xml fails with InstanceNotRegisteredException - the key is not registered yet. An override has
+  to live in a descriptor that declares a dependency on the module declaring the service, which is what this module
+  is for; the dependency below is what puts the override after the platform's registration.
+
+  The module has no jar of its own, so it needs a package prefix, and everything under jetbrains.mps.ide.whatsnew is
+  loaded by this module's class loader instead of the core one. The What's New content (jetbrains/mps/whatsNew) and
+  the actions it invokes (jetbrains.mps.workbench.actions.whatsnew) stay outside that prefix on purpose: resources
+  are not scoped by it, and the actions are registered by MPSPlugin.template.xml against the core class loader.
+
+  Heads-up: as of 2026.2 this module is EXCLUDED at run time and the override below never takes effect, in the
+  distribution as well as in a run from sources. intellij.platform.whatsNew depends on intellij.platform.ui.jcef,
+  MPS bundles no JCEF plugin, so whatsNew is excluded and this module goes with it (optional loading, deliberately -
+  it is excluded rather than taking the core plugin down). The plugin-resolution block in idea.log says so:
+
+      module intellij.platform.ui.jcef (namespace=jetbrains) is not resolved
+        └ dependent module intellij.platform.whatsNew excluded
+          └ dependent module jetbrains.mps.ide.whatsNew excluded
+
+  So the expected 2026.2 behaviour is: no InstanceNotRegisteredException, and no What's New either - Help | What's
+  New falls back to the platform's base com.intellij.ide.actions.WhatsNewAction, which just opens
+  ExternalProductResourceUrls.whatIsNewPageUrl in a browser. Do not read that as this module working. Restoring
+  What's New needs the JCEF plugin added to MPS's product layout in intellij-community; see
+  WHATSNEW-JCEF-TODO.md in the repository root for what to do and why.
+-->
+<idea-plugin package="jetbrains.mps.ide.whatsnew">
+  <dependencies>
+    <module name="intellij.platform.whatsNew"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="com.intellij.platform.whatsNew.WhatsNewInVisionContentProvider"
+                        serviceImplementation="jetbrains.mps.ide.whatsnew.MPSWhatsNewInVisionContentProvider"
+                        overrides="true"/>
+  </extensions>
+</idea-plugin>
