@@ -29,12 +29,6 @@
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/amazon-ion/ion-java/blob/master/LICENSE"
 }, {
-  "name" : "Apache Ant",
-  "url" : "https://ant.apache.org/",
-  "version" : "1.9",
-  "license" : "Apache 2.0",
-  "licenseUrl" : "https://ant.apache.org/license.html"
-}, {
   "name" : "Apache Commons CLI",
   "url" : "https://commons.apache.org/proper/commons-cli/",
   "version" : "1.11.0",
@@ -226,12 +220,6 @@
   "version" : "0.7.0",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/google/incremental-dom/blob/master/LICENSE"
-}, {
-  "name" : "IntelliJ IDEA Test Discovery Agent",
-  "url" : "https://github.com/JetBrains/intellij-coverage/tree/master/test-discovery",
-  "version" : "1.0.776",
-  "license" : "Apache 2.0",
-  "licenseUrl" : "https://github.com/JetBrains/intellij-coverage/blob/master/LICENSE"
 }, {
   "name" : "JAXB (JSR 222) Reference Implementation",
   "url" : "https://github.com/javaee/jaxb-v2",
@@ -835,7 +823,7 @@
 }, {
   "name" : "intellij-markdown",
   "url" : "https://github.com/JetBrains/markdown",
-  "version" : "0.7.5",
+  "version" : "0.7.7",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/markdown/blob/master/LICENSE"
 }, {
@@ -884,14 +872,14 @@
   "name" : "jediterm-core",
   "url" : "https://github.com/JetBrains/jediterm",
   "version" : "3.72",
-  "license" : "LGPL 3.0",
-  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-LGPLv3.txt"
+  "license" : "Apache 2.0",
+  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-APACHE-2.0.txt"
 }, {
   "name" : "jediterm-ui",
   "url" : "https://github.com/JetBrains/jediterm",
   "version" : "3.72",
-  "license" : "LGPL 3.0",
-  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-LGPLv3.txt"
+  "license" : "Apache 2.0",
+  "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-APACHE-2.0.txt"
 }, {
   "name" : "jetCheck",
   "url" : "https://github.com/JetBrains/jetCheck",
@@ -1093,7 +1081,7 @@
 }, {
   "name" : "opencsv",
   "url" : "https://opencsv.sourceforge.net/",
-  "version" : "5.10",
+  "version" : "5.11.2",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://sourceforge.net/p/opencsv/source/ci/master/tree/LICENSE"
 }, {
