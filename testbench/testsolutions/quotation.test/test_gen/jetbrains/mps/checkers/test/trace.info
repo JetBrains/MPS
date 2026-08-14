@@ -100,64 +100,106 @@
   <root nodeRef="r:afa6200c-5e34-4244-b141-d3f095bc906f(jetbrains.mps.checkers.test@tests)/7614966498964100982">
     <file name="ConceptHierarchyCycleTest_Test.java">
       <node id="7614966498964100982" at="23,43,24,60" concept="5" />
-      <node id="7614966498964101648" at="28,90,29,81" concept="1" />
-      <node id="7614966498964101679" at="32,90,33,81" concept="1" />
-      <node id="7614966498964101710" at="36,90,37,81" concept="1" />
-      <node id="7614966498964100982" at="42,52,43,19" concept="5" />
-      <node id="7614966498964100982" at="47,36,48,92" concept="1" />
-      <node id="7614966498964101648" at="51,92,52,22" concept="1" />
-      <node id="7614966498964101648" at="53,30,54,63" concept="3" />
-      <node id="7614966498964101648" at="54,63,55,356" concept="1" />
-      <node id="7614966498964101679" at="58,92,59,22" concept="1" />
-      <node id="7614966498964101679" at="60,30,61,63" concept="3" />
-      <node id="7614966498964101679" at="61,63,62,356" concept="1" />
-      <node id="7614966498964101710" at="65,92,66,22" concept="1" />
-      <node id="7614966498964101710" at="67,30,68,63" concept="3" />
-      <node id="7614966498964101710" at="68,63,69,356" concept="1" />
+      <node id="2544021697899289606" at="28,90,29,81" concept="1" />
+      <node id="2544021697899289609" at="32,79,33,70" concept="1" />
+      <node id="2544021697899289612" at="36,79,37,70" concept="1" />
+      <node id="2544021697899289615" at="40,90,41,81" concept="1" />
+      <node id="2544021697899289618" at="44,90,45,81" concept="1" />
+      <node id="2544021697899289621" at="48,79,49,70" concept="1" />
+      <node id="7614966498964100982" at="54,52,55,19" concept="5" />
+      <node id="7614966498964100982" at="59,36,60,92" concept="1" />
+      <node id="2544021697899289606" at="63,92,64,22" concept="1" />
+      <node id="2544021697899289606" at="65,30,66,63" concept="3" />
+      <node id="2544021697899289606" at="66,63,67,363" concept="1" />
+      <node id="2544021697899289609" at="70,81,71,22" concept="1" />
+      <node id="2544021697899289609" at="72,30,73,63" concept="3" />
+      <node id="2544021697899289609" at="73,63,74,369" concept="1" />
+      <node id="2544021697899289612" at="77,81,78,22" concept="1" />
+      <node id="2544021697899289612" at="79,30,80,63" concept="3" />
+      <node id="2544021697899289612" at="80,63,81,357" concept="1" />
+      <node id="2544021697899289615" at="84,92,85,22" concept="1" />
+      <node id="2544021697899289615" at="86,30,87,63" concept="3" />
+      <node id="2544021697899289615" at="87,63,88,363" concept="1" />
+      <node id="2544021697899289618" at="91,92,92,22" concept="1" />
+      <node id="2544021697899289618" at="93,30,94,63" concept="3" />
+      <node id="2544021697899289618" at="94,63,95,363" concept="1" />
+      <node id="2544021697899289621" at="98,81,99,22" concept="1" />
+      <node id="2544021697899289621" at="100,30,101,63" concept="3" />
+      <node id="2544021697899289621" at="101,63,102,357" concept="1" />
       <node id="7614966498964100982" at="20,0,22,0" concept="4" trace="ourParametersCacheExtension" />
       <node id="7614966498964100982" at="23,0,26,0" concept="0" trace="ConceptHierarchyCycleTest_Test#()V" />
-      <node id="7614966498964100982" at="42,0,45,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
-      <node id="7614966498964101648" at="27,0,31,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101648#()V" />
-      <node id="7614966498964101679" at="31,0,35,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101679#()V" />
-      <node id="7614966498964101710" at="35,0,39,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101710#()V" />
-      <node id="7614966498964100982" at="46,0,50,0" concept="2" trace="initTestNodes#()V" />
-      <node id="7614966498964101648" at="52,22,56,9" concept="1" />
-      <node id="7614966498964101679" at="59,22,63,9" concept="1" />
-      <node id="7614966498964101710" at="66,22,70,9" concept="1" />
-      <node id="7614966498964101648" at="51,0,58,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101648#()V" />
-      <node id="7614966498964101679" at="58,0,65,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101679#()V" />
-      <node id="7614966498964101710" at="65,0,72,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101710#()V" />
+      <node id="7614966498964100982" at="54,0,57,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="2544021697899289606" at="27,0,31,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck2544021697899289606#()V" />
+      <node id="2544021697899289609" at="31,0,35,0" concept="2" trace="test_NodeUnknownRuleCheck2544021697899289609#()V" />
+      <node id="2544021697899289612" at="35,0,39,0" concept="2" trace="test_NodeUnknownRuleCheck2544021697899289612#()V" />
+      <node id="2544021697899289615" at="39,0,43,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck2544021697899289615#()V" />
+      <node id="2544021697899289618" at="43,0,47,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck2544021697899289618#()V" />
+      <node id="2544021697899289621" at="47,0,51,0" concept="2" trace="test_NodeUnknownRuleCheck2544021697899289621#()V" />
+      <node id="7614966498964100982" at="58,0,62,0" concept="2" trace="initTestNodes#()V" />
+      <node id="2544021697899289606" at="64,22,68,9" concept="1" />
+      <node id="2544021697899289609" at="71,22,75,9" concept="1" />
+      <node id="2544021697899289612" at="78,22,82,9" concept="1" />
+      <node id="2544021697899289615" at="85,22,89,9" concept="1" />
+      <node id="2544021697899289618" at="92,22,96,9" concept="1" />
+      <node id="2544021697899289621" at="99,22,103,9" concept="1" />
+      <node id="2544021697899289606" at="63,0,70,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck2544021697899289606#()V" />
+      <node id="2544021697899289609" at="70,0,77,0" concept="2" trace="test_NodeUnknownRuleCheck2544021697899289609#()V" />
+      <node id="2544021697899289612" at="77,0,84,0" concept="2" trace="test_NodeUnknownRuleCheck2544021697899289612#()V" />
+      <node id="2544021697899289615" at="84,0,91,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck2544021697899289615#()V" />
+      <node id="2544021697899289618" at="91,0,98,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck2544021697899289618#()V" />
+      <node id="2544021697899289621" at="98,0,105,0" concept="2" trace="test_NodeUnknownRuleCheck2544021697899289621#()V" />
       <scope id="7614966498964100982" at="23,43,24,60" />
-      <scope id="7614966498964101648" at="28,90,29,81" />
-      <scope id="7614966498964101679" at="32,90,33,81" />
-      <scope id="7614966498964101710" at="36,90,37,81" />
-      <scope id="7614966498964100982" at="42,52,43,19" />
-      <scope id="7614966498964100982" at="47,36,48,92" />
-      <scope id="7614966498964101648" at="53,30,55,356">
-        <var name="nodeToCheck" id="7614966498964101648" />
+      <scope id="2544021697899289606" at="28,90,29,81" />
+      <scope id="2544021697899289609" at="32,79,33,70" />
+      <scope id="2544021697899289612" at="36,79,37,70" />
+      <scope id="2544021697899289615" at="40,90,41,81" />
+      <scope id="2544021697899289618" at="44,90,45,81" />
+      <scope id="2544021697899289621" at="48,79,49,70" />
+      <scope id="7614966498964100982" at="54,52,55,19" />
+      <scope id="7614966498964100982" at="59,36,60,92" />
+      <scope id="2544021697899289606" at="65,30,67,363">
+        <var name="nodeToCheck" id="2544021697899289606" />
       </scope>
-      <scope id="7614966498964101679" at="60,30,62,356">
-        <var name="nodeToCheck" id="7614966498964101679" />
+      <scope id="2544021697899289609" at="72,30,74,369">
+        <var name="nodeToCheck" id="2544021697899289609" />
       </scope>
-      <scope id="7614966498964101710" at="67,30,69,356">
-        <var name="nodeToCheck" id="7614966498964101710" />
+      <scope id="2544021697899289612" at="79,30,81,357">
+        <var name="nodeToCheck" id="2544021697899289612" />
+      </scope>
+      <scope id="2544021697899289615" at="86,30,88,363">
+        <var name="nodeToCheck" id="2544021697899289615" />
+      </scope>
+      <scope id="2544021697899289618" at="93,30,95,363">
+        <var name="nodeToCheck" id="2544021697899289618" />
+      </scope>
+      <scope id="2544021697899289621" at="100,30,102,357">
+        <var name="nodeToCheck" id="2544021697899289621" />
       </scope>
       <scope id="7614966498964100982" at="23,0,26,0" />
-      <scope id="7614966498964100982" at="42,0,45,0">
+      <scope id="7614966498964100982" at="54,0,57,0">
         <var name="owner" id="7614966498964100982" />
       </scope>
-      <scope id="7614966498964101648" at="27,0,31,0" />
-      <scope id="7614966498964101679" at="31,0,35,0" />
-      <scope id="7614966498964101710" at="35,0,39,0" />
-      <scope id="7614966498964100982" at="46,0,50,0" />
-      <scope id="7614966498964101648" at="51,92,56,9" />
-      <scope id="7614966498964101679" at="58,92,63,9" />
-      <scope id="7614966498964101710" at="65,92,70,9" />
-      <scope id="7614966498964101648" at="51,0,58,0" />
-      <scope id="7614966498964101679" at="58,0,65,0" />
-      <scope id="7614966498964101710" at="65,0,72,0" />
-      <unit id="7614966498964100982" at="40,0,74,0" name="jetbrains.mps.checkers.test.ConceptHierarchyCycleTest_Test$TestBody" />
-      <unit id="7614966498964100982" at="18,0,75,0" name="jetbrains.mps.checkers.test.ConceptHierarchyCycleTest_Test" />
+      <scope id="2544021697899289606" at="27,0,31,0" />
+      <scope id="2544021697899289609" at="31,0,35,0" />
+      <scope id="2544021697899289612" at="35,0,39,0" />
+      <scope id="2544021697899289615" at="39,0,43,0" />
+      <scope id="2544021697899289618" at="43,0,47,0" />
+      <scope id="2544021697899289621" at="47,0,51,0" />
+      <scope id="7614966498964100982" at="58,0,62,0" />
+      <scope id="2544021697899289606" at="63,92,68,9" />
+      <scope id="2544021697899289609" at="70,81,75,9" />
+      <scope id="2544021697899289612" at="77,81,82,9" />
+      <scope id="2544021697899289615" at="84,92,89,9" />
+      <scope id="2544021697899289618" at="91,92,96,9" />
+      <scope id="2544021697899289621" at="98,81,103,9" />
+      <scope id="2544021697899289606" at="63,0,70,0" />
+      <scope id="2544021697899289609" at="70,0,77,0" />
+      <scope id="2544021697899289612" at="77,0,84,0" />
+      <scope id="2544021697899289615" at="84,0,91,0" />
+      <scope id="2544021697899289618" at="91,0,98,0" />
+      <scope id="2544021697899289621" at="98,0,105,0" />
+      <unit id="7614966498964100982" at="52,0,107,0" name="jetbrains.mps.checkers.test.ConceptHierarchyCycleTest_Test$TestBody" />
+      <unit id="7614966498964100982" at="18,0,108,0" name="jetbrains.mps.checkers.test.ConceptHierarchyCycleTest_Test" />
     </file>
   </root>
 </debug-info>

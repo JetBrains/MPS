@@ -21,6 +21,7 @@
     <import index="4szu" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.references(MPS.Core/)" />
     <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" />
     <import index="tpcj" ref="r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)" />
+    <import index="tpcg" ref="r:00000000-0000-4000-0000-011c8959028c(jetbrains.mps.lang.structure.constraints)" />
   </imports>
   <registry>
     <language id="8585453e-6bfb-4d80-98de-b16074f1d86c" name="jetbrains.mps.lang.test">
@@ -36,10 +37,14 @@
       <concept id="7835233914439520906" name="jetbrains.mps.lang.test.structure.AbstractNodeRuleCheckOperation" flags="ng" index="mZCkL">
         <child id="710597951278798299" name="expectedMessage" index="1DMPz9" />
       </concept>
+      <concept id="7691029917083831655" name="jetbrains.mps.lang.test.structure.UnknownRuleReference" flags="ng" index="2u4KIi" />
       <concept id="7691029917083872157" name="jetbrains.mps.lang.test.structure.IRuleReference" flags="ngI" index="2u4UPC">
         <reference id="8333855927540250453" name="declaration" index="39XzEq" />
       </concept>
       <concept id="4531408400484511853" name="jetbrains.mps.lang.test.structure.ReportErrorStatementReference" flags="ng" index="2PYRI3" />
+      <concept id="8333855927540283103" name="jetbrains.mps.lang.test.structure.NodeConstraintsErrorCheckOperation" flags="ng" index="39XrGg">
+        <child id="8333855927548182241" name="errorRef" index="39rjcI" />
+      </concept>
       <concept id="1216913645126" name="jetbrains.mps.lang.test.structure.NodesTestCase" flags="lg" index="1lH9Xt">
         <property id="2616911529524314943" name="accessMode" index="3DII0k" />
         <child id="1217501822150" name="nodesToCheck" index="1SKRRt" />
@@ -196,14 +201,22 @@
       <node concept="1TIwiD" id="6AHMUXrgltT" role="1qenE9">
         <property role="EcuMT" value="7614966498964100985" />
         <property role="TrG5h" value="CyclicSelfExtendingConcept" />
-        <ref role="1TJDcQ" node="6AHMUXrgltT" />
+        <ref role="1TJDcQ" node="6AHMUXrgltT" resolve="CyclicSelfExtendingConcept" />
         <node concept="7CXmI" id="6AHMUXrglCf" role="lGtFl">
-          <node concept="1TM$A" id="6AHMUXrglCg" role="7EUXB">
-            <node concept="2PYRI3" id="6AHMUXrglCh" role="3lydEf">
+          <node concept="1TM$A" id="2deb$5$b5K6" role="7EUXB">
+            <node concept="2PYRI3" id="2deb$5$b5K7" role="3lydEf">
               <ref role="39XzEq" to="tpcj:6AHMUXrf29$" />
             </node>
-            <node concept="1DMPye" id="6AHMUXrglCi" role="1DMPz9">
-              <property role="1DMPyf" value="Cyclic concept hierarchy: this concept is its own superconcept" />
+            <node concept="1DMPye" id="2deb$5$b5K8" role="1DMPz9">
+              <property role="1DMPyf" value="Error: Cyclic concept hierarchy: this concept is its own superconcept" />
+            </node>
+          </node>
+          <node concept="39XrGg" id="2deb$5$b5K9" role="7EUXB">
+            <node concept="2u4KIi" id="2deb$5$b5Ka" role="39rjcI">
+              <ref role="39XzEq" to="tpcg:5Vvmn_QkT3X" />
+            </node>
+            <node concept="1DMPye" id="2deb$5$b5Kb" role="1DMPz9">
+              <property role="1DMPyf" value="The reference  CyclicSelfExtendingConcept (extends) is out of search scope" />
             </node>
           </node>
         </node>
@@ -213,14 +226,22 @@
       <node concept="1TIwiD" id="6AHMUXrgltW" role="1qenE9">
         <property role="EcuMT" value="7614966498964100988" />
         <property role="TrG5h" value="CyclicConceptA" />
-        <ref role="1TJDcQ" node="6AHMUXrgltZ" />
+        <ref role="1TJDcQ" node="6AHMUXrgltZ" resolve="CyclicConceptB" />
         <node concept="7CXmI" id="6AHMUXrglCI" role="lGtFl">
-          <node concept="1TM$A" id="6AHMUXrglCJ" role="7EUXB">
-            <node concept="2PYRI3" id="6AHMUXrglCK" role="3lydEf">
+          <node concept="39XrGg" id="2deb$5$b5Kc" role="7EUXB">
+            <node concept="2u4KIi" id="2deb$5$b5Kd" role="39rjcI">
+              <ref role="39XzEq" to="tpcg:5Vvmn_QkT3X" />
+            </node>
+            <node concept="1DMPye" id="2deb$5$b5Ke" role="1DMPz9">
+              <property role="1DMPyf" value="The reference  CyclicConceptB (extends) is out of search scope" />
+            </node>
+          </node>
+          <node concept="1TM$A" id="2deb$5$b5Kf" role="7EUXB">
+            <node concept="2PYRI3" id="2deb$5$b5Kg" role="3lydEf">
               <ref role="39XzEq" to="tpcj:6AHMUXrf29$" />
             </node>
-            <node concept="1DMPye" id="6AHMUXrglCL" role="1DMPz9">
-              <property role="1DMPyf" value="Cyclic concept hierarchy: this concept is its own superconcept" />
+            <node concept="1DMPye" id="2deb$5$b5Kh" role="1DMPz9">
+              <property role="1DMPyf" value="Error: Cyclic concept hierarchy: this concept is its own superconcept" />
             </node>
           </node>
         </node>
@@ -230,14 +251,22 @@
       <node concept="1TIwiD" id="6AHMUXrgltZ" role="1qenE9">
         <property role="EcuMT" value="7614966498964100991" />
         <property role="TrG5h" value="CyclicConceptB" />
-        <ref role="1TJDcQ" node="6AHMUXrgltW" />
+        <ref role="1TJDcQ" node="6AHMUXrgltW" resolve="CyclicConceptA" />
         <node concept="7CXmI" id="6AHMUXrglDd" role="lGtFl">
-          <node concept="1TM$A" id="6AHMUXrglDe" role="7EUXB">
-            <node concept="2PYRI3" id="6AHMUXrglDf" role="3lydEf">
+          <node concept="1TM$A" id="2deb$5$b5Ki" role="7EUXB">
+            <node concept="2PYRI3" id="2deb$5$b5Kj" role="3lydEf">
               <ref role="39XzEq" to="tpcj:6AHMUXrf29$" />
             </node>
-            <node concept="1DMPye" id="6AHMUXrglDg" role="1DMPz9">
-              <property role="1DMPyf" value="Cyclic concept hierarchy: this concept is its own superconcept" />
+            <node concept="1DMPye" id="2deb$5$b5Kk" role="1DMPz9">
+              <property role="1DMPyf" value="Error: Cyclic concept hierarchy: this concept is its own superconcept" />
+            </node>
+          </node>
+          <node concept="39XrGg" id="2deb$5$b5Kl" role="7EUXB">
+            <node concept="2u4KIi" id="2deb$5$b5Km" role="39rjcI">
+              <ref role="39XzEq" to="tpcg:5Vvmn_QkT3X" />
+            </node>
+            <node concept="1DMPye" id="2deb$5$b5Kn" role="1DMPz9">
+              <property role="1DMPyf" value="The reference  CyclicConceptA (extends) is out of search scope" />
             </node>
           </node>
         </node>

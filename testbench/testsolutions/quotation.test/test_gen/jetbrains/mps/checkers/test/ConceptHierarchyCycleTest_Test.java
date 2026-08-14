@@ -25,16 +25,28 @@ public class ConceptHierarchyCycleTest_Test extends BaseTransformationTest {
   }
 
   @Test
-  public void test_NodeCyclicConceptHierarchyCheck7614966498964101648() throws Throwable {
-    new TestBody(this).test_NodeCyclicConceptHierarchyCheck7614966498964101648();
+  public void test_NodeCyclicConceptHierarchyCheck2544021697899289606() throws Throwable {
+    new TestBody(this).test_NodeCyclicConceptHierarchyCheck2544021697899289606();
   }
   @Test
-  public void test_NodeCyclicConceptHierarchyCheck7614966498964101679() throws Throwable {
-    new TestBody(this).test_NodeCyclicConceptHierarchyCheck7614966498964101679();
+  public void test_NodeUnknownRuleCheck2544021697899289609() throws Throwable {
+    new TestBody(this).test_NodeUnknownRuleCheck2544021697899289609();
   }
   @Test
-  public void test_NodeCyclicConceptHierarchyCheck7614966498964101710() throws Throwable {
-    new TestBody(this).test_NodeCyclicConceptHierarchyCheck7614966498964101710();
+  public void test_NodeUnknownRuleCheck2544021697899289612() throws Throwable {
+    new TestBody(this).test_NodeUnknownRuleCheck2544021697899289612();
+  }
+  @Test
+  public void test_NodeCyclicConceptHierarchyCheck2544021697899289615() throws Throwable {
+    new TestBody(this).test_NodeCyclicConceptHierarchyCheck2544021697899289615();
+  }
+  @Test
+  public void test_NodeCyclicConceptHierarchyCheck2544021697899289618() throws Throwable {
+    new TestBody(this).test_NodeCyclicConceptHierarchyCheck2544021697899289618();
+  }
+  @Test
+  public void test_NodeUnknownRuleCheck2544021697899289621() throws Throwable {
+    new TestBody(this).test_NodeUnknownRuleCheck2544021697899289621();
   }
 
   /*package*/ static class TestBody extends BaseTestBody {
@@ -48,25 +60,46 @@ public class ConceptHierarchyCycleTest_Test extends BaseTransformationTest {
       prepareTestNodes("7614966498964100983", "7614966498964100986", "7614966498964100989");
     }
 
-    public void test_NodeCyclicConceptHierarchyCheck7614966498964101648() throws Exception {
+    public void test_NodeCyclicConceptHierarchyCheck2544021697899289606() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("7614966498964100985");
-        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "7614966498963759716"), "Cyclic concept hierarchy: this concept is its own superconcept", myProject.getRepository(), myProject.getPlatform()).run();
+        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "7614966498963759716"), "Error: Cyclic concept hierarchy: this concept is its own superconcept", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
-    public void test_NodeCyclicConceptHierarchyCheck7614966498964101679() throws Exception {
+    public void test_NodeUnknownRuleCheck2544021697899289609() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("7614966498964100985");
+        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028c(jetbrains.mps.lang.structure.constraints)", "6836281137582805245"), "The reference  CyclicSelfExtendingConcept (extends) is out of search scope", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeUnknownRuleCheck2544021697899289612() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("7614966498964100988");
-        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "7614966498963759716"), "Cyclic concept hierarchy: this concept is its own superconcept", myProject.getRepository(), myProject.getPlatform()).run();
+        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028c(jetbrains.mps.lang.structure.constraints)", "6836281137582805245"), "The reference  CyclicConceptB (extends) is out of search scope", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
-    public void test_NodeCyclicConceptHierarchyCheck7614966498964101710() throws Exception {
+    public void test_NodeCyclicConceptHierarchyCheck2544021697899289615() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("7614966498964100988");
+        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "7614966498963759716"), "Error: Cyclic concept hierarchy: this concept is its own superconcept", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeCyclicConceptHierarchyCheck2544021697899289618() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("7614966498964100991");
-        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "7614966498963759716"), "Cyclic concept hierarchy: this concept is its own superconcept", myProject.getRepository(), myProject.getPlatform()).run();
+        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "7614966498963759716"), "Error: Cyclic concept hierarchy: this concept is its own superconcept", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeUnknownRuleCheck2544021697899289621() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("7614966498964100991");
+        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028c(jetbrains.mps.lang.structure.constraints)", "6836281137582805245"), "The reference  CyclicConceptA (extends) is out of search scope", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
 
