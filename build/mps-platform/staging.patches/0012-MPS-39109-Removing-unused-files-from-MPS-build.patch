@@ -1,0 +1,49 @@
+From 06e7fbf7a9d4a504d085607cccac84c540d9fc02 Mon Sep 17 00:00:00 2001
+From: Maros Sandor <maros.sandor@jetbrains.com>
+Date: Thu, 13 Aug 2026 13:55:19 +0200
+Subject: MPS-39109 Removing unused files from MPS build
+
+---
+ community/mps/build/build/build.xml                  | 12 +++++++++++-
+ .../src/idea/MPSApplicationInfo.xml                  |  2 +-
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 824b819cbd4a9..439d4982fdc9d 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -76,7 +76,17 @@
+   <!-- Remove IdeaApplicationInfo.xml and IdeaPlugin.xml. These will be provided during MPS build later -->
+   <target name="repackage-app-jar" description="Remove IDEA specific descriptors">
+     <jar destfile="${target.dist}/lib/stripped.jar" zip64Mode="as-needed">
+-      <zipfileset src="${target.dist}/lib/intellij.idea.community.customization.jar" excludes="idea/IdeaApplicationInfo.xml,META-INF/IdeaPlugin.xml" />
++      <zipfileset src="${target.dist}/lib/intellij.idea.community.customization.jar" excludes="
++        idea/IdeaApplicationInfo.xml,
++        META-INF/IdeaPlugin.xml,
++        META-INF/tips-intellij-idea-community.xml,
++        META-INF/community-customization.xml,
++        tips/**,
++        localization/**,
++        lafs/**,
++        idea_community_logo*.png,
++        idea-ce*.svg"
++      />
+     </jar>
+     <move file="${target.dist}/lib/stripped.jar" tofile="${target.dist}/lib/intellij.idea.community.customization.jar"/>
+   </target>
+diff --git a/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml b/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml
+index 8cf0408ddf1a2..cf84f969232e7 100644
+--- a/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml
++++ b/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml
+@@ -4,7 +4,7 @@
+   <version suffix="" major="2026" minor="2" eap="true"/>
+   <company name="JetBrains s.r.o." url="https://www.jetbrains.com/?fromIDE" copyrightStart="2009"/>
+   <build number="IC-__BUILD__" date="__BUILD_DATE__"/>
+-  <logo  url="/idea_community_logo.png"/>
++  <logo  url="/mps.svg"/>
+   <icon svg="/mps.svg" svg-small="/mps_16.svg"/>
+   <names product="MPS" script="mps"/>
+   <essential-plugin>com.intellij.java</essential-plugin>
+-- 
+2.53.0.windows.1
+

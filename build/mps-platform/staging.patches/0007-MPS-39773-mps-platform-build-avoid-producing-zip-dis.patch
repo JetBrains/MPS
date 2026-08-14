@@ -1,7 +1,7 @@
 From cb7b7a8654a515203b2c038d45f53d562c278187 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Mon, 13 Jul 2026 12:51:26 +0200
-Subject: [PATCH 07/11] MPS-39773 mps-platform build: avoid producing zip dist
+Subject: MPS-39773 mps-platform build: avoid producing zip dist
  and installers for windows
 
 Zipped distribution and installers are not needed to build mps-platform.

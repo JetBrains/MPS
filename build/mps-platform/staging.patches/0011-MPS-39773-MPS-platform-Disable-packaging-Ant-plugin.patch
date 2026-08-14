@@ -1,7 +1,7 @@
 From a6651ac3c4d153b567cc86a26578b756928507d4 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Fri, 31 Jul 2026 11:00:52 +0200
-Subject: [PATCH 11/11] MPS-39773 MPS platform: Disable packaging Ant plugin
+Subject: MPS-39773 MPS platform: Disable packaging Ant plugin
 
 Ant plugin is not essential for MPS, and its functionality is broken
 by dependencies on Java actions not available in MPS.
