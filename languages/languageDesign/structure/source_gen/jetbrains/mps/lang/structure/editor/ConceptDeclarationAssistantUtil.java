@@ -6,6 +6,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 import java.util.List;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
+import java.util.Set;
+import jetbrains.mps.internal.collections.runtime.SetSequence;
+import java.util.HashSet;
 import java.util.Queue;
 import jetbrains.mps.internal.collections.runtime.QueueSequence;
 import java.util.LinkedList;
@@ -23,11 +26,16 @@ public class ConceptDeclarationAssistantUtil {
   public List<SNode> getStructurallyEqualSuperConcepts() {
     List<SNode> result = ListSequence.fromList(new ArrayList<SNode>());
 
+    Set<SNode> visited = SetSequence.fromSet(new HashSet<SNode>());
     Queue<SNode> toCheck = QueueSequence.fromQueueAndArray(new LinkedList<SNode>(), myConcept);
     final List<SNode> expectedLinks = AbstractConceptDeclaration__BehaviorDescriptor.getLinkDeclarations_idhEwILKK.invoke(myConcept);
     final List<SNode> expectedProperties = AbstractConceptDeclaration__BehaviorDescriptor.getPropertyDeclarations_idhEwILLM.invoke(myConcept);
     while (QueueSequence.fromQueue(toCheck).isNotEmpty()) {
       SNode acd = QueueSequence.fromQueue(toCheck).removeFirstElement();
+      if (SetSequence.fromSet(visited).contains(acd)) {
+        continue;
+      }
+      SetSequence.fromSet(visited).addElement(acd);
       if (SNodeOperations.is(acd, new SNodePointer("r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)", "1133920641626")) || SNodeOperations.is(acd, new SNodePointer("r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)", "1169194658468"))) {
         continue;
       }

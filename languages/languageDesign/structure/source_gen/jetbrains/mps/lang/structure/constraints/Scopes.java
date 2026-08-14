@@ -76,6 +76,18 @@ public class Scopes {
       }
     };
   }
+  public static Scope forInterfaceConceptReferenceIntfc(final SNode conceptNode, SNode contextNode) {
+    if (conceptNode == null) {
+      return new EmptyScope();
+    }
+
+    return new FilteringScope(forConcepts(contextNode, CONCEPTS.InterfaceConceptDeclaration$CG)) {
+      @Override
+      public boolean isExcluded(SNode node) {
+        return (boolean) AbstractConceptDeclaration__BehaviorDescriptor.isSubconceptOf_id73yVtVlWOga.invoke(SNodeOperations.cast(node, CONCEPTS.InterfaceConceptDeclaration$CG), conceptNode);
+      }
+    };
+  }
 
   /**
    * 
@@ -91,5 +103,6 @@ public class Scopes {
   private static final class CONCEPTS {
     /*package*/ static final SConcept AbstractConceptDeclaration$KA = MetaAdapterFactory.getConcept(0xc72da2b97cce4447L, 0x8389f407dc1158b7L, 0x1103553c5ffL, "jetbrains.mps.lang.structure.structure.AbstractConceptDeclaration");
     /*package*/ static final SConcept ConceptDeclaration$gH = MetaAdapterFactory.getConcept(0xc72da2b97cce4447L, 0x8389f407dc1158b7L, 0xf979ba0450L, "jetbrains.mps.lang.structure.structure.ConceptDeclaration");
+    /*package*/ static final SConcept InterfaceConceptDeclaration$CG = MetaAdapterFactory.getConcept(0xc72da2b97cce4447L, 0x8389f407dc1158b7L, 0x1103556dcafL, "jetbrains.mps.lang.structure.structure.InterfaceConceptDeclaration");
   }
 }

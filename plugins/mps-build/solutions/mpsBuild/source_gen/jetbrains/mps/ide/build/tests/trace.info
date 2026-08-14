@@ -47,7 +47,7 @@
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/4074183641147971049">
     <file name="mpsSModel.xml">
-      <unit id="4074183641147971049" at="1,0,2159,10" name="jetbrains.mps.ide.build.tests.mpsSModel" />
+      <unit id="4074183641147971049" at="1,0,2164,10" name="jetbrains.mps.ide.build.tests.mpsSModel" />
     </file>
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/4286050570470716727">

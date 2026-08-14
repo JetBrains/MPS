@@ -6,6 +6,7 @@
     <use id="f61473f9-130f-42f6-b98d-6c438812c2f6" name="jetbrains.mps.baseLanguage.unitTest" version="1" />
     <use id="3a13115c-633c-4c5c-bbcc-75c4219e9555" name="jetbrains.mps.lang.quotation" version="5" />
     <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
+    <use id="c72da2b9-7cce-4447-8389-f407dc1158b7" name="jetbrains.mps.lang.structure" version="9" />
   </languages>
   <imports>
     <import index="wsw7" ref="r:ba41e9c6-15ca-4a47-95f2-6a81c2318547(jetbrains.mps.checkers)" />
@@ -18,6 +19,8 @@
     <import index="tqvn" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.tempmodel(MPS.Core/)" />
     <import index="18ew" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.util(MPS.Core/)" />
     <import index="4szu" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.references(MPS.Core/)" />
+    <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" />
+    <import index="tpcj" ref="r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)" />
   </imports>
   <registry>
     <language id="8585453e-6bfb-4d80-98de-b16074f1d86c" name="jetbrains.mps.lang.test">
@@ -30,6 +33,9 @@
       <concept id="1215607067978" name="jetbrains.mps.lang.test.structure.CheckNodeForErrorMessagesOperation" flags="ng" index="7OXhh">
         <property id="3743352646565420194" name="includeSelf" index="GvXf4" />
       </concept>
+      <concept id="7835233914439520906" name="jetbrains.mps.lang.test.structure.AbstractNodeRuleCheckOperation" flags="ng" index="mZCkL">
+        <child id="710597951278798299" name="expectedMessage" index="1DMPz9" />
+      </concept>
       <concept id="7691029917083872157" name="jetbrains.mps.lang.test.structure.IRuleReference" flags="ngI" index="2u4UPC">
         <reference id="8333855927540250453" name="declaration" index="39XzEq" />
       </concept>
@@ -40,6 +46,9 @@
       </concept>
       <concept id="1216989428737" name="jetbrains.mps.lang.test.structure.TestNode" flags="ng" index="1qefOq">
         <child id="1216989461394" name="nodeToCheck" index="1qenE9" />
+      </concept>
+      <concept id="710597951278798236" name="jetbrains.mps.lang.test.structure.ExpectedMessageContainer" flags="ng" index="1DMPye">
+        <property id="710597951278798237" name="text" index="1DMPyf" />
       </concept>
     </language>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -71,6 +80,14 @@
         <property id="2173356959483005420" name="stringValueMigrated" index="3qcH_f" />
       </concept>
       <concept id="1196866233735" name="jetbrains.mps.lang.quotation.structure.PropertyAntiquotation" flags="ng" index="2EMmih" />
+    </language>
+    <language id="c72da2b9-7cce-4447-8389-f407dc1158b7" name="jetbrains.mps.lang.structure">
+      <concept id="1169125787135" name="jetbrains.mps.lang.structure.structure.AbstractConceptDeclaration" flags="ig" index="PkWjJ">
+        <property id="6714410169261853888" name="conceptId" index="EcuMT" />
+      </concept>
+      <concept id="1071489090640" name="jetbrains.mps.lang.structure.structure.ConceptDeclaration" flags="ig" index="1TIwiD">
+        <reference id="1071489389519" name="extends" index="1TJDcQ" />
+      </concept>
     </language>
     <language id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core">
       <concept id="1133920641626" name="jetbrains.mps.lang.core.structure.BaseConcept" flags="ng" index="2VYdi">
@@ -167,6 +184,61 @@
         <node concept="7CXmI" id="29gobADr4yZ" role="lGtFl">
           <node concept="7OXhh" id="29gobADr4z8" role="7EUXB">
             <property role="GvXf4" value="true" />
+          </node>
+        </node>
+      </node>
+    </node>
+  </node>
+  <node concept="1lH9Xt" id="6AHMUXrgltQ">
+    <property role="3DII0k" value="2hh8MJdVwqX/command" />
+    <property role="TrG5h" value="ConceptHierarchyCycleTest" />
+    <node concept="1qefOq" id="6AHMUXrgltR" role="1SKRRt">
+      <node concept="1TIwiD" id="6AHMUXrgltT" role="1qenE9">
+        <property role="EcuMT" value="7614966498964100985" />
+        <property role="TrG5h" value="CyclicSelfExtendingConcept" />
+        <ref role="1TJDcQ" node="6AHMUXrgltT" />
+        <node concept="7CXmI" id="6AHMUXrglCf" role="lGtFl">
+          <node concept="1TM$A" id="6AHMUXrglCg" role="7EUXB">
+            <node concept="2PYRI3" id="6AHMUXrglCh" role="3lydEf">
+              <ref role="39XzEq" to="tpcj:6AHMUXrf29$" />
+            </node>
+            <node concept="1DMPye" id="6AHMUXrglCi" role="1DMPz9">
+              <property role="1DMPyf" value="Cyclic concept hierarchy: this concept is its own superconcept" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="1qefOq" id="6AHMUXrgltU" role="1SKRRt">
+      <node concept="1TIwiD" id="6AHMUXrgltW" role="1qenE9">
+        <property role="EcuMT" value="7614966498964100988" />
+        <property role="TrG5h" value="CyclicConceptA" />
+        <ref role="1TJDcQ" node="6AHMUXrgltZ" />
+        <node concept="7CXmI" id="6AHMUXrglCI" role="lGtFl">
+          <node concept="1TM$A" id="6AHMUXrglCJ" role="7EUXB">
+            <node concept="2PYRI3" id="6AHMUXrglCK" role="3lydEf">
+              <ref role="39XzEq" to="tpcj:6AHMUXrf29$" />
+            </node>
+            <node concept="1DMPye" id="6AHMUXrglCL" role="1DMPz9">
+              <property role="1DMPyf" value="Cyclic concept hierarchy: this concept is its own superconcept" />
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="1qefOq" id="6AHMUXrgltX" role="1SKRRt">
+      <node concept="1TIwiD" id="6AHMUXrgltZ" role="1qenE9">
+        <property role="EcuMT" value="7614966498964100991" />
+        <property role="TrG5h" value="CyclicConceptB" />
+        <ref role="1TJDcQ" node="6AHMUXrgltW" />
+        <node concept="7CXmI" id="6AHMUXrglDd" role="lGtFl">
+          <node concept="1TM$A" id="6AHMUXrglDe" role="7EUXB">
+            <node concept="2PYRI3" id="6AHMUXrglDf" role="3lydEf">
+              <ref role="39XzEq" to="tpcj:6AHMUXrf29$" />
+            </node>
+            <node concept="1DMPye" id="6AHMUXrglDg" role="1DMPz9">
+              <property role="1DMPyf" value="Cyclic concept hierarchy: this concept is its own superconcept" />
+            </node>
           </node>
         </node>
       </node>

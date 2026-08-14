@@ -97,5 +97,68 @@
       <unit id="6807933448480841880" at="20,0,99,0" name="jetbrains.mps.checkers.test.SuppressErrorsTest_Test" />
     </file>
   </root>
+  <root nodeRef="r:afa6200c-5e34-4244-b141-d3f095bc906f(jetbrains.mps.checkers.test@tests)/7614966498964100982">
+    <file name="ConceptHierarchyCycleTest_Test.java">
+      <node id="7614966498964100982" at="23,43,24,60" concept="5" />
+      <node id="7614966498964101648" at="28,90,29,81" concept="1" />
+      <node id="7614966498964101679" at="32,90,33,81" concept="1" />
+      <node id="7614966498964101710" at="36,90,37,81" concept="1" />
+      <node id="7614966498964100982" at="42,52,43,19" concept="5" />
+      <node id="7614966498964100982" at="47,36,48,92" concept="1" />
+      <node id="7614966498964101648" at="51,92,52,22" concept="1" />
+      <node id="7614966498964101648" at="53,30,54,63" concept="3" />
+      <node id="7614966498964101648" at="54,63,55,356" concept="1" />
+      <node id="7614966498964101679" at="58,92,59,22" concept="1" />
+      <node id="7614966498964101679" at="60,30,61,63" concept="3" />
+      <node id="7614966498964101679" at="61,63,62,356" concept="1" />
+      <node id="7614966498964101710" at="65,92,66,22" concept="1" />
+      <node id="7614966498964101710" at="67,30,68,63" concept="3" />
+      <node id="7614966498964101710" at="68,63,69,356" concept="1" />
+      <node id="7614966498964100982" at="20,0,22,0" concept="4" trace="ourParametersCacheExtension" />
+      <node id="7614966498964100982" at="23,0,26,0" concept="0" trace="ConceptHierarchyCycleTest_Test#()V" />
+      <node id="7614966498964100982" at="42,0,45,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="7614966498964101648" at="27,0,31,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101648#()V" />
+      <node id="7614966498964101679" at="31,0,35,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101679#()V" />
+      <node id="7614966498964101710" at="35,0,39,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101710#()V" />
+      <node id="7614966498964100982" at="46,0,50,0" concept="2" trace="initTestNodes#()V" />
+      <node id="7614966498964101648" at="52,22,56,9" concept="1" />
+      <node id="7614966498964101679" at="59,22,63,9" concept="1" />
+      <node id="7614966498964101710" at="66,22,70,9" concept="1" />
+      <node id="7614966498964101648" at="51,0,58,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101648#()V" />
+      <node id="7614966498964101679" at="58,0,65,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101679#()V" />
+      <node id="7614966498964101710" at="65,0,72,0" concept="2" trace="test_NodeCyclicConceptHierarchyCheck7614966498964101710#()V" />
+      <scope id="7614966498964100982" at="23,43,24,60" />
+      <scope id="7614966498964101648" at="28,90,29,81" />
+      <scope id="7614966498964101679" at="32,90,33,81" />
+      <scope id="7614966498964101710" at="36,90,37,81" />
+      <scope id="7614966498964100982" at="42,52,43,19" />
+      <scope id="7614966498964100982" at="47,36,48,92" />
+      <scope id="7614966498964101648" at="53,30,55,356">
+        <var name="nodeToCheck" id="7614966498964101648" />
+      </scope>
+      <scope id="7614966498964101679" at="60,30,62,356">
+        <var name="nodeToCheck" id="7614966498964101679" />
+      </scope>
+      <scope id="7614966498964101710" at="67,30,69,356">
+        <var name="nodeToCheck" id="7614966498964101710" />
+      </scope>
+      <scope id="7614966498964100982" at="23,0,26,0" />
+      <scope id="7614966498964100982" at="42,0,45,0">
+        <var name="owner" id="7614966498964100982" />
+      </scope>
+      <scope id="7614966498964101648" at="27,0,31,0" />
+      <scope id="7614966498964101679" at="31,0,35,0" />
+      <scope id="7614966498964101710" at="35,0,39,0" />
+      <scope id="7614966498964100982" at="46,0,50,0" />
+      <scope id="7614966498964101648" at="51,92,56,9" />
+      <scope id="7614966498964101679" at="58,92,63,9" />
+      <scope id="7614966498964101710" at="65,92,70,9" />
+      <scope id="7614966498964101648" at="51,0,58,0" />
+      <scope id="7614966498964101679" at="58,0,65,0" />
+      <scope id="7614966498964101710" at="65,0,72,0" />
+      <unit id="7614966498964100982" at="40,0,74,0" name="jetbrains.mps.checkers.test.ConceptHierarchyCycleTest_Test$TestBody" />
+      <unit id="7614966498964100982" at="18,0,75,0" name="jetbrains.mps.checkers.test.ConceptHierarchyCycleTest_Test" />
+    </file>
+  </root>
 </debug-info>
 

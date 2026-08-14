@@ -13333,44 +13333,50 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959028d(jetbrains.mps.lang.structure.editor)/8887077936716725174">
     <file name="ConceptDeclarationAssistantUtil.java">
-      <node id="8887077936716725423" at="17,0,18,0" concept="5" trace="myConcept" />
-      <node id="8887077936716725614" at="19,57,20,24" concept="4" />
-      <node id="8887077936718654150" at="23,58,24,71" concept="9" />
-      <node id="8887077936718647491" at="24,71,25,0" concept="12" />
-      <node id="8887077936718513337" at="25,0,26,95" concept="9" />
-      <node id="1022940362748241186" at="26,95,27,133" concept="9" />
-      <node id="1022940362748248666" at="27,133,28,142" concept="9" />
-      <node id="8887077936718513354" at="29,59,30,72" concept="9" />
-      <node id="8887077936718513362" at="31,287,32,17" concept="3" />
-      <node id="8887077936718513372" at="34,364,35,17" concept="3" />
-      <node id="8887077936718688738" at="37,29,38,54" concept="4" />
-      <node id="8887077936718513420" at="39,7,40,109" concept="11" />
-      <node id="8887077936718513422" at="40,109,41,170" concept="4" />
-      <node id="8887077936718530796" at="42,5,43,18" concept="10" />
-      <node id="8887077936716725275" at="19,0,22,0" concept="2" trace="ConceptDeclarationAssistantUtil#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
-      <node id="8887077936718513360" at="30,72,33,7" concept="7" />
-      <node id="8887077936718513370" at="33,7,36,7" concept="7" />
-      <node id="8887077936721247324" at="36,7,39,7" concept="7" />
-      <node id="8887077936718513349" at="28,142,42,5" concept="17" />
-      <node id="8887077936718192323" at="23,0,45,0" concept="8" trace="getStructurallyEqualSuperConcepts#()Ljava/util/List;" />
-      <scope id="8887077936716725279" at="19,57,20,24" />
-      <scope id="8887077936718513361" at="31,287,32,17" />
-      <scope id="8887077936718513371" at="34,364,35,17" />
-      <scope id="8887077936721247326" at="37,29,38,54" />
-      <scope id="8887077936716725275" at="19,0,22,0">
+      <node id="8887077936716725423" at="20,0,21,0" concept="5" trace="myConcept" />
+      <node id="8887077936716725614" at="22,57,23,24" concept="4" />
+      <node id="8887077936718654150" at="26,58,27,71" concept="9" />
+      <node id="8887077936718647491" at="27,71,28,0" concept="12" />
+      <node id="7614966498963761538" at="28,0,29,67" concept="9" />
+      <node id="8887077936718513337" at="29,67,30,95" concept="9" />
+      <node id="1022940362748241186" at="30,95,31,133" concept="9" />
+      <node id="1022940362748248666" at="31,133,32,142" concept="9" />
+      <node id="8887077936718513354" at="33,59,34,72" concept="9" />
+      <node id="7614966498963762244" at="35,55,36,17" concept="3" />
+      <node id="7614966498963763009" at="37,7,38,51" concept="4" />
+      <node id="8887077936718513362" at="39,287,40,17" concept="3" />
+      <node id="8887077936718513372" at="42,364,43,17" concept="3" />
+      <node id="8887077936718688738" at="45,29,46,54" concept="4" />
+      <node id="8887077936718513420" at="47,7,48,109" concept="11" />
+      <node id="8887077936718513422" at="48,109,49,170" concept="4" />
+      <node id="8887077936718530796" at="50,5,51,18" concept="10" />
+      <node id="8887077936716725275" at="22,0,25,0" concept="2" trace="ConceptDeclarationAssistantUtil#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
+      <node id="7614966498963762233" at="34,72,37,7" concept="7" />
+      <node id="8887077936718513360" at="38,51,41,7" concept="7" />
+      <node id="8887077936718513370" at="41,7,44,7" concept="7" />
+      <node id="8887077936721247324" at="44,7,47,7" concept="7" />
+      <node id="8887077936718513349" at="32,142,50,5" concept="17" />
+      <node id="8887077936718192323" at="26,0,53,0" concept="8" trace="getStructurallyEqualSuperConcepts#()Ljava/util/List;" />
+      <scope id="8887077936716725279" at="22,57,23,24" />
+      <scope id="7614966498963762243" at="35,55,36,17" />
+      <scope id="8887077936718513361" at="39,287,40,17" />
+      <scope id="8887077936718513371" at="42,364,43,17" />
+      <scope id="8887077936721247326" at="45,29,46,54" />
+      <scope id="8887077936716725275" at="22,0,25,0">
         <var name="concept" id="8887077936716725314" />
       </scope>
-      <scope id="8887077936718513353" at="29,59,41,170">
+      <scope id="8887077936718513353" at="33,59,49,170">
         <var name="acd" id="8887077936718513355" />
       </scope>
-      <scope id="8887077936718192326" at="23,58,43,18">
+      <scope id="8887077936718192326" at="26,58,51,18">
         <var name="expectedLinks" id="1022940362748241187" />
         <var name="expectedProperties" id="1022940362748248667" />
         <var name="result" id="8887077936718654153" />
         <var name="toCheck" id="8887077936718513338" />
+        <var name="visited" id="7614966498963761541" />
       </scope>
-      <scope id="8887077936718192323" at="23,0,45,0" />
-      <unit id="8887077936716725174" at="16,0,46,0" name="jetbrains.mps.lang.structure.editor.ConceptDeclarationAssistantUtil" />
+      <scope id="8887077936718192323" at="26,0,53,0" />
+      <unit id="8887077936716725174" at="19,0,54,0" name="jetbrains.mps.lang.structure.editor.ConceptDeclarationAssistantUtil" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959028d(jetbrains.mps.lang.structure.editor)/899069222100891964">
