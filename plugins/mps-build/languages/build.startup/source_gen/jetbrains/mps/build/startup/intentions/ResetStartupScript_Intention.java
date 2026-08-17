@@ -63,8 +63,12 @@ public final class ResetStartupScript_Intention extends AbstractIntentionDescrip
     public void execute(final SNode node, final EditorContext editorContext) {
       ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.bootClasspath$_ysz)).clear();
       ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.bootClasspath$_ysz)).addSequence(ListSequence.fromList(SLinkOperations.getChildren(DefaultStartupScript.getDefaultStartupScript(), LINKS.bootClasspath$_ysz)).select((it) -> SNodeOperations.copyNode(it)));
+      ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.extBootClasspath$1tL0)).clear();
+      ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.extBootClasspath$1tL0)).addSequence(ListSequence.fromList(SLinkOperations.getChildren(DefaultStartupScript.getDefaultStartupScript(), LINKS.extBootClasspath$1tL0)).select((it) -> SNodeOperations.copyNode(it)));
       ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.vmOptions64$zvnw)).clear();
       ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.vmOptions64$zvnw)).addSequence(ListSequence.fromList(SLinkOperations.getChildren(DefaultStartupScript.getDefaultStartupScript(), LINKS.vmOptions64$zvnw)).select((it) -> SNodeOperations.copyNode(it)));
+      ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.additionalJvmOptions$uDnf)).clear();
+      ListSequence.fromList(SLinkOperations.getChildren(node, LINKS.additionalJvmOptions$uDnf)).addSequence(ListSequence.fromList(SLinkOperations.getChildren(DefaultStartupScript.getDefaultStartupScript(), LINKS.additionalJvmOptions$uDnf)).select((it) -> SNodeOperations.copyNode(it)));
     }
 
     @Override
@@ -82,9 +86,21 @@ public final class ResetStartupScript_Intention extends AbstractIntentionDescrip
         return true;
       }
 
+      Set<String> currentExtClassPath = this._additional_getExtClassPathSet(node);
+      Set<String> defaultExtClassPath = this._additional_getExtClassPathSet(DefaultStartupScript.getDefaultStartupScript());
+      if (SetSequence.fromSet(currentExtClassPath).disjunction(SetSequence.fromSet(defaultExtClassPath)).isNotEmpty()) {
+        return true;
+      }
+
       Set<String> currentVMOptions = this._additional_getVMOptionsSet(node);
       Set<String> defaultVMOptions = this._additional_getVMOptionsSet(DefaultStartupScript.getDefaultStartupScript());
       if (SetSequence.fromSet(currentVMOptions).disjunction(SetSequence.fromSet(defaultVMOptions)).isNotEmpty()) {
+        return true;
+      }
+
+      Set<String> currentAdditionalVMOptions = this._additional_getAdditionalVMOptionsSet(node);
+      Set<String> defaultAdditionalVMOptions = this._additional_getAdditionalVMOptionsSet(DefaultStartupScript.getDefaultStartupScript());
+      if (SetSequence.fromSet(currentAdditionalVMOptions).disjunction(SetSequence.fromSet(defaultAdditionalVMOptions)).isNotEmpty()) {
         return true;
       }
 
@@ -98,6 +114,12 @@ public final class ResetStartupScript_Intention extends AbstractIntentionDescrip
     private Set<String> _additional_getVMOptionsSet(SNode script) {
       return SetSequence.fromSetWithValues(new LinkedHashSet<String>(), Sequence.fromIterable(SNodeOperations.ofConcept(SLinkOperations.getChildren(script, LINKS.vmOptions64$zvnw), CONCEPTS.SimpleVmOptions$48)).where((it) -> !(SPropertyOperations.getBoolean(it, PROPS.commented$92Mp))).select((it) -> SPropertyOperations.getString(it, PROPS.options$D2Jv)));
     }
+    private Set<String> _additional_getExtClassPathSet(SNode script) {
+      return SetSequence.fromSetWithValues(new LinkedHashSet<String>(), ListSequence.fromList(SLinkOperations.getChildren(script, LINKS.extBootClasspath$1tL0)).select((it) -> SPropertyOperations.getString(it, PROPS.path$jtyZ)));
+    }
+    private Set<String> _additional_getAdditionalVMOptionsSet(SNode script) {
+      return SetSequence.fromSetWithValues(new LinkedHashSet<String>(), Sequence.fromIterable(SNodeOperations.ofConcept(SLinkOperations.getChildren(script, LINKS.additionalJvmOptions$uDnf), CONCEPTS.SimpleVmOptions$48)).where((it) -> !(SPropertyOperations.getBoolean(it, PROPS.commented$92Mp))).select((it) -> SPropertyOperations.getString(it, PROPS.options$D2Jv)));
+    }
     @Override
     public IntentionDescriptor getDescriptor() {
       return ResetStartupScript_Intention.this;
@@ -107,7 +129,9 @@ public final class ResetStartupScript_Intention extends AbstractIntentionDescrip
 
   private static final class LINKS {
     /*package*/ static final SContainmentLink bootClasspath$_ysz = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x35ebd6e5b3437728L, "bootClasspath");
+    /*package*/ static final SContainmentLink extBootClasspath$1tL0 = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x75b5b19ab96b3f01L, "extBootClasspath");
     /*package*/ static final SContainmentLink vmOptions64$zvnw = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x2560aecfb4da3f5bL, "vmOptions64");
+    /*package*/ static final SContainmentLink additionalJvmOptions$uDnf = MetaAdapterFactory.getContainmentLink(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x35ebd6e5b3437508L, 0x75b5b19ab99e10c2L, "additionalJvmOptions");
   }
 
   private static final class PROPS {
