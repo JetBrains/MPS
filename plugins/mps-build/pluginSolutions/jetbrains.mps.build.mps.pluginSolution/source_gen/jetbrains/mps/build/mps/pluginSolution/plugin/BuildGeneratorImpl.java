@@ -287,10 +287,11 @@ public class BuildGeneratorImpl extends AbstractBuildGenerator {
       ListSequence.fromList(dependencies).addElement(_quotation_createNode_un708i_a0a01a0r0ab(macro));
       ListSequence.fromList(dependencies).addElement(_quotation_createNode_un708i_a0a11a0r0ab(macro));
       ListSequence.fromList(dependencies).addElement(createBuildProjectDependency_un708i_a0a21a0r0ab(macro));
+      ListSequence.fromList(dependencies).addElement(createBuildExternalLayoutDependency_un708i_a0a31a0r0ab(macro));
       userMacroNames.remove("mps_home");
       userMacroNames.remove("date");
       userMacroNames.remove("build.number");
-      branding = _quotation_createNode_un708i_a0q0a71a62(ICONS, buildNumber, name, name, dateMacro, ICONS, name.toLowerCase(), name.toLowerCase() + ".svg", ICONS, name.toLowerCase() + "_16.svg", ICONS);
+      branding = _quotation_createNode_un708i_a0r0a71a62(ICONS, buildNumber, name, name, dateMacro, ICONS, name.toLowerCase(), name.toLowerCase() + ".svg", ICONS, name.toLowerCase() + "_16.svg", ICONS);
       ListSequence.fromList(SLinkOperations.getChildren(buildProject, LINKS.parts$mGDj)).addElement(branding);
     }
     for (String macro : userMacroNames) {
@@ -680,7 +681,17 @@ public class BuildGeneratorImpl extends AbstractBuildGenerator {
     }
     return n0.getResult();
   }
-  private static SNode _quotation_createNode_un708i_a0q0a71a62(Object parameter_1, Object parameter_2, Object parameter_3, Object parameter_4, Object parameter_5, Object parameter_6, Object parameter_7, Object parameter_8, Object parameter_9, Object parameter_10, Object parameter_11) {
+  private static SNode createBuildExternalLayoutDependency_un708i_a0a31a0r0ab(SNode p0) {
+    PersistenceFacade facade = PersistenceFacade.getInstance();
+    SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.BuildExternalLayoutDependency$oL);
+    n0.setReference(LINKS.layout$GC7_, new SNodePointer(facade.createModelReference("r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)"), facade.createNodeId("7181125477683264500")));
+    {
+      SNodeBuilder n1 = n0.forChild(LINKS.artifacts$GBS$).init(CONCEPTS.BuildSourceMacroRelativePath$b7);
+      n1.setReferenceTarget(LINKS.macro$kdvp, p0);
+    }
+    return n0.getResult();
+  }
+  private static SNode _quotation_createNode_un708i_a0r0a71a62(Object parameter_1, Object parameter_2, Object parameter_3, Object parameter_4, Object parameter_5, Object parameter_6, Object parameter_7, Object parameter_8, Object parameter_9, Object parameter_10, Object parameter_11) {
     SNode quotedNode_12 = null;
     SNode quotedNode_13 = null;
     SNode quotedNode_14 = null;
@@ -3300,6 +3311,8 @@ public class BuildGeneratorImpl extends AbstractBuildGenerator {
     /*package*/ static final SContainmentLink sources$mT1j = MetaAdapterFactory.getContainmentLink(0xcf935df46994e9cL, 0xa132fa109541cba3L, 0x48e82d508331930cL, 0x48e82d5083341d31L, "sources");
     /*package*/ static final SReferenceLink script$6Ehy = MetaAdapterFactory.getReferenceLink(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd908c220L, 0x4df58c6f18f84a24L, "script");
     /*package*/ static final SContainmentLink artifacts$MVTa = MetaAdapterFactory.getContainmentLink(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd908c220L, 0x395055ca96617d32L, "artifacts");
+    /*package*/ static final SReferenceLink layout$GC7_ = MetaAdapterFactory.getReferenceLink(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d3d0a4L, 0x63a87b9320d3d0a7L, "layout");
+    /*package*/ static final SContainmentLink artifacts$GBS$ = MetaAdapterFactory.getContainmentLink(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d3d0a4L, 0x63a87b9320d3d0a6L, "artifacts");
   }
 
   private static final class CONCEPTS {
@@ -3315,5 +3328,6 @@ public class BuildGeneratorImpl extends AbstractBuildGenerator {
     /*package*/ static final SConcept BuildProjectDependency$sN = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd908c220L, "jetbrains.mps.build.structure.BuildProjectDependency");
     /*package*/ static final SConcept BuildSourceMacroRelativePath$b7 = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafae121dL, "jetbrains.mps.build.structure.BuildSourceMacroRelativePath");
     /*package*/ static final SConcept BuildCompositePath$Eh = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x779c6e65c01467f1L, "jetbrains.mps.build.structure.BuildCompositePath");
+    /*package*/ static final SConcept BuildExternalLayoutDependency$oL = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d3d0a4L, "jetbrains.mps.build.structure.BuildExternalLayoutDependency");
   }
 }
