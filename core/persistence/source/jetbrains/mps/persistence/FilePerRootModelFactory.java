@@ -167,6 +167,15 @@ public class FilePerRootModelFactory implements ModelFactory, IndexAwareModelFac
       header.setMetaInfoProvider(new StuffedMetaModelInfo(new RegularMetaModelInfo()));
     }
 
+    if (ContentOption.CONTENT_ONLY.presentIn(options)) {
+      try {
+        ModelLoadResult result = pf.readModel(header, ModelLoadingState.FULLY_LOADED);
+        return new ContentOnlySModelDescriptor((DefaultSModel) result.getModel(), this);
+      } catch (ModelReadException mre) {
+        throw new ModelLoadException("Can't read model: ", Collections.emptyList(), mre);
+      }
+    }
+
     LOG.debug("Getting model " + header.getModelReference() + " from " + source.getLocation());
     return new DefaultSModelDescriptor(pf, header);
   }

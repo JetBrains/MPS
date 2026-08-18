@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="45qtqt8kc286o82t4b9bg5zr3by5ico">
+<product version="3" modelHash="-55y0bm9z2rs8pxfovq6g5zb3km3r4nm">
   <files names="AccessImpl_AppPluginPart.java:Contribite2NodeActions_ActionGroup.java:Contribute2ModuleActions_ActionGroup.java:Contribute2PackageActions_ActionGroup.java:CoreNodeRefactorings_ActionGroup.java:DeleteNode_Action.java:DeleteNodesHelper.java:EditorActionsAddition_ActionGroup.java:ExtensionDescriptor.java:ModelRefactoring_ActionGroup.java:MoveModelActionExecutor.java:MoveModelDialog.java:MoveModel_Action.java:MoveNodes_Action.java:RefactoringView_Tool.java:Refactoring_ApplicationPlugin.java:Refactoring_Default_KeymapChanges.java:Refactoring_Mac_10_5_KeymapChanges.java:Refactoring_Mac_KeymapChanges.java:Refactoring_ProjectPlugin.java:RenameModel_Action.java:RenameModule_Action.java:RenameNode_Action.java:SafeDelete_Action.java:TouchBarDefault_shift_move_ActionGroup.java:TouchBarDefault_shift_rename_ActionGroup.java:UpdateDependentModelsRefactoringParticipant.java" />
 </product>
 

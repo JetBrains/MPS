@@ -154,8 +154,9 @@ public class DefaultModelPersistence implements ModelFactory, IndexAwareModelFac
 
     if (ContentOption.CONTENT_ONLY.presentIn(options)) {
       // aka parseSingleStream(), just with extra option to keep MMIP
-      try (InputStream is = source.openInputStream()) {
-        SModelData modelData = ModelPersistence.getModelData(is, MetaInfoLoadingOption.KEEP_READ.presentIn(options));
+      try {
+        // Use the source-based overload because the stream may not remain reusable after header parsing.
+        SModelData modelData = ModelPersistence.getModelData(source, MetaInfoLoadingOption.KEEP_READ.presentIn(options));
         if (modelData instanceof DefaultSModel dsm) {
           return new ContentOnlySModelDescriptor(dsm, this);
         }

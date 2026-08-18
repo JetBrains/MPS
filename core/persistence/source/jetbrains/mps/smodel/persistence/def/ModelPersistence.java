@@ -252,6 +252,10 @@ public class ModelPersistence {
     }
   }
 
+  /**
+   * Loads model data from input InputStream. The stream must support mark/reset and remain usable after close,
+   * as SAX parser closes stream after reading the header.
+   */
   public static SModelData getModelData(@NotNull InputStream input, boolean keepMetaModelInfo) throws IOException, ModelReadException {
     assertMarkSupported(input);
     input.mark(HEADER_READ_LIMIT);
@@ -261,6 +265,20 @@ public class ModelPersistence {
       header.setMetaInfoProvider(new StuffedMetaModelInfo(new RegularMetaModelInfo()));
     }
     ModelLoadResult result = readModel(header, new InputSource(new InputStreamReader(input, FileUtil.DEFAULT_CHARSET)), ModelLoadingState.FULLY_LOADED);
+    return result.getModel();
+  }
+
+  /**
+   * Loads model data by opening separate data source streams for the header and the complete model.
+   * The SAX parser closes the header stream, so file-backed streams cannot be reset and reused
+   * for the complete model read.
+   */
+  public static SModelData getModelData(@NotNull StreamDataSource source, boolean keepMetaModelInfo) throws IOException, ModelReadException {
+    SModelHeader header = loadDescriptor(source);
+    if (keepMetaModelInfo) {
+      header.setMetaInfoProvider(new StuffedMetaModelInfo(new RegularMetaModelInfo()));
+    }
+    ModelLoadResult result = readModel(header, source, ModelLoadingState.FULLY_LOADED);
     return result.getModel();
   }
 
