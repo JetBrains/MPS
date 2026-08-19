@@ -46,11 +46,11 @@ import java.util.Objects;
 //todo: currently, myEntryPath can be empty or like "a/b/c". Force it to have "/a/b/c" format and be non-empty (like in JRT file)
 public class JarEntryFile implements IFile {
 
-  private final AbstractJarFileData myJarFileData;
+  private final JarFileData myJarFileData;
   private final String myEntryPath;
   private final JarIoFileSystem myFileSystem;
 
-  JarEntryFile(AbstractJarFileData jarFileData, String entryPath, JarIoFileSystem fileSystem) {
+  JarEntryFile(JarFileData jarFileData, String entryPath, JarIoFileSystem fileSystem) {
     myJarFileData = jarFileData;
     myEntryPath = entryPath;
     myFileSystem = fileSystem;
@@ -151,7 +151,7 @@ public class JarEntryFile implements IFile {
 
   @Override
   public boolean isDirectory() {
-    return myJarFileData != null && myJarFileData.isDirectory(myEntryPath);
+    return myJarFileData.isDirectory(myEntryPath);
   }
 
   @NotNull
@@ -189,7 +189,7 @@ public class JarEntryFile implements IFile {
 
   @Override
   public boolean exists() {
-    return myJarFileData != null && myJarFileData.exists(myEntryPath);
+    return myJarFileData.exists(myEntryPath);
   }
 
   @Override
@@ -224,9 +224,6 @@ public class JarEntryFile implements IFile {
 
   @Override
   public InputStream openInputStream() throws IOException {
-    if (myJarFileData == null) {
-      throw new IOException("File is not found " + getPath());
-    }
     return myJarFileData.openStream(myEntryPath);
   }
 
@@ -242,9 +239,6 @@ public class JarEntryFile implements IFile {
 
   @Override
   public long length() {
-    if (myJarFileData == null) {
-      return -1;
-    }
     return myJarFileData.getLength(myEntryPath);
   }
 
@@ -305,8 +299,8 @@ public class JarEntryFile implements IFile {
 
   @Override
   public int hashCode() {
-    int result = myJarFileData.hashCode();
-    result += myEntryPath != null ? myEntryPath.hashCode() : 0;
+    int result = myJarFileData.getFile().hashCode();
+    result = 31 * result + myEntryPath.hashCode();
     return result;
   }
 }

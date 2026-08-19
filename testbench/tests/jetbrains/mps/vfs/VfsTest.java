@@ -24,9 +24,11 @@ import jetbrains.mps.tool.environment.Environment;
 import jetbrains.mps.tool.environment.EnvironmentAware;
 import jetbrains.mps.util.IFileUtil;
 import jetbrains.mps.util.ReadUtil;
+import jetbrains.mps.vfs.iofs.jar.JarIoFileSystem;
 import jetbrains.mps.vfs.openapi.FileSystem;
 import jetbrains.mps.vfs.path.Path;
 import jetbrains.mps.vfs.util.PathFormatChecker.PathFormatException;
+import jetbrains.mps.vfs.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assume;
 import org.junit.Test;
@@ -34,8 +36,12 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.function.Consumer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -253,6 +259,59 @@ public class VfsTest implements EnvironmentAware {
     assertNull(jarRoot.getParent().getParent());
   }
 
+  private static void doMissingJarIoVfsTest() throws IOException {
+    java.nio.file.Path tempDir = Files.createTempDirectory("mps-missing-jar");
+    java.nio.file.Path archive = tempDir.resolve("created-later.zip");
+    tempDir.toFile().deleteOnExit();
+    archive.toFile().deleteOnExit();
+    String archivePath = PathUtil.toSystemIndependent(archive.toString());
+    IFileSystem jarFileSystem = new JarIoFileSystem(new VFSManager(), null);
+    String entryPath = archivePath + Path.ARCHIVE_SEPARATOR + "entry.txt";
+
+    try {
+      IFile missingEntry = jarFileSystem.getFile(entryPath);
+      assertFalse(missingEntry.exists());
+      assertFalse(missingEntry.isDirectory());
+      assertTrue(missingEntry.getChildren().isEmpty());
+      assertEquals(-1L, missingEntry.length());
+      assertCannotRead(missingEntry);
+
+      try (ZipOutputStream output = new ZipOutputStream(Files.newOutputStream(archive))) {
+        output.putNextEntry(new ZipEntry("entry.txt"));
+        output.write("content".getBytes(StandardCharsets.UTF_8));
+        output.closeEntry();
+      }
+
+      IFile recoveredEntry = jarFileSystem.getFile(entryPath);
+      assertTrue(recoveredEntry.exists());
+      try (InputStream input = recoveredEntry.openInputStream()) {
+        assertEquals("content", new String(ReadUtil.read(input), StandardCharsets.UTF_8));
+      }
+      assertEquals(missingEntry, recoveredEntry);
+      assertEquals(missingEntry.hashCode(), recoveredEntry.hashCode());
+
+      IFile absentEntry = jarFileSystem.getFile(archivePath + Path.ARCHIVE_SEPARATOR + "absent.txt");
+      assertFalse(absentEntry.exists());
+      assertEquals(-1L, absentEntry.length());
+      assertCannotRead(absentEntry);
+    } finally {
+      try {
+        Files.deleteIfExists(archive);
+        Files.deleteIfExists(tempDir);
+      } catch (IOException ignored) {
+        // ZipFile stays open while an IFile from the archive is reachable; deleteOnExit handles this case on Windows.
+      }
+    }
+  }
+
+  private static void assertCannotRead(IFile file) {
+    try (InputStream ignored = file.openInputStream()) {
+      fail("Expected an IOException for " + file);
+    } catch (IOException expected) {
+      // expected
+    }
+  }
+
   @Test
   public void baseIdeaVfsTest() {
     IDEA_FS_TEST(VfsTest::doBaseVfsTest);
@@ -282,5 +341,10 @@ public class VfsTest implements EnvironmentAware {
   @Test
   public void jarIoVfsTest() {
     IO_FS_TEST(VfsTest::doJarVfsTest);
+  }
+
+  @Test
+  public void missingJarIoVfsTest() throws IOException {
+    doMissingJarIoVfsTest();
   }
 }

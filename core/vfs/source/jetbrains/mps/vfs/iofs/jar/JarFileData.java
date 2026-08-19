@@ -21,10 +21,11 @@ import jetbrains.mps.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.NoSuchFileException;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.Set;
 import java.util.jar.JarFile;
@@ -36,48 +37,60 @@ import java.util.zip.ZipFile;
  * This class represents a jar file abstraction
  * It stores cache with all subdirectories and all entries
  */
-class JarFileData extends AbstractJarFileData {
-  private static Logger LOG = Logger.getLogger(JarFileData.class);
+class JarFileData {
+  private static final Logger LOG = Logger.getLogger(JarFileData.class);
+
+  private enum State {
+    NEW, READY, FAILED
+  }
 
   private final Object myLock = new Object();
-  private boolean isInitialized = false;
+  private final File myFile;
+  private final JarFileDataCache myCache;
+  private State myState = State.NEW;
+  private IOException myInitializationFailure;
   private final ZipFileContainer myZipFileContainer = new ZipFileContainer(); // cleared up in the JarFileDataCache#removeGCedReferences
   private final Map<String, Set<String>> myFiles = new THashMap<>();
   private final Map<String, Set<String>> mySubDirectories = new THashMap<>();
   private final Map<String, ZipEntry> myEntries = new THashMap<>();
 
-  JarFileData(File file) {
-    super(file);
+  JarFileData(File file, JarFileDataCache cache) {
+    myFile = file;
+    myCache = cache;
+  }
+
+  File getFile() {
+    return myFile;
   }
 
   ZipFileContainer getZipFileContainer() {
     return myZipFileContainer;
   }
 
-  @Override
   Set<String> getFiles(String dir) {
-    ensureInitialized();
-
-    return Collections.unmodifiableSet(myFiles.get(dir));
+    if (!ensureInitialized()) {
+      return Collections.emptySet();
+    }
+    Set<String> files = myFiles.get(dir);
+    return files == null ? Collections.emptySet() : Collections.unmodifiableSet(files);
   }
 
-  @Override
   Set<String> getSubdirectories(String dir) {
-    ensureInitialized();
-
-    return Collections.unmodifiableSet(mySubDirectories.get(dir));
+    if (!ensureInitialized()) {
+      return Collections.emptySet();
+    }
+    Set<String> directories = mySubDirectories.get(dir);
+    return directories == null ? Collections.emptySet() : Collections.unmodifiableSet(directories);
   }
 
-  @Override
   boolean exists(String path) {
-    ensureInitialized();
-
-    return (myEntries.get(path) != null) || (mySubDirectories.get(path) != null);
+    return ensureInitialized() && (myEntries.get(path) != null || mySubDirectories.get(path) != null);
   }
 
-  @Override
   boolean isDirectory(String path) {
-    ensureInitialized();
+    if (!ensureInitialized()) {
+      return false;
+    }
 
     if (myEntries.get(path) != null) {
       return myEntries.get(path).isDirectory();
@@ -86,7 +99,6 @@ class JarFileData extends AbstractJarFileData {
     return myFiles.get(path) != null || mySubDirectories.get(path) != null;
   }
 
-  @Override
   String getParentDirectory(String dir) {
     int lastSlash = dir.lastIndexOf('/');
     if (lastSlash == -1) {
@@ -105,31 +117,37 @@ class JarFileData extends AbstractJarFileData {
     return myFiles.get(dir);
   }
 
-  @Override
   InputStream openStream(String path) throws IOException {
-    ensureInitialized();
+    if (!ensureInitialized()) {
+      throw new IOException("Unable to read archive '" + getFile() + "'", getInitializationFailure());
+    }
 
     ZipEntry entry = myEntries.get(path);
+    if (entry == null) {
+      throw new FileNotFoundException("Archive entry does not exist: " + getFile() + "!/" + path);
+    }
     // XXX I wonder why not to count InputStream open()/close() to assess when zipFile might be ready to go/close().
     return new MyInputStream(entry);
   }
 
-  @Override
   long getLength(String path) {
-    ensureInitialized();
-
-    return myEntries.get(path).getSize();
+    if (!ensureInitialized()) {
+      return -1L;
+    }
+    ZipEntry entry = myEntries.get(path);
+    return entry == null ? -1L : entry.getSize();
   }
 
-  private void ensureInitialized() {
+  private boolean ensureInitialized() {
     synchronized (myLock) {
-      if (isInitialized) {
-        return;
+      if (myState == State.READY) {
+        return true;
+      }
+      if (myState == State.FAILED) {
+        return false;
       }
 
-      isInitialized = true;
       try {
-
         Stream<? extends ZipEntry> entries = doOpenArchive();
 
         entries.forEach(entry -> {
@@ -174,9 +192,25 @@ class JarFileData extends AbstractJarFileData {
             }
           }
         });
+        myState = State.READY;
+        return true;
       } catch (IOException e) {
-        LOG.error(String.format("Bad jar '%s'", getFile()), e);
+        myInitializationFailure = e;
+        myState = State.FAILED;
+        myCache.discard(this);
+        if (e instanceof FileNotFoundException || e instanceof NoSuchFileException) {
+          LOG.warning("Requested jar file does not exist " + getFile());
+        } else {
+          LOG.error(String.format("Bad jar '%s'", getFile()), e);
+        }
+        return false;
       }
+    }
+  }
+
+  private IOException getInitializationFailure() {
+    synchronized (myLock) {
+      return myInitializationFailure;
     }
   }
 

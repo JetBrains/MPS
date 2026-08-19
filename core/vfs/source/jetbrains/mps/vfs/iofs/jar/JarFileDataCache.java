@@ -66,11 +66,22 @@ final class JarFileDataCache {
         }
       }
 
-      JarFileData data = new JarFileData(file);
+      JarFileData data = new JarFileData(file, this);
       JarFileDataWeakReference ref = new JarFileDataWeakReference(path, data, myQueue);
       myPathToRef.put(path, ref);
 
       return data;
+    }
+  }
+
+  void discard(JarFileData data) {
+    synchronized (myLock) {
+      final String path = data.getFile().getAbsolutePath();
+      JarFileDataWeakReference ref = myPathToRef.get(path);
+      if (ref != null && ref.get() == data) {
+        myPathToRef.remove(path);
+        ref.cleanup();
+      }
     }
   }
 

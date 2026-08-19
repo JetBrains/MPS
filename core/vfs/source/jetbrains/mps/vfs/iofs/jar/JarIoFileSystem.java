@@ -15,7 +15,6 @@
  */
 package jetbrains.mps.vfs.iofs.jar;
 
-import jetbrains.mps.logging.Logger;
 import jetbrains.mps.vfs.FileSystem;
 import jetbrains.mps.vfs.IFile;
 import jetbrains.mps.vfs.IFileSystem;
@@ -28,7 +27,6 @@ import java.io.File;
 
 public final class JarIoFileSystem implements IFileSystem {
   public static final String JAR_SEPARATOR = "!";
-  private static final Logger LOG = Logger.getLogger(JarIoFileSystem.class);
   private final VFSManager myManager;
   private final FileSystem myUmbrellaFileSystem;
 
@@ -56,21 +54,13 @@ public final class JarIoFileSystem implements IFileSystem {
       entryPath = entryPath.substring(1);
     }
 
-    File jarFile = new File(jarPath);
-
-    AbstractJarFileData jarFileData;
-    if (jarFile.exists()) {
-      jarFileData = myJarCache.getDataFor(jarFile);
-    } else {
-      LOG.warning("Requested jar file does not exist " + jarFile);
-      jarFileData = new AbstractJarFileData(jarFile);
-    }
+    JarFileData jarFileData = myJarCache.getDataFor(new File(jarPath));
     return createFile(entryPath, jarFileData);
   }
 
   @Internal
   @NotNull
-  /*package*/ JarEntryFile createFile(String entryPath, AbstractJarFileData jarFileData) {
+  /*package*/ JarEntryFile createFile(String entryPath, JarFileData jarFileData) {
     return new JarEntryFile(jarFileData, entryPath, this);
   }
 
