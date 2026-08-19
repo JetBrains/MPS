@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -95,20 +96,24 @@ public class MessagesContainer implements Disposable {
     }
 
     boolean hasModelMessages(Predicate<SObject> predicate, Predicate<ReportItem> reportItemFilter, SRepository repository) {
-      return myModelsWithMessages.entrySet().stream()
-             // first, find a module that matches
-             .filter(models -> models.getKey().resolve(repository) != null)
-             .filter(models -> predicate.test(SObject.wildcardOf(models.getKey().resolve(repository))))
-             .findFirst()
-             .map(messages ->
-                   // then, see if there is a matching model with messages
-                   messages.getValue().stream()
-                           .filter(modelRef -> modelRef.resolve(repository) != null)
-                           .filter(modelRef -> predicate.test(SObject.of(modelRef.resolve(repository))))
-                           // finally, test with reportItemFilter
-                           .flatMap(modelRef -> myModelMessages.getOrDefault(modelRef, Collections.emptyList()).stream())
-                           .anyMatch(reportItemFilter)
-          ).orElse(false);
+      for (Map.Entry<SModuleReference, Set<SModelReference>> moduleEntry : myModelsWithMessages.entrySet()) {
+        SModule module = moduleEntry.getKey().resolve(repository);
+        if (module == null || !predicate.test(SObject.wildcardOf(module))) {
+          continue;
+        }
+        for (SModelReference modelReference : moduleEntry.getValue()) {
+          SModel model = modelReference.resolve(repository);
+          if (model == null || !predicate.test(SObject.of(model))) {
+            continue;
+          }
+          for (ReportItem reportItem : myModelMessages.getOrDefault(modelReference, Collections.emptyList())) {
+            if (reportItemFilter.test(reportItem)) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
     }
 
   }
@@ -184,12 +189,23 @@ public class MessagesContainer implements Disposable {
    * filtering of messages by groups.
    */
   public boolean hasMessagesInHierarchy(Predicate<SObject> hierarchyContains, Predicate<ReportItem> reportItemFilter, MessageStatus severity, boolean exactly) {
-      MPSProject mpsProject = ProjectHelper.fromIdeaProject(myProject);
-      return mpsProject.getModelAccess()
-                       .computeReadAction(() -> myIndices.entrySet().stream()
-                          .filter(index -> severityIsAtLeast(index.getKey(), severity, exactly))
-                          .anyMatch(index -> index.getValue().hasAnyMessages(hierarchyContains, reportItemFilter, mpsProject.getRepository()))
-                       );
+    MPSProject mpsProject = ProjectHelper.fromIdeaProject(myProject);
+    return mpsProject.getModelAccess().computeReadAction(() -> {
+      SRepository repository = mpsProject.getRepository();
+      if (exactly) {
+        Index index = myIndices.get(severity);
+        return index != null && index.hasAnyMessages(hierarchyContains, reportItemFilter, repository);
+      }
+      for (Map.Entry<MessageStatus, Index> index : myIndices.entrySet()) {
+        if (index.getKey().compareTo(severity) < 0) {
+          continue;
+        }
+        if (index.getValue().hasAnyMessages(hierarchyContains, reportItemFilter, repository)) {
+          return true;
+        }
+      }
+      return false;
+    });
   }
 
   public List<ReportItem> getMessages(SModuleReference moduleRef, MessageStatus severity, boolean exactly) {
