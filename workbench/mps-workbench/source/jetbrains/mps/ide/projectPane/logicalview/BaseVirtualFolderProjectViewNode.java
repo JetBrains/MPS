@@ -42,7 +42,6 @@ import javax.swing.tree.TreeNode;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -80,8 +79,7 @@ public abstract class BaseVirtualFolderProjectViewNode<FolderType extends Virtua
 
   protected boolean containsValue(Object value) {
     String virtualFolder = getValue().getName();
-    return myHierarchy.allValues(virtualFolder).anyMatch(v -> Objects.equals(value, v)) ||
-           myHierarchy.allAuxValues(virtualFolder).anyMatch(av -> Objects.equals(value, av));
+    return myHierarchy.isValueInVirtualFolder(value, virtualFolder);
   }
 
   @Override

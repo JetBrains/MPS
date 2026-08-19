@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -35,6 +34,7 @@ public class VirtualFolderHelper<T> {
   private final SortedSet<String> myVirtualFolders;
   private final Map<String, List<T>> myValueByFolder = new HashMap<>();
   private final Map<String, List<T>> myAuxValueByFolder = new HashMap<>();
+  private final Map<T, List<String>> myFoldersByValue = new HashMap<>();
 
   /**
    * Create a virtual folder hierarchy for a collection of values.
@@ -63,10 +63,16 @@ public class VirtualFolderHelper<T> {
       virtualFolder = virtualFolder.startsWith(".") ? virtualFolder.substring(1) : virtualFolder;
       myValueByFolder.computeIfAbsent(virtualFolder, name -> new ArrayList<>())
                      .add(value);
+      myFoldersByValue.computeIfAbsent(value, v -> new ArrayList<>())
+                      .add(virtualFolder);
       Collection<? extends T> aux = getAuxValues.apply(value);
       if (aux != null && !aux.isEmpty()) {
         myAuxValueByFolder.computeIfAbsent(virtualFolder, name -> new ArrayList<>())
                           .addAll(aux);
+        for (T auxValue : aux) {
+          myFoldersByValue.computeIfAbsent(auxValue, v -> new ArrayList<>())
+                          .add(virtualFolder);
+        }
       }
     }
     myVirtualFolders = new TreeSet<>(myValueByFolder.keySet());
@@ -144,6 +150,24 @@ public class VirtualFolderHelper<T> {
               Stream.of(virtualFolder),
               allFolders(virtualFolderToPrefix(virtualFolder)))
           .flatMap(this::auxValues);
+  }
+
+  /**
+   * Test whether the specified value is assigned to the given virtual folder or one of its subfolders.
+   */
+  @SuppressWarnings("SuspiciousMethodCalls")
+  protected boolean isValueInVirtualFolder(Object value, String virtualFolder) {
+    List<String> folders = myFoldersByValue.get(value);
+    if (folders == null) {
+      return false;
+    }
+    String prefix = virtualFolderToPrefix(virtualFolder);
+    for (String folder : folders) {
+      if (folder.equals(virtualFolder) || folder.startsWith(prefix)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected String virtualFolderToPrefix(String virtualFolder) {

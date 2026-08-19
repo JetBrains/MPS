@@ -7,6 +7,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -168,5 +169,32 @@ public class VirtualFolderHelperTest {
         assertEquals(List.of(), helper.values("folder..").collect(Collectors.toList()));
     }
 
-    
+    @Test
+    public void testValueInVirtualFolder() {
+        List<String> values = Arrays.asList("value1", "value2", "value3");
+        Function<String, String> getVirtualFolder = value -> {
+            switch (value) {
+                case "value1": return "folder1.folder11";
+                case "value2": return "folder11";
+                case "value3": return "folder2";
+                default: return "";
+            }
+        };
+        Function<String, Collection<? extends String>> getAuxValues = value -> {
+            if ("value1".equals(value) || "value3".equals(value)) return Collections.singleton("auxValue");
+            return Collections.emptyList();
+        };
+
+        VirtualFolderHelper<String> helper = new VirtualFolderHelper<>(values, getVirtualFolder, getAuxValues);
+
+        assertTrue(helper.isValueInVirtualFolder("value1", ""));
+        assertTrue(helper.isValueInVirtualFolder("value1", "folder1"));
+        assertTrue(helper.isValueInVirtualFolder("value1", "folder1.folder11"));
+        assertTrue(helper.isValueInVirtualFolder("auxValue", "folder1"));
+        assertTrue(helper.isValueInVirtualFolder("auxValue", "folder2"));
+        assertFalse(helper.isValueInVirtualFolder("value1", "folder11"));
+        assertFalse(helper.isValueInVirtualFolder("value2", "folder1"));
+        assertFalse(helper.isValueInVirtualFolder("missing", ""));
+    }
+
 }
