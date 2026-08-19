@@ -28,6 +28,7 @@ import jetbrains.mps.vfs.openapi.FileSystem;
 import jetbrains.mps.vfs.path.Path;
 import jetbrains.mps.vfs.util.PathFormatChecker.PathFormatException;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -164,6 +165,17 @@ public class VfsTest implements EnvironmentAware {
     }
   }
 
+  private static void doUnixBackslashPathVfsTest(@NotNull IdeaFileSystem fs) {
+    IFile tmpDir = IFileUtil.createTmpDir(fs);
+    try {
+      java.nio.file.Path backslashPath = java.nio.file.Path.of(tmpDir.getPath()).resolve("file\\with\\backslashes");
+      IFile backslashFile = fs.getFile(backslashPath);
+      assertEquals(backslashPath.toString(), backslashFile.getPath());
+    } finally {
+      assertTrue(tmpDir.delete());
+    }
+  }
+
   private static void doJarVfsTest(@NotNull FileSystem fileSystem) {
     String testJarPath = VfsTest.class.getResource(JAR_NAME).getPath();
     IFile jarRoot1 = fileSystem.getFile(testJarPath + Path.ARCHIVE_SEPARATOR + JAR_FOLDER);
@@ -254,6 +266,12 @@ public class VfsTest implements EnvironmentAware {
   @Test
   public void pathIdeaVfsTest() {
     IDEA_FS_TEST(VfsTest::doPathVfsTest);
+  }
+
+  @Test
+  public void unixBackslashPathIdeaVfsTest() {
+    Assume.assumeTrue("Backslash is a valid file-name character only on Unix", java.io.File.separatorChar == '/');
+    IDEA_FS_TEST(VfsTest::doUnixBackslashPathVfsTest);
   }
 
   @Test

@@ -36,6 +36,7 @@ import jetbrains.mps.vfs.refresh.CachingContext;
 import jetbrains.mps.vfs.refresh.CachingFile;
 import jetbrains.mps.vfs.refresh.CachingFileSystem;
 import jetbrains.mps.vfs.refresh.FileSystemListener;
+import jetbrains.mps.vfs.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -110,7 +111,7 @@ public final class IdeaFileSystem implements FileSystem, CachingFileSystem, File
    */
   @NotNull
   public IdeaFile getFile(@NotNull Path path) {
-    String normalizedPath = FileUtil.normalize(path.normalize().toString());
+    String normalizedPath = PathUtil.toSystemIndependent(path.normalize().toString());
     IFileSystem fileSystem = MPSCoreComponents.getInstance().getPlatform().findComponent(VFSManager.class).getFileSystem(VFSManager.FILE_FS);
     assert fileSystem instanceof BaseIdeaFileSystem;
     return ((BaseIdeaFileSystem) fileSystem).getFile(normalizedPath);
@@ -180,7 +181,7 @@ public final class IdeaFileSystem implements FileSystem, CachingFileSystem, File
         return getFile(nioPath);
       }
     }
-    return getFile(FileUtil.normalize(virtualFile.getPath()));
+    return getArchiveAwareFile(virtualFile.getPath()); // normalized downstream
   }
 
   @Override
