@@ -55,6 +55,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
   /*package*/  boolean isReadEnabledFlag() {
     // FIXME I wonder if we shall filter isActive (or make it part of isReadInProgressCurrentThread)
-    return myAllReadFlagTokens.stream().anyMatch(ReadAccessToken::isReadInProgressCurrentThread);
+    for (ReadAccessToken token : myAllReadFlagTokens) {
+      if (token.isReadInProgressCurrentThread()) {
+        return true;
+      }
+    }
+    return false;
   }
 }
