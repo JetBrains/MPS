@@ -1,0 +1,27 @@
+From 4c67622fa25c770fa5f6967b37645a0ec8a142e6 Mon Sep 17 00:00:00 2001
+From: Maros Sandor <maros.sandor@jetbrains.com>
+Date: Fri, 21 Aug 2026 11:37:46 +0200
+Subject: MPS-40018 Stop building UI to enumerated scopes
+
+---
+ .../intellij/psi/search/PredefinedSearchScopeProviderImpl.kt  | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/community/platform/lang-impl/src/com/intellij/psi/search/PredefinedSearchScopeProviderImpl.kt b/community/platform/lang-impl/src/com/intellij/psi/search/PredefinedSearchScopeProviderImpl.kt
+index 93c4d64203b36..4efbf53343de0 100644
+--- a/community/platform/lang-impl/src/com/intellij/psi/search/PredefinedSearchScopeProviderImpl.kt
++++ b/community/platform/lang-impl/src/com/intellij/psi/search/PredefinedSearchScopeProviderImpl.kt
+@@ -482,8 +482,8 @@ open class PredefinedSearchScopeProviderImpl : PredefinedSearchScopeProvider() {
+         return
+       }
+ 
+-      val contentManager = toolWindow.getContentManager()
+-      val content = contentManager.getSelectedContent()
++      val contentManager = toolWindow.getContentManagerIfCreated()
++      val content = contentManager?.getSelectedContent()
+       if (content == null) {
+         return
+       }
+-- 
+2.53.0.windows.1
+
