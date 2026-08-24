@@ -137,6 +137,8 @@
         <library jar="/lib/intellij.platform.vcs.log.impl.jar" />
         <library jar="/lib/intellij.platform.vcs.log.jar" />
         <library jar="/lib/intellij.platform.vcs.jar" />
+        <library jar="/lib/intellij.platform.vcs.shared.jar" />
+        <library jar="/lib/intellij.platform.vcs.core.jar" />
         <sources jar="." descriptor="jetbrains.mps.vcs.idea.stubs.msd" />
       </module>
     </echoxml>
