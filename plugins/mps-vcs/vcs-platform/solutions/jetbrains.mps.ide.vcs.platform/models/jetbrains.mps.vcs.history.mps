@@ -36,10 +36,10 @@
     <import index="akqu" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.data(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="e0ho" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.impl(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="8voc" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.annotate(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="yah0" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
-    <import index="jlcv" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
+    <import index="yah0" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.history(MPS.IDEA)" />
+    <import index="jlcv" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs(MPS.IDEA)" />
     <import index="1q0i" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.graph(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="7g4e" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcsUtil(MPS.IDEA.Modules/)" />
+    <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA)" />
     <import index="1m72" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.components(MPS.IDEA/)" implicit="true" />
   </imports>
   <registry>

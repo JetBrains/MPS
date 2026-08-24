@@ -63,15 +63,14 @@
     <import index="1037" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="qv1t" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.impl.projectlevelman(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="j86o" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.impl(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="1038" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
-    <import index="jlcv" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
-    <import index="epdg" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.rollback(MPS.IDEA.Modules/)" />
+    <import index="1038" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.changes(MPS.IDEA/)" />
+    <import index="epdg" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.rollback(MPS.IDEA/)" />
     <import index="6vmh" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.builder(MPS.Core/)" />
     <import index="2k9e" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.adapter.structure(MPS.Core/)" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" />
     <import index="1ctc" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.stream(JDK/)" />
     <import index="wyuk" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.components(MPS.Core/)" />
-    <import index="qv1u" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.impl.projectlevelman(MPS.IDEA.Modules/)" />
+    <import index="qv1u" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.impl.projectlevelman(MPS.IDEA)" />
     <import index="urs3" ref="r:fc76aa36-3cff-41c7-b94b-eee0e8341932(jetbrains.mps.internal.collections.runtime)" />
     <import index="18nx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.checkin(MPS.IDEA/)" implicit="true" />
   </imports>
@@ -783,7 +782,7 @@
       <property role="TrG5h" value="myGitVcs" />
       <node concept="3Tmbuc" id="7HgS$Vk3cFb" role="1B3o_S" />
       <node concept="3uibUv" id="3oUomEoMJtp" role="1tU5fm">
-        <ref role="3uigEE" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
+        <ref role="3uigEE" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
       </node>
     </node>
     <node concept="2tJIrI" id="1oVBfwt1ipJ" role="jymVt" />
@@ -1433,7 +1432,7 @@
                 </node>
               </node>
               <node concept="liA8E" id="3oUomEoMJu9" role="2OqNvi">
-                <ref role="37wK5l" to="qv1t:~AllVcsesI.getByName(java.lang.String)" resolve="getByName" />
+                <ref role="37wK5l" to="qv1u:~AllVcsesI.getByName(java.lang.String)" resolve="getByName" />
                 <node concept="Xl_RD" id="3oUomEoMJua" role="37wK5m">
                   <property role="Xl_RC" value="Git" />
                 </node>
@@ -1487,8 +1486,8 @@
           <node concept="1rXfSq" id="4hiugqyz9v_" role="3clFbG">
             <ref role="37wK5l" node="xjl$fQR0hX" resolve="setAutoaddPolicy" />
             <node concept="Rm8GO" id="xjl$fQR0im" role="37wK5m">
-              <ref role="1Px2BO" to="jlcv:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
-              <ref role="Rm8GQ" to="jlcv:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
+              <ref role="1Px2BO" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
+              <ref role="Rm8GQ" to="jlcu:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
             </node>
           </node>
         </node>
@@ -1581,11 +1580,11 @@
                 <property role="3TUv4t" value="true" />
                 <property role="TrG5h" value="projectVcsManager" />
                 <node concept="3uibUv" id="5qjuzPoksoc" role="1tU5fm">
-                  <ref role="3uigEE" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                  <ref role="3uigEE" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                 </node>
                 <node concept="2YIFZM" id="5qjuzPokFqE" role="33vP2m">
-                  <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
-                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                  <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                   <node concept="37vLTw" id="5qjuzPokFqF" role="37wK5m">
                     <ref role="3cqZAo" node="3oUomEoMJuI" resolve="myIdeaProject" />
                   </node>
@@ -1834,7 +1833,7 @@
       <node concept="37vLTG" id="xjl$fQR0hW" role="3clF46">
         <property role="TrG5h" value="value" />
         <node concept="3uibUv" id="xjl$fQR0i0" role="1tU5fm">
-          <ref role="3uigEE" to="jlcv:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
+          <ref role="3uigEE" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
         </node>
       </node>
       <node concept="3clFbS" id="xjl$fQR0i1" role="3clF47">
@@ -1842,11 +1841,11 @@
           <node concept="3cpWsn" id="xjl$fQR0hV" role="3cpWs9">
             <property role="TrG5h" value="vcsManager" />
             <node concept="3uibUv" id="xjl$fQR0i3" role="1tU5fm">
-              <ref role="3uigEE" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+              <ref role="3uigEE" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
             </node>
             <node concept="2YIFZM" id="xjl$fQR0i4" role="33vP2m">
-              <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
-              <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+              <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+              <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
               <node concept="37vLTw" id="2BHiRxeumuR" role="37wK5m">
                 <ref role="3cqZAo" node="3oUomEoMJuI" resolve="myIdeaProject" />
               </node>
@@ -1860,10 +1859,10 @@
                 <ref role="3cqZAo" node="xjl$fQR0hV" resolve="vcsManager" />
               </node>
               <node concept="liA8E" id="xjl$fQR0ia" role="2OqNvi">
-                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getStandardConfirmation(com.intellij.openapi.vcs.VcsConfiguration$StandardConfirmation,com.intellij.openapi.vcs.AbstractVcs)" resolve="getStandardConfirmation" />
+                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getStandardConfirmation(com.intellij.openapi.vcs.VcsConfiguration$StandardConfirmation,com.intellij.openapi.vcs.AbstractVcs)" resolve="getStandardConfirmation" />
                 <node concept="Rm8GO" id="7ua3Cx2EWn$" role="37wK5m">
-                  <ref role="Rm8GQ" to="jlcv:~VcsConfiguration$StandardConfirmation.ADD" resolve="ADD" />
-                  <ref role="1Px2BO" to="jlcv:~VcsConfiguration$StandardConfirmation" resolve="VcsConfiguration.StandardConfirmation" />
+                  <ref role="Rm8GQ" to="jlcu:~VcsConfiguration$StandardConfirmation.ADD" resolve="ADD" />
+                  <ref role="1Px2BO" to="jlcu:~VcsConfiguration$StandardConfirmation" resolve="VcsConfiguration.StandardConfirmation" />
                 </node>
                 <node concept="37vLTw" id="2BHiRxeut4Z" role="37wK5m">
                   <ref role="3cqZAo" node="3oUomEoMJtn" resolve="myGitVcs" />
@@ -1871,7 +1870,7 @@
               </node>
             </node>
             <node concept="liA8E" id="xjl$fQR0id" role="2OqNvi">
-              <ref role="37wK5l" to="jlcv:~VcsShowConfirmationOption.setValue(com.intellij.openapi.vcs.VcsShowConfirmationOption$Value)" resolve="setValue" />
+              <ref role="37wK5l" to="jlcu:~VcsShowConfirmationOption.setValue(com.intellij.openapi.vcs.VcsShowConfirmationOption$Value)" resolve="setValue" />
               <node concept="37vLTw" id="2BHiRxgm84k" role="37wK5m">
                 <ref role="3cqZAo" node="xjl$fQR0hW" resolve="value" />
               </node>
@@ -2471,13 +2470,13 @@
                 <property role="TrG5h" value="exceptions" />
                 <node concept="_YKpA" id="7HgS$VjMeLa" role="1tU5fm">
                   <node concept="3uibUv" id="7HgS$VjMeLb" role="_ZDj9">
-                    <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
                   </node>
                 </node>
                 <node concept="2ShNRf" id="7HgS$VjMeLc" role="33vP2m">
                   <node concept="Tc6Ow" id="7HgS$VjMeLd" role="2ShVmc">
                     <node concept="3uibUv" id="7HgS$VjMeLe" role="HW$YZ">
-                      <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+                      <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
                     </node>
                   </node>
                 </node>
@@ -2494,7 +2493,7 @@
                     <ref role="3cqZAo" node="3oUomEoMJtn" resolve="myGitVcs" />
                   </node>
                   <node concept="liA8E" id="4g0Mut8AyT$" role="2OqNvi">
-                    <ref role="37wK5l" to="jlcv:~AbstractVcs.getRollbackEnvironment()" resolve="getRollbackEnvironment" />
+                    <ref role="37wK5l" to="jlcu:~AbstractVcs.getRollbackEnvironment()" resolve="getRollbackEnvironment" />
                   </node>
                 </node>
               </node>
@@ -12375,7 +12374,7 @@
                 <property role="TrG5h" value="e" />
                 <node concept="nSUau" id="xvs04dIv04" role="1tU5fm">
                   <node concept="3uibUv" id="4DNDPQS2LQ0" role="nSUat">
-                    <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
                   </node>
                 </node>
               </node>
@@ -12455,7 +12454,7 @@
           </node>
         </node>
         <node concept="3uibUv" id="6hwF4wZOzAN" role="Sfmx6">
-          <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+          <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
         </node>
         <node concept="2AHcQZ" id="6hwF4wZOzAU" role="2AJF6D">
           <ref role="2AI5Lk" to="rjhg:~Test" resolve="Test" />
@@ -12472,8 +12471,8 @@
           <node concept="1rXfSq" id="4hiugqyzeUO" role="3clFbG">
             <ref role="37wK5l" node="xjl$fQR0hX" resolve="setAutoaddPolicy" />
             <node concept="Rm8GO" id="xjl$fQR0AW" role="37wK5m">
-              <ref role="1Px2BO" to="jlcv:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
-              <ref role="Rm8GQ" to="jlcv:~VcsShowConfirmationOption$Value.DO_ACTION_SILENTLY" resolve="DO_ACTION_SILENTLY" />
+              <ref role="1Px2BO" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
+              <ref role="Rm8GQ" to="jlcu:~VcsShowConfirmationOption$Value.DO_ACTION_SILENTLY" resolve="DO_ACTION_SILENTLY" />
             </node>
           </node>
         </node>
@@ -12657,8 +12656,8 @@
           <node concept="1rXfSq" id="4hiugqyz7Es" role="3clFbG">
             <ref role="37wK5l" node="xjl$fQR0hX" resolve="setAutoaddPolicy" />
             <node concept="Rm8GO" id="xjl$fQR0AX" role="37wK5m">
-              <ref role="1Px2BO" to="jlcv:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
-              <ref role="Rm8GQ" to="jlcv:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
+              <ref role="1Px2BO" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
+              <ref role="Rm8GQ" to="jlcu:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
             </node>
           </node>
         </node>
@@ -13556,7 +13555,7 @@
         <ref role="3uigEE" to="guwi:~IOException" resolve="IOException" />
       </node>
       <node concept="3uibUv" id="6hwF4wZOzB8" role="Sfmx6">
-        <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
       </node>
       <node concept="2AHcQZ" id="6hwF4wZOzBh" role="2AJF6D">
         <ref role="2AI5Lk" to="rjhg:~Test" resolve="Test" />

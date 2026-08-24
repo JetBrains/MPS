@@ -15,9 +15,6 @@
       <sourceRoot location="intellij.platform.vcs.log.graph.jar" />
       <sourceRoot location="intellij.platform.vcs.log.impl.jar" />
       <sourceRoot location="intellij.platform.vcs.log.jar" />
-      <sourceRoot location="intellij.platform.vcs.shared.jar" />
-      <sourceRoot location="intellij.platform.vcs.core.jar" />
-      <sourceRoot location="intellij.platform.vcs.jar" />
       <PackageScope skip-private="false">
         <include prefix="com.intellij." />
       </PackageScope>
@@ -37,9 +34,6 @@
       <library location="${mps_home}/lib/intellij.platform.vcs.log.graph.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.log.impl.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.log.jar" />
-      <library location="${mps_home}/lib/intellij.platform.vcs.shared.jar" />
-      <library location="${mps_home}/lib/intellij.platform.vcs.core.jar" />
-      <library location="${mps_home}/lib/intellij.platform.vcs.jar" />
     </facet>
   </facets>
   <dependencies>

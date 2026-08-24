@@ -69,13 +69,13 @@
     <import index="yah0" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.history(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="lhm8" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.ui(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="e0ho" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.impl(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="jlcv" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
-    <import index="yah1" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
-    <import index="1037" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
-    <import index="idua" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcs.log(MPS.IDEA.Modules/)" />
-    <import index="fy1h" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.diff(MPS.IDEA.Modules/)" />
-    <import index="7g4e" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcsUtil(MPS.IDEA.Modules/)" />
-    <import index="hlwo" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.merge(MPS.IDEA.Modules/)" />
+    <import index="jlcv" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs(MPS.IDEA)" />
+    <import index="yah1" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.history(MPS.IDEA)" />
+    <import index="1037" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.changes(MPS.IDEA)" />
+    <import index="idua" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcs.log(MPS.IDEA)" />
+    <import index="fy1h" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.diff(MPS.IDEA)" />
+    <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA)" />
+    <import index="hlwo" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.merge(MPS.IDEA)" />
     <import index="idub" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log(jetbrains.mps.vcs.idea.stubs/)" implicit="true" />
     <import index="7bx7" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.workbench.action(MPS.Platform/)" implicit="true" />
   </imports>

@@ -61,9 +61,10 @@
     <import index="ap4t" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.generator(MPS.Core/)" />
     <import index="ap4u" ref="215c4c45-ba99-49f5-9ab7-4b6901a63cfd/java:jetbrains.mps.generator(MPS.Generator/)" />
     <import index="lui2" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.module(MPS.OpenAPI/)" />
-    <import index="1037" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="1037" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.changes(MPS.IDEA/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="5fzo" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.persistence.def(MPS.Core/)" />
+    <import index="1038" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="7bx7" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.workbench.action(MPS.Platform/)" implicit="true" />
     <import index="tprs" ref="r:00000000-0000-4000-0000-011c895904a4(jetbrains.mps.ide.actions)" implicit="true" />
   </imports>
@@ -503,11 +504,11 @@
           <node concept="3cpWsn" id="6ySnuJfjg$m" role="3cpWs9">
             <property role="TrG5h" value="manager" />
             <node concept="3uibUv" id="6ySnuJfjg$n" role="1tU5fm">
-              <ref role="3uigEE" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+              <ref role="3uigEE" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
             </node>
             <node concept="2YIFZM" id="6ySnuJfjg$o" role="33vP2m">
-              <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-              <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+              <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+              <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
               <node concept="2OqwBi" id="6ySnuJfjg$p" role="37wK5m">
                 <node concept="2WthIp" id="6ySnuJfjg$q" role="2Oq$k0" />
                 <node concept="1DTwFV" id="6ySnuJfjg$r" role="2OqNvi">
@@ -532,7 +533,7 @@
                   <ref role="3cqZAo" node="6ySnuJfjg$m" resolve="manager" />
                 </node>
                 <node concept="liA8E" id="6ySnuJfjg$$" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getAllVersionedRoots()" resolve="getAllVersionedRoots" />
+                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getAllVersionedRoots()" resolve="getAllVersionedRoots" />
                 </node>
               </node>
               <node concept="1Rwk04" id="6ySnuJfjg$_" role="2OqNvi" />
@@ -604,7 +605,7 @@
                   <ref role="3cqZAo" node="6ySnuJfjg$m" resolve="manager" />
                 </node>
                 <node concept="liA8E" id="6ySnuJfjg_4" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                   <node concept="37vLTw" id="3GM_nagTApk" role="37wK5m">
                     <ref role="3cqZAo" node="6ySnuJfjg$M" resolve="file" />
                   </node>
@@ -2489,11 +2490,11 @@
           <node concept="3cpWsn" id="6ySnuJfjn$E" role="3cpWs9">
             <property role="TrG5h" value="changeListManager" />
             <node concept="3uibUv" id="6ySnuJfjn$F" role="1tU5fm">
-              <ref role="3uigEE" to="1037:~ChangeListManagerImpl" resolve="ChangeListManagerImpl" />
+              <ref role="3uigEE" to="1038:~ChangeListManagerImpl" resolve="ChangeListManagerImpl" />
             </node>
             <node concept="2YIFZM" id="6ySnuJfjn$G" role="33vP2m">
-              <ref role="37wK5l" to="1037:~ChangeListManagerImpl.getInstanceImpl(com.intellij.openapi.project.Project)" resolve="getInstanceImpl" />
-              <ref role="1Pybhc" to="1037:~ChangeListManagerImpl" resolve="ChangeListManagerImpl" />
+              <ref role="37wK5l" to="1038:~ChangeListManagerImpl.getInstanceImpl(com.intellij.openapi.project.Project)" resolve="getInstanceImpl" />
+              <ref role="1Pybhc" to="1038:~ChangeListManagerImpl" resolve="ChangeListManagerImpl" />
               <node concept="2OqwBi" id="38wEix8exQH" role="37wK5m">
                 <node concept="2WthIp" id="38wEix8exQK" role="2Oq$k0" />
                 <node concept="1DTwFV" id="38wEix8exQM" role="2OqNvi">
@@ -2509,13 +2510,13 @@
               <ref role="3cqZAo" node="6ySnuJfjn$E" resolve="changeListManager" />
             </node>
             <node concept="liA8E" id="6ySnuJfjn$N" role="2OqNvi">
-              <ref role="37wK5l" to="1037:~ChangeListManagerImpl.addUnversionedFiles(com.intellij.openapi.vcs.changes.LocalChangeList,java.util.List)" resolve="addUnversionedFiles" />
+              <ref role="37wK5l" to="1038:~ChangeListManagerImpl.addUnversionedFiles(com.intellij.openapi.vcs.changes.LocalChangeList,java.util.List)" resolve="addUnversionedFiles" />
               <node concept="2OqwBi" id="6ySnuJfjn$O" role="37wK5m">
                 <node concept="37vLTw" id="3GM_nagTrKL" role="2Oq$k0">
                   <ref role="3cqZAo" node="6ySnuJfjn$E" resolve="changeListManager" />
                 </node>
                 <node concept="liA8E" id="6ySnuJfjn$Q" role="2OqNvi">
-                  <ref role="37wK5l" to="1037:~ChangeListManagerImpl.getDefaultChangeList()" resolve="getDefaultChangeList" />
+                  <ref role="37wK5l" to="1038:~ChangeListManagerImpl.getDefaultChangeList()" resolve="getDefaultChangeList" />
                 </node>
               </node>
               <node concept="37vLTw" id="3GM_nagTwww" role="37wK5m">
@@ -2914,14 +2915,14 @@
             <node concept="10Nm6u" id="6ySnuJfjmnQ" role="3uHU7w" />
             <node concept="2OqwBi" id="6ySnuJfjmnR" role="3uHU7B">
               <node concept="2YIFZM" id="6ySnuJfjmnS" role="2Oq$k0">
-                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                 <node concept="37vLTw" id="523_aD7YVl5" role="37wK5m">
                   <ref role="3cqZAo" node="523_aD7YVkZ" resolve="ideaProject" />
                 </node>
               </node>
               <node concept="liA8E" id="6ySnuJfjmnW" role="2OqNvi">
-                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                 <node concept="37vLTw" id="523_aD7YSvu" role="37wK5m">
                   <ref role="3cqZAo" node="523_aD7YAjr" resolve="virtualFile" />
                 </node>

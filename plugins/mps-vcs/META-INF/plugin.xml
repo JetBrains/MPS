@@ -22,6 +22,7 @@
   <dependencies>
     <plugin id="jetbrains.mps.core"/>
     <module name="intellij.platform.vcs.impl"/>
+    <module name="intellij.platform.vcs.log"/>
   </dependencies>
 
   <depends optional="true">Subversion</depends>

@@ -38,7 +38,9 @@
     <import index="hlwo" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.merge(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="j86o" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.impl(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="1038" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="hlwp" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.merge(MPS.IDEA/)" />
+    <import index="2lav" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.checkout(MPS.IDEA/)" />
+    <import index="j86p" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.impl(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -227,8 +229,8 @@
   <node concept="312cEu" id="33vUo2uvw57">
     <property role="TrG5h" value="ProjectCheckoutListener" />
     <node concept="3Tm1VV" id="33vUo2uvw58" role="1B3o_S" />
-    <node concept="3uibUv" id="33vUo2uvw59" role="EKbjA">
-      <ref role="3uigEE" to="2lau:~CheckoutListener" resolve="CheckoutListener" />
+    <node concept="3uibUv" id="5xb3lU7dozG" role="EKbjA">
+      <ref role="3uigEE" to="2lav:~CheckoutListener" resolve="CheckoutListener" />
     </node>
     <node concept="3clFb_" id="33vUo2uvw5e" role="jymVt">
       <property role="TrG5h" value="processCheckedOutDirectory" />
@@ -424,8 +426,8 @@
   <node concept="312cEu" id="33vUo2uvKbY">
     <property role="TrG5h" value="ModuleVcsPathPresenter" />
     <node concept="3Tm1VV" id="33vUo2uvKbZ" role="1B3o_S" />
-    <node concept="3uibUv" id="33vUo2uvKc0" role="1zkMxy">
-      <ref role="3uigEE" to="j86o:~VcsPathPresenter" resolve="VcsPathPresenter" />
+    <node concept="3uibUv" id="5xb3lU7dn_I" role="1zkMxy">
+      <ref role="3uigEE" to="j86p:~VcsPathPresenter" resolve="VcsPathPresenter" />
     </node>
     <node concept="312cEg" id="33vUo2uvKc1" role="jymVt">
       <property role="TrG5h" value="myProject" />
@@ -586,11 +588,11 @@
                         <node concept="1DcWWT" id="33vUo2uvKdf" role="3cqZAp">
                           <node concept="2OqwBi" id="33vUo2uvKdg" role="1DdaDG">
                             <node concept="liA8E" id="33vUo2uvKdi" role="2OqNvi">
-                              <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getAllVcsRoots()" resolve="getAllVcsRoots" />
+                              <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getAllVcsRoots()" resolve="getAllVcsRoots" />
                             </node>
                             <node concept="2YIFZM" id="LSPZqiDtBn" role="2Oq$k0">
-                              <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                              <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                              <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                              <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                               <node concept="37vLTw" id="LSPZqiDua6" role="37wK5m">
                                 <ref role="3cqZAo" node="33vUo2uvKc1" resolve="myProject" />
                               </node>
@@ -599,7 +601,7 @@
                           <node concept="3cpWsn" id="33vUo2uvKdj" role="1Duv9x">
                             <property role="TrG5h" value="root" />
                             <node concept="3uibUv" id="33vUo2uvKdk" role="1tU5fm">
-                              <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
+                              <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
                             </node>
                           </node>
                           <node concept="3clFbS" id="33vUo2uvKdl" role="2LFqv$">
@@ -609,7 +611,7 @@
                                 <ref role="37wK5l" to="jlff:~VfsUtilCore.isAncestor(com.intellij.openapi.vfs.VirtualFile,com.intellij.openapi.vfs.VirtualFile,boolean)" resolve="isAncestor" />
                                 <node concept="2OqwBi" id="41JhXQX7Te1" role="37wK5m">
                                   <node concept="liA8E" id="46_v$3HTXzJ" role="2OqNvi">
-                                    <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
+                                    <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
                                   </node>
                                   <node concept="37vLTw" id="3GM_nagT_V4" role="2Oq$k0">
                                     <ref role="3cqZAo" node="33vUo2uvKdj" resolve="root" />
@@ -634,7 +636,7 @@
                                           <node concept="2OqwBi" id="33vUo2uvKd$" role="3uHU7w">
                                             <node concept="2OqwBi" id="33vUo2uvKd_" role="2Oq$k0">
                                               <node concept="liA8E" id="46_v$3HTXVJ" role="2OqNvi">
-                                                <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
+                                                <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
                                               </node>
                                               <node concept="37vLTw" id="3GM_nagTzDf" role="2Oq$k0">
                                                 <ref role="3cqZAo" node="33vUo2uvKdj" resolve="root" />
@@ -716,14 +718,14 @@
         <property role="TrG5h" value="fromRevision" />
         <property role="3TUv4t" value="true" />
         <node concept="3uibUv" id="33vUo2uvKdU" role="1tU5fm">
-          <ref role="3uigEE" to="1038:~ContentRevision" resolve="ContentRevision" />
+          <ref role="3uigEE" to="1037:~ContentRevision" resolve="ContentRevision" />
         </node>
       </node>
       <node concept="37vLTG" id="33vUo2uvKdV" role="3clF46">
         <property role="TrG5h" value="toRevision" />
         <property role="3TUv4t" value="true" />
         <node concept="3uibUv" id="33vUo2uvKdW" role="1tU5fm">
-          <ref role="3uigEE" to="1038:~ContentRevision" resolve="ContentRevision" />
+          <ref role="3uigEE" to="1037:~ContentRevision" resolve="ContentRevision" />
         </node>
       </node>
       <node concept="3clFbS" id="33vUo2uvKdX" role="3clF47">
@@ -740,7 +742,7 @@
                     <ref role="3cqZAo" node="33vUo2uvKdV" resolve="toRevision" />
                   </node>
                   <node concept="liA8E" id="7WyXo5rEH4A" role="2OqNvi">
-                    <ref role="37wK5l" to="1038:~ContentRevision.getFile()" resolve="getFile" />
+                    <ref role="37wK5l" to="1037:~ContentRevision.getFile()" resolve="getFile" />
                   </node>
                 </node>
                 <node concept="liA8E" id="7WyXo5rEH4B" role="2OqNvi">
@@ -753,7 +755,7 @@
                     <ref role="3cqZAo" node="33vUo2uvKdT" resolve="fromRevision" />
                   </node>
                   <node concept="liA8E" id="7WyXo5rEH4F" role="2OqNvi">
-                    <ref role="37wK5l" to="1038:~ContentRevision.getFile()" resolve="getFile" />
+                    <ref role="37wK5l" to="1037:~ContentRevision.getFile()" resolve="getFile" />
                   </node>
                 </node>
                 <node concept="liA8E" id="7WyXo5rEH4G" role="2OqNvi">
@@ -962,13 +964,13 @@
           <node concept="3cpWsn" id="5ooWrzQBcR6" role="3cpWs9">
             <property role="TrG5h" value="mergeProvider" />
             <node concept="3uibUv" id="2LiDtbYeDMp" role="1tU5fm">
-              <ref role="3uigEE" to="hlwo:~MergeProvider" resolve="MergeProvider" />
+              <ref role="3uigEE" to="hlwp:~MergeProvider" resolve="MergeProvider" />
             </node>
             <node concept="2EnYce" id="5ooWrzQBcR8" role="33vP2m">
               <node concept="2OqwBi" id="5ooWrzQBcRi" role="2Oq$k0">
                 <node concept="2YIFZM" id="1ysYxhdn6Tq" role="2Oq$k0">
-                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                  <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                  <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                   <node concept="2OqwBi" id="1ysYxhdn6Tr" role="37wK5m">
                     <node concept="37vLTw" id="1ysYxhdn6Ts" role="2Oq$k0">
                       <ref role="3cqZAo" node="6y_kxB1UVmN" resolve="myMpsProject" />
@@ -979,14 +981,14 @@
                   </node>
                 </node>
                 <node concept="liA8E" id="5ooWrzQBcRk" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                   <node concept="37vLTw" id="3GM_nagTBtc" role="37wK5m">
                     <ref role="3cqZAo" node="4jj2N358GwW" resolve="file" />
                   </node>
                 </node>
               </node>
               <node concept="liA8E" id="5ooWrzQBcRa" role="2OqNvi">
-                <ref role="37wK5l" to="jlcv:~AbstractVcs.getMergeProvider()" resolve="getMergeProvider" />
+                <ref role="37wK5l" to="jlcu:~AbstractVcs.getMergeProvider()" resolve="getMergeProvider" />
               </node>
             </node>
           </node>
@@ -1060,7 +1062,7 @@
                       <ref role="3cqZAo" node="5ooWrzQBcR6" resolve="mergeProvider" />
                     </node>
                     <node concept="liA8E" id="5ooWrzQBcRB" role="2OqNvi">
-                      <ref role="37wK5l" to="hlwo:~MergeProvider.conflictResolvedForFile(com.intellij.openapi.vfs.VirtualFile)" resolve="conflictResolvedForFile" />
+                      <ref role="37wK5l" to="hlwp:~MergeProvider.conflictResolvedForFile(com.intellij.openapi.vfs.VirtualFile)" resolve="conflictResolvedForFile" />
                       <node concept="37vLTw" id="3GM_nagT_Ku" role="37wK5m">
                         <ref role="3cqZAo" node="4jj2N358GwW" resolve="file" />
                       </node>
@@ -1070,8 +1072,8 @@
                 <node concept="3clFbF" id="5ooWrzQBcS_" role="3cqZAp">
                   <node concept="2OqwBi" id="5ooWrzQBcSD" role="3clFbG">
                     <node concept="2YIFZM" id="1ysYxhdn7C6" role="2Oq$k0">
-                      <ref role="37wK5l" to="1038:~VcsDirtyScopeManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                      <ref role="1Pybhc" to="1038:~VcsDirtyScopeManager" resolve="VcsDirtyScopeManager" />
+                      <ref role="37wK5l" to="1037:~VcsDirtyScopeManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                      <ref role="1Pybhc" to="1037:~VcsDirtyScopeManager" resolve="VcsDirtyScopeManager" />
                       <node concept="2OqwBi" id="1ysYxhdn7C7" role="37wK5m">
                         <node concept="37vLTw" id="1ysYxhdn7C8" role="2Oq$k0">
                           <ref role="3cqZAo" node="6y_kxB1UVmN" resolve="myMpsProject" />
@@ -1082,7 +1084,7 @@
                       </node>
                     </node>
                     <node concept="liA8E" id="5ooWrzQBcSH" role="2OqNvi">
-                      <ref role="37wK5l" to="1038:~VcsDirtyScopeManager.fileDirty(com.intellij.openapi.vfs.VirtualFile)" resolve="fileDirty" />
+                      <ref role="37wK5l" to="1037:~VcsDirtyScopeManager.fileDirty(com.intellij.openapi.vfs.VirtualFile)" resolve="fileDirty" />
                       <node concept="37vLTw" id="3GM_nagT$7J" role="37wK5m">
                         <ref role="3cqZAo" node="4jj2N358GwW" resolve="file" />
                       </node>
@@ -1721,7 +1723,7 @@
     <property role="TrG5h" value="ProjectDirMPSCheckoutListener" />
     <node concept="3Tm1VV" id="4Z7jVP8LjLM" role="1B3o_S" />
     <node concept="3uibUv" id="4Z7jVP8LjQl" role="EKbjA">
-      <ref role="3uigEE" to="2lau:~CheckoutListener" resolve="CheckoutListener" />
+      <ref role="3uigEE" to="2lav:~CheckoutListener" resolve="CheckoutListener" />
     </node>
     <node concept="3clFb_" id="4Z7jVP8LjQL" role="jymVt">
       <property role="TrG5h" value="processCheckedOutDirectory" />
@@ -1836,8 +1838,8 @@
   <node concept="312cEu" id="2Qfj$4YV7PJ">
     <property role="TrG5h" value="NonMPSProjectCheckoutListener" />
     <node concept="3Tm1VV" id="2Qfj$4YV7PK" role="1B3o_S" />
-    <node concept="3uibUv" id="2Qfj$4YV7PL" role="EKbjA">
-      <ref role="3uigEE" to="2lau:~CheckoutListener" resolve="CheckoutListener" />
+    <node concept="3uibUv" id="5xb3lU6S3Lu" role="EKbjA">
+      <ref role="3uigEE" to="2lav:~CheckoutListener" resolve="CheckoutListener" />
     </node>
     <node concept="3clFb_" id="2Qfj$4YV7PM" role="jymVt">
       <property role="TrG5h" value="processCheckedOutDirectory" />
