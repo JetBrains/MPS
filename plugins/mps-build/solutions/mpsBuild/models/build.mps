@@ -46939,9 +46939,9 @@
           </node>
         </node>
       </node>
-      <node concept="1SiIV0" id="1mJHWo2XebR" role="3bR37C">
-        <node concept="3bR9La" id="1mJHWo2XebS" role="1SiIV1">
-          <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
+      <node concept="1SiIV0" id="5xb3lU7NpLn" role="3bR37C">
+        <node concept="3bR9La" id="5xb3lU7NpLo" role="1SiIV1">
+          <ref role="3bR37D" node="6IrEpWwbD4R" resolve="jetbrains.mps.vcs.idea.stubs" />
         </node>
       </node>
     </node>
@@ -47467,11 +47467,6 @@
       <node concept="1SiIV0" id="6IrEpWwdikU" role="3bR37C">
         <node concept="3bR9La" id="6IrEpWwdikV" role="1SiIV1">
           <ref role="3bR37D" node="6IrEpWwbD4R" resolve="jetbrains.mps.vcs.idea.stubs" />
-        </node>
-      </node>
-      <node concept="1SiIV0" id="1mJHWo2XecO" role="3bR37C">
-        <node concept="3bR9La" id="1mJHWo2XecP" role="1SiIV1">
-          <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
         </node>
       </node>
     </node>
