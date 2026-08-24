@@ -14987,7 +14987,6 @@
         </node>
         <node concept="1SiIV0" id="7U76iHCPN$V" role="3bR37C">
           <node concept="3bR9La" id="7U76iHCPN$W" role="1SiIV1">
-            <property role="3bR36h" value="true" />
             <ref role="3bR37D" node="7Kfy9QB6L2N" resolve="jetbrains.mps.baseLanguage.tuples.runtime" />
           </node>
         </node>
