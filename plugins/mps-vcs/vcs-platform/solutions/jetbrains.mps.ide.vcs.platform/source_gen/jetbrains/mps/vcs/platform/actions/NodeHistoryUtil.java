@@ -41,9 +41,9 @@ public final class NodeHistoryUtil {
   }
 
   public void initFileAndVcs(SNode node) {
-    // I planned to use  '''DataLocationAwareModelFactory.nodeLocation(node)''' to access node's source in 
+    // I planned to use  '''DataLocationAwareModelFactory.nodeLocation(SNode):DataSource''' to access node's source in 
     // an uniform and what seems to be endorsed way, but noticed FilePerRootModelFactory.nodeLocation logic
-    // is likely to mishandle nodes with the same name, while '''FilePerRootFormatUtil.getStreamNames()''' at least leaves
+    // is likely to mishandle nodes with the same name, while '''FilePerRootFormatUtil.getStreamNames(Iterable<SNode>):Map<SNodeId,String>''' at least leaves
     // a chance to handle such nodes correctly
     myIdeaFile = getFileFromModel(SNodeOperations.getModel(node), SNodeOperations.getContainingRoot(node).getNodeId());
     myActiveVcs = (myIdeaFile == null ? null : ProjectLevelVcsManager.getInstance(myProject.getProject()).getVcsFor(myIdeaFile));

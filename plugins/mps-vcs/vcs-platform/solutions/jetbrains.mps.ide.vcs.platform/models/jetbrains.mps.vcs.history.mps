@@ -36,10 +36,9 @@
     <import index="akqu" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.data(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="e0ho" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.impl(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="8voc" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.annotate(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="yah0" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.history(MPS.IDEA)" />
-    <import index="jlcv" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs(MPS.IDEA)" />
+    <import index="yah0" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.history(MPS.IDEA/)" />
     <import index="1q0i" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.graph(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA)" />
+    <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA/)" />
     <import index="1m72" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.components(MPS.IDEA/)" implicit="true" />
   </imports>
   <registry>
@@ -1634,7 +1633,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="1K6WBNun8f9" role="Sfmx6">
-        <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
       </node>
       <node concept="3uibUv" id="1K6WBNunepG" role="Sfmx6">
         <ref role="3uigEE" to="guwi:~IOException" resolve="IOException" />
@@ -1992,7 +1991,7 @@
       <node concept="37vLTG" id="4_JpahyA5vf" role="3clF46">
         <property role="TrG5h" value="vcs" />
         <node concept="3uibUv" id="4_JpahyA6b5" role="1tU5fm">
-          <ref role="3uigEE" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
+          <ref role="3uigEE" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
         </node>
       </node>
       <node concept="37vLTG" id="4_JpahyAlbL" role="3clF46">
@@ -2159,7 +2158,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="4_JpahyFjK8" role="Sfmx6">
-        <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
       </node>
     </node>
     <node concept="2tJIrI" id="2AsRvWbsITR" role="jymVt" />
@@ -2223,7 +2222,7 @@
         <ref role="3uigEE" to="2o8p:~DiffContent" resolve="DiffContent" />
       </node>
       <node concept="3uibUv" id="2AsRvWbuHtn" role="Sfmx6">
-        <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
       </node>
       <node concept="37vLTG" id="2AsRvWbuHtf" role="3clF46">
         <property role="TrG5h" value="node" />
@@ -2240,7 +2239,7 @@
       <node concept="37vLTG" id="2AsRvWbuHtj" role="3clF46">
         <property role="TrG5h" value="vcs" />
         <node concept="3uibUv" id="2AsRvWbuHtk" role="1tU5fm">
-          <ref role="3uigEE" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
+          <ref role="3uigEE" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
         </node>
       </node>
       <node concept="37vLTG" id="2AsRvWbuHtl" role="3clF46">
@@ -2828,8 +2827,8 @@
                 <node concept="liA8E" id="YIxS4EmxKX" role="2OqNvi">
                   <ref role="37wK5l" to="8voc:~AnnotationTooltipBuilder.appendLine(java.lang.String)" resolve="appendLine" />
                   <node concept="2YIFZM" id="YIxS4EmxKY" role="37wK5m">
-                    <ref role="37wK5l" to="jlcv:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
-                    <ref role="1Pybhc" to="jlcv:~VcsBundle" resolve="VcsBundle" />
+                    <ref role="37wK5l" to="jlcu:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
+                    <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
                     <node concept="Xl_RD" id="YIxS4EmxKZ" role="37wK5m">
                       <property role="Xl_RC" value="commit.description.tooltip.author" />
                     </node>
@@ -2853,8 +2852,8 @@
                 <node concept="liA8E" id="YIxS4EmxL6" role="2OqNvi">
                   <ref role="37wK5l" to="8voc:~AnnotationTooltipBuilder.appendLine(java.lang.String)" resolve="appendLine" />
                   <node concept="2YIFZM" id="YIxS4EmxL7" role="37wK5m">
-                    <ref role="1Pybhc" to="jlcv:~VcsBundle" resolve="VcsBundle" />
-                    <ref role="37wK5l" to="jlcv:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
+                    <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
+                    <ref role="37wK5l" to="jlcu:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
                     <node concept="Xl_RD" id="YIxS4EmxL8" role="37wK5m">
                       <property role="Xl_RC" value="commit.description.tooltip.date" />
                     </node>
@@ -5721,7 +5720,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="5Lno_XHgwNB" role="Sfmx6">
-        <ref role="3uigEE" to="jlcv:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
       </node>
       <node concept="3uibUv" id="5Lno_XHgANI" role="Sfmx6">
         <ref role="3uigEE" to="guwi:~IOException" resolve="IOException" />
