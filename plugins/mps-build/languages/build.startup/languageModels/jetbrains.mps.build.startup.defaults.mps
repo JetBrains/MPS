@@ -1107,34 +1107,14 @@
     <node concept="26Ea6D" id="1xE$2SyOl79" role="3caU5o">
       <property role="26Ea6C" value="-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader" />
     </node>
-    <node concept="26Ea6D" id="1xE$2SyOl7a" role="3caU5o">
-      <property role="26Ea6C" value="-Didea.vendor.name=JetBrains" />
-      <property role="2eq24a" value="true" />
-    </node>
-    <node concept="26Ea6D" id="1xE$2SyOl7b" role="3caU5o">
-      <property role="26Ea6C" value="-Didea.paths.selector=MPS2026.2" />
-      <property role="2eq24a" value="true" />
-    </node>
-    <node concept="26Ea6D" id="1xE$2SyOl7c" role="3caU5o">
-      <property role="26Ea6C" value="-Djna.boot.library.path=%IDE_HOME%/lib/jna/aarch64" />
-      <property role="2eq24a" value="true" />
-    </node>
     <node concept="26Ea6D" id="1xE$2SyOl7d" role="3caU5o">
       <property role="26Ea6C" value="-Djna.nosys=true" />
     </node>
     <node concept="26Ea6D" id="1xE$2SyOl7e" role="3caU5o">
       <property role="26Ea6C" value="-Djna.noclasspath=true" />
     </node>
-    <node concept="26Ea6D" id="1xE$2SyOl7f" role="3caU5o">
-      <property role="26Ea6C" value="-Dpty4j.preferred.native.folder=%IDE_HOME%/lib/pty4j" />
-      <property role="2eq24a" value="true" />
-    </node>
     <node concept="26Ea6D" id="1xE$2SyOl7g" role="3caU5o">
       <property role="26Ea6C" value="-Dio.netty.allocator.type=pooled" />
-    </node>
-    <node concept="26Ea6D" id="1xE$2SyOl7h" role="3caU5o">
-      <property role="26Ea6C" value="-Dskiko.library.path=%IDE_HOME%/lib/skiko-awt-runtime-all" />
-      <property role="2eq24a" value="true" />
     </node>
     <node concept="26Ea6D" id="1xE$2SyOl7i" role="3caU5o">
       <property role="26Ea6C" value="-Dintellij.platform.runtime.repository.path=%IDE_HOME%/modules/module-descriptors.dat" />
