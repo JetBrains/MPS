@@ -1117,6 +1117,7 @@
       <module namespace="org.junit.junit5" type="solution" uuid="63b449db-0918-4a4a-a891-2c430ab133e4">
         <dependencies>
           <module ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065(JDK)" kind="cl" />
+          <module ref="49808fad-9d41-4b96-83fa-9231640f6b2b(JUnit)" kind="cl" />
         </dependencies>
         <uses />
         <library jar="../../lib/apiguardian-api-1.1.2.jar" />

@@ -60756,6 +60756,12 @@
             </node>
           </node>
         </node>
+        <node concept="1SiIV0" id="2oICgeCspPZ" role="3bR37C">
+          <node concept="3bR9La" id="2oICgeCspQ0" role="1SiIV1">
+            <property role="3bR36h" value="true" />
+            <ref role="3bR37D" node="1xb0AuwN7WS" resolve="JUnit" />
+          </node>
+        </node>
       </node>
     </node>
     <node concept="2G$12M" id="7MSVDs2RlsF" role="3989C9">
