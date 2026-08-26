@@ -5,6 +5,7 @@
   <description>Execution configurations for MPS</description>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
 
+  <depends>intellij.testRunner.plugin</depends>
   <depends>jetbrains.mps.execution.languages</depends>
   <depends>jetbrains.mps.debugger.java</depends>
   <depends>jetbrains.mps.debugger.api</depends>
