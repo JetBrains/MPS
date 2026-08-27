@@ -58563,22 +58563,19 @@
             </node>
           </node>
         </node>
-        <node concept="398223" id="5f5DhuJRV_$" role="39821P">
-          <node concept="3_J27D" id="5f5DhuJRV__" role="Nbhlr">
-            <node concept="3Mxwew" id="5f5DhuJRV_A" role="3MwsjC">
-              <property role="3MwjfP" value="platform-testRunner-plugin" />
-            </node>
-          </node>
-          <node concept="2HvfSZ" id="5f5DhuJRV_B" role="39821P">
-            <node concept="55IIr" id="5f5DhuJRV_C" role="2HvfZ0">
-              <node concept="2Ry0Ak" id="5f5DhuJRV_D" role="iGT6I">
+        <node concept="m$_wl" id="3TAvYl1bUxc" role="39821P">
+          <ref role="m_rDy" node="3TAvYl1bTr3" resolve="intellij.testRunner.plugin" />
+          <node concept="2HvfSZ" id="3TAvYl1bUCN" role="39821P">
+            <node concept="55IIr" id="3TAvYl1bUCO" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="3TAvYl1bUCP" role="iGT6I">
                 <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="5f5DhuJRV_E" role="2Ry0An">
+                <node concept="2Ry0Ak" id="3TAvYl1bUCQ" role="2Ry0An">
                   <property role="2Ry0Am" value="platform-testRunner-plugin" />
                 </node>
               </node>
             </node>
           </node>
+          <node concept="pUk6x" id="3TAvYl1bUz$" role="pUk7w" />
         </node>
       </node>
     </node>
@@ -58599,6 +58596,25 @@
       </node>
       <node concept="3_J27D" id="5ziJCXbfbGX" role="m$_w8">
         <node concept="3Mxwew" id="5ziJCXbfcMj" role="3MwsjC">
+          <property role="3MwjfP" value="&lt;empty&gt;" />
+        </node>
+      </node>
+    </node>
+    <node concept="m$_wf" id="3TAvYl1bTr3" role="3989C9">
+      <property role="m$_wk" value="intellij.testRunner.plugin" />
+      <property role="1NdglO" value="true" />
+      <node concept="3_J27D" id="3TAvYl1bTr5" role="m$_yQ">
+        <node concept="3Mxwew" id="3TAvYl1bTve" role="3MwsjC">
+          <property role="3MwjfP" value="Test Runner" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="3TAvYl1bTr7" role="m_cZH">
+        <node concept="3Mxwew" id="3TAvYl1bTwY" role="3MwsjC">
+          <property role="3MwjfP" value="platform-testRunner-plugin" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="3TAvYl1bTr9" role="m$_w8">
+        <node concept="3Mxwew" id="3TAvYl1bTAN" role="3MwsjC">
           <property role="3MwjfP" value="&lt;empty&gt;" />
         </node>
       </node>

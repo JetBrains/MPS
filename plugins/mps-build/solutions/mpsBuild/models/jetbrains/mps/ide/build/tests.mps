@@ -4360,6 +4360,9 @@
             <property role="3MwjfP" value="-Xmx2048m" />
           </node>
         </node>
+        <node concept="24YFd4" id="3TAvYl1bUYC" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:3TAvYl1bTr3" resolve="intellij.testRunner.plugin" />
+        </node>
       </node>
       <node concept="22LTRF" id="yja7V_1JuO" role="22LTRK">
         <ref role="22LTRG" node="yja7V_1HH2" resolve="generator-tests" />
