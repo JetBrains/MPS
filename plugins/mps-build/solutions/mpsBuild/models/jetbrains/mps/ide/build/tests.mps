@@ -335,6 +335,9 @@
             <property role="3MwjfP" value="-Xmx2048m" />
           </node>
         </node>
+        <node concept="24YFd4" id="4LnM3RjTk6x" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:3TAvYl1bTr3" resolve="intellij.testRunner.plugin" />
+        </node>
       </node>
       <node concept="22LTRM" id="30QAtkedoZT" role="22LTRK">
         <ref role="22LTRN" node="30QAtkedp05" resolve="jetbrains.mps.execution.impl.tests" />
