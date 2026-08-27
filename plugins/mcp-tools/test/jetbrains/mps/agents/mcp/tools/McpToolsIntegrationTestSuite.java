@@ -89,6 +89,7 @@ public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
     cfg.addPlugin(new File(pluginsDir, "execution-api").getAbsolutePath(), "jetbrains.mps.execution.api");
     cfg.addPlugin(new File(pluginsDir, "execution-languages").getAbsolutePath(), "jetbrains.mps.execution.languages");
     cfg.addPlugin(new File(pluginsDir, "execution-configurations").getAbsolutePath(), "jetbrains.mps.execution.configurations");
+    cfg.addPlugin(new File(pluginsDir, "platform-testRunner-plugin").getAbsolutePath(), "platform-testRunner-plugin");
     ourEnvironment = new IdeaEnvironment(cfg);
     ourEnvironment.init();
   }

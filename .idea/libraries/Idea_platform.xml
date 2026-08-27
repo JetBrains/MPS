@@ -402,6 +402,8 @@
       <root url="jar://$PROJECT_DIR$/lib/testFramework.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/platform-structureView-plugin/lib/modules/intellij.platform.structureView.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/platform-bookmarks-plugin/lib/modules/intellij.platform.bookmarks.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-testRunner-plugin/lib/modules/intellij.platform.testRunner.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-testRunner-plugin/lib/modules/intellij.platform.smRunner.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
