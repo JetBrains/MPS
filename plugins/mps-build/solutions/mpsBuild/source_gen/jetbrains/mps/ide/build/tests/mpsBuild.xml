@@ -932,6 +932,7 @@
       <plugin id="jetbrains.mps.execution.languages" path="${artifacts.mps}/plugins/mps-execution-languages" />
       <plugin id="jetbrains.mps.junit5" path="${artifacts.mps}/plugins/mps-junit5" />
       <plugin id="jetbrains.mps.testing" path="${artifacts.mps}/plugins/mps-testing" />
+      <plugin id="intellij.testRunner.plugin" path="${artifacts.mps}/plugins/platform-testRunner-plugin" />
       <project path="${basedir}" />
       <testmodules>        
         <path refid="mps.tests.path" />
