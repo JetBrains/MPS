@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,16 +53,26 @@ public abstract class RegularModelDescriptor extends SModelBase {
       return copy;
     }
     final ModelLoadingState oldState;
+    boolean replaced = false;
     synchronized (myLoadLock) {
       oldState = getLoadingState();
       if (mySModel == null) {
         ModelLoadResult<jetbrains.mps.smodel.SModel> loadResult = createModel();
-        mySModel = loadResult.getModelData();
+        final jetbrains.mps.smodel.SModel newlyLoaded = loadResult.getModelData();
         setLoadingState(loadResult.getState());
+        // has to go inside a lock to prevent race condition like MPS-40002, mySModel shall never escape
+        // getSModel() without proper ModelDescriptor set
+        replaceInstance(null, newlyLoaded);
+        mySModel = newlyLoaded;
+        replaced = true;
       }
     }
-    replaceModelAndFireEvent(null, mySModel);
-    fireModelStateChanged(oldState, getLoadingState());
+    // don't send more than once in case few threads got into this method
+    if (replaced) {
+      // in fact, null->mySModel is no-op
+      fireInstanceReplaced(null, mySModel);
+      fireModelStateChanged(oldState, getLoadingState());
+    }
     return mySModel;
   }
 
@@ -97,8 +107,9 @@ public abstract class RegularModelDescriptor extends SModelBase {
       oldModel = mySModel;
       mySModel = newModel.getModelData();
       setLoadingState(newModel.getState());
+      replaceInstance(oldModel, mySModel);
     }
-    replaceModelAndFireEvent(oldModel, mySModel);
+    fireInstanceReplaced(oldModel, mySModel);
     fireModelStateChanged(oldState, getLoadingState());
   }
 }

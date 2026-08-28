@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2023 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,8 +105,10 @@ public abstract class LazyEditableSModelBase extends EditableSModelBase {
     setChanged(false);
     final SModel oldModel = getCurrentModelInternal();
     myLoadSupport.replaceWith(newModel, state);
-    // newModel to get modelDescriptor along with event firing
-    replaceModelAndFireEvent(oldModel, newModel);
+    // newModel to get modelDescriptor
+    replaceInstance(oldModel, newModel);
+    // and event firing comes separately
+    fireInstanceReplaced(oldModel, newModel);
 
     // fixme AP since we have reference separately from the model data; will go away once the name as well as id is stored inside model data
     if (needToChangeReference) {
