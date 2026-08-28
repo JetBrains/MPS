@@ -46,7 +46,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Demonstrates a data-race in the lazy publication of a model's data instance in
@@ -100,7 +99,7 @@ public class StubModelDescriptorPublishRaceTest implements EnvironmentAware {
 
     final JavaClassStubModelDescriptor model = new JavaClassStubModelDescriptor(modelRef, dataSource) {
       @Override
-      protected void replaceModelAndFireEvent(jetbrains.mps.smodel.SModel oldModel, jetbrains.mps.smodel.SModel newModel) {
+      protected void fireInstanceReplaced(jetbrains.mps.smodel.SModel oldModel, jetbrains.mps.smodel.SModel newModel) {
         // mySModel is now published to the field (reachable via the lock-free fast path), but the descriptor
         // has NOT been attached to newModel yet. Let a reader observe exactly this state.
         published.countDown();
@@ -109,7 +108,7 @@ public class StubModelDescriptorPublishRaceTest implements EnvironmentAware {
         } catch (InterruptedException ignore) {
           Thread.currentThread().interrupt();
         }
-        super.replaceModelAndFireEvent(oldModel, newModel);
+        super.fireInstanceReplaced(oldModel, newModel);
       }
     };
     model.setModule(fakeModule(moduleRef));

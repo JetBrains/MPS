@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -483,15 +483,27 @@ public abstract class SModelBase extends SModelDescriptorStub implements SModel 
    * FIXME it's synchronized, do we still need that (with RegularModelDescriptor using distinct lock object)
    * XXX there are two uses in subclasses of not-so-nice EditableSModelBase (lazy and custom) that can't get replaced readily with
    * nice and convenient RegularModelDescriptor.replace() call.
+   * @deprecated we are going to remove this method
    */
+  @Deprecated(forRemoval = true, since = "2026.2")
   protected void replaceModelAndFireEvent(jetbrains.mps.smodel.SModel oldModel, jetbrains.mps.smodel.SModel newModel) {
+    replaceInstance(oldModel, newModel);
+    fireInstanceReplaced(oldModel, newModel);
+  }
+
+  protected final void replaceInstance(jetbrains.mps.smodel.SModel oldModel, jetbrains.mps.smodel.SModel newModel) {
     if (oldModel != null) {
       oldModel.dispose();
     }
     if (newModel != null) {
       newModel.setModelDescriptor(this, getNodeEventDispatch());
     }
+  }
 
+  // FIXME once we confirm that there's no longer race condition, we may need to rework
+  //       (or delete) StubModelDescriptorPublishRaceTest, remove original replaceModelAndFireEvent() method
+  //       and make this one final.
+  protected void fireInstanceReplaced(jetbrains.mps.smodel.SModel oldModel, jetbrains.mps.smodel.SModel newModel) {
     if (oldModel != null && newModel != null) {
       // there are events like model 'loaded' (null to something) and 'unloaded' (something to null), I don't see a reason
       // to distrubute 'replaced' unless both are 'something'. However, there are exceptions (defects), see #unload(),
