@@ -1,11 +1,12 @@
-From cde6ae06c17fbe8202d55d3ab5e88e0fc667b3b9 Mon Sep 17 00:00:00 2001
+From e2d81d4984948cb3ee0dd568c3b55ae2c80b2d90 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
-Date: Thu, 27 Aug 2026 17:06:52 +0200
+Date: Fri, 28 Aug 2026 10:10:42 +0200
 Subject: [PATCH 14/14] MPS-39954 move library modules from
  libraries-misc-plugin to /lib
 
 Drop libraries-misc-plugin.
 Cherry-picked c5dab09507410 ignoring changes unrelated to MPS.
+Only changes in community/ included.
 
 DO NOT MERGE TO MASTER!
 
@@ -45,13 +46,7 @@ Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
  .../productLayout/CommunityModuleSets.kt      | 10 +++++++++
  .../intellij.moduleSets.ide.common.xml        |  6 ++++++
  ...tellij.moduleSets.libraries.ide.common.xml | 11 ++++++++++
- .../intellij.moduleSets.ide.ultimate.xml      |  6 ++++++
- .../build/gateway/GatewayProperties.kt        |  1 +
- .../gateway/JetBrainsGatewayBuildTest.kt      |  7 -------
- .../gateway/resources/META-INF/plugin.xml     |  1 +
- .../META-INF/ReSharperBackendPlugin.xml       |  1 +
- .../ReSharperExternalProductProperties.kt     |  1 +
- 11 files changed, 38 insertions(+), 32 deletions(-)
+ 5 files changed, 28 insertions(+), 25 deletions(-)
  create mode 100644 community/platform/platform-resources/generated/META-INF/intellij.moduleSets.libraries.ide.common.xml
 
 diff --git a/community/libraries/misc/plugin/plugin-content.yaml b/community/libraries/misc/plugin/plugin-content.yaml
@@ -173,99 +168,6 @@ index 0000000000000..9a40736e6cfb5
 +  </content>
 +</idea-plugin>
 \ No newline at end of file
-diff --git a/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml b/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml
-index 0e0193541fec4..f7f7acb66dd83 100644
---- a/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml
-+++ b/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml
-@@ -339,6 +339,12 @@
-     <module name="intellij.platform.jewel.markdown.core"/>
-     <!-- endregion -->
- 
-+    <!-- region nested: ide.common > libraries.ide.common -->
-+    <module name="intellij.libraries.javax.activation"/>
-+    <module name="intellij.libraries.lucene.common"/>
-+    <module name="intellij.libraries.commons.text"/>
-+    <!-- endregion -->
-+
-     <!-- region nested: ide.common > vcs -->
-     <!-- region nested: ide.common > vcs > vcs.shared -->
-     <module name="intellij.platform.vcs.core" loading="embedded"/>
-diff --git a/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt b/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt
-index f075d74c70da1..c3f9c75bd8c58 100644
---- a/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt
-+++ b/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt
-@@ -171,6 +171,7 @@ open class GatewayProperties(private val ultimateHome: Path) : JetBrainsProductP
-     deprecatedInclude("intellij.platform.resources", "META-INF/PlatformLangPlugin.xml")
- 
-     moduleSet(CommunityModuleSets.essential())
-+    moduleSet(CommunityModuleSets.librariesIdeCommon())
-     moduleSet(CommunityModuleSets.vcs())
-     bundledPlugins(
-       listOf(
-diff --git a/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt b/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt
-index dd4a4f2616389..62275a7f803fe 100644
---- a/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt
-+++ b/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt
-@@ -11,12 +11,9 @@ import org.junit.jupiter.api.Assertions.assertFalse
- import org.junit.jupiter.api.Assertions.assertTrue
- import org.junit.jupiter.api.Test
- import org.junit.jupiter.api.TestInfo
--import java.nio.file.Files
- import java.nio.file.Path
- 
- private const val MISC_LIBRARIES_PLUGIN = "intellij.libraries.misc.plugin"
--private const val ACTIVATION_MODULE = "intellij.libraries.javax.activation"
--private const val LUCENE_COMMON_MODULE = "intellij.libraries.lucene.common"
- 
- class JetBrainsGatewayBuildTest {
-   @Test
-@@ -48,10 +45,6 @@ class JetBrainsGatewayBuildTest {
- 
-     val productContent = productProperties.getProductContentDescriptor()
-     assertTrue(productContent.bundledPlugins.contains(TargetName(MISC_LIBRARIES_PLUGIN)))
--
--    val gatewayPluginXml = Files.readString(ULTIMATE_HOME.resolve("remote-dev/gateway/resources/META-INF/plugin.xml"))
--    assertFalse(gatewayPluginXml.contains("<module name=\"$ACTIVATION_MODULE\""))
--    assertFalse(gatewayPluginXml.contains("<module name=\"$LUCENE_COMMON_MODULE\""))
-   }
- 
-   private fun verifyBuiltInModules(file: Path) {
-diff --git a/remote-dev/gateway/resources/META-INF/plugin.xml b/remote-dev/gateway/resources/META-INF/plugin.xml
-index 34225ee194d61..67d0653dbe7c5 100644
---- a/remote-dev/gateway/resources/META-INF/plugin.xml
-+++ b/remote-dev/gateway/resources/META-INF/plugin.xml
-@@ -7,6 +7,7 @@
- 
-   <xi:include href="/META-INF/PlatformLangPlugin.xml"/>
-   <xi:include href="/META-INF/intellij.moduleSets.essential.xml"/>
-+  <xi:include href="/META-INF/intellij.moduleSets.libraries.ide.common.xml"/>
-   <xi:include href="/META-INF/intellij.moduleSets.vcs.xml"/>
-   <!-- region additional -->
-   <content namespace="jetbrains">
-diff --git a/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml b/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml
-index e0019b09e8eb5..dbcd2a6da475e 100644
---- a/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml
-+++ b/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml
-@@ -10,6 +10,7 @@
-   <xi:include href="/META-INF/PlatformLangPlugin.xml"/>
-   <xi:include href="/META-INF/resharper-backend-customization.xml"/>
-   <xi:include href="/META-INF/intellij.moduleSets.essential.xml"/>
-+  <xi:include href="/META-INF/intellij.moduleSets.libraries.ide.common.xml"/>
-   <xi:include href="/META-INF/intellij.moduleSets.commercial.xml"/>
-   <xi:include href="/META-INF/intellij.moduleSets.identifiers.ultimate.xml"/>
-   <xi:include href="/META-INF/intellij.moduleSets.vcs.xml"/>
-diff --git a/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt b/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt
-index 367c376fc8758..c2a782a998bcb 100644
---- a/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt
-+++ b/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt
-@@ -71,6 +71,7 @@ class DotnetExternalProductProperties : ProductProperties() {
- 
-     // Module sets
-     moduleSet(CommunityModuleSets.essential())
-+    moduleSet(CommunityModuleSets.librariesIdeCommon())
-     moduleSet(UltimateModuleSets.commercial())
-     moduleSet(UltimateModuleSets.identifiersUltimate())
-     moduleSet(CommunityModuleSets.vcs())
 -- 
 2.55.0
 
