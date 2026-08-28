@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.jetbrains.mps.openapi.persistence.NullDataSource;
  * @author Artem Tikhomirov
  */
 public class TrivialModelDescriptor extends SModelBase {
-  private SModel myModelData;
+  private final SModel myModelData;
 
   /**
    * @param modelData actual model data represented with this descriptor. Note, data's modelDescriptor is set to <code>this</code>
@@ -46,7 +46,8 @@ public class TrivialModelDescriptor extends SModelBase {
   public TrivialModelDescriptor(@NotNull SModel modelData) {
     super(modelData.getReference(), new NullDataSource());
     myModelData = modelData;
-    replaceModelAndFireEvent(null, modelData);
+    replaceInstance(null, modelData); // no need to fire any events, we've just instantiated the model,
+    // all we need to do is to associate this descriptor with the data
     setLoadingState(ModelLoadingState.FULLY_LOADED);
   }
 
