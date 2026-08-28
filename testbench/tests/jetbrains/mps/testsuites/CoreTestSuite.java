@@ -69,6 +69,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.environment.MpsEnvironmentTest.class,
     jetbrains.mps.repo.RepoListenerTest.class,
     jetbrains.mps.java.stub.StubModelLazyLoadStressTest.class,
+    jetbrains.mps.java.stub.StubModelDescriptorPublishRaceTest.class,
     jetbrains.mps.java.stub.JavaClassAnnotationValueTest.class,
     jetbrains.mps.java.stub.GenericArrayParametersTest.class,
     jetbrains.mps.classloading.ProjectMPSFacetCorrectnessTest.class,
