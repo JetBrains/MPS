@@ -1,7 +1,7 @@
-From 06e7fbf7a9d4a504d085607cccac84c540d9fc02 Mon Sep 17 00:00:00 2001
+From c4853c982a924f8b6149e08b8bef935ad29b9c51 Mon Sep 17 00:00:00 2001
 From: Maros Sandor <maros.sandor@jetbrains.com>
 Date: Thu, 13 Aug 2026 13:55:19 +0200
-Subject: MPS-39109 Removing unused files from MPS build
+Subject: [PATCH 12/14] MPS-39109 Removing unused files from MPS build
 
 ---
  community/mps/build/build/build.xml                  | 12 +++++++++++-
@@ -9,10 +9,10 @@ Subject: MPS-39109 Removing unused files from MPS build
  2 files changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
-index 824b819cbd4a9..439d4982fdc9d 100644
+index 1a307e8207e64..9805b7adb4b7b 100644
 --- a/community/mps/build/build/build.xml
 +++ b/community/mps/build/build/build.xml
-@@ -76,7 +76,17 @@
+@@ -65,7 +65,17 @@
    <!-- Remove IdeaApplicationInfo.xml and IdeaPlugin.xml. These will be provided during MPS build later -->
    <target name="repackage-app-jar" description="Remove IDEA specific descriptors">
      <jar destfile="${target.dist}/lib/stripped.jar" zip64Mode="as-needed">
@@ -32,7 +32,7 @@ index 824b819cbd4a9..439d4982fdc9d 100644
      <move file="${target.dist}/lib/stripped.jar" tofile="${target.dist}/lib/intellij.idea.community.customization.jar"/>
    </target>
 diff --git a/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml b/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml
-index 8cf0408ddf1a2..cf84f969232e7 100644
+index 4c437e89d2c68..3546e906812f8 100644
 --- a/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml
 +++ b/community/mps/build/intellij.mps.resources/src/idea/MPSApplicationInfo.xml
 @@ -4,7 +4,7 @@
@@ -45,5 +45,5 @@ index 8cf0408ddf1a2..cf84f969232e7 100644
    <names product="MPS" script="mps"/>
    <essential-plugin>com.intellij.java</essential-plugin>
 -- 
-2.53.0.windows.1
+2.55.0
 

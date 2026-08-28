@@ -1,20 +1,40 @@
-From 4d0641085389b68b3d26d2dc50cc4217e5d66d5b Mon Sep 17 00:00:00 2001
+From 922b33844bb6142f7d2db87b6141832488024b6a Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 30 Jul 2026 17:18:14 +0200
-Subject: MPS-39681 MPS build: patch Java plugin manifest during
+Subject: [PATCH 10/14] MPS-39681 MPS build: patch Java plugin manifest during
  build
 
 Avoid patching the resulting jar file from ant build file,
 instead patch the manifest during build.
 ---
+ community/mps/build/BUILD.bazel               |  5 +
  community/mps/build/build/build.xml           | 13 +--
  .../java-impl.jar/META-INF/JavaPlugin.xml     | 94 ------------------
  .../java-impl.jar/META-INF/plugin.xml         | 96 ++++++++++++++++++-
- .../intellij/build/mps/MPSBuilder.kt          |  2 +-
- .../intellij/build/mps/MPSProperties.kt       | 31 ++++--
- 5 files changed, 115 insertions(+), 121 deletions(-)
+ community/mps/build/intellij.mps.build.iml    |  2 +
+ .../intellij/build/mps/MPSProperties.kt       | 29 ++++--
+ 6 files changed, 120 insertions(+), 119 deletions(-)
  delete mode 100644 community/mps/build/build/manifests/java-impl.jar/META-INF/JavaPlugin.xml
 
+diff --git a/community/mps/build/BUILD.bazel b/community/mps/build/BUILD.bazel
+index 8aebb89c9900c..e54f6a93ff0c3 100644
+--- a/community/mps/build/BUILD.bazel
++++ b/community/mps/build/BUILD.bazel
+@@ -28,9 +28,14 @@ jvm_library(
+         allow_empty = True,
+     ),
+     module_name = "intellij.mps.build",
++    resource_strip_prefix = "build/manifests",
++    resources = glob(
++        ["build/manifests/**/*"],
++    ),
+     visibility = ["//visibility:public"],
+     deps = [
+         # do not sort,
++        "@lib//:jetbrains-annotations",
+         "@lib//ant/lib:ant",
+         "//build",
+         "//java/java-runtime:rt",
 diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
 index 824b819cbd4a9..1a307e8207e64 100644
 --- a/community/mps/build/build/build.xml
@@ -264,32 +284,26 @@ index 23bf600ffa8e9..785212753e616 100644
 +  </extensions>
 +
  </idea-plugin>
-diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
-index 86a7b19d897b1..2934f3c4a327e 100644
---- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
-+++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSBuilder.kt
-@@ -58,7 +58,7 @@ class MPSBuilder {
- 
-                 val buildContext = BuildContextImpl.createContext(
-                     projectHome = home,
--                    productProperties = MPSProperties(),
-+                    productProperties = MPSProperties(MPS_HOME),
-                     proprietaryBuildTools = buildTools,
-                     options = options
-                 )
+diff --git a/community/mps/build/intellij.mps.build.iml b/community/mps/build/intellij.mps.build.iml
+index 24bc09451b964..236d84df241fb 100644
+--- a/community/mps/build/intellij.mps.build.iml
++++ b/community/mps/build/intellij.mps.build.iml
+@@ -3,9 +3,11 @@
+   <component name="NewModuleRootManager" inherit-compiler-output="true">
+     <exclude-output />
+     <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/build/manifests" type="java-resource" />
+       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+     </content>
+     <orderEntry type="inheritedJdk" />
++    <orderEntry type="library" name="jetbrains-annotations" level="project" />
+     <orderEntry type="sourceFolder" forTests="false" />
+     <orderEntry type="library" name="Ant" level="project" />
+     <orderEntry type="module" module-name="intellij.idea.community.build" />
 diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
-index 715ad6e65aed9..5a24f34ebb6e5 100644
+index 715ad6e65aed9..afafc76b5a9cb 100644
 --- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
 +++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
-@@ -40,7 +40,7 @@ private val javaCompiler: (PlatformLayout, BuildContext) -> Unit = { layout, _ -
-     }
- }
- 
--class MPSProperties : JetBrainsProductProperties() {
-+class MPSProperties(val buildDir: Path? = null) : JetBrainsProductProperties() {
- 
-     init {
-         platformPrefix = "MPS"
 @@ -230,14 +230,25 @@ class MPSProperties : JetBrainsProductProperties() {
              installerImagesPath = projectHome.resolve("build/resources")
          }
@@ -313,10 +327,10 @@ index 715ad6e65aed9..5a24f34ebb6e5 100644
 +        )
 +        
 +        val regex = """(?m)(?s)(.*)<content namespace="jetbrains">(.+)</idea-plugin>([\n]*)"""
-+        val patchedManifest = buildDir?.resolve("build/manifests/java-impl.jar/META-INF/plugin.xml") ?:
-+                                throw IllegalStateException("Failed to resolve plugin xml")
-+        val matchResult = Regex(regex,).matchEntire(Files.readString(patchedManifest)) ?:
-+                              throw IllegalStateException("Failed to match regex")
++        val patchedManifestContent = javaClass.classLoader.getResourceAsStream("java-impl.jar/META-INF/plugin.xml")?.use {
++          it.bufferedReader().readText()
++        } ?: throw IllegalStateException("Failed to resolve plugin xml")
++        val matchResult = Regex(regex).matchEntire(patchedManifestContent) ?: throw IllegalStateException("Failed to match regex")
 +        checkedReplace(
 +          oldText = newText,
 +          regex = regex,

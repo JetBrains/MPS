@@ -1,0 +1,271 @@
+From cde6ae06c17fbe8202d55d3ab5e88e0fc667b3b9 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Thu, 27 Aug 2026 17:06:52 +0200
+Subject: [PATCH 14/14] MPS-39954 move library modules from
+ libraries-misc-plugin to /lib
+
+Drop libraries-misc-plugin.
+Cherry-picked c5dab09507410 ignoring changes unrelated to MPS.
+
+DO NOT MERGE TO MASTER!
+
+=== cherry-pick ===
+
+IJPL-248701 Move three misc library modules back to the IDE platform
+
+commons-text, javax.activation and lucene-common were content modules of the
+bundled intellij.libraries.misc.plugin wrapper, so they shipped under
+lib/modules/. Products that consume them as ordinary platform libraries -- MPS
+in particular -- need them as plain jars in lib/.
+
+Introduce CommunityModuleSets.librariesIdeCommon() and nest it in ideCommon(),
+mirroring the upstream fix c5dab0950741 for this ticket. This is a partial
+backport: only these three modules move, so opencsv, jettison and xstream stay
+in the wrapper plugin and it remains bundled everywhere. oshi.core, which
+upstream also moved, does not exist on this branch.
+
+The modules are registered with module() rather than embeddedModule(), matching
+upstream. The jars therefore land in lib/ but keep their own product-module
+classloaders and are not added to product-info.json classPath -- moving them
+into the platform classloader would be a separate, riskier change.
+
+Gateway and ReSharper-external bundle the wrapper plugin but never reach
+ideCommon(), so they receive the new module set explicitly; without it they
+would silently lose javax.activation and lucene-common. The
+JetBrainsGatewayBuildTest assertions claiming those two libraries come from the
+wrapper are now obsolete and were dropped.
+
+commons-text was the wrapper's only loading="required" anchor. The remaining
+three content modules are all optional, which the product-DSL validators accept.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+---
+ .../libraries/misc/plugin/plugin-content.yaml | 21 -------------------
+ .../misc/plugin/resources/META-INF/plugin.xml |  5 +----
+ .../productLayout/CommunityModuleSets.kt      | 10 +++++++++
+ .../intellij.moduleSets.ide.common.xml        |  6 ++++++
+ ...tellij.moduleSets.libraries.ide.common.xml | 11 ++++++++++
+ .../intellij.moduleSets.ide.ultimate.xml      |  6 ++++++
+ .../build/gateway/GatewayProperties.kt        |  1 +
+ .../gateway/JetBrainsGatewayBuildTest.kt      |  7 -------
+ .../gateway/resources/META-INF/plugin.xml     |  1 +
+ .../META-INF/ReSharperBackendPlugin.xml       |  1 +
+ .../ReSharperExternalProductProperties.kt     |  1 +
+ 11 files changed, 38 insertions(+), 32 deletions(-)
+ create mode 100644 community/platform/platform-resources/generated/META-INF/intellij.moduleSets.libraries.ide.common.xml
+
+diff --git a/community/libraries/misc/plugin/plugin-content.yaml b/community/libraries/misc/plugin/plugin-content.yaml
+index c37a26626e812..9257253dfe333 100644
+--- a/community/libraries/misc/plugin/plugin-content.yaml
++++ b/community/libraries/misc/plugin/plugin-content.yaml
+@@ -1,33 +1,12 @@
+ - name: lib/libraries-misc-plugin.jar
+   modules:
+   - name: intellij.libraries.misc.plugin
+-- name: lib/modules/intellij.libraries.commons.text.jar
+-  contentModules:
+-  - name: intellij.libraries.commons.text
+-    libraries:
+-      commons-text:
+-      - name: $MAVEN_REPOSITORY$/org/apache/commons/commons-text/1/commons-text-1.jar
+-- name: lib/modules/intellij.libraries.javax.activation.jar
+-  contentModules:
+-  - name: intellij.libraries.javax.activation
+ - name: lib/modules/intellij.libraries.jettison.jar
+   contentModules:
+   - name: intellij.libraries.jettison
+     libraries:
+       jettison:
+       - name: $MAVEN_REPOSITORY$/org/codehaus/jettison/jettison/1/jettison-1.jar
+-- name: lib/modules/intellij.libraries.lucene.common.jar
+-  projectLibraries:
+-  - name: lucene-analysis-common
+-    files:
+-    - name: $MAVEN_REPOSITORY$/org/apache/lucene/lucene-analysis-common/10/lucene-analysis-common-10.jar
+-    reason: <- intellij.libraries.lucene.common
+-  - name: lucene-core
+-    files:
+-    - name: $MAVEN_REPOSITORY$/org/apache/lucene/lucene-core/10/lucene-core-10.jar
+-    reason: <- intellij.libraries.lucene.common
+-  contentModules:
+-  - name: intellij.libraries.lucene.common
+ - name: lib/modules/intellij.libraries.opencsv.jar
+   contentModules:
+   - name: intellij.libraries.opencsv
+diff --git a/community/libraries/misc/plugin/resources/META-INF/plugin.xml b/community/libraries/misc/plugin/resources/META-INF/plugin.xml
+index 34f25581ecd21..722bee0c61913 100644
+--- a/community/libraries/misc/plugin/resources/META-INF/plugin.xml
++++ b/community/libraries/misc/plugin/resources/META-INF/plugin.xml
+@@ -5,11 +5,8 @@
+   <description>Provides miscellaneous library content modules for IntelliJ-based IDEs.</description>
+   <vendor>JetBrains</vendor>
+   <content namespace="jetbrains">
+-    <module name="intellij.libraries.javax.activation"/>
+     <module name="intellij.libraries.opencsv"/>
+-    <module name="intellij.libraries.lucene.common"/>
+     <module name="intellij.libraries.jettison"/>
+     <module name="intellij.libraries.xstream"/>
+-    <module name="intellij.libraries.commons.text" loading="required"/>
+   </content>
+-</idea-plugin>
++</idea-plugin>
+\ No newline at end of file
+diff --git a/community/platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/CommunityModuleSets.kt b/community/platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/CommunityModuleSets.kt
+index 17b6600f9e791..794bbaba651d4 100644
+--- a/community/platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/CommunityModuleSets.kt
++++ b/community/platform/build-scripts/src/org/jetbrains/intellij/build/productLayout/CommunityModuleSets.kt
+@@ -369,6 +369,15 @@ object CommunityModuleSets {
+     module("intellij.rd.client.base")
+   }
+ 
++  /**
++   * Popular applied libraries, required for many plugins.
++   */
++  fun librariesIdeCommon(): ModuleSet = moduleSet("libraries.ide.common") {
++    module("intellij.libraries.javax.activation")
++    module("intellij.libraries.lucene.common")
++    module("intellij.libraries.commons.text")
++  }
++
+   /**
+    * IDE common modules (includes essential, compose, vcs, xml, duplicates).
+    */
+@@ -376,6 +385,7 @@ object CommunityModuleSets {
+     // Include essential first (which includes coreLang from CoreModuleSets)
+     moduleSet(essential())
+     moduleSet(compose())
++    moduleSet(librariesIdeCommon())
+ 
+     // Additional IDE-specific modules
+     module("intellij.platform.lvcs.impl")
+diff --git a/community/platform/platform-resources/generated/META-INF/intellij.moduleSets.ide.common.xml b/community/platform/platform-resources/generated/META-INF/intellij.moduleSets.ide.common.xml
+index d3d53b7551cd0..1a441340c98ff 100644
+--- a/community/platform/platform-resources/generated/META-INF/intellij.moduleSets.ide.common.xml
++++ b/community/platform/platform-resources/generated/META-INF/intellij.moduleSets.ide.common.xml
+@@ -338,6 +338,12 @@
+     <module name="intellij.platform.jewel.markdown.core"/>
+     <!-- endregion -->
+ 
++    <!-- region nested: libraries.ide.common -->
++    <module name="intellij.libraries.javax.activation"/>
++    <module name="intellij.libraries.lucene.common"/>
++    <module name="intellij.libraries.commons.text"/>
++    <!-- endregion -->
++
+     <!-- region nested: vcs -->
+     <!-- region nested: vcs > vcs.shared -->
+     <module name="intellij.platform.vcs.core" loading="embedded"/>
+diff --git a/community/platform/platform-resources/generated/META-INF/intellij.moduleSets.libraries.ide.common.xml b/community/platform/platform-resources/generated/META-INF/intellij.moduleSets.libraries.ide.common.xml
+new file mode 100644
+index 0000000000000..9a40736e6cfb5
+--- /dev/null
++++ b/community/platform/platform-resources/generated/META-INF/intellij.moduleSets.libraries.ide.common.xml
+@@ -0,0 +1,11 @@
++<!-- DO NOT EDIT: This file is auto-generated from Kotlin code -->
++<!-- To regenerate, run: `Generate Product Layouts` or `bazel run //platform/buildScripts:plugin-model-tool` -->
++<!-- Source: see moduleSet("libraries.ide.common") function in CommunityModuleSets.kt -->
++<!-- Note: Files are kept under VCS to support running products without dev mode (deprecated) -->
++<idea-plugin>
++  <content namespace="jetbrains">
++    <module name="intellij.libraries.javax.activation"/>
++    <module name="intellij.libraries.lucene.common"/>
++    <module name="intellij.libraries.commons.text"/>
++  </content>
++</idea-plugin>
+\ No newline at end of file
+diff --git a/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml b/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml
+index 0e0193541fec4..f7f7acb66dd83 100644
+--- a/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml
++++ b/licenseCommon/generated/META-INF/intellij.moduleSets.ide.ultimate.xml
+@@ -339,6 +339,12 @@
+     <module name="intellij.platform.jewel.markdown.core"/>
+     <!-- endregion -->
+ 
++    <!-- region nested: ide.common > libraries.ide.common -->
++    <module name="intellij.libraries.javax.activation"/>
++    <module name="intellij.libraries.lucene.common"/>
++    <module name="intellij.libraries.commons.text"/>
++    <!-- endregion -->
++
+     <!-- region nested: ide.common > vcs -->
+     <!-- region nested: ide.common > vcs > vcs.shared -->
+     <module name="intellij.platform.vcs.core" loading="embedded"/>
+diff --git a/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt b/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt
+index f075d74c70da1..c3f9c75bd8c58 100644
+--- a/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt
++++ b/remote-dev/gateway/build/src/org/jetbrains/intellij/build/gateway/GatewayProperties.kt
+@@ -171,6 +171,7 @@ open class GatewayProperties(private val ultimateHome: Path) : JetBrainsProductP
+     deprecatedInclude("intellij.platform.resources", "META-INF/PlatformLangPlugin.xml")
+ 
+     moduleSet(CommunityModuleSets.essential())
++    moduleSet(CommunityModuleSets.librariesIdeCommon())
+     moduleSet(CommunityModuleSets.vcs())
+     bundledPlugins(
+       listOf(
+diff --git a/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt b/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt
+index dd4a4f2616389..62275a7f803fe 100644
+--- a/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt
++++ b/remote-dev/gateway/build/testSrc/org/jetbrains/intellij/build/gateway/JetBrainsGatewayBuildTest.kt
+@@ -11,12 +11,9 @@ import org.junit.jupiter.api.Assertions.assertFalse
+ import org.junit.jupiter.api.Assertions.assertTrue
+ import org.junit.jupiter.api.Test
+ import org.junit.jupiter.api.TestInfo
+-import java.nio.file.Files
+ import java.nio.file.Path
+ 
+ private const val MISC_LIBRARIES_PLUGIN = "intellij.libraries.misc.plugin"
+-private const val ACTIVATION_MODULE = "intellij.libraries.javax.activation"
+-private const val LUCENE_COMMON_MODULE = "intellij.libraries.lucene.common"
+ 
+ class JetBrainsGatewayBuildTest {
+   @Test
+@@ -48,10 +45,6 @@ class JetBrainsGatewayBuildTest {
+ 
+     val productContent = productProperties.getProductContentDescriptor()
+     assertTrue(productContent.bundledPlugins.contains(TargetName(MISC_LIBRARIES_PLUGIN)))
+-
+-    val gatewayPluginXml = Files.readString(ULTIMATE_HOME.resolve("remote-dev/gateway/resources/META-INF/plugin.xml"))
+-    assertFalse(gatewayPluginXml.contains("<module name=\"$ACTIVATION_MODULE\""))
+-    assertFalse(gatewayPluginXml.contains("<module name=\"$LUCENE_COMMON_MODULE\""))
+   }
+ 
+   private fun verifyBuiltInModules(file: Path) {
+diff --git a/remote-dev/gateway/resources/META-INF/plugin.xml b/remote-dev/gateway/resources/META-INF/plugin.xml
+index 34225ee194d61..67d0653dbe7c5 100644
+--- a/remote-dev/gateway/resources/META-INF/plugin.xml
++++ b/remote-dev/gateway/resources/META-INF/plugin.xml
+@@ -7,6 +7,7 @@
+ 
+   <xi:include href="/META-INF/PlatformLangPlugin.xml"/>
+   <xi:include href="/META-INF/intellij.moduleSets.essential.xml"/>
++  <xi:include href="/META-INF/intellij.moduleSets.libraries.ide.common.xml"/>
+   <xi:include href="/META-INF/intellij.moduleSets.vcs.xml"/>
+   <!-- region additional -->
+   <content namespace="jetbrains">
+diff --git a/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml b/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml
+index e0019b09e8eb5..dbcd2a6da475e 100644
+--- a/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml
++++ b/resharper/external-services/core/resources/META-INF/ReSharperBackendPlugin.xml
+@@ -10,6 +10,7 @@
+   <xi:include href="/META-INF/PlatformLangPlugin.xml"/>
+   <xi:include href="/META-INF/resharper-backend-customization.xml"/>
+   <xi:include href="/META-INF/intellij.moduleSets.essential.xml"/>
++  <xi:include href="/META-INF/intellij.moduleSets.libraries.ide.common.xml"/>
+   <xi:include href="/META-INF/intellij.moduleSets.commercial.xml"/>
+   <xi:include href="/META-INF/intellij.moduleSets.identifiers.ultimate.xml"/>
+   <xi:include href="/META-INF/intellij.moduleSets.vcs.xml"/>
+diff --git a/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt b/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt
+index 367c376fc8758..c2a782a998bcb 100644
+--- a/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt
++++ b/rider/build/src/com/jetbrains/rider/build/product/ReSharperExternalProductProperties.kt
+@@ -71,6 +71,7 @@ class DotnetExternalProductProperties : ProductProperties() {
+ 
+     // Module sets
+     moduleSet(CommunityModuleSets.essential())
++    moduleSet(CommunityModuleSets.librariesIdeCommon())
+     moduleSet(UltimateModuleSets.commercial())
+     moduleSet(UltimateModuleSets.identifiersUltimate())
+     moduleSet(CommunityModuleSets.vcs())
+-- 
+2.55.0
+
