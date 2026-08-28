@@ -12379,6 +12379,45 @@
             </node>
           </node>
         </node>
+        <node concept="1SiIV0" id="6qVPxNAlmX$" role="3bR37C">
+          <node concept="1BurEX" id="6qVPxNAlmX_" role="1SiIV1">
+            <node concept="398BVA" id="6qVPxNAlmXx" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6qVPxNAlmXy" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6qVPxNAlmXz" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.commons.text.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6qVPxNAlmZ9" role="3bR37C">
+          <node concept="1BurEX" id="6qVPxNAlmZa" role="1SiIV1">
+            <node concept="398BVA" id="6qVPxNAlmZ6" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6qVPxNAlmZ7" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6qVPxNAlmZ8" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.javax.activation.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6qVPxNAln0R" role="3bR37C">
+          <node concept="1BurEX" id="6qVPxNAln0S" role="1SiIV1">
+            <node concept="398BVA" id="6qVPxNAln0O" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6qVPxNAln0P" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6qVPxNAln0Q" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.lucene.common.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
       </node>
       <node concept="1E1JtA" id="2GzIqorFzWp" role="2G$12L">
         <property role="BnDLt" value="true" />
@@ -35975,6 +36014,13 @@
           </node>
         </node>
       </node>
+      <node concept="13uQ2_" id="6qVPxNAlcHk" role="39821P">
+        <node concept="3_J27D" id="6qVPxNAlcHm" role="13uQ07">
+          <node concept="3Mxwew" id="6qVPxNAlcM9" role="3MwsjC">
+            <property role="3MwjfP" value="intellij.libraries.javax.activation.jar" />
+          </node>
+        </node>
+      </node>
       <node concept="13uQ2_" id="2Uq$M2W4GYW" role="39821P">
         <node concept="3_J27D" id="2Uq$M2W4GYY" role="13uQ07">
           <node concept="3Mxwew" id="2Uq$M2W4GZ0" role="3MwsjC">
@@ -36315,6 +36361,13 @@
         <node concept="3_J27D" id="k06Em_JVV5" role="13uQ07">
           <node concept="3Mxwew" id="k06Em_JVV6" role="3MwsjC">
             <property role="3MwjfP" value="intellij.libraries.ktor.utils.jar" />
+          </node>
+        </node>
+      </node>
+      <node concept="13uQ2_" id="6qVPxNAlcQZ" role="39821P">
+        <node concept="3_J27D" id="6qVPxNAlcR1" role="13uQ07">
+          <node concept="3Mxwew" id="6qVPxNAlcR3" role="3MwsjC">
+            <property role="3MwjfP" value="intellij.libraries.lucene.common.jar" />
           </node>
         </node>
       </node>

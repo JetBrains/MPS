@@ -44,6 +44,7 @@
         <sourceRoot location="intellij.libraries.commons.io.jar" />
         <sourceRoot location="intellij.libraries.commons.lang3.jar" />
         <sourceRoot location="intellij.libraries.commons.logging.jar" />
+        <sourceRoot location="intellij.libraries.commons.text.jar" />
         <sourceRoot location="intellij.libraries.compose.foundation.desktop.jar" />
         <sourceRoot location="intellij.libraries.compose.runtime.desktop.jar" />
         <sourceRoot location="intellij.libraries.download.pgp.verifier.jar" />
@@ -76,6 +77,7 @@
         <sourceRoot location="intellij.libraries.jackson3.module.kotlin.jar" />
         <sourceRoot location="intellij.libraries.java.compatibility.jar" />
         <sourceRoot location="intellij.libraries.java.websocket.jar" />
+        <sourceRoot location="intellij.libraries.javax.activation.jar" />
         <sourceRoot location="intellij.libraries.javax.annotation.jar" />
         <sourceRoot location="intellij.libraries.jaxen.jar" />
         <sourceRoot location="intellij.libraries.jbr.jar" />
@@ -111,6 +113,7 @@
         <sourceRoot location="intellij.libraries.ktor.network.tls.jar" />
         <sourceRoot location="intellij.libraries.ktor.server.cio.jar" />
         <sourceRoot location="intellij.libraries.ktor.utils.jar" />
+        <sourceRoot location="intellij.libraries.lucene.common.jar" />
         <sourceRoot location="intellij.libraries.lz4.jar" />
         <sourceRoot location="intellij.libraries.markdown.jar" />
         <sourceRoot location="intellij.libraries.microba.jar" />
@@ -397,6 +400,7 @@
       <library location="${mps_home}/lib/intellij.libraries.commons.io.jar" />
       <library location="${mps_home}/lib/intellij.libraries.commons.lang3.jar" />
       <library location="${mps_home}/lib/intellij.libraries.commons.logging.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.commons.text.jar" />
       <library location="${mps_home}/lib/intellij.libraries.compose.foundation.desktop.jar" />
       <library location="${mps_home}/lib/intellij.libraries.compose.runtime.desktop.jar" />
       <library location="${mps_home}/lib/intellij.libraries.download.pgp.verifier.jar" />
@@ -429,6 +433,7 @@
       <library location="${mps_home}/lib/intellij.libraries.jackson3.module.kotlin.jar" />
       <library location="${mps_home}/lib/intellij.libraries.java.compatibility.jar" />
       <library location="${mps_home}/lib/intellij.libraries.java.websocket.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.javax.activation.jar" />
       <library location="${mps_home}/lib/intellij.libraries.javax.annotation.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jaxen.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jbr.jar" />
@@ -464,6 +469,7 @@
       <library location="${mps_home}/lib/intellij.libraries.ktor.network.tls.jar" />
       <library location="${mps_home}/lib/intellij.libraries.ktor.server.cio.jar" />
       <library location="${mps_home}/lib/intellij.libraries.ktor.utils.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.lucene.common.jar" />
       <library location="${mps_home}/lib/intellij.libraries.lz4.jar" />
       <library location="${mps_home}/lib/intellij.libraries.markdown.jar" />
       <library location="${mps_home}/lib/intellij.libraries.microba.jar" />

@@ -54,6 +54,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.commons.io.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.commons.lang3.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.commons.logging.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.commons.text.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.compose.foundation.desktop.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.compose.runtime.desktop.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.download.pgp.verifier.jar!/" />
@@ -87,6 +88,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jackson3.module.kotlin.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.java.compatibility.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.java.websocket.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.javax.activation.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.javax.annotation.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jaxen.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jbr.jar!/" />
@@ -127,6 +129,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.ktor.network.tls.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.ktor.server.cio.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.ktor.utils.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.lucene.common.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.lz4.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.markdown.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.microba.jar!/" />
