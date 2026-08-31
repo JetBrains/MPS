@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2016 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import org.jetbrains.mps.openapi.language.SConcept;
 import org.jetbrains.mps.openapi.model.SNode;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * NOTE: use of this class is discouraged. It's still referenced in some MPS templates
  * (namely in j.m.lang.resources, ConceptIconResourceExpression) and in use from editor runtime. Latter shall get
@@ -36,7 +39,8 @@ public class IconResourceUtil {
   public static IconResource getIconResourceForConcept(SAbstractConcept concept) {
     if (concept instanceof SConcept) {
       SConcept current = ((SConcept) concept);
-      while (current != null) {
+      Set<SAbstractConcept> seen = new HashSet<>();
+      while (current != null && seen.add(current)) {
         IconResource ir = getIconForExactConcept(current);
         if (ir != null) {
           return ir;

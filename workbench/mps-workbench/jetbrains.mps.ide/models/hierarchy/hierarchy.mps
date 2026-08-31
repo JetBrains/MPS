@@ -12338,11 +12338,52 @@
             </node>
           </node>
           <node concept="3clFbS" id="51NkKCgB4cN" role="3clFbx">
+            <node concept="3cpWs8" id="4A0ujlgqG1q" role="3cqZAp">
+              <node concept="3cpWsn" id="4A0ujlgqG1r" role="3cpWs9">
+                <property role="TrG5h" value="seen" />
+                <node concept="3uibUv" id="4A0ujlgqG1s" role="1tU5fm">
+                  <ref role="3uigEE" to="33ny:~Set" resolve="Set" />
+                  <node concept="3Tqbb2" id="4A0ujlgqG1t" role="11_B2D" />
+                </node>
+                <node concept="2ShNRf" id="4A0ujlgqG1u" role="33vP2m">
+                  <node concept="1pGfFk" id="4A0ujlgqG1v" role="2ShVmc">
+                    <ref role="37wK5l" to="33ny:~HashSet.&lt;init&gt;()" resolve="HashSet" />
+                    <node concept="3Tqbb2" id="4A0ujlgqG1w" role="1pMfVU" />
+                  </node>
+                </node>
+              </node>
+            </node>
+            <node concept="3clFbF" id="4A0ujlgqNAp" role="3cqZAp">
+              <node concept="2OqwBi" id="4A0ujlgqNAr" role="3clFbG">
+                <node concept="37vLTw" id="4A0ujlgqNAu" role="2Oq$k0">
+                  <ref role="3cqZAo" node="4A0ujlgqG1r" resolve="seen" />
+                </node>
+                <node concept="liA8E" id="4A0ujlgqNAv" role="2OqNvi">
+                  <ref role="37wK5l" to="33ny:~Set.add(java.lang.Object)" resolve="add" />
+                  <node concept="37vLTw" id="4A0ujlgqNAw" role="37wK5m">
+                    <ref role="3cqZAo" node="51NkKCgB4cs" resolve="node" />
+                  </node>
+                </node>
+              </node>
+            </node>
             <node concept="2$JKZl" id="51NkKCgB4cO" role="3cqZAp">
-              <node concept="1rXfSq" id="6MbXnZ0XSv_" role="2$JKZa">
-                <ref role="37wK5l" node="2KxF7SEk$6J" resolve="isInGeneratorModel" />
-                <node concept="37vLTw" id="6MbXnZ0XT$T" role="37wK5m">
-                  <ref role="3cqZAo" node="51NkKCgB4c_" resolve="result" />
+              <node concept="1Wc70l" id="4A0ujlgqNFN" role="2$JKZa">
+                <node concept="1rXfSq" id="4A0ujlgqNFQ" role="3uHU7B">
+                  <ref role="37wK5l" node="2KxF7SEk$6J" resolve="isInGeneratorModel" />
+                  <node concept="37vLTw" id="4A0ujlgqNFR" role="37wK5m">
+                    <ref role="3cqZAo" node="51NkKCgB4c_" resolve="result" />
+                  </node>
+                </node>
+                <node concept="2OqwBi" id="4A0ujlgqNFS" role="3uHU7w">
+                  <node concept="37vLTw" id="4A0ujlgqNFV" role="2Oq$k0">
+                    <ref role="3cqZAo" node="4A0ujlgqG1r" resolve="seen" />
+                  </node>
+                  <node concept="liA8E" id="4A0ujlgqNFW" role="2OqNvi">
+                    <ref role="37wK5l" to="33ny:~Set.add(java.lang.Object)" resolve="add" />
+                    <node concept="37vLTw" id="4A0ujlgqNFX" role="37wK5m">
+                      <ref role="3cqZAo" node="51NkKCgB4c_" resolve="result" />
+                    </node>
+                  </node>
                 </node>
               </node>
               <node concept="3clFbS" id="51NkKCgB4cT" role="2LFqv$">
@@ -12442,12 +12483,40 @@
             </node>
           </node>
         </node>
-        <node concept="2$JKZl" id="51NkKCgB4d_" role="3cqZAp">
-          <node concept="3y3z36" id="51NkKCgB4dA" role="2$JKZa">
-            <node concept="37vLTw" id="3GM_nagT$s_" role="3uHU7B">
-              <ref role="3cqZAo" node="51NkKCgB4dy" resolve="parentDeclaration" />
+        <node concept="3cpWs8" id="4A0ujlgpNlF" role="3cqZAp">
+          <node concept="3cpWsn" id="4A0ujlgpNlG" role="3cpWs9">
+            <property role="TrG5h" value="seenParents" />
+            <node concept="3uibUv" id="4A0ujlgpNlH" role="1tU5fm">
+              <ref role="3uigEE" to="33ny:~Set" resolve="Set" />
+              <node concept="3Tqbb2" id="4A0ujlgpNlI" role="11_B2D" />
             </node>
-            <node concept="10Nm6u" id="51NkKCgB4dC" role="3uHU7w" />
+            <node concept="2ShNRf" id="4A0ujlgpNlJ" role="33vP2m">
+              <node concept="1pGfFk" id="4A0ujlgpNlK" role="2ShVmc">
+                <ref role="37wK5l" to="33ny:~HashSet.&lt;init&gt;()" resolve="HashSet" />
+                <node concept="3Tqbb2" id="4A0ujlgpNlL" role="1pMfVU" />
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="2$JKZl" id="51NkKCgB4d_" role="3cqZAp">
+          <node concept="1Wc70l" id="4A0ujlgpTjS" role="2$JKZa">
+            <node concept="3y3z36" id="4A0ujlgpTjV" role="3uHU7B">
+              <node concept="37vLTw" id="4A0ujlgpTjY" role="3uHU7B">
+                <ref role="3cqZAo" node="51NkKCgB4dy" resolve="parentDeclaration" />
+              </node>
+              <node concept="10Nm6u" id="4A0ujlgpTjZ" role="3uHU7w" />
+            </node>
+            <node concept="2OqwBi" id="4A0ujlgpTk0" role="3uHU7w">
+              <node concept="37vLTw" id="4A0ujlgpTk3" role="2Oq$k0">
+                <ref role="3cqZAo" node="4A0ujlgpNlG" resolve="seenParents" />
+              </node>
+              <node concept="liA8E" id="4A0ujlgpTk4" role="2OqNvi">
+                <ref role="37wK5l" to="33ny:~Set.add(java.lang.Object)" resolve="add" />
+                <node concept="37vLTw" id="4A0ujlgpTk5" role="37wK5m">
+                  <ref role="3cqZAo" node="51NkKCgB4dy" resolve="parentDeclaration" />
+                </node>
+              </node>
+            </node>
           </node>
           <node concept="3clFbS" id="51NkKCgB4dD" role="2LFqv$">
             <node concept="3clFbF" id="51NkKCgB4dE" role="3cqZAp">

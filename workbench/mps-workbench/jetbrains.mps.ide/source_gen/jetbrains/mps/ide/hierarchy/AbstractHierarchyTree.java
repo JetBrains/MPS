@@ -24,8 +24,8 @@ import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
 import java.util.LinkedHashSet;
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.smodel.SModelStereotype;
 import com.intellij.openapi.actionSystem.ActionGroup;
@@ -171,7 +171,9 @@ public abstract class AbstractHierarchyTree extends MPSTree {
       return null;
     }
     if (!(myShowGeneratorModels)) {
-      while (isInGeneratorModel(result)) {
+      Set<SNode> seen = new HashSet<SNode>();
+      seen.add(node);
+      while (isInGeneratorModel(result) && seen.add(result)) {
         result = getParent(result);
         if (result == null) {
           return null;
@@ -186,7 +188,8 @@ public abstract class AbstractHierarchyTree extends MPSTree {
   protected MPSTreeNode rebuildParentHierarchy() {
     ArrayList<SNode> parentHierarchy = new ArrayList<>();
     SNode parentDeclaration = myHierarchyNode;
-    while (parentDeclaration != null) {
+    Set<SNode> seenParents = new HashSet<SNode>();
+    while (parentDeclaration != null && seenParents.add(parentDeclaration)) {
       parentHierarchy.add(parentDeclaration);
       parentDeclaration = getAbstractParent(parentDeclaration);
     }

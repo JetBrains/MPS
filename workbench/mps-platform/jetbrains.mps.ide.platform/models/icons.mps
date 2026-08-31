@@ -180,7 +180,9 @@
         <reference id="1068499141037" name="baseMethodDeclaration" index="37wK5l" />
         <child id="1068499141038" name="actualArgument" index="37wK5m" />
       </concept>
-      <concept id="1212685548494" name="jetbrains.mps.baseLanguage.structure.ClassCreator" flags="nn" index="1pGfFk" />
+      <concept id="1212685548494" name="jetbrains.mps.baseLanguage.structure.ClassCreator" flags="nn" index="1pGfFk">
+        <child id="1212687122400" name="typeParameter" index="1pMfVU" />
+      </concept>
       <concept id="1107461130800" name="jetbrains.mps.baseLanguage.structure.Classifier" flags="ng" index="3pOWGL">
         <property id="521412098689998745" name="nonStatic" index="2bfB8j" />
         <child id="5375687026011219971" name="member" index="jymVt" unordered="true" />
@@ -1986,6 +1988,26 @@
       <property role="od$2w" value="false" />
       <property role="2aFKle" value="false" />
       <node concept="3clFbS" id="192HKKPOhVF" role="3clF47">
+        <node concept="3cpWs8" id="4A0ujlgqRQ6" role="3cqZAp">
+          <node concept="3cpWsn" id="4A0ujlgqRQ9" role="3cpWs9">
+            <property role="TrG5h" value="seen" />
+            <node concept="3uibUv" id="4A0ujlgqRQb" role="1tU5fm">
+              <ref role="3uigEE" to="33ny:~Set" resolve="Set" />
+              <node concept="3uibUv" id="4A0ujlgqRQc" role="11_B2D">
+                <ref role="3uigEE" to="c17a:~SAbstractConcept" resolve="SAbstractConcept" />
+              </node>
+            </node>
+            <node concept="2ShNRf" id="4A0ujlgqRQd" role="33vP2m">
+              <node concept="1pGfFk" id="4A0ujlgqRQf" role="2ShVmc">
+                <property role="373rjd" value="true" />
+                <ref role="37wK5l" to="33ny:~HashSet.&lt;init&gt;()" resolve="HashSet" />
+                <node concept="3uibUv" id="4A0ujlgqRQg" role="1pMfVU">
+                  <ref role="3uigEE" to="c17a:~SAbstractConcept" resolve="SAbstractConcept" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="3cpWs8" id="192HKKPOhVG" role="3cqZAp">
           <node concept="3cpWsn" id="192HKKPOhVH" role="3cpWs9">
             <property role="3TUv4t" value="false" />
@@ -1999,11 +2021,24 @@
           </node>
         </node>
         <node concept="2$JKZl" id="192HKKPOhVN" role="3cqZAp">
-          <node concept="3y3z36" id="192HKKPOhVO" role="2$JKZa">
-            <node concept="37vLTw" id="192HKKPOhVP" role="3uHU7B">
-              <ref role="3cqZAo" node="192HKKPOhVH" resolve="current" />
+          <node concept="1Wc70l" id="4A0ujlgreat" role="2$JKZa">
+            <node concept="3y3z36" id="4A0ujlgreaw" role="3uHU7B">
+              <node concept="37vLTw" id="4A0ujlgreaz" role="3uHU7B">
+                <ref role="3cqZAo" node="192HKKPOhVH" resolve="current" />
+              </node>
+              <node concept="10Nm6u" id="4A0ujlgrea$" role="3uHU7w" />
             </node>
-            <node concept="10Nm6u" id="192HKKPOhVQ" role="3uHU7w" />
+            <node concept="2OqwBi" id="4A0ujlgrea_" role="3uHU7w">
+              <node concept="37vLTw" id="4A0ujlgreaC" role="2Oq$k0">
+                <ref role="3cqZAo" node="4A0ujlgqRQ9" resolve="seen" />
+              </node>
+              <node concept="liA8E" id="4A0ujlgreaD" role="2OqNvi">
+                <ref role="37wK5l" to="33ny:~Set.add(java.lang.Object)" resolve="add" />
+                <node concept="37vLTw" id="4A0ujlgreaE" role="37wK5m">
+                  <ref role="3cqZAo" node="192HKKPOhVH" resolve="current" />
+                </node>
+              </node>
+            </node>
           </node>
           <node concept="3clFbS" id="192HKKPOhVR" role="2LFqv$">
             <node concept="3cpWs8" id="192HKKPOhVS" role="3cqZAp">

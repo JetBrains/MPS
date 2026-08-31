@@ -6941,11 +6941,6 @@
             <ref role="3bR37D" to="ffeo:mXGwHwhVPj" resolve="JDK" />
           </node>
         </node>
-        <node concept="1SiIV0" id="6IYCYtgqEJg" role="3bR37C">
-          <node concept="3bR9La" id="6IYCYtgqEJh" role="1SiIV1">
-            <ref role="3bR37D" to="ffeo:7Kfy9QB6Lh7" resolve="jetbrains.mps.typesystemEngine" />
-          </node>
-        </node>
         <node concept="1SiIV0" id="6IYCYtgqEJi" role="3bR37C">
           <node concept="3bR9La" id="6IYCYtgqEJj" role="1SiIV1">
             <ref role="3bR37D" to="ffeo:7Kfy9QB6L9c" resolve="jetbrains.mps.lang.quotation" />
@@ -7008,6 +7003,11 @@
         <node concept="1SiIV0" id="2deb$5zAyjr" role="3bR37C">
           <node concept="3bR9La" id="2deb$5zAyjt" role="1SiIV1">
             <ref role="3bR37D" to="ffeo:7Kfy9QB6LaO" resolve="jetbrains.mps.lang.structure" />
+          </node>
+        </node>
+        <node concept="1SiIV0" id="1NJXWPlxVU_" role="3bR37C">
+          <node concept="3bR9La" id="1NJXWPlxVUA" role="1SiIV1">
+            <ref role="3bR37D" to="ffeo:2eDSGe9d1qi" resolve="jetbrains.mps.ide" />
           </node>
         </node>
       </node>

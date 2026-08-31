@@ -25,6 +25,14 @@ public class ConceptHierarchyCycleTest_Test extends BaseTransformationTest {
   }
 
   @Test
+  public void test_selfExtendingConceptHierarchyTerminates() throws Throwable {
+    new TestBody(this).test_selfExtendingConceptHierarchyTerminates();
+  }
+  @Test
+  public void test_mutuallyExtendingConceptHierarchyTerminates() throws Throwable {
+    new TestBody(this).test_mutuallyExtendingConceptHierarchyTerminates();
+  }
+  @Test
   public void test_NodeCyclicConceptHierarchyCheck2544021697899289606() throws Throwable {
     new TestBody(this).test_NodeCyclicConceptHierarchyCheck2544021697899289606();
   }
@@ -60,6 +68,17 @@ public class ConceptHierarchyCycleTest_Test extends BaseTransformationTest {
       prepareTestNodes("7614966498964100983", "7614966498964100986", "7614966498964100989");
     }
 
+    public void test_selfExtendingConceptHierarchyTerminates() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("selfExtending")));
+    }
+    public void test_mutuallyExtendingConceptHierarchyTerminates() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("conceptA"));
+        ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("conceptB"));
+      });
+    }
     public void test_NodeCyclicConceptHierarchyCheck2544021697899289606() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
