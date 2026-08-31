@@ -65,12 +65,12 @@ public final class AbstractConceptDeclaration__BehaviorDescriptor extends BaseBH
   public static final SMethod<Iterable<SNode>> getAllSuperConcepts_id2A8AB0rAWpG = new SMethodBuilder<>((Class<Iterable<SNode>>) ((Class) Object.class)).name("getAllSuperConcepts").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(2992811758677902956L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter(Boolean.TYPE, "includeSelf"));
   /*package*/ static final SMethod<Void> collectSuperConcepts_id2A8AB0rB3NH = new SMethodBuilder<>(Void.TYPE).name("collectSuperConcepts").modifiers(1, AccessPrivileges.PRIVATE).concept(CONCEPT).baseMethodId(2992811758677933293L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter(SNode.class, "concept"), SMethodBuilder.createJavaParameter((Class<Set<SNode>>) ((Class) Object.class), "result"));
   public static final SMethod<SNode> computeInHierarchy_id3CiBrVcn5fe = new SMethodBuilder<>(SNode.class).name("computeInHierarchy").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(4184580446578561998L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter((Class<_FunctionTypes._return_P1_E0<? extends SNode, ? super SNode>>) ((Class) Object.class), "predicate"));
-  public static final SMethod<SNode> computeInHierarchy_id1N3jFzyCMRV = new SMethodBuilder<>(SNode.class).name("computeInHierarchy").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(2072586809503854075L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter((Class<_FunctionTypes._return_P1_E0<? extends SNode, ? super SNode>>) ((Class) Object.class), "predicate"), SMethodBuilder.createJavaParameter((Class<Set<SNode>>) ((Class) Object.class), "visited"));
+  /*package*/ static final SMethod<SNode> computeInHierarchyGuarded_id1N3jFzyCMRV = new SMethodBuilder<>(SNode.class).name("computeInHierarchyGuarded").modifiers(0, AccessPrivileges.PRIVATE).concept(CONCEPT).baseMethodId(2072586809503854075L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter((Class<_FunctionTypes._return_P1_E0<? extends SNode, ? super SNode>>) ((Class) Object.class), "predicate"), SMethodBuilder.createJavaParameter((Class<Set<SNode>>) ((Class) Object.class), "visited"));
   public static final SMethod<Pair<Set<SNode>, Set<SNode>>> getInLanguageAndNotInLanguageAncestors_id54xSEBmK0MK = new SMethodBuilder<>((Class<Pair<Set<SNode>, Set<SNode>>>) ((Class) Object.class)).name("getInLanguageAndNotInLanguageAncestors").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(5846203010383875248L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2();
-  public static final SMethod<Pair<Set<SNode>, Set<SNode>>> getInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP = new SMethodBuilder<>((Class<Pair<Set<SNode>, Set<SNode>>>) ((Class) Object.class)).name("getInLanguageAndNotInLanguageAncestors").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(7614966498963434357L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter((Class<Set<SNode>>) ((Class) Object.class), "visited"));
+  /*package*/ static final SMethod<Pair<Set<SNode>, Set<SNode>>> collectInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP = new SMethodBuilder<>((Class<Pair<Set<SNode>, Set<SNode>>>) ((Class) Object.class)).name("collectInLanguageAndNotInLanguageAncestors").modifiers(0, AccessPrivileges.PRIVATE).concept(CONCEPT).baseMethodId(7614966498963434357L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter((Class<Set<SNode>>) ((Class) Object.class), "visited"));
   public static final SMethod<Boolean> is_id4MKjpUYmGW0 = new SMethodBuilder<>(Boolean.TYPE).name("is").modifiers(0, AccessPrivileges.PUBLIC).concept(CONCEPT).baseMethodId(5526002086977392384L).languageId(0x8389f407dc1158b7L, 0xc72da2b97cce4447L).build2(SMethodBuilder.createJavaParameter(SAbstractConcept.class, "concept"));
 
-  private final List<SMethod<?>> BH_METHODS = Arrays.<SMethod<?>>asList(setLanguageIdFromModule_id7NTi8jM8SJY, findConceptAspect_id7g4OXB0yku$, findConceptAspects_id4G9PD8$NvPM, getPresentation_id280s3ZNTXNS, getAvailableConceptMethods_idhEwILGo, getVisibleConceptMethods_idwrIPXhfIPX, getVirtualConceptMethods_idhEwILHM, getNotImplementedConceptMethods_idhEwILIz, getLinkDeclarations_idhEwILKK, getReferenceLinkDeclarations_idhEwILL0, getAggregationLinkDeclarations_idhEwILLp, getPropertyDeclarations_idhEwILLM, isSubconceptOf_id73yVtVlWOga, isSubconceptOf_id4UTtJHK9fEJ, getImmediateSuperconcepts_idhMuxyK2, getAllSuperConcepts_id2A8AB0rAWpG, collectSuperConcepts_id2A8AB0rB3NH, computeInHierarchy_id3CiBrVcn5fe, computeInHierarchy_id1N3jFzyCMRV, getInLanguageAndNotInLanguageAncestors_id54xSEBmK0MK, getInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP, is_id4MKjpUYmGW0);
+  private final List<SMethod<?>> BH_METHODS = Arrays.<SMethod<?>>asList(setLanguageIdFromModule_id7NTi8jM8SJY, findConceptAspect_id7g4OXB0yku$, findConceptAspects_id4G9PD8$NvPM, getPresentation_id280s3ZNTXNS, getAvailableConceptMethods_idhEwILGo, getVisibleConceptMethods_idwrIPXhfIPX, getVirtualConceptMethods_idhEwILHM, getNotImplementedConceptMethods_idhEwILIz, getLinkDeclarations_idhEwILKK, getReferenceLinkDeclarations_idhEwILL0, getAggregationLinkDeclarations_idhEwILLp, getPropertyDeclarations_idhEwILLM, isSubconceptOf_id73yVtVlWOga, isSubconceptOf_id4UTtJHK9fEJ, getImmediateSuperconcepts_idhMuxyK2, getAllSuperConcepts_id2A8AB0rAWpG, collectSuperConcepts_id2A8AB0rB3NH, computeInHierarchy_id3CiBrVcn5fe, computeInHierarchyGuarded_id1N3jFzyCMRV, getInLanguageAndNotInLanguageAncestors_id54xSEBmK0MK, collectInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP, is_id4MKjpUYmGW0);
 
 
   /*package*/ static void setLanguageIdFromModule_id7NTi8jM8SJY(@NotNull SNode __thisNode__, SModule m) {
@@ -249,9 +249,9 @@ public final class AbstractConceptDeclaration__BehaviorDescriptor extends BaseBH
     }
   }
   /*package*/ static SNode computeInHierarchy_id3CiBrVcn5fe(@NotNull SNode __thisNode__, _FunctionTypes._return_P1_E0<? extends SNode, ? super SNode> predicate) {
-    return AbstractConceptDeclaration__BehaviorDescriptor.computeInHierarchy_id1N3jFzyCMRV.invoke(__thisNode__, predicate, SetSequence.fromSet(new HashSet<SNode>()));
+    return AbstractConceptDeclaration__BehaviorDescriptor.computeInHierarchyGuarded_id1N3jFzyCMRV.invokeSpecial(__thisNode__, predicate, SetSequence.fromSet(new HashSet<SNode>()));
   }
-  /*package*/ static SNode computeInHierarchy_id1N3jFzyCMRV(@NotNull SNode __thisNode__, _FunctionTypes._return_P1_E0<? extends SNode, ? super SNode> predicate, Set<SNode> visited) {
+  /*package*/ static SNode computeInHierarchyGuarded_id1N3jFzyCMRV(@NotNull SNode __thisNode__, _FunctionTypes._return_P1_E0<? extends SNode, ? super SNode> predicate, Set<SNode> visited) {
     // todo: comment method!, use generics
     if (SetSequence.fromSet(visited).contains(__thisNode__)) {
       return null;
@@ -263,7 +263,7 @@ public final class AbstractConceptDeclaration__BehaviorDescriptor extends BaseBH
     }
 
     for (SNode superconcept : AbstractConceptDeclaration__BehaviorDescriptor.getImmediateSuperconcepts_idhMuxyK2.invoke(__thisNode__)) {
-      SNode superconceptResult = AbstractConceptDeclaration__BehaviorDescriptor.computeInHierarchy_id1N3jFzyCMRV.invoke(superconcept, predicate, visited);
+      SNode superconceptResult = AbstractConceptDeclaration__BehaviorDescriptor.computeInHierarchyGuarded_id1N3jFzyCMRV.invoke(superconcept, predicate, visited);
       if (superconceptResult != null) {
         return superconceptResult;
       }
@@ -272,9 +272,9 @@ public final class AbstractConceptDeclaration__BehaviorDescriptor extends BaseBH
     return null;
   }
   /*package*/ static Pair<Set<SNode>, Set<SNode>> getInLanguageAndNotInLanguageAncestors_id54xSEBmK0MK(@NotNull SNode __thisNode__) {
-    return AbstractConceptDeclaration__BehaviorDescriptor.getInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP.invoke(__thisNode__, SetSequence.fromSet(new HashSet<SNode>()));
+    return AbstractConceptDeclaration__BehaviorDescriptor.collectInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP.invokeSpecial(__thisNode__, SetSequence.fromSet(new HashSet<SNode>()));
   }
-  /*package*/ static Pair<Set<SNode>, Set<SNode>> getInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP(@NotNull SNode __thisNode__, Set<SNode> visited) {
+  /*package*/ static Pair<Set<SNode>, Set<SNode>> collectInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP(@NotNull SNode __thisNode__, Set<SNode> visited) {
     // todo: use tuple
     Set<SNode> inLanguageAncestors = SetSequence.fromSet(new HashSet<SNode>());
     Set<SNode> notInLanguageAncestors = SetSequence.fromSet(new HashSet<SNode>());
@@ -285,7 +285,7 @@ public final class AbstractConceptDeclaration__BehaviorDescriptor extends BaseBH
 
     for (SNode superconcept : AbstractConceptDeclaration__BehaviorDescriptor.getImmediateSuperconcepts_idhMuxyK2.invoke(__thisNode__)) {
       if (SNodeOperations.getModel(superconcept) == SNodeOperations.getModel(__thisNode__)) {
-        Pair<Set<SNode>, Set<SNode>> superconceptResult = AbstractConceptDeclaration__BehaviorDescriptor.getInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP.invoke(superconcept, visited);
+        Pair<Set<SNode>, Set<SNode>> superconceptResult = AbstractConceptDeclaration__BehaviorDescriptor.collectInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP.invoke(superconcept, visited);
         SetSequence.fromSet(inLanguageAncestors).addElement(superconcept);
 
         SetSequence.fromSet(inLanguageAncestors).addSequence(SetSequence.fromSet(superconceptResult.o1));
@@ -347,11 +347,11 @@ public final class AbstractConceptDeclaration__BehaviorDescriptor extends BaseBH
       case 17:
         return (T) ((SNode) computeInHierarchy_id3CiBrVcn5fe(node, (_FunctionTypes._return_P1_E0<? extends SNode, ? super SNode>) parameters[0]));
       case 18:
-        return (T) ((SNode) computeInHierarchy_id1N3jFzyCMRV(node, (_FunctionTypes._return_P1_E0<? extends SNode, ? super SNode>) parameters[0], (Set<SNode>) parameters[1]));
+        return (T) ((SNode) computeInHierarchyGuarded_id1N3jFzyCMRV(node, (_FunctionTypes._return_P1_E0<? extends SNode, ? super SNode>) parameters[0], (Set<SNode>) parameters[1]));
       case 19:
         return (T) ((Pair<Set<SNode>, Set<SNode>>) getInLanguageAndNotInLanguageAncestors_id54xSEBmK0MK(node));
       case 20:
-        return (T) ((Pair<Set<SNode>, Set<SNode>>) getInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP(node, (Set<SNode>) parameters[0]));
+        return (T) ((Pair<Set<SNode>, Set<SNode>>) collectInLanguageAndNotInLanguageAncestors_id6AHMUXrdMHP(node, (Set<SNode>) parameters[0]));
       case 21:
         return (T) ((Boolean) is_id4MKjpUYmGW0(node, (SAbstractConcept) parameters[0]));
       default:

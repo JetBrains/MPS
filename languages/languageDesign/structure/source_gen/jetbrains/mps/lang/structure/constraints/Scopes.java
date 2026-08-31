@@ -65,26 +65,20 @@ public class Scopes {
     };
   }
   public static Scope forConceptDeclarationExtends(final SNode conceptNode, SNode contextNode) {
-    if (conceptNode == null) {
-      return new EmptyScope();
-    }
-
-    return new FilteringScope(forConcepts(contextNode, CONCEPTS.ConceptDeclaration$gH)) {
-      @Override
-      public boolean isExcluded(SNode node) {
-        return (boolean) AbstractConceptDeclaration__BehaviorDescriptor.isSubconceptOf_id73yVtVlWOga.invoke(SNodeOperations.cast(node, CONCEPTS.ConceptDeclaration$gH), conceptNode);
-      }
-    };
+    return forNonSubconcepts(conceptNode, contextNode, CONCEPTS.ConceptDeclaration$gH);
   }
   public static Scope forInterfaceConceptReferenceIntfc(final SNode conceptNode, SNode contextNode) {
+    return forNonSubconcepts(conceptNode, contextNode, CONCEPTS.InterfaceConceptDeclaration$CG);
+  }
+  /*package*/ static Scope forNonSubconcepts(final SNode conceptNode, SNode contextNode, SAbstractConcept metaConcept) {
     if (conceptNode == null) {
       return new EmptyScope();
     }
 
-    return new FilteringScope(forConcepts(contextNode, CONCEPTS.InterfaceConceptDeclaration$CG)) {
+    return new FilteringScope(forConcepts(contextNode, metaConcept)) {
       @Override
       public boolean isExcluded(SNode node) {
-        return (boolean) AbstractConceptDeclaration__BehaviorDescriptor.isSubconceptOf_id73yVtVlWOga.invoke(SNodeOperations.cast(node, CONCEPTS.InterfaceConceptDeclaration$CG), conceptNode);
+        return (boolean) AbstractConceptDeclaration__BehaviorDescriptor.isSubconceptOf_id73yVtVlWOga.invoke(SNodeOperations.cast(node, CONCEPTS.AbstractConceptDeclaration$KA), conceptNode);
       }
     };
   }

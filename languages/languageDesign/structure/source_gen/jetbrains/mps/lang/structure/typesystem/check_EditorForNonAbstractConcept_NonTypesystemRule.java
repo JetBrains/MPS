@@ -10,16 +10,9 @@ import jetbrains.mps.lang.typesystem.runtime.IsApplicableStatus;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModuleOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
-import java.util.Set;
-import jetbrains.mps.internal.collections.runtime.SetSequence;
-import java.util.HashSet;
-import java.util.Queue;
-import jetbrains.mps.internal.collections.runtime.QueueSequence;
-import java.util.LinkedList;
+import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.lang.structure.behavior.AbstractConceptDeclaration__BehaviorDescriptor;
 import jetbrains.mps.smodel.SNodePointer;
-import jetbrains.mps.internal.collections.runtime.Sequence;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.errors.messageTargets.MessageTarget;
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget;
 import jetbrains.mps.errors.IErrorReporter;
@@ -38,21 +31,11 @@ public class check_EditorForNonAbstractConcept_NonTypesystemRule extends Abstrac
     if (!(SModuleOperations.isAspect(SNodeOperations.getModel(conceptDeclaration), "structure"))) {
       return;
     }
-    Set<SNode> visited = SetSequence.fromSet(new HashSet<SNode>());
-    Queue<SNode> toCheck = QueueSequence.fromQueue(new LinkedList<SNode>());
-    QueueSequence.fromQueue(toCheck).addLastElement(conceptDeclaration);
-    while (QueueSequence.fromQueue(toCheck).isNotEmpty()) {
-      // FWIW, similar code in CreateDefaultAction
-      SNode acd = QueueSequence.fromQueue(toCheck).removeFirstElement();
-      if (SetSequence.fromSet(visited).contains(acd)) {
-        continue;
-      }
-      SetSequence.fromSet(visited).addElement(acd);
+    for (SNode acd : Sequence.fromIterable(AbstractConceptDeclaration__BehaviorDescriptor.getAllSuperConcepts_id2A8AB0rAWpG.invoke(conceptDeclaration, ((boolean) true)))) {
       Iterable<SNode> aspects = AbstractConceptDeclaration__BehaviorDescriptor.findConceptAspects_id4G9PD8$NvPM.invoke(acd, SModuleOperations.getAspect(SNodeOperations.getModel(acd).getModule(), "editor"));
       if (!(SNodeOperations.is(acd, new SNodePointer("r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)", "1133920641626"))) && Sequence.fromIterable(SNodeOperations.ofConcept(aspects, CONCEPTS.ConceptEditorDeclaration$BH)).isNotEmpty()) {
         return;
       }
-      QueueSequence.fromQueue(toCheck).addSequence(ListSequence.fromList(AbstractConceptDeclaration__BehaviorDescriptor.getImmediateSuperconcepts_idhMuxyK2.invoke(acd)));
     }
     {
       final MessageTarget errorTarget = new PropertyMessageTarget(PROPS.name$MnvL);

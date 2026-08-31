@@ -37,7 +37,7 @@ import jetbrains.mps.smodel.behaviour.BHReflection;
 import jetbrains.mps.core.aspects.behaviour.SMethodIdV2;
 import java.util.List;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
-import java.util.HashSet;
+import org.jetbrains.mps.util.ImmediateParentConceptIterator;
 import jetbrains.mps.smodel.runtime.ConceptPresentation;
 import org.jetbrains.annotations.Nullable;
 import com.intellij.openapi.util.IconLoader;
@@ -206,14 +206,14 @@ public class BaseIconManager {
   }
 
   private IconResource getIconForConceptNoCache(SAbstractConcept concept) {
-    Set<SAbstractConcept> seen = new HashSet<SAbstractConcept>();
-    SAbstractConcept current = concept;
-    while (current != null && seen.add(current)) {
+    if (!(concept instanceof SConcept)) {
+      return getIconForExactConcept(concept);
+    }
+    for (SConcept current : new ImmediateParentConceptIterator(((SConcept) concept))) {
       IconResource ir = getIconForExactConcept(current);
       if (ir != null) {
         return ir;
       }
-      current = ((current instanceof SConcept) ? ((SConcept) current).getSuperConcept() : null);
     }
     return null;
   }

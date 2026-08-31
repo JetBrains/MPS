@@ -19,13 +19,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.language.SConcept;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Concept hierarchy iterator that walks direct super concepts only, up to specified concept (exclusive)
  * or a top-most concept (<code>BaseConcept</code>, inclusive).
  * Iteration begins with a concept supplied as a start one.
  * Iterator doesn't support removals.
+ * Iteration stops at the first concept seen twice, so that a cyclic concept hierarchy doesn't loop forever.
  * @author Artem Tikhomirov
  * @since 3.3
  */
@@ -33,6 +36,7 @@ public final class ImmediateParentConceptIterator implements Iterable<SConcept>,
 
   private final SConcept myStart;
   private final SConcept myStop;
+  private final Set<SConcept> mySeen = new HashSet<>();
   private SConcept myNext;
 
   public ImmediateParentConceptIterator(@NotNull SConcept start) {
@@ -54,12 +58,13 @@ public final class ImmediateParentConceptIterator implements Iterable<SConcept>,
 
   @Override
   public boolean hasNext() {
-    return myNext != null && !myNext.equals(myStop);
+    return myNext != null && !myNext.equals(myStop) && !mySeen.contains(myNext);
   }
 
   @Override
   public SConcept next() {
     SConcept rv = myNext;
+    mySeen.add(rv);
     myNext = myNext.getSuperConcept();
     return rv;
   }
@@ -70,6 +75,7 @@ public final class ImmediateParentConceptIterator implements Iterable<SConcept>,
   }
 
   private void reset() {
+    mySeen.clear();
     myNext = myStart;
   }
 }

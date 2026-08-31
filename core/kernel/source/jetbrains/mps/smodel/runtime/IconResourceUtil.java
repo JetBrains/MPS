@@ -20,9 +20,7 @@ import jetbrains.mps.smodel.language.ConceptRegistry;
 import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import org.jetbrains.mps.openapi.language.SConcept;
 import org.jetbrains.mps.openapi.model.SNode;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.jetbrains.mps.util.ImmediateParentConceptIterator;
 
 /**
  * NOTE: use of this class is discouraged. It's still referenced in some MPS templates
@@ -38,14 +36,11 @@ public class IconResourceUtil {
 
   public static IconResource getIconResourceForConcept(SAbstractConcept concept) {
     if (concept instanceof SConcept) {
-      SConcept current = ((SConcept) concept);
-      Set<SAbstractConcept> seen = new HashSet<>();
-      while (current != null && seen.add(current)) {
+      for (SConcept current : new ImmediateParentConceptIterator(((SConcept) concept))) {
         IconResource ir = getIconForExactConcept(current);
         if (ir != null) {
           return ir;
         }
-        current = current.getSuperConcept();
       }
       return null;
     } else {

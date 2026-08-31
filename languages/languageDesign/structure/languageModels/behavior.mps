@@ -4581,7 +4581,7 @@
       </node>
     </node>
     <node concept="13i0hz" id="1N3jFzyCMRV" role="13h7CS">
-      <property role="TrG5h" value="computeInHierarchy" />
+      <property role="TrG5h" value="computeInHierarchyGuarded" />
       <node concept="37vLTG" id="1N3jFzyCMRW" role="3clF46">
         <property role="TrG5h" value="predicate" />
         <node concept="1ajhzC" id="1N3jFzyCMRX" role="1tU5fm">
@@ -4591,7 +4591,7 @@
           <node concept="3Tqbb2" id="1N3jFzyCMRZ" role="1ajl9A" />
         </node>
       </node>
-      <node concept="3Tm1VV" id="1N3jFzyCMS0" role="1B3o_S" />
+      <node concept="3Tm6S6" id="1NJXWPlX3Ek" role="1B3o_S" />
       <node concept="3Tqbb2" id="1N3jFzyCMS1" role="3clF45" />
       <node concept="3clFbS" id="1N3jFzyCMS2" role="3clF47">
         <node concept="3SKdUt" id="1N3jFzyCMS3" role="3cqZAp">
@@ -4760,8 +4760,8 @@
       </node>
     </node>
     <node concept="13i0hz" id="6AHMUXrdMHP" role="13h7CS">
-      <property role="TrG5h" value="getInLanguageAndNotInLanguageAncestors" />
-      <node concept="3Tm1VV" id="6AHMUXrdMHQ" role="1B3o_S" />
+      <property role="TrG5h" value="collectInLanguageAndNotInLanguageAncestors" />
+      <node concept="3Tm6S6" id="1NJXWPlX3N5" role="1B3o_S" />
       <node concept="3uibUv" id="6AHMUXrdMHR" role="3clF45">
         <ref role="3uigEE" to="18ew:~Pair" resolve="Pair" />
         <node concept="2hMVRd" id="6AHMUXrdMHS" role="11_B2D">
