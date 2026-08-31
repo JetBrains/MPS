@@ -16,7 +16,8 @@ import jetbrains.mps.util.MacrosFactory;
 import jetbrains.mps.vfs.util.PathUtil;
 import com.intellij.openapi.application.PathManager;
 import java.io.File;
-import jetbrains.mps.ide.platform.OpenedPackages;
+import java.util.List;
+import java.lang.management.ManagementFactory;
 
 public final class MpsStartupSettings_Configuration implements IPersistentConfiguration, Copyable<MpsStartupSettings_Configuration> {
   @NotNull
@@ -71,9 +72,10 @@ public final class MpsStartupSettings_Configuration implements IPersistentConfig
     return new File(configPath, "plugins");
   }
   private String computeOpenedPackages() {
+    List<String> addOpens = ManagementFactory.getRuntimeMXBean().getInputArguments().stream().filter((arg) -> arg.startsWith("--add-opens=")).toList();
     StringBuilder sb = new StringBuilder();
-    for (String p : OpenedPackages.getAllOpenedPackages()) {
-      sb.append("--add-opens=" + p + "=ALL-UNNAMED\n");
+    for (String opt : addOpens) {
+      sb.append(opt).append("\n");
     }
     return sb.toString();
   }
