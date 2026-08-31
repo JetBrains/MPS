@@ -13,39 +13,39 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1081236700938:jetbrains.mps.baseLanguage.structure.StaticMethodDeclaration" />
   <root nodeRef="r:c3f8847b-5450-45d4-8ef0-445954b1dc9e(jetbrains.mps.ide.platform)/3150057390452330126">
     <file name="OpenedPackages.java">
-      <node id="2977095070785706240" at="10,0,11,0" concept="9" trace="packages" />
-      <node id="2977095070785709220" at="11,0,12,0" concept="9" trace="mac" />
-      <node id="2977095070785717757" at="12,0,13,0" concept="9" trace="linux" />
-      <node id="2977095070785718057" at="13,0,14,0" concept="9" trace="windows" />
-      <node id="2977095070785707197" at="14,57,15,234" concept="7" />
-      <node id="2977095070785710899" at="17,57,18,118" concept="7" />
-      <node id="2977095070785721722" at="20,59,21,120" concept="7" />
-      <node id="2977095070785722302" at="23,61,24,122" concept="7" />
-      <node id="8481880751328574277" at="27,61,28,35" concept="7" />
-      <node id="8481880751328574263" at="30,63,31,37" concept="7" />
-      <node id="8481880751328574249" at="33,65,34,39" concept="7" />
-      <node id="2977095070785683381" at="14,0,17,0" concept="10" trace="getAllOpenedPackages#()Ljava/lang/Iterable;" />
-      <node id="2977095070785710625" at="17,0,20,0" concept="10" trace="getMacOpenedPackages#()Ljava/lang/Iterable;" />
-      <node id="2977095070785721720" at="20,0,23,0" concept="10" trace="getLinuxOpenedPackages#()Ljava/lang/Iterable;" />
-      <node id="2977095070785722300" at="23,0,26,0" concept="10" trace="getWindowsOpenedPackages#()Ljava/lang/Iterable;" />
-      <node id="8481880751328574275" at="27,0,30,0" concept="10" trace="getMacOnlyOpenedPackages#()Ljava/lang/Iterable;" />
-      <node id="8481880751328574261" at="30,0,33,0" concept="10" trace="getLinuxOnlyOpenedPackages#()Ljava/lang/Iterable;" />
-      <node id="8481880751328574247" at="33,0,36,0" concept="10" trace="getWindowsOnlyOpenedPackages#()Ljava/lang/Iterable;" />
-      <scope id="2977095070785683384" at="14,57,15,234" />
-      <scope id="2977095070785710628" at="17,57,18,118" />
-      <scope id="2977095070785721721" at="20,59,21,120" />
-      <scope id="2977095070785722301" at="23,61,24,122" />
-      <scope id="8481880751328574276" at="27,61,28,35" />
-      <scope id="8481880751328574262" at="30,63,31,37" />
-      <scope id="8481880751328574248" at="33,65,34,39" />
-      <scope id="2977095070785683381" at="14,0,17,0" />
-      <scope id="2977095070785710625" at="17,0,20,0" />
-      <scope id="2977095070785721720" at="20,0,23,0" />
-      <scope id="2977095070785722300" at="23,0,26,0" />
-      <scope id="8481880751328574275" at="27,0,30,0" />
-      <scope id="8481880751328574261" at="30,0,33,0" />
-      <scope id="8481880751328574247" at="33,0,36,0" />
-      <unit id="3150057390452330126" at="8,0,38,0" name="jetbrains.mps.ide.platform.OpenedPackages" />
+      <node id="2977095070785709220" at="19,0,20,0" concept="9" trace="mac" />
+      <node id="2977095070785717757" at="23,0,24,0" concept="9" trace="linux" />
+      <node id="2977095070785718057" at="27,0,28,0" concept="9" trace="windows" />
+      <node id="2977095070785707197" at="32,57,33,234" concept="7" />
+      <node id="2977095070785710899" at="39,57,40,118" concept="7" />
+      <node id="2977095070785721722" at="46,59,47,120" concept="7" />
+      <node id="2977095070785722302" at="53,61,54,122" concept="7" />
+      <node id="8481880751328574277" at="60,61,61,35" concept="7" />
+      <node id="8481880751328574263" at="66,63,67,37" concept="7" />
+      <node id="8481880751328574249" at="72,65,73,39" concept="7" />
+      <node id="2977095070785706240" at="14,0,16,0" concept="9" trace="packages" />
+      <node id="8481880751328574275" at="60,0,63,0" concept="10" trace="getMacOnlyOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="8481880751328574261" at="66,0,69,0" concept="10" trace="getLinuxOnlyOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="8481880751328574247" at="72,0,75,0" concept="10" trace="getWindowsOnlyOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="2977095070785683381" at="31,0,35,0" concept="10" trace="getAllOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="2977095070785710625" at="38,0,42,0" concept="10" trace="getMacOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="2977095070785721720" at="45,0,49,0" concept="10" trace="getLinuxOpenedPackages#()Ljava/lang/Iterable;" />
+      <node id="2977095070785722300" at="52,0,56,0" concept="10" trace="getWindowsOpenedPackages#()Ljava/lang/Iterable;" />
+      <scope id="2977095070785683384" at="32,57,33,234" />
+      <scope id="2977095070785710628" at="39,57,40,118" />
+      <scope id="2977095070785721721" at="46,59,47,120" />
+      <scope id="2977095070785722301" at="53,61,54,122" />
+      <scope id="8481880751328574276" at="60,61,61,35" />
+      <scope id="8481880751328574262" at="66,63,67,37" />
+      <scope id="8481880751328574248" at="72,65,73,39" />
+      <scope id="8481880751328574275" at="60,0,63,0" />
+      <scope id="8481880751328574261" at="66,0,69,0" />
+      <scope id="8481880751328574247" at="72,0,75,0" />
+      <scope id="2977095070785683381" at="31,0,35,0" />
+      <scope id="2977095070785710625" at="38,0,42,0" />
+      <scope id="2977095070785721720" at="45,0,49,0" />
+      <scope id="2977095070785722300" at="52,0,56,0" />
+      <unit id="3150057390452330126" at="8,0,77,0" name="jetbrains.mps.ide.platform.OpenedPackages" />
     </file>
   </root>
   <root nodeRef="r:c3f8847b-5450-45d4-8ef0-445954b1dc9e(jetbrains.mps.ide.platform)/4475567139869328645">

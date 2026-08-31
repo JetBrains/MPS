@@ -7,29 +7,68 @@ import jetbrains.mps.internal.collections.runtime.Sequence;
 
 @GeneratedClass(nodeId = "3150057390452330126", model = "r:c3f8847b-5450-45d4-8ef0-445954b1dc9e(jetbrains.mps.ide.platform)")
 public class OpenedPackages {
+  /**
+   * NB! This list of opened packages is unmaintained and does not reflect the actual opened
+   * packages anymore.
+   */
+  @Deprecated
   private static final String[] packages = {"java.base/java.io", "java.base/java.lang", "java.base/java.lang.reflect", "java.base/java.net", "java.base/java.nio", "java.base/java.nio.charset", "java.base/java.text", "java.base/java.time", "java.base/java.util", "java.base/java.util.concurrent", "java.base/java.util.concurrent.atomic", "java.base/jdk.internal.ref", "java.base/jdk.internal.vm", "java.base/sun.nio.ch", "java.base/sun.nio.fs", "java.base/sun.security.ssl", "java.base/sun.security.util", "java.desktop/java.awt", "java.desktop/java.awt.dnd.peer", "java.desktop/java.awt.event", "java.desktop/java.awt.image", "java.desktop/java.awt.peer", "java.desktop/javax.swing", "java.desktop/javax.swing.plaf.basic", "java.desktop/javax.swing.text", "java.desktop/javax.swing.text.html", "java.desktop/javax.swing.text.html.parser", "java.desktop/sun.awt.datatransfer", "java.desktop/sun.awt.image", "java.desktop/sun.awt", "java.desktop/sun.font", "java.desktop/sun.java2d", "java.desktop/sun.swing", "jdk.attach/sun.tools.attach", "jdk.compiler/com.sun.tools.javac.api", "jdk.internal.jvmstat/sun.jvmstat.monitor", "jdk.jdi/com.sun.tools.jdi", "java.management/sun.management"};
+  /**
+   * Defines the additional packages to be specified in --add-opens for MacOs
+   */
   private static final String[] mac = {"java.desktop/sun.lwawt", "java.desktop/sun.lwawt.macosx", "java.desktop/com.apple.laf", "java.desktop/com.apple.eawt", "java.desktop/com.apple.eawt.event"};
+  /**
+   * Defines the additional packages to be specified in --add-opens for Linux
+   */
   private static final String[] linux = {"java.desktop/sun.awt.X11", "java.desktop/com.sun.java.swing.plaf.gtk"};
+  /**
+   * Defines the additional packages to be specified in --add-opens for Windows
+   */
   private static final String[] windows = {"java.desktop/sun.awt.windows"};
+  /**
+   * Unused in MPS
+   */
+  @Deprecated
   public static Iterable<String> getAllOpenedPackages() {
     return Sequence.fromIterable(Sequence.fromArray(packages)).concat(Sequence.fromIterable(Sequence.fromArray(mac))).concat(Sequence.fromIterable(Sequence.fromArray(linux))).concat(Sequence.fromIterable(Sequence.fromArray(windows)));
   }
+  /**
+   * Unused in MPS.
+   */
+  @Deprecated
   public static Iterable<String> getMacOpenedPackages() {
     return Sequence.fromIterable(Sequence.fromArray(packages)).concat(Sequence.fromIterable(Sequence.fromArray(mac)));
   }
+  /**
+   * Only one usage -- to be removed.
+   */
+  @Deprecated
   public static Iterable<String> getLinuxOpenedPackages() {
     return Sequence.fromIterable(Sequence.fromArray(packages)).concat(Sequence.fromIterable(Sequence.fromArray(linux)));
   }
+  /**
+   * Only one usage -- to be removed.
+   */
+  @Deprecated
   public static Iterable<String> getWindowsOpenedPackages() {
     return Sequence.fromIterable(Sequence.fromArray(packages)).concat(Sequence.fromIterable(Sequence.fromArray(windows)));
   }
 
+  /**
+   * Returns the additional packages to be specified in --add-opens for MacOs
+   */
   public static Iterable<String> getMacOnlyOpenedPackages() {
     return Sequence.fromArray(mac);
   }
+  /**
+   * Returns the additional packages to be specified in --add-opens for Linux
+   */
   public static Iterable<String> getLinuxOnlyOpenedPackages() {
     return Sequence.fromArray(linux);
   }
+  /**
+   * Returns the additional packages to be specified in --add-opens for Windows
+   */
   public static Iterable<String> getWindowsOnlyOpenedPackages() {
     return Sequence.fromArray(windows);
   }
