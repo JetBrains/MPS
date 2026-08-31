@@ -105,6 +105,7 @@ public class API {
   }
   public static class UserGroup {
     public String $type;
+    public String id;
     public String ringId;
     public String name;
     public Project teamForProject;

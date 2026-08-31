@@ -47,8 +47,7 @@ public class Reporter {
 
   private static final String MPS_PROJECT = "MPS";
   private static final String MPS_PROJECT_ID = "22-10";
-  private static final String MPS_TEAM_GROUP = "MPS Team";
-  private static final String MPS_TEAM_GROUP_ID = "74b7b60a-d99f-4796-9ae1-c9044dc58d2c";
+  private static final String MPS_TEAM_GROUP_ID = "673-3";        // "MPS Team", the project team of MPS
 
   private static final String AFFECTED_VERSIONS_FIELD = "Affected versions";
   private static final String AFFECTED_VERSIONS_FIELD_ID = "112-27";
@@ -176,9 +175,10 @@ public class Reporter {
     issue.customFields = customFields.toArray(new API.IssueCustomField[0]);
 
     if (hidden) {
+      // YouTrack locates a user group in a request body by id only: ringId is read-only, and name is writable, hence
+      // sending it next to the id would read as a request to rename the group.
       API.UserGroup group = new API.UserGroup();
-      group.name = MPS_TEAM_GROUP;
-      group.ringId = MPS_TEAM_GROUP_ID;
+      group.id = MPS_TEAM_GROUP_ID;
 
       issue.visibility = new API.LimitedVisibility();
       issue.visibility.permittedGroups = new API.UserGroup[] { group };
