@@ -5,6 +5,12 @@
       <add-to-group group-id="ToolbarRunGroup" relative-to-action="RunConfiguration" anchor="before"/>
     </group>
 
+    <!--
+      WelcomeScreen.CreateNewProject is not added to WelcomeScreen.QuickStart on purpose: the platform's
+      WelcomeScreen.DefaultNewProjectActionGroup already looks this action up by id and puts it on the welcome
+      screen. Adding it here as well makes the same action occupy two slots of the quick start toolbar, which
+      pushes Vcs.VcsClone ("Clone Repository") out of the primary buttons into the "more actions" menu (MPS-39966).
+    -->
     <group id="WelcomeScreen.QuickStart.MPS">
       <action id="WelcomeScreen.CreateNewProject"
               class="jetbrains.mps.workbench.actions.NewMPSProjectAction"
@@ -14,7 +20,6 @@
 <!--              class="jetbrains.mps.workbench.actions.OpenMPSProjectAction$OnMPSWelcomeScreen"-->
 <!--              text="Open"-->
 <!--              description="You can open existing project with this action"/>-->
-      <add-to-group group-id="WelcomeScreen.QuickStart" anchor="first"/>
     </group>
   </actions>
 </idea-plugin>
