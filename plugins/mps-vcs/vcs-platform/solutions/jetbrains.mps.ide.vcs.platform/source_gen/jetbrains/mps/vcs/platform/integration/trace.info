@@ -343,65 +343,67 @@
   <root nodeRef="r:f7252e75-44f2-46f6-9600-c9b291e7dd5f(jetbrains.mps.vcs.platform.integration)/3906168775482822123">
     <file name="MPSVcsHelper.java">
       <node id="2514879470149552404" at="26,0,27,0" concept="6" trace="myFiles" />
-      <node id="2514879470149552415" at="27,58,28,22" concept="5" />
-      <node id="2514879470149552424" at="32,50,33,21" concept="11" />
-      <node id="2514879470149552436" at="36,40,37,37" concept="12" />
-      <node id="2514879470149552432" at="37,37,38,19" concept="11" />
-      <node id="3906168775483305494" at="42,40,43,19" concept="16" />
-      <node id="9126930968321401183" at="47,164,48,0" concept="13" />
-      <node id="9126930968321482568" at="49,220,50,0" concept="13" />
-      <node id="9126930968321627228" at="50,0,51,243" concept="10" />
-      <node id="9126930968321956346" at="52,38,53,78" concept="11" />
-      <node id="8695149241389369747" at="55,35,56,151" concept="10" />
-      <node id="4062951586954850803" at="56,151,57,168" concept="10" />
-      <node id="7075964554777830516" at="57,168,58,69" concept="5" />
-      <node id="9126930968322043356" at="58,69,59,31" concept="12" />
-      <node id="3179764911871405736" at="59,31,60,91" concept="10" />
-      <node id="2474081500119270298" at="60,91,61,91" concept="10" />
-      <node id="2474081500119593292" at="62,66,63,93" concept="10" />
-      <node id="2474081500119593299" at="64,75,65,51" concept="5" />
-      <node id="3707298695201813361" at="66,11,67,307" concept="5" />
-      <node id="2474081500119499051" at="67,307,68,113" concept="10" />
-      <node id="2474081500119557527" at="69,35,70,63" concept="11" />
-      <node id="3179764911871502683" at="72,9,73,149" concept="10" />
-      <node id="3179764911871432432" at="73,149,74,126" concept="10" />
-      <node id="3179764911871369839" at="74,126,75,153" concept="11" />
-      <node id="9126930968321401799" at="77,5,78,0" concept="13" />
-      <node id="9126930968321499966" at="78,0,79,72" concept="11" />
-      <node id="2514879470149552409" at="27,0,30,0" concept="3" trace="MPSMergeDialogResult#(Ljava/util/List;)V" />
-      <node id="3906168775483287313" at="42,0,45,0" concept="3" trace="MPSVcsHelper#(Lcom/intellij/openapi/project/Project;)V" />
-      <node id="9126930968321948484" at="51,243,54,7" concept="8" />
-      <node id="2474081500119593296" at="63,93,66,11" concept="7" />
-      <node id="2474081500119519175" at="68,113,71,11" concept="8" />
-      <node id="2514879470149552420" at="30,0,35,0" concept="9" trace="getProcessedFiles#()Ljava/util/List;" />
-      <node id="2514879470149552429" at="35,0,40,0" concept="9" trace="shouldFinishMerge#()Z" />
-      <node id="2474081500119432237" at="61,91,72,9" concept="8" />
-      <node id="9126930968321964506" at="54,7,76,7" concept="8" />
-      <node id="9126930968321468737" at="48,0,77,5" concept="8" />
-      <node id="3906168775483308729" at="46,0,81,0" concept="9" trace="showMergeDialog#(Ljava/util/List;Lcom/intellij/openapi/vcs/merge/MergeProvider;Lcom/intellij/openapi/vcs/merge/MergeDialogCustomizer;)Lcom/intellij/openapi/vcs/AbstractVcsHelper/MergeDialogResult;" />
-      <scope id="2514879470149552414" at="27,58,28,22" />
-      <scope id="2514879470149552423" at="32,50,33,21" />
-      <scope id="3906168775483287317" at="42,40,43,19" />
-      <scope id="9126930968321948487" at="52,38,53,78" />
-      <scope id="2474081500119593298" at="64,75,65,51" />
-      <scope id="2474081500119519178" at="69,35,70,63" />
-      <scope id="2514879470149552431" at="36,40,38,19" />
-      <scope id="2514879470149552409" at="27,0,30,0">
-        <var name="files" id="2514879470149552411" />
-      </scope>
-      <scope id="3906168775483287313" at="42,0,45,0">
+      <node id="3665398209885345980" at="27,0,28,0" concept="6" trace="myShouldFinishMerge" />
+      <node id="2514879470149552415" at="28,85,29,22" concept="5" />
+      <node id="3665398209885428339" at="29,22,30,46" concept="5" />
+      <node id="2514879470149552424" at="34,50,35,21" concept="11" />
+      <node id="2514879470149552432" at="38,40,39,33" concept="11" />
+      <node id="3906168775483305494" at="43,40,44,19" concept="16" />
+      <node id="9126930968321401183" at="49,192,50,0" concept="13" />
+      <node id="9126930968321482568" at="51,220,52,0" concept="13" />
+      <node id="9126930968321627228" at="52,0,53,243" concept="10" />
+      <node id="9126930968321956346" at="54,38,55,85" concept="11" />
+      <node id="8695149241389369747" at="57,35,58,151" concept="10" />
+      <node id="4062951586954850803" at="58,151,59,168" concept="10" />
+      <node id="7075964554777830516" at="59,168,60,69" concept="5" />
+      <node id="9126930968322043356" at="60,69,61,31" concept="12" />
+      <node id="3179764911871405736" at="61,31,62,91" concept="10" />
+      <node id="2474081500119270298" at="62,91,63,91" concept="10" />
+      <node id="2474081500119593292" at="64,66,65,93" concept="10" />
+      <node id="2474081500119593299" at="66,75,67,51" concept="5" />
+      <node id="3707298695201813361" at="68,11,69,307" concept="5" />
+      <node id="2474081500119499051" at="69,307,70,113" concept="10" />
+      <node id="2474081500119557527" at="71,35,72,70" concept="11" />
+      <node id="3179764911871502683" at="74,9,75,149" concept="10" />
+      <node id="3179764911871432432" at="75,149,76,126" concept="10" />
+      <node id="3179764911871369839" at="76,126,77,189" concept="11" />
+      <node id="9126930968321401799" at="79,5,80,0" concept="13" />
+      <node id="9126930968321499966" at="80,0,81,72" concept="11" />
+      <node id="3906168775483287313" at="43,0,46,0" concept="3" trace="MPSVcsHelper#(Lcom/intellij/openapi/project/Project;)V" />
+      <node id="9126930968321948484" at="53,243,56,7" concept="8" />
+      <node id="2474081500119593296" at="65,93,68,11" concept="7" />
+      <node id="2474081500119519175" at="70,113,73,11" concept="8" />
+      <node id="2514879470149552409" at="28,0,32,0" concept="3" trace="MPSMergeDialogResult#(Ljava/util/List;Z)V" />
+      <node id="2514879470149552429" at="37,0,41,0" concept="9" trace="shouldFinishMerge#()Z" />
+      <node id="2514879470149552420" at="32,0,37,0" concept="9" trace="getProcessedFiles#()Ljava/util/List;" />
+      <node id="2474081500119432237" at="63,91,74,9" concept="8" />
+      <node id="9126930968321964506" at="56,7,78,7" concept="8" />
+      <node id="9126930968321468737" at="50,0,79,5" concept="8" />
+      <node id="3906168775483308729" at="47,0,83,0" concept="9" trace="showMergeDialogWithResult#(Ljava/util/List;Lcom/intellij/openapi/vcs/merge/MergeProvider;Lcom/intellij/openapi/vcs/merge/MergeDialogCustomizer;)Lcom/intellij/openapi/vcs/AbstractVcsHelper/MergeDialogResult;" />
+      <scope id="2514879470149552423" at="34,50,35,21" />
+      <scope id="2514879470149552431" at="38,40,39,33" />
+      <scope id="3906168775483287317" at="43,40,44,19" />
+      <scope id="9126930968321948487" at="54,38,55,85" />
+      <scope id="2474081500119593298" at="66,75,67,51" />
+      <scope id="2474081500119519178" at="71,35,72,70" />
+      <scope id="2514879470149552414" at="28,85,30,46" />
+      <scope id="3906168775483287313" at="43,0,46,0">
         <var name="project" id="3906168775483287514" />
       </scope>
-      <scope id="2474081500119593296" at="63,93,66,11">
+      <scope id="2474081500119593296" at="65,93,68,11">
         <var name="file" id="2474081500119593297" />
       </scope>
-      <scope id="2514879470149552420" at="30,0,35,0" />
-      <scope id="2514879470149552429" at="35,0,40,0" />
-      <scope id="2474081500119432240" at="62,66,71,11">
+      <scope id="2514879470149552409" at="28,0,32,0">
+        <var name="files" id="2514879470149552411" />
+        <var name="shouldFinishMerge" id="3665398209885388085" />
+      </scope>
+      <scope id="2514879470149552429" at="37,0,41,0" />
+      <scope id="2514879470149552420" at="32,0,37,0" />
+      <scope id="2474081500119432240" at="64,66,73,11">
         <var name="ans" id="2474081500119499052" />
         <var name="message" id="2474081500119593293" />
       </scope>
-      <scope id="9126930968321964509" at="55,35,75,153">
+      <scope id="9126930968321964509" at="57,35,77,189">
         <var name="autoResolvedFiles" id="3179764911871405737" />
         <var name="modelConflictResolverTask" id="4062951586954850804" />
         <var name="resolvedResult" id="3179764911871432433" />
@@ -409,17 +411,17 @@
         <var name="toResolve" id="3179764911871502686" />
         <var name="unresolvedFiles" id="2474081500119270301" />
       </scope>
-      <scope id="9126930968321468740" at="49,220,76,7">
+      <scope id="9126930968321468740" at="51,220,78,7">
         <var name="answer" id="9126930968321627231" />
       </scope>
-      <scope id="3906168775483308740" at="47,164,79,72" />
-      <scope id="3906168775483308729" at="46,0,81,0">
+      <scope id="3906168775483308740" at="49,192,81,72" />
+      <scope id="3906168775483308729" at="47,0,83,0">
         <var name="customizer" id="3906168775483308737" />
         <var name="files" id="3906168775483308732" />
         <var name="provider" id="3906168775483308735" />
       </scope>
-      <unit id="2514879470149552401" at="25,0,41,0" name="jetbrains.mps.vcs.platform.integration.MPSVcsHelper$MPSMergeDialogResult" />
-      <unit id="3906168775482822123" at="22,0,82,0" name="jetbrains.mps.vcs.platform.integration.MPSVcsHelper" />
+      <unit id="2514879470149552401" at="25,0,42,0" name="jetbrains.mps.vcs.platform.integration.MPSVcsHelper$MPSMergeDialogResult" />
+      <unit id="3906168775482822123" at="22,0,84,0" name="jetbrains.mps.vcs.platform.integration.MPSVcsHelper" />
     </file>
   </root>
   <root nodeRef="r:f7252e75-44f2-46f6-9600-c9b291e7dd5f(jetbrains.mps.vcs.platform.integration)/5085852630254807374">
