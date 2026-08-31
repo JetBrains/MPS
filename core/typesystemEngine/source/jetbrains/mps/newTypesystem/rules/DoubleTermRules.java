@@ -24,6 +24,7 @@ import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.util.Computable;
 import jetbrains.mps.util.Pair;
 import jetbrains.mps.util.Triplet;
+import org.jetbrains.mps.util.ImmediateParentConceptIterator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,11 +106,13 @@ public abstract class DoubleTermRules<K> {
       return Collections.emptyList();
     }
     // not sure there's much sense in BaseConcept among return values, left as it used to be.
-    SConcept c = ((SConcept) concept).getSuperConcept();
+    SConcept superConcept = ((SConcept) concept).getSuperConcept();
+    if (superConcept == null) {
+      return Collections.emptyList();
+    }
     ArrayList<SConcept> rv = new ArrayList<>();
-    while (c != null) {
+    for (SConcept c : new ImmediateParentConceptIterator(superConcept)) {
       rv.add(c);
-      c = c.getSuperConcept();
     }
     return rv;
   }
