@@ -83,6 +83,11 @@ public interface TypecheckingSession {
     private Map<String, ?> myParamsMap;
 
     @NotNull
+    private static Flags nullFlags() {
+      return new Flags(0L);
+    }
+
+    @NotNull
     public static Flags basic() {
       return new Flags(FLAG_BASIC);
     }
@@ -183,6 +188,58 @@ public interface TypecheckingSession {
       this.myFlags = flags;
     }
 
+  }
+
+  class NullTypecheckingSession implements TypecheckingSession {
+    @Override
+    public Flags flags() {
+      return Flags.nullFlags();
+    }
+
+    @Override
+    public <Q extends TypecheckingQueries> Q getQueries(Class<? extends Q> queriesClass) {
+      return null;
+    }
+
+    @Override
+    public TypecheckingQueries getQueries(@NotNull SNode src, SNode trg, SConcept trgConcept) {
+      return null;
+    }
+
+    @Override
+    public TypecheckingQueries getQueries(@NotNull SNode src, SNode trg) {
+      return null;
+    }
+
+    @Override
+    public TypecheckingQueries getQueries(@NotNull SNode node) {
+      return null;
+    }
+
+    @Override
+    public <C> C getData(Class<? extends C> dataClass) {
+      return null;
+    }
+  }
+
+  class NullHandle implements Handle  {
+
+    private final NullTypecheckingSession myNullTypecheckingSession = new NullTypecheckingSession();
+
+    @Override
+    public TypecheckingSession session() {
+      return myNullTypecheckingSession;
+    }
+
+    @Override
+    public void release() {
+      // NOP
+    }
+
+    @Override
+    public void invalidateAndRelease() {
+      // NOP
+    }
   }
 
 }

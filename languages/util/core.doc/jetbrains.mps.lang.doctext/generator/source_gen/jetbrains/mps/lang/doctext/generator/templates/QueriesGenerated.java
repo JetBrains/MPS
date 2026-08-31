@@ -16,9 +16,7 @@ import jetbrains.mps.lang.text.behavior.Line__BehaviorDescriptor;
 import jetbrains.mps.generator.template.PropertyMacroContext;
 import org.jetbrains.mps.openapi.module.SRepository;
 import org.jetbrains.mps.openapi.model.SNode;
-import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
 import jetbrains.mps.openapi.editor.TextBuilder;
-import javax.swing.SwingUtilities;
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent;
 import jetbrains.mps.lang.doctext.util.DocumentationPathResolver;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
@@ -165,19 +163,17 @@ public class QueriesGenerated extends QueryProviderBase {
     }
   }
   public static Object propertyMacro_GetValue_7_0(final PropertyMacroContext _context) {
-    final SRepository repository = _context.getOriginalInputModel().getRepository();
-    final SNode n = _context.getOriginalCopiedInputNode(_context.getNode());
-    final Wrappers._T<TextBuilder> tb = new Wrappers._T<TextBuilder>();
+    SRepository repository = _context.getOriginalInputModel().getRepository();
+    SNode n = _context.getOriginalCopiedInputNode(_context.getNode());
+    TextBuilder tb;
     try {
-      SwingUtilities.invokeAndWait(() -> {
-        HeadlessEditorComponent component = new HeadlessEditorComponent(repository);
-        component.editNode(n);
-        tb.value = component.getRootCell().renderText();
-      });
+      HeadlessEditorComponent component = new HeadlessEditorComponent(repository);
+      component.editNode(n);
+      tb = component.getRootCell().renderText();
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-    String returnValue = tb.value.getText();
+    String returnValue = tb.getText();
     if (" <no node> ".equals(returnValue)) {
       return "empty block of code";
     }

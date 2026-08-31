@@ -52,6 +52,9 @@ public abstract class TypecheckingSessionHandler implements TypecheckingComputat
 
   @Override
   public final <T> T computeWithSession(@NotNull TypecheckingSession withSession, Function<TypecheckingSession, T> code) {
+    if (withSession instanceof NullTypecheckingSession) {
+      return code.apply(withSession);
+    }
     if (!(withSession instanceof TypecheckingSessionImpl)) {
       throw new IllegalArgumentException();
     }
@@ -68,6 +71,10 @@ public abstract class TypecheckingSessionHandler implements TypecheckingComputat
 
   @Override
   public final void runWithSession(@NotNull TypecheckingSession withSession, Consumer<TypecheckingSession> code) {
+    if (withSession instanceof NullTypecheckingSession) {
+      code.accept(withSession);
+      return;
+    }
     if (!(withSession instanceof TypecheckingSessionImpl)) {
       throw new IllegalArgumentException();
     }

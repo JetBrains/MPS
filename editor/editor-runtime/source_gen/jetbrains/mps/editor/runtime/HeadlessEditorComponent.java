@@ -7,15 +7,16 @@ import jetbrains.mps.nodeEditor.EditorComponent;
 import org.jetbrains.mps.openapi.module.SRepository;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.nodeEditor.configuration.EditorConfigurationBuilder;
+import jetbrains.mps.typechecking.TypecheckingSession;
 
 /**
  * This editor component was designed to be used in headless mode. Instance of this editor component can be created
  * in order to:
  * 
- * - render the node tree as projection-specific text
- * - render the node tree as a picture
- * - call some editor-specific actions - e.g. substitute
- * - ...
+ * <ul><li>render the node tree as projection-specific text<li>
+ * <li>render the node tree as a picture<li>
+ * <li>call some editor-specific actions - e.g. substitute<li>
+ * <li>...<li></ul>
  */
 @GeneratedClass(nodeId = "7398401354080376432", model = "r:2af017c2-293f-4ebb-99f3-81e353b3d6e6(jetbrains.mps.editor.runtime)")
 public class HeadlessEditorComponent extends EditorComponent {
@@ -36,13 +37,22 @@ public class HeadlessEditorComponent extends EditorComponent {
   }
 
   @Override
+  protected synchronized void requestTypecheckingSession() {
+    this.myTypecheckingSessionHandle = new TypecheckingSession.NullHandle();
+  }
+
+  @Override
+  protected synchronized void releaseTypecheckingSession(boolean invalidate) {
+    this.myTypecheckingSessionHandle = null;
+  }
+
+  @Override
   protected void attachListeners() {
   }
 
   @Override
   protected void detachListeners() {
   }
-
 
   @Override
   protected void assertInEDT() {

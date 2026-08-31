@@ -15,6 +15,7 @@
  */
 package jetbrains.mps.nodeEditor.updater;
 
+import jetbrains.mps.editor.runtime.HeadlessEditorComponent;
 import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.ide.project.ProjectHelper;
 import jetbrains.mps.logging.Logger;
@@ -98,9 +99,7 @@ public class UpdaterImpl implements Updater {
   }
 
   private void doUpdate(List<SModelEvent> events) {
-    if (!ThreadUtils.isInEDT()) {
-      LOG.error("This method should be called in EDT", new Throwable());
-    }
+    assertInEdt();
     if (myDisposed) {
       return;
     }
@@ -149,10 +148,15 @@ public class UpdaterImpl implements Updater {
   @Override
   public void flushModelEvents() {
     assert !myDisposed;
+    assertInEdt();
+    myModelListenersController.flush();
+  }
+
+  protected void assertInEdt() {
+    if (myEditorComponent instanceof HeadlessEditorComponent) return;
     if (!ThreadUtils.isInEDT()) {
       LOG.error("This method should be called in EDT", new Throwable());
     }
-    myModelListenersController.flush();
   }
 
   @Override
