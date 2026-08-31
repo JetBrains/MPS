@@ -18,4 +18,9 @@
     <mps.LanguageLibrary dir="/" hide="true"/>
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter" />
   </extensions>
+  <actions>
+    <!--MPS-39914 moved  over from DisabledLangActions.xml -->
+    <group id="TestTreePopupMenu" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
+    <action id="openAssertEqualsDiff" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
+  </actions>
 </idea-plugin>

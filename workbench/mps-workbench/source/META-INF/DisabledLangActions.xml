@@ -382,10 +382,6 @@
 
     <group id="EditorPopupMenuDebug" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
 
-    <!--    TMP MPS-39914 comment out disabled actions &#45;&#45; to be moved to a separate plugin-->
-<!--    <group id="TestTreePopupMenu" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>-->
-
-<!--    <action id="openAssertEqualsDiff" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>-->
     <group id="RunTestGroup" class="com.intellij.openapi.actionSystem.EmptyActionGroup" overrides="true"/>
 
     <action id="DumpLookupElementWeights" class="com.intellij.openapi.actionSystem.EmptyAction" overrides="true"/>
