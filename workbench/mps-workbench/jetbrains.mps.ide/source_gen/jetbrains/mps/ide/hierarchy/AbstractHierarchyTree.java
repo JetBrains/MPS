@@ -13,6 +13,8 @@ import javax.swing.tree.TreePath;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.ide.ui.tree.MPSTreeNode;
 import jetbrains.mps.smodel.ModelReadRunnable;
+import jetbrains.mps.ide.messages.Icons;
+import com.intellij.ui.JBColor;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.ide.icons.GlobalIconManager;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
@@ -119,7 +121,20 @@ public abstract class AbstractHierarchyTree extends MPSTree {
     if (myHierarchyNode == null) {
       return new TextTreeNode(noNodeString());
     }
-    return rebuildParentHierarchy();
+    try {
+      return rebuildParentHierarchy();
+    } catch (CircularHierarchyException ex) {
+      SNode errorNode = (SNode) ex.getRepeatedObject();
+      HierarchyTreeNode errorTreeNode = new HierarchyTreeNode(errorNode);
+      setNodePresentation(errorTreeNode, errorNode);
+      errorTreeNode.setIcon(Icons.ERROR_ICON);
+      errorTreeNode.setColor(JBColor.RED);
+      errorTreeNode.setAdditionalText(ex.getMessage());
+      myTreeNode = errorTreeNode;
+      MPSTreeNode topRootNode = new TextTreeNode("Hierarchy");
+      topRootNode.add(errorTreeNode);
+      return topRootNode;
+    }
   }
 
   /**
@@ -162,7 +177,7 @@ public abstract class AbstractHierarchyTree extends MPSTree {
     }
     return SetSequence.fromSetWithValues(new LinkedHashSet<>(), result);
   }
-  protected SNode getAbstractParent(SNode node) {
+  protected SNode getAbstractParent(SNode node) throws CircularHierarchyException {
     if (myIsParentHierarchy) {
       return null;
     }
@@ -173,7 +188,10 @@ public abstract class AbstractHierarchyTree extends MPSTree {
     if (!(myShowGeneratorModels)) {
       Set<SNode> seen = new HashSet<SNode>();
       seen.add(node);
-      while (isInGeneratorModel(result) && seen.add(result)) {
+      while (isInGeneratorModel(result)) {
+        if (!(seen.add(result))) {
+          throw new CircularHierarchyException(result, "circular concept hierarchy");
+        }
         result = getParent(result);
         if (result == null) {
           return null;
@@ -185,11 +203,14 @@ public abstract class AbstractHierarchyTree extends MPSTree {
     }
     return result;
   }
-  protected MPSTreeNode rebuildParentHierarchy() {
+  protected MPSTreeNode rebuildParentHierarchy() throws CircularHierarchyException {
     ArrayList<SNode> parentHierarchy = new ArrayList<>();
     SNode parentDeclaration = myHierarchyNode;
     Set<SNode> seenParents = new HashSet<SNode>();
-    while (parentDeclaration != null && seenParents.add(parentDeclaration)) {
+    while (parentDeclaration != null) {
+      if (!(seenParents.add(parentDeclaration))) {
+        throw new CircularHierarchyException(parentDeclaration, "circular concept hierarchy");
+      }
       parentHierarchy.add(parentDeclaration);
       parentDeclaration = getAbstractParent(parentDeclaration);
     }

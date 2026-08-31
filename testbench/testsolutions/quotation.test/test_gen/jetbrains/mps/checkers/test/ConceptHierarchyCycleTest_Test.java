@@ -10,6 +10,7 @@ import jetbrains.mps.lang.test.runtime.TestParametersCacheBuilder;
 import org.junit.jupiter.api.Test;
 import jetbrains.mps.lang.test.runtime.BaseTestBody;
 import jetbrains.mps.lang.test.runtime.TransformationTest;
+import org.junit.Assert;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.lang.test.runtime.CheckExpectedMessageRunnable;
 import jetbrains.mps.errors.MessageStatus;
@@ -25,12 +26,20 @@ public class ConceptHierarchyCycleTest_Test extends BaseTransformationTest {
   }
 
   @Test
-  public void test_selfExtendingConceptHierarchyTerminates() throws Throwable {
-    new TestBody(this).test_selfExtendingConceptHierarchyTerminates();
+  public void test_selfExtendingConceptHierarchyIsReported() throws Throwable {
+    new TestBody(this).test_selfExtendingConceptHierarchyIsReported();
   }
   @Test
-  public void test_mutuallyExtendingConceptHierarchyTerminates() throws Throwable {
-    new TestBody(this).test_mutuallyExtendingConceptHierarchyTerminates();
+  public void test_mutuallyExtendingConceptHierarchyIsReported() throws Throwable {
+    new TestBody(this).test_mutuallyExtendingConceptHierarchyIsReported();
+  }
+  @Test
+  public void test_selfExtendingConceptHierarchyIsReportedInExpandedTree() throws Throwable {
+    new TestBody(this).test_selfExtendingConceptHierarchyIsReportedInExpandedTree();
+  }
+  @Test
+  public void test_mutuallyExtendingConceptHierarchyIsReportedInExpandedTree() throws Throwable {
+    new TestBody(this).test_mutuallyExtendingConceptHierarchyIsReportedInExpandedTree();
   }
   @Test
   public void test_NodeCyclicConceptHierarchyCheck2544021697899289606() throws Throwable {
@@ -68,15 +77,26 @@ public class ConceptHierarchyCycleTest_Test extends BaseTransformationTest {
       prepareTestNodes("7614966498964100983", "7614966498964100986", "7614966498964100989");
     }
 
-    public void test_selfExtendingConceptHierarchyTerminates() throws Exception {
+    public void test_selfExtendingConceptHierarchyIsReported() throws Exception {
       initTestNodes();
-      runWithinCommand(() -> ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("selfExtending")));
+      runWithinCommand(() -> Assert.assertTrue("cyclic concept hierarchy of a self-extending concept must be reported", ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("selfExtending"))));
     }
-    public void test_mutuallyExtendingConceptHierarchyTerminates() throws Exception {
+    public void test_mutuallyExtendingConceptHierarchyIsReported() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
-        ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("conceptA"));
-        ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("conceptB"));
+        Assert.assertTrue("cyclic concept hierarchy of mutually extending concept A must be reported", ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("conceptA")));
+        Assert.assertTrue("cyclic concept hierarchy of mutually extending concept B must be reported", ConceptHierarchyTreeTestSupport.buildParentHierarchy(getAnnotatedNode("conceptB")));
+      });
+    }
+    public void test_selfExtendingConceptHierarchyIsReportedInExpandedTree() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> Assert.assertEquals("expanding the hierarchy of a self-extending concept must report the cycle as an error node", "circular concept hierarchy", ConceptHierarchyTreeTestSupport.expandChildHierarchyUntilCycleReported(getAnnotatedNode("selfExtending"), 20)));
+    }
+    public void test_mutuallyExtendingConceptHierarchyIsReportedInExpandedTree() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        Assert.assertEquals("expanding the hierarchy of mutually extending concept A must report the cycle as an error node", "circular concept hierarchy", ConceptHierarchyTreeTestSupport.expandChildHierarchyUntilCycleReported(getAnnotatedNode("conceptA"), 20));
+        Assert.assertEquals("expanding the hierarchy of mutually extending concept B must report the cycle as an error node", "circular concept hierarchy", ConceptHierarchyTreeTestSupport.expandChildHierarchyUntilCycleReported(getAnnotatedNode("conceptB"), 20));
       });
     }
     public void test_NodeCyclicConceptHierarchyCheck2544021697899289606() throws Exception {

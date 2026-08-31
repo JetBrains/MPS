@@ -5,23 +5,66 @@ package jetbrains.mps.checkers.test;
 import jetbrains.mps.ide.hierarchy.ConceptHierarchyTree;
 import org.jetbrains.mps.openapi.module.SRepository;
 import org.jetbrains.mps.openapi.model.SNode;
+import jetbrains.mps.ide.hierarchy.CircularHierarchyException;
+import jetbrains.mps.ide.ui.tree.MPSTreeNode;
+import jetbrains.mps.ide.messages.Icons;
+import com.intellij.ui.JBColor;
 
 /**
  * 
  * Gives tests access to the protected hierarchy building code of the Concept Hierarchy view.
  */
 public class ConceptHierarchyTreeTestSupport extends ConceptHierarchyTree {
-  public ConceptHierarchyTreeTestSupport(SRepository repository) {
-    super(repository, false);
+  public ConceptHierarchyTreeTestSupport(SRepository repository, boolean isParentHierarchy) {
+    super(repository, isParentHierarchy);
   }
   /**
    * 
    * Builds the parent hierarchy for the given concept declaration, the way the Concept Hierarchy view does.
-   * Has to terminate even if the concept hierarchy is cyclic, see MPS-40037.
+   * Returns true if a cyclic concept hierarchy was reported instead of being silently truncated, see MPS-40037.
    */
-  public static void buildParentHierarchy(SNode conceptDeclaration) {
-    ConceptHierarchyTreeTestSupport tree = new ConceptHierarchyTreeTestSupport(conceptDeclaration.getModel().getRepository());
+  public static boolean buildParentHierarchy(SNode conceptDeclaration) {
+    ConceptHierarchyTreeTestSupport tree = new ConceptHierarchyTreeTestSupport(conceptDeclaration.getModel().getRepository(), false);
     tree.setHierarchyNode(conceptDeclaration);
-    tree.rebuildParentHierarchy();
+    try {
+      tree.rebuildParentHierarchy();
+      return false;
+    } catch (CircularHierarchyException ex) {
+      return true;
+    }
+  }
+  /**
+   * 
+   * Expands the child hierarchy of the given concept declaration the way the Concept Hierarchy view does, in the direction that walks superconcepts,
+   * and returns the message the view reported for the hierarchy, or null if nothing was reported.
+   * A cyclic hierarchy has to be reported by ChildHierarchyTreeNode as an error node instead of being expanded forever, see MPS-40037.
+   * The reported node is looked up the way the view renders it - red, with Icons.ERROR_ICON - so this also pins that presentation.
+   * The walk descends at most maxDepth levels and fails with an IllegalStateException once that budget is exhausted, so that
+   * a regression of the cycle guard fails the test instead of hanging it.
+   */
+  public static String expandChildHierarchyUntilCycleReported(SNode conceptDeclaration, int maxDepth) {
+    ConceptHierarchyTreeTestSupport tree = new ConceptHierarchyTreeTestSupport(conceptDeclaration.getModel().getRepository(), true);
+    tree.setHierarchyNode(conceptDeclaration);
+    try {
+      return findReportedCycle(tree.rebuildParentHierarchy(), maxDepth);
+    } catch (CircularHierarchyException ex) {
+      throw new IllegalStateException("the parent chain above the root is not walked in this direction, so it cannot report a cycle", ex);
+    }
+  }
+  private static String findReportedCycle(MPSTreeNode treeNode, int depthBudget) {
+    if (depthBudget <= 0) {
+      throw new IllegalStateException("hierarchy expansion did not terminate: the concept hierarchy cycle was not reported");
+    }
+    treeNode.init();
+    if (treeNode.getIcon() == Icons.ERROR_ICON && treeNode.getColor() == JBColor.RED) {
+      return treeNode.getAdditionalText();
+    }
+    for (MPSTreeNode child : treeNode) {
+      String reported = findReportedCycle(child, depthBudget - 1);
+      if (reported != null) {
+        return reported;
+      }
+    }
+    return null;
   }
 }

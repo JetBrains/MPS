@@ -76,7 +76,7 @@ public class ConceptHierarchyTree extends AbstractHierarchyTree {
   }
 
   @Override
-  protected MPSTreeNode rebuildParentHierarchy() {
+  protected MPSTreeNode rebuildParentHierarchy() throws CircularHierarchyException {
     buildCaches();
     return super.rebuildParentHierarchy();
   }
