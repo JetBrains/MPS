@@ -204,6 +204,19 @@ import java.net.URLClassLoader;
           }
         }
       }
+      // Since the platform's v2 plugin model, a plugin's content modules are packaged as lib/modules/*.jar
+      // and are not part of the plugin's main classpath. As we keep a single flat classloader per plugin
+      // (see createPluginClassLoader), module jars are exposed as regular classpath entries here. Otherwise
+      // classes of a content module can not be resolved, e.g. git4idea.GitRemoteBranch coming from
+      // vcs-git/lib/modules/intellij.vcs.git.shared.jar, see MPS-39928
+      final File[] moduleFiles = new File(new File(pluginLocation, "lib"), "modules").listFiles();
+      if (moduleFiles != null) {
+        for (final File f : moduleFiles) {
+          if (f.isFile() && f.getName().toLowerCase(Locale.ENGLISH).endsWith(".jar")) {
+            result.add(f);
+          }
+        }
+      }
       return result;
     } else {
       return Collections.singletonList(pluginLocation);
