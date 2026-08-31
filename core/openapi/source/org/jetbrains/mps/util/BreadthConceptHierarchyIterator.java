@@ -22,12 +22,17 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Iterates hierarchy of concepts, breadth-first. Iterator doesn't support removals.
  * Return values are not unique, e.g. if an interface is implemented by few concepts, it is reported several times.
  * Wrap with {@link org.jetbrains.mps.util.UniqueIterator} if necessary.
+ * Each concept is expanded (i.e. gets its super-concept and super-interfaces queued) at most once, so that a cyclic concept
+ * hierarchy doesn't loop forever. It's this iterator, not a {@code UniqueIterator} wrapper, that keeps a cycle finite.
+ * Note, expanding once doesn't make return values unique, a concept already expanded is still reported.
  *
  * Given
  *  ConceptA implements I1, I2 and
@@ -44,6 +49,7 @@ import java.util.Iterator;
  */
 public class BreadthConceptHierarchyIterator implements Iterable<SAbstractConcept>, Iterator<SAbstractConcept>{
   private final Deque<SAbstractConcept> myQueue = new ArrayDeque<>();
+  private final Set<SAbstractConcept> mySeen = new HashSet<>();
   private final SAbstractConcept myStart;
 
   public BreadthConceptHierarchyIterator(@NotNull SAbstractConcept start) {
@@ -54,6 +60,7 @@ public class BreadthConceptHierarchyIterator implements Iterable<SAbstractConcep
   @Override
   public Iterator<SAbstractConcept> iterator() {
     myQueue.clear();
+    mySeen.clear();
     myQueue.add(myStart);
     return this;
   }
@@ -66,6 +73,10 @@ public class BreadthConceptHierarchyIterator implements Iterable<SAbstractConcep
   @Override
   public SAbstractConcept next() {
     SAbstractConcept rv = myQueue.removeFirst();
+    if (!mySeen.add(rv)) {
+      // already expanded, report it once again (return values are not unique), but don't queue its parents anew
+      return rv;
+    }
     final SConcept parentConcept = rv.getSuperConcept();
     final Iterable<SInterfaceConcept> superInterfaces = rv.getSuperInterfaces();
     // for a concept, implemented interfaces  are deemed as 'this' level, while extended concept constitutes jump to a next depth

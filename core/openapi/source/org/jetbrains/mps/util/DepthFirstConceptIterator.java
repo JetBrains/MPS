@@ -22,7 +22,9 @@ import org.jetbrains.mps.openapi.language.SInterfaceConcept;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Traverse hierarchy of {@link org.jetbrains.mps.openapi.language.SConcept SConcepts} for a given concept (inclusive), visiting super-concepts first
@@ -31,6 +33,9 @@ import java.util.Iterator;
  * the order would be ConceptB, ConceptA, I3, I4, I1, I2, I5, I1
  *
  * Note, same concept may appear few times in this iterator, no unique filtering is done. Use {@link org.jetbrains.mps.util.UniqueIterator} if necessary.
+ * Each concept is expanded (i.e. gets its super-concept and super-interfaces queued) at most once, so that a cyclic concept
+ * hierarchy doesn't loop forever. It's this iterator, not a {@code UniqueIterator} wrapper, that keeps a cycle finite.
+ * Note, expanding once doesn't make return values unique, a concept already expanded is still reported.
  *
  * FIXME functionality of this class shall get exposed from SConcept API
  * (likely, in addition to public iterator not to limit to single iteration approach, i.e. depth or breadth first).
@@ -42,6 +47,7 @@ public class DepthFirstConceptIterator implements Iterable<SAbstractConcept>, It
   private final SAbstractConcept myStart;
   private SConcept myCurrent; // super-concepts hierarchy or null once all super-concepts are over
   private final Deque<SInterfaceConcept> myInterfaces = new ArrayDeque<>();
+  private final Set<SAbstractConcept> mySeen = new HashSet<>();
 
   public DepthFirstConceptIterator(@NotNull SAbstractConcept start) {
     myStart = start;
@@ -56,12 +62,20 @@ public class DepthFirstConceptIterator implements Iterable<SAbstractConcept>, It
   public SAbstractConcept next() {
     if (myCurrent == null) {
       final SInterfaceConcept rv = myInterfaces.removeFirst();
-      queueSuperInterfaces(rv);
+      if (mySeen.add(rv)) {
+        queueSuperInterfaces(rv);
+      }
+      // otherwise, report the interface once again (return values are not unique), but don't queue its super-interfaces anew
       return rv;
     } else {
       SConcept rv = myCurrent;
-      queueSuperInterfaces(myCurrent);
-      myCurrent = myCurrent.getSuperConcept();
+      if (mySeen.add(rv)) {
+        queueSuperInterfaces(rv);
+        myCurrent = rv.getSuperConcept();
+      } else {
+        // cyclic super-concept chain, we are back at a concept expanded earlier, report it and give up the chain
+        myCurrent = null;
+      }
       return rv;
     }
   }
@@ -84,6 +98,7 @@ public class DepthFirstConceptIterator implements Iterable<SAbstractConcept>, It
 
   private void reset() {
     myInterfaces.clear();
+    mySeen.clear();
     if (myStart instanceof SInterfaceConcept) {
       myCurrent = null;
       myInterfaces.add((SInterfaceConcept) myStart);

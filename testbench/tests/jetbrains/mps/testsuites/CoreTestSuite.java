@@ -35,6 +35,7 @@ import org.junit.runners.model.RunnerBuilder;
 @RunWith(CoreTestSuite.class)
 @Suite.SuiteClasses({
     jetbrains.mps.util.MacrosTest.class,
+    jetbrains.mps.util.ConceptHierarchyIteratorsTest.class,
     jetbrains.mps.aspects.InOrderSorterTest.class,
     jetbrains.mps.compile.EclipseJavaCompilerTest.class,
     jetbrains.mps.classloading.ModuleClassLoaderTest.class,
