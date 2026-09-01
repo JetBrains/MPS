@@ -94,6 +94,14 @@ public class TransientModelsNotification {
     private volatile boolean mySessionJustOpened;
 
     @Override
+    public void handleNotification(MakeNotification notification) {
+      // MakeServiceComponent is a platform-wide component, hence we are told about make sessions of all the
+      // open projects. Everything below is about our project only.
+      if (myProject == notification.getProject()) {
+        IMakeNotificationListener.super.handleNotification(notification);
+      }
+    }
+    @Override
     public void scriptAboutToStart(MakeNotification notification) {
       if (mySessionJustOpened) {
         showBalloonLater();
@@ -107,9 +115,7 @@ public class TransientModelsNotification {
     @Override
     public void sessionClosed(MakeNotification notification) {
       mySessionJustOpened = false;
-      if (myProject == notification.getProject()) {
-        selectTransientsFolderLater();
-      }
+      selectTransientsFolderLater();
     }
   }
 
