@@ -1001,7 +1001,7 @@
       <node id="1217271586585" at="57,36,58,40" concept="3" />
       <node id="1225979304892" at="61,74,62,22" concept="3" />
       <node id="2501421320959199497" at="63,30,64,55" concept="6" />
-      <node id="2501421320959199506" at="64,55,65,63" concept="6" />
+      <node id="2501421320959199506" at="64,55,65,69" concept="6" />
       <node id="6923385624929494145" at="68,89,69,22" concept="3" />
       <node id="6923385624929494145" at="70,30,71,63" concept="5" />
       <node id="6923385624929494145" at="71,63,72,286" concept="3" />
@@ -1041,7 +1041,7 @@
       <scope id="2501421320959199496" at="46,77,47,68" />
       <scope id="1217271586585" at="52,52,53,19" />
       <scope id="1217271586585" at="57,36,58,40" />
-      <scope id="1225979304892" at="63,30,65,63" />
+      <scope id="1225979304892" at="63,30,65,69" />
       <scope id="6923385624929494145" at="70,30,72,286">
         <var name="nodeToCheck" id="6923385624929494145" />
       </scope>
@@ -16165,6 +16165,152 @@
       <scope id="9092976468699800071" at="43,0,50,0" />
       <unit id="9092976468699800028" at="32,0,52,0" name="jetbrains.mps.baseLanguage.test.ForBreakUnreachable_Test$TestBody" />
       <unit id="9092976468699800028" at="18,0,53,0" name="jetbrains.mps.baseLanguage.test.ForBreakUnreachable_Test" />
+    </file>
+  </root>
+  <root nodeRef="r:00000000-0000-4000-0000-011c895902c7(jetbrains.mps.baseLanguage.test@tests)/9221264782734574213">
+    <file name="UnusedPlusAssignment_Test.java">
+      <node id="9221264782734574213" at="25,38,26,60" concept="8" />
+      <node id="9221264782734574240" at="30,60,31,51" concept="3" />
+      <node id="9221264782734629280" at="34,105,35,96" concept="3" />
+      <node id="9221264782734624150" at="38,89,39,80" concept="3" />
+      <node id="9221264782734635968" at="42,91,43,82" concept="3" />
+      <node id="9221264782734597038" at="46,77,47,68" concept="3" />
+      <node id="9221264782735704365" at="50,105,51,96" concept="3" />
+      <node id="9221264782735703055" at="54,89,55,80" concept="3" />
+      <node id="9221264782734617464" at="58,91,59,82" concept="3" />
+      <node id="9221264782734598770" at="62,77,63,68" concept="3" />
+      <node id="9221264782734574213" at="68,52,69,19" concept="8" />
+      <node id="9221264782734574213" at="73,36,74,46" concept="3" />
+      <node id="9221264782734574240" at="77,62,78,22" concept="3" />
+      <node id="9221264782734574243" at="79,30,80,55" concept="6" />
+      <node id="9221264782734574252" at="80,55,81,78" concept="6" />
+      <node id="9221264782734641308" at="81,78,82,104" concept="6" />
+      <node id="9221264782734629280" at="85,107,86,22" concept="3" />
+      <node id="9221264782734629280" at="87,30,88,63" concept="5" />
+      <node id="9221264782734629280" at="88,63,89,293" concept="3" />
+      <node id="9221264782734624150" at="92,91,93,22" concept="3" />
+      <node id="9221264782734624150" at="94,30,95,63" concept="5" />
+      <node id="9221264782734624150" at="95,63,96,294" concept="3" />
+      <node id="9221264782734635968" at="99,93,100,22" concept="3" />
+      <node id="9221264782734635968" at="101,30,102,63" concept="5" />
+      <node id="9221264782734635968" at="102,63,103,294" concept="3" />
+      <node id="9221264782734597038" at="106,79,107,22" concept="3" />
+      <node id="9221264782734597038" at="108,30,109,63" concept="5" />
+      <node id="9221264782734597038" at="109,63,110,1079" concept="3" />
+      <node id="9221264782735704365" at="113,107,114,22" concept="3" />
+      <node id="9221264782735704365" at="115,30,116,63" concept="5" />
+      <node id="9221264782735704365" at="116,63,117,293" concept="3" />
+      <node id="9221264782735703055" at="120,91,121,22" concept="3" />
+      <node id="9221264782735703055" at="122,30,123,63" concept="5" />
+      <node id="9221264782735703055" at="123,63,124,294" concept="3" />
+      <node id="9221264782734617464" at="127,93,128,22" concept="3" />
+      <node id="9221264782734617464" at="129,30,130,63" concept="5" />
+      <node id="9221264782734617464" at="130,63,131,294" concept="3" />
+      <node id="9221264782734598770" at="134,79,135,22" concept="3" />
+      <node id="9221264782734598770" at="136,30,137,63" concept="5" />
+      <node id="9221264782734598770" at="137,63,138,1079" concept="3" />
+      <node id="9221264782734574213" at="22,0,24,0" concept="7" trace="ourParametersCacheExtension" />
+      <node id="9221264782734574213" at="25,0,28,0" concept="2" trace="UnusedPlusAssignment_Test#()V" />
+      <node id="9221264782734574213" at="68,0,71,0" concept="2" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="9221264782734574240" at="29,0,33,0" concept="4" trace="test_UnusedPlusAssignment#()V" />
+      <node id="9221264782734629280" at="33,0,37,0" concept="4" trace="test_NodeVariableInitializerIsRedundantWarningCheck9221264782734629280#()V" />
+      <node id="9221264782734624150" at="37,0,41,0" concept="4" trace="test_NodeUnusedVariableWarningCheck9221264782734624150#()V" />
+      <node id="9221264782734635968" at="41,0,45,0" concept="4" trace="test_NodeUnusedAssignmentWarningCheck9221264782734635968#()V" />
+      <node id="9221264782734597038" at="45,0,49,0" concept="4" trace="test_ErrorMessagesCheck9221264782734597038#()V" />
+      <node id="9221264782735704365" at="49,0,53,0" concept="4" trace="test_NodeVariableInitializerIsRedundantWarningCheck9221264782735704365#()V" />
+      <node id="9221264782735703055" at="53,0,57,0" concept="4" trace="test_NodeUnusedVariableWarningCheck9221264782735703055#()V" />
+      <node id="9221264782734617464" at="57,0,61,0" concept="4" trace="test_NodeUnusedAssignmentWarningCheck9221264782734617464#()V" />
+      <node id="9221264782734598770" at="61,0,65,0" concept="4" trace="test_ErrorMessagesCheck9221264782734598770#()V" />
+      <node id="9221264782734574213" at="72,0,76,0" concept="4" trace="initTestNodes#()V" />
+      <node id="9221264782734629280" at="86,22,90,9" concept="3" />
+      <node id="9221264782734624150" at="93,22,97,9" concept="3" />
+      <node id="9221264782734635968" at="100,22,104,9" concept="3" />
+      <node id="9221264782734597038" at="107,22,111,9" concept="3" />
+      <node id="9221264782735704365" at="114,22,118,9" concept="3" />
+      <node id="9221264782735703055" at="121,22,125,9" concept="3" />
+      <node id="9221264782734617464" at="128,22,132,9" concept="3" />
+      <node id="9221264782734598770" at="135,22,139,9" concept="3" />
+      <node id="9221264782734574240" at="78,22,83,9" concept="3" />
+      <node id="9221264782734629280" at="85,0,92,0" concept="4" trace="test_NodeVariableInitializerIsRedundantWarningCheck9221264782734629280#()V" />
+      <node id="9221264782734624150" at="92,0,99,0" concept="4" trace="test_NodeUnusedVariableWarningCheck9221264782734624150#()V" />
+      <node id="9221264782734635968" at="99,0,106,0" concept="4" trace="test_NodeUnusedAssignmentWarningCheck9221264782734635968#()V" />
+      <node id="9221264782734597038" at="106,0,113,0" concept="4" trace="test_ErrorMessagesCheck9221264782734597038#()V" />
+      <node id="9221264782735704365" at="113,0,120,0" concept="4" trace="test_NodeVariableInitializerIsRedundantWarningCheck9221264782735704365#()V" />
+      <node id="9221264782735703055" at="120,0,127,0" concept="4" trace="test_NodeUnusedVariableWarningCheck9221264782735703055#()V" />
+      <node id="9221264782734617464" at="127,0,134,0" concept="4" trace="test_NodeUnusedAssignmentWarningCheck9221264782734617464#()V" />
+      <node id="9221264782734598770" at="134,0,141,0" concept="4" trace="test_ErrorMessagesCheck9221264782734598770#()V" />
+      <node id="9221264782734574240" at="77,0,85,0" concept="4" trace="test_UnusedPlusAssignment#()V" />
+      <scope id="9221264782734574213" at="25,38,26,60" />
+      <scope id="9221264782734574240" at="30,60,31,51" />
+      <scope id="9221264782734629280" at="34,105,35,96" />
+      <scope id="9221264782734624150" at="38,89,39,80" />
+      <scope id="9221264782734635968" at="42,91,43,82" />
+      <scope id="9221264782734597038" at="46,77,47,68" />
+      <scope id="9221264782735704365" at="50,105,51,96" />
+      <scope id="9221264782735703055" at="54,89,55,80" />
+      <scope id="9221264782734617464" at="58,91,59,82" />
+      <scope id="9221264782734598770" at="62,77,63,68" />
+      <scope id="9221264782734574213" at="68,52,69,19" />
+      <scope id="9221264782734574213" at="73,36,74,46" />
+      <scope id="9221264782734629280" at="87,30,89,293">
+        <var name="nodeToCheck" id="9221264782734629280" />
+      </scope>
+      <scope id="9221264782734624150" at="94,30,96,294">
+        <var name="nodeToCheck" id="9221264782734624150" />
+      </scope>
+      <scope id="9221264782734635968" at="101,30,103,294">
+        <var name="nodeToCheck" id="9221264782734635968" />
+      </scope>
+      <scope id="9221264782734597038" at="108,30,110,1079">
+        <var name="nodeToCheck" id="9221264782734597038" />
+      </scope>
+      <scope id="9221264782735704365" at="115,30,117,293">
+        <var name="nodeToCheck" id="9221264782735704365" />
+      </scope>
+      <scope id="9221264782735703055" at="122,30,124,294">
+        <var name="nodeToCheck" id="9221264782735703055" />
+      </scope>
+      <scope id="9221264782734617464" at="129,30,131,294">
+        <var name="nodeToCheck" id="9221264782734617464" />
+      </scope>
+      <scope id="9221264782734598770" at="136,30,138,1079">
+        <var name="nodeToCheck" id="9221264782734598770" />
+      </scope>
+      <scope id="9221264782734574213" at="25,0,28,0" />
+      <scope id="9221264782734574213" at="68,0,71,0">
+        <var name="owner" id="9221264782734574213" />
+      </scope>
+      <scope id="9221264782734574240" at="79,30,82,104" />
+      <scope id="9221264782734574240" at="29,0,33,0" />
+      <scope id="9221264782734629280" at="33,0,37,0" />
+      <scope id="9221264782734624150" at="37,0,41,0" />
+      <scope id="9221264782734635968" at="41,0,45,0" />
+      <scope id="9221264782734597038" at="45,0,49,0" />
+      <scope id="9221264782735704365" at="49,0,53,0" />
+      <scope id="9221264782735703055" at="53,0,57,0" />
+      <scope id="9221264782734617464" at="57,0,61,0" />
+      <scope id="9221264782734598770" at="61,0,65,0" />
+      <scope id="9221264782734574213" at="72,0,76,0" />
+      <scope id="9221264782734629280" at="85,107,90,9" />
+      <scope id="9221264782734624150" at="92,91,97,9" />
+      <scope id="9221264782734635968" at="99,93,104,9" />
+      <scope id="9221264782734597038" at="106,79,111,9" />
+      <scope id="9221264782735704365" at="113,107,118,9" />
+      <scope id="9221264782735703055" at="120,91,125,9" />
+      <scope id="9221264782734617464" at="127,93,132,9" />
+      <scope id="9221264782734598770" at="134,79,139,9" />
+      <scope id="9221264782734574240" at="77,62,83,9" />
+      <scope id="9221264782734629280" at="85,0,92,0" />
+      <scope id="9221264782734624150" at="92,0,99,0" />
+      <scope id="9221264782734635968" at="99,0,106,0" />
+      <scope id="9221264782734597038" at="106,0,113,0" />
+      <scope id="9221264782735704365" at="113,0,120,0" />
+      <scope id="9221264782735703055" at="120,0,127,0" />
+      <scope id="9221264782734617464" at="127,0,134,0" />
+      <scope id="9221264782734598770" at="134,0,141,0" />
+      <scope id="9221264782734574240" at="77,0,85,0" />
+      <unit id="9221264782734574213" at="66,0,143,0" name="jetbrains.mps.baseLanguage.test.UnusedPlusAssignment_Test$TestBody" />
+      <unit id="9221264782734574213" at="20,0,144,0" name="jetbrains.mps.baseLanguage.test.UnusedPlusAssignment_Test" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895902c7(jetbrains.mps.baseLanguage.test@tests)/966837649722289098">

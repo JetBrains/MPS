@@ -272,36 +272,37 @@
       <node id="4914488904500985606" at="45,35,46,62" concept="9" />
       <node id="4914488904500985617" at="47,5,48,17" concept="9" />
       <node id="4282822416100098871" at="50,74,51,47" concept="8" />
-      <node id="4282822416100098890" at="53,41,54,66" concept="3" />
-      <node id="4282822416100098902" at="56,5,57,20" concept="9" />
-      <node id="4282822416100098911" at="59,61,60,70" concept="9" />
-      <node id="4282822416100098922" at="62,66,63,56" concept="8" />
-      <node id="4282822416100098936" at="64,67,65,55" concept="3" />
-      <node id="4282822416100098945" at="66,5,67,29" concept="9" />
+      <node id="9221264782735406331" at="51,47,52,66" concept="8" />
+      <node id="9221264782735430366" at="54,88,55,66" concept="3" />
+      <node id="4282822416100098902" at="57,5,58,20" concept="9" />
+      <node id="4282822416100098911" at="60,61,61,70" concept="9" />
+      <node id="4282822416100098922" at="63,66,64,56" concept="8" />
+      <node id="4282822416100098936" at="65,67,66,55" concept="3" />
+      <node id="4282822416100098945" at="67,5,68,29" concept="9" />
       <node id="4282822416100098660" at="15,0,17,0" concept="2" trace="DataFlow#()V" />
       <node id="4282822416100098677" at="17,0,20,0" concept="13" trace="buildProgram#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/lang/dataFlow/framework/Program;" />
       <node id="4282822416100098814" at="22,45,25,5" concept="5" />
       <node id="4282822416100098844" at="30,44,33,5" concept="5" />
       <node id="4914488904500985597" at="44,5,47,5" concept="6" />
-      <node id="4282822416100098885" at="52,53,55,7" concept="6" />
-      <node id="4282822416100098904" at="59,0,62,0" concept="13" trace="getUnusedAssignments#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/Set;" />
-      <node id="4282822416100098929" at="63,56,66,5" concept="5" />
+      <node id="9221264782735430354" at="53,53,56,7" concept="6" />
+      <node id="4282822416100098904" at="60,0,63,0" concept="13" trace="getUnusedAssignments#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/Set;" />
+      <node id="4282822416100098929" at="64,56,67,5" concept="5" />
       <node id="4914488904500985562" at="39,71,43,7" concept="6" />
-      <node id="4282822416100098878" at="51,47,56,5" concept="5" />
+      <node id="9221264782735430351" at="52,66,57,5" concept="5" />
       <node id="4914488904500985531" at="38,45,44,5" concept="5" />
       <node id="4282822416100098830" at="29,0,36,0" concept="13" trace="getUninitializedReads#(Ljetbrains/mps/lang/dataFlow/framework/Program;)Ljava/util/Set;" />
-      <node id="4282822416100098915" at="62,0,69,0" concept="13" trace="getUnusedAssignments#(Ljetbrains/mps/lang/dataFlow/framework/Program;)Ljava/util/Set;" />
+      <node id="4282822416100098915" at="63,0,70,0" concept="13" trace="getUnusedAssignments#(Ljetbrains/mps/lang/dataFlow/framework/Program;)Ljava/util/Set;" />
       <node id="4282822416100098793" at="20,0,28,0" concept="13" trace="getExpectedReturns#(Ljetbrains/mps/lang/dataFlow/framework/Program;)Ljava/util/Set;" />
-      <node id="4282822416100098862" at="50,0,59,0" concept="13" trace="getUsedVariables#(Ljetbrains/mps/lang/dataFlow/framework/Program;Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/Set;" />
+      <node id="4282822416100098862" at="50,0,60,0" concept="13" trace="getUsedVariables#(Ljetbrains/mps/lang/dataFlow/framework/Program;Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/util/Set;" />
       <node id="4914488904500951871" at="37,0,50,0" concept="13" trace="isInitializedRewritten#(Ljetbrains/mps/lang/dataFlow/framework/Program;Lorg/jetbrains/mps/openapi/model/SNode;)Z" />
       <scope id="4282822416100098662" at="15,21,15,21" />
       <scope id="4282822416100098682" at="17,50,18,54" />
       <scope id="4282822416100098818" at="23,47,24,44" />
       <scope id="4282822416100098850" at="31,66,32,42" />
       <scope id="4914488904500985598" at="45,35,46,62" />
-      <scope id="4282822416100098889" at="53,41,54,66" />
-      <scope id="4282822416100098910" at="59,61,60,70" />
-      <scope id="4282822416100098935" at="64,67,65,55" />
+      <scope id="9221264782735430365" at="54,88,55,66" />
+      <scope id="4282822416100098910" at="60,61,61,70" />
+      <scope id="4282822416100098935" at="65,67,66,55" />
       <scope id="4282822416100098660" at="15,0,17,0" />
       <scope id="4914488904500985563" at="40,88,42,14" />
       <scope id="4282822416100098677" at="17,0,20,0">
@@ -313,21 +314,21 @@
       <scope id="4282822416100098844" at="30,44,33,5">
         <var name="read" id="4282822416100098848" />
       </scope>
-      <scope id="4282822416100098884" at="52,53,55,7" />
-      <scope id="4282822416100098904" at="59,0,62,0">
+      <scope id="9221264782735430353" at="53,53,56,7" />
+      <scope id="4282822416100098904" at="60,0,63,0">
         <var name="node" id="4282822416100098908" />
       </scope>
-      <scope id="4282822416100098929" at="63,56,66,5">
+      <scope id="4282822416100098929" at="64,56,67,5">
         <var name="write" id="4282822416100098933" />
       </scope>
       <scope id="4914488904500985532" at="39,71,43,7" />
       <scope id="4282822416100098836" at="29,67,34,17">
         <var name="reads" id="4282822416100098838" />
       </scope>
-      <scope id="4282822416100098878" at="51,47,56,5">
-        <var name="i" id="4282822416100098882" />
+      <scope id="9221264782735430351" at="52,66,57,5">
+        <var name="i" id="9221264782735430375" />
       </scope>
-      <scope id="4282822416100098921" at="62,66,67,29">
+      <scope id="4282822416100098921" at="63,66,68,29">
         <var name="unusedAssignments" id="4282822416100098923" />
       </scope>
       <scope id="4282822416100098799" at="20,64,26,18">
@@ -340,16 +341,17 @@
       <scope id="4282822416100098830" at="29,0,36,0">
         <var name="program" id="4282822416100098834" />
       </scope>
-      <scope id="4282822416100098870" at="50,74,57,20">
-        <var name="readVars" id="4282822416100098872" />
-      </scope>
-      <scope id="4282822416100098915" at="62,0,69,0">
+      <scope id="4282822416100098915" at="63,0,70,0">
         <var name="program" id="4282822416100098919" />
       </scope>
       <scope id="4282822416100098793" at="20,0,28,0">
         <var name="program" id="4282822416100098797" />
       </scope>
-      <scope id="4282822416100098862" at="50,0,59,0">
+      <scope id="4282822416100098870" at="50,74,58,20">
+        <var name="faintReads" id="9221264782735406330" />
+        <var name="readVars" id="4282822416100098872" />
+      </scope>
+      <scope id="4282822416100098862" at="50,0,60,0">
         <var name="node" id="4282822416100098868" />
         <var name="program" id="4282822416100098866" />
       </scope>
@@ -360,7 +362,7 @@
         <var name="program" id="4914488904500985520" />
         <var name="write" id="4914488904500985522" />
       </scope>
-      <unit id="4282822416100098655" at="13,0,70,0" name="jetbrains.mps.lang.dataFlow.DataFlow" />
+      <unit id="4282822416100098655" at="13,0,71,0" name="jetbrains.mps.lang.dataFlow.DataFlow" />
     </file>
   </root>
   <root nodeRef="2af156ab-65c1-4a62-bd0d-ea734f71eab6/r:a1d8bbbf-d4f0-431f-8dcd-a6badc777315(jetbrains.mps.dataFlow.runtime/jetbrains.mps.lang.dataFlow)/4282822416100099045">

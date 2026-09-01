@@ -379,5 +379,27 @@
       <unit id="4074113095384034856" at="11,0,37,0" name="jetbrains.mps.lang.dataFlow.framework.analyzers.ReachabilityAnalyzer" />
     </file>
   </root>
+  <root nodeRef="r:f076de5c-ea08-4e23-95cb-3ac8654d592e(jetbrains.mps.lang.dataFlow.framework.analyzers)/9221264782734996619">
+    <file name="SelectiveLivenessAnalyzer.java">
+      <node id="9221264782734996622" at="18,0,19,0" concept="3" trace="myIgnoredReads" />
+      <node id="9221264782734996633" at="19,71,20,34" concept="2" />
+      <node id="9221264782734996656" at="24,121,25,19" concept="8" />
+      <node id="9221264782734996658" at="26,5,27,31" concept="8" />
+      <node id="9221264782734996627" at="19,0,22,0" concept="1" trace="SelectiveLivenessAnalyzer#(Ljava/util/Set;)V" />
+      <node id="9221264782734996645" at="23,51,26,5" concept="5" />
+      <node id="9221264782734996638" at="22,0,29,0" concept="6" trace="fun#(Ljetbrains/mps/lang/dataFlow/framework/VarSet;Ljetbrains/mps/lang/dataFlow/framework/ProgramState;)Ljetbrains/mps/lang/dataFlow/framework/VarSet;" />
+      <scope id="9221264782734996632" at="19,71,20,34" />
+      <scope id="9221264782734996655" at="24,121,25,19" />
+      <scope id="9221264782734996627" at="19,0,22,0">
+        <var name="ignoredReads" id="9221264782734996629" />
+      </scope>
+      <scope id="9221264782734996644" at="23,51,27,31" />
+      <scope id="9221264782734996638" at="22,0,29,0">
+        <var name="input" id="9221264782734996640" />
+        <var name="s" id="9221264782734996642" />
+      </scope>
+      <unit id="9221264782734996619" at="17,0,30,0" name="jetbrains.mps.lang.dataFlow.framework.analyzers.SelectiveLivenessAnalyzer" />
+    </file>
+  </root>
 </debug-info>
 

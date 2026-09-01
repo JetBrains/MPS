@@ -21,7 +21,7 @@ import jetbrains.mps.lang.dataFlow.framework.analyzers.ReachabilityAnalyzer;
 import java.util.HashSet;
 import jetbrains.mps.lang.dataFlow.framework.analyzers.InitializedVariablesAnalyzer;
 import jetbrains.mps.lang.dataFlow.framework.analyzers.MayBeInitializedVariablesAnalyzer;
-import jetbrains.mps.lang.dataFlow.framework.analyzers.LivenessAnalyzer;
+import jetbrains.mps.lang.dataFlow.framework.analyzers.SelectiveLivenessAnalyzer;
 import jetbrains.mps.lang.dataFlow.framework.instructions.AbstractJumpInstruction;
 
 public class Program {
@@ -253,7 +253,7 @@ public class Program {
     return initializedVars.contains(instruction.getVariableIndex());
   }
   public Set<WriteInstruction> getUnusedAssignments() {
-    AnalysisResult<VarSet> analysisResult = analyze(new LivenessAnalyzer());
+    AnalysisResult<VarSet> analysisResult = analyze(new SelectiveLivenessAnalyzer(getFaintSelfReads()));
     Set<WriteInstruction> retModeTrue = new HashSet<>();
     Set<WriteInstruction> retModeFalse = new HashSet<>();
     for (ProgramState s : analysisResult.getStates()) {
@@ -372,5 +372,61 @@ public class Program {
       program.add(i);
     }
     return program;
+  }
+  private Set<ReadInstruction> myFaintSelfReads;
+  /**
+   * 
+   * Self-reads of compound assignments — a read and a write emitted from the same source node for the
+   * same variable, like the read of 'a' in 'a += x' — whose written value never reaches any other read.
+   * Computed as a least fixpoint of strong liveness: analysis starts with every self-read disabled, and
+   * a self-read is re-enabled only when its own write turns out live. A self-read still disabled at the
+   * fixpoint is faint: its compound assignment only feeds itself, so the assignment result is unused.
+   */
+  public Set<ReadInstruction> getFaintSelfReads() {
+    if (myFaintSelfReads != null) {
+      return myFaintSelfReads;
+    }
+    Map<ReadInstruction, WriteInstruction> selfReadPairs = new HashMap<>();
+    for (Instruction instruction : myInstructions) {
+      if (!(instruction instanceof ReadInstruction) || instruction.getSource() == null) {
+        continue;
+      }
+      ReadInstruction read = (ReadInstruction) instruction;
+      for (Instruction candidate : myInstructions) {
+        if (candidate instanceof WriteInstruction && candidate.getSource() == read.getSource() && candidate.getIndex() > read.getIndex() && ((WriteInstruction) candidate).getVariableIndex() == read.getVariableIndex()) {
+          selfReadPairs.put(read, (WriteInstruction) candidate);
+          break;
+        }
+      }
+    }
+    Set<ReadInstruction> ignoredReads = new HashSet<>(selfReadPairs.keySet());
+    while (!(ignoredReads.isEmpty())) {
+      AnalysisResult<VarSet> analysisResult = analyze(new SelectiveLivenessAnalyzer(ignoredReads));
+      Set<WriteInstruction> liveWrites = new HashSet<>();
+      for (ProgramState s : getStates()) {
+        if (s.getInstruction() instanceof WriteInstruction) {
+          WriteInstruction write = (WriteInstruction) s.getInstruction();
+          VarSet liveAfter = new VarSet(this);
+          for (ProgramState succ : s.succ()) {
+            liveAfter.addAll(analysisResult.get(succ));
+          }
+          if (liveAfter.contains(write.getVariableIndex())) {
+            liveWrites.add(write);
+          }
+        }
+      }
+      Set<ReadInstruction> reenabledReads = new HashSet<>();
+      for (ReadInstruction read : ignoredReads) {
+        if (liveWrites.contains(selfReadPairs.get(read))) {
+          reenabledReads.add(read);
+        }
+      }
+      if (reenabledReads.isEmpty()) {
+        break;
+      }
+      ignoredReads.removeAll(reenabledReads);
+    }
+    myFaintSelfReads = ignoredReads;
+    return myFaintSelfReads;
   }
 }

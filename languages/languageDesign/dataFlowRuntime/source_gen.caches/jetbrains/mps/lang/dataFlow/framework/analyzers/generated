@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-33zql2k4s5zmjvd1yltmwagv2r4v8is">
-  <files names="InitializedVariablesAnalyzer.java:LivenessAnalyzer.java:MayBeInitializedVariablesAnalyzer.java:ReachabilityAnalyzer.java:ReachingDefinitionsAnalyzer.java:ReachingReadsAnalyzer.java" />
+<product version="3" modelHash="4mc827ot2coo6iquikg20bcv5v03rmi">
+  <files names="InitializedVariablesAnalyzer.java:LivenessAnalyzer.java:MayBeInitializedVariablesAnalyzer.java:ReachabilityAnalyzer.java:ReachingDefinitionsAnalyzer.java:ReachingReadsAnalyzer.java:SelectiveLivenessAnalyzer.java" />
 </product>
 

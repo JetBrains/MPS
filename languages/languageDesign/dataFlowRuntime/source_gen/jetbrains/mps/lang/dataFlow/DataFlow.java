@@ -49,8 +49,9 @@ public class DataFlow {
   }
   public static Set<SNode> getUsedVariables(Program program, SNode node) {
     Set<SNode> readVars = new HashSet<SNode>();
+    Set<ReadInstruction> faintReads = program.getFaintSelfReads();
     for (Instruction i : program.getInstructions()) {
-      if (i instanceof ReadInstruction) {
+      if (i instanceof ReadInstruction && !(faintReads.contains((ReadInstruction) i))) {
         readVars.add((SNode) ((ReadInstruction) i).getVariable());
       }
     }
