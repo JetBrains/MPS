@@ -887,7 +887,10 @@
                           </node>
                         </node>
                         <node concept="liA8E" id="4r$i1_a$4pO" role="2OqNvi">
-                          <ref role="37wK5l" to="v7ux:~ContentManager.removeAllContents(boolean)" resolve="removeAllContents" />
+                          <ref role="37wK5l" to="v7ux:~ContentManager.removeContent(com.intellij.ui.content.Content,boolean)" />
+                          <node concept="37vLTw" id="6vUEXPkxBTf" role="37wK5m">
+                            <ref role="3cqZAo" node="4r$i1_a$4pu" resolve="attachedContent" />
+                          </node>
                           <node concept="3clFbT" id="4r$i1_a$4pP" role="37wK5m">
                             <property role="3clFbU" value="true" />
                           </node>

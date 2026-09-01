@@ -94,7 +94,7 @@ public class RunConfigurationsStateManager implements PluginReloadingListener {
           LOG.warning("Manager of attached content of descriptor " + descriptor.getDisplayName() + " is null.");
         }
       } else {
-        attachedContent.getManager().removeAllContents(true);
+        attachedContent.getManager().removeContent(attachedContent, true);
       }
     }
   }
