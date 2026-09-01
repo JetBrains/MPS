@@ -22,8 +22,6 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
@@ -34,7 +32,6 @@ import jetbrains.mps.generator.TransientModelsProvider;
 import jetbrains.mps.ide.project.ProjectHelper;
 import jetbrains.mps.ide.tools.BaseTabbedProjectTool;
 import jetbrains.mps.ide.tools.BaseTabbedProjectTool.Tab;
-import jetbrains.mps.ide.tools.BaseTool;
 import jetbrains.mps.ide.tools.CloseAction;
 import jetbrains.mps.project.MPSProject;
 import jetbrains.mps.smodel.ModelAccessHelper;
@@ -63,6 +60,17 @@ public final class GenerationTracerViewToolState {
 
   private final List<GenerationTracerView> myTracerViews = new ArrayList<>();
   private ContentManagerListener myContentListener;
+  /**
+   * The {@link ContentManager} {@link #myContentListener} has been installed on, so that it is removed from that
+   * very instance again: a plugin reload or a project reopen creates a new manager, and the old one may already be
+   * disposed (mirrors {@code BaseTabbedProjectTool.myListenerInstalledOn}).
+   */
+  private ContentManager myListenerInstalledOn;
+  /**
+   * Whether the owning tool is registered, i.e. {@link #createTool()} ran and {@link #unregister()} did not. Guards
+   * the callbacks both of them defer to a later EDT event, which may run after the tool has gone away.
+   */
+  private boolean myRegistered;
   private final TransientModelsProvider myTransientModelsOwner;
   private final Project myProject;
   private final BaseTabbedProjectTool myTool;
@@ -93,10 +101,7 @@ public final class GenerationTracerViewToolState {
     return modelReference != null && myTransientModelsOwner.getTrace(modelReference) != null;
   }
   public boolean showTraceInputData(@NotNull SNode node) {
-    int index = getTabIndex(GenerationTracerView.Kind.TraceForward, node.getReference());
-    if (index > -1) {
-      selectIndex(index);
-      myTool.openToolLater(true);
+    if (selectExistingView(GenerationTracerView.Kind.TraceForward, node.getReference())) {
       return true;
     }
 
@@ -109,10 +114,7 @@ public final class GenerationTracerViewToolState {
   }
 
   public boolean showTracebackData(SNode node) {
-    int index = getTabIndex(GenerationTracerView.Kind.TraceBackward, node.getReference());
-    if (index > -1) {
-      selectIndex(index);
-      myTool.openToolLater(true);
+    if (selectExistingView(GenerationTracerView.Kind.TraceBackward, node.getReference())) {
       return true;
     }
     TraceNodeUI tracerNode = buildBackwardTrace(node);
@@ -126,8 +128,9 @@ public final class GenerationTracerViewToolState {
   //////////////////
 
   public void createTool() {
+    myRegistered = true;
     StartupManager.getInstance(getProject()).runWhenProjectIsInitialized(() -> {
-      if (getProject().isDisposed()) return;
+      if (getProject().isDisposed() || !myRegistered) return;
       showNoTabsComponent();
       setTracingDataIsAvailable(hasTracingData());
       myTool.setAvailable(false);
@@ -135,84 +138,123 @@ public final class GenerationTracerViewToolState {
     });
   }
 
+  /**
+   * Installs the listener that keeps {@link #myTracerViews} and the "no tabs" placeholder in sync with the tool
+   * window's tabs. Never installs a second listener on the same {@link ContentManager}, and never installs one after
+   * {@link #unregister()} (the caller checks {@code myRegistered}): the tool window is owned by the platform and
+   * outlives the tool, so a stale listener would keep this whole tool state - trace trees included - alive.
+   */
   private void registerContentManagerListener() {
+    final ContentManager contentManager = myTool.getContentManagerIfCreated();
+    if (contentManager == null || contentManager.isDisposed() || contentManager == myListenerInstalledOn) {
+      return;
+    }
+    removeContentManagerListener();
+
     myContentListener = new ContentManagerListener() {
+      @Override
       public void contentRemoved(@NotNull ContentManagerEvent event) {
-        final boolean removedNoTabsTab = event.getContent().getComponent() == myNoTabsComponent;
-        //noTabs component could be removed
+        final JComponent removedComponent = event.getContent().getComponent();
+        final boolean removedNoTabsTab = removedComponent == myNoTabsComponent;
         if (!removedNoTabsTab) {
-          myTracerViews.remove(event.getIndex());
+          // Identity lookup rather than remove(event.getIndex()): myTracerViews deliberately excludes the "no tabs"
+          // tab the ContentManager holds, so the two index spaces are offset, and tabs can be reordered on top.
+          myTracerViews.removeIf(view -> view.getComponent() == removedComponent);
         }
-        if (getContentManager().getContentCount() == 0) {
-          showNoTabsComponent();
-          if (removedNoTabsTab) {
-            myTool.makeUnavailableLater();
-          }
+        // The manager that fired this event, rather than a freshly resolved one.
+        if (myListenerInstalledOn == null || myListenerInstalledOn.getContentCount() > 0) {
+          return;
         }
+        if (removedNoTabsTab) {
+          // The user closed the placeholder itself: hide the tool instead of putting the tab back. Note that
+          // makeUnavailableLater() runs synchronously here (we are on EDT), so re-adding the placeholder
+          // afterwards would flip the tool window available again through the ContentManagerWatcher.
+          myTool.makeUnavailableLater();
+          return;
+        }
+        // Deferred on purpose: the manager is in the middle of delivering this very removal event, and
+        // showNoTabsComponent() adds content back to it.
+        ApplicationManager.getApplication().invokeLater(GenerationTracerViewToolState.this::showNoTabsComponent, myProject.getDisposed());
       }
     };
-
-    final ContentManager contentManager = getContentManager();
-    if (contentManager==null || contentManager.isDisposed()) return;
     contentManager.addContentManagerListener(myContentListener);
+    myListenerInstalledOn = contentManager;
   }
 
   public void unregister() {
-    final ContentManager contentManager = getContentManager();
-    if (contentManager != null && !contentManager.isDisposed()) {
-      if (myContentListener != null) {
-        contentManager.removeContentManagerListener(myContentListener);
-      }
-      closeAll();
-      Content noTabsContent = getContentManager().getContent(myNoTabsComponent);
-      if (noTabsContent != null) {
-        getContentManager().removeContent(noTabsContent, true);
-      }
+    myRegistered = false;
+    myTracerViews.clear();
+    if (myContentListener == null) {
+      // The deferred createTool() callback never ran, hence there is nothing of ours to detach; BaseTool.unregister()
+      // removes the tool window's content (if it has any) on its own, without forcing it to be created.
+      return;
+    }
+    removeContentManagerListener();
+    closeAll();
+  }
+
+  private void removeContentManagerListener() {
+    if (myListenerInstalledOn != null) {
+      myListenerInstalledOn.removeContentManagerListener(myContentListener);
+      myListenerInstalledOn = null;
     }
     myContentListener = null;
   }
 
-  private ContentManager getContentManager() {
-    if (myProject.isDisposed()) {
-      return null;
-    }
-    ToolWindow tw = myTool == null ? null : myTool.getToolWindow();
-    return tw == null ? null : tw.getContentManager();
-  }
-
-
+  /**
+   * Shows the "no tabs" placeholder tab, unless the tool window already shows something (or is gone altogether).
+   * Never creates the tool window's content: this runs from deferred callbacks that may outlive the tool.
+   */
   private void showNoTabsComponent() {
-    ContentManager manager = getContentManager();
-    if (manager != null) {
-      manager.removeAllContents(true);
-      final Tab tab = new Tab(myNoTabsComponent, "", null);
-      myTool.addTab(tab, false, false);
+    if (!myRegistered) {
+      return;
     }
-  }
-
-  private void closeTab(int index) {
-    getContentManager().removeContent(getContentManager().getContent(index), true);
+    ContentManager manager = myTool.getContentManagerIfCreated();
+    if (manager == null || manager.isDisposed() || manager.getContentCount() > 0) {
+      return;
+    }
+    myTool.addTab(new Tab(myNoTabsComponent, "", null), false, false);
   }
 
   public void closeAll() {
-    getContentManager().removeAllContents(true);
+    ContentManager manager = myTool.getContentManagerIfCreated();
+    if (manager != null && !manager.isDisposed()) {
+      manager.removeAllContents(true);
+    }
   }
 
-  private void selectIndex(int index) {
-    ContentManager manager = getContentManager();
-    //noinspection ConstantConditions
-    manager.setSelectedContent(manager.getContent(index));
+  /**
+   * Selects the tab of an already open view for {@code kind} and {@code node}, if there is one.
+   * <p>
+   * A view whose tab is gone is dropped rather than reused: the content-manager listener that normally maintains
+   * {@link #myTracerViews} is installed only once the project is initialized and out of dumb mode, so a tab closed
+   * before that leaves a stale entry behind - and reusing it would leave the caller reporting success while
+   * selecting nothing.
+   *
+   * @return whether an open view has been selected
+   */
+  private boolean selectExistingView(GenerationTracerView.Kind kind, SNodeReference node) {
+    GenerationTracerView existingView = findView(kind, node);
+    if (existingView == null) {
+      return false;
+    }
+    if (myTool.findContent(existingView.getComponent()) == null) {
+      myTracerViews.remove(existingView);
+      return false;
+    }
+    myTool.selectTabSafely(existingView.getComponent());
+    myTool.openToolLater(true);
+    return true;
   }
 
-  private int getTabIndex(GenerationTracerView.Kind kind, SNodeReference node) {
-    int index = 0;
+  @Nullable
+  private GenerationTracerView findView(GenerationTracerView.Kind kind, SNodeReference node) {
     for (GenerationTracerView tracerView : myTracerViews) {
       if (tracerView.isViewFor(kind, node)) {
-        return index;
+        return tracerView;
       }
-      index++;
     }
-    return -1;
+    return null;
   }
   boolean isAutoscroll() {
     return myAutoscroll;
@@ -226,20 +268,22 @@ public final class GenerationTracerViewToolState {
     }
   }
   void close(GenerationTracerView view) {
-    closeTab(myTracerViews.indexOf(view));
+    // Idempotent with the content-manager listener, which may not be installed yet, see selectExistingView().
+    myTracerViews.remove(view);
+    myTool.closeTab(view.getComponent());
   }
 
   void showTraceView(GenerationTracerView.Kind viewToken, TraceNodeUI tracerNode, SNode node) {
-    GenerationTracerView tracerView = new GenerationTracerView(this, node.getReference(), viewToken, tracerNode);
-    myTracerViews.add(tracerView);
-    Icon i = Icons.getIcon(tracerView.isForwardTraceView() ? TraceNodeUI.Kind.INPUT : TraceNodeUI.Kind.OUTPUT, node);
-    final Tab tab = new Tab(tracerView.getComponent(), node.getPresentation(), i);
-    myTool.addTab(tab, true, true);
-
-    Content noTabsContent = getContentManager().getContent(myNoTabsComponent);
-    if (noTabsContent != null) {
-      getContentManager().removeContent(noTabsContent, true);
+    if (myTool.getContentManager() == null) {
+      // Tool window absent or project closing - addTab() would drop the tab. Checked upfront so that no view (and
+      // no tree rebuild of it) is built for a tab that cannot be shown.
+      return;
     }
+    GenerationTracerView tracerView = new GenerationTracerView(this, node.getReference(), viewToken, tracerNode);
+    Icon i = Icons.getIcon(tracerView.isForwardTraceView() ? TraceNodeUI.Kind.INPUT : TraceNodeUI.Kind.OUTPUT, node);
+    myTool.addTab(new Tab(tracerView.getComponent(), node.getPresentation(), i), true, true);
+    myTracerViews.add(tracerView);
+    myTool.closeTab(myNoTabsComponent);
     myTool.openToolLater(true);
   }
 
