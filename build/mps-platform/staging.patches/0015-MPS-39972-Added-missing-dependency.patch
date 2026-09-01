@@ -1,0 +1,24 @@
+From 2b1e9d5682ed051916174c23370a51f076605315 Mon Sep 17 00:00:00 2001
+From: Maros Sandor <maros.sandor@jetbrains.com>
+Date: Tue, 1 Sep 2026 16:46:17 +0200
+Subject: MPS-39972 Added missing dependency
+
+---
+ .../mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml  | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml b/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
+index 785212753e616..aa3a0483b533f 100644
+--- a/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
++++ b/community/mps/build/build/manifests/java-impl.jar/META-INF/plugin.xml
+@@ -23,6 +23,7 @@
+     <module name="intellij.java.compiler.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.debugger" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.debugger.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
++    <module name="intellij.java.execution" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.execution.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.frontback.psi" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+     <module name="intellij.java.frontback.psi.impl" loading="embedded"><![CDATA[<idea-plugin visibility="public"></idea-plugin>]]></module>
+-- 
+2.53.0.windows.1
+
