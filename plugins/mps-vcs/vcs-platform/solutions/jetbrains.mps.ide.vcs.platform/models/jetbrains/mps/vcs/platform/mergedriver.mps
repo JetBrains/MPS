@@ -326,6 +326,9 @@
         <property id="1193676396447" name="virtualPackage" index="3GE5qa" />
         <child id="5169995583184591170" name="smodelAttribute" index="lGtFl" />
       </concept>
+      <concept id="1196978630214" name="jetbrains.mps.lang.core.structure.IResolveInfo" flags="ngI" index="2Lv6Xg">
+        <property id="1196978656277" name="resolveInfo" index="2Lvdk3" />
+      </concept>
       <concept id="1169194658468" name="jetbrains.mps.lang.core.structure.INamedConcept" flags="ngI" index="TrEIO">
         <property id="1169194664001" name="name" index="TrG5h" />
       </concept>
@@ -5894,13 +5897,6 @@
         <ref role="3uigEE" to="4nm9:~Project" resolve="Project" />
       </node>
     </node>
-    <node concept="312cEg" id="3LKVexu7Xl2" role="jymVt">
-      <property role="TrG5h" value="myCompositeState" />
-      <node concept="3Tm6S6" id="3LKVexu7Xl3" role="1B3o_S" />
-      <node concept="3uibUv" id="3LKVexu7Xl5" role="1tU5fm">
-        <ref role="3uigEE" node="1crbmp8Of6p" resolve="AbstractInstaller.State" />
-      </node>
-    </node>
     <node concept="312cEg" id="6lEzp8ArlVb" role="jymVt">
       <property role="TrG5h" value="myLastNotification" />
       <property role="34CwA1" value="true" />
@@ -5934,23 +5930,20 @@
     <node concept="2tJIrI" id="4Io9bth23Pd" role="jymVt" />
     <node concept="3clFb_" id="3LKVexu7Xl6" role="jymVt">
       <property role="TrG5h" value="calculateCompositeState" />
-      <node concept="3cqZAl" id="3LKVexu7Xl7" role="3clF45" />
+      <node concept="3uibUv" id="2$dvLMYhqoS" role="3clF45">
+        <ref role="3uigEE" node="1crbmp8Of6p" />
+      </node>
       <node concept="3Tm6S6" id="3LKVexu7Xla" role="1B3o_S" />
       <node concept="3clFbS" id="3LKVexu7Xl9" role="3clF47">
-        <node concept="3clFbF" id="3LKVexu7Xlb" role="3cqZAp">
-          <node concept="37vLTI" id="3LKVexu7Xld" role="3clFbG">
-            <node concept="2YIFZM" id="3LKVexu7Xlh" role="37vLTx">
-              <ref role="37wK5l" node="3LKVexu7XiU" resolve="getCompositeState" />
-              <ref role="1Pybhc" node="3OxOldILH8I" resolve="MergeDriverInstaller" />
-              <node concept="37vLTw" id="2BHiRxeukFz" role="37wK5m">
-                <ref role="3cqZAo" node="63ZcAL21OIS" resolve="myProject" />
-              </node>
-              <node concept="3clFbT" id="3LKVexu7Xlk" role="37wK5m">
-                <property role="3clFbU" value="false" />
-              </node>
+        <node concept="3cpWs6" id="2$dvLMYhyEL" role="3cqZAp">
+          <node concept="2YIFZM" id="3LKVexu7Xlh" role="3cqZAk">
+            <ref role="37wK5l" node="3LKVexu7XiU" resolve="getCompositeState" />
+            <ref role="1Pybhc" node="3OxOldILH8I" resolve="MergeDriverInstaller" />
+            <node concept="37vLTw" id="2BHiRxeukFz" role="37wK5m">
+              <ref role="3cqZAo" node="63ZcAL21OIS" resolve="myProject" />
             </node>
-            <node concept="37vLTw" id="2BHiRxeuWRi" role="37vLTJ">
-              <ref role="3cqZAo" node="3LKVexu7Xl2" resolve="myCompositeState" />
+            <node concept="3clFbT" id="3LKVexu7Xlk" role="37wK5m">
+              <property role="3clFbU" value="false" />
             </node>
           </node>
         </node>
@@ -5984,9 +5977,16 @@
             </node>
           </node>
         </node>
-        <node concept="3clFbF" id="3LKVexu8mzy" role="3cqZAp">
-          <node concept="1rXfSq" id="4hiugqyzbM5" role="3clFbG">
-            <ref role="37wK5l" node="3LKVexu7Xl6" resolve="calculateCompositeState" />
+        <node concept="3cpWs8" id="2$dvLMYh$Od" role="3cqZAp">
+          <node concept="3cpWsn" id="2$dvLMYh$Og" role="3cpWs9">
+            <property role="TrG5h" value="compositeState" />
+            <property role="2Lvdk3" value="compositeState" />
+            <node concept="3uibUv" id="2$dvLMYh$Oi" role="1tU5fm">
+              <ref role="3uigEE" node="1crbmp8Of6p" />
+            </node>
+            <node concept="1rXfSq" id="4hiugqyzbM5" role="33vP2m">
+              <ref role="37wK5l" node="3LKVexu7Xl6" resolve="calculateCompositeState" />
+            </node>
           </node>
         </node>
         <node concept="3clFbJ" id="3LKVexu8mzb" role="3cqZAp">
@@ -5997,7 +5997,7 @@
                 <ref role="1Px2BO" node="1crbmp8Of6p" resolve="AbstractInstaller.State" />
               </node>
               <node concept="37vLTw" id="SERxxVQX3I" role="3uHU7B">
-                <ref role="3cqZAo" node="3LKVexu7Xl2" resolve="myCompositeState" />
+                <ref role="3cqZAo" node="2$dvLMYh$Og" />
               </node>
             </node>
             <node concept="3clFbC" id="3LKVexu8mzf" role="3uHU7w">
@@ -6006,7 +6006,7 @@
                 <ref role="1Px2BO" node="1crbmp8Of6p" resolve="AbstractInstaller.State" />
               </node>
               <node concept="37vLTw" id="2BHiRxeurqh" role="3uHU7B">
-                <ref role="3cqZAo" node="3LKVexu7Xl2" resolve="myCompositeState" />
+                <ref role="3cqZAo" node="2$dvLMYh$Og" />
               </node>
             </node>
           </node>

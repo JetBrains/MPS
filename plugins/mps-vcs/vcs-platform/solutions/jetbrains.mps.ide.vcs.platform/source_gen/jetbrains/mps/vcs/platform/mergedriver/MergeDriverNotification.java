@@ -26,21 +26,20 @@ import com.intellij.notification.Notifications;
 public class MergeDriverNotification {
   private static final String SUPPRESSED_PROPERTY_NAME = "merge.driver.suppressed.notification";
   private Project myProject;
-  private AbstractInstaller.State myCompositeState;
   private volatile Notification myLastNotification;
   public MergeDriverNotification(Project project) {
     myProject = project;
   }
 
-  private void calculateCompositeState() {
-    myCompositeState = MergeDriverInstaller.getCompositeState(myProject, false);
+  private AbstractInstaller.State calculateCompositeState() {
+    return MergeDriverInstaller.getCompositeState(myProject, false);
   }
   public void showNotificationIfNeeded() {
     if (myLastNotification != null && !(myLastNotification.isExpired())) {
       return;
     }
-    calculateCompositeState();
-    if (myCompositeState == AbstractInstaller.State.NOT_ENABLED || myCompositeState == AbstractInstaller.State.INSTALLED) {
+    AbstractInstaller.State compositeState = calculateCompositeState();
+    if (compositeState == AbstractInstaller.State.NOT_ENABLED || compositeState == AbstractInstaller.State.INSTALLED) {
       return;
     }
     showNotifications();
