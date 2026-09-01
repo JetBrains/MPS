@@ -591,5 +591,14 @@
         <button name="Download" url="https://www.jetbrains.com/mps/download" download="true"/>
       </build>
     </channel>
+    <channel id="MPS262EAP" name="MPS 2026.2" status="eap"
+             url="https://www.jetbrains.com/mps/nextversion"
+             feedback="http://youtrack.jetbrains.net/issues/MPS"
+             majorVersion="2026" minorVersoin="2">
+      <build number="262.9437.166" version="2026.2 EAP1">
+        <message>JetBrains MPS 2026.2 EAP1 is now available.</message>
+        <button name="Download" url="https://www.jetbrains.com/mps/nextversion" download="true"/>
+      </build>
+    </channel>
   </product>
 </products>
