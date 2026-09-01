@@ -4565,7 +4565,7 @@
       <node concept="3clFbS" id="6AHMUXrbSvX" role="3clF47">
         <node concept="3cpWs6" id="6AHMUXrbSvY" role="3cqZAp">
           <node concept="BsUDl" id="6AHMUXrbSvZ" role="3cqZAk">
-            <ref role="37wK5l" node="1N3jFzyCMRV" resolve="computeInHierarchy" />
+            <ref role="37wK5l" node="1N3jFzyCMRV" resolve="computeInHierarchyGuarded" />
             <node concept="37vLTw" id="6AHMUXrbSw0" role="37wK5m">
               <ref role="3cqZAo" node="3CiBrVcn5fk" resolve="predicate" />
             </node>
@@ -4677,7 +4677,7 @@
                     <ref role="3cqZAo" node="1N3jFzyCMSC" resolve="superconcept" />
                   </node>
                   <node concept="3zqWPK" id="1N3jFzyCMSv" role="2OqNvi">
-                    <ref role="37wK5l" node="1N3jFzyCMRV" />
+                    <ref role="37wK5l" node="1N3jFzyCMRV" resolve="computeInHierarchyGuarded" />
                     <node concept="37vLTw" id="1N3jFzyCMSw" role="37wK5m">
                       <ref role="3cqZAo" node="1N3jFzyCMRW" resolve="predicate" />
                     </node>
@@ -4747,7 +4747,7 @@
       <node concept="3clFbS" id="6AHMUXrdQJG" role="3clF47">
         <node concept="3cpWs6" id="6AHMUXrdQJH" role="3cqZAp">
           <node concept="BsUDl" id="6AHMUXrdQJI" role="3cqZAk">
-            <ref role="37wK5l" node="6AHMUXrdMHP" resolve="getInLanguageAndNotInLanguageAncestors" />
+            <ref role="37wK5l" node="6AHMUXrdMHP" resolve="collectInLanguageAndNotInLanguageAncestors" />
             <node concept="2ShNRf" id="6AHMUXrdQJJ" role="37wK5m">
               <node concept="2i4dXS" id="6AHMUXrdQJL" role="2ShVmc">
                 <node concept="3Tqbb2" id="6AHMUXrdQJM" role="HW$YZ">
@@ -4885,7 +4885,7 @@
                         <ref role="3cqZAo" node="6AHMUXrdMJ5" resolve="superconcept" />
                       </node>
                       <node concept="3zqWPK" id="6AHMUXrdMIu" role="2OqNvi">
-                        <ref role="37wK5l" node="6AHMUXrdMHP" />
+                        <ref role="37wK5l" node="6AHMUXrdMHP" resolve="collectInLanguageAndNotInLanguageAncestors" />
                         <node concept="37vLTw" id="6AHMUXrdQy3" role="37wK5m">
                           <ref role="3cqZAo" node="6AHMUXrdMW0" resolve="visited" />
                         </node>

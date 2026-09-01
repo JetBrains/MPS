@@ -11856,7 +11856,7 @@
                   <node concept="2ShNRf" id="1NJXWPm6B2d" role="33vP2m">
                     <node concept="1pGfFk" id="1NJXWPm6B2f" role="2ShVmc">
                       <property role="373rjd" value="true" />
-                      <ref role="37wK5l" node="51NkKCgB4oq" />
+                      <ref role="37wK5l" node="51NkKCgB4oq" resolve="HierarchyTreeNode" />
                       <node concept="37vLTw" id="1NJXWPm6B2g" role="37wK5m">
                         <ref role="3cqZAo" node="1NJXWPm6B1V" resolve="errorNode" />
                       </node>
@@ -12554,7 +12554,7 @@
                       <node concept="2ShNRf" id="1NJXWPm6joy" role="YScLw">
                         <node concept="1pGfFk" id="1NJXWPm6jo$" role="2ShVmc">
                           <property role="373rjd" value="true" />
-                          <ref role="37wK5l" node="51NkKCgB4lO" />
+                          <ref role="37wK5l" node="51NkKCgB4lO" resolve="CircularHierarchyException" />
                           <node concept="37vLTw" id="1NJXWPm6jo_" role="37wK5m">
                             <ref role="3cqZAo" node="51NkKCgB4c_" resolve="result" />
                           </node>
@@ -12707,7 +12707,7 @@
                   <node concept="2ShNRf" id="1NJXWPm6wr4" role="YScLw">
                     <node concept="1pGfFk" id="1NJXWPm6wr6" role="2ShVmc">
                       <property role="373rjd" value="true" />
-                      <ref role="37wK5l" node="51NkKCgB4lO" />
+                      <ref role="37wK5l" node="51NkKCgB4lO" resolve="CircularHierarchyException" />
                       <node concept="37vLTw" id="1NJXWPm6wr7" role="37wK5m">
                         <ref role="3cqZAo" node="51NkKCgB4dy" resolve="parentDeclaration" />
                       </node>

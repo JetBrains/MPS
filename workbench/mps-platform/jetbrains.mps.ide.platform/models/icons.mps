@@ -2408,7 +2408,7 @@
                             <ref role="3cqZAo" node="192HKKPP2rW" resolve="icon" />
                           </node>
                           <node concept="3uibUv" id="1zjDZIUDHXO" role="10QFUM">
-                            <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="CachedImageIcon" />
+                            <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="IconLoader.CachedImageIcon" />
                           </node>
                         </node>
                       </node>
@@ -2422,7 +2422,7 @@
               <node concept="1Wc70l" id="1zjDZIUDG0b" role="3clFbw">
                 <node concept="2ZW3vV" id="1zjDZIUDHAw" role="3uHU7w">
                   <node concept="3uibUv" id="1zjDZIUDHJD" role="2ZW6by">
-                    <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="CachedImageIcon" />
+                    <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="IconLoader.CachedImageIcon" />
                   </node>
                   <node concept="37vLTw" id="1zjDZIUDHs5" role="2ZW6bz">
                     <ref role="3cqZAo" node="192HKKPP2rW" resolve="icon" />
@@ -2752,7 +2752,7 @@
                               <ref role="3cqZAo" node="192HKKPP2rW" resolve="icon" />
                             </node>
                             <node concept="3uibUv" id="3Vy23wLez$V" role="10QFUM">
-                              <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="CachedImageIcon" />
+                              <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="IconLoader.CachedImageIcon" />
                             </node>
                           </node>
                         </node>
@@ -2765,7 +2765,7 @@
                 </node>
                 <node concept="2ZW3vV" id="3Vy23wLez$Y" role="3clFbw">
                   <node concept="3uibUv" id="3Vy23wLez$Z" role="2ZW6by">
-                    <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="CachedImageIcon" />
+                    <ref role="3uigEE" to="zn9m:~IconLoader$CachedImageIcon" resolve="IconLoader.CachedImageIcon" />
                   </node>
                   <node concept="37vLTw" id="3Vy23wLez_0" role="2ZW6bz">
                     <ref role="3cqZAo" node="192HKKPP2rW" resolve="icon" />

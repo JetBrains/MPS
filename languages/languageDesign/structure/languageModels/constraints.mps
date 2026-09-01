@@ -3187,7 +3187,7 @@
     <property role="TrG5h" value="InterfaceConceptReference_Constraints" />
     <ref role="1M2myG" to="tpce:h0PrWoo" resolve="InterfaceConceptReference" />
     <node concept="1N5Pfh" id="6AHMUXrghT9" role="1Mr941">
-      <ref role="1N5Vy1" to="tpce:h0PrY0D" />
+      <ref role="1N5Vy1" to="tpce:h0PrY0D" resolve="intfc" />
       <node concept="3dgokm" id="6AHMUXrghTa" role="1N6uqs">
         <node concept="3clFbS" id="6AHMUXrghTc" role="2VODD2">
           <node concept="3SKdUt" id="6AHMUXrghTd" role="3cqZAp">

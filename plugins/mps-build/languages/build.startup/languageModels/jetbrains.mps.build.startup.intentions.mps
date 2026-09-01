@@ -438,7 +438,7 @@
             <node concept="2OqwBi" id="1xE$2SyOll8" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOllb" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOllc" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:3nFPImNgRsC" />
+                <ref role="3TtcxE" to="s7om:3nFPImNgRsC" resolve="bootClasspath" />
               </node>
             </node>
             <node concept="2Kehj3" id="1xE$2SyOlld" role="2OqNvi" />
@@ -449,7 +449,7 @@
             <node concept="2OqwBi" id="1xE$2SyOllj" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOllm" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOlln" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:3nFPImNgRsC" />
+                <ref role="3TtcxE" to="s7om:3nFPImNgRsC" resolve="bootClasspath" />
               </node>
             </node>
             <node concept="X8dFx" id="1xE$2SyOllo" role="2OqNvi">
@@ -460,7 +460,7 @@
                     <ref role="1Pybhc" to="ovkb:3E3V7xVhWwO" resolve="DefaultStartupScript" />
                   </node>
                   <node concept="3Tsc0h" id="1xE$2SyOllx" role="2OqNvi">
-                    <ref role="3TtcxE" to="s7om:3nFPImNgRsC" />
+                    <ref role="3TtcxE" to="s7om:3nFPImNgRsC" resolve="bootClasspath" />
                   </node>
                 </node>
                 <node concept="3$u5V9" id="1xE$2SyOlly" role="2OqNvi">
@@ -491,7 +491,7 @@
             <node concept="2OqwBi" id="1xE$2SyOllT" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOllW" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOllX" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:7mPGpETqNW1" />
+                <ref role="3TtcxE" to="s7om:7mPGpETqNW1" resolve="extBootClasspath" />
               </node>
             </node>
             <node concept="2Kehj3" id="1xE$2SyOllY" role="2OqNvi" />
@@ -502,7 +502,7 @@
             <node concept="2OqwBi" id="1xE$2SyOlm4" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOlm7" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOlm8" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:7mPGpETqNW1" />
+                <ref role="3TtcxE" to="s7om:7mPGpETqNW1" resolve="extBootClasspath" />
               </node>
             </node>
             <node concept="X8dFx" id="1xE$2SyOlm9" role="2OqNvi">
@@ -513,7 +513,7 @@
                     <ref role="1Pybhc" to="ovkb:3E3V7xVhWwO" resolve="DefaultStartupScript" />
                   </node>
                   <node concept="3Tsc0h" id="1xE$2SyOlmi" role="2OqNvi">
-                    <ref role="3TtcxE" to="s7om:7mPGpETqNW1" />
+                    <ref role="3TtcxE" to="s7om:7mPGpETqNW1" resolve="extBootClasspath" />
                   </node>
                 </node>
                 <node concept="3$u5V9" id="1xE$2SyOlmj" role="2OqNvi">
@@ -544,7 +544,7 @@
             <node concept="2OqwBi" id="1xE$2SyOlmE" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOlmH" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOlmI" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" />
+                <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" resolve="vmOptions64" />
               </node>
             </node>
             <node concept="2Kehj3" id="1xE$2SyOlmJ" role="2OqNvi" />
@@ -555,7 +555,7 @@
             <node concept="2OqwBi" id="1xE$2SyOlmP" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOlmS" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOlmT" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" />
+                <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" resolve="vmOptions64" />
               </node>
             </node>
             <node concept="X8dFx" id="1xE$2SyOlmU" role="2OqNvi">
@@ -566,7 +566,7 @@
                     <ref role="1Pybhc" to="ovkb:3E3V7xVhWwO" resolve="DefaultStartupScript" />
                   </node>
                   <node concept="3Tsc0h" id="1xE$2SyOln3" role="2OqNvi">
-                    <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" />
+                    <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" resolve="vmOptions64" />
                   </node>
                 </node>
                 <node concept="3$u5V9" id="1xE$2SyOln4" role="2OqNvi">
@@ -597,7 +597,7 @@
             <node concept="2OqwBi" id="1xE$2SyOlnr" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOlnu" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOlnv" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:7mPGpETBx32" />
+                <ref role="3TtcxE" to="s7om:7mPGpETBx32" resolve="additionalJvmOptions" />
               </node>
             </node>
             <node concept="2Kehj3" id="1xE$2SyOlnw" role="2OqNvi" />
@@ -608,7 +608,7 @@
             <node concept="2OqwBi" id="1xE$2SyOlnA" role="2Oq$k0">
               <node concept="2Sf5sV" id="1xE$2SyOlnD" role="2Oq$k0" />
               <node concept="3Tsc0h" id="1xE$2SyOlnE" role="2OqNvi">
-                <ref role="3TtcxE" to="s7om:7mPGpETBx32" />
+                <ref role="3TtcxE" to="s7om:7mPGpETBx32" resolve="additionalJvmOptions" />
               </node>
             </node>
             <node concept="X8dFx" id="1xE$2SyOlnF" role="2OqNvi">
@@ -619,7 +619,7 @@
                     <ref role="1Pybhc" to="ovkb:3E3V7xVhWwO" resolve="DefaultStartupScript" />
                   </node>
                   <node concept="3Tsc0h" id="1xE$2SyOlnO" role="2OqNvi">
-                    <ref role="3TtcxE" to="s7om:7mPGpETBx32" />
+                    <ref role="3TtcxE" to="s7om:7mPGpETBx32" resolve="additionalJvmOptions" />
                   </node>
                 </node>
                 <node concept="3$u5V9" id="1xE$2SyOlnP" role="2OqNvi">
@@ -670,7 +670,7 @@
                     <ref role="3cqZAo" node="1xE$2SyOlod" resolve="script" />
                   </node>
                   <node concept="3Tsc0h" id="1xE$2SyOlou" role="2OqNvi">
-                    <ref role="3TtcxE" to="s7om:3nFPImNgRsC" />
+                    <ref role="3TtcxE" to="s7om:3nFPImNgRsC" resolve="bootClasspath" />
                   </node>
                 </node>
                 <node concept="3$u5V9" id="1xE$2SyOlov" role="2OqNvi">
@@ -726,7 +726,7 @@
                         <ref role="3cqZAo" node="1xE$2SyOloS" resolve="script" />
                       </node>
                       <node concept="3Tsc0h" id="1xE$2SyOlpf" role="2OqNvi">
-                        <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" />
+                        <ref role="3TtcxE" to="s7om:2lwFGYOQzXr" resolve="vmOptions64" />
                       </node>
                     </node>
                     <node concept="v3k3i" id="1xE$2SyOlpg" role="2OqNvi">
@@ -812,7 +812,7 @@
                     <ref role="3cqZAo" node="1xE$2SyOlq2" resolve="script" />
                   </node>
                   <node concept="3Tsc0h" id="1xE$2SyOlqj" role="2OqNvi">
-                    <ref role="3TtcxE" to="s7om:7mPGpETqNW1" />
+                    <ref role="3TtcxE" to="s7om:7mPGpETqNW1" resolve="extBootClasspath" />
                   </node>
                 </node>
                 <node concept="3$u5V9" id="1xE$2SyOlqk" role="2OqNvi">
@@ -868,7 +868,7 @@
                         <ref role="3cqZAo" node="1xE$2SyOlqH" resolve="script" />
                       </node>
                       <node concept="3Tsc0h" id="1xE$2SyOlr4" role="2OqNvi">
-                        <ref role="3TtcxE" to="s7om:7mPGpETBx32" />
+                        <ref role="3TtcxE" to="s7om:7mPGpETBx32" resolve="additionalJvmOptions" />
                       </node>
                     </node>
                     <node concept="v3k3i" id="1xE$2SyOlr5" role="2OqNvi">

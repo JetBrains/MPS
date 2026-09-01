@@ -11072,7 +11072,7 @@
                   <ref role="3cqZAo" node="7ctIhG_bUtn" resolve="myTargetsView" />
                 </node>
                 <node concept="liA8E" id="6C_eVWCBkTK" role="2OqNvi">
-                  <ref role="37wK5l" to="ngmm:~UsagesView.getComponent()" />
+                  <ref role="37wK5l" to="ngmm:~UsagesView.getComponent()" resolve="getComponent" />
                 </node>
               </node>
             </node>

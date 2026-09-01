@@ -12473,15 +12473,15 @@
                   <node concept="TSZUe" id="644urAVb1d4" role="2OqNvi">
                     <node concept="2pJPEk" id="644urAVb1d5" role="25WWJ7">
                       <node concept="2pJPED" id="644urAVb1d6" role="2pJPEn">
-                        <ref role="2pJxaS" to="3ior:6eCuTcwOX2$" />
+                        <ref role="2pJxaS" to="3ior:6eCuTcwOX2$" resolve="BuildExternalLayoutDependency" />
                         <node concept="2pIpSj" id="644urAVb1d7" role="2pJxcM">
-                          <ref role="2pIpSl" to="3ior:6eCuTcwOX2B" />
+                          <ref role="2pIpSl" to="3ior:6eCuTcwOX2B" resolve="layout" />
                           <node concept="36bGnv" id="644urAVb1d8" role="28nt2d">
-                            <ref role="36bGnp" to="ffeo:6eCuTcwOnJO" />
+                            <ref role="36bGnp" to="ffeo:6eCuTcwOnJO" resolve="IDEA" />
                           </node>
                         </node>
                         <node concept="2pIpSj" id="644urAVb1d9" role="2pJxcM">
-                          <ref role="2pIpSl" to="3ior:6eCuTcwOX2A" />
+                          <ref role="2pIpSl" to="3ior:6eCuTcwOX2A" resolve="artifacts" />
                           <node concept="2pJPED" id="644urAVb1da" role="28nt2d">
                             <ref role="2pJxaS" to="3ior:6qcrfIJFx8t" resolve="BuildSourceMacroRelativePath" />
                             <node concept="2pIpSj" id="644urAVb1db" role="2pJxcM">

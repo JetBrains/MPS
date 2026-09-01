@@ -847,7 +847,7 @@
             <node concept="2ShNRf" id="1NJXWPm8$0M" role="33vP2m">
               <node concept="1pGfFk" id="1NJXWPm8$0O" role="2ShVmc">
                 <property role="373rjd" value="true" />
-                <ref role="37wK5l" node="1NJXWPlwJKx" />
+                <ref role="37wK5l" node="1NJXWPlwJKx" resolve="ConceptHierarchyTreeTestSupport" />
                 <node concept="2OqwBi" id="1NJXWPm8$0P" role="37wK5m">
                   <node concept="2OqwBi" id="1NJXWPm8$0S" role="2Oq$k0">
                     <node concept="37vLTw" id="1NJXWPm8$0V" role="2Oq$k0">
