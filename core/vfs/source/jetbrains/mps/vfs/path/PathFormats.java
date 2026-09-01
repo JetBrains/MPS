@@ -17,6 +17,8 @@ package jetbrains.mps.vfs.path;
 
 
 import jetbrains.mps.logging.Logger;
+// note this is jetbrains.mps.vfs.util.PathUtil, not the same-named interface of this very package
+import jetbrains.mps.vfs.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -301,7 +303,9 @@ public class PathFormats {
     if (path.contains(Path.UNIX_SEPARATOR) && path.contains(Path.WIN_SEPARATOR)) {
       LOG.warning("The path '" + path + "' contains both Unix and Windows separators which is suspicious.");
     }
-    if (path.contains(Path.ARCHIVE_SEPARATOR)) {
+    // Only a separator that indeed introduces an archive entry calls for a FilePath. A '!' is a legal character of a file name, so
+    // a plain local path bears the "!/" sequence whenever a directory name ends with one, and it is a NonArchivePath (MPS-40062).
+    if (PathUtil.indexOfArchiveSeparator(path, 0) >= 0) {
       throw new PathParseException(path, "NonArchivePath is not allowed to include archive separators." +
                                          "One would expect FilePath to be used here.");
     }

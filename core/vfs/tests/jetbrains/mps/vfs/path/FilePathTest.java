@@ -92,6 +92,34 @@ public class FilePathTest extends PathTest {
     Assert.assertEquals(fromString("/a/b/c//asdf//cx.jar!///asd.jar!/", PathFormats.UNIX), path.getParent());
   }
 
+  /**
+   * A {@code '!'} is a legal character of a file name on every supported OS, so a directory whose name ends with one puts the
+   * {@link Path#ARCHIVE_SEPARATOR} sequence into the path of everything below it without any archive being involved. Such a path
+   * is a plain path to a file, see MPS-40062.
+   */
+  @Test
+  public void bangInDirectoryNameIsNoArchiveSeparator() {
+    Path path = fromString("/a/&#!/b/c.mps", PathFormats.UNIX);
+    Assert.assertFalse("Shall not be an archive path: " + path, path.isArchive());
+    Assert.assertEquals("/a/&#!/b/c.mps", path.toText());
+    Assert.assertEquals("c.mps", path.getFileName());
+    // the '!' belongs to the name of the directory and has to survive the parse
+    Assert.assertEquals(List.of("/", "a", "&#!", "b", "c.mps"), path.getAllParts());
+    Assert.assertEquals(fromString("/a/&#!/b", PathFormats.UNIX), path.getParent());
+  }
+
+  /**
+   * The counterpart of {@link #bangInDirectoryNameIsNoArchiveSeparator()}: a separator that does follow an archive name still
+   * splits, nested archives included.
+   */
+  @Test
+  public void archiveNameBeforeSeparatorStillSplits() {
+    Path path = fromString("/a/&#!/b.jar!/c.zip!/d.mps", PathFormats.UNIX);
+    Assert.assertTrue(path.isArchive());
+    Assert.assertEquals("/a/&#!/b.jar!/c.zip!/d.mps", path.toText());
+    Assert.assertEquals(fromString("/a/&#!/b.jar!/c.zip!/", PathFormats.UNIX), path.getParent());
+  }
+
   @Test
   public void jarSeparatorTest() {
     for (var format : PathFormats.getDefaultFormats()) {

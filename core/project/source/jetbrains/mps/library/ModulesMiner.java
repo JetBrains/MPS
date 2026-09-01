@@ -39,6 +39,7 @@ import jetbrains.mps.util.PathManager;
 import jetbrains.mps.vfs.IFile;
 import jetbrains.mps.vfs.path.Path;
 import jetbrains.mps.vfs.util.PathFormatChecker.PathFormatException;
+import jetbrains.mps.vfs.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.annotations.Immutable;
@@ -574,9 +575,13 @@ public final class ModulesMiner {
           // bear in mind that FileBasedModelRoot.LOCATION could be "." or ""
           final String normalizedSuffix = FileUtil.normalize(contentPath + File.separator + sourceRoot.get(FileBasedModelRoot.LOCATION));
           final String pastModuleMacroSuffix;
-          if (normalizedSuffix.endsWith(Path.ARCHIVE_SEPARATOR)) {
+          final String beforeTrailingSeparator = normalizedSuffix.endsWith(Path.ARCHIVE_SEPARATOR)
+              ? normalizedSuffix.substring(0, normalizedSuffix.length() - Path.ARCHIVE_SEPARATOR.length())
+              : null;
+          // the name in front has to be that of an archive: a '!' merely ending a directory name introduces none (MPS-40062)
+          if (beforeTrailingSeparator != null && PathUtil.hasArchiveFileName(beforeTrailingSeparator)) {
             // I've seen <modelRoot contentPath="${module}/lib/whatever-1.2.7.jar!" type="java_classes"><sourceRoot location="." /></modelRoot>
-            pastModuleMacroSuffix = normalizedSuffix.substring(0, normalizedSuffix.length() - Path.ARCHIVE_SEPARATOR.length());
+            pastModuleMacroSuffix = beforeTrailingSeparator;
           } else {
             pastModuleMacroSuffix = normalizedSuffix;
           }

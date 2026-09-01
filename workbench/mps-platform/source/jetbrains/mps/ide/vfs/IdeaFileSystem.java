@@ -18,6 +18,7 @@ package jetbrains.mps.ide.vfs;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.WriteAction;
 import com.intellij.openapi.fileTypes.FileTypeManager;
+import com.intellij.openapi.fileTypes.FileTypes;
 import com.intellij.openapi.vfs.JarFileSystem;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VfsUtil;
@@ -84,7 +85,8 @@ public final class IdeaFileSystem implements FileSystem, CachingFileSystem, File
 
   /**
    * Gives an MPS file abstraction for an absolute path that may denote an entry inside an archive, e.g. {@code /path/to/lib.jar!/entry}.
-   * The path is dispatched to the archive or to the local file system depending on the presence of the {@code !/} separator.
+   * The path is dispatched to the archive file system iff it bears the {@code !/} separator and the part in front of the first one
+   * denotes an archive; otherwise the path is a local one and goes to the local file system.
    * <p>
    * Prefer {@link #getFile(Path)} whenever the path is known to be a local one.
    *
@@ -93,13 +95,39 @@ public final class IdeaFileSystem implements FileSystem, CachingFileSystem, File
   @NotNull
   public IdeaFile getArchiveAwareFile(@NotNull String path) {
     path = FileUtil.normalizeAndResolveParentDirs(path);
-    if (path.endsWith("!")) {
-      path += "/";
+    String archivePath = PathUtil.extractArchivePath(path);
+    boolean insideArchive = archivePath != null && denotesArchive(archivePath);
+    if (insideArchive && path.endsWith("!")) {
+      // an archive root is sometimes spelled without the trailing slash, e.g. /path/to/lib.jar!
+      path += IFileSystem.SEPARATOR;
     }
-    String fsId = path.contains("!") ? VFSManager.JAR_FS : VFSManager.FILE_FS;
+    String fsId = insideArchive ? VFSManager.JAR_FS : VFSManager.FILE_FS;
     IFileSystem fileSystem = MPSCoreComponents.getInstance().getPlatform().findComponent(VFSManager.class).getFileSystem(fsId);
     assert fileSystem instanceof BaseIdeaFileSystem;
     return ((BaseIdeaFileSystem) fileSystem).getFile(path);
+  }
+
+  /**
+   * Tells whether the given local path denotes an archive, deliberately without resolving the path in the platform VFS: an archive
+   * that has not been refreshed into the VFS yet shall not lose its archive nature and end up in the local file system, where it
+   * would never resolve. This is the resolution-free counterpart of the {@code getFileType() == FileTypes.ARCHIVE} check of
+   * {@code IdeaFile#isZipArchive()}, so that any path produced by {@link IFile#stepIntoArchive()} is recognized here. It is also
+   * exactly what the platform demands of a host of its archive file system, see
+   * {@code com.intellij.openapi.vfs.newvfs.ArchiveFileSystem#isCorrectFileType}.
+   * <p>
+   * Note, the mere presence of a {@code '!'} in a path tells nothing, as it is a legal character of a local file name (MPS-40062).
+   * <p>
+   * Being a pure name lookup is what buys the freedom from file access, and it is also the limitation of this method: it cannot tell
+   * an archive from a <em>directory</em> that happens to be named {@code foo.jar}, so {@code /p/foo.jar!/x} is attributed to the
+   * archive file system either way. Such a path would not resolve anyway, and the platform's own check has the same blind spot.
+   * <p>
+   * The java.io-backed {@code jetbrains.mps.vfs.impl.IoFileSystem} deliberately decides differently: it has no platform to ask, so
+   * it recognizes {@code .jar}/{@code .zip} by name ({@link PathUtil#hasArchiveFileName(String)}) and otherwise falls back to
+   * detecting the zip signature in the file contents, which is the notion of an archive its own files use.
+   */
+  private static boolean denotesArchive(@NotNull String localPath) {
+    String name = localPath.substring(localPath.lastIndexOf(IFileSystem.SEPARATOR_CHAR) + 1);
+    return FileTypeManager.getInstance().getFileTypeByFileName(name) == FileTypes.ARCHIVE;
   }
 
   /**

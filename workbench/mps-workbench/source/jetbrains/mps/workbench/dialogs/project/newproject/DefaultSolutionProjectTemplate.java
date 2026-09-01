@@ -72,7 +72,7 @@ public class DefaultSolutionProjectTemplate implements SolutionProjectTemplate {
   @Override
   public TemplateFiller getTemplateFiller() {
     return project -> StartupManager.getInstance(project.getProject()).runAfterOpened(() -> project.getModelAccess().executeCommandInEDT(
-        () -> new SolutionProducer(project).create(myNewSolutionSettings.getModuleName(), project.getFileSystem().getFile(myNewSolutionSettings.getModuleLocation()))
+        () -> new SolutionProducer(project).create(myNewSolutionSettings.getModuleName(), MPSProjectTemplate.getModuleHome(project, myNewSolutionSettings.getModuleLocation()))
     ));
   }
 

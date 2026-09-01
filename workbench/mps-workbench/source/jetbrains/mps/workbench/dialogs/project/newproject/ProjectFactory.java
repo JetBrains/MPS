@@ -112,7 +112,7 @@ public class ProjectFactory {
         mpsProject.getModelAccess().executeCommand(() -> {
           if (myOptions.getCreateNewLanguage()) {
             // see if for new solution, below
-            final IFile path = mpsProject.getFileSystem().getFile(new File(myOptions.getLanguagePath()));
+            final IFile path = MPSProjectTemplate.getModuleHome(mpsProject, new File(myOptions.getLanguagePath()));
             myCreatedLanguage = new LanguageProducer(mpsProject).create(myOptions.getLanguageNamespace(), path);
           }
 
@@ -120,12 +120,12 @@ public class ProjectFactory {
             // FIXME here we can control whether to get controlled IFile instance (through VFSManager) or
             //       rely on project fs. Since it's almost a dead code (CreateProjectWizard uses MPSProjectTemplate to fill the project)
             //       I decided not to bother.
-            final IFile path = mpsProject.getFileSystem().getFile(new File(myOptions.getSolutionPath()));
+            final IFile path = MPSProjectTemplate.getModuleHome(mpsProject, new File(myOptions.getSolutionPath()));
             myCreatedSolution = new SolutionProducer(mpsProject).create(myOptions.getSolutionNamespace(), path);
           }
 
           if (myOptions.getCreateNewDevkit()) {
-            final IFile path = mpsProject.getFileSystem().getFile(new File(myOptions.getDevkitPath()));
+            final IFile path = MPSProjectTemplate.getModuleHome(mpsProject, new File(myOptions.getDevkitPath()));
             myCreatedDevkit = new DevkitProducer(mpsProject).create(myOptions.getDevkitNamespace(), path);
           }
 

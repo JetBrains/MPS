@@ -120,7 +120,7 @@ public class DefaultLanguageProjectTemplate implements LanguageProjectTemplate {
       final LanguageAndSolutionsProducer lp = new LanguageAndSolutionsProducer(project);
       lp.withRuntimeSolution(myRuntimeSolution.isSelected()).withSandboxSolution(mySandboxSolution.isSelected()).withGenerator(myGenerator.isSelected());
       try {
-        lp.create(mySettings.getModuleName(), project.getFileSystem().getFile(mySettings.getModuleLocation()));
+        lp.create(mySettings.getModuleName(), MPSProjectTemplate.getModuleHome(project, mySettings.getModuleLocation()));
       } catch (IllegalStateException | IllegalArgumentException e) {
         // This is really just a fallback check if the producer raises an exception despite all the checks made by NewModuleUtil.check()
         final String message = e.getMessage() != null ? e.getMessage() : "No message was provided by exception";

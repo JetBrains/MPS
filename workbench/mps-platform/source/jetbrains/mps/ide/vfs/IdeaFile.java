@@ -34,6 +34,7 @@ import jetbrains.mps.util.IFileUtil;
 import jetbrains.mps.vfs.IFile;
 import jetbrains.mps.vfs.IFileSystem;
 import jetbrains.mps.vfs.QualifiedPath;
+import jetbrains.mps.vfs.VFSManager;
 import jetbrains.mps.vfs.path.Path;
 import jetbrains.mps.vfs.path.PathFormats;
 import jetbrains.mps.vfs.refresh.CachingContext;
@@ -128,7 +129,7 @@ public class IdeaFile implements IFile, CachingFile {
     try {
       if (virtualFile == null) {
         LOG.warning("Could not find the virtual file for " + this);
-        return guessURLForPath(myPath);
+        return guessURLForPath();
       }
       return VirtualFileUtils.extractURLFromVirtualFile(virtualFile);
     } catch (IOException e) {
@@ -137,16 +138,21 @@ public class IdeaFile implements IFile, CachingFile {
     return null;
   }
 
+  /**
+   * Builds a URL out of the path alone, for when there is no VirtualFile to ask. Whether it is a {@code jar:} URL is decided by the
+   * file system this file belongs to and only then by the path: a local path is never one, no matter how it is spelled, since
+   * {@code '!'} is a legal character of a local file name and so is the {@code "!/"} sequence, see MPS-40062.
+   */
   @NotNull
-  private static URL guessURLForPath(String path) throws MalformedURLException {
+  private URL guessURLForPath() throws MalformedURLException {
     // it is guaranteed that the path is already absolute and os-independent
 //    path = PathUtil.addSlashForAbsolutePathIfNeeded(path);
-    if (path.contains(Path.ARCHIVE_SEPARATOR)) {
-      String encoded = new File(path).toURI().toASCIIString(); // adding file://, reversing slashes on windows etc.
+    if (!isOfLocalFS() && myPath.contains(Path.ARCHIVE_SEPARATOR)) {
+      String encoded = new File(myPath).toURI().toASCIIString(); // adding file://, reversing slashes on windows etc.
       // using this URI constructor is the correct way to create JARs (with 'jar:file://...')
       return URI.create("jar:" + encoded).toURL();
     } else {
-      return new File(path).toURI().toURL();
+      return new File(myPath).toURI().toURL();
     }
   }
 
@@ -581,9 +587,18 @@ public class IdeaFile implements IFile, CachingFile {
     VirtualFile virtualFile = findVirtualFile();
     if (virtualFile != null) {
       return virtualFile.getFileSystem() instanceof ArchiveFileSystem;
-    } else {
-      return myPath.contains("!");
     }
+    // There is no VirtualFile to ask (e.g. this file is yet to be created), so the file system this file belongs to decides.
+    return !isOfLocalFS();
+  }
+
+  /**
+   * Whether this file belongs to the local file system, in which case it is never inside an archive and bears no archive part, no
+   * matter how its path is spelled (cf. {@code jetbrains.mps.vfs.iofs.file.LocalFile#isInZipArchive}). The path alone tells nothing:
+   * {@code '!'} is a legal character of a local file name, and so is the {@code "!/"} sequence, see MPS-40062.
+   */
+  private boolean isOfLocalFS() {
+    return VFSManager.FILE_FS.equals(myFS.getProtocol());
   }
 
   @Override
@@ -620,7 +635,7 @@ public class IdeaFile implements IFile, CachingFile {
         return this;
       }
     } else {
-      if (myPath.contains("!")) {
+      if (!isOfLocalFS() && myPath.contains(Path.ARCHIVE_SEPARATOR)) {
         return localFS.getFile(myPath.substring(0, myPath.indexOf(Path.ARCHIVE_SEPARATOR)));
       } else {
         return this;
@@ -644,7 +659,7 @@ public class IdeaFile implements IFile, CachingFile {
         return getParent();
       }
     } else {
-      if (myPath.contains("!")) {
+      if (!isOfLocalFS() && myPath.contains(Path.ARCHIVE_SEPARATOR)) {
         return localFS.getFile(myPath.substring(0, myPath.indexOf(Path.ARCHIVE_SEPARATOR)));
       } else {
         return getParent();
@@ -695,7 +710,9 @@ public class IdeaFile implements IFile, CachingFile {
 
   @Override
   public String toString() {
-    return "IdeaFile[path: " + myPath + "]";
+    // the file system belongs here: the path alone does not tell a local file from an entry in an archive, and mistaking one for
+    // the other is exactly the kind of defect this string ends up reporting, see MPS-40062
+    return "IdeaFile[" + myFS.getProtocol() + "; path: " + myPath + "]";
   }
 
   @Override

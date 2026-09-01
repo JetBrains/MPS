@@ -59,6 +59,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.ide.ModuleIDETests1.class,
     jetbrains.mps.ide.ModuleIDETests2.class,
     jetbrains.mps.ide.FSTests.class,
+    jetbrains.mps.ide.ModuleInBangDirectoryTest.class,
     jetbrains.mps.ide.PasteNodeActionTest.class,
     jetbrains.mps.ide.GoToRootNodeShortcutTest.class,
     jetbrains.mps.migration.MigrationsTest.class,

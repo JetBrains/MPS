@@ -60,6 +60,7 @@ public class VfsTest implements EnvironmentAware {
 
   private static final String JAR_NAME = "testjar.zip";
   private static final String JAR_FOLDER = "testjar";
+  private static final String WEIRD_DIR_NAME = "weird&#!";
 
   private Platform myPlatform;
 
@@ -213,7 +214,18 @@ public class VfsTest implements EnvironmentAware {
 
         assertEquals(jarRoot1, ideaFileSystem.getArchiveAwareFile(testJarPath + Path.ARCHIVE_SEPARATOR + JAR_FOLDER));
         assertEquals(testJarFile, ideaFileSystem.getArchiveAwareFile(testJarPath));
+        // an archive root spelled without the trailing slash is still an archive root
+        assertEquals(zipRoot, ideaFileSystem.getArchiveAwareFile(testJarPath + "!"));
+
+        assertEquals(VFSManager.FILE_FS, testJarFile.getQualifiedPath().getFsId());
+        assertEquals(VFSManager.JAR_FS, zipRoot.getQualifiedPath().getFsId());
+        assertEquals(VFSManager.JAR_FS, jarRoot1.getQualifiedPath().getFsId());
       }
+
+      // getBundleHome: the containing archive for entries, the parent directory for a local file
+      assertEquals(testJarFile, zipRoot.getBundleHome());
+      assertEquals(testJarFile, jarRoot2.getBundleHome());
+      assertEquals(testJarFile.getParent(), testJarFile.getBundleHome());
 
       // stepUpToArchive
       assertTrue(zipRoot.stepUpToArchive().isZipArchive());
@@ -257,6 +269,101 @@ public class VfsTest implements EnvironmentAware {
     assertEquals(jarRoot.getPath(), file1.getParent().getParent().getParent().getPath());
     assertNotNull(jarRoot.getParent());
     assertNull(jarRoot.getParent().getParent());
+  }
+
+  /**
+   * {@code '!'} is a legal character of a file name on every supported OS, so a local path must not be taken for an archive path just
+   * because it bears one. Used to break creation of a project in a directory with such a name, see MPS-40062. Note the dispatch under
+   * test here is the one of the umbrella file system, {@code getFile(String)}.
+   */
+  private static void doBangInNameVfsTest(@NotNull FileSystem fs) {
+    IFile tmpDir = IFileUtil.createTmpDir(fs);
+    try {
+      String weirdDirPath = tmpDir.getPath() + IFileSystem.SEPARATOR + WEIRD_DIR_NAME;
+      String descendantPath = weirdDirPath + "/languages/MyLanguage/models/MyLanguage.structure.mps";
+
+      // the file is not there yet - this is the case that used to break the New Project wizard
+      IFile missingDir = fs.getFile(weirdDirPath);
+      assertLocalFile(missingDir);
+      assertFalse(missingDir.exists());
+
+      IFile missingDescendant = fs.getFile(descendantPath);
+      assertLocalFile(missingDescendant);
+      assertFalse(missingDescendant.exists());
+      assertEquals(missingDir, missingDescendant.getParent().getParent().getParent().getParent());
+
+      // there is no archive to step up to, and no exception either (the path bears a '!' but no "!/")
+      assertEquals(missingDescendant, missingDescendant.stepUpToArchive());
+      assertEquals(missingDescendant.getParent(), missingDescendant.getBundleHome());
+      assertEquals(missingDir, missingDir.stepUpToArchive());
+      assertEquals(tmpDir, missingDir.getBundleHome());
+
+      // and now the same, with the files in place
+      assertTrue(missingDescendant.getParent().mkdirs());
+      try (OutputStream os = missingDescendant.openOutputStream()) {
+        os.write('x');
+      } catch (IOException e) {
+        fail(e.getMessage());
+      }
+
+      IFile existingDir = fs.getFile(weirdDirPath);
+      assertLocalFile(existingDir);
+      assertTrue(existingDir.exists());
+      assertTrue(existingDir.isDirectory());
+      try {
+        assertFalse("A plain directory is not an archive: " + existingDir, existingDir.isZipArchive());
+      } catch (IOException e) {
+        fail(e.getMessage());
+      }
+      assertEquals(WEIRD_DIR_NAME, existingDir.getName());
+
+      IFile existingDescendant = fs.getFile(descendantPath);
+      assertLocalFile(existingDescendant);
+      assertTrue(existingDescendant.exists());
+      assertFalse(existingDescendant.isReadOnly());
+      assertEquals(1L, existingDescendant.length());
+      // children of a directory with a '!' in the name are local files, too
+      assertLocalFile(existingDir.findChild("languages"));
+
+      // The IFile -> Path -> IFile round trip a data source goes through, see
+      // jetbrains.mps.persistence.DataSourceFactoryBridge#create(IFile): the Path of a local file must not claim to enter an
+      // archive, or the file is re-resolved against the archive file system and stops resolving at all. That is how every model
+      // of a project under such a directory failed to load, with a FileNotFoundException naming a file plainly there (MPS-40062).
+      Path localPath = existingDescendant.toPath();
+      assertFalse("A local path shall not be taken for an archive path: " + localPath, localPath.isArchive());
+      String roundTripped = PathUtil.toSystemIndependent(localPath.toText());
+      assertEquals(existingDescendant.getPath(), roundTripped);
+      assertLocalFile(fs.getFile(roundTripped));
+      try (InputStream is = fs.getFile(roundTripped).openInputStream()) {
+        assertEquals('x', is.read());
+      } catch (IOException e) {
+        fail(e.getMessage());
+      }
+
+      // a path that does enter an archive still splits, so that a model shipped inside a jar keeps loading
+      IFile jarEntry = fs.getFile(tmpDir.getPath() + "/lib.jar" + Path.ARCHIVE_SEPARATOR + "entry");
+      assertTrue("An archive path shall be recognized as one: " + jarEntry, jarEntry.toPath().isArchive());
+      assertTrue("Shall be an archive entry: " + jarEntry, jarEntry.isInZipArchive());
+
+      // an existing plain file is no archive either - this tells 'the prefix is not an archive' apart from 'the prefix is absent'
+      IFile notes = tmpDir.findChild("notes.txt");
+      try (OutputStream os = notes.openOutputStream()) {
+        os.write("this is not an archive\n".getBytes(StandardCharsets.UTF_8));
+      } catch (IOException e) {
+        fail(e.getMessage());
+      }
+      assertTrue(notes.exists());
+      IFile notesEntry = fs.getFile(notes.getPath() + Path.ARCHIVE_SEPARATOR + "entry");
+      assertLocalFile(notesEntry);
+      assertFalse(notesEntry.exists());
+    } finally {
+      assertTrue(tmpDir.delete());
+    }
+  }
+
+  private static void assertLocalFile(@NotNull IFile file) {
+    assertEquals("Shall belong to the local file system: " + file, VFSManager.FILE_FS, file.getQualifiedPath().getFsId());
+    assertFalse("Shall not be an archive entry: " + file, file.isInZipArchive());
   }
 
   private static void doMissingJarIoVfsTest() throws IOException {
@@ -331,6 +438,16 @@ public class VfsTest implements EnvironmentAware {
   public void unixBackslashPathIdeaVfsTest() {
     Assume.assumeTrue("Backslash is a valid file-name character only on Unix", java.io.File.separatorChar == '/');
     IDEA_FS_TEST(VfsTest::doUnixBackslashPathVfsTest);
+  }
+
+  @Test
+  public void bangInNameIdeaVfsTest() {
+    IDEA_FS_TEST(VfsTest::doBangInNameVfsTest);
+  }
+
+  @Test
+  public void bangInNameIoVfsTest() {
+    IO_FS_TEST(VfsTest::doBangInNameVfsTest);
   }
 
   @Test

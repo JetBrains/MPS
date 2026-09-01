@@ -33,6 +33,8 @@ import jetbrains.mps.util.PathSpec;
 import jetbrains.mps.util.PathSpecBundle;
 import jetbrains.mps.util.annotation.Hack;
 import jetbrains.mps.vfs.IFile;
+import jetbrains.mps.vfs.path.Path;
+import jetbrains.mps.vfs.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.TestOnly;
@@ -173,18 +175,23 @@ public class JavaModuleFacetImpl extends ModuleFacetBase implements JavaModuleFa
     return result;
   }
 
+  /**
+   * A classes root that lives inside an archive contributes the archive itself to the classpath; a local one contributes its own
+   * path. Note a {@code '!'} in the path proves nothing: it is a legal character of a file name on every supported OS, so a local
+   * path bears one whenever a directory name does, and the sequence {@code "!/"} along with it (MPS-40062).
+   */
   private String getClassPath(@NotNull IFile classes) {
     String path = classes.getPath();
-    if (path.contains("!")) {
-      String[] split = path.split("!");
-      if (split.length > 0) {
-        if (!split[1].isEmpty() && !"/".equals(split[1])) {
-          LOG.warning("Can not transform directory " + path + " to proper classpath while calculating classpath for module " + getModule());
-        }
-      }
-      return split[0];
+    String archivePath = PathUtil.extractArchivePath(path);
+    if (archivePath == null || !PathUtil.hasArchiveFileName(archivePath)) {
+      return path;
     }
-    return path;
+    // whatever follows the archive itself, be it the separator alone or an entry within: only an archive root is a classpath entry
+    String entry = path.substring(Math.min(archivePath.length() + Path.ARCHIVE_SEPARATOR.length(), path.length()));
+    if (!entry.isEmpty()) {
+      LOG.warning("Can not transform directory " + path + " to proper classpath while calculating classpath for module " + getModule());
+    }
+    return archivePath;
   }
 
   /**

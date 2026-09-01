@@ -15,6 +15,8 @@
  */
 package jetbrains.mps.workbench.dialogs.project.newproject;
 
+import jetbrains.mps.project.MPSProject;
+import jetbrains.mps.vfs.IFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,6 +53,19 @@ public interface MPSProjectTemplate {
   @Nullable
   default String getProjectPathFromSettings() {
     return null;
+  }
+
+  /**
+   * Gives the MPS file abstraction for a module home chosen in a new-project dialog. The location is a local one, hence the
+   * local-only {@code getFile(java.nio.file.Path)}: the archive-aware {@code getFile(String)} would take a location whose name bears
+   * a {@code '!'} for a path into an archive, and the module created there would end up read-only (MPS-40062).
+   *
+   * @since 2026.2
+   */
+  @NotNull
+  @SuppressWarnings("removal") // getFile(Path) is the sanctioned way to get a local IFile, though IdeaFileSystem as a whole is deprecated
+  static IFile getModuleHome(@NotNull MPSProject project, @NotNull File moduleLocation) {
+    return project.getFileSystem().getFile(moduleLocation.getAbsoluteFile().toPath());
   }
 
   @Nullable

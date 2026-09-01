@@ -18,7 +18,6 @@ package jetbrains.mps.extapi.persistence;
 import jetbrains.mps.extapi.persistence.datasource.PreinstalledDataSourceTypes;
 import jetbrains.mps.vfs.IFile;
 import jetbrains.mps.vfs.openapi.FileSystem;
-import jetbrains.mps.vfs.path.Path;
 import jetbrains.mps.vfs.refresh.CachingFile;
 import jetbrains.mps.vfs.refresh.CachingFileSystem;
 import jetbrains.mps.vfs.refresh.DefaultCachingContext;
@@ -110,11 +109,11 @@ public class FolderSetDataSource extends DataSourceBase implements DataSource, F
     long max = -1;
     Collection<IFile> paths = getFiles();
     for (IFile path : paths) {
-      String fsPath = path.getPath();
-      //at least some programs don't change timestamp of a directory inside jar file after deleting a file in it
-      if (fsPath.contains(Path.ARCHIVE_SEPARATOR)) {
-        IFile jarFile = path.getFileSystem().getFile(fsPath.substring(0, fsPath.lastIndexOf(Path.ARCHIVE_SEPARATOR)));
-        max = Math.max(max, jarFile.lastModified());
+      //at least some programs don't change timestamp of a directory inside jar file after deleting a file in it.
+      //Ask the file itself: a path bears the "!/" sequence whenever a local directory name ends with a '!', which is legal on
+      //every supported OS and denotes no archive at all, see MPS-40062.
+      if (path.isInZipArchive()) {
+        max = Math.max(max, path.stepUpToArchive().lastModified());
         continue; // no need to go deep into jar contents
       }
       long ts = getTimestampRecursive(path);

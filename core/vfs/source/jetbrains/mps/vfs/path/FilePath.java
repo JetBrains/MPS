@@ -15,12 +15,13 @@
  */
 package jetbrains.mps.vfs.path;
 
+// note this is jetbrains.mps.vfs.util.PathUtil, not the same-named interface of this very package
+import jetbrains.mps.vfs.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.annotations.Immutable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -83,14 +84,29 @@ public class FilePath extends AbstractPath {
     return Objects.hash(myPathToFile, myArchivePaths);
   }
 
+  /**
+   * Splits the path at every {@link PathUtil#indexOfArchiveSeparator(String, int) archive separator}, that is, at the ones that
+   * indeed separate an archive from an entry within it. A {@code '!'} that merely ends a local directory name is none, so
+   * {@code /a/b!/c} is a plain path to a file, while {@code /a/b.jar!/c} enters an archive (MPS-40062).
+   *
+   * @return the part addressing a file in the file system, followed by the parts addressing entries within archives; a single
+   *         element, the path itself, when the path enters no archive
+   */
   private static String[] splitArchive(String path) {
-    String[] paths = path.split(ARCHIVE_SEPARATOR);
-    if (path.endsWith(ARCHIVE_SEPARATOR)) {
-      String[] result = Arrays.copyOf(paths, paths.length + 1);
-      result[paths.length] = "";
-      return result;
+    int separator = PathUtil.indexOfArchiveSeparator(path, 0);
+    if (separator < 0) {
+      return new String[]{path};
     }
-    return paths;
+    List<String> parts = new ArrayList<>();
+    int partStart = 0;
+    while (separator >= 0) {
+      parts.add(path.substring(partStart, separator));
+      partStart = separator + ARCHIVE_SEPARATOR.length();
+      separator = PathUtil.indexOfArchiveSeparator(path, partStart);
+    }
+    // an archive root is spelled with the separator at the very end, which leaves an empty last part, e.g. /a/b.jar!/
+    parts.add(path.substring(partStart));
+    return parts.toArray(new String[0]);
   }
 
   private static String trim(String path) {

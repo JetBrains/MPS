@@ -21,6 +21,7 @@ import jetbrains.mps.vfs.IFileSystem;
 import jetbrains.mps.vfs.openapi.FileSystem;
 import jetbrains.mps.vfs.path.Path;
 import jetbrains.mps.vfs.util.PathFormatChecker;
+import jetbrains.mps.vfs.util.PathUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedInputStream;
@@ -104,7 +105,9 @@ public class IFileUtil {
    */
   public static IFile getDescendant(@NotNull IFile file, String relativePath) {
     //that's because at least we don't know the type of the archive
-    if (relativePath.contains("!")){
+    // a bare '!' is no archive separator, it is a legal character of a file name and steps into nothing, see MPS-40062
+    String archivePath = PathUtil.extractArchivePath(relativePath);
+    if (archivePath != null && PathUtil.hasArchiveFileName(archivePath)) {
       LOG.error("getDescendant() can't step into an archive. File= " + file.getPath() + ", relativePath=" + relativePath+". Using a fallback solution. Support for '!' will soon be completely removed", new Throwable());
       return file.getFileSystem().getFile(file.getPath()+"/"+relativePath);
     }
@@ -152,7 +155,10 @@ public class IFileUtil {
   }
 
   public static String getCanonicalPath(String absolutePath) {
-    final int index = absolutePath.indexOf(Path.ARCHIVE_SEPARATOR);
+    // Only the part in front of an archive escapes canonicalization - there is no such thing as a symlink to follow inside a jar.
+    // A '!' that merely ends a local directory name introduces no archive, and the rest of a local path has to be canonicalized
+    // like any other, see MPS-40062.
+    final int index = PathUtil.indexOfArchiveSeparator(absolutePath, 0);
     if (index == -1) {
       return FileUtil.getCanonicalPath(absolutePath);
     } else {
