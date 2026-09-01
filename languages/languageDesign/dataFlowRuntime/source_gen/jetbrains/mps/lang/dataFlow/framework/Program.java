@@ -22,6 +22,7 @@ import java.util.HashSet;
 import jetbrains.mps.lang.dataFlow.framework.analyzers.InitializedVariablesAnalyzer;
 import jetbrains.mps.lang.dataFlow.framework.analyzers.MayBeInitializedVariablesAnalyzer;
 import jetbrains.mps.lang.dataFlow.framework.analyzers.SelectiveLivenessAnalyzer;
+import jetbrains.mps.lang.dataFlow.framework.analyzers.LivenessAnalyzer;
 import jetbrains.mps.lang.dataFlow.framework.instructions.AbstractJumpInstruction;
 
 public class Program {
@@ -253,27 +254,18 @@ public class Program {
     return initializedVars.contains(instruction.getVariableIndex());
   }
   public Set<WriteInstruction> getUnusedAssignments() {
-    AnalysisResult<VarSet> analysisResult = analyze(new SelectiveLivenessAnalyzer(getFaintSelfReads()));
-    Set<WriteInstruction> retModeTrue = new HashSet<>();
-    Set<WriteInstruction> retModeFalse = new HashSet<>();
-    for (ProgramState s : analysisResult.getStates()) {
-      if (s.getInstruction() instanceof WriteInstruction) {
-        WriteInstruction write = (WriteInstruction) s.getInstruction();
-        VarSet liveAfter = new VarSet(this);
-        for (ProgramState succ : s.succ()) {
-          liveAfter.addAll(analysisResult.get(succ));
-        }
-        if (!(liveAfter.contains(write.getVariableIndex()))) {
-          if (s.isReturnMode()) {
-            retModeTrue.add(write);
-          } else {
-            retModeFalse.add(write);
-          }
-        }
-      }
+    Set<ReadInstruction> faintReads = getFaintSelfReads();
+    Set<WriteInstruction> result = computeDeadWrites(new SelectiveLivenessAnalyzer(faintReads));
+    if (!(faintReads.isEmpty()) && !(result.isEmpty())) {
+      // A plain write that is dead only under strong liveness still has its value read by a faint
+      // compound assignment (e.g. the initializer feeding "a += x" in a loop); removing it would
+      // leave that read uninitialized, so only plainly dead writes and the faint compound writes
+      // themselves are reported.
+      Set<WriteInstruction> reportable = computeDeadWrites(new LivenessAnalyzer());
+      reportable.addAll(myFaintWrites);
+      result.retainAll(reportable);
     }
-    retModeFalse.retainAll(retModeTrue);
-    return retModeFalse;
+    return result;
   }
   public String toString() {
     return toString(false);
@@ -426,7 +418,35 @@ public class Program {
       }
       ignoredReads.removeAll(reenabledReads);
     }
+    myFaintWrites = new HashSet<>();
+    for (ReadInstruction read : ignoredReads) {
+      myFaintWrites.add(selfReadPairs.get(read));
+    }
     myFaintSelfReads = ignoredReads;
     return myFaintSelfReads;
+  }
+  private Set<WriteInstruction> myFaintWrites;
+  private Set<WriteInstruction> computeDeadWrites(DataFlowAnalyzer<VarSet> analyzer) {
+    AnalysisResult<VarSet> analysisResult = analyze(analyzer);
+    Set<WriteInstruction> retModeTrue = new HashSet<>();
+    Set<WriteInstruction> retModeFalse = new HashSet<>();
+    for (ProgramState s : getStates()) {
+      if (s.getInstruction() instanceof WriteInstruction) {
+        WriteInstruction write = (WriteInstruction) s.getInstruction();
+        VarSet liveAfter = new VarSet(this);
+        for (ProgramState succ : s.succ()) {
+          liveAfter.addAll(analysisResult.get(succ));
+        }
+        if (!(liveAfter.contains(write.getVariableIndex()))) {
+          if (s.isReturnMode()) {
+            retModeTrue.add(write);
+          } else {
+            retModeFalse.add(write);
+          }
+        }
+      }
+    }
+    retModeFalse.retainAll(retModeTrue);
+    return retModeFalse;
   }
 }
