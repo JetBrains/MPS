@@ -17,6 +17,7 @@
 package jetbrains.mps.jps.make.tests;
 
 import jetbrains.mps.jps.make.tests.inc.MpsIncrementalChangeModelTestCase;
+import jetbrains.mps.jps.make.tests.inc.MpsIncrementalRemoveFileFromModelTestCase;
 import jetbrains.mps.jps.make.tests.inc.MpsIncrementalRemoveModelTestCase;
 import jetbrains.mps.jps.make.tests.inc.MpsIncrementalTouchModelTestCase;
 import jetbrains.mps.jps.make.tests.inc.MpsRebuildChangedModel;
@@ -34,6 +35,7 @@ import org.junit.runners.Suite;
   MpsIncrementalTouchModelTestCase.class,
   MpsIncrementalChangeModelTestCase.class,
   MpsIncrementalRemoveModelTestCase.class,
+  MpsIncrementalRemoveFileFromModelTestCase.class,
   MpsRebuildChangedModel.class,
 })
 public class JpsMakeTestSuite {

@@ -1,23 +1,15 @@
-MPS generated files:
-mps-make/makeTests/source_gen.caches/ManifestXml/dependencies
-mps-make/makeTests/source_gen.caches/ManifestXml/generated
-mps-make/makeTests/source_gen/ManifestXml/manifest.xml
-mps-make/makeTests/source_gen/ManifestXml/trace.info
-End of files
-Cleaning output files:
-mps-make/makeTests/source_gen.caches/ManifestXml/dependencies
-mps-make/makeTests/source_gen.caches/ManifestXml/generated
-mps-make/makeTests/source_gen/ManifestXml/manifest.xml
-mps-make/makeTests/source_gen/ManifestXml/trace.info
-End of files
-Cleaning output files:
-out/production/makeTests/ManifestXml/manifest.xml
-End of files
-Cleaning output files:
-out/production/makeTests/ManifestXml/trace.info
-End of files
-MPS generated files:
-mps-make/makeTests/source_gen.caches/MainJava/dependencies
-mps-make/makeTests/source_gen.caches/MainJava/generated
-mps-make/makeTests/source_gen/MainJava/trace.info
-End of files
+[COMPILED/MPS]
+  mps-make/makeTests/source_gen.caches/ManifestXml/dependencies
+  mps-make/makeTests/source_gen.caches/ManifestXml/generated
+  mps-make/makeTests/source_gen/ManifestXml/manifest.xml
+  mps-make/makeTests/source_gen/ManifestXml/trace.info
+[DELETED]
+  mps-make/makeTests/source_gen.caches/ManifestXml/dependencies
+  mps-make/makeTests/source_gen.caches/ManifestXml/generated
+  mps-make/makeTests/source_gen/ManifestXml/manifest.xml
+  mps-make/makeTests/source_gen/ManifestXml/trace.info
+  out/production/makeTests/ManifestXml/manifest.xml
+  out/production/makeTests/ManifestXml/trace.info
+[COMPILED/MPS]
+  mps-make/makeTests/source_gen.caches/MainJava/dependencies
+  mps-make/makeTests/source_gen.caches/MainJava/generated
