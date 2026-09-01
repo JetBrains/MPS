@@ -53,6 +53,7 @@ import org.junit.runners.Suite.SuiteClasses;
     jetbrains.mps.ide.ThreadUtilsTest.class,
     jetbrains.mps.java.stub.GenericArrayParametersTest.class,
     jetbrains.mps.java.stub.ParameterizedInnerClassTest.class,
+    jetbrains.mps.project.modules.NewModuleCheckTest.class,
     jetbrains.mps.ide.projectPane.logicalview.VirtualFolderHelperTest.class,
     jetbrains.mps.ide.findusages.view.ViewOptionsTest.class,
     jetbrains.mps.ide.findusages.view.treeholder.treeview.path.PathProviderVirtualPackageSegmentsTest.class

@@ -6506,6 +6506,44 @@
             </node>
           </node>
         </node>
+        <node concept="3clFbJ" id="1S9gGTgPyqh" role="3cqZAp">
+          <node concept="22lmx$" id="1S9gGTgPyqi" role="3clFbw">
+            <node concept="2OqwBi" id="1S9gGTgP_2g" role="3uHU7B">
+              <node concept="37vLTw" id="1S9gGTgPyqv" role="2Oq$k0">
+                <ref role="3cqZAo" node="ZAhE5qVWXW" resolve="myName" />
+              </node>
+              <node concept="liA8E" id="1S9gGTgP_2h" role="2OqNvi">
+                <ref role="37wK5l" to="wyt6:~String.contains(java.lang.CharSequence)" resolve="contains" />
+                <node concept="Xl_RD" id="1S9gGTgP_2i" role="37wK5m">
+                  <property role="Xl_RC" value="/" />
+                </node>
+              </node>
+            </node>
+            <node concept="2OqwBi" id="1S9gGTgP_2C" role="3uHU7w">
+              <node concept="37vLTw" id="1S9gGTgPyq_" role="2Oq$k0">
+                <ref role="3cqZAo" node="ZAhE5qVWXW" resolve="myName" />
+              </node>
+              <node concept="liA8E" id="1S9gGTgP_2D" role="2OqNvi">
+                <ref role="37wK5l" to="wyt6:~String.contains(java.lang.CharSequence)" resolve="contains" />
+                <node concept="Xl_RD" id="1S9gGTgP_2E" role="37wK5m">
+                  <property role="Xl_RC" value="\\" />
+                </node>
+              </node>
+            </node>
+          </node>
+          <node concept="3clFbS" id="1S9gGTgPyqo" role="3clFbx">
+            <node concept="3cpWs6" id="1S9gGTgPyqp" role="3cqZAp">
+              <node concept="2ShNRf" id="1S9gGTgP_1H" role="3cqZAk">
+                <node concept="1pGfFk" id="1S9gGTgP_1T" role="2ShVmc">
+                  <ref role="37wK5l" to="18ew:~Status$ERROR.&lt;init&gt;(java.lang.String)" resolve="Status.ERROR" />
+                  <node concept="Xl_RD" id="1S9gGTgP_1U" role="37wK5m">
+                    <property role="Xl_RC" value="Module namespace should not contain path separators" />
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="3clFbJ" id="7$5DhTHXCBV" role="3cqZAp">
           <node concept="3clFbS" id="7$5DhTHXCBW" role="3clFbx">
             <node concept="3cpWs6" id="7$5DhTHXEHg" role="3cqZAp">

@@ -77,6 +77,9 @@ public class NewModuleCheck {
     if (NameUtil.shortNameFromLongName(myName).length() == 0) {
       return new Status.ERROR("Enter valid namespace");
     }
+    if (myName.contains("/") || myName.contains("\\")) {
+      return new Status.ERROR("Module namespace should not contain path separators");
+    }
     if (myValidJavaNamespace && !(SourceVersion.isName(myName))) {
       return new Status.ERROR("Module namespace should be a valid Java package");
     }
