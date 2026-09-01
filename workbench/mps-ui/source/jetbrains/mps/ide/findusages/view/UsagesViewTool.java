@@ -77,6 +77,7 @@ import javax.swing.Icon;
 import javax.swing.JComponent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @State(
     name = "UsagesViewTool",
@@ -84,6 +85,8 @@ import java.util.List;
 )
 @Service(Service.Level.PROJECT)
 public final class UsagesViewTool extends BaseTabbedProjectTool implements PersistentStateComponent<Element> {
+
+  private static final Logger LOG = Logger.getLogger(UsagesViewTool.class);
 
   private static final String VERSION_NUMBER = "1";
   private static final String VERSION = "version";
@@ -95,11 +98,19 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
   private static final String DEFAULT_VIEW_OPTIONS = "default_view_options";
   private static final String TOOL_WINDOW_ID = "Usages";
 
-  private final List<UsageViewData> myUsageViewsData = new ArrayList<>();
+  // Copy-on-write: tabs are registered and unregistered in the EDT, while getState() iterates from the settings
+  // save thread, where neither a ConcurrentModificationException nor a torn copy of a growing ArrayList is an option.
+  private final List<UsageViewData> myUsageViewsData = new CopyOnWriteArrayList<>();
   private final ViewOptions myDefaultViewOptions = createFindUsagesDefaults();
   private final DataTreeChangesNotifier myChangeTracker = new DataTreeChangesNotifier();
 
   private volatile Runnable loadedTabInitializer = null;
+  /**
+   * The state to report while the tool window has no tabs to derive it from: first the element {@link #read} was
+   * given, then the last state {@link #getState()} produced from live tabs. Deliberately never reset to
+   * {@code null}, see {@link #getState()} for what a {@code null} state does to the stored one.
+   */
+  private volatile Element loadedState = null;
 
   //----CONSTRUCT STUFF----
 
@@ -164,7 +175,12 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
    * Display usages in a tool window of a respective project, according to options supplied.
    */
   public static void showUsages(@NotNull Project project, @NotNull IResultProvider provider, @NotNull SearchQuery query, @NotNull UsageToolOptions options) {
-    UsagesViewTool.getInstance(project).findUsages(provider, query, options);
+    final UsagesViewTool tool = UsagesViewTool.getInstance(project);
+    if (tool == null) {
+      LOG.warning("No " + TOOL_WINDOW_ID + " tool window, usages are not shown");
+      return;
+    }
+    tool.findUsages(provider, query, options);
   }
 
   private void findUsages(IResultProvider provider, final SearchQuery query, final UsageToolOptions options) {
@@ -238,14 +254,27 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
       }
     }, forceNewTab, openTool);
     if (usageViewData.myPinned) {
-      final Content content = getContentManager().getContent(component);
-      content.setPinned(true);
+      // Null-tolerant and non-creating: addTab() above may have bailed out (no content manager), and this must
+      // fail the same way - silently - rather than with an NPE.
+      pinTab(component);
     }
   }
 
   //---END FIND STUFF----
 
   private void read(Element element, jetbrains.mps.project.Project project) {
+    if (loadedTabInitializer != null || getContentManagerIfCreated() != null) {
+      // loadState() comes again whenever the workspace file changes underneath us (VCS update, external edit).
+      // Such a state cannot be honoured: the platform builds a tool window's content exactly once, so tabs read
+      // here would never be materialised, while the tabs already restored - or about to be - are the ones the user
+      // works with. Bail out before UsageViewData.read() creates UsagesView instances nobody would dispose.
+      LOG.info("Ignoring reloaded " + TOOL_WINDOW_ID + " state, tabs of this project are already restored");
+      return;
+    }
+    // Retain the element no matter how much of it we manage to restore below: until there are live tabs to write,
+    // it *is* the state (see getState()), and tabs we fail to read must not disappear from the workspace file.
+    loadedState = element.clone();
+
     Element versionXML = element.getChild(VERSION);
     if (versionXML == null) {
       return;
@@ -263,7 +292,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
         try {
           usageViewData = UsageViewData.read(this, tabXML, project);
         } catch (RuntimeException ex) {
-          Logger.getLogger(UsagesViewTool.class).info("Failed to restore usages view tab", ex);
+          LOG.info("Failed to restore usages view tab", ex);
           continue;
         } catch (CantLoadSomethingException e) {
           continue;
@@ -275,7 +304,6 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     Element defaultViewOptionsXML = element.getChild(DEFAULT_VIEW_OPTIONS);
     myDefaultViewOptions.read(defaultViewOptionsXML, project);
 
-    assert loadedTabInitializer == null;
     if (!loadedUsageViewData.isEmpty()) {
       // We must delay adding visual tabs until the tool window is registered with ToolWindowManager,
       loadedTabInitializer = new Runnable() {
@@ -299,14 +327,21 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     element.addContent(versionXML);
 
     Element tabsXML = new Element(TABS);
+    // myUsageViewsData is copy-on-write, so this iterates a snapshot even though tabs come and go in the EDT.
     for (UsageViewData usageViewData : myUsageViewsData) {
       if (usageViewData.isTransientView()) {
         continue;
       }
+      // Non-creating lookup: the creating one used to build the whole Usages UI from the save thread. No backing
+      // content means the data is not visualized, e.g. addTab() bailed out on a tool window being torn down.
+      final Content content = findContent(usageViewData.myUsagesView.getComponent());
+      if (content == null) {
+        LOG.info("Not saving usages tab '" + usageViewData.myUsagesView.getCaption() + "', it has no tab content");
+        continue;
+      }
       try {
         Element tabXML = new Element(TAB);
-        final Content content = getContentManager().getContent(usageViewData.myUsagesView.getComponent());
-        usageViewData.write(tabXML, project, content);
+        usageViewData.write(tabXML, project, content.isPinned());
         tabsXML.addContent(tabXML);
       } catch (CantSaveSomethingException e) {
         // ignore
@@ -319,8 +354,40 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     element.addContent(defaultViewOptionsXML);
   }
 
+  /**
+   * Unlike what its {@link PersistentStateComponent#getState()} contract suggests, a {@code null} state does not
+   * make the platform keep the state it already stores: it drops our component from the workspace file
+   * ({@code ComponentStoreImpl} -> {@code XmlElementStorage} -> {@code setStateAndCloneIfNeeded}). Neither may this
+   * method derive a state from {@link #myUsageViewsData} before the loaded tabs are materialised - the list is
+   * still empty then, and an element with empty {@code tabs} discards the persisted ones just as effectively.
+   * Hence {@link #loadedState}, which stands in for the tabs until there are any; {@code null} is left for the one
+   * case where it costs nothing, namely nothing loaded and no tab ever created.
+   *
+   * @return the state to persist, or {@code null} if there is none - neither live, nor loaded, nor saved before.
+   */
+  @Nullable
   @Override
   public Element getState() {
+    final Element live = writeLiveState();
+    if (live != null) {
+      // Keep it: by the time we are asked again the tool window content may be gone (project teardown).
+      loadedState = live;
+      // The platform is free to mutate what it gets, our copy must stay as written.
+      return live.clone();
+    }
+    final Element loaded = loadedState;
+    return loaded == null ? null : loaded.clone();
+  }
+
+  /**
+   * @return the state of the tabs the tool window actually shows, or {@code null} while it shows none: its content
+   * was never created, or a loaded state is still waiting for {@link #loadedTabInitializer} to turn it into tabs.
+   */
+  @Nullable
+  private Element writeLiveState() {
+    if (getContentManagerIfCreated() == null || loadedTabInitializer != null) {
+      return null;
+    }
     final jetbrains.mps.project.Project mpsProject = ProjectHelper.fromIdeaProject(getProject());
     final Element state = new Element("state");
     mpsProject.getModelAccess().runReadAction(() -> write(state, mpsProject));
@@ -407,12 +474,12 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
       return new UsageViewData(usageView, task, pinned!=null && "true".equals(pinned.getValue()));
     }
 
-    public void write(Element element, jetbrains.mps.project.Project project, Content content) throws CantSaveSomethingException {
+    public void write(Element element, jetbrains.mps.project.Project project, boolean pinned) throws CantSaveSomethingException {
       //this is to partially fix MPS-14671
       if (myUsagesView.getIncludedResultNodes().size() > 500) {
         throw new CantSaveSomethingException("usages view size too big to save");
       }
-      element.setAttribute("pinned", Boolean.toString(content.isPinned()));
+      element.setAttribute("pinned", Boolean.toString(pinned));
 
       if (mySearchTask != null) {
         mySearchTask.write(element, project);
@@ -505,10 +572,18 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
       if (service != null) {
         toolWindow.hide();
         //Propagate the loaded usages report data into actual visual tabs
-        if (service.loadedTabInitializer != null) {
+        final Runnable initializer = service.loadedTabInitializer;
+        if (initializer != null) {
           final Runnable runnable = () -> {
-            service.loadedTabInitializer.run();
-            service.loadedTabInitializer = null;
+            try {
+              initializer.run();
+            } finally {
+              // Whatever the restore managed to add is live from now on, so getState() has to derive the state
+              // from the tabs, not from the element they came from - a restore that threw halfway included, or we
+              // would keep re-persisting tabs that are no longer the ones the user sees.
+              service.loadedTabInitializer = null;
+            }
+            // Deliberately outside the finally: a half-restored window should not be raised.
             service.openToolLater(false);
           };
           if (ThreadUtils.isInEDT()) {
