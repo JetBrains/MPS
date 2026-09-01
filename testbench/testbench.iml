@@ -79,6 +79,7 @@
     <orderEntry type="module" module-name="mps-make-plugin" />
     <orderEntry type="module" module-name="mps-java-jps-plugin" scope="TEST" />
     <orderEntry type="module" module-name="mps-jps-plugin" scope="TEST" />
+    <orderEntry type="module" module-name="ant-mps-common" scope="TEST" />
     <orderEntry type="module" module-name="mps-jps-common" scope="TEST" />
     <orderEntry type="module" module-name="mps-repository" scope="TEST" />
     <orderEntry type="library" name="idea.grazie" level="project" />

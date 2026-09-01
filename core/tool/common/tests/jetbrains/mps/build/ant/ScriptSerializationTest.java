@@ -20,6 +20,7 @@ import junit.framework.TestCase;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -38,22 +39,22 @@ public class ScriptSerializationTest extends TestCase {
 //    testToDoConsistency(toDo);
 //  }
 
-  public void testCloningConsistencyWithModels() {
+  public void testCloningConsistencyWithModels() throws IOException {
     Script toDo = new Script();
 
-    toDo.addModelFile(new File("languages/util/regexp/languageModels/editor.mps").getAbsoluteFile());
-    toDo.addModelFile(new File("languages/util/regexp/languageModels/structure.mps").getAbsoluteFile());
-    toDo.addModelFile(new File("languages/util/regexp/languageModels/typesystem.mps").getAbsoluteFile());
+    toDo.addModelFile(existingFile(".mps"));
+    toDo.addModelFile(existingFile(".mps"));
+    toDo.addModelFile(existingFile(".mps"));
 
     testToDoConsistency(toDo);
   }
 
-  public void testCloningConsistencyWithModules() {
+  public void testCloningConsistencyWithModules() throws IOException {
     Script toDo = new Script();
 
-    toDo.addModuleFile(new File("languages/util/regexp/solutions/jetbrains.mps.regexp.examples/jetbrains.mps.baseLanguage.regexp.examples.msd").getAbsoluteFile());
-    toDo.addModuleFile(new File("languages/util/regexp/solutions/jetbrains.mps.regexp.sandbox/jetbrains.mps.baseLanguage.regexp.sandbox.msd").getAbsoluteFile());
-    toDo.addModuleFile(new File("languages/util/regexp/solutions/jetbrains.mps.regexp.unittest/jetbrains.mps.baseLanguage.regexp.unittest.msd").getAbsoluteFile());
+    toDo.addModuleFile(existingFile(".msd"));
+    toDo.addModuleFile(existingFile(".msd"));
+    toDo.addModuleFile(existingFile(".msd"));
 
     testToDoConsistency(toDo);
   }
@@ -127,4 +128,14 @@ public class ScriptSerializationTest extends TestCase {
     }
   }
 
+  /**
+   * Script#addModelFile and Script#addModuleFile assert that the file exists, but they do not care what is in it,
+   * and neither does the serialization under test. Use throwaway files rather than naming project content: the
+   * paths this test used to hardcode were removed from the repository long ago (see "Moving more test solutions").
+   */
+  private File existingFile(String extension) throws IOException {
+    File file = File.createTempFile("scriptSerializationTest", extension);
+    file.deleteOnExit();
+    return file.getAbsoluteFile();
+  }
 }
