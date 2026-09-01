@@ -297,6 +297,7 @@
       <property role="3TUv4t" value="false" />
       <node concept="17QB3L" id="5ABJGODLc3l" role="1tU5fm" />
       <node concept="3Tm6S6" id="5ABJGODLc3m" role="1B3o_S" />
+      <node concept="Xl_RD" id="4RIgh0JxiPH" role="33vP2m" />
     </node>
     <node concept="312cEg" id="5ABJGODLc3n" role="jymVt">
       <property role="TrG5h" value="myFramesSelector" />
@@ -481,9 +482,6 @@
                 <node concept="3uibUv" id="5ABJGODLc3P" role="nSUat">
                   <ref role="3uigEE" to="frkw:~IncompatibleThreadStateException" resolve="IncompatibleThreadStateException" />
                 </node>
-                <node concept="3uibUv" id="2hdoiXP0ATL" role="nSUat">
-                  <ref role="3uigEE" to="frkw:~AbsentInformationException" resolve="AbsentInformationException" />
-                </node>
               </node>
             </node>
             <node concept="3clFbS" id="5ABJGODLc3I" role="1zc67A">
@@ -496,6 +494,35 @@
                     <ref role="37wK5l" to="wwqx:~Logger.error(java.lang.Throwable)" resolve="error" />
                     <node concept="37vLTw" id="3GM_nagTw$z" role="37wK5m">
                       <ref role="3cqZAo" node="5ABJGODLc3O" resolve="e" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+          <node concept="3uVAMA" id="4RIgh0Jxteq" role="1zxBo5">
+            <node concept="XOnhg" id="4RIgh0Jxter" role="1zc67B">
+              <property role="3TUv4t" value="false" />
+              <property role="TrG5h" value="e" />
+              <node concept="nSUau" id="4RIgh0Jxtes" role="1tU5fm">
+                <node concept="3uibUv" id="4RIgh0Jxteu" role="nSUat">
+                  <ref role="3uigEE" to="frkw:~AbsentInformationException" resolve="AbsentInformationException" />
+                </node>
+              </node>
+            </node>
+            <node concept="3clFbS" id="4RIgh0Jxtev" role="1zc67A">
+              <node concept="3clFbF" id="4RIgh0Jxtew" role="3cqZAp">
+                <node concept="2OqwBi" id="4RIgh0Jxtex" role="3clFbG">
+                  <node concept="37vLTw" id="4RIgh0Jxtey" role="2Oq$k0">
+                    <ref role="3cqZAo" node="5ABJGODLc33" resolve="LOG" />
+                  </node>
+                  <node concept="liA8E" id="4RIgh0Jxtez" role="2OqNvi">
+                    <ref role="37wK5l" to="wwqx:~Logger.debug(java.lang.String,java.lang.Throwable)" />
+                    <node concept="Xl_RD" id="4RIgh0JxZau" role="37wK5m">
+                      <property role="Xl_RC" value="no source information for the current location" />
+                    </node>
+                    <node concept="37vLTw" id="4RIgh0Jxte$" role="37wK5m">
+                      <ref role="3cqZAo" node="4RIgh0Jxter" resolve="e" />
                     </node>
                   </node>
                 </node>
@@ -853,9 +880,6 @@
                     <node concept="3uibUv" id="5ABJGODLc63" role="nSUat">
                       <ref role="3uigEE" to="frkw:~IncompatibleThreadStateException" resolve="IncompatibleThreadStateException" />
                     </node>
-                    <node concept="3uibUv" id="2hdoiXP0HEF" role="nSUat">
-                      <ref role="3uigEE" to="frkw:~AbsentInformationException" resolve="AbsentInformationException" />
-                    </node>
                   </node>
                 </node>
                 <node concept="3clFbS" id="5ABJGODLc5W" role="1zc67A">
@@ -868,6 +892,35 @@
                         <ref role="37wK5l" to="wwqx:~Logger.error(java.lang.Throwable)" resolve="error" />
                         <node concept="37vLTw" id="3GM_nagTBat" role="37wK5m">
                           <ref role="3cqZAo" node="5ABJGODLc62" resolve="e" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3uVAMA" id="4RIgh0Jy7cf" role="1zxBo5">
+                <node concept="XOnhg" id="4RIgh0Jy7cg" role="1zc67B">
+                  <property role="3TUv4t" value="false" />
+                  <property role="TrG5h" value="e" />
+                  <node concept="nSUau" id="4RIgh0Jy7ch" role="1tU5fm">
+                    <node concept="3uibUv" id="4RIgh0Jy7cj" role="nSUat">
+                      <ref role="3uigEE" to="frkw:~AbsentInformationException" resolve="AbsentInformationException" />
+                    </node>
+                  </node>
+                </node>
+                <node concept="3clFbS" id="4RIgh0Jy7ck" role="1zc67A">
+                  <node concept="3clFbF" id="4RIgh0Jy7cl" role="3cqZAp">
+                    <node concept="2OqwBi" id="4RIgh0Jy7cm" role="3clFbG">
+                      <node concept="37vLTw" id="4RIgh0Jy7cn" role="2Oq$k0">
+                        <ref role="3cqZAo" node="5ABJGODLc33" resolve="LOG" />
+                      </node>
+                      <node concept="liA8E" id="4RIgh0Jy7co" role="2OqNvi">
+                        <ref role="37wK5l" to="wwqx:~Logger.debug(java.lang.String,java.lang.Throwable)" />
+                        <node concept="Xl_RD" id="4RIgh0JyC3P" role="37wK5m">
+                          <property role="Xl_RC" value="no source information for the current location" />
+                        </node>
+                        <node concept="37vLTw" id="4RIgh0Jy7cp" role="37wK5m">
+                          <ref role="3cqZAo" node="4RIgh0Jy7cg" resolve="e" />
                         </node>
                       </node>
                     </node>
@@ -1009,34 +1062,6 @@
                 <node concept="3cpWs6" id="5ABJGODLc6M" role="3cqZAp">
                   <node concept="37vLTw" id="2BHiRxeuxQ4" role="3cqZAk">
                     <ref role="3cqZAo" node="5ABJGODLc38" resolve="myStepType" />
-                  </node>
-                </node>
-              </node>
-            </node>
-            <node concept="3cpWs8" id="5ABJGODLc6O" role="3cqZAp">
-              <node concept="3cpWsn" id="5ABJGODLc6P" role="3cpWs9">
-                <property role="TrG5h" value="filesEqual" />
-                <property role="3TUv4t" value="false" />
-                <node concept="10P_77" id="5ABJGODLc6Q" role="1tU5fm" />
-                <node concept="2OqwBi" id="5ABJGODLc6R" role="33vP2m">
-                  <node concept="37vLTw" id="2BHiRxeud_d" role="2Oq$k0">
-                    <ref role="3cqZAo" node="5ABJGODLc3b" resolve="myDeclaringType" />
-                  </node>
-                  <node concept="liA8E" id="5ABJGODLc6T" role="2OqNvi">
-                    <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
-                    <node concept="2OqwBi" id="5ABJGODLc6U" role="37wK5m">
-                      <node concept="2OqwBi" id="5ABJGODLc6V" role="2Oq$k0">
-                        <node concept="37vLTw" id="3GM_nagTw3C" role="2Oq$k0">
-                          <ref role="3cqZAo" node="5ABJGODLc5L" resolve="location" />
-                        </node>
-                        <node concept="liA8E" id="5ABJGODLc6X" role="2OqNvi">
-                          <ref role="37wK5l" to="frkw:~Location.declaringType()" resolve="declaringType" />
-                        </node>
-                      </node>
-                      <node concept="liA8E" id="5ABJGODLc6Y" role="2OqNvi">
-                        <ref role="37wK5l" to="frkw:~ReferenceType.name()" resolve="name" />
-                      </node>
-                    </node>
                   </node>
                 </node>
               </node>

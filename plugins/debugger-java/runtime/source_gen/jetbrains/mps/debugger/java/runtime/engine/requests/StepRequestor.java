@@ -22,7 +22,7 @@ public class StepRequestor implements Requestor {
   private String myDeclaringType;
   private int myLineNumber;
   private int myFrameCount;
-  private String mySourceName;
+  private String mySourceName = "";
   private final IDebuggableFramesSelector myFramesSelector;
   public StepRequestor(ThreadReference thread, int stepType, IDebuggableFramesSelector framesSelector) {
     myStepType = stepType;
@@ -37,8 +37,10 @@ public class StepRequestor implements Requestor {
           mySourceName = frame.location().sourceName();
         }
       }
-    } catch (IncompatibleThreadStateException | AbsentInformationException e) {
+    } catch (IncompatibleThreadStateException e) {
       LOG.error(e);
+    } catch (AbsentInformationException e) {
+      LOG.debug("no source information for the current location", e);
     }
   }
   public int nextStep(StepEvent event) {
@@ -71,15 +73,16 @@ public class StepRequestor implements Requestor {
       try {
         frameCount = thread.frameCount();
         sourceName = location.sourceName();
-      } catch (IncompatibleThreadStateException | AbsentInformationException e) {
+      } catch (IncompatibleThreadStateException e) {
         LOG.error(e);
+      } catch (AbsentInformationException e) {
+        LOG.debug("no source information for the current location", e);
       }
       //  if we are not in debuggable position we step again
       //  TODO this place may lead (and does lead) to bad performance (see MPS-8725)
       if (!(sourceName.isEmpty()) && !(myFramesSelector.isDebuggablePosition(location.declaringType().name(), sourceName, location.lineNumber()))) {
         return myStepType;
       }
-      boolean filesEqual = myDeclaringType.equals(location.declaringType().name());
       //  if we are on the same place we should step again
       if (myFramesSelector.isSamePosition(myDeclaringType, mySourceName, myLineNumber, myFrameCount, location.declaringType().name(), sourceName, location.lineNumber(), frameCount)) {
         return myStepType;
