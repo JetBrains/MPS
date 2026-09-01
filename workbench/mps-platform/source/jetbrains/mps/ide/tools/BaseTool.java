@@ -33,6 +33,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import jetbrains.mps.ide.ThreadUtils;
+import jetbrains.mps.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +50,8 @@ import java.util.Map.Entry;
 
 public abstract class BaseTool {
 
+  private static final Logger LOG = Logger.getLogger(BaseTool.class);
+
   private final Project myProject;
   private final String myId;
   private final Icon myIcon;
@@ -62,6 +65,8 @@ public abstract class BaseTool {
   private boolean myFallbackToolWindowRegistered = false;
 
   private JComponent myComponent = null;
+  /** Guards {@link #rebuildContent()} against reentrancy, see its Javadoc. */
+  private boolean myRebuildingContent = false;
 
   protected static Map<String, KeyStroke> shortcutsFromNumber(int number) {
     if (number == -1) {
@@ -405,15 +410,29 @@ public abstract class BaseTool {
    * (Re)builds this tool's component and adds it as the tool window's content, WITHOUT installing the
    * {@link com.intellij.ide.impl.ContentManagerWatcher}. {@link #attachTo} installs the watcher once per window;
    * on a plugin reload the tool window (and its watcher) persist, so only the content has to be rebuilt.
+   * <p>
+   * Hardening only, not a root-cause fix: {@link #doRegister()} can, for tabbed tools, run a subclass's own
+   * lazy-initialization path (e.g. populating initial tabs), and that path resolves the content manager, which
+   * this method's outer call is in the middle of creating. Should that ever re-enter {@code rebuildContent()} for
+   * this same tool, the guard below makes the reentrant call a no-op; the outer (first) call always runs to
+   * completion and performs the actual content addition.
    */
   private void rebuildContent() {
-    doRegister();
-
-    if (myComponent == null) {
-      myComponent = getComponent();
+    if (myRebuildingContent) {
+      return;
     }
-    if (myComponent != null) {
-      addContent(myComponent, "", null, false);
+    myRebuildingContent = true;
+    try {
+      doRegister();
+
+      if (myComponent == null) {
+        myComponent = getComponent();
+      }
+      if (myComponent != null) {
+        addContent(myComponent, "", null, false);
+      }
+    } finally {
+      myRebuildingContent = false;
     }
   }
 
@@ -425,8 +444,12 @@ public abstract class BaseTool {
 
   }
 
+  @Deprecated
   public int getCurrentTabIndex() {
     final ContentManager contentManager = getContentManager();
+    if (contentManager == null) {
+      return -1;
+    }
     final Content selectedContent = contentManager.getSelectedContent();
     return selectedContent == null ? -1 : contentManager.getIndexOfContent(selectedContent);
   }
@@ -471,6 +494,21 @@ public abstract class BaseTool {
     myIsRegistered = false;
     myComponent = null;
 
+    try {
+      detachContent();
+    } finally {
+      // detachContent() runs subclass tab-disposal code; a throw there must not skip the tear-down, or the
+      // content-manager listener leaks with the whole tool graph behind it.
+      onUnregistered();
+    }
+  }
+
+  /**
+   * Detaches this tool's content from the platform tool window (or unregisters the window altogether when this
+   * tool registered it itself). Extracted from {@link #unregister()} so that none of its early exits can skip the
+   * {@link #onUnregistered()} tear-down, which has to run after the content has been removed.
+   */
+  private void detachContent() {
     if (myProject.isDisposed()) {
       return;
     }
@@ -490,11 +528,16 @@ public abstract class BaseTool {
     }
     // The platform owns the EP-declared tool window, so we do not unregister it; we only detach our content.
     ToolWindow toolWindow = toolWindowManager.getToolWindow(myId);
-    if (toolWindow != null) {
-      ContentManager contentManager = toolWindow.getContentManager();
-      if (!contentManager.isDisposed()) {
-        contentManager.removeAllContents(true);
-      }
+    if (toolWindow == null) {
+      return;
+    }
+    // Non-creating accessor on purpose: a tool window that was never shown has no content to detach, and the
+    // creating one would run the platform's lazy content creation - building this tool's entire UI (models,
+    // editors, persisted tabs) just to tear it down - and would leave the window in the "content created but
+    // empty" state, which a tool cannot tell apart from "the user closed all tabs".
+    ContentManager contentManager = toolWindow.getContentManagerIfCreated();
+    if (contentManager != null && !contentManager.isDisposed()) {
+      contentManager.removeAllContents(true);
     }
   }
 
@@ -506,13 +549,43 @@ public abstract class BaseTool {
 
   }
 
+  /**
+   * Final tear-down step, invoked by {@link #unregister()} on every unregistration path, after
+   * {@link #doUnregister()} and after this tool's content has been detached.
+   * <p>
+   * Deliberately package-private and reserved for the {@code BaseTool} hierarchy itself: {@link #doUnregister()}
+   * is routinely overridden by subclasses (including MPS-generated tools) without calling {@code super}, so a base
+   * class cannot rely on it running, whereas this hook cannot be intercepted from outside this package.
+   */
+  void onUnregistered() {
+
+  }
+
   // TODO: make method abstract - fix jetbrains.mps.ide.findusages.view.UsagesViewTool
   public JComponent getComponent() {
     return null;
   }
 
+  /**
+   * @return the created {@link Content}, or {@code null} when there is no content manager (tool window absent,
+   * project disposed) - nothing is added in that case.
+   */
+  @Nullable
   protected Content addContent(JComponent component, @NotNull String name, Icon icon, boolean isLockable) {
     ContentManager contentManager = getContentManager();
+    if (contentManager == null) {
+      LOG.warning("addContent(\"" + name + "\") ignored: no content manager for tool " + getId());
+      return null;
+    }
+    return addContent(contentManager, component, name, icon, isLockable);
+  }
+
+  /**
+   * Overload for callers that already resolved the content manager (see {@code BaseTabbedProjectTool.addTab}),
+   * so that a single flow does not re-resolve - and possibly re-observe - the manager step by step.
+   */
+  @NotNull
+  Content addContent(@NotNull ContentManager contentManager, JComponent component, @NotNull String name, Icon icon, boolean isLockable) {
     Content content = contentManager.getFactory().createContent(component, name, isLockable);
     if (icon != null) {
       content.putUserData(ToolWindow.SHOW_CONTENT_ICON, Boolean.TRUE);
@@ -526,7 +599,23 @@ public abstract class BaseTool {
 
   public void setSelectedComponent(JComponent component) {
     ContentManager manager = getContentManager();
+    if (manager == null) {
+      return;
+    }
+    setSelectedComponent(manager, component);
+  }
+
+  /**
+   * Overload for callers that already resolved the content manager, see
+   * {@link #addContent(ContentManager, JComponent, String, Icon, boolean)}.
+   */
+  void setSelectedComponent(@NotNull ContentManager manager, JComponent component) {
     Content content = manager.getContent(component);
+    // manager.setSelectedContent(null) throws; a component with no matching Content (not yet added,
+    // already removed, tool window torn down mid-call) must leave selection untouched.
+    if (content == null) {
+      return;
+    }
     manager.setSelectedContent(content);
   }
 
@@ -538,6 +627,24 @@ public abstract class BaseTool {
     ToolWindowManager wm = ToolWindowManager.getInstance(myProject);
     ToolWindow tw = wm == null ? null : wm.getToolWindow(myId);
     return tw == null ? null : tw.getContentManager();
+  }
+
+  /**
+   * Non-creating counterpart of {@link #getContentManager()}: never triggers the platform's lazy content
+   * creation ({@code ToolWindowImpl.createContentIfNeeded}). Use this from code paths that must not force a
+   * never-shown tool window to build its content just to answer a query (e.g. persistence save, tab lookups).
+   *
+   * @return {@code null} when the project is disposed, the tool window is absent, or the tool window's content
+   * manager has not been created yet.
+   */
+  @Nullable
+  protected ContentManager getContentManagerIfCreated() {
+    if (myProject.isDisposed()) {
+      return null;
+    }
+    ToolWindowManager wm = ToolWindowManager.getInstance(myProject);
+    ToolWindow tw = wm == null ? null : wm.getToolWindow(myId);
+    return tw == null ? null : tw.getContentManagerIfCreated();
   }
 
   @Override

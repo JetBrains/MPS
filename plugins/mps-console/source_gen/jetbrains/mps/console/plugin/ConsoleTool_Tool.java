@@ -12,7 +12,6 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
 import jetbrains.mps.project.MPSProject;
 import com.intellij.openapi.project.Project;
-import com.intellij.ui.content.ContentManager;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
 import javax.swing.KeyStroke;
@@ -28,10 +27,12 @@ import com.intellij.openapi.wm.ToolWindow;
 import jetbrains.mps.console.tool.OutputConsoleTab;
 import jetbrains.mps.console.tool.DialogConsoleTab;
 import jetbrains.mps.plugins.tool.IComponentDisposer;
+import com.intellij.ui.content.ContentManager;
+import com.intellij.ui.content.Content;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.smodel.behaviour.BHReflection;
 import jetbrains.mps.core.aspects.behaviour.SMethodIdV2;
-import com.intellij.ui.content.Content;
+import javax.swing.JComponent;
 import org.jetbrains.mps.openapi.language.SConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
@@ -42,7 +43,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
   private MPSProject myMPSProject;
   private Project myIdeaProject;
   private Object myself = ConsoleTool_Tool.this;
-  private ContentManager contentManager;
+  private boolean myTabsInitialized = false;
   public ConsoleTool_Tool(Project project) {
     super(project, "Console", MapSequence.fromMapAndEntryArray(new HashMap<String, KeyStroke>(), Map.entry("$default", KeyStroke.getKeyStroke("alt F11"))), ICON, ToolWindowAnchor.BOTTOM, true);
   }
@@ -56,12 +57,11 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     return true;
   }
   protected void doUnregister() {
-    ConsoleTool_Tool.this.contentManager = null;
+    ConsoleTool_Tool.this.myTabsInitialized = false;
     ListSequence.fromList(ConsoleTool_Tool.this.myTabs).clear();
   }
   @Override
   protected void doRegister() {
-    ConsoleTool_Tool.this.contentManager = ConsoleTool_Tool.this.getMyself().getContentManager();
     ConsoleTool_Tool.this.initTabs();
   }
   private BaseTabbedProjectTool getMyself() {
@@ -69,7 +69,12 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
   }
   public void clearAll() {
     while (ListSequence.fromList(ConsoleTool_Tool.this.myTabs).isNotEmpty()) {
-      ConsoleTool_Tool.this.closeTab(ListSequence.fromList(ConsoleTool_Tool.this.myTabs).first());
+      BaseConsoleTab tab = ListSequence.fromList(ConsoleTool_Tool.this.myTabs).first();
+      int tabCountBefore = ListSequence.fromList(ConsoleTool_Tool.this.myTabs).count();
+      ConsoleTool_Tool.this.closeTab(tab);
+      if (ListSequence.fromList(ConsoleTool_Tool.this.myTabs).count() >= tabCountBefore) {
+        ListSequence.fromList(ConsoleTool_Tool.this.myTabs).removeElement(tab);
+      }
     }
     ConsoleToolPersistence persistence = ConsoleTool_Tool.this.myIdeaProject.getService(ConsoleToolPersistence.class);
     if (persistence != null) {
@@ -78,9 +83,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     ConsoleTool_Tool.this.initTabs();
   }
   public void selectTab(BaseConsoleTab tab) {
-    if ((ConsoleTool_Tool.this.contentManager != null)) {
-      ConsoleTool_Tool.this.contentManager.setSelectedContent(ConsoleTool_Tool.this.contentManager.getContent(tab));
-    }
+    ConsoleTool_Tool.this.getMyself().selectTabSafely(tab);
   }
   public BaseConsoleTab addConsoleTab(@Nullable TabState tabState, @Nullable Icon icon, boolean openTool) {
     String title = check_39mclg_a0a0o(tabState);
@@ -123,22 +126,36 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     return tab;
   }
   private void initTabs() {
-    final ContentManager cm = ConsoleTool_Tool.this.contentManager;
+    final ContentManager cm = ConsoleTool_Tool.this.getMyself().getContentManager();
+    if (cm == null) {
+      return;
+    }
     ConsoleToolPersistence persistence = ConsoleTool_Tool.this.myIdeaProject.getService(ConsoleToolPersistence.class);
     MyState loadedState = (persistence != null ? persistence.retrieveLoadedState() : null);
     if (loadedState != null) {
       for (TabState tabState : ListSequence.fromList(loadedState.tabs)) {
         BaseConsoleTab tab = ConsoleTool_Tool.this.addConsoleTab(tabState, null, false);
-        cm.getContent(tab).setPinned(true);
+        check_39mclg_a1a0a4a51(cm.getContent(tab));
       }
     }
-    if (ListSequence.fromList(ConsoleTool_Tool.this.myTabs).count() == 0) {
-      BaseConsoleTab tab = ConsoleTool_Tool.this.addConsoleTab(null, null, false);
-      cm.getContent(tab).setPinned(true);
+    BaseConsoleTab defaultTab = null;
+    for (BaseConsoleTab existingTab : ListSequence.fromList(ConsoleTool_Tool.this.myTabs)) {
+      if (existingTab instanceof DialogConsoleTab) {
+        defaultTab = existingTab;
+        break;
+      }
     }
-    check_39mclg_a5a51(cm.getContent(0));
-    check_39mclg_a6a51(cm.getContent(0));
-    cm.setSelectedContent(cm.getContent(0));
+    if (defaultTab == null) {
+      defaultTab = ConsoleTool_Tool.this.addConsoleTab(null, null, false);
+      check_39mclg_a1a7a51(cm.getContent(defaultTab));
+    }
+    Content defaultContent = cm.getContent(defaultTab);
+    if (defaultContent != null) {
+      defaultContent.setPinnable(false);
+      defaultContent.setCloseable(false);
+      cm.setSelectedContent(defaultContent);
+    }
+    ConsoleTool_Tool.this.myTabsInitialized = true;
   }
   public void executeCommand(final SNode command) {
     final TabState tabState = new TabState();
@@ -148,19 +165,25 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     ConsoleTool_Tool.this.myMPSProject.getRepository().getModelAccess().executeCommand(() -> tab.execute(command, null, null));
   }
   public DialogConsoleTab getCurrentEditableTab() {
-    if (ListSequence.fromList(ConsoleTool_Tool.this.myTabs).getElement(ConsoleTool_Tool.this.getCurrentTabIndex()) instanceof DialogConsoleTab) {
-      return as_39mclg_a0a0a0r(ListSequence.fromList(ConsoleTool_Tool.this.myTabs).getElement(ConsoleTool_Tool.this.getCurrentTabIndex()), DialogConsoleTab.class);
+    JComponent selected = ConsoleTool_Tool.this.getMyself().getSelectedTab();
+    if (selected instanceof DialogConsoleTab) {
+      return as_39mclg_a0a0b0r(selected, DialogConsoleTab.class);
     }
-    return as_39mclg_a0b0r(ListSequence.fromList(ConsoleTool_Tool.this.myTabs).getElement(0), DialogConsoleTab.class);
+    for (BaseConsoleTab candidate : ListSequence.fromList(ConsoleTool_Tool.this.myTabs)) {
+      if (candidate instanceof DialogConsoleTab) {
+        return as_39mclg_a0a0a0c0r(candidate, DialogConsoleTab.class);
+      }
+    }
+    return null;
   }
   @Nullable
   public MyState getState() {
-    MyState result = new MyState();
-    if (ConsoleTool_Tool.this.contentManager == null) {
-      return result;
+    if ((ConsoleTool_Tool.this.getMyself().getContentManagerIfCreated() == null) || !(ConsoleTool_Tool.this.myTabsInitialized)) {
+      return null;
     }
+    MyState result = new MyState();
     for (BaseConsoleTab tab : ListSequence.fromList(ConsoleTool_Tool.this.myTabs)) {
-      if (!(ConsoleTool_Tool.this.contentManager.getContent(tab).isPinned())) {
+      if (!(ConsoleTool_Tool.this.getMyself().isTabPinned(tab))) {
         continue;
       }
       TabState tabState = new TabState();
@@ -214,22 +237,22 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     }
     return false;
   }
-  private static void check_39mclg_a5a51(Content checkedDotOperand) {
+  private static void check_39mclg_a1a0a4a51(Content checkedDotOperand) {
     if (null != checkedDotOperand) {
-      checkedDotOperand.setPinnable(false);
+      checkedDotOperand.setPinned(true);
     }
 
   }
-  private static void check_39mclg_a6a51(Content checkedDotOperand) {
+  private static void check_39mclg_a1a7a51(Content checkedDotOperand) {
     if (null != checkedDotOperand) {
-      checkedDotOperand.setCloseable(false);
+      checkedDotOperand.setPinned(true);
     }
 
   }
-  private static <T> T as_39mclg_a0a0a0r(Object o, Class<T> type) {
+  private static <T> T as_39mclg_a0a0b0r(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_39mclg_a0b0r(Object o, Class<T> type) {
+  private static <T> T as_39mclg_a0a0a0c0r(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 

@@ -21,6 +21,7 @@ import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
+import jetbrains.mps.logging.Logger;
 import jetbrains.mps.plugins.tool.IComponentDisposer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,12 +32,24 @@ import javax.swing.KeyStroke;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseTabbedProjectTool extends BaseTool {
 
+  private static final Logger LOG = Logger.getLogger(BaseTabbedProjectTool.class);
+
   private final List<IDisposableTab> myTabList = new ArrayList<>();
-  private AtomicBoolean myContentRemovedListenerAdded = new AtomicBoolean(false);
+  /**
+   * The {@link ContentManager} instance {@link #addContentRemovedListenerIfNeeded} last installed
+   * {@link #myContentRemovedListener} on, or {@code null} if none. Tracking the instance (rather than a plain
+   * "did we ever install it" flag) matters for three cases a boolean cannot express: (1) if resolving the manager
+   * throws (e.g. a nested lazy-content-creation failure) before the listener is installed, a flag set eagerly
+   * would wrongly claim "already installed" forever; (2) a plugin reload or unregister/register cycle can
+   * dispose the old manager and create a new instance, which needs its own listener; (3) {@link #onUnregistered()}
+   * has to remove the listener from exactly the manager it was added to.
+   */
+  private ContentManager myListenerInstalledOn;
+  /** The listener installed on {@link #myListenerInstalledOn}, kept so that it can be removed again. */
+  private ContentManagerListener myContentRemovedListener;
 
   protected BaseTabbedProjectTool(Project project, String id, Map<String, KeyStroke> shortcutsByKeymap, Icon icon,
                                   ToolWindowAnchor anchor, boolean canCloseContent) {
@@ -45,7 +58,9 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
 
   @Override
   protected void doUnregister() {
-    ContentManager contentManager = getContentManager();
+    // Non-creating accessor on purpose: a tool window that was never shown has no tabs to remove, and the
+    // creating one would build this tool's entire UI just to tear it down (see BaseTool.detachContent()).
+    ContentManager contentManager = getContentManagerIfCreated();
     if (contentManager != null && !contentManager.isDisposed() && !getProject().isDisposed()) {
       contentManager.removeAllContents(true);
     }
@@ -59,6 +74,52 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
   @Override
   public @Nullable ContentManager getContentManager() {
     return super.getContentManager();
+  }
+
+  /**
+   * Changing the visibility, for the same reason as {@link #getContentManager()} above: generated subclasses
+   * (declared as node&lt;TabbedToolDeclaration&gt; instances) cannot see protected superclass members.
+   * @return Delegates to the BaseTool class
+   */
+  @Override
+  public @Nullable ContentManager getContentManagerIfCreated() {
+    return super.getContentManagerIfCreated();
+  }
+
+  /**
+   * Non-creating tab lookup: never forces a never-shown tool window to build its content.
+   * @return the {@link Content} backing {@code tab}, or {@code null} if there is no content manager yet or no
+   * such tab.
+   */
+  @Nullable
+  public Content findContent(@Nullable JComponent tab) {
+    if (tab == null) {
+      return null;
+    }
+    ContentManager contentManager = getContentManagerIfCreated();
+    return contentManager == null ? null : contentManager.getContent(tab);
+  }
+
+  /**
+   * @return whether {@code tab} is pinned; {@code false} (not an exception) when there is no content manager
+   * yet or no matching tab.
+   */
+  public boolean isTabPinned(@Nullable JComponent tab) {
+    Content content = findContent(tab);
+    return content != null && content.isPinned();
+  }
+
+  /**
+   * Selects {@code tab} if it currently has backing {@link Content}; a no-op (never a
+   * {@code setSelectedContent(null)} crash) when there is no content manager yet or no matching tab.
+   */
+  public void selectTabSafely(@Nullable JComponent tab) {
+    ContentManager contentManager = getContentManagerIfCreated();
+    Content content = findContent(tab);
+    if (contentManager == null || content == null) {
+      return;
+    }
+    contentManager.setSelectedContent(content);
   }
 
   public void closeTab(JComponent component) {
@@ -88,13 +149,30 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
     addTab(tab, false, openTool);
   }
 
+  /**
+   * Resolving the content manager is the FIRST statement, and deliberately so: for a tool that has never been
+   * shown before, {@link #getContentManager()} runs the platform's lazy content-creation path to completion
+   * ({@code attachTo -> rebuildContent -> doRegister}), and for tabbed tools {@code doRegister} typically
+   * populates an initial set of tabs (e.g. the Console's {@code initTabs()}) by calling back into this very
+   * method. That nested call must fully finish - including its own listener install and bookkeeping - before
+   * this (outer) call touches {@code myTabList} or the listener state; resolving the manager any later (e.g.
+   * only when installing the listener) would let the two calls interleave. {@code cm} is threaded through the
+   * rest of the method instead of re-resolving it, so every step below observes the same instance the nested
+   * call (if any) already finished with.
+   */
   public void addTab(final Tab tab, boolean forceNewTab, boolean openTool) {
-    addContentRemovedListenerIfNeeded();
-    if (!forceNewTab) {
-      closeCurrentTabIfUnpinned();
+    ContentManager cm = getContentManager();
+    if (cm == null) {
+      // Tool window absent (e.g. project closing) or project disposed: never partially mutate myTabList/content.
+      LOG.warning("addTab(\"" + tab.getTitle() + "\") ignored: no content manager for tool " + getId());
+      return;
     }
-    addContent(tab.getComponent(), tab.getTitle(), tab.getIcon(), true);
-    setSelectedComponent(tab.getComponent());
+    addContentRemovedListenerIfNeeded(cm);
+    if (!forceNewTab) {
+      closeCurrentTabIfUnpinned(cm);
+    }
+    addContent(cm, tab.getComponent(), tab.getTitle(), tab.getIcon(), true);
+    setSelectedComponent(cm, tab.getComponent());
     myTabList.add(tab);
     if (openTool) {
       openToolLater(true);
@@ -104,6 +182,9 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
   @SuppressWarnings("unused")
   public JComponent getSelectedTab() {
     ContentManager contentManager = getContentManager();
+    if (contentManager == null) {
+      return null;
+    }
     Content selectedContent = contentManager.getSelectedContent();
     if (selectedContent == null) {
       return null;
@@ -118,7 +199,9 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
    */
   @SuppressWarnings("unused")
   public <T extends JComponent> void pinTab(@Nullable T tab) {
-    Content content = getContentManager().getContent(tab);
+    // findContent() honours the @Nullable contract above: ContentManager.getContent(JComponent) is
+    // @NotNull-parametered and NPEs inside SwingUtilities.isDescendingFrom for a null tab.
+    Content content = findContent(tab);
     if (content != null) {
       content.setPinned(true);
     }
@@ -130,14 +213,14 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
    */
   @SuppressWarnings("unused")
   public <T extends JComponent> void unpinTab(@Nullable T tab) {
-    Content content = getContentManager().getContent(tab);
+    // See pinTab() above for why this goes through findContent().
+    Content content = findContent(tab);
     if (content != null) {
       content.setPinned(false);
     }
   }
 
-  private void closeCurrentTabIfUnpinned() {
-    ContentManager contentManager = getContentManager();
+  private void closeCurrentTabIfUnpinned(@NotNull ContentManager contentManager) {
     Content selectedContent = contentManager.getSelectedContent();
     if (selectedContent == null) {
       return;
@@ -147,20 +230,64 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
     }
   }
 
-  private void addContentRemovedListenerIfNeeded() {
-    if (myContentRemovedListenerAdded.getAndSet(true)) {
+  private void addContentRemovedListenerIfNeeded(@NotNull ContentManager cm) {
+    if (cm == myListenerInstalledOn) {
       return;
     }
 
-    // the listener is removed automatically on content manager dispose
-    this.getContentManager().addContentManagerListener(new ContentManagerListener() {
+    ContentManagerListener listener = new ContentManagerListener() {
       @Override
       public void contentRemoved(@NotNull ContentManagerEvent event) {
-        int index = event.getIndex();
-        IDisposableTab tab = myTabList.remove(index);
-        tab.disposeTab();
+        // Identity lookup, not a positional remove(index): myTabList's order is not the ContentManager's index
+        // space - the user can drag-reorder tabs - and the events are not limited to our own live tabs either:
+        // a removeAllContents(true) burst on unregister, or a listener from a previous tool instance still
+        // attached to the surviving manager, both deliver content with no matching myTabList entry. A positional
+        // remove would then dispose an unrelated - or already stale - tab.
+        JComponent removedComponent = event.getContent().getComponent();
+        IDisposableTab removedTab = null;
+        for (IDisposableTab candidate : myTabList) {
+          if (candidate.getComponent() == removedComponent) {
+            removedTab = candidate;
+            break;
+          }
+        }
+        if (removedTab == null) {
+          // No matching entry - nothing of ours to dispose.
+          return;
+        }
+        myTabList.remove(removedTab);
+        removedTab.disposeTab();
       }
-    });
+    };
+    cm.addContentManagerListener(listener);
+    // Record the state only after addContentManagerListener() actually succeeded, and record `cm` itself (not
+    // just "installed = true"): see the field's Javadoc for why a plain boolean is unsafe here. The listener is
+    // NOT removed automatically - the EP-declared tool window and its ContentManager outlive unregister() - so
+    // onUnregistered() removes it explicitly.
+    myListenerInstalledOn = cm;
+    myContentRemovedListener = listener;
+  }
+
+  /**
+   * Removes the {@link ContentManagerListener} installed by {@link #addContentRemovedListenerIfNeeded}, invoked by
+   * {@link BaseTool#unregister()} on every unregistration path - after the tool's content has been detached, so
+   * the removal events still reach the listener and drain {@code myTabList}.
+   * <p>
+   * Explicit removal is required because the tool window is owned by the platform (declared via the
+   * {@code com.intellij.toolWindow} EP): {@code unregister()} does not dispose its {@link ContentManager}. Without
+   * this, every plugin reload would leave the previous tool's listener attached to the surviving manager, strongly
+   * referencing that dead tool and its whole tab graph (MPS editors included).
+   */
+  @Override
+  void onUnregistered() {
+    if (myListenerInstalledOn == null) {
+      return;
+    }
+    // Remove from the exact instance the listener was added to, not from whatever getContentManager() would
+    // return now: a project reopen creates a new manager, and the old one may already be disposed.
+    myListenerInstalledOn.removeContentManagerListener(myContentRemovedListener);
+    myListenerInstalledOn = null;
+    myContentRemovedListener = null;
   }
 
   @Override

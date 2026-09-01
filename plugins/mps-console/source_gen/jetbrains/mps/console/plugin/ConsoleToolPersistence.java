@@ -29,7 +29,14 @@ public final class ConsoleToolPersistence implements PersistentStateComponent<My
   @Nullable
   @Override
   public MyState getState() {
-    storeLoadedState(ProjectPluginManager.getInstance(myProject).getTool(ConsoleTool_Tool.class).getState());
+    ConsoleTool_Tool tool = ProjectPluginManager.getInstance(myProject).getTool(ConsoleTool_Tool.class);
+    if (tool == null) {
+      return loadedState;
+    }
+    MyState toolState = tool.getState();
+    if (toolState != null) {
+      storeLoadedState(toolState);
+    }
     return loadedState;
   }
   @Override
