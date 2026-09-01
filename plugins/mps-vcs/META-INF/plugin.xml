@@ -94,6 +94,7 @@
     <projectService serviceInterface="jetbrains.mps.vcs.changesmanager.NodeFileStatusMapping"
                     serviceImplementation="jetbrains.mps.vcs.changesmanager.roots.NodeFileStatusMappingExt"/>
 
+    <projectService serviceImplementation="jetbrains.mps.vcs.platform.mergedriver.MergeDriverNotification" />
     <projectService serviceImplementation="jetbrains.mps.vcs.MPSVcsManager" />
     <backgroundPostStartupActivity implementation="jetbrains.mps.vcs.MPSVcsManager$OnStartup" />
 

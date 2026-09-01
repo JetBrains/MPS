@@ -12,7 +12,6 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.List;
 import com.intellij.openapi.vcs.VcsDirectoryMapping;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.internal.collections.runtime.IterableUtils;
 import com.intellij.openapi.vcs.impl.projectlevelman.AllVcses;
 import com.intellij.notification.NotificationType;
@@ -20,6 +19,7 @@ import com.intellij.notification.NotificationListener;
 import org.jetbrains.annotations.NotNull;
 import javax.swing.event.HyperlinkEvent;
 import com.intellij.ide.BrowserUtil;
+import jetbrains.mps.ide.ThreadUtils;
 import com.intellij.notification.Notifications;
 
 @GeneratedClass(nodeId = "6989360587247930283", model = "r:36539f52-7ec3-4937-98bf-1fbc1fbe99fc(jetbrains.mps.vcs.platform.mergedriver)")
@@ -27,8 +27,8 @@ public class MergeDriverNotification {
   private static final String SUPPRESSED_PROPERTY_NAME = "merge.driver.suppressed.notification";
   private Project myProject;
   private AbstractInstaller.State myCompositeState;
-  private Notification myLastNotification;
-  private MergeDriverNotification(Project project) {
+  private volatile Notification myLastNotification;
+  public MergeDriverNotification(Project project) {
     myProject = project;
   }
 
@@ -45,36 +45,40 @@ public class MergeDriverNotification {
     }
     showNotifications();
   }
-  private void showNotifications() {
-    final Set<String> vcsNames = SetSequence.fromSetWithValues(new HashSet<String>(), ListSequence.fromList(((List<VcsDirectoryMapping>) ProjectLevelVcsManager.getInstance(myProject).getDirectoryMappings())).select((dm) -> dm.getVcs()).where((vn) -> (vn != null && vn.length() > 0)));
+  private synchronized void showNotifications() {
+    // the startup activity and the VCS mapping listener may race here, hence the repeated check
+    if (myLastNotification != null && !(myLastNotification.isExpired())) {
+      return;
+    }
+    Set<String> vcsNames = SetSequence.fromSetWithValues(new HashSet<String>(), ListSequence.fromList(((List<VcsDirectoryMapping>) ProjectLevelVcsManager.getInstance(myProject).getDirectoryMappings())).select((dm) -> dm.getVcs()).where((vn) -> (vn != null && vn.length() > 0)));
+    String whichVcses = IterableUtils.join(SetSequence.fromSet(vcsNames).select((vn) -> AllVcses.getInstance(myProject).getByName(vn).getDisplayName()), "and");
+    String message = "<p>This project uses " + whichVcses + ". For better integration with MPS, it is necessary to update VCS settings (<a href=\"https://www.jetbrains.com/help/mps/version-control-integration.html#vcsadd-ons\"" + ">More info</a>).<p><a href=\"install\">Update</a></p>";
+    myLastNotification = new Notification("MergeDriver", "VCS Addons", message, NotificationType.WARNING, new NotificationListener() {
+      @Override
+      public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
+        if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
+          return;
+        }
+        if (e.getURL() != null) {
+          BrowserUtil.launchBrowser(e.getURL().toExternalForm());
+          return;
+        } else
+        if ("install".equals(e.getDescription())) {
+          MergeDriverInstaller.installWhereNeeded(myProject);
+        } else {
+          assert false;
+        }
+        notification.expire();
+      }
+    });
     ThreadUtils.runInUIThreadNoWait(() -> {
       if (myProject.isDisposed()) {
         return;
       }
-      String whichVcses = IterableUtils.join(SetSequence.fromSet(vcsNames).select((vn) -> AllVcses.getInstance(myProject).getByName(vn).getDisplayName()), "and");
-      String message = "<p>This project uses " + whichVcses + ". For better integration with MPS, it is necessary to update VCS settings (<a href=\"https://www.jetbrains.com/help/mps/version-control-integration.html#vcsadd-ons\"" + ">More info</a>).<p><a href=\"install\">Update</a></p>";
-      myLastNotification = new Notification("MergeDriver", "VCS Addons", message, NotificationType.WARNING, new NotificationListener() {
-        @Override
-        public void hyperlinkUpdate(@NotNull Notification notification, @NotNull HyperlinkEvent e) {
-          if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED) {
-            return;
-          }
-          if (e.getURL() != null) {
-            BrowserUtil.launchBrowser(e.getURL().toExternalForm());
-            return;
-          } else
-          if ("install".equals(e.getDescription())) {
-            MergeDriverInstaller.installWhereNeeded(myProject);
-          } else {
-            assert false;
-          }
-          notification.expire();
-        }
-      });
       Notifications.Bus.notify(myLastNotification, myProject);
     });
   }
   public static MergeDriverNotification getInstance(Project project) {
-    return new MergeDriverNotification(project);
+    return project.getService(MergeDriverNotification.class);
   }
 }

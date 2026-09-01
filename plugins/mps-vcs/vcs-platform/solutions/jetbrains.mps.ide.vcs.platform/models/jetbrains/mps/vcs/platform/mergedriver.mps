@@ -9,6 +9,8 @@
     <use id="760a0a8c-eabb-4521-8bfd-65db761a9ba3" name="jetbrains.mps.baseLanguage.logging" version="-1" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="f2801650-65d5-424e-bb1b-463a8781b786" name="jetbrains.mps.baseLanguage.javadoc" version="3" />
+    <use id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core" version="2" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
   </languages>
   <imports>
     <import index="unno" ref="r:61e3d524-8c49-4491-b5e3-f6d6e9364527(jetbrains.mps.util)" />
@@ -44,7 +46,7 @@
     <import index="hr4p" ref="f57286e3-4e19-4d8d-8045-3900761f6530/java:git4idea(jetbrains.mps.git4idea.stubs/)" />
     <import index="ejh2" ref="6fd1293f-7f65-4ffd-99dc-4719eca7c171/java:org.jetbrains.idea.svn(jetbrains.mps.ide.vcs.platform/)" />
     <import index="qv1t" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.impl.projectlevelman(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="qv1u" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.impl.projectlevelman(MPS.IDEA/)" implicit="true" />
+    <import index="qv1u" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.impl.projectlevelman(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -134,7 +136,9 @@
         <child id="1070534934091" name="type" index="10QFUM" />
         <child id="1070534934092" name="expression" index="10QFUP" />
       </concept>
-      <concept id="1068390468200" name="jetbrains.mps.baseLanguage.structure.FieldDeclaration" flags="ig" index="312cEg" />
+      <concept id="1068390468200" name="jetbrains.mps.baseLanguage.structure.FieldDeclaration" flags="ig" index="312cEg">
+        <property id="1240249534625" name="isVolatile" index="34CwA1" />
+      </concept>
       <concept id="1068390468198" name="jetbrains.mps.baseLanguage.structure.ClassConcept" flags="ig" index="312cEu">
         <property id="1075300953594" name="abstractClass" index="1sVAO0" />
         <child id="1165602531693" name="superclass" index="1zkMxy" />
@@ -5899,6 +5903,7 @@
     </node>
     <node concept="312cEg" id="6lEzp8ArlVb" role="jymVt">
       <property role="TrG5h" value="myLastNotification" />
+      <property role="34CwA1" value="true" />
       <node concept="3Tm6S6" id="6lEzp8ArlVc" role="1B3o_S" />
       <node concept="3uibUv" id="6lEzp8ArlVe" role="1tU5fm">
         <ref role="3uigEE" to="fnpx:~Notification" resolve="Notification" />
@@ -5912,7 +5917,7 @@
         </node>
       </node>
       <node concept="3cqZAl" id="63ZcAL21OII" role="3clF45" />
-      <node concept="3Tm6S6" id="63ZcAL21OIO" role="1B3o_S" />
+      <node concept="3Tm1VV" id="7ZSwRqEVAqp" role="1B3o_S" />
       <node concept="3clFbS" id="63ZcAL21OIK" role="3clF47">
         <node concept="3clFbF" id="63ZcAL21OJ7" role="3cqZAp">
           <node concept="37vLTI" id="63ZcAL21OJ9" role="3clFbG">
@@ -6018,9 +6023,82 @@
     </node>
     <node concept="3clFb_" id="63ZcAL228Sm" role="jymVt">
       <property role="TrG5h" value="showNotifications" />
+      <property role="od$2w" value="true" />
       <node concept="3cqZAl" id="63ZcAL228Sn" role="3clF45" />
       <node concept="3Tm6S6" id="63ZcAL228Sq" role="1B3o_S" />
       <node concept="3clFbS" id="63ZcAL228Sp" role="3clF47">
+        <node concept="3SKdUt" id="7ZSwRqEYwQh" role="3cqZAp">
+          <node concept="1PaTwC" id="7ZSwRqEYwQl" role="1aUNEU">
+            <node concept="3oM_SD" id="7ZSwRqEYwQn" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQo" role="1PaTwD">
+              <property role="3oM_SC" value="startup" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQp" role="1PaTwD">
+              <property role="3oM_SC" value="activity" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQq" role="1PaTwD">
+              <property role="3oM_SC" value="and" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQr" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQs" role="1PaTwD">
+              <property role="3oM_SC" value="VCS" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQt" role="1PaTwD">
+              <property role="3oM_SC" value="mapping" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQu" role="1PaTwD">
+              <property role="3oM_SC" value="listener" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQv" role="1PaTwD">
+              <property role="3oM_SC" value="may" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQw" role="1PaTwD">
+              <property role="3oM_SC" value="race" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQx" role="1PaTwD">
+              <property role="3oM_SC" value="here," />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQy" role="1PaTwD">
+              <property role="3oM_SC" value="hence" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQz" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQ$" role="1PaTwD">
+              <property role="3oM_SC" value="repeated" />
+            </node>
+            <node concept="3oM_SD" id="7ZSwRqEYwQ_" role="1PaTwD">
+              <property role="3oM_SC" value="check" />
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbJ" id="7ZSwRqEW5R0" role="3cqZAp">
+          <node concept="3clFbS" id="7ZSwRqEW5R1" role="3clFbx">
+            <node concept="3cpWs6" id="7ZSwRqEW5R2" role="3cqZAp" />
+          </node>
+          <node concept="1Wc70l" id="7ZSwRqEW5R3" role="3clFbw">
+            <node concept="3fqX7Q" id="7ZSwRqEW5R4" role="3uHU7w">
+              <node concept="2OqwBi" id="7ZSwRqEW5R5" role="3fr31v">
+                <node concept="37vLTw" id="7ZSwRqEW5R6" role="2Oq$k0">
+                  <ref role="3cqZAo" node="6lEzp8ArlVb" resolve="myLastNotification" />
+                </node>
+                <node concept="liA8E" id="7ZSwRqEW5R7" role="2OqNvi">
+                  <ref role="37wK5l" to="fnpx:~Notification.isExpired()" resolve="isExpired" />
+                </node>
+              </node>
+            </node>
+            <node concept="3y3z36" id="7ZSwRqEW5R8" role="3uHU7B">
+              <node concept="37vLTw" id="7ZSwRqEW5R9" role="3uHU7B">
+                <ref role="3cqZAo" node="6lEzp8ArlVb" resolve="myLastNotification" />
+              </node>
+              <node concept="10Nm6u" id="7ZSwRqEW5Ra" role="3uHU7w" />
+            </node>
+          </node>
+        </node>
         <node concept="3cpWs8" id="127cgHIfgPA" role="3cqZAp">
           <node concept="3cpWsn" id="127cgHIfgPB" role="3cpWs9">
             <property role="TrG5h" value="vcsNames" />
@@ -6097,6 +6175,247 @@
             </node>
           </node>
         </node>
+        <node concept="3cpWs8" id="63ZcAL22cko" role="3cqZAp">
+          <node concept="3cpWsn" id="63ZcAL22ckp" role="3cpWs9">
+            <property role="TrG5h" value="whichVcses" />
+            <node concept="17QB3L" id="63ZcAL22ckq" role="1tU5fm" />
+            <node concept="2OqwBi" id="7Etb25iy8Lk" role="33vP2m">
+              <node concept="2OqwBi" id="63ZcAL22ctA" role="2Oq$k0">
+                <node concept="37vLTw" id="3GM_nagTsVC" role="2Oq$k0">
+                  <ref role="3cqZAo" node="127cgHIfgPB" resolve="vcsNames" />
+                </node>
+                <node concept="3$u5V9" id="127cgHIfgQ0" role="2OqNvi">
+                  <node concept="1bVj0M" id="127cgHIfgQ1" role="23t8la">
+                    <node concept="3clFbS" id="127cgHIfgQ2" role="1bW5cS">
+                      <node concept="3clFbF" id="127cgHIfgZ$" role="3cqZAp">
+                        <node concept="2OqwBi" id="127cgHIfgZI" role="3clFbG">
+                          <node concept="2OqwBi" id="127cgHIfgZC" role="2Oq$k0">
+                            <node concept="2YIFZM" id="127cgHIfgZA" role="2Oq$k0">
+                              <ref role="37wK5l" to="qv1t:~AllVcses.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                              <ref role="1Pybhc" to="qv1t:~AllVcses" resolve="AllVcses" />
+                              <node concept="37vLTw" id="2BHiRxeuW13" role="37wK5m">
+                                <ref role="3cqZAo" node="63ZcAL21OIS" resolve="myProject" />
+                              </node>
+                            </node>
+                            <node concept="liA8E" id="127cgHIfgZG" role="2OqNvi">
+                              <ref role="37wK5l" to="qv1u:~AllVcsesI.getByName(java.lang.String)" resolve="getByName" />
+                              <node concept="37vLTw" id="2BHiRxghfnS" role="37wK5m">
+                                <ref role="3cqZAo" node="5W7E4fV0XTu" resolve="vn" />
+                              </node>
+                            </node>
+                          </node>
+                          <node concept="liA8E" id="127cgHIfiJ9" role="2OqNvi">
+                            <ref role="37wK5l" to="jlcu:~AbstractVcs.getDisplayName()" resolve="getDisplayName" />
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                    <node concept="gl6BB" id="5W7E4fV0XTu" role="1bW2Oz">
+                      <property role="TrG5h" value="vn" />
+                      <node concept="2jxLKc" id="5W7E4fV0XTv" role="1tU5fm" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3uJxvA" id="7Etb25iy8Lw" role="2OqNvi">
+                <node concept="Xl_RD" id="7Etb25iyd_h" role="3uJOhx">
+                  <property role="Xl_RC" value="and" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs8" id="63ZcAL22ctF" role="3cqZAp">
+          <node concept="3cpWsn" id="63ZcAL22ctG" role="3cpWs9">
+            <property role="TrG5h" value="message" />
+            <node concept="17QB3L" id="63ZcAL22ctM" role="1tU5fm" />
+            <node concept="3cpWs3" id="3fU80iE1zWk" role="33vP2m">
+              <node concept="Xl_RD" id="3fU80iE1xd8" role="3uHU7w">
+                <property role="Xl_RC" value="&gt;More info&lt;/a&gt;).&lt;p&gt;&lt;a href=\&quot;install\&quot;&gt;Update&lt;/a&gt;&lt;/p&gt;" />
+              </node>
+              <node concept="3cpWs3" id="14CscpcLAjN" role="3uHU7B">
+                <node concept="3cpWs3" id="14CscpcLA7y" role="3uHU7B">
+                  <node concept="Xl_RD" id="14CscpcLA7C" role="3uHU7B">
+                    <property role="Xl_RC" value="&lt;p&gt;This project uses " />
+                  </node>
+                  <node concept="37vLTw" id="14CscpcLATB" role="3uHU7w">
+                    <ref role="3cqZAo" node="63ZcAL22ckp" resolve="whichVcses" />
+                  </node>
+                </node>
+                <node concept="Xl_RD" id="14CscpcLAjV" role="3uHU7w">
+                  <property role="Xl_RC" value=". For better integration with MPS, it is necessary to update VCS settings (&lt;a href=\&quot;https://www.jetbrains.com/help/mps/version-control-integration.html#vcsadd-ons\&quot;" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="6lEzp8ArlVg" role="3cqZAp">
+          <node concept="37vLTI" id="6lEzp8ArlVi" role="3clFbG">
+            <node concept="37vLTw" id="2BHiRxeuxJ9" role="37vLTJ">
+              <ref role="3cqZAo" node="6lEzp8ArlVb" resolve="myLastNotification" />
+            </node>
+            <node concept="2ShNRf" id="63ZcAL22bYE" role="37vLTx">
+              <node concept="1pGfFk" id="63ZcAL22bYG" role="2ShVmc">
+                <ref role="37wK5l" to="fnpx:~Notification.&lt;init&gt;(java.lang.String,java.lang.String,java.lang.String,com.intellij.notification.NotificationType,com.intellij.notification.NotificationListener)" resolve="Notification" />
+                <node concept="Xl_RD" id="63ZcAL22bYK" role="37wK5m">
+                  <property role="Xl_RC" value="MergeDriver" />
+                </node>
+                <node concept="Xl_RD" id="63ZcAL22bYM" role="37wK5m">
+                  <property role="Xl_RC" value="VCS Addons" />
+                </node>
+                <node concept="37vLTw" id="3GM_nagTw14" role="37wK5m">
+                  <ref role="3cqZAo" node="63ZcAL22ctG" resolve="message" />
+                </node>
+                <node concept="Rm8GO" id="63ZcAL22bYR" role="37wK5m">
+                  <ref role="1Px2BO" to="fnpx:~NotificationType" resolve="NotificationType" />
+                  <ref role="Rm8GQ" to="fnpx:~NotificationType.WARNING" resolve="WARNING" />
+                </node>
+                <node concept="2ShNRf" id="63ZcAL22ciL" role="37wK5m">
+                  <node concept="YeOm9" id="63ZcAL22ciN" role="2ShVmc">
+                    <node concept="1Y3b0j" id="63ZcAL22ciO" role="YeSDq">
+                      <property role="2bfB8j" value="true" />
+                      <ref role="37wK5l" to="wyt6:~Object.&lt;init&gt;()" resolve="Object" />
+                      <ref role="1Y3XeK" to="fnpx:~NotificationListener" resolve="NotificationListener" />
+                      <node concept="3Tm1VV" id="63ZcAL22ciP" role="1B3o_S" />
+                      <node concept="3clFb_" id="63ZcAL22ciQ" role="jymVt">
+                        <property role="1EzhhJ" value="false" />
+                        <property role="TrG5h" value="hyperlinkUpdate" />
+                        <property role="DiZV1" value="false" />
+                        <node concept="3Tm1VV" id="63ZcAL22ciR" role="1B3o_S" />
+                        <node concept="3cqZAl" id="63ZcAL22ciS" role="3clF45" />
+                        <node concept="37vLTG" id="63ZcAL22ciT" role="3clF46">
+                          <property role="TrG5h" value="notification" />
+                          <node concept="3uibUv" id="63ZcAL22ciU" role="1tU5fm">
+                            <ref role="3uigEE" to="fnpx:~Notification" resolve="Notification" />
+                          </node>
+                          <node concept="2AHcQZ" id="63ZcAL22ciV" role="2AJF6D">
+                            <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
+                          </node>
+                        </node>
+                        <node concept="37vLTG" id="63ZcAL22ciW" role="3clF46">
+                          <property role="TrG5h" value="e" />
+                          <node concept="3uibUv" id="63ZcAL22ciX" role="1tU5fm">
+                            <ref role="3uigEE" to="gsia:~HyperlinkEvent" resolve="HyperlinkEvent" />
+                          </node>
+                          <node concept="2AHcQZ" id="63ZcAL22ciY" role="2AJF6D">
+                            <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
+                          </node>
+                        </node>
+                        <node concept="3clFbS" id="63ZcAL22ciZ" role="3clF47">
+                          <node concept="3clFbJ" id="3riZMBy7lgv" role="3cqZAp">
+                            <node concept="3clFbS" id="3riZMBy7lgw" role="3clFbx">
+                              <node concept="3cpWs6" id="3riZMBy7JNx" role="3cqZAp" />
+                            </node>
+                            <node concept="3y3z36" id="3riZMBy7lgD" role="3clFbw">
+                              <node concept="2OqwBi" id="3riZMBy7lg$" role="3uHU7B">
+                                <node concept="37vLTw" id="2BHiRxgm7cL" role="2Oq$k0">
+                                  <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
+                                </node>
+                                <node concept="liA8E" id="3riZMBy7lgC" role="2OqNvi">
+                                  <ref role="37wK5l" to="gsia:~HyperlinkEvent.getEventType()" resolve="getEventType" />
+                                </node>
+                              </node>
+                              <node concept="10M0yZ" id="3riZMBy7JNw" role="3uHU7w">
+                                <ref role="1PxDUh" to="gsia:~HyperlinkEvent$EventType" resolve="HyperlinkEvent.EventType" />
+                                <ref role="3cqZAo" to="gsia:~HyperlinkEvent$EventType.ACTIVATED" resolve="ACTIVATED" />
+                              </node>
+                            </node>
+                          </node>
+                          <node concept="3clFbJ" id="4kwL$UZHXoU" role="3cqZAp">
+                            <node concept="3clFbS" id="4kwL$UZHXoV" role="3clFbx">
+                              <node concept="3clFbF" id="6KGokXnActr" role="3cqZAp">
+                                <node concept="2YIFZM" id="6KGokXnActt" role="3clFbG">
+                                  <ref role="37wK5l" to="ddhc:~BrowserUtil.launchBrowser(java.lang.String)" resolve="launchBrowser" />
+                                  <ref role="1Pybhc" to="ddhc:~BrowserUtil" resolve="BrowserUtil" />
+                                  <node concept="2OqwBi" id="6KGokXnAct_" role="37wK5m">
+                                    <node concept="2OqwBi" id="6KGokXnActv" role="2Oq$k0">
+                                      <node concept="37vLTw" id="2BHiRxghfx6" role="2Oq$k0">
+                                        <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
+                                      </node>
+                                      <node concept="liA8E" id="6KGokXnActz" role="2OqNvi">
+                                        <ref role="37wK5l" to="gsia:~HyperlinkEvent.getURL()" resolve="getURL" />
+                                      </node>
+                                    </node>
+                                    <node concept="liA8E" id="6KGokXnActD" role="2OqNvi">
+                                      <ref role="37wK5l" to="zf81:~URL.toExternalForm()" resolve="toExternalForm" />
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                              <node concept="3cpWs6" id="6KGokXnAkd$" role="3cqZAp" />
+                            </node>
+                            <node concept="3clFbJ" id="4kwL$UZHXp1" role="9aQIa">
+                              <node concept="3clFbS" id="4kwL$UZHXp2" role="3clFbx">
+                                <node concept="3clFbF" id="4kwL$UZHXp3" role="3cqZAp">
+                                  <node concept="2YIFZM" id="4kwL$UZHXp4" role="3clFbG">
+                                    <ref role="1Pybhc" node="3OxOldILH8I" resolve="MergeDriverInstaller" />
+                                    <ref role="37wK5l" node="3OxOldILLP6" resolve="installWhereNeeded" />
+                                    <node concept="37vLTw" id="2BHiRxeuh$m" role="37wK5m">
+                                      <ref role="3cqZAo" node="63ZcAL21OIS" resolve="myProject" />
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                              <node concept="9aQIb" id="4kwL$UZHXph" role="9aQIa">
+                                <node concept="3clFbS" id="4kwL$UZHXpi" role="9aQI4">
+                                  <node concept="1gVbGN" id="4kwL$UZHXpj" role="3cqZAp">
+                                    <node concept="3clFbT" id="4kwL$UZHXpk" role="1gVkn0">
+                                      <property role="3clFbU" value="false" />
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                              <node concept="2OqwBi" id="4kwL$UZHXpl" role="3clFbw">
+                                <node concept="Xl_RD" id="4kwL$UZHXpm" role="2Oq$k0">
+                                  <property role="Xl_RC" value="install" />
+                                </node>
+                                <node concept="liA8E" id="4kwL$UZHXpn" role="2OqNvi">
+                                  <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
+                                  <node concept="2OqwBi" id="4kwL$UZHXpo" role="37wK5m">
+                                    <node concept="37vLTw" id="2BHiRxgkWz1" role="2Oq$k0">
+                                      <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
+                                    </node>
+                                    <node concept="liA8E" id="4kwL$UZHXpq" role="2OqNvi">
+                                      <ref role="37wK5l" to="gsia:~HyperlinkEvent.getDescription()" resolve="getDescription" />
+                                    </node>
+                                  </node>
+                                </node>
+                              </node>
+                            </node>
+                            <node concept="3y3z36" id="4kwL$UZHZ0N" role="3clFbw">
+                              <node concept="10Nm6u" id="4kwL$UZHZ0Q" role="3uHU7w" />
+                              <node concept="2OqwBi" id="4kwL$UZHXpx" role="3uHU7B">
+                                <node concept="37vLTw" id="2BHiRxgha7H" role="2Oq$k0">
+                                  <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
+                                </node>
+                                <node concept="liA8E" id="4kwL$UZHXp_" role="2OqNvi">
+                                  <ref role="37wK5l" to="gsia:~HyperlinkEvent.getURL()" resolve="getURL" />
+                                </node>
+                              </node>
+                            </node>
+                          </node>
+                          <node concept="3clFbF" id="63ZcAL22ctZ" role="3cqZAp">
+                            <node concept="2OqwBi" id="63ZcAL22cu1" role="3clFbG">
+                              <node concept="37vLTw" id="2BHiRxghgdq" role="2Oq$k0">
+                                <ref role="3cqZAo" node="63ZcAL22ciT" resolve="notification" />
+                              </node>
+                              <node concept="liA8E" id="63ZcAL22cu5" role="2OqNvi">
+                                <ref role="37wK5l" to="fnpx:~Notification.expire()" resolve="expire" />
+                              </node>
+                            </node>
+                          </node>
+                        </node>
+                        <node concept="2AHcQZ" id="3tYsUK_Uv_K" role="2AJF6D">
+                          <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="63ZcAL22bUT" role="3cqZAp">
           <node concept="2YIFZM" id="63ZcAL22bUV" role="3clFbG">
             <ref role="37wK5l" to="3a50:~ThreadUtils.runInUIThreadNoWait(java.lang.Runnable)" resolve="runInUIThreadNoWait" />
@@ -6113,247 +6432,6 @@
                     </node>
                     <node concept="liA8E" id="1LArolxZNGq" role="2OqNvi">
                       <ref role="37wK5l" to="1m72:~ComponentManager.isDisposed()" resolve="isDisposed" />
-                    </node>
-                  </node>
-                </node>
-                <node concept="3cpWs8" id="63ZcAL22cko" role="3cqZAp">
-                  <node concept="3cpWsn" id="63ZcAL22ckp" role="3cpWs9">
-                    <property role="TrG5h" value="whichVcses" />
-                    <node concept="17QB3L" id="63ZcAL22ckq" role="1tU5fm" />
-                    <node concept="2OqwBi" id="7Etb25iy8Lk" role="33vP2m">
-                      <node concept="2OqwBi" id="63ZcAL22ctA" role="2Oq$k0">
-                        <node concept="37vLTw" id="3GM_nagTsVC" role="2Oq$k0">
-                          <ref role="3cqZAo" node="127cgHIfgPB" resolve="vcsNames" />
-                        </node>
-                        <node concept="3$u5V9" id="127cgHIfgQ0" role="2OqNvi">
-                          <node concept="1bVj0M" id="127cgHIfgQ1" role="23t8la">
-                            <node concept="3clFbS" id="127cgHIfgQ2" role="1bW5cS">
-                              <node concept="3clFbF" id="127cgHIfgZ$" role="3cqZAp">
-                                <node concept="2OqwBi" id="127cgHIfgZI" role="3clFbG">
-                                  <node concept="2OqwBi" id="127cgHIfgZC" role="2Oq$k0">
-                                    <node concept="2YIFZM" id="127cgHIfgZA" role="2Oq$k0">
-                                      <ref role="37wK5l" to="qv1t:~AllVcses.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                                      <ref role="1Pybhc" to="qv1t:~AllVcses" resolve="AllVcses" />
-                                      <node concept="37vLTw" id="2BHiRxeuW13" role="37wK5m">
-                                        <ref role="3cqZAo" node="63ZcAL21OIS" resolve="myProject" />
-                                      </node>
-                                    </node>
-                                    <node concept="liA8E" id="127cgHIfgZG" role="2OqNvi">
-                                      <ref role="37wK5l" to="qv1u:~AllVcsesI.getByName(java.lang.String)" resolve="getByName" />
-                                      <node concept="37vLTw" id="2BHiRxghfnS" role="37wK5m">
-                                        <ref role="3cqZAo" node="5W7E4fV0XTu" resolve="vn" />
-                                      </node>
-                                    </node>
-                                  </node>
-                                  <node concept="liA8E" id="127cgHIfiJ9" role="2OqNvi">
-                                    <ref role="37wK5l" to="jlcu:~AbstractVcs.getDisplayName()" resolve="getDisplayName" />
-                                  </node>
-                                </node>
-                              </node>
-                            </node>
-                            <node concept="gl6BB" id="5W7E4fV0XTu" role="1bW2Oz">
-                              <property role="TrG5h" value="vn" />
-                              <node concept="2jxLKc" id="5W7E4fV0XTv" role="1tU5fm" />
-                            </node>
-                          </node>
-                        </node>
-                      </node>
-                      <node concept="3uJxvA" id="7Etb25iy8Lw" role="2OqNvi">
-                        <node concept="Xl_RD" id="7Etb25iyd_h" role="3uJOhx">
-                          <property role="Xl_RC" value="and" />
-                        </node>
-                      </node>
-                    </node>
-                  </node>
-                </node>
-                <node concept="3cpWs8" id="63ZcAL22ctF" role="3cqZAp">
-                  <node concept="3cpWsn" id="63ZcAL22ctG" role="3cpWs9">
-                    <property role="TrG5h" value="message" />
-                    <node concept="17QB3L" id="63ZcAL22ctM" role="1tU5fm" />
-                    <node concept="3cpWs3" id="3fU80iE1zWk" role="33vP2m">
-                      <node concept="Xl_RD" id="3fU80iE1xd8" role="3uHU7w">
-                        <property role="Xl_RC" value="&gt;More info&lt;/a&gt;).&lt;p&gt;&lt;a href=\&quot;install\&quot;&gt;Update&lt;/a&gt;&lt;/p&gt;" />
-                      </node>
-                      <node concept="3cpWs3" id="14CscpcLAjN" role="3uHU7B">
-                        <node concept="3cpWs3" id="14CscpcLA7y" role="3uHU7B">
-                          <node concept="Xl_RD" id="14CscpcLA7C" role="3uHU7B">
-                            <property role="Xl_RC" value="&lt;p&gt;This project uses " />
-                          </node>
-                          <node concept="37vLTw" id="14CscpcLATB" role="3uHU7w">
-                            <ref role="3cqZAo" node="63ZcAL22ckp" resolve="whichVcses" />
-                          </node>
-                        </node>
-                        <node concept="Xl_RD" id="14CscpcLAjV" role="3uHU7w">
-                          <property role="Xl_RC" value=". For better integration with MPS, it is necessary to update VCS settings (&lt;a href=\&quot;https://www.jetbrains.com/help/mps/version-control-integration.html#vcsadd-ons\&quot;" />
-                        </node>
-                      </node>
-                    </node>
-                  </node>
-                </node>
-                <node concept="3clFbF" id="6lEzp8ArlVg" role="3cqZAp">
-                  <node concept="37vLTI" id="6lEzp8ArlVi" role="3clFbG">
-                    <node concept="37vLTw" id="2BHiRxeuxJ9" role="37vLTJ">
-                      <ref role="3cqZAo" node="6lEzp8ArlVb" resolve="myLastNotification" />
-                    </node>
-                    <node concept="2ShNRf" id="63ZcAL22bYE" role="37vLTx">
-                      <node concept="1pGfFk" id="63ZcAL22bYG" role="2ShVmc">
-                        <ref role="37wK5l" to="fnpx:~Notification.&lt;init&gt;(java.lang.String,java.lang.String,java.lang.String,com.intellij.notification.NotificationType,com.intellij.notification.NotificationListener)" resolve="Notification" />
-                        <node concept="Xl_RD" id="63ZcAL22bYK" role="37wK5m">
-                          <property role="Xl_RC" value="MergeDriver" />
-                        </node>
-                        <node concept="Xl_RD" id="63ZcAL22bYM" role="37wK5m">
-                          <property role="Xl_RC" value="VCS Addons" />
-                        </node>
-                        <node concept="37vLTw" id="3GM_nagTw14" role="37wK5m">
-                          <ref role="3cqZAo" node="63ZcAL22ctG" resolve="message" />
-                        </node>
-                        <node concept="Rm8GO" id="63ZcAL22bYR" role="37wK5m">
-                          <ref role="1Px2BO" to="fnpx:~NotificationType" resolve="NotificationType" />
-                          <ref role="Rm8GQ" to="fnpx:~NotificationType.WARNING" resolve="WARNING" />
-                        </node>
-                        <node concept="2ShNRf" id="63ZcAL22ciL" role="37wK5m">
-                          <node concept="YeOm9" id="63ZcAL22ciN" role="2ShVmc">
-                            <node concept="1Y3b0j" id="63ZcAL22ciO" role="YeSDq">
-                              <property role="2bfB8j" value="true" />
-                              <ref role="37wK5l" to="wyt6:~Object.&lt;init&gt;()" resolve="Object" />
-                              <ref role="1Y3XeK" to="fnpx:~NotificationListener" resolve="NotificationListener" />
-                              <node concept="3Tm1VV" id="63ZcAL22ciP" role="1B3o_S" />
-                              <node concept="3clFb_" id="63ZcAL22ciQ" role="jymVt">
-                                <property role="1EzhhJ" value="false" />
-                                <property role="TrG5h" value="hyperlinkUpdate" />
-                                <property role="DiZV1" value="false" />
-                                <node concept="3Tm1VV" id="63ZcAL22ciR" role="1B3o_S" />
-                                <node concept="3cqZAl" id="63ZcAL22ciS" role="3clF45" />
-                                <node concept="37vLTG" id="63ZcAL22ciT" role="3clF46">
-                                  <property role="TrG5h" value="notification" />
-                                  <node concept="3uibUv" id="63ZcAL22ciU" role="1tU5fm">
-                                    <ref role="3uigEE" to="fnpx:~Notification" resolve="Notification" />
-                                  </node>
-                                  <node concept="2AHcQZ" id="63ZcAL22ciV" role="2AJF6D">
-                                    <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
-                                  </node>
-                                </node>
-                                <node concept="37vLTG" id="63ZcAL22ciW" role="3clF46">
-                                  <property role="TrG5h" value="e" />
-                                  <node concept="3uibUv" id="63ZcAL22ciX" role="1tU5fm">
-                                    <ref role="3uigEE" to="gsia:~HyperlinkEvent" resolve="HyperlinkEvent" />
-                                  </node>
-                                  <node concept="2AHcQZ" id="63ZcAL22ciY" role="2AJF6D">
-                                    <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
-                                  </node>
-                                </node>
-                                <node concept="3clFbS" id="63ZcAL22ciZ" role="3clF47">
-                                  <node concept="3clFbJ" id="3riZMBy7lgv" role="3cqZAp">
-                                    <node concept="3clFbS" id="3riZMBy7lgw" role="3clFbx">
-                                      <node concept="3cpWs6" id="3riZMBy7JNx" role="3cqZAp" />
-                                    </node>
-                                    <node concept="3y3z36" id="3riZMBy7lgD" role="3clFbw">
-                                      <node concept="2OqwBi" id="3riZMBy7lg$" role="3uHU7B">
-                                        <node concept="37vLTw" id="2BHiRxgm7cL" role="2Oq$k0">
-                                          <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
-                                        </node>
-                                        <node concept="liA8E" id="3riZMBy7lgC" role="2OqNvi">
-                                          <ref role="37wK5l" to="gsia:~HyperlinkEvent.getEventType()" resolve="getEventType" />
-                                        </node>
-                                      </node>
-                                      <node concept="10M0yZ" id="3riZMBy7JNw" role="3uHU7w">
-                                        <ref role="1PxDUh" to="gsia:~HyperlinkEvent$EventType" resolve="HyperlinkEvent.EventType" />
-                                        <ref role="3cqZAo" to="gsia:~HyperlinkEvent$EventType.ACTIVATED" resolve="ACTIVATED" />
-                                      </node>
-                                    </node>
-                                  </node>
-                                  <node concept="3clFbJ" id="4kwL$UZHXoU" role="3cqZAp">
-                                    <node concept="3clFbS" id="4kwL$UZHXoV" role="3clFbx">
-                                      <node concept="3clFbF" id="6KGokXnActr" role="3cqZAp">
-                                        <node concept="2YIFZM" id="6KGokXnActt" role="3clFbG">
-                                          <ref role="37wK5l" to="ddhc:~BrowserUtil.launchBrowser(java.lang.String)" resolve="launchBrowser" />
-                                          <ref role="1Pybhc" to="ddhc:~BrowserUtil" resolve="BrowserUtil" />
-                                          <node concept="2OqwBi" id="6KGokXnAct_" role="37wK5m">
-                                            <node concept="2OqwBi" id="6KGokXnActv" role="2Oq$k0">
-                                              <node concept="37vLTw" id="2BHiRxghfx6" role="2Oq$k0">
-                                                <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
-                                              </node>
-                                              <node concept="liA8E" id="6KGokXnActz" role="2OqNvi">
-                                                <ref role="37wK5l" to="gsia:~HyperlinkEvent.getURL()" resolve="getURL" />
-                                              </node>
-                                            </node>
-                                            <node concept="liA8E" id="6KGokXnActD" role="2OqNvi">
-                                              <ref role="37wK5l" to="zf81:~URL.toExternalForm()" resolve="toExternalForm" />
-                                            </node>
-                                          </node>
-                                        </node>
-                                      </node>
-                                      <node concept="3cpWs6" id="6KGokXnAkd$" role="3cqZAp" />
-                                    </node>
-                                    <node concept="3clFbJ" id="4kwL$UZHXp1" role="9aQIa">
-                                      <node concept="3clFbS" id="4kwL$UZHXp2" role="3clFbx">
-                                        <node concept="3clFbF" id="4kwL$UZHXp3" role="3cqZAp">
-                                          <node concept="2YIFZM" id="4kwL$UZHXp4" role="3clFbG">
-                                            <ref role="1Pybhc" node="3OxOldILH8I" resolve="MergeDriverInstaller" />
-                                            <ref role="37wK5l" node="3OxOldILLP6" resolve="installWhereNeeded" />
-                                            <node concept="37vLTw" id="2BHiRxeuh$m" role="37wK5m">
-                                              <ref role="3cqZAo" node="63ZcAL21OIS" resolve="myProject" />
-                                            </node>
-                                          </node>
-                                        </node>
-                                      </node>
-                                      <node concept="9aQIb" id="4kwL$UZHXph" role="9aQIa">
-                                        <node concept="3clFbS" id="4kwL$UZHXpi" role="9aQI4">
-                                          <node concept="1gVbGN" id="4kwL$UZHXpj" role="3cqZAp">
-                                            <node concept="3clFbT" id="4kwL$UZHXpk" role="1gVkn0">
-                                              <property role="3clFbU" value="false" />
-                                            </node>
-                                          </node>
-                                        </node>
-                                      </node>
-                                      <node concept="2OqwBi" id="4kwL$UZHXpl" role="3clFbw">
-                                        <node concept="Xl_RD" id="4kwL$UZHXpm" role="2Oq$k0">
-                                          <property role="Xl_RC" value="install" />
-                                        </node>
-                                        <node concept="liA8E" id="4kwL$UZHXpn" role="2OqNvi">
-                                          <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
-                                          <node concept="2OqwBi" id="4kwL$UZHXpo" role="37wK5m">
-                                            <node concept="37vLTw" id="2BHiRxgkWz1" role="2Oq$k0">
-                                              <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
-                                            </node>
-                                            <node concept="liA8E" id="4kwL$UZHXpq" role="2OqNvi">
-                                              <ref role="37wK5l" to="gsia:~HyperlinkEvent.getDescription()" resolve="getDescription" />
-                                            </node>
-                                          </node>
-                                        </node>
-                                      </node>
-                                    </node>
-                                    <node concept="3y3z36" id="4kwL$UZHZ0N" role="3clFbw">
-                                      <node concept="10Nm6u" id="4kwL$UZHZ0Q" role="3uHU7w" />
-                                      <node concept="2OqwBi" id="4kwL$UZHXpx" role="3uHU7B">
-                                        <node concept="37vLTw" id="2BHiRxgha7H" role="2Oq$k0">
-                                          <ref role="3cqZAo" node="63ZcAL22ciW" resolve="e" />
-                                        </node>
-                                        <node concept="liA8E" id="4kwL$UZHXp_" role="2OqNvi">
-                                          <ref role="37wK5l" to="gsia:~HyperlinkEvent.getURL()" resolve="getURL" />
-                                        </node>
-                                      </node>
-                                    </node>
-                                  </node>
-                                  <node concept="3clFbF" id="63ZcAL22ctZ" role="3cqZAp">
-                                    <node concept="2OqwBi" id="63ZcAL22cu1" role="3clFbG">
-                                      <node concept="37vLTw" id="2BHiRxghgdq" role="2Oq$k0">
-                                        <ref role="3cqZAo" node="63ZcAL22ciT" resolve="notification" />
-                                      </node>
-                                      <node concept="liA8E" id="63ZcAL22cu5" role="2OqNvi">
-                                        <ref role="37wK5l" to="fnpx:~Notification.expire()" resolve="expire" />
-                                      </node>
-                                    </node>
-                                  </node>
-                                </node>
-                                <node concept="2AHcQZ" id="3tYsUK_Uv_K" role="2AJF6D">
-                                  <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
-                                </node>
-                              </node>
-                            </node>
-                          </node>
-                        </node>
-                      </node>
                     </node>
                   </node>
                 </node>
@@ -6382,12 +6460,15 @@
       </node>
       <node concept="3Tm1VV" id="63ZcAL21OIY" role="1B3o_S" />
       <node concept="3clFbS" id="63ZcAL21OIZ" role="3clF47">
-        <node concept="3clFbF" id="63ZcAL21OJ2" role="3cqZAp">
-          <node concept="2ShNRf" id="63ZcAL21OJ3" role="3clFbG">
-            <node concept="1pGfFk" id="63ZcAL21OJ5" role="2ShVmc">
-              <ref role="37wK5l" node="63ZcAL21OIH" resolve="MergeDriverNotification" />
-              <node concept="37vLTw" id="2BHiRxglV_5" role="37wK5m">
-                <ref role="3cqZAo" node="63ZcAL21OJ0" resolve="project" />
+        <node concept="3cpWs6" id="7ZSwRqEYujG" role="3cqZAp">
+          <node concept="2OqwBi" id="7ZSwRqEYvaa" role="3cqZAk">
+            <node concept="37vLTw" id="7ZSwRqEYujM" role="2Oq$k0">
+              <ref role="3cqZAo" node="63ZcAL21OJ0" resolve="project" />
+            </node>
+            <node concept="liA8E" id="7ZSwRqEYvab" role="2OqNvi">
+              <ref role="37wK5l" to="1m72:~ComponentManager.getService(java.lang.Class)" resolve="getService" />
+              <node concept="3VsKOn" id="7ZSwRqEYvac" role="37wK5m">
+                <ref role="3VsUkX" node="63ZcAL21OIF" resolve="MergeDriverNotification" />
               </node>
             </node>
           </node>
