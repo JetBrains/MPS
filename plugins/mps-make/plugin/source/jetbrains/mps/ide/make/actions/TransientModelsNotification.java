@@ -37,10 +37,11 @@ public class TransientModelsNotification {
 
   public void projectOpened() {
     myRootDispose = Disposer.newDisposable("notify-transients");
-    StatusBar statusBar = WindowManager.getInstance().getStatusBar(myProject.getProject());
     final GenerationSettingsProvider genSettings = myProject.getComponent(GenerationSettingsProvider.class);
 
-    myDisplayer = new TransientModelBalloonDisplayer(statusBar);
+    // Note, we are notified as soon as MPSProject is ready, which happens well before the project gets its
+    // IDEA frame (and thus a status bar), hence the displayer has to find the status bar when it needs one.
+    myDisplayer = new TransientModelBalloonDisplayer(myProject.getProject());
     Disposer.register(myRootDispose, myDisplayer);
     genSettings.addSettingsListener(mySettingsListener);
     myProject.getComponent(MakeServiceComponent.class).addListener(myMakeNotificationListener);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2025 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+ * Copyright 2000-2026 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 package jetbrains.mps.ide.make.actions;
 
@@ -13,31 +13,48 @@ import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.Balloon;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.wm.StatusBarWidget;
+import com.intellij.openapi.wm.WindowManager;
 import java.awt.Component;
 import javax.swing.JRootPane;
 import javax.swing.SwingUtilities;
 import java.awt.Container;
 import java.awt.Rectangle;
 import java.awt.Point;
+import com.intellij.openapi.project.Project;
 import com.intellij.util.ui.UIUtil;
 import java.awt.Dimension;
+import java.util.function.Supplier;
 import com.intellij.ui.awt.RelativePoint;
 import com.intellij.notification.impl.NotificationSettings;
+import org.jetbrains.annotations.NotNull;
 
 public final class TransientModelBalloonDisplayer implements Disposable {
   private static final String ID = "Saving Transient Models Is On";
-  private final StatusBar myStatusBar;
+  private final Supplier<StatusBar> myStatusBar;
   private boolean myIsDisposed = false;
 
   /**
    * The {@code widget} parameter is ignored.
+   *
+   * @deprecated use {@link #TransientModelBalloonDisplayer(Project)}, the status bar of a project being opened doesn't necessarily exist yet
    */
   @Deprecated
   public TransientModelBalloonDisplayer(StatusBar statusBar, TransientModelsWidget widget) {
-    myStatusBar = statusBar;
+    this(statusBar);
   }
+
+  /**
+   * @deprecated use {@link #TransientModelBalloonDisplayer(Project)}, the status bar of a project being opened doesn't necessarily exist yet
+   */
+  @Deprecated
   public TransientModelBalloonDisplayer(StatusBar statusBar) {
-    myStatusBar = statusBar;
+    myStatusBar = () -> statusBar;
+  }
+
+  public TransientModelBalloonDisplayer(@NotNull Project project) {
+    // A project's frame, and hence its status bar, comes to life later than MPSProject gets ready (i.e. later than
+    // the moment we are instantiated at), therefore we look the status bar up on demand rather than capture it here.
+    myStatusBar = () -> WindowManager.getInstance().getStatusBar(project);
   }
 
   @Override
@@ -51,6 +68,11 @@ public final class TransientModelBalloonDisplayer implements Disposable {
       return;
     }
     // Assumes EDT
+    StatusBar statusBar = myStatusBar.get();
+    if (statusBar == null) {
+      // there's no frame for the project (yet), or we are headless - nothing to anchor the balloon to
+      return;
+    }
     boolean sticky = NotificationsConfigurationImpl.getSettings(ID).getDisplayType() == NotificationDisplayType.STICKY_BALLOON;
     BalloonBuilder builder = JBPopupFactory.getInstance().createHtmlTextBalloonBuilder("Saving transient models is on. This may slow down generation.", MessageType.WARNING, null).setHideOnAction(!(sticky)).setHideOnClickOutside(!(sticky)).setHideOnKeyOutside(!(sticky));
     if (!(sticky)) {
@@ -60,12 +82,12 @@ public final class TransientModelBalloonDisplayer implements Disposable {
 
     Disposer.register(this, balloon);
 
-    StatusBarWidget widget = myStatusBar.getWidget("SaveTransientModels");
+    StatusBarWidget widget = statusBar.getWidget("SaveTransientModels");
     Component component = (widget instanceof TransientModelsWidget ? ((TransientModelsWidget) widget).getComponent() : null);
     if (component != null && component.isShowing()) {
       showForComponent(component, balloon);
     } else {
-      component = myStatusBar.getComponent();
+      component = statusBar.getComponent();
       if (component != null && component.isShowing()) {
         showForComponent(component, balloon);
       } else {
