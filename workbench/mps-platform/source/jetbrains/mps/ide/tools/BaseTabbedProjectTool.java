@@ -238,6 +238,10 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
     ContentManagerListener listener = new ContentManagerListener() {
       @Override
       public void contentRemoved(@NotNull ContentManagerEvent event) {
+        // Tab reordering temporarily removes and re-adds the same Content; its component is still live.
+        if (Boolean.TRUE.equals(event.getContent().getUserData(Content.TEMPORARY_REMOVED_KEY))) {
+          return;
+        }
         // Identity lookup, not a positional remove(index): myTabList's order is not the ContentManager's index
         // space - the user can drag-reorder tabs - and the events are not limited to our own live tabs either:
         // a removeAllContents(true) burst on unregister, or a listener from a previous tool instance still
