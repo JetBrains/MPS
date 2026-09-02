@@ -365,7 +365,12 @@ public class Program {
     }
     return program;
   }
+
+  /**
+   * Cached faint self-reads.
+   */
   private Set<ReadInstruction> myFaintSelfReads;
+
   /**
    * 
    * Self-reads of compound assignments — a read and a write emitted from the same source node for the
@@ -425,7 +430,18 @@ public class Program {
     myFaintSelfReads = ignoredReads;
     return myFaintSelfReads;
   }
+
+  /**
+   * Corresponding faint writes.
+   */
   private Set<WriteInstruction> myFaintWrites;
+
+  /**
+   * Computes writes that are dead after the instruction in both normal and return modes.
+   * 
+   * @param analyzer liveness analyzer used to compute live variables
+   * @return writes dead under the supplied analysis
+   */
   private Set<WriteInstruction> computeDeadWrites(DataFlowAnalyzer<VarSet> analyzer) {
     AnalysisResult<VarSet> analysisResult = analyze(analyzer);
     Set<WriteInstruction> retModeTrue = new HashSet<>();

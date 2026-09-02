@@ -62,7 +62,7 @@ public class MethodParametersTest_Test extends BaseTransformationTest {
       initTestNodes();
       runWithinCommand(() -> {
         // Check statement was moved to node annotation
-        // check '''getAnnotatedNode("method")''' error messages
+        // check '''getAnnotatedNode(string):node<>''' error messages
       });
     }
     public void test_NodeVariableHasNotBeenInitializedErrorCheck6923385624927544278() throws Exception {

@@ -58,7 +58,7 @@ public class UnusedAssignment_Test extends BaseTransformationTest {
       initTestNodes();
       runWithinCommand(() -> {
         // Check statement was moved to node annotation
-        // check '''getAnnotatedNode("method")''' error messages
+        // check '''getAnnotatedNode(string):node<>''' error messages
       });
     }
     public void test_NodeVariableInitializerIsRedundantWarningCheck6923385624928924551() throws Exception {

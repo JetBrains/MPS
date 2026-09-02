@@ -27,10 +27,6 @@ public class UnusedPlusAssignment_Test extends BaseTransformationTest {
   }
 
   @Test
-  public void test_UnusedPlusAssignment() throws Throwable {
-    new TestBody(this).test_UnusedPlusAssignment();
-  }
-  @Test
   public void test_NodeVariableInitializerIsRedundantWarningCheck9221264782734629280() throws Throwable {
     new TestBody(this).test_NodeVariableInitializerIsRedundantWarningCheck9221264782734629280();
   }
@@ -70,14 +66,6 @@ public class UnusedPlusAssignment_Test extends BaseTransformationTest {
       prepareTestNodes("9221264782734574214");
     }
 
-    public void test_UnusedPlusAssignment() throws Exception {
-      initTestNodes();
-      runWithinCommand(() -> {
-        // Check statement was moved to node annotation
-        // check '''getAnnotatedNode("methodWithAssignment")''' error messages
-        // MPS-40034: mainWithPlusAssignment expects the same "Unused assignment" warning on "a += str";
-      });
-    }
     public void test_NodeVariableInitializerIsRedundantWarningCheck9221264782734629280() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
