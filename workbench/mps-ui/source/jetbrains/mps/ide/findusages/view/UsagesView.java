@@ -242,6 +242,10 @@ public class UsagesView implements IExternalizeable {
     return myTreeComponent;
   }
 
+  /*package*/ void rebuildNow() {
+    myTreeComponent.getTree().rebuildNow();
+  }
+
   //----SAVE/LOAD STUFF----
 
   @Override

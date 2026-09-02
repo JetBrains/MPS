@@ -310,10 +310,16 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
         @Override
         public void run() {
           for (UsageViewData d : loadedUsageViewData) {
+            // read() only schedules a delayed tree rebuild. Materialize the restored contents while this factory
+            // is on the EDT, before exposing the component; leave the queued rebuild as a fallback if this fails.
+            try {
+              d.myUsagesView.rebuildNow();
+            } catch (RuntimeException ex) {
+              LOG.info("Failed to materialize restored usages view tab", ex);
+            }
             register(d);
-          }
-          for (UsageViewData d : myUsageViewsData) {
-            // we re-open tabs here, shall force new tab for each restored data element, but no need to bring tool to front
+            // Re-open only data captured from the loaded state. A live view registered while lazy content creation
+            // is in progress has its own addTab() call and must not get a second Content for the same component.
             UsagesViewTool.this.addTab(d, true, false);
           }
         }
