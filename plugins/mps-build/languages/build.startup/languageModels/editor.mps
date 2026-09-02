@@ -186,7 +186,7 @@
         </node>
       </node>
       <node concept="3F0ifn" id="3nFPImNgRsA" role="3EZMnx">
-        <property role="3F0ifm" value="boot classpath" />
+        <property role="3F0ifm" value="boot classpath (platform)" />
       </node>
       <node concept="3EZMnI" id="3nFPImNgRsO" role="3EZMnx">
         <node concept="3XFhqQ" id="3nFPImNgRsR" role="3EZMnx" />
@@ -202,7 +202,7 @@
         </node>
       </node>
       <node concept="3F0ifn" id="7mPGpETqO8$" role="3EZMnx">
-        <property role="3F0ifm" value="ext boot classpath" />
+        <property role="3F0ifm" value="extended boot classpath (product)" />
       </node>
       <node concept="3EZMnI" id="7mPGpETqO8v" role="3EZMnx">
         <node concept="3XFhqQ" id="7mPGpETqO8w" role="3EZMnx" />
@@ -212,28 +212,9 @@
           <node concept="2iRkQZ" id="7mPGpETqO8z" role="2czzBx" />
         </node>
       </node>
-      <node concept="3F0ifn" id="2lwFGYOQF3b" role="3EZMnx">
-        <node concept="VPM3Z" id="2lwFGYOQF3c" role="3F10Kt">
-          <property role="VOm3f" value="false" />
-        </node>
-      </node>
-      <node concept="3F0ifn" id="7mPGpETBxsE" role="3EZMnx">
-        <property role="3F0ifm" value="additionalJvmOptions" />
-      </node>
-      <node concept="3EZMnI" id="7mPGpETBxsF" role="3EZMnx">
-        <node concept="VPM3Z" id="7mPGpETBxsG" role="3F10Kt">
-          <property role="VOm3f" value="false" />
-        </node>
-        <node concept="3XFhqQ" id="7mPGpETBxsH" role="3EZMnx" />
-        <node concept="3F2HdR" id="7mPGpETBxsI" role="3EZMnx">
-          <ref role="1NtTu8" to="s7om:7mPGpETBx32" resolve="additionalJvmOptions" />
-          <node concept="2iRkQZ" id="7mPGpETBxsJ" role="2czzBx" />
-        </node>
-        <node concept="2iRfu4" id="7mPGpETBxsK" role="2iSdaV" />
-      </node>
       <node concept="3F0ifn" id="7mPGpETBxrS" role="3EZMnx" />
       <node concept="3F0ifn" id="2lwFGYOQF3d" role="3EZMnx">
-        <property role="3F0ifm" value="vm options (64 bit)" />
+        <property role="3F0ifm" value="vm options" />
       </node>
       <node concept="3EZMnI" id="2lwFGYOQF3e" role="3EZMnx">
         <node concept="VPM3Z" id="2lwFGYOQF3f" role="3F10Kt">
@@ -246,24 +227,24 @@
         </node>
         <node concept="2iRfu4" id="2lwFGYOQF3j" role="2iSdaV" />
       </node>
-      <node concept="3F0ifn" id="3nFPImNgRsH" role="3EZMnx">
-        <node concept="VPM3Z" id="3nFPImNgRsI" role="3F10Kt">
+      <node concept="3F0ifn" id="2lwFGYOQF3b" role="3EZMnx">
+        <node concept="VPM3Z" id="2lwFGYOQF3c" role="3F10Kt">
           <property role="VOm3f" value="false" />
         </node>
       </node>
-      <node concept="3F0ifn" id="3nFPImNgRsK" role="3EZMnx">
-        <property role="3F0ifm" value="vm options (32 bit)" />
+      <node concept="3F0ifn" id="7mPGpETBxsE" role="3EZMnx">
+        <property role="3F0ifm" value="additional vm arguments" />
       </node>
-      <node concept="3EZMnI" id="3nFPImNgRsT" role="3EZMnx">
-        <node concept="VPM3Z" id="3nFPImNgRsU" role="3F10Kt">
+      <node concept="3EZMnI" id="7mPGpETBxsF" role="3EZMnx">
+        <node concept="VPM3Z" id="7mPGpETBxsG" role="3F10Kt">
           <property role="VOm3f" value="false" />
         </node>
-        <node concept="3XFhqQ" id="3nFPImNgRsX" role="3EZMnx" />
-        <node concept="3F2HdR" id="3nFPImNh2pA" role="3EZMnx">
-          <ref role="1NtTu8" to="s7om:3nFPImNh2p$" resolve="vmOptions" />
-          <node concept="2iRkQZ" id="3nFPImNh2pC" role="2czzBx" />
+        <node concept="3XFhqQ" id="7mPGpETBxsH" role="3EZMnx" />
+        <node concept="3F2HdR" id="7mPGpETBxsI" role="3EZMnx">
+          <ref role="1NtTu8" to="s7om:7mPGpETBx32" resolve="additionalJvmOptions" />
+          <node concept="2iRkQZ" id="7mPGpETBxsJ" role="2czzBx" />
         </node>
-        <node concept="2iRfu4" id="3nFPImNgRsW" role="2iSdaV" />
+        <node concept="2iRfu4" id="7mPGpETBxsK" role="2iSdaV" />
       </node>
       <node concept="2iRkQZ" id="3nFPImNgRkl" role="2iSdaV" />
     </node>
