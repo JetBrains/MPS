@@ -22,6 +22,7 @@ import com.intellij.openapi.actionSystem.ActionToolbar;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.startup.StartupManager;
+import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.content.ContentManagerEvent;
 import com.intellij.ui.content.ContentManagerListener;
@@ -154,6 +155,10 @@ public final class GenerationTracerViewToolState {
     myContentListener = new ContentManagerListener() {
       @Override
       public void contentRemoved(@NotNull ContentManagerEvent event) {
+        // Tab reordering temporarily removes and re-adds the same Content; its component is still live.
+        if (Boolean.TRUE.equals(event.getContent().getUserData(Content.TEMPORARY_REMOVED_KEY))) {
+          return;
+        }
         final JComponent removedComponent = event.getContent().getComponent();
         final boolean removedNoTabsTab = removedComponent == myNoTabsComponent;
         if (!removedNoTabsTab) {
