@@ -125,21 +125,24 @@ public final class DataTransferManager implements LanguageRegistryListener {
 
   private CopyPreProcessor getCopyPreProcessor(SAbstractConcept concept) {
     buildCache();
-    return MapSequence.fromMap(myCopyPreProcessors).get(concept);
+    return findApplicable(myCopyPreProcessors, concept);
   }
 
   private PastePostProcessor getPastePostProcessor(SAbstractConcept concept) {
     buildCache();
-    return MapSequence.fromMap(myPastePostProcessors).get(concept);
+    return findApplicable(myPastePostProcessors, concept);
   }
 
   private PasteWrapper getPasteWrapper(SAbstractConcept source, SAbstractConcept target) {
     buildCache();
-    Map<SAbstractConcept, PasteWrapper> wrappers = MapSequence.fromMap(myPasteWrappers).get(target);
-    for (SAbstractConcept src : ListSequence.fromList(SConceptOperations.getAllSuperConcepts(source, true))) {
-      PasteWrapper pasteWrapper = MapSequence.fromMap(wrappers).get(src);
-      if (pasteWrapper != null) {
-        return pasteWrapper;
+    return findApplicable(MapSequence.fromMap(myPasteWrappers).get(target), source);
+  }
+
+  private <T> T findApplicable(Map<SAbstractConcept, T> handlers, SAbstractConcept concept) {
+    for (SAbstractConcept applicableConcept : ListSequence.fromList(SConceptOperations.getAllSuperConcepts(concept, true))) {
+      T handler = MapSequence.fromMap(handlers).get(applicableConcept);
+      if (handler != null) {
+        return handler;
       }
     }
     return null;
