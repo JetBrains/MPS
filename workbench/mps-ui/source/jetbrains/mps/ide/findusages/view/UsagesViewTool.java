@@ -42,6 +42,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.content.Content;
+import com.intellij.ui.content.ContentManager;
 import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.ide.actions.MPSActions;
 import jetbrains.mps.ide.actions.MPSCommonDataKeys;
@@ -322,35 +323,50 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
             // is in progress has its own addTab() call and must not get a second Content for the same component.
             UsagesViewTool.this.addTab(d, true, false);
           }
+          // Last, because addTab() selects every tab it adds. A state with no tab marked selected (written before
+          // the selection was persisted) leaves the last restored tab selected, as before.
+          for (UsageViewData d : loadedUsageViewData) {
+            if (d.mySelected) {
+              UsagesViewTool.this.selectTabSafely(d.myUsagesView.getComponent());
+              break;
+            }
+          }
         }
       };
     }
   }
 
-  private void write(Element element, jetbrains.mps.project.Project project) {
+  private void write(Element element, jetbrains.mps.project.Project project, @NotNull ContentManager contentManager) {
     Element versionXML = new Element(VERSION);
     versionXML.setAttribute(ID, VERSION_NUMBER);
     element.addContent(versionXML);
 
     Element tabsXML = new Element(TABS);
-    // myUsageViewsData is copy-on-write, so this iterates a snapshot even though tabs come and go in the EDT.
-    for (UsageViewData usageViewData : myUsageViewsData) {
-      if (usageViewData.isTransientView()) {
+    // Tab order comes from the ContentManager, not from the append-only myUsageViewsData: a drag-reorder moves the
+    // Content alone, and it reaches us as the temporary-removal/re-add pair BaseTabbedProjectTool deliberately
+    // ignores to keep the tab's data alive. The manager's index space is thus the only record of the order the user
+    // sees - as it already is for the pinned flag and the selection. Iterated as a single snapshot, since this runs
+    // off the EDT, where a lookup per tab could observe tabs moving in between.
+    final List<UsageViewData> saved = new ArrayList<>();
+    for (Content content : contentManager.getContents()) {
+      final UsageViewData usageViewData = findUsageViewData(content.getComponent());
+      if (usageViewData == null || usageViewData.isTransientView()) {
         continue;
       }
-      // Non-creating lookup: the creating one used to build the whole Usages UI from the save thread. No backing
-      // content means the data is not visualized, e.g. addTab() bailed out on a tool window being torn down.
-      final Content content = findContent(usageViewData.myUsagesView.getComponent());
-      if (content == null) {
-        LOG.info("Not saving usages tab '" + usageViewData.myUsagesView.getCaption() + "', it has no tab content");
-        continue;
-      }
+      saved.add(usageViewData);
       try {
         Element tabXML = new Element(TAB);
-        usageViewData.write(tabXML, project, content.isPinned());
+        usageViewData.write(tabXML, project, content.isPinned(), contentManager.isSelected(content));
         tabsXML.addContent(tabXML);
       } catch (CantSaveSomethingException e) {
         // ignore
+      }
+    }
+    // myUsageViewsData is copy-on-write, so this iterates a snapshot even though tabs come and go in the EDT. Data
+    // with no tab content of its own is not visualized, e.g. addTab() bailed out on a tool window being torn down.
+    for (UsageViewData usageViewData : myUsageViewsData) {
+      if (!usageViewData.isTransientView() && !saved.contains(usageViewData)) {
+        LOG.info("Not saving usages tab '" + usageViewData.myUsagesView.getCaption() + "', it has no tab content");
       }
     }
     element.addContent(tabsXML);
@@ -358,6 +374,21 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     Element defaultViewOptionsXML = new Element(DEFAULT_VIEW_OPTIONS);
     myDefaultViewOptions.write(defaultViewOptionsXML, project);
     element.addContent(defaultViewOptionsXML);
+  }
+
+  /**
+   * @return the data behind the tab showing {@code tabComponent}, or {@code null} for a tab that is none of ours
+   * (content of a placeholder or of a previous tool instance). {@link #addTab} makes the {@link UsagesView}'s own
+   * component the tab component, hence the identity match.
+   */
+  @Nullable
+  private UsageViewData findUsageViewData(@NotNull JComponent tabComponent) {
+    for (UsageViewData usageViewData : myUsageViewsData) {
+      if (usageViewData.myUsagesView.getComponent() == tabComponent) {
+        return usageViewData;
+      }
+    }
+    return null;
   }
 
   /**
@@ -391,12 +422,15 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
    */
   @Nullable
   private Element writeLiveState() {
-    if (getContentManagerIfCreated() == null || loadedTabInitializer != null) {
+    // Resolved once and handed down, so that a single save observes one state of the manager (see
+    // BaseTool.addContent(ContentManager, ...) for the same reasoning).
+    final ContentManager contentManager = getContentManagerIfCreated();
+    if (contentManager == null || loadedTabInitializer != null) {
       return null;
     }
     final jetbrains.mps.project.Project mpsProject = ProjectHelper.fromIdeaProject(getProject());
     final Element state = new Element("state");
-    mpsProject.getModelAccess().runReadAction(() -> write(state, mpsProject));
+    mpsProject.getModelAccess().runReadAction(() -> write(state, mpsProject, contentManager));
     return state;
   }
 
@@ -441,22 +475,26 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
   private static class UsageViewData {
     private static final String USAGE_VIEW = "usage_view";
     private static final String USAGE_VIEW_OPTIONS = "usage_view_options";
+    private static final String PINNED = "pinned";
+    private static final String SELECTED = "selected";
 
     public final UsagesView myUsagesView;
     public final SearchTaskImpl mySearchTask;
     private final boolean myPinned;
+    private final boolean mySelected;
     private boolean myIsTransientView = false;
     // now it's not in use, but will be used to implement constructable finders
 //    private FindUsagesOptions myOptions = new FindUsagesOptions();
 
-    public UsageViewData(@NotNull UsagesView view, @Nullable SearchTaskImpl searchTask, boolean pinned) {
+    public UsageViewData(@NotNull UsagesView view, @Nullable SearchTaskImpl searchTask, boolean pinned, boolean selected) {
       myUsagesView = view;
       mySearchTask = searchTask;
       myPinned = pinned;
+      mySelected = selected;
     }
 
     public UsageViewData(@NotNull UsagesView view, @Nullable SearchTaskImpl searchTask) {
-      this(view, searchTask, false);
+      this(view, searchTask, false, false);
     }
 
     /*package*/void setTransientView(boolean isTransientView) {
@@ -476,16 +514,22 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
 
 //      Element usageViewOptionsXML = element.getChild(USAGE_VIEW_OPTIONS);
 //      myOptions = new FindUsagesOptions(usageViewOptionsXML, project);
-      final Attribute pinned = element.getAttribute("pinned");
-      return new UsageViewData(usageView, task, pinned!=null && "true".equals(pinned.getValue()));
+      final Attribute pinned = element.getAttribute(PINNED);
+      final Attribute selected = element.getAttribute(SELECTED);
+      return new UsageViewData(usageView, task, isTrue(pinned), isTrue(selected));
     }
 
-    public void write(Element element, jetbrains.mps.project.Project project, boolean pinned) throws CantSaveSomethingException {
+    private static boolean isTrue(@Nullable Attribute attribute) {
+      return attribute != null && "true".equals(attribute.getValue());
+    }
+
+    public void write(Element element, jetbrains.mps.project.Project project, boolean pinned, boolean selected) throws CantSaveSomethingException {
       //this is to partially fix MPS-14671
       if (myUsagesView.getIncludedResultNodes().size() > 500) {
         throw new CantSaveSomethingException("usages view size too big to save");
       }
-      element.setAttribute("pinned", Boolean.toString(pinned));
+      element.setAttribute(PINNED, Boolean.toString(pinned));
+      element.setAttribute(SELECTED, Boolean.toString(selected));
 
       if (mySearchTask != null) {
         mySearchTask.write(element, project);
