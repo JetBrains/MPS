@@ -65,6 +65,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.workbench.ProjectCreationTest.class,
     // Needs a live ConceptRegistry to read a node's virtual-package property; see its javadoc.
     jetbrains.mps.ide.findusages.view.PathProviderVirtualPackageTest.class,
+    jetbrains.mps.ide.datatransfer.AddRequiredImportsDialogTest.class,
 })
 public class PlatformTestSuite extends OutputWatchingTestSuite {
   private static IdeaEnvironment ourEnvironment;
