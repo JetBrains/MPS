@@ -348,7 +348,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     // sees - as it already is for the pinned flag and the selection. Iterated as a single snapshot, since this runs
     // off the EDT, where a lookup per tab could observe tabs moving in between.
     final List<UsageViewData> saved = new ArrayList<>();
-    for (Content content : contentManager.getContents()) {
+    for (Content content : contentManager.getContentsRecursively()) {
       final UsageViewData usageViewData = findUsageViewData(content.getComponent());
       if (usageViewData == null || usageViewData.isTransientView()) {
         continue;
@@ -356,7 +356,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
       saved.add(usageViewData);
       try {
         Element tabXML = new Element(TAB);
-        usageViewData.write(tabXML, project, content.isPinned(), contentManager.isSelected(content));
+        usageViewData.write(tabXML, project, content.isPinned(), content.isSelected());
         tabsXML.addContent(tabXML);
       } catch (CantSaveSomethingException e) {
         // ignore

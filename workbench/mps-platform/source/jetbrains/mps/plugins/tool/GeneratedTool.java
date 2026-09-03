@@ -32,14 +32,4 @@ public abstract class GeneratedTool extends BaseTool {
   protected GeneratedTool(Project project, String id, Map<String, KeyStroke> shortcutsByKeymap, Icon icon, ToolWindowAnchor anchor, boolean canCloseContent, boolean sideTool) {
     super(project, id, shortcutsByKeymap, icon, anchor, sideTool, canCloseContent);
   }
-
-  @Override
-  public void init(Project project) {
-
-  }
-
-  @Override
-  public void dispose() {
-
-  }
 }
