@@ -2,7 +2,7 @@
   <extensions defaultExtensionNs="com.intellij">
     <projectService serviceImplementation="jetbrains.mps.ide.messages.navigation.NavigationManager"/>
     <projectService serviceImplementation="jetbrains.mps.ide.messages.MessagesViewTool"/>
-    <toolWindow id="Usages" anchor="bottom" icon="AllIcons.Toolwindows.ToolWindowFind" factoryClass="jetbrains.mps.ide.findusages.view.UsagesViewTool$Factory" doNotActivateOnStart="false" canCloseContents="true"/>
+    <toolWindow id="Usages" anchor="bottom" icon="AllIcons.Toolwindows.ToolWindowFind" factoryClass="jetbrains.mps.ide.findusages.view.UsagesViewTool$Factory" doNotActivateOnStart="true" canCloseContents="true"/>
   </extensions>
 
   <extensionPoints>

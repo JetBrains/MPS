@@ -27,6 +27,7 @@ import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.actionSystem.ex.ActionUtil;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext;
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext.Builder;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.Service;
@@ -85,7 +86,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
     storages = @Storage(StoragePathMacros.WORKSPACE_FILE)
 )
 @Service(Service.Level.PROJECT)
-public final class UsagesViewTool extends BaseTabbedProjectTool implements PersistentStateComponent<Element> {
+public final class UsagesViewTool extends BaseTabbedProjectTool implements PersistentStateComponent<Element>, Disposable {
 
   private static final Logger LOG = Logger.getLogger(UsagesViewTool.class);
 
@@ -255,9 +256,14 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
         unregisterAndDispose(usageViewData);
       }
     }, forceNewTab, openTool);
+    if (findTab(component) == null) {
+      // addTab() above bailed out (no content manager, e.g. tool window/project torn down): no Content was
+      // created and the Tab above was never added to the tab list, so nothing will ever invoke its disposeTab().
+      // Clean up here instead of leaking usageViewData - and, if it was the only one, the repo listener - forever.
+      unregisterAndDispose(usageViewData);
+      return;
+    }
     if (usageViewData.myPinned) {
-      // Null-tolerant and non-creating: addTab() above may have bailed out (no content manager), and this must
-      // fail the same way - silently - rather than with an NPE.
       pinTab(component);
     }
   }
@@ -624,14 +630,15 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     }
 
     /**
-     * Initializes the tabs from the loaded state, hides the window explicitly so as not to start with open Usages
+     * Initializes the tabs from the loaded state. The tool window itself is kept from popping open at project
+     * start by {@code doNotActivateOnStart="true"} in MPSUI.xml, so this method must not call {@code hide()} -
+     * doing so would also cancel the very "show" a user's first click on the tool button is already in progress of.
      */
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
       //Initialize loading of saved tabs
       final UsagesViewTool service = project.getService(UsagesViewTool.class);
       if (service != null) {
-        toolWindow.hide();
         //Propagate the loaded usages report data into actual visual tabs
         final Runnable initializer = service.loadedTabInitializer;
         if (initializer != null) {
@@ -644,8 +651,6 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
               // would keep re-persisting tabs that are no longer the ones the user sees.
               service.loadedTabInitializer = null;
             }
-            // Deliberately outside the finally: a half-restored window should not be raised.
-            service.openToolLater(false);
           };
           if (ThreadUtils.isInEDT()) {
             runnable.run();
