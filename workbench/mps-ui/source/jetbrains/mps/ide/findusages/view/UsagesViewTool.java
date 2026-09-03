@@ -106,7 +106,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
   private final ViewOptions myDefaultViewOptions = createFindUsagesDefaults();
   private final DataTreeChangesNotifier myChangeTracker = new DataTreeChangesNotifier();
 
-  private volatile Runnable loadedTabInitializer = null;
+  private volatile RestoreInitializer loadedTabInitializer = null;
   /**
    * The state to report while the tool window has no tabs to derive it from: first the element {@link #read} was
    * given, then the last state {@link #getState()} produced from live tabs. Deliberately never reset to
@@ -161,6 +161,13 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     // if any data left (e.g. data restored but not visualized by addTab() - still in the myUsagesViewsData)
     ArrayList<UsageViewData> copy = new ArrayList<>(myUsageViewsData);
     copy.forEach(this::unregisterAndDispose);
+    // Tabs read() restored but that this session never materialized (the tool window's content was never built,
+    // e.g. the user neither opened it nor ran a live search) live only in loadedTabInitializer, invisible to
+    // myUsageViewsData above - dispose them here or they leak for good. See BaseTool.dispose()'s FIXME.
+    RestoreInitializer pending = loadedTabInitializer;
+    if (pending != null) {
+      pending.disposePending();
+    }
   }
 
   /** Common cleanup for a {@link UsageViewData} that is going away, be it via a closed tab or tool disposal. */
@@ -319,37 +326,55 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
 
     if (!loadedUsageViewData.isEmpty()) {
       // We must delay adding visual tabs until the tool window is registered with ToolWindowManager,
-      loadedTabInitializer = new Runnable() {
-        @Override
-        public void run() {
-          for (UsageViewData d : loadedUsageViewData) {
-            try {
-              // read() only schedules a delayed tree rebuild. Materialize the restored contents while this factory
-              // is on the EDT, before exposing the component; leave the queued rebuild as a fallback if this fails.
-              try {
-                d.myUsagesView.rebuildNow();
-              } catch (RuntimeException ex) {
-                LOG.info("Failed to materialize restored usages view tab", ex);
-              }
-              register(d);
-              // Re-open only data captured from the loaded state. A live view registered while lazy content creation
-              // is in progress has its own addTab() call and must not get a second Content for the same component.
-              UsagesViewTool.this.addTab(d, true, false);
-            } catch (RuntimeException ex) {
-              // One tab failing to register/add must not abort materialization of the remaining restored tabs.
-              LOG.info("Failed to restore usages view tab", ex);
-            }
+      loadedTabInitializer = new RestoreInitializer(loadedUsageViewData);
+    }
+  }
+
+  /**
+   * Delayed materialization of tabs {@link #read} restored, run once the tool window's content is actually built.
+   * Until then (and permanently, if it never is - see {@link #dispose()}), the {@link UsageViewData} instances it
+   * holds are not in {@link #myUsageViewsData} and so are invisible to the regular disposal sweep.
+   */
+  private final class RestoreInitializer implements Runnable {
+    private final List<UsageViewData> myData;
+
+    RestoreInitializer(List<UsageViewData> data) {
+      myData = data;
+    }
+
+    @Override
+    public void run() {
+      for (UsageViewData d : myData) {
+        try {
+          // read() only schedules a delayed tree rebuild. Materialize the restored contents while this factory
+          // is on the EDT, before exposing the component; leave the queued rebuild as a fallback if this fails.
+          try {
+            d.myUsagesView.rebuildNow();
+          } catch (RuntimeException ex) {
+            LOG.info("Failed to materialize restored usages view tab", ex);
           }
-          // Last, because addTab() selects every tab it adds. A state with no tab marked selected (written before
-          // the selection was persisted) leaves the last restored tab selected, as before.
-          for (UsageViewData d : loadedUsageViewData) {
-            if (d.mySelected) {
-              UsagesViewTool.this.selectTabSafely(d.myUsagesView.getComponent());
-              break;
-            }
-          }
+          register(d);
+          // Re-open only data captured from the loaded state. A live view registered while lazy content creation
+          // is in progress has its own addTab() call and must not get a second Content for the same component.
+          UsagesViewTool.this.addTab(d, true, false);
+        } catch (RuntimeException ex) {
+          // One tab failing to register/add must not abort materialization of the remaining restored tabs.
+          LOG.info("Failed to restore usages view tab", ex);
         }
-      };
+      }
+      // Last, because addTab() selects every tab it adds. A state with no tab marked selected (written before
+      // the selection was persisted) leaves the last restored tab selected, as before.
+      for (UsageViewData d : myData) {
+        if (d.mySelected) {
+          UsagesViewTool.this.selectTabSafely(d.myUsagesView.getComponent());
+          break;
+        }
+      }
+    }
+
+    /** Dispose views that never got a chance to {@link #run()} - see {@link UsagesViewTool#dispose()}. */
+    void disposePending() {
+      myData.forEach(d -> d.myUsagesView.dispose());
     }
   }
 
