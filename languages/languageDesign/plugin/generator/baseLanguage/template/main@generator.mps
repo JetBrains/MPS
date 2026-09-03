@@ -11700,7 +11700,7 @@
       <node concept="3clFbS" id="4LNA5o6dMuE" role="3clF47">
         <node concept="3clFbF" id="4LNA5o6dMuF" role="3cqZAp">
           <node concept="3nyPlj" id="4LNA5o6dMuG" role="3clFbG">
-            <ref role="37wK5l" to="eqyk:~GeneratedTool.init(com.intellij.openapi.project.Project)" resolve="init" />
+            <ref role="37wK5l" to="71xd:~BaseTool.init(com.intellij.openapi.project.Project)" resolve="init" />
             <node concept="37vLTw" id="2BHiRxgmJeQ" role="37wK5m">
               <ref role="3cqZAo" node="4LNA5o6dMuv" resolve="project" />
             </node>
@@ -11801,7 +11801,7 @@
         </node>
         <node concept="3clFbF" id="4LNA5o6dMvj" role="3cqZAp">
           <node concept="3nyPlj" id="4LNA5o6dMvk" role="3clFbG">
-            <ref role="37wK5l" to="eqyk:~GeneratedTool.dispose()" resolve="dispose" />
+            <ref role="37wK5l" to="71xd:~BaseTool.dispose()" resolve="dispose" />
           </node>
         </node>
       </node>
