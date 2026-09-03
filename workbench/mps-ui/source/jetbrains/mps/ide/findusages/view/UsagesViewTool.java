@@ -287,7 +287,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     if (versionXML == null) {
       return;
     }
-    String version = versionXML.getAttribute(ID).getValue();
+    String version = versionXML.getAttributeValue(ID);
     if (!VERSION_NUMBER.equals(version)) {
       return;
     }
@@ -310,7 +310,12 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     }
 
     Element defaultViewOptionsXML = element.getChild(DEFAULT_VIEW_OPTIONS);
-    myDefaultViewOptions.read(defaultViewOptionsXML, project);
+    try {
+      myDefaultViewOptions.read(defaultViewOptionsXML, project);
+    } catch (RuntimeException ex) {
+      // A malformed default-view-options element must not throw away the tabs already recovered above.
+      LOG.info("Failed to restore default usages view options", ex);
+    }
 
     if (!loadedUsageViewData.isEmpty()) {
       // We must delay adding visual tabs until the tool window is registered with ToolWindowManager,
@@ -318,17 +323,22 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
         @Override
         public void run() {
           for (UsageViewData d : loadedUsageViewData) {
-            // read() only schedules a delayed tree rebuild. Materialize the restored contents while this factory
-            // is on the EDT, before exposing the component; leave the queued rebuild as a fallback if this fails.
             try {
-              d.myUsagesView.rebuildNow();
+              // read() only schedules a delayed tree rebuild. Materialize the restored contents while this factory
+              // is on the EDT, before exposing the component; leave the queued rebuild as a fallback if this fails.
+              try {
+                d.myUsagesView.rebuildNow();
+              } catch (RuntimeException ex) {
+                LOG.info("Failed to materialize restored usages view tab", ex);
+              }
+              register(d);
+              // Re-open only data captured from the loaded state. A live view registered while lazy content creation
+              // is in progress has its own addTab() call and must not get a second Content for the same component.
+              UsagesViewTool.this.addTab(d, true, false);
             } catch (RuntimeException ex) {
-              LOG.info("Failed to materialize restored usages view tab", ex);
+              // One tab failing to register/add must not abort materialization of the remaining restored tabs.
+              LOG.info("Failed to restore usages view tab", ex);
             }
-            register(d);
-            // Re-open only data captured from the loaded state. A live view registered while lazy content creation
-            // is in progress has its own addTab() call and must not get a second Content for the same component.
-            UsagesViewTool.this.addTab(d, true, false);
           }
           // Last, because addTab() selects every tab it adds. A state with no tab marked selected (written before
           // the selection was persisted) leaves the last restored tab selected, as before.
