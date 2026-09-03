@@ -16,11 +16,19 @@ import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
 import jetbrains.mps.smodel.CopyUtil;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
+import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.diff.contents.DocumentContent;
+import com.intellij.diff.DiffContentFactory;
+import com.intellij.diff.merge.TextMergeRequest;
+import com.intellij.diff.requests.TextMergeRequestImpl;
+import java.util.Arrays;
+import jetbrains.mps.vcs.diff.ui.merge.MergeModelsPanel;
 import jetbrains.mps.vcs.diff.merge.MergeSession;
-import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import jetbrains.mps.internal.collections.runtime.IterableUtils;
+import jetbrains.mps.internal.collections.runtime.Sequence;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
 import jetbrains.mps.smodel.builder.SNodeBuilder;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
@@ -196,19 +204,24 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
   }
 
   /**
-   * r1 = member, r2 = annotation
-   * base: A:r1 X r2, Y:r2
-   * mine: A:r1 X r2, Y:r2 - no changes
-   * repo: A:r1 B:r1, X r2, Y:r2 - member B added
    * check that the order is saved (without postsorting it is A X Y B)
    */
   @Test
   public void A_X_Y_B_test() {
-    SNode root = _quotation_createNode_3qo9lu_a0a0s();
+    assertMergeMatchesExpectedModel(buildAXYBFixture());
+  }
+  /**
+   * r1 = member, r2 = annotation
+   * base: A:r1 X r2, Y:r2
+   * mine: A:r1 X r2, Y:r2 - no changes
+   * repo: A:r1 B:r1, X r2, Y:r2 - member B added
+   */
+  private SModel buildAXYBFixture() {
+    SNode root = _quotation_createNode_3qo9lu_a0a0t();
     SNode A = createInstanceMethod("A");
     SNode B = createInstanceMethod("B");
-    SNode X = _quotation_createNode_3qo9lu_a0d0s();
-    SNode Y = _quotation_createNode_3qo9lu_a0e0s();
+    SNode X = _quotation_createNode_3qo9lu_a0d0t();
+    SNode Y = _quotation_createNode_3qo9lu_a0e0t();
 
     ListSequence.fromList(SLinkOperations.getChildren(root, LINKS.member$L_2d)).addElement(A);
     ListSequence.fromList(SLinkOperations.getChildren(root, LINKS.annotation$K49I)).addElement(X);
@@ -227,7 +240,38 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
     SModelOperations.addRootNode(myMineModel, mineRoot);
     SModelOperations.addRootNode(myRepoModel, repoRoot);
 
-    assertMergeMatchesExpectedModel(expected);
+    return expected;
+  }
+  /**
+   * check that MergeModelsPanel passes the post-sorted result model to its saver:
+   * the saved model must have children in the expected order (without postsorting it is A X Y B)
+   * the panel is created and driven on the EDT, but the assertions run on the test
+   * thread - an assertion failing inside invokeAndWait would otherwise be swallowed
+   */
+  @Test
+  public void applySavesReorderedResult() {
+    SModel expected = buildAXYBFixture();
+    final Wrappers._T<SModel> savedModel = new Wrappers._T<SModel>(null);
+    final Wrappers._boolean isSaved = new Wrappers._boolean(false);
+    ApplicationManager.getApplication().invokeAndWait(() -> {
+      DocumentContent content = DiffContentFactory.getInstance().create("");
+      TextMergeRequest request = new TextMergeRequestImpl(myIdeaProject, content, "", Arrays.asList(content, content, content), "", Arrays.asList("mine", "base", "theirs"));
+      // there should be NO unresolved conflicts in the merge, otherwise confirmation dialog will stop test execution
+      MergeModelsPanel panel = new MergeModelsPanel(myIdeaProject, myBaseModel, myMineModel, myRepoModel, request, true, false);
+      try {
+        panel.setSaver((parent, result) -> {
+          savedModel.value = result;
+          return true;
+        });
+        panel.mergeNonConflictingRoots();
+        isSaved.value = panel.saveResults();
+      } finally {
+        panel.dispose();
+      }
+    });
+
+    Assert.assertTrue("merge result must be saved", isSaved.value);
+    assertChildOrderMatches(expected, savedModel.value);
   }
 
   /**
@@ -243,8 +287,7 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
    */
   private void assertMergeMatchesExpectedModel(SModel expectedModel) {
     final MergeSession session = MergeSession.createMergeSession(myBaseModel, myMineModel, myRepoModel);
-    boolean noConflicts = Sequence.fromIterable(session.getAllChanges()).all((c) -> Sequence.fromIterable(session.getConflictedWith(c)).isEmpty());
-    Assert.assertTrue("test setup must not produce conflicts", noConflicts);
+    assertSetupHasNoConflicts(session);
     session.applyChanges(session.getAllChanges());
     SModel resultModel = session.getSortedResultModel();
     // 1. Structural diff via ChangeSetBuilder: catches everything *except* cross-role order.
@@ -270,10 +313,13 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
 
   private SModel applyChangesAndGetModel() {
     final MergeSession session = MergeSession.createMergeSession(myBaseModel, myMineModel, myRepoModel);
-    boolean noConflicts = Sequence.fromIterable(session.getAllChanges()).all((c) -> Sequence.fromIterable(session.getConflictedWith(c)).isEmpty());
-    Assert.assertTrue("test setup must not produce conflicts", noConflicts);
+    assertSetupHasNoConflicts(session);
     session.applyChanges(session.getAllChanges());
     return session.getSortedResultModel();
+  }
+  private void assertSetupHasNoConflicts(final MergeSession session) {
+    boolean noConflicts = Sequence.fromIterable(session.getAllChanges()).all((c) -> Sequence.fromIterable(session.getConflictedWith(c)).isEmpty());
+    Assert.assertTrue("test setup must not produce conflicts", noConflicts);
   }
 
   /**
@@ -320,7 +366,7 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
   }
 
   private static SNode createInstanceMethod(final String name) {
-    return _quotation_createNode_3qo9lu_a0a43(name);
+    return _quotation_createNode_3qo9lu_a0a73(name);
   }
 
   /**
@@ -381,7 +427,7 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
     nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)/~NotNull");
     return quotedNode_1;
   }
-  private static SNode _quotation_createNode_3qo9lu_a0a0s() {
+  private static SNode _quotation_createNode_3qo9lu_a0a0t() {
     SNode quotedNode_1 = null;
     SNode quotedNode_2 = null;
     SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0xf8c108ca66L, "ClassConcept"));
@@ -392,21 +438,21 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
     quotedNode_1.addChild(MetaAdapterFactory.getContainmentLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x112670d273fL, 0x112670d886aL, "visibility"), quotedNode_2);
     return quotedNode_1;
   }
-  private static SNode _quotation_createNode_3qo9lu_a0d0s() {
+  private static SNode _quotation_createNode_3qo9lu_a0d0t() {
     SNode quotedNode_1 = null;
     SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
     quotedNode_1 = nb.getResult();
     nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)/~Deprecated");
     return quotedNode_1;
   }
-  private static SNode _quotation_createNode_3qo9lu_a0e0s() {
+  private static SNode _quotation_createNode_3qo9lu_a0e0t() {
     SNode quotedNode_1 = null;
     SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
     quotedNode_1 = nb.getResult();
     nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit(JUnit/)/~Ignore");
     return quotedNode_1;
   }
-  private static SNode _quotation_createNode_3qo9lu_a0a43(Object parameter_1) {
+  private static SNode _quotation_createNode_3qo9lu_a0a73(Object parameter_1) {
     SNode quotedNode_2 = null;
     SNode quotedNode_3 = null;
     SNode quotedNode_4 = null;
