@@ -178,14 +178,20 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
   }
   @Nullable
   public MyState getState() {
-    if ((ConsoleTool_Tool.this.getMyself().getContentManagerIfCreated() == null) || !(ConsoleTool_Tool.this.myTabsInitialized)) {
+    ContentManager cm = ConsoleTool_Tool.this.getMyself().getContentManagerIfCreated();
+    if (cm == null || !(ConsoleTool_Tool.this.myTabsInitialized)) {
       return null;
     }
     MyState result = new MyState();
-    for (BaseConsoleTab tab : ListSequence.fromList(ConsoleTool_Tool.this.myTabs)) {
-      if (!(ConsoleTool_Tool.this.getMyself().isTabPinned(tab))) {
+    for (Content content : cm.getContentsRecursively()) {
+      if (!(content.isPinned())) {
         continue;
       }
+      JComponent component = content.getComponent();
+      if (!(component instanceof BaseConsoleTab)) {
+        continue;
+      }
+      BaseConsoleTab tab = (BaseConsoleTab) component;
       TabState tabState = new TabState();
       tabState.title = tab.getTitle();
       if (tabState.title == null) {
