@@ -488,6 +488,9 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
 
     public final UsagesView myUsagesView;
     public final SearchTaskImpl mySearchTask;
+    // Restore-time seeds only, read once each (addTab() for myPinned, the loadedTabInitializer's second pass for
+    // mySelected) to prime the Content the platform creates for the restored tab. Once that Content exists, it -
+    // not these fields - is authoritative: write() persists content.isPinned()/isSelected(), never these.
     private final boolean myPinned;
     private final boolean mySelected;
     private boolean myIsTransientView = false;
