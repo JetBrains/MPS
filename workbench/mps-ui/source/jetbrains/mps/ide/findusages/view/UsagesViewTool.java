@@ -442,14 +442,16 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
 
   /**
    * @return the state of the tabs the tool window actually shows, or {@code null} while it shows none: its content
-   * was never created, or a loaded state is still waiting for {@link #loadedTabInitializer} to turn it into tabs.
+   * was never created, its content manager was disposed (e.g. project teardown) but {@link #getContentManagerIfCreated()}
+   * still hands back that stale, cleared instance, or a loaded state is still waiting for {@link #loadedTabInitializer}
+   * to turn it into tabs.
    */
   @Nullable
   private Element writeLiveState() {
     // Resolved once and handed down, so that a single save observes one state of the manager (see
     // BaseTool.addContent(ContentManager, ...) for the same reasoning).
     final ContentManager contentManager = getContentManagerIfCreated();
-    if (contentManager == null || loadedTabInitializer != null) {
+    if (contentManager == null || contentManager.isDisposed() || loadedTabInitializer != null) {
       return null;
     }
     final jetbrains.mps.project.Project mpsProject = ProjectHelper.fromIdeaProject(getProject());
