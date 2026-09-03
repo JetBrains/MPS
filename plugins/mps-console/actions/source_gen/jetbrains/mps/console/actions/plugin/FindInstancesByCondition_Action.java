@@ -4,15 +4,15 @@ package jetbrains.mps.console.actions.plugin;
 
 import jetbrains.mps.workbench.action.BaseAction;
 import javax.swing.Icon;
-import jetbrains.mps.workbench.action.ActionAccess;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.Map;
-import com.intellij.openapi.project.Project;
+import jetbrains.mps.ide.project.ProjectHelper;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import org.jetbrains.annotations.NotNull;
+import com.intellij.openapi.project.Project;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.ide.actions.MPSCommonDataKeys;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
-import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.console.plugin.ConsoleTool_Tool;
 import jetbrains.mps.plugins.projectplugins.ProjectPluginManager;
 import jetbrains.mps.console.tool.DialogConsoleTab;
@@ -31,12 +31,20 @@ public class FindInstancesByCondition_Action extends BaseAction {
   public FindInstancesByCondition_Action() {
     super("Find Instances by Condition", "", ICON);
     this.setIsAlwaysVisible(false);
-    this.setActionAccess(ActionAccess.UNDO_PROJECT);
+    this.setExecuteOutsideCommand(true);
     updateInBackground(true);
   }
   @Override
   public boolean isDumbAware() {
     return false;
+  }
+  @Override
+  public boolean isApplicable(AnActionEvent event, final Map<String, Object> _params) {
+    return ProjectHelper.fromIdeaProject(event.getData(CommonDataKeys.PROJECT)) != null;
+  }
+  @Override
+  public void doUpdate(@NotNull AnActionEvent event, final Map<String, Object> _params) {
+    this.setEnabledState(event.getPresentation(), this.isApplicable(event, _params));
   }
   @Override
   protected boolean collectActionData(AnActionEvent event, final Map<String, Object> _params) {
@@ -64,11 +72,13 @@ public class FindInstancesByCondition_Action extends BaseAction {
   public void doExecute(@NotNull final AnActionEvent event, final Map<String, Object> _params) {
     ConsoleTool_Tool tool = ProjectPluginManager.getInstance(event.getData(CommonDataKeys.PROJECT)).getTool(ConsoleTool_Tool.class);
     assert tool.isAvailable();
-    DialogConsoleTab tab = tool.getCurrentEditableTab();
+    final DialogConsoleTab tab = tool.getCurrentEditableTab();
     assert tab != null;
-    SNode command = _quotation_createNode_flklsf_a0e0a(event.getData(MPSCommonDataKeys.NODE));
-    tab.insertCommand(command);
-    tab.selectNode(SLinkOperations.getTarget(ListSequence.fromList(SNodeOperations.getNodeDescendants(SLinkOperations.getTarget(tab.getRoot(), LINKS.commandHolder$LTfs), CONCEPTS.ClosureLiteral$rp, false, new SAbstractConcept[]{})).first(), LINKS.body$Ujx2));
+    final SNode command = _quotation_createNode_flklsf_a0e0a(event.getData(MPSCommonDataKeys.NODE));
+    ProjectHelper.fromIdeaProject(event.getData(CommonDataKeys.PROJECT)).getModelAccess().executeCommand(() -> {
+      tab.insertCommand(command);
+      tab.selectNode(SLinkOperations.getTarget(ListSequence.fromList(SNodeOperations.getNodeDescendants(SLinkOperations.getTarget(tab.getRoot(), LINKS.commandHolder$LTfs), CONCEPTS.ClosureLiteral$rp, false, new SAbstractConcept[]{})).first(), LINKS.body$Ujx2));
+    });
   }
   private static SNode _quotation_createNode_flklsf_a0e0a(Object parameter_1) {
     SNode quotedNode_2 = null;
