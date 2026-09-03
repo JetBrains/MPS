@@ -13,12 +13,12 @@
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959028a(jetbrains.mps.lang.structure.actions)/1135871461211091350">
     <file name="StructureIds_PastePostProcessor_0.java">
-      <node id="1135871461211091351" at="15,50,16,42" concept="4" />
+      <node id="1135871461211091351" at="15,50,16,50" concept="4" />
       <node id="1135871461211204022" at="19,49,20,91" concept="0" />
-      <node id="1135871461211091351" at="24,0,25,0" concept="5" trace="ConceptDeclaration$gH" />
+      <node id="1135871461211091351" at="24,0,25,0" concept="5" trace="AbstractConceptDeclaration$KA" />
       <node id="1135871461211091351" at="14,0,18,0" concept="2" trace="getApplicableConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
       <node id="1135871461211091351" at="18,0,22,0" concept="2" trace="postProcessNode#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
-      <scope id="1135871461211091351" at="15,50,16,42" />
+      <scope id="1135871461211091351" at="15,50,16,50" />
       <scope id="1135871461211091353" at="19,49,20,91" />
       <scope id="1135871461211091351" at="14,0,18,0" />
       <scope id="1135871461211091351" at="18,0,22,0">
@@ -28,21 +28,6 @@
       <unit id="1135871461211091351" at="13,0,27,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_0" />
     </file>
     <file name="StructureIds_PastePostProcessor_1.java">
-      <node id="7209189852292022688" at="15,50,16,51" concept="4" />
-      <node id="7209189852292022691" at="19,49,20,91" concept="0" />
-      <node id="7209189852292022688" at="24,0,25,0" concept="5" trace="InterfaceConceptDeclaration$CG" />
-      <node id="7209189852292022688" at="14,0,18,0" concept="2" trace="getApplicableConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="7209189852292022688" at="18,0,22,0" concept="2" trace="postProcessNode#(Lorg/jetbrains/mps/openapi/model/SNode;)V" />
-      <scope id="7209189852292022688" at="15,50,16,51" />
-      <scope id="7209189852292022690" at="19,49,20,91" />
-      <scope id="7209189852292022688" at="14,0,18,0" />
-      <scope id="7209189852292022688" at="18,0,22,0">
-        <var name="pastedNode" id="7209189852292022688" />
-      </scope>
-      <unit id="7209189852292022688" at="23,0,26,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_1$CONCEPTS" />
-      <unit id="7209189852292022688" at="13,0,27,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_1" />
-    </file>
-    <file name="StructureIds_PastePostProcessor_2.java">
       <node id="1135871461211121602" at="15,50,16,43" concept="4" />
       <node id="1135871461211219238" at="19,49,20,120" concept="3" />
       <node id="1135871461211213191" at="21,20,22,59" concept="0" />
@@ -60,10 +45,10 @@
       <scope id="1135871461211121602" at="18,0,25,0">
         <var name="pastedNode" id="1135871461211121602" />
       </scope>
-      <unit id="1135871461211121602" at="26,0,30,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_2$CONCEPTS" />
-      <unit id="1135871461211121602" at="13,0,31,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_2" />
+      <unit id="1135871461211121602" at="26,0,30,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_1$CONCEPTS" />
+      <unit id="1135871461211121602" at="13,0,31,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_1" />
     </file>
-    <file name="StructureIds_PastePostProcessor_3.java">
+    <file name="StructureIds_PastePostProcessor_2.java">
       <node id="1135871461211121631" at="15,50,16,39" concept="4" />
       <node id="1135871461211220699" at="19,49,20,120" concept="3" />
       <node id="1135871461211220708" at="21,20,22,55" concept="0" />
@@ -81,10 +66,10 @@
       <scope id="1135871461211121631" at="18,0,25,0">
         <var name="pastedNode" id="1135871461211121631" />
       </scope>
-      <unit id="1135871461211121631" at="26,0,30,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_3$CONCEPTS" />
-      <unit id="1135871461211121631" at="13,0,31,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_3" />
+      <unit id="1135871461211121631" at="26,0,30,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_2$CONCEPTS" />
+      <unit id="1135871461211121631" at="13,0,31,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_2" />
     </file>
-    <file name="StructureIds_PastePostProcessor_4.java">
+    <file name="StructureIds_PastePostProcessor_3.java">
       <node id="7791109065627100723" at="15,50,16,43" concept="4" />
       <node id="7791109065627100954" at="19,49,20,86" concept="0" />
       <node id="7791109065627100723" at="24,0,25,0" concept="5" trace="DataTypeDeclaration$AD" />
@@ -96,10 +81,10 @@
       <scope id="7791109065627100723" at="18,0,22,0">
         <var name="pastedNode" id="7791109065627100723" />
       </scope>
-      <unit id="7791109065627100723" at="23,0,26,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_4$CONCEPTS" />
-      <unit id="7791109065627100723" at="13,0,27,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_4" />
+      <unit id="7791109065627100723" at="23,0,26,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_3$CONCEPTS" />
+      <unit id="7791109065627100723" at="13,0,27,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_3" />
     </file>
-    <file name="StructureIds_PastePostProcessor_5.java">
+    <file name="StructureIds_PastePostProcessor_4.java">
       <node id="1421157252384386406" at="15,50,16,52" concept="4" />
       <node id="1421157252384386514" at="19,49,20,116" concept="3" />
       <node id="1421157252384386524" at="21,20,22,55" concept="0" />
@@ -117,8 +102,8 @@
       <scope id="1421157252384386406" at="18,0,25,0">
         <var name="pastedNode" id="1421157252384386406" />
       </scope>
-      <unit id="1421157252384386406" at="26,0,30,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_5$CONCEPTS" />
-      <unit id="1421157252384386406" at="13,0,31,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_5" />
+      <unit id="1421157252384386406" at="26,0,30,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_4$CONCEPTS" />
+      <unit id="1421157252384386406" at="13,0,31,0" name="jetbrains.mps.lang.structure.actions.StructureIds_PastePostProcessor_4" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c8959028a(jetbrains.mps.lang.structure.actions)/1163111159679">

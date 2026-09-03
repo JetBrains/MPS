@@ -509,7 +509,7 @@
   <node concept="21GTPz" id="Z3rhdFZr6m">
     <property role="TrG5h" value="StructureIds" />
     <node concept="3ZhVFo" id="Z3rhdFZr6n" role="21GTLz">
-      <ref role="1JFXUq" to="tpce:f_TIwhg" resolve="ConceptDeclaration" />
+      <ref role="1JFXUq" to="tpce:h0PkWnZ" />
       <node concept="1JFUiI" id="Z3rhdFZr6o" role="3xT8ml">
         <node concept="3clFbS" id="Z3rhdFZr6p" role="2VODD2">
           <node concept="3clFbF" id="Z3rhdFZQAQ" role="3cqZAp">
@@ -522,27 +522,6 @@
                 <node concept="1JFAaq" id="Z3rhdFZSHL" role="2Oq$k0" />
               </node>
               <node concept="3clFbT" id="Z3rhdFZRlU" role="37wK5m">
-                <property role="3clFbU" value="true" />
-              </node>
-            </node>
-          </node>
-        </node>
-      </node>
-    </node>
-    <node concept="3ZhVFo" id="6gcbZA8dS6w" role="21GTLz">
-      <ref role="1JFXUq" to="tpce:h0PlHMJ" resolve="InterfaceConceptDeclaration" />
-      <node concept="1JFUiI" id="6gcbZA8dS6x" role="3xT8ml">
-        <node concept="3clFbS" id="6gcbZA8dS6y" role="2VODD2">
-          <node concept="3clFbF" id="6gcbZA8dS6z" role="3cqZAp">
-            <node concept="2YIFZM" id="6gcbZA8dS6$" role="3clFbG">
-              <ref role="37wK5l" to="twe9:Z3rhdFZzmy" resolve="processConcept" />
-              <ref role="1Pybhc" to="twe9:Z3rhdFZzlq" resolve="ConceptIdSetter" />
-              <node concept="1JFAaq" id="6gcbZA8dS6_" role="37wK5m" />
-              <node concept="2OqwBi" id="6gcbZA8dS6A" role="37wK5m">
-                <node concept="I4A8Y" id="6gcbZA8dS6B" role="2OqNvi" />
-                <node concept="1JFAaq" id="6gcbZA8dS6C" role="2Oq$k0" />
-              </node>
-              <node concept="3clFbT" id="6gcbZA8dS6D" role="37wK5m">
                 <property role="3clFbU" value="true" />
               </node>
             </node>

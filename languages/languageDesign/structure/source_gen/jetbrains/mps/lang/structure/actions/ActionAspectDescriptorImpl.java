@@ -38,6 +38,6 @@ public class ActionAspectDescriptorImpl extends BaseActionAspectDescriptor imple
 
   @Override
   public Collection<PastePostProcessor> getPastePostProcessors() {
-    return Arrays.asList(new PastePostProcessor[]{new StructureIds_PastePostProcessor_0(), new StructureIds_PastePostProcessor_1(), new StructureIds_PastePostProcessor_2(), new StructureIds_PastePostProcessor_3(), new StructureIds_PastePostProcessor_4(), new StructureIds_PastePostProcessor_5()});
+    return Arrays.asList(new PastePostProcessor[]{new StructureIds_PastePostProcessor_0(), new StructureIds_PastePostProcessor_1(), new StructureIds_PastePostProcessor_2(), new StructureIds_PastePostProcessor_3(), new StructureIds_PastePostProcessor_4()});
   }
 }
