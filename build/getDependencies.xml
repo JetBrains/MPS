@@ -37,6 +37,77 @@
   </target>
 
   <!-- ===================================================== -->
+  <!-- Detect OS and architecture                            -->
+  <!-- ===================================================== -->
+
+  <target name="detect-os">
+    
+    <condition property="os.platform" value="win.x86">
+      <and>
+        <os family="windows"/>
+        <or>
+          <os arch="amd64"/>
+          <os arch="x86_64"/>
+        </or>
+      </and>
+    </condition>
+
+    <condition property="os.platform" value="win.aarch64">
+      <and>
+        <os family="windows"/>
+        <or>
+          <os arch="aarch64"/>
+          <os arch="arm64"/>
+        </or>
+      </and>
+    </condition>
+
+    <condition property="os.platform" value="mac.aarch64">
+      <and>
+        <os family="mac"/>
+        <or>
+          <os arch="aarch64"/>
+          <os arch="arm64"/>
+        </or>
+      </and>
+    </condition>
+
+    <condition property="os.platform" value="mac.x86">
+      <and>
+        <os family="mac"/>
+        <or>
+          <os arch="amd64"/>
+          <os arch="x86_64"/>
+        </or>
+      </and>
+    </condition>
+
+    <condition property="os.platform" value="unix.x86">
+      <and>
+        <os family="unix"/>
+        <or>
+          <os arch="amd64"/>
+          <os arch="x86_64"/>
+        </or>
+      </and>
+    </condition>
+
+    <condition property="os.platform" value="unix.aarch64">
+      <and>
+        <os family="unix"/>
+        <or>
+          <os arch="aarch64"/>
+          <os arch="arm64"/>
+        </or>
+      </and>
+    </condition>
+
+    <fail unless="os.platform">Unsupported OS/architecture: ${os.name}/${os.arch}</fail>
+
+    <echo message="Detected OS platform: ${os.platform}"/>
+  </target>
+
+  <!-- ===================================================== -->
   <!-- Check 3rd party libraries download requirement        -->
   <!-- ===================================================== -->
 
@@ -270,7 +341,7 @@
     <ivy:retrieve pattern="${basedir}/../[artifact].[ext]" overwritemode="different"/>
   </target>
 
-  <target name="unzip-platform" description="Unpacks mps-platform.zip">
+  <target name="unzip-platform" depends="detect-os" description="Unpacks mps-platform.zip">
     <antcall target="clean-platform"/>
 
     <unzip src="${basedir}/../${platform.zip.file}" dest="${basedir}/../" overwrite="true">
@@ -280,7 +351,17 @@
         <!-- XXX there's no more at least log.xml in the platform, is this exclude still valid? -->
         <exclude name="bin/log.xml"/>
         <exclude name="bin/mps.svg"/>
+        <exclude name="__overlay__/**"/>
       </patternset>
+    </unzip>
+    <unzip src="${basedir}/../${platform.zip.file}" dest="${basedir}/../" overwrite="true">
+      <patternset>
+        <exclude name="*"/>
+        <include name="__overlay__/${os.platform}/**"/>
+      </patternset>
+      <mapper type="glob"
+              from="__overlay__/${os.platform}/*"
+              to="*"/>
     </unzip>
 
     <antcall target="update-licence-info"/>
