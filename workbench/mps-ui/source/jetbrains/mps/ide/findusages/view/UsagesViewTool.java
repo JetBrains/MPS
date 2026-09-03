@@ -126,6 +126,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     return options;
   }
 
+  @Nullable
   public static UsagesViewTool getInstance(Project project) {
     final UsagesViewTool service = project.getService(UsagesViewTool.class);
     //ensure tool window registration
@@ -248,7 +249,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     Icon icon = usagesView.getIcon();
     String caption = usagesView.getCaption();
     JComponent component = usagesView.getComponent();
-    addTab(new Tab(component, caption, icon) {
+    addTab(new Tab(component, caption, icon, usageViewData) {
       @Override
       public void disposeTab() {
         unregisterAndDispose(usageViewData);
@@ -378,11 +379,18 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
 
   /**
    * @return the data behind the tab showing {@code tabComponent}, or {@code null} for a tab that is none of ours
-   * (content of a placeholder or of a previous tool instance). {@link #addTab} makes the {@link UsagesView}'s own
-   * component the tab component, hence the identity match.
+   * (content of a placeholder or of a previous tool instance). Resolved primarily via {@link #findTab}, which
+   * {@link #addTab} attaches the {@link UsageViewData} to as the tab's payload; falls back to a scan of
+   * {@link #myUsageViewsData} for data registered but not yet turned into a tab (see {@link #dispose()}), which
+   * {@link #findTab} cannot see.
    */
   @Nullable
   private UsageViewData findUsageViewData(@NotNull JComponent tabComponent) {
+    IDisposableTab tab = findTab(tabComponent);
+    Object payload = tab == null ? null : tab.getPayload();
+    if (payload instanceof UsageViewData) {
+      return (UsageViewData) payload;
+    }
     for (UsageViewData usageViewData : myUsageViewsData) {
       if (usageViewData.myUsagesView.getComponent() == tabComponent) {
         return usageViewData;

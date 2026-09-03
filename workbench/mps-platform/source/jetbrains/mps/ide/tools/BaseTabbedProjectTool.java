@@ -179,6 +179,27 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
     }
   }
 
+  /**
+   * Non-creating identity lookup into the live tab list, by the same component identity {@link #addTab} indexes
+   * tabs by. Shared by {@link #addContentRemovedListenerIfNeeded}'s listener and by subclasses that need to
+   * resolve their own per-tab payload (see {@link Tab#getPayload()}) without keeping a second list in lockstep
+   * with this one.
+   * @return the tab whose {@link IDisposableTab#getComponent()} is identical to {@code component}, or
+   * {@code null} if there is none.
+   */
+  @Nullable
+  protected final IDisposableTab findTab(@Nullable JComponent component) {
+    if (component == null) {
+      return null;
+    }
+    for (IDisposableTab candidate : myTabList) {
+      if (candidate.getComponent() == component) {
+        return candidate;
+      }
+    }
+    return null;
+  }
+
   @SuppressWarnings("unused")
   public JComponent getSelectedTab() {
     ContentManager contentManager = getContentManager();
@@ -247,14 +268,7 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
         // a removeAllContents(true) burst on unregister, or a listener from a previous tool instance still
         // attached to the surviving manager, both deliver content with no matching myTabList entry. A positional
         // remove would then dispose an unrelated - or already stale - tab.
-        JComponent removedComponent = event.getContent().getComponent();
-        IDisposableTab removedTab = null;
-        for (IDisposableTab candidate : myTabList) {
-          if (candidate.getComponent() == removedComponent) {
-            removedTab = candidate;
-            break;
-          }
-        }
+        IDisposableTab removedTab = findTab(event.getContent().getComponent());
         if (removedTab == null) {
           // No matching entry - nothing of ours to dispose.
           return;
@@ -307,17 +321,33 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
     default void disposeTab() {}
 
     JComponent getComponent();
+
+    /**
+     * @return the subclass-specific object this tab stands for, or {@code null} if it carries none. Lets a
+     * subclass resolve its own per-tab data via {@link #findTab} instead of maintaining a second, component-keyed
+     * list that has to be kept in lockstep with the tab list.
+     */
+    @Nullable
+    default Object getPayload() {
+      return null;
+    }
   }
 
   public static class Tab implements IDisposableTab {
     private final JComponent myComponent;
     private final String myTitle;
     private final Icon myIcon;
+    private final Object myPayload;
 
     public Tab(@NotNull JComponent component, @NotNull String title, Icon icon) {
+      this(component, title, icon, null);
+    }
+
+    public Tab(@NotNull JComponent component, @NotNull String title, Icon icon, @Nullable Object payload) {
       myComponent = component;
       myTitle = title;
       myIcon = icon;
+      myPayload = payload;
     }
 
     @Override
@@ -331,6 +361,12 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
 
     public Icon getIcon() {
       return myIcon;
+    }
+
+    @Override
+    @Nullable
+    public Object getPayload() {
+      return myPayload;
     }
   }
 }
