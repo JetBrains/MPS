@@ -57,7 +57,7 @@
   </root>
   <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/4301118715654497533">
     <file name="mpsDistribution.xml">
-      <unit id="4301118715654497533" at="1,0,585,10" name="jetbrains.mps.ide.build.mpsDistribution" />
+      <unit id="4301118715654497533" at="1,0,590,10" name="jetbrains.mps.ide.build.mpsDistribution" />
     </file>
   </root>
   <root nodeRef="r:874d959d-e3b4-4d04-b931-ca849af130dd(jetbrains.mps.ide.build)/4301118715654819483">

@@ -306,6 +306,9 @@
     <antcall target="unzip-platform">
       <param name="platform.zip.file" value="${idea.platform.provided.filename}"/>
     </antcall>
+    <antcall target="unzip-platform-overlay">
+      <param name="platform.zip.file" value="${idea.platform.provided.filename}"/>
+    </antcall>
   </target>
 
   <target name="check-provided-platform" if="${platform.provided}">
@@ -332,6 +335,9 @@
     <echo message="Platform will be downloaded"/>
     <antcall target="download-ivy"/>
     <antcall target="unzip-platform">
+      <param name="platform.zip.file" value="mps-platform.zip"/>
+    </antcall>
+    <antcall target="unzip-platform-overlay">
       <param name="platform.zip.file" value="mps-platform.zip"/>
     </antcall>
   </target>
@@ -381,6 +387,16 @@
     <chmod file="${basedir}/../bin/win/runnerw.exe" perm="755"/>
     <chmod file="${basedir}/../bin/win/vistalauncher.exe" perm="755"/>
     <chmod file="${basedir}/../bin/win/WinProcessListHelper.exe" perm="755"/>
+  </target>
+
+  <target name="unzip-platform-overlay" description="Unpacks mps-platform.zip!/__overlay__" if="${unzip.overlay}">
+    <mkdir dir="${basedir}/tmp"/>
+    <unzip src="${basedir}/../${platform.zip.file}" dest="${basedir}/tmp" overwrite="true">
+      <patternset>
+        <exclude name="*"/>
+        <include name="__overlay__/**"/>
+      </patternset>
+    </unzip>
   </target>
 
   <target name="embed-module-descriptors">

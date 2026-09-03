@@ -3,7 +3,9 @@
   <property name="resources" location="${basedir}/resources"/>
 
   <target name="platform">
-    <ant antfile="getDependencies.xml" target="install" inheritAll="true" useNativeBasedir="true"/>
+    <ant antfile="getDependencies.xml" target="install" inheritAll="true" useNativeBasedir="true">
+      <property name="unzip.overlay" value="true"/>
+    </ant>
   </target>
 
   <target name="getOpenjdkWin">
