@@ -2,11 +2,18 @@
   <id>com.intellij</id>
   <name>IDEA CORE</name>
 
-  <!--  MPS-39970: hosts the WhatsNewInVisionContentProvider override, which cannot live in this descriptor.
-        The descriptor is /jetbrains.mps.ide.whatsNew.xml - the module name plus '.xml' at the class path root is
-        where the platform looks it up; an embedded <![CDATA[...]]> descriptor is not read on this loading path. -->
+  <!--  MPS-owned content modules. They exist to host service overrides that cannot live in this descriptor: a
+        service declared by a content module is registered after the main descriptor, so an 'overrides="true"' here
+        either fails outright or is beaten by another content module's override. Such an override has to be declared
+        from a descriptor that depends on the module declaring the service - which is what these modules do.
+
+        Each one is a real /<module name>.xml file at the class path root, which is where the platform looks it up
+        for a 'jetbrains.*' content module of the core plugin; an embedded <![CDATA[...]]> descriptor is not read on
+        this loading path (PluginDescriptorLoader.loadContentModuleDescriptors takes the embedded path only for
+        'intellij.*', 'fleet.*' and 'language-server.*' module names). -->
   <content namespace="jetbrains">
-    <module name="jetbrains.mps.ide.whatsNew"/>
+    <module name="jetbrains.mps.ide.whatsNew"/>      <!-- MPS-39970: WhatsNewInVisionContentProvider override -->
+    <module name="jetbrains.mps.ide.customization"/> <!-- MPS-40020: ExternalProductResourceUrls override -->
   </content>
   @@MODULE_DESCRIPTORS@@
 
@@ -91,16 +98,25 @@
 <!--    <statistics.counterUsagesCollector implementationClass="com.intellij.platform.whatsNew.collectors.WhatsNewCounterUsageCollector"/>-->
 <!--    <statistics.validation.customValidationRule implementation="com.intellij.platform.whatsNew.collectors.WhatsNewMultipageIdValidationRule"/>-->
 
-<!--    <applicationService serviceInterface="com.intellij.platform.ide.customization.ExternalProductResourceUrls"-->
-<!--                        serviceImplementation="jetbrains.mps.intellij.integration.MPSExternalResourceUrls"-->
-<!--                        overrides="true"/>-->
-
 <!--    <registryKey defaultValue="false" description="Whats new test mode" key="whats.new.test.mode" restartRequired="false" />-->
 <!--    <registryKey key="csat.survey.enabled" defaultValue="false" description="Enables periodic CSAT survey" overrides="true"/>-->
 <!--  </extensions>-->
 <!--  <actions resource-bundle="messages.ActionsBundle">-->
 <!--    <action id="WhatsNewAction" class="com.intellij.platform.whatsNew.WhatsNewAction" overrides="true"/>-->
 <!--  </actions>-->
+  <!--  Status of the block above, for whoever gets round to it:
+          - whats.new.test.mode and the WhatsNewAction override are now declared by intellij.platform.whatsNew
+            itself, so these two lines are redundant and can simply be deleted.
+          - csat.survey.enabled is NOT redundant. The platform declares it with defaultValue="true"
+            (intellij.platform.feedback.xml), so with this line commented out MPS 2026.2 shows the periodic CSAT
+            survey that MPS had deliberately switched off. Restoring it here may be enough: the base declaration
+            sits in an *embedded* content module, and only OPTIONAL content modules get the implicit dependency on
+            the main descriptor (pluginInitContextConstraintResolver.kt), so the ordering that broke the two
+            overrides moved out of this descriptor need not apply. That has to be verified in a run; if it does not
+            hold, it needs the same treatment - a content module depending on intellij.platform.feedback.
+          - ExternalProductResourceUrls was restored below and now lives in jetbrains.mps.ide.customization
+            (MPS-40020).
+          - The remaining whatsNew registrations are genuinely provided by intellij.platform.whatsNew. -->
 
   <extensions defaultExtensionNs="com.intellij">
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
@@ -141,6 +157,18 @@
                         serviceImplementation="jetbrains.mps.ide.ui.fileEditor.MPSEditorEmptyTextPainter"
                         overrides="true"/>
     <!-- MPS-39970: the WhatsNewInVisionContentProvider override lives in the jetbrains.mps.ide.whatsNew content module above -->
+
+    <!-- MPS-40020: this registration is legal but not sufficient on its own - the platform declares the base service
+         in the main descriptor, so overriding it here works, but intellij.idea.customization.base overrides the same
+         key from a content module and therefore registers later and wins. jetbrains.mps.ide.customization declares
+         the same override again, after IDEA's. Keeping this one as well means MPS still gets its own URLs should
+         intellij.idea.customization.base ever leave the product content and that module be excluded; a repeated
+         override of the same key is supported (InstanceRegistrarImpl.overrideInitializer).
+         open="true" because this registration is meant to be overridden - both by IDEA's, which registers next, and
+         by ours again from the content module; without it each of those steps logs an InstanceNotOverridableException. -->
+    <applicationService serviceInterface="com.intellij.platform.ide.customization.ExternalProductResourceUrls"
+                        serviceImplementation="jetbrains.mps.intellij.integration.MPSExternalResourceUrls"
+                        overrides="true" open="true"/>
     <!-- Similar to community/java/ide-customization/resources/META-INF/plugin.xml -->
     <!-- preload because in any case will be requested to reopen last projects -->
     <applicationService serviceInterface="com.intellij.ide.RecentProjectsManager"

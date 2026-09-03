@@ -1,0 +1,39 @@
+<!--
+  Descriptor of the jetbrains.mps.ide.customization content module declared by MPSPlugin.template.xml.
+
+  MPS-40020: ExternalProductResourceUrls decides where Help | Help, Help | What's New, the feedback forms and the
+  patch/download URLs point. The platform declares a neutral implementation in the main descriptor
+  (PlatformExtensions.xml, LegacyExternalProductResourceUrls), but MPS's product content also pulls in
+  intellij.idea.customization.base (MPSProperties.getProductContentDescriptor), which overrides it with
+  IntelliJIdeaExternalResourceUrls. That is a content module, and content modules are registered after the main
+  descriptor, so MPS's own override in MPSPlugin.template.xml was silently beaten by IntelliJ IDEA's and MPS shipped
+  IDEA's help and What's New pages. Registering the override here, from a descriptor that depends on
+  intellij.idea.customization.base, is what puts it after IDEA's.
+
+  The package prefix intentionally owns no code. A content module with no jar of its own is required to declare one
+  (ClassLoaderConfigurator.getPackagePrefixesLoadedBySeparateClassLoaders), but claiming the package that actually
+  holds MPSExternalResourceUrls would take it away from the core class loader, and MPSPlugin.template.xml has to keep
+  registering the same implementation - see the comment there. A prefix that matches nothing satisfies the
+  requirement while leaving the class on the core loader: this module's loader finds no match for the class name,
+  createModuleResolveScopeManager returns "" ("not mine"), and PluginClassLoader delegates to the core loader.
+  Do not move code into jetbrains.mps.ide.customization - keep the prefix empty.
+
+  Known wart: IDEA's registration is not declared open="true", so overriding it logs
+  "InstanceNotOverridableException: Incorrect override for ...ExternalProductResourceUrls" at WARN. The override is
+  applied regardless. MPS already carries a few of these (FileDocumentManager, AbstractVcsHelper). Note that
+  InstanceContainerImpl tolerates incorrect overrides only by default and its comment says the default "will be
+  changed to false" once the platform migration finishes - at which point these become LOG.error, i.e. auto-reported
+  exceptions. The clean way out for this one is to stop pulling intellij.idea.customization.base into MPS's product
+  content (MPSProperties.getProductContentDescriptor) - it holds nothing but IDEA branding, two services - and then
+  the registration in MPSPlugin.template.xml alone is correct and this module can go away.
+-->
+<idea-plugin package="jetbrains.mps.ide.customization">
+  <dependencies>
+    <module name="intellij.idea.customization.base"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="com.intellij.platform.ide.customization.ExternalProductResourceUrls"
+                        serviceImplementation="jetbrains.mps.intellij.integration.MPSExternalResourceUrls"
+                        overrides="true"/>
+  </extensions>
+</idea-plugin>
