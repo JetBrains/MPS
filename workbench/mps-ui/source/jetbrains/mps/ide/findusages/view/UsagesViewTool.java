@@ -465,8 +465,16 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
       if (getProject().isDisposed()) {
         return;
       }
-      final jetbrains.mps.project.Project mpsProject = ProjectHelper.fromIdeaProject(getProject());
-      mpsProject.getModelAccess().runReadAction(() -> read(state, mpsProject));
+      try {
+        final jetbrains.mps.project.Project mpsProject = ProjectHelper.fromIdeaProject(getProject());
+        mpsProject.getModelAccess().runReadAction(() -> read(state, mpsProject));
+      } catch (RuntimeException ex) {
+        // Failed before read() could retain the element itself (e.g. no MPS counterpart yet for this project, see
+        // ProjectHelper.fromIdeaProject()). getState() must not be left to report null and have the platform drop
+        // this component from the workspace file - see getState() - so fall back to the raw element here.
+        loadedState = state.clone();
+        LOG.info("Failed to restore " + TOOL_WINDOW_ID + " state", ex);
+      }
   }
 
   private UsagesView createUsageView(@Nullable SearchTaskImpl searchTask) {
