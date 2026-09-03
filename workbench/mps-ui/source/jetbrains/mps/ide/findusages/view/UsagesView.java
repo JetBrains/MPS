@@ -73,6 +73,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNodeReference;
+import org.jetbrains.mps.openapi.module.SRepository;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 
 import javax.swing.BorderFactory;
@@ -121,7 +122,11 @@ public class UsagesView implements IExternalizeable {
   public UsagesView(Project mpsProject, ViewOptions defaultOptions) {
     this(mpsProject, defaultOptions, new DataTreeChangesNotifier());
     myOwnChangeTracker = true;
-    new RepoListenerRegistrar(mpsProject.getRepository(), myChangeTracker).attach();
+    final @Nullable SRepository repository = mpsProject.getRepository();
+    if (repository == null) {
+      throw new IllegalArgumentException("Project's repository is null");
+    }
+    new RepoListenerRegistrar(repository, myChangeTracker).attach();
   }
 
   public UsagesView(Project mpsProject, ViewOptions defaultOptions, DataTreeChangesNotifier changeTracker) {

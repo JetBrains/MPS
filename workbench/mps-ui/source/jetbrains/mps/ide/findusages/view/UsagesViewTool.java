@@ -158,11 +158,13 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     super.dispose();
     // if any data left (e.g. data restored but not visualized by addTab() - still in the myUsagesViewsData)
     ArrayList<UsageViewData> copy = new ArrayList<>(myUsageViewsData);
-    // pretty much the same what we do in Tab.disposeTab(), below
-    copy.forEach(this::unregister);
-    for (UsageViewData uv : copy) {
-      uv.myUsagesView.dispose();
-    }
+    copy.forEach(this::unregisterAndDispose);
+  }
+
+  /** Common cleanup for a {@link UsageViewData} that is going away, be it via a closed tab or tool disposal. */
+  private void unregisterAndDispose(UsageViewData usageViewData) {
+    unregister(usageViewData);
+    usageViewData.myUsagesView.dispose();
   }
 
   @Override
@@ -249,9 +251,7 @@ public final class UsagesViewTool extends BaseTabbedProjectTool implements Persi
     addTab(new Tab(component, caption, icon) {
       @Override
       public void disposeTab() {
-        UsagesView uv = usageViewData.myUsagesView;
-        unregister(usageViewData);
-        uv.dispose();
+        unregisterAndDispose(usageViewData);
       }
     }, forceNewTab, openTool);
     if (usageViewData.myPinned) {
