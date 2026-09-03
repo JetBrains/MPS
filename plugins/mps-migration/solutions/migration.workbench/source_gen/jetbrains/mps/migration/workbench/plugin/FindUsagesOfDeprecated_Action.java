@@ -6,11 +6,12 @@ import jetbrains.mps.workbench.action.BaseAction;
 import javax.swing.Icon;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.Map;
+import jetbrains.mps.ide.findusages.view.UsagesViewTool;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.project.MPSProject;
 import jetbrains.mps.ide.actions.MPSCommonDataKeys;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.progress.PerformInBackgroundOption;
 import java.util.List;
@@ -31,7 +32,6 @@ import jetbrains.mps.util.Pair;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.ide.findusages.model.SearchResults;
 import java.util.Collections;
-import jetbrains.mps.ide.findusages.view.UsagesViewTool;
 
 public class FindUsagesOfDeprecated_Action extends BaseAction {
   private static final Icon ICON = null;
@@ -46,6 +46,14 @@ public class FindUsagesOfDeprecated_Action extends BaseAction {
   @Override
   public boolean isDumbAware() {
     return false;
+  }
+  @Override
+  public boolean isApplicable(AnActionEvent event, final Map<String, Object> _params) {
+    return UsagesViewTool.getInstance(event.getData(CommonDataKeys.PROJECT)) != null;
+  }
+  @Override
+  public void doUpdate(@NotNull AnActionEvent event, final Map<String, Object> _params) {
+    this.setEnabledState(event.getPresentation(), this.isApplicable(event, _params));
   }
   @Override
   protected boolean collectActionData(AnActionEvent event, final Map<String, Object> _params) {

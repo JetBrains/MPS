@@ -117,6 +117,7 @@
         <child id="1239975488603" name="updateFunction" index="2Oj6PV" />
       </concept>
       <concept id="1239975436002" name="jetbrains.mps.lang.plugin.structure.UpdateGroupFunction" flags="in" index="2OiTZ2" />
+      <concept id="1205681243813" name="jetbrains.mps.lang.plugin.structure.IsApplicableBlock" flags="in" index="2ScWuX" />
       <concept id="1203680534665" name="jetbrains.mps.lang.plugin.structure.GroupAnchor" flags="ng" index="10WQ6h" />
       <concept id="5538333046911348654" name="jetbrains.mps.lang.plugin.structure.RequiredCondition" flags="ng" index="1oajcY" />
       <concept id="1217252042208" name="jetbrains.mps.lang.plugin.structure.ActionDataParameterDeclaration" flags="ng" index="1DS2jV">
@@ -6378,6 +6379,25 @@
         </node>
       </node>
     </node>
+    <node concept="2ScWuX" id="3j0j8Bdcq02" role="tmbBb">
+      <node concept="3clFbS" id="3j0j8Bdcq03" role="2VODD2">
+        <node concept="3clFbF" id="3j0j8Bdcrqq" role="3cqZAp">
+          <node concept="3y3z36" id="3j0j8Bdcrqr" role="3clFbG">
+            <node concept="10Nm6u" id="3j0j8Bdcrqs" role="3uHU7w" />
+            <node concept="2YIFZM" id="3j0j8Bdcrqt" role="3uHU7B">
+              <ref role="37wK5l" to="ngmm:~UsagesViewTool.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+              <ref role="1Pybhc" to="ngmm:~UsagesViewTool" resolve="UsagesViewTool" />
+              <node concept="2OqwBi" id="3j0j8Bdcrqu" role="37wK5m">
+                <node concept="2WthIp" id="3j0j8Bdcrqv" role="2Oq$k0" />
+                <node concept="1DTwFV" id="3j0j8Bdcrqw" role="2OqNvi">
+                  <ref role="2WH_rO" node="51adnVzXyUS" resolve="project" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="sE7Ow" id="5$zfhXzrxUf">
     <property role="TrG5h" value="RunProjectMigration" />
@@ -8955,6 +8975,25 @@
       <ref role="1DUlNI" to="qkt:~CommonDataKeys.PROJECT" resolve="PROJECT" />
       <node concept="1oajcY" id="5$zfhXzt8TY" role="1oa70y" />
     </node>
+    <node concept="2ScWuX" id="3j0j8Bdbvte" role="tmbBb">
+      <node concept="3clFbS" id="3j0j8Bdbvtf" role="2VODD2">
+        <node concept="3clFbF" id="3j0j8BdbxE$" role="3cqZAp">
+          <node concept="3y3z36" id="3j0j8Bdb_W2" role="3clFbG">
+            <node concept="10Nm6u" id="3j0j8Bdb_WM" role="3uHU7w" />
+            <node concept="2YIFZM" id="3j0j8BdbxEA" role="3uHU7B">
+              <ref role="37wK5l" to="ngmm:~UsagesViewTool.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+              <ref role="1Pybhc" to="ngmm:~UsagesViewTool" resolve="UsagesViewTool" />
+              <node concept="2OqwBi" id="3j0j8BdbxEB" role="37wK5m">
+                <node concept="2WthIp" id="3j0j8BdbxEC" role="2Oq$k0" />
+                <node concept="1DTwFV" id="3j0j8BdbxED" role="2OqNvi">
+                  <ref role="2WH_rO" node="5$zfhXzt8TX" resolve="project" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
   </node>
   <node concept="312cEu" id="65Effnlxqkb">
     <property role="TrG5h" value="UsagesFormattingUtil" />
@@ -9477,6 +9516,25 @@
       <property role="TrG5h" value="project" />
       <ref role="1DUlNI" to="qkt:~CommonDataKeys.PROJECT" resolve="PROJECT" />
       <node concept="1oajcY" id="2t6hOiXSDf2" role="1oa70y" />
+    </node>
+    <node concept="2ScWuX" id="3j0j8Bdcn5x" role="tmbBb">
+      <node concept="3clFbS" id="3j0j8Bdcn5y" role="2VODD2">
+        <node concept="3clFbF" id="3j0j8Bdcofb" role="3cqZAp">
+          <node concept="3y3z36" id="3j0j8Bdcofc" role="3clFbG">
+            <node concept="10Nm6u" id="3j0j8Bdcofd" role="3uHU7w" />
+            <node concept="2YIFZM" id="3j0j8Bdcofe" role="3uHU7B">
+              <ref role="37wK5l" to="ngmm:~UsagesViewTool.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+              <ref role="1Pybhc" to="ngmm:~UsagesViewTool" resolve="UsagesViewTool" />
+              <node concept="2OqwBi" id="3j0j8Bdcoff" role="37wK5m">
+                <node concept="2WthIp" id="3j0j8Bdcofg" role="2Oq$k0" />
+                <node concept="1DTwFV" id="3j0j8Bdcofh" role="2OqNvi">
+                  <ref role="2WH_rO" node="2t6hOiXSDf1" resolve="project" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
     </node>
   </node>
   <node concept="2uRRBy" id="5FAP3BJU75V">

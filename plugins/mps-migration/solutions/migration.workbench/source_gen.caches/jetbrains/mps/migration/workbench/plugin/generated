@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="bdo9vidyix34kjcib32v3tfhd3eu90c">
+<product version="3" modelHash="-b6r4pg63pfyiinccd4lsmpnnsxb5tzm">
   <files names="ExecuteRerunnableMigrations_Action.java:FindDeprecatedCodeWithNoUsages_Action.java:FindDeprecatedCode_Action.java:FindUsagesOfDeprecated_Action.java:LanguageMigrations_ActionGroup.java:MigrationIssueHandler_ProjectPluginPart.java:MigrationTestConfigDialog.java:MigrationsMenuLegacyCode_ActionGroup.java:MigrationsMenu_ActionGroup.java:Migrations_ActionGroup.java:PrepareNewProject_AppPluginPart.java:ProjectMigrations_ActionGroup.java:RebuildHandler_ProjectPluginPart.java:RunMigration.java:RunMigrationAssistant_Action.java:RunPreUpdateCheck_Action.java:RunProjectMigration_Action.java:TestMigrationSession.java:TestMigrationWizard_Action.java:ToolsInternalAddition_ActionGroup.java:UsagesFormattingUtil.java:Workbench_ApplicationPlugin.java:Workbench_ProjectPlugin.java:startup.properties" />
 </product>
 
