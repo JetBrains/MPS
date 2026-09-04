@@ -329,6 +329,7 @@ public final class MergeSession {
    * but the overall children order reflects the order for models before merge as much as possible
    */
   public SModel getSortedResultModel() {
+    assert myResultModel.getRepository() == null || myResultModel.getRepository().getModelAccess().canWrite();
     sortResultChildren();
     return myResultModel;
   }

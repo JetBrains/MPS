@@ -8452,6 +8452,39 @@
     <node concept="3clFb_" id="7OAO1yPTxzu" role="jymVt">
       <property role="TrG5h" value="getSortedResultModel" />
       <node concept="3clFbS" id="7OAO1yPTxzx" role="3clF47">
+        <node concept="1gVbGN" id="10GMDA89tg4" role="3cqZAp">
+          <node concept="22lmx$" id="10GMDA89tfX" role="1gVkn0">
+            <node concept="3clFbC" id="10GMDA89tfY" role="3uHU7B">
+              <node concept="2OqwBi" id="10GMDA89tjB" role="3uHU7B">
+                <node concept="37vLTw" id="10GMDA89tgP" role="2Oq$k0">
+                  <ref role="3cqZAo" node="3$YpntjF4rf" resolve="myResultModel" />
+                </node>
+                <node concept="liA8E" id="10GMDA89tjC" role="2OqNvi">
+                  <ref role="37wK5l" to="g3l6:~SModelBase.getRepository()" resolve="getRepository" />
+                </node>
+              </node>
+              <node concept="10Nm6u" id="10GMDA89tg0" role="3uHU7w" />
+            </node>
+            <node concept="2OqwBi" id="10GMDA89tpy" role="3uHU7w">
+              <node concept="2OqwBi" id="10GMDA89tn$" role="2Oq$k0">
+                <node concept="2OqwBi" id="10GMDA89tlB" role="2Oq$k0">
+                  <node concept="37vLTw" id="10GMDA89thR" role="2Oq$k0">
+                    <ref role="3cqZAo" node="3$YpntjF4rf" resolve="myResultModel" />
+                  </node>
+                  <node concept="liA8E" id="10GMDA89tlC" role="2OqNvi">
+                    <ref role="37wK5l" to="g3l6:~SModelBase.getRepository()" resolve="getRepository" />
+                  </node>
+                </node>
+                <node concept="liA8E" id="10GMDA89tn_" role="2OqNvi">
+                  <ref role="37wK5l" to="lui2:~SRepository.getModelAccess()" resolve="getModelAccess" />
+                </node>
+              </node>
+              <node concept="liA8E" id="10GMDA89tpz" role="2OqNvi">
+                <ref role="37wK5l" to="lui2:~ModelAccess.canWrite()" resolve="canWrite" />
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="7OAO1yPUiFJ" role="3cqZAp">
           <node concept="1rXfSq" id="7OAO1yPUiFI" role="3clFbG">
             <ref role="37wK5l" node="7Rc1eyrOTYZ" resolve="sortResultChildren" />
