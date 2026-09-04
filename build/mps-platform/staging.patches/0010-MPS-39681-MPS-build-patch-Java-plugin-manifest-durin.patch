@@ -1,7 +1,7 @@
-From 922b33844bb6142f7d2db87b6141832488024b6a Mon Sep 17 00:00:00 2001
+From 1ac53340ec93bb22213670b4e76ef22ad30a7be7 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 30 Jul 2026 17:18:14 +0200
-Subject: [PATCH 10/14] MPS-39681 MPS build: patch Java plugin manifest during
+Subject: [PATCH 10/16] MPS-39681 MPS build: patch Java plugin manifest during
  build
 
 Avoid patching the resulting jar file from ant build file,

@@ -1,7 +1,7 @@
-From e2d81d4984948cb3ee0dd568c3b55ae2c80b2d90 Mon Sep 17 00:00:00 2001
+From cdd8d721ddb9a6262eb793dc3ca8ab2a79d1b67a Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Fri, 28 Aug 2026 10:10:42 +0200
-Subject: [PATCH 14/14] MPS-39954 move library modules from
+Subject: [PATCH 14/16] MPS-39954 move library modules from
  libraries-misc-plugin to /lib
 
 Drop libraries-misc-plugin.

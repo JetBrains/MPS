@@ -1,0 +1,30 @@
+From 1f4226ed599b583f7e3c7b772411e6887ac0b399 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Thu, 3 Sep 2026 10:39:36 +0200
+Subject: [PATCH 16/16] MPS-40103 mps-platform: package OS-specific plugins in
+ __overlay__ folder
+
+---
+ community/mps/build/build/build.xml | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 9805b7adb4b7b..a2fc64ad42c68 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -122,6 +122,12 @@
+       <zipfileset dir="${target.root}/temp/skiko-awt-runtime-all" prefix="lib/skiko-awt-runtime-all"/>
+       <zipfileset dir="${target.root}/temp/native" prefix="lib/native"/>
+       <zipfileset dir="${target.root}/temp/pty4j" prefix="lib/pty4j"/>
++      <zipfileset dir="${target.root}/dist.mac.aarch64/plugins" prefix="__overlay__/mac.aarch64/plugins"/>
++      <zipfileset dir="${target.root}/dist.mac.x64/plugins" prefix="__overlay__/mac.x64/plugins"/>
++      <zipfileset dir="${target.root}/dist.win.aarch64/plugins" prefix="__overlay__/win.aarch64/plugins"/>
++      <zipfileset dir="${target.root}/dist.win.x64/plugins" prefix="__overlay__/win.x64/plugins"/>
++      <zipfileset dir="${target.root}/dist.unix.aarch64/plugins" prefix="__overlay__/unix.aarch64/plugins"/>
++      <zipfileset dir="${target.root}/dist.unix.x64/plugins" prefix="__overlay__/unix.x64/plugins"/>
+     </zip>
+   </target>
+   
+-- 
+2.55.0
+

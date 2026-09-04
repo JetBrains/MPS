@@ -1,7 +1,7 @@
-From 4f51be63be3761166229d964d80bbf0580d72663 Mon Sep 17 00:00:00 2001
+From ccbebc1483ac0190d4387c018aa950c062509e5a Mon Sep 17 00:00:00 2001
 From: Maros Sandor <maros.sandor@jetbrains.com>
 Date: Fri, 21 Aug 2026 11:37:46 +0200
-Subject: [PATCH 13/14] MPS-40018 Stop building UI to enumerated scopes
+Subject: [PATCH 13/16] MPS-40018 Stop building UI to enumerated scopes
 
 ---
  .../intellij/psi/search/PredefinedSearchScopeProviderImpl.kt  | 4 ++--
