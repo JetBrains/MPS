@@ -2,7 +2,7 @@
   <info organisation="org.jetbrains.mps" module="idea-platform"/>
   <dependencies>
     <dependency org="org" name="MPS_20262_Distribution_Platform" rev="${mps.platform.build}">
-      <artifact name="mps-platform" ext="zip"/>
+      <artifact name="mps-platform" ext="tar.gz"/>
     </dependency>
   </dependencies>
 </ivy-module>
