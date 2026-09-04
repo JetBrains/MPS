@@ -60,6 +60,13 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     return true;
   }
   protected void doUnregister() {
+    MyState state = ConsoleTool_Tool.this.getState();
+    if (state != null) {
+      ConsoleToolPersistence persistence = ConsoleTool_Tool.this.myIdeaProject.getService(ConsoleToolPersistence.class);
+      if (persistence != null) {
+        persistence.storeLoadedState(state);
+      }
+    }
     ConsoleTool_Tool.this.myTabsInitialized.set(false);
     ListSequence.fromList(ConsoleTool_Tool.this.myTabs).clear();
   }
@@ -128,13 +135,17 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     } else {
       tab = new DialogConsoleTab(ConsoleTool_Tool.this.myMPSProject, tool, title, history);
     }
-    ListSequence.fromList(ConsoleTool_Tool.this.myTabs).addElement(tab);
     ConsoleTool_Tool.this.getMyself().<BaseConsoleTab>addTab(tab, title, icon, new IComponentDisposer<BaseConsoleTab>() {
       @Override
       public void disposeComponent(BaseConsoleTab component) {
         ListSequence.fromList(ConsoleTool_Tool.this.myTabs).removeElement(component);
       }
     }, openTool);
+    if (ConsoleTool_Tool.this.getMyself().findContent(tab) == null) {
+      tab.dispose();
+      return null;
+    }
+    ListSequence.fromList(ConsoleTool_Tool.this.myTabs).addElement(tab);
 
     return tab;
   }
@@ -162,7 +173,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
       defaultTab = ConsoleTool_Tool.this.addConsoleTab(null, null, false);
       ConsoleTool_Tool.this.getMyself().pinTab(defaultTab);
     }
-    Content defaultContent = cm.getContent(defaultTab);
+    Content defaultContent = (defaultTab != null ? cm.getContent(defaultTab) : null);
     if (defaultContent != null) {
       defaultContent.setPinnable(false);
       defaultContent.setCloseable(false);
@@ -175,6 +186,9 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     ConsoleTool_Tool.this.myMPSProject.getRepository().getModelAccess().runReadAction(() -> tabState.title = ((String) BHReflection.invoke0(command, CONCEPTS.BaseConcept$gP, SMethodIdV2.create("getPresentation", 1213877396640L, 0x553941aeb020c32eL))));
     tabState.isHistoryTab = true;
     final BaseConsoleTab tab = ConsoleTool_Tool.this.addConsoleTab(tabState, null, true);
+    if (tab == null) {
+      return;
+    }
     ConsoleTool_Tool.this.myMPSProject.getRepository().getModelAccess().executeCommand(() -> tab.execute(command, null, null));
   }
   public DialogConsoleTab getCurrentEditableTab() {
