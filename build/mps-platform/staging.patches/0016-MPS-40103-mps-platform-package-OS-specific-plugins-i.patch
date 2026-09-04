@@ -1,30 +1,65 @@
-From 1f4226ed599b583f7e3c7b772411e6887ac0b399 Mon Sep 17 00:00:00 2001
+From 500e286c371422a15055cc76985347e92cdcd7cb Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 3 Sep 2026 10:39:36 +0200
 Subject: [PATCH 16/16] MPS-40103 mps-platform: package OS-specific plugins in
  __overlay__ folder
 
+Also change mps-platform-provided.zip => .tar.gz to keep *nix file attrs.
 ---
- community/mps/build/build/build.xml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ community/mps/build/build/build.xml | 41 ++++++++++++++++-------------
+ 1 file changed, 23 insertions(+), 18 deletions(-)
 
 diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
-index 9805b7adb4b7b..a2fc64ad42c68 100644
+index 9805b7adb4b7b..caee49ede0070 100644
 --- a/community/mps/build/build/build.xml
 +++ b/community/mps/build/build/build.xml
-@@ -122,6 +122,12 @@
-       <zipfileset dir="${target.root}/temp/skiko-awt-runtime-all" prefix="lib/skiko-awt-runtime-all"/>
-       <zipfileset dir="${target.root}/temp/native" prefix="lib/native"/>
-       <zipfileset dir="${target.root}/temp/pty4j" prefix="lib/pty4j"/>
-+      <zipfileset dir="${target.root}/dist.mac.aarch64/plugins" prefix="__overlay__/mac.aarch64/plugins"/>
-+      <zipfileset dir="${target.root}/dist.mac.x64/plugins" prefix="__overlay__/mac.x64/plugins"/>
-+      <zipfileset dir="${target.root}/dist.win.aarch64/plugins" prefix="__overlay__/win.aarch64/plugins"/>
-+      <zipfileset dir="${target.root}/dist.win.x64/plugins" prefix="__overlay__/win.x64/plugins"/>
-+      <zipfileset dir="${target.root}/dist.unix.aarch64/plugins" prefix="__overlay__/unix.aarch64/plugins"/>
-+      <zipfileset dir="${target.root}/dist.unix.x64/plugins" prefix="__overlay__/unix.x64/plugins"/>
-     </zip>
-   </target>
+@@ -106,23 +106,28 @@
+ 
+   <target name="package-mps-platform-provided">
+     <!-- Copied from `IdeaPlatform.buildTypes.PlatformCI#artifactRules` and adapted to ant -->
+-    <zip destfile="${target.root}/artifacts/mps-platform-provided.zip" duplicate="preserve">
+-      <zipfileset file="${target.root}/artifacts/platform-sources.zip" prefix="lib/src"/>
+-      <zipfileset dir="${target.root}/dist.all/lib" prefix="lib"/>
+-      <zipfileset dir="${target.root}/dist.all/license" prefix="license"/>
+-      <zipfileset dir="${target.root}/dist.all/plugins" prefix="plugins"/>
+-      <!--<zipfileset dir="${target.root}/dist.mac.x64/plugins/laf-macos" prefix="plugins/laf-macos"/>-->
+-      <!--<zipfileset dir="${target.root}/dist.win.x64/plugins/laf-win10" prefix="plugins/laf-win10"/>-->
+-      <zipfileset file="${target.root}/dist.all/build.txt" fullpath="lib/build.txt"/>
+-      <zipfileset dir="${target.root}/dist.all/bin" prefix="bin"/>
+-      <zipfileset dir="${target.root}/dist.all/build/resources" prefix="build/resources"/>
+-      <zipfileset dir="${target.root}/dist.all/build/dependencies" prefix="build/dependencies"/>
+-      <zipfileset dir="${target.root}/dist.all/build/tools" prefix="build/tools"/>
+-      <zipfileset dir="${target.root}/temp/jna" prefix="lib/jna"/>
+-      <zipfileset dir="${target.root}/temp/skiko-awt-runtime-all" prefix="lib/skiko-awt-runtime-all"/>
+-      <zipfileset dir="${target.root}/temp/native" prefix="lib/native"/>
+-      <zipfileset dir="${target.root}/temp/pty4j" prefix="lib/pty4j"/>
+-    </zip>
+-  </target>
++  <tar destfile="${target.root}/artifacts/mps-platform-provided.tar.gz" compression="gzip" longfile="gnu">
++    <tarfileset file="${target.root}/artifacts/platform-sources.zip" prefix="lib/src"/>
++    <tarfileset dir="${target.root}/dist.all/lib" prefix="lib"/>
++    <tarfileset dir="${target.root}/dist.all/license" prefix="license"/>
++    <tarfileset dir="${target.root}/dist.all/plugins" prefix="plugins"/>
++    <!--<tarfileset dir="${target.root}/dist.mac.x64/plugins/laf-macos" prefix="plugins/laf-macos"/>-->
++    <!--<tarfileset dir="${target.root}/dist.win.x64/plugins/laf-win10" prefix="plugins/laf-win10"/>-->
++    <tarfileset file="${target.root}/dist.all/build.txt" fullpath="lib/build.txt"/>
++    <tarfileset dir="${target.root}/dist.all/bin" prefix="bin"/>
++    <tarfileset dir="${target.root}/dist.all/build/resources" prefix="build/resources"/>
++    <tarfileset dir="${target.root}/dist.all/build/dependencies" prefix="build/dependencies"/>
++    <tarfileset dir="${target.root}/dist.all/build/tools" prefix="build/tools"/>
++    <tarfileset dir="${target.root}/temp/jna" prefix="lib/jna"/>
++    <tarfileset dir="${target.root}/temp/skiko-awt-runtime-all" prefix="lib/skiko-awt-runtime-all"/>
++    <tarfileset dir="${target.root}/temp/native" prefix="lib/native"/>
++    <tarfileset dir="${target.root}/temp/pty4j" prefix="lib/pty4j"/>
++    <tarfileset dir="${target.root}/dist.mac.aarch64/plugins" prefix="__overlay__/mac.aarch64/plugins"/>
++    <tarfileset dir="${target.root}/dist.mac.x64/plugins" prefix="__overlay__/mac.x64/plugins"/>
++    <tarfileset dir="${target.root}/dist.win.aarch64/plugins" prefix="__overlay__/win.aarch64/plugins"/>
++    <tarfileset dir="${target.root}/dist.win.x64/plugins" prefix="__overlay__/win.x64/plugins"/>
++    <tarfileset dir="${target.root}/dist.unix.aarch64/plugins" prefix="__overlay__/unix.aarch64/plugins"/>
++    <tarfileset dir="${target.root}/dist.unix.x64/plugins" prefix="__overlay__/unix.x64/plugins"/>
++  </tar>
    
+ </project>
 -- 
 2.55.0
 
