@@ -4,6 +4,7 @@ package jetbrains.mps.console.plugin;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.ide.tools.BaseTabbedProjectTool;
+import jetbrains.mps.logging.Logger;
 import javax.swing.Icon;
 import jetbrains.mps.icons.MPSIcons;
 import java.util.List;
@@ -38,6 +39,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
 @GeneratedClass(nodeId = "2960931074096488202", model = "r:12d1fcfd-d198-4520-8b28-436d7e8a8ae6(jetbrains.mps.console.plugin)")
 public class ConsoleTool_Tool extends BaseTabbedProjectTool {
+  private static final Logger LOG = Logger.getLogger(ConsoleTool_Tool.class);
   private static final Icon ICON = MPSIcons.ToolWindows.Console;
   private List<BaseConsoleTab> myTabs = ListSequence.fromList(new ArrayList<BaseConsoleTab>());
   private MPSProject myMPSProject;
@@ -87,7 +89,8 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
   }
   public BaseConsoleTab addConsoleTab(@Nullable TabState tabState, @Nullable Icon icon, boolean openTool) {
     String title = check_39mclg_a0a0o(tabState);
-    Element history = check_39mclg_a0b0o(check_39mclg_a0a1a41(check_39mclg_a0a0b0o(check_39mclg_a0a0a1a41(tabState))));
+    List<Element> historyChildren = ((tabState != null && tabState.historyXml != null) ? tabState.historyXml.getChildren() : null);
+    Element history = ((historyChildren != null && !(historyChildren.isEmpty())) ? historyChildren.get(0).clone() : null);
     if (icon == null) {
       icon = MPSIcons.ToolWindows.OpenTerminal_13x13;
     }
@@ -110,7 +113,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
       }
     };
     BaseConsoleTab tab;
-    if (check_39mclg_a6a41(tabState)) {
+    if (check_39mclg_a7a41(tabState)) {
       tab = new OutputConsoleTab(ConsoleTool_Tool.this.myMPSProject, tool, title, history);
     } else {
       tab = new DialogConsoleTab(ConsoleTool_Tool.this.myMPSProject, tool, title, history);
@@ -134,8 +137,14 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     MyState loadedState = (persistence != null ? persistence.retrieveLoadedState() : null);
     if (loadedState != null) {
       for (TabState tabState : ListSequence.fromList(loadedState.tabs)) {
-        BaseConsoleTab tab = ConsoleTool_Tool.this.addConsoleTab(tabState, null, false);
-        check_39mclg_a1a0a4a51(cm.getContent(tab));
+        try {
+          BaseConsoleTab tab = ConsoleTool_Tool.this.addConsoleTab(tabState, null, false);
+          check_39mclg_a1a0a0a4a51(cm.getContent(tab));
+        } catch (Throwable t) {
+          if (LOG.isErrorLevel()) {
+            LOG.error("Failed to restore a persisted console tab; skipping it", t);
+          }
+        }
       }
     }
     BaseConsoleTab defaultTab = null;
@@ -167,11 +176,11 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
   public DialogConsoleTab getCurrentEditableTab() {
     JComponent selected = ConsoleTool_Tool.this.getMyself().getSelectedTab();
     if (selected instanceof DialogConsoleTab) {
-      return as_39mclg_a0a0b0r(selected, DialogConsoleTab.class);
+      return as_39mclg_a0a0b0s(selected, DialogConsoleTab.class);
     }
     for (BaseConsoleTab candidate : ListSequence.fromList(ConsoleTool_Tool.this.myTabs)) {
       if (candidate instanceof DialogConsoleTab) {
-        return as_39mclg_a0a0a0c0r(candidate, DialogConsoleTab.class);
+        return as_39mclg_a0a0a0c0s(candidate, DialogConsoleTab.class);
       }
     }
     return null;
@@ -213,37 +222,13 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     }
     return null;
   }
-  private static Element check_39mclg_a0b0o(Element checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.clone();
-    }
-    return null;
-  }
-  private static Element check_39mclg_a0a1a41(List<Element> checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.get(0);
-    }
-    return null;
-  }
-  private static List<Element> check_39mclg_a0a0b0o(Element checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.getChildren();
-    }
-    return null;
-  }
-  private static Element check_39mclg_a0a0a1a41(TabState checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      return checkedDotOperand.historyXml;
-    }
-    return null;
-  }
-  private static boolean check_39mclg_a6a41(TabState checkedDotOperand) {
+  private static boolean check_39mclg_a7a41(TabState checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.isHistoryTab;
     }
     return false;
   }
-  private static void check_39mclg_a1a0a4a51(Content checkedDotOperand) {
+  private static void check_39mclg_a1a0a0a4a51(Content checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.setPinned(true);
     }
@@ -255,10 +240,10 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     }
 
   }
-  private static <T> T as_39mclg_a0a0b0r(Object o, Class<T> type) {
+  private static <T> T as_39mclg_a0a0b0s(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_39mclg_a0a0a0c0r(Object o, Class<T> type) {
+  private static <T> T as_39mclg_a0a0a0c0s(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 
