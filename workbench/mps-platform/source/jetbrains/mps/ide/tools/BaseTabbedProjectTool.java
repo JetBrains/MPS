@@ -56,16 +56,6 @@ public abstract class BaseTabbedProjectTool extends BaseTool {
     super(project, id, shortcutsByKeymap, icon, anchor, false, canCloseContent);
   }
 
-  @Override
-  protected void doUnregister() {
-    // Non-creating accessor on purpose: a tool window that was never shown has no tabs to remove, and the
-    // creating one would build this tool's entire UI just to tear it down (see BaseTool.detachContent()).
-    ContentManager contentManager = getContentManagerIfCreated();
-    if (contentManager != null && !contentManager.isDisposed() && !getProject().isDisposed()) {
-      contentManager.removeAllContents(true);
-    }
-  }
-
   /**
    * Changing the visibility, since the generated subclasses need to call this method,
    * yet the actual TabbedTool concept instances are not subclasses of {@link BaseTabbedProjectTool}
