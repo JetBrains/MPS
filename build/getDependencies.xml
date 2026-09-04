@@ -7,7 +7,7 @@
 
   <property name="mps.ivy.home" value="${user.home}" description="Property used to set custom path on TeamCity"/>
   <property name="idea.platform.local.build" value="false" description="Set to true if use local platform build"/>
-  <property name="idea.platform.provided.filename" value="mps-platform-provided.zip"/>
+  <property name="idea.platform.provided.filename" value="mps-platform-provided.tar.gz"/>
   <property name="ivy.jar.dir" value="${basedir}/ivy"/>
   <property name="ivy.cache.ttl.default" value="eternal"/>
 
@@ -335,10 +335,10 @@
     <echo message="Platform will be downloaded"/>
     <antcall target="download-ivy"/>
     <antcall target="unzip-platform">
-      <param name="platform.zip.file" value="mps-platform.zip"/>
+      <param name="platform.zip.file" value="mps-platform.tar.gz"/>
     </antcall>
     <antcall target="unzip-platform-overlay">
-      <param name="platform.zip.file" value="mps-platform.zip"/>
+      <param name="platform.zip.file" value="mps-platform.tar.gz"/>
     </antcall>
   </target>
 
@@ -350,7 +350,7 @@
   <target name="unzip-platform" depends="detect-os" description="Unpacks mps-platform.zip">
     <antcall target="clean-platform"/>
 
-    <unzip src="${basedir}/../${platform.zip.file}" dest="${basedir}/../" overwrite="true">
+    <untar src="${basedir}/../${platform.zip.file}" dest="${basedir}/../" compression="gzip" overwrite="true">
       <patternset>
         <exclude name="plugins/java-ide-customization/**"/>
         <!-- TODO: Exclude log.xml & mps.svg from platform-->
@@ -359,8 +359,8 @@
         <exclude name="bin/mps.svg"/>
         <exclude name="__overlay__/**"/>
       </patternset>
-    </unzip>
-    <unzip src="${basedir}/../${platform.zip.file}" dest="${basedir}/../" overwrite="true">
+    </untar>
+    <untar src="${basedir}/../${platform.zip.file}" dest="${basedir}/../" compression="gzip" overwrite="true">
       <patternset>
         <exclude name="*"/>
         <include name="__overlay__/${os.platform}/**"/>
@@ -368,8 +368,7 @@
       <mapper type="glob"
               from="__overlay__/${os.platform}/*"
               to="*"/>
-    </unzip>
-
+    </untar>
     <antcall target="update-licence-info"/>
 
     <!-- Set executable flag to binaries -->
@@ -391,12 +390,12 @@
 
   <target name="unzip-platform-overlay" description="Unpacks mps-platform.zip!/__overlay__" if="${unzip.overlay}">
     <mkdir dir="${basedir}/tmp"/>
-    <unzip src="${basedir}/../${platform.zip.file}" dest="${basedir}/tmp" overwrite="true">
+    <untar src="${basedir}/../${platform.zip.file}" dest="${basedir}/tmp" compression="gzip" overwrite="true">
       <patternset>
         <exclude name="*"/>
         <include name="__overlay__/**"/>
       </patternset>
-    </unzip>
+    </untar>
   </target>
 
   <target name="embed-module-descriptors">
