@@ -9,15 +9,20 @@ import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.openapi.vfs.VirtualFile;
+import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.ide.project.ProjectHelper;
-import jetbrains.mps.nodefs.MPSNodeVirtualFile;
+import jetbrains.mps.nodeEditor.EditorComponent;
+import jetbrains.mps.nodeEditor.NodeEditorComponent;
+import jetbrains.mps.openapi.editor.Editor;
 import jetbrains.mps.project.MPSProject;
 import jetbrains.mps.smodel.language.LanguageRegistry;
 import jetbrains.mps.smodel.runtime.ModuleDeploymentChange;
 import jetbrains.mps.smodel.runtime.ModuleDeploymentListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -63,6 +68,24 @@ public final class EditorTrackService {
         deactivateListeners();
       }
     }
+  }
+
+  /*package*/ void commitPendingCellValues() {
+    ThreadUtils.assertEDT();
+    // avoid repeated commitAllCellValues on the shared inspector
+    Set<EditorComponent> components = new LinkedHashSet<>();
+    for (MPSFileNodeEditor fileEditor : myEditors) {
+      Editor nodeEditor = fileEditor.getNodeEditor();
+      if (nodeEditor == null || !(nodeEditor.getCurrentEditorComponent() instanceof NodeEditorComponent editorComponent)) {
+        continue;
+      }
+      components.add(editorComponent);
+      EditorComponent inspector = editorComponent.getInspector();
+      if (inspector != null) {
+        components.add(inspector);
+      }
+    }
+    components.forEach(EditorComponent::commitAllCellValues);
   }
 
   private void activateListeners() {
