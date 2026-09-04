@@ -21,7 +21,7 @@ import java.util.Objects;
 @GeneratedClass(nodeId = "7590011715503896212", model = "r:12d1fcfd-d198-4520-8b28-436d7e8a8ae6(jetbrains.mps.console.plugin)")
 public final class ConsoleToolPersistence implements PersistentStateComponent<MyState> {
   private final Project myProject;
-  private MyState loadedState = null;
+  private volatile MyState loadedState = null;
 
   public ConsoleToolPersistence(Project project) {
     myProject = project;
@@ -29,6 +29,9 @@ public final class ConsoleToolPersistence implements PersistentStateComponent<My
   @Nullable
   @Override
   public MyState getState() {
+    if (myProject.isDisposed()) {
+      return loadedState;
+    }
     ConsoleTool_Tool tool = ProjectPluginManager.getInstance(myProject).getTool(ConsoleTool_Tool.class);
     if (tool == null) {
       return loadedState;

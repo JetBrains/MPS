@@ -13,6 +13,7 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
 import jetbrains.mps.project.MPSProject;
 import com.intellij.openapi.project.Project;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
 import javax.swing.KeyStroke;
@@ -45,7 +46,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
   private MPSProject myMPSProject;
   private Project myIdeaProject;
   private Object myself = ConsoleTool_Tool.this;
-  private boolean myTabsInitialized = false;
+  private AtomicBoolean myTabsInitialized = new AtomicBoolean(false);
   public ConsoleTool_Tool(Project project) {
     super(project, "Console", MapSequence.fromMapAndEntryArray(new HashMap<String, KeyStroke>(), Map.entry("$default", KeyStroke.getKeyStroke("alt F11"))), ICON, ToolWindowAnchor.BOTTOM, true);
   }
@@ -59,7 +60,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     return true;
   }
   protected void doUnregister() {
-    ConsoleTool_Tool.this.myTabsInitialized = false;
+    ConsoleTool_Tool.this.myTabsInitialized.set(false);
     ListSequence.fromList(ConsoleTool_Tool.this.myTabs).clear();
   }
   @Override
@@ -70,6 +71,15 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     return ((BaseTabbedProjectTool) ConsoleTool_Tool.this.myself);
   }
   public void clearAll() {
+    /*
+      Not currently called anywhere in the codebase (zero callers). It exists as the only way to
+      fully reset the console: close every tab, wipe the persisted state, and recreate the default tab.
+      The tabCountBefore / remove(tab) fallback below is not overcaution: BaseTabbedProjectTool.closeTab()
+      silently no-ops when a tab has no backing Content (e.g. an orphaned entry), so without it this loop
+      could spin forever on the EDT. Keep both facts in mind before deleting either piece.
+
+    */
+
     while (ListSequence.fromList(ConsoleTool_Tool.this.myTabs).isNotEmpty()) {
       BaseConsoleTab tab = ListSequence.fromList(ConsoleTool_Tool.this.myTabs).first();
       int tabCountBefore = ListSequence.fromList(ConsoleTool_Tool.this.myTabs).count();
@@ -139,7 +149,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
       for (TabState tabState : ListSequence.fromList(loadedState.tabs)) {
         try {
           BaseConsoleTab tab = ConsoleTool_Tool.this.addConsoleTab(tabState, null, false);
-          check_39mclg_a1a0a0a4a51(cm.getContent(tab));
+          ConsoleTool_Tool.this.getMyself().pinTab(tab);
         } catch (Throwable t) {
           if (LOG.isErrorLevel()) {
             LOG.error("Failed to restore a persisted console tab; skipping it", t);
@@ -147,16 +157,10 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
         }
       }
     }
-    BaseConsoleTab defaultTab = null;
-    for (BaseConsoleTab existingTab : ListSequence.fromList(ConsoleTool_Tool.this.myTabs)) {
-      if (existingTab instanceof DialogConsoleTab) {
-        defaultTab = existingTab;
-        break;
-      }
-    }
+    BaseConsoleTab defaultTab = ConsoleTool_Tool.this.findFirstDialogConsoleTab();
     if (defaultTab == null) {
       defaultTab = ConsoleTool_Tool.this.addConsoleTab(null, null, false);
-      check_39mclg_a1a7a51(cm.getContent(defaultTab));
+      ConsoleTool_Tool.this.getMyself().pinTab(defaultTab);
     }
     Content defaultContent = cm.getContent(defaultTab);
     if (defaultContent != null) {
@@ -164,7 +168,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
       defaultContent.setCloseable(false);
       cm.setSelectedContent(defaultContent);
     }
-    ConsoleTool_Tool.this.myTabsInitialized = true;
+    ConsoleTool_Tool.this.myTabsInitialized.set(true);
   }
   public void executeCommand(final SNode command) {
     final TabState tabState = new TabState();
@@ -178,9 +182,12 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     if (selected instanceof DialogConsoleTab) {
       return as_39mclg_a0a0b0s(selected, DialogConsoleTab.class);
     }
+    return ConsoleTool_Tool.this.findFirstDialogConsoleTab();
+  }
+  private DialogConsoleTab findFirstDialogConsoleTab() {
     for (BaseConsoleTab candidate : ListSequence.fromList(ConsoleTool_Tool.this.myTabs)) {
       if (candidate instanceof DialogConsoleTab) {
-        return as_39mclg_a0a0a0c0s(candidate, DialogConsoleTab.class);
+        return as_39mclg_a0a0a0a0t(candidate, DialogConsoleTab.class);
       }
     }
     return null;
@@ -188,7 +195,7 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
   @Nullable
   public MyState getState() {
     ContentManager cm = ConsoleTool_Tool.this.getMyself().getContentManagerIfCreated();
-    if (cm == null || !(ConsoleTool_Tool.this.myTabsInitialized)) {
+    if (cm == null || !(ConsoleTool_Tool.this.myTabsInitialized.get())) {
       return null;
     }
     MyState result = new MyState();
@@ -228,22 +235,10 @@ public class ConsoleTool_Tool extends BaseTabbedProjectTool {
     }
     return false;
   }
-  private static void check_39mclg_a1a0a0a4a51(Content checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      checkedDotOperand.setPinned(true);
-    }
-
-  }
-  private static void check_39mclg_a1a7a51(Content checkedDotOperand) {
-    if (null != checkedDotOperand) {
-      checkedDotOperand.setPinned(true);
-    }
-
-  }
   private static <T> T as_39mclg_a0a0b0s(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_39mclg_a0a0a0c0s(Object o, Class<T> type) {
+  private static <T> T as_39mclg_a0a0a0a0t(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 
