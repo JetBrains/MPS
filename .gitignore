@@ -104,6 +104,7 @@ teamcity-info.xml
 # some default plugins (not mentioned in MPSProperties.groovy)
 /plugins/platform-images
 /plugins/mps-devkit/lib
+/plugins/jcef-plugin
 
 # Main libraries folder: dependencies are downloaded before complilation with task 'install' from build/getDependencies.xml
 /lib/
