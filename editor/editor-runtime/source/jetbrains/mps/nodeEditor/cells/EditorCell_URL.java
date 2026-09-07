@@ -40,7 +40,7 @@ public class EditorCell_URL extends EditorCell_Property {
     int modifiers = InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK;
     if ((e.getModifiersEx() & modifiers) == modifiers) {
       e.consume();
-      BrowserUtil.launchBrowser(this.getText());
+      BrowserUtil.browse(this.getText());
       return false;
     } else {
       return super.processMousePressed(e);
