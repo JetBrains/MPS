@@ -31,7 +31,33 @@ import java.lang.reflect.Field;
  */
 @RunWith(McpToolsIntegrationTestSuite.class)
 @Suite.SuiteClasses({
+    JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest.class,
+    JetBrainsMPSJavaMcpToolsetIntegrationTest.class,
+    JetBrainsMPSLanguageMcpToolsetIntegrationTest.class,
+    JetBrainsMPSModelMcpToolsetIntegrationTest.class,
+    JetBrainsMPSModuleMcpToolsetIntegrationTest.class,
+    JetBrainsMPSEditorMcpToolsetIntegrationTest.class,
+    ScaffoldEditorStalenessTest.class,
+    JetBrainsMPSNodeMcpToolsetIntegrationTest.class,
+    JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.class,
+    JetBrainsMPSIntentionsMcpToolsetIntegrationTest.class,
+    JetBrainsMPSRootNodeMcpToolsetIntegrationTest.class,
+    EditorCaretSelectionSerializerTest.class,
+    SearchRootNodeCrossProjectTest.class,
+    WriteToolCrossProjectTest.class,
+    ProjectResolutionCrossProjectTest.class,
+    JetBrainsMPSProjectMcpToolsetIntegrationTest.class,
+    JetBrainsMPSConsoleMcpToolsetIntegrationTest.class,
     JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest.class,
+    AbstractOpsMakeTest.class,
+    AbstractOpsPropertyProblemsTest.class,
+    AbstractOpsAutoApplyQuickFixesTest.class,
+    AbstractOpsModalTimeoutTest.class,
+    IntentionsCandidateSelectionTest.class,
+    AssignableReferenceServiceTest.class,
+    JetBrainsMPSInitMcpToolsetTest.class,
+    JetBrainsMPSInitMcpToolsetIntegrationTest.class,
+    McpToolInputSchemasTest.class,
 })
 public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
   private static IdeaEnvironment ourEnvironment;
