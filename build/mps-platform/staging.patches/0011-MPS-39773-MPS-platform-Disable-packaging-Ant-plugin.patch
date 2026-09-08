@@ -1,4 +1,4 @@
-From eb8c60647706e4a07e29539819d6caaa215ced1b Mon Sep 17 00:00:00 2001
+From 8e9fb55c61507250053cc3c527acd7be10ae23a2 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Fri, 31 Jul 2026 11:00:52 +0200
 Subject: [PATCH 11/17] MPS-39773 MPS platform: Disable packaging Ant plugin

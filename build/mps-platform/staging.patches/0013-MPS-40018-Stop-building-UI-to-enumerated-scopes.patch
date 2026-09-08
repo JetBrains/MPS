@@ -1,4 +1,4 @@
-From ccbebc1483ac0190d4387c018aa950c062509e5a Mon Sep 17 00:00:00 2001
+From 6e317041686734ddbdd2877e5c2bcd3c8c5afe11 Mon Sep 17 00:00:00 2001
 From: Maros Sandor <maros.sandor@jetbrains.com>
 Date: Fri, 21 Aug 2026 11:37:46 +0200
 Subject: [PATCH 13/17] MPS-40018 Stop building UI to enumerated scopes

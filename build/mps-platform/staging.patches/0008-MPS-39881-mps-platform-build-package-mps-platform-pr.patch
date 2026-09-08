@@ -1,4 +1,4 @@
-From 00e3896b59a540cb7abd7b4cb4838a451684e7d1 Mon Sep 17 00:00:00 2001
+From f0ccd5234588986dd76cc1193dee1a2763499f22 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 25 Jun 2026 09:54:45 +0200
 Subject: [PATCH 08/17] MPS-39881 mps-platform build: package

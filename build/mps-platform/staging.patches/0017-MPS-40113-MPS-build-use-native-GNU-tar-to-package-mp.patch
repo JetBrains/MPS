@@ -1,4 +1,4 @@
-From 06698db69159c86f79a92ce40ffc6ed0656c30a0 Mon Sep 17 00:00:00 2001
+From c1610129f14bca4aa5b42cca1c117ab63d9f39fd Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Tue, 8 Sep 2026 12:17:53 +0200
 Subject: [PATCH 17/17] MPS-40113 MPS build: use native GNU tar to package
@@ -9,7 +9,7 @@ Subject: [PATCH 17/17] MPS-40113 MPS build: use native GNU tar to package
  1 file changed, 106 insertions(+), 22 deletions(-)
 
 diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
-index f9f13bbf95ade..cfe3f96f7cb35 100644
+index f9f13bbf95ade..6b1ac06ffe477 100644
 --- a/community/mps/build/build/build.xml
 +++ b/community/mps/build/build/build.xml
 @@ -27,6 +27,30 @@
@@ -94,9 +94,9 @@ index f9f13bbf95ade..cfe3f96f7cb35 100644
 +      <arg value="dist.all/plugins"/>
 +      <!--<arg value="dist.all/build.txt"/>-->
 +      <arg value="dist.all/bin"/>
-+      <!--<arg value="dist.all/resources"/>-->
-+      <!--<arg value="dist.all/dependencies"/>-->
-+      <!--<arg value="dist.all/tools"/>-->
++      <arg value="dist.all/build/resources"/>
++      <arg value="dist.all/build/dependencies"/>
++      <arg value="dist.all/build/tools"/>
 +
 +      <arg value="temp/jna"/>
 +      <arg value="temp/skiko-awt-runtime-all"/>

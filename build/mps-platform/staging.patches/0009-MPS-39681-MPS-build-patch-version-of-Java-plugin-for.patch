@@ -1,4 +1,4 @@
-From 8e97a1d39829c4e59b21067692f887e85554e394 Mon Sep 17 00:00:00 2001
+From 8e20a253f8cf1a6acb604f801a586baa72984fe5 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 30 Jul 2026 17:18:14 +0200
 Subject: [PATCH 09/17] MPS-39681 MPS build: patch version of Java plugin for

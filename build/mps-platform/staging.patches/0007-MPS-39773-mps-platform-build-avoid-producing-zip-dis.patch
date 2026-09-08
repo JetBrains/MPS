@@ -1,4 +1,4 @@
-From ca5f7f532f56fafc978c2c1642b86fcb94ba5eb4 Mon Sep 17 00:00:00 2001
+From 7a422180095c2ce2f676bbccc08f3a0663a3259e Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Mon, 13 Jul 2026 12:51:26 +0200
 Subject: [PATCH 07/17] MPS-39773 mps-platform build: avoid producing zip dist
