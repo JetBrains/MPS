@@ -62,6 +62,7 @@
     <import index="cttk" ref="r:5ff047e0-2953-4750-806a-bdc16824aa89(jetbrains.mps.smodel)" />
     <import index="82uw" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.function(JDK/)" />
     <import index="kip1" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.nodefs(MPS.Platform/)" />
+    <import index="drih" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.editor.colors(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -3436,6 +3437,68 @@
                     </node>
                     <node concept="liA8E" id="5rV$5P0BqWY" role="2OqNvi">
                       <ref role="37wK5l" to="hdhb:6ucDe7IybjI" resolve="getPanel" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="241_1eUbEj9" role="3cqZAp">
+          <node concept="2OqwBi" id="241_1eUbEku" role="3clFbG">
+            <node concept="37vLTw" id="241_1eUbEjw" role="2Oq$k0">
+              <ref role="3cqZAo" node="2duWW7Sf6jn" resolve="panel" />
+            </node>
+            <node concept="liA8E" id="241_1eUbEkv" role="2OqNvi">
+              <ref role="37wK5l" to="dxuu:~JComponent.setOpaque(boolean)" resolve="setOpaque" />
+              <node concept="3clFbT" id="241_1eUbEkw" role="37wK5m">
+                <property role="3clFbU" value="true" />
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="241_1eUbEjc" role="3cqZAp">
+          <node concept="2OqwBi" id="241_1eUbEkY" role="3clFbG">
+            <node concept="37vLTw" id="241_1eUbEjF" role="2Oq$k0">
+              <ref role="3cqZAo" node="2duWW7Sf6jn" resolve="panel" />
+            </node>
+            <node concept="liA8E" id="241_1eUbEkZ" role="2OqNvi">
+              <ref role="37wK5l" to="dxuu:~JComponent.setBackground(java.awt.Color)" resolve="setBackground" />
+              <node concept="2YIFZM" id="241_1eUbEBz" role="37wK5m">
+                <ref role="1Pybhc" to="lzb2:~JBColor" resolve="JBColor" />
+                <ref role="37wK5l" to="lzb2:~JBColor.lazy(java.util.function.Supplier)" resolve="lazy" />
+                <node concept="1bVj0M" id="241_1eUbEB$" role="37wK5m">
+                  <node concept="3clFbS" id="241_1eUbEB_" role="1bW5cS">
+                    <node concept="3clFbF" id="241_1eUbEBA" role="3cqZAp">
+                      <node concept="3K4zz7" id="241_1eUbEBB" role="3clFbG">
+                        <node concept="2OqwBi" id="241_1eUcCOW" role="3K4Cdx">
+                          <node concept="10M0yZ" id="241_1eUcCOZ" role="2Oq$k0">
+                            <ref role="1PxDUh" to="lzb2:~IslandsState" resolve="IslandsState" />
+                            <ref role="3cqZAo" to="lzb2:~IslandsState.Companion" resolve="Companion" />
+                          </node>
+                          <node concept="liA8E" id="241_1eUcCP0" role="2OqNvi">
+                            <ref role="37wK5l" to="lzb2:~IslandsState$Companion.isEnabled()" resolve="isEnabled" />
+                          </node>
+                        </node>
+                        <node concept="2OqwBi" id="241_1eUbED4" role="3K4E3e">
+                          <node concept="2OqwBi" id="241_1eUbECG" role="2Oq$k0">
+                            <node concept="2YIFZM" id="241_1eUbECe" role="2Oq$k0">
+                              <ref role="1Pybhc" to="drih:~EditorColorsManager" resolve="EditorColorsManager" />
+                              <ref role="37wK5l" to="drih:~EditorColorsManager.getInstance()" resolve="getInstance" />
+                            </node>
+                            <node concept="liA8E" id="241_1eUbECH" role="2OqNvi">
+                              <ref role="37wK5l" to="drih:~EditorColorsManager.getGlobalScheme()" resolve="getGlobalScheme" />
+                            </node>
+                          </node>
+                          <node concept="liA8E" id="241_1eUbED5" role="2OqNvi">
+                            <ref role="37wK5l" to="drih:~EditorColorsScheme.getDefaultBackground()" resolve="getDefaultBackground" />
+                          </node>
+                        </node>
+                        <node concept="2YIFZM" id="241_1eUbECn" role="3K4GZi">
+                          <ref role="1Pybhc" to="g1qu:~UIUtil" resolve="UIUtil" />
+                          <ref role="37wK5l" to="g1qu:~UIUtil.getPanelBackground()" resolve="getPanelBackground" />
+                        </node>
+                      </node>
                     </node>
                   </node>
                 </node>
@@ -7126,23 +7189,14 @@
             </node>
           </node>
         </node>
-        <node concept="3clFbF" id="56VWuMNd2mk" role="3cqZAp">
-          <node concept="2OqwBi" id="56VWuMNdY6N" role="3clFbG">
-            <node concept="37vLTw" id="56VWuMNdeUq" role="2Oq$k0">
+        <node concept="3clFbF" id="241_1eUbZEg" role="3cqZAp">
+          <node concept="2OqwBi" id="241_1eUbZF5" role="3clFbG">
+            <node concept="37vLTw" id="241_1eUbZEr" role="2Oq$k0">
               <ref role="3cqZAo" node="56VWuMNd2mf" resolve="panel" />
             </node>
-            <node concept="liA8E" id="56VWuMNdY6O" role="2OqNvi">
-              <ref role="37wK5l" to="dxuu:~JComponent.setBorder(javax.swing.border.Border)" resolve="setBorder" />
-              <node concept="2YIFZM" id="56VWuMNdY6P" role="37wK5m">
-                <ref role="1Pybhc" to="g1qu:~JBUI$Borders" resolve="JBUI.Borders" />
-                <ref role="37wK5l" to="g1qu:~JBUI$Borders.empty(int,int)" resolve="empty" />
-                <node concept="3cmrfG" id="56VWuMNdY6Q" role="37wK5m">
-                  <property role="3cmrfH" value="0" />
-                </node>
-                <node concept="3cmrfG" id="56VWuMNdY6R" role="37wK5m">
-                  <property role="3cmrfH" value="4" />
-                </node>
-              </node>
+            <node concept="liA8E" id="241_1eUbZF6" role="2OqNvi">
+              <ref role="37wK5l" to="dxuu:~JComponent.setOpaque(boolean)" resolve="setOpaque" />
+              <node concept="3clFbT" id="241_1eUbZF7" role="37wK5m" />
             </node>
           </node>
         </node>
@@ -7156,6 +7210,17 @@
               <node concept="1pGfFk" id="56VWuMNqJPT" role="2ShVmc">
                 <ref role="37wK5l" to="5stq:~BorderLayoutPanel.&lt;init&gt;()" resolve="BorderLayoutPanel" />
               </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="241_1eUck51" role="3cqZAp">
+          <node concept="2OqwBi" id="241_1eUck9E" role="3clFbG">
+            <node concept="37vLTw" id="241_1eUck5c" role="2Oq$k0">
+              <ref role="3cqZAo" node="56VWuMNd2mp" resolve="labelWithIcon" />
+            </node>
+            <node concept="liA8E" id="241_1eUck9F" role="2OqNvi">
+              <ref role="37wK5l" to="dxuu:~JComponent.setOpaque(boolean)" resolve="setOpaque" />
+              <node concept="3clFbT" id="241_1eUck9G" role="37wK5m" />
             </node>
           </node>
         </node>
@@ -7342,6 +7407,17 @@
                   <node concept="1pGfFk" id="56VWuMNdeVJ" role="2ShVmc">
                     <ref role="37wK5l" to="dxuu:~JPanel.&lt;init&gt;()" resolve="JPanel" />
                   </node>
+                </node>
+              </node>
+            </node>
+            <node concept="3clFbF" id="241_1eUcCPf" role="3cqZAp">
+              <node concept="2OqwBi" id="241_1eUcCQ4" role="3clFbG">
+                <node concept="37vLTw" id="241_1eUcCPq" role="2Oq$k0">
+                  <ref role="3cqZAo" node="56VWuMNd2nm" resolve="panel2" />
+                </node>
+                <node concept="liA8E" id="241_1eUcCQ5" role="2OqNvi">
+                  <ref role="37wK5l" to="dxuu:~JComponent.setOpaque(boolean)" resolve="setOpaque" />
+                  <node concept="3clFbT" id="241_1eUcCQ6" role="37wK5m" />
                 </node>
               </node>
             </node>

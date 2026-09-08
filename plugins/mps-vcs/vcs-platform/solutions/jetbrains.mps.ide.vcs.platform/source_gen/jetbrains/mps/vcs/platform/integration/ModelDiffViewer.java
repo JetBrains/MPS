@@ -29,9 +29,8 @@ import com.intellij.diff.contents.FileContent;
 import org.jetbrains.annotations.Nullable;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import com.intellij.openapi.actionSystem.AnAction;
+import java.util.Collections;
 import com.intellij.openapi.actionSystem.ActionManager;
-import java.util.Arrays;
 import jetbrains.mps.components.ComponentHost;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
 import jetbrains.mps.smodel.SModelReference;
@@ -154,11 +153,7 @@ public class ModelDiffViewer implements FrameDiffTool.DiffViewer {
   @NotNull
   public FrameDiffTool.ToolbarComponents init() {
     FrameDiffTool.ToolbarComponents toolbarComponents = new FrameDiffTool.ToolbarComponents();
-    AnAction showInNewWindow = ActionManager.getInstance().getAction("Vcs.Diff.ShowDiffInNewWindow");
-    AnAction showInEditorTab = ActionManager.getInstance().getAction("Vcs.Diff.ShowDiffInEditorTab");
-    // by some reason a wrong icon is created for showInEditorTab action
-    showInEditorTab.getTemplatePresentation().setIcon(showInNewWindow.getTemplatePresentation().getIcon());
-    toolbarComponents.toolbarActions = Arrays.asList(showInEditorTab, showInNewWindow);
+    toolbarComponents.rightToolbarActions = Collections.singletonList(ActionManager.getInstance().getAction("Diff.Binary.Settings"));
     return toolbarComponents;
   }
   public void dispose() {

@@ -37,6 +37,8 @@ import com.intellij.ui.ScrollPaneFactory;
 import com.intellij.ui.IdeBorderFactory;
 import java.awt.Dimension;
 import com.intellij.openapi.util.DimensionService;
+import com.intellij.ui.IslandsState;
+import com.intellij.util.ui.JBUI;
 import jetbrains.mps.vcs.diff.ChangeSetBuilder;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.vcs.diff.ui.common.Bounds;
@@ -134,6 +136,9 @@ public class ModelDifferenceViewer implements DataProvider {
     Dimension size = DimensionService.getInstance().getSize(getDimensionServiceKey());
     if (size == null) {
       myComponent.setPreferredSize(new Dimension(500, 700));
+    }
+    if (IslandsState.Companion.isEnabled()) {
+      myComponent.setBorder(JBUI.Borders.emptyTop(2));
     }
   }
 

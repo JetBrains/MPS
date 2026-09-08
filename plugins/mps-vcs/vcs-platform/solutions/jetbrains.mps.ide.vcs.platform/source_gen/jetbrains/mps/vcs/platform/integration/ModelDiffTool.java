@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.DiffContext;
 import com.intellij.diff.requests.DiffRequest;
 import com.intellij.diff.requests.ContentDiffRequest;
+import javax.swing.Icon;
 
 @GeneratedClass(nodeId = "2146316116462340798", model = "r:f7252e75-44f2-46f6-9600-c9b291e7dd5f(jetbrains.mps.vcs.platform.integration)")
 public class ModelDiffTool implements FrameDiffTool {
@@ -25,5 +26,9 @@ public class ModelDiffTool implements FrameDiffTool {
   @NotNull
   public FrameDiffTool.DiffViewer createComponent(@NotNull DiffContext context, @NotNull DiffRequest request) {
     return new ModelDiffViewer(context, (ContentDiffRequest) request);
+  }
+  @Override
+  public Icon getIcon() {
+    return MPSFileTypeFactory.MPS_FILE_TYPE.getIcon();
   }
 }

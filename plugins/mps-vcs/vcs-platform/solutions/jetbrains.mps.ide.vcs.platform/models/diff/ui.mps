@@ -13,6 +13,7 @@
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="f2801650-65d5-424e-bb1b-463a8781b786" name="jetbrains.mps.baseLanguage.javadoc" version="3" />
     <use id="760a0a8c-eabb-4521-8bfd-65db761a9ba3" name="jetbrains.mps.baseLanguage.logging" version="-1" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
   </languages>
   <imports>
     <import index="dxuu" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.swing(JDK/)" />
@@ -88,6 +89,7 @@
     <import index="tcg7" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.fileTypes(MPS.Platform/)" />
     <import index="wenr" ref="r:351fe3d9-2ce5-4ea0-8afc-9b076259a949(jetbrains.mps.vcs.diff.ui.merge)" />
     <import index="o8e1" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.diff.merge(MPS.IDEA/)" />
+    <import index="drih" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.editor.colors(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -4634,6 +4636,68 @@
             </node>
           </node>
         </node>
+        <node concept="3clFbF" id="241_1eUbbfq" role="3cqZAp">
+          <node concept="2OqwBi" id="241_1eUbbio" role="3clFbG">
+            <node concept="37vLTw" id="241_1eUbbg3" role="2Oq$k0">
+              <ref role="3cqZAo" node="3SMO48FPagc" resolve="myPanel" />
+            </node>
+            <node concept="liA8E" id="241_1eUbbip" role="2OqNvi">
+              <ref role="37wK5l" to="dxuu:~JComponent.setOpaque(boolean)" resolve="setOpaque" />
+              <node concept="3clFbT" id="241_1eUbbiq" role="37wK5m">
+                <property role="3clFbU" value="true" />
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="241_1eUbbft" role="3cqZAp">
+          <node concept="2OqwBi" id="241_1eUbbjS" role="3clFbG">
+            <node concept="37vLTw" id="241_1eUbbgw" role="2Oq$k0">
+              <ref role="3cqZAo" node="3SMO48FPagc" resolve="myPanel" />
+            </node>
+            <node concept="liA8E" id="241_1eUbbjT" role="2OqNvi">
+              <ref role="37wK5l" to="dxuu:~JComponent.setBackground(java.awt.Color)" resolve="setBackground" />
+              <node concept="2YIFZM" id="241_1eUboUC" role="37wK5m">
+                <ref role="1Pybhc" to="lzb2:~JBColor" resolve="JBColor" />
+                <ref role="37wK5l" to="lzb2:~JBColor.lazy(java.util.function.Supplier)" resolve="lazy" />
+                <node concept="1bVj0M" id="241_1eUboUD" role="37wK5m">
+                  <node concept="3clFbS" id="241_1eUboUE" role="1bW5cS">
+                    <node concept="3clFbF" id="241_1eUboUF" role="3cqZAp">
+                      <node concept="3K4zz7" id="241_1eUboUG" role="3clFbG">
+                        <node concept="2OqwBi" id="241_1eUcCOC" role="3K4Cdx">
+                          <node concept="10M0yZ" id="241_1eUcCOF" role="2Oq$k0">
+                            <ref role="1PxDUh" to="lzb2:~IslandsState" resolve="IslandsState" />
+                            <ref role="3cqZAo" to="lzb2:~IslandsState.Companion" resolve="Companion" />
+                          </node>
+                          <node concept="liA8E" id="241_1eUcCOG" role="2OqNvi">
+                            <ref role="37wK5l" to="lzb2:~IslandsState$Companion.isEnabled()" resolve="isEnabled" />
+                          </node>
+                        </node>
+                        <node concept="2OqwBi" id="241_1eUbpLS" role="3K4E3e">
+                          <node concept="2OqwBi" id="241_1eUbpLw" role="2Oq$k0">
+                            <node concept="2YIFZM" id="241_1eUbpso" role="2Oq$k0">
+                              <ref role="1Pybhc" to="drih:~EditorColorsManager" resolve="EditorColorsManager" />
+                              <ref role="37wK5l" to="drih:~EditorColorsManager.getInstance()" resolve="getInstance" />
+                            </node>
+                            <node concept="liA8E" id="241_1eUbpLx" role="2OqNvi">
+                              <ref role="37wK5l" to="drih:~EditorColorsManager.getGlobalScheme()" resolve="getGlobalScheme" />
+                            </node>
+                          </node>
+                          <node concept="liA8E" id="241_1eUbpLT" role="2OqNvi">
+                            <ref role="37wK5l" to="drih:~EditorColorsScheme.getDefaultBackground()" resolve="getDefaultBackground" />
+                          </node>
+                        </node>
+                        <node concept="2YIFZM" id="241_1eUbpLb" role="3K4GZi">
+                          <ref role="1Pybhc" to="g1qu:~UIUtil" resolve="UIUtil" />
+                          <ref role="37wK5l" to="g1qu:~UIUtil.getPanelBackground()" resolve="getPanelBackground" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="59GNzBifmNy" role="3cqZAp">
           <node concept="37vLTI" id="59GNzBifpBK" role="3clFbG">
             <node concept="1rXfSq" id="59GNzBifsbF" role="37vLTx">
@@ -8930,6 +8994,36 @@
                 </node>
                 <node concept="37vLTw" id="5zPLqcHK32_" role="2Oq$k0">
                   <ref role="3cqZAo" node="5zPLqcHJB9i" resolve="myComponent" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbJ" id="241_1eUcXtS" role="3cqZAp">
+          <node concept="2OqwBi" id="241_1eUdNEE" role="3clFbw">
+            <node concept="10M0yZ" id="241_1eUdNEH" role="2Oq$k0">
+              <ref role="1PxDUh" to="lzb2:~IslandsState" resolve="IslandsState" />
+              <ref role="3cqZAo" to="lzb2:~IslandsState.Companion" resolve="Companion" />
+            </node>
+            <node concept="liA8E" id="241_1eUdNEI" role="2OqNvi">
+              <ref role="37wK5l" to="lzb2:~IslandsState$Companion.isEnabled()" resolve="isEnabled" />
+            </node>
+          </node>
+          <node concept="3clFbS" id="241_1eUcXtV" role="3clFbx">
+            <node concept="3clFbF" id="241_1eUcXtW" role="3cqZAp">
+              <node concept="2OqwBi" id="241_1eUcXvC" role="3clFbG">
+                <node concept="37vLTw" id="241_1eUcXun" role="2Oq$k0">
+                  <ref role="3cqZAo" node="5zPLqcHJB9i" resolve="myComponent" />
+                </node>
+                <node concept="liA8E" id="241_1eUcXvD" role="2OqNvi">
+                  <ref role="37wK5l" to="dxuu:~JComponent.setBorder(javax.swing.border.Border)" resolve="setBorder" />
+                  <node concept="2YIFZM" id="241_1eUcXw3" role="37wK5m">
+                    <ref role="1Pybhc" to="g1qu:~JBUI$Borders" resolve="JBUI.Borders" />
+                    <ref role="37wK5l" to="g1qu:~JBUI$Borders.emptyTop(int)" resolve="emptyTop" />
+                    <node concept="3cmrfG" id="241_1eUcXw4" role="37wK5m">
+                      <property role="3cmrfH" value="2" />
+                    </node>
+                  </node>
                 </node>
               </node>
             </node>

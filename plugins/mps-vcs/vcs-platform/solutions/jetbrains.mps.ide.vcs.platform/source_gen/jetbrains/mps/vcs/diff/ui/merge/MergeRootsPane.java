@@ -40,6 +40,10 @@ import org.jetbrains.annotations.NotNull;
 import java.beans.PropertyChangeEvent;
 import com.intellij.openapi.ui.Splitter;
 import java.util.Arrays;
+import com.intellij.ui.JBColor;
+import com.intellij.ui.IslandsState;
+import com.intellij.openapi.editor.colors.EditorColorsManager;
+import com.intellij.util.ui.UIUtil;
 import com.intellij.diff.util.Side;
 import javax.swing.JComponent;
 import com.intellij.openapi.actionSystem.ToggleAction;
@@ -64,16 +68,15 @@ import com.intellij.diff.FrameDiffTool;
 import com.intellij.util.LineSeparator;
 import java.nio.charset.Charset;
 import java.awt.BorderLayout;
-import com.intellij.util.ui.JBUI;
 import com.intellij.util.ui.components.BorderLayoutPanel;
 import com.intellij.ui.components.JBLabel;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.icons.AllIcons;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
+import com.intellij.util.ui.JBUI;
 import javax.swing.JLabel;
 import java.nio.charset.StandardCharsets;
-import com.intellij.ui.JBColor;
 import java.awt.Color;
 
 @GeneratedClass(nodeId = "2657001694096388534", model = "r:351fe3d9-2ce5-4ea0-8afc-9b076259a949(jetbrains.mps.vcs.diff.ui.merge)")
@@ -194,6 +197,8 @@ public class MergeRootsPane implements PropertyChangeListener {
 
   private ThreesideContentPanel createThreesideContentPanel() {
     ThreesideContentPanel panel = new ThreesideContentPanel(Arrays.asList(myMineEditor.getPanel(), myResultEditor.getPanel(), myRepositoryEditor.getPanel()));
+    panel.setOpaque(true);
+    panel.setBackground(JBColor.lazy(() -> (IslandsState.Companion.isEnabled() ? EditorColorsManager.getInstance().getGlobalScheme().getDefaultBackground() : UIUtil.getPanelBackground())));
     ListSequence.fromList(mySplitters).addElement((JBSplitter) myMineEditor.getPanel());
     ListSequence.fromList(mySplitters).addElement((JBSplitter) myResultEditor.getPanel());
     ListSequence.fromList(mySplitters).addElement((JBSplitter) myRepositoryEditor.getPanel());
@@ -607,8 +612,9 @@ public class MergeRootsPane implements PropertyChangeListener {
   @NotNull
   private JComponent createTitle(@Nullable FrameDiffTool.DiffViewer viewer, @Nullable @NlsContexts.Label String title, @Nullable LineSeparator separator, @Nullable Charset charset, @Nullable Boolean bom, boolean readOnly, @Nullable DiffEditorTitleCustomizer titleCustomizer) {
     JPanel panel = new JPanel(new BorderLayout());
-    panel.setBorder(JBUI.Borders.empty(0, 4));
+    panel.setOpaque(false);
     BorderLayoutPanel labelWithIcon = new BorderLayoutPanel();
+    labelWithIcon.setOpaque(false);
     JComponent titleLabel = (titleCustomizer != null ? titleCustomizer.getLabel() : new JBLabel(StringUtil.notNullize(title)).setCopyable(true));
     if (titleCustomizer != null && titleLabel instanceof Disposable) {
       // Disposer.register(viewer, disposableTitleLabel);
@@ -623,6 +629,7 @@ public class MergeRootsPane implements PropertyChangeListener {
     panel.add(labelWithIcon, BorderLayout.CENTER);
     if (charset != null || separator != null) {
       JPanel panel2 = new JPanel();
+      panel2.setOpaque(false);
       panel2.setLayout(new BoxLayout(panel2, BoxLayout.X_AXIS));
       if (charset != null) {
         panel2.add(Box.createRigidArea(JBUI.size(4, 0)));
