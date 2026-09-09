@@ -43,7 +43,7 @@
 
   <target name="detect-os">
     
-    <condition property="os.platform" value="win.x86">
+    <condition property="os.platform" value="win.x64">
       <and>
         <os family="windows"/>
         <or>
@@ -73,7 +73,7 @@
       </and>
     </condition>
 
-    <condition property="os.platform" value="mac.x86">
+    <condition property="os.platform" value="mac.x64">
       <and>
         <os family="mac"/>
         <or>
@@ -83,7 +83,7 @@
       </and>
     </condition>
 
-    <condition property="os.platform" value="unix.x86">
+    <condition property="os.platform" value="unix.x64">
       <and>
         <os family="unix"/>
         <or>
