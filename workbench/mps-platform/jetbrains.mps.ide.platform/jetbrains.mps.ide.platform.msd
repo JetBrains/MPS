@@ -35,7 +35,6 @@
     <dependency reexport="false">8e98f4e2-decf-4e97-bf80-9109e8b759ee(jetbrains.mps.lang.constraints.rules.runtime)</dependency>
     <dependency reexport="false">a0c108f0-1637-416e-a249-3effbaa4c998(jetbrains.mps.baseLanguage.search)</dependency>
     <dependency reexport="false">b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)</dependency>
-    <dependency reexport="false">8d17ee87-2ea6-4f4a-9bd4-751928af5412(MPS.IDEA.Plugins)</dependency>
     <dependency reexport="false">320a7d92-2f09-4a63-9adc-ee2fc4d9ea30(MPS.IDEA.testFramework)</dependency>
   </dependencies>
   <languageVersions>
@@ -61,7 +60,6 @@
     <module reference="215c4c45-ba99-49f5-9ab7-4b6901a63cfd(MPS.Generator)" version="0" />
     <module reference="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" version="0" />
     <module reference="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" version="0" />
-    <module reference="8d17ee87-2ea6-4f4a-9bd4-751928af5412(MPS.IDEA.Plugins)" version="0" />
     <module reference="320a7d92-2f09-4a63-9adc-ee2fc4d9ea30(MPS.IDEA.testFramework)" version="0" />
     <module reference="8865b7a8-5271-43d3-884c-6fd1d9cfdd34(MPS.OpenAPI)" version="0" />
     <module reference="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61(MPS.Platform)" version="0" />

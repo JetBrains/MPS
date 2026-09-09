@@ -33753,11 +33753,6 @@
             <ref role="3bR37D" node="7Kfy9QB6KYw" resolve="jetbrains.mps.baseLanguage.search" />
           </node>
         </node>
-        <node concept="1SiIV0" id="2GzIqorGxkO" role="3bR37C">
-          <node concept="3bR9La" id="2GzIqorGxkP" role="1SiIV1">
-            <ref role="3bR37D" node="2GzIqorFzWp" resolve="MPS.IDEA.Plugins" />
-          </node>
-        </node>
         <node concept="1SiIV0" id="7ITB3PTRpvl" role="3bR37C">
           <node concept="3bR9La" id="7ITB3PTRpvm" role="1SiIV1">
             <ref role="3bR37D" node="1uyFnK9vtIN" resolve="MPS.IDEA.testFramework" />
