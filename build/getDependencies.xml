@@ -348,6 +348,66 @@
     <ivy:retrieve pattern="${basedir}/../[artifact].[ext]" overwritemode="different"/>
   </target>
 
+  <macrodef name="native-untar">
+    <attribute name="archive"/>
+    <attribute name="dest"/>
+    <!-- GNU BRE and BSD tar substitution syntax are expected here. -->
+    <attribute name="transform"/>
+
+    <!-- Contents are passed as tar member-selection arguments. -->
+    <element name="include-patterns" implicit="true"/>
+
+    <sequential>
+      <local name="transform.option"/>
+      <local name="include.mode"/>
+
+      <condition property="is.gnu.tar" value="false" else="true">
+        <os family="mac"/>
+      </condition>
+
+      <!--  GNU: &#45;&#45;transform EXPRESSION; BSD: -s EXPRESSION -->
+      <condition property="transform.option"
+                 value="--transform"
+                 else="-s">
+        <istrue value="${is.gnu.tar}"/>
+      </condition>
+
+      <condition property="transform.pattern"
+                 value="s@{transform}"
+                 else="@{transform}">
+        <istrue value="${is.gnu.tar}"/>
+      </condition>
+
+      <!-- GNU needs &#45;&#45;wildcards for wildcard member arguments.-->
+      <!-- bsdtar handles its member patterns natively. -->
+      <condition property="include.mode"
+                 value="--wildcards"
+                 else="">
+        <istrue value="${is.gnu.tar}"/>
+      </condition>
+
+      <exec executable="tar" failonerror="true">
+        <arg value="-x"/>
+        <arg value="-f"/>
+        <arg file="@{archive}"/>
+
+        <arg value="-C"/>
+        <arg file="@{dest}"/>
+
+        <arg value="${transform.option}"/>
+        <arg value="${transform.pattern}"/>
+
+        <arg line="${include.mode}"/>
+
+        <!-- Example:
+             <arg value="lib/**"/>
+             <arg value="bin/**"/>
+        -->
+        <include-patterns/>
+      </exec>
+    </sequential>
+  </macrodef>
+
   <target name="unzip-platform" depends="detect-os" description="Unpacks mps-platform.zip">
     <antcall target="clean-platform"/>
 
@@ -361,15 +421,22 @@
         <exclude name="__overlay__/**"/>
       </patternset>
     </untar>
-    <untar src="${basedir}/../${platform.zip.file}" dest="${basedir}/../" compression="gzip" overwrite="true">
-      <patternset>
-        <exclude name="*"/>
-        <include name="__overlay__/${os.platform}/**"/>
-      </patternset>
-      <mapper type="glob"
-              from="__overlay__/${os.platform}/*"
-              to="*"/>
-    </untar>
+    <condition property="use.native.tar" value="true" else="false">
+      <or>
+        <os family="unix"/>
+        <os family="mac"/>
+      </or>
+    </condition>
+    <antcall target="unzip-platform-overlay-native">
+      <param name="unzip.dest" value="${basedir}/../"/>
+      <param name="unzip.transform" value=",__overlay__/[^/]*/,,"/>
+      <param name="unzip.wildcard" value="__overlay__/${os.platform}/**"/>
+    </antcall>
+    <antcall target="unzip-platform-overlay-other">
+      <param name="unzip.dest" value="${basedir}/../"/>
+      <param name="unzip.transform" value=",__overlay__/[^/]*/,,"/>
+      <param name="unzip.wildcard" value="__overlay__/${os.platform}/**"/>
+    </antcall>
     <antcall target="update-licence-info"/>
 
     <!-- Set executable flag to binaries -->
@@ -391,10 +458,35 @@
 
   <target name="unzip-platform-overlay" description="Unpacks mps-platform.zip!/__overlay__" if="${unzip.overlay}">
     <mkdir dir="${resources}"/>
-    <untar src="${basedir}/../${platform.zip.file}" dest="${resources}" compression="gzip" overwrite="true">
+    <condition property="use.native.tar" value="true" else="false">
+      <or>
+        <os family="unix"/>
+        <os family="mac"/>
+      </or>
+    </condition>
+    <antcall target="unzip-platform-overlay-native">
+      <param name="unzip.dest" value="${resources}"/>
+      <param name="unzip.transform" value=",,,"/>
+      <param name="unzip.wildcard" value="__overlay__/**"/>
+    </antcall>
+    <antcall target="unzip-platform-overlay-other">
+      <param name="unzip.dest" value="${resources}"/>
+      <param name="unzip.transform" value=",,,"/>
+      <param name="unzip.wildcard" value="__overlay__/**"/>
+    </antcall>
+  </target>
+
+  <target name="unzip-platform-overlay-native" if="use.native.tar">
+    <native-untar archive="${basedir}/../${platform.zip.file}" dest="${unzip.dest}" transform="${unzip.transform}">
+      <arg value="${unzip.wildcard}"/>
+    </native-untar>
+  </target>
+
+  <target name="unzip-platform-overlay-other" unless="use.native.tar">
+    <untar src="${basedir}/../${platform.zip.file}" dest="${unzip.dest}" compression="gzip" overwrite="true">
       <patternset>
         <exclude name="*"/>
-        <include name="__overlay__/**"/>
+        <include name="${unzip.wildcard}"/>
       </patternset>
     </untar>
   </target>
@@ -591,6 +683,7 @@
     <delete dir="${basedir}/../plugins/space" failonerror="false"/>
     <delete dir="${basedir}/../plugins/platform-images" failonerror="false"/>
     <delete dir="${basedir}/../plugins/vcs-git-commit-modal" failonerror="false"/>
+    <delete dir="${basedir}/../plugins/jcef-plugin" failonerror="false"/>
 
     <delete dir="${basedir}/../build/tools/mac" failonerror="false"/>
 
