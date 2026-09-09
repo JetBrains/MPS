@@ -5,6 +5,7 @@ package jetbrains.mps.vcs.platform.mergedriver;
 import jetbrains.mps.annotations.GeneratedClass;
 import com.intellij.openapi.project.Project;
 import com.intellij.notification.Notification;
+import com.intellij.openapi.application.ApplicationManager;
 import java.util.Set;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
 import java.util.HashSet;
@@ -38,11 +39,17 @@ public class MergeDriverNotification {
     if (myLastNotification != null && !(myLastNotification.isExpired())) {
       return;
     }
-    AbstractInstaller.State compositeState = calculateCompositeState();
-    if (compositeState == AbstractInstaller.State.NOT_ENABLED || compositeState == AbstractInstaller.State.INSTALLED) {
-      return;
-    }
-    showNotifications();
+    // Calculating the state spawns external VCS processes, and the VCS mapping listener may be invoked under a lock (e.g. inside a Workspace Model write action, MPS-40122), so never do it on the caller's thread
+    ApplicationManager.getApplication().executeOnPooledThread(() -> {
+      if (myProject.isDisposed()) {
+        return;
+      }
+      AbstractInstaller.State compositeState = calculateCompositeState();
+      if (compositeState == AbstractInstaller.State.NOT_ENABLED || compositeState == AbstractInstaller.State.INSTALLED) {
+        return;
+      }
+      showNotifications();
+    });
   }
   private synchronized void showNotifications() {
     // the startup activity and the VCS mapping listener may race here, hence the repeated check

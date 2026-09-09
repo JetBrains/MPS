@@ -19,7 +19,7 @@ import com.intellij.openapi.progress.ProgressManager;
 public class GitConfigUtilWrapped {
   public static String getValue(@NotNull final Project project, @NotNull final VirtualFile root, @NotNull final String key) throws VcsException {
     Application application = ApplicationManager.getApplication();
-    if (application != null && (application.isDispatchThread() || application.isReadAccessAllowed())) {
+    if (application != null && application.isDispatchThread()) {
       final Reference<String> result = new Reference<String>();
       final Reference<VcsException> ex = new Reference<VcsException>();
       Task.Modal task = new Task.Modal(project, "Get Git Config Value", false) {
@@ -44,7 +44,7 @@ public class GitConfigUtilWrapped {
 
   public static void setValue(@NotNull final Project project, @NotNull final VirtualFile root, @NotNull final String key, @NotNull final String value, final String... additionalParameters) throws VcsException {
     Application application = ApplicationManager.getApplication();
-    if (application != null && (application.isDispatchThread() || application.isReadAccessAllowed())) {
+    if (application != null && application.isDispatchThread()) {
       final Reference<VcsException> ex = new Reference<VcsException>();
       Task.Modal task = new Task.Modal(project, "Set Git Config Value", false) {
         @Override

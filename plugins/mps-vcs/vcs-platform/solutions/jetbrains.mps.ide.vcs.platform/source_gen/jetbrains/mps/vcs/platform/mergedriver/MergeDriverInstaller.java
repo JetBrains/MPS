@@ -26,12 +26,13 @@ public class MergeDriverInstaller {
       final List<VcsDirectoryMapping> directoryMappings = ProjectLevelVcsManager.getInstance(project).getDirectoryMappings();
       installers = Sequence.fromIterable(installers).where((final AbstractInstaller i) -> ListSequence.fromList(directoryMappings).any((dm) -> dm.getVcs().equals(i.getAffectedVcsName())));
     }
-    if (Sequence.fromIterable(installers).any((i) -> i.getCurrentState() == AbstractInstaller.State.NOT_INSTALLED)) {
+    List<AbstractInstaller.State> states = Sequence.fromIterable(installers).select((i) -> i.getCurrentState()).toList();
+    if (ListSequence.fromList(states).contains(AbstractInstaller.State.NOT_INSTALLED)) {
       return AbstractInstaller.State.NOT_INSTALLED;
-    } else if (Sequence.fromIterable(installers).any((i) -> i.getCurrentState() == AbstractInstaller.State.OUTDATED)) {
+    } else if (ListSequence.fromList(states).contains(AbstractInstaller.State.OUTDATED)) {
       return AbstractInstaller.State.OUTDATED;
     } else
-    if (Sequence.fromIterable(installers).any((it) -> it.getCurrentState() == AbstractInstaller.State.INSTALLED)) {
+    if (ListSequence.fromList(states).contains(AbstractInstaller.State.INSTALLED)) {
       return AbstractInstaller.State.INSTALLED;
     } else {
       return AbstractInstaller.State.NOT_ENABLED;
