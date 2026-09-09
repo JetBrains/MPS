@@ -3,6 +3,7 @@
 
   <applicationListeners>
     <listener class="jetbrains.mps.nodeEditor.EditorSettingsUISettingsListener" topic="com.intellij.ide.ui.UISettingsListener"/>
+    <listener class="jetbrains.mps.ide.editor.PendingCellValuesCommitter" topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener" activeInHeadlessMode="false"/>
   </applicationListeners>
 
   <extensionPoints>

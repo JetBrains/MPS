@@ -2933,7 +2933,7 @@ public abstract class EditorComponent extends JComponent implements Scrollable, 
     }
   }
 
-  private void commitAllCellValues() {
+  public void commitAllCellValues() {
     final List<EditorCell_Property> cellsToCommit = getCellsToCommit();
     if (cellsToCommit.isEmpty()) {
       return;
