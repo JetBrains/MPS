@@ -153,7 +153,7 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
   protected abstract JPanel createPanel();
 
   protected List<JComponent> getTitles() {
-    return DiffUtil.createSimpleTitles(myDiffViewer, myDiffRequest);
+    return DiffUtil.createSyncHeightComponents(DiffUtil.createSimpleTitles(myDiffViewer, myDiffRequest));
   }
 
   protected DefaultActionGroup createActionGroup(boolean isEditable) {

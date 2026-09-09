@@ -5144,14 +5144,18 @@
       <property role="TrG5h" value="getTitles" />
       <node concept="3clFbS" id="2A553ZPwYDp" role="3clF47">
         <node concept="3clFbF" id="17s8F13IUkc" role="3cqZAp">
-          <node concept="2YIFZM" id="17s8F13J4w9" role="3clFbG">
-            <ref role="37wK5l" to="xo69:~DiffUtil.createSimpleTitles(com.intellij.diff.FrameDiffTool$DiffViewer,com.intellij.diff.requests.ContentDiffRequest)" resolve="createSimpleTitles" />
+          <node concept="2YIFZM" id="1oCLtCiWzIR" role="3clFbG">
             <ref role="1Pybhc" to="xo69:~DiffUtil" resolve="DiffUtil" />
-            <node concept="37vLTw" id="17s8F13JeBX" role="37wK5m">
-              <ref role="3cqZAo" node="17s8F13C5Wo" resolve="myDiffViewer" />
-            </node>
-            <node concept="37vLTw" id="17s8F13JyMJ" role="37wK5m">
-              <ref role="3cqZAo" node="17s8F13BuQ2" resolve="myDiffRequest" />
+            <ref role="37wK5l" to="xo69:~DiffUtil.createSyncHeightComponents(java.util.List)" resolve="createSyncHeightComponents" />
+            <node concept="2YIFZM" id="1oCLtCiWzIS" role="37wK5m">
+              <ref role="1Pybhc" to="xo69:~DiffUtil" resolve="DiffUtil" />
+              <ref role="37wK5l" to="xo69:~DiffUtil.createSimpleTitles(com.intellij.diff.FrameDiffTool$DiffViewer,com.intellij.diff.requests.ContentDiffRequest)" resolve="createSimpleTitles" />
+              <node concept="37vLTw" id="1oCLtCiWzIT" role="37wK5m">
+                <ref role="3cqZAo" node="17s8F13C5Wo" resolve="myDiffViewer" />
+              </node>
+              <node concept="37vLTw" id="1oCLtCiWzIU" role="37wK5m">
+                <ref role="3cqZAo" node="17s8F13BuQ2" resolve="myDiffRequest" />
+              </node>
             </node>
           </node>
         </node>
