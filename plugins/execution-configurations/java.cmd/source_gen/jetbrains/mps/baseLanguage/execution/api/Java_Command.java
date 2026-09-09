@@ -129,6 +129,7 @@ public class Java_Command {
     }
     File java = Java_Command.getJavaCommand(myJrePath_String);
     new JDKVersionChecker(myProject_Project).checkAndNotifyOldJDK(myJrePath_String);
+    ArgumentFileBuilder argumentFile = new ArgumentFileBuilder().withClassPath(classPath);
     // In fact, this is a workaround for MPS-35210. In 2022.3, IDEA demands use of PathClassLoader for system CL
     // and it doesn't work with CP specified in MANIFEST.MF. I want to keep this code as it's handy to have long CP
     // serialized, just make it inactive now as no code calls jarManifestLimit with >0 value at the moment.
@@ -140,6 +141,17 @@ public class Java_Command {
         return new ProcessHandlerBuilder().cmdline(java, myVirtualMachineParameter_ProcessBuilderCommandPart, myDebuggerSettings_String, new KeyValueCommandPart("-" + "jar", jar.getAbsolutePath()), programParameter).build(myWorkingDirectory_File);
       } catch (IOException e) {
         throw new ExecutionException("Could not create temporary file for program parameters and class path.", e);
+      }
+    } else if (argumentFile.getLength() > Java_Command.getMaxCommandLine()) {
+      // MPS-40058: the class path alone may be longer than the command line the OS accepts
+      // (32767 characters on Windows). We pass it in a JVM argument file then: java expands
+      // @file arguments in its launcher, before any class is loaded, therefore -classpath stays
+      // a genuine JVM option and keeps working with the PathClassLoader mentioned above.
+      try {
+        File argFile = argumentFile.toTempFile();
+        return new ProcessHandlerBuilder().cmdline(java, myVirtualMachineParameter_ProcessBuilderCommandPart, myDebuggerSettings_String, Java_Command.protect("@" + argFile.getAbsolutePath()), className, programParameter).build(myWorkingDirectory_File);
+      } catch (IOException e) {
+        throw new ExecutionException("Could not create temporary argument file for the class path.", e);
       }
     } else {
       CommandPart classPathPart = new KeyValueCommandPart("-" + "classpath", new ListCommandPart(classPath, File.pathSeparator));
@@ -220,7 +232,7 @@ public class Java_Command {
     }
   }
   private static int getMaxCommandLine() {
-    // FIXME KEPT THIS METHOD FOR FUTURE CONSIDERATION, see classPath comment above regarding cmdline length
+    // the longest class path we are willing to keep on the command line
     // the command line limit on win is 32767 characters
     // (see http://blogs.msdn.com/b/oldnewthing/archive/2003/12/10/56028.aspx)
     // we set the limit to 16384 (half as many) just in case
