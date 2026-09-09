@@ -1,7 +1,7 @@
 From 3c566689a8fa979573b02e661e45cd4f3570920f Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Wed, 8 Jul 2026 13:34:32 +0200
-Subject: [PATCH 06/17] MPS-39881 Ensure git applies patches correctly in .git
+Subject: [PATCH 06/18] MPS-39881 Ensure git applies patches correctly in .git
  repo
 
 The command `git apply` silently skips patches if launched in a context of .git repository.

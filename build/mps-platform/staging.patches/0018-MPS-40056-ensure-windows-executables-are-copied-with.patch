@@ -1,0 +1,28 @@
+From 2efabd3b7cbfc38494e83de1381f447ece3f0ab2 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Wed, 9 Sep 2026 13:38:39 +0200
+Subject: [PATCH 18/18] MPS-40056 ensure windows executables are copied with
+ overwrite option
+
+---
+ community/mps/build/build/build.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 6b1ac06ffe477..1a3e6a6a50f80 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -106,8 +106,8 @@
+ 
+   <!-- Build contains exe files with proper MPS icons -->
+   <target name="extract-win-exe" description="Extract customized Windows executables">
+-    <copy file="${target.win.x64}/bin/mps64.exe" tofile="${target.dist}/build/resources/mps-win-64.exe"/>
+-    <copy file="${target.win.aarch64}/bin/mps64.exe" tofile="${target.dist}/build/resources/mps-win-aarch64.exe"/>
++    <copy file="${target.win.x64}/bin/mps64.exe" tofile="${target.dist}/build/resources/mps-win-64.exe" overwrite="true"/>
++    <copy file="${target.win.aarch64}/bin/mps64.exe" tofile="${target.dist}/build/resources/mps-win-aarch64.exe" overwrite="true"/>
+   </target>
+ 
+   <!-- plugin.xml built by JPS contains all needed embedded module descriptors. Extract them for MPS build to later include them in MPSPlugin.xml -->
+-- 
+2.55.0
+

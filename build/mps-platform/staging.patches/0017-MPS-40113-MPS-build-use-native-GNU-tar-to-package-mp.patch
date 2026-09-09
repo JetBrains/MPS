@@ -1,7 +1,7 @@
 From c1610129f14bca4aa5b42cca1c117ab63d9f39fd Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Tue, 8 Sep 2026 12:17:53 +0200
-Subject: [PATCH 17/17] MPS-40113 MPS build: use native GNU tar to package
+Subject: [PATCH 17/18] MPS-40113 MPS build: use native GNU tar to package
  mps-platform-provided.tar.gz
 
 ---

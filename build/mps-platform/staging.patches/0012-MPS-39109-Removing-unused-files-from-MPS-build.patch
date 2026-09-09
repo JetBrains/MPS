@@ -1,7 +1,7 @@
 From 97dbfa5bd7da0667e8a86037f9d29aae4539efca Mon Sep 17 00:00:00 2001
 From: Maros Sandor <maros.sandor@jetbrains.com>
 Date: Thu, 13 Aug 2026 13:55:19 +0200
-Subject: [PATCH 12/17] MPS-39109 Removing unused files from MPS build
+Subject: [PATCH 12/18] MPS-39109 Removing unused files from MPS build
 
 ---
  community/mps/build/build/build.xml                  | 12 +++++++++++-
