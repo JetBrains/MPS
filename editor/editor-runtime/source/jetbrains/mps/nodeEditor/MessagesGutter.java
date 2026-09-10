@@ -165,7 +165,7 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
   @Override
   public void mouseMoved(MouseEvent e) {
     List<GutterMark> gutterMarks = getGutterMarksAt(e.getY());
-    if (gutterMarks.size() > 0) {
+    if (!gutterMarks.isEmpty()) {
       scrollbar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     } else {
       scrollbar.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -180,9 +180,10 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
   @Override
   public void mousePressed(MouseEvent e) {
     int y = e.getY();
-    List<GutterMark> gutterMarks = getGutterMarksAt(y);
-    if (gutterMarks.size() > 0) {
-      GutterMark mark = gutterMarks.get(0);
+    CoordinateTransformation transformation = new CoordinateTransformation();
+    List<GutterMark> gutterMarks = getGutterMarksAt(y, transformation);
+    if (!gutterMarks.isEmpty()) {
+      GutterMark mark = gutterMarks.getFirst();
       SimpleEditorMessage message = mark.getEditorMessage();
       if (message instanceof EditorMessage) {
         ((EditorMessage) message).doNavigate(myEditorComponent);
@@ -190,7 +191,7 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
         // I assume y comes within scrollable area, where some space is occupied by decrement button,
         // and area with messages starts right after the button.
         // Perhaps, the ratio constant shall be part of GutterMark?
-        int scrollableY = (int) Math.round((y - getMessagesAreaShift()) / scrollBar2ScrollableRatio());
+        int scrollableY = transformation.toEditorLocation(y);
         // I don't expect any negative value here, provided we found the mark, but there's some range tolerated for
         // discovery in getGutterMarksAt(int), max() is for extra safety here.
         // +1 is legacy, I suppose it's to deal with rounding and the EditorCell_Collection trick in calculateHeight()
@@ -224,15 +225,14 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
         GutterStatus status = GutterStatus.OK;
         List<GutterMark> marks = new ArrayList<>();
         Rectangle msgBounds = new Rectangle();
-        final double areaRatio = scrollBar2ScrollableRatio();
         final int xx = myRightToLeft ? -2 : 4;
         final int ww = General.InspectionsOK.getIconWidth() - 1;
         for (SimpleEditorMessage message : myMessages) {
           if (!GutterMark.isValid(message, myEditorComponent)) {
             continue;
           }
-          msgBounds.setBounds(xx, calculateY(message, areaRatio), ww, calculateHeight(message, areaRatio));
-          GutterMark mark = new GutterMark(message, adjustBounds(message, msgBounds));
+          calculateBounds(msgBounds, message, xx, ww);
+          GutterMark mark = new GutterMark(message, msgBounds);
 
           GutterStatus messageStatus = GutterStatus.getStatus(message.getStatus());
           if (messageStatus.ordinal() > status.ordinal()) {
@@ -334,10 +334,9 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
   }
 
   private void drawMarks(Graphics graphics) {
+    CoordinateTransformation transformation = new CoordinateTransformation();
     for (GutterMark mark : myGutterMarks) {
-      if (graphics.hitClip(mark.getX(), mark.getY(), mark.getWidth(), mark.getHeight())) {
-        mark.paint(graphics);
-      }
+      mark.paint(graphics, transformation);
     }
   }
 
@@ -353,10 +352,6 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
     return scrollbar.getHeight() - getIncrementButtonHeight() - getMessagesAreaShift();
   }
 
-  private int calculateY(SimpleEditorMessage message, double areaRatio) {
-    return getMessagesAreaShift() + (int) (message.getStart(myEditorComponent) * areaRatio);
-  }
-
   // to translate Y position inside Scrollable to Y position in scroll bar.
   // 1/value translates Y in scroll bar to Y in Scrollable
   private double scrollBar2ScrollableRatio() {
@@ -364,16 +359,16 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
   }
 
   // magic around right-to-left and horizontal/vertical shape
-  private Rectangle adjustBounds(SimpleEditorMessage message, Rectangle rect) {
-    // FIXME I don't like approach with function to tell horizontal mark from vertical
-    if (myIsMessageThin.test(message)) {
-      rect.x = myRightToLeft ? rect.width : 0;
-      rect.width = 2;
-    }
-    return rect;
+  private void calculateBounds(Rectangle rect, SimpleEditorMessage message, int x, int width) {
+    boolean isThin = myIsMessageThin.test(message);
+
+    rect.x = isThin ? (myRightToLeft ? width : 0) : x;
+    rect.width = isThin ? 2 : width;
+    rect.y = message.getStart(myEditorComponent);
+    rect.height = calculateHeight(message);
   }
 
-  private int calculateHeight(SimpleEditorMessage message, double areaRatio) {
+  private int calculateHeight(SimpleEditorMessage message) {
     int height = message.getHeight(myEditorComponent);
     if (message instanceof EditorMessage) {
       EditorCell cell = ((EditorMessage) message).getCell(myEditorComponent);
@@ -386,16 +381,17 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
         }
       }
     }
-    return (int) (height * areaRatio) + 2;
+    return height;
   }
 
-
   private List<GutterMark> getGutterMarksAt(int y) {
+    return getGutterMarksAt(y, new CoordinateTransformation());
+  }
+
+  private List<GutterMark> getGutterMarksAt(int y, CoordinateTransformation transformation) {
     List<GutterMark> result = new SortedList<>(EDITOR_MESSAGES_COMPARATOR);
     for (GutterMark gutterMark : myGutterMarks) {
-      int start = gutterMark.getY();
-      int end = start + gutterMark.getHeight();
-      if (start - 3 <= y && y <= end + 3) {
+      if (gutterMark.isLocatedAt(y, transformation)) {
         result.add(gutterMark);
       }
     }
@@ -431,10 +427,10 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
     int y = event.getY();
 
     List<GutterMark> gutterMarks = getGutterMarksAt(y);
-    if (gutterMarks.size() > 0) {
+    if (!gutterMarks.isEmpty()) {
       StringBuilder text = new StringBuilder();
       for (GutterMark mark : gutterMarks) {
-        if (text.length() > 0) {
+        if (!text.isEmpty()) {
           text.append("<br>");
         }
         text.append(mark.getEditorMessage().getFormattedMessage());
@@ -470,41 +466,34 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
       myHeight = bounds.height;
     }
 
-    public void paint(Graphics g) {
-      Color color = myMessage.getColor();
-      g.setColor(color);
-      int x = getX();
-      int y = getY();
-      int height = Math.max(getHeight(), 3);
-
-      g.fillRect(x, y, getWidth(), height);
+    void paint(Graphics g, CoordinateTransformation transformation) {
+      int y = transformation.toGutterLocation(myY);
+      int height = transformation.toGutterHeight(myHeight);
+      if (g.hitClip(myX, y, myWidth, height)) {
+        g.setColor(myMessage.getColor());
+        g.fillRect(myX, y, myWidth, Math.max(height, 3));
+      }
     }
 
-    public int getX() {
-      return myX;
+    boolean isLocatedAt(int y, CoordinateTransformation transformation) {
+      int start = transformation.toGutterLocation(myY);
+      int end = start + transformation.toGutterHeight(myHeight);
+      return start - 3 <= y && y <= end + 3;
     }
 
-    public int getY() {
+    int getY() {
       return myY;
     }
 
-    public int getWidth() {
-      return myWidth;
-    }
-
-    public int getHeight() {
-      return myHeight;
-    }
-
-    public int getPriority() {
+    int getPriority() {
       return myMessage.getPriority();
     }
 
-    public MessageStatus getStatus() {
+    MessageStatus getStatus() {
       return myMessage.getStatus();
     }
 
-    public SimpleEditorMessage getEditorMessage() {
+    SimpleEditorMessage getEditorMessage() {
       return myMessage;
     }
   }
@@ -516,13 +505,11 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
     IN_PROGRESS;
 
     static GutterStatus getStatus(MessageStatus status) {
-      switch (status) {
-        case WARNING:
-          return WARNING;
-        case ERROR:
-          return ERROR;
-      }
-      return OK;
+      return switch (status) {
+        case WARNING -> WARNING;
+        case ERROR -> ERROR;
+        default -> OK;
+      };
     }
   }
 
@@ -548,6 +535,29 @@ public class MessagesGutter extends ButtonlessScrollBarUI.Transparent implements
     @Override
     public Dimension getPreferredSize() {
       return new Dimension(General.InspectionsOK.getIconWidth(), General.InspectionsOK.getIconHeight());
+    }
+  }
+
+  private final class CoordinateTransformation {
+
+    private final int     myShift;
+    private final double  myRatio;
+
+    CoordinateTransformation() {
+      myShift = getMessagesAreaShift();
+      myRatio = scrollBar2ScrollableRatio();
+    }
+
+    int toGutterLocation(int yEditor) {
+      return myShift + (int) (yEditor * myRatio);
+    }
+
+    int toGutterHeight(int editorHeight) {
+      return (int) (editorHeight * myRatio) + 2;
+    }
+
+    int toEditorLocation(int yGutter) {
+      return (int) Math.round((yGutter - myShift) / myRatio);
     }
   }
 }
