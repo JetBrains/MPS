@@ -3083,28 +3083,37 @@
                   <ref role="3cqZAo" node="7Qh4dIZrS06" resolve="e" />
                 </node>
               </node>
-              <node concept="3clFbF" id="7Qh4dIZrRZV" role="3cqZAp">
-                <node concept="2YIFZM" id="7Qh4dIZrRZW" role="3clFbG">
-                  <ref role="37wK5l" to="jkm4:~Messages.showErrorDialog(com.intellij.openapi.project.Project,java.lang.String,java.lang.String)" resolve="showErrorDialog" />
-                  <ref role="1Pybhc" to="jkm4:~Messages" resolve="Messages" />
-                  <node concept="37vLTw" id="7Qh4dIZrRZX" role="37wK5m">
-                    <ref role="3cqZAo" node="1crbmp8Of6C" resolve="myProject" />
+              <node concept="3clFbJ" id="4JqTvMa_Ltc" role="3cqZAp">
+                <node concept="3fqX7Q" id="4JqTvMa_Ltf" role="3clFbw">
+                  <node concept="37vLTw" id="4JqTvMa_Lth" role="3fr31v">
+                    <ref role="3cqZAo" node="7Qh4dIZrMvq" resolve="dryRun" />
                   </node>
-                  <node concept="3cpWs3" id="7Qh4dIZrRZY" role="37wK5m">
-                    <node concept="2OqwBi" id="7Qh4dIZrRZZ" role="3uHU7w">
-                      <node concept="37vLTw" id="7Qh4dIZrS00" role="2Oq$k0">
-                        <ref role="3cqZAo" node="7Qh4dIZrS06" resolve="e" />
+                </node>
+                <node concept="3clFbS" id="4JqTvMa_Lti" role="3clFbx">
+                  <node concept="3clFbF" id="7Qh4dIZrRZV" role="3cqZAp">
+                    <node concept="2YIFZM" id="7Qh4dIZrRZW" role="3clFbG">
+                      <ref role="37wK5l" to="jkm4:~Messages.showErrorDialog(com.intellij.openapi.project.Project,java.lang.String,java.lang.String)" resolve="showErrorDialog" />
+                      <ref role="1Pybhc" to="jkm4:~Messages" resolve="Messages" />
+                      <node concept="37vLTw" id="7Qh4dIZrRZX" role="37wK5m">
+                        <ref role="3cqZAo" node="1crbmp8Of6C" resolve="myProject" />
                       </node>
-                      <node concept="liA8E" id="7Qh4dIZrS01" role="2OqNvi">
-                        <ref role="37wK5l" to="jlcu:~VcsException.getMessage()" resolve="getMessage" />
+                      <node concept="3cpWs3" id="7Qh4dIZrRZY" role="37wK5m">
+                        <node concept="2OqwBi" id="7Qh4dIZrRZZ" role="3uHU7w">
+                          <node concept="37vLTw" id="7Qh4dIZrS00" role="2Oq$k0">
+                            <ref role="3cqZAo" node="7Qh4dIZrS06" resolve="e" />
+                          </node>
+                          <node concept="liA8E" id="7Qh4dIZrS01" role="2OqNvi">
+                            <ref role="37wK5l" to="jlcu:~VcsException.getMessage()" resolve="getMessage" />
+                          </node>
+                        </node>
+                        <node concept="Xl_RD" id="7Qh4dIZrS02" role="3uHU7B">
+                          <property role="Xl_RC" value="Can't get current Git merge driver settings: " />
+                        </node>
+                      </node>
+                      <node concept="Xl_RD" id="7Qh4dIZrS03" role="37wK5m">
+                        <property role="Xl_RC" value="Git Merge Driver Settings" />
                       </node>
                     </node>
-                    <node concept="Xl_RD" id="7Qh4dIZrS02" role="3uHU7B">
-                      <property role="Xl_RC" value="Can't get current Git merge driver settings: " />
-                    </node>
-                  </node>
-                  <node concept="Xl_RD" id="7Qh4dIZrS03" role="37wK5m">
-                    <property role="Xl_RC" value="Git Merge Driver Settings" />
                   </node>
                 </node>
               </node>
@@ -5819,28 +5828,37 @@
               </node>
             </node>
             <node concept="3clFbS" id="4C1Obq304NS" role="1zc67A">
-              <node concept="3clFbF" id="4C1Obq304NT" role="3cqZAp">
-                <node concept="2YIFZM" id="4C1Obq304NU" role="3clFbG">
-                  <ref role="37wK5l" to="jkm4:~Messages.showErrorDialog(com.intellij.openapi.project.Project,java.lang.String,java.lang.String)" resolve="showErrorDialog" />
-                  <ref role="1Pybhc" to="jkm4:~Messages" resolve="Messages" />
-                  <node concept="37vLTw" id="2BHiRxgm6EU" role="37wK5m">
-                    <ref role="3cqZAo" node="4C1Obq304O9" resolve="project" />
+              <node concept="3clFbJ" id="4JqTvMa_Mg6" role="3cqZAp">
+                <node concept="3fqX7Q" id="4JqTvMa_Mg9" role="3clFbw">
+                  <node concept="37vLTw" id="4JqTvMa_Mgb" role="3fr31v">
+                    <ref role="3cqZAo" node="4C1Obq304LY" resolve="dryRun" />
                   </node>
-                  <node concept="3cpWs3" id="4C1Obq304NW" role="37wK5m">
-                    <node concept="2OqwBi" id="4C1Obq304NX" role="3uHU7w">
-                      <node concept="37vLTw" id="3GM_nagTBoN" role="2Oq$k0">
-                        <ref role="3cqZAo" node="4C1Obq304NQ" resolve="e" />
+                </node>
+                <node concept="3clFbS" id="4JqTvMa_Mgc" role="3clFbx">
+                  <node concept="3clFbF" id="4C1Obq304NT" role="3cqZAp">
+                    <node concept="2YIFZM" id="4C1Obq304NU" role="3clFbG">
+                      <ref role="37wK5l" to="jkm4:~Messages.showErrorDialog(com.intellij.openapi.project.Project,java.lang.String,java.lang.String)" resolve="showErrorDialog" />
+                      <ref role="1Pybhc" to="jkm4:~Messages" resolve="Messages" />
+                      <node concept="37vLTw" id="2BHiRxgm6EU" role="37wK5m">
+                        <ref role="3cqZAo" node="4C1Obq304O9" resolve="project" />
                       </node>
-                      <node concept="liA8E" id="4C1Obq304NZ" role="2OqNvi">
-                        <ref role="37wK5l" to="wyt6:~Throwable.getMessage()" resolve="getMessage" />
+                      <node concept="3cpWs3" id="4C1Obq304NW" role="37wK5m">
+                        <node concept="2OqwBi" id="4C1Obq304NX" role="3uHU7w">
+                          <node concept="37vLTw" id="3GM_nagTBoN" role="2Oq$k0">
+                            <ref role="3cqZAo" node="4C1Obq304NQ" resolve="e" />
+                          </node>
+                          <node concept="liA8E" id="4C1Obq304NZ" role="2OqNvi">
+                            <ref role="37wK5l" to="wyt6:~Throwable.getMessage()" resolve="getMessage" />
+                          </node>
+                        </node>
+                        <node concept="Xl_RD" id="4C1Obq304O0" role="3uHU7B">
+                          <property role="Xl_RC" value="Can't create merger script: " />
+                        </node>
+                      </node>
+                      <node concept="Xl_RD" id="4C1Obq304O1" role="37wK5m">
+                        <property role="Xl_RC" value="Can't Create Merger Script" />
                       </node>
                     </node>
-                    <node concept="Xl_RD" id="4C1Obq304O0" role="3uHU7B">
-                      <property role="Xl_RC" value="Can't create merger script: " />
-                    </node>
-                  </node>
-                  <node concept="Xl_RD" id="4C1Obq304O1" role="37wK5m">
-                    <property role="Xl_RC" value="Can't Create Merger Script" />
                   </node>
                 </node>
               </node>

@@ -62,7 +62,9 @@ import com.intellij.openapi.ui.Messages;
       }
       return AbstractInstaller.State.INSTALLED;
     } catch (IOException e) {
-      Messages.showErrorDialog(project, "Can't create merger script: " + e.getMessage(), "Can't Create Merger Script");
+      if (!(dryRun)) {
+        Messages.showErrorDialog(project, "Can't create merger script: " + e.getMessage(), "Can't Create Merger Script");
+      }
       return AbstractInstaller.State.NOT_INSTALLED;
     }
   }

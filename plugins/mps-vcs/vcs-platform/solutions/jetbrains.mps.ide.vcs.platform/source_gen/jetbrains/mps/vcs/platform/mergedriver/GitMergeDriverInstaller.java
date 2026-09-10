@@ -117,7 +117,9 @@ import jetbrains.mps.vcs.core.mergedriver.MergeDriverMain;
       if (LOG.isWarningLevel()) {
         LOG.warning("Can't get value", e);
       }
-      Messages.showErrorDialog(myProject, "Can't get current Git merge driver settings: " + e.getMessage(), "Git Merge Driver Settings");
+      if (!(dryRun)) {
+        Messages.showErrorDialog(myProject, "Can't get current Git merge driver settings: " + e.getMessage(), "Git Merge Driver Settings");
+      }
       return AbstractInstaller.State.NOT_INSTALLED;
     }
 
