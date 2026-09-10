@@ -434,7 +434,7 @@
     </antcall>
     <antcall target="unzip-platform-overlay-other">
       <param name="unzip.dest" value="${basedir}/../"/>
-      <param name="unzip.transform" value=",__overlay__/[^/]*/,,"/>
+      <param name="unzip.mapper.from" value="__overlay__/${os.platform}/*"/>
       <param name="unzip.wildcard" value="__overlay__/${os.platform}/**"/>
     </antcall>
     <antcall target="update-licence-info"/>
@@ -471,23 +471,26 @@
     </antcall>
     <antcall target="unzip-platform-overlay-other">
       <param name="unzip.dest" value="${resources}"/>
-      <param name="unzip.transform" value=",,,"/>
+      <param name="unzip.mapper.from" value="*"/>
       <param name="unzip.wildcard" value="__overlay__/**"/>
     </antcall>
   </target>
 
-  <target name="unzip-platform-overlay-native" if="use.native.tar">
+  <target name="unzip-platform-overlay-native" if="${use.native.tar}">
     <native-untar archive="${basedir}/../${platform.zip.file}" dest="${unzip.dest}" transform="${unzip.transform}">
       <arg value="${unzip.wildcard}"/>
     </native-untar>
   </target>
 
-  <target name="unzip-platform-overlay-other" unless="use.native.tar">
+  <target name="unzip-platform-overlay-other" unless="${use.native.tar}">
     <untar src="${basedir}/../${platform.zip.file}" dest="${unzip.dest}" compression="gzip" overwrite="true">
       <patternset>
         <exclude name="*"/>
         <include name="${unzip.wildcard}"/>
       </patternset>
+      <mapper type="glob"
+              from="${unzip.mapper.from}"
+              to="*"/>
     </untar>
   </target>
 
