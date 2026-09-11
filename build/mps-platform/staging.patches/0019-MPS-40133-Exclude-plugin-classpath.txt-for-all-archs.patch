@@ -1,0 +1,30 @@
+From 6f2c079a2c9cf453837b053e7828398d3e297be9 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Fri, 11 Sep 2026 13:25:54 +0200
+Subject: [PATCH 19/19] MPS-40133 Exclude plugin-classpath.txt for all archs
+
+The platform plugin-classpath.txt describes the platform product, not the
+assembled MPS distribution. Copying it through the Windows overlay bypasses
+MPSPlugin.xml and MPS plugin discovery, causing IDEA-like UI and missing
+implementation classes.
+---
+ community/mps/build/build/build.xml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index 1a3e6a6a50f80..5c0af1c274736 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -160,7 +160,8 @@
+       <arg value="--transform=s,^dist.all/,,"/>
+       <arg value="--transform=s,^temp/,lib/,"/>
+       <arg value="--transform=s,^dist\.\([^/]*\)/,__overlay__/\1/,"/>
+-
++      <arg value="--exclude=plugin-classpath.txt"/>
++      
+       <!--Begin files and directories-->
+       <arg value="--"/>
+ 
+-- 
+2.55.0
+

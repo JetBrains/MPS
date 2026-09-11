@@ -1,7 +1,7 @@
 From 1b545dbd6da2097507a84e383848dd6c7d97aa7f Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 25 Jun 2026 09:54:01 +0200
-Subject: [PATCH 01/18] MRI-4598 mps-platform: ensure 'build.number' system
+Subject: [PATCH 01/19] MRI-4598 mps-platform: ensure 'build.number' system
  property is passed to Bazel
 
 System properties are not inherited by processes spawned neither by Ant, nor Bazel by default.

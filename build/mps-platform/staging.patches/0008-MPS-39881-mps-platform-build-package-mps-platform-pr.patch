@@ -1,7 +1,7 @@
 From f0ccd5234588986dd76cc1193dee1a2763499f22 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 25 Jun 2026 09:54:45 +0200
-Subject: [PATCH 08/18] MPS-39881 mps-platform build: package
+Subject: [PATCH 08/19] MPS-39881 mps-platform build: package
  mps-platform-provided.zip as build step
 
 The use of TeamCity's mappings for building an artifact

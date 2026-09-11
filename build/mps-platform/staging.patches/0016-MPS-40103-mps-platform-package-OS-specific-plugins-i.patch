@@ -1,7 +1,7 @@
 From 43407b63914a7c93d697ecd6949282539318dbf8 Mon Sep 17 00:00:00 2001
 From: Fedor Isakov <fedor.isakov@jetbrains.com>
 Date: Thu, 3 Sep 2026 10:39:36 +0200
-Subject: [PATCH 16/18] MPS-40103 mps-platform: package OS-specific plugins in
+Subject: [PATCH 16/19] MPS-40103 mps-platform: package OS-specific plugins in
  __overlay__ folder
 
 Also change mps-platform-provided.zip => .tar.gz to keep *nix file attrs.
