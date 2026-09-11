@@ -19,6 +19,10 @@ not be used at all, write `**CI**: not validated — <reason>` rather than omitt
 
 The `Co-Authored-By` trailer is required for YouTrack comments (see `.agents/tools.md`).
 
+If the issue already carried `Fix versions` / `Fixed in builds` or an earlier "fixed" comment when
+you started (see `issue-fields.md`), state in the comment whether this change is an additional fix,
+a backport, or a verification — never post a second unqualified "fixed" comment on such an issue.
+
 Remind the user to:
 - Open a PR / code review
 - Update the YouTrack issue state if needed (e.g. mark as Fixed)

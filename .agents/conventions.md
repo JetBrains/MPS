@@ -16,3 +16,4 @@
 ## Generated code
 
 - Do not patch generated Java/Kotlin as the lasting fix when the source of truth is an MPS model or generator. Prefer fixing the model, language aspect, or generator that owns the behavior.
+- `source_gen` is checked into this repository. When a model or generator change alters generated output, regenerate and commit the regenerated sources together with the change that caused them.

@@ -19,6 +19,15 @@ Branches named with a full release version, such as `2024.3`, represent release 
 
 Derive a new branch of the current `master` or the current release branch in order to make changes.
 
+Create it without checking the base out: `git fetch origin <base>` then
+`git checkout -b <MPS_VERSION>/<user_name>/<topic> origin/<base>`. A plain `git checkout <base>`
+fails whenever a sibling worktree already holds that branch (`git worktree list`), which is the
+normal state of this repository.
+
+If the current HEAD already carries commits you must build on (a topic branch ahead of the
+release), branch off HEAD instead — `git checkout -b <name>` with no base — and record the actual
+base commit, because fetching or checking the release branch out would discard that work.
+
 Before deriving a branch, check the current branch and recent local and remote release branches. If the task is tied to a YouTrack fix version or a user-named release branch, use that release as the base. Otherwise use `master` unless the user says otherwise.
 
 If the current branch already follows `<MPS_VERSION>/<user_name>/<topic>` and the task is a continuation of that work, stay on it. Create a new branch only when the user asks or when the task clearly requires isolating a new change.
@@ -32,6 +41,13 @@ Use Git worktrees for new branches only when asked explicitly.
 * **Subject line:** `<Area> - <summary>`, where `<Area>` is a short component/topic tag and `<summary>`
   briefly describes the change. Examples: `MPSCLI - create build script`, `MPSCLI - Switch to Gson`,
   `MPSCLI - fix tests`. Keep the subject to a single concise line.
+* **Issue-driven commits:** when the commit fixes a ticket, put the ID in the subject after the
+  area — `<Area> - <MPS-NNNNN> <summary>`; the branch name is not preserved after a squash/merge.
+  Only commits that actually implement the fix carry the ID; leave it off refactorings, cleanups,
+  and unrelated drive-by changes that happen to sit on the same branch.
+  Pick `<Area>` from recent history for the path you touched (`git log --oneline -20 -- <path>`);
+  if that history shows no consistent tag, use the top-level directory or subsystem name rather
+  than coining a new one.
 * **Body (optional):** after a blank line, explain the *what/why* — bullet points are fine for
   multi-part changes. Wrap prose at a sensible width.
 * **Trailers last:** any trailers (`Co-Authored-By`, issue/MR references, etc.) go in a final,
@@ -43,7 +59,9 @@ Every commit produced with AI assistance must include this trailer:
 
 `Co-Authored-By: <identity of the AI agent>`
 
-For Codex, use `Co-Authored-By: Codex <codex@openai.com>`.
+Use the identity of the agent that produced the commit, e.g. `Co-Authored-By: Codex
+<codex@openai.com>`, `Co-Authored-By: Junie <junie@jetbrains.com>`, or `Co-Authored-By: Claude
+<noreply@anthropic.com>`. Do not invent an address for an agent already listed here.
 
 ## Pushing
 

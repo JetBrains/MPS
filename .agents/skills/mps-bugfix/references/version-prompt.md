@@ -1,6 +1,6 @@
 # Phase 1 — Version-Clarification Prompt
 
-Present findings and ask. Derive the in-development version from TeamCity `mps.git.branch` / HEAD; do not hardcode it.
+Present findings and ask. Read the in-development version from `git show origin/master:build.txt` (e.g. `262.9437.SNAPSHOT` → `2026.2`) and confirm it against the highest `MPS_<ver>` TeamCity project's `mps.idea.platform.number`. Do not hardcode it, and do not use `mps.version` — it is stale in some projects (`.agents/tools.md`).
 
 > **Which MPS version should this fix target?**
 >

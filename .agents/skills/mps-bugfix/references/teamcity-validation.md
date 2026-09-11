@@ -15,6 +15,10 @@ has been positively identified as pre-existing on the base branch.
 Run this after the branch has been pushed. Pushing is an outward-facing action — get the user's
 go-ahead first (`.agents/git.md`).
 
+If that go-ahead is refused or deferred, do not push anyway and do not drop the gate silently: use
+§3 for partial signal and close out with an explicit `CI: not validated — push declined` verdict
+(`completion-comment.md`).
+
 ### Step 1 — confirm authentication and locate the run
 
 ```bash
@@ -43,6 +47,9 @@ running build's outcome.
 teamcity run view <compositeRunId>           # chain summary, test counts
 teamcity run tree <compositeRunId>           # which children failed
 ```
+
+`teamcity run list` truncates the JOB column, so the list alone will not tell you *which* job failed
+— identify jobs from `run tree` / `run view`, not from `run list`.
 
 For each failed child (the composite's own log is empty):
 
@@ -137,7 +144,7 @@ test that fails deterministically elsewhere is not.
 
 ---
 
-## 3. Optional pre-push validation
+## 3. Pre-push validation (and the fallback when the push is declined)
 
 To get CI signal without publishing a branch, run a personal build with uncommitted changes:
 

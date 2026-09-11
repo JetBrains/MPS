@@ -12,7 +12,7 @@ Git prefix, username, and base branch come from `.agents/git.md`. TeamCity coord
 | **YouTrack fix version** | e.g. `2025.1.x` or `2026.1` |
 | **TeamCity feature-branch project** | `MPS_<ver>_FeatureBranches` |
 
-The topic segment is `MPS-NNNNN-short-description` — that issue ID is what makes this a bugfix branch rather than a generic topic branch.
+The topic segment is `MPS-NNNNN-short-description` — that issue ID is what makes this a bugfix branch rather than a generic topic branch. Derive `short-description` from the issue summary: 2–5 lowercase ASCII words joined by `-`, whole branch name under ~60 characters — e.g. summary *"Editor freezes on large models"*, target 2026.1, user `jsmith` → `261/jsmith/MPS-12345-editor-freeze-large-models`. If the git user name contains spaces or non-ASCII characters, use its first token in lower case (`Jane Doe` → `jane`) and cross-check it against that person's existing branches in `git branch -r`.
 
 A branch that does not start with the right prefix **never gets built** (TeamCity feature-branch VCS spec is `+:refs/heads/<prefix>/*`; see `.agents/tools.md`).
 
