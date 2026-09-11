@@ -170,6 +170,7 @@
     </language>
     <language id="aee9cad2-acd4-4608-aef2-0004f6a1cdbd" name="jetbrains.mps.lang.actions">
       <concept id="5979988948250981289" name="jetbrains.mps.lang.actions.structure.SNodeCreatorAndInitializer" flags="nn" index="2fJWfE" />
+      <concept id="5480835971642155304" name="jetbrains.mps.lang.actions.structure.NF_Model_CreateNewNodeOperation" flags="nn" index="15TzpJ" />
     </language>
     <language id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel">
       <concept id="1177026924588" name="jetbrains.mps.lang.smodel.structure.RefConcept_Reference" flags="nn" index="chp4Y">
@@ -187,6 +188,9 @@
         <child id="3906496115198199033" name="conceptArgument" index="3oSUPX" />
       </concept>
       <concept id="1143234257716" name="jetbrains.mps.lang.smodel.structure.Node_GetModelOperation" flags="nn" index="I4A8Y" />
+      <concept id="1143235216708" name="jetbrains.mps.lang.smodel.structure.Model_CreateNewNodeOperation" flags="nn" index="I8ghe">
+        <reference id="1143235391024" name="concept" index="I8UWU" />
+      </concept>
       <concept id="1145383075378" name="jetbrains.mps.lang.smodel.structure.SNodeListType" flags="in" index="2I9FWS">
         <reference id="1145383142433" name="elementConcept" index="2I9WkF" />
       </concept>
@@ -501,11 +505,15 @@
             <node concept="3Tqbb2" id="6jDmPiUWfA3" role="1tU5fm">
               <ref role="ehGHo" to="tp3j:77ZFhhOGiCb" resolve="Intention" />
             </node>
-            <node concept="2ShNRf" id="6jDmPiUWfA4" role="33vP2m">
-              <node concept="2fJWfE" id="6jDmPiUWfA5" role="2ShVmc">
-                <node concept="3Tqbb2" id="6jDmPiUWfA6" role="3zrR0E">
-                  <ref role="ehGHo" to="tp3j:77ZFhhOGiCb" resolve="Intention" />
+            <node concept="2OqwBi" id="7Yad_vlNytV" role="33vP2m">
+              <node concept="2OqwBi" id="7Yad_vlNuRV" role="2Oq$k0">
+                <node concept="37vLTw" id="7Yad_vlNu29" role="2Oq$k0">
+                  <ref role="3cqZAo" node="6jDmPiUVU3r" resolve="node" />
                 </node>
+                <node concept="I4A8Y" id="7Yad_vlNx9v" role="2OqNvi" />
+              </node>
+              <node concept="15TzpJ" id="6prMAGvGqIr" role="2OqNvi">
+                <ref role="I8UWU" to="tp3j:77ZFhhOGiCb" resolve="Intention" />
               </node>
             </node>
           </node>

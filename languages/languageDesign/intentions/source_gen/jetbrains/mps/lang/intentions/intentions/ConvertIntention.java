@@ -118,7 +118,7 @@ public class ConvertIntention extends IntentionsFactory {
     SNode oldChildFilter = SLinkOperations.getTarget(SNodeOperations.cast(SLinkOperations.getTarget(node, LINKS.childFilterFunction$xRr2), CONCEPTS.ChildFilterFunction$q_), LINKS.body$e68K);
 
     // create new intention
-    SNode newIntention = SNodeFactoryOperations.createNewNode(CONCEPTS.Intention$zo, null);
+    SNode newIntention = SNodeFactoryOperations.createNewNode(SNodeOperations.getModel(node), CONCEPTS.Intention$zo, null);
 
     // obtain references to members
 
