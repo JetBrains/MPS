@@ -1,6 +1,6 @@
 ---
-name: mps-bugfix
-description: Structured MPS bugfix workflow driven by a YouTrack issue ID — preflight tool checks, version/branch derivation, parallel-agent problem analysis, solution design, branch creation, implementation, review, TeamCity feature-branch validation, and YouTrack updates. Use when the user invokes "/bugfix", asks to "fix a bug", "work on a bug", "investigate an issue", or provides a YouTrack issue ID.
+name: bugfix-workflow
+description: Structured MPS bugfix workflow driven by a YouTrack issue ID — preflight tool checks, version/branch derivation, parallel-agent problem analysis, solution design, branch creation, implementation, review, TeamCity feature-branch validation, and YouTrack updates. Use when the user invokes "/bugfix", "/bugfix-workflow", asks to "fix a bug", "work on a bug", "investigate an issue", or provides a YouTrack issue ID.
 argument-hint: <YouTrack issue ID, e.g. MPS-12345>
 type: reference
 ---
