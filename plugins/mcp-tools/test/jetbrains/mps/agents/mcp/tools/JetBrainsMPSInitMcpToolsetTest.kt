@@ -406,7 +406,7 @@ class JetBrainsMPSInitMcpToolsetTest {
         // the simple per-skill copy and the collision-error path. Keep this in sync with
         // `plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills/`.
         private const val REAL_SKILL_NAME = "mps-aspect-accessories"
-        private const val EXCLUDED_SKILL_NAME = "mps-bugfix"
+        private const val EXCLUDED_SKILL_NAME = "bugfix-workflow"
 
         // A real bundled skill that ships an auxiliary subdirectory. Used to verify that
         // copyDirectoryRecursively walks into nested folders rather than just copying the

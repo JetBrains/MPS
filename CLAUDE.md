@@ -90,7 +90,7 @@ Use the `mps-mcp-workflow` skill whenever the task involves MPS project structur
 
 The `mps_mcp_*` tools act on the MPS project open in the running MPS instance, and the IDEA MCP tools act on the project open in IDEA. One checkout can expose several projects to the same MCP server — for example, this repository plus the IntelliJ platform sources opened alongside it (see Platform sources below), or a VCS root containing several MPS project subdirectories. When a tool reports "no project" or "multiple projects opened", first call `mps_mcp_list_open_projects`, then pass the intended project's `mpsProjectBaseDirectory` via the host's project-path argument (for IDEA tools, the absolute `projectPath`); the path must be at or inside the project that owns the code, not a parent directory. Note that some repositories keep the MPS project in a subdirectory (e.g. `tools/BigProject` in mbeddr / MPS-extensions), in which case the MPS project base directory is below the repository root. When more than one project is open and it is not obvious from your request or the current editor focus which one a query or change should target, ask the user which project to use rather than guessing — the open projects share a single module repository, so the wrong choice silently returns the wrong nodes or gets a cross-project write refused.
 
-Agent configuration is separate from project resolution. `mps_mcp_initialize_project_for_agents` installs the skills and the `AGENTS.md`/`CLAUDE.md` guides into the repository / workspace root — its `targetDirectory`, derived from the open project's enclosing VCS root when left empty — which may be an *ancestor* of the MPS project directory. When calling that tool, still pass `projectPath` (the framework needs it to route any `mps_mcp_*` call) — use the open project's base directory, not an ancestor; only `targetDirectory` (left empty to derive it) is allowed to resolve to an ancestor such as the repo root.
+Agent configuration is separate from project resolution. `mps_mcp_initialize_project_for_agents` installs the skills and the `AGENTS.md`/`CLAUDE.md` guides into the repository / workspace root — its `targetDirectory`, derived from the open project's enclosing VCS root when left empty — which may be an *ancestor* of the MPS project directory. Do not pass `projectPath` to that tool.
 
 ## Rules For Generated Code
 
@@ -115,13 +115,7 @@ Before editing generated code, identify:
 
 ## Validation Expectations
 
-Match validation to the kind of change:
-- Java/Kotlin changes: use IDEA inspections (`get_file_problems`) and the smallest relevant build, test, or run configuration
-- MPS model changes: check model or root problems and rebuild or regenerate as needed
-- generator changes: validate both generation results and downstream compilation or tests
-- cross-cutting changes: validate both the MPS side and the JVM side
-
-Prefer focused validation before broad suites.
+Match validation to the kind of change, and prefer focused validation before broad suites. [`.agents/quality-gates.md`](.agents/quality-gates.md) is the single source of truth: it covers the JDK, build and test commands, run-configuration timeouts and monitoring, and the MPS-side checks.
 
 ## Environment Notes
 
@@ -135,35 +129,9 @@ Common assumptions for this repository:
 Current environment uses:
 - `origin`: `git@github.com:JetBrains/MPS-development.git` (master branch)
 
----
-## Platform sources
+### Platform sources
 
-This project builds on top of the IntelliJ platform, bundled as jar files. Platform Java/Kotlin classes live in `com.intellij...` packages; MPS code lives in `jetbrains.mps...`.
-
-**When the sources of the platform are required for understanding an MPS feature/code/problem**:
-- Get the location of the IntelliJ platform sources - typically it is a folder nearby (`../intellij-community` or a similar location).
-- Ask the user for exact location of the platform sources.
-- Convert it to an absolute path. To access the platform sources via MCP tools, you must use the **absolute path** for the `projectPath` parameter (e.g., `/Users/user-name/work/MPS/intellij-community/`).
-- Ask the user to open the platform project in an IntelliJ IDEA instance. This makes the platform sources available through IDEA's mcp tools.
-- The IDEA mcp tools will be serving code from two projects, each in its own directory - one in the platform and one is the MPS project.
-
-Do not make changes to the code of the platform, do not compile or run the platform code. Use the Git branch of the platform that has been set by the user, do not switch branches of the platform project.
-To verify that platform sources are accessible via MCP, use `search_symbol` (e.g., query `org.jetbrains.kotlin.jsr223.KotlinJsr223StandardScriptEngineFactory4Idea`) rather than `list_directory_tree` — the latter may return an empty tree even when the project is fully loaded, and should not be used as an availability check.
-
-## Build & test
-
-The primary way for agents to build the project is through the IntelliJ IDEA MCP tools:
-- Use `build_project` to compile the entire project.
-- Verified to use **JDK 25**.
-- Run configurations such as `CoreTestSuite` or `MPS` can be found via `get_run_configurations`.
-
-### Running test suites
-
-- **Pre-flight check**: before starting any test suite, verify no other test JVM is already running: `ps aux | grep JUnitStarter`. Starting a second suite while one is running will cause failures due to shared MPS environments, project locks, and state.
-- **Timeout behavior**: `execute_run_configuration` has an internal timeout (~60s) that may be shorter than the requested `timeout` parameter. A "Timed out" error means the MCP tool stopped waiting — **the JVM test process continues running in the background**. This is not a test failure.
-- **Recommended workflow for long-running suites**: use `waitForExit=false` to start the test without blocking. Then monitor the process with `ps aux | grep <suite-class-name>` until it exits. After it finishes, read the output log file (path returned by `execute_run_configuration` in `fullOutputPath`) and search for `testFailed` entries (TeamCity service message format). Zero `testFailed` matches means all tests passed.
-- **Mutual exclusion**: never run multiple test suites concurrently — they share MPS environments, project locks, and state, causing contention failures.
-- **MCP tools tests require the whole suite**: individual `*McpToolset*IntegrationTest` classes (e.g. `JetBrainsMPSRootNodeMcpToolsetIntegrationTest`) cannot be run standalone — their shared test environment is created once by the `McpToolsIntegrationTestSuite` run configuration, not per class. Running a single class or method directly fails every test with `java.lang.NullPointerException: ... this.myEnv is null` / `this.myProject is null` in `ModuleInProjectTest.before()`/`after()`, which is an environment-setup failure, not a real test failure. Always run the `McpToolsIntegrationTestSuite` (or `McpToolsIntegrationTestSuite (1)`) run configuration to validate mcp-tools plugin changes, then search its output log for the specific test name(s) you care about.
+This project builds on top of the IntelliJ platform, bundled as jar files. Platform Java/Kotlin classes live in `com.intellij...` packages; MPS code lives in `jetbrains.mps...`. When platform sources are needed, follow the procedure in [`.agents/tools.md`](.agents/tools.md); never modify, compile, or re-branch them.
 
 ## Global rules
 

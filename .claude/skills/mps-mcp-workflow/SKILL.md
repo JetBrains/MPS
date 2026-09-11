@@ -42,7 +42,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 All MPS skills live in a per-harness directory loaded by the agent host (e.g. `.agents/skills/<skill-name>/SKILL.md` for AGENTS.md-aware hosts, `.claude/skills/<skill-name>/SKILL.md` for Claude Code). Load whichever ones apply to your current task.
 
-> **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed and refreshed by the `mps_mcp_initialize_project_for_agents` MCP tool. It installs into a `targetDirectory` — normally your **repository / workspace root** (the folder containing `.git`), which may be an *ancestor* of the MPS project directory when the project sits in a subdirectory; leave `targetDirectory` empty to let the tool derive that root from the open project's enclosing VCS folder, and do **not** pass it `projectPath`. If no `mps-*` skills exist yet, the project has not been initialized for agents — tell the user and offer to run it. If the catalog looks stale or incomplete, offer to refresh it (with approval): delete every `mps-*` skill folder from `.agents/skills/` and `.claude/skills/` — keeping any project-local `*-dsl` skills — re-run the tool, then carefully merge its returned `agentsFileText` into `AGENTS.md`/`CLAUDE.md`, preserving project-specific sections. See that tool's description for the exact refresh contract.
+> **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed and refreshed by the `mps_mcp_initialize_project_for_agents` MCP tool. It installs into a `targetDirectory` — normally your **repository / workspace root** (the folder containing `.git`), which may be an *ancestor* of the MPS project directory when the project sits in a subdirectory; leave `targetDirectory` empty to let the tool derive that root from the open project's enclosing VCS folder, and do **not** pass it `projectPath`. If no `mps-*` skills exist yet, the project has not been initialized for agents — tell the user and offer to run it. If the catalog looks stale or incomplete, offer to refresh it (with approval): delete every `mps-*` skill folder from `.agents/skills/` and `.claude/skills/` — keeping repository-local skills (such as `bugfix-workflow` and `*-dsl` skills) — re-run the tool, then carefully merge its returned `agentsFileText` into `AGENTS.md`/`CLAUDE.md`, preserving project-specific sections. See that tool's description for the exact refresh contract.
 
 | Skill | What it covers |
 |-------|---------------|
@@ -72,7 +72,7 @@ All MPS skills live in a per-harness directory loaded by the agent host (e.g. `.
 | `mps-quotations`                    | MPS quotations and anti-quotations — node literals creating SNode trees inline in behavior/generator/model code. |
 | `mps-build-language`                | MPS Build Language — declarative DSL generating Ant `build.xml` files for packaging plugins, Java modules, standalone IDEs. |
 | `mps-ide-plugin`                    | MPS IDE plugins — actions, action groups, tool windows, keymaps, preference components. |
-| `mps-bugfix`                        | MPS bugfixing workflow. |
+| `bugfix-workflow`                  | MPS bugfixing workflow. |
 
 ## Key Concepts
 

@@ -5,7 +5,9 @@
 * Use 'YouTrack' tools to read issue data. Do not scrape YouTrack web pages.
 * Never create or update YouTrack issues, post comments, or change the issue state without an explicit user request.
 * Every YouTrack issue comment or edit produced with AI assistance must include this trailer: `Co-Authored-By: <identity of the AI agent>`.
-* If the MCP server is unavailable, say so clearly and ask the user how to proceed before doing anything that depends on issue data.
+* If the MCP server is unavailable, say so clearly — but for **reading** you may fall back to the public REST API instead of blocking the whole task:
+  `curl -s "https://youtrack.jetbrains.com/api/issues/<ID>?fields=idReadable,summary,description,customFields(name,value(name))"` and `.../api/issues/<ID>/comments?fields=text,author(name),created`.
+  State that you used the fallback. Never use REST to **write**: comments and field changes always require the MCP tools and an explicit user request.
 * The YouTrack issues related to this project are grouped in these project ids:
   * `MPS` - the MPS core functionality
   * `MPSSPRT` - support issues submitted by MPS customers
@@ -25,16 +27,19 @@
 ## JetBrains IntelliJ IDEA
 
 - Use 'IDEA' tools for diagnostics, inspecting currently open files, and symbol renames.
+- Hosts expose this surface differently: some offer `get_file_problems`, `build_project`, `get_run_configurations`, `execute_run_configuration` as top-level tools, others only a generic `execute_tool` that takes them as a command (`execute_tool(command="get_file_problems --filePath <path>")`). Check both before reporting a tool as missing — the same caution as for `mps_mcp_*` names below.
 - **Prefer IDE rename over sed/grep scripts.** `rename_refactoring` is type-aware: it handles type references, parameter declarations, named-argument call sites, and file renames atomically without touching unrelated identifiers. Rename calls are safe and may be performed autonomously as part of a refactoring task.
 - Use `get_file_problems` eagerly to validate code.
 - When multiple IDEA projects are served, pass the absolute `projectPath` for the project that owns the code. Do not use a parent VCS root when the actual IDEA project is below it.
-- If IntelliJ platform sources are needed, ask the user for their exact location and ask them to open that project in IDEA. Use the absolute platform path for IDEA MCP queries and do not modify or build platform sources.
+- If IntelliJ platform sources are needed, first look for a sibling checkout (`../intellij-community` or similar) and probe it with any IDEA tool — the error message lists the projects that are currently open, which answers "is it open?" in one call. Only then ask the user for their exact location and ask them to open that project in IDEA. Use the absolute platform path as `projectPath`. Verify access with `search_symbol` (e.g. `org.jetbrains.kotlin.jsr223.KotlinJsr223StandardScriptEngineFactory4Idea`); do not use `list_directory_tree` as the availability check — it can return empty even when the project is loaded. Do not modify, compile, or run platform sources, and do not switch the platform Git branch.
 - Never change the state of the IDE (which files are open, run configurations, breakpoints) without an explicit user request.
 - If the MCP server is unavailable, stop only for work that requires IDEA-aware navigation, diagnostics, refactoring, builds, tests, or run configurations. Plain text, docs, and configuration work may continue with file tools.
 
 ## JetBrains MPS (mps_mcp_*)
 
-- Use `mps_mcp_*` tools for changing, diagnostics, and inspecting currently open MPS modules, models, and nodes.
+- Use `mps_mcp_*` tools for changing, diagnostics, and inspecting currently open MPS modules, models, and nodes. The `mps-mcp-workflow` skill is the single source of truth for the toolset — load it instead of relying on remembered tool names, and use `references/mcp-tools-index.md` for the full inventory.
+- Match tools by the stable `mps_mcp_*` suffix; clients wrap them with their own prefix. Never conclude the toolset is missing because a name you guessed for it is absent — check what you were actually given.
+- `mps_mcp_initialize_project_for_agents` is **not** an availability probe — it writes the skill catalog and agent guides into the repository. Probe with `mps_mcp_list_open_projects`.
 - When no project or multiple projects are reported, call `mps_mcp_list_open_projects` and pass the intended project's `mpsProjectBaseDirectory` as `projectPath` to later calls. Ask the user if the correct project is not obvious.
 - Never change the IDE state (which files are open, run configurations, breakpoints) without an explicit user request.
 - If the MCP server is unavailable, stop for MPS model, language, generator, module, or node work and direct the user to fix the setup. Plain JVM, docs, and configuration work may continue with file tools when it does not require model-aware access.
@@ -53,37 +58,18 @@
 
 ## TeamCity
 
-- Use the `teamcity` CLI (at `~/.local/bin/teamcity`) for all TC operations. The skill at `.agents/skills/teamcity-cli/` documents all commands. Check `teamcity auth status` first to confirm connectivity.
-- TeamCity project and build configuration IDs include the concrete release version. Derive the prefix from the target MPS release: `2026.1` -> `MPS_20261`, `2026.2` -> `MPS_20262`, `2026.3` -> `MPS_20263`.
+- Use the `teamcity` CLI (at `~/.local/bin/teamcity`) for all TC operations. The skill at `.agents/skills/teamcity-cli/` documents commands. Check `teamcity auth status` first.
+- Project and build-configuration IDs include the release. Derive them from the target MPS version: `2026.1` → `MPS_20261`, `2026.2` → `MPS_20262`. `<ver>` in `MPS_<ver>…` always means that compact digits-only form, so `MPS_<ver>_FeatureBranches` for 2026.1 is `MPS_20261_FeatureBranches` — not `MPS_2026.1_…`. Never assume which version `master` holds — it advances every release.
 - Derive the target release from the current branch, the YouTrack fix version, or the user request. If those disagree, ask before triggering or watching builds.
-- A concrete MPS version example for `2026.1`:
-  - Distribution: `MPS_20261_Distribution`
-  - Feature branches: `MPS_20261_FeatureBranches` (TC **project** ID, not a build config)
-  - IntelliJ IDEA platform: `MPS_20261_IdeaPlatform`
-
-### Feature branch build chain (`MPS_20261_FeatureBranches`)
-
-The feature-branches project contains these build configurations:
-
-| Build config ID                                            | Name                               |
-|------------------------------------------------------------|------------------------------------|
-| `MPS_20261_FeatureBranches_Binaries`                       | Binaries (root — runs first)       |
-| `MPS_20261_FeatureBranches_DownloadableArtifactsNoInstallers` | Downloadable Artifacts (key gate) |
-| `MPS_20261_FeatureBranches_TestsFromIdeaProject`           | Tests from IDEA Project            |
-| `MPS_20261_FeatureBranches_TestBinaries`                   | Test Binaries                      |
-| `MPS_20261_FeatureBranches_TestTypesystem`                 | Test Typesystem                    |
-| `MPS_20261_FeatureBranches_TestParallelGeneration`         | Test Parallel Generation           |
-| `MPS_20261_FeatureBranches_TestMbeddrBuild`                | Test Mbeddr Build                  |
-| `MPS_20261_FeatureBranches_MpsProjectConsistencyTest`      | MPS Project Consistency Test       |
-| `MPS_20261_FeatureBranches_Extensions`                     | Extensions                         |
-| `MPS_20261_FeatureBranches_Statistics`                     | Statistics                         |
-| `MPS_20261_FeatureBranches_LinuxDistribution`              | Linux Distribution                 |
-| `MPS_20261_FeatureBranches_MacInstaller`                   | Mac Installer                      |
-| `MPS_20261_FeatureBranches_WindowsInstaller`               | Windows Installer                  |
-
-- The `Binaries` build is the root of the chain and runs first; downstream builds are triggered by VCS/snapshot dependency after it succeeds.
-- `DownloadableArtifactsNoInstallers` is the key gate to wait for on feature branches.
-- To trigger a feature-branch chain, start the versioned `FeatureBranches_Binaries` build for the branch, then watch the downstream gate build requested by the user or required by the workflow.
-- To find a branch's build: `teamcity run list --job MPS_20261_FeatureBranches_Binaries --limit 5` (TeamCity branch names usually match git branch names without the leading version segment, e.g. `261/vaclav/MPS-39649` appears as `vaclav/MPS-39649`).
-- To watch a build: `teamcity run watch <run-id>` (blocks until done).
-- To check status without blocking: `teamcity run list --job <job-id> --limit 3`.
+- Confirm coordinates from the version project, not from memory:
+  `teamcity project param list MPS_<ver> | grep -E "mps.git.branch|mps.idea.platform.number"`
+  `mps.git.branch` is the git base branch; `mps.idea.platform.number` is the git branch prefix. Do not trust `mps.version` — it is stale in some projects.
+- Each version has three relevant sub-projects: `MPS_<ver>_Distribution` (the version's default git branch), `MPS_<ver>_FeatureBranches` (non-default branches matching `+:<prefix>/*`), and `MPS_<ver>_IdeaPlatform`.
+- TeamCity logical branch names omit the numeric git prefix: git `261/vaclav/topic` is TeamCity `vaclav/topic`. Filtering by the full git name or `--branch @this` silently returns "No runs found".
+- On feature branches, the VCS trigger is on the composite `..._DownloadableArtifactsNoInstallers` (branch filter `+:*` / `-:<default>`). Pushing a matching branch starts the chain. If you must start it by hand, start that composite with `--no-push`, not `Binaries`. Starting `Binaries` alone does not run tests. A full chain takes roughly 45–60 minutes.
+- The composite aggregates Binaries, Test Binaries, Tests from IDEA Project, Test Typesystem, Extensions, Test Mbeddr Build, and the installer/distribution jobs. Paused or scheduled-only jobs (`Statistics`, `Test Parallel Generation`, sometimes an installer) are not a failure if missing. `MPS Project Consistency Test` depends on `Binaries` but is **not** a snapshot dependency of the composite — do not wait for it as part of the chain.
+- `Extensions` and `Test Mbeddr Build` check out external repositories at branches pinned by project parameters. Failures there are often unrelated to this repository.
+- Do not start, cancel, or re-run `Distribution` jobs unless the user explicitly asks.
+- `teamcity run start` auto-pushes the current branch unless `--no-push` is given. Always pass `--no-push` unless the user has asked you to push. Composite logs are empty — drill into children with `teamcity run tree`.
+- `teamcity run list` truncates the JOB column, so it cannot tell you which job failed; identify jobs with `teamcity run tree <compositeRunId>` or `teamcity run view <runId>`.
+- The binary is often not on `PATH`, and each shell invocation is a fresh shell: call `~/.local/bin/teamcity` or prepend `export PATH="$HOME/.local/bin:$PATH";`.

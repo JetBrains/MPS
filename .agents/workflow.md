@@ -2,7 +2,7 @@
 
 - Keep changes minimal — only touch what the task requires.
 - Don't introduce new abstractions when existing patterns already solve the problem.
-- Match the conventions of the surrounding file (naming, formatting, structure).
+- Follow `.agents/conventions.md` for style, naming, module boundaries, and source of truth.
 - When changing public behavior, update the nearest relevant documentation.
 
 ## Merge conflicts
@@ -14,6 +14,7 @@
 
 ## Reviews
 
+- Start with the change itself: which line changes the behavior that was reported, and which test would have failed without it. A clean, minimal diff that does not address the report is still a defect.
 - For review requests, lead with concrete findings ordered by severity.
 - Cite file and line references for each finding.
 - Focus on bugs, regressions, missing tests, API compatibility, generated-source drift, and validation gaps.

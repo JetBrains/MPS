@@ -34,7 +34,7 @@ Keep the configuration name stable across iterations so step 2 idempotently over
 
 - **`mps-baselanguage`** — when the runnable root is a plain `ClassConcept` you authored or need to inspect (`main` method shape, BaseLanguage editing).
 - **`mps-aspect-generator`** — when stale or wrong generated Java is the root cause of an execution failure.
-- **`mps-bugfix`** — when an execution failure points back at the generator or model rather than the launcher.
+- **`bugfix-workflow`** — when an execution failure points back at the generator or model rather than the launcher.
 
 ## Reference Index
 
