@@ -1,9 +1,8 @@
 # Phase 6 — Review Checklist
 
-The reviewer agent should check:
+Apply `.agents/workflow.md` (Reviews) and `.agents/conventions.md`. In addition, check:
 
 - Correctness and logic of the fix
-- Adherence to project conventions (AGENTS.md, .agents/conventions.md)
 - Missing edge cases or null checks
 - Test coverage adequacy
 - No accidental changes outside the fix scope

@@ -1,11 +1,11 @@
 # Phase 1 — Version-Clarification Prompt
 
-Present findings and ask:
+Present findings and ask. Derive the in-development version from TeamCity `mps.git.branch` / HEAD; do not hardcode it.
 
 > **Which MPS version should this fix target?**
 >
 > Available release branches: _[list them]_
-> Master branch (in-development): _[next version, e.g. 2026.1]_
+> Master branch (in-development): _[version currently on master]_
 >
 > Options:
 > - A **released version** → fix will be backported (base branch: e.g. `2025.1`)

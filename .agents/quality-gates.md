@@ -19,3 +19,4 @@
 - For generator changes, validate both the MPS generator result and the affected generated Java/Kotlin compilation path.
 - For cross-cutting changes, validate both the MPS side and the JVM side.
 - If validation cannot be run because the required IDE, MPS, authentication, or external service is unavailable, say exactly what was skipped and why.
+- These local gates always apply. A green local build is not evidence about TeamCity; when a workflow requires remote CI, that is a separate gate (see `.agents/tools.md`).

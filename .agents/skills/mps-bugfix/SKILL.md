@@ -9,16 +9,15 @@ type: reference
 
 You are guiding a structured bugfix process for the JetBrains MPS project. Follow each phase in order. Never skip phases or start implementation before the user gives an explicit command to do so.
 
-The issue to fix: **$ARGUMENTS**
+The issue to fix is the YouTrack ID supplied with this request (`$ARGUMENTS` when the host substitutes it).
+
+Always-on project rules apply throughout: `AGENTS.md` and `.agents/git.md`, `conventions.md`, `tools.md`, `workflow.md`, `quality-gates.md`. This skill is only the bugfix process and a few stricter overlays. Load `teamcity-cli` for TeamCity CLI syntax.
 
 ## Critical Directives
 
 - **Never start implementing code before the user gives explicit approval.** Wait for "implement", "go ahead", "start coding", "do it", etc.
 - **Never skip Phase 0 preflight.** Missing YouTrack MCP, IDEA MCP, or the platform project changes how you should proceed; surface the gap before touching code.
-- **Prefer fixing the true source of truth (MPS model/generator) over patching generated code.**
-- **Use IDEA MCP for Java/Kotlin navigation and inspection; use MPS MCP for MPS model edits.**
-- **Validate after each logical change** — `mcp_idea_get_file_problems` on modified files, build affected module, run smallest relevant test suite.
-- **A fix is not done until TeamCity is green.** Local builds and local test runs are necessary but not sufficient. The definitive confirmation of success is the TeamCity feature-branch build chain for the pushed branch: all tests must pass, or every remaining failure must be proven pre-existing on the base branch. Never report the task complete on local evidence alone, and never predict the outcome of a build that is still running. See Phase 7 and `references/teamcity-validation.md`.
+- **A fix is not done until TeamCity is green.** Local builds and tests are necessary but not sufficient. The definitive confirmation is the TeamCity feature-branch chain for the pushed branch: all tests must pass, or every remaining failure must be proven pre-existing on the base branch. Never report the task complete on local evidence alone, and never predict the outcome of a build that is still running. See Phase 7 and `references/teamcity-validation.md`.
 
 ## Phase 0 — Pre-flight Checks
 
@@ -26,7 +25,7 @@ Verify all required tools and inputs before doing any work.
 
 ### 0.1 — Issue ID
 
-If `$ARGUMENTS` is empty, stop immediately and ask:
+If no valid-looking issue ID was supplied (empty `$ARGUMENTS`, or the host left `$ARGUMENTS` unsubstituted), stop immediately and ask:
 
 > Which YouTrack issue should I work on? Please provide the issue ID (e.g. `MPS-12345`).
 
@@ -34,7 +33,7 @@ Do not continue until a valid-looking issue ID is supplied.
 
 ### 0.2 — YouTrack MCP
 
-Check that the YouTrack MCP server tools are available in this session (by attempting to call `get_issue`).
+Check that the YouTrack MCP tools are available in this session (the tool list includes `get_issue`). Do not fetch the issue yet.
 
 If they are not available:
 > **YouTrack MCP is not connected.** Please start the YouTrack MCP server and retry.
@@ -47,16 +46,16 @@ Call `get_issue` with the provided issue ID. If the issue does not exist, report
 
 ### 0.4 — IDEA MCP (MPS project)
 
-Check that the `mcp_idea_*` tools are available.
+Check that the IDEA MCP tools are available (`get_file_problems`, `search_symbol`, `build_project`, …).
 
 If not available:
 > **IDEA MCP is not connected.** Please open the MPS project in IntelliJ IDEA with the MCP plugin running and retry.
 
-Do not continue without the IDEA MCP tools.
+Do not continue without the IDEA MCP tools. This is stricter than `.agents/tools.md`, which allows docs-only work to proceed without IDEA.
 
 ### 0.5 — IDEA MCP (platform project)
 
-Call `mcp_idea_get_project_modules` or `mcp_idea_get_repositories` to verify that the IntelliJ platform project (`../intellij-community`) is also open/accessible via the IDEA MCP. If not, ask whether to proceed with MPS-only sources or wait. See `references/platform-prompt.md` for the exact prompt.
+If analysis may need IntelliJ platform sources, follow `AGENTS.md` and `.agents/tools.md` (ask for the exact path, have the user open that project in IDEA, verify with `search_symbol`). If they are not accessible, ask whether to proceed with MPS-only sources or wait. See `references/platform-prompt.md`.
 
 ### 0.6 — TeamCity CLI
 
@@ -74,13 +73,13 @@ Determine which MPS version the fix targets and derive the correct branch and Yo
 
 1. **Identify available release branches**: run `git branch -r --list 'origin/20*'` and inspect master HEAD.
 2. **Ask the user** which version to target — see `references/version-prompt.md` for the exact wording.
-3. **Derive branch metadata** — see `references/branch-naming.md` for the full table.
-4. **Derive the TeamCity coordinates** for the chosen version and record them for Phase 7 — the version project (`MPS_<ver>`), its feature-branch project (`MPS_<ver>_FeatureBranches`), the branch prefix, and the base git branch. Verify rather than guess:
+3. **Derive git metadata** from `.agents/git.md` (prefix, username, base branch). The topic segment for this ticket is `MPS-NNNNN-short-description` — see `references/branch-naming.md`.
+4. **Derive TeamCity coordinates** from `.agents/tools.md` and record them for Phase 7. Verify with:
    ```
    teamcity project param list MPS_<ver> | grep -E "mps.git.branch|mps.idea.platform.number"
    ```
-   The `mps.idea.platform.number` value **is** the branch prefix, and `mps.git.branch` **is** the base branch — they must match what `references/branch-naming.md` produced. See `references/teamcity-validation.md` §1.
-5. **Update YouTrack fix version** with `update_issue` after the user confirms.
+   so the prefix and base branch match.
+5. **Offer to set the YouTrack `Fix versions` field** after the user confirms the target version. YouTrack writes need that yes and a `Co-Authored-By` trailer (`.agents/tools.md`).
 
 ## Phase 2 — Problem Analysis
 
@@ -95,11 +94,11 @@ Deeply understand the bug by reading relevant source code in both MPS and the pl
 1. **Propose 2–3 distinct fix approaches** with trade-offs.
 2. **State your recommendation.**
 3. **Detailed implementation plan** for the recommended approach — files, line-level precision, generation steps, validation.
-4. **Offer to post the RCA + plan as a YouTrack comment** via `add_issue_comment`.
+4. **Offer to post the RCA + plan as a YouTrack comment** via `add_issue_comment`. Wait for a yes; include the `Co-Authored-By` trailer (`.agents/tools.md`).
 
 ## Phase 4 — Branch Creation
 
-After the user explicitly approves moving forward, run:
+After the user explicitly approves moving forward, create a **new** branch for this ticket from the Phase 1 base (this isolates the fix; it is an exception to `.agents/git.md`'s "stay on the current topic branch" rule):
 
 ```
 git checkout <base-branch>
@@ -113,16 +112,7 @@ git checkout -b <proposed-branch-name>
 
 **Only begin after explicit user command.**
 
-Follow AGENTS.md rules throughout:
-
-- Use IDEA MCP for Java/Kotlin code navigation and inspection.
-- Use MPS MCP for MPS model edits (if required).
-- Prefer fixing the source of truth (MPS model/generator) over patching generated code.
-- Keep changes minimal — touch only what the fix requires.
-- Match conventions of surrounding code.
-- Validate after each logical change: `mcp_idea_get_file_problems`, module build, smallest relevant test.
-
-Commit each logical unit of change with a clear message following project format, including a `Co-Authored-By` trailer.
+Follow `AGENTS.md` and the always-on `.agents/*.md` files. Commit each logical unit per `.agents/git.md`.
 
 ## Phase 6 — Review
 
@@ -130,30 +120,19 @@ Once implementation is complete, offer:
 
 > The implementation is done. Shall I run an agent-performed code review of the changes? (yes / no)
 
-If yes, invoke `/review` scoped to `git diff <base-branch>...HEAD`. Checks listed in `references/review-checklist.md`.
-
-Present the findings and ask the user how to proceed (fix issues, ignore, or proceed as-is).
+If yes, review `git diff <base-branch>...HEAD` against `.agents/workflow.md` (Reviews) and `references/review-checklist.md`. Present the findings and ask the user how to proceed (fix issues, ignore, or proceed as-is).
 
 ## Phase 7 — TeamCity Validation
 
-**This phase is mandatory and it is what determines whether the task succeeded.** Local green tests are not the criterion; a green TeamCity feature-branch chain is. Full details, commands, and the report template are in `references/teamcity-validation.md` — read it before starting this phase.
+**This phase is mandatory and it is what determines whether the task succeeded.** Local green tests are not the criterion; a green TeamCity feature-branch chain is. Coordinates and which job to start: `.agents/tools.md`. CLI: `teamcity-cli`. Procedure, classification, and report template: `references/teamcity-validation.md` — read it before starting this phase.
 
-1. **Ask for the go-ahead to push.** Pushing is outward-facing and it is what triggers CI:
-   > Ready to validate on CI. Shall I push `<branch>` to `origin`? That triggers the TeamCity chain in `MPS_<ver>_FeatureBranches`.
+1. **Ask for the go-ahead to push** (`.agents/git.md`). Reuse that approval for later fix → push → re-validate iterations on the same branch.
+2. **Locate the triggered chain** in `MPS_<ver>_FeatureBranches` (branch-name translation and VCS trigger: `.agents/tools.md`). Allow ~5 minutes. Only start the composite by hand if it genuinely did not start.
+3. **Wait for completion** with `teamcity run watch <compositeRunId>`. A chain takes 45–60 minutes. Do not report completion while it is running.
+4. **Read and classify** every failure with evidence (own change / pre-existing / infrastructure). Iterate up to 3 distinct fixes. Jobs that build external repositories (`Extensions`, `Test Mbeddr Build`) frequently fail for reasons outside this repository.
+5. **Report** using the template in `references/teamcity-validation.md`. State "all tests pass in TeamCity" only when the composite run is green, or when every remaining failure is documented as pre-existing with its evidence.
 
-   Reuse that approval for the later fix → push → re-validate iterations on the same branch.
-2. **Locate the triggered chain.** Remember TeamCity strips the numeric prefix: git `261/vaclav/MPS-12345-fix` is TeamCity branch `vaclav/MPS-12345-fix`. Filtering by the full git name (or `--branch @this`) silently returns "No runs found".
-   ```
-   teamcity run list --project MPS_<ver>_FeatureBranches --branch <tc-branch> --limit 20
-   ```
-   Allow ~5 minutes for the VCS trigger (120 s poll interval). Only start the chain manually — on the composite `..._DownloadableArtifactsNoInstallers` job, with `--no-push` — if it genuinely did not start.
-3. **Wait for completion** — `teamcity run watch <compositeRunId>`, or hand the composite run ID to the `babysit-build` agent for long waits. A chain takes 45–60 minutes. Do not report completion while it is running.
-4. **Read the result** — `teamcity run view` / `run tree` for the chain; for each failed child `run tests <id> --failed` and `run log <id> --failed --raw`. The composite build's own log is empty by design, and chains fail bottom-up, so the deepest failed dependency is the root cause.
-5. **Classify every failure** into exactly one bucket, with evidence: (a) caused by my change → fix and re-validate; (b) pre-existing on the base branch → prove it against the `MPS_<ver>_Distribution` twin job, `currentlyFailing` tests, mutes/investigations, or another feature branch off the same base; (c) infrastructure/flaky → prove it by re-running the single job. Jobs that build external repositories (`Extensions`, `Test Mbeddr Build`, `Test iets3`) frequently fail for reasons outside this repository — check their pinned branch parameters before blaming the fix.
-6. **Iterate**, up to 3 fix attempts. Each attempt must be a genuinely different fix; if the same failure survives three, stop and report the diagnosis instead of churning.
-7. **Report** using the template in `references/teamcity-validation.md` §6. State "all tests pass in TeamCity" only when the composite run is green, or when every remaining failure is documented as pre-existing with its evidence.
-
-Never mute, skip, disable, or delete a test to turn a build green, and never force-push.
+During this phase, never mute, skip, disable, or delete a test to turn a build green, and never force-push (stricter than `.agents/git.md`).
 
 ## Phase 8 — Completion
 
@@ -164,9 +143,9 @@ Once TeamCity confirms the fix and the user agrees the issue is resolved, offer 
 - `references/issue-fields.md` — fields to extract from the fetched issue.
 - `references/platform-prompt.md` — prompt when platform sources are not accessible.
 - `references/version-prompt.md` — Phase 1 version-clarification prompt.
-- `references/branch-naming.md` — branch-name derivation table (prefix, username, version).
+- `references/branch-naming.md` — bugfix topic form, YouTrack fix version, confirmation table.
 - `references/explore-prompts.md` — Phase 2 parallel Explore-agent prompts.
 - `references/root-cause-template.md` — structured RCA markdown template.
-- `references/review-checklist.md` — what the agent reviewer must check.
-- `references/teamcity-validation.md` — Phase 7 TeamCity project layout, branch-name translation, validation workflow, pre-existing-failure evidence, hazards, report template.
+- `references/review-checklist.md` — additional checks on top of `.agents/workflow.md`.
+- `references/teamcity-validation.md` — Phase 7 procedure, pre-existing-failure evidence, report template.
 - `references/completion-comment.md` — Phase 8 YouTrack closing-comment template.

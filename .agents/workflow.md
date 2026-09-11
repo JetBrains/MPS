@@ -2,7 +2,7 @@
 
 - Keep changes minimal — only touch what the task requires.
 - Don't introduce new abstractions when existing patterns already solve the problem.
-- Match the conventions of the surrounding file (naming, formatting, structure).
+- Follow `.agents/conventions.md` for style, naming, module boundaries, and source of truth.
 - When changing public behavior, update the nearest relevant documentation.
 
 ## Merge conflicts

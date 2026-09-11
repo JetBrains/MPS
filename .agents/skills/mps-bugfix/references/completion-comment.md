@@ -9,11 +9,15 @@ Fixed in branch `<branch-name>` (targeting <MPS version>).
 **Fix**: <one sentence describing what was changed>
 **Files changed**: <comma-separated list of key files>
 **CI**: TeamCity <compositeRunId> — <SUCCESS | SUCCESS except pre-existing failures> (<web URL>)
+
+Co-Authored-By: <identity of the AI agent>
 ```
 
 The `CI` line is mandatory: it is the record that the fix was validated. If failures remained,
-name them and say why they are pre-existing (see `teamcity-validation.md` §3). If TeamCity could
+name them and say why they are pre-existing (see `teamcity-validation.md` §2). If TeamCity could
 not be used at all, write `**CI**: not validated — <reason>` rather than omitting the line.
+
+The `Co-Authored-By` trailer is required for YouTrack comments (see `.agents/tools.md`).
 
 Remind the user to:
 - Open a PR / code review
