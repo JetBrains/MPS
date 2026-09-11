@@ -10558,7 +10558,7 @@
             <node concept="H_c77" id="6E2SOPziqYz" role="1tU5fm" />
             <node concept="2OqwBi" id="JIxq8WEucw" role="33vP2m">
               <node concept="liA8E" id="JIxq8WEHq7" role="2OqNvi">
-                <ref role="37wK5l" to="w1kc:~ModelAccessHelper.runWriteAction(jetbrains.mps.util.Computable)" />
+                <ref role="37wK5l" to="w1kc:~ModelAccessHelper.runWriteAction(jetbrains.mps.util.Computable)" resolve="runWriteAction" />
                 <node concept="1bVj0M" id="JIxq8WEVdz" role="37wK5m">
                   <node concept="3clFbS" id="JIxq8WEVd$" role="1bW5cS">
                     <node concept="3SKdUt" id="JIxq8WBi$X" role="3cqZAp">
