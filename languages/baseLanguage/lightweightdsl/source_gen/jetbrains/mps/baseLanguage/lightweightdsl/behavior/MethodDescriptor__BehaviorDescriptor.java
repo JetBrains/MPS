@@ -20,6 +20,7 @@ import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.smodel.ModelDependencyUpdate;
+import org.jetbrains.mps.openapi.module.SRepository;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.core.aspects.behaviour.api.BHMethodNotFoundException;
@@ -48,7 +49,13 @@ public final class MethodDescriptor__BehaviorDescriptor extends BaseBHDescriptor
     SLinkOperations.setTarget(method, LINKS.decl$QvLv, __thisNode__);
     // 1fc90995c6 fix suggests we could face futureModel == null here. However, I'd like to figure out
     //          how come we pass null here, instead.
-    new ModelDependencyUpdate(futureModel, SNodeOperations.getNodeDescendants(method, null, true, new SAbstractConcept[]{})).updateUsedLanguages().updateImportedModels(futureModel.getRepository());
+    ModelDependencyUpdate update = new ModelDependencyUpdate(futureModel, SNodeOperations.getNodeDescendants(method, null, true, new SAbstractConcept[]{}));
+
+    SRepository repository = futureModel.getRepository();
+    update.updateUsedLanguages().updateImportedModels(repository);
+    if (futureModel.getModule() != null) {
+      update.updateModuleDependencies(repository);
+    }
     return method;
   }
   /*package*/ static SNode getReturnType_id3m06Jgso0l8(@NotNull SNode __thisNode__) {
