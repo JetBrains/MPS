@@ -34,7 +34,7 @@ public class RefactoringProcessor {
     final Wrappers._T<List<RefactoringParticipant.Option>> options = new Wrappers._T<List<RefactoringParticipant.Option>>();
     refactoringUI.prepare(() -> {
       for (RefactoringParticipant<?, ?, IP, FP> participant : Sequence.fromIterable(participants)) {
-        ListSequence.fromList(participantStates).addElement(RefactoringParticipant.ParticipantApplied.create(factory, participant, nodes));
+        ListSequence.fromList(participantStates).addElement(factory.apply(participant, nodes));
       }
       options.value = ListSequence.fromList(participantStates).translate((it) -> it.getAvaliableOptions(repository)).distinct().sort((it) -> it.getDescription(), true).toList();
     });

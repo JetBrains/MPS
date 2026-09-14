@@ -5238,6 +5238,24 @@
                   </node>
                 </node>
               </node>
+              <node concept="3clFbH" id="7ram9ht0i_b" role="3cqZAp" />
+              <node concept="3cpWs8" id="7ram9ht0viz" role="3cqZAp">
+                <node concept="3cpWsn" id="7ram9ht0vix" role="3cpWs9">
+                  <property role="3TUv4t" value="true" />
+                  <property role="TrG5h" value="stateFactory" />
+                  <node concept="3uibUv" id="7ram9ht16yo" role="1tU5fm">
+                    <ref role="3uigEE" to="5nvm:XAmMejEI3D" resolve="RefactoringParticipant.CollectingParticipantStateFactory" />
+                    <node concept="3Tqbb2" id="7ram9ht1oUf" role="11_B2D" />
+                    <node concept="3Tqbb2" id="7ram9ht1COa" role="11_B2D" />
+                  </node>
+                  <node concept="2ShNRf" id="7ram9hsZYGv" role="33vP2m">
+                    <node concept="HV5vD" id="7ram9hsZYGw" role="2ShVmc">
+                      <property role="373rjd" value="true" />
+                      <ref role="HV5vE" to="5nvm:XAmMejEI3D" resolve="RefactoringParticipant.CollectingParticipantStateFactory" />
+                    </node>
+                  </node>
+                </node>
+              </node>
               <node concept="3clFbH" id="2swFJmOkS$F" role="3cqZAp" />
               <node concept="3cpWs6" id="1DR1niBkjYN" role="3cqZAp">
                 <node concept="2OqwBi" id="361hHoA3JSS" role="3cqZAk">
@@ -5290,7 +5308,7 @@
                                         </node>
                                       </node>
                                     </node>
-                                    <node concept="3clFbH" id="5wvp72QaRgW" role="3cqZAp" />
+                                    <node concept="3clFbH" id="7ram9hsZMWk" role="3cqZAp" />
                                     <node concept="3cpWs8" id="112yVMICZSX" role="3cqZAp">
                                       <node concept="3cpWsn" id="112yVMICZT0" role="3cpWs9">
                                         <property role="TrG5h" value="childparticipantStates" />
@@ -5299,11 +5317,13 @@
                                           <node concept="1LlUBW" id="6hSzYdRrUUF" role="_ZDj9">
                                             <node concept="3Tqbb2" id="6hSzYdRrYlN" role="1Lm7xW" />
                                             <node concept="3uibUv" id="112yVMID1Ok" role="1Lm7xW">
-                                              <ref role="3uigEE" to="5nvm:112yVMI$YQ8" resolve="RecursiveParticipant.RecursiveParticipantApplied" />
+                                              <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
                                               <node concept="3qTvmN" id="112yVMID1Ol" role="11_B2D" />
                                               <node concept="3qTvmN" id="112yVMID1Om" role="11_B2D" />
                                               <node concept="3Tqbb2" id="5z_gLGeto7q" role="11_B2D" />
                                               <node concept="3Tqbb2" id="5z_gLGetsBT" role="11_B2D" />
+                                              <node concept="3Tqbb2" id="7ram9hsT5g2" role="11_B2D" />
+                                              <node concept="3Tqbb2" id="7ram9hsT5gr" role="11_B2D" />
                                             </node>
                                           </node>
                                         </node>
@@ -5329,30 +5349,36 @@
                                                             <node concept="3cpWs8" id="PXLOXmtQtF" role="3cqZAp">
                                                               <node concept="3cpWsn" id="PXLOXmtQtG" role="3cpWs9">
                                                                 <property role="TrG5h" value="participantState" />
-                                                                <node concept="2YIFZM" id="4ik5FEymNdI" role="33vP2m">
-                                                                  <ref role="37wK5l" to="5nvm:112yVMIEMzh" resolve="create" />
-                                                                  <ref role="1Pybhc" to="5nvm:112yVMI$YQ8" resolve="RecursiveParticipant.RecursiveParticipantApplied" />
-                                                                  <node concept="37vLTw" id="PXLOXmtQtI" role="37wK5m">
-                                                                    <ref role="3cqZAo" node="5W7E4fV0Xog" resolve="participant" />
-                                                                  </node>
-                                                                  <node concept="2ShNRf" id="5SvlHWolZjR" role="37wK5m">
-                                                                    <node concept="Tc6Ow" id="5SvlHWolZjN" role="2ShVmc">
-                                                                      <node concept="3Tqbb2" id="5SvlHWomoHZ" role="HW$YZ" />
-                                                                      <node concept="37vLTw" id="5SvlHWomfLG" role="HW$Y0">
-                                                                        <ref role="3cqZAo" node="5W7E4fV0Xoi" resolve="node" />
-                                                                      </node>
-                                                                    </node>
-                                                                  </node>
-                                                                  <node concept="37vLTw" id="PXLOXmtQtM" role="37wK5m">
-                                                                    <ref role="3cqZAo" node="112yVMIAw5W" resolve="parents" />
-                                                                  </node>
-                                                                </node>
                                                                 <node concept="3uibUv" id="PXLOXmtQtu" role="1tU5fm">
-                                                                  <ref role="3uigEE" to="5nvm:112yVMI$YQ8" resolve="RecursiveParticipant.RecursiveParticipantApplied" />
+                                                                  <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
                                                                   <node concept="3qTvmN" id="PXLOXmtQt$" role="11_B2D" />
                                                                   <node concept="3qTvmN" id="PXLOXmtQtz" role="11_B2D" />
                                                                   <node concept="3Tqbb2" id="5z_gLGetwZ$" role="11_B2D" />
                                                                   <node concept="3Tqbb2" id="5z_gLGet_sU" role="11_B2D" />
+                                                                  <node concept="3Tqbb2" id="7ram9hsSPag" role="11_B2D" />
+                                                                  <node concept="3Tqbb2" id="7ram9hsSXaO" role="11_B2D" />
+                                                                </node>
+                                                                <node concept="2OqwBi" id="7ram9ht3bDo" role="33vP2m">
+                                                                  <node concept="37vLTw" id="7ram9ht31Av" role="2Oq$k0">
+                                                                    <ref role="3cqZAo" node="7ram9ht0vix" resolve="stateFactory" />
+                                                                  </node>
+                                                                  <node concept="liA8E" id="7ram9ht3mPK" role="2OqNvi">
+                                                                    <ref role="37wK5l" to="5nvm:7ram9ht4kVU" resolve="apply" />
+                                                                    <node concept="37vLTw" id="7ram9ht3wRc" role="37wK5m">
+                                                                      <ref role="3cqZAo" node="5W7E4fV0Xog" resolve="participant" />
+                                                                    </node>
+                                                                    <node concept="2ShNRf" id="7ram9ht3K7P" role="37wK5m">
+                                                                      <node concept="Tc6Ow" id="7ram9ht3K7Q" role="2ShVmc">
+                                                                        <node concept="3Tqbb2" id="7ram9ht3K7R" role="HW$YZ" />
+                                                                        <node concept="37vLTw" id="7ram9ht3K7S" role="HW$Y0">
+                                                                          <ref role="3cqZAo" node="5W7E4fV0Xoi" resolve="node" />
+                                                                        </node>
+                                                                      </node>
+                                                                    </node>
+                                                                    <node concept="37vLTw" id="7ram9ht43dR" role="37wK5m">
+                                                                      <ref role="3cqZAo" node="112yVMIAw5W" resolve="parents" />
+                                                                    </node>
+                                                                  </node>
                                                                 </node>
                                                               </node>
                                                             </node>
@@ -6025,12 +6051,8 @@
                                                                   <node concept="37vLTw" id="361hHoA2jBx" role="37wK5m">
                                                                     <ref role="3cqZAo" node="361hHoA2jAe" resolve="refactoringSession" />
                                                                   </node>
-                                                                  <node concept="2ShNRf" id="XAmMek9hbq" role="37wK5m">
-                                                                    <node concept="HV5vD" id="XAmMek9hLQ" role="2ShVmc">
-                                                                      <ref role="HV5vE" to="5nvm:XAmMejEI3D" resolve="RefactoringParticipant.CollectingParticipantStateFactory" />
-                                                                      <node concept="3Tqbb2" id="42LwYUtsPJO" role="HU9BZ" />
-                                                                      <node concept="3Tqbb2" id="42LwYUtsQzI" role="HU9BZ" />
-                                                                    </node>
+                                                                  <node concept="37vLTw" id="7ram9htioFf" role="37wK5m">
+                                                                    <ref role="3cqZAo" node="7ram9ht0vix" resolve="stateFactory" />
                                                                   </node>
                                                                 </node>
                                                               </node>

@@ -97,6 +97,14 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
   abstract class ParticipantStateFactory<IP, FP, IS, FS> {
     public abstract <I, F> I getInitial(RefactoringParticipant<I, F, IP, FP> participant, IS oldNode);
     public abstract <I, F> F getFinal(RefactoringParticipant<I, F, IP, FP> participant, FS newNode);
+
+    public <I, F> ParticipantApplied<I, F, IP, FP, IS, FS> apply(RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes) {
+      return apply(participant, oldNodes, null);
+    }
+    public <I, F> ParticipantApplied<I, F, IP, FP, IS, FS> apply(final RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes, Iterable<ParticipantApplied> appliedParents) {
+      List<I> initialState = ListSequence.fromList(oldNodes).select((it) -> getInitial(participant, it)).toList();
+      return new ParticipantApplied<>(participant, initialState, appliedParents);
+    }
   }
 
   class CollectingParticipantStateFactory<IP, FP> extends ParticipantStateFactory<IP, FP, IP, FP> {
@@ -118,9 +126,12 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
   }
 
   class ParticipantApplied<I, F, IP, FP, IS, FS> {
-    private RefactoringParticipant<I, F, IP, FP> myParticipant;
-    private List<I> myInitialStates;
+    private final RefactoringParticipant<I, F, IP, FP> myParticipant;
+    private final List<I> myInitialStates;
+    private final List<ParticipantApplied> myAppliedParents;
+
     private List<List<Change<I, F>>> changes;
+
     public List<List<Change<I, F>>> getChanges() {
       return changes;
     }
@@ -130,20 +141,22 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
     public List<I> getInitialStates() {
       return myInitialStates;
     }
-    public static <I, F, IP, FP, IS, FS> ParticipantApplied<I, F, IP, FP, IS, FS> create(ParticipantStateFactory<IP, FP, IS, FS> factory, RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes) {
-      return new ParticipantApplied<I, F, IP, FP, IS, FS>(factory, participant, oldNodes);
-    }
-    public ParticipantApplied(final ParticipantStateFactory<IP, FP, IS, FS> factory, final RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes) {
+
+    public ParticipantApplied(RefactoringParticipant<I, F, IP, FP> participant, List<I> initialState, Iterable<ParticipantApplied> appliedParents) {
       this.myParticipant = participant;
-      myInitialStates = ListSequence.fromList(oldNodes).select((it) -> factory.getInitial(participant, it)).toList();
+      this.myInitialStates = initialState;
+      // FIXME we treat null and empty myAppliedParents differently (to satisfy legacy code path in MoveAspectParticipants along base getChanges() impl in ReafactoringParticipantBase
+      this.myAppliedParents = (appliedParents == null ? null : Sequence.fromIterable(appliedParents).toList());
     }
+
     public List<Option> getAvaliableOptions(SRepository repository) {
       return myParticipant.getAvailableOptions(ListSequence.fromList(myInitialStates).where((it) -> it != null).toList(), repository);
     }
     public List<List<Change<I, F>>> findChanges(SRepository repository, List<Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
       return changes = initChanges(repository, selectedOptions, searchScope, progressMonitor);
     }
-    protected <T, S> List<S> mapNotNull(List<T> arguments, _FunctionTypes._return_P1_E0<? extends List<S>, ? super List<T>> notNullMapFunc) {
+
+    private <T, S> List<S> mapNotNull(List<T> arguments, _FunctionTypes._return_P1_E0<? extends List<S>, ? super List<T>> notNullMapFunc) {
       List<S> filteredResult = notNullMapFunc.invoke(ListSequence.fromList(arguments).where((it) -> it != null).toList());
       List<S> result = ListSequence.fromList(new ArrayList<S>(ListSequence.fromList(arguments).count()));
       int j = 0;
@@ -152,13 +165,29 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       }
       return result;
     }
-    protected List<List<Change<I, F>>> initChanges(final SRepository repository, final List<Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor) {
-      return mapNotNull(myInitialStates, new _FunctionTypes._return_P1_E0<List<List<Change<I, F>>>, List<I>>() {
-        public List<List<Change<I, F>>> invoke(@NonNls List<I> initialStates) {
-          return (ListSequence.fromList(initialStates).isEmpty() ? Collections.<List<Change<I, F>>>emptyList() : myParticipant.getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor));
+    private List<List<Change<I, F>>> initChanges(final SRepository repository, final List<Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor) {
+      if (ListSequence.fromList(myInitialStates).isEmpty()) {
+        return Collections.<List<Change<I, F>>>emptyList();
+      }
+      // weird !null check for applied parents is there as we need top RecursiveParticipant to go through 5-arg getChanges in RefactoringParticipantBase, which 
+      // is busy creating necessary sub-monitors, and then hit MoveAspectParticipant override with empty list
+      if (myAppliedParents != null && myParticipant instanceof RecursiveParticipant) {
+        // Suppressed: java compiler will ignore generics anyway, since a raw type is used
+        if (ListSequence.fromList(myAppliedParents).any(new _FunctionTypes._return_P1_E0<Boolean, ParticipantApplied>() {
+          public Boolean invoke(ParticipantApplied parent) {
+            return Objects.equals(parent.getParticipant(), ParticipantApplied.this.getParticipant()) && ListSequence.fromList(parent.getInitialStates()).containsSequence(ListSequence.fromList(ParticipantApplied.this.getInitialStates())) && ListSequence.fromList(ParticipantApplied.this.getInitialStates()).containsSequence(ListSequence.fromList(parent.getInitialStates()));
+          }
+        })) {
+          // todo: checked exception
+          throw new IllegalStateException("infinite recursion detected");
+        } else {
+          return mapNotNull(myInitialStates, (List<I> initialStates) -> ((RecursiveParticipant<I, F, IP, FP>) myParticipant).getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor, ListSequence.fromList(myAppliedParents).concat(Sequence.fromIterable(Sequence.singleton(ParticipantApplied.this)))));
         }
-      });
+      } else {
+        return mapNotNull(myInitialStates, (List<I> initialStates) -> myParticipant.getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor));
+      }
     }
+
     public void doRefactor(List<FS> newNodes, final SRepository repository, final RefactoringSession session, ParticipantStateFactory<IP, FP, IS, FS> factory) {
       {
         Iterator<List<Change<I, F>>> nodeChanges_it = ListSequence.fromList(this.changes).iterator();

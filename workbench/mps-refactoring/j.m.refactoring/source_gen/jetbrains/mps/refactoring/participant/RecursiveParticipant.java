@@ -7,47 +7,9 @@ import java.util.List;
 import org.jetbrains.mps.openapi.module.SRepository;
 import org.jetbrains.mps.openapi.module.SearchScope;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
-import jetbrains.mps.internal.collections.runtime.Sequence;
-import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
-import java.util.Objects;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
-import org.jetbrains.annotations.NonNls;
 
 @GeneratedClass(nodeId = "1171652495569015565", model = "r:27bc780b-59b2-4d26-9db5-a38b63c35884(jetbrains.mps.refactoring.participant)")
 public interface RecursiveParticipant<InitialDataObject, FinalDataObject, InitialPoint, FinalPoint> extends RefactoringParticipant<InitialDataObject, FinalDataObject, InitialPoint, FinalPoint> {
 
   List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> getChanges(List<InitialDataObject> initialStates, SRepository repository, List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor, Iterable<RefactoringParticipant.ParticipantApplied> parents);
-
-  class RecursiveParticipantApplied<I, F, IP, FP> extends RefactoringParticipant.ParticipantApplied<I, F, IP, FP, IP, FP> {
-    private Iterable<RefactoringParticipant.ParticipantApplied> myParents;
-    public static <I, F, IP, FP> RecursiveParticipantApplied<I, F, IP, FP> create(RefactoringParticipant<I, F, IP, FP> participant, List<IP> oldNodes, Iterable<RefactoringParticipant.ParticipantApplied> parents) {
-      return new RecursiveParticipantApplied<I, F, IP, FP>(participant, oldNodes, parents);
-    }
-    private RecursiveParticipantApplied(RefactoringParticipant<I, F, IP, FP> participant, List<IP> oldNodes, Iterable<RefactoringParticipant.ParticipantApplied> parents) {
-      super(new RefactoringParticipant.CollectingParticipantStateFactory<IP, FP>(), participant, oldNodes);
-      myParents = parents;
-    }
-    @Override
-    protected List<List<RefactoringParticipant.Change<I, F>>> initChanges(final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor) {
-      if (getParticipant() instanceof RecursiveParticipant) {
-        // Suppressed: java compiler will ignore generics anyway, since a raw type is used
-        if (Sequence.fromIterable(myParents).any(new _FunctionTypes._return_P1_E0<Boolean, RefactoringParticipant.ParticipantApplied>() {
-          public Boolean invoke(RefactoringParticipant.ParticipantApplied parent) {
-            return Objects.equals(parent.getParticipant(), RecursiveParticipantApplied.this.getParticipant()) && ListSequence.fromList(parent.getInitialStates()).containsSequence(ListSequence.fromList(RecursiveParticipantApplied.this.getInitialStates())) && ListSequence.fromList(RecursiveParticipantApplied.this.getInitialStates()).containsSequence(ListSequence.fromList(parent.getInitialStates()));
-          }
-        })) {
-          // todo: checked exception
-          throw new IllegalStateException("infinite recursion detected");
-        } else {
-          return mapNotNull(getInitialStates(), new _FunctionTypes._return_P1_E0<List<List<RefactoringParticipant.Change<I, F>>>, List<I>>() {
-            public List<List<RefactoringParticipant.Change<I, F>>> invoke(@NonNls List<I> initialStates) {
-              return ((RecursiveParticipant<I, F, IP, FP>) getParticipant()).getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor, Sequence.fromIterable(myParents).concat(Sequence.fromIterable(Sequence.<RefactoringParticipant.ParticipantApplied>singleton(RecursiveParticipantApplied.this))));
-            }
-          });
-        }
-      } else {
-        return super.initChanges(repository, selectedOptions, searchScope, progressMonitor);
-      }
-    }
-  }
 }

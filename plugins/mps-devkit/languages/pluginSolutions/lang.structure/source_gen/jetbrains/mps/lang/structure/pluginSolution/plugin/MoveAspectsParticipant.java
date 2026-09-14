@@ -96,20 +96,22 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
       Iterable<SNode> aspects = Sequence.fromIterable(MapSequence.fromMap(aspectsMap).values()).translate((x) -> x);
       progressMonitor.start("", participantSize * Sequence.fromIterable(aspects).foldLeft(0, (Integer s, SNode it) -> s + ListSequence.fromList(SNodeOperations.getNodeDescendants(it, null, true, new SAbstractConcept[]{})).count()));
 
+      final RefactoringParticipant.CollectingParticipantStateFactory<SNode, SNode> stateFactory = new RefactoringParticipant.CollectingParticipantStateFactory<>();
+
       return MapSequence.fromMap(aspectsMap).translate((final IMapping<LanguageAspectDescriptor, List<SNode>> mapping) -> {
         return ListSequence.fromList(mapping.value()).select((final SNode aspect) -> {
 
           List<SNode> descendants = SNodeOperations.getNodeDescendants(aspect, null, true, new SAbstractConcept[]{});
 
-          final List<Tuples._2<SNode, RecursiveParticipant.RecursiveParticipantApplied<?, ?, SNode, SNode>>> childparticipantStates = ListSequence.fromList(descendants).translate((final SNode node) -> Sequence.fromIterable(new ExtensionPoint<MoveNodeRefactoringParticipant<?, ?>>("jetbrains.mps.refactoring.participant.MoveNodeParticipantEP").getObjects()).select((participant) -> {
-            RecursiveParticipant.RecursiveParticipantApplied<?, ?, SNode, SNode> participantState = RecursiveParticipant.RecursiveParticipantApplied.create(participant, ListSequence.fromListAndArray(new ArrayList<SNode>(), node), parents);
+          final List<Tuples._2<SNode, RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode, SNode, SNode>>> childparticipantStates = ListSequence.fromList(descendants).translate((final SNode node) -> Sequence.fromIterable(new ExtensionPoint<MoveNodeRefactoringParticipant<?, ?>>("jetbrains.mps.refactoring.participant.MoveNodeParticipantEP").getObjects()).select((participant) -> {
+            RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode, SNode, SNode> participantState = stateFactory.apply(participant, ListSequence.fromListAndArray(new ArrayList<SNode>(), node), parents);
             participantState.findChanges(repository, selectedOptions, searchScope, progressMonitor.subTask(1));
-            return MultiTuple.<SNode,RecursiveParticipant.RecursiveParticipantApplied<?, ?, SNode, SNode>>from(node, participantState);
+            return MultiTuple.<SNode,RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode, SNode, SNode>>from(node, participantState);
           })).toList();
 
           SearchResults results = new SearchResults();
           results = results.addSearchResults(new SearchResults(SetSequence.fromSetAndArray(new HashSet<SNode>(), sourceConcept), ListSequence.fromListAndArray(new ArrayList<SearchResult<SNode>>(), new SearchResult<SNode>(aspect, "concept aspect"))));
-          for (Tuples._2<SNode, RecursiveParticipant.RecursiveParticipantApplied<?, ?, SNode, SNode>> childState : ListSequence.fromList(childparticipantStates)) {
+          for (Tuples._2<SNode, RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode, SNode, SNode>> childState : ListSequence.fromList(childparticipantStates)) {
             for (RefactoringParticipant.Change<?, ?> subChange : ListSequence.fromList(ListSequence.fromList(childState._1().getChanges()).first())) {
               results = results.addSearchResults(subChange.getSearchResults());
             }
@@ -139,7 +141,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
 
               final Map<SNode, SNode> copyMap = NodeCopyTracker.get(refactoringSession).getCopyMap();
               newLocation.insertNode(repository, ListSequence.fromList(copied).first());
-              ListSequence.fromList(childparticipantStates).visitAll((pis) -> pis._1().doRefactor(ListSequence.fromListAndArray(new ArrayList<SNode>(), MapSequence.fromMap(copyMap).get(pis._0())), repository, refactoringSession, new RefactoringParticipant.CollectingParticipantStateFactory<SNode, SNode>()));
+              ListSequence.fromList(childparticipantStates).visitAll((pis) -> pis._1().doRefactor(ListSequence.fromListAndArray(new ArrayList<SNode>(), MapSequence.fromMap(copyMap).get(pis._0())), repository, refactoringSession, stateFactory));
 
               if (needsToPreserveOldNode() == RefactoringParticipant.KeepOldNodes.POSTPONE_REMOVE && SNodeOperations.getModel(sourceConcept) == null) {
                 SNodeOperations.deleteNode(aspect);
