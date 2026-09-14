@@ -14,7 +14,6 @@ import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.ide.findusages.model.SearchResults;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
-import java.util.Iterator;
 import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -98,30 +97,22 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
     public abstract <I, F> I getInitial(RefactoringParticipant<I, F, IP, FP> participant, IS oldNode);
     public abstract <I, F> F getFinal(RefactoringParticipant<I, F, IP, FP> participant, FS newNode);
 
-    public <I, F> ParticipantApplied<I, F, IP, FP, IS, FS> apply(RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes) {
+    public <I, F> ParticipantApplied<I, F, IP, FP> apply(RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes) {
       return apply(participant, oldNodes, null);
     }
-    public <I, F> ParticipantApplied<I, F, IP, FP, IS, FS> apply(final RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes, Iterable<ParticipantApplied> appliedParents) {
+    public <I, F> ParticipantApplied<I, F, IP, FP> apply(final RefactoringParticipant<I, F, IP, FP> participant, List<IS> oldNodes, Iterable<ParticipantApplied> appliedParents) {
       List<I> initialState = ListSequence.fromList(oldNodes).select((it) -> getInitial(participant, it)).toList();
       return new ParticipantApplied<>(participant, initialState, appliedParents);
     }
 
-    public <I, F> void confirm(ParticipantApplied<I, F, IP, FP, IS, FS> applied, List<FS> newNodes, final SRepository repo, final RefactoringSession session) {
+    public <I, F> void confirm(ParticipantApplied<I, F, IP, FP> applied, List<FS> newNodes, final SRepository repo, final RefactoringSession session) {
       List<List<Change<I, F>>> changes = applied.getChanges();
       if (changes == null || ListSequence.fromList(changes).count() != ListSequence.fromList(newNodes).count()) {
         throw new IllegalStateException();
       }
-      {
-        Iterator<List<Change<I, F>>> nodeChanges_it = ListSequence.fromList(changes).iterator();
-        Iterator<FS> newNode_it = ListSequence.fromList(newNodes).iterator();
-        List<Change<I, F>> nodeChanges_var;
-        FS newNode_var;
-        while (nodeChanges_it.hasNext() && newNode_it.hasNext()) {
-          nodeChanges_var = nodeChanges_it.next();
-          newNode_var = newNode_it.next();
-          final F finalState = getFinal(applied.getParticipant(), newNode_var);
-          ListSequence.fromList(nodeChanges_var).visitAll((it) -> it.confirm(finalState, repo, session));
-        }
+      for (int x = ListSequence.fromList(newNodes).count(), i = 0; i < x; i++) {
+        final F finalState = getFinal(applied.getParticipant(), ListSequence.fromList(newNodes).getElement(i));
+        ListSequence.fromList(ListSequence.fromList(changes).getElement(i)).visitAll((it) -> it.confirm(finalState, repo, session));
       }
     }
   }
@@ -144,7 +135,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
     }
   }
 
-  class ParticipantApplied<I, F, IP, FP, IS, FS> {
+  class ParticipantApplied<I, F, IP, FP> {
     private final RefactoringParticipant<I, F, IP, FP> myParticipant;
     private final List<I> myInitialStates;
     private final List<ParticipantApplied> myAppliedParents;
@@ -164,7 +155,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
     public ParticipantApplied(RefactoringParticipant<I, F, IP, FP> participant, List<I> initialState, Iterable<ParticipantApplied> appliedParents) {
       this.myParticipant = participant;
       this.myInitialStates = initialState;
-      // FIXME we treat null and empty myAppliedParents differently (to satisfy legacy code path in MoveAspectsParticipants along base getChanges() impl in RefactoringParticipantBase
+      // FIXME we treat null and empty myAppliedParents differently (to satisfy legacy code path in MoveAspectsParticipant along base getChanges() impl in RefactoringParticipantBase)
       this.myAppliedParents = (appliedParents == null ? null : Sequence.fromIterable(appliedParents).toList());
     }
 

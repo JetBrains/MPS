@@ -28,9 +28,9 @@ import org.jetbrains.annotations.Nullable;
 public class RefactoringProcessor {
   private static final Logger LOG = Logger.getLogger(RefactoringProcessor.class);
 
-  public static <IP, FP, IS, FS> Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS>>, SearchTask> askParticipantChanges(final RefactoringParticipant.ParticipantStateFactory<IP, FP, IS, FS> factory, RefactoringUI refactoringUI, final SRepository repository, final SearchScope searchScope, final Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> nodes) {
+  public static <IP, FP, IS, FS> Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>>, SearchTask> askParticipantChanges(final RefactoringParticipant.ParticipantStateFactory<IP, FP, IS, FS> factory, RefactoringUI refactoringUI, final SRepository repository, final SearchScope searchScope, final Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> nodes) {
 
-    final List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS>> participantStates = ListSequence.fromList(new ArrayList<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS>>());
+    final List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>> participantStates = ListSequence.fromList(new ArrayList<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>>());
     final Wrappers._T<List<RefactoringParticipant.Option>> options = new Wrappers._T<List<RefactoringParticipant.Option>>();
     refactoringUI.prepare(() -> {
       for (RefactoringParticipant<?, ?, IP, FP> participant : Sequence.fromIterable(participants)) {
@@ -53,7 +53,7 @@ public class RefactoringProcessor {
         repository.getModelAccess().runReadAction(() -> {
           int steps = ListSequence.fromList(participantStates).count();
           progressMonitor.start("Searching for usages", steps);
-          for (RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS> participantState : ListSequence.fromList(participantStates)) {
+          for (RefactoringParticipant.ParticipantApplied<?, ?, IP, FP> participantState : ListSequence.fromList(participantStates)) {
             participantState.findChanges(repository, selectedOptions, searchScope, progressMonitor.subTask(1, SubProgressKind.AS_COMMENT));
             if (progressMonitor.isCanceled()) {
               cancelled.value = true;
@@ -66,7 +66,7 @@ public class RefactoringProcessor {
           return null;
         }
         SearchResults searchResults = new SearchResults();
-        for (RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS> participantState : ListSequence.fromList(participantStates)) {
+        for (RefactoringParticipant.ParticipantApplied<?, ?, IP, FP> participantState : ListSequence.fromList(participantStates)) {
           List<? extends List<? extends RefactoringParticipant.Change<?, ?>>> participantChanges = participantState.getChanges();
           for (List<? extends RefactoringParticipant.Change<?, ?>> nodeChanges : ListSequence.fromList(participantChanges)) {
             for (RefactoringParticipant.Change<?, ?> change : ListSequence.fromList(nodeChanges)) {
@@ -78,7 +78,7 @@ public class RefactoringProcessor {
       }
     };
 
-    return MultiTuple.<List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS>>,SearchTask>from(participantStates, searchTask);
+    return MultiTuple.<List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>>,SearchTask>from(participantStates, searchTask);
   }
 
   /**
@@ -88,7 +88,7 @@ public class RefactoringProcessor {
   public static <IP, FP> void performRefactoringInProject(Project project, RefactoringUI refactoringUI, final RefactoringBody<IP, FP> refactoringBody) {
     final RefactoringSessionImpl refactoringSession = new RefactoringSessionImpl(refactoringBody.getRefactoringName());
     final List<IP> initialStates = refactoringBody.findInitialStates();
-    performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<IP, FP>(), refactoringUI, refactoringSession, project.getRepository(), project.getScope(), refactoringBody.getAllAvailableParticipants(), initialStates, () -> refactoringBody.prepareRefactoring(), (Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IP, FP>> participantStates) -> {
+    performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<IP, FP>(), refactoringUI, refactoringSession, project.getRepository(), project.getScope(), refactoringBody.getAllAvailableParticipants(), initialStates, () -> refactoringBody.prepareRefactoring(), (Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>> participantStates) -> {
       refactoringBody.doRefactor(participantStates, refactoringSession);
       Map<IP, FP> finalStateMap = MapSequence.fromMap(new HashMap<IP, FP>());
       for (IP is : ListSequence.fromList(initialStates)) {
@@ -121,7 +121,7 @@ public class RefactoringProcessor {
      * 
      * Executed inside command.
      */
-    void doRefactor(Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IP, FP>> participantStates, RefactoringSession refactoringSession);
+    void doRefactor(Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>> participantStates, RefactoringSession refactoringSession);
     /**
      * Pure method doing nothing but looking into a map that can be prepared in doRefactor(), so this method should not require command..
      * The map should be already initialized by method doRefactor().
@@ -140,10 +140,10 @@ public class RefactoringProcessor {
    * Update usages during refactoring.
    * For calling from both 'during refactoring' and migration context.
    */
-  public static <IP, FP, IS, FS> void performRefactoring(final RefactoringParticipant.ParticipantStateFactory<IP, FP, IS, FS> factory, RefactoringUI refactoringUI, final RefactoringSession refactoringSession, final SRepository repository, SearchScope scope, Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> initialStates, final _FunctionTypes._void_P0_E0 prepareRefactoring, final _FunctionTypes._return_P1_E0<? extends Map<IS, FS>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS>>> doRefactor, @Nullable final _FunctionTypes._void_P0_E0 doCleanup) {
+  public static <IP, FP, IS, FS> void performRefactoring(final RefactoringParticipant.ParticipantStateFactory<IP, FP, IS, FS> factory, RefactoringUI refactoringUI, final RefactoringSession refactoringSession, final SRepository repository, SearchScope scope, Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> initialStates, final _FunctionTypes._void_P0_E0 prepareRefactoring, final _FunctionTypes._return_P1_E0<? extends Map<IS, FS>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>>> doRefactor, @Nullable final _FunctionTypes._void_P0_E0 doCleanup) {
 
 
-    final Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS>>, SearchTask> participantChanges = askParticipantChanges(factory, refactoringUI, repository, scope, participants, initialStates);
+    final Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>>, SearchTask> participantChanges = askParticipantChanges(factory, refactoringUI, repository, scope, participants, initialStates);
     if (participantChanges == null) {
       return;
     }
@@ -161,7 +161,7 @@ public class RefactoringProcessor {
       repository.getModelAccess().executeCommand(() -> {
         final Map<IS, FS> getFinalObject = doRefactor.invoke(participantChanges._0());
         if (getFinalObject != null) {
-          for (RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS> participantState : ListSequence.fromList(participantChanges._0())) {
+          for (RefactoringParticipant.ParticipantApplied<?, ?, IP, FP> participantState : ListSequence.fromList(participantChanges._0())) {
             factory.confirm(participantState, ListSequence.fromList(initialStates).select((it) -> MapSequence.fromMap(getFinalObject).get(it)).toList(), repository, refactoringSession);
           }
           if (doCleanup != null) {

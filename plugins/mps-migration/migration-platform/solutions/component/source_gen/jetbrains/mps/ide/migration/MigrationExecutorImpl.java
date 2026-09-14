@@ -139,7 +139,7 @@ public class MigrationExecutorImpl implements MigrationExecutor {
   }
 
   private <IP, FP> void doRun(SModule module, RefactoringParticipant.PersistentRefactoringParticipant<?, ?, IP, FP> participant, RefactoringUI ui, Iterable<SNode> initialState, final Map<SNode, SNode> initialToFinal, RefactoringSession refactoringSession) {
-    RefactoringProcessor.<IP,FP,SNode,SNode>performRefactoring(new RefactoringParticipant.DeserializingParticipantStateFactory<IP, FP>(), ui, refactoringSession, MigrationExecutorImpl.this.myProject.getRepository(), new ModulesScope(module), Sequence.singleton(participant), Sequence.fromIterable(initialState).toList(), null, (Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, SNode, SNode>> changes) -> initialToFinal, null);
+    RefactoringProcessor.<IP,FP,SNode,SNode>performRefactoring(new RefactoringParticipant.DeserializingParticipantStateFactory<IP, FP>(), ui, refactoringSession, MigrationExecutorImpl.this.myProject.getRepository(), new ModulesScope(module), Sequence.singleton(participant), Sequence.fromIterable(initialState).toList(), null, (Iterable<RefactoringParticipant.ParticipantApplied<?, ?, IP, FP>> changes) -> initialToFinal, null);
   }
 
   private static class RefactoringSessionTaskQueue {

@@ -131,7 +131,7 @@ public class MoveModelActionExecutor extends ModelCreationActionsBaseExecutor {
       myNewModel = check_lf1t34_a0c0m72(check_lf1t34_a0a2a21bb(dialog.getResultHelper(), myOriginalModel));
     }
 
-    public void doRefactor(Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SModel, SModel, SModel, SModel>> participantStates, RefactoringSession refactoringSession) {
+    public void doRefactor(Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SModel, SModel>> participantStates, RefactoringSession refactoringSession) {
       if (myNewModel == null) {
         return;
       }
