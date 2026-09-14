@@ -22,9 +22,9 @@ import org.jetbrains.mps.openapi.model.SNodeReference;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
+import java.util.Collections;
 import org.jetbrains.mps.openapi.module.SearchScope;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
-import java.util.Collections;
 import java.util.Collection;
 import org.jetbrains.mps.openapi.model.SReference;
 import jetbrains.mps.lang.smodel.query.runtime.CommandUtil;
@@ -158,16 +158,24 @@ public abstract class UpdateReferencesParticipantBase<T> extends RefactoringPart
     return ListSequence.fromListAndArray(new ArrayList<RefactoringParticipant.Option>(), OPTION);
   }
 
+  private List<List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>> noChanges(List<NodeData<T>> initialStates) {
+    return ListSequence.fromList(initialStates).select((it) -> emptyList()).toList();
+  }
+
+  private List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>> emptyList() {
+    return Collections.<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>emptyList();
+  }
+
   public List<List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>> getChanges(List<NodeData<T>> initialStates, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
     if (!(ListSequence.fromList(selectedOptions).contains(OPTION))) {
-      return ListSequence.fromList(initialStates).select((it) -> (List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>) Collections.<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>emptyList()).toList();
+      return noChanges(initialStates);
     }
     Collection<SReference> usages;
     List<SNode> movedNodes = ListSequence.fromList(initialStates).select((it) -> it.baseData().reference().resolve(repository)).toList();
     {
-      SearchScope scope_82eo7d_d0s = CommandUtil.createScope(searchScope);
-      final SearchScope scope_82eo7d_d0s_0 = new EditableFilteringScope(scope_82eo7d_d0s);
-      QueryExecutionContext context = () -> scope_82eo7d_d0s_0;
+      SearchScope scope_82eo7d_d0w = CommandUtil.createScope(searchScope);
+      final SearchScope scope_82eo7d_d0w_0 = new EditableFilteringScope(scope_82eo7d_d0w);
+      QueryExecutionContext context = () -> scope_82eo7d_d0w_0;
       if (!(ListSequence.fromList(movedNodes).contains(null))) {
         // all source nodes are present, so we can run find usages (we are probably inside in-project refactoring)
         progressMonitor.start("References in current project", 1);
@@ -181,7 +189,7 @@ public abstract class UpdateReferencesParticipantBase<T> extends RefactoringPart
           }
           progressMonitor.advance(1);
           if (progressMonitor.isCanceled()) {
-            return null;
+            return noChanges(initialStates);
           }
         }
       }
@@ -218,7 +226,10 @@ public abstract class UpdateReferencesParticipantBase<T> extends RefactoringPart
       }
       ListSequence.fromList(MapSequence.fromMap(result).get(ref.getTargetNodeReference())).addElement(change);
     }
-    return ListSequence.fromList(initialStates).select((initialState) -> MapSequence.fromMap(result).get(initialState.baseData().reference())).toList();
+    return ListSequence.fromList(initialStates).select((initialState) -> {
+      List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>> list = MapSequence.fromMap(result).get(initialState.baseData().reference());
+      return (list == null ? emptyList() : list);
+    }).toList();
   }
   protected boolean shouldUpdateReference(final List<RefactoringParticipant.Option> selectedOptions, SRepository repository, final SNode containingNode, final SReferenceLink role, SNode movingNode, RefactoringSession refactoringSession) {
     NodeCopyTracker copyMap = NodeCopyTracker.get(refactoringSession);

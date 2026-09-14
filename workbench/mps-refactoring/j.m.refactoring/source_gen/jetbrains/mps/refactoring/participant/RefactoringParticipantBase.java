@@ -15,12 +15,15 @@ public abstract class RefactoringParticipantBase<InitialDataObject, FinalDataObj
   public List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> getChanges(List<InitialDataObject> initialStates, SRepository repository, List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
     RefactoringParticipant.Option firstOption = ListSequence.fromList(getAvailableOptions(initialStates, repository)).first();
     progressMonitor.start((firstOption == null ? "" : firstOption.getDescription()), ListSequence.fromList(initialStates).count());
-    List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> result = ListSequence.fromList(new ArrayList<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>>(ListSequence.fromList(initialStates).count()));
+    List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> result = ListSequence.fromList(new ArrayList<>(ListSequence.fromList(initialStates).count()));
+    final List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>> emptyList = ListSequence.fromList(new ArrayList<>());
     for (InitialDataObject initialState : ListSequence.fromList(initialStates)) {
-      ListSequence.fromList(result).addElement(getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor.subTask(1)));
       if (progressMonitor.isCanceled()) {
-        return null;
+        ListSequence.fromList(result).addElement(emptyList);
+        // sic! Fulfil the contract, the method is expected to return list of size matching that of initialStates!
+        continue;
       }
+      ListSequence.fromList(result).addElement(getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor.subTask(1)));
     }
     progressMonitor.done();
     return result;

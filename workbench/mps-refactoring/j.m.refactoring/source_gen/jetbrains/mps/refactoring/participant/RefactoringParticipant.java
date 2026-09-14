@@ -111,8 +111,13 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
         throw new IllegalStateException();
       }
       for (int x = ListSequence.fromList(newNodes).count(), i = 0; i < x; i++) {
+        List<Change<I, F>> nextChange = ListSequence.fromList(changes).getElement(i);
+        if (nextChange == null) {
+          // completely legitimate, PA.mapNotNull records null for each input participant refused to handle. No reason to ask getFinal for such participant.
+          continue;
+        }
         final F finalState = getFinal(applied.getParticipant(), ListSequence.fromList(newNodes).getElement(i));
-        ListSequence.fromList(ListSequence.fromList(changes).getElement(i)).visitAll((it) -> it.confirm(finalState, repo, session));
+        ListSequence.fromList(nextChange).visitAll((it) -> it.confirm(finalState, repo, session));
       }
     }
   }
