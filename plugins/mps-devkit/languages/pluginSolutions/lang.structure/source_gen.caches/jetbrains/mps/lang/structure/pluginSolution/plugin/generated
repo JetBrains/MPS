@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-1a3gjsl6c1airxn8t845dzmi5bo3cs0">
+<product version="3" modelHash="1d265x4guhm34z5evnfwoyk8sq0byqp">
   <files names="AbstractLanguageMove.java:CreateReferenceConcept_Action.java:DropEnumMigrationAttribute_Action.java:DropEnumPropertyMigrationAttribute_Action.java:ExtensionDescriptor.java:HelpHelper.java:ImplicitNodeRenamer_extension.java:LanguageStructureMigrationParticipant.java:MoveAbstractConceptSpecialization.java:MoveAspectsParticipant.java:MoveConceptDialog.java:MoveConceptMemberSpecialization.java:MoveConceptMemberUp.java:MoveConceptUtil.java:MoveConceptsAndDatatypes.java:MoveContainmentLinkSpecialization.java:MovePropertySpecialization.java:MoveReferenceLinkSpecialization.java:MoveUpDialog.java:PluginSolution_ApplicationPlugin.java:ShowAsIntentions_LangStructure_ActionGroup.java:ShowDefaultHelp_Action.java:ShowHelpForAspect_Action.java:ShowHelpForNode_Action.java:ShowHelpForRoot_Action.java:ShowHelp_ActionGroup.java:StructureSpecialization.java:StructureSpecializationBase.java:Structure_ActionGroup.java:UpdateConceptReferencesParticipant.java:UpdateLocalInstancesParticipant.java:WriteSubconceptMigrationParticipant.java" />
 </product>
 

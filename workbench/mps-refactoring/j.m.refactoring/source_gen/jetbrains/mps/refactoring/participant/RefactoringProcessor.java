@@ -162,7 +162,7 @@ public class RefactoringProcessor {
         final Map<IS, FS> getFinalObject = doRefactor.invoke(participantChanges._0());
         if (getFinalObject != null) {
           for (RefactoringParticipant.ParticipantApplied<?, ?, IP, FP, IS, FS> participantState : ListSequence.fromList(participantChanges._0())) {
-            participantState.doRefactor(ListSequence.fromList(initialStates).select((it) -> MapSequence.fromMap(getFinalObject).get(it)).toList(), repository, refactoringSession, factory);
+            factory.confirm(participantState, ListSequence.fromList(initialStates).select((it) -> MapSequence.fromMap(getFinalObject).get(it)).toList(), repository, refactoringSession);
           }
           if (doCleanup != null) {
             doCleanup.invoke();

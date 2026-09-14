@@ -14,10 +14,10 @@ import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.ide.findusages.model.SearchResults;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
+import java.util.Iterator;
 import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
 @GeneratedClass(nodeId = "4331048896013407851", model = "r:27bc780b-59b2-4d26-9db5-a38b63c35884(jetbrains.mps.refactoring.participant)")
 public interface RefactoringParticipant<InitialDataObject, FinalDataObject, InitialPoint, FinalPoint> {
@@ -105,6 +105,25 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       List<I> initialState = ListSequence.fromList(oldNodes).select((it) -> getInitial(participant, it)).toList();
       return new ParticipantApplied<>(participant, initialState, appliedParents);
     }
+
+    public <I, F> void confirm(ParticipantApplied<I, F, IP, FP, IS, FS> applied, List<FS> newNodes, final SRepository repo, final RefactoringSession session) {
+      List<List<Change<I, F>>> changes = applied.getChanges();
+      if (changes == null || ListSequence.fromList(changes).count() != ListSequence.fromList(newNodes).count()) {
+        throw new IllegalStateException();
+      }
+      {
+        Iterator<List<Change<I, F>>> nodeChanges_it = ListSequence.fromList(changes).iterator();
+        Iterator<FS> newNode_it = ListSequence.fromList(newNodes).iterator();
+        List<Change<I, F>> nodeChanges_var;
+        FS newNode_var;
+        while (nodeChanges_it.hasNext() && newNode_it.hasNext()) {
+          nodeChanges_var = nodeChanges_it.next();
+          newNode_var = newNode_it.next();
+          final F finalState = getFinal(applied.getParticipant(), newNode_var);
+          ListSequence.fromList(nodeChanges_var).visitAll((it) -> it.confirm(finalState, repo, session));
+        }
+      }
+    }
   }
 
   class CollectingParticipantStateFactory<IP, FP> extends ParticipantStateFactory<IP, FP, IP, FP> {
@@ -145,7 +164,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
     public ParticipantApplied(RefactoringParticipant<I, F, IP, FP> participant, List<I> initialState, Iterable<ParticipantApplied> appliedParents) {
       this.myParticipant = participant;
       this.myInitialStates = initialState;
-      // FIXME we treat null and empty myAppliedParents differently (to satisfy legacy code path in MoveAspectParticipants along base getChanges() impl in ReafactoringParticipantBase
+      // FIXME we treat null and empty myAppliedParents differently (to satisfy legacy code path in MoveAspectsParticipants along base getChanges() impl in RefactoringParticipantBase
       this.myAppliedParents = (appliedParents == null ? null : Sequence.fromIterable(appliedParents).toList());
     }
 
@@ -170,7 +189,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
         return Collections.<List<Change<I, F>>>emptyList();
       }
       // weird !null check for applied parents is there as we need top RecursiveParticipant to go through 5-arg getChanges in RefactoringParticipantBase, which 
-      // is busy creating necessary sub-monitors, and then hit MoveAspectParticipant override with empty list
+      // is busy creating necessary sub-monitors, and then hit MoveAspectsParticipant override with empty list
       if (myAppliedParents != null && myParticipant instanceof RecursiveParticipant) {
         // Suppressed: java compiler will ignore generics anyway, since a raw type is used
         if (ListSequence.fromList(myAppliedParents).any(new _FunctionTypes._return_P1_E0<Boolean, ParticipantApplied>() {
@@ -187,22 +206,5 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
         return mapNotNull(myInitialStates, (List<I> initialStates) -> myParticipant.getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor));
       }
     }
-
-    public void doRefactor(List<FS> newNodes, final SRepository repository, final RefactoringSession session, ParticipantStateFactory<IP, FP, IS, FS> factory) {
-      {
-        Iterator<List<Change<I, F>>> nodeChanges_it = ListSequence.fromList(this.changes).iterator();
-        Iterator<FS> newNode_it = ListSequence.fromList(newNodes).iterator();
-        List<Change<I, F>> nodeChanges_var;
-        FS newNode_var;
-        while (nodeChanges_it.hasNext() && newNode_it.hasNext()) {
-          nodeChanges_var = nodeChanges_it.next();
-          newNode_var = newNode_it.next();
-          final F finalState = factory.getFinal(myParticipant, newNode_var);
-          ListSequence.fromList(nodeChanges_var).visitAll((it) -> it.confirm(finalState, repository, session));
-        }
-      }
-    }
   }
-
-
 }

@@ -141,7 +141,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
 
               final Map<SNode, SNode> copyMap = NodeCopyTracker.get(refactoringSession).getCopyMap();
               newLocation.insertNode(repository, ListSequence.fromList(copied).first());
-              ListSequence.fromList(childparticipantStates).visitAll((pis) -> pis._1().doRefactor(ListSequence.fromListAndArray(new ArrayList<SNode>(), MapSequence.fromMap(copyMap).get(pis._0())), repository, refactoringSession, stateFactory));
+              ListSequence.fromList(childparticipantStates).visitAll((pis) -> stateFactory.confirm(pis._1(), ListSequence.fromListAndArray(new ArrayList<SNode>(), MapSequence.fromMap(copyMap).get(pis._0())), repository, refactoringSession));
 
               if (needsToPreserveOldNode() == RefactoringParticipant.KeepOldNodes.POSTPONE_REMOVE && SNodeOperations.getModel(sourceConcept) == null) {
                 SNodeOperations.deleteNode(aspect);
