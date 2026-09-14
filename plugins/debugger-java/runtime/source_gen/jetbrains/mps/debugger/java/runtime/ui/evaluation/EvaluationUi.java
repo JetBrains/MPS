@@ -132,7 +132,7 @@ public abstract class EvaluationUi extends JPanel {
             setErrorText("");
             update();
             if (myAutoUpdate) {
-              ApplicationManager.getApplication().invokeLater(() -> evaluate());
+              evaluate();
             }
           }
         });

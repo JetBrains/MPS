@@ -4571,24 +4571,9 @@
                                   <ref role="3cqZAo" node="2LsTSypo3cp" resolve="myAutoUpdate" />
                                 </node>
                                 <node concept="3clFbS" id="7W2k2QqWCig" role="3clFbx">
-                                  <node concept="3clFbF" id="7W2k2QqWCih" role="3cqZAp">
-                                    <node concept="2OqwBi" id="7W2k2QqWCii" role="3clFbG">
-                                      <node concept="2YIFZM" id="7W2k2QqWCij" role="2Oq$k0">
-                                        <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
-                                        <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
-                                      </node>
-                                      <node concept="liA8E" id="7W2k2QqWCik" role="2OqNvi">
-                                        <ref role="37wK5l" to="bd8o:~Application.invokeLater(java.lang.Runnable)" resolve="invokeLater" />
-                                        <node concept="1bVj0M" id="7W2k2QqYcww" role="37wK5m">
-                                          <node concept="3clFbS" id="7W2k2QqYcwz" role="1bW5cS">
-                                            <node concept="3clFbF" id="2LsTSypo3c3" role="3cqZAp">
-                                              <node concept="1rXfSq" id="4hiugqyzhN3" role="3clFbG">
-                                                <ref role="37wK5l" node="2LsTSypo3cA" resolve="evaluate" />
-                                              </node>
-                                            </node>
-                                          </node>
-                                        </node>
-                                      </node>
+                                  <node concept="3clFbF" id="2LsTSypo3c3" role="3cqZAp">
+                                    <node concept="1rXfSq" id="4hiugqyzhN3" role="3clFbG">
+                                      <ref role="37wK5l" node="2LsTSypo3cA" resolve="evaluate" />
                                     </node>
                                   </node>
                                 </node>
