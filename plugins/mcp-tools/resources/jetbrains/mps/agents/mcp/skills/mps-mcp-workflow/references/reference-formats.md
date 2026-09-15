@@ -8,6 +8,21 @@
     - Use `mps_mcp_get_concept_details` and check the **`sourceNode`** field in the response.
     - Alternatively, use `mps_mcp_search_concepts` and check the `sourceNode` field for each match.
 - The `mps_mcp_insert_root_node_from_json` and `mps_mcp_update_node` tools will reject `c:...` strings in reference roles and will fail if a provided node reference cannot be resolved.
+- **Model References**: `r:<model-uuid>(<model-name>)` — a node reference without the `#<node-id>` part.
+
+### Which tools accept a MODEL reference
+
+A model reference is **not** interchangeable with a node reference; each tool takes one or the other:
+
+| Tool | node/root reference | model reference |
+|---|---|---|
+| `mps_mcp_check_root_node_problems` | yes | **yes** — checks every root of the model in one exhaustive call (`autoApplyQuickFixes` is ignored in this mode) |
+| `mps_mcp_print_node` | yes | **no** — answers NOT_FOUND; use `mps_mcp_get_project_structure` (`includeNodes=true`) for a whole model |
+| `mps_mcp_update_node`, `mps_mcp_open_node`, `mps_mcp_list_node_intentions`, `mps_mcp_apply_intention` | yes | no — their node parameters take a node reference only |
+| `mps_mcp_insert_root_node_from_json`, `mps_mcp_create_root_node` | — | yes, as the *target model* parameter |
+| `mps_mcp_query_nodes` (`models` scope), `mps_mcp_alter_nodes` (`MAKE` `{"models": […]}`), `mps_mcp_model_dependency`, `mps_mcp_model_used_language`, `mps_mcp_update_model` | — | yes, in the documented model/`models` parameter |
+
+Passing a model reference where a node reference is expected fails with NOT_FOUND, not with a type error — recheck the reference shape before concluding the node is gone.
 
 ## MCP Response Envelope
 

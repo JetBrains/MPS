@@ -37,6 +37,8 @@ Parameters:
 }
 ```
 
+"Inside the system temp directory" means the **JVM system temp directory** (`java.io.tmpdir`): `$TMPDIR` on macOS/Linux — on macOS a per-user `/var/folders/...` path, so **`/tmp` is rejected** with `Input file path '/tmp/…' is not inside the system temp directory` — and `%TEMP%` on Windows. Shell: `f="$TMPDIR/concepts-$$.json"`. An agent file-writing tool (e.g. `Write`) may create the file, but needs the expanded absolute path, since it does not expand `$TMPDIR`.
+
 For children and references, the `target` field accepts:
 * Simple name of a concept being created in this operation (e.g., `"MyNewConcept"`)
 * Fully qualified name of an existing concept (e.g., `"jetbrains.mps.lang.core.structure.BaseConcept"`)

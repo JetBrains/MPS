@@ -54,6 +54,8 @@ Signature surfaced in the editor: `(newNode, sampleNode, enclosingNode, index, m
 
 ## Reference Index
 
+**Start here — most common case**: one `NodeFactory` that initializes a freshly created node (optionally copying from `sampleNode`) → read only `references/setup-function-bodies.md`, plus `references/json-blueprints.md` if you insert the root through MCP; copy/paste behaviour → only `references/copy-paste-and-paste-wrappers.md`.
+
 - Open `references/node-factories-and-triggers.md` when you need the validated concept ref for `NodeFactories` / `NodeFactory` / `NodeSetupFunction`, the rule that factories are picked by exact `applicableConcept` (not by subtype inheritance through a more-general parent factory), and the precise list of triggers that fire / do not fire a factory.
 - Open `references/setup-function-bodies.md` when writing the function body — copying properties vs. child links (`SPropertyAccess` vs `SLinkAccess`), cross-type narrowing in `ifInstanceOf`, the verbatim ChemMastery (same-type property copy) and Kaja (cross-type child-link copy) examples, and the JSON shape for an `AssignmentExpression` over `SLinkAccess`.
 - Open `references/json-blueprints.md` when inserting the `NodeFactories` root or a `NodeFactory` child via MCP — minimal blueprints, the full `IfInstanceOfStatement` body, and the tip on using `mps_mcp_parse_java_and_insert` to skip the blueprint.

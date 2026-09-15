@@ -39,6 +39,10 @@ Parameters:
 
 ## `mps_mcp_print_node` — Output Format
 
+`format` accepts exactly three literals — `JSON` (default), `HTML`, `PLAIN TEXT`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT`).
+
+`nodeReference` must be a **node** reference (`r:<uuid>(name)#<node-id>`). Unlike `mps_mcp_check_root_node_problems`, this tool does **not** accept a model reference (`r:<uuid>(name)`) — it answers NOT_FOUND. To dump a whole model use `mps_mcp_get_project_structure` (`includeNodes=true`), or print its roots one by one.
+
 Saves the node JSON to a local text file (path returned in `data`). Behaviour depends on `deep`:
 
 - `deep=true` recursively inlines all descendants.
@@ -76,9 +80,13 @@ The saved file contains the full MCP response envelope; its `data` field contain
 }
 ```
 
+**Default property values are invisible in dumps.** MPS stores nothing for a property that holds its default value — most visibly the *first/default literal* of an enumeration. Such a property is therefore **omitted** from the `properties` array above (and from `mps_mcp_get_project_structure` `includeNodes` dumps); report-style output (`mps_mcp_check_root_node_problems` with `onlyNodesWithProblems=false`) prints it as `"value": ""`. Read an absent property or `"value": ""` as **"holds its default value"**, never as "missing": verification code must substitute the default (a missing key is not an error — it caused a `KeyError` in one study run), and the `PLAIN TEXT` projection shows the resolved literal (e.g. `easy`) when you need to see it spelled out.
+
 ## `mps_mcp_check_root_node_problems` — Output Format
 
 Validates the specified node (and its descendants) or the specified model. Accepts either an `SNodeReference` or an `SModelReference`. If no problems are found, returns `data: "no problems found"`; otherwise saves the report to a temp file and returns its path.
+
+> **Passing the MODEL reference checks every root of the model in one call and is exhaustive; do NOT re-check roots individually after a clean model-level result.** `data: "no problems found"` for a model means every root in it is clean — a per-root sweep afterwards costs one call per root and cannot find anything new. Use `autoApplyQuickFixes=true` to apply single auto-applicable fixes in the same call (node/root references only; with a model reference the flag is ignored and the envelope says so in `warnings`).
 
 - `onlyNodesWithProblems=true` (default) returns a flat list of just the nodes that have problems — easier to skim.
 - `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to each node, property, reference, and child role; useful when sibling context matters.

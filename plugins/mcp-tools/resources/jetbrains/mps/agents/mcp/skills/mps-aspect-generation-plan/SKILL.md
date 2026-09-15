@@ -51,6 +51,8 @@ A **generation plan** (`Plan`) is an ordered script that controls which generato
 
 ## Reference Index
 
+**Start here — most common case**: creating a plan and wiring it into a DevKit → read only `references/plan-setup.md`, plus `references/step-catalog.md` for the exact step concepts; cross-phase label resolution → only `references/checkpoints.md`; composing or branching plans → only `references/composition-and-fork.md`.
+
 - Plan setup and DevKit attachment — open when creating a new genplan model, wiring it into a DevKit, or switching between DevKit and Custom generation facet attachment. See [references/plan-setup.md](references/plan-setup.md).
 - Step concept catalog — open when you need exact concept names, properties, cardinalities, and the meanings of `Transform`, `ApplyGenerators`, `Checkpoint`, `IncludePlan`, `Fork`, `CheckpointDeclaration`, `CheckpointSynchronization`, `DocumentationStep`. See [references/step-catalog.md](references/step-catalog.md).
 - `Transform` and `ApplyGenerators` — open when wiring languages by identity (`LanguageEntry.kind` = Transform / TargetAt / Extend) or naming specific generator modules. Includes the verified "the plan" and "WithCompiledGenerator" JSON examples. See [references/transform-and-applygenerators.md](references/transform-and-applygenerators.md).
