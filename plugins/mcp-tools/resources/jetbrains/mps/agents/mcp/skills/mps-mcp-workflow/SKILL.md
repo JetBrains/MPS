@@ -125,3 +125,28 @@ Open `references/mcp-tools-index.md` for the complete inventory of MPS MCP tools
 - **Do not** edit serialized `.mps` model files as plain text unless the user explicitly asks for it.
 - **Do not** edit `.mpl` module descriptors manually if an MCP wiring tool (`mps_mcp_module_dependency`, `mps_mcp_update_module`, …) covers the change.
 - **Do not** delete-and-reinsert a node to "change" it when surgical tools exist.
+
+## Scripts
+
+`scripts/mps_dump.py` — projects an MPS MCP result file (`mps_mcp_get_project_structure`,
+`mps_mcp_print_node`, `mps_mcp_get_concept_details`) down to the lines you need, instead of
+reading the whole 10–40 KB file: `roots`, `node`, `shape`, `count`. It is also the library the
+other skills' scripts import (`load`, `roots`, `props`, `refs`, `children`, `find`, `shape`);
+`props` fills in enum properties that MPS omitted because they sit at their default value.
+
+```
+python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Recipe
+python3 scripts/mps_dump.py node /var/folders/.../mps-node-123.json Crepes \
+    --concept-details /var/folders/.../mps-node-456.json
+```
+
+Run `--help` for every subcommand and `--list-tools` for the MPS MCP tools and parameters it
+depends on. Bundled dumps to try it on, and to read when you need a shape reminder, are in
+`scripts/examples/`. Stdout is the table plus a one-line JSON summary; the full table is
+always written to a file under the system temp directory and named in that summary.
+
+No `python3` (typically Windows): do it by hand — call the tool, read the result file with the
+file reader, and keep only the `name` / `concept` / `reference` of the roots you need. An enum
+property that is absent from the dump (or printed as `""`) is at its enumeration's default
+literal — take it from `mps_mcp_get_concept_details` (`enumerationValues`, first entry unless
+the declaration names another default member), do not treat it as missing data.

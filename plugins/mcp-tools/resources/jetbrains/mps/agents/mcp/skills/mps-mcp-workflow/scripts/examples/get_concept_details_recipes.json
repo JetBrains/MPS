@@ -1,0 +1,648 @@
+{
+  "ok": true,
+  "data": [
+    {
+      "name": "Cookbook",
+      "qualifiedName": "mcp.study.recipes.structure.Cookbook",
+      "conceptAlias": "cookbook",
+      "shortDescription": "A named collection of recipe references",
+      "doc": "Groups existing Recipe roots into a titled collection without containing them.",
+      "deprecated": "false",
+      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359703:mcp.study.recipes.structure.Cookbook",
+      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [
+        "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+      ],
+      "superInterfaceDetails": [
+        {
+          "name": "INamedConcept",
+          "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+        }
+      ],
+      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359703",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": true,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "recipes",
+          "targetConcept": "mcp.study.recipes.structure.RecipeRef",
+          "cardinality": "0..n",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359703/2518891257435359717",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359717",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "mcp.study.recipes.structure.Cookbook",
+        "properties": [
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          },
+          {
+            "name": "name",
+            "value": "Cookbook"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "recipes",
+            "nodes": [
+              "/* Instances of mcp.study.recipes.structure.RecipeRef or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Ingredient",
+      "qualifiedName": "mcp.study.recipes.structure.Ingredient",
+      "conceptAlias": "ingredient",
+      "shortDescription": "A single ingredient, measured in a given unit",
+      "doc": "A named ingredient that recipe steps can refer to. The unit says how amounts of this ingredient are measured.",
+      "deprecated": "false",
+      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
+      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [
+        "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+      ],
+      "superInterfaceDetails": [
+        {
+          "name": "INamedConcept",
+          "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+        }
+      ],
+      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359693",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": true,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "unit",
+          "type": "Unit",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693/2518891257435359705",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359705",
+          "doc": "",
+          "deprecated": "false",
+          "enumerationValues": [
+            "G",
+            "ML",
+            "PIECE"
+          ]
+        },
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "mcp.study.recipes.structure.Ingredient",
+        "properties": [
+          {
+            "name": "unit",
+            "value": "G"
+          },
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          },
+          {
+            "name": "name",
+            "value": "Ingredient"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "IngredientRef",
+      "qualifiedName": "mcp.study.recipes.structure.IngredientRef",
+      "conceptAlias": "",
+      "shortDescription": "Use of an ingredient inside a step",
+      "doc": "Smart reference wrapper that lets a Step point at an Ingredient root node.",
+      "deprecated": "false",
+      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695:mcp.study.recipes.structure.IngredientRef",
+      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [],
+      "superInterfaceDetails": [],
+      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359695",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": false,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        }
+      ],
+      "references": [
+        {
+          "name": "ingredient",
+          "targetConcept": "mcp.study.recipes.structure.Ingredient",
+          "cardinality": "1",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695/2518891257435359707",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359707",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "children": [
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "mcp.study.recipes.structure.IngredientRef",
+        "properties": [
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          }
+        ],
+        "references": [
+          {
+            "role": "ingredient",
+            "target": "/* Reference to mcp.study.recipes.structure.Ingredient */"
+          }
+        ],
+        "children": [
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Recipe",
+      "qualifiedName": "mcp.study.recipes.structure.Recipe",
+      "conceptAlias": "recipe",
+      "shortDescription": "A recipe: servings, difficulty and an ordered list of steps",
+      "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+      "deprecated": "false",
+      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [
+        "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+      ],
+      "superInterfaceDetails": [
+        {
+          "name": "INamedConcept",
+          "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+        }
+      ],
+      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359701",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": true,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "servings",
+          "type": "integer",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359712",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359712",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "difficulty",
+          "type": "Difficulty",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359713",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359713",
+          "doc": "",
+          "deprecated": "false",
+          "enumerationValues": [
+            "EASY",
+            "MEDIUM",
+            "HARD"
+          ]
+        },
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "steps",
+          "targetConcept": "mcp.study.recipes.structure.Step",
+          "cardinality": "1..n",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359714",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359714",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "seeAlso",
+          "targetConcept": "mcp.study.recipes.structure.RecipeRef",
+          "cardinality": "0..n",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359715",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359715",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "mcp.study.recipes.structure.Recipe",
+        "properties": [
+          {
+            "name": "servings",
+            "value": "1"
+          },
+          {
+            "name": "difficulty",
+            "value": "EASY"
+          },
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          },
+          {
+            "name": "name",
+            "value": "Recipe"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "nodes": [
+              "/* Instances of mcp.study.recipes.structure.Step or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "nodes": [
+              "/* Instances of mcp.study.recipes.structure.RecipeRef or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "RecipeRef",
+      "qualifiedName": "mcp.study.recipes.structure.RecipeRef",
+      "conceptAlias": "",
+      "shortDescription": "Reference to a recipe",
+      "doc": "Smart reference wrapper used by Recipe.seeAlso and Cookbook.recipes to point at a Recipe root node.",
+      "deprecated": "false",
+      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [],
+      "superInterfaceDetails": [],
+      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359699",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": false,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        }
+      ],
+      "references": [
+        {
+          "name": "recipe",
+          "targetConcept": "mcp.study.recipes.structure.Recipe",
+          "cardinality": "1",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699/2518891257435359711",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359711",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "children": [
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "mcp.study.recipes.structure.RecipeRef",
+        "properties": [
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          }
+        ],
+        "references": [
+          {
+            "role": "recipe",
+            "target": "/* Reference to mcp.study.recipes.structure.Recipe */"
+          }
+        ],
+        "children": [
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Step",
+      "qualifiedName": "mcp.study.recipes.structure.Step",
+      "conceptAlias": "step",
+      "shortDescription": "One step of a recipe, with a duration in minutes",
+      "doc": "A single instruction of a recipe. minutes is the time the step takes; uses lists the ingredients it consumes.",
+      "deprecated": "false",
+      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [],
+      "superInterfaceDetails": [],
+      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359697",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": false,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "text",
+          "type": "string",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697/2518891257435359708",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359708",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "minutes",
+          "type": "integer",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697/2518891257435359709",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359709",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "uses",
+          "targetConcept": "mcp.study.recipes.structure.IngredientRef",
+          "cardinality": "0..n",
+          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697/2518891257435359710",
+          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359710",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "mcp.study.recipes.structure.Step",
+        "properties": [
+          {
+            "name": "text",
+            "value": "example"
+          },
+          {
+            "name": "minutes",
+            "value": "1"
+          },
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "uses",
+            "nodes": [
+              "/* Instances of mcp.study.recipes.structure.IngredientRef or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

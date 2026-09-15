@@ -137,6 +137,41 @@ def validate_catalog(
   return errors
 
 
+SHARED_SCRIPTS_SKILL = "mps-mcp-workflow"
+FOREIGN_SKILL_PATH = re.compile(r"(mps-[a-z0-9-]+)/(?:scripts|references|assets)/")
+
+
+def validate_scripts(catalog: Path) -> list[str]:
+  """Locality and contract checks for executable helpers in <skill>/scripts/ and <skill>/assets/.
+
+  - a script may reference another skill only as the shared library `mps-mcp-workflow/scripts`;
+  - no hard-coded `/tmp` (file inputs must use the system temp dir);
+  - every script exposes `--help` (argparse) and `--list-tools`;
+  - every `scripts/*.py` and every `assets/*` file is mentioned in its skill's SKILL.md.
+  """
+  errors: list[str] = []
+  for skill_dir in sorted(p for p in catalog.iterdir() if p.is_dir()):
+    skill_md = (skill_dir / "SKILL.md").read_text(encoding="utf-8") if (skill_dir / "SKILL.md").exists() else ""
+    for script in sorted((skill_dir / "scripts").glob("*.py")):
+      text = script.read_text(encoding="utf-8")
+      rel = script.relative_to(catalog)
+      for match in FOREIGN_SKILL_PATH.finditer(text):
+        if match.group(1) not in (skill_dir.name, SHARED_SCRIPTS_SKILL):
+          errors.append(f"{rel}: references foreign skill path '{match.group(0)}'")
+      if re.search(r"(?<![\w/.])/tmp(?![\w-])", text):
+        errors.append(f"{rel}: hard-coded /tmp; use tempfile.gettempdir()")
+      if "argparse" not in text:
+        errors.append(f"{rel}: must use argparse and provide --help")
+      if "--list-tools" not in text:
+        errors.append(f"{rel}: must support --list-tools (drift test contract)")
+      if script.name not in skill_md:
+        errors.append(f"{rel}: not mentioned in {skill_dir.name}/SKILL.md (add a '## Scripts' entry)")
+    for asset in sorted(p for p in (skill_dir / "assets").glob("*") if p.is_file()):
+      if asset.name not in skill_md:
+        errors.append(f"{asset.relative_to(catalog)}: not mentioned in {skill_dir.name}/SKILL.md")
+  return errors
+
+
 def write_skill(root: Path, name: str, body: str = "") -> Path:
   skill = root / name
   skill.mkdir(parents=True)
@@ -238,13 +273,14 @@ def main() -> int:
   if args.self_test:
     run_self_test()
   if args.catalog:
-    errors = validate_catalog(args.catalog)
+    errors = validate_catalog(args.catalog) + validate_scripts(args.catalog)
     if errors:
       print("\n".join(errors))
       return 1
     markdown_count = sum(1 for _ in args.catalog.rglob("*.md"))
     skill_count = sum(1 for path in args.catalog.iterdir() if path.is_dir())
-    print(f"validated {skill_count} skills and {markdown_count} Markdown files")
+    script_count = sum(1 for _ in args.catalog.glob("*/scripts/*.py"))
+    print(f"validated {skill_count} skills, {markdown_count} Markdown files and {script_count} scripts")
   elif not args.self_test:
     parser.error("provide a catalog path, --self-test, or both")
   return 0

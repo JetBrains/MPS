@@ -1,0 +1,712 @@
+{
+  "ok": true,
+  "data": {
+    "name": "mcp.study.kitchen.samples",
+    "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)",
+    "readOnly": false,
+    "rootNodes": [
+      {
+        "name": "Flour",
+        "concept": "Ingredient",
+        "doc": "A named ingredient that recipe steps can refer to. The unit says how amounts of this ingredient are measured.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048000",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Flour"
+          }
+        ],
+        "references": [],
+        "children": []
+      },
+      {
+        "name": "Milk",
+        "concept": "Ingredient",
+        "doc": "A named ingredient that recipe steps can refer to. The unit says how amounts of this ingredient are measured.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048001",
+        "properties": [
+          {
+            "name": "unit",
+            "type": "enum:Unit",
+            "doc": "",
+            "deprecated": "false",
+            "value": "1x81nr4PfaY/ML"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Milk"
+          }
+        ],
+        "references": [],
+        "children": []
+      },
+      {
+        "name": "Egg",
+        "concept": "Ingredient",
+        "doc": "A named ingredient that recipe steps can refer to. The unit says how amounts of this ingredient are measured.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048002",
+        "properties": [
+          {
+            "name": "unit",
+            "type": "enum:Unit",
+            "doc": "",
+            "deprecated": "false",
+            "value": "3tSupaEUlNW/PIECE"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Egg"
+          }
+        ],
+        "references": [],
+        "children": []
+      },
+      {
+        "name": "Pancakes",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048003",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "4"
+          },
+          {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "7tUWsHqcKpu/MEDIUM"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Pancakes"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048005"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048009"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048010"
+              }
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Crepes",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048028"
+              },
+              {
+                "name": "VanillaCustard",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048029"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Crepes",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048011",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Crepes"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048013"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048017"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048018"
+              }
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Pancakes",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048030"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "VanillaCustard",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048019",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "6"
+          },
+          {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/HARD"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "VanillaCustard"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048021"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048023"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048026"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048027"
+              }
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Pancakes",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048031"
+              },
+              {
+                "name": "Crepes",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048032"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Tomato Soup",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329296",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "6"
+          },
+          {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/HARD"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Tomato Soup"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329298"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329299"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329300"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329301"
+              }
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Goulash",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329302"
+              },
+              {
+                "name": "Dumplings",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329303"
+              },
+              {
+                "name": "Porridge",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329304"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Pancakes",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329305",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "6"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Pancakes"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329307"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329308"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329309"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329310"
+              }
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Apple Pie",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329311"
+              },
+              {
+                "name": "Minestrone",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329312"
+              },
+              {
+                "name": "Pho",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329313"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Omelette",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329314",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "8"
+          },
+          {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/HARD"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Omelette"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329316"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329317"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329318"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329319"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329320"
+              }
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Pancakes",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329623"
+              },
+              {
+                "name": "Miso Soup",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329321"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Caesar Salad",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329322",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Caesar Salad"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329324"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329325"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329326"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329327"
+              }
+            ]
+          },
+          {
+            "role": "seeAlso",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Lentil Stew",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329328"
+              },
+              {
+                "name": "Potato Gratin",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329329"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Garlic Bread",
+        "concept": "Recipe",
+        "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329330",
+        "properties": [
+          {
+            "name": "servings",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "8"
+          },
+          {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/HARD"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Garlic Bread"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "steps",
+            "type": "Step",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329332"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329333"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329334"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329335"
+              },
+              {
+                "name": "step",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436329336"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "BreakfastFavourites",
+        "concept": "Cookbook",
+        "doc": "Groups existing Recipe roots into a titled collection without containing them.",
+        "deprecated": "false",
+        "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359703:mcp.study.recipes.structure.Cookbook",
+        "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048033",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "BreakfastFavourites"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "recipes",
+            "type": "RecipeRef",
+            "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Pancakes",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048034"
+              },
+              {
+                "name": "Crepes",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048035"
+              },
+              {
+                "name": "VanillaCustard",
+                "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048036"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -83,3 +83,28 @@ The tools that accept a node JSON blueprint (`mps_mcp_update_node` for `ADD`/`SE
 - Open `references/json-format.md` when you need the unified JSON blueprint shape — concept/properties/children/references layout, optional-section rules, and reference-resolution semantics (`r:...` vs name auto-resolution).
 - Open `references/staged-construction.md` when the subtree is large (>~4 KB) or its child refs are needed for later edits — the skeleton → validate → incremental-fill → targeted-update → cleanup pattern.
 - Open `references/troubleshooting.md` when an insert call fails with `JsonElement.getAsString()` errors or when the JSON shape diverges from the user's textual notation.
+
+## Scripts
+
+`scripts/table_to_bulk_insert.py` — turns a CSV (or JSON rows) plus a small JSON mapping spec
+into the top-level-array blueprint `mps_mcp_insert_root_node_from_json` accepts, written to a
+file under the system temp directory, and prints `{path, roots, children, references}`. Covers
+typed properties (`int`, enum literals), split-column child lists, and reference-wrapper
+children whose targets are written as names for the tool to resolve after the batch lands.
+
+```
+python3 scripts/table_to_bulk_insert.py recipes.csv recipes.map.json
+{"children":183,"path":"/var/folders/.../bulk_insert-recipes-1234.json","references":65,"roots":40}
+```
+
+Then `mps_mcp_insert_root_node_from_json(modelReference=…, json="<that path>", dryRun=true)`
+and, once it is clean, the same call with `dryRun=false`. Run `--help` for the full mapping-spec
+reference, `--list-tools` for the tools and parameters it depends on; `scripts/examples/`
+holds a 40-row `recipes.csv` with its matching `recipes.map.json`.
+
+No `python3` (typically Windows): author the array by hand as described in
+`references/json-format.md` — one object per row, `properties` entries omitted for empty cells
+so the MPS default applies, one child role per list column, and one wrapper child per
+reference with `{"role": …, "target": "<name>"}` — write it to a file under the system temp
+directory (not `/tmp` on macOS) and pass that path. Prefer `--limit`-sized batches, or the
+staged construction in `references/staged-construction.md`, over one oversized blueprint.

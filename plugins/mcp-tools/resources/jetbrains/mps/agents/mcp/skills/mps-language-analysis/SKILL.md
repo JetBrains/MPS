@@ -52,3 +52,29 @@ Use `mps_mcp_query_structure` with `LIST_CONCEPT_ASPECTS` to find associated def
 
 - Open `references/search-concepts.md` for the `mps_mcp_search_concepts` matching algorithm — haystack composition, subtoken splitting, fallback ranking, `modelReference` scoping, and the sub-2-char failure mode.
 - Open `references/concept-details.md` for the `mps_mcp_get_concept_details` result schema and the unresolved-ref policy (all-failed vs partial-success envelopes and the suggestion heuristic).
+
+## Scripts
+
+`scripts/concept_shape.py` — reduces a `mps_mcp_get_concept_details` result file to one line
+per property, reference, and child role (type, enum literals, cardinality): the concept shape
+needed to author a blueprint, instead of the 10–40 KB details file.
+
+```
+python3 scripts/concept_shape.py /var/folders/.../mps-node-456.json --concept Recipe
+Recipe  mcp.study.recipes.structure.Recipe  rootable
+  prop   servings    integer
+  prop   difficulty  enum Difficulty [EASY|MEDIUM|HARD]
+  child  steps       mcp.study.recipes.structure.Step       1..n
+```
+
+`--all` keeps the inherited `shortDescription` / `virtualPackage` / `smodelAttribute` features
+that are hidden by default; `--list-tools` prints the tools and parameters it depends on. The
+script is a thin front end over `scripts/mps_dump.py` in the `mps-mcp-workflow` skill root
+after loading that companion skill from the same origin, which must be installed alongside
+this one; that library also offers the `roots`, `node`, and `count` projections.
+
+No `python3` (typically Windows): read the details file with the file reader and keep, per
+concept, only `qualifiedName`, `isAbstract`/`isRootable`, and for each entry of `properties` /
+`references` / `children` the `name`, `type`/`targetConcept`, `cardinality`, and
+`enumerationValues` — ignore `featureId`, `sourceNode`, `doc`, and `sampleNode` unless you need
+them.

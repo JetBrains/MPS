@@ -1,0 +1,256 @@
+{
+  "ok": true,
+  "data": {
+    "name": "Pancakes",
+    "concept": "Recipe",
+    "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+    "deprecated": "false",
+    "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+    "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048003",
+    "properties": [
+      {
+        "name": "servings",
+        "type": "integer",
+        "doc": "",
+        "deprecated": "false",
+        "value": "4"
+      },
+      {
+        "name": "difficulty",
+        "type": "enum:Difficulty",
+        "doc": "",
+        "deprecated": "false",
+        "value": "7tUWsHqcKpu/MEDIUM"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "doc": "",
+        "deprecated": "false",
+        "value": "Pancakes"
+      }
+    ],
+    "references": [],
+    "children": [
+      {
+        "role": "steps",
+        "type": "Step",
+        "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+        "cardinality": "1..n",
+        "doc": "",
+        "deprecated": "false",
+        "nodes": [
+          {
+            "name": "step",
+            "concept": "Step",
+            "doc": "A single instruction of a recipe. minutes is the time the step takes; uses lists the ingredients it consumes.",
+            "deprecated": "false",
+            "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048005",
+            "properties": [
+              {
+                "name": "text",
+                "type": "string",
+                "doc": "",
+                "deprecated": "false",
+                "value": "Whisk the flour, milk and eggs into a smooth batter"
+              },
+              {
+                "name": "minutes",
+                "type": "integer",
+                "doc": "",
+                "deprecated": "false",
+                "value": "5"
+              }
+            ],
+            "references": [],
+            "children": [
+              {
+                "role": "uses",
+                "type": "IngredientRef",
+                "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695:mcp.study.recipes.structure.IngredientRef",
+                "cardinality": "0..n",
+                "doc": "",
+                "deprecated": "false",
+                "nodes": [
+                  {
+                    "name": "Flour",
+                    "concept": "IngredientRef",
+                    "doc": "Smart reference wrapper that lets a Step point at an Ingredient root node.",
+                    "deprecated": "false",
+                    "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695:mcp.study.recipes.structure.IngredientRef",
+                    "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048006",
+                    "properties": [],
+                    "references": [
+                      {
+                        "role": "ingredient",
+                        "type": "Ingredient",
+                        "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
+                        "cardinality": "1",
+                        "doc": "",
+                        "deprecated": "false",
+                        "target": "Flour",
+                        "targetReference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048000"
+                      }
+                    ],
+                    "children": []
+                  },
+                  {
+                    "name": "Milk",
+                    "concept": "IngredientRef",
+                    "doc": "Smart reference wrapper that lets a Step point at an Ingredient root node.",
+                    "deprecated": "false",
+                    "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695:mcp.study.recipes.structure.IngredientRef",
+                    "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048007",
+                    "properties": [],
+                    "references": [
+                      {
+                        "role": "ingredient",
+                        "type": "Ingredient",
+                        "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
+                        "cardinality": "1",
+                        "doc": "",
+                        "deprecated": "false",
+                        "target": "Milk",
+                        "targetReference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048001"
+                      }
+                    ],
+                    "children": []
+                  },
+                  {
+                    "name": "Egg",
+                    "concept": "IngredientRef",
+                    "doc": "Smart reference wrapper that lets a Step point at an Ingredient root node.",
+                    "deprecated": "false",
+                    "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695:mcp.study.recipes.structure.IngredientRef",
+                    "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048008",
+                    "properties": [],
+                    "references": [
+                      {
+                        "role": "ingredient",
+                        "type": "Ingredient",
+                        "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
+                        "cardinality": "1",
+                        "doc": "",
+                        "deprecated": "false",
+                        "target": "Egg",
+                        "targetReference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048002"
+                      }
+                    ],
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "step",
+            "concept": "Step",
+            "doc": "A single instruction of a recipe. minutes is the time the step takes; uses lists the ingredients it consumes.",
+            "deprecated": "false",
+            "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048009",
+            "properties": [
+              {
+                "name": "text",
+                "type": "string",
+                "doc": "",
+                "deprecated": "false",
+                "value": "Let the batter rest in the fridge"
+              },
+              {
+                "name": "minutes",
+                "type": "integer",
+                "doc": "",
+                "deprecated": "false",
+                "value": "30"
+              }
+            ],
+            "references": [],
+            "children": []
+          },
+          {
+            "name": "step",
+            "concept": "Step",
+            "doc": "A single instruction of a recipe. minutes is the time the step takes; uses lists the ingredients it consumes.",
+            "deprecated": "false",
+            "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
+            "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048010",
+            "properties": [
+              {
+                "name": "text",
+                "type": "string",
+                "doc": "",
+                "deprecated": "false",
+                "value": "Fry thick pancakes in a hot buttered pan, one ladle at a time"
+              },
+              {
+                "name": "minutes",
+                "type": "integer",
+                "doc": "",
+                "deprecated": "false",
+                "value": "15"
+              }
+            ],
+            "references": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "role": "seeAlso",
+        "type": "RecipeRef",
+        "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+        "cardinality": "0..n",
+        "doc": "",
+        "deprecated": "false",
+        "nodes": [
+          {
+            "name": "Crepes",
+            "concept": "RecipeRef",
+            "doc": "Smart reference wrapper used by Recipe.seeAlso and Cookbook.recipes to point at a Recipe root node.",
+            "deprecated": "false",
+            "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048028",
+            "properties": [],
+            "references": [
+              {
+                "role": "recipe",
+                "type": "Recipe",
+                "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+                "cardinality": "1",
+                "doc": "",
+                "deprecated": "false",
+                "target": "Crepes",
+                "targetReference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048011"
+              }
+            ],
+            "children": []
+          },
+          {
+            "name": "VanillaCustard",
+            "concept": "RecipeRef",
+            "doc": "Smart reference wrapper used by Recipe.seeAlso and Cookbook.recipes to point at a Recipe root node.",
+            "deprecated": "false",
+            "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
+            "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048029",
+            "properties": [],
+            "references": [
+              {
+                "role": "recipe",
+                "type": "Recipe",
+                "typeReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
+                "cardinality": "1",
+                "doc": "",
+                "deprecated": "false",
+                "target": "VanillaCustard",
+                "targetReference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048019"
+              }
+            ],
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}

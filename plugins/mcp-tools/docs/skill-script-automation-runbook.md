@@ -235,26 +235,26 @@ Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipe
 
 - [x] 7.1 (decision 9.12: everything, no A/B) **Gate 2 (human)**: which remedies to build, in report rank order. Docs-only fixes
       (tier D) may proceed immediately in their own commits.
-- [ ] 7.2 Packaging check before the first script (3.5, 7): confirm `resources/**/scripts/*.py`
+- [x] 7.2 (verified: `resources` is java-resource, build fileset has no includes filter, `copyDirectoryRecursively` copies everything; `SkillScriptsPackagingTest` guards it) Packaging check before the first script (3.5, 7): confirm `resources/**/scripts/*.py`
       and `assets/*` reach the plugin JAR (`mcp-tools.iml` marks `resources` as java-resource;
       verify no `*.md`-only filter) **and** that `mps_mcp_initialize_project_for_agents` copies
       non-`.md` files (inspect the copy code in `JetBrainsMPSInitMcpToolset.kt` /
       `AgentConfigRootResolver.kt`). Add a unit test asserting ≥1 `scripts/` entry in the skills
       resource tree once the first script exists.
-- [ ] 7.3 Shared library in `mps-mcp-workflow/scripts/`: `mps_mcp_client.py` (Streamable HTTP
+- [x] 7.3 (deviation: shipped `mps_dump.py` — result-file library — instead of an HTTP client + blueprint helper, because the pilot showed result post-processing and CSV→blueprint, not online chains, as the need; `tools_inventory.py`'s `McpClient` remains the seed for a client if S4/S5/S8 ever justify P-on) Shared library in `mps-mcp-workflow/scripts/`: `mps_mcp_client.py` (Streamable HTTP
       JSON-RPC, `MPS_MCP_URL`, `--project-path`, `Mcp-Session-Id`, `tools/list` pre-check, exit
       codes 0/2/3/4, `MCP_TOOLS_VERSION_TESTED` warning) and `mps_json.py` (node/ref helpers, FQN
       check, 4 KB size guard, staged split). Promote `tools_inventory.py` logic into the client.
-- [ ] 7.4 Implement the approved remedies in their owning skill (`scripts/` or `assets/`), each
+- [~] 7.4 (docs R3/R6/R2-docs committed 9c8afa9d4db6; scripts R5 committed 66041c7d37f1; server R1/R7/R8a in progress, R2/R4/R8b queued) Implement the approved remedies in their owning skill (`scripts/` or `assets/`), each
       with a `## Scripts` section + example call in `SKILL.md`, `--help`, stdlib only.
 - [ ] 7.5 Implement approved tier-S composite tools in Kotlin with integration tests.
-- [ ] 7.6 Drift control (3.5): extend `McpIntegrationTestBase`-based suite with a test that runs
+- [~] 7.6 (`SkillScriptsDriftTest` written, not yet registered/run; `validate_skill_catalog.py` now checks scripts/assets locality, /tmp, argparse, --list-tools and SKILL.md mention; `.agents/conventions.md` carries the same-commit rule) Drift control (3.5): extend `McpIntegrationTestBase`-based suite with a test that runs
       each `scripts/*.py --list-tools` in a subprocess and asserts the tools/parameters exist in
       the live registry; functional smoke feeding each P-off generator's bundled example spec to
       its tool with `dryRun=true`. Extend `plugins/mcp-tools/scripts/validate_skill_catalog.py`
       to cover `scripts/` and `assets/` locality (no cross-skill imports except the shared lib
       path). Add the "update scripts in the same commit" rule to `.agents/conventions.md`.
-- [ ] 7.7 Windows fallback (8): every `## Scripts` section states what to do without `python3`.
+- [x] 7.7 Windows fallback (8): every `## Scripts` section states what to do without `python3`.
 - [ ] 7.8 Re-run `mps_mcp_initialize_project_for_agents` into a fresh ProjectX copy and confirm
       scripts arrive; refresh `fixtures/empty-project.tar.gz` as the treated template.
 
