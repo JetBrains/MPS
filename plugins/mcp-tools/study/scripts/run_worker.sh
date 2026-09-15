@@ -2,7 +2,7 @@
 # Run one headless worker for the skill-script automation study.
 #
 # usage: run_worker.sh <scenario> <model> <run-no> <project-dir>
-#   scenario     S1..S8 (directory under study/scenarios/)
+#   scenario     S1..S8 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
 #   model        claude model alias, e.g. opus | sonnet
 #   run-no       1, 2, ...
 #   project-dir  absolute path of the scratch MPS project (must be open in MPS)
@@ -28,7 +28,7 @@ ID="$SCENARIO-$MODEL-$RUN"
 [ -f "$PROMPT" ] || { echo "no prompt: $PROMPT" >&2; exit 2; }
 [ -d "$PROJECT" ] || { echo "no project dir: $PROJECT" >&2; exit 2; }
 mkdir -p "$RUNS"
-[ -e "$RUNS/$ID-worker.jsonl" ] && { echo "run id already exists: $ID" >&2; exit 2; }
+[ -e "$RUNS/$ID-worker.jsonl" ] && { echo "run id already exists: $ID — bump the run number" >&2; exit 2; }
 
 touch "$CALLLOG"
 START_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
