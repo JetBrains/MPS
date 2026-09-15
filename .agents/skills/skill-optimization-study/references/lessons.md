@@ -27,3 +27,18 @@
     chains they remove, not by turn deltas between models.
 13. **Keep the study-only VM option out of shared config** — it hard-codes a home path; commit it as a
     clearly labelled TEMP commit and `git revert` it at wrap-up.
+14. **Background implementers die with the observer session.** A server-side implementer was
+    stopped mid-task when the session restarted; its edits survived in the working tree and it could
+    be resumed from its transcript. → Give implementers disjoint file sets so partial work is
+    attributable, check `git status` + `build_project` before resuming, and resume with SendMessage
+    rather than restarting from scratch.
+15. **Own the shared files yourself.** `McpToolsIntegrationTestSuite.java` and the reference files
+    several implementers want to touch are edited only by the observer, after the implementers
+    report; implementers put the sentences they want added into their report.
+16. **One suite run at a time.** The integration suite compiles into one output directory; two
+    concurrent runs corrupt each other. Implementers compile with `build_project`; the observer runs
+    the suite once per batch.
+17. **Enum defaults are invisible to scripts.** `get_concept_details` did not expose the declared
+    default member, so the shipped `mps_dump.py` assumes the first literal. Pair every P-off script
+    with the server change that exposes the data it needs (here: a default marker on enum literals).
+
