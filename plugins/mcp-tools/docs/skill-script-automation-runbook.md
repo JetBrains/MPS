@@ -248,7 +248,7 @@ Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipe
 - [x] 7.4 (docs 9c8afa9d4db6 + 92a6b8496afe; scripts 66041c7d37f1; server batch 1 8c2da291c6f7; server batch 2 3dc6bd935046; batch-2 reference sentences being pasted; final suite run in progress) Implement the approved remedies in their owning skill (`scripts/` or `assets/`), each
       with a `## Scripts` section + example call in `SKILL.md`, `--help`, stdlib only.
 - [x] 7.5 (no new composite tools; the approved S-tier remedies are parameters/envelope fields on existing tools — both batches done) Implement approved tier-S composite tools in Kotlin with integration tests.
-- [~] 7.6 (`SkillScriptsDriftTest` written, not yet registered/run; `validate_skill_catalog.py` now checks scripts/assets locality, /tmp, argparse, --list-tools and SKILL.md mention; `.agents/conventions.md` carries the same-commit rule) Drift control (3.5): extend `McpIntegrationTestBase`-based suite with a test that runs
+- [x] 7.6 (`SkillScriptsPackagingTest` 3 tests + `SkillScriptsDriftTest` 2 tests green in both full-suite runs; `validate_skill_catalog.py` checks scripts/assets locality, /tmp, argparse, --list-tools and SKILL.md mention; `.agents/conventions.md` carries the same-commit rule) Drift control (3.5): extend `McpIntegrationTestBase`-based suite with a test that runs
       each `scripts/*.py --list-tools` in a subprocess and asserts the tools/parameters exist in
       the live registry; functional smoke feeding each P-off generator's bundled example spec to
       its tool with `dryRun=true`. Extend `plugins/mcp-tools/scripts/validate_skill_catalog.py`
