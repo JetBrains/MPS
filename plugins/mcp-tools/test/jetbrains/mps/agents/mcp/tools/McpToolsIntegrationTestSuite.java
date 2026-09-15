@@ -58,6 +58,7 @@ import java.lang.reflect.Field;
     JetBrainsMPSInitMcpToolsetTest.class,
     JetBrainsMPSInitMcpToolsetIntegrationTest.class,
     McpToolInputSchemasTest.class,
+    McpCallLogTest.class,
 })
 public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
   private static IdeaEnvironment ourEnvironment;

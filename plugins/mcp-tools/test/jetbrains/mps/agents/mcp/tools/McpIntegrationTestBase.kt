@@ -264,7 +264,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         error[0]?.let { throw it }
     }
 
-    private fun stubMcpCallInfo(mpsProject: MPSProject): McpCallInfo {
+    protected fun stubMcpCallInfo(mpsProject: MPSProject): McpCallInfo {
         val emptySchema = McpToolSchema(
             JsonObject(emptyMap()),
             emptySet(),
