@@ -2394,12 +2394,6 @@
         </node>
       </node>
       <node concept="3Tm1VV" id="XAmMejRZQ9" role="1B3o_S" />
-      <node concept="16euLQ" id="XAmMejRZQa" role="16eVyc">
-        <property role="TrG5h" value="IS" />
-      </node>
-      <node concept="16euLQ" id="XAmMejRZQb" role="16eVyc">
-        <property role="TrG5h" value="FS" />
-      </node>
       <node concept="3uibUv" id="XAmMek0cp4" role="1zkMxy">
         <ref role="3uigEE" node="XAmMejZP77" resolve="RefactoringParticipant.ParticipantStateFactory" />
         <node concept="3Tqbb2" id="XAmMejSas2" role="11_B2D" />

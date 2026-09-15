@@ -131,7 +131,6 @@
       </concept>
       <concept id="2820489544401957797" name="jetbrains.mps.baseLanguage.structure.DefaultClassCreator" flags="nn" index="HV5vD">
         <reference id="2820489544401957798" name="classifier" index="HV5vE" />
-        <child id="2820489544402271667" name="typeParameter" index="HU9BZ" />
       </concept>
       <concept id="4678410916365116210" name="jetbrains.mps.baseLanguage.structure.DefaultModifier" flags="ng" index="2JFqV2" />
       <concept id="1154032098014" name="jetbrains.mps.baseLanguage.structure.AbstractLoopStatement" flags="nn" index="2LF5Ji">
@@ -11695,12 +11694,6 @@
             <node concept="2ShNRf" id="XAmMekfKO_" role="37wK5m">
               <node concept="HV5vD" id="XAmMekfM93" role="2ShVmc">
                 <ref role="HV5vE" to="5nvm:XAmMejRZPu" resolve="RefactoringParticipant.DeserializingParticipantStateFactory" />
-                <node concept="16syzq" id="ZyaJRS0AFV" role="HU9BZ">
-                  <ref role="16sUi3" node="ZyaJRS07vF" resolve="IP" />
-                </node>
-                <node concept="16syzq" id="ZyaJRS0Bc0" role="HU9BZ">
-                  <ref role="16sUi3" node="ZyaJRS0aNf" resolve="FP" />
-                </node>
               </node>
             </node>
             <node concept="37vLTw" id="ZyaJRS0BN8" role="37wK5m">

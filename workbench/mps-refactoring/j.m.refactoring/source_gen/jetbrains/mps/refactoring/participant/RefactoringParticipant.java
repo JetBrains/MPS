@@ -141,7 +141,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
     }
   }
 
-  class DeserializingParticipantStateFactory<IS, FS> extends ParticipantStateFactory<SNode, SNode> {
+  class DeserializingParticipantStateFactory extends ParticipantStateFactory<SNode, SNode> {
     public <I> I getInitial(RefactoringParticipant<I, ?, ?, ?> participant, SNode serializedInitial) {
       return ((PersistentRefactoringParticipant<I, ?, ?, ?>) participant).deserializeInitialState(serializedInitial);
     }
