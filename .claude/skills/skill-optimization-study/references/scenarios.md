@@ -1,6 +1,9 @@
 # Scenario set
 
 Location: `plugins/mcp-tools/study/scenarios/<S>/worker_prompt.md` + `done_criteria.md`.
+Fixtures are NOT kept as tarballs in git — regenerate them per `plugins/mcp-tools/study/fixtures/README.md`
+(empty = initialised empty project; statechart = Projectxx5; recipes = a passing S1 project incl. `classes_gen`;
+recipes-broken = recipes + `scenarios/S5/PROBLEMS.md`).
 
 | # | Scenario | Fixture | Hypotheses |
 |---|---|---|---|

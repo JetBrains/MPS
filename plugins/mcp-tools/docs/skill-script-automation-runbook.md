@@ -1,6 +1,6 @@
 # Skill Script Automation Study — Execution Runbook
 
-Status: draft 2026-09-15. Executes the design in `skill-script-automation-study.md` (the
+Status: COMPLETE 2026-09-15 (kept as the dated decision log). Executed the design in `skill-script-automation-study.md` (the
 "study"). This file is the ordered task list; tick boxes as work lands and record deviations
 in section 9. Section numbers in parentheses refer to the study.
 
@@ -255,20 +255,20 @@ Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipe
       to cover `scripts/` and `assets/` locality (no cross-skill imports except the shared lib
       path). Add the "update scripts in the same commit" rule to `.agents/conventions.md`.
 - [x] 7.7 Windows fallback (8): every `## Scripts` section states what to do without `python3`.
-- [ ] 7.8 Re-run `mps_mcp_initialize_project_for_agents` into a fresh ProjectX copy and confirm
+- [x] 7.8 (scripts implementer verified the live install copies `scripts/` byte-identically into both skill dirs; template tarballs no longer kept) Re-run `mps_mcp_initialize_project_for_agents` into a fresh ProjectX copy and confirm
       scripts arrive; refresh `fixtures/empty-project.tar.gz` as the treated template.
 
 ## 8. Phase 7 — A/B and final report (4.5) — A/B SKIPPED by gate-2 decision 9.12; final report still due
 
-- [ ] 8.1 Re-run the identical matrix (same prompts, same shas, treated template) with the
+- [ ] (skipped, decision 9.12) 8.1 Re-run the identical matrix (same prompts, same shas, treated template) with the
       same provisioning procedure.
-- [ ] 8.2 `analyze_runs.py --compare baseline/ treated/`: per scenario × model deltas in tool
+- [ ] (skipped) 8.2 `analyze_runs.py --compare baseline/ treated/`: per scenario × model deltas in tool
       calls, context tokens, retries, pass rate; attribute deltas per remedy by chain.
-- [ ] 8.3 Success check on treated scenarios: ≥30 % fewer tool calls **and** ≥25 % fewer
+- [ ] (skipped) 8.3 Success check on treated scenarios: ≥30 % fewer tool calls **and** ≥25 % fewer
       context tokens with no drop in task success. Report per remedy.
-- [ ] 8.4 Delete remedies that did not pay for themselves (and their drift tests); keep the
+- [ ] (skipped) 8.4 Delete remedies that did not pay for themselves (and their drift tests); keep the
       docs fixes regardless.
-- [ ] 8.5 Final section in `HOTSPOT_REPORT.md`: A/B table, kept/deleted remedies, open
+- [x] 8.5 (report §6 post-treatment check; study doc §9) Final section in `HOTSPOT_REPORT.md`: A/B table, kept/deleted remedies, open
       questions. Commit; ask before the first push.
 
 ## 8a. Phase 8 — Wrap-up: extract a re-runnable optimisation scenario, then roll back the scaffolding
@@ -297,9 +297,9 @@ again, and the same baseline → hotspot → remedy → A/B loop should be repea
 - [x] 9.2 (2026-09-15: fresh Opus session ran preflight, SMOKE-sonnet-2 and analysis from the skill alone; verdict 'with fixes', 11 gaps found and fixed — absolute paths via $STUDY/$RUNS, toolchain checks, 'empty project' definition, call-log on/off check, inventory filename, SMOKE documented, wrapper-pid polling, Bash timeout, tools.json, re-run guard, no pointer to the runbook as required reading) Dry-run the extracted skill: a fresh observer session, given only the skill and an empty
       project, must reach a completed smoke run and a populated `metrics.csv` without consulting
       this runbook or the chat history. Fix the skill until it does.
-- [ ] 9.3 Fold conclusions into the study document (`skill-script-automation-study.md`): baseline
+- [x] 9.3 (section 9 of the study document; commits 9680f7681e78, 3f7c24c6ec3f) Fold conclusions into the study document (`skill-script-automation-study.md`): baseline
       and A/B tables, kept/deleted remedies, updated hypotheses H1–H8, open questions.
-- [ ] 9.4 Roll back the study-only scaffolding, each in its own commit or revert:
+- [x] 9.4 (2026-09-15: VM option reverted; fixture tarballs deleted, `fixtures/README.md` documents regeneration; `study/` prompts, criteria, scripts and SMOKE kept — SMOKE is required by the extracted skill's step 4; this runbook kept as the dated decision log (deviation from the original plan to delete it); call-log listener kept) Roll back the study-only scaffolding, each in its own commit or revert:
       - **Revert the VM option** in `.idea/runConfigurations/MPS.xml` (user-specific absolute path in
         a shared run configuration) — `git revert 16ca274cc63f` (commit `mcp-tools - TEMP study-only: …`).
       - **Delete `study/fixtures/*.tar.gz`** (regenerable from ProjectX / Projectxx5) and the `SMOKE`
@@ -308,12 +308,12 @@ again, and the same baseline → hotspot → remedy → A/B loop should be repea
         record, or move into the skill from 9.1 and delete here.
       - **Delete this runbook** once 9.1–9.3 carry its content; keep the study document.
       - **Keep** `McpCallLogListener` + test + `plugin.xml` registration (product feature, off by default).
-- [ ] 9.5 Clean up outside the repo: `~/MPSProjects/mcp-study/` (scratch projects, transcripts,
+- [x] 9.5 (evidence archived to `~/MPSProjects/mcp-study-runs-2026-09-15.tar.gz` incl. the post-treatment inventory; scratch projects, runs dir and worker memory dirs deleted; `~/.claude.json` had no scratch-project entries; ProjectX initialisation files kept by the human's choice) Clean up outside the repo: `~/MPSProjects/mcp-study/` (scratch projects, transcripts,
       call log — archive the `runs/` directory first, it is the evidence), `/tmp/mcpserver-classes`,
       per-scratch-project entries in `~/.claude.json`, the workers' auto-memory directories
       `~/.claude/projects/-Users-vaclav-MPSProjects-mcp-study-proj-*/`, and ProjectX's initialisation files
       (`.agents/`, `.claude/`, `CLAUDE.md`, `AGENTS.md`) if ProjectX should return to an empty project.
-- [ ] 9.6 Final report to the user: what was measured, what shipped, what was rolled back, and how
+- [x] 9.6 (2026-09-15, in chat; content = study document §9 + HOTSPOT_REPORT §6) Final report to the user: what was measured, what shipped, what was rolled back, and how
       to re-run via the `skill-optimization-study` skill.
 
 ## 9. Decisions and deviations log

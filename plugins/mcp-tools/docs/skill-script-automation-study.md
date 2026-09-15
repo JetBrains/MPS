@@ -420,7 +420,9 @@ H8 remain unmeasured. Evidence = stream-json transcripts + the new server call l
 | S | `rootsChecked`/`perRoot`, bulk-insert `responseDetail`, `create_module` model list, enum default marker, temp-dir error text | 3dc6bd935046 |
 | process | `skill-optimization-study` skill (re-runnable procedure, 17 lessons) | a7828acb620d |
 
-No A/B was run (gate 2); expected effect from the baseline: ≈ 84 avoidable follow-up reads and
+Live check after the MPS restart: all new parameters advertised; `mps_mcp_*` descriptions grew by
+2.9 KB (≈ 700 tokens per schema load) — negligible against ≈ 150 K tokens per avoided turn; suite
+669/0. No A/B was run (gate 2); expected effect from the baseline: ≈ 84 avoidable follow-up reads and
 ≈ 60 avoidable validation calls across the four runs, i.e. roughly a quarter of all turns.
 
 ### 9.4 Not done / open

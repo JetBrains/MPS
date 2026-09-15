@@ -110,3 +110,15 @@ Not proposed: P-on (online chain) scripts — no chain in these runs needs serve
 that a composite tool would not do better; `wire_references.py`, `validate_until_clean.py` and
 `dump_language.py` from the study's candidate list (3.4) have **no supporting evidence** in the
 pilot and should not be built without S4/S5/S8 data.
+
+## 6. Post-treatment check (2026-09-15, live server after MPS restart)
+
+`tools_inventory.py` diff, study start → after all remedies: 56 tools before and after, none added or
+removed; new optional parameters advertised — `check_root_node_problems` (+`maxInlineBytes`, `perRoot`),
+`get_concept_details` (+`detail`, `includeChildRoleConcepts`, `maxInlineBytes`), `get_project_structure`,
+`print_node`, `query_nodes` (+`maxInlineBytes`), `insert_root_node_from_json`, `update_node`
+(+`responseDetail`); `create_module` description documents `data.models`. Fixed-context cost of the
+treatment: `mps_mcp_*` descriptions 43,175 → 46,093 B (+2,918 B ≈ +700 tokens per schema load),
+schemas 34,328 → 36,600 B. Against ≈ 150 K tokens per avoided turn this is negligible.
+Integration suite after treatment: 669 tests, 0 failures (baseline 637). No A/B run (gate 2).
+

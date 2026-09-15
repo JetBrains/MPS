@@ -65,7 +65,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
 5. **Scenarios** — `study/scenarios/S1..S8/{worker_prompt.md,done_criteria.md}`; add a scenario for
    whatever skill/tool changed. Prompts are developer-voice, fixed names, explicit "done", NO reporting
-   requirements. Fixtures: `empty-project`, `statechart` (Projectxx5), `recipes` (a passing S1).
+   requirements. Fixtures: `empty-project`, `statechart` (Projectxx5), `recipes` (a passing S1) —
+   regenerated per `study/fixtures/README.md`, not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
    projects). Per run: copy fixture → human opens → confirm with `list_open_projects` → launch
    detached → poll the PID in bounded loops → evaluate with an Opus subagent using the
@@ -86,8 +87,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
 10. **A/B** (optional) — same runs against the treated tools; success = ≥ 30 % fewer tool calls and
     ≥ 25 % fewer context tokens on treated scenarios, no drop in pass rate; delete remedies that do
     not pay.
-11. **Wrap up** — fold conclusions into the study doc; revert the VM option; delete fixtures tarballs
-    and the SMOKE scenario; clean `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
+11. **Wrap up** — fold conclusions into the study doc; revert the VM option; delete fixture tarballs
+    (keep the SMOKE scenario — step 4 needs it); clean `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
     `~/.claude/projects/-…-mcp-study-proj-*/` memory dirs; keep the call-log listener.
 
 ## References
