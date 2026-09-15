@@ -76,5 +76,5 @@ this one; that library also offers the `roots`, `node`, and `count` projections.
 No `python3` (typically Windows): read the details file with the file reader and keep, per
 concept, only `qualifiedName`, `isAbstract`/`isRootable`, and for each entry of `properties` /
 `references` / `children` the `name`, `type`/`targetConcept`, `cardinality`, and
-`enumerationValues` — ignore `featureId`, `sourceNode`, `doc`, and `sampleNode` unless you need
-them.
+`enumerationValues` (plus `enumerationDefault`, the literal a property holding the default value
+carries) — ignore `featureId`, `sourceNode`, `doc`, and `sampleNode` unless you need them.

@@ -32,11 +32,13 @@ stdout carries the table (capped by --max-lines) followed by a one-line JSON sum
 full table is always written to a file under the system temp directory, whose path is in
 that summary. Exit codes: 0 ok, 2 usage, 3 bad input.
 
-Enum properties: MPS omits a property left at its default, and prints a set one as
-`<enumRef>/LITERAL`. Values are reduced to `LITERAL` here. With a concept-details file the
-declared-but-absent enum properties are filled with the enumeration's first literal (what
-MPS uses when the declaration names no explicit default member) and flagged as a default;
-without one they can only be flagged as `<default>`.
+Enum properties: a set one prints as `<enumRef>/LITERAL`, reduced to `LITERAL` here. A
+property left at its enumeration's default stores nothing; `mps_mcp_print_node` reports it
+with the default literal as its value plus `"isDefault": true`, and this script marks it as
+a default rather than as a set value. For an older dump that omits the property entirely, a
+concept-details file fills it from `enumerationDefault` (the declared default member) or,
+when the declaration names none, from the first literal; without that file the property can
+only be marked `<default>`.
 """
 
 from __future__ import annotations
@@ -143,9 +145,10 @@ def _is_node(value):
 def props(node, concept_details=None):
     """Property values of `node` as a dict, with default-valued properties filled in.
 
-    Enum values lose their `<enumRef>/` prefix. An enum property MPS left at its default is
-    absent from the dump: with `concept_details` it is filled with the enumeration's first
-    literal, otherwise (and for a property printed as "") it is set to `<default>`.
+    Enum values lose their `<enumRef>/` prefix. A property at its enumeration's default is
+    reported by the printer with that literal and an `isDefault` flag; in an older dump it is
+    absent, and is then filled from `concept_details` (`enumerationDefault`, else the first
+    literal) or, without that file, set to `<default>`.
     """
     return {name: value for name, (value, _) in props_detail(node, concept_details).items()}
 
@@ -158,17 +161,28 @@ def props_detail(node, concept_details=None):
         if name is None:
             continue
         value = _plain_value(entry.get("value"))
-        if value:
-            result[name] = (value, "set")
-        else:
+        if not value:
             result[name] = (DEFAULT_MARKER, "unset")
+        elif entry.get("isDefault"):
+            result[name] = (value, "default")
+        else:
+            result[name] = (value, "set")
 
     for name, entry in _declared_properties(node, concept_details).items():
-        literals = entry.get("enumerationValues") or []
+        default = _declared_default(entry)
         known = result.get(name)
-        if literals and (known is None or known[1] != "set"):
-            result[name] = (literals[0], "default")
+        if default and (known is None or known[1] != "set"):
+            result[name] = (default, "default")
     return result
+
+
+def _declared_default(prop_entry):
+    """Default literal of a declared enum property: the declared default member, else the first."""
+    declared = prop_entry.get("enumerationDefault")
+    if declared:
+        return declared
+    literals = prop_entry.get("enumerationValues") or []
+    return literals[0] if literals else ""
 
 
 def _plain_value(value):
@@ -313,7 +327,7 @@ def _shape_of(entry, include_noise):
             "type": ("enum %s [%s]" % (prop.get("type"), "|".join(literals))) if literals
                     else prop.get("type"),
             "cardinality": "",
-            "default": literals[0] if literals else "",
+            "default": _declared_default(prop),
         })
     for kind, key in (("ref", "references"), ("child", "children")):
         for link in entry.get(key) or []:

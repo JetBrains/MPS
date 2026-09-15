@@ -1092,6 +1092,102 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `print_node_json emits an enum property at its default with the isDefault flag`() {
+        // A property holding its enumeration's default stores nothing, and that is exactly the case
+        // that used to disappear from the printout (study defects D5/D12). The node factory may
+        // pre-set such a property, so the test deletes it to reach the "genuinely unset" state
+        // instead of depending on what the factory did.
+        val ref = createConceptRoot("DefaultPropProbe")
+        val (propertyName, defaultLiteral) = unsetDefaultedEnumProperty(ref)
+
+        val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = false) })
+        val properties = printed.getAsJsonArray("properties").associate { entry ->
+            entry.asJsonObject.get("name").asString to entry.asJsonObject
+        }
+
+        val entry = properties[propertyName]
+        assertNotNull("an unset defaulted enum property must be printed, not omitted: $printed", entry)
+        assertEquals("the default literal is the printed value", defaultLiteral, entry!!.get("value").asString)
+        assertTrue("the printed default must be flagged: $entry", entry.get("isDefault").asBoolean)
+        for ((name, property) in properties) {
+            if (!property.has("isDefault")) continue
+            assertTrue(
+                "only an enum property can be flagged as holding its default, but '$name' is ${property.get("type")}",
+                property.get("type").asString.startsWith("enum:"),
+            )
+        }
+    }
+
+    @Test
+    fun `a printout carrying a defaulted enum property is still accepted as a blueprint`() {
+        // Round-trip guard for the flag above: the mutation tools consume printouts, and the
+        // default literal's name is a value the property writer accepts.
+        val ref = createConceptRoot("RoundTripProbe")
+        unsetDefaultedEnumProperty(ref)
+        val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = false) })
+        assertTrue(
+            "test precondition: the printout must carry a flagged default",
+            printed.getAsJsonArray("properties").any { it.asJsonObject.has("isDefault") },
+        )
+
+        val response = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, printed.toString(), dryRun = true)
+        }
+        val data = expectOk(response)
+        assertTrue("the printout must validate as a blueprint: $response", data.get("dryRun").asBoolean)
+    }
+
+    // ── update_node ADD CHILD: responseDetail ────────────────────────────────────────────
+
+    @Test
+    fun `update_node ADD CHILD returns the full envelope by default`() {
+        val parentRef = createConceptRoot("AddChildFull")
+        val response = addPropertyChildResponse(parentRef, "pFull", responseDetail = null)
+
+        val data = expectOk(response)
+        assertTrue("the default response is the full node envelope: $response", data.has("conceptDoc"))
+        assertTrue("the full envelope reports the landing index: $response", data.has("index"))
+    }
+
+    @Test
+    fun `update_node ADD CHILD responseDetail summary returns the compact form`() {
+        val parentRef = createConceptRoot("AddChildSummary")
+        val response = addPropertyChildResponse(parentRef, "pSummary", responseDetail = "summary")
+
+        val data = expectOk(response)
+        assertEquals(1, data.get("added").asInt)
+        val nodes = data.getAsJsonArray("nodes").map { it.asJsonObject }
+        assertEquals(1, nodes.size)
+        assertEquals(
+            "a summary entry is {name, reference, concept}: ${nodes.first()}",
+            setOf("name", "reference", "concept"), nodes.first().keySet(),
+        )
+        assertEquals("pSummary", nodes.first().get("name").asString)
+        assertFalse("the summary must drop conceptDoc: $data", data.has("conceptDoc"))
+        assertTrue("the summary must keep the fix-references counters: $data", data.has("fixReferences"))
+
+        readOnRepo {
+            val child = resolveNode(parentRef).children.singleOrNull { it.name == "pSummary" }
+            assertNotNull("the child must really have been added: $response", child)
+        }
+    }
+
+    @Test
+    fun `update_node ADD CHILD rejects an unknown responseDetail before mutating`() {
+        val parentRef = createConceptRoot("AddChildBadDetail")
+        val response = addPropertyChildResponse(parentRef, "pBad", responseDetail = "brief")
+
+        val error = expectErr(response)
+        assertTrue("the error must list the allowed values: $error", error.contains("summary") && error.contains("full"))
+        readOnRepo {
+            assertTrue(
+                "a rejected responseDetail must not add anything: $error",
+                resolveNode(parentRef).children.none { it.name == "pBad" },
+            )
+        }
+    }
+
+    @Test
     fun `print_node_json returns NOT_FOUND envelope for unknown reference`() {
         val response = runTool(toolset) {
             it.mps_mcp_print_node("r:00000000-0000-0000-0000-000000000000(ghost)/0", deep = false)
@@ -1139,6 +1235,81 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `check_root_node_problems on a clean model reports the scope and the roots it checked`() {
+        // R2 / study defect D7: agents re-checked every root because the model-level answer never
+        // said what it covered. A model reference now sweeps every root and states the coverage.
+        val solution = createSolution()
+        val emptyModel = createModel(solution, "test.model.clean${System.nanoTime()}")
+
+        val response = runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(emptyModel)) }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("no problems found", envelope.get("data").asString)
+        val details = envelope.getAsJsonObject("details")
+        assertNotNull("the clean model answer must carry coverage details: $response", details)
+        assertEquals("model", details.get("scope").asString)
+        assertEquals("an empty model has no roots to check", 0, details.get("rootsChecked").asInt)
+    }
+
+    @Test
+    fun `check_root_node_problems on a model lists the offending root under roots`() {
+        val conceptRef = createConceptRoot("ModelScopeProblem")
+        clearConceptId(conceptRef)
+        val rootCount = readOnRepo { structureModel.rootNodes.count() }
+
+        val response = runTool(toolset) { it.mps_mcp_check_root_node_problems(structureModelRef) }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        val details = envelope.getAsJsonObject("details")
+        assertEquals("model", details.get("scope").asString)
+        assertEquals(rootCount, details.get("rootsChecked").asInt)
+
+        val report = payloadObjectFromOkData(response)
+        assertTrue("the model report must keep the model fields: $report", report.has("name") && report.has("problems"))
+        val roots = report.getAsJsonArray("roots").map { it.asJsonObject }
+        val entry = roots.singleOrNull { it.get("root").asString == conceptRef }
+        assertNotNull("the root with the cleared conceptId must be listed: $report", entry)
+        assertEquals("ModelScopeProblem", entry!!.get("name").asString)
+        assertEquals("ConceptDeclaration", entry.get("concept").asString)
+        assertTrue("the entry must tally its problems: $entry", entry.get("errors").asInt >= 1)
+        assertTrue(
+            "onlyNodesWithProblems=true must attach the per-node list: $entry",
+            entry.getAsJsonArray("nodes").size() >= 1,
+        )
+    }
+
+    @Test
+    fun `check_root_node_problems perRoot lists every root of the model including clean ones`() {
+        val brokenRef = createConceptRoot("PerRootBroken")
+        clearConceptId(brokenRef)
+        val otherRef = createConceptRoot("PerRootOther")
+        val rootCount = readOnRepo { structureModel.rootNodes.count() }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true)
+        }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals(rootCount, envelope.getAsJsonObject("details").get("rootsChecked").asInt)
+
+        val entries = payloadArrayFromOkData(response).map { it.asJsonObject }
+        assertEquals("perRoot must answer for every root, clean ones included", rootCount, entries.size)
+        for (entry in entries) {
+            assertEquals(
+                "a perRoot entry must be {root, name, concept, errors, warnings}: $entry",
+                setOf("root", "name", "concept", "errors", "warnings"), entry.keySet(),
+            )
+        }
+        val refs = entries.map { it.get("root").asString }.toSet()
+        assertTrue("both roots must be covered: $refs", refs.containsAll(setOf(brokenRef, otherRef)))
+        val broken = entries.single { it.get("root").asString == brokenRef }
+        assertTrue("the broken root must report at least one error: $broken", broken.get("errors").asInt >= 1)
+    }
+
+    @Test
     fun `check_root_node_problems returns NOT_FOUND envelope for unresolvable input`() {
         val response = runTool(toolset) {
             it.mps_mcp_check_root_node_problems(
@@ -1150,6 +1321,68 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Deletes the value of one enum property of [ref] whose enumeration declares a default member,
+     * and returns its name together with that default literal's name. Deleting is what puts the
+     * property into the "MPS stores nothing" state the printout has to reconstruct.
+     */
+    private fun unsetDefaultedEnumProperty(ref: String): Pair<String, String> {
+        val candidate = readOnRepo {
+            resolveNode(ref).concept.properties
+                .mapNotNull { prop ->
+                    val enumeration = prop.type as? org.jetbrains.mps.openapi.language.SEnumeration
+                        ?: return@mapNotNull null
+                    val default = enumeration.default ?: return@mapNotNull null
+                    prop.name to (default.name ?: default.presentation)
+                }
+                .firstOrNull()
+        }
+        assertNotNull(
+            "test precondition: the concept must declare an enum property whose enumeration has a default member",
+            candidate,
+        )
+        val (propertyName, defaultLiteral) = candidate!!
+        val response = runTool(toolset) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY,
+                properties = listOf(listOf(ref, propertyName, null)),
+            )
+        }
+        assertTrue(
+            "deleting '$propertyName' must succeed: $response",
+            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean,
+        )
+        return propertyName to defaultLiteral
+    }
+
+    /** Blanks the `conceptId` of the concept at [conceptRef] to provoke the missing-id checker error. */
+    private fun clearConceptId(conceptRef: String) {
+        executeCommand {
+            val node = resolveNode(conceptRef)
+            val prop = node.concept.properties.first { it.name == "conceptId" }
+            node.setProperty(prop, null)
+        }
+    }
+
+    /** Raw `ADD CHILD` response for a `PropertyDeclaration` child, with an optional `responseDetail`. */
+    private fun addPropertyChildResponse(parentRef: String, propertyName: String, responseDetail: String?): String {
+        val childJson = """
+            {
+              "concept": "$propertyDeclarationFqn",
+              "properties": [ { "name": "name", "value": "$propertyName" } ]
+            }
+        """.trimIndent()
+        return runTool(toolset) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD,
+                nodeReference = parentRef,
+                childRole = "propertyDeclaration",
+                childJson = childJson,
+                responseDetail = responseDetail,
+            )
+        }
+    }
 
     /** Adds a `PropertyDeclaration` child with the given name and primitive type to the parent root. */
     private fun addPropertyChild(parentRef: String, propertyName: String, type: String) {

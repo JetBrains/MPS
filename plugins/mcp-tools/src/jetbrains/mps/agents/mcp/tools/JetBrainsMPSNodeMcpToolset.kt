@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
@@ -592,22 +593,24 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
+        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
+        A **model reference is exhaustive and is the preferred scope**: it validates the model itself (imports, used languages, devkits) AND runs the full checker stack on every root, so there is no need to follow up with a per-root check. Both the clean and the problem answer carry `details.scope:"model"` and `details.rootsChecked:<N>` stating the coverage; the problem report is the model object plus a `roots` array, one entry per root with problems (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` per `onlyNodesWithProblems`). Pass `perRoot=true` to get `data` as one line per root instead — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — which replaces N single-root calls with one. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
         @McpDescription("Persistent form of SNodeReference or SModelReference") nodeReference: String,
         @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true,
         @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false,
-        @McpDescription("Inline the problem report in `data` when it is at most this many characters; larger reports are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+        @McpDescription("Inline the problem report in `data` when it is at most this many characters; larger reports are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        @McpDescription("Model references only: if true, `data` is one compact entry per root — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — instead of the problem tree (default = false). Ignored for a node reference.") perRoot: Boolean = false
     ): String {
         return withMpsProject("Checking MPS problems") { mpsProject ->
             // Auto-apply mutates the model, so it needs a write command; the default (report-only)
             // mode keeps the read wrapper to avoid needless write locks.
             if (autoApplyQuickFixes) {
-                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes) }
+                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot) }
             } else {
-                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes) }
+                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot) }
             }
         }
     }
@@ -618,6 +621,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         onlyNodesWithProblems: Boolean,
         applyFixes: Boolean,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        perRoot: Boolean = false,
     ): String {
         val repo = mpsProject.repository
         val host = mpsProject.platform
@@ -724,27 +728,72 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             }
             val model = sModelRef?.resolve(repo)
             return if (model != null) {
-                val problems = mutableListOf<ModelReportItem>()
-                ModelValidator(host, model).validate({ problems.add(it) }, monitor)
+                val modelProblems = mutableListOf<ModelReportItem>()
+                ModelValidator(host, model).validate({ modelProblems.add(it) }, monitor)
 
-                val modelBranchWarnings = if (applyFixes) {
-                    listOf("autoApplyQuickFixes applies only to node references; ignored for a model reference")
-                } else {
-                    emptyList()
+                // ModelValidator only inspects model-level metadata (imports, used languages, devkits,
+                // aspect/generator sanity) — it never looks at the roots. Sweeping every root through
+                // the same checkers the node branch runs is what makes the model-scope answer
+                // exhaustive, which is what `details.rootsChecked` states and what spares agents the
+                // per-root re-check they were doing out of distrust (study hotspot 2, defect D7).
+                val roots = model.rootNodes.toList()
+                val rootProblems = roots.map { runRootCheckers(mpsProject, it, repo) }
+
+                val warnings = mutableListOf<String>()
+                if (applyFixes) {
+                    warnings.add("autoApplyQuickFixes applies only to node references; ignored for a model reference")
                 }
-                if (problems.isEmpty()) {
-                    okJson(JsonPrimitive("no problems found"), warnings = modelBranchWarnings)
+                val details = mutableMapOf<String, Any?>("scope" to "model", "rootsChecked" to roots.size)
+
+                if (perRoot) {
+                    val perRootArray = JsonArray()
+                    for ((index, root) in roots.withIndex()) {
+                        perRootArray.add(rootProblemSummary(root, rootProblems[index]))
+                    }
+                    if (modelProblems.isNotEmpty()) {
+                        details["modelProblems"] = modelProblems.size
+                        warnings.add(
+                            "The model itself has ${modelProblems.size} problem(s) (imports / used languages / devkits); " +
+                                "re-run with perRoot=false to see them"
+                        )
+                    }
+                    finalizeResult(perRootArray.toString(), maxInlineBytes, details, warnings)
                 } else {
-                    if (applyFixes) {
-                        finalizeResult(modelWithProblemsToJson(model, problems, mpsProject), maxInlineBytes,
-                            details = mapOf("warning" to modelBranchWarnings.first()))
+                    val problemRoots = JsonArray()
+                    for ((index, root) in roots.withIndex()) {
+                        val problems = rootProblems[index]
+                        if (!hasAnyProblems(root, problems)) continue
+                        problemRoots.add(rootProblemSummary(root, problems).apply {
+                            if (onlyNodesWithProblems) {
+                                add("nodes", nodeWithProblemsListJsonArray(root, problems, mpsProject))
+                            } else {
+                                add("tree", nodeWithProblemsJsonObject(root, problems, true, mpsProject))
+                            }
+                        })
+                    }
+                    if (modelProblems.isEmpty() && problemRoots.isEmpty()) {
+                        okJson(JsonPrimitive("no problems found"), warnings = warnings, details = details)
                     } else {
-                        finalizeResult(modelWithProblemsToJson(model, problems, mpsProject), maxInlineBytes)
+                        val report = modelWithProblemsJsonObject(model, modelProblems, mpsProject)
+                        report.add("roots", problemRoots)
+                        finalizeResult(report.toString(), maxInlineBytes, details, warnings)
                     }
                 }
             } else {
                 errJson("Reference '$nodeReference' resolved to neither node nor model", McpErrorCode.NOT_FOUND)
             }
+        }
+    }
+
+    /** `{root, name, concept, errors, warnings}` for one root of a model-scope problem check. */
+    private fun rootProblemSummary(root: SNode, problems: Map<SNode, List<NodeReportItem>>): JsonObject {
+        val counts = problemCounts(root, problems)
+        return jsonObject {
+            addProperty("root", PersistenceFacade.getInstance().asString(root.reference))
+            addProperty("name", root.name ?: root.presentation)
+            addProperty("concept", root.concept.name)
+            addProperty("errors", counts.errors)
+            addProperty("warnings", counts.warnings)
         }
     }
 
@@ -788,7 +837,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
           childRole: containment role name.
           childJson: JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. For large blueprints prefer the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
           position: Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. A `position` at or beyond the current child count is clamped to an append (not rejected); a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.
-          Returns the inserted node's info envelope (`data.parentReference` carries the parent ref, `data.index` the actual landing index — useful when an over-range `position` was clamped).
+          Returns the inserted node's info envelope (`data.parentReference` carries the parent ref, `data.index` the actual landing index — useful when an over-range `position` was clamped). `responseDetail="summary"` answers with `{added, nodes:[{name, reference, concept}], fixReferences}` instead (no conceptDoc, no index); `full` is the default because one call adds one child.
 
         SET × CHILD — Replace an existing child node with a new node described by a JSON blueprint. Deletes the child if `childJson = null`.
           childNodeRef: persistent ref of the child to replace.
@@ -819,12 +868,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("If true, validate without mutating (ADD CHILD, SET CHILD only). Default: false.") dryRun: Boolean = false,
         @McpDescription("Batch triplets [nodeRef, propertyName, value] for SET PROPERTY") properties: List<List<String?>>? = null,
         @McpDescription("Batch triplets [nodeRef, referenceRole, targetNodeRefOrName] for SET REFERENCE") references: List<List<String?>>? = null,
+        @McpDescription("ADD CHILD only: `summary` for `{added, nodes:[{name, reference, concept}], fixReferences}`, `full` (the default for a single child) for the complete node-info envelope with `index`.") responseDetail: String? = null,
     ): String {
         val op = resolveOperationOrNull<NodeUpdateOperation>(operation)
             ?: return unknownOperation<NodeUpdateOperation>(operation)
         val k = resolveOperationOrNull<NodeUpdateKind>(kind)
             ?: return unknownOperation<NodeUpdateKind>(kind)
-        return mps_mcp_update_node(op, k, nodeReference, childRole, position, childJson, childNodeRef, dryRun, properties, references)
+        return mps_mcp_update_node(op, k, nodeReference, childRole, position, childJson, childNodeRef, dryRun, properties, references, responseDetail)
     }
 
     /**
@@ -843,6 +893,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         dryRun: Boolean = false,
         properties: List<List<String?>>? = null,
         references: List<List<String?>>? = null,
+        responseDetail: String? = null,
     ): String {
         return when (kind) {
             NodeUpdateKind.CHILD -> when (operation) {
@@ -850,7 +901,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     val parentRef = nodeReference ?: return errJson("nodeReference is required for ADD CHILD")
                     val role = childRole ?: return errJson("childRole is required for ADD CHILD")
                     val json = childJson ?: return errJson("childJson is required for ADD CHILD")
-                    update_node_child(parentRef, role, json, null, position, dryRun)
+                    update_node_child(parentRef, role, json, null, position, dryRun, responseDetail)
                 }
                 NodeUpdateOperation.SET -> {
                     val childRef = childNodeRef ?: return errJson("childNodeRef is required for SET CHILD")
@@ -916,10 +967,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         childJson: String?,
         childToReplaceOrDeleteRef: String?,
         position: Int?,
-        dryRun: Boolean = false
+        dryRun: Boolean = false,
+        responseDetail: String? = null
     ): String = withMpsProject("Updating MPS node child") { mpsProject ->
         val actualJson = readNodeJsonOrFile(childJson, dryRun)
-        update_node_child(mpsProject, nodeReference, childRole, actualJson, childToReplaceOrDeleteRef, position, dryRun)
+        update_node_child(mpsProject, nodeReference, childRole, actualJson, childToReplaceOrDeleteRef, position, dryRun, responseDetail)
     }
 
     private suspend fun update_node_reference(

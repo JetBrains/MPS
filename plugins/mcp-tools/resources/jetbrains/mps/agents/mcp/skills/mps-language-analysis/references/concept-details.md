@@ -32,7 +32,7 @@ Treat the suggestion list as a **candidate set**, not a ranked answer. For free-
 
 ## Detail level, one-hop closure and inlining
 
-- `detail = "shape"` returns only the structural projection of each concept — `{qualifiedName, conceptReference, isAbstract, isRootable, properties: [{name, type, enumerationValues?}], references: [{name, targetConcept, cardinality}], children: [{name, targetConcept, cardinality}]}` — with no docs, no `sampleNode` and no aspect details. This is everything needed to author a node of the concept; prefer it over reducing the full record yourself. `detail = "full"` (default) returns the schema below.
+- `detail = "shape"` returns only the structural projection of each concept — `{qualifiedName, conceptReference, isAbstract, isRootable, properties: [{name, type, enumerationValues?, enumerationDefault?}], references: [{name, targetConcept, cardinality}], children: [{name, targetConcept, cardinality}]}` — with no docs, no `sampleNode` and no aspect details. This is everything needed to author a node of the concept; prefer it over reducing the full record yourself. `detail = "full"` (default) returns the schema below.
 - `includeChildRoleConcepts = true` additionally returns every concept that is the target of a child or reference role of the requested concepts (one hop, deduplicated, excluding the requested concepts, at the same detail level). `data` then becomes `{"concepts": [...], "relatedConcepts": [...]}` instead of the bare array — one call instead of a follow-up lookup per role target. Pair it with `detail = "shape"` to keep the payload small.
 - `maxInlineBytes` (default 20000) is the inline/temp-file cut-off: at or below it, `data` is the JSON itself; above it, `data` is a temp-file path whose file holds the same `{ok, data}` envelope.
 
@@ -92,6 +92,10 @@ Each item in these three arrays carries the identifiers needed to reference the 
   featureId,                // <langUUID>/<conceptId>/<featureId> — the encoded id triple
   sourceNode,               // declaration node's persistent ref, e.g. r:...(...structure)/<id>
   enumerationValues: [...], // properties with an enum type only
+  enumerationDefault,       // enum properties whose enumeration declares a default member: that
+                            // member's name. A property sitting at the default stores nothing, so
+                            // `mps_mcp_print_node` reports this value with `isDefault: true`, and
+                            // an absent value means the default, not "missing".
   doc, deprecated           // when present on the declaration
 }
 ```

@@ -437,6 +437,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 val values = JsonArray()
                 for (literal in type.literals) values.add(literal.name ?: literal.presentation)
                 propObj.add("enumerationValues", values)
+                addEnumerationDefault(propObj, type)
             }
             properties.add(propObj)
         }
@@ -444,6 +445,19 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         obj.add("references", linkShapeJsonArray(concept.referenceLinks))
         obj.add("children", linkShapeJsonArray(concept.containmentLinks))
         return obj
+    }
+
+    /**
+     * Names the enumeration's default member next to `enumerationValues`, as `enumerationDefault`.
+     * A sibling field rather than turning the array into objects, so existing consumers of the plain
+     * string array keep working. Omitted when the declaration names no default member — the literal
+     * order alone does not identify it, and readers used to guess the first literal (study defects
+     * D5/D12). A property holding the default stores nothing, so this is also the value
+     * `mps_mcp_print_node` reports with `isDefault:true`.
+     */
+    private fun addEnumerationDefault(target: JsonObject, type: SEnumeration) {
+        val default = type.default ?: return
+        target.addProperty("enumerationDefault", default.name ?: default.presentation)
     }
 
     private fun linkShapeJsonArray(links: Collection<SAbstractLink>): JsonArray {
@@ -509,6 +523,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     values.add(literal.name ?: literal.presentation)
                 }
                 obj.add("enumerationValues", values)
+                addEnumerationDefault(obj, type)
             }
             result.add(obj)
         }

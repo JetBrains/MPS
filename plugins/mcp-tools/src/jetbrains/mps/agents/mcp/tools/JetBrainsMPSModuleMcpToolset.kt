@@ -237,7 +237,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
     @McpTool
     @McpDescription("""
-        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`). See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
+        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`) plus `data.models` — `[{name, reference, aspect}]` for every model the module already owns. A new Language comes with its aspect models (`structure`, ...) and a new Generator with its `templates@generator` model, so use those references instead of calling `mps_mcp_create_model` for them again. See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
     """
     )
     suspend fun mps_mcp_create_module(
@@ -634,9 +634,43 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         val finalCreated = created
         when {
             finalError != null -> errJson(finalError)
-            finalCreated != null -> okJson(moduleInfoJson(mpsProject, finalCreated))
+            finalCreated != null -> okJson(executeShortReadOnEdt(mpsProject) {
+                moduleInfoJsonObject(mpsProject, finalCreated).apply {
+                    add("models", createdModelsJsonArray(finalCreated))
+                }
+            })
             else -> errJson("Module creation failed for unknown reason")
         }
+    }
+
+    /**
+     * The models the new module already owns, `[{name, reference, aspect}]`. A Language is born with
+     * its aspect models and a Generator with its `templates@generator` model, and agents that could
+     * not see them from the create result tried to create them again, which fails with "No suitable
+     * model root found ... to create model" (study defect D6).
+     *
+     * `aspect` is the model's stereotype when it has one (`generator`, `tests`, ...), otherwise the
+     * part of the name following the module name (`structure`, `editor`, ...), and empty for a model
+     * whose name does not extend the module's.
+     */
+    private fun createdModelsJsonArray(module: SModule): JsonArray {
+        val result = JsonArray()
+        val moduleName = module.moduleName ?: ""
+        for (model in module.models) {
+            val stereotype = model.name.stereotype
+            val longName = model.name.longName
+            val aspect = when {
+                stereotype.isNotEmpty() -> stereotype
+                moduleName.isNotEmpty() && longName.startsWith("$moduleName.") -> longName.substring(moduleName.length + 1)
+                else -> ""
+            }
+            result.add(jsonObject {
+                addProperty("name", model.name.value)
+                addProperty("reference", PersistenceFacade.getInstance().asString(model.reference))
+                addProperty("aspect", aspect)
+            })
+        }
+        return result
     }
 
     @McpTool

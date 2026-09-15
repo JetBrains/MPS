@@ -9,6 +9,7 @@ import jetbrains.mps.smodel.Generator
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelStereotype
 import org.jetbrains.mps.openapi.module.SDependencyScope
+import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -384,6 +385,37 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     // ── create_module variants ────────────────────────────────────────────────────────────
+
+    @Test
+    fun `create_module lists the models the new language already owns`() {
+        // R8b / study defect D6: both greenfield workers called mps_mcp_create_model for
+        // `<lang>.structure` after create_module had already produced it, and got
+        // "No suitable model root found ... to create model".
+        val langName = "test.models.lang${System.nanoTime()}"
+        val response = runTool(toolset) {
+            it.mps_mcp_create_module("language", langName, freshPathInProject(langName))
+        }
+
+        val data = expectOk(response)
+        val models = data.getAsJsonArray("models").map { it.asJsonObject }
+        assertFalse("a new language must report its aspect models: $response", models.isEmpty())
+        for (model in models) {
+            assertEquals(
+                "a models entry is {name, reference, aspect}: $model",
+                setOf("name", "reference", "aspect"), model.keySet(),
+            )
+        }
+        val structure = models.singleOrNull { it.get("aspect").asString == "structure" }
+        assertNotNull("the structure aspect model must be listed: $models", structure)
+        assertEquals("$langName.structure", structure!!.get("name").asString)
+
+        readOnRepo {
+            val lang = myProject.projectModules.single { it.moduleName == langName }
+            val listed = models.map { it.get("reference").asString }.toSet()
+            val live = lang.models.map { PersistenceFacade.getInstance().asString(it.reference) }.toSet()
+            assertEquals("every listed reference must be a real model of the module", live, listed)
+        }
+    }
 
     @Test
     fun `language creation with companions registers parent generator runtime and sandbox`() {

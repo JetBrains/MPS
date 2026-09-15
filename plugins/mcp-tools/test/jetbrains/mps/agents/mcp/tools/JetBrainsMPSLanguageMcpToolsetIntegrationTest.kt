@@ -78,8 +78,10 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("ConceptDeclaration must expose properties in the shape: $concept", properties.isNotEmpty())
         for (property in properties) {
             assertTrue(
-                "a shape property must be {name, type} (+ enumerationValues for an enum); got=$property",
-                property.keySet().all { it == "name" || it == "type" || it == "enumerationValues" },
+                "a shape property must be {name, type} (+ enumerationValues/enumerationDefault for an enum); got=$property",
+                property.keySet().all {
+                    it == "name" || it == "type" || it == "enumerationValues" || it == "enumerationDefault"
+                },
             )
         }
         for (block in listOf("references", "children")) {
@@ -89,6 +91,55 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                     setOf("name", "targetConcept", "cardinality"), link.keySet(),
                 )
             }
+        }
+    }
+
+    @Test
+    fun `get-concept-details names the default member of an enum property`() {
+        // R8b / study defects D5+D12: `enumerationValues` alone does not say which literal a
+        // property holding the default is at, and readers guessed the first one.
+        // `LinkDeclaration.metaClass` is a bundled enum property whose enumeration declares a
+        // default, so the expectation is taken from the loaded language, not hard-coded.
+        val conceptFqn = "jetbrains.mps.lang.structure.structure.LinkDeclaration"
+        val expected = readOnRepo {
+            val concept = MetaAdapterFactory.getConcept(
+                0xc72da2b97cce4447uL.toLong(), 0x8389f407dc1158b7uL.toLong(), 0xf979bd086aL,
+                conceptFqn,
+            )
+            concept.properties
+                .mapNotNull { prop ->
+                    val enumeration = prop.type as? org.jetbrains.mps.openapi.language.SEnumeration ?: return@mapNotNull null
+                    val default = enumeration.default ?: return@mapNotNull null
+                    prop.name to (default.name ?: default.presentation)
+                }
+                .toMap()
+        }
+        assertTrue(
+            "test precondition: LinkDeclaration must declare an enum property with a default member",
+            expected.isNotEmpty(),
+        )
+
+        for (detail in listOf("full", "shape")) {
+            val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+                it.mps_mcp_get_concept_details(conceptRefs = listOf(conceptFqn), detail = detail)
+            }
+            val properties = payloadArrayFromOkData(response).single().asJsonObject
+                .getAsJsonArray("properties")
+                .associate { entry -> entry.asJsonObject.get("name").asString to entry.asJsonObject }
+            for ((name, default) in expected) {
+                val entry = properties[name]
+                assertTrue("detail=$detail must list the enum property '$name': $properties", entry != null)
+                assertTrue("detail=$detail must keep enumerationValues: $entry", entry!!.has("enumerationValues"))
+                assertEquals(
+                    "detail=$detail must name the declared default member of '$name'",
+                    default, entry.get("enumerationDefault").asString,
+                )
+            }
+            val nonEnum = properties.values.firstOrNull { !it.has("enumerationValues") }
+            assertTrue(
+                "a non-enum property must not carry enumerationDefault: $nonEnum",
+                nonEnum == null || !nonEnum.has("enumerationDefault"),
+            )
         }
     }
 

@@ -4,6 +4,8 @@ import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSyntaxException
 import jetbrains.mps.errors.MessageStatus
+import jetbrains.mps.errors.item.FlavouredItem
+import jetbrains.mps.errors.item.IssueKindReportItem
 import jetbrains.mps.errors.item.NodeReportItem
 import jetbrains.mps.java.core.newparser.FeatureKind
 import jetbrains.mps.persistence.PersistenceRegistry
@@ -18,6 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
+import org.junit.Assume
 import org.junit.BeforeClass
 import org.junit.Test
 import org.jetbrains.mps.openapi.language.SAbstractConcept
@@ -80,6 +83,14 @@ class AbstractOpsPropertyProblemsTest {
             nodeWithProblemsToJson(node, problems, deep = false)
 
         fun readJsonOrFileForTest(jsonOrPath: String?, dryRun: Boolean = false) = readJsonOrFile(jsonOrPath, dryRun)
+
+        fun nodeHierarchyToJsonForTest(node: SNode, deep: Boolean = false) = nodeHierarchyToJson(node, deep)
+
+        /** `(errors, warnings)` — unwrapped because [AbstractOps.ProblemCounts] is protected. */
+        fun problemCountsForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>): Pair<Int, Int> {
+            val counts = problemCounts(node, problems)
+            return counts.errors to counts.warnings
+        }
 
         fun resolveNodeReferenceForTest(repository: org.jetbrains.mps.openapi.module.SRepository, nodeRefStr: String) =
             resolveNodeReference(repository, nodeRefStr)
@@ -153,6 +164,111 @@ class AbstractOpsPropertyProblemsTest {
 
         val json = ops.nodeWithProblemsToJsonForTest(node, problems)
         assertTrue(json.contains("Empty enumeration property"))
+    }
+
+    @Test
+    fun printoutReportsAnEnumDefaultWithAFlag() {
+        // D5/D12: a property holding its enumeration's default stores nothing, so the printout used
+        // to omit it (or show ""), and readers counted it as missing data.
+        val property = TestEnumProperty()
+        val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
+        node.setId(SNodeId.Regular(20L))
+
+        val json = ops.nodeHierarchyToJsonForTest(node)
+
+        assertTrue("the default literal must be printed as the value: $json", json.contains("\"value\":\"DEFAULT\""))
+        assertTrue("the printed default must carry the flag: $json", json.contains("\"isDefault\":true"))
+    }
+
+    @Test
+    fun printedEnumDefaultIsAcceptedBackByThePropertyWriter() {
+        // Blueprint round-trip: whatever the printer puts in `value` must be writable again.
+        val property = TestEnumProperty()
+        val printed = jetbrains.mps.smodel.SNode(TestConcept(listOf(property))).also { it.setId(SNodeId.Regular(21L)) }
+        val json = JsonParser.parseString(ops.nodeHierarchyToJsonForTest(printed)).asJsonObject
+        val value = json.getAsJsonArray("properties").single().asJsonObject.get("value").asString
+
+        val target = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
+        target.setId(SNodeId.Regular(22L))
+        nodeOps.setPropertyForTest(target, property, value)
+
+        val stored = SNodeAccessUtil.getPropertyValue(target, property)
+        assertTrue("printed default must be stored back as a literal, got: $stored", stored is TestEnumLiteral)
+        assertEquals("DEFAULT", (stored as TestEnumLiteral).name)
+    }
+
+    @Test
+    fun printoutKeepsASetEnumValueUnflagged() {
+        // The flag must follow the *stored* value: TestEnumeration renders to null (like a property
+        // whose declaration cannot render its value, e.g. an unresolved concept), so this property
+        // prints as absent — but never as the default, because MPS does hold a value for it.
+        val property = TestEnumProperty()
+        val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
+        node.setId(SNodeId.Regular(23L))
+        TEST_ACCESS_UTIL.setRawProperty(node, property, TestEnumLiteral("OTHER"))
+
+        val json = ops.nodeHierarchyToJsonForTest(node)
+
+        assertFalse("an explicitly set value must not be flagged as a default: $json", json.contains("\"isDefault\""))
+        assertFalse("the stored value must not be replaced by the default literal: $json", json.contains("DEFAULT"))
+    }
+
+    @Test
+    fun printoutKeepsARenderableSetEnumValueUnflagged() {
+        // Same rule for a property whose data type does render its value: the printed value is the
+        // stored one and carries no flag.
+        val property = TestPresentationEnumProperty()
+        val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
+        node.setId(SNodeId.Regular(25L))
+        TEST_ACCESS_UTIL.setRawProperty(node, property, TestPresentationLiteral("GREEN_PEAR", "Green Pear"))
+
+        val json = ops.nodeHierarchyToJsonForTest(node)
+
+        assertTrue("the stored value must be printed: $json", json.contains("\"value\":\"Green Pear\""))
+        assertFalse("an explicitly set value must not be flagged as a default: $json", json.contains("\"isDefault\""))
+    }
+
+    @Test
+    fun problemCountsTalliesCheckerItemsAndSoftProblemsBySeverity() {
+        // The per-root tallies of a model-scope check (details.rootsChecked / perRoot) must count
+        // exactly what the report for that root would print: checker items by severity, plus the
+        // synthesized "empty enumeration property" error.
+        val property = TestEnumProperty()
+        val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
+        node.setId(SNodeId.Regular(24L))
+
+        val (errors, warnings) = ops.problemCountsForTest(
+            node,
+            mapOf(node to listOf(
+                stubNodeReportItem(node, MessageStatus.ERROR),
+                stubNodeReportItem(node, MessageStatus.WARNING),
+                stubNodeReportItem(node, MessageStatus.OK),
+            )),
+        )
+
+        assertEquals("one checker error + the empty-enum soft error", 2, errors)
+        assertEquals(1, warnings)
+    }
+
+    @Test
+    fun fileInputOutsideTheSystemTempDirectoryNamesTheAcceptedDirectory() {
+        // D11: the old message hinted at `File.createTempFile`, a Java hint given to a shell agent.
+        val tempDir = File(System.getProperty("java.io.tmpdir")).canonicalFile
+        val outside = File(System.getProperty("user.dir")).canonicalFile.listFiles()?.firstOrNull { it.isFile }
+        Assume.assumeTrue(
+            "needs an existing regular file outside the system temp directory",
+            outside != null && !outside.canonicalPath.startsWith(tempDir.path + File.separator),
+        )
+
+        try {
+            ops.readJsonOrFileForTest(outside!!.absolutePath)
+            fail("Expected a path outside the system temp directory to be rejected")
+        } catch (e: AbstractOps.McpInvalidRequestException) {
+            val message = e.message.orEmpty()
+            assertTrue("message must name the accepted directory: $message", message.contains(tempDir.path))
+            assertTrue("message must name the shell variables: $message", message.contains("\$TMPDIR") && message.contains("%TEMP%"))
+            assertFalse("the Java-API hint must be gone: $message", message.contains("File.createTempFile"))
+        }
     }
 
     @Test
@@ -921,6 +1037,25 @@ class AbstractOpsPropertyProblemsTest {
         } catch (_: CancellationException) {
         }
     }
+
+    /** Minimal [NodeReportItem]: [problemCounts] reads only `severity` and `message`. */
+    private class StubProblemItem(
+        private val status: MessageStatus,
+        private val text: String,
+    ) : NodeReportItem {
+        override fun getNode(): SNodeReference =
+            throw UnsupportedOperationException("problemCounts must key problems by node, not read item.node")
+        override fun getMessage(): String = text
+        override fun getSeverity(): MessageStatus = status
+        override fun getIssueKind(): IssueKindReportItem.ItemKind? = null
+        override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> = emptySet()
+    }
+
+    private fun stubNodeReportItem(
+        @Suppress("UNUSED_PARAMETER") node: SNode,
+        severity: MessageStatus,
+        message: String = "stub problem",
+    ): NodeReportItem = StubProblemItem(severity, message)
 
     private class TestConcept(
         private val properties: Collection<SProperty>,

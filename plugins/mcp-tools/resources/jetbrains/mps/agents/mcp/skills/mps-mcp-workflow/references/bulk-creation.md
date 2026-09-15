@@ -8,6 +8,10 @@
 - For nodes that are created as part of the same bulk operation, you can use their **name** as a placeholder in the `target` field. The tool will automatically resolve these "local" references once all nodes are created.
 - If automatic resolution is not possible or desired, leave the target references empty and set them later with `mps_mcp_update_node` (`SET`/`REFERENCE`) once you have discovered the IDs of the newly created nodes.
 
+From 10 roots up, a bulk insert answers with the summary `{inserted: N, roots: [{name, reference, concept}], fixReferences: {fixed, repointed, stillBroken}}` instead of one full node envelope per root (the full form used to be larger than the blueprint it answered); check `fixReferences.stillBroken` for unresolved references and pass `responseDetail="full"` only when the per-root `conceptDoc`/model/module fields are actually needed.
+
+After a bulk insert, validate with one `mps_mcp_check_root_node_problems` on the **model** reference (optionally `perRoot=true`) instead of one call per inserted root — the model scope checks every root and reports `details.rootsChecked`.
+
 ### Array vs. object — the one asymmetry
 
 - `mps_mcp_insert_root_node_from_json` (`json`) accepts **a single object or a top-level array**.

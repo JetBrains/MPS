@@ -130,6 +130,13 @@ abstract class AbstractOps : McpToolset {
         const val DEFAULT_MAX_INLINE_BYTES: Int = 20_000
 
         /**
+         * Number of top-level nodes at which a creating tool switches to the compact `summary`
+         * response unless the caller passes an explicit `responseDetail`. Public so the tool
+         * signatures and descriptions can state the same number the code uses.
+         */
+        const val SUMMARY_RESPONSE_THRESHOLD: Int = 10
+
+        /**
          * Timeout for model operations; acts as a safety net for unexpected blocking (e.g. a
          * modal dialog). Protected, not private: every EDT-dispatching tool entry point should
          * route through [withModalTimeoutOnEdt] (or [withModalTimeout] directly for a non-EDT
@@ -1333,13 +1340,31 @@ abstract class AbstractOps : McpToolset {
         val properties = JsonArray()
         for (prop in node.concept.properties) {
             val value = SNodeAccessUtil.getPropertyValue(node, prop)?.let { prop.type.toString(it) }
-            if (value.isNullOrEmpty()) continue
+            // An enum property left at its enumeration's default literal stores nothing, so it used
+            // to vanish from the printout (or print as ""), and readers counted it as missing data
+            // (study defects D5/D12). Emit the default literal's name with `isDefault:true` instead:
+            // the value is what the editor shows, and it round-trips through the blueprint-insert
+            // tools, which resolve an enum property value by literal name.
+            //
+            // "Holds the default" is decided by `hasProperty` — whether the node stores anything for
+            // the property — and not by the rendered string alone: a property MPS does hold, whose
+            // value the data type cannot render (a stale value, or any value on an unresolved
+            // concept declaration), also renders as "" and must stay unflagged. Reading the raw
+            // value cannot make that call either: for an unset enum property the accessor answers
+            // with the enumeration's own default literal rather than with null.
+            val defaultLiteral = if (value.isNullOrEmpty() && !SNodeAccessUtil.hasProperty(node, prop)) {
+                defaultEnumLiteralName(prop)
+            } else {
+                null
+            }
+            if (value.isNullOrEmpty() && defaultLiteral == null) continue
             val propDeclarationNode = prop.sourceNode?.resolve(repository)
             val propObj = JsonObject()
             propObj.addProperty("name", prop.name)
             propObj.addProperty("type", getPropertyType(prop))
             addDocAndDeprecated(propObj, getDoc(propDeclarationNode), getDeprecationInfo(propDeclarationNode))
-            propObj.addProperty("value", value)
+            propObj.addProperty("value", defaultLiteral ?: value)
+            if (defaultLiteral != null) propObj.addProperty("isDefault", true)
             properties.add(propObj)
         }
         obj.add("properties", properties)
@@ -1400,6 +1425,17 @@ abstract class AbstractOps : McpToolset {
         } else {
             type.toString()
         }
+    }
+
+    /**
+     * Name of the default literal of [prop]'s enumeration, or null when [prop] is not enum-typed or
+     * its enumeration declares no default member. MPS stores nothing for a property that holds the
+     * default, which is why printouts have to reconstruct it from the declaration.
+     */
+    protected fun defaultEnumLiteralName(prop: SProperty): String? {
+        val type = prop.type as? SEnumeration ?: return null
+        val default = type.default ?: return null
+        return default.name ?: default.presentation
     }
 
     private data class PropertyState(
@@ -1695,6 +1731,42 @@ abstract class AbstractOps : McpToolset {
             if (hasAnyProblems(child, problems)) return true
         }
         return false
+    }
+
+    /** Error/warning tallies of one subtree, as reported by [problemCounts]. */
+    protected data class ProblemCounts(val errors: Int, val warnings: Int)
+
+    /**
+     * Counts the problems [nodeWithProblemsListJsonArray] would print for [node]'s subtree, split by
+     * severity: the checker-reported items plus the two "soft" problems the formatter synthesizes
+     * (empty enumeration property / invalid property value). Counting here rather than over the
+     * rendered JSON keeps the per-root tallies of a model-scope check consistent with the report the
+     * same call would produce for that root. `info` items are not counted, matching
+     * [hasLocalProblems], which ignores them for the green/red decision.
+     */
+    protected fun problemCounts(node: SNode, problems: Map<SNode, List<NodeReportItem>>): ProblemCounts {
+        var errors = 0
+        var warnings = 0
+
+        fun visit(n: SNode) {
+            val nodeProblems = problems[n] ?: emptyList()
+            for (item in nodeProblems) {
+                when (item.severity) {
+                    MessageStatus.ERROR -> errors++
+                    MessageStatus.WARNING -> warnings++
+                    else -> {}
+                }
+            }
+            for (prop in n.concept.properties) {
+                val propertyState = getPropertyState(n, prop)
+                if (propertyState.isEmptyEnum) errors++
+                if (propertyState.isInvalid && nodeProblems.none { it.message.contains("invalid", ignoreCase = true) }) errors++
+            }
+            for (child in n.children) visit(child)
+        }
+
+        visit(node)
+        return ProblemCounts(errors, warnings)
     }
 
     protected fun nodeWithProblemsListToJson(
@@ -3238,7 +3310,8 @@ abstract class AbstractOps : McpToolset {
         if (tempDir != null && !canonicalFile.path.startsWith(tempDir.path + File.separator) && canonicalFile.path != tempDir.path) {
             throw McpInvalidRequestException(
                 "Input file path '$jsonOrPath' is not inside the system temp directory. " +
-                        "Write the JSON to a temp file (e.g. via File.createTempFile) and pass that path instead."
+                        "It must be inside the system temp directory ${tempDir.path} " +
+                        "(\$TMPDIR on macOS/Linux, %TEMP% on Windows)."
             )
         }
         val sizeBytes = file.length()

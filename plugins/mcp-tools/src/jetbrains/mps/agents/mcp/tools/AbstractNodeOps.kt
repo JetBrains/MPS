@@ -555,7 +555,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
     }
 
-    protected suspend fun update_node_child(mpsProject: MPSProject, nodeReference: String?, childRole: String?, childJson: String?, childToReplaceOrDeleteRef: String?, position: Int? = null, dryRun: Boolean = false): String {
+    protected suspend fun update_node_child(mpsProject: MPSProject, nodeReference: String?, childRole: String?, childJson: String?, childToReplaceOrDeleteRef: String?, position: Int? = null, dryRun: Boolean = false, responseDetail: String? = null): String {
         currentCoroutineContext().reportToolActivity("Updating MPS node child")
         return executeShortCommandOnEdt(mpsProject) {
             when {
@@ -564,7 +564,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 childToReplaceOrDeleteRef != null ->
                     deleteNodeChild(mpsProject, childToReplaceOrDeleteRef, dryRun)
                 nodeReference != null && childRole != null && childJson != null ->
-                    addNodeChild(mpsProject, nodeReference, childRole, childJson, position, dryRun)
+                    addNodeChild(mpsProject, nodeReference, childRole, childJson, position, dryRun, responseDetail)
                 else ->
                     errJson("Invalid parameters for child update", McpErrorCode.INVALID_REQUEST)
             }
@@ -669,7 +669,11 @@ abstract class AbstractNodeOps : AbstractOps() {
         else -> InsertIndex.At(requested)
     }
 
-    private fun addNodeChild(mpsProject: MPSProject, nodeReference: String, childRole: String, childJson: String, position: Int?, dryRun: Boolean): String {
+    private fun addNodeChild(mpsProject: MPSProject, nodeReference: String, childRole: String, childJson: String, position: Int?, dryRun: Boolean, responseDetail: String? = null): String {
+        val summarize = when (val r = resolveResponseDetail(responseDetail, 1)) {
+            is ResponseDetailResolution.Ok -> r.summary
+            is ResponseDetailResolution.Err -> return r.errJson
+        }
         val (parent, model, console) = when (val r = resolveEditableNodeAllowingConsole(mpsProject, nodeReference, { "Parent node '$it' not found" })) {
             is ConsoleAwareResolution.Ok -> Triple(r.node, r.model, r.console)
             is ConsoleAwareResolution.Err -> return r.errJson
@@ -744,6 +748,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         val fixResult = performFixReferences(mpsProject, newChild)
         val warn = persistOrRefreshConsole(model, console)
+        if (summarize) {
+            return okJson(jsonObject {
+                addProperty("added", 1)
+                add("nodes", JsonArray().apply { add(createdNodeSummaryJsonObject(newChild)) })
+                add("fixReferences", aggregateFixReferencesJsonObject(listOf(fixResult)))
+            }, warnings = listOfNotNull(warn))
+        }
         // Report the new child's actual index so a caller that overshot `position` (now clamped
         // to an append) can see where it landed.
         return okJson(withFixReferencesInfo(nodeInfoJsonObjectWithIndex(newChild, mpsProject), fixResult), warnings = listOfNotNull(warn))
@@ -900,6 +911,54 @@ abstract class AbstractNodeOps : AbstractOps() {
             else -> "1 broken reference resolved"
         }
         return FixReferencesResult(fixed = fixed, repointed = repointed, stillBroken = stillBroken, message = message)
+    }
+
+    /**
+     * Resolution of the `responseDetail` parameter shared by the node-creating tools: either the
+     * decision (summary or the full per-node envelopes) or a ready error envelope for an
+     * unrecognized literal. Validated before any mutation so a typo costs nothing.
+     *
+     * With no explicit value, a call that creates [SUMMARY_RESPONSE_THRESHOLD] or more top-level
+     * nodes answers with the summary — a 40-root bulk insert used to answer with 33 KB of node
+     * envelopes, `conceptDoc` repeated per root (study hotspot 5) — and a smaller one keeps the
+     * full envelopes. The count is the number of *top-level* nodes created (array elements), which
+     * is what drives the response size; a deep single-node blueprint stays on the full path.
+     */
+    protected sealed class ResponseDetailResolution {
+        data class Ok(val summary: Boolean) : ResponseDetailResolution()
+        data class Err(val errJson: String) : ResponseDetailResolution()
+    }
+
+    protected fun resolveResponseDetail(requested: String?, topLevelNodeCount: Int): ResponseDetailResolution {
+        val normalized = requested?.trim()?.lowercase()
+        return when {
+            normalized.isNullOrEmpty() -> ResponseDetailResolution.Ok(topLevelNodeCount >= SUMMARY_RESPONSE_THRESHOLD)
+            normalized == "summary" -> ResponseDetailResolution.Ok(true)
+            normalized == "full" -> ResponseDetailResolution.Ok(false)
+            else -> ResponseDetailResolution.Err(
+                errJson(
+                    "Invalid responseDetail '$requested'. Allowed values: summary, full",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
+        }
+    }
+
+    /** `{name, reference, concept}` — the summary entry for one newly created node. */
+    protected fun createdNodeSummaryJsonObject(n: SNode): JsonObject = jsonObject {
+        addProperty("name", n.name ?: n.presentation)
+        addProperty("reference", PersistenceFacade.getInstance().asString(n.reference))
+        addProperty("concept", n.concept.name)
+    }
+
+    /**
+     * Aggregate `fixReferences` counters for a summary response: dropping the per-node envelopes
+     * must not drop the one fact a bulk insert has to report — whether any reference is still broken.
+     */
+    protected fun aggregateFixReferencesJsonObject(results: List<FixReferencesResult>): JsonObject = jsonObject {
+        addProperty("fixed", results.sumOf { it.fixed })
+        addProperty("repointed", results.sumOf { it.repointed })
+        addProperty("stillBroken", results.sumOf { it.stillBroken })
     }
 
     /**

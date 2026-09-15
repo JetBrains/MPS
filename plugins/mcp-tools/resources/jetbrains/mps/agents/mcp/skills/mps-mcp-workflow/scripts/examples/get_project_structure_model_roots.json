@@ -14,6 +14,14 @@
         "reference": "r:3e0e0824-0a5b-408b-bd9e-70bf200ce632(mcp.study.kitchen.samples)/2518891257436048000",
         "properties": [
           {
+            "name": "unit",
+            "type": "enum:Unit",
+            "doc": "",
+            "deprecated": "false",
+            "value": "G",
+            "isDefault": true
+          },
+          {
             "name": "name",
             "type": "string",
             "doc": "",
@@ -164,6 +172,14 @@
             "doc": "",
             "deprecated": "false",
             "value": "2"
+          },
+          {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "EASY",
+            "isDefault": true
           },
           {
             "name": "name",
@@ -389,6 +405,14 @@
             "value": "6"
           },
           {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "EASY",
+            "isDefault": true
+          },
+          {
             "name": "name",
             "type": "string",
             "doc": "",
@@ -544,6 +568,14 @@
             "doc": "",
             "deprecated": "false",
             "value": "2"
+          },
+          {
+            "name": "difficulty",
+            "type": "enum:Difficulty",
+            "doc": "",
+            "deprecated": "false",
+            "value": "EASY",
+            "isDefault": true
           },
           {
             "name": "name",

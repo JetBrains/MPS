@@ -284,12 +284,13 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays insert atomically with batch rollback on failure). Returns the new node's info envelope, or an array of envelopes when the input was an array. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.
+        Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays insert atomically with batch rollback on failure). Returns the new node's info envelope, or an array of envelopes when the input was an array (`responseDetail="full"`). From 10 roots up the response defaults to `responseDetail="summary"` — `{inserted:N, roots:[{name, reference, concept}], fixReferences:{fixed, repointed, stillBroken}}`, without the per-root `conceptDoc`/`conceptReference`/model/module fields — because the full form grew larger than the blueprint it answers; pass `responseDetail="full"` to force the envelopes, or `"summary"` to get the compact form for a smaller insert. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.
     """)
     suspend fun mps_mcp_insert_root_node_from_json(
         @McpDescription("Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String,
         @McpDescription("JSON blueprint, single object or top-level array (max 4KB) OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. See `mps-node-editing` for the format and file-input semantics.") json: String,
-        @McpDescription("Optional: if true, only validate JSON and concept-role assignability without mutating the model. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false
+        @McpDescription("Optional: if true, only validate JSON and concept-role assignability without mutating the model. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false,
+        @McpDescription("Optional: `summary` for `{inserted, roots:[{name, reference, concept}], fixReferences}`, `full` for one complete node-info envelope per inserted root. Defaults to `summary` from 10 roots up and to `full` below that.") responseDetail: String? = null
     ): String {
         return withMpsProject("Inserting MPS root node from JSON") { mpsProject ->
             val actualJson = readNodeJsonOrFile(json, dryRun)
@@ -307,6 +308,10 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                 }
                 jsonElement.isJsonObject -> listOf(jsonElement.asJsonObject)
                 else -> return@withMpsProject errJson("Expected a JSON object or array, got ${jsonElement.javaClass.simpleName}", McpErrorCode.INVALID_JSON)
+            }
+            val summarize = when (val r = resolveResponseDetail(responseDetail, jsonObjects.size)) {
+                is ResponseDetailResolution.Ok -> r.summary
+                is ResponseDetailResolution.Err -> return@withMpsProject r.errJson
             }
 
             executeShortCommandOnEdt(mpsProject) {
@@ -342,6 +347,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                 }
 
                 val nodeInfos = mutableListOf<JsonObject>()
+                val fixResults = mutableListOf<FixReferencesResult>()
                 if (!dryRun) {
                     // Two-pass for batched inserts: attach every root first, then run
                     // performFixReferences. The fix-references step uses ScopeResolver, which
@@ -355,7 +361,10 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     }
                     for (newNode in preparedNodes) {
                         val fixResult = performFixReferences(mpsProject, newNode)
-                        nodeInfos.add(withFixReferencesInfo(nodeInfoJsonObject(newNode, mpsProject), fixResult))
+                        fixResults.add(fixResult)
+                        if (!summarize) {
+                            nodeInfos.add(withFixReferencesInfo(nodeInfoJsonObject(newNode, mpsProject), fixResult))
+                        }
                     }
                 }
 
@@ -366,10 +375,14 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     }, warnings = batchWarnings ?: emptyList())
                 } else {
                     saveModelAndModule(model)
-                    if (jsonObjects.size == 1) {
-                        okJson(nodeInfos.first())
-                    } else {
-                        okJson(JsonArray().apply { nodeInfos.forEach { add(it) } })
+                    when {
+                        summarize -> okJson(jsonObject {
+                            addProperty("inserted", preparedNodes.size)
+                            add("roots", JsonArray().apply { preparedNodes.forEach { add(createdNodeSummaryJsonObject(it)) } })
+                            add("fixReferences", aggregateFixReferencesJsonObject(fixResults))
+                        })
+                        jsonObjects.size == 1 -> okJson(nodeInfos.first())
+                        else -> okJson(JsonArray().apply { nodeInfos.forEach { add(it) } })
                     }
                 }
             }

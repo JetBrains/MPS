@@ -143,7 +143,8 @@
             "G",
             "ML",
             "PIECE"
-          ]
+          ],
+          "enumerationDefault": "G"
         },
         {
           "name": "shortDescription",
@@ -344,7 +345,8 @@
             "EASY",
             "MEDIUM",
             "HARD"
-          ]
+          ],
+          "enumerationDefault": "EASY"
         },
         {
           "name": "shortDescription",

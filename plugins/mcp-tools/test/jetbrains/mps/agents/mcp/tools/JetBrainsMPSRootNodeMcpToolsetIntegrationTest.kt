@@ -35,6 +35,12 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     private val conceptDeclarationFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
 
+    /** A top-level-array blueprint of named `ConceptDeclaration` roots. */
+    private fun conceptArrayJson(names: List<String>): String =
+        names.joinToString(
+            prefix = "[", postfix = "]",
+        ) { """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "$it" } ] }""" }
+
     // ── create_root_node ──────────────────────────────────────────────────────────────────
 
     @Test
@@ -215,6 +221,90 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val present = structureModel.rootNodes.mapNotNull { it.name }.toSet()
             assertTrue("both inserted roots must be present: $present", present.containsAll(setOf("A", "B")))
         }
+    }
+
+    @Test
+    fun `insert_root_node_from_json summarizes a batch of ten or more roots by default`() {
+        // R4 / study hotspot 5: the full form answered a 63 KB blueprint with 33 KB of node
+        // envelopes, `conceptDoc` repeated per root.
+        val names = (1..10).map { "BulkSummary$it" }
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, conceptArrayJson(names), dryRun = false)
+        }
+
+        val data = expectOk(response)
+        assertEquals(10, data.get("inserted").asInt)
+        val roots = data.getAsJsonArray("roots").map { it.asJsonObject }
+        assertEquals(names, roots.map { it.get("name").asString })
+        for (root in roots) {
+            assertEquals(
+                "a summary entry is {name, reference, concept}: $root",
+                setOf("name", "reference", "concept"), root.keySet(),
+            )
+        }
+        assertTrue("the summary must keep the aggregate fix-references counters: $data", data.has("fixReferences"))
+        assertEquals(0, data.getAsJsonObject("fixReferences").get("stillBroken").asInt)
+
+        readOnRepo {
+            val present = structureModel.rootNodes.mapNotNull { it.name }.toSet()
+            assertTrue("every summarized root must really exist: $present", present.containsAll(names))
+        }
+    }
+
+    @Test
+    fun `insert_root_node_from_json responseDetail full forces the per-root envelopes`() {
+        val names = (1..10).map { "BulkFull$it" }
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(
+                structureModelRef, conceptArrayJson(names), dryRun = false, responseDetail = "full",
+            )
+        }
+
+        val arr = parseDataArray(response)
+        assertEquals(10, arr.size())
+        for (entry in arr.map { it.asJsonObject }) {
+            assertTrue("responseDetail=full keeps the complete node envelope: $entry", entry.has("conceptDoc"))
+            assertTrue("responseDetail=full keeps the per-root fixReferences: $entry", entry.has("fixReferences"))
+        }
+    }
+
+    @Test
+    fun `insert_root_node_from_json keeps the full envelopes for a small batch and summarizes on request`() {
+        val small = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, conceptArrayJson(listOf("SmallA", "SmallB")), dryRun = false)
+        }
+        val arr = parseDataArray(small)
+        assertEquals(2, arr.size())
+        assertTrue("below ten roots the default stays full: $small", arr.first().asJsonObject.has("conceptDoc"))
+
+        val requested = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(
+                structureModelRef,
+                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "SmallSummary" } ] }""",
+                dryRun = false,
+                responseDetail = "summary",
+            )
+        }
+        val data = expectOk(requested)
+        assertEquals("summary can be requested for a single root too", 1, data.get("inserted").asInt)
+        assertEquals("SmallSummary", data.getAsJsonArray("roots").single().asJsonObject.get("name").asString)
+    }
+
+    @Test
+    fun `insert_root_node_from_json rejects an unknown responseDetail without inserting`() {
+        val before = readOnRepo { structureModel.rootNodes.count() }
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(
+                structureModelRef,
+                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "NotInserted" } ] }""",
+                dryRun = false,
+                responseDetail = "brief",
+            )
+        }
+
+        val error = expectErr(response)
+        assertTrue("the error must list the allowed values: $error", error.contains("summary") && error.contains("full"))
+        assertEquals("nothing may be inserted", before, readOnRepo { structureModel.rootNodes.count() })
     }
 
     @Test

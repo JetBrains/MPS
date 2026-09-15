@@ -417,7 +417,7 @@ H8 remain unmeasured. Evidence = stream-json transcripts + the new server call l
 | D | temp-dir rule, format literals, node-vs-model and array-vs-object notes, model-scope validation, default-value semantics, jump tables, "start here" routing in 14 aspect skills | 9c8afa9d4db6 |
 | P-off | `mps_dump.py`, `table_to_bulk_insert.py`, `concept_shape.py` with examples, packaging + drift tests, validator + conventions rule | 66041c7d37f1, 3c25f82a65f1 |
 | S | inline small results (`maxInlineBytes`), `detail="shape"`, `includeChildRoleConcepts`, project-scoped suggestions | 8c2da291c6f7 |
-| S | `rootsChecked`/`perRoot`, bulk-insert `responseDetail`, `create_module` model list, enum default marker, temp-dir error text | (batch 2 — see runbook 7.4) |
+| S | `rootsChecked`/`perRoot`, bulk-insert `responseDetail`, `create_module` model list, enum default marker, temp-dir error text | 3dc6bd935046 |
 | process | `skill-optimization-study` skill (re-runnable procedure, 17 lessons) | a7828acb620d |
 
 No A/B was run (gate 2); expected effect from the baseline: ≈ 84 avoidable follow-up reads and
