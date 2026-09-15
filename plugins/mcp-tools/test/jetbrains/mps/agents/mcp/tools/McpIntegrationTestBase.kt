@@ -203,6 +203,34 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
     }
 
     /**
+     * Returns the payload of an ok envelope whose `data` is *either* the payload itself (read tools
+     * inline results up to `maxInlineBytes`) *or* the absolute path of a temp file holding a second
+     * ok envelope with the payload. Both layers are unwrapped, a stringified payload is parsed, and
+     * a temp file that was read is registered for cleanup.
+     */
+    protected fun payloadFromOkData(response: String): JsonElement {
+        val outer = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok=true envelope, got: $response", outer.get("ok").asBoolean)
+        val data = outer.get("data")
+        if (!data.isJsonPrimitive) return data
+        val text = data.asString
+        val file = File(text)
+        if (!file.isAbsolute || !file.isFile) return JsonParser.parseString(text)
+        generatedTempFiles.add(file)
+        val content = file.readText()
+        val fileEnvelope = JsonParser.parseString(content).asJsonObject
+        assertTrue("file envelope must be ok: $content", fileEnvelope.get("ok").asBoolean)
+        val fileData = fileEnvelope.get("data")
+        return if (fileData.isJsonPrimitive) JsonParser.parseString(fileData.asString) else fileData
+    }
+
+    protected fun payloadObjectFromOkData(response: String): com.google.gson.JsonObject =
+        payloadFromOkData(response).asJsonObject
+
+    protected fun payloadArrayFromOkData(response: String): JsonArray =
+        payloadFromOkData(response).asJsonArray
+
+    /**
      * Creates a `ConceptDeclaration` root named [name] in the test's structure model via the
      * structure-operation toolset, and returns its persistent SNodeReference.
      */

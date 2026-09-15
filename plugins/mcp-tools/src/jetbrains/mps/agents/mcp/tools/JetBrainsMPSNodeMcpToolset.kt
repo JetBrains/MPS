@@ -108,15 +108,18 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         from another open MPS project and are queried read-only. FIND_USAGES: find nodes whose references point at the given
         node — incoming references, not instances (`nodeReference`; optional `scope` as above). GET_PARENT, GET_ROOT,
         GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE take `nodeReference`. Returns `{"ok":true,"data":{...}}`
-        on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+        on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
+        FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
+        otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
     """)
     suspend fun mps_mcp_query_nodes(
         @McpDescription("The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("JSON string representing the parameters for the operation") parameters: String,
+        @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val op = resolveOperationOrNull<MPSQueryOperation>(operation)
             ?: return unknownOperation<MPSQueryOperation>(operation)
-        return mps_mcp_query_nodes(op, parameters)
+        return mps_mcp_query_nodes(op, parameters, maxInlineBytes)
     }
 
     /**
@@ -124,7 +127,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      * registered `@McpTool`, so an unrecognised `operation` is an INVALID_REQUEST error instead of
      * a crash in the framework's pre-call enum decode (see [resolveOperationOrNull]).
      */
-    suspend fun mps_mcp_query_nodes(operation: MPSQueryOperation, parameters: String): String {
+    suspend fun mps_mcp_query_nodes(
+        operation: MPSQueryOperation,
+        parameters: String,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+    ): String {
         return withMpsProject("Querying MPS nodes: $operation") { mpsProject ->
             val params = try {
                 Gson().fromJson(parameters, JsonObject::class.java)
@@ -135,10 +142,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             when (operation) {
                 MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
                 MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE ->
-                    opNodeInfoRead(mpsProject, operation, params)
+                    opNodeInfoRead(mpsProject, operation, params, maxInlineBytes)
 
-                MPSQueryOperation.FIND_USAGES -> opFindUsages(mpsProject, params)
-                MPSQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params)
+                MPSQueryOperation.FIND_USAGES -> opFindUsages(mpsProject, params, maxInlineBytes)
+                MPSQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params, maxInlineBytes)
             }
         }
     }
@@ -190,7 +197,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     private suspend fun opNodeInfoRead(
         mpsProject: MPSProject,
         operation: MPSQueryOperation,
-        params: JsonObject
+        params: JsonObject,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
         return executeShortReadOnEdt(mpsProject) {
@@ -211,7 +219,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     else errJson("Node '$nodeReference' is not in a model")
                 }
                 MPSQueryOperation.NODE_INDEX -> opNodeIndex(node)
-                MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject)
+                MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject, maxInlineBytes)
                 MPSQueryOperation.GET_CHILD_ROLE -> opGetChildRole(node, mpsProject)
                 MPSQueryOperation.FIND_USAGES,
                 MPSQueryOperation.FIND_INSTANCES -> errJson("Unsupported operation: $operation")
@@ -226,13 +234,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         return okJson(parent.getChildren(link).indexOf(node).toString())
     }
 
-    private fun opSiblings(node: SNode, mpsProject: MPSProject): String {
+    private fun opSiblings(node: SNode, mpsProject: MPSProject, maxInlineBytes: Int): String {
         val parent = node.parent ?: return errJson("Node is a root node")
         val link = node.containmentLink ?: return errJson("Node does not have a containment role")
         if (!link.isMultiple) return errJson("Node is not in a multiple role")
         val siblings = parent.getChildren(link)
         val cache = ProjectMembershipCache(mpsProject)
-        return finalizeResult("[" + siblings.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]")
+        return finalizeResult("[" + siblings.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]", maxInlineBytes)
     }
 
     private fun opGetChildRole(node: SNode, mpsProject: MPSProject): String {
@@ -240,7 +248,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         return okJson(containmentLinkInfoJsonObject(link, mpsProject.repository, currentProject = mpsProject))
     }
 
-    private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject): String {
+    private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
         val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
         val scopeParam = params.get("scope")?.asString ?: "editable"
         val monitor = coroutineProgressMonitor()
@@ -269,7 +277,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 errJson("Operation canceled")
             } else {
                 val cache = ProjectMembershipCache(mpsProject)
-                finalizeResult("[" + results.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]")
+                finalizeResult("[" + results.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]", maxInlineBytes)
             }
         }
     }
@@ -556,7 +564,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
     }
 
-    suspend private fun showNodeAppearance(nodeReference: String, asHtml: Boolean = false
+    suspend private fun showNodeAppearance(
+        nodeReference: String,
+        asHtml: Boolean = false,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         return withMpsProject("Getting MPS node ${if (asHtml) "HTML" else "text"} representation") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
@@ -572,7 +583,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     } else {
                         component.rootCell.renderText().getText()
                     }
-                    saveToTempFileResult(JsonPrimitive(text).toString())
+                    finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes)
                 }
             }
         }
@@ -581,21 +592,22 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, or a path to a temp file containing the problem tree. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
+        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
         @McpDescription("Persistent form of SNodeReference or SModelReference") nodeReference: String,
         @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true,
-        @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false
+        @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false,
+        @McpDescription("Inline the problem report in `data` when it is at most this many characters; larger reports are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         return withMpsProject("Checking MPS problems") { mpsProject ->
             // Auto-apply mutates the model, so it needs a write command; the default (report-only)
             // mode keeps the read wrapper to avoid needless write locks.
             if (autoApplyQuickFixes) {
-                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true) }
+                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes) }
             } else {
-                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false) }
+                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes) }
             }
         }
     }
@@ -605,6 +617,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         nodeReference: String,
         onlyNodesWithProblems: Boolean,
         applyFixes: Boolean,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
     ): String {
         val repo = mpsProject.repository
         val host = mpsProject.platform
@@ -699,7 +712,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 } else {
                     nodeWithProblemsToJson(reportNode, problems, currentProject = mpsProject)
                 }
-                saveToTempFileResult(json, details)
+                finalizeResult(json, maxInlineBytes, details)
             }
         } else {
             // Try resolving as model reference
@@ -723,10 +736,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     okJson(JsonPrimitive("no problems found"), warnings = modelBranchWarnings)
                 } else {
                     if (applyFixes) {
-                        saveToTempFileResult(modelWithProblemsToJson(model, problems, mpsProject),
+                        finalizeResult(modelWithProblemsToJson(model, problems, mpsProject), maxInlineBytes,
                             details = mapOf("warning" to modelBranchWarnings.first()))
                     } else {
-                        saveToTempFileResult(modelWithProblemsToJson(model, problems, mpsProject))
+                        finalizeResult(modelWithProblemsToJson(model, problems, mpsProject), maxInlineBytes)
                     }
                 }
             } else {
@@ -738,19 +751,20 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Saves a JSON printout of the specified node to a temp file (path returned in `data`). `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The saved envelope is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
-        Alternatively, if HTML or PLAIN TEXT format is required, it saves the editor-projected representation of the specified node to a temp file (path returned in `data`).
+        Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
+        Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
         @McpDescription("Persistent form of SNodeReference") nodeReference: String,
         @McpDescription("Whether to return a JSON blueprint(default), HTML or PLAIN TEXT. Defaults to JSON.") format: String = "JSON",
-        @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false
+        @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
+        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val normalizedFormat = format.uppercase().trim()
-        if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true)
-        if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false)
+        if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true, maxInlineBytes = maxInlineBytes)
+        if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false, maxInlineBytes = maxInlineBytes)
         if (normalizedFormat != "JSON") return errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT", McpErrorCode.INVALID_REQUEST)
         return withMpsProject(if (deep) "Deep printing MPS node" else "Shallow printing MPS node") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
@@ -759,7 +773,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     ?: return@executeShortReadOnEdt invalidReference("Invalid or unresolvable node reference: '$nodeReference'")
                 val node = sNodeRef.resolve(repo)
                     ?: return@executeShortReadOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
-                saveToTempFileResult(nodeHierarchyToJson(node, deep, mpsProject))
+                finalizeResult(nodeHierarchyToJson(node, deep, mpsProject), maxInlineBytes)
             }
         }
     }

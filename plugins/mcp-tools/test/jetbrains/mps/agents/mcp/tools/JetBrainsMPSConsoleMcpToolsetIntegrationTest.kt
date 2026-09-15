@@ -103,24 +103,8 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     /**
-     * `mps_mcp_get_project_structure` always saves its payload to a temp file and returns the
-     * path inside an ok envelope. The file content is a second ok envelope whose `data` is
-     * either the inlined JsonObject (common case — `saveToTempFile` writes `okJson(json)` which
-     * embeds the object directly) or a stringified JSON payload (fallback). Unwrap both layers
-     * and hand back the object.
+     * `mps_mcp_get_project_structure` returns its payload inline when small and as a temp-file
+     * path when it exceeds `maxInlineBytes`; the base helper accepts both shapes.
      */
-    private fun readJsonObjectFromOkPath(response: String): JsonObject {
-        val outer = JsonParser.parseString(response).asJsonObject
-        assertTrue("expected ok=true envelope, got: $response", outer.get("ok").asBoolean)
-        val path = outer.get("data").asString
-        val content = File(path).readText()
-        val fileEnvelope = JsonParser.parseString(content).asJsonObject
-        assertTrue("file envelope must be ok: $content", fileEnvelope.get("ok").asBoolean)
-        val data = fileEnvelope.get("data")
-        return when {
-            data.isJsonObject -> data.asJsonObject
-            data.isJsonPrimitive -> JsonParser.parseString(data.asString).asJsonObject
-            else -> error("unexpected project-structure data shape: $data")
-        }
-    }
+    private fun readJsonObjectFromOkPath(response: String): JsonObject = payloadObjectFromOkData(response)
 }

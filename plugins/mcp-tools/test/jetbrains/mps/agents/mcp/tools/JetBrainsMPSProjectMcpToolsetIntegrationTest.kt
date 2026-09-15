@@ -85,6 +85,38 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `get-project-structure inlines a small dump and honours maxInlineBytes`() {
+        // The default module listing of the test project is a few hundred characters, well under
+        // the 20000-character default, so it must come back inline — the whole point of R1 is that
+        // a tiny payload no longer costs a second call to read a temp file.
+        val inline = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure()
+        }
+        val inlineEnvelope = JsonParser.parseString(inline).asJsonObject
+        assertTrue("expected ok envelope: $inline", inlineEnvelope.get("ok").asBoolean)
+        assertTrue(
+            "a small project dump must be inlined as a JSON object in `data`, got: ${inlineEnvelope.get("data")}",
+            inlineEnvelope.get("data").isJsonObject,
+        )
+        assertTrue(
+            "the inlined dump must carry the module list",
+            inlineEnvelope.getAsJsonObject("data").has("modules"),
+        )
+
+        val saved = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(maxInlineBytes = 1)
+        }
+        val savedEnvelope = JsonParser.parseString(saved).asJsonObject
+        assertTrue("expected ok envelope: $saved", savedEnvelope.get("ok").asBoolean)
+        val path = savedEnvelope.get("data").asString
+        assertTrue("`data` must be a temp-file path above maxInlineBytes: $path", File(path).isFile)
+        assertTrue(
+            "the saved dump must carry the module list",
+            readJsonObjectFromOkPath(saved).has("modules"),
+        )
+    }
+
+    @Test
     fun `get-project-structure with a model starting point returns the model JSON`() {
         val response = runTool(JetBrainsMPSProjectMcpToolset()) {
             it.mps_mcp_get_project_structure(
@@ -354,13 +386,6 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
-    /**
-     * `mps_mcp_get_project_structure` always saves its payload to a temp file and returns the
-     * path inside an ok envelope. The file content is a second ok envelope whose `data` is
-     * either the inlined JsonObject (common case — `saveToTempFile` writes `okJson(json)` which
-     * embeds the object directly) or a stringified JSON payload (fallback). Unwrap both layers
-     * and hand back the object.
-     */
     @Test
     fun `get-project-structure includeNodes implies includeRootNodes and inlines the AST`() {
         // IMPL-4: includeNodes=true must descend into root nodes even when includeRootNodes is
@@ -392,18 +417,9 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("inlined root must carry a children container: $root", root.has("children"))
     }
 
-    private fun readJsonObjectFromOkPath(response: String): JsonObject {
-        val outer = JsonParser.parseString(response).asJsonObject
-        assertTrue("expected ok=true envelope, got: $response", outer.get("ok").asBoolean)
-        val path = outer.get("data").asString
-        val content = File(path).readText()
-        val fileEnvelope = JsonParser.parseString(content).asJsonObject
-        assertTrue("file envelope must be ok: $content", fileEnvelope.get("ok").asBoolean)
-        val data = fileEnvelope.get("data")
-        return when {
-            data.isJsonObject -> data.asJsonObject
-            data.isJsonPrimitive -> JsonParser.parseString(data.asString).asJsonObject
-            else -> error("unexpected project-structure data shape: $data")
-        }
-    }
+    /**
+     * `mps_mcp_get_project_structure` returns its payload inline when small and as a temp-file
+     * path when it exceeds `maxInlineBytes`; the base helper accepts both shapes.
+     */
+    private fun readJsonObjectFromOkPath(response: String): JsonObject = payloadObjectFromOkData(response)
 }

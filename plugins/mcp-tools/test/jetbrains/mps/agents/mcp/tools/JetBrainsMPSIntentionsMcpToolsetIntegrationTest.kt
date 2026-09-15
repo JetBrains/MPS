@@ -196,7 +196,7 @@ class JetBrainsMPSIntentionsMcpToolsetIntegrationTest : McpIntegrationTestBase()
         val checkResponse = runTool(JetBrainsMPSNodeMcpToolset()) {
             it.mps_mcp_check_root_node_problems(conceptRef)
         }
-        val reportText = File(extractFilePathFromData(checkResponse)).readText()
+        val reportText = payloadFromOkData(checkResponse).toString()
         assertTrue("check report should list quickFixes: $reportText", reportText.contains("\"quickFixes\""))
         assertTrue("check report should name the fix: $reportText", reportText.contains(generateIdsFixFqn))
 
@@ -223,9 +223,9 @@ class JetBrainsMPSIntentionsMcpToolsetIntegrationTest : McpIntegrationTestBase()
         }
         val envelope = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
-        // The problem survives (the id fix is not auto-applicable), so `data` is a report temp-file
-        // path; extract it so the base class deletes the file after the test.
-        extractFilePathFromData(response)
+        // The problem survives (the id fix is not auto-applicable), so `data` carries a report —
+        // inline for a small one, a temp-file path above the threshold (then deleted after the test).
+        payloadFromOkData(response)
         // The bundled id fix is not auto-applicable, so the list may be empty — but the mechanism
         // must run and the detail must be present as an array (serialization + command path). The
         // execution path itself (apply/retry/termination/throw containment) is unit-tested in

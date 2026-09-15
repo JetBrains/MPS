@@ -1018,16 +1018,8 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
                 conceptRefs = listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
             )
         }
-        // get_concept_details saves to a temp file; unwrap both layers to get the concept array.
-        val outer = JsonParser.parseString(conceptResp).asJsonObject
-        assertTrue("expected ok envelope from get_concept_details: $conceptResp", outer.get("ok").asBoolean)
-        val filePath = outer.get("data").asString
-        val innerEnvelope = JsonParser.parseString(java.io.File(filePath).readText()).asJsonObject
-        assertTrue("file envelope must be ok", innerEnvelope.get("ok").asBoolean)
-        val dataArray = innerEnvelope.get("data")
-        val innerArray = if (dataArray.isJsonArray) dataArray.asJsonArray
-        else JsonParser.parseString(dataArray.asString).asJsonArray
-        val conceptObj = innerArray.get(0).asJsonObject
+        // get_concept_details inlines small results and falls back to a temp-file path.
+        val conceptObj = payloadArrayFromOkData(conceptResp).get(0).asJsonObject
         val sourceNodeRef = conceptObj.get("sourceNode").asString
         assertTrue("sourceNode reference should not be empty", sourceNodeRef.isNotEmpty())
 
@@ -1064,12 +1056,29 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     // ── print_node_json ──────────────────────────────────────────────────────────────────
 
     @Test
-    fun `print_node_json shallow returns a path that contains the expected content`() {
+    fun `print_node_json shallow inlines a small printout in data`() {
         val ref = createConceptRoot("PrintTarget")
         val response = runTool(toolset) { it.mps_mcp_print_node(ref, deep = false) }
+        // A single concept root is far below the default 20000-character threshold, so `data`
+        // must be the node object itself — no second call to read a temp file.
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        assertTrue(
+            "a small printout must be inlined as a JSON object in `data`, got: ${envelope.get("data")}",
+            envelope.get("data").isJsonObject,
+        )
+        val node = envelope.getAsJsonObject("data")
+        assertEquals("PrintTarget", node.get("name").asString)
+        assertEquals("ConceptDeclaration", node.get("concept").asString)
+    }
+
+    @Test
+    fun `print_node_json falls back to a temp-file path above maxInlineBytes`() {
+        val ref = createConceptRoot("TinyThresholdTarget")
+        val response = runTool(toolset) { it.mps_mcp_print_node(ref, deep = false, maxInlineBytes = 1) }
         val path = extractFilePathFromData(response)
         val text = java.io.File(path).readText()
-        assertTrue("file must contain the printed concept: $text", text.contains("PrintTarget"))
+        assertTrue("saved file must contain the printed concept: $text", text.contains("TinyThresholdTarget"))
         assertTrue(text.contains("ConceptDeclaration"))
     }
 
@@ -1078,8 +1087,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val ref = createConceptRoot("DeepPrintHost")
         addPropertyChild(ref, "deepKid", "string")
         val response = runTool(toolset) { it.mps_mcp_print_node(ref, deep = true) }
-        val path = extractFilePathFromData(response)
-        val text = java.io.File(path).readText()
+        val text = payloadFromOkData(response).toString()
         assertTrue("deep print must include the child property name: $text", text.contains("deepKid"))
     }
 
@@ -1123,9 +1131,10 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val raw = if (obj.get("data").isJsonPrimitive) obj.get("data").asString else obj.get("data").toString()
         val saysClean = raw.contains("no problems found")
         val pointsToReport = raw.startsWith("/") && raw.endsWith(".json") && java.io.File(raw).exists()
+        val inlinedReport = obj.get("data").isJsonArray || obj.get("data").isJsonObject
         assertTrue(
-            "envelope data must be either the 'no problems found' phrase or a path to a saved report: $raw",
-            saysClean || pointsToReport,
+            "envelope data must be the 'no problems found' phrase, an inlined report, or a path to a saved report: $raw",
+            saysClean || pointsToReport || inlinedReport,
         )
     }
 

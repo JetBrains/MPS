@@ -9,7 +9,9 @@ import jetbrains.mps.project.modules.SolutionProducer
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
+import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -458,6 +460,49 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         assertTrue("sibling-only modelReference must be accepted as a read-only concept-search scope: $response", "ConceptDeclaration" in resultNames)
     }
 
+    @Test
+    fun `name-suggestion candidates exclude concepts owned by a sibling project`() {
+        // D4: `unresolved[].suggestions` are ranked over the shared module repository, so without
+        // this membership filter a plain concept name can be answered with a same-named concept
+        // from another open project. The ranker consults only languages loaded in the
+        // LanguageRegistry — which in the headless fixture are all read-only libraries — so the
+        // filter's predicate is pinned directly here instead of through a tool call.
+        val projectB = openProjectB()
+        val sharedName = "mcp.test.suggestscope${System.nanoTime()}"
+        val bLanguage = createLanguageIn(projectB, sharedName)
+        val aLanguage = createLanguageIn(myProject, sharedName)
+        val bConceptRef = createConceptRootIn(projectB, structureModelOf(projectB, bLanguage), "SuggestScopeConcept")
+        val aConceptRef = createConceptRootIn(myProject, structureModelOf(myProject, aLanguage), "SuggestScopeConcept")
+
+        val probe = object : AbstractOps() {
+            fun isForeign(project: MPSProject, concept: SAbstractConcept, repository: SRepository): Boolean =
+                ProjectMembershipCache(project).isFromAnotherOpenProject(concept, repository)
+        }
+
+        readIn(myProject) {
+            val repository = myProject.repository
+            val aConcept = MetaAdapterByDeclaration.getConcept(
+                resolveNode(myProject, aConceptRef) ?: error("concept A did not resolve")
+            )
+            val bConcept = MetaAdapterByDeclaration.getConcept(
+                resolveNode(projectB, bConceptRef) ?: error("concept B did not resolve")
+            )
+            assertFalse(
+                "a concept of the selected project must remain a suggestion candidate",
+                probe.isForeign(myProject, aConcept, repository),
+            )
+            assertTrue(
+                "a same-named concept owned by a sibling project must be dropped as a candidate",
+                probe.isForeign(myProject, bConcept, repository),
+            )
+            val libraryConcept = aConcept.superConcept ?: error("a created concept must extend BaseConcept")
+            assertFalse(
+                "a read-only library concept is owned by no open project and stays a candidate",
+                probe.isForeign(myProject, libraryConcept, repository),
+            )
+        }
+    }
+
     private fun openProjectB(): MPSProject =
         (mcpEnvironment.createEmptyProject() as MPSProject).also { projectB = it }
 
@@ -554,19 +599,7 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         assertFalse("$editableField must be false for foreign project elements", obj.get(editableField).asBoolean)
     }
 
-    private fun readJsonObjectFromOkPath(response: String): JsonObject {
-        val outer = JsonParser.parseString(response).asJsonObject
-        assertTrue("expected ok=true envelope, got: $response", outer.get("ok").asBoolean)
-        val content = File(outer.get("data").asString).readText()
-        val fileEnvelope = JsonParser.parseString(content).asJsonObject
-        assertTrue("file envelope must be ok: $content", fileEnvelope.get("ok").asBoolean)
-        val data = fileEnvelope.get("data")
-        return when {
-            data.isJsonObject -> data.asJsonObject
-            data.isJsonPrimitive -> JsonParser.parseString(data.asString).asJsonObject
-            else -> error("unexpected project-structure data shape: $data")
-        }
-    }
+    private fun readJsonObjectFromOkPath(response: String): JsonObject = payloadObjectFromOkData(response)
 
     private fun <T> readIn(project: MPSProject, block: () -> T): T =
         project.modelAccess.computeReadAction<T> { block() }

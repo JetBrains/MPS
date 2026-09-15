@@ -1248,7 +1248,11 @@ abstract class AbstractNodeOps : AbstractOps() {
      * mps_mcp_query_nodes; mps_mcp_query_structure keeps dispatching here (unadvertised) so
      * pre-move skill copies installed in other projects continue to work.
      */
-    protected suspend fun opFindInstances(mpsProject: MPSProject, params: JsonObject): String {
+    protected suspend fun opFindInstances(
+        mpsProject: MPSProject,
+        params: JsonObject,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+    ): String {
         val conceptRef = params.get("conceptRef")?.asString ?: return errJson("Parameter 'conceptRef' is missing")
         val scopeParam = params.get("scope")?.asString ?: "editable"
         val exact = params.get("exact")?.asBoolean ?: false
@@ -1311,7 +1315,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 sample?.let { results.add(it) }
             }
             val cache = ProjectMembershipCache(mpsProject)
-            finalizeResult("[" + results.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]")
+            finalizeResult("[" + results.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]", maxInlineBytes)
         }
     }
 

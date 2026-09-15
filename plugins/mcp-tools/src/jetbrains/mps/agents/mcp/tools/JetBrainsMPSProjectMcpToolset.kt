@@ -69,7 +69,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). Saves the result to a temp file to bypass MCP response-size limits (path returned in `data`). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
+        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
     """
     )
     suspend fun mps_mcp_get_project_structure(
@@ -85,7 +85,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
             "(<uuid>(<name>)) or use the 'moduleKind' filter (with startingPoint null). Scope heavy 'include...' " +
             "flags by passing a startingPoint."
         ) startingPoint: String? = null,
-        @McpDescription("Optional filter by module kind (Solution, Language, DevKit, Generator). Only used if startingPoint is null.") moduleKind: String? = null
+        @McpDescription("Optional filter by module kind (Solution, Language, DevKit, Generator). Only used if startingPoint is null.") moduleKind: String? = null,
+        @McpDescription("Inline the dump in `data` when it is at most this many characters; larger dumps are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         if (!startingPoint.isNullOrBlank() && !moduleKind.isNullOrBlank()) {
             return errJson("Parameters 'startingPoint' and 'moduleKind' cannot be used together.")
@@ -110,7 +111,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                     }
                     val node = nodeRef?.resolve(mpsProject.repository)
                     if (node != null) {
-                        return@executeShortReadOnEdt saveToTempFileResult(nodeHierarchyToJson(node, includeNodes, mpsProject))
+                        return@executeShortReadOnEdt finalizeResult(nodeHierarchyToJson(node, includeNodes, mpsProject), maxInlineBytes)
                     }
 
                     // 2. Try Model
@@ -120,7 +121,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                         resolveModel(mpsProject, startingPoint, projectOnly = true)
                     }
                     if (model != null) {
-                        return@executeShortReadOnEdt saveToTempFileResult(modelToJson(mpsProject, model, effectiveIncludeRootNodes, includeNodes, includeDependencies))
+                        return@executeShortReadOnEdt finalizeResult(modelToJson(mpsProject, model, effectiveIncludeRootNodes, includeNodes, includeDependencies), maxInlineBytes)
                     }
 
                     // 3. Try Module
@@ -133,8 +134,9 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                         // Check if we should filter out non-project modules if they are not included.
                         val isProjectModule = isModuleInSelectedProject(mpsProject, module)
                         if (includeStubModules || isProjectModule) {
-                            return@executeShortReadOnEdt saveToTempFileResult(
-                                moduleToJson(mpsProject, module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies)
+                            return@executeShortReadOnEdt finalizeResult(
+                                moduleToJson(mpsProject, module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies),
+                                maxInlineBytes
                             )
                         }
                         return@executeShortReadOnEdt errJson(
@@ -164,7 +166,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                         moduleArray.add(moduleJsonObject(mpsProject, projectModule, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies, cache))
                     }
                     json.add("modules", moduleArray)
-                    saveToTempFileResult(json.toString())
+                    finalizeResult(json.toString(), maxInlineBytes)
                 }
             }
         }

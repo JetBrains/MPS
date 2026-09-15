@@ -56,6 +56,114 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `get-concept-details detail shape returns only the structural projection`() {
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(
+                conceptRefs = listOf("jetbrains.mps.lang.structure.structure.ConceptDeclaration"),
+                detail = "shape",
+            )
+        }
+
+        val concept = payloadArrayFromOkData(response).single().asJsonObject
+        assertEquals(
+            "shape must carry exactly the projection fields and nothing else",
+            setOf("qualifiedName", "conceptReference", "isAbstract", "isRootable", "properties", "references", "children"),
+            concept.keySet(),
+        )
+        assertEquals(
+            "jetbrains.mps.lang.structure.structure.ConceptDeclaration",
+            concept.get("qualifiedName").asString,
+        )
+        val properties = concept.getAsJsonArray("properties").map { it.asJsonObject }
+        assertTrue("ConceptDeclaration must expose properties in the shape: $concept", properties.isNotEmpty())
+        for (property in properties) {
+            assertTrue(
+                "a shape property must be {name, type} (+ enumerationValues for an enum); got=$property",
+                property.keySet().all { it == "name" || it == "type" || it == "enumerationValues" },
+            )
+        }
+        for (block in listOf("references", "children")) {
+            for (link in concept.getAsJsonArray(block).map { it.asJsonObject }) {
+                assertEquals(
+                    "a shape $block entry must be {name, targetConcept, cardinality}; got=$link",
+                    setOf("name", "targetConcept", "cardinality"), link.keySet(),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `get-concept-details rejects an unknown detail level`() {
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(
+                conceptRefs = listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
+                detail = "brief",
+            )
+        }
+
+        val error = expectErr(response)
+        assertTrue("error must list the allowed detail levels: $error", error.contains("full") && error.contains("shape"))
+    }
+
+    @Test
+    fun `get-concept-details includeChildRoleConcepts adds the role targets as relatedConcepts`() {
+        val requested = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(
+                conceptRefs = listOf(requested),
+                detail = "shape",
+                includeChildRoleConcepts = true,
+            )
+        }
+
+        val payload = payloadObjectFromOkData(response)
+        val concepts = payload.getAsJsonArray("concepts").map { it.asJsonObject }
+        assertEquals(listOf(requested), concepts.map { it.get("qualifiedName").asString })
+
+        val related = payload.getAsJsonArray("relatedConcepts").map { it.asJsonObject }
+        val relatedNames = related.map { it.get("qualifiedName").asString }.toSet()
+        assertEquals("relatedConcepts must be deduplicated", related.size, relatedNames.size)
+        assertFalse(
+            "a requested concept must not be repeated in relatedConcepts; got=$relatedNames",
+            relatedNames.contains(requested),
+        )
+        val roleTargets = listOf("children", "references")
+            .flatMap { block -> concepts.single().getAsJsonArray(block).map { it.asJsonObject.get("targetConcept").asString } }
+            .toSet() - requested
+        assertTrue("ConceptDeclaration must declare child/reference roles to expand", roleTargets.isNotEmpty())
+        assertEquals(
+            "relatedConcepts must be exactly the one-hop child/reference role targets",
+            roleTargets, relatedNames,
+        )
+        for (entry in related) {
+            assertEquals(
+                "relatedConcepts must use the requested detail level",
+                setOf("qualifiedName", "conceptReference", "isAbstract", "isRootable", "properties", "references", "children"),
+                entry.keySet(),
+            )
+        }
+    }
+
+    @Test
+    fun `get-concept-details falls back to a temp-file path above maxInlineBytes`() {
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(
+                conceptRefs = listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
+                maxInlineBytes = 1,
+            )
+        }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        val path = envelope.get("data").asString
+        assertTrue("`data` must be a temp-file path when the result exceeds maxInlineBytes: $path", File(path).isFile)
+        assertEquals(
+            listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
+            payloadArrayFromOkData(response).map { it.asJsonObject.get("qualifiedName").asString },
+        )
+    }
+
+    @Test
     fun `get-concept-details accepts a single concept reference string`() {
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
             it.mps_mcp_get_concept_details(
@@ -186,17 +294,21 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // String-typed wrapper must keep its `= ""` default; otherwise every documented
         // language-only call (conceptRefs omitted, languageRefs provided) throws before the
         // body's either/or guard ever runs.
+        // The registered overload is the one whose refs parameters are Strings (the other entry
+        // point takes List<String>); its remaining parameters (detail, includeChildRoleConcepts,
+        // maxInlineBytes) are projections/limits and must be optional for the same reason.
         val fn = JetBrainsMPSLanguageMcpToolset::class.declaredFunctions
             .single { function ->
                 function.name == "mps_mcp_get_concept_details" &&
-                        function.valueParameters.all { it.type.classifier == String::class }
+                        function.valueParameters.first().type.classifier == String::class
             }
-        val conceptRefs = fn.valueParameters.single { it.name == "conceptRefs" }
-        assertTrue(
-            "conceptRefs must have a Kotlin default (KParameter.isOptional) so CallableBridge accepts " +
-                "language-only calls instead of throwing 'No argument is passed for required parameter conceptRefs'",
-            conceptRefs.isOptional
-        )
+        for (parameter in fn.valueParameters) {
+            assertTrue(
+                "'${parameter.name}' must have a Kotlin default (KParameter.isOptional) so CallableBridge accepts " +
+                    "calls that omit it instead of throwing 'No argument is passed for required parameter'",
+                parameter.isOptional
+            )
+        }
     }
 
     @Test
@@ -724,19 +836,10 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     /**
-     * `mps_mcp_get_concept_details` always saves to a temp file and returns the path. The
-     * file content is itself an ok envelope whose `data` is the concept array; unwrap both
-     * layers and hand back the array.
+     * `mps_mcp_get_concept_details` returns the concept array inline when it fits in
+     * `maxInlineBytes` and as a temp-file path otherwise; the base helper accepts both shapes.
      */
-    private fun readConceptArrayFromOkPath(response: String): JsonArray {
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertTrue("expected ok=true envelope, got: $response", obj.get("ok").asBoolean)
-        val path = obj.get("data").asString
-        val content = File(path).readText()
-        val fileEnvelope = JsonParser.parseString(content).asJsonObject
-        assertTrue("file envelope must be ok: $content", fileEnvelope.get("ok").asBoolean)
-        return unwrapArray(fileEnvelope.get("data"))
-    }
+    private fun readConceptArrayFromOkPath(response: String): JsonArray = payloadArrayFromOkData(response)
 
     /**
      * `mps_mcp_search_concepts` inlines the result when small and falls back to a temp file

@@ -122,6 +122,14 @@ abstract class AbstractOps : McpToolset {
         private const val MAX_INPUT_FILE_SIZE_BYTES = 10L * 1024 * 1024
 
         /**
+         * Default inline/temp-file cut-off for read tools that expose a `maxInlineBytes`
+         * parameter: a serialized payload up to this length is returned inline in `data`,
+         * anything larger is written to a temp file whose path becomes `data`. Public so the
+         * tool signatures can use it as their documented default.
+         */
+        const val DEFAULT_MAX_INLINE_BYTES: Int = 20_000
+
+        /**
          * Timeout for model operations; acts as a safety net for unexpected blocking (e.g. a
          * modal dialog). Protected, not private: every EDT-dispatching tool entry point should
          * route through [withModalTimeoutOnEdt] (or [withModalTimeout] directly for a non-EDT
@@ -129,6 +137,18 @@ abstract class AbstractOps : McpToolset {
          * for the failure mode this guards against.
          */
         protected const val MODEL_OPERATION_TIMEOUT_MS: Long = 30_000
+
+        /**
+         * True when [a] and [b] denote the same open project. Lives in the companion so the nested
+         * [ProjectMembershipCache] shares one definition of project identity with the
+         * foreign-project markers.
+         */
+        internal fun sameOpenProject(a: MPSProject, b: MPSProject): Boolean {
+            if (a === b || a.project === b.project) return true
+            val aBase = a.project.basePath?.let { Paths.get(it).toAbsolutePath().normalize() }
+            val bBase = b.project.basePath?.let { Paths.get(it).toAbsolutePath().normalize() }
+            return aBase != null && aBase == bBase
+        }
 
         /**
          * Maximum time `performMake` waits, after the build completes, for the
@@ -756,6 +776,25 @@ abstract class AbstractOps : McpToolset {
             conceptOwner[concept] = owner
             return owner
         }
+
+        /**
+         * True when the element is owned by an open MPS project *other* than [currentProject].
+         * Read-only lookups that offer name-based candidates (e.g. "did you mean" suggestions)
+         * use this to drop candidates the caller cannot act on: the module repository is shared
+         * across open projects, so a plain name can otherwise surface a same-named concept or
+         * language belonging to a sibling project. Elements owned by no open project (read-only
+         * libraries and stubs) are NOT foreign — they are legitimately visible everywhere.
+         */
+        fun isFromAnotherOpenProject(concept: SAbstractConcept, repository: SRepository): Boolean =
+            isForeign(ownerOfConcept(repository, concept))
+
+        fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean =
+            isForeign(ownerOfLanguage(repository, language))
+
+        private fun isForeign(owner: MPSProject?): Boolean {
+            val current = currentProject ?: return false
+            return owner != null && !sameOpenProject(owner, current)
+        }
     }
 
     private fun projectReferenceJsonObject(project: MPSProject): JsonObject {
@@ -807,12 +846,6 @@ abstract class AbstractOps : McpToolset {
         obj.addProperty(foreignProjectField(prefix, "editableFromCurrentProject"), false)
     }
 
-    private fun sameOpenProject(a: MPSProject, b: MPSProject): Boolean {
-        if (a === b || a.project === b.project) return true
-        val aBase = a.project.basePath?.let { Paths.get(it).toAbsolutePath().normalize() }
-        val bBase = b.project.basePath?.let { Paths.get(it).toAbsolutePath().normalize() }
-        return aBase != null && aBase == bBase
-    }
 
     protected fun addContainingProjectIfForeign(
         obj: JsonObject,
@@ -1020,12 +1053,21 @@ abstract class AbstractOps : McpToolset {
         LanguageRegistry.getInstance(repository).allLanguages
     }
 
-    protected fun finalizeResult(json: String): String {
-        return if (json.length > 20_000) {
-            saveToTempFileResult(json)
-        } else {
-            okJson(json)
-        }
+    /**
+     * Returns [json] inline inside the ok envelope when it is at most [maxInlineBytes] long, and
+     * saves it to a temp file (path in `data`) otherwise. Inlining small payloads is what spares
+     * the caller a second round trip just to read a few identifiers back from disk; the temp-file
+     * fallback keeps large results below the MCP response-size limit.
+     */
+    protected fun finalizeResult(
+        json: String,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        details: Map<String, Any?> = emptyMap(),
+        warnings: List<String> = emptyList()
+    ): String {
+        if (json.length > maxInlineBytes) return saveToTempFileResult(json, details, warnings)
+        if (details.isEmpty() && warnings.isEmpty()) return okJson(json)
+        return okJson(JsonParser.parseString(json), warnings = warnings, details = details)
     }
 
     protected fun saveToTempFileResult(json: String): String {
@@ -1044,11 +1086,15 @@ abstract class AbstractOps : McpToolset {
      * (a caller that inlined `saveToTempFile` for the details case would leak the raw IO exception
      * as an INTERNAL_ERROR and lose the details). Falls back to the plain form when [details] is empty.
      */
-    protected fun saveToTempFileResult(json: String, details: Map<String, Any?>): String {
-        if (details.isEmpty()) return saveToTempFileResult(json)
+    protected fun saveToTempFileResult(
+        json: String,
+        details: Map<String, Any?>,
+        warnings: List<String> = emptyList()
+    ): String {
+        if (details.isEmpty() && warnings.isEmpty()) return saveToTempFileResult(json)
         return try {
             val tempFile = saveToTempFile(json)
-            okJson(JsonPrimitive(tempFile.absolutePath), details = details)
+            okJson(JsonPrimitive(tempFile.absolutePath), warnings = warnings, details = details)
         } catch (e: Exception) {
             rethrowIfCancellation(e)
             logger.warn("Failed to save MCP tool result to a temporary file", e)

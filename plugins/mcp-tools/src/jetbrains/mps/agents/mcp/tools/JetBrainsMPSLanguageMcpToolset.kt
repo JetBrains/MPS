@@ -2,7 +2,6 @@ package jetbrains.mps.agents.mcp.tools
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.project.MPSProject
@@ -17,6 +16,7 @@ import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import jetbrains.mps.smodel.ModelDependencyResolver
 import org.jetbrains.mps.openapi.language.SAbstractLink
+import org.jetbrains.mps.openapi.language.SDataType
 import org.jetbrains.mps.openapi.language.SContainmentLink
 import org.jetbrains.mps.openapi.language.SReferenceLink
 import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
@@ -48,6 +48,11 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         // list, and surfacing 20 candidates per typo would dominate the response.
         const val MAX_SUGGESTIONS_PER_UNRESOLVED = 5
 
+        // `detail` literals of mps_mcp_get_concept_details. "shape" is the structural projection
+        // agents otherwise re-implement in throwaway scripts on top of the "full" record.
+        const val DETAIL_FULL = "full"
+        const val DETAIL_SHAPE = "shape"
+
         // Single-character subtokens like "5" or "D" are substrings of almost any docstring and
         // would let unrelated concepts match — keep only subtokens of at least MIN_SUBTOKEN_LENGTH
         // characters. The whole-word fallback only kicks in when the word itself meets the
@@ -64,15 +69,21 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Returns detailed info for the listed concepts and/or for every concept of the listed languages. Saves the result to a temp file (path returned in `data`). Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple to paste into `PROPERTY`/`REF` macros and smodel `SPropertyAccess`/`SLinkAccess`) and `sourceNode` (the declaration node's persistent ref, e.g. `r:...(...structure)/<id>`; this is the right node-ref *form* for APIs that expect a structure declaration such as `applicableConcept`, but a feature declaration ref is informational only and is not itself a valid `applicableConcept` target) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. If a concept was just created via `CREATE_CONCEPTS` and the response carried `makeStatus: "runtime_stale"`, the runtime descriptor returned here may be hollow (empty properties/references/children, `isAbstract: true`); each affected entry is marked with `descriptorStatus: "hollow"` and a `descriptorRecoveryAction` string — `mps_mcp_reload_all` alone is not sufficient, a clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true` targeting the language module (not just the structure model) is required. See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
+        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept and cardinality) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `includeChildRoleConcepts = true` additionally returns, under `relatedConcepts`, each concept that is the target of a child or reference role of the requested concepts (one hop, deduplicated, same detail level); in that case `data` is the object `{"concepts": [...], "relatedConcepts": [...]}` instead of the bare concept array. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple to paste into `PROPERTY`/`REF` macros and smodel `SPropertyAccess`/`SLinkAccess`) and `sourceNode` (the declaration node's persistent ref, e.g. `r:...(...structure)/<id>`; this is the right node-ref *form* for APIs that expect a structure declaration such as `applicableConcept`, but a feature declaration ref is informational only and is not itself a valid `applicableConcept` target) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. If a concept was just created via `CREATE_CONCEPTS` and the response carried `makeStatus: "runtime_stale"`, the runtime descriptor returned here may be hollow (empty properties/references/children, `isAbstract: true`); each affected entry is marked with `descriptorStatus: "hollow"` and a `descriptorRecoveryAction` string — `mps_mcp_reload_all` alone is not sufficient, a clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true` targeting the language module (not just the structure model) is required. See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
     """
     )
     suspend fun mps_mcp_get_concept_details(
         @McpDescription("A persistent reference (SAbstractConcept) or fully qualified name of a concept/interface concept, or a JSON array of them.") conceptRefs: String = "",
-        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them. All concepts and interface concepts of these languages will be returned.") languageRefs: String = ""
+        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them. All concepts and interface concepts of these languages will be returned.") languageRefs: String = "",
+        @McpDescription("Detail level: \"full\" (default) for the complete records, or \"shape\" for the structural projection only (no docs, no sampleNode).") detail: String = "full",
+        @McpDescription("If true, also return the concepts targeted by child and reference roles of the requested concepts (one hop, deduplicated) under `relatedConcepts` (default = false).") includeChildRoleConcepts: Boolean = false,
+        @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String = mps_mcp_get_concept_details(
         parseStringOrJsonArray(conceptRefs),
         parseStringOrJsonArray(languageRefs),
+        detail,
+        includeChildRoleConcepts,
+        maxInlineBytes,
     )
 
     /**
@@ -83,10 +94,21 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      */
     suspend fun mps_mcp_get_concept_details(
         conceptRefs: List<String>,
-        languageRefs: List<String> = emptyList()
+        languageRefs: List<String> = emptyList(),
+        detail: String = DETAIL_FULL,
+        includeChildRoleConcepts: Boolean = false,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         if (conceptRefs.isEmpty() && languageRefs.isEmpty()) {
             return errJson("No concepts nor languages have been provided")
+        }
+        val shapeOnly = when (detail.trim().lowercase()) {
+            DETAIL_FULL -> false
+            DETAIL_SHAPE -> true
+            else -> return errJson(
+                "Invalid detail '$detail'. Allowed values: $DETAIL_FULL, $DETAIL_SHAPE",
+                McpErrorCode.INVALID_REQUEST,
+            )
         }
         return withMpsProject("Getting MPS language concept details") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
@@ -138,21 +160,29 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
 
                 val cache = ProjectMembershipCache(mpsProject)
                 for (concept in conceptSet) {
-                    val detailedInfo = conceptInfoJsonObject(concept, repo, mpsProject, cache)
-                    detailedInfo.add("properties", conceptPropertiesJsonArray(concept, repo))
-                    detailedInfo.add("references", conceptReferencesJsonArray(concept, repo, mpsProject, cache))
-                    detailedInfo.add("children", conceptChildrenJsonArray(concept, repo, mpsProject, cache))
-                    detailedInfo.add("sampleNode", conceptSampleJsonObject(concept))
-                    results.add(detailedInfo)
+                    results.add(conceptDetailsJsonObject(concept, repo, mpsProject, cache, shapeOnly))
+                }
+
+                val payload = if (includeChildRoleConcepts) {
+                    val related = JsonArray()
+                    for (target in roleTargetConcepts(conceptSet)) {
+                        related.add(conceptDetailsJsonObject(target, repo, mpsProject, cache, shapeOnly))
+                    }
+                    jsonObject {
+                        add("concepts", results)
+                        add("relatedConcepts", related)
+                    }.toString()
+                } else {
+                    results.toString()
                 }
 
                 val anyUnresolved = unresolvedConceptRefs.isNotEmpty() || unresolvedLanguageRefs.isNotEmpty()
                 if (!anyUnresolved) {
-                    return@executeShortReadOnEdt saveToTempFileResult(results.toString())
+                    return@executeShortReadOnEdt finalizeResult(payload, maxInlineBytes)
                 }
 
                 val unresolvedJson = buildUnresolvedDetailsJson(
-                    unresolvedConceptRefs, unresolvedLanguageRefs, registry, repo
+                    unresolvedConceptRefs, unresolvedLanguageRefs, registry, repo, cache
                 )
 
                 if (conceptSet.isEmpty()) {
@@ -179,10 +209,11 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
 
                 // Partial success — return resolved data plus warnings and suggestions.
                 buildPartialSuccessResult(
-                    results.toString(),
+                    payload,
                     unresolvedConceptRefs,
                     unresolvedLanguageRefs,
                     unresolvedJson,
+                    maxInlineBytes,
                 )
             }
         }
@@ -223,13 +254,17 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val registry = LanguageRegistry.getInstance(repo)
+            val cache = ProjectMembershipCache(mpsProject)
             val languages: Iterable<SLanguage> = if (modelReference != null) {
                 val model = resolveModelPreferringProject(mpsProject, modelReference)
                     ?: return@executeShortReadOnEdt errJson("Model not found: $modelReference")
                 val mdr = ModelDependencyResolver(registry, repo)
                 mdr.usedLanguages(model)
             } else {
-                registry.allLanguages
+                // Global search: drop languages owned by another open project so a free-form query
+                // cannot answer with a same-named concept from a sibling project (the repository is
+                // shared). An explicit `modelReference` is an explicit scope and is honoured as given.
+                languagesInProject(registry, repo, cache)
             }
 
             val termGroups: List<List<String>> = searchTexts
@@ -269,7 +304,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             // Tracked once instead of repeatedly probing strictMatches.size(): once any concept
             // matches strictly, the fallback path is irrelevant for the rest of the scan.
             var strictFound = false
-            val cache = ProjectMembershipCache(mpsProject)
 
             for (lang in languages) {
                 val runtime = registry.getLanguage(lang) ?: continue
@@ -361,22 +395,110 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         return resolved
     }
 
+    /**
+     * One concept record at the requested detail level: the full record (concept info, features
+     * with ids/docs, and a sample node) or the structural projection produced by
+     * [conceptShapeJsonObject].
+     */
+    private fun conceptDetailsJsonObject(
+        concept: SAbstractConcept,
+        repository: SRepository,
+        mpsProject: MPSProject,
+        cache: ProjectMembershipCache,
+        shapeOnly: Boolean
+    ): JsonObject {
+        if (shapeOnly) return conceptShapeJsonObject(concept, repository)
+        val detailedInfo = conceptInfoJsonObject(concept, repository, mpsProject, cache)
+        detailedInfo.add("properties", conceptPropertiesJsonArray(concept, repository))
+        detailedInfo.add("references", conceptReferencesJsonArray(concept, repository, mpsProject, cache))
+        detailedInfo.add("children", conceptChildrenJsonArray(concept, repository, mpsProject, cache))
+        detailedInfo.add("sampleNode", conceptSampleJsonObject(concept))
+        return detailedInfo
+    }
+
+    /**
+     * `detail = "shape"` projection: everything needed to author a node of the concept
+     * (features, their types/targets and cardinalities) and nothing else. Agents were
+     * re-implementing exactly this reduction over the full record in ad-hoc scripts.
+     */
+    private fun conceptShapeJsonObject(concept: SAbstractConcept, repository: SRepository): JsonObject {
+        val obj = JsonObject()
+        obj.addProperty("qualifiedName", structureQualifiedName(concept))
+        obj.addProperty("conceptReference", PersistenceFacade.getInstance().asString(concept))
+        obj.addProperty("isAbstract", concept.isAbstract)
+        obj.addProperty("isRootable", isRootable(concept, repository))
+        val properties = JsonArray()
+        for (prop in concept.properties) {
+            val propObj = JsonObject()
+            propObj.addProperty("name", prop.name)
+            val type = prop.type
+            propObj.addProperty("type", propertyTypeName(type))
+            if (type is SEnumeration) {
+                val values = JsonArray()
+                for (literal in type.literals) values.add(literal.name ?: literal.presentation)
+                propObj.add("enumerationValues", values)
+            }
+            properties.add(propObj)
+        }
+        obj.add("properties", properties)
+        obj.add("references", linkShapeJsonArray(concept.referenceLinks))
+        obj.add("children", linkShapeJsonArray(concept.containmentLinks))
+        return obj
+    }
+
+    private fun linkShapeJsonArray(links: Collection<SAbstractLink>): JsonArray {
+        val result = JsonArray()
+        for (link in links) {
+            val obj = JsonObject()
+            obj.addProperty("name", link.name)
+            obj.addProperty("targetConcept", structureQualifiedName(link.targetConcept))
+            obj.addProperty("cardinality", linkCardinality(link))
+            result.add(obj)
+        }
+        return result
+    }
+
+    private fun linkCardinality(link: SAbstractLink): String = when (link) {
+        is SContainmentLink -> getCardinality(link)
+        is SReferenceLink -> getCardinality(link)
+        else -> "0..1"
+    }
+
+    /**
+     * Target concepts of every child and reference role of [concepts], in encounter order,
+     * deduplicated and without the requested concepts themselves. One hop only: `relatedConcepts`
+     * answers "what can I put in these roles", not "give me the whole reachable graph".
+     */
+    private fun roleTargetConcepts(concepts: Collection<SAbstractConcept>): List<SAbstractConcept> {
+        val targets = LinkedHashSet<SAbstractConcept>()
+        for (concept in concepts) {
+            for (link in concept.containmentLinks) targets.add(link.targetConcept)
+            for (link in concept.referenceLinks) targets.add(link.targetConcept)
+        }
+        targets.removeAll(concepts.toSet())
+        return targets.toList()
+    }
+
+    /**
+     * Built-in primitives (string/integer/boolean) are reference-equal to the [SPrimitiveTypes]
+     * constants but do not implement [SNamedElement]. Custom constrained data types and
+     * enumerations do implement [SNamedElement].
+     */
+    private fun propertyTypeName(type: SDataType): String = when (type) {
+        SPrimitiveTypes.STRING -> "string"
+        SPrimitiveTypes.INTEGER -> "integer"
+        SPrimitiveTypes.BOOLEAN -> "boolean"
+        is SNamedElement -> type.name ?: "unknown"
+        else -> "unknown"
+    }
+
     private fun conceptPropertiesJsonArray(concept: SAbstractConcept, repository: SRepository): JsonArray {
         val result = JsonArray()
         for (prop in concept.properties) {
             val obj = JsonObject()
             obj.addProperty("name", prop.name)
             val type = prop.type
-            // Built-in primitives (string/integer/boolean) are reference-equal to the
-            // SPrimitiveTypes constants but do not implement SNamedElement. Custom
-            // constrained data types and enumerations do implement SNamedElement.
-            val typeName = when (type) {
-                SPrimitiveTypes.STRING -> "string"
-                SPrimitiveTypes.INTEGER -> "integer"
-                SPrimitiveTypes.BOOLEAN -> "boolean"
-                is SNamedElement -> type.name ?: "unknown"
-                else -> "unknown"
-            }
+            val typeName = propertyTypeName(type)
             obj.addProperty("type", typeName)
             obj.addProperty("featureId", MetaIdHelper.getProperty(prop).serialize())
             val declarationNode = addSourceNodeAndResolve(obj, prop.sourceNode, repository)
@@ -404,11 +526,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             val obj = JsonObject()
             obj.addProperty("name", ref.name)
             obj.addProperty("targetConcept", structureQualifiedName(ref.targetConcept))
-            obj.addProperty("cardinality", when (ref) {
-                is SContainmentLink -> getCardinality(ref)
-                is SReferenceLink -> getCardinality(ref)
-                else -> "0..1"
-            })
+            obj.addProperty("cardinality", linkCardinality(ref))
             val featureId = when (ref) {
                 is SReferenceLink -> MetaIdHelper.getAssociation(ref).serialize()
                 is SContainmentLink -> MetaIdHelper.getAggregation(ref).serialize()
@@ -494,6 +612,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         languages: Iterable<SLanguage>,
         registry: LanguageRegistry,
         repository: SRepository,
+        cache: ProjectMembershipCache,
         limit: Int
     ): List<SAbstractConcept> {
         val subtokens = subtokensOf(simpleName)
@@ -504,6 +623,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             val runtime = registry.getLanguage(lang) ?: continue
             val langSimpleName = lang.qualifiedName.substringAfterLast('.')
             for (concept in runtime.concepts) {
+                if (cache.isFromAnotherOpenProject(concept, repository)) continue
                 val name = concept.name ?: ""
                 val doc = getDoc(concept.sourceNode?.resolve(repository))
                 val alias = concept.conceptAlias ?: ""
@@ -557,17 +677,19 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     private fun suggestForUnresolvedConceptRef(
         ref: String,
         registry: LanguageRegistry,
-        repository: SRepository
+        repository: SRepository,
+        cache: ProjectMembershipCache
     ): List<SAbstractConcept> {
         val simpleName = ref.substringAfterLast('.')
+        val candidateLanguages = languagesInProject(registry, repository, cache)
         if (ref.contains('.')) {
             val beforeLast = ref.substringBeforeLast('.')
             if (beforeLast.endsWith(".structure")) {
                 val langName = beforeLast.removeSuffix(".structure")
-                val targetLang = registry.allLanguages.firstOrNull { it.qualifiedName == langName }
+                val targetLang = candidateLanguages.firstOrNull { it.qualifiedName == langName }
                 if (targetLang != null) {
                     val scoped = rankConceptSuggestions(
-                        simpleName, listOf(targetLang), registry, repository,
+                        simpleName, listOf(targetLang), registry, repository, cache,
                         MAX_SUGGESTIONS_PER_UNRESOLVED
                     )
                     if (scoped.isNotEmpty()) return scoped
@@ -575,10 +697,23 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             }
         }
         return rankConceptSuggestions(
-            simpleName, registry.allLanguages, registry, repository,
+            simpleName, candidateLanguages, registry, repository, cache,
             MAX_SUGGESTIONS_PER_UNRESOLVED
         )
     }
+
+    /**
+     * Registered languages minus the ones owned by another open MPS project. The module
+     * repository is shared across open projects, so an unfiltered candidate list can answer a
+     * plain name with a same-named concept or language living in a sibling project — the caller
+     * cannot edit it and following the hint silently leaves its own project. Library and stub
+     * languages (owned by no open project) stay in the list.
+     */
+    private fun languagesInProject(
+        registry: LanguageRegistry,
+        repository: SRepository,
+        cache: ProjectMembershipCache
+    ): List<SLanguage> = registry.allLanguages.filter { !cache.isFromAnotherOpenProject(it, repository) }
 
     /**
      * Computes "did you mean" candidates for an unresolved languageRef by subtoken-matching the
@@ -588,11 +723,13 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      */
     private fun suggestForUnresolvedLanguageRef(
         ref: String,
-        registry: LanguageRegistry
+        registry: LanguageRegistry,
+        repository: SRepository,
+        cache: ProjectMembershipCache
     ): List<SLanguage> {
         val subtokens = subtokensOf(ref.substringAfterLast('.'))
         if (subtokens.isEmpty()) return emptyList()
-        return registry.allLanguages
+        return languagesInProject(registry, repository, cache)
             .mapNotNull { lang ->
                 val tail = lang.qualifiedName.substringAfterLast('.')
                 val score = subtokens.count { tail.contains(it, ignoreCase = true) }
@@ -613,7 +750,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         unresolvedConceptRefs: Collection<String>,
         unresolvedLanguageRefs: Collection<String>,
         registry: LanguageRegistry,
-        repository: SRepository
+        repository: SRepository,
+        cache: ProjectMembershipCache
     ): JsonArray {
         val facade = PersistenceFacade.getInstance()
         val arr = JsonArray()
@@ -622,7 +760,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             entry.addProperty("ref", ref)
             entry.addProperty("kind", "concept")
             val suggestions = JsonArray()
-            for (c in suggestForUnresolvedConceptRef(ref, registry, repository)) {
+            for (c in suggestForUnresolvedConceptRef(ref, registry, repository, cache)) {
                 val s = JsonObject()
                 s.addProperty("qualifiedName", structureQualifiedName(c))
                 s.addProperty("conceptReference", facade.asString(c))
@@ -636,7 +774,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             entry.addProperty("ref", ref)
             entry.addProperty("kind", "language")
             val suggestions = JsonArray()
-            for (lang in suggestForUnresolvedLanguageRef(ref, registry)) {
+            for (lang in suggestForUnresolvedLanguageRef(ref, registry, repository, cache)) {
                 val s = JsonObject()
                 s.addProperty("qualifiedName", lang.qualifiedName)
                 s.addProperty("languageReference", facade.asString(lang))
@@ -649,30 +787,26 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     }
 
     /**
-     * Builds the partial-success envelope: resolved data is saved to the temp file (same shape
-     * as `saveToTempFileResult`), and the outer envelope additionally carries `warnings` (one
-     * line per unresolved ref) and `details.unresolved` (the suggestion structure built by
-     * [buildUnresolvedDetailsJson]). If the temp-file write fails we degrade to a plain error
-     * envelope so the caller still sees the failure rather than partial silent data loss.
+     * Builds the partial-success envelope: resolved data is inlined or saved to a temp file by the
+     * same [finalizeResult] rule as the all-resolved case, and the outer envelope additionally
+     * carries `warnings` (one line per unresolved ref) and `details.unresolved` (the suggestion
+     * structure built by [buildUnresolvedDetailsJson]).
      */
     private fun buildPartialSuccessResult(
         dataJson: String,
         unresolvedConceptRefs: Collection<String>,
         unresolvedLanguageRefs: Collection<String>,
-        unresolvedDetails: JsonArray
+        unresolvedDetails: JsonArray,
+        maxInlineBytes: Int
     ): String {
-        val tempPath = try {
-            saveToTempFile(dataJson).absolutePath
-        } catch (e: Exception) {
-            return errJson("Failed to save result to a temporary file: ${e.message}")
-        }
         val warnings = mutableListOf<String>()
         for (ref in unresolvedConceptRefs) warnings.add("Could not resolve conceptRef '$ref' — see details.unresolved for suggestions")
         for (ref in unresolvedLanguageRefs) warnings.add("Could not resolve languageRef '$ref' — see details.unresolved for suggestions")
-        return okJson(
-            JsonPrimitive(tempPath),
+        return finalizeResult(
+            dataJson,
+            maxInlineBytes,
+            details = mapOf("unresolved" to unresolvedDetails),
             warnings = warnings,
-            details = mapOf("unresolved" to unresolvedDetails)
         )
     }
 }

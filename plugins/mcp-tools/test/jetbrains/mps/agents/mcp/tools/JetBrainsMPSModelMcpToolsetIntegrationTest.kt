@@ -589,10 +589,9 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 startingPoint = modelRefOf(model),
             )
         }
-        // get_project_structure returns the temp-file path in `data`, and the file itself holds an
-        // {ok, data} envelope whose `data` is the model JSON — unwrap both layers.
-        val fileEnvelope = JsonParser.parseString(File(extractFilePathFromData(response)).readText()).asJsonObject
-        val modelJson = parseDataObject(fileEnvelope.get("data"))
+        // get_project_structure inlines a small dump in `data` and otherwise returns a temp-file
+        // path whose file holds a second {ok, data} envelope — the base helper accepts both.
+        val modelJson = payloadObjectFromOkData(response)
         val devkitEntry = modelJson.getAsJsonArray("usedLanguages")
             .map { it.asJsonObject }
             .single { it.has("kind") && it.get("kind").asString == "devkit" && it.get("name").asString == devkitName }
