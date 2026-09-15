@@ -1,7 +1,7 @@
 ---
 name: mps-console
 description: >-
-  Use when running or generating MPS Console code, or when writing `jetbrains.mps.lang.smodel.query` queries anywhere in MPS (intentions, behavior, actions, generator queries, plain BaseLanguage). Covers the console command languages (`jetbrains.mps.console.base` / `ideCommands` / `internalCommands` / `scripts`): `BLCommand` / `BLExpression`, the `#print*` / `#show` result printers, IDE commands (`#make` / `#clean` / `#removeGenSources` / `#reloadClasses` / `#stat` / `#showGenPlan` / `#showBrokenRefs`), `#exec` / `forEach` / `refactor` scripts. Covers the smodel query language: `#nodes` / `#references` / `#models` / `#modules` / `#instances` / `#usages`, the `with`-statement scope wrapper, scopes (`project` / `editable` / `global` / `visible` / `modules` / `models` / `custom`) and query parameters (`scope` / `exact` / `r/o+`). Also how to insert, read, recall, and run console commands with `mps_mcp_insert_console_command_from_json`, `mps_mcp_get_current_editor_root_node(source="console")`, `mps_mcp_get_console_history`, `mps_mcp_recall_console_command`, and `mps_mcp_run_console_command`.
+  Run or generate MPS Console code and `jetbrains.mps.lang.smodel.query` queries in MPS intentions, behavior, actions, generators, and BaseLanguage. Covers console commands, result printers, IDE operations, scripts, scoped node/model/module queries, and inserting, reading, recalling, or running commands through MPS MCP tools.
 type: reference
 ---
 
