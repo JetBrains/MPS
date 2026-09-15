@@ -367,22 +367,13 @@ script to write, and it dogfoods the contract in 3.3.
 
 ## 7. Quick wins available before the study
 
-- `mps-mcp-workflow/references/mcp-tools-index.md` claims completeness but omits
-  `mps_mcp_search_root_node_by_name`, `mps_mcp_parse_java_and_insert`,
-  `mps_mcp_create_run_configuration`; regenerate the index from the tool registry (a P-off
-  script over `tools/list` output — cheap and removes one drift source permanently).
 - Add the server-side call log flag now; it is useful for support cases independent of the study.
 - Decide the packaging check for non-`.md` skill resources now, so the first script does not
   silently fail to ship.
 
 ## 8. Open questions and risks
 
-- Windows developers: `python3` may be absent; scripts should also run as `python` and the
-  skill text must say what to install.
-- Junie's shell: confirm it can run local Python and read files the agent wrote; otherwise
-  Junie benefits only from D, S and T tiers.
-- Auth: confirm the IntelliJ MCP server on `/stream` requires no token in the versions you
-  ship; if a token appears, the client needs `MPS_MCP_TOKEN`.
+- Windows developers: `python3` may be absent; agents must be able to fall back to using the skills without python.
 - Scope creep: the study will surface tool-description defects faster than script
   opportunities; keep a separate "docs defects" list so they get fixed without waiting for the
   scripting work.
