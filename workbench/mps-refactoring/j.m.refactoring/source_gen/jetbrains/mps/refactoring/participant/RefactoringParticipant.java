@@ -13,6 +13,7 @@ import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.ide.findusages.model.SearchResults;
 import org.jetbrains.mps.openapi.model.SNode;
+import java.util.function.Function;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
 import java.util.ArrayList;
@@ -95,16 +96,24 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
 
   /**
    * StateFactory deals with state objects (typed IS and FS) to get initial and final data objects
+   * A factory binds to a participant once; the returned functions are then applied to each of its state objects.
    */
   abstract class ParticipantStateFactory<IS, FS> {
-    public abstract <I> I getInitial(RefactoringParticipant<I, ?, ?, ?> participant, IS oldNode);
-    public abstract <F> F getFinal(RefactoringParticipant<?, F, ?, ?> participant, FS newNode);
+    /**
+     * function to convert driver's initial state objects into this participant's initial data objects
+     */
+    public abstract <I> Function<IS, I> getInitial(RefactoringParticipant<I, ?, ?, ?> participant);
+    /**
+     * function to convert driver's final state objects into this participant's final data objects
+     */
+    public abstract <F> Function<FS, F> getFinal(RefactoringParticipant<?, F, ?, ?> participant);
 
     public <I, F> ParticipantApplied<I, F> apply(RefactoringParticipant<I, F, ?, ?> participant, List<IS> oldNodes) {
       return apply(participant, oldNodes, null);
     }
-    public <I, F> ParticipantApplied<I, F> apply(final RefactoringParticipant<I, F, ?, ?> participant, List<IS> oldNodes, Iterable<ParticipantApplied> appliedParents) {
-      List<I> initialState = ListSequence.fromList(oldNodes).select((it) -> getInitial(participant, it)).toList();
+    public <I, F> ParticipantApplied<I, F> apply(RefactoringParticipant<I, F, ?, ?> participant, List<IS> oldNodes, Iterable<ParticipantApplied<?, ?>> appliedParents) {
+      final Function<IS, I> toInitial = getInitial(participant);
+      List<I> initialState = ListSequence.fromList(oldNodes).select((it) -> toInitial.apply(it)).toList();
       return new ParticipantApplied<>(participant, initialState, appliedParents);
     }
 
@@ -113,47 +122,58 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       if (changes == null || ListSequence.fromList(changes).count() != ListSequence.fromList(newNodes).count()) {
         throw new IllegalStateException();
       }
+      Function<FS, F> toFinal = getFinal(applied.getParticipant());
       for (int x = ListSequence.fromList(newNodes).count(), i = 0; i < x; i++) {
         List<Change<I, F>> nextChange = ListSequence.fromList(changes).getElement(i);
         if (nextChange == null) {
           // completely legitimate, PA.mapNotNull records null for each input participant refused to handle. No reason to ask getFinal for such participant.
           continue;
         }
-        final F finalState = getFinal(applied.getParticipant(), ListSequence.fromList(newNodes).getElement(i));
+        final F finalState = toFinal.apply(ListSequence.fromList(newNodes).getElement(i));
         ListSequence.fromList(nextChange).visitAll((it) -> it.confirm(finalState, repo, session));
       }
     }
   }
 
   class CollectingParticipantStateFactory<IS, FS> extends ParticipantStateFactory<IS, FS> {
-    public <I> I getInitial(RefactoringParticipant<I, ?, ?, ?> participant, IS oldNode) {
+    public <I> Function<IS, I> getInitial(RefactoringParticipant<I, ?, ?, ?> participant) {
       // XXX casts to RP with specific InitialPoint and FinalPoint isn't nice, yet to keep these two extra type parameters is not worth it.
       // What is lost is the compile-time guarantee that a driver's node type matches its participants' point type;  a mismatch would become a ClassCastException inside beforeMove. 
-      // Of the five drivers, three do not have  that guarantee today anyway (MigrationExecutorImpl is raw; MoveNodesUtil, RenameRefactoringBody and 
-      // MoveModelActionExecutor go through RefactoringBody<IP, FP>, which keeps the link and is unaffected).  
-      // Only RefactoringProcessor.performRefactoring's two direct callers lose it — and there the factory and the 
-      // extension point are chosen in the same expression (ImplicitNodeRenamer_extension)
-      // In other words, these three keep the link via RefactoringBody, MigrationExecutorImpl never had it (raw participant), so exactly one — ImplicitNodeRenamer_extension — loses a check it previously had.
-      return ((RefactoringParticipant<I, ?, IS, ?>) participant).getDataCollector().beforeMove(oldNode);
+      // Of the five drivers, three (MoveNodesUtil, RenameRefactoringBody and MoveModelActionExecutor) keep the link via RefactoringBody, MigrationExecutorImpl is raw and never had it;
+      // so exactly one — ImplicitNodeRenamer_extension — loses a check it previously had.
+      final RefactoringDataCollector<I, ?, IS, ?> dataCollector = ((RefactoringParticipant<I, ?, IS, ?>) participant).getDataCollector();
+      return (IS oldNode) -> dataCollector.beforeMove(oldNode);
     }
-    public <F> F getFinal(RefactoringParticipant<?, F, ?, ?> participant, FS oldNode) {
-      return ((RefactoringParticipant<?, F, ?, FS>) participant).getDataCollector().afterMove(oldNode);
+    public <F> Function<FS, F> getFinal(RefactoringParticipant<?, F, ?, ?> participant) {
+      final RefactoringDataCollector<?, F, ?, FS> dataCollector = ((RefactoringParticipant<?, F, ?, FS>) participant).getDataCollector();
+      return (FS oldNode) -> dataCollector.afterMove(oldNode);
     }
   }
 
   class DeserializingParticipantStateFactory extends ParticipantStateFactory<SNode, SNode> {
-    public <I> I getInitial(RefactoringParticipant<I, ?, ?, ?> participant, SNode serializedInitial) {
-      return ((PersistentRefactoringParticipant<I, ?, ?, ?>) participant).deserializeInitialState(serializedInitial);
+
+    @Override
+    public <I> Function<SNode, I> getInitial(RefactoringParticipant<I, ?, ?, ?> participant) {
+      final PersistentRefactoringParticipant<I, ?, ?, ?> p = asPersistent(participant);
+      return (SNode serializedInitial) -> p.deserializeInitialState(serializedInitial);
     }
-    public <F> F getFinal(RefactoringParticipant<?, F, ?, ?> participant, SNode serializedFinal) {
-      return ((PersistentRefactoringParticipant<?, F, ?, ?>) participant).deserializeFinalState(serializedFinal);
+    @Override
+    public <F> Function<SNode, F> getFinal(RefactoringParticipant<?, F, ?, ?> participant) {
+      final PersistentRefactoringParticipant<?, F, ?, ?> p = asPersistent(participant);
+      return (SNode serializedFinal) -> p.deserializeFinalState(serializedFinal);
+    }
+    private static <I, F> PersistentRefactoringParticipant<I, F, ?, ?> asPersistent(RefactoringParticipant<I, F, ?, ?> p) {
+      if (p instanceof PersistentRefactoringParticipant) {
+        return (PersistentRefactoringParticipant<I, F, ?, ?>) p;
+      }
+      throw new IllegalArgumentException();
     }
   }
 
   class ParticipantApplied<I, F> {
     private final RefactoringParticipant<I, F, ?, ?> myParticipant;
     private final List<I> myInitialStates;
-    private final List<ParticipantApplied> myAppliedParents;
+    private final List<ParticipantApplied<?, ?>> myAppliedParents;
 
     private List<List<Change<I, F>>> changes;
 
@@ -167,7 +187,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       return myInitialStates;
     }
 
-    public ParticipantApplied(RefactoringParticipant<I, F, ?, ?> participant, List<I> initialState, Iterable<ParticipantApplied> appliedParents) {
+    public ParticipantApplied(RefactoringParticipant<I, F, ?, ?> participant, List<I> initialState, Iterable<ParticipantApplied<?, ?>> appliedParents) {
       this.myParticipant = participant;
       this.myInitialStates = initialState;
       // FIXME we treat null and empty myAppliedParents differently (to satisfy legacy code path in MoveAspectsParticipant along base getChanges() impl in RefactoringParticipantBase)
@@ -198,11 +218,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       // is busy creating necessary sub-monitors, and then hit MoveAspectsParticipant override with empty list
       if (myAppliedParents != null && myParticipant instanceof RecursiveParticipant) {
         // Suppressed: java compiler will ignore generics anyway, since a raw type is used
-        if (ListSequence.fromList(myAppliedParents).any(new _FunctionTypes._return_P1_E0<Boolean, ParticipantApplied>() {
-          public Boolean invoke(ParticipantApplied parent) {
-            return Objects.equals(parent.getParticipant(), ParticipantApplied.this.getParticipant()) && ListSequence.fromList(parent.getInitialStates()).containsSequence(ListSequence.fromList(ParticipantApplied.this.getInitialStates())) && ListSequence.fromList(ParticipantApplied.this.getInitialStates()).containsSequence(ListSequence.fromList(parent.getInitialStates()));
-          }
-        })) {
+        if (ListSequence.fromList(myAppliedParents).any((parent) -> Objects.equals(parent.getParticipant(), ParticipantApplied.this.getParticipant()) && ListSequence.fromList(parent.getInitialStates()).containsSequence(ListSequence.fromList(ParticipantApplied.this.getInitialStates())) && ListSequence.fromList(ParticipantApplied.this.getInitialStates()).containsSequence(ListSequence.fromList(parent.getInitialStates())))) {
           // todo: checked exception
           throw new IllegalStateException("infinite recursion detected");
         } else {

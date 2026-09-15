@@ -4873,6 +4873,8 @@
         <node concept="A3Dl8" id="5SvlHWoltNC" role="1tU5fm">
           <node concept="3uibUv" id="5SvlHWoltND" role="A3Ik2">
             <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
+            <node concept="3qTvmN" id="1zEfp2qVtV3" role="11_B2D" />
+            <node concept="3qTvmN" id="1zEfp2qV_Xj" role="11_B2D" />
           </node>
         </node>
       </node>
@@ -4984,6 +4986,8 @@
         <node concept="A3Dl8" id="112yVMIA$UV" role="1tU5fm">
           <node concept="3uibUv" id="5z_gLGetj3C" role="A3Ik2">
             <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
+            <node concept="3qTvmN" id="1zEfp2r1PHg" role="11_B2D" />
+            <node concept="3qTvmN" id="1zEfp2r1Yz6" role="11_B2D" />
           </node>
         </node>
       </node>

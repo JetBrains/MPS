@@ -79,7 +79,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
 
 
   @Override
-  public List<List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>> getChanges(List<SNodeReference> initialStates, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor, final Iterable<RefactoringParticipant.ParticipantApplied> parents) {
+  public List<List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>> getChanges(List<SNodeReference> initialStates, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor, final Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> parents) {
     return ListSequence.fromList(initialStates).select((initialState) -> getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor, parents)).toList();
   }
 
