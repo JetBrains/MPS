@@ -377,3 +377,55 @@ script to write, and it dogfoods the contract in 3.3.
 - Scope creep: the study will surface tool-description defects faster than script
   opportunities; keep a separate "docs defects" list so they get fixed without waiting for the
   scripting work.
+
+## 9. Outcome (2026-09-15) — what the study found and what shipped
+
+Executed per `skill-script-automation-runbook.md`; full evidence in `plugins/mcp-tools/study/`
+(`HOTSPOT_REPORT.md`, `observations.md`, `docs-defects.md`, `runs/` outside the repo).
+
+### 9.1 What was measured
+Four pilot runs (S1 greenfield DSL, S3 bulk authoring × opus, sonnet), all task-PASS; gate 1
+stopped the matrix there, so S2, S4–S8 and hypotheses H2, H5 (fix loops), H7 (discovery-heavy),
+H8 remain unmeasured. Evidence = stream-json transcripts + the new server call log.
+
+| | S1 opus | S1 sonnet | S3 opus | S3 sonnet |
+|---|---|---|---|---|
+| turns / minutes | 181 / 23 | 148 / 22 | 100 / 12 | 28 / 4 |
+| tool calls (MCP) | 173 (90) | 135 (71) | 97 (68) | 26 (11) |
+| temp-file envelopes | 32 | 23 | 25 | 4 |
+| cache-read tokens | 27.1 M | 27.5 M | 13.6 M | 4.0 M |
+
+### 9.2 Verdict on the original hypotheses
+- The biggest cost is **turn count × fixed context** (~150 K cache-read tokens per turn), not
+  payload size. Anything that removes a round trip wins; anything that only shrinks a payload wins
+  little (1.2(6) confirmed, more strongly than expected).
+- **H4 (discovery reads) is the #1 hotspot**: a third of MCP results were temp-file paths that cost a
+  second call and 10–40 KB of context to extract a few identifiers. Remedy tier S, not scripts.
+- **H3 (bulk creation) was already solved by the tools** (top-level-array insert via file path);
+  the cost moved to workers writing CSV→blueprint and result-verification Python on the fly — the
+  one place where the study's original idea (scripts shipped in skills) is supported by evidence.
+- **Verification habits** (50 validation calls where one sufficed) are shaped by envelopes
+  (`rootsChecked`), not by documentation — a fifth remedy category the design did not foresee.
+- **P-on (online chain) scripts have no evidence** in the pilot and were not built.
+- Two protocol findings: the shared module repository leaks across open projects (one scratch
+  project per run), and background implementers/observers need commit-or-report checkpoints.
+
+### 9.3 What shipped (all on `261/vaclav/MCP`)
+| Tier | Remedy | Commit |
+|---|---|---|
+| infra | `McpCallLogListener` (ToolCallListener, `-Dmps.mcp.calllog=<file>`, off by default) | cc9c0a595511 |
+| D | temp-dir rule, format literals, node-vs-model and array-vs-object notes, model-scope validation, default-value semantics, jump tables, "start here" routing in 14 aspect skills | 9c8afa9d4db6 |
+| P-off | `mps_dump.py`, `table_to_bulk_insert.py`, `concept_shape.py` with examples, packaging + drift tests, validator + conventions rule | 66041c7d37f1, 3c25f82a65f1 |
+| S | inline small results (`maxInlineBytes`), `detail="shape"`, `includeChildRoleConcepts`, project-scoped suggestions | 8c2da291c6f7 |
+| S | `rootsChecked`/`perRoot`, bulk-insert `responseDetail`, `create_module` model list, enum default marker, temp-dir error text | (batch 2 — see runbook 7.4) |
+| process | `skill-optimization-study` skill (re-runnable procedure, 17 lessons) | a7828acb620d |
+
+No A/B was run (gate 2); expected effect from the baseline: ≈ 84 avoidable follow-up reads and
+≈ 60 avoidable validation calls across the four runs, i.e. roughly a quarter of all turns.
+
+### 9.4 Not done / open
+- A/B re-run; the full 32-run matrix; S2, S4–S8 scenarios (prompts and fixtures are ready).
+- Candidate scripts without evidence (`wire_references.py`, `validate_until_clean.py`,
+  `dump_language.py`, `mps_mcp_client.py`) — revisit only with S4/S5/S8 data.
+- Tool-behaviour defects that need platform or deeper changes: name suggestions still drawn from
+  the shared registry (filtered, not scoped); `ToolSearch` schema fetches are harness overhead.
