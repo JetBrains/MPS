@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mps-mcp-server": {
+      "type": "http",
+      "url": "http://localhost:64343/stream"
+    }
+  }
+}
