@@ -17,9 +17,9 @@ import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.smodel.tempmodel.TemporaryModels;
 import jetbrains.mps.smodel.tempmodel.TempModuleOptions;
 import jetbrains.mps.debugger.java.api.evaluation.EvaluationException;
+import jetbrains.mps.smodel.ModelAccessHelper;
 import jetbrains.mps.debugger.java.api.evaluation.Evaluator;
 import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
-import jetbrains.mps.smodel.ModelAccessHelper;
 import jetbrains.mps.util.Computable;
 import org.jetbrains.mps.openapi.model.SNode;
 import jetbrains.mps.smodel.behaviour.BHReflection;
@@ -57,9 +57,8 @@ public abstract class EvaluationContainer implements IEvaluationContainer {
 
   @Override
   public Class generateClass() throws EvaluationException {
-    // XXX this method is invoked from EvaluationUi, from a thread without any model access.
-    // but as it used to work for years, don't want to touch it
-    SModel containerModel = myContainerModel.resolve(myDebuggerRepository);
+    // Release model read access before make, which needs write access.
+    SModel containerModel = new ModelAccessHelper(myDebuggerRepository).runReadAction(() -> myContainerModel.resolve(myDebuggerRepository));
     return GeneratorUtil.generateAndLoadEvaluatorClass(myProject, containerModel, Properties.EVALUATOR_NAME);
   }
 

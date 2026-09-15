@@ -270,7 +270,9 @@ public class WorkbenchMakeService extends AbstractMakeService implements IMakeSe
     };
     PerformInBackgroundOption bg = MakeServiceConfiguration.getInstance(ideaPrj).getMakeInBackgroundOption();
     final Task platformTask;
-    if (bg.shouldStartInBackground()) {
+    // A modal progress blocks the EDT until make completes.
+    // When make is requested off the EDT, the EDT may be inside a model read action and the write action of make would deadlock (MPS-40142).
+    if (bg.shouldStartInBackground() || !(ThreadUtils.isInEDT())) {
       platformTask = new Task.Backgroundable(ideaPrj, scrName, true) {
         @Override
         public void run(@NotNull ProgressIndicator indicator) {
