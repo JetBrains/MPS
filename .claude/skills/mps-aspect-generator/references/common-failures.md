@@ -11,7 +11,7 @@ Read this when: a generator doesn't behave as expected — start here to map an 
 | Wrong order of children in output | Templates produce insertion order of rules; mixed with copies | Use an explicit LOOP or script to reorder |
 | "Ambiguous reduction rule" | Two rules match the same node | Make rules mutually exclusive via `applicableConcept` or `condition` |
 | Stale code after language edit | Generator module not rebuilt | Rebuild generator module; regenerate consumer model |
-| `RulesFunctions_…` method typed wrong | Java parser return-type issue | See `mps-model-manipulation/references/variable-declarations.md` — replace return type child |
+| `RulesFunctions_…` method typed wrong | Java parser return-type issue | See `references/variable-declarations.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin — replace return type child |
 | Reduction fires forever / stack overflow | Reduction matches its own output | Change target concept, or use `DismissTopMappingRule`, or copy-through with `$COPY_SRC$` |
 | `genContext.get output … for (X)` returns null at reference site | Writer rule ran in a later step than reader; or reader used wrong input node | Add priority constraint so writer runs first; or pass the *original* source node (not a copy) as the input to `get output` |
 | Weaving rule's template content appears unwanted | Template has scaffolding around the `TemplateFragment` | Move `TemplateFragment` onto the exact subtree to insert; scaffolding is ignored |

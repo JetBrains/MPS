@@ -44,7 +44,7 @@ parentNode.isInstanceOf(CommandList) && parentNode.parent.isInstanceOf(Script);
 
 Both bodies are single `ExpressionStatement`s whose expression is the returned `boolean`. The `parentNode.parent` chain is a plain `DotExpression` with operation `Node_GetParentOperation` (`jetbrains.mps.lang.smodel.structure.Node_GetParentOperation`), followed by `isInstanceOf` (`Node_IsInstanceOfOperation`).
 
-> **Reading a property on the typed parent**: `parentNode` is `node<>`, so `isInstanceOf(X)` works but `parentNode.someProp` does not — `SPropertyAccess`/`SLinkAccess` require the operand to be typed `node<X>`. Wrap with `SNodeTypeCastExpression` first: `(parentNode : X).someProp`. See `mps-model-manipulation/references/dot-expression-basics.md` for the full blueprint and the `:` vs `as` cast forms.
+> **Reading a property on the typed parent**: `parentNode` is `node<>`, so `isInstanceOf(X)` works but `parentNode.someProp` does not — `SPropertyAccess`/`SLinkAccess` require the operand to be typed `node<X>`. Wrap with `SNodeTypeCastExpression` first: `(parentNode : X).someProp`. See `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin for the full blueprint and the `:` vs `as` cast forms.
 
 Minimal `ConstraintFunction_CanBeAChild` blueprint:
 

@@ -64,7 +64,7 @@ If you define (or import) `delete_action_id` but **not** `backspace_action_id`, 
 
 ## Example: Keyboard-Deletable Annotation (Attribute) Cells
 
-An annotation (node attribute — see `mps-aspect-structure-concepts/references/attributes-and-annotations.md`) projects *around* its host node, so the caret usually sits on one of the annotation's own label cells, where the default `Delete` does nothing useful. To let `Delete`/`Backspace` remove the annotation, override `delete_action_id` in an action map and attach it to the annotation editor's label cell via the cell's `actionMap` link.
+An annotation (node attribute — see `references/attributes-and-annotations.md` in the `mps-aspect-structure-concepts` skill root after loading that companion skill from the same origin) projects *around* its host node, so the caret usually sits on one of the annotation's own label cells, where the default `Delete` does nothing useful. To let `Delete`/`Backspace` remove the annotation, override `delete_action_id` in an action map and attach it to the annotation editor's label cell via the cell's `actionMap` link.
 
 From `jetbrains.mps.lang.test` (the match-relaxation marks `UnorderedChildrenMark`, `IgnoreNodeMark`, …):
 
@@ -89,7 +89,7 @@ What makes this pattern work:
 - **`BACKSPACE` comes for free** — defining `delete_action_id` auto-registers an identical `BACKSPACE` (see above), so both keys remove the annotation.
 - **Wire the map from the cell explicitly** (`actionMap` reference on the annotation editor's leading `CellModel_Constant`) — the caret is on the *annotation's* cells, so a map discovered by naming convention on the host concept would never fire here.
 - Two-step deletion is usually skipped for small annotation cells; if you want the highlight-first behaviour, call `node.approveDelete(editorContext)` before mutating (see `selection-and-deletion.md`).
-- Pair this with an intention that *attaches* the annotation (see `mps-aspect-intentions/references/execute-idioms.md`) so users can both add and remove the mark from the keyboard.
+- Pair this with an intention that *attaches* the annotation (see `references/execute-idioms.md` in the `mps-aspect-intentions` skill root after loading that companion skill from the same origin) so users can both add and remove the mark from the keyboard.
 
 Verbatim JSON of the whole root, extracted from the live `DeleteMatchRelaxationMark` node (insert with `mps_mcp_insert_root_node_from_json`, then set the `variableDeclaration` target of the last statement to the freshly inserted local variable):
 

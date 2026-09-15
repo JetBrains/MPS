@@ -6,9 +6,13 @@ type: reference
 
 # Writing Tests in MPS Models
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 MPS ships a dedicated **test language** — `jetbrains.mps.lang.test` — for testing language artefacts (typesystem, scopes, constraints, dataflow, editor, generator, migrations). Plain JUnit-style tests against runtime classes use `jetbrains.mps.baseLanguage.unitTest` (the `BTestCase` concept).
 
-A test is a **root node** living in a model whose **stereotype is `tests`** (pass `modelName: "<name>@tests"` to `mps_mcp_create_model`; the on-disk file ends in `@tests.mps`). See [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md) for all model identifiers. The test model lives in a Solution module carrying the **`tests` facet**, not in the language module itself, so it can depend on the language under test plus arbitrary runtime libraries.
+A test is a **root node** living in a model whose **stereotype is `tests`** (pass `modelName: "<name>@tests"` to `mps_mcp_create_model`; the on-disk file ends in `@tests.mps`). See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers. The test model lives in a Solution module carrying the **`tests` facet**, not in the language module itself, so it can depend on the language under test plus arbitrary runtime libraries.
 
 This skill is the reference for *what to put in a test model* and *what each test type means*. For the mechanics of creating/modifying nodes via MCP, see `mps-model-manipulation` and the `mps_mcp_*` tool docs. Documentation: <https://www.jetbrains.com/help/mps/testing-languages.html>. Source: `plugins/mps-testing/languages/lang.test/`.
 

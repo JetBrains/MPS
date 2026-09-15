@@ -6,6 +6,10 @@ type: reference
 
 # Running MPS Root Nodes
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 This skill covers the path from "an MPS root node exists in a model" to "a green IDE run / red stack trace in my hand," using only MCP tools. It targets user-level artifacts (DSL `main`-like roots, plain `ClassConcept` mains, test cases) — **not** launching MPS itself (the `MPS` / `MPS (2nd inst.)` configs are a different topic, see `AGENTS.md` or `CLAUDE.md`).
 
 ## Critical Directives

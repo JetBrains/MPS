@@ -4,6 +4,10 @@ description: Create or refresh project-local DSL skills under `.agents/skills/<d
 type: reference
 ---
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 ### When to Use
 * A new MPS sample or DSL project has no generated DSL skill under `.agents/skills/<dsl-name>-dsl/`, or the existing one is outdated.
 * The user says "bootstrap DSL skill", "generate DSL skill", or "document this DSL".
@@ -68,8 +72,8 @@ The `<dsl-name>` slug is derived from the language namespace: use stable lowerca
 * Reference directory links.
 
 ### Reference Files
-* `references/concepts.md`: concept hierarchy, rootable concepts, properties, child roles, references, and semantic notes.
-* `references/sandbox.md`: sandbox model refs, representative roots, configuration nodes, reference targets, and stable node refs.
-* `references/workflows.md`: creation/editing recipes, including when to use full-root JSON versus skeleton-plus-subtrees.
-* `references/gotchas.md`: reference formats, ordering constraints, required roles, expression precedence issues, extension-language dependencies, and known validation failures.
+* `concepts.md` under the generated skill's `references/`: concept hierarchy, rootable concepts, properties, child roles, references, and semantic notes.
+* `sandbox.md` under the generated skill's `references/`: sandbox model refs, representative roots, configuration nodes, reference targets, and stable node refs.
+* `workflows.md` under the generated skill's `references/`: creation/editing recipes, including when to use full-root JSON versus skeleton-plus-subtrees.
+* `gotchas.md` under the generated skill's `references/`: reference formats, ordering constraints, required roles, expression precedence issues, extension-language dependencies, and known validation failures.
 * `references/blueprints/`: valid compact JSON skeletons and subtree templates.

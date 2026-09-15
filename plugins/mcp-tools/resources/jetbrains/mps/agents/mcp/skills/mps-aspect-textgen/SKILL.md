@@ -6,9 +6,13 @@ type: reference
 
 # MPS TextGen Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 **TextGen** turns a model (usually the output of generation) into plain text files. It is how BaseLanguage becomes `.java` on disk, and how any text-targeting language serialises its models. Lives in `<lang>/languageModels/textGen.mps`, language `jetbrains.mps.lang.textGen`. Rule bodies are BaseLanguage + smodel + textgen-specific statements (`append`, `indent buffer`, `with indent`).
 
-**Prerequisite for any insert:** the textGen model must exist (`mps_mcp_create_model` with `modelName: "<lang>.textGen"` — aspect ID `textGen`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)) and must import `jetbrains.mps.lang.textGen`, `jetbrains.mps.baseLanguage`, and `jetbrains.mps.lang.smodel` as used languages **before** the first `mps_mcp_insert_root_node_from_json`. Missing any of these three causes node inserts to fail with unresolved-concept errors. See step 1 of the Common-Path Workflow.
+**Prerequisite for any insert:** the textGen model must exist (`mps_mcp_create_model` with `modelName: "<lang>.textGen"` — aspect ID `textGen`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) and must import `jetbrains.mps.lang.textGen`, `jetbrains.mps.baseLanguage`, and `jetbrains.mps.lang.smodel` as used languages **before** the first `mps_mcp_insert_root_node_from_json`. Missing any of these three causes node inserts to fail with unresolved-concept errors. See step 1 of the Common-Path Workflow.
 
 ## Critical Directives
 

@@ -54,4 +54,4 @@ A `"warnings"` array may appear at the top level alongside `data` when the stagi
 }
 ```
 
-Treat a non-empty `warnings` list as a signal to either fix the reference target before writing, or accept that the write will create a dynamic (potentially broken) reference. See `mps-mcp-workflow/references/reference-formats.md` for the full envelope shape.
+Treat a non-empty `warnings` list as a signal to either fix the reference target before writing, or accept that the write will create a dynamic (potentially broken) reference. See `references/reference-formats.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin for the full envelope shape.

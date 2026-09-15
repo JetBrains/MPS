@@ -7,6 +7,10 @@ type: reference
 
 # MPS Quotations and Anti-quotations
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 A **quotation** is a node literal — a concise expression that evaluates to an `SNode` (or tree of `SNode`s) at runtime. Instead of building nodes manually via the smodel API, you write the desired structure in the target language syntax and let MPS wrap it. Anti-quotations ("antiquotations") are escape holes inside a quotation where a runtime expression is spliced in.
 
 **Required used language:** `jetbrains.mps.lang.quotation` (UUID `3a13115c-633c-4c5c-bbcc-75c4219e9555`)

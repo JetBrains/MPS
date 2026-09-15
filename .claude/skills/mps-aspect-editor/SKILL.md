@@ -6,6 +6,10 @@ type: reference
 
 # MPS Editor — Technical Reference
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The `jetbrains.mps.lang.editor` language defines projectional editors as trees of **cell models** (display elements) with **cell layouts** and **style items**. This skill is the technical lookup: concept names, suffixes, style classes, and the rules that decide which cell model to use where.
 
 ## Critical Directives
@@ -21,7 +25,7 @@ The `jetbrains.mps.lang.editor` language defines projectional editors as trees o
 
 ## Common Workflow
 
-0. **Check whether the editor model already exists — it almost always does.** `editor` is one of a language's default aspects (alongside `structure`, `constraints`, `behavior`, `typesystem`), so any non-trivial language already has it. Confirm with `mps_mcp_get_project_structure` (it lists the module's models) before doing anything else. Only when a brand-new language genuinely has no editor model do you create one — with `mps_mcp_create_model` and `modelName: "<lang>.editor"` (aspect ID `editor`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)). Action maps, keymaps, transformation/substitute menus live in the **same** `editor` model — there is no separate aspect ID for them.
+0. **Check whether the editor model already exists — it almost always does.** `editor` is one of a language's default aspects (alongside `structure`, `constraints`, `behavior`, `typesystem`), so any non-trivial language already has it. Confirm with `mps_mcp_get_project_structure` (it lists the module's models) before doing anything else. Only when a brand-new language genuinely has no editor model do you create one — with `mps_mcp_create_model` and `modelName: "<lang>.editor"` (aspect ID `editor`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Action maps, keymaps, transformation/substitute menus live in the **same** `editor` model — there is no separate aspect ID for them.
 1. **Scaffold first** — `mps_mcp_scaffold_editor` builds a default editor that wires properties/children/references to sensible cell models.
 2. **Componentize** reusable cell groups into an `EditorComponentDeclaration` and embed them with `CellModel_Component` — see `references/editor-components.md` for the manual and `mps_mcp_scaffold_editor` (`type="component"`, `includeComponents`, `detectComponents`) paths.
 3. **Refine cell choice and layout** using the catalog below.

@@ -5,6 +5,7 @@
 - `mps_mcp_list_open_projects`: lists open IDE projects, marks which have MPS project counterparts, and returns the `mpsProjectBaseDirectory` to use as the host `projectPath` selector when several MPS projects are open.
 - `mps_mcp_get_project_structure`: the universal tool to explore the project. Use `startingPoint` and filtering to avoid large responses; pass `includeStubModules=true` to include read-only libraries/stubs and modules from other open MPS projects.
 - `mps_mcp_reload_all`: reloads all modules in the MPS project to refresh runtime classes and concept registries after compiled-aspect changes.
+- `mps_mcp_initialize_project_for_agents`: installs the bundled MPS skill catalog and starter agent guides into an agent-configuration directory. It writes files, so use it only to initialize or explicitly refresh agent support; it never overwrites existing guide files or skill folders.
 
 ## Modules and Models
 
@@ -18,6 +19,7 @@
 - `mps_mcp_open_node`: opens a node in the editor; non-root references open the containing root and select the target.
 - `mps_mcp_get_current_editor_root_node`: identifies the node the user is currently looking at. With `source="editor"` it also reports the caret's cell as a cell descriptor — its node, `cellType`, and the property/reference/child the cell edits, where `feature.navigational` distinguishes a navigation-only reference from an edited one, plus the cell's `selectable` / `selected` interaction flags and any editor `messages` on the cell (`caret`) — plus the selected region's nodes and cells with its `direction` (`selection`), and the `selectedNodeReference` / `bigCellSelected` flags, always as skeleton objects so emptiness is explicit.
 - `mps_mcp_create_root_node`, `mps_mcp_update_root_node_from_json`
+- `mps_mcp_search_root_node_by_name`: finds root nodes by name in the selected project's editable modules, visible dependencies, or explicitly selected models/modules. To find non-root nodes by concept, use `mps_mcp_query_nodes` (`FIND_INSTANCES`).
 - `mps_mcp_query_nodes`: read-only node queries — FIND_INSTANCES (find nodes of a concept; `sampleOnly` for one example), FIND_USAGES (nodes referencing a given node), GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE. Default scopes are selected-project based; explicit model/module/root scopes may target another open project read-only.
 - `mps_mcp_alter_nodes`: structural node mutations and code generation — MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES.
 - `mps_mcp_print_node`: shows the underlying JSON structure or it shows the "visual" projection of a node.
@@ -51,3 +53,8 @@
 - `mps_mcp_alter_structure`: write operations on language structure — `CREATE_CONCEPTS`, `CREATE_ENUM`, `UPDATE_CONCEPT_PROPERTY`, `UPDATE_CONCEPT_CHILD`, `UPDATE_CONCEPT_REFERENCE`, `RENAME_CONCEPT_PROPERTY`, `RENAME_CONCEPT_CHILD`, `RENAME_CONCEPT_REFERENCE`. Reports a `makeStatus` where `"runtime_stale"` indicates reload failure, requiring a clean rebuild (`MAKE rebuild=true`).
 - `mps_mcp_query_structure`: read-only structure queries — `GET_SUB_CONCEPTS`, `GET_ASSIGNABLE_CONCEPTS`, `GET_ALL_SUPERCONCEPTS`, `IS_SUBCONCEPT_OF`, `GET_ENUMERATION_LITERALS`, `LIST_CONCEPT_ASPECTS`, `GET_ASSIGNABLE_REFERENCES`, `IS_SMART_REFERENCE`.
 - `mps_mcp_scaffold_editor`: generates a default `ConceptEditorDeclaration` for a specified concept, automatically wiring relation declarations properties, children, references to default cell models. Its `includeComponents`, `includeProperties`, `includeReferences`, and `includeChildren` selectors each accept one value or a JSON-array string; omit property/reference/child selectors for all, or pass `"[]"` for none. If the target concept is uncompiled or its structure is out of date, this tool automatically attempts to build (make) the structure model (self-healing), failing if compilation fails or runtime remains stale/hollow.
+
+## BaseLanguage and Run Configurations
+
+- `mps_mcp_parse_java_and_insert`: parses Java source and inserts the resulting MPS BaseLanguage nodes as roots, children, replacements, or the current Console command. Its JSON `parameters` select the parsed feature and insertion mode; successes include any problems found in the inserted subtree.
+- `mps_mcp_create_run_configuration`: creates or replaces an MPS run configuration for a runnable root node (`IMainClass`, `ClassConcept` with `main`, or `ITestCase`). It creates a Java Application or JUnit Tests configuration that can then be executed through the host's run-configuration tool.

@@ -6,6 +6,10 @@ type: reference
 
 # MPS Generation Plans
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 A **generation plan** (`Plan`) is an ordered script that controls which generators run, in what sequence, and with what synchronization points. Without a plan, MPS determines order from mutual generator priorities and dependencies. A plan lets language designers specify that ordering once, in a single place, without requiring all involved languages to know about each other.
 
 **Language:** `jetbrains.mps.lang.generator.plan` (id `7ab1a6fa-0a11-4b95-9e48-75f363d6cb00`, version 3)
@@ -20,7 +24,7 @@ A **generation plan** (`Plan`) is an ordered script that controls which generato
 
 ## Critical Directives
 
-- **Genplan models use the `genplan` stereotype.** File name pattern: `<name>@genplan.mps`. Pass `modelName: "<name>@genplan"` to `mps_mcp_create_model`. See [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md) for all model identifiers. Set `doNotGenerate=true` (MPS adds this automatically).
+- **Genplan models use the `genplan` stereotype.** File name pattern: `<name>@genplan.mps`. Pass `modelName: "<name>@genplan"` to `mps_mcp_create_model`. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers. Set `doNotGenerate=true` (MPS adds this automatically).
 - **Only one DevKit per model may carry a genplan.** Assigning multiple genplan-bearing DevKits to the same model is unsupported.
 - **`Plan.steps` is `1..n`.** A plan with no steps is invalid.
 - **`LanguageEntry.language` (`LanguageId`) and `GeneratorModulePointer.module` (`ModulePointer`) are each cardinality 1** — missing them is a validation error.

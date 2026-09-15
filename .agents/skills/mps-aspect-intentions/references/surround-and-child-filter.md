@@ -51,7 +51,7 @@ childNode.ancestor<concept = State> :eq: node;
 Pieces:
 
 - `:eq:` is MPS's **null-safe equality** (concept `jetbrains.mps.baseLanguage.structure.NPEEqualsExpression`). Use it instead of `==` when either side can be `null` — here `childNode.ancestor<concept = State>` is nullable.
-- `childNode.ancestor<concept = State>` walks up from the descendant to its nearest enclosing `State` (concept `Node_GetAncestorOperation` with an `OperationParm_Concept` parameter; see `mps-model-manipulation/references/dot-expression-basics.md`).
+- `childNode.ancestor<concept = State>` walks up from the descendant to its nearest enclosing `State` (concept `Node_GetAncestorOperation` with an `OperationParm_Concept` parameter; see `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin).
 
 The trailing boolean expression (no explicit `return`) is the filter's result.
 

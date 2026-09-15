@@ -4,7 +4,7 @@ Attributes (annotations) graft extra children / references / property data onto 
 without that concept declaring them; the instance is stored in the host node's universal
 `smodelAttribute` child slot. (For the structure side — declaring an attribute concept, the four
 `NodeAttribute` / `PropertyAttribute` / `ChildAttribute` / `LinkAttribute` kinds, and the
-`AttributeInfo` extension-point spec — see `mps-aspect-structure-concepts/references/attributes-and-annotations.md`.)
+`AttributeInfo` extension-point spec — see `references/attributes-and-annotations.md` in the `mps-aspect-structure-concepts` skill root after loading that companion skill from the same origin.)
 
 In smodel code you reach an attached attribute through the **`.@` operator**, then read/write the
 attribute node with ordinary smodel operations. `.@` is a smodel extension the Java parser cannot
@@ -108,7 +108,7 @@ yields the **sequence** of attached instances instead of a single node:
 
 - append with `.add(...)` (collections `AddElementOperation`), as in an attach-intention body:
   `node.@unorderedChildren.add(m);` (see
-  `mps-aspect-intentions/references/execute-idioms.md` §"Attach an Annotation");
+  `references/execute-idioms.md` in the `mps-aspect-intentions` skill root after loading that companion skill from the same origin §"Attach an Annotation");
 - remove one instance with `.detach` / `.delete` on the specific attribute node (assigning `null`
   replaces/removes a *single* attribute — it is not how you drop one element of a multiple);
 - iterate/filter with the usual collection operations.

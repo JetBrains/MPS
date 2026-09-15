@@ -175,7 +175,7 @@ Place this node among the `childCellModel`s of the surrounding `CellLayout_Inden
 
 ## Annotation (Node Attribute) Editor
 
-The editor of an **attribute concept** (see `mps-aspect-structure-concepts/references/attributes-and-annotations.md`) *replaces* the host node's cell wherever the attribute is attached. It must therefore contain a `CellModel_AttributedNodeCell` (surface name **`attributed node`**, FQN `jetbrains.mps.lang.editor.structure.CellModel_AttributedNodeCell`) — that cell re-embeds the host node's own editor. Without it the attributed node disappears from the projection.
+The editor of an **attribute concept** (see `references/attributes-and-annotations.md` in the `mps-aspect-structure-concepts` skill root after loading that companion skill from the same origin) *replaces* the host node's cell wherever the attribute is attached. It must therefore contain a `CellModel_AttributedNodeCell` (surface name **`attributed node`**, FQN `jetbrains.mps.lang.editor.structure.CellModel_AttributedNodeCell`) — that cell re-embeds the host node's own editor. Without it the attributed node disappears from the projection.
 
 From `jetbrains.mps.lang.test` (`UnorderedChildrenMark_Editor` — projects as `«unordered child: <role> » <host node>`):
 
@@ -196,8 +196,8 @@ Conventions that make annotation editors readable and usable:
 
 - **Guillemet labels** (`«…»` constants) visually separate the annotation from the host node's own syntax — the convention used by MPS itself (e.g. anti-quotations, test annotations).
 - **`attributed node` placement** decides whether the annotation renders as a prefix (cell last, as above), suffix (cell first), or wrapper (cells on both sides) of the host.
-- **Attach a `delete_action_id` action map to the label constant** so `Delete`/`Backspace` on the annotation's label removes the annotation and reselects the host — see `mps-aspect-editor-menus-and-keymaps/references/action-maps.md` §"Keyboard-Deletable Annotation".
-- Pair with an intention that attaches the annotation (`mps-aspect-intentions/references/execute-idioms.md`) — annotations have no keyword syntax, so Alt+Enter is how users discover and add them.
+- **Attach a `delete_action_id` action map to the label constant** so `Delete`/`Backspace` on the annotation's label removes the annotation and reselects the host — see `references/action-maps.md` in the `mps-aspect-editor-menus-and-keymaps` skill root after loading that companion skill from the same origin §"Keyboard-Deletable Annotation".
+- Pair with an intention that attaches the annotation (`references/execute-idioms.md` in the `mps-aspect-intentions` skill root after loading that companion skill from the same origin) — annotations have no keyword syntax, so Alt+Enter is how users discover and add them.
 
 Verbatim JSON of the `cellModel` (extracted from the live editor; `CellModel_AttributedNodeCell` and `CellModel_ReferencePresentation` take no properties, references, or children):
 

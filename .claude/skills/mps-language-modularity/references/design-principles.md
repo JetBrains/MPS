@@ -23,7 +23,7 @@ Skip this classification and you can still compose *syntax* later, but not *sema
 
 ## Terminology trap: MPS "extends" ≠ the taxonomy
 
-MPS uses *extension* broadly at the tool level: whenever one language definition uses/refers to another's concepts, you declare an `extends`/used-language relation. That **module-level wiring** is independent of the **design-level classification** — you can be doing referencing, extension, reuse, or embedding while the module says "A extends/uses B." Conflating them leads to bad choices (e.g. assuming an `extends` declaration means you must integrate syntax). Tool-level wiring → [`mps-aspect-accessories`](../../mps-aspect-accessories/SKILL.md), [`mps-language-inheritance`](../../mps-language-inheritance/SKILL.md); design-level is what this skill decides.
+MPS uses *extension* broadly at the tool level: whenever one language definition uses/refers to another's concepts, you declare an `extends`/used-language relation. That **module-level wiring** is independent of the **design-level classification** — you can be doing referencing, extension, reuse, or embedding while the module says "A extends/uses B." Conflating them leads to bad choices (e.g. assuming an `extends` declaration means you must integrate syntax). Tool-level wiring → `mps-aspect-accessories`, `mps-language-inheritance`; design-level is what this skill decides.
 
 ## Annotations — the escape hatch (not a fifth kind)
 
@@ -31,7 +31,7 @@ Adjacent to, but **outside**, the four-way taxonomy: MPS **annotations** attach 
 
 - **Use for:** attaching data/markers to nodes you don't own; cross-cutting overlays; experimentation before committing to a language change.
 - **Don't** use them as a substitute for referencing/extension/reuse/embedding when the task is really composing *semantics*.
-- **Declare:** `mps-aspect-structure-concepts/references/attributes-and-annotations.md`; **read/attach** via `.@`: `mps-model-manipulation/references/attribute-access.md`.
+- **Declare:** `references/attributes-and-annotations.md` in the `mps-aspect-structure-concepts` skill root after loading that companion skill from the same origin; **read/attach** via `.@`: `references/attribute-access.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## See also
 

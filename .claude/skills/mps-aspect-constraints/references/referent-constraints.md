@@ -333,7 +333,7 @@ Full `body` (`StatementList`) blueprint — the scope factory's body. The target
 }
 ```
 
-> The closure-literal shape (correct FQNs, the obligatory `type` → `UndefinedType` child, and referencing the parameter) is documented canonically in `mps-model-manipulation/references/closures-catalog.md`, section *“Closure literal blueprint (reusable building block)”* (the JSON object is at lines 94–110; the `InferredClosureParameterDeclaration` shape this fix mirrors is lines 98–104).
+> The closure-literal shape (correct FQNs, the obligatory `type` → `UndefinedType` child, and referencing the parameter) is documented canonically in `references/closures-catalog.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin, section *“Closure literal blueprint (reusable building block)”* (the JSON object is at lines 94–110; the `InferredClosureParameterDeclaration` shape this fix mirrors is lines 98–104).
 
 Use this pattern whenever the imperative scope must **gather nodes from more than one place**. For the "one host, one role" shape, stick with `SimpleRoleScope.forNamedElements(host, link/.../)` — it is cheaper and name-indexed.
 
@@ -390,7 +390,7 @@ Key constructs:
 
 Use when a reference targets a **structure declaration** of another language — e.g. an annotation
 concept that names a containment role of its host via a `link : LinkDeclaration` reference (see
-`mps-aspect-structure-concepts/references/attributes-and-annotations.md` §"Choosing the kind").
+`references/attributes-and-annotations.md` in the `mps-aspect-structure-concepts` skill root after loading that companion skill from the same origin §"Choosing the kind").
 The scope is built from the *host concept's own declarations*, reached through
 `node.conceptNode` and the structure-language behavior methods.
 
@@ -511,7 +511,7 @@ Key FQNs (verified against the live node):
 | `referenceNode` | `jetbrains.mps.lang.constraints.structure.ConstraintFunctionParameter_referenceNode` |
 
 The closure-literal shape (obligatory `type` → `UndefinedType`, `resolveInfo`) follows
-`mps-model-manipulation/references/closures-catalog.md`.
+`references/closures-catalog.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## Inherited scope via `InheritedNodeScopeFactory` + `ScopeProvider`
 

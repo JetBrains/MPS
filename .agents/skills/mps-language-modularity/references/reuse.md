@@ -8,7 +8,7 @@
 
 ## MPS mechanics
 
-**Structure — the hook is an abstract concept**, the *only* place host-specific semantics may enter. → [`mps-aspect-structure-concepts`](../../mps-aspect-structure-concepts/SKILL.md).
+**Structure — the hook is an abstract concept**, the *only* place host-specific semantics may enter. → `mps-aspect-structure-concepts`.
 
 ```text
 // statemachine (core — knows nothing about sensors/IO/any host)
@@ -22,7 +22,7 @@ concept SetOutputAction extends Action  references: Output output 1   properties
 
 The core never references `Sensor`/`Output`; only the adapter does. Swap the adapter → the same state machine drives a different host.
 
-**Behavior/typesystem — an abstract contract keeps core rules stable.** The core defines abstract behavior the adapter fulfills; core rules are expressed **only** in terms of the contract, never the host. → [`mps-aspect-behavior`](../../mps-aspect-behavior/SKILL.md) + [`mps-aspect-typesystem`](../../mps-aspect-typesystem/SKILL.md).
+**Behavior/typesystem — an abstract contract keeps core rules stable.** The core defines abstract behavior the adapter fulfills; core rules are expressed **only** in terms of the contract, never the host. → `mps-aspect-behavior` + `mps-aspect-typesystem`.
 
 ```text
 // core:    concept behavior Guard  { public boolean evaluate() is abstract; }
@@ -36,7 +36,7 @@ The core never references `Sensor`/`Output`; only the adapter does. Swap the ada
 | **Separated** | Core emits an abstract/generic artifact; adapter emits a subclass/configuration | Clean architecture; a runtime indirection layer is acceptable | An extra abstraction layer |
 | **Interwoven** | Core/host emits **hook nodes**; adapter **injects** code by reduction/weaving | Generated code must be physically inlined into the host artifact | Brittle generator ordering & contracts |
 
-**Separated** (the default): the core emits a driver class with the transition skeleton plus **abstract** hook methods; the adapter emits a subclass implementing them. Source modularity survives into the generated code. → [`mps-aspect-generator`](../../mps-aspect-generator/SKILL.md).
+**Separated** (the default): the core emits a driver class with the transition skeleton plus **abstract** hook methods; the adapter emits a subclass implementing them. Source modularity survives into the generated code. → `mps-aspect-generator`.
 
 ```text
 // core emits:    abstract class DoorControllerBase { ... abstract boolean guard_0(); abstract void action_0(); }
@@ -44,7 +44,7 @@ The core never references `Sensor`/`Output`; only the adapter does. Swap the ada
 //                  boolean guard_0() { return io.read("pressure") > 50; } void action_0() { io.write("latch",1); } }
 ```
 
-**Interwoven** (only when inlining is mandatory): when action code must live *inside* the core's generated `step()` rather than behind a virtual call, the core emits a **`PlaceholderStatement`** at each hook site and the adapter reduces it. Not magic weaving — a **planned generator hook** plus **generator priorities** guaranteeing the placeholder exists before the adapter runs and is gone before text gen. → + [`mps-aspect-generation-plan`](../../mps-aspect-generation-plan/SKILL.md).
+**Interwoven** (only when inlining is mandatory): when action code must live *inside* the core's generated `step()` rather than behind a virtual call, the core emits a **`PlaceholderStatement`** at each hook site and the adapter reduces it. Not magic weaving — a **planned generator hook** plus **generator priorities** guaranteeing the placeholder exists before the adapter runs and is gone before text gen. → + `mps-aspect-generation-plan`.
 
 ```text
 // core emits inside step():   placeholder("sm.action", transition);

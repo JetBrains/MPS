@@ -12,7 +12,7 @@
 
 **Guest** — self-contained: its own `Expression` hierarchy, literals, operators, type system, and a reusable generator lowering to BaseLanguage. By itself it knows nothing about the host — that independence is what makes this embedding, not extension.
 
-**Composition language** — depends on both, often extends/adapts the host so it can own a guest child, and adds adapter concepts so the guest can talk about host data. → [`mps-aspect-structure-concepts`](../../mps-aspect-structure-concepts/SKILL.md).
+**Composition language** — depends on both, often extends/adapts the host so it can own a guest child, and adds adapter concepts so the guest can talk about host data. → `mps-aspect-structure-concepts`.
 
 ```text
 // rules.expr (composition — depends on rules AND expr)
@@ -22,13 +22,13 @@ concept FactRef         extends Expression  references: Fact fact 1          // 
 
 Prefer **specific reference concepts** (`FactRef`) over a generic symbol reference: MPS lets each keep its own scope and type rules.
 
-**Scope — the canonical semantic bridge.** The guest never knew about `RuleSet`/`Fact`; the composition language adds that knowledge and restricts a `FactRef` to facts of the enclosing rule set. → [`mps-aspect-constraints`](../../mps-aspect-constraints/SKILL.md); `contextNode`/`ancestor<…>` syntax is smodel → [`mps-model-manipulation`](../../mps-model-manipulation/SKILL.md).
+**Scope — the canonical semantic bridge.** The guest never knew about `RuleSet`/`Fact`; the composition language adds that knowledge and restricts a `FactRef` to facts of the enclosing rule set. → `mps-aspect-constraints`; `contextNode`/`ancestor<…>` syntax is smodel → `mps-model-manipulation`.
 
 ```text
 link {fact} search scope:  contextNode.ancestor<concept = RuleSet, +>.facts;
 ```
 
-**Type bridges — the most important non-obvious part.** Host and guest were each designed independently, so each defines its *own* primitive types — and two concepts sharing the simple name `BooleanType` (`rules.BooleanType` vs `expr.BooleanType`) are still **different concept instances**, incompatible to the type checker. So when a guest operator (`==`, `&&`) meets a `FactRef` carrying a *host* type, the guest's type system rejects it. Choose **one** canonical type space (often the guest's) and map everything into it — either type the adapter concept directly into that space, or extend the relevant overloaded operations to accept the host type and still yield a result in the chosen space. → [`mps-aspect-typesystem`](../../mps-aspect-typesystem/SKILL.md).
+**Type bridges — the most important non-obvious part.** Host and guest were each designed independently, so each defines its *own* primitive types — and two concepts sharing the simple name `BooleanType` (`rules.BooleanType` vs `expr.BooleanType`) are still **different concept instances**, incompatible to the type checker. So when a guest operator (`==`, `&&`) meets a `FactRef` carrying a *host* type, the guest's type system rejects it. Choose **one** canonical type space (often the guest's) and map everything into it — either type the adapter concept directly into that space, or extend the relevant overloaded operations to accept the host type and still yield a result in the chosen space. → `mps-aspect-typesystem`.
 
 ```text
 // inference rule for FactRef as fr — map host primitive onto guest at the adapter boundary.
@@ -38,7 +38,7 @@ if (fr.fact.type.isInstanceOf(rules.NumberType))  { typeof(fr) :==: <expr.Number
 // (alternative) overload guest == to accept a rules.BooleanType operand, result expr.BooleanType
 ```
 
-**Generation — reuse the guest's lowering pipeline.** The guest already lowers to some base language; reuse it in the host chain rather than re-flattening expressions to text in every host. Host-specific reductions then handle *only* the adapter concepts (here `FactRef` → a host fact read). → [`mps-aspect-generator`](../../mps-aspect-generator/SKILL.md).
+**Generation — reuse the guest's lowering pipeline.** The guest already lowers to some base language; reuse it in the host chain rather than re-flattening expressions to text in every host. Host-specific reductions then handle *only* the adapter concepts (here `FactRef` → a host fact read). → `mps-aspect-generator`.
 
 ```text
 reduction rule FactRef -> facts.read( $[fact.name] )   // host-specific; guest Expression -> Java reused unchanged

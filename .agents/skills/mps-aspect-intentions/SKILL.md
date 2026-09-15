@@ -6,6 +6,10 @@ type: reference
 
 # MPS Intentions Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 Intentions are user-invoked transformations shown in the Alt+Enter popup on a node. They are the canonical way to offer optional refactorings (wrap, convert, introduce, preview) alongside quick-fixes. Authoring lives in `<lang>/languageModels/intentions.mps`, language `jetbrains.mps.lang.intentions`.
 
 ## Critical Directives
@@ -20,7 +24,7 @@ Intentions are user-invoked transformations shown in the Alt+Enter popup on a no
 
 ## Common-Path Workflow
 
-1. Ensure an `intentions` model exists in the language (create with `mps_mcp_create_model` and `modelName: "<lang>.intentions"` — aspect ID `intentions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.intentions`; add `jetbrains.mps.lang.actions` if you will use factory-initialized splicing.
+1. Ensure an `intentions` model exists in the language (create with `mps_mcp_create_model` and `modelName: "<lang>.intentions"` — aspect ID `intentions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.intentions`; add `jetbrains.mps.lang.actions` if you will use factory-initialized splicing.
 2. Insert an `IntentionDeclaration` root with `mps_mcp_insert_root_node_from_json` (see blueprint in `references/json-blueprints.md`). Set `name`, `forConcept`, and `isAvailableInChildNodes` if the popup should bubble from descendants.
 3. Fill `descriptionFunction` (returns a short label String), `executeFunction` (the transformation), and optionally `isApplicableFunction` (gate predicate) and `childFilterFunction` (per-descendant filter when `isAvailableInChildNodes=true`).
 4. For multiple menu entries per blueprint use `ParameterizedIntentionDeclaration` with `paramType` + `queryFunction`; use `IntentionParameter` wherever you want "the current value" inside other blocks.

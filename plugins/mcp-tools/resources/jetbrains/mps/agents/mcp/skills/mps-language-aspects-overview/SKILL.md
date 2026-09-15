@@ -6,44 +6,48 @@ type: reference
 
 # MPS Language Aspects — Overview
 
-An MPS language is a collection of **aspects**, each a separate model inside the language module. Together they define syntax, semantics, UI, and output. Edit each aspect through its own language (its DSL). This skill is the router; each aspect links to a dedicated skill.
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
+An MPS language is a collection of **aspects**, each a separate model inside the language module. Together they define syntax, semantics, UI, and output. Edit each aspect through its own language (its DSL). This skill is the router; each aspect names a dedicated companion skill.
 
 ## Critical Directives
 
 - **Always prefer MPS MCP tools over hand-editing `.mps` XML.** Hand edits can silently corrupt model files.
 - **Keep aspect rules thin and declarative** — push logic into **behavior methods**, then call them from any aspect.
 - **When something in a consumer is wrong, re-check the root cause on the language side** (structure / generator / typesystem) before patching generated Java.
-- **Choose a modularity strategy before authoring** when this language must relate to others — reference, extend, embed, or adapt them. The kind you pick (referencing / extension / reuse / embedding) changes how you use structure, constraints, typesystem, and generator. See [`mps-language-modularity`](../mps-language-modularity/SKILL.md).
+- **Choose a modularity strategy before authoring** when this language must relate to others — reference, extend, embed, or adapt them. The kind you pick (referencing / extension / reuse / embedding) changes how you use structure, constraints, typesystem, and generator. See `mps-language-modularity`.
 
 ## Aspects and Where to Find Detailed Guidance
 
 | Aspect | Aspect ID / Stereotype | Model file | Language DSL | Detailed skill |
 |---|---|---|---|---|
-| **Structure** | `structure` | `models/structure.mps` | `jetbrains.mps.lang.structure` | [`mps-aspect-structure-concepts`](../mps-aspect-structure-concepts/SKILL.md) |
-| **Editor** | `editor` | `models/editor.mps` | `jetbrains.mps.lang.editor` | [`mps-aspect-editor`](../mps-aspect-editor/SKILL.md), [`mps-aspect-editor-menus-and-keymaps`](../mps-aspect-editor-menus-and-keymaps/SKILL.md) |
-| **Constraints** | `constraints` | `models/constraints.mps` | `jetbrains.mps.lang.constraints` | [`mps-aspect-constraints`](../mps-aspect-constraints/SKILL.md) |
-| **Behavior** | `behavior` | `models/behavior.mps` | `jetbrains.mps.lang.behavior` | [`mps-aspect-behavior`](../mps-aspect-behavior/SKILL.md) |
-| **Typesystem & Checking** | `typesystem` | `models/typesystem.mps` | `jetbrains.mps.lang.typesystem` | [`mps-aspect-typesystem`](../mps-aspect-typesystem/SKILL.md) |
-| **Intentions** | `intentions` | `models/intentions.mps` | `jetbrains.mps.lang.intentions` | [`mps-aspect-intentions`](../mps-aspect-intentions/SKILL.md) |
-| **Actions** | `actions` | `models/actions.mps` | `jetbrains.mps.lang.actions` | [`mps-aspect-actions`](../mps-aspect-actions/SKILL.md) |
-| **Generator** | `@generator` (stereotype) | `generator/template/main@generator.mps` | `jetbrains.mps.lang.generator` | [`mps-aspect-generator`](../mps-aspect-generator/SKILL.md) |
-| **TextGen** | `textGen` | `models/textGen.mps` | `jetbrains.mps.lang.textGen` | [`mps-aspect-textgen`](../mps-aspect-textgen/SKILL.md) |
-| **Dataflow** | `dataFlow` (camelCase) | `models/dataFlow.mps` | `jetbrains.mps.lang.dataFlow` | [`mps-aspect-dataflow`](../mps-aspect-dataflow/SKILL.md) |
-| **Migrations** | `migration` | `models/migration.mps` | `jetbrains.mps.lang.migration` | [`mps-aspect-migrations`](../mps-aspect-migrations/SKILL.md) |
-| **Enhancement scripts** | `scripts` | `models/scripts.mps` | `jetbrains.mps.lang.script` | [`mps-aspect-migrations`](../mps-aspect-migrations/SKILL.md) |
+| **Structure** | `structure` | `models/structure.mps` | `jetbrains.mps.lang.structure` | `mps-aspect-structure-concepts` |
+| **Editor** | `editor` | `models/editor.mps` | `jetbrains.mps.lang.editor` | `mps-aspect-editor`, `mps-aspect-editor-menus-and-keymaps` |
+| **Constraints** | `constraints` | `models/constraints.mps` | `jetbrains.mps.lang.constraints` | `mps-aspect-constraints` |
+| **Behavior** | `behavior` | `models/behavior.mps` | `jetbrains.mps.lang.behavior` | `mps-aspect-behavior` |
+| **Typesystem & Checking** | `typesystem` | `models/typesystem.mps` | `jetbrains.mps.lang.typesystem` | `mps-aspect-typesystem` |
+| **Intentions** | `intentions` | `models/intentions.mps` | `jetbrains.mps.lang.intentions` | `mps-aspect-intentions` |
+| **Actions** | `actions` | `models/actions.mps` | `jetbrains.mps.lang.actions` | `mps-aspect-actions` |
+| **Generator** | `@generator` (stereotype) | `generator/template/main@generator.mps` | `jetbrains.mps.lang.generator` | `mps-aspect-generator` |
+| **TextGen** | `textGen` | `models/textGen.mps` | `jetbrains.mps.lang.textGen` | `mps-aspect-textgen` |
+| **Dataflow** | `dataFlow` (camelCase) | `models/dataFlow.mps` | `jetbrains.mps.lang.dataFlow` | `mps-aspect-dataflow` |
+| **Migrations** | `migration` | `models/migration.mps` | `jetbrains.mps.lang.migration` | `mps-aspect-migrations` |
+| **Enhancement scripts** | `scripts` | `models/scripts.mps` | `jetbrains.mps.lang.script` | `mps-aspect-migrations` |
 | **Find Usages** | `findUsages` (camelCase) | `models/findUsages.mps` | `jetbrains.mps.lang.findUsages` | — |
 | **Refactorings** | `refactorings` | `models/refactorings.mps` | `jetbrains.mps.lang.refactoring` | — |
-| **IDE plugin** | `plugin` | `models/plugin.mps` | `jetbrains.mps.lang.plugin` | [`mps-ide-plugin`](../mps-ide-plugin/SKILL.md) |
+| **IDE plugin** | `plugin` | `models/plugin.mps` | `jetbrains.mps.lang.plugin` | `mps-ide-plugin` |
 | **Feedback** | `feedback` | `models/feedback.mps` | `jetbrains.mps.lang.feedback` | — |
-| **Accessories / Dependencies** | — (no model created) | `.mpl` and per-model | — | [`mps-aspect-accessories`](../mps-aspect-accessories/SKILL.md) |
-| **Code inside bodies** | — | any aspect that holds BL | `baseLanguage`, `smodel`, `collections`, `closures` | [`mps-model-manipulation`](../mps-model-manipulation/SKILL.md) |
-| **Inline node literals** | — | any aspect using quotations | `jetbrains.mps.lang.quotation` | [`mps-quotations`](../mps-quotations/SKILL.md) |
+| **Accessories / Dependencies** | — (no model created) | `.mpl` and per-model | — | `mps-aspect-accessories` |
+| **Code inside bodies** | — | any aspect that holds BL | `baseLanguage`, `smodel`, `collections`, `closures` | `mps-model-manipulation` |
+| **Inline node literals** | — | any aspect using quotations | `jetbrains.mps.lang.quotation` | `mps-quotations` |
 
-Aspect IDs are **case-sensitive** and create models named `<langModule>.<aspectId>` with **no `@` suffix**. Stereotypes (`@generator`, `@genplan`, `@tests`, `@descriptor`) are a separate mechanism for non-aspect models. Authoritative table with usage notes and pitfalls: [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md).
+Aspect IDs are **case-sensitive** and create models named `<langModule>.<aspectId>` with **no `@` suffix**. Stereotypes (`@generator`, `@genplan`, `@tests`, `@descriptor`) are a separate mechanism for non-aspect models. Authoritative table with usage notes and pitfalls: [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md).
 
-Additional aspects exist (Find Usages, Refactorings, Scopes Provider, Plugin). They follow the same "per-concept rule root + body" pattern — consult companion skills in `.agents/skills/` or the MPS user guide when needed.
+Additional aspects exist (Find Usages, Refactorings, Scopes Provider, Plugin). They follow the same "per-concept rule root + body" pattern — load an applicable companion skill or consult the MPS user guide when needed.
 
-**Generation Plans** (cross-cutting, not an aspect of a single language) are covered by [`mps-aspect-generation-plan`](../mps-aspect-generation-plan/SKILL.md). Use when you need to control generator ordering, enable cross-model reference resolution with checkpoints, fork generation into parallel branches, or conditionally contribute plans via `PlanContribution`.
+**Generation Plans** (cross-cutting, not an aspect of a single language) are covered by `mps-aspect-generation-plan`. Use when you need to control generator ordering, enable cross-model reference resolution with checkpoints, fork generation into parallel branches, or conditionally contribute plans via `PlanContribution`.
 
 ## Typical Authoring Order
 

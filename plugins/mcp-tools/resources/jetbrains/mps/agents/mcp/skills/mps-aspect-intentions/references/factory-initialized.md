@@ -15,7 +15,7 @@ When `execute` adds a child whose concept has a **NodeFactory** defined in the a
 | `new root node initialized<C> in model` | `NF_Model_CreateNewRootNodeOperation` | `Model_CreateNewRootNodeOperation` |
 | `c.new initialized()` (detached) | `NF_Concept_NewInstance` | `Concept_NewInstance` |
 
-`<default>` inside `add new initialized(<default>)` is an empty initializer placeholder: the concept is inferred from the containment role and no extra init block runs beyond the node factory. Use it when the factory already does everything you need. See `mps-model-manipulation/references/property-and-mutation-ops.md` for the full smodel/NF_* operation table and `mps-model-manipulation/references/collections-catalog.md` for the collections-vs-baseLanguage `IsEmptyOperation` disambiguation.
+`<default>` inside `add new initialized(<default>)` is an empty initializer placeholder: the concept is inferred from the containment role and no extra init block runs beyond the node factory. Use it when the factory already does everything you need. See `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin for the full smodel/NF_* operation table and `references/collections-catalog.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin for the collections-vs-baseLanguage `IsEmptyOperation` disambiguation.
 
 ## Used-language requirement
 
@@ -41,4 +41,4 @@ Contrast with the non-factory form `node.onEntry.operations.add new(C)` / `... .
 |---|---|
 | Insert a node and let the language's NodeFactory seed defaults/mandatory children | `NF_*` variant |
 | Insert a "blank" shell and assign all fields manually | plain `Node_/LinkList_/Model_*` variant |
-| Build a quotation/generator output (factories don't fire) | `new node<C>()` and explicit init (see `mps-aspect-actions/references/node-factories-and-triggers.md` "When factories do NOT fire") |
+| Build a quotation/generator output (factories don't fire) | `new node<C>()` and explicit init (see `references/node-factories-and-triggers.md` in the `mps-aspect-actions` skill root after loading that companion skill from the same origin "When factories do NOT fire") |

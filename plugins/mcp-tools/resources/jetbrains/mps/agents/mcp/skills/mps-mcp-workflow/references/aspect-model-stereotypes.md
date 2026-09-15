@@ -18,20 +18,20 @@ Each row gives the canonical aspect ID (the exact string passed to `mps_mcp_crea
 
 | Aspect | Aspect ID (case-sensitive) | Typical on-disk file | Aspect language(s) | Detailed skill |
 |---|---|---|---|---|
-| Structure | `structure` | `models/structure.mps` | `jetbrains.mps.lang.structure` | [`mps-aspect-structure-concepts`](../../mps-aspect-structure-concepts/SKILL.md) |
-| Editor | `editor` | `models/editor.mps` | `jetbrains.mps.lang.editor` | [`mps-aspect-editor`](../../mps-aspect-editor/SKILL.md), [`mps-aspect-editor-menus-and-keymaps`](../../mps-aspect-editor-menus-and-keymaps/SKILL.md) |
-| Constraints | `constraints` | `models/constraints.mps` | `jetbrains.mps.lang.constraints` (+ `lang.smodel`, `lang.scopes`, `lang.behavior`, `baseLanguage` for scope bodies) | [`mps-aspect-constraints`](../../mps-aspect-constraints/SKILL.md) |
-| Behavior | `behavior` | `models/behavior.mps` | `jetbrains.mps.lang.behavior` (+ body languages: `smodel`, `collections`, `closures`, `baseLanguage`) | [`mps-aspect-behavior`](../../mps-aspect-behavior/SKILL.md) |
-| Typesystem | `typesystem` | `models/typesystem.mps` | `jetbrains.mps.lang.typesystem` (+ body languages) | [`mps-aspect-typesystem`](../../mps-aspect-typesystem/SKILL.md) |
-| TextGen | `textGen` | `models/textGen.mps` | `jetbrains.mps.lang.textGen`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel` | [`mps-aspect-textgen`](../../mps-aspect-textgen/SKILL.md) |
-| Intentions | `intentions` | `models/intentions.mps` | `jetbrains.mps.lang.intentions` (+ `jetbrains.mps.lang.actions` for factory-initialised splicing) | [`mps-aspect-intentions`](../../mps-aspect-intentions/SKILL.md) |
-| Actions | `actions` | `models/actions.mps` | `jetbrains.mps.lang.actions`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel` | [`mps-aspect-actions`](../../mps-aspect-actions/SKILL.md) |
-| Dataflow | `dataFlow` | `models/dataFlow.mps` | `jetbrains.mps.lang.dataFlow` (transitively `jetbrains.mps.baseLanguage`) | [`mps-aspect-dataflow`](../../mps-aspect-dataflow/SKILL.md) |
-| Migration | `migration` | `models/migration.mps` | `jetbrains.mps.lang.migration` | [`mps-aspect-migrations`](../../mps-aspect-migrations/SKILL.md) |
-| Enhancement scripts | `scripts` | `models/scripts.mps` | `jetbrains.mps.lang.script` | [`mps-aspect-migrations`](../../mps-aspect-migrations/SKILL.md) |
+| Structure | `structure` | `models/structure.mps` | `jetbrains.mps.lang.structure` | `mps-aspect-structure-concepts` |
+| Editor | `editor` | `models/editor.mps` | `jetbrains.mps.lang.editor` | `mps-aspect-editor`, `mps-aspect-editor-menus-and-keymaps` |
+| Constraints | `constraints` | `models/constraints.mps` | `jetbrains.mps.lang.constraints` (+ `lang.smodel`, `lang.scopes`, `lang.behavior`, `baseLanguage` for scope bodies) | `mps-aspect-constraints` |
+| Behavior | `behavior` | `models/behavior.mps` | `jetbrains.mps.lang.behavior` (+ body languages: `smodel`, `collections`, `closures`, `baseLanguage`) | `mps-aspect-behavior` |
+| Typesystem | `typesystem` | `models/typesystem.mps` | `jetbrains.mps.lang.typesystem` (+ body languages) | `mps-aspect-typesystem` |
+| TextGen | `textGen` | `models/textGen.mps` | `jetbrains.mps.lang.textGen`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel` | `mps-aspect-textgen` |
+| Intentions | `intentions` | `models/intentions.mps` | `jetbrains.mps.lang.intentions` (+ `jetbrains.mps.lang.actions` for factory-initialised splicing) | `mps-aspect-intentions` |
+| Actions | `actions` | `models/actions.mps` | `jetbrains.mps.lang.actions`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel` | `mps-aspect-actions` |
+| Dataflow | `dataFlow` | `models/dataFlow.mps` | `jetbrains.mps.lang.dataFlow` (transitively `jetbrains.mps.baseLanguage`) | `mps-aspect-dataflow` |
+| Migration | `migration` | `models/migration.mps` | `jetbrains.mps.lang.migration` | `mps-aspect-migrations` |
+| Enhancement scripts | `scripts` | `models/scripts.mps` | `jetbrains.mps.lang.script` | `mps-aspect-migrations` |
 | Find Usages | `findUsages` | `models/findUsages.mps` | `jetbrains.mps.lang.findUsages` | — |
 | Refactorings | `refactorings` | `models/refactorings.mps` | `jetbrains.mps.lang.refactoring` | — |
-| IDE plugin | `plugin` | `models/plugin.mps` | `jetbrains.mps.lang.plugin` | [`mps-ide-plugin`](../../mps-ide-plugin/SKILL.md) |
+| IDE plugin | `plugin` | `models/plugin.mps` | `jetbrains.mps.lang.plugin` | `mps-ide-plugin` |
 | Feedback | `feedback` | `models/feedback.mps` | `jetbrains.mps.lang.feedback` | — |
 | VCS merge hints | `vcs` | `models/vcs.mps` | `jetbrains.mps.vcs.mergehints` | — |
 | Documentation (sample only) | `documentation` | `models/documentation.mps` | sample only | — |
@@ -49,9 +49,9 @@ Source of truth for the IDs: each language's generated `LanguageAspectsEP_extens
 
 | Stereotype | When to use | On-disk pattern | Hosting module | Detailed skill |
 |---|---|---|---|---|
-| `generator` | Generator template models | `template/main@generator.mps` | Generator (sub-module of a Language) | [`mps-aspect-generator`](../../mps-aspect-generator/SKILL.md) |
-| `genplan` | Generation plans | `<name>@genplan.mps` | Solution or Language | [`mps-aspect-generation-plan`](../../mps-aspect-generation-plan/SKILL.md) |
-| `tests` | Test cases | `<name>@tests.mps` | Solution with `tests` facet | [`mps-tests`](../../mps-tests/SKILL.md) |
+| `generator` | Generator template models | `template/main@generator.mps` | Generator (sub-module of a Language) | `mps-aspect-generator` |
+| `genplan` | Generation plans | `<name>@genplan.mps` | Solution or Language | `mps-aspect-generation-plan` |
+| `tests` | Test cases | `<name>@tests.mps` | Solution with `tests` facet | `mps-tests` |
 | `descriptor` | Language descriptor model (auto-managed by MPS; rarely authored by hand) | `<lang>@descriptor.mps` | Language | — |
 
 Caveats:

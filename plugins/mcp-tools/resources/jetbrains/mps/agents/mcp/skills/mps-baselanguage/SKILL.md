@@ -6,6 +6,10 @@ type: reference
 
 # MPS BaseLanguage (Java) Authoring
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 `jetbrains.mps.baseLanguage` is MPS's Java-equivalent language. You edit it as an AST, not as text. Two authoring paths exist: the Java parser (`mps_mcp_parse_java_and_insert`) for plain Java, and JSON AST blueprints (`mps_mcp_insert_root_node_from_json` / `mps_mcp_update_root_node_from_json` / `mps_mcp_update_node`) for everything else — especially code that uses BaseLanguage extensions (`jetbrains.mps.lang.smodel`, `jetbrains.mps.baseLanguage.closures`, `jetbrains.mps.baseLanguage.collections`) or needs stable persistent member references.
 
 ## Critical Directives

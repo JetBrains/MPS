@@ -6,9 +6,13 @@ type: reference
 
 # MPS Module and Model Dependencies, Accessory Models
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 This skill covers the *wiring* layer of an MPS language — the module descriptor (`.mpl`) and the per-model imports — and the special role of **accessory models** and **runtime solutions**.
 
-**Note**: accessory wiring does not introduce a new aspect model or stereotype; it edits the existing language descriptor and model imports. When you do need to create a new aspect or stereotyped model, see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md) for the canonical aspect IDs and `@stereotype` values.
+**Note**: accessory wiring does not introduce a new aspect model or stereotype; it edits the existing language descriptor and model imports. When you do need to create a new aspect or stereotyped model, see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for the canonical aspect IDs and `@stereotype` values.
 
 ## Critical Directives
 

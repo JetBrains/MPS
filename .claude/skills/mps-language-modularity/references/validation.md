@@ -2,7 +2,7 @@
 
 Projectional reality changes what to test. Invalid syntax usually **cannot be entered**, so parser-style syntax tests are nearly irrelevant. The seams that actually break in modular languages are **semantic**: scopes, type bridges, and generator contracts. Test those, and keep a suite of **representative example models** that language evolution and migrations must keep valid.
 
-Use `NodesTestCase` (typesystem, constraints, scopes, generator output) and `EditorTestCase` (intentions, actions, completion) with in-model `has error` / `has type` / `ScopesTest` annotations and label-based `node<label>` cross-references. → [`mps-tests`](../../mps-tests/SKILL.md). After every structural or generator change, run the model checker over the example suite (`mps_mcp_check_root_node_problems`).
+Use `NodesTestCase` (typesystem, constraints, scopes, generator output) and `EditorTestCase` (intentions, actions, completion) with in-model `has error` / `has type` / `ScopesTest` annotations and label-based `node<label>` cross-references. → `mps-tests`. After every structural or generator change, run the model checker over the example suite (`mps_mcp_check_root_node_problems`).
 
 ## General checklist (all kinds)
 

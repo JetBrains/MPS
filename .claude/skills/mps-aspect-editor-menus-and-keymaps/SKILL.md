@@ -7,9 +7,13 @@ type: reference
 
 # MPS Editor Aspect — Menus, Keymaps and Actions
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 This skill covers the **non-layout parts** of the MPS editor aspect: everything that controls user interaction (typing, keystrokes, completion, paste, context actions). Most concepts belong to `jetbrains.mps.lang.editor.structure`; paste wrappers / node factories / copy-paste handlers live in `jetbrains.mps.lang.actions.structure`. Roots typically live in `<lang>/languageModels/editor.mps` or `actions.mps`.
 
-**Where these roots go.** Menus / keymaps / action maps live in the **same `editor` aspect model** as the layout cell models — there is no separate aspect ID. Paste wrappers, copy-paste handlers and node factories live in the **`actions` aspect model**. Both aspect IDs (`editor`, `actions`) are case-sensitive and carry no `@` suffix — see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md).
+**Where these roots go.** Menus / keymaps / action maps live in the **same `editor` aspect model** as the layout cell models — there is no separate aspect ID. Paste wrappers, copy-paste handlers and node factories live in the **`actions` aspect model**. Both aspect IDs (`editor`, `actions`) are case-sensitive and carry no `@` suffix — see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md).
 
 For the **layout** side (concept editors, cell models, style sheets, editor components) see `mps-mcp-workflow` and `mps-aspect-editor`.
 

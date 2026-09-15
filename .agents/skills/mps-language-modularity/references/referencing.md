@@ -8,7 +8,7 @@
 
 ## MPS mechanics
 
-**Structure — reference, never containment.** That distinction *is* referencing. → [`mps-aspect-structure-concepts`](../../mps-aspect-structure-concepts/SKILL.md).
+**Structure — reference, never containment.** That distinction *is* referencing. → `mps-aspect-structure-concepts`.
 
 ```text
 // metrics (referenced catalog, its own fragment)
@@ -18,16 +18,16 @@ abstract concept Widget   references: Metric metric 1     // <-- cross-language 
 concept LineChart / StatusLight extends Widget            // want numeric / boolean
 ```
 
-**Smart references + editor.** Keep wrappers near-invisible: the user types the target name (`Web.latency`) and MPS instantiates the wrapper after completion. → [`mps-aspect-editor`](../../mps-aspect-editor/SKILL.md), smart-reference shape in [`mps-aspect-structure-concepts`](../../mps-aspect-structure-concepts/SKILL.md).
+**Smart references + editor.** Keep wrappers near-invisible: the user types the target name (`Web.latency`) and MPS instantiates the wrapper after completion. → `mps-aspect-editor`, smart-reference shape in `mps-aspect-structure-concepts`.
 
-**Search scope — the heart of referencing.** Every cross-language reference needs a `search scope` restricting valid targets. Start with the *narrowest* meaningful scope (over-broad scope is the #1 correctness/UX bug): climb to the owning root, walk its declared imports, aggregate legal targets. `contextNode` is the always-available scope-function implicit (the referrer, or its prospective parent during completion). When the scope naturally belongs to an ancestor, prefer supplying it from that ancestor's `ScopeProvider.getScope` over a reference-side function. → [`mps-aspect-constraints`](../../mps-aspect-constraints/SKILL.md); scope-body syntax is smodel → [`mps-model-manipulation`](../../mps-model-manipulation/SKILL.md).
+**Search scope — the heart of referencing.** Every cross-language reference needs a `search scope` restricting valid targets. Start with the *narrowest* meaningful scope (over-broad scope is the #1 correctness/UX bug): climb to the owning root, walk its declared imports, aggregate legal targets. `contextNode` is the always-available scope-function implicit (the referrer, or its prospective parent during completion). When the scope naturally belongs to an ancestor, prefer supplying it from that ancestor's `ScopeProvider.getScope` over a reference-side function. → `mps-aspect-constraints`; scope-body syntax is smodel → `mps-model-manipulation`.
 
 ```text
 link {metric} search scope:
   contextNode.ancestor<concept = Dashboard, +>.imports.catalog.metrics;  // only imported catalogs
 ```
 
-**Behavior naming contracts — share knowledge, not strings.** The dashboard generator must know the *names* of functions the metrics generator emits. Centralize naming rules as **behavior methods on the referenced concept** and have both generators call them — turning brittle string conventions into typed contracts. → [`mps-aspect-behavior`](../../mps-aspect-behavior/SKILL.md).
+**Behavior naming contracts — share knowledge, not strings.** The dashboard generator must know the *names* of functions the metrics generator emits. Centralize naming rules as **behavior methods on the referenced concept** and have both generators call them — turning brittle string conventions into typed contracts. → `mps-aspect-behavior`.
 
 ```text
 concept behavior Metric {
@@ -36,13 +36,13 @@ concept behavior Metric {
 }
 ```
 
-**Cross-language checks.** Referencing *permits* reasoning over referenced types — e.g. a status light binds only to a boolean metric, a line chart only to a numeric one. Implement as checking rules over the referenced type system. → [`mps-aspect-typesystem`](../../mps-aspect-typesystem/SKILL.md).
+**Cross-language checks.** Referencing *permits* reasoning over referenced types — e.g. a status light binds only to a boolean metric, a line chart only to a numeric one. Implement as checking rules over the referenced type system. → `mps-aspect-typesystem`.
 
-**Generation.** Keep generators **separate**: the dashboard generator emits code calling `metric.seriesId()`/`accessorName()`; it does not interleave into the metrics generator. → [`mps-aspect-generator`](../../mps-aspect-generator/SKILL.md).
+**Generation.** Keep generators **separate**: the dashboard generator emits code calling `metric.seriesId()`/`accessorName()`; it does not interleave into the metrics generator. → `mps-aspect-generator`.
 
 ## Recipe
 
-1. **Accessories** — add the referenced language to used/extended languages + any generator runtime dep. (MPS dependency ≠ taxonomy verdict.) → [`mps-aspect-accessories`](../../mps-aspect-accessories/SKILL.md)
+1. **Accessories** — add the referenced language to used/extended languages + any generator runtime dep. (MPS dependency ≠ taxonomy verdict.) → `mps-aspect-accessories`
 2. **Structure** — model foreign elements as `references`, never children.
 3. **Editor** — project references compactly; rely on smart references.
 4. **Constraints** — a `search scope` on *every* cross-language reference; start narrow.

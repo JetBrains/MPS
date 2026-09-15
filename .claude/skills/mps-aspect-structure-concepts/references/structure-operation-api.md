@@ -3,7 +3,7 @@
 Two tools cover structure operations:
 
 - **`mps_mcp_alter_structure`** — write operations: `CREATE_CONCEPTS`, `CREATE_ENUM`, `UPDATE_CONCEPT_PROPERTY`, `UPDATE_CONCEPT_CHILD`, `UPDATE_CONCEPT_REFERENCE`, `RENAME_CONCEPT_PROPERTY`, `RENAME_CONCEPT_CHILD`, `RENAME_CONCEPT_REFERENCE`.
-- **`mps_mcp_query_structure`** — read-only operations: `GET_ENUMERATION_LITERALS`, `IS_SUBCONCEPT_OF`, `GET_SUB_CONCEPTS`, `GET_ASSIGNABLE_CONCEPTS`, `GET_ALL_SUPERCONCEPTS`, `LIST_CONCEPT_ASPECTS`, `GET_ASSIGNABLE_REFERENCES`, `IS_SMART_REFERENCE`. To find nodes that are *instances* of a concept use `mps_mcp_query_nodes` (`FIND_INSTANCES`) — see `mps-mcp-workflow/references/analysis-tools.md`.
+- **`mps_mcp_query_structure`** — read-only operations: `GET_ENUMERATION_LITERALS`, `IS_SUBCONCEPT_OF`, `GET_SUB_CONCEPTS`, `GET_ASSIGNABLE_CONCEPTS`, `GET_ALL_SUPERCONCEPTS`, `LIST_CONCEPT_ASPECTS`, `GET_ASSIGNABLE_REFERENCES`, `IS_SMART_REFERENCE`. To find nodes that are *instances* of a concept use `mps_mcp_query_nodes` (`FIND_INSTANCES`) — see `references/analysis-tools.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 
 Both return a JSON object with `'ok':true` and `'data':{...}` on success, or `'ok':false` and `'error':"..."` on failure.
 Failure responses can also include optional stable metadata fields: `'code'`, `'details'`, and `'warnings'`.

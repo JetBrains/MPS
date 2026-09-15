@@ -6,6 +6,10 @@ type: reference
 
 # MPS Constraints Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The **constraints** aspect controls *runtime* rules about nodes: what values properties may hold, how a property is stored when set, what nodes a reference may point to, and where a node of a concept is allowed to appear in the AST. It lives in the language's `constraints` model (`<lang>/languageModels/constraints.mps`) and uses the language `jetbrains.mps.lang.constraints`.
 
 Constraints are enforced at edit time and also consulted by the typesystem/editor. They are **not** the place for structural cardinalities (that belongs in `structure`) or for types (that belongs in `typesystem`).
@@ -30,7 +34,7 @@ Constraints are enforced at edit time and also consulted by the typesystem/edito
 
 ## Common-Path Workflow
 
-1. Ensure the language has a `constraints` model; create it with `mps_mcp_create_model` (`modelName: "<lang>.constraints"` — aspect ID `constraints`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)) if absent.
+1. Ensure the language has a `constraints` model; create it with `mps_mcp_create_model` (`modelName: "<lang>.constraints"` — aspect ID `constraints`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
 2. Add `jetbrains.mps.lang.constraints` to the model's used languages. For scope bodies also add `jetbrains.mps.lang.smodel`, `jetbrains.mps.lang.scopes`, `jetbrains.mps.lang.behavior`, `jetbrains.mps.baseLanguage`; import models `jetbrains.mps.scope` and `jetbrains.mps.lang.core.behavior`.
    - **Module-level dependency for scope classes**: the language module must have a `Default` dependency on solution `jetbrains.mps.kernel` (which ships model `jetbrains.mps.scope`). `mps_mcp_model_dependency` adds it automatically when importing `jetbrains.mps.scope`; `mps_mcp_create_module type=language` does not. See `references/scope-fqn-reference.md` → "Required module-level dependency".
 3. For each concept to constrain, create one `ConceptConstraints` root (`mps_mcp_create_root_node`); set `concept` ref. Minimal blueprint and validated FQN/c-ref in `references/concept-roots.md`.

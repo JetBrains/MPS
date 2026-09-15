@@ -6,6 +6,10 @@ type: reference
 
 # MPS Dataflow Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The dataflow aspect (`jetbrains.mps.lang.dataFlow`, `l:7fa12e9c-b949-4976-b4fa-19accbc320b4`) lets a language describe how control and data flow through nodes of a concept. MPS uses that information for reachability analysis, uninitialised-variable checks, and (via `IBuilderMode`) richer flow analyses such as nullable tracking.
 
 ## Mental Model
@@ -28,7 +32,7 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 
 ## Common-Path Workflow
 
-1. Create the dataflow model with `mps_mcp_create_model` and `modelName: "<lang>.dataFlow"` if absent. **The aspect ID is `dataFlow` — camelCase, case-sensitive, no `@` suffix**; spelling it `dataflow` (lowercase) produces a utility model that MPS will not recognise. See [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md). Add `jetbrains.mps.lang.dataFlow` (and transitively `jetbrains.mps.baseLanguage`) as used languages on the model.
+1. Create the dataflow model with `mps_mcp_create_model` and `modelName: "<lang>.dataFlow"` if absent. **The aspect ID is `dataFlow` — camelCase, case-sensitive, no `@` suffix**; spelling it `dataflow` (lowercase) produces a utility model that MPS will not recognise. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md). Add `jetbrains.mps.lang.dataFlow` (and transitively `jetbrains.mps.baseLanguage`) as used languages on the model.
 2. Create a `DataFlowBuilderDeclaration` root node; set `conceptDeclaration` to the concept being described; give it a `name`.
 3. Add a `BuilderBlock` child with a `body` (BL `StatementList`).
 4. Emit instructions: delegate to children with `EmitCodeForStatement`; model branches with `EmitIfJumpStatement` + `EmitLabelStatement`; record variable use with `EmitReadStatement` / `EmitWriteStatement`; mark exits with `EmitRetStatement`.

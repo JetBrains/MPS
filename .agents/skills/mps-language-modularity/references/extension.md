@@ -14,7 +14,7 @@ Every one is the same move: *new concept subtyping a base concept → valid in e
 
 ## MPS mechanics
 
-**Structure — subconcepting is the whole trick.** A concept becomes legal wherever its supertype is by *extending* it. → [`mps-aspect-structure-concepts`](../../mps-aspect-structure-concepts/SKILL.md).
+**Structure — subconcepting is the whole trick.** A concept becomes legal wherever its supertype is by *extending* it. → `mps-aspect-structure-concepts`.
 
 ```text
 concept UnlessStatement extends Statement      // legal anywhere a statement is
@@ -24,14 +24,14 @@ concept PlaceholderStatement extends Statement properties: id : string   // rese
 
 `PlaceholderStatement` is also a valid statement, but reserved as a **generator hook** for later composition — the seed of *extensible generators* (see `reuse.md`).
 
-**Generator — assimilate to the base language.** Extensions are *lowered* into the host; nothing extension-specific survives. Simplest case is a pure reduction; for constructs needing a helper, the classic shape is **weaving rule** creates a method → **mapping label** remembers it → **reduction rule** replaces the construct with a call to that label (how `closures` lowers a capturing `{ => … }`). → [`mps-aspect-generator`](../../mps-aspect-generator/SKILL.md).
+**Generator — assimilate to the base language.** Extensions are *lowered* into the host; nothing extension-specific survives. Simplest case is a pure reduction; for constructs needing a helper, the classic shape is **weaving rule** creates a method → **mapping label** remembers it → **reduction rule** replaces the construct with a call to that label (how `closures` lowers a capturing `{ => … }`). → `mps-aspect-generator`.
 
 ```text
 reduction UnlessStatement -> IfStatement   condition = Not($COPY_SRC$[condition]); body = $COPY_SRCL$[body]
 // unless (door.isOpen) { close(); }  →  if (!(door.isOpen)) { close(); }
 ```
 
-**Typesystem — integrate into the lattice, don't bypass it.** Type the new concept in terms of the base type system. When an extension adds new *types* but should reuse *existing operators* (`+`, `*`, `==`), use **overloaded operation containers** rather than cloning operators — this keeps modularity additive and avoids two near-identical `+` concepts at completion. → [`mps-aspect-typesystem`](../../mps-aspect-typesystem/SKILL.md).
+**Typesystem — integrate into the lattice, don't bypass it.** Type the new concept in terms of the base type system. When an extension adds new *types* but should reuse *existing operators* (`+`, `*`, `==`), use **overloaded operation containers** rather than cloning operators — this keeps modularity additive and avoids two near-identical `+` concepts at completion. → `mps-aspect-typesystem`.
 
 ```text
 concept MoneyType extends Type;  concept MoneyLiteral extends Expression  // 19.99 EUR
@@ -42,7 +42,7 @@ operation MulExpression   operands: <MoneyType>,<int|float>  -> <MoneyType>
 // (generator lowers MoneyType arithmetic to java.math.BigDecimal calls)
 ```
 
-**Constraints — don't overgeneralize the host.** Restrict illegal blends only where needed (e.g. a `can be ancestor` rule banning a statement inside a constant-expression context). → [`mps-aspect-constraints`](../../mps-aspect-constraints/SKILL.md).
+**Constraints — don't overgeneralize the host.** Restrict illegal blends only where needed (e.g. a `can be ancestor` rule banning a statement inside a constant-expression context). → `mps-aspect-constraints`.
 
 
 ## Recipe
@@ -53,7 +53,7 @@ operation MulExpression   operands: <MoneyType>,<int|float>  -> <MoneyType>
 4. **Typesystem** — type the new concept *and* extend existing operators via overloaded operation containers before duplicating syntax.
 5. **Constraints** — ban illegal placements narrowly.
 6. **Generator** — assimilate via reduction + weaving; reserve placeholders for future post-processing.
-7. **Generation priorities** — run the extension generator **before** the host's final text generator and **after** any generator that must create hook nodes first. → [`mps-aspect-generation-plan`](../../mps-aspect-generation-plan/SKILL.md)
+7. **Generation priorities** — run the extension generator **before** the host's final text generator and **after** any generator that must create hook nodes first. → `mps-aspect-generation-plan`
 
 ## Pitfalls
 

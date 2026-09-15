@@ -7,6 +7,10 @@ type: reference
 
 # MPS Language Modularity & Composition
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The **design tier** for multi-language MPS work: before authoring aspects, decide *how* the languages relate. This skill turns a 2×2 taxonomy into a decision procedure and routes each choice into the aspect skills that implement it.
 
 **The MPS-specific lesson: syntax composition is the easy part.** MPS is projectional — no parser, no grammar to become ambiguous — so combining notations needs far less work than in parser-based tools (only alias clashes and completion UX still need a glance). The real difficulty is semantic: **scopes, type systems, generator contracts, and migration.** Choosing a modularity kind is mostly choosing *where the dependency lives* and *how generated code interacts*.
@@ -55,7 +59,7 @@ If the goal is only to **attach metadata** to existing nodes (traceability, vari
 
 If you don't actually need the guest to stay independent, **extension is materially cheaper than embedding** — prefer it.
 
-Wiring the dependencies any strategy needs (used/extended languages, runtime solutions, accessory models) is [`mps-aspect-accessories`](../mps-aspect-accessories/SKILL.md). Aspect-skill links above are under `../mps-aspect-*/SKILL.md`.
+Wiring the dependencies any strategy needs (used/extended languages, runtime solutions, accessory models) is covered by the `mps-aspect-accessories` companion skill.
 
 ## Reference index
 
@@ -68,9 +72,9 @@ Wiring the dependencies any strategy needs (used/extended languages, runtime sol
 
 ## Related skills
 
-- [`mps-language-aspects-overview`](../mps-language-aspects-overview/SKILL.md) — authoring order and which aspect to edit once a strategy is chosen.
-- [`mps-language-inheritance`](../mps-language-inheritance/SKILL.md) — module `extends` and concept super/sub mechanics used by extension and embedding.
-- [`mps-tests`](../mps-tests/SKILL.md) — `NodesTestCase` / `EditorTestCase` patterns the validation checklist relies on.
+- `mps-language-aspects-overview` — authoring order and which aspect to edit once a strategy is chosen.
+- `mps-language-inheritance` — module `extends` and concept super/sub mechanics used by extension and embedding.
+- `mps-tests` — `NodesTestCase` / `EditorTestCase` patterns the validation checklist relies on.
 
 ## Validation
 

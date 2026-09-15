@@ -6,6 +6,10 @@ type: reference
 
 # Projectional Agent Toolkit – JetBrains MPS for Agents
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 Entry point for working with JetBrains MPS (Meta Programming System) models, languages, generators, and the MPS MCP tools.
 
 Read this together with `AGENTS.md` whenever the task involves MPS artifacts or MPS MCP tooling.
@@ -40,7 +44,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 ## Companion Skills
 
-All MPS skills live in a per-harness directory loaded by the agent host (e.g. `.agents/skills/<skill-name>/SKILL.md` for AGENTS.md-aware hosts, `.claude/skills/<skill-name>/SKILL.md` for Claude Code). Load whichever ones apply to your current task.
+The MPS catalog contains companion skills for focused task families. Load whichever ones apply to your current task, following the origin rules above.
 
 > **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed and refreshed by the `mps_mcp_initialize_project_for_agents` MCP tool. It installs into a `targetDirectory` — normally your **repository / workspace root** (the folder containing `.git`), which may be an *ancestor* of the MPS project directory when the project sits in a subdirectory; leave `targetDirectory` empty to let the tool derive that root from the open project's enclosing VCS folder, and do **not** pass it `projectPath`. If no `mps-*` skills exist yet, the project has not been initialized for agents — tell the user and offer to run it. If the catalog looks stale or incomplete, offer to refresh it (with approval): delete every `mps-*` skill folder from `.agents/skills/` and `.claude/skills/` — keeping repository-local skills (such as `bugfix-workflow` and `*-dsl` skills) — re-run the tool, then carefully merge its returned `agentsFileText` into `AGENTS.md`/`CLAUDE.md`, preserving project-specific sections. See that tool's description for the exact refresh contract.
 

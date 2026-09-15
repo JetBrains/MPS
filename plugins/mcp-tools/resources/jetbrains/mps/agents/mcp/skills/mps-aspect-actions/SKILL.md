@@ -6,6 +6,10 @@ type: reference
 
 # MPS Actions Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The **actions** aspect customizes how new nodes of a concept are constructed by the MPS editor — typically during substitution, side transformations, right-transform/`<ctrl-space>` replacement, or auto-replace. The framework produces an empty instance of the target concept; the setup function then populates it, often copying fields from the node it is replacing (`sampleNode`). Lives in `<lang>/models/<lang>.actions.mps`, language `jetbrains.mps.lang.actions`. The aspect also hosts copy/paste handlers and paste wrappers (see `references/copy-paste-and-paste-wrappers.md`).
 
 ## Critical Directives
@@ -21,7 +25,7 @@ The **actions** aspect customizes how new nodes of a concept are constructed by 
 
 ## Common-Path Workflow
 
-1. Ensure an actions model exists (`<lang>/models/<lang>.actions.mps`; create with `mps_mcp_create_model` and `modelName: "<lang>.actions"` — aspect ID `actions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.actions`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel`. Add `jetbrains.mps.lang.core` as the base. Import the structure model of your language.
+1. Ensure an actions model exists (`<lang>/models/<lang>.actions.mps`; create with `mps_mcp_create_model` and `modelName: "<lang>.actions"` — aspect ID `actions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.actions`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel`. Add `jetbrains.mps.lang.core` as the base. Import the structure model of your language.
 2. Create the `NodeFactories` root via `mps_mcp_insert_root_node_from_json` (blueprint in `references/json-blueprints.md`). Set `name`.
 3. For each concept that needs custom initialization, add a `NodeFactory` child via `mps_mcp_update_node`. Set `applicableConcept`; attach a `NodeSetupFunction` with a `StatementList` body.
 4. Fill the body. Typical pattern: `ifInstanceOf (sampleNode is <Concept> original) { newNode.<prop> = original.<prop>; ... }`. Cross-type narrowing is allowed — see `references/setup-function-bodies.md`.
@@ -42,7 +46,7 @@ Signature surfaced in the editor: `(newNode, sampleNode, enclosingNode, index, m
 ## Related Skills
 
 - `mps-aspect-behavior` — concept constructors are the place to set defaults that don't depend on the node being replaced. Use a constructor for *intrinsic* defaults, a `NodeFactory` for context-sensitive carry-over.
-- `mps-aspect-intentions` — intentions that call `add new initialized(...)` route through factories. The `NF_*` family is documented in the intentions skill's `references/factory-initialized.md`.
+- `mps-aspect-intentions` — intentions that call `add new initialized(...)` route through factories. Load the `mps-aspect-intentions` companion skill from the same origin when this applies, then open `references/factory-initialized.md` in the `mps-aspect-intentions` skill root for the `NF_*` family.
 - `mps-aspect-generator` — generator output bypasses factories (quotations and `add new root` do not fire factories). Document where the generator must mimic the factory behavior.
 - `mps-model-manipulation` — full smodel reference: `SLinkAccess` vs `SPropertyAccess`, `IfInstanceOfStatement`, `IfInstanceOfVariable`, and the `NF_*` family.
 - `mps-aspect-structure-concepts` — when adding the concept that `applicableConcept` targets.
