@@ -32,7 +32,7 @@
       <node id="972152238150293451" at="64,84,65,270" concept="10" />
       <node id="972152238150122357" at="68,49,69,99" concept="10" />
       <node id="972152238150146406" at="70,12,71,83" concept="10" />
-      <node id="1171652495568757057" at="76,271,77,186" concept="10" />
+      <node id="1171652495568757057" at="76,271,77,192" concept="10" />
       <node id="6782235080028247173" at="82,363,83,176" concept="10" />
       <node id="1906998965796082140" at="87,114,88,115" concept="10" />
       <node id="1906998965793906984" at="89,12,90,129" concept="9" />
@@ -103,7 +103,7 @@
       <node id="2889732820754371943" at="101,123,152,11" concept="10" />
       <node id="1906998965796159411" at="100,0,153,18" concept="10" />
       <node id="1906998965796151698" at="89,10,154,5" concept="2" />
-      <node id="1906998965794008075" at="86,350,154,5" concept="7" />
+      <node id="1906998965794008075" at="86,356,154,5" concept="7" />
       <node id="1906998965791196060" at="86,0,156,0" concept="8" trace="getChanges#(Lorg/jetbrains/mps/openapi/model/SNodeReference;Lorg/jetbrains/mps/openapi/module/SRepository;Ljava/util/List;Lorg/jetbrains/mps/openapi/module/SearchScope;Lorg/jetbrains/mps/openapi/util/ProgressMonitor;Ljava/lang/Iterable;)Ljava/util/List;" />
       <scope id="647583388922274045" at="43,47,44,75" />
       <scope id="647583388922274056" at="46,55,47,42" />
@@ -113,7 +113,7 @@
       <scope id="972152238150178353" at="64,84,65,270" />
       <scope id="972152238150118857" at="68,49,69,99" />
       <scope id="972152238150137019" at="70,12,71,83" />
-      <scope id="1171652495568700457" at="76,271,77,186" />
+      <scope id="1171652495568700457" at="76,271,77,192" />
       <scope id="6782235080029232388" at="82,363,83,176" />
       <scope id="1906998965794008077" at="87,114,88,115" />
       <scope id="8053158288173027888" at="115,150,116,79" />
@@ -194,7 +194,7 @@
         <var name="sourceLanguage" id="2889732820754177257" />
         <var name="stateFactory" id="8559751436009862305" />
       </scope>
-      <scope id="1906998965791196078" at="86,350,154,5" />
+      <scope id="1906998965791196078" at="86,356,154,5" />
       <scope id="1906998965791196060" at="86,0,156,0">
         <var name="initialState" id="1906998965791196061" />
         <var name="parents" id="1171652495569191292" />

@@ -74,7 +74,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
 
   @Override
   public List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> getChanges(final SNodeReference initialState, final SRepository repository, List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, ProgressMonitor progressMonitor) {
-    return getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor, Sequence.fromIterable(Collections.<RefactoringParticipant.ParticipantApplied>emptyList()));
+    return getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor, Sequence.fromIterable(Collections.<RefactoringParticipant.ParticipantApplied<?, ?>>emptyList()));
   }
 
 
@@ -83,7 +83,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
     return ListSequence.fromList(initialStates).select((initialState) -> getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor, parents)).toList();
   }
 
-  public List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> getChanges(final SNodeReference initialState, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor, final Iterable<RefactoringParticipant.ParticipantApplied> parents) {
+  public List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> getChanges(final SNodeReference initialState, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor, final Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> parents) {
     if (!(isApplicable(initialState, repository)) || !(ListSequence.fromList(selectedOptions).contains(OPTION))) {
       return ListSequence.fromList(new ArrayList<RefactoringParticipant.Change<SNodeReference, SNodeReference>>());
     } else {

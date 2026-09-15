@@ -3425,7 +3425,7 @@
                               <node concept="17R0WA" id="7ram9ht8ZaB" role="3uHU7B">
                                 <node concept="2OqwBi" id="7ram9ht8ZaC" role="3uHU7B">
                                   <node concept="37vLTw" id="7ram9ht8ZaD" role="2Oq$k0">
-                                    <ref role="3cqZAo" node="7ram9ht8ZaY" resolve="parent" />
+                                    <ref role="3cqZAo" node="1zEfp2rcX7B" resolve="parent" />
                                   </node>
                                   <node concept="liA8E" id="7ram9ht8ZaE" role="2OqNvi">
                                     <ref role="37wK5l" node="5z_gLGerhdA" resolve="getParticipant" />
@@ -3441,7 +3441,7 @@
                               <node concept="2OqwBi" id="7ram9ht8ZaI" role="3uHU7w">
                                 <node concept="2OqwBi" id="7ram9ht8ZaJ" role="2Oq$k0">
                                   <node concept="37vLTw" id="7ram9ht8ZaK" role="2Oq$k0">
-                                    <ref role="3cqZAo" node="7ram9ht8ZaY" resolve="parent" />
+                                    <ref role="3cqZAo" node="1zEfp2rcX7B" resolve="parent" />
                                   </node>
                                   <node concept="liA8E" id="7ram9ht8ZaL" role="2OqNvi">
                                     <ref role="37wK5l" node="5z_gLGerhdI" resolve="getInitialStates" />
@@ -3461,7 +3461,7 @@
                               <node concept="BjQpj" id="7ram9ht8ZaR" role="2OqNvi">
                                 <node concept="2OqwBi" id="7ram9ht8ZaS" role="25WWJ7">
                                   <node concept="37vLTw" id="7ram9ht8ZaT" role="2Oq$k0">
-                                    <ref role="3cqZAo" node="7ram9ht8ZaY" resolve="parent" />
+                                    <ref role="3cqZAo" node="1zEfp2rcX7B" resolve="parent" />
                                   </node>
                                   <node concept="liA8E" id="7ram9ht8ZaU" role="2OqNvi">
                                     <ref role="37wK5l" node="5z_gLGerhdI" resolve="getInitialStates" />
@@ -3478,9 +3478,11 @@
                           </node>
                         </node>
                       </node>
-                      <node concept="gl6BB" id="7ram9ht8ZaY" role="1bW2Oz">
+                      <node concept="37vLTG" id="1zEfp2rcX7B" role="1bW2Oz">
                         <property role="TrG5h" value="parent" />
-                        <node concept="2jxLKc" id="7ram9ht8ZaZ" role="1tU5fm" />
+                        <node concept="3uibUv" id="1zEfp2rcX7$" role="1tU5fm">
+                          <ref role="3uigEE" node="5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
+                        </node>
                       </node>
                     </node>
                   </node>

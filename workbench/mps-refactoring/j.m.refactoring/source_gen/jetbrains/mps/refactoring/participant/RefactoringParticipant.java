@@ -218,7 +218,11 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       // is busy creating necessary sub-monitors, and then hit MoveAspectsParticipant override with empty list
       if (myAppliedParents != null && myParticipant instanceof RecursiveParticipant) {
         // Suppressed: java compiler will ignore generics anyway, since a raw type is used
-        if (ListSequence.fromList(myAppliedParents).any((parent) -> Objects.equals(parent.getParticipant(), ParticipantApplied.this.getParticipant()) && ListSequence.fromList(parent.getInitialStates()).containsSequence(ListSequence.fromList(ParticipantApplied.this.getInitialStates())) && ListSequence.fromList(ParticipantApplied.this.getInitialStates()).containsSequence(ListSequence.fromList(parent.getInitialStates())))) {
+        if (ListSequence.fromList(myAppliedParents).any(new _FunctionTypes._return_P1_E0<Boolean, ParticipantApplied>() {
+          public Boolean invoke(ParticipantApplied parent) {
+            return Objects.equals(parent.getParticipant(), ParticipantApplied.this.getParticipant()) && ListSequence.fromList(parent.getInitialStates()).containsSequence(ListSequence.fromList(ParticipantApplied.this.getInitialStates())) && ListSequence.fromList(ParticipantApplied.this.getInitialStates()).containsSequence(ListSequence.fromList(parent.getInitialStates()));
+          }
+        })) {
           // todo: checked exception
           throw new IllegalStateException("infinite recursion detected");
         } else {

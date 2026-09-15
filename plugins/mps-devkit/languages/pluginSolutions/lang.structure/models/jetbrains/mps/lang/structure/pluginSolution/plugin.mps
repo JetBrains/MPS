@@ -4822,6 +4822,8 @@
               <node concept="kMnCb" id="361hHoA2$5l" role="2ShVmc">
                 <node concept="3uibUv" id="5z_gLGetlm1" role="kMuH3">
                   <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
+                  <node concept="3qTvmN" id="1zEfp2rfycZ" role="11_B2D" />
+                  <node concept="3qTvmN" id="1zEfp2rfE3P" role="11_B2D" />
                 </node>
               </node>
             </node>
