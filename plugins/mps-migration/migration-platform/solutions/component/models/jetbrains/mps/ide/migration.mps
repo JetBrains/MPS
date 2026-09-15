@@ -11753,12 +11753,6 @@
                     <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
                     <node concept="3qTvmN" id="5$FcEFNaOtA" role="11_B2D" />
                     <node concept="3qTvmN" id="5$FcEFNaOtB" role="11_B2D" />
-                    <node concept="16syzq" id="ZyaJRS0QKt" role="11_B2D">
-                      <ref role="16sUi3" node="ZyaJRS07vF" resolve="IP" />
-                    </node>
-                    <node concept="16syzq" id="ZyaJRS0R1b" role="11_B2D">
-                      <ref role="16sUi3" node="ZyaJRS0aNf" resolve="FP" />
-                    </node>
                   </node>
                 </node>
               </node>

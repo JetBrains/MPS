@@ -103,15 +103,15 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
 
           List<SNode> descendants = SNodeOperations.getNodeDescendants(aspect, null, true, new SAbstractConcept[]{});
 
-          final List<Tuples._2<SNode, RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode>>> childparticipantStates = ListSequence.fromList(descendants).translate((final SNode node) -> Sequence.fromIterable(new ExtensionPoint<MoveNodeRefactoringParticipant<?, ?>>("jetbrains.mps.refactoring.participant.MoveNodeParticipantEP").getObjects()).select((participant) -> {
-            RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode> participantState = stateFactory.apply(participant, ListSequence.fromListAndArray(new ArrayList<SNode>(), node), parents);
+          final List<Tuples._2<SNode, RefactoringParticipant.ParticipantApplied<?, ?>>> childparticipantStates = ListSequence.fromList(descendants).translate((final SNode node) -> Sequence.fromIterable(new ExtensionPoint<MoveNodeRefactoringParticipant<?, ?>>("jetbrains.mps.refactoring.participant.MoveNodeParticipantEP").getObjects()).select((participant) -> {
+            RefactoringParticipant.ParticipantApplied<?, ?> participantState = stateFactory.apply(participant, ListSequence.fromListAndArray(new ArrayList<SNode>(), node), parents);
             participantState.findChanges(repository, selectedOptions, searchScope, progressMonitor.subTask(1));
-            return MultiTuple.<SNode,RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode>>from(node, participantState);
+            return MultiTuple.<SNode,RefactoringParticipant.ParticipantApplied<?, ?>>from(node, participantState);
           })).toList();
 
           SearchResults results = new SearchResults();
           results = results.addSearchResults(new SearchResults(SetSequence.fromSetAndArray(new HashSet<SNode>(), sourceConcept), ListSequence.fromListAndArray(new ArrayList<SearchResult<SNode>>(), new SearchResult<SNode>(aspect, "concept aspect"))));
-          for (Tuples._2<SNode, RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode>> childState : ListSequence.fromList(childparticipantStates)) {
+          for (Tuples._2<SNode, RefactoringParticipant.ParticipantApplied<?, ?>> childState : ListSequence.fromList(childparticipantStates)) {
             for (RefactoringParticipant.Change<?, ?> subChange : ListSequence.fromList(ListSequence.fromList(childState._1().getChanges()).first())) {
               results = results.addSearchResults(subChange.getSearchResults());
             }

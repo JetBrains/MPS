@@ -118,7 +118,7 @@ public class MoveNodesUtil {
         // do nothing
       }
       @Override
-      public void doRefactor(final Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, SNode>> participantStates, RefactoringSession refactoringSession) {
+      public void doRefactor(final Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> participantStates, RefactoringSession refactoringSession) {
         myRefactoringSession = refactoringSession;
 
         for (IMapping<NodeProcessor, List<SNode>> mapping : MapSequence.fromMap(processorToMoveRoots)) {

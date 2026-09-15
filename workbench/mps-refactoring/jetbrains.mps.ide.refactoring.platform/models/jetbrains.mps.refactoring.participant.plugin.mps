@@ -2489,8 +2489,6 @@
                           <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
                           <node concept="3qTvmN" id="3D2IEK82wR8" role="11_B2D" />
                           <node concept="3qTvmN" id="3D2IEK82wR9" role="11_B2D" />
-                          <node concept="3Tqbb2" id="3D2IEK82wRa" role="11_B2D" />
-                          <node concept="3Tqbb2" id="3D2IEK82wRb" role="11_B2D" />
                         </node>
                       </node>
                     </node>
@@ -5332,8 +5330,6 @@
             <ref role="3uigEE" to="5nvm:5z_gLGerhde" resolve="RefactoringParticipant.ParticipantApplied" />
             <node concept="3qTvmN" id="3ly2gVlmzOK" role="11_B2D" />
             <node concept="3qTvmN" id="3ly2gVlmzOL" role="11_B2D" />
-            <node concept="3Tqbb2" id="6K8$EnCZhhc" role="11_B2D" />
-            <node concept="17QB3L" id="6K8$EnCZi2g" role="11_B2D" />
           </node>
         </node>
       </node>

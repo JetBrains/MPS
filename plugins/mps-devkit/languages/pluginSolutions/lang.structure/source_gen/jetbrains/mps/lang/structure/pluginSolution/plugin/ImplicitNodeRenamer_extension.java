@@ -58,7 +58,7 @@ public class ImplicitNodeRenamer_extension extends Extension.Default<_FunctionTy
 
         String refactoringName = "Rename Node Inline";
         final RefactoringSessionImpl refactoringSession = new RefactoringSessionImpl(refactoringName);
-        _FunctionTypes._return_P1_E0<? extends Map<SNode, String>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, String>>> doRefactor = (Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, String>> participantStates) -> {
+        _FunctionTypes._return_P1_E0<? extends Map<SNode, String>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?>>> doRefactor = (Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> participantStates) -> {
           Map<SNode, String> m = MapSequence.fromMapAndEntryArray(new HashMap<SNode, String>(), Map.entry(node, newName));
           return m;
         };

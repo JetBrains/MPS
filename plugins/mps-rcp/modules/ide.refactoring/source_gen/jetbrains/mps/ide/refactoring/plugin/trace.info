@@ -653,7 +653,7 @@
       <node id="4448668666025436254" at="116,0,119,0" concept="11" trace="getRefactoringName#()Ljava/lang/String;" />
       <node id="4448668666025436260" at="120,0,123,0" concept="11" trace="getAllAvailableParticipants#()Ljava/lang/Iterable;" />
       <node id="4448668666025436272" at="124,0,127,0" concept="11" trace="findInitialStates#()Ljava/util/List;" />
-      <node id="4448668666025436332" at="134,160,137,7" concept="10" />
+      <node id="4448668666025436332" at="134,144,137,7" concept="10" />
       <node id="4448668666025436369" at="143,88,146,11" concept="10" />
       <node id="4448668666025436422" at="153,0,156,0" concept="11" trace="getFinalStateFor#(Lorg/jetbrains/mps/openapi/model/SModel;)Lorg/jetbrains/mps/openapi/model/SModel;" />
       <node id="4448668666025436430" at="157,0,160,0" concept="11" trace="doCleanup#()V" />
@@ -770,7 +770,7 @@
         <var name="modules" id="4448668666025121379" />
         <var name="selectedModule" id="4448668666025121417" />
       </scope>
-      <scope id="4448668666025436331" at="134,160,150,83" />
+      <scope id="4448668666025436331" at="134,144,150,83" />
       <scope id="4448668666025436317" at="134,0,152,0">
         <var name="participantStates" id="4448668666025436318" />
         <var name="refactoringSession" id="4448668666025436327" />

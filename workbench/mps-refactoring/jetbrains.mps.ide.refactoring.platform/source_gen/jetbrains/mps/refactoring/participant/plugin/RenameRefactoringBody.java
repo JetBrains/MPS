@@ -41,7 +41,7 @@ public class RenameRefactoringBody implements RefactoringProcessor.RefactoringBo
   public void prepareRefactoring() {
     // do nothing
   }
-  public void doRefactor(Iterable<RefactoringParticipant.ParticipantApplied<?, ?, SNode, String>> participantStates, RefactoringSession refactoringSession) {
+  public void doRefactor(Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> participantStates, RefactoringSession refactoringSession) {
     SPropertyOperations.assign(myNode, PROPS.name$MnvL, myNewNodeName);
   }
   @Override
