@@ -276,7 +276,7 @@ Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipe
 The measurement is a one-off, but the *procedure* is not: skills and tool descriptions will drift
 again, and the same baseline → hotspot → remedy → A/B loop should be repeatable on demand.
 
-- [ ] 9.1 Extract a project-local skill `skill-optimization-study` (`.agents/skills/` and
+- [~] 9.1 (drafted 2026-09-15 in `.agents/skills/skill-optimization-study/` + `.claude/skills/…`, 5 files; lessons to be extended after the treatment phase; dry-run 9.2 pending) Extract a project-local skill `skill-optimization-study` (`.agents/skills/` and
       `.claude/skills/`, sibling of the `mps-*` catalog, **not** part of the bundled catalog) that
       makes this runbook re-runnable end to end. Contents:
       - `SKILL.md`: when to use (after a tool-description or skill change, before a release, or

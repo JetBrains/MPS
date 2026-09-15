@@ -1,0 +1,77 @@
+---
+name: skill-optimization-study
+description: Re-runnable measurement loop for agent-driven JetBrains MPS work over mps_mcp_* tools — baseline headless worker runs on fixed scenarios, server call log + transcripts, hotspot ranking, remedy classification (docs / server tool / offline script / online script / template), optional A/B. Use when tool descriptions or mps-* skills changed, before a release, or when agents seem slow or retry-prone on MPS tasks.
+---
+
+# Skill optimisation study (MPS MCP)
+
+A repeatable procedure for finding where agents waste turns and tokens when driving MPS through
+`mps_mcp_*`, and for choosing the cheapest fix. It was extracted from the 2026-09 study
+(`plugins/mcp-tools/docs/skill-script-automation-study.md`, runbook
+`plugins/mcp-tools/docs/skill-script-automation-runbook.md`, results `plugins/mcp-tools/study/`).
+Scripts and scenario prompts live in `plugins/mcp-tools/study/`; if that directory is removed,
+move `scripts/` here and the prompts into `assets/`.
+
+## Roles
+
+- **Observer** (this session, Opus-class): orchestrates, never performs the MPS task, never tells
+  workers they are measured, evaluates results read-only, writes the report.
+- **Workers**: headless `claude -p` processes, one per (scenario, model, run), launched by
+  `study/scripts/run_worker.sh`. Evidence = their stream-json transcript + the server call log.
+- **Human**: opens/closes scratch projects in MPS, restarts MPS when the plugin changed, answers the
+  gate questions, approves pushes.
+
+## Gate questions to ask before starting (use them verbatim)
+
+1. Instrumentation: server call log first (needs plugin rebuild + MPS restart) or transcript-only?
+2. Worker models (default: opus + sonnet).
+3. Permission mode for workers (default: `bypassPermissions` on the developer's machine).
+4. Scope of the first pass before gate 1 (default: S1 + S3 on both models = 4 runs).
+Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies; A/B yes/no.
+
+## Procedure (tick as you go; details in the references)
+
+1. **Preflight** — MPS running with MCP on `http://localhost:64343/stream`; `claude`, `python3 ≥ 3.9`,
+   `jq`; `mps_mcp_list_open_projects` shows an EMPTY golden project (e.g. `~/MPSProjects/ProjectX`).
+   Record the tool inventory: `python3 study/scripts/tools_inventory.py --out runs/inventory.json`.
+2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
+   `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Add the option to the `MPS` run
+   configuration for the study only and REVERT it afterwards (it hard-codes a home path).
+3. **Template** — initialise the golden project for agents (`mps_mcp_initialize_project_for_agents`),
+   snapshot it (`tar`, exclude `.git`, `workspace.xml`). Do NOT put `.mcp.json` in the template; the
+   worker gets the server from `study/mcp.study.json` with `--strict-mcp-config`.
+4. **Smoke** — `run_worker.sh SMOKE sonnet 1 <template copy>`; the transcript must contain
+   `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; the call-log slice ≥ 1 line.
+5. **Scenarios** — `study/scenarios/S1..S8/{worker_prompt.md,done_criteria.md}`; add a scenario for
+   whatever skill/tool changed. Prompts are developer-voice, fixed names, explicit "done", NO reporting
+   requirements. Fixtures: `empty-project`, `statechart` (Projectxx5), `recipes` (a passing S1).
+6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
+   projects). Per run: copy fixture → human opens → confirm with `list_open_projects` → launch
+   detached → poll the PID in bounded loops → evaluate with an Opus subagent using the
+   `done_criteria.md` (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in
+   `<id>.meta.json` → human closes. Sequential, never two workers against one MPS.
+7. **Analyse** — `python3 study/scripts/analyze_runs.py runs/` → `metrics.csv`, `chains.json`,
+   `errors.json`, `hotspots.md`. Filter chains containing `mps_mcp`, group into families, have an
+   Opus reviewer inspect 3 instances per family with `study/scripts/show_steps.py` and assign
+   determinism {1.0, 0.5, 0}. Rank by avoidable turns (fixed context ≈ 150 K cache-read tokens per
+   turn dominates) as well as by the study formula.
+8. **Classify** each hotspot D → S → P-off → P-on → T (first fit). Write `HOTSPOT_REPORT.md`:
+   baseline table, ranked hotspots with `run:step` evidence, hypotheses, defects, remedies with
+   owner/contract/saving/risk. Keep a separate `docs-defects.md` from day one.
+9. **Treat** — parallel Opus implementers with DISJOINT file sets (skill docs / skill scripts +
+   packaging + drift test / server batch). Never two agents in the same Kotlin toolset; the observer
+   registers new tests in `McpToolsIntegrationTestSuite` and runs the suite between batches.
+10. **A/B** (optional) — same runs against the treated tools; success = ≥ 30 % fewer tool calls and
+    ≥ 25 % fewer context tokens on treated scenarios, no drop in pass rate; delete remedies that do
+    not pay.
+11. **Wrap up** — fold conclusions into the study doc; revert the VM option; delete fixtures tarballs
+    and the SMOKE scenario; clean `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
+    `~/.claude/projects/-…-mcp-study-proj-*/` memory dirs; keep the call-log listener.
+
+## References
+
+- `references/harness.md` — run_worker.sh, analyze_runs.py, show_steps.py, tools_inventory.py usage;
+  clean-environment rule; per-run procedure card.
+- `references/scenarios.md` — the scenario set, fixtures, done-criteria style, adding a scenario.
+- `references/analysis.md` — metrics, chain scoring, rubric, report template, thresholds.
+- `references/lessons.md` — what went wrong the first time and the rule that came out of it.
