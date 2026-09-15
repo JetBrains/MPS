@@ -145,13 +145,13 @@ Analysis helper (6.3) — the first study script, dogfooding the 3.3 contract:
 - [x] 3.4 StateChart fixture (`fixtures/statechart.tar.gz`, concepts StateChart/State/Transition/Event verified): tar Projectxx5 (minus `.git`) → `fixtures/statechart.tar.gz`;
       verify with `search_concepts`/`get_project_structure` that it satisfies S2 (a `StateChart`
       language to extend with `Guard` + an intention) and S8 (enough to document).
-- [ ] 3.5 Recipes fixture for S4: take the first *passing* S1 run's project (from the pilot, 4.2)
+- [x] 3.5 (`fixtures/recipes.tar.gz` = S1-opus-1 after PASS, includes `classes_gen` so no rebuild is needed) Recipes fixture for S4: take the first *passing* S1 run's project (from the pilot, 4.2)
       → `fixtures/recipes.tar.gz`.
 - [ ] 3.6 Broken-model fixture for S5: copy the recipes fixture, inject 12 problems via
       `mps_mcp_update_node` (dangling refs, missing required children, bad property values), list
       each with the node ref in `fixtures/PROBLEMS.md`, verify `check_root_node_problems` reports
       ≥12 → `fixtures/recipes-broken.tar.gz`.
-- [~] 3.7 (pilot S1 projects provisioned 2026-09-15: `~/MPSProjects/mcp-study/proj/S1-opus-1`, `.../S1-sonnet-1`; waiting for the human open step) Per-run project provisioning (decision, see 9.1): copy the right tarball to
+- [~] 3.7 (see decision 9.10: one scratch project open at a time; pilot S1 projects provisioned 2026-09-15: `~/MPSProjects/mcp-study/proj/S1-opus-1`, `.../S1-sonnet-1`; waiting for the human open step) Per-run project provisioning (decision, see 9.1): copy the right tarball to
       `~/MPSProjects/mcp-study/proj/<run-id>/`, copy `.mcp.json`, human opens it in MPS (batch of
       4 per scenario: 2 models × 2 runs), observer confirms via `mps_mcp_list_open_projects`.
 - [ ] 3.8 Dry-run all 8 prompts through the observer's own eyes only for ambiguity (not for
@@ -161,16 +161,35 @@ Analysis helper (6.3) — the first study script, dogfooding the 3.3 contract:
 
 ## 4. Phase 3 — Pilot and gate 1
 
-- [ ] 4.1 Run S1 and S3 × {opus, sonnet} × 1 (4 runs) on fresh ProjectX copies (a passing S1 run is also fixture 3.5).
-- [ ] 4.2 Evaluate `done` criteria read-only; record pass/fail + evidence in the meta file.
-- [ ] 4.3 Run `analyze_runs.py`; check that server slice and transcript agree on call count
+- [x] 4.1 S1-opus-1 done 2026-09-15 (181 turns, 23 min, 173 tool calls = 90 MCP + 73 Bash + 6 Skill +
+      4 ToolSearch; 32 temp-file envelopes, 33 Bash reads of those files, 9 Bash blueprint writes, 22 skill
+      reads, 16× check_root_node_problems; 2 error envelopes; server log 90 lines, 0 exceptions).
+      S1-sonnet-1 done (148 turns, 22 min, 135 tool calls = 31 Read + 15 ToolSearch + 9 Skill + 6 Write +
+      3 Bash + MCP; 5 error envelopes; evaluation pending). S3 projects provisioned from the recipes
+      fixture (`proj/S3-opus-1`, `proj/S3-sonnet-1`, `recipes.csv` inside).
+      S3-opus-1 done (100 turns, 12 min, 97 tool calls: 50× check_root_node_problems, 25 Bash, 3 bulk
+      inserts for 40 recipes; 4 error envelopes; PASS 4/4). S3-sonnet-1 done (28 turns, 4 min, PASS 4/4). Run S1 and S3 × {opus, sonnet} × 1 (4 runs) on fresh ProjectX copies (a passing S1 run is also fixture 3.5).
+- [x] 4.2 Evaluate `done` criteria read-only (Opus subagents; reports in `runs/<id>.eval.md`); record pass/fail + evidence in the meta file.
+- [x] 4.3 (server_calls == mps_calls for S1-opus-1 90/90, S1-sonnet-1 71/71, S3-opus-1 68/68; S3-sonnet-1 10 vs 11: the one rejected `projectPath`-less call never reached dispatch) Run `analyze_runs.py`; check that server slice and transcript agree on call count
       (±0 expected; if they differ, fix slicing — consider adding the session id to both).
-- [ ] 4.4 Record wall-clock, turns used vs `--max-turns 400`, and total tokens. Extrapolate the
-      32-run matrix (4.5) in hours and tokens.
-- [ ] 4.5 **Gate 1 (human)**: full matrix (8×2×2), or reduced (e.g. 1 run per model for S6–S8,
+- [x] 4.4 Pilot summary (2026-09-15, 4 runs, all under --max-turns 400):
+
+      | run | pass | turns | min | cost | tool calls (MCP) | temp-file envelopes | errors |
+      |---|---|---|---|---|---|---|---|
+      | S1-opus-1 | yes | 181 | 23 | $14.96 | 173 (90) | 32 | 2 |
+      | S1-sonnet-1 | yes* | 148 | 22 | $5.83 | 135 (71) | 23 | 5 |
+      | S3-opus-1 | yes | 100 | 12 | $5.55 | 97 (68) | 25 | 4 |
+      | S3-sonnet-1 | yes | 28 | 4 | $1.13 | 26 (11) | 4 | 1 |
+
+      *independence caveat (decision 9.10). Cache-read tokens: 27 M per S1 run, 13.6 M / 4.0 M for S3.
+      Extrapolation for the full 32-run matrix: heavy scenarios (S1, S2, S4, S6, S7) ≈ 15–25 min per
+      run, light ones (S3, S5, S8) ≈ 4–12 min → ≈ 8 h of worker wall-clock, ≈ 2 h of evaluator time,
+      ≈ $200–250, **and 32 human open/close swaps** because of the one-project rule — the swaps, not
+      the compute, are the bottleneck. Halving the matrix (1 run per model, 16 runs) halves all four.
+- [x] 4.5 **Gate 1 (human, 2026-09-15): stop the matrix here and analyse the 4 pilot runs** (decision 9.11). **Gate 1 (human)**: full matrix (8×2×2), or reduced (e.g. 1 run per model for S6–S8,
       or drop haiku for S6/S7)? Record the decision in section 9.
 
-## 5. Phase 4 — Baseline matrix (4.5)
+## 5. Phase 4 — Baseline matrix (4.5) — SKIPPED by gate-1 decision 9.11
 
 Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipes fixtures), S6, S7.
 
@@ -188,33 +207,33 @@ Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipe
 
 ## 6. Phase 5 — Analysis and HOTSPOT_REPORT.md (4.2–4.4, 6.1 step 4–5)
 
-- [ ] 6.1 Baseline metrics table per scenario × model: tokens (split: authored JSON / tool
+- [x] 6.1 Baseline metrics table per scenario × model: tokens (split: authored JSON / tool
       results / skill reads / rest), tool calls, retries, validation loops, stale-runtime
       incidents, wall-clock, pass rate.
-- [ ] 6.2 Take the top chains from `chains.json` (n-grams with ≥3 occurrences across runs). For
+- [x] 6.2 Take the top chains from `chains.json` (n-grams with ≥3 occurrences across runs). For
       each of the top 10, open 2–3 concrete instances (`run-id:step-range`) in the transcripts and
       assign determinism ∈ {1.0, 0.5, 0}. Recompute `score = occurrences × avg tokens ×
       determinism × (1 + retry_rate)`; re-rank.
-- [ ] 6.3 Classify each hotspot with the rubric in order D → S → P-off → P-on → T (4.4). For D,
+- [x] 6.3 Classify each hotspot with the rubric in order D → S → P-off → P-on → T (4.4). For D,
       quote the tool description / skill line the worker missed and propose the wording change.
       For S, sketch the Kotlin tool signature. For P-off/P-on, define input spec, stdout summary,
       file outputs, tools called. For T, name the skeleton and `# CUSTOMIZE:` points.
-- [ ] 6.4 Check each hypothesis H1–H8 (2): confirmed / refuted / not observed, with evidence.
-- [ ] 6.5 Measure the two costs no script fixes (1.2(6)): tool-schema bytes from
+- [x] 6.4 Check each hypothesis H1–H8 (2): confirmed / refuted / not observed, with evidence.
+- [x] 6.5 Measure the two costs no script fixes (1.2(6)): tool-schema bytes from
       `inventory.json` and skill-read bytes from `metrics.csv`; state expected gains against
       that baseline.
-- [ ] 6.6 Append documentation defects found in transcripts to `docs-defects.md` (wrong,
+- [x] 6.6 Append documentation defects found in transcripts to `docs-defects.md` (wrong,
       ambiguous, or unused descriptions/skill lines), each with a run citation.
-- [ ] 6.7 Write `HOTSPOT_REPORT.md`: baseline table; ranked hotspots (evidence, remedy tier,
+- [x] 6.7 Write `HOTSPOT_REPORT.md`: baseline table; ranked hotspots (evidence, remedy tier,
       owning skill, estimated saving in tokens/calls/retries, drift risk); docs-defects summary;
       for every proposed script: name, location (`<skill>/scripts` or `/assets`), input
       contract, output contract. No remedies implemented in this phase.
-- [ ] 6.8 Commit study assets and the report (`mcp-tools - skill script study: baseline runs
+- [x] 6.8 (commits e38ccb574c2d, and the report commit that follows) Commit study assets and the report (`mcp-tools - skill script study: baseline runs
       and hotspot report`); runs stay outside the repo.
 
 ## 7. Phase 6 — Gate 2 and treatment (3, 7)
 
-- [ ] 7.1 **Gate 2 (human)**: which remedies to build, in report rank order. Docs-only fixes
+- [x] 7.1 (decision 9.12: everything, no A/B) **Gate 2 (human)**: which remedies to build, in report rank order. Docs-only fixes
       (tier D) may proceed immediately in their own commits.
 - [ ] 7.2 Packaging check before the first script (3.5, 7): confirm `resources/**/scripts/*.py`
       and `assets/*` reach the plugin JAR (`mcp-tools.iml` marks `resources` as java-resource;
@@ -239,7 +258,7 @@ Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipe
 - [ ] 7.8 Re-run `mps_mcp_initialize_project_for_agents` into a fresh ProjectX copy and confirm
       scripts arrive; refresh `fixtures/empty-project.tar.gz` as the treated template.
 
-## 8. Phase 7 — A/B and final report (4.5)
+## 8. Phase 7 — A/B and final report (4.5) — A/B SKIPPED by gate-2 decision 9.12; final report still due
 
 - [ ] 8.1 Re-run the identical matrix (same prompts, same shas, treated template) with the
       same provisioning procedure.
@@ -282,7 +301,7 @@ again, and the same baseline → hotspot → remedy → A/B loop should be repea
       and A/B tables, kept/deleted remedies, updated hypotheses H1–H8, open questions.
 - [ ] 9.4 Roll back the study-only scaffolding, each in its own commit or revert:
       - **Revert the VM option** in `.idea/runConfigurations/MPS.xml` (user-specific absolute path in
-        a shared run configuration) — `git revert` the dedicated commit.
+        a shared run configuration) — `git revert 16ca274cc63f` (commit `mcp-tools - TEMP study-only: …`).
       - **Delete `study/fixtures/*.tar.gz`** (regenerable from ProjectX / Projectxx5) and the `SMOKE`
         scenario; drop the `study/runs/` `.gitignore` line if `study/` goes.
       - **Decide the fate of `study/`** (prompts, done criteria, scripts): keep as the reproducibility
@@ -291,7 +310,8 @@ again, and the same baseline → hotspot → remedy → A/B loop should be repea
       - **Keep** `McpCallLogListener` + test + `plugin.xml` registration (product feature, off by default).
 - [ ] 9.5 Clean up outside the repo: `~/MPSProjects/mcp-study/` (scratch projects, transcripts,
       call log — archive the `runs/` directory first, it is the evidence), `/tmp/mcpserver-classes`,
-      per-scratch-project entries in `~/.claude.json`, and ProjectX's initialisation files
+      per-scratch-project entries in `~/.claude.json`, the workers' auto-memory directories
+      `~/.claude/projects/-Users-vaclav-MPSProjects-mcp-study-proj-*/`, and ProjectX's initialisation files
       (`.agents/`, `.claude/`, `CLAUDE.md`, `AGENTS.md`) if ProjectX should return to an empty project.
 - [ ] 9.6 Final report to the user: what was measured, what shipped, what was rolled back, and how
       to re-run via the `skill-optimization-study` skill.
@@ -306,6 +326,25 @@ again, and the same baseline → hotspot → remedy → A/B loop should be repea
   transcript here; Junie runs (if any) count as source-A-only data and are out of the baseline.
 - 9.3 Worker models (2026-09-15, Vaclav): `opus` + `sonnet`, not the study's Sonnet + weaker model.
 - 9.7 Instrumentation (2026-09-15, Vaclav): implement the server-side call log *before* the pilot.
+- 9.12 Gate 2 (2026-09-15, Vaclav): build ALL proposed remedies — docs (R3, R6, R2-docs), server-side
+  (R1, R2, R4, R7, R8) and scripts (R5); **no A/B re-run** (Phase 7 skipped; remedies ship on baseline
+  evidence). Execution: three parallel Opus implementers with disjoint files (skill docs / skill
+  scripts + packaging + drift test / server batch 1 = R1, R7, R8-suggestions), then server batch 2
+  (R2, R4, R8 create_module + enum flag) sequentially; observer registers new tests in the suite and
+  runs `McpToolsIntegrationTestSuite` between batches.
+- 9.11 Gate 1 (2026-09-15, Vaclav): no further baseline runs; Phase 5 analysis on the 4 pilot runs
+  (S1, S3 × opus, sonnet; all PASS). Phase 4 (5.1–5.5) skipped. Hypotheses tied to S2/S4–S8 (H2
+  generator chain, H5/H8 validation and stale runtime, H7 discovery-heavy) stay unmeasured and are
+  marked as such in the report. Strictly sequential runs remain the rule if the matrix is resumed.
+- 9.10 One scratch project open at a time (2026-09-15, Vaclav's concern): the MCP server shares a
+  single module repository across all open projects, so a worker can (a) see and copy a finished
+  sibling run — the S1 sonnet worker's `list_open_projects` result listed S1-opus-1 — and (b) have
+  plain-name lookups (`mcp.study.recipes`, `mcp.study.kitchen.samples`) resolve into a sibling run
+  with identical module names. Rule: before a worker starts, only its own scratch project plus
+  projects with disjoint module names (ProjectX, Projectxx5) may be open; the previous run's
+  project is closed by the human after its evaluation. Also: all four S3 runs for a scenario are
+  therefore *sequential with a close step in between*, not a batch of four open projects
+  (supersedes the batching in 3.7 and 5.1).
 - 9.9 Call log via `ToolCallListener` (2026-09-15): a first version hooked `AbstractOps.withMpsProject`
   plus hand-wrapped tools; the integration test showed ~16 tools return from argument-validation
   guard clauses before that wrapper, so the hook was replaced by the platform listener, which is

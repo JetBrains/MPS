@@ -25,7 +25,20 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-SKILL_DIR_RE = re.compile(r"/(\.agents|\.claude)/skills/")
+SKILL_DIR_RE = re.compile(r"(?:\.agents|\.claude)/skills/|\bmps-[a-z0-9-]+/(?:SKILL\.md|references/)")
+TEMP_RESULT_RE = re.compile(r"mps-node-\d+\.json|/T/mps-[a-z-]*\d+|mps-mcp-result")
+BLUEPRINT_WRITE_RE = re.compile(r"cat\s*>|tee\s|open\([^)]*['\"]w['\"]|json\.dump\(|>\s*\S+\.json")
+
+
+def classify_bash(command: str) -> str:
+    """skill_read | temp_result_read | blueprint_write | other — what a Bash call is used for."""
+    if SKILL_DIR_RE.search(command):
+        return "skill_read"
+    if BLUEPRINT_WRITE_RE.search(command):
+        return "blueprint_write"
+    if TEMP_RESULT_RE.search(command):
+        return "temp_result_read"
+    return "other"
 STALE_RE = re.compile(r"descriptorStatus\W+hollow|runtime_stale|RUNTIME_STALE", re.I)
 VALIDATE_TOOL = "mps_mcp_check_root_node_problems"
 
@@ -91,8 +104,12 @@ def load_jsonl(path: Path):
 
 def analyse_run(run_id: str, runs: Path):
     events = load_jsonl(runs / f"{run_id}-worker.jsonl")
-    server = load_jsonl(runs / f"{run_id}-server.jsonl")
     meta = json.loads((runs / f"{run_id}.meta.json").read_text()) if (runs / f"{run_id}.meta.json").exists() else {}
+    server = load_jsonl(runs / f"{run_id}-server.jsonl")
+    # The server slice is cut by time window; drop lines from other projects (e.g. the observer
+    # evaluating a previous run while this one was running).
+    if meta.get("project"):
+        server = [s for s in server if not s.get("project") or s["project"].rstrip("/") == meta["project"].rstrip("/")]
 
     calls = []            # ordered tool_use steps: dict(step, name, key, input_chars, result_bytes, error, root)
     by_id = {}
@@ -116,9 +133,12 @@ def analyse_run(run_id: str, runs: Path):
                     inp = block.get("input")
                     call = {"step": step, "name": name, "key": key_of(name, inp),
                             "input_chars": len(json.dumps(inp)) if inp is not None else 0,
-                            "result_bytes": 0, "error": False, "root": root_ref_of(inp),
-                            "skill_read": name == "Read" and isinstance(inp, dict)
-                                          and bool(SKILL_DIR_RE.search(str(inp.get("file_path", ""))))}
+                            "result_bytes": 0, "error": False, "root": root_ref_of(inp), "result_is_temp_file": False,
+                            "skill_read": (name == "Read" and isinstance(inp, dict)
+                                           and bool(SKILL_DIR_RE.search(str(inp.get("file_path", "")))))
+                                          or (name == "Bash" and isinstance(inp, dict)
+                                              and classify_bash(str(inp.get("command", ""))) == "skill_read"),
+                            "bash_kind": classify_bash(str(inp.get("command", ""))) if name == "Bash" and isinstance(inp, dict) else None}
                     calls.append(call)
                     by_id[block.get("id")] = call
         elif t == "user":
@@ -131,6 +151,7 @@ def analyse_run(run_id: str, runs: Path):
                     if STALE_RE.search(text):
                         stale += 1
                     if call:
+                        call["result_is_temp_file"] = bool(re.match(r'\s*\{"ok":true,"data":"/[^"]+"', text))
                         call["result_bytes"] = n
                         call["error"] = is_error_result(block, text)
                         if call["skill_read"]:
@@ -182,6 +203,10 @@ def analyse_run(run_id: str, runs: Path):
         "mps_authored_chars": sum(c["input_chars"] for c in calls if c["name"].startswith("mps_mcp_")),
         "tool_result_bytes": result_total, "skill_read_bytes": skill_bytes,
         "skill_reads": sum(1 for c in calls if c["skill_read"]),
+        "bash_calls": sum(1 for c in calls if c["name"] == "Bash"),
+        "bash_temp_result_reads": sum(1 for c in calls if c["bash_kind"] == "temp_result_read"),
+        "bash_blueprint_writes": sum(1 for c in calls if c["bash_kind"] == "blueprint_write"),
+        "temp_file_envelopes": sum(1 for c in calls if c["name"].startswith("mps_mcp_") and c["result_is_temp_file"]),
         "errors": sum(1 for c in calls if c["error"]), "retries": len(retries),
         "validation_loops": len(loops), "stale_incidents": stale,
         "server_calls": len(server), "server_errors": len(server) - server_ok,
