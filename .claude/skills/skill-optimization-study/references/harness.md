@@ -7,15 +7,24 @@ Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/
 `MAX_TURNS` (400), `STUDY` (auto). Writes `<id>.meta.json`, `<id>-worker.jsonl`, `<id>-worker.stderr`,
 `<id>-server.jsonl` (call-log slice by byte offsets). Launch detached and poll:
 ```
-nohup sh -c "RUNS=$RUNS study/scripts/run_worker.sh S1 opus 1 $PROJ; echo EXIT_CODE=\$?" > $RUNS/S1-opus-1.harness.log 2>&1 &
-for i in $(seq 1 100); do ps -p <pid> >/dev/null || break; sleep 5; done   # ≤ ~9 min per Bash call
+nohup sh -c "RUNS=$RUNS $STUDY/scripts/run_worker.sh S1 opus 1 $PROJ; echo EXIT_CODE=\$?" \
+  > $RUNS/S1-opus-1.harness.log 2>&1 &
+WRAPPER=$!            # poll THIS pid: the sh wrapper exits when run_worker.sh (and the worker) exit
+for i in $(seq 1 100); do ps -p $WRAPPER >/dev/null || break; sleep 5; done
 ```
+Set the Bash tool's `timeout` to ≥ 540000 ms for polling calls (the default is 2 min); one call
+covers ≈ 8–9 min, so repeat the loop in further calls for long runs. The meta file's `pid` is
+`run_worker.sh`'s own pid (useful for `kill`), not the `claude` process. Re-running an id is
+refused (exit 2) — bump the run number instead. Worker prompts use the cwd as `projectPath`.
 The child CLI runs under `env -i HOME PATH USER SHELL LANG TERM TMPDIR` because an agent session
 leaks `ANTHROPIC_BASE_URL` / `CLAUDE_CODE_*` (worker reports "Not logged in" otherwise), with
 `--permission-mode bypassPermissions --mcp-config study/mcp.study.json --strict-mcp-config
 --output-format stream-json --verbose --max-turns $MAX_TURNS < /dev/null`.
 
-## analyze_runs.py `runs/ [--out DIR] [--min-occurrences 3] [--top 25]`
+## analyze_runs.py `$RUNS [--out DIR (default $RUNS/analysis)] [--min-occurrences 3] [--top 25]`
+Outputs: `metrics.csv`, `tools.json` (per-tool calls/errors/avg sizes, transcript + server),
+`chains.json`, `errors.json`, `hotspots.md`. `pass` comes from `<id>.meta.json.taskPass` (empty until
+the observer evaluates; always empty for SMOKE).
 Per run: tokens (input/output/cache read/write), tool calls, MCP calls, Bash/Read/Write, skill-file
 reads + bytes (Read and Bash `cat`/`sed` of `*/skills/*`), temp-file envelopes (`data` = path),
 Bash reads of those files, Bash blueprint writes, authored tool-input chars (all / MCP), tool-result
@@ -28,7 +37,8 @@ Cross-check: `server_calls == mps_calls` unless a call was rejected before dispa
 Compact view of a step range (1-based tool_use ordinals as in `chains.json` examples) with inputs,
 result heads, `[ERROR]` markers and assistant prose. Give reviewers this instead of the transcript.
 
-## tools_inventory.py `--out runs/inventory.json`
+## tools_inventory.py `--out $RUNS/inventory.json`
+Use exactly this path: `run_worker.sh` stores its sha256 as `inventorySha256` in every meta file.
 Streamable-HTTP `initialize` → `notifications/initialized` → `tools/list`; records names, parameter
 names, description/schema bytes. Its `McpClient` class is the seed of an online client if ever needed.
 

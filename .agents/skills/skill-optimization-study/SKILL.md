@@ -6,11 +6,21 @@ description: Re-runnable measurement loop for agent-driven JetBrains MPS work ov
 # Skill optimisation study (MPS MCP)
 
 A repeatable procedure for finding where agents waste turns and tokens when driving MPS through
-`mps_mcp_*`, and for choosing the cheapest fix. It was extracted from the 2026-09 study
-(`plugins/mcp-tools/docs/skill-script-automation-study.md`, runbook
-`plugins/mcp-tools/docs/skill-script-automation-runbook.md`, results `plugins/mcp-tools/study/`).
-Scripts and scenario prompts live in `plugins/mcp-tools/study/`; if that directory is removed,
-move `scripts/` here and the prompts into `assets/`.
+`mps_mcp_*`, and for choosing the cheapest fix. This skill is self-sufficient: the 2026-09 study documents
+(`plugins/mcp-tools/docs/skill-script-automation-study.md` and its runbook) are history and
+evidence, not required reading. Scripts and scenario prompts live in `plugins/mcp-tools/study/`;
+if that directory is removed, move `scripts/` here and the prompts into `assets/`.
+
+## Conventions used below
+
+Agent shells reset the working directory per call, so every command uses absolute paths through
+two variables — set them at the start of each Bash call (or export them in a wrapper script):
+
+```
+STUDY=/Users/vaclav/work/MPS/myMPS-fix/plugins/mcp-tools/study   # adjust to the checkout
+RUNS=$HOME/MPSProjects/mcp-study/runs                            # evidence dir, outside the repo
+```
+`$RUNS/inventory.json` is a load-bearing name: `run_worker.sh` records its sha in every run's meta.
 
 ## Roles
 
@@ -31,17 +41,28 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
 
 ## Procedure (tick as you go; details in the references)
 
-1. **Preflight** — MPS running with MCP on `http://localhost:64343/stream`; `claude`, `python3 ≥ 3.9`,
-   `jq`; `mps_mcp_list_open_projects` shows an EMPTY golden project (e.g. `~/MPSProjects/ProjectX`).
-   Record the tool inventory: `python3 study/scripts/tools_inventory.py --out runs/inventory.json`.
+1. **Preflight** — MPS running with MCP on `http://localhost:64343/stream`. Check the toolchain:
+   `claude --version` (≥ 2.1; must accept `--output-format stream-json --strict-mcp-config`),
+   `python3 -c 'import sys; assert sys.version_info >= (3, 9)'`, `jq --version`.
+   `mps_mcp_list_open_projects(projectPath=<golden>)` must list the golden project — "empty" means
+   no modules of its own (`mps_mcp_get_project_structure` returns no modules), e.g.
+   `~/MPSProjects/ProjectX`. Other projects may be open only if their module names are disjoint
+   from what workers will create. Is the call log on? `grep -c mps.mcp.calllog <MPS>/log/idea.log`
+   ≥ 1 and the log file grows after any tool call; if not (gate question 1 = transcript-only),
+   expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
+   Record the tool inventory: `python3 $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json`.
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
    `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Add the option to the `MPS` run
    configuration for the study only and REVERT it afterwards (it hard-codes a home path).
 3. **Template** — initialise the golden project for agents (`mps_mcp_initialize_project_for_agents`),
    snapshot it (`tar`, exclude `.git`, `workspace.xml`). Do NOT put `.mcp.json` in the template; the
    worker gets the server from `study/mcp.study.json` with `--strict-mcp-config`.
-4. **Smoke** — `run_worker.sh SMOKE sonnet 1 <template copy>`; the transcript must contain
-   `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; the call-log slice ≥ 1 line.
+4. **Smoke** — `SMOKE` is a harness check, not a scenario: a read-only prompt that lists open
+   projects and stops, so it may run against the golden project itself (no template copy, no
+   evaluation, `pass` stays empty). `RUNS=$RUNS MAX_TURNS=6 $STUDY/scripts/run_worker.sh SMOKE sonnet <n>
+   <golden>` — bump `<n>` on every re-run (the harness refuses an existing run id). The transcript
+   must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
+   the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
 5. **Scenarios** — `study/scenarios/S1..S8/{worker_prompt.md,done_criteria.md}`; add a scenario for
    whatever skill/tool changed. Prompts are developer-voice, fixed names, explicit "done", NO reporting
    requirements. Fixtures: `empty-project`, `statechart` (Projectxx5), `recipes` (a passing S1).
@@ -50,8 +71,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    detached → poll the PID in bounded loops → evaluate with an Opus subagent using the
    `done_criteria.md` (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in
    `<id>.meta.json` → human closes. Sequential, never two workers against one MPS.
-7. **Analyse** — `python3 study/scripts/analyze_runs.py runs/` → `metrics.csv`, `chains.json`,
-   `errors.json`, `hotspots.md`. Filter chains containing `mps_mcp`, group into families, have an
+7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
+   → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
+   each run's meta after evaluation. Filter chains containing `mps_mcp`, group into families, have an
    Opus reviewer inspect 3 instances per family with `study/scripts/show_steps.py` and assign
    determinism {1.0, 0.5, 0}. Rank by avoidable turns (fixed context ≈ 150 K cache-read tokens per
    turn dominates) as well as by the study formula.

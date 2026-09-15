@@ -13,6 +13,8 @@ Location: `plugins/mcp-tools/study/scenarios/<S>/worker_prompt.md` + `done_crite
 | S7 | `@tests` model, 3 NodesTestCases + 1 EditorTestCase, run config | recipes | H2, H7 |
 | S8 | Onboard unknown project → `statechart-dsl` skill via `mps-dsl-memory` | statechart | H4, H7 |
 
+| SMOKE | Harness check: list open projects and stop (read-only; no `done_criteria.md`; runs against the golden project; never evaluated) | — | — |
+
 Measured in 2026-09: S1, S3 (both models, all PASS). S2, S4–S8 unmeasured.
 
 ## Writing a prompt

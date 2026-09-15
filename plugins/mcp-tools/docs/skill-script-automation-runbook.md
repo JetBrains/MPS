@@ -294,7 +294,7 @@ again, and the same baseline → hotspot → remedy → A/B loop should be repea
         envelopes, stale study claims, MPS project open/close being a human step, …).
       The skill points at `plugins/mcp-tools/study/` for the scripts and prompts; if that directory is
       removed in 9.4, move the scripts into the skill's `scripts/` and the prompts into `assets/`.
-- [ ] 9.2 Dry-run the extracted skill: a fresh observer session, given only the skill and an empty
+- [x] 9.2 (2026-09-15: fresh Opus session ran preflight, SMOKE-sonnet-2 and analysis from the skill alone; verdict 'with fixes', 11 gaps found and fixed — absolute paths via $STUDY/$RUNS, toolchain checks, 'empty project' definition, call-log on/off check, inventory filename, SMOKE documented, wrapper-pid polling, Bash timeout, tools.json, re-run guard, no pointer to the runbook as required reading) Dry-run the extracted skill: a fresh observer session, given only the skill and an empty
       project, must reach a completed smoke run and a populated `metrics.csv` without consulting
       this runbook or the chat history. Fix the skill until it does.
 - [ ] 9.3 Fold conclusions into the study document (`skill-script-automation-study.md`): baseline
