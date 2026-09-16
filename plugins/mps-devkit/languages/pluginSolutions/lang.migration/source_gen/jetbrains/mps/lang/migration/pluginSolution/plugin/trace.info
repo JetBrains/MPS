@@ -104,8 +104,8 @@
       <node id="5632889823466456237" at="114,0,115,55" concept="11" />
       <node id="5632889823466450737" at="115,55,116,0" concept="12" />
       <node id="5983465960088695583" at="118,47,119,99" concept="10" />
-      <node id="3567210265429227921" at="121,117,122,58" concept="9" />
-      <node id="3947813777275390199" at="122,58,123,289" concept="9" />
+      <node id="3567210265429227921" at="121,93,122,82" concept="9" />
+      <node id="3947813777275390199" at="122,82,123,289" concept="9" />
       <node id="1817798995039523950" at="123,289,124,47" concept="4" />
       <node id="3947813777275584693" at="125,9,126,128" concept="9" />
       <node id="3947813777275586661" at="126,128,127,81" concept="9" />
@@ -149,7 +149,7 @@
       <node id="7222086642610009059" at="93,5,101,5" concept="6" />
       <node id="3947813777275584689" at="124,47,137,9" concept="1" />
       <node id="149909493390852580" at="89,0,104,0" concept="8" trace="getChanges#(Ljava/util/List;Lorg/jetbrains/mps/openapi/module/SRepository;Ljava/util/List;Lorg/jetbrains/mps/openapi/module/SearchScope;Lorg/jetbrains/mps/openapi/util/ProgressMonitor;)Ljava/util/List;" />
-      <node id="3567210265429227911" at="121,0,139,0" concept="8" trace="confirm#(Lorg/jetbrains/mps/openapi/model/SNodeReference;Lorg/jetbrains/mps/openapi/module/SRepository;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
+      <node id="3567210265429227911" at="121,0,139,0" concept="8" trace="confirm#(Lorg/jetbrains/mps/openapi/model/SNodeReference;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
       <node id="3567210265429227844" at="116,0,139,6" concept="9" />
       <node id="3947813777274815866" at="105,0,142,0" concept="8" trace="getChanges#(Lorg/jetbrains/mps/openapi/model/SNodeReference;Lorg/jetbrains/mps/openapi/module/SRepository;Ljava/util/List;Lorg/jetbrains/mps/openapi/module/SearchScope;)Ljava/util/List;" />
       <scope id="625080419371537361" at="36,58,37,75" />
@@ -227,14 +227,13 @@
         <var name="searchScope" id="149909493390852589" />
         <var name="selectedOptions" id="149909493390852586" />
       </scope>
-      <scope id="3567210265429227920" at="121,117,137,9">
+      <scope id="3567210265429227920" at="121,93,137,9">
         <var name="logBuilder" id="3947813777275390200" />
         <var name="targetNode" id="3567210265429227922" />
       </scope>
       <scope id="3567210265429227911" at="121,0,139,0">
         <var name="finalState" id="3567210265429227914" />
         <var name="refactoringSession" id="3567210265429227918" />
-        <var name="repository" id="3567210265429227916" />
       </scope>
       <scope id="3947813777274815890" at="105,232,140,129">
         <var name="change" id="3567210265429227845" />

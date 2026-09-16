@@ -125,9 +125,9 @@ public class WriteSubconceptMigrationParticipant extends RefactoringParticipantB
           public SearchResults getSearchResults() {
             return SearchResults.singleton(new SearchResult<SModule>(subModule, "induced migration script"));
           }
-          public void confirm(Void finalState, SRepository repository, RefactoringSession refactoringSession) {
+          public void confirm(Void finalState, final RefactoringSession refactoringSession) {
             LanguageStructureMigrationParticipant.MigrationBuilder migrationBuilder = LanguageStructureMigrationParticipant.MigrationBuilder.getBuilder(refactoringSession, subModule);
-            migrationBuilder.addPart(createIncludeMigrationPart_8k3jue_a0a1a1a0a0a0a0a0a5a2a21(SNodeOperations.cast(initialState._1().resolve(repository), CONCEPTS.IMigrationUnit$xq)));
+            migrationBuilder.addPart(createIncludeMigrationPart_8k3jue_a0a1a1a0a0a0a0a0a5a2a21(SNodeOperations.cast(initialState._1().resolve(refactoringSession.getRepository()), CONCEPTS.IMigrationUnit$xq)));
           }
         };
         return change;

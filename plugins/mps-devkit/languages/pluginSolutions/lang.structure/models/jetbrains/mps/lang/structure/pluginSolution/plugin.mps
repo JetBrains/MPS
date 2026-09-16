@@ -14119,14 +14119,9 @@
                                           <ref role="3uigEE" to="wyt6:~Void" resolve="Void" />
                                         </node>
                                       </node>
-                                      <node concept="37vLTG" id="704K6n3vRKT" role="3clF46">
-                                        <property role="TrG5h" value="repository" />
-                                        <node concept="3uibUv" id="704K6n3vRKU" role="1tU5fm">
-                                          <ref role="3uigEE" to="lui2:~SRepository" resolve="SRepository" />
-                                        </node>
-                                      </node>
                                       <node concept="37vLTG" id="704K6n3vRKV" role="3clF46">
                                         <property role="TrG5h" value="refactoringSession" />
+                                        <property role="3TUv4t" value="true" />
                                         <node concept="3uibUv" id="704K6n3vRKW" role="1tU5fm">
                                           <ref role="3uigEE" to="5nvm:3KqYwoBJ0xf" resolve="RefactoringSession" />
                                         </node>
@@ -14178,8 +14173,13 @@
                                                           </node>
                                                           <node concept="liA8E" id="704K6n3vRLh" role="2OqNvi">
                                                             <ref role="37wK5l" node="3oob4NQ3tP8" resolve="resolve" />
-                                                            <node concept="37vLTw" id="704K6n3vRLi" role="37wK5m">
-                                                              <ref role="3cqZAo" node="704K6n3vRKT" resolve="repository" />
+                                                            <node concept="2OqwBi" id="34P8w74EiuS" role="37wK5m">
+                                                              <node concept="37vLTw" id="704K6n3vRLi" role="2Oq$k0">
+                                                                <ref role="3cqZAo" node="704K6n3vRKV" resolve="refactoringSession" />
+                                                              </node>
+                                                              <node concept="liA8E" id="34P8w74EtaB" role="2OqNvi">
+                                                                <ref role="37wK5l" to="5nvm:7VAzgTdnvUa" resolve="getRepository" />
+                                                              </node>
                                                             </node>
                                                           </node>
                                                         </node>

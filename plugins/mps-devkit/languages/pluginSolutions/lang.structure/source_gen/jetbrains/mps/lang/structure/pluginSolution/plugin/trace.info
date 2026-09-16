@@ -355,8 +355,8 @@
       <node id="4969018317724217123" at="117,43,118,97" concept="10" />
       <node id="2770867049911465203" at="121,20,122,169" concept="9" />
       <node id="8071787975458913330" at="125,51,126,109" concept="10" />
-      <node id="8071787975458913342" at="128,111,129,183" concept="9" />
-      <node id="8071787975458913348" at="129,183,130,185" concept="4" />
+      <node id="8071787975458913342" at="128,93,129,183" concept="9" />
+      <node id="8071787975458913348" at="129,183,130,209" concept="4" />
       <node id="8071787975458943731" at="132,10,133,22" concept="10" />
       <node id="2770867049911658963" at="134,18,135,21" concept="10" />
       <node id="3897914186547823545" at="140,102,141,254" concept="10" />
@@ -411,7 +411,7 @@
       <node id="2770867049912316093" at="160,0,163,0" concept="8" trace="afterMove#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljava/lang/Void;" />
       <node id="3327932925618683014" at="164,0,167,0" concept="8" trace="getDataCollector#()Ljetbrains/mps/refactoring/participant/MoveNodeRefactoringParticipant/MoveNodeRefactoringDataCollector;" />
       <node id="2770867049911914412" at="55,0,59,0" concept="3" trace="MigrationScriptRef#(Lorg/jetbrains/mps/openapi/module/SModuleReference;I)V" />
-      <node id="8071787975458913332" at="128,0,132,0" concept="8" trace="confirm#(Ljava/lang/Void;Lorg/jetbrains/mps/openapi/module/SRepository;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
+      <node id="8071787975458913332" at="128,0,132,0" concept="8" trace="confirm#(Ljava/lang/Void;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
       <node id="3897914186546404680" at="65,0,70,0" concept="8" trace="resolve#(Lorg/jetbrains/mps/openapi/module/SRepository;)Lorg/jetbrains/mps/openapi/model/SNode;" />
       <node id="4969018317724012912" at="108,235,113,11" concept="10" />
       <node id="4969018317724217115" at="115,226,120,11" concept="10" />
@@ -445,7 +445,7 @@
       <scope id="2770867049912316097" at="160,44,161,18" />
       <scope id="3327932925618683022" at="164,150,165,27" />
       <scope id="2770867049911914416" at="55,61,57,18" />
-      <scope id="8071787975458913341" at="128,111,130,185">
+      <scope id="8071787975458913341" at="128,93,130,209">
         <var name="migrationBuilder" id="8071787975458913343" />
       </scope>
       <scope id="2770867049911914550" at="59,0,62,0" />
@@ -494,7 +494,6 @@
       <scope id="8071787975458913332" at="128,0,132,0">
         <var name="finalState" id="8071787975458913335" />
         <var name="refactoringSession" id="8071787975458913339" />
-        <var name="repository" id="8071787975458913337" />
       </scope>
       <scope id="3897914186546404680" at="65,0,70,0">
         <var name="repository" id="3897914186546457483" />

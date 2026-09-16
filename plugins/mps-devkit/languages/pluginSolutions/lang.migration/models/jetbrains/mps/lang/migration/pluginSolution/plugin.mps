@@ -1305,12 +1305,6 @@
                         <ref role="3uigEE" to="mhbf:~SNodeReference" resolve="SNodeReference" />
                       </node>
                     </node>
-                    <node concept="37vLTG" id="361hHoA2jAc" role="3clF46">
-                      <property role="TrG5h" value="repository" />
-                      <node concept="3uibUv" id="361hHoA2jAd" role="1tU5fm">
-                        <ref role="3uigEE" to="lui2:~SRepository" resolve="SRepository" />
-                      </node>
-                    </node>
                     <node concept="37vLTG" id="361hHoA2jAe" role="3clF46">
                       <property role="TrG5h" value="refactoringSession" />
                       <node concept="3uibUv" id="361hHoA2jAf" role="1tU5fm">
@@ -1328,8 +1322,13 @@
                             </node>
                             <node concept="liA8E" id="361hHoA2jAn" role="2OqNvi">
                               <ref role="37wK5l" to="mhbf:~SNodeReference.resolve(org.jetbrains.mps.openapi.module.SRepository)" resolve="resolve" />
-                              <node concept="37vLTw" id="361hHoA2jAo" role="37wK5m">
-                                <ref role="3cqZAo" node="361hHoA2jAc" resolve="repository" />
+                              <node concept="2OqwBi" id="34P8w74HJRz" role="37wK5m">
+                                <node concept="37vLTw" id="361hHoA2jAo" role="2Oq$k0">
+                                  <ref role="3cqZAo" node="361hHoA2jAe" resolve="refactoringSession" />
+                                </node>
+                                <node concept="liA8E" id="34P8w74HPif" role="2OqNvi">
+                                  <ref role="37wK5l" to="5nvm:7VAzgTdnvUa" resolve="getRepository" />
+                                </node>
                               </node>
                             </node>
                           </node>

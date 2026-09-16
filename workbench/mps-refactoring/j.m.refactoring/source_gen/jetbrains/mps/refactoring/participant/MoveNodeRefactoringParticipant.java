@@ -19,6 +19,8 @@ public interface MoveNodeRefactoringParticipant<InitialDataObject, FinalDataObje
     public RefactoringParticipant.KeepOldNodes needsToPreserveOldNode() {
       return RefactoringParticipant.KeepOldNodes.REMOVE;
     }
-    public abstract void confirm(FinalDataObject finalState, SRepository repository, RefactoringSession refactoringSession);
+    public void confirm(FinalDataObject finalState, SRepository repository, RefactoringSession refactoringSession) {
+      throw new UnsupportedOperationException();
+    }
   }
 }

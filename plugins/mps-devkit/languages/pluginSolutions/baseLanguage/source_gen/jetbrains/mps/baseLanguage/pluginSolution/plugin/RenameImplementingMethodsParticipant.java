@@ -76,7 +76,7 @@ public class RenameImplementingMethodsParticipant extends RefactoringParticipant
           return searchResults;
         }
         @Override
-        public void confirm(final String finalState, SRepository repository, RefactoringSession refactoringSession) {
+        public void confirm(final String finalState, RefactoringSession refactoringSession) {
           refactoringSession.registerChange(() -> SPropertyOperations.assign(node, PROPS.name$MnvL, finalState));
         }
       });

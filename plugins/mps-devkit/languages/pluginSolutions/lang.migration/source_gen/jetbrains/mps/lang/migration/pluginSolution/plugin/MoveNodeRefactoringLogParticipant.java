@@ -118,8 +118,8 @@ public class MoveNodeRefactoringLogParticipant extends RefactoringParticipantBas
       public SearchResults getSearchResults() {
         return SearchResults.singleton(new SearchResult<SModule>(sourceModule, "refactoring log"));
       }
-      public void confirm(SNodeReference finalState, SRepository repository, RefactoringSession refactoringSession) {
-        SNode targetNode = finalState.resolve(repository);
+      public void confirm(SNodeReference finalState, RefactoringSession refactoringSession) {
+        SNode targetNode = finalState.resolve(refactoringSession.getRepository());
         LogBuilder logBuilder = LogBuilder.getBuilder(refactoringSession, searchScope, sourceModule, "Update References: " + BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(sourceNode) + "->" + BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(targetNode));
         logBuilder.addOptions(selectedOptions);
         {

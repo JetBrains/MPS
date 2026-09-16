@@ -46,7 +46,7 @@
       <node id="1519954259331884968" at="69,89,70,167" concept="12" />
       <node id="1762976820112517818" at="71,136,72,238" concept="12" />
       <node id="1519954259332354005" at="75,49,76,31" concept="13" />
-      <node id="1762976820112517877" at="79,117,80,113" concept="6" />
+      <node id="1762976820112517877" at="79,93,80,113" concept="6" />
       <node id="1519954259332493161" at="83,5,84,18" concept="13" />
       <node id="1519954259331366000" at="88,0,89,0" concept="16" trace="BaseMethodDeclaration$kD" />
       <node id="1519954259331366000" at="92,0,93,0" concept="16" trace="name$MnvL" />
@@ -59,7 +59,7 @@
       <node id="1519954259331366088" at="61,245,64,5" concept="10" />
       <node id="1519954259331746514" at="65,58,68,5" concept="10" />
       <node id="1519954259331970892" at="74,0,78,0" concept="11" trace="getSearchResults#()Ljetbrains/mps/ide/findusages/model/SearchResults;" />
-      <node id="1519954259331970903" at="78,0,82,0" concept="11" trace="confirm#(Ljava/lang/String;Lorg/jetbrains/mps/openapi/module/SRepository;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
+      <node id="1519954259331970903" at="78,0,82,0" concept="11" trace="confirm#(Ljava/lang/String;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
       <node id="1519954259331705007" at="53,58,58,5" concept="10" />
       <node id="1519954259331366019" at="41,0,49,0" concept="7" trace="myDataCollector" />
       <node id="1519954259331366062" at="52,0,60,0" concept="11" trace="getAvailableOptions#(Lorg/jetbrains/mps/openapi/model/SNodeReference;Lorg/jetbrains/mps/openapi/module/SRepository;)Ljava/util/List;" />
@@ -76,7 +76,7 @@
       <scope id="1519954259331366089" at="62,69,63,107" />
       <scope id="1519954259331746525" at="66,91,67,107" />
       <scope id="1519954259331970899" at="75,49,76,31" />
-      <scope id="1519954259331970917" at="79,117,80,113" />
+      <scope id="1519954259331970917" at="79,93,80,113" />
       <scope id="1519954259331366002" at="32,0,35,0" />
       <scope id="1519954259331366004" at="35,0,38,0" />
       <scope id="1519954259331366030" at="42,0,45,0">
@@ -90,7 +90,6 @@
       <scope id="1519954259331970903" at="78,0,82,0">
         <var name="finalState" id="1519954259331970907" />
         <var name="refactoringSession" id="1519954259331970911" />
-        <var name="repository" id="1519954259331970909" />
       </scope>
       <scope id="1519954259331366070" at="52,119,58,5">
         <var name="renamingNode" id="1519954259331705001" />

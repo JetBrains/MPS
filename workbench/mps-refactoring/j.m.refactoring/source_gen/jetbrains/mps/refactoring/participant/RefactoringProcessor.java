@@ -143,16 +143,45 @@ public class RefactoringProcessor {
    * @deprecated use alternative that use repository and scope from the session
    */
   @Deprecated(forRemoval = true, since = "2026.2")
-  public static <IP, FP, IS, FS> void performRefactoring(RefactoringParticipant.ParticipantStateFactory<IS, FS> factory, RefactoringUI refactoringUI, RefactoringSession refactoringSession, final SRepository repository, SearchScope scope, Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> initialStates, final _FunctionTypes._void_P0_E0 prepareRefactoring, final _FunctionTypes._return_P1_E0<? extends Map<IS, FS>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?>>> doRefactor, @Nullable _FunctionTypes._void_P0_E0 doCleanup) {
+  public static <IP, FP, IS, FS> void performRefactoring(RefactoringParticipant.ParticipantStateFactory<IS, FS> factory, RefactoringUI refactoringUI, final RefactoringSession refactoringSession, final SRepository repository, final SearchScope scope, Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> initialStates, final _FunctionTypes._void_P0_E0 prepareRefactoring, final _FunctionTypes._return_P1_E0<? extends Map<IS, FS>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?>>> doRefactor, @Nullable _FunctionTypes._void_P0_E0 doCleanup) {
 
+    RefactoringSession rs;
     if (refactoringSession.getRepository() == null || refactoringSession.getSearchScope() == null) {
       if (LOG.isWarningLevel()) {
         LOG.warning("Fix refactoring call to include repository and scope into session");
       }
-      refactoringSession = new RefactoringSessionImpl(refactoringSession.getRefactoringName(), repository, scope);
+      rs = new RefactoringSession() {
+        @Override
+        public SRepository getRepository() {
+          return repository;
+        }
+        @Override
+        public SearchScope getSearchScope() {
+          return scope;
+        }
+        @Override
+        public void putObject(String id, Object object) {
+          refactoringSession.putObject(id, object);
+        }
+        @Override
+        public Object getObject(String id) {
+          return refactoringSession.getObject(id);
+        }
+        @Nullable
+        @Override
+        public String getRefactoringName() {
+          return refactoringSession.getRefactoringName();
+        }
+        @Override
+        public void registerChange(Runnable change) {
+          refactoringSession.registerChange(change);
+        }
+      };
+    } else {
+      rs = refactoringSession;
     }
 
-    performRefactoring(factory, refactoringUI, refactoringSession, participants, initialStates, prepareRefactoring, doRefactor, doCleanup);
+    performRefactoring(factory, refactoringUI, rs, participants, initialStates, prepareRefactoring, doRefactor, doCleanup);
   }
 
   /**

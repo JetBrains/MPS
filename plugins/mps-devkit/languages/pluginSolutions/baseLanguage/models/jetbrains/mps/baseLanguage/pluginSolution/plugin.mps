@@ -3007,12 +3007,6 @@
                             <property role="TrG5h" value="finalState" />
                             <node concept="17QB3L" id="1knX_y6kJt$" role="1tU5fm" />
                           </node>
-                          <node concept="37vLTG" id="1knX_y6kJtt" role="3clF46">
-                            <property role="TrG5h" value="repository" />
-                            <node concept="3uibUv" id="1knX_y6kJtu" role="1tU5fm">
-                              <ref role="3uigEE" to="lui2:~SRepository" resolve="SRepository" />
-                            </node>
-                          </node>
                           <node concept="37vLTG" id="1knX_y6kJtv" role="3clF46">
                             <property role="TrG5h" value="refactoringSession" />
                             <node concept="3uibUv" id="1knX_y6kJtw" role="1tU5fm">

@@ -90,6 +90,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
      */
     @Deprecated(forRemoval = true, since = "2026.2")
     default void confirm(FinalDataObject finalState, SRepository repository, RefactoringSession refactoringSession) {
+      throw new UnsupportedOperationException("override 2-arg confirm() method!");
     }
     default void confirm(FinalDataObject finalState, RefactoringSession refactoringSession) {
       confirm(finalState, refactoringSession.getRepository(), refactoringSession);
