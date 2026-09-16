@@ -4,7 +4,7 @@
   <id>jetbrains.mps.debugger.java.customViewers</id>
   <name>BaseLanguage Debugger Support</name>
   <description>Debugger support for baseLanguage extensions</description>
-  <version>2026.1.1</version>
+  <version>2026.1.2</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <idea-version since-build="261.1" />
   

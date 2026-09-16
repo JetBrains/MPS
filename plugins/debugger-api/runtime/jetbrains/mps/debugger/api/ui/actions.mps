@@ -2122,7 +2122,7 @@
     <property role="9BnSM" value="JetBrains" />
     <property role="TrG5h" value="Debugger API for MPS" />
     <property role="9BnSO" value="261.1" />
-    <property role="9BnSK" value="2026.1.1" />
+    <property role="9BnSK" value="2026.1.2" />
   </node>
   <node concept="312cEu" id="24OxoGwTqg6">
     <property role="TrG5h" value="MuteBreakpoints" />
