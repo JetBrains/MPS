@@ -56006,9 +56006,6 @@
     <node concept="26EafG" id="4nX__hM7r7q" role="3cRCUr">
       <property role="26EafJ" value="lib/mps-workbench.jar" />
     </node>
-    <node concept="26EafG" id="2cMGRytXXLz" role="3cRCUr">
-      <property role="26EafJ" value="lib/nio-fs.jar" />
-    </node>
     <node concept="26EafG" id="44nat7ZsPd1" role="3cRCUr">
       <property role="26EafJ" value="lib/opentelemetry.jar" />
     </node>

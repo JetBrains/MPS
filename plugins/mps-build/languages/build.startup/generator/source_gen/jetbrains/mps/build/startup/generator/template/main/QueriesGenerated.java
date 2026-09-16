@@ -404,27 +404,32 @@ public class QueriesGenerated extends QueryProviderBase {
     return String.format("        \"%s\",", library);
   }
   public static Object propertyMacro_GetValue_6_12(final PropertyMacroContext _context) {
-    return String.format(_context.getTemplateValue(), BuildMps_Branding__BehaviorDescriptor.getVendor_id6RvRF8fBDEC.invoke(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), null));
+    String niofsjar = "lib/nio-fs.jar";
+    niofsjar = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + niofsjar;
+    return String.format(_context.getTemplateValue(), niofsjar);
   }
   public static Object propertyMacro_GetValue_6_13(final PropertyMacroContext _context) {
+    return String.format(_context.getTemplateValue(), BuildMps_Branding__BehaviorDescriptor.getVendor_id6RvRF8fBDEC.invoke(SLinkOperations.getTarget(_context.getNode(), LINKS.branding$Eg1g), null));
+  }
+  public static Object propertyMacro_GetValue_6_14(final PropertyMacroContext _context) {
     String jnaPath = "lib/jna";
     jnaPath = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + jnaPath;
     return String.format(_context.getTemplateValue(), jnaPath);
   }
-  public static Object propertyMacro_GetValue_6_14(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_15(final PropertyMacroContext _context) {
     String path = "lib/skiko-awt-runtime-all";
     path = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + path;
     return String.format(_context.getTemplateValue(), path);
   }
-  public static Object propertyMacro_GetValue_6_15(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_16(final PropertyMacroContext _context) {
     String pty4jFolder = "lib/pty4j";
     pty4jFolder = (("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/"))) + pty4jFolder;
     return String.format(_context.getTemplateValue(), pty4jFolder);
   }
-  public static Object propertyMacro_GetValue_6_16(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_17(final PropertyMacroContext _context) {
     return String.format(_context.getTemplateValue(), SPropertyOperations.getString(SNodeOperations.as(_context.getNode(), CONCEPTS.SimpleVmOptions$48), PROPS.options$D2Jv));
   }
-  public static Object propertyMacro_GetValue_6_17(final PropertyMacroContext _context) {
+  public static Object propertyMacro_GetValue_6_18(final PropertyMacroContext _context) {
     return SPropertyOperations.getString(_context.getNode(), PROPS.text$DMB3);
   }
   public static boolean ifMacro_Condition_6_0(final IfMacroContext _context) {
@@ -576,7 +581,7 @@ public class QueriesGenerated extends QueryProviderBase {
     pvqMethods.put("2604223389424176433", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "if [ -n \"$MPS_CLASSPATH\" ]; then"));
     pvqMethods.put("2604223389424194139", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "  CLASSPATH=\"$CLASSPATH:$MPS_CLASSPATH\""));
     pvqMethods.put("4487788881657707877", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "MAIN_CLASS="));
-    pvqMethods.put("4396737822194642704", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "  \"-XX:ErrorFile=$HOME/java_error_in_%s_%%p.log\" \\"));
+    pvqMethods.put("1648847256733682783", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "  \"-XX:ErrorFile=$HOME/java_error_in_%s_%%p.log\" \\"));
     pvqMethods.put("4396737822194642998", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "  \"-XX:HeapDumpPath=$HOME/java_error_in_%s.hprof\" \\"));
     pvqMethods.put("2977095070787047797", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "  --add-opens=java.base/java.io=ALL-UNNAMED \\"));
     pvqMethods.put("922958177839996412", new PVQ(i++, MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L, 0x110396ec041L, "name"), "mps.sh"));
@@ -593,6 +598,7 @@ public class QueriesGenerated extends QueryProviderBase {
     pvqMethods.put("7717100174560616378", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "      \"vmOptionsFilePath\": \"%s\","));
     pvqMethods.put("7717100174560616432", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"annotations.jar\","));
     pvqMethods.put("8481880751316231788", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"annotations.jar\","));
+    pvqMethods.put("1648847256733632481", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Xbootclasspath/a:%s\","));
     pvqMethods.put("7717100174560616512", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Didea.vendor.name=%s\","));
     pvqMethods.put("4782412228687886522", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Djna.boot.library.path=%s\","));
     pvqMethods.put("2935038219003853520", new PVQ(i++, MetaAdapterFactory.getProperty(0xd5033ceef63244b6L, 0xb30889d4fbde34ffL, 0x180805c7b1d668a2L, 0x180805c7b1df77d9L, "text"), "        \"-Dskiko.library.path=%s\","));
@@ -751,6 +757,8 @@ public class QueriesGenerated extends QueryProviderBase {
           return QueriesGenerated.propertyMacro_GetValue_6_16(ctx);
         case 67:
           return QueriesGenerated.propertyMacro_GetValue_6_17(ctx);
+        case 68:
+          return QueriesGenerated.propertyMacro_GetValue_6_18(ctx);
         default:
           throw new GenerationFailureException(String.format("Inconsistent QueriesGenerated: there's no method for query %s (key: #%d)", ctx.getTemplateReference(), methodKey));
       }

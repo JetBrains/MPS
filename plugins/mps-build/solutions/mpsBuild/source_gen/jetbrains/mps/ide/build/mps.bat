@@ -126,7 +126,7 @@ IF "%VM_OPTIONS_FILE%%USER_VM_OPTIONS_FILE%" == "" (
 )
 
 
-SET COMMON_JVM_ARGS="-XX:ErrorFile=%USERPROFILE%\java_error_in_%PRODUCT%_%%p.log" "-XX:HeapDumpPath=%USERPROFILE%\java_error_in_%PRODUCT%.hprof" -Didea.paths.selector=%IDEA_PATHS_SELECTOR% -Didea.vendor.name="%IDEA_VENDOR_NAME%" %IDE_PROPERTIES_PROPERTY%
+SET COMMON_JVM_ARGS="-Xbootclasspath/a:%IDE_HOME%/lib/nio-fs.jar" "-XX:ErrorFile=%USERPROFILE%\java_error_in_%PRODUCT%_%%p.log" "-XX:HeapDumpPath=%USERPROFILE%\java_error_in_%PRODUCT%.hprof" -Didea.paths.selector=%IDEA_PATHS_SELECTOR% -Didea.vendor.name="%IDEA_VENDOR_NAME%" %IDE_PROPERTIES_PROPERTY%
 SET IDE_JVM_ARGS=-Dintellij.platform.load.app.info.from.resources=true -Didea.jre.check=true -Dpty4j.preferred.native.folder="%IDE_HOME%/lib/pty4j" -Djna.boot.library.path="%IDE_HOME%/lib/jna" -Dskiko.library.path="%IDE_HOME%/lib/skiko-awt-runtime-all" -Djava.system.class.loader=com.intellij.util.lang.PathClassLoader -Dij.startup.error.report.url="https://youtrack.jetbrains.com/newissue?project=MPS&clearDraft=true&summary=$TITLE$&description=$DESCR$"
 SET ALL_JVM_ARGS=%ACC% %COMMON_JVM_ARGS% %IDE_JVM_ARGS%
 

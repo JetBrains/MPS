@@ -482,6 +482,7 @@ MAIN_CLASS=jetbrains.mps.Launcher
 "$JAVA_BIN" \
   -classpath "$CLASSPATH" \
   ${VM_OPTIONS} \
+  "-Xbootclasspath/a:${IDE_HOME}/lib/nio-fs.jar" \
   "-XX:ErrorFile=$HOME/java_error_in_MPS_%p.log" \
   "-XX:HeapDumpPath=$HOME/java_error_in_MPS.hprof" \
   "-Djb.vmOptionsFile=${USER_VM_OPTIONS_FILE:-${VM_OPTIONS_FILE}}" \

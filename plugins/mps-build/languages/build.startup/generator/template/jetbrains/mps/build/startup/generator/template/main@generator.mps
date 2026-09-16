@@ -2510,7 +2510,7 @@
     <node concept="2DRAP_" id="4eWOtEm1vV9" role="2DRAPQ" />
     <node concept="2DRAP_" id="4eWOtEm2wu$" role="2DRAPQ" />
     <node concept="2DRAP_" id="4eWOtEm22os" role="2DRAPQ">
-      <property role="2DPR8u" value="SET COMMON_JVM_ARGS=&quot;-XX:ErrorFile=%USERPROFILE%\java_error_in_%PRODUCT%_%%p.log&quot; &quot;-XX:HeapDumpPath=%USERPROFILE%\java_error_in_%PRODUCT%.hprof&quot; -Didea.paths.selector=%IDEA_PATHS_SELECTOR% -Didea.vendor.name=&quot;%IDEA_VENDOR_NAME%&quot; %IDE_PROPERTIES_PROPERTY%" />
+      <property role="2DPR8u" value="SET COMMON_JVM_ARGS=&quot;-Xbootclasspath/a:%IDE_HOME%/lib/nio-fs.jar&quot; &quot;-XX:ErrorFile=%USERPROFILE%\java_error_in_%PRODUCT%_%%p.log&quot; &quot;-XX:HeapDumpPath=%USERPROFILE%\java_error_in_%PRODUCT%.hprof&quot; -Didea.paths.selector=%IDEA_PATHS_SELECTOR% -Didea.vendor.name=&quot;%IDEA_VENDOR_NAME%&quot; %IDE_PROPERTIES_PROPERTY%" />
     </node>
     <node concept="2DRAP_" id="4eWOtEm22ts" role="2DRAPQ">
       <property role="2DPR8u" value="SET IDE_JVM_ARGS=-Dintellij.platform.load.app.info.from.resources=true -Didea.jre.check=true -Dpty4j.preferred.native.folder=&quot;%IDE_HOME%/lib/pty4j&quot; -Djna.boot.library.path=&quot;%IDE_HOME%/lib/jna&quot; -Dskiko.library.path=&quot;%IDE_HOME%/lib/skiko-awt-runtime-all&quot; -Djava.system.class.loader=com.intellij.util.lang.PathClassLoader -Dij.startup.error.report.url=&quot;https://youtrack.jetbrains.com/newissue?project=MPS&amp;clearDraft=true&amp;summary=$TITLE$&amp;description=$DESCR$&quot;" />
@@ -4245,44 +4245,47 @@
       <property role="2DPR8u" value="  ${VM_OPTIONS} \" />
     </node>
     <node concept="2DRAP_" id="7C7qUK4tcX2" role="2DRAPQ">
+      <property role="2DPR8u" value="  &quot;-Xbootclasspath/a:${IDE_HOME}/lib/nio-fs.jar&quot; \" />
+    </node>
+    <node concept="2DRAP_" id="1rxStwivgLu" role="2DRAPQ">
       <property role="2DPR8u" value="  &quot;-XX:ErrorFile=$HOME/java_error_in_%s_%%p.log&quot; \" />
-      <node concept="17Uvod" id="3O4ms4urUWg" role="lGtFl">
+      <node concept="17Uvod" id="1rxStwivgLv" role="lGtFl">
         <property role="2qtEX9" value="text" />
         <property role="P4ACc" value="d5033cee-f632-44b6-b308-89d4fbde34ff/1731640411964205218/1731640411964798937" />
-        <node concept="3zFVjK" id="3O4ms4urUWh" role="3zH0cK">
-          <node concept="3clFbS" id="3O4ms4urUWi" role="2VODD2">
-            <node concept="3clFbF" id="3MPxqbC5_1P" role="3cqZAp">
-              <node concept="2OqwBi" id="3MPxqbC5_xs" role="3clFbG">
-                <node concept="3zGtF$" id="3MPxqbC5_1O" role="2Oq$k0" />
-                <node concept="2cAKMz" id="3MPxqbC5_UP" role="2OqNvi">
-                  <node concept="3K4zz7" id="3MPxqbC5CLp" role="2cAKU6">
-                    <node concept="Xl_RD" id="3MPxqbC5DfV" role="3K4E3e">
+        <node concept="3zFVjK" id="1rxStwivgLw" role="3zH0cK">
+          <node concept="3clFbS" id="1rxStwivgLx" role="2VODD2">
+            <node concept="3clFbF" id="1rxStwivgLy" role="3cqZAp">
+              <node concept="2OqwBi" id="1rxStwivgLz" role="3clFbG">
+                <node concept="3zGtF$" id="1rxStwivgL$" role="2Oq$k0" />
+                <node concept="2cAKMz" id="1rxStwivgL_" role="2OqNvi">
+                  <node concept="3K4zz7" id="1rxStwivgLA" role="2cAKU6">
+                    <node concept="Xl_RD" id="1rxStwivgLB" role="3K4E3e">
                       <property role="Xl_RC" value="MPS" />
                     </node>
-                    <node concept="2OqwBi" id="3MPxqbC5Bon" role="3K4Cdx">
-                      <node concept="2OqwBi" id="3MPxqbC5A9N" role="2Oq$k0">
-                        <node concept="30H73N" id="3MPxqbC5A02" role="2Oq$k0" />
-                        <node concept="3TrEf2" id="3MPxqbC5AyE" role="2OqNvi">
+                    <node concept="2OqwBi" id="1rxStwivgLC" role="3K4Cdx">
+                      <node concept="2OqwBi" id="1rxStwivgLD" role="2Oq$k0">
+                        <node concept="30H73N" id="1rxStwivgLE" role="2Oq$k0" />
+                        <node concept="3TrEf2" id="1rxStwivgLF" role="2OqNvi">
                           <ref role="3Tt5mk" to="s7om:32A7APlXEJ9" resolve="branding" />
                         </node>
                       </node>
-                      <node concept="3w_OXm" id="3MPxqbC5C7I" role="2OqNvi" />
+                      <node concept="3w_OXm" id="1rxStwivgLG" role="2OqNvi" />
                     </node>
-                    <node concept="2OqwBi" id="3O4ms4urV1u" role="3K4GZi">
-                      <node concept="2OqwBi" id="3O4ms4urV1v" role="2Oq$k0">
-                        <node concept="2OqwBi" id="3O4ms4urV1w" role="2Oq$k0">
-                          <node concept="30H73N" id="3O4ms4urV1x" role="2Oq$k0" />
-                          <node concept="3TrEf2" id="3O4ms4urV1y" role="2OqNvi">
+                    <node concept="2OqwBi" id="1rxStwivgLH" role="3K4GZi">
+                      <node concept="2OqwBi" id="1rxStwivgLI" role="2Oq$k0">
+                        <node concept="2OqwBi" id="1rxStwivgLJ" role="2Oq$k0">
+                          <node concept="30H73N" id="1rxStwivgLK" role="2Oq$k0" />
+                          <node concept="3TrEf2" id="1rxStwivgLL" role="2OqNvi">
                             <ref role="3Tt5mk" to="s7om:32A7APlXEJ9" resolve="branding" />
                           </node>
                         </node>
-                        <node concept="3TrEf2" id="3O4ms4urV1z" role="2OqNvi">
+                        <node concept="3TrEf2" id="1rxStwivgLM" role="2OqNvi">
                           <ref role="3Tt5mk" to="kdzh:5j4USBYGz2J" resolve="product" />
                         </node>
                       </node>
-                      <node concept="3zqWPK" id="70OdufORfO4" role="2OqNvi">
+                      <node concept="3zqWPK" id="1rxStwivgLN" role="2OqNvi">
                         <ref role="37wK5l" to="vbkb:3NagsOfTioI" resolve="getText" />
-                        <node concept="10Nm6u" id="70OdufORfO6" role="37wK5m" />
+                        <node concept="10Nm6u" id="1rxStwivgLO" role="37wK5m" />
                       </node>
                     </node>
                   </node>
@@ -5632,8 +5635,88 @@
         <node concept="raruj" id="6GoDrz8MJ2g" role="lGtFl" />
       </node>
       <node concept="2DRAP_" id="7mPGpETBHeK" role="2DRAPQ">
-        <property role="2DPR8u" value="        &quot;-XX:+UseCompressedOops&quot;," />
+        <property role="2DPR8u" value="        &quot;-Xbootclasspath/a:%s&quot;," />
         <node concept="raruj" id="7mPGpETBHeL" role="lGtFl" />
+        <node concept="17Uvod" id="1rxStwiv4vx" role="lGtFl">
+          <property role="2qtEX9" value="text" />
+          <property role="P4ACc" value="d5033cee-f632-44b6-b308-89d4fbde34ff/1731640411964205218/1731640411964798937" />
+          <node concept="3zFVjK" id="1rxStwiv4v$" role="3zH0cK">
+            <node concept="3clFbS" id="1rxStwiv4v_" role="2VODD2">
+              <node concept="3cpWs8" id="1rxStwiv4Dx" role="3cqZAp">
+                <node concept="3cpWsn" id="1rxStwiv4Dy" role="3cpWs9">
+                  <property role="TrG5h" value="niofsjar" />
+                  <node concept="17QB3L" id="1rxStwiv4Dz" role="1tU5fm" />
+                  <node concept="Xl_RD" id="1rxStwiv4D$" role="33vP2m">
+                    <property role="Xl_RC" value="lib/nio-fs.jar" />
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbF" id="1rxStwiv4D_" role="3cqZAp">
+                <node concept="37vLTI" id="1rxStwiv4DA" role="3clFbG">
+                  <node concept="37vLTw" id="1rxStwiv4DB" role="37vLTJ">
+                    <ref role="3cqZAo" node="1rxStwiv4Dy" resolve="niofsjar" />
+                  </node>
+                  <node concept="3cpWs3" id="1rxStwiv4DC" role="37vLTx">
+                    <node concept="37vLTw" id="1rxStwiv4DD" role="3uHU7w">
+                      <ref role="3cqZAo" node="1rxStwiv4Dy" resolve="niofsjar" />
+                    </node>
+                    <node concept="1eOMI4" id="1rxStwiv4DE" role="3uHU7B">
+                      <node concept="3K4zz7" id="1rxStwiv4DF" role="1eOMHV">
+                        <node concept="Xl_RD" id="1rxStwiv4DG" role="3K4E3e">
+                          <property role="Xl_RC" value="$APP_PACKAGE/Contents/" />
+                        </node>
+                        <node concept="3K4zz7" id="1rxStwiv4DH" role="3K4GZi">
+                          <node concept="2OqwBi" id="1rxStwiv4DI" role="3K4Cdx">
+                            <node concept="Xl_RD" id="1rxStwiv4DJ" role="2Oq$k0">
+                              <property role="Xl_RC" value="Windows" />
+                            </node>
+                            <node concept="liA8E" id="1rxStwiv4DK" role="2OqNvi">
+                              <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
+                              <node concept="v3LJS" id="1rxStwiv4DL" role="37wK5m">
+                                <ref role="v3LJV" node="6GoDrz8Lya0" resolve="os" />
+                              </node>
+                            </node>
+                          </node>
+                          <node concept="Xl_RD" id="1rxStwiv4DM" role="3K4GZi">
+                            <property role="Xl_RC" value="$IDE_HOME/" />
+                          </node>
+                          <node concept="Xl_RD" id="1rxStwiv4DN" role="3K4E3e">
+                            <property role="Xl_RC" value="%IDE_HOME%/" />
+                          </node>
+                        </node>
+                        <node concept="2OqwBi" id="1rxStwiv4DO" role="3K4Cdx">
+                          <node concept="Xl_RD" id="1rxStwiv4DP" role="2Oq$k0">
+                            <property role="Xl_RC" value="macOS" />
+                          </node>
+                          <node concept="liA8E" id="1rxStwiv4DQ" role="2OqNvi">
+                            <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
+                            <node concept="v3LJS" id="1rxStwiv4DR" role="37wK5m">
+                              <ref role="v3LJV" node="6GoDrz8Lya0" resolve="os" />
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbF" id="1rxStwiv4DS" role="3cqZAp">
+                <node concept="2YIFZM" id="1rxStwiv4DT" role="3clFbG">
+                  <ref role="37wK5l" to="wyt6:~String.format(java.lang.String,java.lang.Object...)" resolve="format" />
+                  <ref role="1Pybhc" to="wyt6:~String" resolve="String" />
+                  <node concept="3zGtF$" id="1rxStwiv4DU" role="37wK5m" />
+                  <node concept="37vLTw" id="1rxStwiv4DV" role="37wK5m">
+                    <ref role="3cqZAo" node="1rxStwiv4Dy" resolve="niofsjar" />
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="2DRAP_" id="1rxStwiuUjd" role="2DRAPQ">
+        <property role="2DPR8u" value="        &quot;-XX:+UseCompressedOops&quot;," />
+        <node concept="raruj" id="1rxStwiuUje" role="lGtFl" />
       </node>
       <node concept="2DRAP_" id="6GoDrz8MA0f" role="2DRAPQ">
         <property role="2DPR8u" value="        &quot;-XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log&quot;," />

@@ -329,7 +329,6 @@
         "mps-tips.jar",
         "mps-tuples.jar",
         "mps-workbench.jar",
-        "nio-fs.jar",
         "opentelemetry.jar",
         "rd-gen.jar",
         "stats.jar",
@@ -339,6 +338,7 @@
         "boot-macos.jar"
       ],
       "additionalJvmArguments": [
+        "-Xbootclasspath/a:%IDE_HOME%/lib/nio-fs.jar",
         "-XX:+UseCompressedOops",
         "-XX:ErrorFile=$USER_HOME/java_error_in_idea_%p.log",
         "-XX:HeapDumpPath=$USER_HOME/java_error_in_idea.hprof",
