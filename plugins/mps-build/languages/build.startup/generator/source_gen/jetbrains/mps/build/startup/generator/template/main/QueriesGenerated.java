@@ -444,7 +444,9 @@ public class QueriesGenerated extends QueryProviderBase {
     return String.format(_context.getTemplateValue(), pty4jFolder);
   }
   public static Object propertyMacro_GetValue_6_17(final PropertyMacroContext _context) {
-    return String.format(_context.getTemplateValue(), SPropertyOperations.getString(SNodeOperations.as(_context.getNode(), CONCEPTS.SimpleVmOptions$48), PROPS.options$D2Jv));
+    String opt = SPropertyOperations.getString(SNodeOperations.as(_context.getNode(), CONCEPTS.SimpleVmOptions$48), PROPS.options$D2Jv);
+    opt = opt.replace("%IDE_HOME%/", ("macOS".equals(((String) _context.getVariable("os"))) ? "$APP_PACKAGE/Contents/" : ("Windows".equals(((String) _context.getVariable("os"))) ? "%IDE_HOME%/" : "$IDE_HOME/")));
+    return String.format(_context.getTemplateValue(), opt);
   }
   public static Object propertyMacro_GetValue_6_18(final PropertyMacroContext _context) {
     return SPropertyOperations.getString(_context.getNode(), PROPS.text$DMB3);

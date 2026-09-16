@@ -357,7 +357,7 @@
         "-Djna.nosys=true",
         "-Djna.noclasspath=true",
         "-Dio.netty.allocator.type=pooled",
-        "-Dintellij.platform.runtime.repository.path=%IDE_HOME%/modules/module-descriptors.dat",
+        "-Dintellij.platform.runtime.repository.path=$IDE_HOME/modules/module-descriptors.dat",
         "-Didea.platform.prefix=MPS",
         "-Daether.connector.resumeDownloads=false",
         "-Dcompose.swing.render.on.graphics=true",

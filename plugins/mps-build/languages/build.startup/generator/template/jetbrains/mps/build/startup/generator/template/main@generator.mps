@@ -6537,23 +6537,85 @@
           <property role="2qtEX9" value="text" />
           <property role="P4ACc" value="d5033cee-f632-44b6-b308-89d4fbde34ff/1731640411964205218/1731640411964798937" />
           <node concept="3zFVjK" id="7mPGpETBIC2" role="3zH0cK">
-            <node concept="3clFbS" id="7mPGpETBIC3" role="2VODD2">
-              <node concept="3clFbF" id="7mPGpETCdp2" role="3cqZAp">
-                <node concept="2YIFZM" id="7mPGpETCdp4" role="3clFbG">
-                  <ref role="37wK5l" to="wyt6:~String.format(java.lang.String,java.lang.Object...)" resolve="format" />
-                  <ref role="1Pybhc" to="wyt6:~String" resolve="String" />
-                  <node concept="3zGtF$" id="7mPGpETCdp5" role="37wK5m" />
-                  <node concept="2OqwBi" id="7mPGpETCdWM" role="37wK5m">
-                    <node concept="1PxgMI" id="7mPGpETCdWN" role="2Oq$k0">
+            <node concept="3clFbS" id="7znofve0g7O" role="2VODD2">
+              <node concept="3cpWs8" id="7znofve0g7P" role="3cqZAp">
+                <node concept="3cpWsn" id="7znofve0g7S" role="3cpWs9">
+                  <property role="TrG5h" value="opt" />
+                  <node concept="17QB3L" id="7znofve0g7U" role="1tU5fm" />
+                  <node concept="2OqwBi" id="7znofve0g7V" role="33vP2m">
+                    <node concept="1PxgMI" id="7znofve0g7Y" role="2Oq$k0">
                       <property role="1BlNFB" value="true" />
-                      <node concept="chp4Y" id="7mPGpETCdWO" role="3oSUPX">
+                      <node concept="30H73N" id="7znofve0g81" role="1m5AlR" />
+                      <node concept="chp4Y" id="7znofve0g82" role="3oSUPX">
                         <ref role="cht4Q" to="s7om:3nFPImNgRtc" resolve="SimpleVmOptions" />
                       </node>
-                      <node concept="30H73N" id="7mPGpETCdWP" role="1m5AlR" />
                     </node>
-                    <node concept="3TrcHB" id="7mPGpETCdWQ" role="2OqNvi">
+                    <node concept="3TrcHB" id="7znofve0g83" role="2OqNvi">
                       <ref role="3TsBF5" to="s7om:3nFPImNgRtd" resolve="options" />
                     </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbF" id="7znofve0g84" role="3cqZAp">
+                <node concept="37vLTI" id="7znofve0g86" role="3clFbG">
+                  <node concept="37vLTw" id="7znofve0g89" role="37vLTJ">
+                    <ref role="3cqZAo" node="7znofve0g7S" resolve="opt" />
+                  </node>
+                  <node concept="2OqwBi" id="7znofve0g8a" role="37vLTx">
+                    <node concept="37vLTw" id="7znofve0g8d" role="2Oq$k0">
+                      <ref role="3cqZAo" node="7znofve0g7S" resolve="opt" />
+                    </node>
+                    <node concept="liA8E" id="7znofve0g8e" role="2OqNvi">
+                      <ref role="37wK5l" to="wyt6:~String.replace(java.lang.CharSequence,java.lang.CharSequence)" resolve="replace" />
+                      <node concept="Xl_RD" id="7znofve0g8f" role="37wK5m">
+                        <property role="Xl_RC" value="%IDE_HOME%/" />
+                      </node>
+                      <node concept="3K4zz7" id="7znofve0g8g" role="37wK5m">
+                        <node concept="2OqwBi" id="7znofve0g8k" role="3K4Cdx">
+                          <node concept="Xl_RD" id="7znofve0g8n" role="2Oq$k0">
+                            <property role="Xl_RC" value="macOS" />
+                          </node>
+                          <node concept="liA8E" id="7znofve0g8o" role="2OqNvi">
+                            <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
+                            <node concept="v3LJS" id="7znofve0g8p" role="37wK5m">
+                              <ref role="v3LJV" node="6GoDrz8Lya0" resolve="os" />
+                            </node>
+                          </node>
+                        </node>
+                        <node concept="Xl_RD" id="7znofve0g8q" role="3K4E3e">
+                          <property role="Xl_RC" value="$APP_PACKAGE/Contents/" />
+                        </node>
+                        <node concept="3K4zz7" id="7znofve0g8r" role="3K4GZi">
+                          <node concept="2OqwBi" id="7znofve0g8v" role="3K4Cdx">
+                            <node concept="Xl_RD" id="7znofve0g8y" role="2Oq$k0">
+                              <property role="Xl_RC" value="Windows" />
+                            </node>
+                            <node concept="liA8E" id="7znofve0g8z" role="2OqNvi">
+                              <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
+                              <node concept="v3LJS" id="7znofve0g8$" role="37wK5m">
+                                <ref role="v3LJV" node="6GoDrz8Lya0" resolve="os" />
+                              </node>
+                            </node>
+                          </node>
+                          <node concept="Xl_RD" id="7znofve0g8_" role="3K4E3e">
+                            <property role="Xl_RC" value="%IDE_HOME%/" />
+                          </node>
+                          <node concept="Xl_RD" id="7znofve0g8A" role="3K4GZi">
+                            <property role="Xl_RC" value="$IDE_HOME/" />
+                          </node>
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbF" id="7znofve0g8B" role="3cqZAp">
+                <node concept="2YIFZM" id="7znofve0g8D" role="3clFbG">
+                  <ref role="37wK5l" to="wyt6:~String.format(java.lang.String,java.lang.Object...)" resolve="format" />
+                  <ref role="1Pybhc" to="wyt6:~String" resolve="String" />
+                  <node concept="3zGtF$" id="7znofve0g8E" role="37wK5m" />
+                  <node concept="37vLTw" id="7znofve0g8F" role="37wK5m">
+                    <ref role="3cqZAo" node="7znofve0g7S" resolve="opt" />
                   </node>
                 </node>
               </node>
