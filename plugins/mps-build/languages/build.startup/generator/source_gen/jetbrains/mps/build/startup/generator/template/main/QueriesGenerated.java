@@ -439,13 +439,13 @@ public class QueriesGenerated extends QueryProviderBase {
     return "macOS".equals(((String) _context.getVariable("os")));
   }
   public static Iterable<SNode> sourceNodesQuery_2_0(final SourceSubstituteMacroNodesContext _context) {
-    return SLinkOperations.getChildren(_context.getNode(), LINKS.bootClasspath$_ysz);
+    return ListSequence.fromList(SLinkOperations.getChildren(_context.getNode(), LINKS.bootClasspath$_ysz)).concat(ListSequence.fromList(SLinkOperations.getChildren(_context.getNode(), LINKS.extBootClasspath$1tL0)));
   }
   public static Iterable<SNode> sourceNodesQuery_3_0(final SourceSubstituteMacroNodesContext _context) {
     return (Iterable<SNode>) MpsStartupScript__BehaviorDescriptor.getVmOptionsTextLines_id2M0p1n5GA6s.invoke(_context.getNode(), ((boolean) false));
   }
   public static Iterable<SNode> sourceNodesQuery_4_0(final SourceSubstituteMacroNodesContext _context) {
-    return SLinkOperations.getChildren(_context.getNode(), LINKS.bootClasspath$_ysz);
+    return ListSequence.fromList(SLinkOperations.getChildren(_context.getNode(), LINKS.bootClasspath$_ysz)).concat(ListSequence.fromList(SLinkOperations.getChildren(_context.getNode(), LINKS.extBootClasspath$1tL0)));
   }
   public static Iterable<SNode> sourceNodesQuery_5_0(final SourceSubstituteMacroNodesContext _context) {
     return (Iterable<SNode>) MpsStartupScript__BehaviorDescriptor.getVmOptionsTextLines_id2M0p1n5GA6s.invoke(_context.getNode(), ((boolean) true));
