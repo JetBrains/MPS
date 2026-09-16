@@ -36,7 +36,7 @@ public class RefactoringProcessor {
       for (RefactoringParticipant<?, ?, IP, FP> participant : Sequence.fromIterable(participants)) {
         ListSequence.fromList(participantStates).addElement(factory.apply(participant, nodes));
       }
-      options.value = ListSequence.fromList(participantStates).translate((it) -> it.getAvaliableOptions(session.getRepository())).distinct().sort((it) -> it.getDescription(), true).toList();
+      options.value = ListSequence.fromList(participantStates).translate((it) -> it.getAvailableOptions(session.getRepository())).distinct().sort((it) -> it.getDescription(), true).toList();
     });
 
     final List<RefactoringParticipant.Option> selectedOptions = refactoringUI.selectParticipants(options.value);
@@ -54,7 +54,7 @@ public class RefactoringProcessor {
           int steps = ListSequence.fromList(participantStates).count();
           progressMonitor.start("Searching for usages", steps);
           for (RefactoringParticipant.ParticipantApplied<?, ?> participantState : ListSequence.fromList(participantStates)) {
-            participantState.findChanges(session.getRepository(), selectedOptions, session.getSearchScope(), progressMonitor.subTask(1, SubProgressKind.AS_COMMENT));
+            participantState.findChanges(session, selectedOptions, progressMonitor.subTask(1, SubProgressKind.AS_COMMENT));
             if (progressMonitor.isCanceled()) {
               cancelled.value = true;
               break;

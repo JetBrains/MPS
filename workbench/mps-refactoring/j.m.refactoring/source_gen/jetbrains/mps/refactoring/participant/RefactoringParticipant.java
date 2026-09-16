@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.List;
 import org.jetbrains.mps.openapi.module.SRepository;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.mps.openapi.module.SearchScope;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
+import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.ide.findusages.model.SearchResults;
 import org.jetbrains.mps.openapi.model.SNode;
@@ -64,9 +64,22 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
 
   /**
    * 
-   * @return the list of the same size as initialStates
+   * @deprecated use alternative
    */
-  List<List<Change<InitialDataObject, FinalDataObject>>> getChanges(@NonNls List<InitialDataObject> initialStates, SRepository repository, List<Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor);
+  @Deprecated(forRemoval = true, since = "2026.2")
+  default List<List<Change<InitialDataObject, FinalDataObject>>> getChanges(List<InitialDataObject> initialStates, SRepository repository, List<Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
+    throw new UnsupportedOperationException("Override getChanges() with RefactoringSession argument");
+  }
+  /**
+   * FIXME replace list of list with an object
+   * 
+   * @since 2026.2
+   * @return the list of the same size as initialStates
+   *         
+   */
+  default List<List<Change<InitialDataObject, FinalDataObject>>> getChanges(List<InitialDataObject> initialStates, @NotNull RefactoringSession session, List<Option> selectedOptions, ProgressMonitor progressMonitor) {
+    return getChanges(initialStates, session.getRepository(), selectedOptions, session.getSearchScope(), progressMonitor);
+  }
 
   /**
    * POSTPONE_REMOVE is a hack used only in idea plugin
@@ -121,12 +134,9 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
     public abstract <F> Function<FS, F> getFinal(RefactoringParticipant<?, F, ?, ?> participant);
 
     public <I, F> ParticipantApplied<I, F> apply(RefactoringParticipant<I, F, ?, ?> participant, List<IS> oldNodes) {
-      return apply(participant, oldNodes, null);
-    }
-    public <I, F> ParticipantApplied<I, F> apply(RefactoringParticipant<I, F, ?, ?> participant, List<IS> oldNodes, Iterable<ParticipantApplied<?, ?>> appliedParents) {
       final Function<IS, I> toInitial = getInitial(participant);
       List<I> initialState = ListSequence.fromList(oldNodes).select((it) -> toInitial.apply(it)).toList();
-      return new ParticipantApplied<>(participant, initialState, appliedParents);
+      return new ParticipantApplied<>(participant, initialState);
     }
 
     public <I, F> void confirm(ParticipantApplied<I, F> applied, List<FS> newNodes, final RefactoringSession session) {
@@ -185,7 +195,6 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
   class ParticipantApplied<I, F> {
     private final RefactoringParticipant<I, F, ?, ?> myParticipant;
     private final List<I> myInitialStates;
-    private final List<ParticipantApplied<?, ?>> myAppliedParents;
 
     private List<List<Change<I, F>>> changes;
 
@@ -199,18 +208,16 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       return myInitialStates;
     }
 
-    public ParticipantApplied(RefactoringParticipant<I, F, ?, ?> participant, List<I> initialState, Iterable<ParticipantApplied<?, ?>> appliedParents) {
+    public ParticipantApplied(RefactoringParticipant<I, F, ?, ?> participant, List<I> initialState) {
       this.myParticipant = participant;
       this.myInitialStates = initialState;
-      // FIXME we treat null and empty myAppliedParents differently (to satisfy legacy code path in MoveAspectsParticipant along base getChanges() impl in RefactoringParticipantBase)
-      this.myAppliedParents = (appliedParents == null ? null : Sequence.fromIterable(appliedParents).toList());
     }
 
-    public List<Option> getAvaliableOptions(SRepository repository) {
+    public List<Option> getAvailableOptions(SRepository repository) {
       return myParticipant.getAvailableOptions(ListSequence.fromList(myInitialStates).where((it) -> it != null).toList(), repository);
     }
-    public List<List<Change<I, F>>> findChanges(SRepository repository, List<Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
-      return changes = initChanges(repository, selectedOptions, searchScope, progressMonitor);
+    public void findChanges(RefactoringSession session, List<Option> selectedOptions, ProgressMonitor progressMonitor) {
+      changes = initChanges(session, selectedOptions, progressMonitor);
     }
 
     private <T, S> List<S> mapNotNull(List<T> arguments, _FunctionTypes._return_P1_E0<? extends List<S>, ? super List<T>> notNullMapFunc) {
@@ -222,27 +229,28 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       }
       return result;
     }
-    private List<List<Change<I, F>>> initChanges(final SRepository repository, final List<Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor) {
+    private List<List<Change<I, F>>> initChanges(final RefactoringSession session, final List<Option> selectedOptions, final ProgressMonitor progressMonitor) {
       if (ListSequence.fromList(myInitialStates).isEmpty()) {
         return Collections.<List<Change<I, F>>>emptyList();
       }
-      // weird !null check for applied parents is there as we need top RecursiveParticipant to go through 5-arg getChanges in RefactoringParticipantBase, which 
-      // is busy creating necessary sub-monitors, and then hit MoveAspectsParticipant override with empty list
-      if (myAppliedParents != null && myParticipant instanceof RecursiveParticipant) {
-        // Suppressed: java compiler will ignore generics anyway, since a raw type is used
-        if (ListSequence.fromList(myAppliedParents).any(new _FunctionTypes._return_P1_E0<Boolean, ParticipantApplied>() {
-          public Boolean invoke(ParticipantApplied parent) {
-            return Objects.equals(parent.getParticipant(), ParticipantApplied.this.getParticipant()) && ListSequence.fromList(parent.getInitialStates()).containsSequence(ListSequence.fromList(ParticipantApplied.this.getInitialStates())) && ListSequence.fromList(ParticipantApplied.this.getInitialStates()).containsSequence(ListSequence.fromList(parent.getInitialStates()));
-          }
-        })) {
-          // todo: checked exception
-          throw new IllegalStateException("infinite recursion detected");
-        } else {
-          return mapNotNull(myInitialStates, (List<I> initialStates) -> ((RecursiveParticipant<I, F, ?, ?>) myParticipant).getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor, ListSequence.fromList(myAppliedParents).concat(Sequence.fromIterable(Sequence.singleton(ParticipantApplied.this)))));
-        }
-      } else {
-        return mapNotNull(myInitialStates, (List<I> initialStates) -> myParticipant.getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor));
+      // we used to check for recursion only for RecursiveParticipant, but it doesn't hurt to do it regardless of the presence of the marker interface 
+      RecursionGuard rg = RecursionGuard.get(session);
+      rg.enter(this);
+      try {
+        return mapNotNull(myInitialStates, (List<I> initialStates) -> myParticipant.getChanges(initialStates, session, selectedOptions, progressMonitor));
+      } finally {
+        rg.leave(this);
       }
+    }
+
+    /*package*/ boolean isSame(ParticipantApplied<?, ?> other) {
+      // FIXME in fact, participant instances are often new instances of the same class (e.g. when instantiated from extension points)
+      //       and would never match by equals. Perhaps, shall match by class, although could be same class with different type arguments (erased at runtime).
+      //       Left as it is for now, because this is the way check was written for years.
+      return Objects.equals(other.getParticipant(), this.getParticipant()) && sameList(other.getInitialStates(), this.getInitialStates());
+    }
+    private static boolean sameList(List<?> a, List<?> b) {
+      return a.containsAll(b) && b.containsAll(a);
     }
   }
 }

@@ -23,10 +23,11 @@ import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
 import java.util.Collections;
-import org.jetbrains.mps.openapi.module.SearchScope;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import java.util.Collection;
 import org.jetbrains.mps.openapi.model.SReference;
+import org.jetbrains.mps.openapi.module.SearchScope;
 import jetbrains.mps.lang.smodel.query.runtime.CommandUtil;
 import jetbrains.mps.project.EditableFilteringScope;
 import jetbrains.mps.lang.smodel.query.runtime.QueryExecutionContext;
@@ -166,20 +167,22 @@ public abstract class UpdateReferencesParticipantBase<T> extends RefactoringPart
     return Collections.<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>emptyList();
   }
 
-  public List<List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>> getChanges(List<NodeData<T>> initialStates, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
+
+  @Override
+  public List<List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>> getChanges(List<NodeData<T>> initialStates, @NotNull final RefactoringSession session, final List<RefactoringParticipant.Option> selectedOptions, ProgressMonitor progressMonitor) {
     if (!(ListSequence.fromList(selectedOptions).contains(OPTION))) {
       return noChanges(initialStates);
     }
     Collection<SReference> usages;
-    List<SNode> movedNodes = ListSequence.fromList(initialStates).select((it) -> it.baseData().reference().resolve(repository)).toList();
+    List<SNode> movedNodes = ListSequence.fromList(initialStates).select((it) -> it.baseData().reference().resolve(session.getRepository())).toList();
     {
-      SearchScope scope_82eo7d_d0w = CommandUtil.createScope(searchScope);
-      final SearchScope scope_82eo7d_d0w_0 = new EditableFilteringScope(scope_82eo7d_d0w);
-      QueryExecutionContext context = () -> scope_82eo7d_d0w_0;
+      SearchScope scope_82eo7d_d0x = CommandUtil.createScope(session.getSearchScope());
+      final SearchScope scope_82eo7d_d0x_0 = new EditableFilteringScope(scope_82eo7d_d0x);
+      QueryExecutionContext context = () -> scope_82eo7d_d0x_0;
       if (!(ListSequence.fromList(movedNodes).contains(null))) {
         // all source nodes are present, so we can run find usages (we are probably inside in-project refactoring)
         progressMonitor.start("References in current project", 1);
-        usages = (Set<SReference>) FindUsagesFacade.getInstance().findUsages(searchScope, SetSequence.fromSetWithValues(new HashSet<SNode>(), movedNodes), progressMonitor.subTask(1));
+        usages = (Set<SReference>) FindUsagesFacade.getInstance().findUsages(session.getSearchScope(), SetSequence.fromSetWithValues(new HashSet<SNode>(), movedNodes), progressMonitor.subTask(1));
       } else {
         progressMonitor.start("References in current project", Sequence.fromIterable(CommandUtil.references(CommandUtil.selectScope(null, context))).count());
         usages = CollectionSequence.fromCollection(new ArrayList<SReference>());
@@ -194,6 +197,7 @@ public abstract class UpdateReferencesParticipantBase<T> extends RefactoringPart
         }
       }
     }
+    progressMonitor.done();
     final Map<SNodeReference, List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>> result = MapSequence.fromMap(new HashMap<SNodeReference, List<RefactoringParticipant.Change<NodeData<T>, NodeData<T>>>>());
     for (SReference ref : CollectionSequence.fromCollection(usages)) {
       final SNodeReference containingNode = ref.getSourceNode().getReference();
@@ -231,6 +235,7 @@ public abstract class UpdateReferencesParticipantBase<T> extends RefactoringPart
       return (list == null ? emptyList() : list);
     }).toList();
   }
+
   protected boolean shouldUpdateReference(final List<RefactoringParticipant.Option> selectedOptions, SRepository repository, final SNode containingNode, final SReferenceLink role, SNode movingNode, RefactoringSession refactoringSession) {
     NodeCopyTracker copyMap = NodeCopyTracker.get(refactoringSession);
     if (containingNode == null) {

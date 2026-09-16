@@ -4,16 +4,22 @@ package jetbrains.mps.refactoring.participant;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import java.util.List;
-import org.jetbrains.mps.openapi.module.SRepository;
-import org.jetbrains.mps.openapi.module.SearchScope;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
+import org.jetbrains.mps.openapi.module.SRepository;
+import org.jetbrains.mps.openapi.module.SearchScope;
 
 @GeneratedClass(nodeId = "5418820454547629216", model = "r:27bc780b-59b2-4d26-9db5-a38b63c35884(jetbrains.mps.refactoring.participant)")
 public abstract class RefactoringParticipantBase<InitialDataObject, FinalDataObject, InitialPoint, FinalPoint> implements RefactoringParticipant<InitialDataObject, FinalDataObject, InitialPoint, FinalPoint> {
-  public List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> getChanges(List<InitialDataObject> initialStates, SRepository repository, List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
-    RefactoringParticipant.Option firstOption = ListSequence.fromList(getAvailableOptions(initialStates, repository)).first();
+
+  /**
+   * XXX I'd love to have this method final, as it's the only valuable part of this base class, just need to refactor few existing overrides.
+   */
+  @Override
+  public List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> getChanges(List<InitialDataObject> initialStates, @NotNull RefactoringSession session, List<RefactoringParticipant.Option> selectedOptions, ProgressMonitor progressMonitor) {
+    RefactoringParticipant.Option firstOption = ListSequence.fromList(getAvailableOptions(initialStates, session.getRepository())).first();
     progressMonitor.start((firstOption == null ? "" : firstOption.getDescription()), ListSequence.fromList(initialStates).count());
     List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> result = ListSequence.fromList(new ArrayList<>(ListSequence.fromList(initialStates).count()));
     final List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>> emptyList = ListSequence.fromList(new ArrayList<>());
@@ -23,11 +29,23 @@ public abstract class RefactoringParticipantBase<InitialDataObject, FinalDataObj
         // sic! Fulfil the contract, the method is expected to return list of size matching that of initialStates!
         continue;
       }
-      ListSequence.fromList(result).addElement(getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor.subTask(1)));
+      ListSequence.fromList(result).addElement(changesPerItem(initialState, session, selectedOptions, progressMonitor.subTask(1)));
     }
     progressMonitor.done();
     return result;
   }
+
+  @Deprecated
+  @Override
+  public final List<List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>>> getChanges(List<InitialDataObject> initialStates, SRepository repository, List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
+    throw new UnsupportedOperationException("Deprecated method, scheduled for removal. Override the one with session parameter");
+  }
+
+  protected List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>> changesPerItem(InitialDataObject initialState, RefactoringSession session, List<RefactoringParticipant.Option> selectedOptions, ProgressMonitor progressMonitor) {
+    return getChanges(initialState, session.getRepository(), selectedOptions, session.getSearchScope(), progressMonitor);
+  }
+
+  @Deprecated
   public List<RefactoringParticipant.Change<InitialDataObject, FinalDataObject>> getChanges(InitialDataObject initialState, SRepository repository, List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
     return getChanges(initialState, repository, selectedOptions, searchScope);
   }

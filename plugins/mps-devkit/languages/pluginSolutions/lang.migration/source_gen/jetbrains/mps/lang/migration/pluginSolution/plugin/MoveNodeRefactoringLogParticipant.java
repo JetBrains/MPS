@@ -19,12 +19,13 @@ import org.jetbrains.mps.openapi.module.SModule;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.smodel.Language;
 import java.util.ArrayList;
-import org.jetbrains.mps.openapi.module.SearchScope;
+import org.jetbrains.annotations.NotNull;
+import jetbrains.mps.refactoring.participant.RefactoringSession;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import jetbrains.mps.lang.migration.runtime.base.MigrationModuleUtil;
+import org.jetbrains.mps.openapi.module.SearchScope;
 import jetbrains.mps.ide.findusages.model.SearchResults;
 import jetbrains.mps.ide.findusages.model.SearchResult;
-import jetbrains.mps.refactoring.participant.RefactoringSession;
 import jetbrains.mps.lang.core.behavior.BaseConcept__BehaviorDescriptor;
 import java.util.Iterator;
 import org.jetbrains.mps.openapi.model.SModel;
@@ -86,12 +87,14 @@ public class MoveNodeRefactoringLogParticipant extends RefactoringParticipantBas
     }
   }
 
+
   @Override
-  public List<List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>> getChanges(List<SNodeReference> initialStates, SRepository repository, List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
-    if (!(isApplicable(initialStates, repository)) || !(ListSequence.fromList(selectedOptions).contains(OPTION))) {
+  public List<List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>> getChanges(List<SNodeReference> initialStates, @NotNull RefactoringSession session, List<RefactoringParticipant.Option> selectedOptions, ProgressMonitor progressMonitor) {
+    if (!(isApplicable(initialStates, session.getRepository())) || !(ListSequence.fromList(selectedOptions).contains(OPTION))) {
+      // FIXME seems to be no-op, there's isApplicable check prior to this method call
       return ListSequence.fromList(initialStates).select((it) -> ((List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>) ListSequence.fromList(new ArrayList<RefactoringParticipant.Change<SNodeReference, SNodeReference>>()))).toList();
     }
-    for (SModule module : Sequence.fromIterable(searchScope.getModules())) {
+    for (SModule module : Sequence.fromIterable(session.getSearchScope().getModules())) {
       if (MigrationModuleUtil.isModuleMigrateable(module) && !(MigrationModuleUtil.allRecordedDependenciesActual(module))) {
         String message = "Module " + module + " requires migration. It is recommended to run migration first and then restart refactoring.";
         if (LOG.isErrorLevel()) {
@@ -99,7 +102,7 @@ public class MoveNodeRefactoringLogParticipant extends RefactoringParticipantBas
         }
       }
     }
-    return super.getChanges(initialStates, repository, selectedOptions, searchScope, progressMonitor);
+    return super.getChanges(initialStates, session, selectedOptions, progressMonitor);
   }
 
   public List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> getChanges(SNodeReference initialState, SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope) {

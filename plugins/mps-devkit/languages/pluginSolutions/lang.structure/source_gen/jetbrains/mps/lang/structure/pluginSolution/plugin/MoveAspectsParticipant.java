@@ -15,12 +15,11 @@ import java.util.List;
 import jetbrains.mps.refactoring.participant.RefactoringParticipant;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
-import org.jetbrains.mps.openapi.module.SearchScope;
+import jetbrains.mps.refactoring.participant.RefactoringSession;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
-import jetbrains.mps.internal.collections.runtime.Sequence;
-import java.util.Collections;
 import java.util.Map;
 import jetbrains.mps.smodel.language.LanguageAspectDescriptor;
+import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.smodel.structure.ExtensionPoint;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import org.jetbrains.mps.openapi.language.SAbstractConcept;
@@ -31,7 +30,6 @@ import jetbrains.mps.ide.findusages.model.SearchResults;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
 import java.util.HashSet;
 import jetbrains.mps.ide.findusages.model.SearchResult;
-import jetbrains.mps.refactoring.participant.RefactoringSession;
 import jetbrains.mps.ide.platform.refactoring.NodeLocation;
 import jetbrains.mps.refactoring.participant.NodeCopyTracker;
 import org.jetbrains.mps.openapi.language.SConcept;
@@ -73,21 +71,11 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
   }
 
   @Override
-  public List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> getChanges(final SNodeReference initialState, final SRepository repository, List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, ProgressMonitor progressMonitor) {
-    return getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor, Sequence.fromIterable(Collections.<RefactoringParticipant.ParticipantApplied<?, ?>>emptyList()));
-  }
-
-
-  @Override
-  public List<List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>> getChanges(List<SNodeReference> initialStates, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor, final Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> parents) {
-    return ListSequence.fromList(initialStates).select((initialState) -> getChanges(initialState, repository, selectedOptions, searchScope, progressMonitor, parents)).toList();
-  }
-
-  public List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> getChanges(final SNodeReference initialState, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, final SearchScope searchScope, final ProgressMonitor progressMonitor, final Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> parents) {
-    if (!(isApplicable(initialState, repository)) || !(ListSequence.fromList(selectedOptions).contains(OPTION))) {
+  protected List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> changesPerItem(SNodeReference initialState, final RefactoringSession session, final List<RefactoringParticipant.Option> selectedOptions, final ProgressMonitor progressMonitor) {
+    if (!(isApplicable(initialState, session.getRepository())) || !(ListSequence.fromList(selectedOptions).contains(OPTION))) {
       return ListSequence.fromList(new ArrayList<RefactoringParticipant.Change<SNodeReference, SNodeReference>>());
     } else {
-      final SNode sourceConcept = SNodeOperations.cast(initialState.resolve(repository), CONCEPTS.AbstractConceptDeclaration$KA);
+      final SNode sourceConcept = SNodeOperations.cast(initialState.resolve(session.getRepository()), CONCEPTS.AbstractConceptDeclaration$KA);
       Language sourceLanguage = ((Language) SNodeOperations.getModel(sourceConcept).getModule());
 
       Map<LanguageAspectDescriptor, List<SNode>> aspectsMap = MoveConceptUtil.getAspectNodes(sourceLanguage, Sequence.<SNode>singleton(sourceConcept));
@@ -104,8 +92,8 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
           List<SNode> descendants = SNodeOperations.getNodeDescendants(aspect, null, true, new SAbstractConcept[]{});
 
           final List<Tuples._2<SNode, RefactoringParticipant.ParticipantApplied<?, ?>>> childparticipantStates = ListSequence.fromList(descendants).translate((final SNode node) -> Sequence.fromIterable(new ExtensionPoint<MoveNodeRefactoringParticipant<?, ?>>("jetbrains.mps.refactoring.participant.MoveNodeParticipantEP").getObjects()).select((participant) -> {
-            RefactoringParticipant.ParticipantApplied<?, ?> participantState = stateFactory.apply(participant, ListSequence.fromListAndArray(new ArrayList<SNode>(), node), parents);
-            participantState.findChanges(repository, selectedOptions, searchScope, progressMonitor.subTask(1));
+            RefactoringParticipant.ParticipantApplied<?, ?> participantState = stateFactory.apply(participant, ListSequence.fromListAndArray(new ArrayList<SNode>(), node));
+            participantState.findChanges(session, selectedOptions, progressMonitor.subTask(1));
             return MultiTuple.<SNode,RefactoringParticipant.ParticipantApplied<?, ?>>from(node, participantState);
           })).toList();
 
@@ -153,6 +141,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
       }).toList();
     }
   }
+
   public static final RefactoringParticipant.Option OPTION = new RefactoringParticipant.Option("moveNode.options.moveConceptAspects", "Move concept aspects");
 
   private static final class CONCEPTS {

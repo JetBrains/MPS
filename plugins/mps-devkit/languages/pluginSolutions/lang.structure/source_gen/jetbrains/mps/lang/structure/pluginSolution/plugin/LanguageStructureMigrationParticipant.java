@@ -38,7 +38,6 @@ import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
 import jetbrains.mps.smodel.builder.SNodeBuilder;
 import jetbrains.mps.refactoring.participant.RefactoringParticipant;
 import org.jetbrains.mps.openapi.module.SRepository;
-import org.jetbrains.mps.openapi.module.SearchScope;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import jetbrains.mps.lang.core.pluginSolution.plugin.UpdateModelImports;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPointerOperations;
@@ -178,8 +177,9 @@ public class LanguageStructureMigrationParticipant<I, F> extends RefactoringPart
   }
   public static final RefactoringParticipant.Option OPTION = new RefactoringParticipant.Option("moveNode.options.writeMigrationScript", "Write migration script");
 
+
   @Override
-  public List<List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>> getChanges(final List<SNodeReference> initialStates, final SRepository repository, final List<RefactoringParticipant.Option> selectedOptions, SearchScope searchScope, ProgressMonitor progressMonitor) {
+  public List<List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>> getChanges(List<SNodeReference> initialStates, @NotNull final RefactoringSession session, final List<RefactoringParticipant.Option> selectedOptions, ProgressMonitor progressMonitor) {
     if (!(ListSequence.fromList(selectedOptions).contains(OPTION))) {
       return ListSequence.fromList(initialStates).select((it) -> {
         List<RefactoringParticipant.Change<SNodeReference, SNodeReference>> list = ListSequence.fromList(new ArrayList<RefactoringParticipant.Change<SNodeReference, SNodeReference>>());
@@ -189,7 +189,7 @@ public class LanguageStructureMigrationParticipant<I, F> extends RefactoringPart
     final boolean updateModelImports = ListSequence.fromList(selectedOptions).contains(UpdateModelImports.OPTION);
 
     return ListSequence.fromList(initialStates).select((final SNodeReference initialState) -> {
-      final Language sourceModule = as_kz6lmo_a0a0a0a0a3a51(check_kz6lmo_a0a0a0a0a3a51(check_kz6lmo_a0a0a0a0a0d0p(SPointerOperations.resolveNode(initialState, repository))), Language.class);
+      final Language sourceModule = as_kz6lmo_a0a0a0a0a3a61(check_kz6lmo_a0a0a0a0a3a61(check_kz6lmo_a0a0a0a0a0d0q(SPointerOperations.resolveNode(initialState, session.getRepository()))), Language.class);
 
       // todo: write guard migration with 'execute after'
       RefactoringParticipant.Change<SNodeReference, SNodeReference> change = new MoveNodeRefactoringParticipant.ChangeBase<SNodeReference, SNodeReference>() {
@@ -202,9 +202,9 @@ public class LanguageStructureMigrationParticipant<I, F> extends RefactoringPart
         }
         public void confirm(SNodeReference finalState, SRepository repository, RefactoringSession refactoringSession) {
           SNode sourceNode = SPointerOperations.resolveNode(initialState, repository);
-          Language sourceModule = as_kz6lmo_a0a1a2a0a0d0a0a0d0p(check_kz6lmo_a0a1a2a0a0d0a0a0d0p(check_kz6lmo_a0a0b0c0a0a3a0a0a3a51(sourceNode)), Language.class);
+          Language sourceModule = as_kz6lmo_a0a1a2a0a0d0a0a0d0q(check_kz6lmo_a0a1a2a0a0d0a0a0d0q(check_kz6lmo_a0a0b0c0a0a3a0a0a3a61(sourceNode)), Language.class);
           SNode targetNode = SPointerOperations.resolveNode(finalState, repository);
-          Language targetModule = as_kz6lmo_a0a3a2a0a0d0a0a0d0p(check_kz6lmo_a0a3a2a0a0d0a0a0d0p(check_kz6lmo_a0a0d0c0a0a3a0a0a3a51(targetNode)), Language.class);
+          Language targetModule = as_kz6lmo_a0a3a2a0a0d0a0a0d0q(check_kz6lmo_a0a3a2a0a0d0a0a0d0q(check_kz6lmo_a0a0d0c0a0a3a0a0a3a61(targetNode)), Language.class);
           if (sourceModule != null && targetModule != null) {
             MigrationBuilder logBuilder = MigrationBuilder.getBuilder(refactoringSession, sourceModule);
             myStructureSpecialization.updateMigrationDescription(sourceNode, targetNode, logBuilder);
@@ -215,49 +215,49 @@ public class LanguageStructureMigrationParticipant<I, F> extends RefactoringPart
       return (List<RefactoringParticipant.Change<SNodeReference, SNodeReference>>) ListSequence.fromListAndArray(new ArrayList<RefactoringParticipant.Change<SNodeReference, SNodeReference>>(), change);
     }).toList();
   }
-  private static SModule check_kz6lmo_a0a0a0a0a3a51(SModel checkedDotOperand) {
+  private static SModule check_kz6lmo_a0a0a0a0a3a61(SModel checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModule();
     }
     return null;
   }
-  private static SModel check_kz6lmo_a0a0a0a0a0d0p(SNode checkedDotOperand) {
+  private static SModel check_kz6lmo_a0a0a0a0a0d0q(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModel();
     }
     return null;
   }
-  private static SModule check_kz6lmo_a0a1a2a0a0d0a0a0d0p(SModel checkedDotOperand) {
+  private static SModule check_kz6lmo_a0a1a2a0a0d0a0a0d0q(SModel checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModule();
     }
     return null;
   }
-  private static SModel check_kz6lmo_a0a0b0c0a0a3a0a0a3a51(SNode checkedDotOperand) {
+  private static SModel check_kz6lmo_a0a0b0c0a0a3a0a0a3a61(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModel();
     }
     return null;
   }
-  private static SModule check_kz6lmo_a0a3a2a0a0d0a0a0d0p(SModel checkedDotOperand) {
+  private static SModule check_kz6lmo_a0a3a2a0a0d0a0a0d0q(SModel checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModule();
     }
     return null;
   }
-  private static SModel check_kz6lmo_a0a0d0c0a0a3a0a0a3a51(SNode checkedDotOperand) {
+  private static SModel check_kz6lmo_a0a0d0c0a0a3a0a0a3a61(SNode checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModel();
     }
     return null;
   }
-  private static <T> T as_kz6lmo_a0a0a0a0a3a51(Object o, Class<T> type) {
+  private static <T> T as_kz6lmo_a0a0a0a0a3a61(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_kz6lmo_a0a1a2a0a0d0a0a0d0p(Object o, Class<T> type) {
+  private static <T> T as_kz6lmo_a0a1a2a0a0d0a0a0d0q(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_kz6lmo_a0a3a2a0a0d0a0a0d0p(Object o, Class<T> type) {
+  private static <T> T as_kz6lmo_a0a3a2a0a0d0a0a0d0q(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 
