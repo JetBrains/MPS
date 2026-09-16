@@ -523,8 +523,8 @@
              url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2025" minorVersoin="1">
-      <build number="251.28774.742" version="2025.1.3">
-        <message>JetBrains MPS 2025.1.3 is now available.</message>
+      <build number="251.28774.766" version="2025.1.4">
+        <message>JetBrains MPS 2025.1.4 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
@@ -532,8 +532,8 @@
              url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2025" minorVersoin="1">
-      <build number="251.28774.742" version="2025.1.3">
-        <message>JetBrains MPS 2025.1.3 is now available.</message>
+      <build number="251.28774.766" version="2025.1.4">
+        <message>JetBrains MPS 2025.1.4 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
@@ -541,8 +541,8 @@
              url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2025" minorVersoin="2">
-      <build number="252.28539.662" version="2025.2.3">
-        <message>JetBrains MPS 2025.2.3 is now available.</message>
+      <build number="252.28539.667" version="2025.2.4">
+        <message>JetBrains MPS 2025.2.4 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
@@ -550,8 +550,8 @@
              url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2025" minorVersoin="2">
-      <build number="252.28539.662" version="2025.2.3">
-        <message>JetBrains MPS 2025.2.3 is now available.</message>
+      <build number="252.28539.667" version="2025.2.4">
+        <message>JetBrains MPS 2025.2.4 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
@@ -559,8 +559,8 @@
              url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2025" minorVersoin="3">
-      <build number="253.29346.537" version="2025.3.1">
-        <message>JetBrains MPS 2025.3.1 is now available.</message>
+      <build number="253.29346.541" version="2025.3.2">
+        <message>JetBrains MPS 2025.3.2 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
@@ -568,8 +568,8 @@
              url="https://www.jetbrains.com/mps/download/previous.html"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2025" minorVersoin="3">
-      <build number="253.29346.537" version="2025.3.1">
-        <message>JetBrains MPS 2025.3.1 is now available.</message>
+      <build number="253.29346.541" version="2025.3.2">
+        <message>JetBrains MPS 2025.3.2 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download/previous.html" download="true"/>
       </build>
     </channel>
@@ -577,8 +577,8 @@
              url="https://www.jetbrains.com/mps/download"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2026" minorVersoin="1">
-      <build number="261.25134.779" version="2026.1">
-        <message>JetBrains MPS 2026.1 is now available.</message>
+      <build number="261.25134.877" version="2026.1.1">
+        <message>JetBrains MPS 2026.1.1 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download" download="true"/>
       </build>
     </channel>
@@ -586,8 +586,8 @@
              url="https://www.jetbrains.com/mps/download"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2026" minorVersoin="1">
-      <build number="261.25134.779" version="2026.1">
-        <message>JetBrains MPS 2026.1 is now available.</message>
+      <build number="261.25134.877" version="2026.1.1">
+        <message>JetBrains MPS 2026.1.1 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/download" download="true"/>
       </build>
     </channel>
