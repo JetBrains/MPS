@@ -12728,6 +12728,12 @@
                                 <node concept="37vLTw" id="7PqTV1oX$$7" role="37wK5m">
                                   <ref role="3cqZAo" node="7PqTV1oX4e7" resolve="refactoringName" />
                                 </node>
+                                <node concept="37vLTw" id="7VAzgTdpj_b" role="37wK5m">
+                                  <ref role="3cqZAo" node="4Lw1UpBxO4O" resolve="repository" />
+                                </node>
+                                <node concept="37vLTw" id="7VAzgTdpm_H" role="37wK5m">
+                                  <ref role="3cqZAo" node="41U5zKUYg40" resolve="scope" />
+                                </node>
                               </node>
                             </node>
                           </node>

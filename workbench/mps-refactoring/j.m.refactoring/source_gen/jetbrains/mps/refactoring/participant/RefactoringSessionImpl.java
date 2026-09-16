@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
+import org.jetbrains.mps.openapi.module.SearchScope;
+import org.jetbrains.mps.openapi.module.SRepository;
+import org.jetbrains.annotations.NotNull;
 
 @GeneratedClass(nodeId = "788503456865530690", model = "r:27bc780b-59b2-4d26-9db5-a38b63c35884(jetbrains.mps.refactoring.participant)")
 public class RefactoringSessionImpl implements RefactoringSession {
@@ -17,8 +20,22 @@ public class RefactoringSessionImpl implements RefactoringSession {
   private List<Runnable> myChanges = ListSequence.fromList(new ArrayList<Runnable>());
   private Map<String, Object> myObjects = MapSequence.fromMap(new HashMap<String, Object>());
   private final String myName;
-  public RefactoringSessionImpl(String name) {
+  private final SearchScope mySearchScope;
+  private final SRepository myRepository;
+  public RefactoringSessionImpl(String name, @NotNull SRepository repository, @NotNull SearchScope searchScope) {
     myName = name;
+    mySearchScope = searchScope;
+    myRepository = repository;
+  }
+
+  @Override
+  public SRepository getRepository() {
+    return myRepository;
+  }
+
+  @Override
+  public SearchScope getSearchScope() {
+    return mySearchScope;
   }
 
   public void putObject(String id, Object object) {

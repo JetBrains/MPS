@@ -11423,6 +11423,22 @@
                 <node concept="Xl_RD" id="7PqTV1oXM_f" role="37wK5m">
                   <property role="Xl_RC" value="Apply Logged Refactoring" />
                 </node>
+                <node concept="2OqwBi" id="7VAzgTdovdg" role="37wK5m">
+                  <node concept="37vLTw" id="7VAzgTdoqBO" role="2Oq$k0">
+                    <ref role="3cqZAo" node="4biA4YBp4Zi" resolve="myProject" />
+                  </node>
+                  <node concept="liA8E" id="7VAzgTdoxC_" role="2OqNvi">
+                    <ref role="37wK5l" to="z1c3:~Project.getRepository()" resolve="getRepository" />
+                  </node>
+                </node>
+                <node concept="2ShNRf" id="7VAzgTdo_vK" role="37wK5m">
+                  <node concept="1pGfFk" id="7VAzgTdo_vL" role="2ShVmc">
+                    <ref role="37wK5l" to="mte5:~ModulesScope.&lt;init&gt;(org.jetbrains.mps.openapi.module.SModule...)" resolve="ModulesScope" />
+                    <node concept="37vLTw" id="7VAzgTdo_vM" role="37wK5m">
+                      <ref role="3cqZAo" node="13dI_iSN_F_" resolve="module" />
+                    </node>
+                  </node>
+                </node>
               </node>
             </node>
           </node>

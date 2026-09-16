@@ -25,12 +25,12 @@ import jetbrains.mps.smodel.SModelInternal;
 import jetbrains.mps.project.AbstractModule;
 import jetbrains.mps.lang.migration.runtime.base.RefactoringScriptReference;
 import jetbrains.mps.refactoring.participant.RefactoringSessionImpl;
+import jetbrains.mps.ide.findusages.model.scopes.ModulesScope;
 import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
 import jetbrains.mps.refactoring.participant.RefactoringUI;
 import jetbrains.mps.refactoring.participant.RefactoringParticipant;
 import jetbrains.mps.refactoring.participant.RefactoringSession;
 import jetbrains.mps.refactoring.participant.RefactoringProcessor;
-import jetbrains.mps.ide.findusages.model.scopes.ModulesScope;
 import java.util.List;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
@@ -120,7 +120,7 @@ public class MigrationExecutorImpl implements MigrationExecutor {
     importedVersion = Math.max(importedVersion, 0);
     assert importedVersion == rLog.getFromVersion();
 
-    final RefactoringSessionImpl refactoringSession = new RefactoringSessionImpl("Apply Logged Refactoring");
+    final RefactoringSessionImpl refactoringSession = new RefactoringSessionImpl("Apply Logged Refactoring", myProject.getRepository(), new ModulesScope(module));
     script.setSession(refactoringSession);
     script.setTaskExecutor((Runnable task) -> RefactoringSessionTaskQueue.getInstance(refactoringSession).putTask(task));
     script.setRefactoringProcessor(new _FunctionTypes._void_P4_E0<RefactoringUI, RefactoringParticipant.PersistentRefactoringParticipant, Iterable<SNode>, Map<SNode, SNode>>() {
