@@ -1368,7 +1368,7 @@
       <node id="3460620618142242859" at="108,7,109,0" concept="14" />
       <node id="2442536122184132404" at="109,0,110,81" concept="5" />
       <node id="3047376598998771124" at="112,43,113,45" concept="5" />
-      <node id="5239783599556559427" at="117,89,118,60" concept="11" />
+      <node id="5239783599556559427" at="117,83,118,60" concept="11" />
       <node id="5239783599556559450" at="118,60,119,115" concept="11" />
       <node id="5239783599556559461" at="119,115,120,51" concept="5" />
       <node id="5239783599556559467" at="120,51,121,52" concept="0" />
@@ -1376,7 +1376,7 @@
       <node id="3194280909370709054" at="122,0,123,162" concept="11" />
       <node id="7201972523301387956" at="123,162,124,42" concept="5" />
       <node id="7201972523307559050" at="124,42,125,121" concept="5" />
-      <node id="1144524525582090233" at="127,167,128,79" concept="5" />
+      <node id="1144524525582090233" at="127,167,128,71" concept="5" />
       <node id="5239783599556635281" at="130,7,131,27" concept="5" />
       <node id="3358842831932302851" at="131,27,132,73" concept="5" />
       <node id="3194280909370760512" at="132,73,133,46" concept="5" />
@@ -1385,7 +1385,7 @@
       <node id="5464540062512796567" at="135,46,136,94" concept="5" />
       <node id="5239783599556559532" at="136,94,137,0" concept="14" />
       <node id="5239783599556674651" at="137,0,138,31" concept="13" />
-      <node id="1109674566552013004" at="141,257,142,412" concept="5" />
+      <node id="1109674566552013004" at="141,241,142,332" concept="5" />
       <node id="3358842831931727289" at="146,0,147,0" concept="15" trace="myId" />
       <node id="3358842831931806290" at="147,0,148,0" concept="6" trace="myTasks" />
       <node id="3358842831931840474" at="148,87,149,99" concept="11" />
@@ -1403,7 +1403,7 @@
       <node id="3460620618142187514" at="105,7,108,7" concept="9" />
       <node id="1210828747872897745" at="111,5,114,5" concept="9" />
       <node id="1065497338539666897" at="127,0,130,0" concept="10" trace="invoke#(Ljetbrains/mps/refactoring/participant/RefactoringUI;Ljetbrains/mps/refactoring/participant/RefactoringParticipant/PersistentRefactoringParticipant;Ljava/lang/Iterable;Ljava/util/Map;)V" />
-      <node id="1144524525581364443" at="141,0,144,0" concept="10" trace="doRun#(Lorg/jetbrains/mps/openapi/module/SModule;Ljetbrains/mps/refactoring/participant/RefactoringParticipant/PersistentRefactoringParticipant;Ljetbrains/mps/refactoring/participant/RefactoringUI;Ljava/lang/Iterable;Ljava/util/Map;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
+      <node id="1144524525581364443" at="141,0,144,0" concept="10" trace="doRun#(Ljetbrains/mps/refactoring/participant/RefactoringParticipant/PersistentRefactoringParticipant;Ljetbrains/mps/refactoring/participant/RefactoringUI;Ljava/lang/Iterable;Ljava/util/Map;Ljetbrains/mps/refactoring/participant/RefactoringSession;)V" />
       <node id="3358842831931756583" at="156,0,159,0" concept="10" trace="putTask#(Ljava/lang/Runnable;)V" />
       <node id="3358842831931827896" at="159,26,162,7" concept="8" />
       <node id="4815078419490674207" at="75,0,79,0" concept="10" trace="execute#(Ljetbrains/mps/migration/global/ProjectMigration;)V" />
@@ -1432,8 +1432,8 @@
       <scope id="2442536122184088132" at="103,47,104,17" />
       <scope id="3460620618142187517" at="106,85,107,17" />
       <scope id="1210828747872897747" at="112,43,113,45" />
-      <scope id="1065497338539666898" at="127,167,128,79" />
-      <scope id="1144524525581364374" at="141,257,142,412" />
+      <scope id="1065497338539666898" at="127,167,128,71" />
+      <scope id="1144524525581364374" at="141,241,142,332" />
       <scope id="3358842831931756587" at="156,40,157,54" />
       <scope id="3358842831931827899" at="160,60,161,19" />
       <scope id="6884273804135086003" at="150,27,152,40" />
@@ -1449,7 +1449,6 @@
       <scope id="1144524525581364443" at="141,0,144,0">
         <var name="initialState" id="1144524525581364426" />
         <var name="initialToFinal" id="1144524525581364429" />
-        <var name="module" id="1144524525581364420" />
         <var name="participant" id="1109674566564341614" />
         <var name="refactoringSession" id="1144524525581364433" />
         <var name="ui" id="1144524525581364424" />
@@ -1496,7 +1495,7 @@
       <scope id="2442536122184042253" at="98,0,111,5">
         <var name="model" id="2442536122184042255" />
       </scope>
-      <scope id="5239783599556559426" at="117,89,138,31">
+      <scope id="5239783599556559426" at="117,83,138,31">
         <var name="importedVersion" id="5239783599556559451" />
         <var name="rLog" id="5239783599556559428" />
         <var name="refactoringSession" id="3194280909370709055" />

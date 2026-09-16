@@ -7,8 +7,6 @@ import jetbrains.mps.logging.Logger;
 import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
 import java.util.List;
 import jetbrains.mps.ide.findusages.model.SearchTask;
-import org.jetbrains.mps.openapi.module.SRepository;
-import org.jetbrains.mps.openapi.module.SearchScope;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
 import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
@@ -21,6 +19,8 @@ import jetbrains.mps.project.Project;
 import java.util.Map;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
+import org.jetbrains.mps.openapi.module.SRepository;
+import org.jetbrains.mps.openapi.module.SearchScope;
 import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class RefactoringProcessor {
   private static final Logger LOG = Logger.getLogger(RefactoringProcessor.class);
 
-  public static <IP, FP, IS, FS> Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?>>, SearchTask> askParticipantChanges(final RefactoringParticipant.ParticipantStateFactory<IS, FS> factory, RefactoringUI refactoringUI, final SRepository repository, final SearchScope searchScope, final Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> nodes) {
+  private static <IP, FP, IS, FS> Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?>>, SearchTask> askParticipantChanges(final RefactoringParticipant.ParticipantStateFactory<IS, FS> factory, RefactoringUI refactoringUI, final RefactoringSession session, final Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> nodes) {
 
     final List<RefactoringParticipant.ParticipantApplied<?, ?>> participantStates = ListSequence.fromList(new ArrayList<RefactoringParticipant.ParticipantApplied<?, ?>>());
     final Wrappers._T<List<RefactoringParticipant.Option>> options = new Wrappers._T<List<RefactoringParticipant.Option>>();
@@ -36,7 +36,7 @@ public class RefactoringProcessor {
       for (RefactoringParticipant<?, ?, IP, FP> participant : Sequence.fromIterable(participants)) {
         ListSequence.fromList(participantStates).addElement(factory.apply(participant, nodes));
       }
-      options.value = ListSequence.fromList(participantStates).translate((it) -> it.getAvaliableOptions(repository)).distinct().sort((it) -> it.getDescription(), true).toList();
+      options.value = ListSequence.fromList(participantStates).translate((it) -> it.getAvaliableOptions(session.getRepository())).distinct().sort((it) -> it.getDescription(), true).toList();
     });
 
     final List<RefactoringParticipant.Option> selectedOptions = refactoringUI.selectParticipants(options.value);
@@ -50,11 +50,11 @@ public class RefactoringProcessor {
       }
       public SearchResults execute(final ProgressMonitor progressMonitor) {
         final Wrappers._boolean cancelled = new Wrappers._boolean(false);
-        repository.getModelAccess().runReadAction(() -> {
+        session.getRepository().getModelAccess().runReadAction(() -> {
           int steps = ListSequence.fromList(participantStates).count();
           progressMonitor.start("Searching for usages", steps);
           for (RefactoringParticipant.ParticipantApplied<?, ?> participantState : ListSequence.fromList(participantStates)) {
-            participantState.findChanges(repository, selectedOptions, searchScope, progressMonitor.subTask(1, SubProgressKind.AS_COMMENT));
+            participantState.findChanges(session.getRepository(), selectedOptions, session.getSearchScope(), progressMonitor.subTask(1, SubProgressKind.AS_COMMENT));
             if (progressMonitor.isCanceled()) {
               cancelled.value = true;
               break;
@@ -88,7 +88,8 @@ public class RefactoringProcessor {
   public static <IP, FP> void performRefactoringInProject(Project project, RefactoringUI refactoringUI, final RefactoringBody<IP, FP> refactoringBody) {
     final RefactoringSessionImpl refactoringSession = new RefactoringSessionImpl(refactoringBody.getRefactoringName(), project.getRepository(), project.getScope());
     final List<IP> initialStates = refactoringBody.findInitialStates();
-    performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<IP, FP>(), refactoringUI, refactoringSession, project.getRepository(), project.getScope(), refactoringBody.getAllAvailableParticipants(), initialStates, () -> refactoringBody.prepareRefactoring(), (Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> participantStates) -> {
+    // FIXME why not the other way around, when we assemble RefactoringBody from individual pieces?
+    performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<IP, FP>(), refactoringUI, refactoringSession, refactoringBody.getAllAvailableParticipants(), initialStates, () -> refactoringBody.prepareRefactoring(), (Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> participantStates) -> {
       refactoringBody.doRefactor(participantStates, refactoringSession);
       Map<IP, FP> finalStateMap = MapSequence.fromMap(new HashMap<IP, FP>());
       for (IP is : ListSequence.fromList(initialStates)) {
@@ -137,13 +138,31 @@ public class RefactoringProcessor {
   }
 
   /**
+   * 
+   * 
+   * @deprecated use alternative that use repository and scope from the session
+   */
+  @Deprecated(forRemoval = true, since = "2026.2")
+  public static <IP, FP, IS, FS> void performRefactoring(RefactoringParticipant.ParticipantStateFactory<IS, FS> factory, RefactoringUI refactoringUI, RefactoringSession refactoringSession, final SRepository repository, SearchScope scope, Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> initialStates, final _FunctionTypes._void_P0_E0 prepareRefactoring, final _FunctionTypes._return_P1_E0<? extends Map<IS, FS>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?>>> doRefactor, @Nullable _FunctionTypes._void_P0_E0 doCleanup) {
+
+    if (refactoringSession.getRepository() == null || refactoringSession.getSearchScope() == null) {
+      if (LOG.isWarningLevel()) {
+        LOG.warning("Fix refactoring call to include repository and scope into session");
+      }
+      refactoringSession = new RefactoringSessionImpl(refactoringSession.getRefactoringName(), repository, scope);
+    }
+
+    performRefactoring(factory, refactoringUI, refactoringSession, participants, initialStates, prepareRefactoring, doRefactor, doCleanup);
+  }
+
+  /**
    * Update usages during refactoring.
    * For calling from both 'during refactoring' and migration context.
    */
-  public static <IP, FP, IS, FS> void performRefactoring(final RefactoringParticipant.ParticipantStateFactory<IS, FS> factory, RefactoringUI refactoringUI, final RefactoringSession refactoringSession, final SRepository repository, SearchScope scope, Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> initialStates, final _FunctionTypes._void_P0_E0 prepareRefactoring, final _FunctionTypes._return_P1_E0<? extends Map<IS, FS>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?>>> doRefactor, @Nullable final _FunctionTypes._void_P0_E0 doCleanup) {
+  public static <IP, FP, IS, FS> void performRefactoring(final RefactoringParticipant.ParticipantStateFactory<IS, FS> factory, RefactoringUI refactoringUI, final RefactoringSession refactoringSession, Iterable<? extends RefactoringParticipant<?, ?, IP, FP>> participants, final List<IS> initialStates, final _FunctionTypes._void_P0_E0 prepareRefactoring, final _FunctionTypes._return_P1_E0<? extends Map<IS, FS>, ? super Iterable<RefactoringParticipant.ParticipantApplied<?, ?>>> doRefactor, @Nullable final _FunctionTypes._void_P0_E0 doCleanup) {
 
 
-    final Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?>>, SearchTask> participantChanges = askParticipantChanges(factory, refactoringUI, repository, scope, participants, initialStates);
+    final Tuples._2<List<RefactoringParticipant.ParticipantApplied<?, ?>>, SearchTask> participantChanges = askParticipantChanges(factory, refactoringUI, refactoringSession, participants, initialStates);
     if (participantChanges == null) {
       return;
     }
@@ -158,11 +177,11 @@ public class RefactoringProcessor {
       if (prepareRefactoring != null) {
         prepareRefactoring.invoke();
       }
-      repository.getModelAccess().executeCommand(() -> {
+      refactoringSession.getRepository().getModelAccess().executeCommand(() -> {
         final Map<IS, FS> getFinalObject = doRefactor.invoke(participantChanges._0());
         if (getFinalObject != null) {
           for (RefactoringParticipant.ParticipantApplied<?, ?> participantState : ListSequence.fromList(participantChanges._0())) {
-            factory.confirm(participantState, ListSequence.fromList(initialStates).select((it) -> MapSequence.fromMap(getFinalObject).get(it)).toList(), repository, refactoringSession);
+            factory.confirm(participantState, ListSequence.fromList(initialStates).select((it) -> MapSequence.fromMap(getFinalObject).get(it)).toList(), refactoringSession);
           }
           if (doCleanup != null) {
             doCleanup.invoke();

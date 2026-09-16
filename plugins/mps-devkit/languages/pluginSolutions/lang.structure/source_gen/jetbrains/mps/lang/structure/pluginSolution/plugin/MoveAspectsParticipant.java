@@ -128,7 +128,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
             public RefactoringParticipant.KeepOldNodes needsToPreserveOldNode() {
               return RefactoringParticipant.KeepOldNodes.max(ListSequence.fromList(childparticipantStates).translate((it) -> ListSequence.fromList(ListSequence.fromList(it._1().getChanges()).first()).select((it1) -> (RefactoringParticipant.Change<?, ?>) it1)).select((it) -> ((MoveNodeRefactoringParticipant.MoveNodeChange) it).needsToPreserveOldNode()));
             }
-            public void confirm(SNodeReference finalState, final SRepository repository, final RefactoringSession refactoringSession) {
+            public void confirm(SNodeReference finalState, SRepository repository, final RefactoringSession refactoringSession) {
               SNode targetConcept = SNodeOperations.cast(finalState.resolve(repository), CONCEPTS.AbstractConceptDeclaration$KA);
               Language targetLanguage = ((Language) SNodeOperations.getModel(targetConcept).getModule());
               // XXX would be great to have access to Platform/CH here (not just a Repo, or shall access CH through Repo)
@@ -141,7 +141,7 @@ public class MoveAspectsParticipant extends RefactoringParticipantBase<SNodeRefe
 
               final Map<SNode, SNode> copyMap = NodeCopyTracker.get(refactoringSession).getCopyMap();
               newLocation.insertNode(repository, ListSequence.fromList(copied).first());
-              ListSequence.fromList(childparticipantStates).visitAll((pis) -> stateFactory.confirm(pis._1(), ListSequence.fromListAndArray(new ArrayList<SNode>(), MapSequence.fromMap(copyMap).get(pis._0())), repository, refactoringSession));
+              ListSequence.fromList(childparticipantStates).visitAll((pis) -> stateFactory.confirm(pis._1(), ListSequence.fromListAndArray(new ArrayList<SNode>(), MapSequence.fromMap(copyMap).get(pis._0())), refactoringSession));
 
               if (needsToPreserveOldNode() == RefactoringParticipant.KeepOldNodes.POSTPONE_REMOVE && SNodeOperations.getModel(sourceConcept) == null) {
                 SNodeOperations.deleteNode(aspect);

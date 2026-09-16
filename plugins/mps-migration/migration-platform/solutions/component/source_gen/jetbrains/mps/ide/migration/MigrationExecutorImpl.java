@@ -114,7 +114,7 @@ public class MigrationExecutorImpl implements MigrationExecutor {
     }
   }
 
-  private void executeRefactoringScript(RefactoringScript script, final SModule module) {
+  private void executeRefactoringScript(RefactoringScript script, SModule module) {
     RefactoringScriptReference rLog = script.getReference();
     int importedVersion = MigrationModuleUtil.getRecordedDependencyVersions(module).get(rLog.getModuleReference());
     importedVersion = Math.max(importedVersion, 0);
@@ -125,7 +125,7 @@ public class MigrationExecutorImpl implements MigrationExecutor {
     script.setTaskExecutor((Runnable task) -> RefactoringSessionTaskQueue.getInstance(refactoringSession).putTask(task));
     script.setRefactoringProcessor(new _FunctionTypes._void_P4_E0<RefactoringUI, RefactoringParticipant.PersistentRefactoringParticipant, Iterable<SNode>, Map<SNode, SNode>>() {
       public void invoke(RefactoringUI ui, RefactoringParticipant.PersistentRefactoringParticipant p, Iterable<SNode> initialState, Map<SNode, SNode> initialToFinal) {
-        doRun(module, p, ui, initialState, initialToFinal, refactoringSession);
+        doRun(p, ui, initialState, initialToFinal, refactoringSession);
       }
     });
     script.execute(module);
@@ -138,8 +138,8 @@ public class MigrationExecutorImpl implements MigrationExecutor {
     // todo: versions in models
   }
 
-  private <IP, FP> void doRun(SModule module, RefactoringParticipant.PersistentRefactoringParticipant<?, ?, IP, FP> participant, RefactoringUI ui, Iterable<SNode> initialState, final Map<SNode, SNode> initialToFinal, RefactoringSession refactoringSession) {
-    RefactoringProcessor.<IP,FP,SNode,SNode>performRefactoring(new RefactoringParticipant.DeserializingParticipantStateFactory(), ui, refactoringSession, MigrationExecutorImpl.this.myProject.getRepository(), new ModulesScope(module), Sequence.singleton(participant), Sequence.fromIterable(initialState).toList(), null, (Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> changes) -> initialToFinal, null);
+  private <IP, FP> void doRun(RefactoringParticipant.PersistentRefactoringParticipant<?, ?, IP, FP> participant, RefactoringUI ui, Iterable<SNode> initialState, final Map<SNode, SNode> initialToFinal, RefactoringSession refactoringSession) {
+    RefactoringProcessor.<IP,FP,SNode,SNode>performRefactoring(new RefactoringParticipant.DeserializingParticipantStateFactory(), ui, refactoringSession, Sequence.singleton(participant), Sequence.fromIterable(initialState).toList(), null, (Iterable<RefactoringParticipant.ParticipantApplied<?, ?>> changes) -> initialToFinal, null);
   }
 
   private static class RefactoringSessionTaskQueue {

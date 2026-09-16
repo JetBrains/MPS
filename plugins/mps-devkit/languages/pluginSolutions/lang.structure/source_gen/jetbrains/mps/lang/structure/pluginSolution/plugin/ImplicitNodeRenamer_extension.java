@@ -62,7 +62,7 @@ public class ImplicitNodeRenamer_extension extends Extension.Default<_FunctionTy
           Map<SNode, String> m = MapSequence.fromMapAndEntryArray(new HashMap<SNode, String>(), Map.entry(node, newName));
           return m;
         };
-        RefactoringProcessor.performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<SNode, String>(), refactoringUI, refactoringSession, repository, scope, participants, initialStates, null, doRefactor, () -> refactoringSession.performAllRegistered());
+        RefactoringProcessor.performRefactoring(new RefactoringParticipant.CollectingParticipantStateFactory<SNode, String>(), refactoringUI, refactoringSession, participants, initialStates, null, doRefactor, () -> refactoringSession.performAllRegistered());
       }, editorDisposed);
       return false;
     };

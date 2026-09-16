@@ -83,7 +83,18 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
 
   interface Change<InitialDataObject, FinalDataObject> {
     SearchResults getSearchResults();
-    void confirm(FinalDataObject finalState, SRepository repository, RefactoringSession refactoringSession);
+    /**
+     * 
+     * 
+     * @deprecated override one without explicit repo, use the one from the session
+     */
+    @Deprecated(forRemoval = true, since = "2026.2")
+    default void confirm(FinalDataObject finalState, SRepository repository, RefactoringSession refactoringSession) {
+    }
+    default void confirm(FinalDataObject finalState, RefactoringSession refactoringSession) {
+      confirm(finalState, refactoringSession.getRepository(), refactoringSession);
+    }
+
   }
 
   interface PersistentRefactoringParticipant<InitialDataObject, FinalDataObject, InitialPoint, FinalPoint> extends RefactoringParticipant<InitialDataObject, FinalDataObject, InitialPoint, FinalPoint> {
@@ -117,7 +128,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
       return new ParticipantApplied<>(participant, initialState, appliedParents);
     }
 
-    public <I, F> void confirm(ParticipantApplied<I, F> applied, List<FS> newNodes, final SRepository repo, final RefactoringSession session) {
+    public <I, F> void confirm(ParticipantApplied<I, F> applied, List<FS> newNodes, final RefactoringSession session) {
       List<List<Change<I, F>>> changes = applied.getChanges();
       if (changes == null || ListSequence.fromList(changes).count() != ListSequence.fromList(newNodes).count()) {
         throw new IllegalStateException();
@@ -130,7 +141,7 @@ public interface RefactoringParticipant<InitialDataObject, FinalDataObject, Init
           continue;
         }
         final F finalState = toFinal.apply(ListSequence.fromList(newNodes).getElement(i));
-        ListSequence.fromList(nextChange).visitAll((it) -> it.confirm(finalState, repo, session));
+        ListSequence.fromList(nextChange).visitAll((it) -> it.confirm(finalState, session));
       }
     }
   }

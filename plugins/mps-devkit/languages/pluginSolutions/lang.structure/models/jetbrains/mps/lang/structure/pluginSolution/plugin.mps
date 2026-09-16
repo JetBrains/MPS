@@ -6046,9 +6046,6 @@
                                                                       </node>
                                                                     </node>
                                                                   </node>
-                                                                  <node concept="37vLTw" id="7ram9htCKpO" role="37wK5m">
-                                                                    <ref role="3cqZAo" node="361hHoA2jAc" resolve="repository" />
-                                                                  </node>
                                                                   <node concept="37vLTw" id="7ram9htCXbp" role="37wK5m">
                                                                     <ref role="3cqZAo" node="361hHoA2jAe" resolve="refactoringSession" />
                                                                   </node>
@@ -12802,7 +12799,7 @@
                         </node>
                         <node concept="3clFbF" id="41U5zKUWRp5" role="3cqZAp">
                           <node concept="2YIFZM" id="4AevHfIt_Go" role="3clFbG">
-                            <ref role="37wK5l" to="5nvm:76O06llVMad" resolve="performRefactoring" />
+                            <ref role="37wK5l" to="5nvm:7VAzgTdtpNX" resolve="performRefactoring" />
                             <ref role="1Pybhc" to="5nvm:5dWUYKKJ14W" resolve="RefactoringProcessor" />
                             <node concept="2ShNRf" id="41U5zKUWRp7" role="37wK5m">
                               <node concept="HV5vD" id="41U5zKUWRp8" role="2ShVmc">
@@ -12816,12 +12813,6 @@
                             </node>
                             <node concept="37vLTw" id="41U5zKUWRpc" role="37wK5m">
                               <ref role="3cqZAo" node="41U5zKUWRp1" resolve="refactoringSession" />
-                            </node>
-                            <node concept="37vLTw" id="4Lw1UpBxO4T" role="37wK5m">
-                              <ref role="3cqZAo" node="4Lw1UpBxO4O" resolve="repository" />
-                            </node>
-                            <node concept="37vLTw" id="41U5zKUYg44" role="37wK5m">
-                              <ref role="3cqZAo" node="41U5zKUYg40" resolve="scope" />
                             </node>
                             <node concept="37vLTw" id="41U5zKUWRq9" role="37wK5m">
                               <ref role="3cqZAo" node="76O06llYVVI" resolve="participants" />

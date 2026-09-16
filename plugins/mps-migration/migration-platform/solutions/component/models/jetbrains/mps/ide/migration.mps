@@ -155,9 +155,7 @@
         <child id="1145553007750" name="creator" index="2ShVmc" />
       </concept>
       <concept id="1070462154015" name="jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration" flags="ig" index="Wx3nA" />
-      <concept id="1070475354124" name="jetbrains.mps.baseLanguage.structure.ThisExpression" flags="nn" index="Xjq3P">
-        <reference id="1182955020723" name="classConcept" index="1HBi2w" />
-      </concept>
+      <concept id="1070475354124" name="jetbrains.mps.baseLanguage.structure.ThisExpression" flags="nn" index="Xjq3P" />
       <concept id="1070475587102" name="jetbrains.mps.baseLanguage.structure.SuperConstructorInvocation" flags="nn" index="XkiVB" />
       <concept id="1070475926800" name="jetbrains.mps.baseLanguage.structure.StringLiteral" flags="nn" index="Xl_RD">
         <property id="1070475926801" name="value" index="Xl_RC" />
@@ -11505,9 +11503,6 @@
                   <node concept="3clFbF" id="ZyaJRS2JZT" role="3cqZAp">
                     <node concept="1rXfSq" id="ZyaJRRZYN$" role="3clFbG">
                       <ref role="37wK5l" node="ZyaJRRZYNr" resolve="doRun" />
-                      <node concept="37vLTw" id="ZyaJRRZYNu" role="37wK5m">
-                        <ref role="3cqZAo" node="13dI_iSN_F_" resolve="module" />
-                      </node>
                       <node concept="37vLTw" id="ZyaJRRZYNv" role="37wK5m">
                         <ref role="3cqZAo" node="V9q2W$MLar" resolve="p" />
                       </node>
@@ -11657,12 +11652,6 @@
       <property role="TrG5h" value="doRun" />
       <node concept="3Tm6S6" id="ZyaJRRZYNs" role="1B3o_S" />
       <node concept="3cqZAl" id="ZyaJRS3ku0" role="3clF45" />
-      <node concept="37vLTG" id="ZyaJRRZYN4" role="3clF46">
-        <property role="TrG5h" value="module" />
-        <node concept="3uibUv" id="ZyaJRRZYN5" role="1tU5fm">
-          <ref role="3uigEE" to="lui2:~SModule" resolve="SModule" />
-        </node>
-      </node>
       <node concept="37vLTG" id="XAmMekmAtI" role="3clF46">
         <property role="TrG5h" value="participant" />
         <node concept="3uibUv" id="XAmMekmDCU" role="1tU5fm">
@@ -11705,7 +11694,7 @@
       <node concept="3clFbS" id="ZyaJRRZYMm" role="3clF47">
         <node concept="3clFbF" id="XAmMejB$zc" role="3cqZAp">
           <node concept="2YIFZM" id="4AevHfIt_Gn" role="3clFbG">
-            <ref role="37wK5l" to="5nvm:76O06llVMad" resolve="performRefactoring" />
+            <ref role="37wK5l" to="5nvm:7VAzgTdtpNX" resolve="performRefactoring" />
             <ref role="1Pybhc" to="5nvm:5dWUYKKJ14W" resolve="RefactoringProcessor" />
             <node concept="2ShNRf" id="XAmMekfKO_" role="37wK5m">
               <node concept="HV5vD" id="XAmMekfM93" role="2ShVmc">
@@ -11717,27 +11706,6 @@
             </node>
             <node concept="37vLTw" id="ZyaJRS0CAK" role="37wK5m">
               <ref role="3cqZAo" node="ZyaJRRZYNh" resolve="refactoringSession" />
-            </node>
-            <node concept="2OqwBi" id="23pjS9DSjTS" role="37wK5m">
-              <node concept="2OqwBi" id="23pjS9DShPv" role="2Oq$k0">
-                <node concept="Xjq3P" id="23pjS9DSclR" role="2Oq$k0">
-                  <ref role="1HBi2w" node="4biA4YBp1hH" resolve="MigrationExecutorImpl" />
-                </node>
-                <node concept="2OwXpG" id="4EpASiE3oh8" role="2OqNvi">
-                  <ref role="2Oxat5" node="4biA4YBp4Zi" resolve="myProject" />
-                </node>
-              </node>
-              <node concept="liA8E" id="23pjS9DSloi" role="2OqNvi">
-                <ref role="37wK5l" to="z1c3:~Project.getRepository()" resolve="getRepository" />
-              </node>
-            </node>
-            <node concept="2ShNRf" id="XAmMejBNHv" role="37wK5m">
-              <node concept="1pGfFk" id="XAmMejBNHw" role="2ShVmc">
-                <ref role="37wK5l" to="mte5:~ModulesScope.&lt;init&gt;(org.jetbrains.mps.openapi.module.SModule...)" resolve="ModulesScope" />
-                <node concept="37vLTw" id="ZyaJRS0DAt" role="37wK5m">
-                  <ref role="3cqZAo" node="ZyaJRRZYN4" resolve="module" />
-                </node>
-              </node>
             </node>
             <node concept="2ShNRf" id="XAmMeko_l1" role="37wK5m">
               <node concept="2HTt$P" id="XAmMeko_l2" role="2ShVmc">
