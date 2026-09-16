@@ -7213,7 +7213,7 @@
             <node concept="2OqwBi" id="1$YBF88TjMq" role="37vLTx">
               <node concept="2YIFZM" id="1$YBF88TjMt" role="2Oq$k0">
                 <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
-                <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" />
+                <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" resolve="fromIdeaProjectOrFail" />
                 <node concept="2xqhHp" id="1$YBF88TjMu" role="37wK5m" />
               </node>
               <node concept="liA8E" id="1$YBF88TjMv" role="2OqNvi">

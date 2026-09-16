@@ -4818,10 +4818,10 @@
       <node concept="37vLTG" id="5pyYflDkIZS" role="3clF46">
         <property role="TrG5h" value="files" />
         <node concept="3uibUv" id="5pyYflDkIZT" role="1tU5fm">
-          <ref role="3uigEE" to="33ny:~List" resolve="java.util.List" />
+          <ref role="3uigEE" to="33ny:~List" resolve="List" />
           <node concept="3qUE_q" id="5pyYflDkIZV" role="11_B2D">
             <node concept="3uibUv" id="5pyYflDkIZU" role="3qUE_r">
-              <ref role="3uigEE" to="jlff:~VirtualFile" resolve="com.intellij.openapi.vfs.VirtualFile" />
+              <ref role="3uigEE" to="jlff:~VirtualFile" resolve="VirtualFile" />
             </node>
           </node>
         </node>
@@ -4829,13 +4829,13 @@
       <node concept="37vLTG" id="5pyYflDkIZW" role="3clF46">
         <property role="TrG5h" value="provider" />
         <node concept="3uibUv" id="5pyYflDkIZX" role="1tU5fm">
-          <ref role="3uigEE" to="hlwo:~MergeProvider" resolve="com.intellij.openapi.vcs.merge.MergeProvider" />
+          <ref role="3uigEE" to="hlwo:~MergeProvider" resolve="MergeProvider" />
         </node>
       </node>
       <node concept="37vLTG" id="5pyYflDkIZY" role="3clF46">
         <property role="TrG5h" value="customizer" />
         <node concept="3uibUv" id="5pyYflDkIZZ" role="1tU5fm">
-          <ref role="3uigEE" to="hlwo:~MergeDialogCustomizer" resolve="com.intellij.openapi.vcs.merge.MergeDialogCustomizer" />
+          <ref role="3uigEE" to="hlwo:~MergeDialogCustomizer" resolve="MergeDialogCustomizer" />
         </node>
       </node>
       <node concept="3clFbS" id="5pyYflDkJ00" role="3clF47">
@@ -4861,7 +4861,7 @@
           <node concept="3cpWsn" id="5pyYflDkJ07" role="3cpWs9">
             <property role="TrG5h" value="result" />
             <node concept="3uibUv" id="5pyYflDkJ09" role="1tU5fm">
-              <ref role="3uigEE" to="jlcu:~AbstractVcsHelper$MergeDialogResult" resolve="com.intellij.openapi.vcs.AbstractVcsHelper.MergeDialogResult" />
+              <ref role="3uigEE" to="jlcu:~AbstractVcsHelper$MergeDialogResult" resolve="AbstractVcsHelper.MergeDialogResult" />
             </node>
             <node concept="3nyPlj" id="5pyYflDkJ0a" role="33vP2m">
               <ref role="37wK5l" to="j86o:~AbstractVcsHelperImpl.showMergeDialogWithResult(java.util.List,com.intellij.openapi.vcs.merge.MergeProvider,com.intellij.openapi.vcs.merge.MergeDialogCustomizer)" resolve="showMergeDialogWithResult" />
@@ -5010,7 +5010,7 @@
       </node>
       <node concept="3Tm6S6" id="5pyYflDkJ0u" role="1B3o_S" />
       <node concept="3uibUv" id="5pyYflDkJ0v" role="3clF45">
-        <ref role="3uigEE" to="jlcu:~AbstractVcsHelper$MergeDialogResult" resolve="com.intellij.openapi.vcs.AbstractVcsHelper.MergeDialogResult" />
+        <ref role="3uigEE" to="jlcu:~AbstractVcsHelper$MergeDialogResult" resolve="AbstractVcsHelper.MergeDialogResult" />
       </node>
     </node>
   </node>
@@ -5177,7 +5177,7 @@
       </node>
       <node concept="3Tm1VV" id="241_1eUaQ1w" role="1B3o_S" />
       <node concept="3uibUv" id="241_1eUaQ1x" role="3clF45">
-        <ref role="3uigEE" to="dxuu:~Icon" resolve="javax.swing.Icon" />
+        <ref role="3uigEE" to="dxuu:~Icon" resolve="Icon" />
       </node>
     </node>
   </node>

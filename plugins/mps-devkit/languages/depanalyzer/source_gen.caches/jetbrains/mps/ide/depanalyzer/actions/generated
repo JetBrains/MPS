@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="3do73ucauo8qant2fxjqfwlxamswpft">
+<product version="3" modelHash="-cfr8wmwi4iyq7zerr2dv67k9xbzkbyi">
   <files names="AnalyzeDependencies_Tool.java:AnalyzeModelDependencies_Action.java:AnalyzeModuleDependencies_Action.java:ContributeAnalyzeModel_ActionGroup.java:ContributeAnalyzeModule_ActionGroup.java:Depanalyzer_ApplicationPlugin.java:Depanalyzer_ProjectPlugin.java:DependenciesKeyMap_KeymapChanges.java:DependenciesUtil.java:ModuleDependencies_Tool.java:SafeDeleteModuleDependency_Action.java:ShowDependenciesInViewer_Action.java:ShowInDependenciesViewer_Action.java:startup.properties" />
 </product>
 

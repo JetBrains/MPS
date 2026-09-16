@@ -28,11 +28,8 @@
     <import index="jkm4" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.ui(MPS.IDEA/)" />
     <import index="7e8u" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.ui.tree(MPS.Platform/)" />
     <import index="g6cj" ref="r:e9e5ee4e-8216-40bc-b13e-6f1480c626c5(jetbrains.mps.ide.depanalyzer)" />
-    <import index="jkny" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.wm(MPS.IDEA/)" />
     <import index="4nm9" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.project(MPS.IDEA/)" />
     <import index="alof" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.project(MPS.Platform/)" />
-    <import index="dxuu" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.swing(JDK/)" />
-    <import index="1m72" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.components(MPS.IDEA/)" />
     <import index="z1c4" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.project(MPS.Platform/)" />
     <import index="9erk" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.ide.findusages.model(MPS.Core/)" />
     <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
@@ -389,7 +386,7 @@
           <node concept="3cpWsn" id="4K0u7uB3vj4" role="3cpWs9">
             <property role="TrG5h" value="tool" />
             <node concept="1xUVSX" id="4K0u7uB3vj5" role="1tU5fm">
-              <ref role="1xYkEM" node="4K0u7uB3vjg" resolve="ModuleDependenies" />
+              <ref role="1xYkEM" node="4K0u7uB3vjg" resolve="ModuleDependencies" />
             </node>
             <node concept="2OqwBi" id="4K0u7uB3vj6" role="33vP2m">
               <node concept="2OqwBi" id="4K0u7uB3vj7" role="2Oq$k0">
@@ -399,7 +396,7 @@
                 </node>
               </node>
               <node concept="LR4U6" id="4K0u7uB3vja" role="2OqNvi">
-                <ref role="LR4U5" node="4K0u7uB3vjg" resolve="ModuleDependenies" />
+                <ref role="LR4U5" node="4K0u7uB3vjg" resolve="ModuleDependencies" />
               </node>
             </node>
           </node>
@@ -853,7 +850,7 @@
                 </node>
               </node>
               <node concept="LR4U6" id="44sVLhmXg9j" role="2OqNvi">
-                <ref role="LR4U5" node="4K0u7uB3vjg" resolve="ModuleDependenies" />
+                <ref role="LR4U5" node="4K0u7uB3vjg" resolve="ModuleDependencies" />
               </node>
             </node>
           </node>
@@ -2791,7 +2788,7 @@
               </node>
             </node>
             <node concept="2YIFZM" id="7TKpiq428ed" role="37vLTx">
-              <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" />
+              <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" resolve="fromIdeaProjectOrFail" />
               <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
               <node concept="2xqhHp" id="7TKpiq428fn" role="37wK5m" />
             </node>

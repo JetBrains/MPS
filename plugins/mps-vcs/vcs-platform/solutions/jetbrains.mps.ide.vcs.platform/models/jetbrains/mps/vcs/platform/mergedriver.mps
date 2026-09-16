@@ -642,7 +642,7 @@
             <property role="2Lvdk3" value="states" />
             <node concept="_YKpA" id="5qoUO7bbpMx" role="1tU5fm">
               <node concept="3uibUv" id="5qoUO7bbpMz" role="_ZDj9">
-                <ref role="3uigEE" node="1crbmp8Of6p" />
+                <ref role="3uigEE" node="1crbmp8Of6p" resolve="AbstractInstaller.State" />
               </node>
             </node>
             <node concept="2OqwBi" id="5qoUO7bbpM$" role="33vP2m">
@@ -691,7 +691,7 @@
             </node>
             <node concept="3JPx81" id="5qoUO7bbqtx" role="2OqNvi">
               <node concept="Rm8GO" id="5qoUO7bbqtz" role="25WWJ7">
-                <ref role="1Px2BO" node="1crbmp8Of6p" resolve="State" />
+                <ref role="1Px2BO" node="1crbmp8Of6p" resolve="AbstractInstaller.State" />
                 <ref role="Rm8GQ" node="1crbmp8Of6q" resolve="NOT_INSTALLED" />
               </node>
             </node>
@@ -711,7 +711,7 @@
               </node>
               <node concept="3JPx81" id="5qoUO7bbrfK" role="2OqNvi">
                 <node concept="Rm8GO" id="5qoUO7bbrfM" role="25WWJ7">
-                  <ref role="1Px2BO" node="1crbmp8Of6p" resolve="State" />
+                  <ref role="1Px2BO" node="1crbmp8Of6p" resolve="AbstractInstaller.State" />
                   <ref role="Rm8GQ" node="1crbmp8Of6r" resolve="OUTDATED" />
                 </node>
               </node>
@@ -724,7 +724,7 @@
               </node>
               <node concept="3JPx81" id="5qoUO7bbrRV" role="2OqNvi">
                 <node concept="Rm8GO" id="5qoUO7bbrRX" role="25WWJ7">
-                  <ref role="1Px2BO" node="1crbmp8Of6p" resolve="State" />
+                  <ref role="1Px2BO" node="1crbmp8Of6p" resolve="AbstractInstaller.State" />
                   <ref role="Rm8GQ" node="1crbmp8Of6s" resolve="INSTALLED" />
                 </node>
               </node>

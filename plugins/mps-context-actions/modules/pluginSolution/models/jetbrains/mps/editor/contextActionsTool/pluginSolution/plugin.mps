@@ -607,7 +607,7 @@
             </node>
             <node concept="2YIFZM" id="7D_l88gJSnv" role="33vP2m">
               <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
-              <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" />
+              <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" resolve="fromIdeaProjectOrFail" />
               <node concept="2xqhHp" id="7D_l88gJSnw" role="37wK5m" />
             </node>
           </node>

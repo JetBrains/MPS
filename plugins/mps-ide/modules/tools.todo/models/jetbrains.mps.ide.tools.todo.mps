@@ -358,7 +358,7 @@
               <node concept="1pGfFk" id="4HeMkQiYOc3" role="2ShVmc">
                 <ref role="37wK5l" node="4HeMkQiYPZB" resolve="TodoViewer" />
                 <node concept="2YIFZM" id="6J69$P31Fw6" role="37wK5m">
-                  <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" />
+                  <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" resolve="fromIdeaProjectOrFail" />
                   <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
                   <node concept="2xqhHp" id="6J69$P31FAD" role="37wK5m" />
                 </node>
