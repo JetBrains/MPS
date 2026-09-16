@@ -157,7 +157,10 @@ def analyse_run(run_id: str, runs: Path):
                         if call["skill_read"]:
                             skill_bytes += n
         elif t == "result":
-            final = ev
+            # A run that delegates to a subagent emits one result event per session; keep the
+            # main one (most turns) so turns/wall_s are not those of the subagent.
+            if final is None or (ev.get("num_turns") or 0) >= (final.get("num_turns") or 0):
+                final = ev
 
     # error -> retry pairs: same tool key again within the next 2 calls after an error
     retries = []
