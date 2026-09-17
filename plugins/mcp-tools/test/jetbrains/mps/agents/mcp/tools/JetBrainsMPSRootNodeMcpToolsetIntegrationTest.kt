@@ -550,6 +550,23 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals(0, arr.size())
     }
 
+    @Test
+    fun `search_root_node_by_name rejects a blank names instead of answering an empty array`() {
+        // A blank `names` used to answer ok:true with `[]`, which reads as "no such root" rather
+        // than "you did not say what to look for" — and `null` decodes to the empty string, so a
+        // caller who sent the wrong key (name/q/searchTexts) hit exactly this. Same guard as
+        // mps_mcp_search_concepts' searchTexts; no alias parameter is added.
+        for (blank in listOf(JsonOrText(""), JsonOrText("   "), JsonOrText("""["", "  "]"""))) {
+            val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name(blank) }
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("blank names must be rejected: $response", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            val error = obj.get("error").asString
+            assertTrue("$error must name the key", error.contains("names is required"))
+            assertTrue("$error must offer the retry line", error.contains("Retry with names set to"))
+        }
+    }
+
     // ── scope confinement (project-scoped, not instance-global) ───────────────────────────
     // A single MPS instance shares one module repository across every open project, so the
     // search scopes must be rooted at the projectPath-selected project, not GlobalScope(repository).

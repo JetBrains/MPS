@@ -39,6 +39,57 @@ internal fun JsonObject.paramString(field: String): String? =
 private const val PARAMETERS_PATH = "parameters"
 
 /**
+ * A `parameters` blob key together with the alternative spellings it accepts.
+ *
+ * The tool surface carries two conventions for the same idea: blob keys use the short `…Ref`
+ * suffix, top-level tool parameters the long `…Reference`. Both are load-bearing in existing call
+ * sites and in the bundled skill scripts, so neither can be renamed — and three measured rounds of
+ * the skill-optimisation study produced a new "wrong spelling" incident every time. Accepting the
+ * other spelling inside the blob is free: a blob key is read out of one string parameter and never
+ * appears in the published MCP schema, so unlike a top-level alias it costs nothing on the
+ * per-turn schema floor. That asymmetry is why aliases stop at the blob boundary.
+ */
+internal class BlobKey(val canonical: String, vararg aliases: String) {
+  val spellings: List<String> = listOf(canonical, *aliases)
+  override fun toString(): String = canonical
+}
+
+internal val PARAM_CONCEPT_REF = BlobKey("conceptRef", "conceptReference")
+internal val PARAM_SUPER_CONCEPT_REF = BlobKey("superConceptRef", "superConceptReference")
+internal val PARAM_STRUCTURE_MODEL_REF = BlobKey("structureModelRef", "structureModelReference")
+internal val PARAM_ENUMERATION_REF = BlobKey("enumerationRef", "enumerationReference")
+internal val PARAM_NODE_REFERENCE = BlobKey("nodeReference", "nodeRef")
+internal val PARAM_CHILD_NODE_REF = BlobKey("childNodeRef", "childNodeReference")
+internal val PARAM_NEW_PARENT_REF = BlobKey("newParentRef", "newParentReference")
+internal val PARAM_MODEL_REFERENCE = BlobKey("modelReference", "modelRef")
+
+/**
+ * Reads [key] under whichever accepted spelling is present. Two spellings present at once is
+ * rejected rather than silently resolved — the same "reject the ignored key" policy as
+ * [REFERENCES_ARE_SINGLE_VALUED] — because a caller who sent both cannot tell which one won.
+ * A field-level JSON null counts as absent, exactly as it does for a single-spelling read.
+ */
+internal fun JsonObject.paramString(key: BlobKey): String? {
+  val present = key.spellings.filter { optionalElement(it) != null }
+  if (present.size > 1) {
+    throw ToolInputSchemaException(
+      "'$PARAMETERS_PATH' carries ${present.joinToString(" and ") { "'$it'" }}, which are the same " +
+        "parameter under different spellings. Keep '${key.canonical}' and remove " +
+        present.filterNot { it == key.canonical }.joinToString(", ") { "'$it'" } + "."
+    )
+  }
+  return present.firstOrNull()?.let { paramString(it) }
+}
+
+/**
+ * True when any accepted spelling of [key] is present with an explicit JSON null. Used where an
+ * explicit null must be rejected rather than read as absence (`MOVE_NODE_TO_PARENT`'s
+ * `newParentRef`, whose absence means "promote to root").
+ */
+internal fun JsonObject.paramIsExplicitNull(key: BlobKey): Boolean =
+  key.spellings.any { has(it) && get(it).isJsonNull }
+
+/**
  * Shared by every structure write that takes a reference cardinality: the bulk
  * `CREATE_CONCEPTS` blueprints and `UPDATE_CONCEPT_REFERENCE`. Both used to drop `multiple`
  * on a reference silently and produce a 0..1 link, which cost a study worker ~40 tool calls

@@ -86,8 +86,8 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
 
         when (operation) {
             MPSStructureQueryOperation.GET_ENUMERATION_LITERALS -> {
-                val enumerationRef = params.paramString("enumerationRef")
-                val nodeReference = params.paramString("nodeReference")
+                val enumerationRef = params.paramString(PARAM_ENUMERATION_REF)
+                val nodeReference = params.paramString(PARAM_NODE_REFERENCE)
                 val propertyName = params.paramString("propertyName")
                 if (enumerationRef != null) {
                     if (nodeReference != null || propertyName != null) {
@@ -110,8 +110,8 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             MPSStructureQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params)
 
             MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val superConceptRef = params.paramString("superConceptRef") ?: return@withMpsProject errJson("Parameter 'superConceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val superConceptRef = params.paramString(PARAM_SUPER_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'superConceptRef' is missing")
                 executeShortReadOnEdt(mpsProject) {
                     val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
                         ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
@@ -123,7 +123,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
 
             MPSStructureQueryOperation.GET_SUB_CONCEPTS,
             MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val languageRefsElement = params.get("languageRefs")
                 executeShortReadOnEdt(mpsProject) {
                     val targetConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
@@ -181,7 +181,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             }
 
             MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 executeShortReadOnEdt(mpsProject) {
                     val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
                         ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
@@ -194,13 +194,13 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             }
 
             MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val includeInherited = params.paramBoolean("includeInherited", default = false)
                 mps_mcp_list_concept_aspects(conceptRef, includeInherited)
             }
 
             MPSStructureQueryOperation.IS_SMART_REFERENCE -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 executeShortReadOnEdt(mpsProject) {
                     val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
                         ?: return@executeShortReadOnEdt errJson("Concept not found: $conceptRef", McpErrorCode.NOT_FOUND)
@@ -248,7 +248,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
 
         when (operation) {
             MPSStructureAlterOperation.CREATE_CONCEPTS -> {
-                val structureModelRef = params.paramString("structureModelRef") ?: return@withMpsProject errJson("Parameter 'structureModelRef' is missing")
+                val structureModelRef = params.paramString(PARAM_STRUCTURE_MODEL_REF) ?: return@withMpsProject errJson("Parameter 'structureModelRef' is missing")
                 val make = params.paramBoolean("make", default = false)
                 val conceptsJsonPath = readStringOrInlineJsonParam(params, "conceptsJson")
                 val interfaceConceptsJsonPath = readStringOrInlineJsonParam(params, "interfaceConceptsJson")
@@ -265,7 +265,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             }
 
             MPSStructureAlterOperation.CREATE_ENUM -> {
-                val structureModelRef = params.paramString("structureModelRef") ?: return@withMpsProject errJson("Parameter 'structureModelRef' is missing")
+                val structureModelRef = params.paramString(PARAM_STRUCTURE_MODEL_REF) ?: return@withMpsProject errJson("Parameter 'structureModelRef' is missing")
                 val enumName = params.paramString("enumName") ?: return@withMpsProject errJson("Parameter 'enumName' is missing")
                 val valuesJson = readStringOrInlineJsonParam(params, "valuesJson") ?: return@withMpsProject errJson("Parameter 'valuesJson' is missing")
                 val defaultEnumName = params.paramString("defaultEnumName")
@@ -273,14 +273,14 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             }
 
             MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val propertyName = params.paramString("propertyName") ?: return@withMpsProject errJson("Parameter 'propertyName' is missing")
                 val dataType = params.paramString("dataType")
                 mps_mcp_update_concept_property(conceptRef, propertyName, dataType)
             }
 
             MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val role = params.paramString("role") ?: return@withMpsProject errJson("Parameter 'role' is missing")
                 val targetConcept = params.paramString("targetConcept")
                 val multiple = params.paramBoolean("multiple", default = false)
@@ -289,7 +289,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             }
 
             MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val role = params.paramString("role") ?: return@withMpsProject errJson("Parameter 'role' is missing")
                 // `multiple: false` is truthful, so it is accepted silently; `multiple: true` used to be
                 // dropped and quietly produce a 0..1 link, which cost a study worker ~40 turns to notice.
@@ -302,21 +302,21 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             }
 
             MPSStructureAlterOperation.RENAME_CONCEPT_PROPERTY -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val oldName = params.paramString("oldName") ?: return@withMpsProject errJson("Parameter 'oldName' is missing")
                 val newName = params.paramString("newName") ?: return@withMpsProject errJson("Parameter 'newName' is missing")
                 mps_mcp_rename_concept_property(conceptRef, oldName, newName)
             }
 
             MPSStructureAlterOperation.RENAME_CONCEPT_CHILD -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val oldRole = params.paramString("oldRole") ?: return@withMpsProject errJson("Parameter 'oldRole' is missing")
                 val newRole = params.paramString("newRole") ?: return@withMpsProject errJson("Parameter 'newRole' is missing")
                 mps_mcp_rename_concept_link(conceptRef, oldRole, newRole, true)
             }
 
             MPSStructureAlterOperation.RENAME_CONCEPT_REFERENCE -> {
-                val conceptRef = params.paramString("conceptRef") ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
+                val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val oldRole = params.paramString("oldRole") ?: return@withMpsProject errJson("Parameter 'oldRole' is missing")
                 val newRole = params.paramString("newRole") ?: return@withMpsProject errJson("Parameter 'newRole' is missing")
                 mps_mcp_rename_concept_link(conceptRef, oldRole, newRole, false)
@@ -1100,12 +1100,27 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, enumerationRef)
-                ?: return@executeShortReadOnEdt invalidReference("Invalid or unresolvable node reference: '$enumerationRef'")
-            val node = sNodeRef.resolve(repo)
-                ?: return@executeShortReadOnEdt errJson("Node '$enumerationRef' not found", McpErrorCode.NOT_FOUND)
+            // A node reference first, then the enumeration's qualified name. `resolveNodeReference`
+            // already covers `<model>.<EnumName>` and a bare `<EnumName>` (its by-name fallback runs
+            // because `SNodePointer.deserialize` throws on a string without a '/'), but not the
+            // language-qualified `<language>.<EnumName>` form — which is the shape a caller holds
+            // after `get_concept_details` refuses an enumeration and routes it here (study defect
+            // D22). A structure-model scan closes that gap.
+            val node = sNodeRef?.resolve(repo)
+                ?: resolveStructureDeclarationPreferringProject(mpsProject, enumerationRef)
+                ?: return@executeShortReadOnEdt if (sNodeRef != null) {
+                    errJson("Node '$enumerationRef' not found", McpErrorCode.NOT_FOUND)
+                } else {
+                    invalidReference(
+                        "Could not resolve 'enumerationRef' '$enumerationRef': it takes an " +
+                                "EnumerationDeclaration's node reference (r:...) or its qualified name " +
+                                "(<language>.structure.<EnumName>). To read the literals of an enum-typed " +
+                                "property instead, pass 'nodeReference' plus 'propertyName'."
+                    )
+                }
             if (!node.concept.isSubConceptOf(CONCEPT_EnumerationDeclaration)) {
                 return@executeShortReadOnEdt errJson(
-                    "Node '$enumerationRef' is not an EnumerationDeclaration (was '${node.concept.name}')",
+                    "'enumerationRef' '$enumerationRef' is not an EnumerationDeclaration (was '${node.concept.name}')",
                     McpErrorCode.INVALID_REQUEST,
                 )
             }
@@ -1404,16 +1419,6 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 0x8389f407dc1158b7uL.toLong(),
                 0x110356fc618L,
                 "jetbrains.mps.lang.structure.structure.InterfaceConceptReference"
-            )
-    }
-    private val CONCEPT_EnumerationDeclaration: SConcept by lazy {
-        val registry = MPSCoreComponents.getInstance()?.platform?.findComponent(LanguageRegistry::class.java)
-        registry?.getLanguage(LANG_STRUCTURE)?.concepts?.filterIsInstance<SConcept>()?.find { it.name == "EnumerationDeclaration" }
-            ?: MetaAdapterFactory.getConcept(
-                0xc72da2b97cce4447uL.toLong(),
-                0x8389f407dc1158b7uL.toLong(),
-                0x2e770ca32c607c5fuL.toLong(),
-                "jetbrains.mps.lang.structure.structure.EnumerationDeclaration"
             )
     }
     private val CONCEPT_EnumerationMemberDeclaration: SConcept by lazy {

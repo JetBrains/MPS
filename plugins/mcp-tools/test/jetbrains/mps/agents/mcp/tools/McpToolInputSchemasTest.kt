@@ -1426,6 +1426,101 @@ class McpToolInputSchemasTest {
         }
     }
 
+    // ---- blob-key aliases (parameter-name consistency sweep) ----
+
+    /**
+     * The drift surface for the `…Ref` / `…Reference` family. Spelled out as literals rather than
+     * derived from the [BlobKey] constants, so renaming or dropping half a pair has to be a
+     * deliberate edit here instead of silently reopening the family that produced a new incident
+     * in every measured round of the study.
+     */
+    private val expectedAliasedBlobKeys: Map<BlobKey, List<String>> = mapOf(
+        PARAM_CONCEPT_REF to listOf("conceptRef", "conceptReference"),
+        PARAM_SUPER_CONCEPT_REF to listOf("superConceptRef", "superConceptReference"),
+        PARAM_STRUCTURE_MODEL_REF to listOf("structureModelRef", "structureModelReference"),
+        PARAM_ENUMERATION_REF to listOf("enumerationRef", "enumerationReference"),
+        PARAM_NODE_REFERENCE to listOf("nodeReference", "nodeRef"),
+        PARAM_CHILD_NODE_REF to listOf("childNodeRef", "childNodeReference"),
+        PARAM_NEW_PARENT_REF to listOf("newParentRef", "newParentReference"),
+        PARAM_MODEL_REFERENCE to listOf("modelReference", "modelRef"),
+    )
+
+    @Test
+    fun aliasedBlobKeysKeepTheirExactSpellings() {
+        for ((key, spellings) in expectedAliasedBlobKeys) {
+            assertEquals("spellings of $key drifted", spellings, key.spellings)
+            assertEquals("the first spelling is the canonical one", spellings.first(), key.canonical)
+            // Every pair is the same stem under the short and the long suffix; nothing else.
+            val stems = spellings.map { it.removeSuffix("Reference").removeSuffix("Ref") }
+            assertEquals("$key must pair one stem, got $stems", 1, stems.distinct().size)
+        }
+    }
+
+    @Test
+    fun aliasedBlobKeyReadsEitherSpelling() {
+        for ((key, spellings) in expectedAliasedBlobKeys) {
+            for (spelling in spellings) {
+                assertEquals(
+                    "'$spelling' must resolve as $key",
+                    "value",
+                    params("""{"$spelling": "value"}""").paramString(key),
+                )
+            }
+            assertNull("absent under every spelling is absent", params("{}").paramString(key))
+            for (spelling in spellings) {
+                assertNull(
+                    "field-level null on '$spelling' counts as absent",
+                    params("""{"$spelling": null}""").paramString(key),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun aliasedBlobKeyRejectsTwoSpellingsAtOnceNamingTheWinner() {
+        for ((key, spellings) in expectedAliasedBlobKeys) {
+            val alias = spellings.last()
+            val message = catchSchemaFailure {
+                params("""{"${key.canonical}": "a", "$alias": "b"}""").paramString(key)
+            }
+            for (spelling in spellings) {
+                assertTrue("$message must name '$spelling'", message.contains("'$spelling'"))
+            }
+            assertTrue(
+                "$message must say which spelling to keep",
+                message.contains("Keep '${key.canonical}'"),
+            )
+        }
+    }
+
+    @Test
+    fun aliasedBlobKeyTreatsANulledSpellingAsAbsentRatherThanAConflict() {
+        // `{"enumerationRef": null, "enumerationReference": "X"}` is one value, not two: a
+        // field-level null already means absence for a single-spelling read, and the
+        // GET_ENUMERATION_LITERALS property form relies on exactly that.
+        for ((key, spellings) in expectedAliasedBlobKeys) {
+            assertEquals(
+                "a nulled canonical spelling must not conflict with a present alias",
+                "value",
+                params("""{"${key.canonical}": null, "${spellings.last()}": "value"}""").paramString(key),
+            )
+        }
+    }
+
+    @Test
+    fun explicitNullIsDetectedUnderEitherSpelling() {
+        for ((key, spellings) in expectedAliasedBlobKeys) {
+            assertFalse(params("{}").paramIsExplicitNull(key))
+            assertFalse(params("""{"${key.canonical}": "v"}""").paramIsExplicitNull(key))
+            for (spelling in spellings) {
+                assertTrue(
+                    "explicit null on '$spelling' must be detected",
+                    params("""{"$spelling": null}""").paramIsExplicitNull(key),
+                )
+            }
+        }
+    }
+
     private fun read(target: Any, getter: String): Any? {
         return target.javaClass.getMethod(getter).invoke(target)
     }

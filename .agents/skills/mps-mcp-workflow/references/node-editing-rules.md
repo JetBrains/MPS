@@ -9,7 +9,7 @@
 - The ids of nodes, concepts, models and modules never change. When used in JSON blueprints, be sure they are 100% accurate.
 - Role names (properties, children, references) must match the concept definition exactly.
 - When setting a property value on a node, make sure the type of the value matches the expected type of the property defined in the concept.
-- When setting a property typed to an enumeration, use `mps_mcp_query_structure` (GET_ENUMERATION_LITERALS) to get the list of allowed values.
+- When setting a property typed to an enumeration, use `mps_mcp_query_structure` (GET_ENUMERATION_LITERALS) to get the list of allowed values. Its `enumerationRef` takes the enumeration's node reference **or** its qualified name (`<language>.structure.<EnumName>`). `mps_mcp_get_concept_details` cannot answer for an enumeration at all — an `EnumerationDeclaration` is not a concept.
 - MPS stores the **default** enum member implicitly (as absent in the model). A newly created node that has never had its enum property explicitly set will still resolve to the default value at runtime. Only set an enum property explicitly when you need a non-default value. Do not treat an unset enum property as an error if the enum has a defined default member.
 - Concepts extend other concepts and implement interface concepts. These are transitive relationships. Both extended concepts and implemented interfaces have an effect on assignability.
 - When setting a reference to a target node, make sure the concept of the target node is assignable to the required concept of the reference role.

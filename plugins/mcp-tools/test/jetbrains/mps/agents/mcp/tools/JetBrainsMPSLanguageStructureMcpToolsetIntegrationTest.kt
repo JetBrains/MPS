@@ -1205,6 +1205,123 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         assertTrue(expectErr(response).contains("not an EnumerationDeclaration"))
     }
 
+    @Test
+    fun `GET_ENUMERATION_LITERALS resolves an enumerationRef given as a qualified name`() {
+        // Study defect D22: a qualified enumeration name resolved nowhere in the tool surface —
+        // get_concept_details can never return an EnumerationDeclaration, and this route took a
+        // node reference only. Both the model-qualified and the language-qualified form must work,
+        // because both are shapes a caller reads off a roots dump or a `qualifiedName` field.
+        createEnum("EnumLitByName", listOf("LOW" to "Low", "HIGH" to "High"))
+        val modelLongName = readOnRepo { structureModel.name.longName }
+        val languageName = readOnRepo { language.moduleName!! }
+
+        for (ref in listOf("$modelLongName.EnumLitByName", "$languageName.EnumLitByName", "EnumLitByName")) {
+            val response = runTool {
+                it.mps_mcp_query_structure(
+                    MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
+                    """{"enumerationRef":"$ref"}"""
+                )
+            }
+            val values = parseDataArray(response).map { it.asJsonObject.get("value").asString }
+            assertEquals("enumerationRef '$ref' must resolve", listOf("LOW", "HIGH"), values)
+        }
+    }
+
+    @Test
+    fun `GET_ENUMERATION_LITERALS rejects a qualified concept name as enumerationRef`() {
+        createConceptRoot("EnumLitNotEnumByName")
+        val modelLongName = readOnRepo { structureModel.name.longName }
+        val response = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
+                """{"enumerationRef":"$modelLongName.EnumLitNotEnumByName"}"""
+            )
+        }
+        val message = expectErr(response)
+        assertTrue(message, message.contains("not an EnumerationDeclaration"))
+        assertTrue("must name the offending parameter: $message", message.contains("'enumerationRef'"))
+    }
+
+    @Test
+    fun `GET_ENUMERATION_LITERALS names both accepted forms when enumerationRef does not resolve`() {
+        // The two input forms must stay distinguishable: this branch names 'enumerationRef' and
+        // points at the property form, while the property form's own failures name
+        // 'nodeReference'/'propertyName'.
+        val byDeclaration = expectErr(runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
+                """{"enumerationRef":"no.such.enum.Nope"}"""
+            )
+        })
+        assertTrue(byDeclaration, byDeclaration.contains("'enumerationRef'"))
+        assertTrue("must name the node-reference form: $byDeclaration", byDeclaration.contains("r:..."))
+        assertTrue("must name the qualified-name form: $byDeclaration", byDeclaration.contains("qualified name"))
+        assertTrue("must name the property form: $byDeclaration", byDeclaration.contains("'propertyName'"))
+
+        val byProperty = expectErr(runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
+                """{"nodeReference":"$unresolvableNodeRef","propertyName":"name"}"""
+            )
+        })
+        assertFalse(
+            "the property form must not answer with the enumerationRef message: $byProperty",
+            byProperty.contains("'enumerationRef'"),
+        )
+    }
+
+    // ── blob-key aliases (`…Ref` / `…Reference`) ──────────────────────────────────────
+
+    @Test
+    fun `structure blob keys accept both the Ref and the Reference spelling`() {
+        val fooRef = createConceptRoot("AliasFoo")
+
+        // CREATE_CONCEPTS: structureModelRef / structureModelReference
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{"structureModelReference":"$structureModelRef","conceptsJson":[{"name":"AliasCreated"}]}"""
+            )
+        })
+        assertEquals("AliasCreated", readOnRepo { expectSingleRoot("AliasCreated").name })
+
+        // IS_SUBCONCEPT_OF: conceptRef / conceptReference and superConceptRef / superConceptReference
+        assertTrue(expectDataBoolean(runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.IS_SUBCONCEPT_OF,
+                """{"conceptReference":"$fooRef","superConceptReference":"jetbrains.mps.lang.core.structure.BaseConcept"}"""
+            )
+        }))
+
+        // GET_ENUMERATION_LITERALS: enumerationRef / enumerationReference
+        createEnum("AliasEnum", listOf("ONE" to "One"))
+        val aliasEnumRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(expectSingleRoot("AliasEnum").reference)
+        }
+        assertEquals(
+            listOf("ONE"),
+            parseDataArray(runTool {
+                it.mps_mcp_query_structure(
+                    MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
+                    """{"enumerationReference":"$aliasEnumRef"}"""
+                )
+            }).map { it.asJsonObject.get("value").asString },
+        )
+    }
+
+    @Test
+    fun `structure blob keys reject two spellings of the same parameter`() {
+        val fooRef = createConceptRoot("AliasConflict")
+        val message = expectErr(runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS,
+                """{"conceptRef":"$fooRef","conceptReference":"$fooRef"}"""
+            )
+        })
+        assertTrue(message, message.contains("'conceptRef'") && message.contains("'conceptReference'"))
+        assertTrue("must name the winner: $message", message.contains("Keep 'conceptRef'"))
+    }
+
     // ── LIST_CONCEPT_ASPECTS ──────────────────────────────────────────────────────────
 
     @Test
@@ -1379,6 +1496,19 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok=true envelope, got: $response", obj.get("ok").asBoolean)
         assertNull("ok envelope should not carry an error: $response", obj.get("error"))
+    }
+
+    /** Creates an `EnumerationDeclaration` root named [name] with the given value/presentation pairs. */
+    private fun createEnum(name: String, values: List<Pair<String, String>>) {
+        val valuesJson = values.joinToString(",") { (value, presentation) ->
+            """{"enumName":"$value","enumPresentation":"$presentation"}"""
+        }
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_ENUM,
+                """{"structureModelRef":"$structureModelRef","enumName":"$name","valuesJson":[$valuesJson]}"""
+            )
+        })
     }
 
     private fun expectSingleRoot(name: String): SNode = readOnRepo {

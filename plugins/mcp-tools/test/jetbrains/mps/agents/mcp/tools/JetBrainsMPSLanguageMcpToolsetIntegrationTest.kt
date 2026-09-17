@@ -802,6 +802,95 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         )
     }
 
+    @Test
+    fun `get-concept-details routes a qualified enumeration name to GET_ENUMERATION_LITERALS`() {
+        // Study defect D22: an EnumerationDeclaration's qualified name used to be answered with a
+        // "did you mean" suggestion for an unrelated *concept* from the same structure model, which
+        // is a dead end — concept resolution requires an AbstractConceptDeclaration, so this tool
+        // can never return an enumeration. It must name what the ref actually is and the call that
+        // reads it instead.
+        createEnumInTestLanguage("RoutedDifficulty")
+        val enumFqn = readOnRepo { "${structureModel.name.longName}.RoutedDifficulty" }
+
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf(enumFqn))
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val error = obj.get("error").asString
+        assertTrue("error must say what the ref is: $error", error.contains("is an EnumerationDeclaration"))
+        assertTrue("error must name the working tool: $error", error.contains("mps_mcp_query_structure"))
+        assertTrue("error must name the operation: $error", error.contains("GET_ENUMERATION_LITERALS"))
+        assertTrue("error must name the parameter: $error", error.contains("enumerationRef"))
+
+        val entry = unresolvedDetailsOf(obj).singleEntryFor(enumFqn)
+        assertEquals("EnumerationDeclaration", entry.get("declaredAs").asString)
+        assertTrue("entry must carry the route: $entry", entry.get("route").asString.contains("GET_ENUMERATION_LITERALS"))
+        assertEquals(
+            "a non-concept declaration must not be answered with concept suggestions",
+            0, entry.get("suggestions").asJsonArray.size(),
+        )
+    }
+
+    @Test
+    fun `get-concept-details carries the enumeration route as a warning on a partial batch`() {
+        createEnumInTestLanguage("PartialDifficulty")
+        val enumFqn = readOnRepo { "${structureModel.name.longName}.PartialDifficulty" }
+
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(
+                conceptRefs = listOf("jetbrains.mps.lang.core.structure.BaseConcept", enumFqn),
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected partial success: $response", obj.get("ok").asBoolean)
+        val warnings = obj.get("warnings").asJsonArray.map { it.asString }
+        assertTrue(
+            "the enumeration route must reach the caller as a warning; got=$warnings",
+            warnings.any { it.contains("GET_ENUMERATION_LITERALS") && it.contains(enumFqn) },
+        )
+        val entry = unresolvedDetailsOf(obj).singleEntryFor(enumFqn)
+        assertEquals("EnumerationDeclaration", entry.get("declaredAs").asString)
+    }
+
+    @Test
+    fun `get-concept-details routes an enumeration node reference to GET_ENUMERATION_LITERALS too`() {
+        // The routing must be input-shape independent: an enumeration's node reference resolves in
+        // resolveConceptNodeInModules' node-reference step, and MetaAdapterByDeclaration.getConcept
+        // then returns null for it, so this shape lands in the same unresolved path.
+        createEnumInTestLanguage("NodeRefDifficulty")
+        val enumNodeRef = readOnRepo {
+            val root = structureModel.rootNodes.single { it.name == "NodeRefDifficulty" }
+            PersistenceFacade.getInstance().asString(root.reference)
+        }
+
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf(enumNodeRef))
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val entry = unresolvedDetailsOf(obj).singleEntryFor(enumNodeRef)
+        assertEquals("EnumerationDeclaration", entry.get("declaredAs").asString)
+        assertTrue(
+            "the route must carry the node reference the caller already holds: $entry",
+            entry.get("route").asString.contains(enumNodeRef),
+        )
+    }
+
+    /** Creates an `EnumerationDeclaration` root in this test's writable structure model. */
+    private fun createEnumInTestLanguage(name: String) {
+        val response = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_ENUM,
+                """{"structureModelRef":"$structureModelRef","enumName":"$name","valuesJson":[{"enumName":"EASY","enumPresentation":"Easy"}]}"""
+            )
+        }
+        assertTrue("CREATE_ENUM must succeed: $response", JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+    }
+
     /**
      * Unwraps the `details.unresolved` JSON array that both the all-failed and the partial-success
      * envelopes carry. Lives here (not on the toolset under test) so a regression that moves the

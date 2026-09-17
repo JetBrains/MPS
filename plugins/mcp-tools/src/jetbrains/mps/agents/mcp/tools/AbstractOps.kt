@@ -2261,6 +2261,16 @@ abstract class AbstractOps : McpToolset {
                 "jetbrains.mps.lang.structure.structure.DeprecatedNodeAnnotation"
             )
     }
+    protected val CONCEPT_EnumerationDeclaration: SConcept by lazy {
+        val registry = MPSCoreComponents.getInstance()?.platform?.findComponent(LanguageRegistry::class.java)
+        registry?.getLanguage(LANG_STRUCTURE)?.concepts?.filterIsInstance<SConcept>()?.find { it.name == "EnumerationDeclaration" }
+            ?: MetaAdapterFactory.getConcept(
+                0xc72da2b97cce4447uL.toLong(),
+                0x8389f407dc1158b7uL.toLong(),
+                0x2e770ca32c607c5fuL.toLong(),
+                "jetbrains.mps.lang.structure.structure.EnumerationDeclaration"
+            )
+    }
     protected val PROP_DeprecatedNodeAnnotation_Comment: SProperty by lazy {
         CONCEPT_DeprecatedNodeAnnotation.properties.find { it.name == "comment" }
             ?: MetaAdapterFactory.getProperty(0xc72da2b97cce4447uL.toLong(), 0x8389f407dc1158b7uL.toLong(), 0x11d0a70ae54L, 0x11d3ec760e8L, "comment")
@@ -2706,6 +2716,65 @@ abstract class AbstractOps : McpToolset {
 
         return null
     }
+
+    /**
+     * Resolves a **structure-aspect root declaration** by name, accepting the same two name forms
+     * as concept resolution — `<model>.<RootName>` / `<language>.<RootName>` (the `qualifiedName`
+     * every tool prints) and a bare root name — but *without* the
+     * `AbstractConceptDeclaration` filter [resolveConceptNodeInModules] applies, so an
+     * `EnumerationDeclaration` or a data-type declaration resolves too.
+     *
+     * Exists because a qualified enumeration name had no working lookup anywhere in the tool
+     * surface (study defect D22): `get_concept_details` can never return one, since
+     * `MetaAdapterByDeclaration.getConcept` only accepts a concept declaration, and the route that
+     * *can* read it, `query_structure GET_ENUMERATION_LITERALS`, took a node reference only. Pass
+     * [accept] to narrow the result (e.g. to declarations that are *not* concepts, for telling a
+     * caller what a name actually names).
+     *
+     * Project modules are searched before the rest of the shared repository, mirroring
+     * [resolveConceptNodePreferringProject], so an open sibling project cannot answer first.
+     */
+    protected fun resolveStructureDeclarationPreferringProject(
+        mpsProject: MPSProject,
+        ref: String,
+        accept: (SNode) -> Boolean = { true },
+    ): SNode? =
+        findStructureDeclarationInModules(ref, mpsProject.projectModulesWithGenerators) { root ->
+            accept(root) && root.model?.let { isModelInSelectedProject(mpsProject, it) } == true
+        } ?: findStructureDeclarationInModules(ref, mpsProject.repository.modules, accept)
+
+    private fun findStructureDeclarationInModules(
+        ref: String,
+        modules: Iterable<SModule>,
+        accept: (SNode) -> Boolean,
+    ): SNode? {
+        if (ref.contains(".")) {
+            val lastDot = ref.lastIndexOf(".")
+            val possibleModelName = ref.substring(0, lastDot)
+            val rootName = ref.substring(lastDot + 1)
+            for (module in modules) {
+                for (model in module.models) {
+                    if (model.name.longName != possibleModelName &&
+                        model.name.longName != "$possibleModelName.structure"
+                    ) continue
+                    model.rootNodes.firstOrNull { it.name == rootName && accept(it) }?.let { return it }
+                }
+            }
+        }
+
+        for (module in modules) {
+            if (module !is Language) continue
+            for (model in module.models) {
+                if (!model.name.longName.endsWith(".structure")) continue
+                model.rootNodes.firstOrNull { it.name == ref && accept(it) }?.let { return it }
+            }
+        }
+
+        return null
+    }
+
+    protected fun isConceptDeclaration(node: SNode): Boolean =
+        node.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration)
 
     protected fun resolveModel(repository: SRepository, modelReference: String): SModel? {
         // 1. Try as a model reference

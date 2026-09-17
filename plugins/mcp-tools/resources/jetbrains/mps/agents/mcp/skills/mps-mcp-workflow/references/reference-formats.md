@@ -43,6 +43,34 @@ as an exception.
 Blob keys *inside* a `parameters` / `conceptsJson` / `valuesJson` payload are different: that
 payload is itself one string parameter, so its own arrays are plain JSON inside it.
 
+### Two spellings for one reference key
+
+The surface carries the same idea under a short and a long suffix — blob keys mostly use `…Ref`,
+top-level tool parameters `…Reference` — and neither can be renamed without breaking existing call
+sites. So **inside a `parameters` blob both spellings are accepted**:
+
+| Canonical blob key | Also accepted | Read by |
+|---|---|---|
+| `conceptRef` | `conceptReference` | `mps_mcp_query_structure`, `mps_mcp_alter_structure`, `mps_mcp_query_nodes` (`FIND_INSTANCES`) |
+| `superConceptRef` | `superConceptReference` | `mps_mcp_query_structure` (`IS_SUBCONCEPT_OF`) |
+| `structureModelRef` | `structureModelReference` | `mps_mcp_alter_structure` |
+| `enumerationRef` | `enumerationReference` | `mps_mcp_query_structure` (`GET_ENUMERATION_LITERALS`) |
+| `nodeReference` | `nodeRef` | `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure` |
+| `childNodeRef` | `childNodeReference` | `mps_mcp_alter_nodes` (`MOVE_CHILD`) |
+| `newParentRef` | `newParentReference` | `mps_mcp_alter_nodes` (`MOVE_NODE_TO_PARENT`) |
+| `modelReference` | `modelRef` | `mps_mcp_alter_nodes` (`MOVE_NODE_TO_PARENT`) |
+
+Sending **both** spellings of one key in one blob is rejected with `INVALID_REQUEST` naming which
+to keep — a caller who sent both could not otherwise tell which one the tool used. A field-level
+JSON `null` still counts as absent under either spelling, so `{"enumerationRef": null,
+"enumerationReference": "…"}` is one value, not a conflict.
+
+**Top-level tool parameters have no aliases**: the only accepted spelling is the one in the tool's
+schema (`conceptRefs`, `searchTexts`, `nodeReference`, `childNodeRef`, `conceptRef` for
+`mps_mcp_scaffold_editor`, …). A wrong key is silently ignored and the parameter's default applies,
+so the tool answers with its own required-parameter rejection — which names the correct key and
+ends with the literal retry to make. Read that line instead of re-fetching the schema.
+
 ## MCP Response Envelope
 
 Every MPS MCP tool returns a JSON envelope at the top level:

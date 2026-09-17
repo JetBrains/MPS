@@ -1380,7 +1380,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         params: JsonObject,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
-        val conceptRef = params.paramString("conceptRef") ?: return errJson("Parameter 'conceptRef' is missing")
+        val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return errJson("Parameter 'conceptRef' is missing")
         val scopeParam = params.paramString("scope") ?: "editable"
         val exact = params.paramBoolean("exact", default = false)
         val sampleOnly = params.paramBoolean("sampleOnly", default = false)

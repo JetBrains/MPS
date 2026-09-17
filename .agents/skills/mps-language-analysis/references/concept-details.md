@@ -21,6 +21,30 @@ The tool distinguishes three response shapes:
 | Some refs failed, at least one resolved | `ok:true` | `data` as above, plus `warnings` naming each unresolved ref and `details.unresolved` with "did you mean" suggestions |
 | Every `conceptRef` and `languageRef` failed | `ok:false`, code `NOT_FOUND` | `details.unresolved` with up to 5 "did you mean" candidates per unresolved ref (qualified names and persistent references) |
 
+## An enumeration is not a concept
+
+This tool returns **concepts and interface concepts only**. An `EnumerationDeclaration` — and any
+other non-concept structure root, such as a constrained data type — can never be returned here, no
+matter how the ref is spelled: resolution goes through the concept declaration, which an
+enumeration is not. `conceptRefs = "<language>.structure.Difficulty"` therefore fails.
+
+It does not fail blindly. A ref that names a real non-concept declaration is answered with what it
+actually is plus the call that reads it, and its `details.unresolved` entry carries `declaredAs`
+(e.g. `"EnumerationDeclaration"`) and `route` instead of "did you mean" candidates — because a
+similarly-named *concept* from the same structure model is a dead end, not a near miss:
+
+```
+mps_mcp_query_structure
+  operation = GET_ENUMERATION_LITERALS
+  parameters = {"enumerationRef": "<language>.structure.Difficulty"}
+```
+
+`enumerationRef` accepts either the declaration's node reference (`r:...`) or exactly this
+qualified name, so the string that failed here can be pasted straight across. Reach for this
+whenever you need an enum's literals or its declared default — the lookup the
+`enumerationDefault` pitfall below forces on every reader, since a property sitting at the default
+stores nothing.
+
 ## Suggestion heuristic
 
 Suggestions are computed by subtoken-matching the input (the same camelCase- and underscore-aware splitter used by `mps_mcp_search_concepts`).

@@ -1928,6 +1928,135 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         assertTrue("row error must mention 'referenceRole', got: $err", err.contains("referenceRole"))
     }
 
+    // ── blob-key aliases (`…Ref` / `…Reference`) ──────────────────────────────────
+
+    @Test
+    fun `node blob keys accept both the Reference and the Ref spelling`() {
+        val parentRef = createConceptRoot("AliasNodeParent")
+        addPropertyChild(parentRef, "kid", "string")
+        val childRef = readOnRepo {
+            val p = resolveNode(parentRef).children.single { it.containmentLink?.name == "propertyDeclaration" }
+            PersistenceFacade.getInstance().asString(p.reference)
+        }
+
+        // query_nodes: nodeReference / nodeRef
+        val parentData = expectOk(runTool(toolset) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, """{ "nodeRef": "$childRef" }""")
+        })
+        assertEquals(parentRef, parentData.get("reference").asString)
+
+        // alter_nodes MOVE_CHILD: childNodeRef / childNodeReference
+        addPropertyChild(parentRef, "kid2", "string")
+        val moveResponse = runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeRef":"$parentRef","childRole":"propertyDeclaration","childNodeReference":"$childRef","position":-1}"""
+            )
+        }
+        assertTrue("MOVE_CHILD must accept the alias spellings: $moveResponse",
+            JsonParser.parseString(moveResponse).asJsonObject.get("ok").asBoolean)
+        readOnRepo {
+            val kids = resolveNode(parentRef).children.filter { it.containmentLink?.name == "propertyDeclaration" }
+            assertEquals(listOf("kid2", "kid"), kids.map { it.name })
+        }
+
+        // alter_nodes MOVE_NODE_TO_PARENT: newParentRef / newParentReference and modelReference / modelRef
+        val otherParentRef = createConceptRoot("AliasNodeOtherParent")
+        val reparent = runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_NODE_TO_PARENT,
+                """{"nodeReference":"$childRef","newParentReference":"$otherParentRef","role":"propertyDeclaration","modelRef":null}"""
+            )
+        }
+        assertTrue("MOVE_NODE_TO_PARENT must accept the alias spellings: $reparent",
+            JsonParser.parseString(reparent).asJsonObject.get("ok").asBoolean)
+        readOnRepo {
+            val kids = resolveNode(otherParentRef).children.filter { it.containmentLink?.name == "propertyDeclaration" }
+            assertEquals(listOf("kid"), kids.map { it.name })
+        }
+    }
+
+    @Test
+    fun `node blob keys reject two spellings of the same parameter`() {
+        val ref = createConceptRoot("AliasNodeConflict")
+        val response = runTool(toolset) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_ROOT, """{"nodeReference":"$ref","nodeRef":"$ref"}""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val error = obj.get("error").asString
+        assertTrue(error, error.contains("'nodeReference'") && error.contains("'nodeRef'"))
+        assertTrue("must name the winner: $error", error.contains("Keep 'nodeReference'"))
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT rejects an explicit null parent under the alias spelling`() {
+        // Absence of newParentRef means "promote to root", so an explicit null must stay a
+        // rejection under either spelling rather than silently promoting the node.
+        val parentRef = createConceptRoot("AliasNullParent")
+        addPropertyChild(parentRef, "kid", "string")
+        val childRef = readOnRepo {
+            val p = resolveNode(parentRef).children.single { it.containmentLink?.name == "propertyDeclaration" }
+            PersistenceFacade.getInstance().asString(p.reference)
+        }
+        val params = JsonObject().apply {
+            addProperty("nodeReference", childRef)
+            add("newParentReference", com.google.gson.JsonNull.INSTANCE)
+        }.toString()
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_NODE_TO_PARENT, params)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertTrue(obj.get("error").asString.contains("newParentRef"))
+        readOnRepo {
+            assertNotNull("the node must not have been promoted", resolveNode(childRef).parent)
+        }
+    }
+
+    // ── update_node required-parameter rejections ─────────────────────────────────
+
+    @Test
+    fun `update_node missing-parameter rejections name the key and the retry`() {
+        // Top-level parameters get no alias (that would grow the published schema on every turn),
+        // so the whole remedy is the message: the correct key plus the literal edit to make.
+        data class Case(val response: String, val key: String, val nearMiss: String?)
+
+        val cases = listOf(
+            Case(runTool(toolset) {
+                it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, childRole = "r", childJson = "{}")
+            }, "nodeReference", "parentRef/nodeRef"),
+            Case(runTool(toolset) {
+                it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = "r:x(y)/1", childJson = "{}")
+            }, "childRole", "role"),
+            Case(runTool(toolset) {
+                it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = "r:x(y)/1", childRole = "r")
+            }, "childJson", "json"),
+            Case(runTool(toolset) {
+                it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD)
+            }, "childNodeRef", "childNodeReference/nodeReference"),
+            Case(runTool(toolset) {
+                it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY)
+            }, "properties", null),
+            Case(runTool(toolset) {
+                it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE)
+            }, "references", null),
+        )
+
+        for ((response, key, nearMiss) in cases) {
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope for $key: $response", obj.get("ok").asBoolean)
+            assertEquals("$key rejection must be classified: $response", "INVALID_REQUEST", obj.get("code").asString)
+            val error = obj.get("error").asString
+            assertTrue("$error must name '$key'", error.contains(key))
+            assertTrue("$error must offer the retry line", error.contains("Retry with $key set to"))
+            if (nearMiss != null) {
+                assertTrue("$error must name the near-miss spelling '$nearMiss'", error.contains(nearMiss))
+            }
+        }
+    }
+
     /**
      * Extracts the per-row error message from a batch envelope `{"ok":false,"data":[<rows>]}`.
      * Use for tests that pin per-row failure semantics in SET PROPERTY / SET REFERENCE.

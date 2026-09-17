@@ -9,6 +9,8 @@ Both return a JSON object with `'ok':true` and `'data':{...}` on success, or `'o
 Failure responses can also include optional stable metadata fields: `'code'`, `'details'`, and `'warnings'`.
 Parameters are passed as a JSON object string. A boolean parameter (`make`, `dryRun`, `multiple`, `optional`, `includeInherited`) takes `true`/`false`, or the same literal quoted in any case (`"true"`, `"TRUE"`); an explicit `null` counts as absent, so the documented default applies. Any other shape — `1`, `"yes"`, `" true "`, an object, an array — is rejected with `'parameters.<name>' must be a boolean` rather than coerced. The same rule applies to booleans *inside* a `conceptsJson` / `interfaceConceptsJson` blueprint (`abstract` and `rootable` on a concept, a link's `multiple` / `optional` in either), where the message names the blueprint path instead — `'conceptsJson[0].rootable' must be a boolean`.
 
+Reference-valued keys accept **both the short and the long suffix**: `conceptRef`/`conceptReference`, `superConceptRef`/`superConceptReference`, `structureModelRef`/`structureModelReference`, `enumerationRef`/`enumerationReference` — and, in `mps_mcp_query_nodes`/`mps_mcp_alter_nodes`, `nodeReference`/`nodeRef`, `childNodeRef`/`childNodeReference`, `newParentRef`/`newParentReference`, `modelReference`/`modelRef`. The short form listed first is the canonical one used throughout these docs; the alias exists only because the tool surface spells the same idea both ways. Sending **both** spellings of one parameter in one `parameters` object is rejected with `INVALID_REQUEST` naming which one to keep, rather than silently picking one.
+
 Direct scalar string fields read by the structure operation dispatcher treat an explicit field-level JSON `null` like an omitted field: required fields take their existing missing-parameter error, while optional fields use their documented default or alternate form. Other JSON values retain Gson's existing `asString` behavior: numbers and booleans are stringified, singleton arrays (including nested singleton arrays) are unwrapped, and objects, empty or multi-element arrays, `[null]`, and `[{}]` keep their existing failure and `INTERNAL_ERROR` envelope. This compatibility rule does not apply to fields inside `conceptsJson`, `interfaceConceptsJson`, or other schema-checked blueprints, and it does not relax the separately documented nonblank string/array rules for search-scope selectors.
 
 ### Supported operations
@@ -124,13 +126,15 @@ Returns a JSON array of objects, each having `"value"`, `"presentation"`, and `"
 
 Accepts two mutually-exclusive forms:
 
-- **By enumeration declaration** — pass a non-null `enumerationRef` pointing at an `EnumerationDeclaration` node. Use this when you know the enum directly.
+- **By enumeration declaration** — pass a non-null `enumerationRef` naming an `EnumerationDeclaration`, either as its node reference (`r:...`) or as its **qualified name** (`<language>.structure.<EnumName>`, `<language>.<EnumName>`, or the bare `<EnumName>`). Use this when you know the enum directly. This is also the route `mps_mcp_get_concept_details` points at for an enumeration, which it can never return itself (see `concept-details.md`) — the qualified name that failed there is accepted here verbatim.
 - **By property on a host node** — omit `enumerationRef` or pass it as `null`, then pass `nodeReference` (a node whose concept has an enum-typed property) plus `propertyName`. Use this when you only have an instance.
+
+The two forms are mutually exclusive and their failures are distinguishable: the declaration form's errors name `'enumerationRef'`, the property form's name `'nodeReference'` / `'propertyName'`.
 
 Parameters:
 ```
 {
-  "enumerationRef": "Persistent reference of an EnumerationDeclaration node. Use this OR (nodeReference + propertyName), not both.",
+  "enumerationRef": "An EnumerationDeclaration's node reference (r:...) or its qualified name. Use this OR (nodeReference + propertyName), not both.",
   "nodeReference": "Persistent reference of a node whose concept has an enumeration-typed property (SNodeReference). Pair with 'propertyName'.",
   "propertyName": "The name of the enumeration property on the concept of 'nodeReference'."
 }

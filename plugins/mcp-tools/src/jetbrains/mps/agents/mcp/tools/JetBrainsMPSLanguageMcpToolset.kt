@@ -196,8 +196,9 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     return@executeShortReadOnEdt finalizeResult(payload, maxInlineBytes)
                 }
 
+                val nonConcepts = nonConceptDeclarationsFor(mpsProject, unresolvedConceptRefs)
                 val unresolvedJson = buildUnresolvedDetailsJson(
-                    unresolvedConceptRefs, unresolvedLanguageRefs, registry, repo, cache
+                    unresolvedConceptRefs, unresolvedLanguageRefs, nonConcepts, registry, repo, cache
                 )
 
                 if (conceptSet.isEmpty()) {
@@ -214,6 +215,9 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                             append(unresolvedLanguageRefs.joinToString(", "))
                         }
                         append(". See details.unresolved for suggestions, or use mps_mcp_search_concepts.")
+                        for (ref in unresolvedConceptRefs) {
+                            nonConcepts[ref]?.let { append(" ").append(it.route) }
+                        }
                     }
                     return@executeShortReadOnEdt errJson(
                         message,
@@ -227,6 +231,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     payload,
                     unresolvedConceptRefs,
                     unresolvedLanguageRefs,
+                    nonConcepts,
                     unresolvedJson,
                     maxInlineBytes,
                 )
@@ -772,14 +777,62 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     }
 
     /**
+     * A `conceptRef` that names a real structure declaration which simply is not a concept —
+     * above all an `EnumerationDeclaration`. `get_concept_details` can *never* return one:
+     * concept resolution requires an `AbstractConceptDeclaration`, so an enumeration's qualified
+     * name falls through to the "did you mean" ranker and comes back with an unrelated concept
+     * from the same structure model (study defect D22: `…structure.Difficulty` was answered with
+     * `…structure.Recipe`). Naming what the ref actually is, plus the tool call that reads it,
+     * replaces that dead end.
+     */
+    private data class NonConceptDeclaration(val declaredAs: String, val route: String)
+
+    private fun nonConceptDeclarationsFor(
+        mpsProject: MPSProject,
+        refs: Collection<String>
+    ): Map<String, NonConceptDeclaration> {
+        val found = LinkedHashMap<String, NonConceptDeclaration>()
+        for (ref in refs) {
+            // A node reference resolves directly; only the `r:`/`i:` shapes are tried that way,
+            // because `resolveNodeReference`'s by-name fallback would answer a bare name with any
+            // same-named root in the repository, not just a structure declaration.
+            val byNodeRef = if (ref.startsWith("r:") || ref.startsWith("i:")) {
+                resolveNodeReferencePreferringProject(mpsProject, ref)?.resolve(mpsProject.repository)
+                    ?.takeUnless { isConceptDeclaration(it) }
+            } else {
+                null
+            }
+            val node = byNodeRef
+                ?: resolveStructureDeclarationPreferringProject(mpsProject, ref) { !isConceptDeclaration(it) }
+                ?: continue
+            val declaredAs = node.concept.name ?: continue
+            val route = if (node.concept.isSubConceptOf(CONCEPT_EnumerationDeclaration)) {
+                "'$ref' is an $declaredAs, not a concept — mps_mcp_get_concept_details returns " +
+                        "concepts and interface concepts only. Retry with mps_mcp_query_structure, " +
+                        "operation GET_ENUMERATION_LITERALS, parameters " +
+                        "{\"enumerationRef\":\"$ref\"} — that parameter accepts exactly this string."
+            } else {
+                "'$ref' is a $declaredAs, not a concept — mps_mcp_get_concept_details returns " +
+                        "concepts and interface concepts only. Retry with mps_mcp_print_node, " +
+                        "nodeReference set to '${PersistenceFacade.getInstance().asString(node.reference)}'."
+            }
+            found[ref] = NonConceptDeclaration(declaredAs, route)
+        }
+        return found
+    }
+
+    /**
      * Builds the `details.unresolved` JSON array surfaced in both the all-failed and the
      * partial-success envelopes. Each entry carries the original input ref, its kind, and a
      * (possibly empty) suggestion list so the agent can paste a canonical `qualifiedName` or
-     * `conceptReference`/`languageReference` straight into a retry.
+     * `conceptReference`/`languageReference` straight into a retry. A ref that names a
+     * non-concept declaration carries `declaredAs` and `route` instead of suggestions — see
+     * [NonConceptDeclaration].
      */
     private fun buildUnresolvedDetailsJson(
         unresolvedConceptRefs: Collection<String>,
         unresolvedLanguageRefs: Collection<String>,
+        nonConcepts: Map<String, NonConceptDeclaration>,
         registry: LanguageRegistry,
         repository: SRepository,
         cache: ProjectMembershipCache
@@ -790,6 +843,14 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             val entry = JsonObject()
             entry.addProperty("ref", ref)
             entry.addProperty("kind", "concept")
+            val nonConcept = nonConcepts[ref]
+            if (nonConcept != null) {
+                entry.addProperty("declaredAs", nonConcept.declaredAs)
+                entry.addProperty("route", nonConcept.route)
+                entry.add("suggestions", JsonArray())
+                arr.add(entry)
+                continue
+            }
             val suggestions = JsonArray()
             for (c in suggestForUnresolvedConceptRef(ref, registry, repository, cache)) {
                 val s = JsonObject()
@@ -827,11 +888,17 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         dataJson: String,
         unresolvedConceptRefs: Collection<String>,
         unresolvedLanguageRefs: Collection<String>,
+        nonConcepts: Map<String, NonConceptDeclaration>,
         unresolvedDetails: JsonArray,
         maxInlineBytes: Int
     ): String {
         val warnings = mutableListOf<String>()
-        for (ref in unresolvedConceptRefs) warnings.add("Could not resolve conceptRef '$ref' — see details.unresolved for suggestions")
+        for (ref in unresolvedConceptRefs) {
+            warnings.add(
+                nonConcepts[ref]?.route
+                    ?: "Could not resolve conceptRef '$ref' — see details.unresolved for suggestions"
+            )
+        }
         for (ref in unresolvedLanguageRefs) warnings.add("Could not resolve languageRef '$ref' — see details.unresolved for suggestions")
         return finalizeResult(
             dataJson,

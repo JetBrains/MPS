@@ -242,7 +242,19 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     McpErrorCode.INVALID_REQUEST,
                 )
             }
-            val nameSet: Set<String> = parseStringOrJsonArray(names).toSet()
+            // A blank `names` used to answer `ok:true` with an empty array, which reads as "no such
+            // root" rather than "you did not say what to look for" — the same silent-drop the
+            // `searchTexts` guard of mps_mcp_search_concepts removes. Named rejection instead, with
+            // the retry line; no alias parameter is added (a top-level alias costs schema bytes on
+            // every turn).
+            val nameSet: Set<String> = parseStringOrJsonArray(names).filter { it.isNotBlank() }.toSet()
+            if (nameSet.isEmpty()) {
+                return@withMpsProject errJson(
+                    "names is required: provide a single root-node name or a JSON array of names. " +
+                            "Retry with names set to the value you passed as name/q/searchTexts.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
 
             // Reuse the exact scope-resolution code that backs FIND_USAGES so the two tools agree
             // on what 'editable'/'all'/'models'/'modules' mean. 'models'/'modules' are passed
