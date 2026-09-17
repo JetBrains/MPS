@@ -26,8 +26,13 @@
     reporting requirements; never reuse such files as worker prompts.
 12. **Model variance is large on identical tasks** (S3: 28 vs 100 turns). Judge remedies by the
     chains they remove, not by turn deltas between models.
-13. **Keep the study-only VM option out of shared config** — it hard-codes a home path; commit it as a
-    clearly labelled TEMP commit and `git revert` it at wrap-up.
+13. **Keep the study-only VM option out of shared config.** `.idea/runConfigurations/MPS.xml` is
+    tracked, so the call-log option must be reverted at wrap-up (`git checkout --`), not committed.
+    Write it with the IDE's `$USER_HOME$` macro —
+    `-Dmps.mcp.calllog=$USER_HOME$/MPSProjects/mcp-study/runs-rN/server-calllog.jsonl` — which
+    removes the hard-coded-path objection the original version of this lesson raised; the reason
+    not to commit it is that it is study-only, not that it is unportable. Create the target
+    directory before starting MPS.
 14. **Background implementers die with the observer session.** A server-side implementer was
     stopped mid-task when the session restarted; its edits survived in the working tree and it could
     be resumed from its transcript. → Give implementers disjoint file sets so partial work is
@@ -59,7 +64,8 @@
     golden project were still pre-treatment (42 differing entries). → Refresh the golden project
     (delete the `mps-*` skill folders, re-run `initialize_project_for_agents`) and assert a treated
     marker (`grep rootsChecked`, `find -name '*.py'`) before building a fixture; otherwise you
-    measure the old docs against the new server.
+    measure the old docs against the new server. **Superseded by the automation in lesson 24 —
+    the manual refresh is now the fallback, not the procedure.**
 21. **One run can emit several `result` events.** A worker that delegates to a subagent produces one
     per session, and taking the last reported the subagent's 13 turns / 92 s instead of the run's
     115 / 952. → `analyze_runs.py` keeps the event with the most turns; when a transcript has
@@ -74,4 +80,20 @@
     single cost in round 2 (~41 tool calls, a quarter of a run) was one worker not knowing a fact
     its three peers knew for free. → Rank remedies by the variance they remove, not only by the
     chains they shorten; a one-paragraph doc fix can outrank a tool change.
+
+## From round 3 (2026-09-17)
+
+24. **A fixture must not carry the thing under measurement.** Rounds 1 and 2 tarred the agent doc
+    surface into the fixture, so each round silently measured whatever catalog was bundled when the
+    tarball was made; round 2 needed a manual refresh as a precondition and still shipped a
+    contradiction. → Fixtures exclude `.agents/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`, and
+    `run_worker.sh` installs the live catalog per run through the product's own
+    `mps_mcp_initialize_project_for_agents` (`scripts/install_skills.py`), recording `skillsSha256`
+    in the meta. Generalisation: anything a round is supposed to vary belongs *outside* the frozen
+    asset, installed at run time from the live source, and fingerprinted into the evidence.
+25. **Fix the scenario asset at the end that is not frozen.** S3's prompt ("exactly 40 Recipe roots
+    plus the Cookbook") contradicted its fixture (3 pre-existing Recipes) for two rounds. Round 3
+    emptied the fixture's samples model instead of rewording the prompt, keeping `promptSha256`
+    comparable across all three rounds. → When a prompt and its fixture disagree, prefer changing
+    the side that is not the comparison key.
 

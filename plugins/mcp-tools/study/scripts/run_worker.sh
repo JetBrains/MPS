@@ -11,7 +11,16 @@
 #   <id>.meta.json        start/end timestamps, exit code, prompt sha, call-log byte offsets
 #   <id>-worker.jsonl     claude stream-json transcript
 #   <id>-server.jsonl     slice of the server call log covering this run
+#   <id>-install.json     result of the pre-run skill install
 # where <id> = <scenario>-<model>-<run-no>.
+#
+# Before every run the LIVE bundled skill catalog and AGENTS.md/CLAUDE.md are installed into the
+# project through `mps_mcp_initialize_project_for_agents` (scripts/install_skills.py). Fixtures
+# deliberately ship without them, so a round can never measure a stale point-in-time catalog
+# (study lesson 20 / defect D16). The resulting catalog fingerprint is recorded as `skillsSha256`
+# in the meta, beside `promptSha256` (the scenario) and `inventorySha256` (the tool surface), so
+# every run is retro-auditable against the docs it actually read. Set SKIP_SKILL_INSTALL=1 to skip
+# it; the meta then records the sha of whatever was already there and `skillsInstalled: false`.
 #
 # Requires: claude CLI, python3, MPS running with the MCP server on $MPS_MCP_URL and the
 # call log enabled (-Dmps.mcp.calllog=$CALLLOG). The worker prompt is passed verbatim.
@@ -30,6 +39,21 @@ ID="$SCENARIO-$MODEL-$RUN"
 mkdir -p "$RUNS"
 [ -e "$RUNS/$ID-worker.jsonl" ] && { echo "run id already exists: $ID — bump the run number" >&2; exit 2; }
 
+# Fresh skills BEFORE the call-log offsets are taken, so the install's own MCP calls stay out of
+# the run's server slice. A failed install aborts the run: measuring an unknown doc surface is
+# worse than not measuring at all.
+if [ "${SKIP_SKILL_INSTALL:-0}" = "1" ]; then
+  SKILLS_INSTALLED=false
+  SKILLS_SHA=$(python3 "$STUDY/scripts/install_skills.py" --sha-only "$PROJECT")
+  echo '{"ok":true,"skipped":true}' > "$RUNS/$ID-install.json"
+else
+  SKILLS_INSTALLED=true
+  if ! python3 "$STUDY/scripts/install_skills.py" --project "$PROJECT" > "$RUNS/$ID-install.json"; then
+    echo "skill install failed for $ID:" >&2; cat "$RUNS/$ID-install.json" >&2; exit 3
+  fi
+  SKILLS_SHA=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["skillsSha256"])' "$RUNS/$ID-install.json")
+fi
+
 touch "$CALLLOG"
 START_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 START_OFF=$(stat -f %z "$CALLLOG" 2>/dev/null || stat -c %s "$CALLLOG")
@@ -39,7 +63,8 @@ INVENTORY_SHA=$( [ -f "$RUNS/inventory.json" ] && shasum -a 256 "$RUNS/inventory
 python3 - "$RUNS/$ID.meta.json" <<PY
 import json,sys
 json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","run":$RUN,"project":"$PROJECT",
-  "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","maxTurns":$MAX_TURNS,
+  "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA",
+  "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
   "startTs":"$START_TS","callLogStartOffset":$START_OFF,"status":"running","pid":$$},
   open(sys.argv[1],"w"),indent=1)
 PY

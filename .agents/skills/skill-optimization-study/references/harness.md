@@ -4,8 +4,12 @@ All scripts: `plugins/mcp-tools/study/scripts/`, Python ≥ 3.9 stdlib, `--help`
 
 ## run_worker.sh `<scenario> <model> <run-no> <project-dir>`
 Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/server-calllog.jsonl`),
-`MAX_TURNS` (400), `STUDY` (auto). Writes `<id>.meta.json`, `<id>-worker.jsonl`, `<id>-worker.stderr`,
-`<id>-server.jsonl` (call-log slice by byte offsets). Launch detached and poll:
+`MAX_TURNS` (400), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0). Writes `<id>.meta.json`,
+`<id>-worker.jsonl`, `<id>-worker.stderr`, `<id>-server.jsonl` (call-log slice by byte offsets),
+`<id>-install.json`. Before taking the call-log offsets it runs `install_skills.py --project
+<project-dir>`, so the worker always reads the live catalog and the install's own MCP calls stay
+out of the run's server slice; a failed install exits 3 and the run does not start. The meta gains
+`skillsSha256` (catalog fingerprint) and `skillsInstalled`. Launch detached and poll:
 ```
 nohup sh -c "RUNS=$RUNS $STUDY/scripts/run_worker.sh S1 opus 1 $PROJ; echo EXIT_CODE=\$?" \
   > $RUNS/S1-opus-1.harness.log 2>&1 &
@@ -37,6 +41,28 @@ Cross-check: `server_calls == mps_calls` unless a call was rejected before dispa
 Compact view of a step range (1-based tool_use ordinals as in `chains.json` examples) with inputs,
 result heads, `[ERROR]` markers and assistant prose. Give reviewers this instead of the transcript.
 
+## install_skills.py `--project <dir> [--target <dir>] [--url URL] [--dry-run]` / `--sha-only <dir>`
+Clean reinstall of the LIVE bundled catalog + `AGENTS.md`/`CLAUDE.md` into a study project: purges
+every `mps-*` folder under `<target>/.agents/skills` and `<target>/.claude/skills` plus both guides
+(the tool refuses to overwrite either), then calls `mps_mcp_initialize_project_for_agents` over
+streamable HTTP (reuses `tools_inventory.McpClient`; unwraps the temp-file `data` form). Verifies
+that both guides were *written* (a guide reported as already present means the purge missed it and
+the worker would read stale guidance) and prints `{ok, installedSkillCount, guideFilesWritten,
+removed, skillsSha256}`. `--sha-only` prints just the fingerprint of an installed tree — `mps-*`
+folders only, paths and contents, so a scenario's own `<dsl>-dsl` skill does not look like drift.
+Exit: 0 ok, 2 usage, 3 MCP error, 4 unreachable, 5 post-install check failed. `--project` is the
+framework `projectPath` and must be an OPEN project; `--target` defaults to it.
+Non-`mps-*` skills are never touched.
+
+## mcp_call.py `<tool> '<json-args>' [--url URL] [--raw] [--max-chars N]`
+One MPS MCP tool call from the shell. The observing/evaluating session is normally NOT connected to
+the server (only the workers are, via `--mcp-config`), so this is how the observer and the Opus
+evaluators reach MPS. Pass `projectPath` inside the JSON args — the platform requires it on every
+tool. A temp-file envelope is resolved and inlined automatically, including the duplicate-envelope
+shape (the file holds a whole `{"ok":…,"data":…}`, not the bare payload — defect D25).
+Read-only by convention only: give evaluators the tool list from the scenario's `done_criteria.md`
+and tell them not to stray from it. Exit: 0 ok, 2 usage, 3 MCP/tool error, 4 unreachable.
+
 ## tools_inventory.py `--out $RUNS/inventory.json`
 Use exactly this path: `run_worker.sh` stores its sha256 as `inventorySha256` in every meta file.
 Streamable-HTTP `initialize` → `notifications/initialized` → `tools/list`; records names, parameter
@@ -44,7 +70,10 @@ names, description/schema bytes. Its `McpClient` class is the seed of an online 
 
 ## Per-run procedure card
 1. `tar -xzf study/fixtures/<fixture>.tar.gz -C ~/MPSProjects/mcp-study/proj/<id> --strip-components=1`
-   (+ scenario inputs such as `recipes.csv`). 2. Human opens it; `mps_mcp_list_open_projects` must show
-   it and NO other project with the same module names. 3. Launch detached; poll. 4. Evaluate via an
-   Opus subagent (read-only, `projectPath` on every call, temp-file `data` is a path to read).
+   (+ scenario inputs such as `recipes.csv`). The extracted tree must have NO `.claude/`, `.agents/`,
+   `AGENTS.md` or `CLAUDE.md`. 2. Human opens it; `mps_mcp_list_open_projects` must show it and NO
+   other project with the same module names — the install in step 3 needs it open. 3. Launch
+   detached; poll. `run_worker.sh` installs the live skills first and writes `<id>-install.json`;
+   confirm `skillsSha256` matches the round's other runs. 4. Evaluate via an Opus subagent
+   (read-only, `projectPath` on every call, temp-file `data` is a path to read).
 5. `meta.taskPass/taskEvidence`; save the report as `<id>.eval.md`. 6. Human closes the project.

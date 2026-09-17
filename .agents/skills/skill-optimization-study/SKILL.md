@@ -51,12 +51,21 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    ≥ 1 and the log file grows after any tool call; if not (gate question 1 = transcript-only),
    expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
    Record the tool inventory: `python3 $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json`.
+   Assert there are no user-level `mps-*` skills (`ls ~/.claude/skills`) — those shadow the
+   per-project catalog and would silently replace the thing being measured.
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
    `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Add the option to the `MPS` run
    configuration for the study only and REVERT it afterwards (it hard-codes a home path).
-3. **Template** — initialise the golden project for agents (`mps_mcp_initialize_project_for_agents`),
-   snapshot it (`tar`, exclude `.git`, `workspace.xml`). Do NOT put `.mcp.json` in the template; the
-   worker gets the server from `study/mcp.study.json` with `--strict-mcp-config`.
+3. **Template** — snapshot the golden project (`tar`) **without any agent doc surface**: exclude
+   `.git`, `workspace.xml`, and also `.agents/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`. A tarball is
+   a point-in-time copy, so a catalog inside it is what every later round measures no matter how
+   far the bundled skills have moved (lesson 20). Instead, `run_worker.sh` installs the **live**
+   catalog into each run's project right before launching the worker — `scripts/install_skills.py`
+   purges every `mps-*` folder plus both guides and calls `mps_mcp_initialize_project_for_agents`,
+   then records `skillsSha256` in the meta. Verify the tarball:
+   `tar -tzf <f>.tar.gz | grep -E '(^|/)(\.claude|\.agents|AGENTS\.md|CLAUDE\.md)'` must be empty.
+   Do NOT put `.mcp.json` in the template; the worker gets the server from `study/mcp.study.json`
+   with `--strict-mcp-config`.
 4. **Smoke** — `SMOKE` is a harness check, not a scenario: a read-only prompt that lists open
    projects and stops, so it may run against the golden project itself (no template copy, no
    evaluation, `pass` stays empty). `RUNS=$RUNS MAX_TURNS=6 $STUDY/scripts/run_worker.sh SMOKE sonnet <n>
@@ -69,9 +78,12 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    regenerated per `study/fixtures/README.md`, not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
    projects). Per run: copy fixture → human opens → confirm with `list_open_projects` → launch
-   detached → poll the PID in bounded loops → evaluate with an Opus subagent using the
-   `done_criteria.md` (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in
-   `<id>.meta.json` → human closes. Sequential, never two workers against one MPS.
+   detached (`run_worker.sh` installs the live skills first; it aborts the run if that fails) →
+   poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
+   (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in `<id>.meta.json`
+   → human closes. Sequential, never two workers against one MPS. Check that every meta's
+   `skillsSha256` is the same value before comparing runs; a differing one means the catalog moved
+   mid-round.
 7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
    → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
    each run's meta after evaluation. Filter chains containing `mps_mcp`, group into families, have an

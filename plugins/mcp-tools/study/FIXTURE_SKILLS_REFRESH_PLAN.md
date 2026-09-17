@@ -1,9 +1,27 @@
 # Follow-up plan: stop the study's sample projects shipping obsolete skills
 
-Status: implementable with the **current** `mps_mcp_initialize_project_for_agents`. That tool has
-no `refresh` / `dryRun` parameters, no provenance manifest, and no `catalogSha256` envelope field
-(those live in the unimplemented `../docs/skill-refresh-implementation-plan.md`). Do not wait on
-them. Origin: round-2 study, defect D16 and lesson 20.
+> **Status: IMPLEMENTED 2026-09-17 (round 3), by a stronger variant than this plan describes.**
+> The plan below kept the catalog inside the fixture and added a staleness *guard*
+> (`skillsSha256` compared against a pre-recorded live fingerprint, exit 2 on mismatch). What
+> shipped instead removes the catalog from the fixture entirely and **installs the live one per
+> run**, so staleness is structurally impossible rather than merely detected:
+>
+> - fixtures exclude `.agents/`, `.claude/`, `AGENTS.md`, `CLAUDE.md` (`fixtures/README.md`);
+> - `scripts/install_skills.py` purges every `mps-*` folder and both guides, then calls
+>   `mps_mcp_initialize_project_for_agents`, and verifies both guides were *written* rather than
+>   reported as already present;
+> - `run_worker.sh` runs it before taking the call-log offsets (so the install's own MCP calls stay
+>   out of the run's server slice), aborts the run if it fails, and records `skillsSha256` +
+>   `skillsInstalled` in every meta; `SKIP_SKILL_INSTALL=1` is the escape hatch.
+>
+> Sections 1–5 below are kept as the design record. Step 3's guard is superseded, and step 5's
+> "rebuild the existing fixtures once" was done (round-3 `fixtures-r3/`). Defects D16 and D19 are
+> closed in `docs-defects.md`; see lesson 24.
+
+Status (original): implementable with the **current** `mps_mcp_initialize_project_for_agents`. That
+tool has no `refresh` / `dryRun` parameters, no provenance manifest, and no `catalogSha256` envelope
+field (those live in the unimplemented `../docs/skill-refresh-implementation-plan.md`). Do not wait
+on them. Origin: round-2 study, defect D16 and lesson 20.
 
 ## The defect, precisely
 
