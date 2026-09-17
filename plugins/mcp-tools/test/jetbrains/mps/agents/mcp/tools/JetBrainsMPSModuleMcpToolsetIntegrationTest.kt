@@ -1,5 +1,6 @@
 package jetbrains.mps.agents.mcp.tools
 
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import java.io.File
 import jetbrains.mps.project.AbstractModule
@@ -1148,6 +1149,103 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `update_module_facet accepts flat and structured memento formats`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        expectOk(updateFacet(moduleName, """{"port":8080,"enabled":true,"properties":"flat","children":42}"""))
+        val flat = persistedFacetMemento(moduleName)
+        val flatProperties = flat.getAsJsonObject("properties")
+        assertEquals("8080", flatProperties.get("port").asString)
+        assertEquals("true", flatProperties.get("enabled").asString)
+        assertEquals("flat", flatProperties.get("properties").asString)
+        assertEquals("42", flatProperties.get("children").asString)
+
+        val structuredSettings = """
+            {
+              "properties": { "port": 8080, "flag": true },
+              "text": 42,
+              "children": [
+                { "type": 7, "text": false },
+                { "type": true, "properties": { "kind": "boolean" } },
+                { "type": "", "text": "" },
+                { "type": "nested", "children": [ { "type": "leaf", "properties": { "value": "ok" } } ] }
+              ]
+            }
+        """.trimIndent()
+        expectOk(updateFacet(moduleName, structuredSettings))
+        val structured = persistedFacetMemento(moduleName)
+        assertEquals("8080", structured.getAsJsonObject("properties").get("port").asString)
+        assertEquals("true", structured.getAsJsonObject("properties").get("flag").asString)
+        assertEquals("42", structured.get("text").asString)
+        val children = structured.getAsJsonArray("children")
+        assertEquals("7", children[0].asJsonObject.get("type").asString)
+        assertEquals("false", children[0].asJsonObject.get("text").asString)
+        assertEquals("true", children[1].asJsonObject.get("type").asString)
+        assertEquals("boolean", children[1].asJsonObject.getAsJsonObject("properties").get("kind").asString)
+        assertEquals("", children[2].asJsonObject.get("type").asString)
+        assertEquals("", children[2].asJsonObject.get("text").asString)
+        val nested = children[3].asJsonObject.getAsJsonArray("children")[0].asJsonObject
+        assertEquals("leaf", nested.get("type").asString)
+        assertEquals("ok", nested.getAsJsonObject("properties").get("value").asString)
+    }
+
+    @Test
+    fun `update_module_facet rejects malformed mementos without replacing existing settings or logging dispatch failures`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+        expectOk(updateFacet(moduleName, """{"seed":"keep"}"""))
+        val before = persistedFacetMemento(moduleName)
+        val invalidSettings = listOf(
+            "{" to "settingsJson",
+            "[]" to "settingsJson",
+            """{"text":{}}""" to "settingsJson.text",
+            """{"text":[]}""" to "settingsJson.text",
+            """{"text":null,"properties":{}}""" to "settingsJson.text",
+            """{"properties":{},"children":null}""" to "settingsJson.children",
+            """{"children":[],"properties":[]}""" to "settingsJson.properties",
+            """{"children":[null]}""" to "settingsJson.children[0]",
+            """{"children":[42]}""" to "settingsJson.children[0]",
+            """{"children":[{}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":null}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":{}}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":[]}]}""" to "settingsJson.children[0].type",
+            """{"children":[{"type":"parent","children":[{"type":"child","text":[]}]}]}""" to
+                "settingsJson.children[0].children[0].text",
+            """{"children":[{"type":"valid"},{"type":"parent","children":[{"type":"ok"},{"type":[]}]}]}""" to
+                "settingsJson.children[1].children[1].type",
+        )
+
+        for ((settings, expectedPath) in invalidSettings) {
+            val (response, messages) = captureLogMessages { updateFacet(moduleName, settings) }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+            assertTrue("error must name '$expectedPath': $response", envelope.get("error").asString.contains(expectedPath))
+            assertEquals("invalid settings must leave the persisted memento unchanged", before, persistedFacetMemento(moduleName))
+            assertTrue(
+                "settings validation must not log an action-dispatch failure: $messages",
+                messages.none { it.contains("Action dispatch failed") || it.contains("Unexpected failure in MCP tool") },
+            )
+        }
+    }
+
+    @Test
+    fun `update_module_facet disabling ignores malformed settings`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+        expectOk(updateFacet(moduleName, """{"seed":"keep"}"""))
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = false, settingsJson = "{")
+        }
+        expectOk(response)
+        val persisted = expectOk(runTool(toolset) { it.mps_mcp_get_module_facets(moduleName) })
+            .getAsJsonArray("persistedFacets")
+        assertTrue(persisted.none { it.asJsonObject.get("type").asString == "tests" })
+    }
+
+    @Test
     fun `update_module_facet with unknown facet type is rejected`() {
         val solution = createSolution()
         val response = runTool(toolset) {
@@ -1176,6 +1274,20 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // factory lookup is skipped because we never need to create the memento.
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+    }
+
+    private fun updateFacet(moduleName: String, settingsJson: String): String =
+        runTool(toolset) {
+            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = true, settingsJson = settingsJson)
+        }
+
+    private fun persistedFacetMemento(moduleName: String): JsonObject {
+        val facets = expectOk(runTool(toolset) { it.mps_mcp_get_module_facets(moduleName) })
+            .getAsJsonArray("persistedFacets")
+        return facets
+            .map { it.asJsonObject }
+            .single { it.get("type").asString == "tests" }
+            .getAsJsonObject("memento")
     }
 
     @Test

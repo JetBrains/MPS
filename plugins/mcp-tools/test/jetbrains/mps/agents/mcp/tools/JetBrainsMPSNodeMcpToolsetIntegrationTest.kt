@@ -160,6 +160,80 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("propertyFilter without 'value' must be rejected: $response", obj.get("ok").asBoolean)
     }
 
+    @Test
+    fun `find-instances rejects a partially resolved model scope`() {
+        val findParams = """
+            {
+              "conceptRef": "jetbrains.mps.lang.structure.structure.ConceptDeclaration",
+              "scope": "models",
+              "models": [ "$structureModelRef", "definitely.missing.model" ]
+            }
+        """.trimIndent()
+
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, findParams)
+        }
+        assertInvalidRequest(response, "models", "definitely.missing.model")
+    }
+
+    @Test
+    fun `find-usages rejects a partially resolved module scope`() {
+        val targetRef = createConceptRoot("PartialUsageTarget")
+        val moduleRef = readOnRepo { PersistenceFacade.getInstance().asString(language.moduleReference) }
+        val findParams = """
+            {
+              "nodeReference": "$targetRef",
+              "scope": "modules",
+              "modules": [ "$moduleRef", "definitely.missing.module" ]
+            }
+        """.trimIndent()
+
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.FIND_USAGES, findParams)
+        }
+        assertInvalidRequest(response, "modules", "definitely.missing.module")
+    }
+
+    @Test
+    fun `scope validation errors do not escape the background read action`() {
+        val rootRef = createConceptRoot("ScopeLogTarget")
+        val conceptReference = readOnRepo {
+            val facade = PersistenceFacade.getInstance()
+            val root = facade.createNodeReference(rootRef).resolve(myProject.repository)
+                ?: error("test root did not resolve")
+            facade.asString(root.concept)
+        }
+        val malformedParams = listOf(
+            """
+                {
+                  "conceptRef": "jetbrains.mps.lang.structure.structure.ConceptDeclaration",
+                  "scope": "models",
+                  "models": { "ref": "$structureModelRef" }
+                }
+            """.trimIndent() to "models",
+            """
+                {
+                  "conceptRef": "jetbrains.mps.lang.structure.structure.ConceptDeclaration",
+                  "scope": "roots",
+                  "roots": [ "$conceptReference" ]
+                }
+            """.trimIndent() to "roots",
+        )
+
+        for ((params, expectedParameter) in malformedParams) {
+            val (response, messages) = captureLogMessages {
+                runTool(JetBrainsMPSNodeMcpToolset()) {
+                    it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, params)
+                }
+            }
+            assertInvalidRequest(response, expectedParameter)
+            assertTrue(
+                "scope validation must not log an action-dispatch failure: $messages",
+                messages.none { it.contains("Action dispatch failed") || it.contains("Unexpected failure in MCP tool") },
+            )
+        }
+    }
+
     /** Three fresh ConceptDeclaration roots in the test's structure model. */
     private fun createAlphaBetaGamma() {
         val createParams = """
@@ -182,6 +256,17 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val data = obj.get("data")
         val rawData = if (data.isJsonPrimitive) data.asString else data.toString()
         return JsonParser.parseString(rawData).asJsonArray.map { it.asJsonObject.get("name").asString }.toSet()
+    }
+
+    private fun assertInvalidRequest(response: String, vararg expectedText: String) {
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        val error = envelope.get("error").asString
+        for (text in expectedText) {
+            assertTrue("error must name '$text': $response", error.contains(text))
+        }
+        assertFalse("scope errors must not return warnings: $response", envelope.has("warnings"))
     }
 
     @Test

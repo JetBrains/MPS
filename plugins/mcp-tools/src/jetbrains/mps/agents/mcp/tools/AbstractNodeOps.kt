@@ -1143,42 +1143,71 @@ abstract class AbstractNodeOps : AbstractOps() {
             // Project's own editable modules only (mpsProject.scope == ProjectScope).
             "editable" -> SearchScopeResolution.Ok(EditableFilteringScope(mpsProject.scope))
             "models" -> {
-                val modelRefStrings = scopeRefStrings(params, "models")
-                    ?: return SearchScopeResolution.Err(errJson("Parameter 'models' is missing for scope 'models'"))
+                val modelRefStrings = when (val r = scopeRefStrings(params, "models")) {
+                    is ScopeReferences.Ok -> r.references
+                    is ScopeReferences.Err -> return SearchScopeResolution.Err(r.errJson)
+                }
                 val modelRefs = mutableSetOf<SModelReference>()
                 for (refStr in modelRefStrings) {
                     val model = resolveModelPreferringProject(mpsProject, refStr)
-                    if (model != null) {
-                        modelRefs.add(model.reference)
+                    if (model == null) {
+                        return SearchScopeResolution.Err(
+                            errJson(
+                                "Parameter 'models' contains an unresolved model reference: '$refStr'",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
+                        )
                     }
+                    modelRefs.add(model.reference)
                 }
-                if (modelRefStrings.isNotEmpty() && modelRefs.isEmpty())
-                    return SearchScopeResolution.Err(errJson("None of the ${modelRefStrings.size} model reference(s) could be resolved"))
                 SearchScopeResolution.Ok(filteredScope(repo, allowedModels = modelRefs, allowedModules = null))
             }
             "modules" -> {
-                val moduleRefStrings = scopeRefStrings(params, "modules")
-                    ?: return SearchScopeResolution.Err(errJson("Parameter 'modules' is missing for scope 'modules'"))
+                val moduleRefStrings = when (val r = scopeRefStrings(params, "modules")) {
+                    is ScopeReferences.Ok -> r.references
+                    is ScopeReferences.Err -> return SearchScopeResolution.Err(r.errJson)
+                }
                 val moduleRefs = mutableSetOf<SModuleReference>()
                 for (refStr in moduleRefStrings) {
                     val module = resolveModulePreferringProject(mpsProject, refStr)
-                    if (module != null) {
-                        moduleRefs.add(module.moduleReference)
+                    if (module == null) {
+                        return SearchScopeResolution.Err(
+                            errJson(
+                                "Parameter 'modules' contains an unresolved module reference: '$refStr'",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
+                        )
                     }
+                    moduleRefs.add(module.moduleReference)
                 }
-                if (moduleRefStrings.isNotEmpty() && moduleRefs.isEmpty())
-                    return SearchScopeResolution.Err(errJson("None of the ${moduleRefStrings.size} module reference(s) could be resolved"))
                 SearchScopeResolution.Ok(filteredScope(repo, allowedModels = null, allowedModules = moduleRefs))
             }
             "roots" -> {
-                val rootRefStrings = scopeRefStrings(params, "roots")
-                    ?: return SearchScopeResolution.Err(errJson("Parameter 'roots' is missing for scope 'roots'"))
+                val rootRefStrings = when (val r = scopeRefStrings(params, "roots")) {
+                    is ScopeReferences.Ok -> r.references
+                    is ScopeReferences.Err -> return SearchScopeResolution.Err(r.errJson)
+                }
                 val rootRefs = mutableSetOf<SNodeReference>()
                 val modelRefs = mutableSetOf<SModelReference>()
                 for (refStr in rootRefStrings) {
-                    val node = resolveNodeReferencePreferringProject(mpsProject, refStr)?.resolve(repo)
+                    val node = try {
+                        resolveNodeReferencePreferringProject(mpsProject, refStr)?.resolve(repo)
+                    }
+                    catch (e: McpInvalidReferenceException) {
+                        return SearchScopeResolution.Err(
+                            errJson(
+                                "Parameter 'roots' contains an invalid root reference '$refStr': ${e.message}",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
+                        )
+                    }
                     if (node == null) {
-                        return SearchScopeResolution.Err(errJson("Failed to resolve root reference: '$refStr'"))
+                        return SearchScopeResolution.Err(
+                            errJson(
+                                "Parameter 'roots' contains an unresolved root reference: '$refStr'",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
+                        )
                     }
                     rootRefs.add(node.containingRoot.reference)
                     node.model?.reference?.let { modelRefs.add(it) }
@@ -1189,28 +1218,67 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
     }
 
-    /**
-     * Normalises an array-valued scope parameter ("models" / "modules" / "roots") to the list of
-     * reference strings it carries. Accepts either a JSON array of strings or a single bare string,
-     * because agents commonly pass one reference unwrapped (mirroring mps_mcp_search_root_node_by_name);
-     * non-string array elements are skipped. Returns null only when the member is absent or JSON null,
-     * so callers can emit the scope-specific "missing parameter" error.
-     *
-     * This replaces [JsonObject.getAsJsonArray], which casts the member to [JsonArray] unchecked: a
-     * non-array value (e.g. "models": "foo", or "models": null) threw [ClassCastException] from inside
-     * the read action, escaping as a spurious "Action dispatch failed" log rather than a clean
-     * validation result (MPS-39835).
-     */
-    private fun scopeRefStrings(params: JsonObject, name: String): List<String>? {
-        val elem = params.get(name)?.takeIf { !it.isJsonNull } ?: return null
-        return when {
-            elem.isJsonArray -> elem.asJsonArray.mapNotNull { e -> e.takeIf { it.isJsonPrimitive }?.asString }
-            elem.isJsonPrimitive -> listOf(elem.asString)
-            // A JSON object (or other non-array, non-primitive) carries no usable references; treat it
-            // as an empty selection rather than crashing, identical to an explicit empty array.
-            else -> emptyList()
-        }
+    private sealed interface ScopeReferences {
+        data class Ok(val references: List<String>) : ScopeReferences
+        data class Err(val errJson: String) : ScopeReferences
     }
+
+    /**
+     * Validates an explicit search-scope selector without throwing from the surrounding read action.
+     * A single bare string remains supported for compatibility with [JetBrainsMPSRootNodeMcpToolset];
+     * arrays must be nonempty and every element must be a nonblank JSON string.
+     */
+    private fun scopeRefStrings(params: JsonObject, name: String): ScopeReferences {
+        val element = params.get(name)
+        if (element == null || element.isJsonNull) {
+            return ScopeReferences.Err(
+                errJson("Parameter '$name' is missing for scope '$name'", McpErrorCode.INVALID_REQUEST)
+            )
+        }
+
+        if (element.isJsonPrimitive) {
+            if (!element.asJsonPrimitive.isString || element.asString.isBlank()) {
+                return invalidScopeReferences(name)
+            }
+            return ScopeReferences.Ok(listOf(element.asString))
+        }
+
+        if (!element.isJsonArray) {
+            return invalidScopeReferences(name)
+        }
+
+        val values = element.asJsonArray
+        if (values.size() == 0) {
+            return ScopeReferences.Err(
+                errJson(
+                    "Parameter '$name' must be a nonempty array of nonblank strings",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
+        }
+
+        val references = ArrayList<String>(values.size())
+        for ((index, value) in values.withIndex()) {
+            if (!value.isJsonPrimitive || !value.asJsonPrimitive.isString || value.asString.isBlank()) {
+                return ScopeReferences.Err(
+                    errJson(
+                        "Parameter '$name[$index]' must be a nonblank string",
+                        McpErrorCode.INVALID_REQUEST,
+                    )
+                )
+            }
+            references.add(value.asString)
+        }
+        return ScopeReferences.Ok(references)
+    }
+
+    private fun invalidScopeReferences(name: String): ScopeReferences.Err =
+        ScopeReferences.Err(
+            errJson(
+                "Parameter '$name' must be a nonblank string or a nonempty array of nonblank strings",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        )
 
     /**
      * Builds a [BaseScope] restricted to either an explicit set of model references or

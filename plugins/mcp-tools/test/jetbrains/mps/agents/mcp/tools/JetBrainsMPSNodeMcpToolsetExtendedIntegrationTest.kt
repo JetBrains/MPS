@@ -788,6 +788,69 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT rejects explicit null parent without changing the node`() {
+        val parentRef = createConceptRoot("MNPNullParent")
+        addPropertyChild(parentRef, "before", "string")
+        addPropertyChild(parentRef, "movee", "string")
+        addPropertyChild(parentRef, "after", "string")
+        val moveeRef = readOnRepo {
+            val movee = resolveNode(parentRef).children.single { it.name == "movee" }
+            PersistenceFacade.getInstance().asString(movee.reference)
+        }
+
+        for (modelReference in listOf(null, structureModelRef)) {
+            val params = JsonObject().apply {
+                addProperty("nodeReference", moveeRef)
+                add("newParentRef", com.google.gson.JsonNull.INSTANCE)
+                modelReference?.let { addProperty("modelReference", it) }
+            }.toString()
+            val response = runTool(toolset) {
+                it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_NODE_TO_PARENT, params)
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+            assertTrue(envelope.get("error").asString.contains("newParentRef"))
+
+            readOnRepo {
+                val parent = resolveNode(parentRef)
+                val children = parent.children.filter { it.containmentLink?.name == "propertyDeclaration" }
+                assertEquals("a rejected move must preserve containment order", listOf("before", "movee", "after"), children.mapNotNull { it.name })
+                val movee = resolveNode(moveeRef)
+                assertEquals(parent.reference, movee.parent?.reference)
+                assertEquals(structureModel.reference, movee.model?.reference)
+            }
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT omission still promotes a child to a root`() {
+        val parentRef = createConceptRoot("MNPPromotionParent")
+        addPropertyChild(parentRef, "promoted", "string")
+        val promotedRef = readOnRepo {
+            val promoted = resolveNode(parentRef).children.single { it.name == "promoted" }
+            PersistenceFacade.getInstance().asString(promoted.reference)
+        }
+        val params = JsonObject().apply {
+            addProperty("nodeReference", promotedRef)
+            addProperty("modelReference", structureModelRef)
+        }.toString()
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_NODE_TO_PARENT, params)
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+
+        readOnRepo {
+            val promoted = resolveNode(promotedRef)
+            assertNull("the promoted node must become a root", promoted.parent)
+            assertEquals(structureModel.reference, promoted.model?.reference)
+            assertTrue(structureModel.rootNodes.any { it.reference == promoted.reference })
+        }
+    }
+
+    @Test
     fun `alter_nodes MOVE_NODE_TO_PARENT treats an explicit null position as an append`() {
         // The one shape in the typed-reader change that turned an error into a successful
         // mutation: this site read `params.get("position").asInt` with no `?.`, so an explicit

@@ -3,6 +3,7 @@ package jetbrains.mps.agents.mcp.tools
 // MPS APIs used for CRUD
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
@@ -1006,6 +1007,8 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     @McpDescription("""
         Updates module facets (enable/disable/configure).
 
+        `settingsJson` accepts a flat object of primitive properties, or a structured memento object with optional `properties`, primitive `text`, and `children`. Structured `properties` must be an object; `children` must be an array of objects whose primitive `type` is present. Invalid settings return INVALID_REQUEST without changing the existing facet configuration. When `enabled=false`, settings are ignored and the facet is disabled.
+
         Returns a JSON object with 'ok':true and 'data':{"updated":true, "facetType":"..."} on success, or 'ok':false and 'error':"..." on failure.
     """)
     // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
@@ -1014,9 +1017,10 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         @McpDescription("Module name or reference") moduleName: String,
         @McpDescription("Facet type to update") facetType: String,
         @McpDescription("Whether to enable or disable the facet") @Nullable enabled: Boolean? = null,
-        @McpDescription("JSON representation of the facet settings (Memento structure)") @Nullable settingsJson: String? = null
+        @McpDescription("Facet settings as a flat JSON object of primitive values, or structured JSON with optional 'properties' object, primitive 'text', and 'children' array. Each child requires a primitive 'type'. Invalid settings leave the existing facet unchanged; ignored when enabled=false.") @Nullable settingsJson: String? = null
     ): String = withMpsProject("Updating module facet") { mpsProject ->
-        withModalTimeoutOnEdt {
+        val validationError = withModalTimeoutOnEdt {
+            var commandError: String? = null
             mpsProject.repository.modelAccess.executeCommand {
                 val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
                 when (resolved) {
@@ -1027,20 +1031,19 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                         if (enabled == false) {
                             descriptor.moduleFacetDescriptors.removeIf { it.type == facetType }
                         } else if (enabled == true || settingsJson != null) {
-                            val factory = FacetsFacade.getInstance().getFacetFactory(facetType)
-                                ?: throw McpInvalidRequestException("Unknown facet type: $facetType. No factory registered.")
+                            if (FacetsFacade.getInstance().getFacetFactory(facetType) == null) {
+                                throw McpInvalidRequestException("Unknown facet type: $facetType. No factory registered.")
+                            }
 
                             val memento = MementoImpl()
                             if (settingsJson != null) {
-                                val jsonElement = try {
-                                    JsonParser.parseString(settingsJson)
-                                } catch (e: Exception) {
-                                    throw McpInvalidRequestException("Failed to parse settingsJson: ${e.message ?: e.toString()}")
+                                when (val parsed = jsonToMemento(settingsJson, memento)) {
+                                    MementoParsingResult.Ok -> Unit
+                                    is MementoParsingResult.Err -> {
+                                        commandError = parsed.errJson
+                                        return@executeCommand
+                                    }
                                 }
-                                if (!jsonElement.isJsonObject) {
-                                    throw McpInvalidRequestException("settingsJson must be a JSON object")
-                                }
-                                jsonToMemento(jsonElement.asJsonObject, memento)
                             } else if (descriptor.moduleFacetDescriptors.any { it.type == facetType }) {
                                 return@executeCommand
                             }
@@ -1054,8 +1057,12 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                     }
                 }
             }
-            mpsProject.save()
+            if (commandError == null) {
+                mpsProject.save()
+            }
+            commandError
         }
+        if (validationError != null) return@withMpsProject validationError
 
         okJson(jsonObject {
             addProperty("updated", true)
@@ -1223,47 +1230,85 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         return obj
     }
 
-    private fun jsonToMemento(obj: JsonObject, m: Memento) {
-        val hasProps = obj.has("properties") && obj.get("properties").isJsonObject
-        val hasChildren = obj.has("children") && obj.get("children").isJsonArray
-        val hasText = obj.has("text") && obj.get("text").isJsonPrimitive
+    private sealed interface MementoParsingResult {
+        object Ok : MementoParsingResult
+        data class Err(val errJson: String) : MementoParsingResult
+    }
 
-        if (hasProps || hasChildren || hasText) {
-            // Structured format
-            obj.getAsJsonObject("properties")?.let { props ->
-                for (entry in props.entrySet()) {
+    private fun jsonToMemento(settingsJson: String, memento: Memento): MementoParsingResult {
+        val element = try {
+            JsonParser.parseString(settingsJson)
+        }
+        catch (e: JsonParseException) {
+            return mementoError("settingsJson is not valid JSON: ${e.message ?: e.toString()}")
+        }
+        if (!element.isJsonObject) {
+            return mementoError("settingsJson must be a JSON object")
+        }
+        return jsonToMemento(element.asJsonObject, memento, "settingsJson")
+    }
+
+    private fun jsonToMemento(obj: JsonObject, memento: Memento, path: String): MementoParsingResult {
+        val text = obj.get("text")
+        if (text != null && !text.isJsonPrimitive) {
+            return mementoError("$path.text must be a JSON primitive")
+        }
+        val properties = obj.get("properties")
+        val children = obj.get("children")
+        val structured = properties?.isJsonObject == true || children?.isJsonArray == true || text != null
+
+        if (structured) {
+            if (properties != null && !properties.isJsonObject) {
+                return mementoError("$path.properties must be a JSON object")
+            }
+            if (children != null && !children.isJsonArray) {
+                return mementoError("$path.children must be a JSON array")
+            }
+            properties?.asJsonObject?.let { values ->
+                for (entry in values.entrySet()) {
                     if (entry.value.isJsonPrimitive) {
-                        m.put(entry.key, entry.value.asString)
+                        memento.put(entry.key, entry.value.asString)
                     }
                 }
             }
-            obj.getAsJsonPrimitive("text")?.let {
-                m.text = it.asString
-            }
-            obj.getAsJsonArray("children")?.let { children ->
-                for ((idx, childElement) in children.withIndex()) {
+            text?.let { memento.text = it.asString }
+            children?.asJsonArray?.let { values ->
+                for ((index, childElement) in values.withIndex()) {
+                    val childPath = "$path.children[$index]"
                     if (!childElement.isJsonObject) {
-                        throw McpInvalidRequestException("settingsJson child at index $idx must be a JSON object")
+                        return mementoError("$childPath must be a JSON object")
                     }
-                    val childObj = childElement.asJsonObject
-                    val type = childObj.getAsJsonPrimitive("type")?.asString
-                        ?: throw McpInvalidRequestException("settingsJson child at index $idx is missing required 'type' string")
-                    val childMemento = m.createChild(type)
-                    jsonToMemento(childObj, childMemento)
+                    val child = childElement.asJsonObject
+                    val type = child.get("type")
+                    if (type == null) {
+                        return mementoError("$childPath.type is missing")
+                    }
+                    if (!type.isJsonPrimitive) {
+                        return mementoError("$childPath.type must be a JSON primitive")
+                    }
+                    val childMemento = memento.createChild(type.asString)
+                    when (val nested = jsonToMemento(child, childMemento, childPath)) {
+                        MementoParsingResult.Ok -> Unit
+                        is MementoParsingResult.Err -> return nested
+                    }
                 }
             }
-        } else {
-            // Flat format
+        }
+        else {
             for (entry in obj.entrySet()) {
                 if (entry.value.isJsonPrimitive) {
                     val key = entry.key
                     val value = entry.value.asString
-                    if (key == "type" && value == m.type) continue
-                    m.put(key, value)
+                    if (key == "type" && value == memento.type) continue
+                    memento.put(key, value)
                 }
             }
         }
+        return MementoParsingResult.Ok
     }
+
+    private fun mementoError(message: String): MementoParsingResult.Err =
+        MementoParsingResult.Err(errJson(message, McpErrorCode.INVALID_REQUEST))
 
     private fun mementosEqual(m1: Memento, m2: Memento, rootType: String? = null): Boolean {
         if (m1.type != m2.type) return false

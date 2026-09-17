@@ -415,6 +415,26 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         )
     }
 
+    @Test
+    fun `find-instances via query_structure rejects a partially resolved model scope`() {
+        val findParams = """
+            {
+              "conceptRef": "jetbrains.mps.lang.structure.structure.ConceptDeclaration",
+              "scope": "models",
+              "models": [ "$structureModelRef", "definitely.missing.model" ]
+            }
+        """.trimIndent()
+
+        val response = runTool {
+            it.mps_mcp_query_structure(MPSStructureQueryOperation.FIND_INSTANCES, findParams)
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        assertTrue(envelope.get("error").asString.contains("definitely.missing.model"))
+        assertFalse("scope errors must not return warnings: $response", envelope.has("warnings"))
+    }
+
     // ── UPDATE_CONCEPT_PROPERTY ───────────────────────────────────────────────────────
 
     @Test

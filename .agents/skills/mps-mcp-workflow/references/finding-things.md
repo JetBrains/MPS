@@ -5,6 +5,7 @@
 - To find nodes that are instances of a concept — e.g. an example node to study or copy as a JSON template — use `mps_mcp_query_nodes` (`FIND_INSTANCES`) with `conceptRef`. `sampleOnly: true` returns one random example; `scope: "roots"` searches within given roots; `propertyFilter: {"name", "value"}` matches a property value (e.g. find a literal by its value).
 - To find the nodes that reference a given node, use `FIND_USAGES` (`nodeReference`). Usages are incoming references — FIND_USAGES does **not** return instances of a concept.
 - To find root nodes by name, use `mps_mcp_search_root_node_by_name`. Aspect roots like `<Concept>_Editor` have no name property and are not findable this way — use `mps_mcp_query_structure` (`LIST_CONCEPT_ASPECTS`) on the concept instead.
+- Explicit `models`, `modules`, and `roots` search scopes are all-or-error: pass one nonblank reference string or a nonempty array of nonblank strings, and every reference must resolve. A missing, null, empty, malformed, or partly unresolved selector returns `INVALID_REQUEST`; the tools never search only the resolvable subset. `mps_mcp_search_root_node_by_name` exposes `models`/`modules` as top-level strings, so use either one bare reference or a JSON-array string such as `models='["r:...", "r:..."]'`; it applies the same nonempty, usable, full-resolution rule after decoding.
 
 ## Finding Concepts
 

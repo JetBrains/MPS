@@ -35,6 +35,8 @@ Parameters:
 }
 ```
 
+For `scope: "models"`, `"modules"`, or `"roots"`, the matching selector must be one nonblank reference string or a nonempty JSON array of nonblank strings. Every supplied reference must resolve; one typo rejects the whole search with `INVALID_REQUEST` naming the parameter and reference, so a search never silently narrows to the resolvable subset. `FIND_USAGES` follows the same rule. Duplicates are allowed, and a child reference in `roots` selects its containing root.
+
 ## Additional Skills — Handling Unknown MPS Languages
 
 - Consult the companion-skill table at the top of `SKILL.md` for available focused guidance.

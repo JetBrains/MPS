@@ -39,6 +39,8 @@ All child, property, and reference operations on existing nodes go through `mps_
 
 `mps_mcp_update_node` (PROPERTY / REFERENCE / CHILD) and `mps_mcp_alter_nodes` MOVE_CHILD / MOVE_NODE_TO_PARENT / COPY_NODE also work on nodes inside the **current MPS Console input command** — pass the node's normal persistent reference; no extra parameter is needed. The node must be inside the current unexecuted console input (not history/stale). MOVE_NODE_TO_PARENT only relocates a node *within* the current console command — moving a node between the console and a project model, or making a console node a root, is refused. Edits to console nodes skip disk-persistence and refresh the console's imports instead. Nodes outside the selected project are rejected as before.
 
+For project models, `MOVE_NODE_TO_PARENT` has two intentional forms. Supply a non-null `newParentRef` and `role` to reparent the node. To promote it to a root, omit `newParentRef` and supply `modelReference`. Do not send `"newParentRef": null`: explicit null is rejected so it cannot accidentally select the promotion form.
+
 `childJson` accepts either an inline JSON string (max 4 KB) **or** an absolute path to a file containing the JSON blueprint. Use the file form for large blueprints to avoid MCP-transport truncation.
 
 Where a parameter's documented null means something (`SET` × `CHILD` deleting the child, `SET` × `PROPERTY`/`REFERENCE` clearing a value), express the null by **omitting the parameter** or sending an unquoted JSON null. The 4-character string `"null"` is not the null form — for `childJson` it is rejected as `Input is the string 'null', not a JSON object/array or a file path`.

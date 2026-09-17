@@ -34,6 +34,10 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import java.io.File
+import java.util.Collections
+import java.util.logging.Handler
+import java.util.logging.LogRecord
+import java.util.logging.Logger
 
 /**
  * Base class for MCP toolset integration tests. Inherits the [MPSProject] lifecycle from
@@ -122,6 +126,28 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
 
     protected fun <T> readOnRepo(block: () -> T): T =
         myProject.modelAccess.computeReadAction<T> { block() }
+
+    protected fun <T> captureLogMessages(block: () -> T): Pair<T, List<String>> {
+        val messages = Collections.synchronizedList(mutableListOf<String>())
+        val handler = object : Handler() {
+            override fun publish(record: LogRecord) {
+                messages.add(record.message)
+            }
+
+            override fun flush() = Unit
+            override fun close() = Unit
+        }
+        val rootLogger = Logger.getLogger("")
+        rootLogger.addHandler(handler)
+        return try {
+            val result = block()
+            val snapshot = synchronized(messages) { messages.toList() }
+            result to snapshot
+        }
+        finally {
+            rootLogger.removeHandler(handler)
+        }
+    }
 
     protected fun createDirInProject(subName: String): IFile = createDirIn(myProject, subName)
 

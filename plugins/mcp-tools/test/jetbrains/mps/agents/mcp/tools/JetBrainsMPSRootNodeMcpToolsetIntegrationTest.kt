@@ -4,6 +4,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import jetbrains.mps.project.MPSProject
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -34,6 +35,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     private val scopeProbe = ScopeProbe()
 
     private val conceptDeclarationFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
+    private val propertyDeclarationFqn = "jetbrains.mps.lang.structure.structure.PropertyDeclaration"
 
     /** A top-level-array blueprint of named `ConceptDeclaration` roots. */
     private fun conceptArrayJson(names: List<String>): String =
@@ -638,6 +640,205 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    @Test
+    fun `explicit scopes reject every missing empty or malformed selector`() {
+        val rootRef = createConceptRoot("ScopeShapeRoot")
+        readOnRepo {
+            val moduleRef = PersistenceFacade.getInstance().asString(language.moduleReference)
+            val validRefs = mapOf("models" to structureModelRef, "modules" to moduleRef, "roots" to rootRef)
+            for ((scope, validRef) in validRefs) {
+                val invalidParameters = listOf(
+                    JsonObject(),
+                    JsonObject().apply { add(scope, JsonNull.INSTANCE) },
+                    JsonObject().apply { add(scope, JsonObject()) },
+                    JsonObject().apply { addProperty(scope, 42) },
+                    JsonObject().apply { addProperty(scope, true) },
+                    JsonObject().apply { add(scope, JsonArray()) },
+                    JsonObject().apply { addProperty(scope, "  ") },
+                )
+                for (params in invalidParameters) {
+                    assertInvalidScope(scopeProbe.errorFor(myProject, scope, params), scope)
+                }
+
+                val invalidElements = listOf(
+                    JsonNull.INSTANCE,
+                    JsonObject(),
+                    JsonArray(),
+                    JsonPrimitive(42),
+                    JsonPrimitive(true),
+                    JsonPrimitive("  "),
+                )
+                for (invalidElement in invalidElements) {
+                    val params = JsonObject().apply {
+                        add(scope, JsonArray().apply {
+                            add(validRef)
+                            add(invalidElement)
+                        })
+                    }
+                    assertInvalidScope(scopeProbe.errorFor(myProject, scope, params), "$scope[1]")
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `explicit scopes reject every unresolved reference without narrowing to a subset`() {
+        val rootRef = createConceptRoot("ScopeResolutionRoot")
+        readOnRepo {
+            val moduleRef = PersistenceFacade.getInstance().asString(language.moduleReference)
+            val refs = mapOf("models" to structureModelRef, "modules" to moduleRef, "roots" to rootRef)
+            for ((scope, validRef) in refs) {
+                val missingRef = "definitely.missing.$scope"
+                val combinations = listOf(
+                    listOf(validRef, missingRef),
+                    listOf(missingRef, validRef),
+                    listOf(missingRef),
+                )
+                for (combination in combinations) {
+                    val params = JsonObject().apply {
+                        add(scope, JsonArray().apply { combination.forEach { add(it) } })
+                    }
+                    val error = scopeProbe.errorFor(myProject, scope, params)
+                    assertInvalidScope(error, scope)
+                    assertTrue("error must name the unresolved reference: $error", error!!.contains(missingRef))
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `explicit scopes accept bare arrays duplicates and aliases of the same target`() {
+        val rootName = "ScopeAliasRoot"
+        val rootRef = createConceptRoot(rootName)
+        val childRef = addScopePropertyChild(rootRef)
+        readOnRepo {
+            val facade = PersistenceFacade.getInstance()
+            val moduleRef = facade.asString(language.moduleReference)
+            val aliases = mapOf(
+                "models" to (structureModelRef to structureModel.name.longName),
+                "modules" to (moduleRef to language.moduleName!!),
+                "roots" to (rootRef to rootName),
+            )
+            for ((scope, refs) in aliases) {
+                val accepted = listOf(
+                    JsonPrimitive(refs.first),
+                    JsonArray().apply { add(refs.first) },
+                    JsonArray().apply {
+                        add(refs.first)
+                        add(refs.first)
+                    },
+                    JsonArray().apply {
+                        add(refs.first)
+                        add(refs.second)
+                    },
+                )
+                for (value in accepted) {
+                    val params = JsonObject().apply { add(scope, value) }
+                    val expected = when (scope) {
+                        "models" -> setOf(structureModelRef)
+                        "modules" -> setOf(moduleRef)
+                        else -> setOf(rootRef)
+                    }
+                    assertEquals(
+                        "scope=$scope must resolve exactly the requested target for $value",
+                        expected,
+                        scopeProbe.selectedRefsFor(myProject, scope, params),
+                    )
+                }
+            }
+
+            val childParams = JsonObject().apply { addProperty("roots", childRef) }
+            assertEquals(
+                "a child selector must confine the scope to its containing root",
+                setOf(rootRef),
+                scopeProbe.selectedRefsFor(myProject, "roots", childParams),
+            )
+        }
+    }
+
+    @Test
+    fun `explicit scopes preserve two distinct valid targets`() {
+        val firstRootRef = createConceptRoot("ScopePairFirst")
+        val secondRootRef = createConceptRoot("ScopePairSecond")
+        val secondSolution = createSolution()
+        val secondModel = createModel(secondSolution, "scope.pair.model${System.nanoTime()}")
+
+        readOnRepo {
+            val facade = PersistenceFacade.getInstance()
+            val firstModuleRef = facade.asString(language.moduleReference)
+            val secondModuleRef = facade.asString(secondSolution.moduleReference)
+            val selectors = mapOf(
+                "models" to listOf(structureModelRef, facade.asString(secondModel.reference)),
+                "modules" to listOf(firstModuleRef, secondModuleRef),
+                "roots" to listOf(firstRootRef, secondRootRef),
+            )
+            for ((scope, references) in selectors) {
+                val params = JsonObject().apply {
+                    add(scope, JsonArray().apply { references.forEach { add(it) } })
+                }
+                assertEquals(
+                    "scope=$scope must preserve both requested targets",
+                    references.toSet(),
+                    scopeProbe.selectedRefsFor(myProject, scope, params),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `root name search rejects partial scope resolution and an encoded empty array`() {
+        createConceptRoot("ScopedRootSearch")
+        val partial = runTool(toolset) {
+            it.mps_mcp_search_root_node_by_name(
+                "ScopedRootSearch",
+                scope = "models",
+                models = "[\"$structureModelRef\",\"definitely.missing.model\"]",
+            )
+        }
+        assertInvalidScope(partial, "definitely.missing.model")
+        assertFalse(JsonParser.parseString(partial).asJsonObject.has("warnings"))
+
+        val empty = runTool(toolset) {
+            it.mps_mcp_search_root_node_by_name("ScopedRootSearch", scope = "models", models = "[]")
+        }
+        assertInvalidScope(empty, "models")
+    }
+
+    private fun assertInvalidScope(errorJson: String?, expectedText: String) {
+        assertNotNull("expected a scope error naming '$expectedText'", errorJson)
+        val envelope = JsonParser.parseString(errorJson).asJsonObject
+        assertFalse("expected error envelope: $errorJson", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        assertTrue("error must name '$expectedText': $errorJson", envelope.get("error").asString.contains(expectedText))
+        assertFalse("scope errors must not return warnings: $errorJson", envelope.has("warnings"))
+    }
+
+    private fun addScopePropertyChild(parentRef: String): String {
+        val name = "scopeChild"
+        val childJson = """
+            {
+              "concept": "$propertyDeclarationFqn",
+              "properties": [ { "name": "name", "value": "$name" } ]
+            }
+        """.trimIndent()
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD,
+                NodeUpdateKind.CHILD,
+                nodeReference = parentRef,
+                childRole = "propertyDeclaration",
+                childJson = childJson,
+            )
+        }
+        expectOk(response)
+        return readOnRepo {
+            val parent = PersistenceFacade.getInstance().createNodeReference(parentRef).resolve(myProject.repository)
+                ?: error("parent '$parentRef' did not resolve")
+            val child = parent.children.single { it.name == name }
+            PersistenceFacade.getInstance().asString(child.reference)
+        }
+    }
+
     // ── get_current_editor_root_node ──────────────────────────────────────────────────────
 
     @Test
@@ -709,4 +910,17 @@ private class ScopeProbe : AbstractNodeOps() {
                 r.scope.models.map { PersistenceFacade.getInstance().asString(it.reference) }.toSet()
             is SearchScopeResolution.Err -> error("expected a resolved scope, got error: ${r.errJson}")
         }
+
+    fun selectedRefsFor(project: MPSProject, scope: String, params: JsonObject): Set<String> {
+        val facade = PersistenceFacade.getInstance()
+        return when (val r = buildSearchScope(project, scope, params)) {
+            is SearchScopeResolution.Ok -> when (scope) {
+                "models" -> r.scope.models.map { facade.asString(it.reference) }.toSet()
+                "modules" -> r.scope.modules.map { facade.asString(it.moduleReference) }.toSet()
+                "roots" -> r.rootFilter.orEmpty().map { facade.asString(it) }.toSet()
+                else -> error("unsupported explicit scope '$scope'")
+            }
+            is SearchScopeResolution.Err -> error("expected a resolved scope, got error: ${r.errJson}")
+        }
+    }
 }

@@ -106,8 +106,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         all|editable|models|modules|roots with matching `models`/`modules`/`roots` (each a single reference or a JSON array),
         `propertyFilter` {"name","value"}, `exact`, `sampleOnly`:true for one example node). `all` and `editable` are rooted
         at the project selected by `projectPath`; explicit `models`/`modules`/`roots` may point to models, modules, or roots
-        from another open MPS project and are queried read-only. FIND_USAGES: find nodes whose references point at the given
-        node — incoming references, not instances (`nodeReference`; optional `scope` as above). GET_PARENT, GET_ROOT,
+        from another open MPS project and are queried read-only. An explicit selector must be a nonblank string or nonempty
+        string array, and every reference must resolve or the whole query returns INVALID_REQUEST. FIND_USAGES: find nodes
+        whose references point at the given node — incoming references, not instances (`nodeReference`; optional `scope` as above). GET_PARENT, GET_ROOT,
         GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE take `nodeReference`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
@@ -153,7 +154,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""        
-        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object string. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
+        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object string. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root. Explicit `newParentRef:null` is rejected. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
          MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool; node references are not accepted — resolve the node's module or model first. Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
@@ -293,6 +294,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     private suspend fun opMoveNodeToParent(params: JsonObject): String {
         val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        if (params.has("newParentRef") && params.get("newParentRef").isJsonNull) {
+            return errJson("Parameter 'newParentRef' must not be null", McpErrorCode.INVALID_REQUEST)
+        }
         val newParentRef = params.get("newParentRef")?.asString
         val role = params.get("role")?.asString
         val position = params.paramInt("position")
