@@ -446,6 +446,48 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
     }
 
     @Test
+    fun `find-instances via query_structure (compat path) also serves conceptRefs and detail count`() {
+        // The compat dispatch shares one implementation with mps_mcp_query_nodes, so the batched
+        // selector and the count projection must be reachable through it too — otherwise a skill
+        // copy that learned the new keys would be told they do not exist.
+        val createParams = """
+            {
+              "structureModelRef": "$structureModelRef",
+              "conceptsJson": [ { "name": "Alpha" }, { "name": "Beta" } ],
+              "interfaceConceptsJson": [ { "name": "IMarker" } ]
+            }
+        """.trimIndent()
+        assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+
+        val findParams = """
+            {
+              "conceptRefs": [
+                "jetbrains.mps.lang.structure.structure.ConceptDeclaration",
+                "jetbrains.mps.lang.structure.structure.InterfaceConceptDeclaration"
+              ],
+              "detail": "count",
+              "scope": "models",
+              "models": [ "$structureModelRef" ]
+            }
+        """.trimIndent()
+
+        val response = runTool {
+            it.mps_mcp_query_structure(MPSStructureQueryOperation.FIND_INSTANCES, findParams)
+        }
+
+        val rows = parseDataArray(response).map {
+            it.asJsonObject.get("concept").asString to it.asJsonObject.get("count").asInt
+        }
+        assertEquals(
+            listOf(
+                "jetbrains.mps.lang.structure.structure.ConceptDeclaration" to 2,
+                "jetbrains.mps.lang.structure.structure.InterfaceConceptDeclaration" to 1,
+            ),
+            rows,
+        )
+    }
+
+    @Test
     fun `find-instances via query_structure rejects a partially resolved model scope`() {
         val findParams = """
             {

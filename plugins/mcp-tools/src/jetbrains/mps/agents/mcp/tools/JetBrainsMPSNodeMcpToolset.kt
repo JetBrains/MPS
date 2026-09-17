@@ -102,12 +102,17 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Read-only node queries. FIND_INSTANCES: find nodes that are instances of a concept (`conceptRef`; optional `scope`
+        Read-only node queries. FIND_INSTANCES: find nodes that are instances of a concept (`conceptRef`, or `conceptRefs`
+        for several concepts in one scan — a single reference or a JSON array; passing both is rejected; optional `scope`
         all|editable|models|modules|roots with matching `models`/`modules`/`roots` (each a single reference or a JSON array),
-        `propertyFilter` {"name","value"}, `exact`, `sampleOnly`:true for one example node). `all` and `editable` are rooted
-        at the project selected by `projectPath`; explicit `models`/`modules`/`roots` may point to models, modules, or roots
-        from another open MPS project and are queried read-only. An explicit selector must be a nonblank string or nonempty
-        string array, and every reference must resolve or the whole query returns INVALID_REQUEST. FIND_USAGES: find nodes
+        `propertyFilter` {"name","value"}, `exact`, `sampleOnly`:true for one example node). `detail`:"count" answers with
+        `[{concept, conceptReference, count}]`, one row per requested concept in input order (count 0 included), and builds
+        no node records — use it to count instances instead of one call per concept, each serializing every node it found;
+        it cannot be combined with `sampleOnly`. Rows overlap by design: with `exact`:false an instance of a subconcept
+        counts for every requested superconcept too, so the rows do not sum to a distinct-node total. `all` and `editable`
+        are rooted at the project selected by `projectPath`; explicit `models`/`modules`/`roots` may point to models,
+        modules, or roots from another open MPS project and are queried read-only. An explicit selector must be a nonblank
+        string or nonempty string array, and every reference must resolve or the whole query returns INVALID_REQUEST. FIND_USAGES: find nodes
         whose references point at the given node — incoming references, not instances (`nodeReference`; optional `scope` as above). GET_PARENT, GET_ROOT,
         GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE take `nodeReference`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,

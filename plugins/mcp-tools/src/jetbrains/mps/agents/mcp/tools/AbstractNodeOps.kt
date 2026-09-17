@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
@@ -1144,8 +1145,8 @@ abstract class AbstractNodeOps : AbstractOps() {
             "editable" -> SearchScopeResolution.Ok(EditableFilteringScope(mpsProject.scope))
             "models" -> {
                 val modelRefStrings = when (val r = scopeRefStrings(params, "models")) {
-                    is ScopeReferences.Ok -> r.references
-                    is ScopeReferences.Err -> return SearchScopeResolution.Err(r.errJson)
+                    is RefStrings.Ok -> r.references
+                    is RefStrings.Err -> return SearchScopeResolution.Err(r.errJson)
                 }
                 val modelRefs = mutableSetOf<SModelReference>()
                 for (refStr in modelRefStrings) {
@@ -1164,8 +1165,8 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
             "modules" -> {
                 val moduleRefStrings = when (val r = scopeRefStrings(params, "modules")) {
-                    is ScopeReferences.Ok -> r.references
-                    is ScopeReferences.Err -> return SearchScopeResolution.Err(r.errJson)
+                    is RefStrings.Ok -> r.references
+                    is RefStrings.Err -> return SearchScopeResolution.Err(r.errJson)
                 }
                 val moduleRefs = mutableSetOf<SModuleReference>()
                 for (refStr in moduleRefStrings) {
@@ -1184,8 +1185,8 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
             "roots" -> {
                 val rootRefStrings = when (val r = scopeRefStrings(params, "roots")) {
-                    is ScopeReferences.Ok -> r.references
-                    is ScopeReferences.Err -> return SearchScopeResolution.Err(r.errJson)
+                    is RefStrings.Ok -> r.references
+                    is RefStrings.Err -> return SearchScopeResolution.Err(r.errJson)
                 }
                 val rootRefs = mutableSetOf<SNodeReference>()
                 val modelRefs = mutableSetOf<SModelReference>()
@@ -1218,9 +1219,10 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
     }
 
-    private sealed interface ScopeReferences {
-        data class Ok(val references: List<String>) : ScopeReferences
-        data class Err(val errJson: String) : ScopeReferences
+    /** Outcome of validating a `parameters` key that names one reference or an array of them. */
+    private sealed interface RefStrings {
+        data class Ok(val references: List<String>) : RefStrings
+        data class Err(val errJson: String) : RefStrings
     }
 
     /**
@@ -1228,28 +1230,36 @@ abstract class AbstractNodeOps : AbstractOps() {
      * A single bare string remains supported for compatibility with [JetBrainsMPSRootNodeMcpToolset];
      * arrays must be nonempty and every element must be a nonblank JSON string.
      */
-    private fun scopeRefStrings(params: JsonObject, name: String): ScopeReferences {
+    private fun scopeRefStrings(params: JsonObject, name: String): RefStrings {
         val element = params.get(name)
         if (element == null || element.isJsonNull) {
-            return ScopeReferences.Err(
+            return RefStrings.Err(
                 errJson("Parameter '$name' is missing for scope '$name'", McpErrorCode.INVALID_REQUEST)
             )
         }
+        return refStrings(element, name)
+    }
 
+    /**
+     * The shape check shared by the scope selectors and FIND_INSTANCES' `conceptRefs`: one nonblank
+     * string, or a nonempty array of nonblank strings. [element] must already be known present and
+     * non-null, so the "missing" wording stays with the caller that knows what absence means there.
+     */
+    private fun refStrings(element: JsonElement, name: String): RefStrings {
         if (element.isJsonPrimitive) {
             if (!element.asJsonPrimitive.isString || element.asString.isBlank()) {
-                return invalidScopeReferences(name)
+                return invalidRefStrings(name)
             }
-            return ScopeReferences.Ok(listOf(element.asString))
+            return RefStrings.Ok(listOf(element.asString))
         }
 
         if (!element.isJsonArray) {
-            return invalidScopeReferences(name)
+            return invalidRefStrings(name)
         }
 
         val values = element.asJsonArray
         if (values.size() == 0) {
-            return ScopeReferences.Err(
+            return RefStrings.Err(
                 errJson(
                     "Parameter '$name' must be a nonempty array of nonblank strings",
                     McpErrorCode.INVALID_REQUEST,
@@ -1260,7 +1270,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         val references = ArrayList<String>(values.size())
         for ((index, value) in values.withIndex()) {
             if (!value.isJsonPrimitive || !value.asJsonPrimitive.isString || value.asString.isBlank()) {
-                return ScopeReferences.Err(
+                return RefStrings.Err(
                     errJson(
                         "Parameter '$name[$index]' must be a nonblank string",
                         McpErrorCode.INVALID_REQUEST,
@@ -1269,11 +1279,11 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
             references.add(value.asString)
         }
-        return ScopeReferences.Ok(references)
+        return RefStrings.Ok(references)
     }
 
-    private fun invalidScopeReferences(name: String): ScopeReferences.Err =
-        ScopeReferences.Err(
+    private fun invalidRefStrings(name: String): RefStrings.Err =
+        RefStrings.Err(
             errJson(
                 "Parameter '$name' must be a nonblank string or a nonempty array of nonblank strings",
                 McpErrorCode.INVALID_REQUEST,
@@ -1346,10 +1356,24 @@ abstract class AbstractNodeOps : AbstractOps() {
 
     /**
      * [findUsagesWithFallback]'s instance-search counterpart: facade first, direct
-     * [InstanceLookup] walk only when the index produced zero raw candidates. Note the fallback
-     * walk does not honor [exact] (it never has) — exact filtering applies on the facade path
-     * only; callers needing strict-exact semantics on unindexed models must filter themselves
-     * (as [opFindInstances] does).
+     * [InstanceLookup] walk for the concepts the index produced no raw candidate for.
+     *
+     * The gate is **per concept**, not per call. The facade's index coverage is per model, so in a
+     * request that batches several concepts one indexed concept must not suppress the fallback for
+     * an unindexed one: a batched query has to answer each concept exactly as a single-concept
+     * query would. For a single concept this is the previous all-or-nothing gate. Attribution
+     * happens on the raw facade callback, before any caller-side filter, for the reason the
+     * previous gate used raw callbacks: the fallback compensates for missing index coverage, not
+     * for caller-side filter misses.
+     *
+     * The fallback walk reports **exact** instances of the requested concepts only: [InstanceLookup]
+     * asks `FastNodeFinder` with `includeInherited=false` and, unlike the facade
+     * (`InstancesSearchType`), does not expand the query set with the concepts' descendants. So a
+     * non-exact query served by the fallback sees no subconcept instances, and an exact one needs
+     * no extra filtering. Either way the collector must apply its own per-concept predicate to
+     * whatever arrives instead of assuming a pre-filtered stream, as [opFindInstances] does.
+     *
+     * [collector] may be invoked concurrently; synchronize shared state inside it.
      */
     protected fun findInstancesWithFallback(
         searchScope: SearchScope,
@@ -1358,11 +1382,21 @@ abstract class AbstractNodeOps : AbstractOps() {
         monitor: ProgressMonitor,
         collector: (SNode) -> Unit
     ) {
-        val sawAny = AtomicBoolean(false)
-        val counting: (SNode) -> Unit = { sawAny.set(true); collector(it) }
+        // Synchronized rather than atomic for the same reason the previous gate was an atomic:
+        // pooled-thread callbacks need a happens-before edge with the post-facade read below.
+        val unseen = concepts.toMutableSet()
+        val counting: (SNode) -> Unit = { node ->
+            synchronized(unseen) {
+                if (unseen.isNotEmpty()) {
+                    unseen.removeAll { conceptMatches(node, it, exact) }
+                }
+            }
+            collector(node)
+        }
         FindUsagesFacade.getInstance().findInstances(searchScope, concepts, exact, { counting(it) }, monitor)
-        if (!sawAny.get() && !monitor.isCanceled) {
-            val lookup = InstanceLookup(concepts) { counting(it) }
+        val uncovered = synchronized(unseen) { unseen.toSet() }
+        if (uncovered.isNotEmpty() && !monitor.isCanceled) {
+            val lookup = InstanceLookup(uncovered) { collector(it) }
             for (m in searchScope.models) {
                 if (monitor.isCanceled) break
                 lookup.collectInstances(m, monitor)
@@ -1371,19 +1405,54 @@ abstract class AbstractNodeOps : AbstractOps() {
     }
 
     /**
-     * FIND_INSTANCES — finds nodes that are instances of a concept. The canonical home is
-     * mps_mcp_query_nodes; mps_mcp_query_structure keeps dispatching here (unadvertised) so
+     * The "is an instance of" predicate FIND_INSTANCES attributes a node by: identity under
+     * [exact], assignability otherwise (which crosses implemented interfaces, so an interface
+     * concept matches its implementors). Kept in one place because it decides both which concepts
+     * the index is considered to cover ([findInstancesWithFallback]) and which requested concept a
+     * counted node belongs to ([opFindInstances]) — the two must not drift apart.
+     */
+    private fun conceptMatches(node: SNode, concept: SAbstractConcept, exact: Boolean): Boolean =
+        if (exact) node.concept == concept else node.concept.isSubConceptOf(concept)
+
+    /**
+     * FIND_INSTANCES — finds nodes that are instances of one or more concepts. The canonical home
+     * is mps_mcp_query_nodes; mps_mcp_query_structure keeps dispatching here (unadvertised) so
      * pre-move skill copies installed in other projects continue to work.
+     *
+     * `conceptRefs` batches several concepts into one scan (study remedy M1: the measured chain was
+     * one call per concept, three of which overflowed into temp files purely because every node was
+     * serialized to be counted). `detail:"count"` answers with one row per requested concept and
+     * builds no node records at all.
      */
     protected suspend fun opFindInstances(
         mpsProject: MPSProject,
         params: JsonObject,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
-        val conceptRef = params.paramString(PARAM_CONCEPT_REF) ?: return errJson("Parameter 'conceptRef' is missing")
+        val conceptRefs = when (val r = requestedConceptRefs(params)) {
+            is RefStrings.Ok -> r.references
+            is RefStrings.Err -> return r.errJson
+        }
+        val detailParam = params.paramString("detail")
+        val countOnly = when (detailParam?.trim()?.lowercase() ?: DETAIL_NODES) {
+            DETAIL_NODES -> false
+            DETAIL_COUNT -> true
+            else -> return errJson(
+                "Invalid detail '$detailParam'. Allowed values: $DETAIL_NODES, $DETAIL_COUNT",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
         val scopeParam = params.paramString("scope") ?: "editable"
         val exact = params.paramBoolean("exact", default = false)
         val sampleOnly = params.paramBoolean("sampleOnly", default = false)
+        if (countOnly && sampleOnly) {
+            return errJson(
+                "detail '$DETAIL_COUNT' and sampleOnly:true ask for opposite things — how many " +
+                    "instances there are, versus one example node. Drop 'sampleOnly' to count, or " +
+                    "drop 'detail' to get the sample.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
         // takeIf: agents commonly pass explicit nulls for optional params; Gson surfaces
         // "propertyFilter": null as JsonNull, which must mean "no filter", not INVALID_REQUEST.
         val propertyFilter = params.get("propertyFilter")?.takeIf { !it.isJsonNull }
@@ -1402,22 +1471,35 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         val monitor = coroutineProgressMonitor()
         return executeBackgroundRead(mpsProject) {
-            val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                ?: return@executeBackgroundRead errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+            // One entry per requested reference, in input order: a `detail:"count"` row set mirrors
+            // the request, so a repeated reference keeps its own row. An unresolvable reference
+            // rejects the whole query rather than silently dropping a row, matching the
+            // all-or-nothing policy of the explicit scope selectors.
+            val requested = ArrayList<SAbstractConcept>(conceptRefs.size)
+            for (ref in conceptRefs) {
+                requested.add(
+                    resolveConceptPreferringProject(mpsProject, ref)
+                        ?: return@executeBackgroundRead errJson("Concept '$ref' not found", McpErrorCode.NOT_FOUND)
+                )
+            }
             val (searchScope, rootFilter) = when (val r = buildSearchScope(mpsProject, scopeParam, params)) {
                 is SearchScopeResolution.Ok -> r.scope to r.rootFilter
                 is SearchScopeResolution.Err -> return@executeBackgroundRead r.errJson
             }
 
             val results = mutableSetOf<SNode>()
+            val counts = IntArray(requested.size)
             var sample: SNode? = null
             var count = 0
             val random = Random()
-            findInstancesWithFallback(searchScope, setOf(concept), exact, monitor) { node ->
-                // The exact check is a no-op on the facade path (already filtered there) but is
-                // required on the fallback walk, which does not honor the exact flag.
+            findInstancesWithFallback(searchScope, requested.toSet(), exact, monitor) { node ->
+                // Defensive: both paths already report exact instances of the requested concepts
+                // for an exact query (the facade does not expand the query set, the fallback walk
+                // asks FastNodeFinder with includeInherited=false), so this narrows nothing today.
+                // Kept because neither guarantee is part of either contract, and generalised over
+                // the requested set so a batched query does not drop a node matching another entry.
                 val accepted = !monitor.isCanceled &&
-                    (!exact || node.concept == concept) &&
+                    (!exact || requested.any { node.concept == it }) &&
                     (rootFilter == null || node.containingRoot.reference in rootFilter) &&
                     (filterName == null || propertyValueByName(node, filterName) == filterValue)
                 if (accepted) {
@@ -1429,8 +1511,17 @@ abstract class AbstractNodeOps : AbstractOps() {
                             if (count == 1 || random.nextInt(count) == 0) {
                                 sample = node
                             }
-                        } else {
-                            results.add(node)
+                        } else if (results.add(node) && countOnly) {
+                            // Tally on first sight only. Both the facade and the fallback walk can
+                            // report one node once per concept it matches (the facade expands a
+                            // non-exact query with the concepts' descendants, the fallback loops
+                            // over the requested set), so the dedup set is what keeps a count from
+                            // counting the same node twice. Rows overlap by construction: with
+                            // exact:false an instance of a subconcept counts for every requested
+                            // superconcept too, so the rows do not sum to a node total.
+                            for (i in requested.indices) {
+                                if (conceptMatches(node, requested[i], exact)) counts[i]++
+                            }
                         }
                     }
                 }
@@ -1438,12 +1529,62 @@ abstract class AbstractNodeOps : AbstractOps() {
             if (monitor.isCanceled) {
                 return@executeBackgroundRead errJson("Operation canceled")
             }
+            if (countOnly) {
+                val rows = JsonArray()
+                for (i in requested.indices) {
+                    val row = JsonObject()
+                    row.addProperty("concept", structureQualifiedName(requested[i]))
+                    row.addProperty("conceptReference", PersistenceFacade.getInstance().asString(requested[i]))
+                    row.addProperty("count", counts[i])
+                    rows.add(row)
+                }
+                return@executeBackgroundRead finalizeResult(rows.toString(), maxInlineBytes)
+            }
             if (sampleOnly) {
                 sample?.let { results.add(it) }
             }
             val cache = ProjectMembershipCache(mpsProject)
             finalizeResult("[" + results.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]", maxInlineBytes)
         }
+    }
+
+    /**
+     * Reads FIND_INSTANCES' concept selector: the plural `conceptRefs` (a single reference or a
+     * nonempty array of them) or the singular `conceptRef` / `conceptReference`.
+     *
+     * `conceptRefs` is deliberately **not** a third spelling folded into [PARAM_CONCEPT_REF]: a
+     * [BlobKey] holds spellings of one key with one arity, and this key takes many values. Sending
+     * the plural together with either singular spelling is rejected naming the one to keep — the
+     * same "reject the ignored key" policy [paramString] applies to two spellings of one key,
+     * because a caller who sent both cannot tell which one won. The arity conflict is reported
+     * first when all three are present, so the message names the key that survives.
+     */
+    private fun requestedConceptRefs(params: JsonObject): RefStrings {
+        val plural = params.get(PARAM_CONCEPT_REFS)?.takeUnless { it.isJsonNull }
+        val singular = PARAM_CONCEPT_REF.spellings.filter { params.get(it)?.takeUnless { v -> v.isJsonNull } != null }
+        if (plural == null) {
+            val single = params.paramString(PARAM_CONCEPT_REF)
+                ?: return RefStrings.Err(
+                    errJson(
+                        "Parameter 'conceptRef' is missing: pass '${PARAM_CONCEPT_REF.canonical}' with one " +
+                            "concept reference or qualified name, or '$PARAM_CONCEPT_REFS' with several.",
+                        McpErrorCode.INVALID_REQUEST,
+                    )
+                )
+            return RefStrings.Ok(listOf(single))
+        }
+        if (singular.isNotEmpty()) {
+            return RefStrings.Err(
+                errJson(
+                    "'parameters' carries '$PARAM_CONCEPT_REFS' and ${singular.joinToString(" and ") { "'$it'" }}, " +
+                        "which select the concepts to search for in two different ways. Keep " +
+                        "'$PARAM_CONCEPT_REFS' (it accepts a single reference as well as an array) and remove " +
+                        singular.joinToString(", ") { "'$it'" } + ".",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
+        }
+        return refStrings(plural, PARAM_CONCEPT_REFS)
     }
 
     private fun propertyValueByName(node: SNode, propertyName: String): String? =

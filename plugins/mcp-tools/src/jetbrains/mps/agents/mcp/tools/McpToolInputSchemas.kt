@@ -64,6 +64,22 @@ internal val PARAM_NEW_PARENT_REF = BlobKey("newParentRef", "newParentReference"
 internal val PARAM_MODEL_REFERENCE = BlobKey("modelReference", "modelRef")
 
 /**
+ * FIND_INSTANCES' plural concept selector. Not a [BlobKey] spelling of [PARAM_CONCEPT_REF]: a
+ * [BlobKey] groups spellings of one key that all carry one value, while this key carries many
+ * (a single reference or an array of them). The two are mutually exclusive at the call site —
+ * see `AbstractNodeOps.requestedConceptRefs`.
+ */
+internal const val PARAM_CONCEPT_REFS = "conceptRefs"
+
+/**
+ * FIND_INSTANCES' `detail` literals. `count` returns one `{concept, conceptReference, count}` row
+ * per requested concept instead of the node records, so counting several concepts costs one call
+ * and does not serialize a node per instance.
+ */
+internal const val DETAIL_NODES = "nodes"
+internal const val DETAIL_COUNT = "count"
+
+/**
  * Reads [key] under whichever accepted spelling is present. Two spellings present at once is
  * rejected rather than silently resolved — the same "reject the ignored key" policy as
  * [REFERENCES_ARE_SINGLE_VALUED] — because a caller who sent both cannot tell which one won.

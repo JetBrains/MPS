@@ -348,6 +348,264 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("scope errors must not return warnings: $response", envelope.has("warnings"))
     }
 
+    // ── FIND_INSTANCES `conceptRefs` + `detail:"count"` (study remedy M1) ───────────────────
+    //
+    // The counting fixture leans on the structure language's own concept hierarchy so that the
+    // requested set genuinely overlaps: `ConceptDeclaration` and `InterfaceConceptDeclaration`
+    // are both subconcepts of the abstract `AbstractConceptDeclaration`. A wrong count cannot be
+    // detected by anything downstream, so each test below pins one specific way of getting it
+    // wrong rather than just the happy path.
+
+    @Test
+    fun `find-instances count reports one row per requested concept in input order`() {
+        createCountFixture()
+
+        val response = countResponse(
+            """[ "$INTERFACE_CONCEPT_DECL", "$CONCEPT_DECL", "$ENUMERATION_DECL" ]"""
+        )
+
+        assertEquals(
+            "rows must mirror the request, including a zero row for a concept with no instances",
+            listOf(INTERFACE_CONCEPT_DECL to 1, CONCEPT_DECL to 3, ENUMERATION_DECL to 0),
+            countRows(response),
+        )
+        for (row in parseDataArray(response)) {
+            assertTrue(
+                "every row must carry the concept's persistent reference: $row",
+                row.asJsonObject.get("conceptReference").asString.startsWith("c:"),
+            )
+        }
+    }
+
+    @Test
+    fun `find-instances count counts a subconcept instance for its requested superconcept`() {
+        createCountFixture()
+
+        val rows = countRows(
+            countResponse("""[ "$CONCEPT_DECL", "$ABSTRACT_CONCEPT_DECL", "$INTERFACE_CONCEPT_DECL" ]""")
+        )
+
+        // The fixture holds 4 declaration roots: Alpha/Beta/Gamma plus the IMarker interface.
+        // AbstractConceptDeclaration has no direct instances, so its 4 are entirely subconcept
+        // instances — and the rows sum to 8 over 4 distinct nodes, which is the documented overlap.
+        assertEquals(
+            listOf(CONCEPT_DECL to 3, ABSTRACT_CONCEPT_DECL to 4, INTERFACE_CONCEPT_DECL to 1),
+            rows,
+        )
+        assertEquals("overlapping rows must not be expected to sum to a node total", 8, rows.sumOf { it.second })
+    }
+
+    @Test
+    fun `find-instances count agrees with the node list of the same query`() {
+        createCountFixture()
+
+        for (conceptRef in listOf(CONCEPT_DECL, ABSTRACT_CONCEPT_DECL, INTERFACE_CONCEPT_DECL)) {
+            val nodes = parseResultReferences(
+                runTool(JetBrainsMPSNodeMcpToolset()) {
+                    it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, findParams(""""$conceptRef""""))
+                }
+            )
+            assertEquals(
+                "the count of '$conceptRef' must equal the number of nodes the same query returns",
+                nodes.size,
+                countRows(countResponse(""""$conceptRef"""")).single().second,
+            )
+        }
+    }
+
+    @Test
+    fun `find-instances count with exact excludes subconcept instances`() {
+        createCountFixture()
+
+        assertEquals(
+            "exact:true must drop the subconcept instances an abstract concept has no others of",
+            listOf(ABSTRACT_CONCEPT_DECL to 0, CONCEPT_DECL to 3),
+            countRows(countResponse("""[ "$ABSTRACT_CONCEPT_DECL", "$CONCEPT_DECL" ]""", extra = ""","exact": true""")),
+        )
+        assertEquals(
+            "exact:false is the default and keeps them",
+            listOf(ABSTRACT_CONCEPT_DECL to 4, CONCEPT_DECL to 3),
+            countRows(countResponse("""[ "$ABSTRACT_CONCEPT_DECL", "$CONCEPT_DECL" ]""")),
+        )
+    }
+
+    @Test
+    fun `find-instances count of one concept is unchanged by batching others alongside it`() {
+        createCountFixture()
+
+        // Guards the two ways batching could corrupt a count: a node reported once per matching
+        // concept being tallied more than once, and one concept's index coverage deciding whether
+        // another concept gets the fallback walk.
+        val alone = countRows(countResponse(""""$ABSTRACT_CONCEPT_DECL""""))
+        val batched = countRows(
+            countResponse("""[ "$CONCEPT_DECL", "$ABSTRACT_CONCEPT_DECL", "$ENUMERATION_DECL" ]""")
+        )
+
+        assertEquals(listOf(ABSTRACT_CONCEPT_DECL to 4), alone)
+        assertEquals(alone.single(), batched.single { it.first == ABSTRACT_CONCEPT_DECL })
+    }
+
+    @Test
+    fun `find-instances count keeps a row per repeated reference`() {
+        createCountFixture()
+
+        assertEquals(
+            "a repeated reference keeps its own row and is not counted twice into one",
+            listOf(CONCEPT_DECL to 3, CONCEPT_DECL to 3),
+            countRows(countResponse("""[ "$CONCEPT_DECL", "$CONCEPT_DECL" ]""")),
+        )
+    }
+
+    @Test
+    fun `find-instances count honours propertyFilter`() {
+        createCountFixture()
+
+        assertEquals(
+            listOf(CONCEPT_DECL to 1, ABSTRACT_CONCEPT_DECL to 1),
+            countRows(
+                countResponse(
+                    """[ "$CONCEPT_DECL", "$ABSTRACT_CONCEPT_DECL" ]""",
+                    extra = ""","propertyFilter": { "name": "name", "value": "Beta" }""",
+                )
+            ),
+        )
+    }
+
+    @Test
+    fun `find-instances accepts several conceptRefs as the union of their instances`() {
+        createCountFixture()
+
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams("""[ "$CONCEPT_DECL", "$INTERFACE_CONCEPT_DECL" ]"""),
+            )
+        }
+
+        assertEquals(setOf("Alpha", "Beta", "Gamma", "IMarker"), parseResultNames(response))
+    }
+
+    @Test
+    fun `find-instances conceptRefs accepts a single reference as well as an array`() {
+        createCountFixture()
+
+        assertEquals(setOf("Alpha", "Beta", "Gamma"), parseResultNames(
+            runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, findParams(""""$CONCEPT_DECL""""))
+            }
+        ))
+    }
+
+    @Test
+    fun `find-instances rejects conceptRefs together with either singular spelling`() {
+        for (singular in listOf("conceptRef", "conceptReference")) {
+            val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_query_nodes(
+                    MPSQueryOperation.FIND_INSTANCES,
+                    """{ "conceptRefs": [ "$CONCEPT_DECL" ], "$singular": "$CONCEPT_DECL" }""",
+                )
+            }
+            assertInvalidRequest(response, "'conceptRefs'", "'$singular'", "Keep 'conceptRefs'")
+        }
+    }
+
+    @Test
+    fun `find-instances names both concept selectors when neither is given`() {
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, """{ "scope": "editable" }""")
+        }
+        assertInvalidRequest(response, "'conceptRef'", "'conceptRefs'")
+    }
+
+    @Test
+    fun `find-instances rejects an empty conceptRefs array`() {
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, """{ "conceptRefs": [] }""")
+        }
+        assertInvalidRequest(response, "conceptRefs", "nonempty array")
+    }
+
+    @Test
+    fun `find-instances rejects detail count together with sampleOnly`() {
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """{ "conceptRef": "$CONCEPT_DECL", "detail": "count", "sampleOnly": true }""",
+            )
+        }
+        assertInvalidRequest(response, "sampleOnly")
+    }
+
+    @Test
+    fun `find-instances rejects an unknown detail value`() {
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """{ "conceptRef": "$CONCEPT_DECL", "detail": "counts" }""",
+            )
+        }
+        assertInvalidRequest(response, "Invalid detail 'counts'", "nodes", "count")
+    }
+
+    @Test
+    fun `find-instances count rejects an unresolvable concept without dropping the row`() {
+        createCountFixture()
+
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams("""[ "$CONCEPT_DECL", "definitely.missing.structure.Nope" ]""", ""","detail": "count""""),
+            )
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("one unresolvable concept must reject the whole query: $response", envelope.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", envelope.get("code").asString)
+        assertTrue(envelope.get("error").asString.contains("definitely.missing.structure.Nope"))
+    }
+
+    /**
+     * Three `ConceptDeclaration` roots plus one `InterfaceConceptDeclaration` root — four nodes
+     * whose concepts overlap under `AbstractConceptDeclaration`.
+     */
+    private fun createCountFixture() {
+        val createParams = """
+            {
+              "structureModelRef": "$structureModelRef",
+              "conceptsJson": [
+                { "name": "Alpha" },
+                { "name": "Beta" },
+                { "name": "Gamma" }
+              ],
+              "interfaceConceptsJson": [ { "name": "IMarker" } ]
+            }
+        """.trimIndent()
+        assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+    }
+
+    /** FIND_INSTANCES parameters scoped to the test's structure model, with [conceptRefs] verbatim. */
+    private fun findParams(conceptRefs: String, extra: String = ""): String = """
+        {
+          "conceptRefs": $conceptRefs,
+          "scope": "models",
+          "models": [ "$structureModelRef" ]$extra
+        }
+    """.trimIndent()
+
+    private fun countResponse(conceptRefs: String, extra: String = ""): String =
+        runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(conceptRefs, ""","detail": "count"$extra"""),
+            )
+        }
+
+    /** The `[{concept, conceptReference, count}]` rows of a `detail:"count"` response, in order. */
+    private fun countRows(response: String): List<Pair<String, Int>> =
+        parseDataArray(response).map {
+            val row = it.asJsonObject
+            row.get("concept").asString to row.get("count").asInt
+        }
+
     @Test
     fun `add-node-child without position appends and returns the new child's reference`() {
         val enumRef = createColorEnum()
@@ -892,5 +1150,15 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     private fun assertOk(response: String) {
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok=true envelope, got: $response", obj.get("ok").asBoolean)
+    }
+
+    private companion object {
+        // The structure language's own hierarchy, used as the FIND_INSTANCES counting fixture:
+        // ConceptDeclaration and InterfaceConceptDeclaration are both subconcepts of the abstract
+        // AbstractConceptDeclaration, so a request naming several of them genuinely overlaps.
+        private const val CONCEPT_DECL = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
+        private const val INTERFACE_CONCEPT_DECL = "jetbrains.mps.lang.structure.structure.InterfaceConceptDeclaration"
+        private const val ABSTRACT_CONCEPT_DECL = "jetbrains.mps.lang.structure.structure.AbstractConceptDeclaration"
+        private const val ENUMERATION_DECL = "jetbrains.mps.lang.structure.structure.EnumerationDeclaration"
     }
 }
