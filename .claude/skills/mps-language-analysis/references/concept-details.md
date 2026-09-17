@@ -4,7 +4,8 @@ Gets detailed information about a list of MPS concepts, including their properti
 
 ## Input form
 
-Each selector accepts either one value or a JSON-array string. For example, use
+Each selector accepts either one value or a JSON array; a real array and the array written as a
+string are equivalent. For example, use
 `conceptRefs = "jetbrains.mps.baseLanguage.structure.ClassConcept"` for one concept, or
 `conceptRefs = "[\"…ClassConcept\", \"…InterfaceConcept\"]"` for several. `languageRefs`
 uses the same form. Omit an unused selector; when both are absent or blank, the tool preserves its

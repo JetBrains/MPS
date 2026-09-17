@@ -33,7 +33,7 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // happy paths — a single Command, or wrapping one/many statements into a block command —
         // require the running console and are verified manually.)
         val response = runTool(JetBrainsMPSConsoleMcpToolset()) {
-            it.mps_mcp_insert_console_command_from_json(json = "{\"concept\":")
+            it.mps_mcp_insert_console_command_from_json(json = JsonOrText("{\"concept\":"))
         }
 
         val obj = JsonParser.parseString(response).asJsonObject
@@ -81,7 +81,7 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `insert-console-command rejects an empty JSON array before touching the console`() {
         val response = runTool(JetBrainsMPSConsoleMcpToolset()) {
-            it.mps_mcp_insert_console_command_from_json(json = "[]")
+            it.mps_mcp_insert_console_command_from_json(json = JsonOrText("[]"))
         }
 
         val obj = JsonParser.parseString(response).asJsonObject
@@ -93,7 +93,7 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `insert-console-command rejects non-object array elements before touching the console`() {
         val response = runTool(JetBrainsMPSConsoleMcpToolset()) {
-            it.mps_mcp_insert_console_command_from_json(json = "[1]")
+            it.mps_mcp_insert_console_command_from_json(json = JsonOrText("[1]"))
         }
 
         val obj = JsonParser.parseString(response).asJsonObject

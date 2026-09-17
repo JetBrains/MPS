@@ -34,14 +34,14 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
     suspend fun mps_mcp_model_dependency(
         @McpDescription("Source model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
         modelReference: String,
-        @McpDescription("Target model name(s) or reference(s). Single string or JSON array: [\"model1\", \"model2\"]")
-        targetModels: String,
+        @McpDescription("Target model name(s) or reference(s). Single string or JSON array: [\"model1\", \"model2\"] (a real array or the array written as a string)")
+        targetModels: JsonOrText,
         @McpDescription("Operation to perform: ADD or DELETE")
         operation: String = "ADD"
     ): String {
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
-        return mps_mcp_model_dependency(modelReference, targetModels, op)
+        return mps_mcp_model_dependency(modelReference, targetModels.text, op)
     }
 
     /** Internal enum-typed entry point for [mps_mcp_model_dependency]; see [resolveOperationOrNull]. */

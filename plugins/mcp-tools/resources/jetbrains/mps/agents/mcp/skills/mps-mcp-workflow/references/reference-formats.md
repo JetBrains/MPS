@@ -24,6 +24,25 @@ A model reference is **not** interchangeable with a node reference; each tool ta
 
 Passing a model reference where a node reference is expected fails with NOT_FOUND, not with a type error — recheck the reference shape before concluding the node is gone.
 
+### Passing a list to a top-level parameter
+
+These top-level parameters take one value or a list: `conceptRefs` / `languageRefs`
+(`mps_mcp_get_concept_details`), `searchTexts` (`mps_mcp_search_concepts`), `names` / `models` /
+`modules` (`mps_mcp_search_root_node_by_name`), `targetModels` (`mps_mcp_model_dependency`),
+`facets` (`mps_mcp_create_module`), the four `include*` selectors of `mps_mcp_scaffold_editor`, and
+the `json` blueprint of `mps_mcp_insert_root_node_from_json`,
+`mps_mcp_update_root_node_from_json` and `mps_mcp_insert_console_command_from_json`.
+
+**Both wire shapes are accepted and equivalent**: a real JSON array (`["A","B"]`) or the array
+written as a string (`"[\"A\",\"B\"]"`). A single bare value needs no brackets — a persistent
+reference is not valid bare JSON, so a lone `r:...` / `c:...` is always taken as one value. A value
+no list can be built from (a JSON object, a number, an array of objects) is passed through as a
+single value and comes back as the tool's ordinary unresolved-reference `ok:false` envelope, never
+as an exception.
+
+Blob keys *inside* a `parameters` / `conceptsJson` / `valuesJson` payload are different: that
+payload is itself one string parameter, so its own arrays are plain JSON inside it.
+
 ## MCP Response Envelope
 
 Every MPS MCP tool returns a JSON envelope at the top level:

@@ -410,6 +410,17 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
+     * [JsonOrText] overload of [parseStringOrJsonArray]. Registered `@McpTool` parameters that
+     * document a JSON array are declared [JsonOrText] rather than `String` so the platform's
+     * argument binding can decode both wire shapes; see [JsonOrText] for why.
+     */
+    protected fun parseStringOrJsonArray(raw: JsonOrText): List<String> = parseStringOrJsonArray(raw.text)
+
+    /** [JsonOrText] overload of [parseNullableStringOrJsonArray]. */
+    protected fun parseNullableStringOrJsonArray(raw: JsonOrText?): List<String>? =
+        parseNullableStringOrJsonArray(raw?.text)
+
+    /**
      * Runs [block]; on a non-cancellation, non-Error throwable returns the exception's message
      * (or `toString()`) as a warning string. Cancellation and [Error] propagate. Used by tool
      * methods that want to surface a secondary failure as a `warnings` payload entry rather than

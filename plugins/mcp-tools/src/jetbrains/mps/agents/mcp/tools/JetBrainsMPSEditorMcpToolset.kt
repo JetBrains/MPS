@@ -103,11 +103,11 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
         @McpDescription("Optional: A persistent reference to a StyleClass to automatically apply to constant cells like the concept alias.") keywordStyle: String? = null,
         @McpDescription("Optional: A persistent reference to a StyleClass to apply to reference cells.") referenceStyle: String? = null,
         @McpDescription("Whether to automatically detect and include existing suitable editor components.") detectComponents: Boolean = false,
-        @McpDescription("Optional: A persistent reference to an existing EditorComponentDeclaration, or a JSON array of references. Omit or pass [] for no explicit components.") includeComponents: String? = null,
+        @McpDescription("Optional: A persistent reference to an existing EditorComponentDeclaration, or a JSON array of references (a real array or the array written as a string). Omit or pass [] for no explicit components.") includeComponents: JsonOrText? = null,
         @McpDescription("Optional: The type of editor to create: 'editor' (default) or 'component'.") type: String = "editor",
-        @McpDescription("Optional: A property name or JSON array of property names to include. Omit for all; [] for none.") includeProperties: String? = null,
-        @McpDescription("Optional: A reference name or JSON array of reference names to include. Omit for all; [] for none.") includeReferences: String? = null,
-        @McpDescription("Optional: A containment link name or JSON array of containment link names to include. Omit for all; [] for none.") includeChildren: String? = null
+        @McpDescription("Optional: A property name or JSON array of property names to include (a real array or the array written as a string). Omit for all; [] for none.") includeProperties: JsonOrText? = null,
+        @McpDescription("Optional: A reference name or JSON array of reference names to include (a real array or the array written as a string). Omit for all; [] for none.") includeReferences: JsonOrText? = null,
+        @McpDescription("Optional: A containment link name or JSON array of containment link names to include (a real array or the array written as a string). Omit for all; [] for none.") includeChildren: JsonOrText? = null
     ): String = mps_mcp_scaffold_editor(
         conceptRef,
         modelReference,

@@ -18,7 +18,7 @@ For `type=language`, three optional flags decide which companion modules are cre
 
 ## `facets` policy
 
-`facets` is an optional additional facet type, or a JSON-array string of facet types, to attach after the producer has installed its defaults (e.g. `"tests"` or `"[\"tests\"]"` to mark a solution as the container for a `@tests` model). Omit it or pass `"[]"` when no extra facets are needed.
+`facets` is an optional additional facet type, or a JSON array of facet types (real or written as a string), to attach after the producer has installed its defaults (e.g. `"tests"` or `"[\"tests\"]"` to mark a solution as the container for a `@tests` model). Omit it or pass `"[]"` when no extra facets are needed.
 
 - Allowed only for `type=solution` and `type=language`. Passing `facets` with `type=devkit` or `type=generator` is **rejected upfront** with `INVALID_REQUEST`.
 - Each entry must match a registered facet factory. **Unknown facet types fail upfront**, before the module is produced, so no partial state is left behind.

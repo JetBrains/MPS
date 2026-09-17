@@ -179,12 +179,12 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
 
         val names = """["RootOnlyInProjectA","RootOnlyInProjectB"]"""
         val asModelScope = searchNames(runTool(rootNodeToolset) {
-            it.mps_mcp_search_root_node_by_name(names, scope = "models", models = "$languageName.structure")
+            it.mps_mcp_search_root_node_by_name(JsonOrText(names), scope = "models", models = JsonOrText("$languageName.structure"))
         })
         assertEquals(setOf("RootOnlyInProjectA"), asModelScope)
 
         val asModuleScope = searchNames(runTool(rootNodeToolset) {
-            it.mps_mcp_search_root_node_by_name(names, scope = "modules", modules = languageName)
+            it.mps_mcp_search_root_node_by_name(JsonOrText(names), scope = "modules", modules = JsonOrText(languageName))
         })
         assertEquals(setOf("RootOnlyInProjectA"), asModuleScope)
     }
@@ -206,7 +206,7 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         val model = createModel(solution, "mcp.test.jsonconcept.model${System.nanoTime()}")
         val modelRef = readIn(myProject) { PersistenceFacade.getInstance().asString(model.reference) }
         val response = runTool(rootNodeToolset) {
-            it.mps_mcp_insert_root_node_from_json(modelRef, """{ "concept": "$conceptName" }""", dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText("""{ "concept": "$conceptName" }"""), dryRun = false)
         }
         val createdRef = expectOk(response).get("reference").asString
 
@@ -246,7 +246,7 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         """.trimIndent()
 
         val response = runTool(rootNodeToolset) {
-            it.mps_mcp_insert_root_node_from_json(aStructureRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(aStructureRef, JsonOrText(json), dryRun = false)
         }
         val derivedRef = expectOk(response).get("reference").asString
 
@@ -389,7 +389,7 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         val modelRef = readIn(myProject) { PersistenceFacade.getInstance().asString(model.reference) }
 
         val response = runTool(rootNodeToolset) {
-            it.mps_mcp_insert_root_node_from_json(modelRef, """{ "conceptReference": "$bConceptRef" }""", dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText("""{ "conceptReference": "$bConceptRef" }"""), dryRun = false)
         }
         val created = expectOk(response)
         assertForeignProjectMarker(created, projectB, "concept")
@@ -501,6 +501,63 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
                 probe.isForeign(myProject, libraryConcept, repository),
             )
         }
+    }
+
+    @Test
+    fun `get concept details suggestions never name a concept from a sibling project`() {
+        // D4, end-to-end half. The test above pins the membership *predicate*; this one drives the
+        // whole `get_concept_details` unresolved path as project A and asserts that nothing in
+        // `details.unresolved[].suggestions` comes out of project B's namespace.
+        //
+        // Fixture limitation, stated rather than hidden: the suggestion ranker iterates
+        // `LanguageRegistry.allLanguages`, and a language created by `LanguageProducer` has no
+        // compiled runtime, so project B's language is not a candidate here for two reasons at
+        // once (unregistered *and* filtered). This test therefore guards the end-to-end wiring —
+        // that suggestions are scoped at all, and that no other code path re-widens them — while
+        // the predicate test above is what pins the filter itself.
+        val projectB = openProjectB()
+        val bLanguageName = "mcp.test.siblingsuggest${System.nanoTime()}"
+        val bLanguage = createLanguageIn(projectB, bLanguageName)
+        createConceptRootIn(projectB, structureModelOf(projectB, bLanguage), "SiblingOnlyProbeConcept")
+
+        val response = runTool(languageToolset) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf("SiblingOnlyProbeConceptZzq"))
+        }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("a name that exists in neither project must fail loudly: $response", envelope.get("ok").asBoolean)
+        val suggestions = envelope.getAsJsonObject("details").getAsJsonArray("unresolved")
+            .flatMap { entry -> entry.asJsonObject.getAsJsonArray("suggestions").map { it.asJsonObject } }
+            .map { it.get("qualifiedName").asString }
+        assertTrue(
+            "no suggestion may come from the sibling project's language; got=$suggestions",
+            suggestions.none { it.startsWith("$bLanguageName.") },
+        )
+        assertTrue(
+            "no suggestion may name the sibling-only concept; got=$suggestions",
+            suggestions.none { it.substringAfterLast('.') == "SiblingOnlyProbeConcept" },
+        )
+    }
+
+    @Test
+    fun `get concept details marks a sibling-project concept reached by plain name`() {
+        // The other side of D4: a plain concept name that exists ONLY in project B is still
+        // reachable, because `resolveConceptNodePreferringProject` falls back from the selected
+        // project's modules to the shared repository. That is the same read-only cross-project
+        // access the module/model tools document — so the contract is not "never reached" but
+        // "never reported as if it belonged to the caller's project".
+        val projectB = openProjectB()
+        val bLanguage = createLanguageIn(projectB, "mcp.test.siblingreach${System.nanoTime()}")
+        val conceptName = "SiblingReachProbeConcept"
+        createConceptRootIn(projectB, structureModelOf(projectB, bLanguage), conceptName)
+
+        val response = runTool(languageToolset) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf(conceptName))
+        }
+
+        val concept = payloadArrayFromOkData(response).single().asJsonObject
+        assertEquals(conceptName, concept.get("name").asString)
+        assertForeignProjectMarker(concept, projectB)
     }
 
     private fun openProjectB(): MPSProject =

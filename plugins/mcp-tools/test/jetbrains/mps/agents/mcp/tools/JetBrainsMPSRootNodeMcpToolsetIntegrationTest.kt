@@ -103,7 +103,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         """.trimIndent()
 
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         val data = expectOk(response)
         assertEquals("Single", data.get("name").asString)
@@ -123,7 +123,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             }
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         val data = expectOk(response)
         val fix = data.get("fixReferences")
@@ -144,7 +144,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             ]
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         val arr = parseDataArray(response)
         assertEquals(2, arr.size())
@@ -176,7 +176,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             ]
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         val arr = parseDataArray(response)
         assertEquals(2, arr.size())
@@ -209,7 +209,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         """.trimIndent()
 
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         // The envelope's `data` is a JSON-string holding the inserted-node array
         val obj = JsonParser.parseString(response).asJsonObject
@@ -231,7 +231,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // envelopes, `conceptDoc` repeated per root.
         val names = (1..10).map { "BulkSummary$it" }
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, conceptArrayJson(names), dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptArrayJson(names)), dryRun = false)
         }
 
         val data = expectOk(response)
@@ -258,7 +258,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val names = (1..10).map { "BulkFull$it" }
         val response = runTool(toolset) {
             it.mps_mcp_insert_root_node_from_json(
-                structureModelRef, conceptArrayJson(names), dryRun = false, responseDetail = "full",
+                structureModelRef, JsonOrText(conceptArrayJson(names)), dryRun = false, responseDetail = "full",
             )
         }
 
@@ -273,7 +273,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `insert_root_node_from_json keeps the full envelopes for a small batch and summarizes on request`() {
         val small = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, conceptArrayJson(listOf("SmallA", "SmallB")), dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptArrayJson(listOf("SmallA", "SmallB"))), dryRun = false)
         }
         val arr = parseDataArray(small)
         assertEquals(2, arr.size())
@@ -282,7 +282,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val requested = runTool(toolset) {
             it.mps_mcp_insert_root_node_from_json(
                 structureModelRef,
-                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "SmallSummary" } ] }""",
+                JsonOrText("""{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "SmallSummary" } ] }"""),
                 dryRun = false,
                 responseDetail = "summary",
             )
@@ -298,7 +298,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) {
             it.mps_mcp_insert_root_node_from_json(
                 structureModelRef,
-                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "NotInserted" } ] }""",
+                JsonOrText("""{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "NotInserted" } ] }"""),
                 dryRun = false,
                 responseDetail = "brief",
             )
@@ -316,7 +316,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             { "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "DryRoot" } ] }
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = true)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = true)
         }
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
@@ -337,7 +337,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `insert_root_node_from_json with invalid JSON returns INVALID_JSON envelope`() {
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, "{ not really JSON", dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText("{ not really JSON"), dryRun = false)
         }
         assertTrue(expectErr(response).contains("Failed to parse JSON"))
     }
@@ -358,7 +358,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             }
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         val err = expectErr(response)
         assertTrue("error must surface the XML-short-id rejection: $err", err.contains("XML short ID"))
@@ -385,7 +385,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val before = readOnRepo { structureModel.rootNodes.mapNotNull { it.name }.toSet() }
 
         val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         val msg = expectErr(response)
         assertTrue("error must mention the non-rootable concept: $msg",
@@ -419,7 +419,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
               ] }
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_update_root_node_from_json(rootRef, json, dryRun = false)
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = false)
         }
         val data = expectOk(response)
         assertEquals("RenamedRoot", data.get("name").asString)
@@ -441,7 +441,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
               "properties": [ { "name": "virtualPackage", "value": "after.update" } ] }
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_update_root_node_from_json(rootRef, json, dryRun = false)
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = false)
         }
         val data = expectOk(response)
         assertEquals("name omitted from blueprint must be preserved", "UpdateMe", data.get("name").asString)
@@ -461,7 +461,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
               "properties": [ { "name": "name", "value": "Different" } ] }
         """.trimIndent()
         val response = runTool(toolset) {
-            it.mps_mcp_update_root_node_from_json(rootRef, json, dryRun = true)
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = true)
         }
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
@@ -484,7 +484,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) {
             it.mps_mcp_update_root_node_from_json(
                 "r:00000000-0000-0000-0000-000000000000(ghost)/0",
-                """{ "concept": "$conceptDeclarationFqn" }""",
+                JsonOrText("""{ "concept": "$conceptDeclarationFqn" }"""),
                 dryRun = false,
             )
         }
@@ -525,7 +525,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `search_root_node_by_name with single string returns matching roots`() {
         createConceptRoot("Findable")
-        val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name("Findable") }
+        val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name(JsonOrText("Findable")) }
         val arr = parseDataArray(response)
         val names = arr.map { it.asJsonObject.get("name").asString }
         assertTrue("results must contain the created concept: $names", names.contains("Findable"))
@@ -536,7 +536,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         createConceptRoot("LookupA")
         createConceptRoot("LookupB")
         val response = runTool(toolset) {
-            it.mps_mcp_search_root_node_by_name("""["LookupA","LookupB"]""")
+            it.mps_mcp_search_root_node_by_name(JsonOrText("""["LookupA","LookupB"]"""))
         }
         val names = parseDataArray(response).map { it.asJsonObject.get("name").asString }.toSet()
         assertTrue("results must contain both names: $names",
@@ -545,7 +545,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     @Test
     fun `search_root_node_by_name returns empty array when nothing matches`() {
-        val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name("DefinitelyNotARealConceptName") }
+        val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name(JsonOrText("DefinitelyNotARealConceptName")) }
         val arr = parseDataArray(response)
         assertEquals(0, arr.size())
     }
@@ -595,7 +595,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     fun `search finds a project root under both all and editable scopes`() {
         createConceptRoot("ScopedFindable")
         for (scope in listOf("all", "editable")) {
-            val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name("ScopedFindable", scope) }
+            val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name(JsonOrText("ScopedFindable"), scope) }
             val names = parseDataArray(response).map { it.asJsonObject.get("name").asString }
             assertTrue("scope=$scope must find the project root: $names", names.contains("ScopedFindable"))
         }
@@ -790,16 +790,16 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         createConceptRoot("ScopedRootSearch")
         val partial = runTool(toolset) {
             it.mps_mcp_search_root_node_by_name(
-                "ScopedRootSearch",
+                JsonOrText("ScopedRootSearch"),
                 scope = "models",
-                models = "[\"$structureModelRef\",\"definitely.missing.model\"]",
+                models = JsonOrText("[\"$structureModelRef\",\"definitely.missing.model\"]"),
             )
         }
         assertInvalidScope(partial, "definitely.missing.model")
         assertFalse(JsonParser.parseString(partial).asJsonObject.has("warnings"))
 
         val empty = runTool(toolset) {
-            it.mps_mcp_search_root_node_by_name("ScopedRootSearch", scope = "models", models = "[]")
+            it.mps_mcp_search_root_node_by_name(JsonOrText("ScopedRootSearch"), scope = "models", models = JsonOrText("[]"))
         }
         assertInvalidScope(empty, "models")
     }

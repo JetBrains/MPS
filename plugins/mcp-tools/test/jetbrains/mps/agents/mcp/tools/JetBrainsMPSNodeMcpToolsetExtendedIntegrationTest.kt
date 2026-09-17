@@ -1309,7 +1309,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         )
 
         val response = runTool(JetBrainsMPSRootNodeMcpToolset()) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, printed.toString(), dryRun = true)
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(printed.toString()), dryRun = true)
         }
         val data = expectOk(response)
         assertTrue("the printout must validate as a blueprint: $response", data.get("dryRun").asBoolean)

@@ -11,7 +11,10 @@ import com.intellij.mcpserver.McpToolDescriptor
 import com.intellij.mcpserver.McpToolFilter
 import com.intellij.mcpserver.McpToolSchema
 import com.intellij.mcpserver.McpToolset
+import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.impl.McpServerService
+import com.intellij.mcpserver.impl.util.CallableBridge
+import com.intellij.mcpserver.impl.util.asTools
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import jetbrains.mps.ide.ModuleInProjectTest
@@ -38,6 +41,9 @@ import java.util.Collections
 import java.util.logging.Handler
 import java.util.logging.LogRecord
 import java.util.logging.Logger
+import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.findAnnotation
+import kotlinx.serialization.json.JsonElement as McpJsonElement
 
 /**
  * Base class for MCP toolset integration tests. Inherits the [MPSProject] lifecycle from
@@ -120,6 +126,35 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
     /** Convenience overload preserving the original concept-test call shape. */
     protected fun <R> runTool(block: suspend (JetBrainsMPSLanguageStructureMcpToolset) -> R): R =
         runTool(JetBrainsMPSLanguageStructureMcpToolset(), block)
+
+    /**
+     * Invokes the *registered* `@McpTool` overload named [toolName] through the platform's
+     * [CallableBridge] — the path `ReflectionCallableMcpTool` takes for a real MCP request, with
+     * [args] the request's raw argument JSON.
+     *
+     * [runTool] calls the Kotlin method directly and so binds arguments with the Kotlin compiler's
+     * rules, never the bridge's. Only this route can observe an argument-binding outcome, which is
+     * where study defect D20 lives: the bridge resolves `serializerOrNull(parameter.type)` per
+     * [kotlin.reflect.KParameter] and hands it the raw [McpJsonElement], so a parameter's declared
+     * type — not its body — decides which wire shapes a client may send. See [JsonOrText].
+     */
+    protected fun callThroughBridge(
+        toolset: McpToolset,
+        toolName: String,
+        args: Map<String, McpJsonElement>,
+        project: MPSProject = myProject,
+    ): String {
+        val registered = toolset::class.declaredFunctions.single { function ->
+            function.name == toolName && function.findAnnotation<McpTool>() != null
+        }
+        val bridge = CallableBridge(registered, toolset)
+        val element = McpCallAdditionalDataElement(stubMcpCallInfo(project))
+        return runBlocking(element) { bridge.call(JsonObject(args)).result } as String
+    }
+
+    /** The input schema the MCP host publishes for [toolName], as generated from its Kotlin signature. */
+    protected fun publishedInputSchema(toolset: McpToolset, toolName: String): McpToolSchema =
+        toolset.asTools().single { it.descriptor.name == toolName }.descriptor.inputSchema
 
     protected fun structureRoots(): List<SNode> =
         myProject.modelAccess.computeReadAction<List<SNode>> { structureModel.rootNodes.toList() }

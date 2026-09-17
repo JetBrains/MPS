@@ -55,7 +55,7 @@ class WriteToolCrossProjectTest : McpIntegrationTestBase() {
 
         // Write tool selected for project A, targeting project B's model → refused by the guard.
         val asA = runTool(rootNodeToolset) {
-            it.mps_mcp_insert_root_node_from_json(bStructureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(bStructureModelRef, JsonOrText(json), dryRun = false)
         }
         assertCrossProjectRefusal(asA)
 
@@ -63,7 +63,7 @@ class WriteToolCrossProjectTest : McpIntegrationTestBase() {
         // reference is valid and resolvable — i.e. the refusal above is specifically the
         // cross-project guard, not a NOT_FOUND.
         val asB = runToolForProject(b, rootNodeToolset) {
-            it.mps_mcp_insert_root_node_from_json(bStructureModelRef, json, dryRun = false)
+            it.mps_mcp_insert_root_node_from_json(bStructureModelRef, JsonOrText(json), dryRun = false)
         }
         assertOk("project B must be allowed to write its own model", asB)
     }
@@ -81,13 +81,13 @@ class WriteToolCrossProjectTest : McpIntegrationTestBase() {
 
         // Write tool selected for project A, targeting project B's node → refused by the guard.
         val asA = runTool(rootNodeToolset) {
-            it.mps_mcp_update_root_node_from_json(bRootRef, json, dryRun = false)
+            it.mps_mcp_update_root_node_from_json(bRootRef, JsonOrText(json), dryRun = false)
         }
         assertCrossProjectRefusal(asA)
 
         // Positive control: the SAME node update selected for project B succeeds.
         val asB = runToolForProject(b, rootNodeToolset) {
-            it.mps_mcp_update_root_node_from_json(bRootRef, json, dryRun = false)
+            it.mps_mcp_update_root_node_from_json(bRootRef, JsonOrText(json), dryRun = false)
         }
         assertOk("project B must be allowed to write its own node", asB)
     }

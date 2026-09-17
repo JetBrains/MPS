@@ -105,7 +105,7 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 type = "solution",
                 name = solutionName,
                 directory = freshPathInProject(solutionName),
-                facets = "tests",
+                facets = JsonOrText("tests"),
             )
         }
 
@@ -121,7 +121,7 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 type = "solution",
                 name = solutionName,
                 directory = freshPathInProject(solutionName),
-                facets = "[\"tests\", \"documentation\"]",
+                facets = JsonOrText("[\"tests\", \"documentation\"]"),
             )
         }
 

@@ -3,6 +3,7 @@ package jetbrains.mps.agents.mcp.tools
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -11,7 +12,11 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import kotlin.reflect.full.declaredFunctions
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.valueParameters
+import kotlinx.serialization.json.JsonArray as McpJsonArray
+import kotlinx.serialization.json.JsonElement as McpJsonElement
+import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 
 /**
  * End-to-end integration tests for [JetBrainsMPSLanguageMcpToolset].
@@ -242,7 +247,7 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     fun `get-concept-details accepts a single concept reference string`() {
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
             it.mps_mcp_get_concept_details(
-                conceptRefs = "jetbrains.mps.lang.core.structure.BaseConcept",
+                conceptRefs = JsonOrText("jetbrains.mps.lang.core.structure.BaseConcept"),
             )
         }
 
@@ -259,7 +264,7 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     fun `get-concept-details accepts a JSON array string`() {
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
             it.mps_mcp_get_concept_details(
-                conceptRefs = "[\"jetbrains.mps.lang.core.structure.BaseConcept\"]",
+                conceptRefs = JsonOrText("[\"jetbrains.mps.lang.core.structure.BaseConcept\"]"),
             )
         }
 
@@ -275,7 +280,7 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `get-concept-details keeps an empty string request as the existing empty-input error`() {
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(conceptRefs = "")
+            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(""))
         }
 
         val obj = JsonParser.parseString(response).asJsonObject
@@ -343,6 +348,193 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    // ── D20: `conceptRefs` and the fully-qualified-name form ───────────────────────────────
+    // Study round 3 recorded D20 as "a fully-qualified concept name in `conceptRefs` raises an
+    // unhandled `Index -1 out of bounds for length 0`". The three tests below split that claim
+    // into its two independent halves, because they have different answers:
+    //   1. the FQN form itself resolves — for a plain concept, an interface concept, and a
+    //      concept in a project language that was never compiled (the shape the study's
+    //      in-session `mcp.study.recipes` language had);
+    //   2. the crash is caused by the *wire shape* of the argument, not by its value: a real
+    //      JSON array sent for the `String`-typed `conceptRefs` parameter dies in the platform's
+    //      argument decoder before the tool body runs.
+
+    @Test
+    fun `get-concept-details resolves a fully qualified name for a plain and an interface concept`() {
+        val plainFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
+        val interfaceFqn = "jetbrains.mps.lang.core.structure.INamedConcept"
+
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf(plainFqn, interfaceFqn))
+        }
+
+        val byQualifiedName = readConceptArrayFromOkPath(response)
+            .associate { it.asJsonObject.get("qualifiedName").asString to it.asJsonObject }
+        assertEquals(
+            "both FQN forms must resolve; the tool prints exactly these strings as qualifiedName",
+            setOf(plainFqn, interfaceFqn), byQualifiedName.keys,
+        )
+        assertFalse(
+            "a ConceptDeclaration must not be reported as an interface concept",
+            byQualifiedName.getValue(plainFqn).get("isInterfaceConcept").asBoolean,
+        )
+        assertTrue(
+            "an InterfaceConceptDeclaration resolved by FQN must be reported as an interface concept",
+            byQualifiedName.getValue(interfaceFqn).get("isInterfaceConcept").asBoolean,
+        )
+    }
+
+    @Test
+    fun `get-concept-details resolves a fully qualified name in a project language that was never compiled`() {
+        // The closest fixture available to the "language registered but runtime descriptor hollow"
+        // case the round-3 plan suspected: `createConceptRoot` writes a ConceptDeclaration into the
+        // test language's structure model without a make, so the language has no compiled runtime
+        // and is absent from the LanguageRegistry. Resolution must still succeed, through
+        // `resolveConceptNodeInModules` step 3 (split on the last dot, match `<model>.structure`).
+        // That the fixture language is absent from the LanguageRegistry is pinned independently by
+        // `get-concept-details warns when a persistent languageRef resolves syntactically but is
+        // not loaded in LanguageRegistry` below.
+        createConceptRoot("D20UncompiledProbe")
+        val fqn = readOnRepo { structureModel.name.longName + ".D20UncompiledProbe" }
+
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(fqn))
+        }
+
+        val concept = readConceptArrayFromOkPath(response).single().asJsonObject
+        assertEquals("D20UncompiledProbe", concept.get("name").asString)
+        assertTrue(
+            "an uncompiled concept resolved by FQN must still carry the documented detail blocks: $concept",
+            concept.has("properties") && concept.has("references") &&
+                    concept.has("children") && concept.has("sampleNode"),
+        )
+    }
+
+    @Test
+    fun `get-concept-details serves a hollow runtime descriptor by concept reference and rejects it by FQN`() {
+        // The plan's third D20 candidate: a concept whose language *is* registered but whose
+        // runtime descriptor is hollow. Forged the same way `ScaffoldEditorStalenessTest.
+        // `checkScaffoldingStaleness flags a hollow runtime descriptor …`` does — an unknown
+        // concept id inside the loaded `jetbrains.mps.lang.editor` language makes
+        // `PersistenceFacade.createConcept` hand back a bare facade with null sourceNode and
+        // empty members, which is exactly what `isHollowDescriptor` catches.
+        //
+        // Neither address form throws, which is the point: the hollow descriptor is *not* D20's
+        // trigger. The `c:` form is served with the documented staleness marker; the plain
+        // qualified name cannot resolve at all (no structure root carries it, and
+        // `facade.createConcept` rejects a non-`c:` string), so it comes back as an ordinary
+        // NOT_FOUND envelope.
+        val hollowConceptRef =
+            "c:18bc6592-03a6-4e29-a83a-7ff23bde13ba/9999999999:jetbrains.mps.lang.editor.structure.BogusConcept"
+
+        val byReference = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(hollowConceptRef))
+        }
+        val hollow = readConceptArrayFromOkPath(byReference).single().asJsonObject
+        assertEquals(
+            "a hollow runtime descriptor must be flagged, not served as a real concept: $hollow",
+            "hollow", hollow.get("descriptorStatus").asString,
+        )
+        assertTrue(
+            "the hollow marker must carry the rebuild recovery action: $hollow",
+            hollow.get("descriptorRecoveryAction").asString.contains("rebuild"),
+        )
+
+        val byQualifiedName = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText("jetbrains.mps.lang.editor.structure.BogusConcept"))
+        }
+        val envelope = JsonParser.parseString(byQualifiedName).asJsonObject
+        assertFalse("a hollow concept has no FQN route, so this must fail: $byQualifiedName", envelope.get("ok").asBoolean)
+        assertEquals(
+            "the failure must be a classified envelope, never a raw exception",
+            "NOT_FOUND", envelope.get("code").asString,
+        )
+    }
+
+    @Test
+    fun `get-concept-details accepts conceptRefs as a real JSON array and as the array written as a string`() {
+        // D20's actual mechanism and its fix, exercised through the same path a real MCP client
+        // takes. `conceptRefs` used to be declared `String`, while the tool description said "or a
+        // JSON array of them" — a client that read that literally sent a JSON array and
+        // `CallableBridge.call` handed it to `String.serializer()`, which made `TaggedDecoder.popTag`
+        // pop an empty tag stack: `IndexOutOfBoundsException: Index -1 out of bounds for length 0`,
+        // thrown during argument binding, before the tool body ran.
+        //
+        // The parameter is now `JsonOrText`, whose serializer keeps the published schema at
+        // `{"type":"string"}` (pinned by `McpJsonOrTextWireShapeTest`) while decoding either shape.
+        val plainFqn = "jetbrains.mps.lang.core.structure.BaseConcept"
+        val interfaceFqn = "jetbrains.mps.lang.core.structure.INamedConcept"
+
+        fun call(conceptRefs: McpJsonElement): List<String> =
+            payloadArrayFromOkData(
+                callThroughBridge(
+                    JetBrainsMPSLanguageMcpToolset(),
+                    "mps_mcp_get_concept_details",
+                    mapOf("conceptRefs" to conceptRefs),
+                )
+            ).map { it.asJsonObject.get("qualifiedName").asString }
+
+        assertEquals(
+            "the array-as-string shape the round-3 worker used must keep working",
+            listOf(plainFqn),
+            call(McpJsonPrimitive("[\"$plainFqn\"]")),
+        )
+        assertEquals(
+            "a real JSON array — the shape the round-3 evaluator sent, which used to crash the " +
+                    "platform's argument decoder — must now resolve",
+            listOf(plainFqn, interfaceFqn),
+            call(McpJsonArray(listOf(McpJsonPrimitive(plainFqn), McpJsonPrimitive(interfaceFqn)))),
+        )
+        assertEquals(
+            "a single bare value must stay byte-identical to the pre-fix behaviour",
+            listOf(plainFqn),
+            call(McpJsonPrimitive(plainFqn)),
+        )
+    }
+
+    @Test
+    fun `get-concept-details rejects the singular conceptReference with a copy-pasteable retry line`() {
+        // M5b. The rejection already named the correct key, and in both observed incidents the
+        // model fetched the tool schema anyway; the message now ends with the literal edit to make.
+        // `conceptReference` is not a declared parameter, so the bridge simply ignores the unknown
+        // request key and the Kotlin default applies — which is what reaches this message.
+        val response = callThroughBridge(
+            JetBrainsMPSLanguageMcpToolset(),
+            "mps_mcp_get_concept_details",
+            mapOf("conceptReference" to McpJsonPrimitive("jetbrains.mps.lang.core.structure.BaseConcept")),
+        )
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("an unknown top-level key must not silently succeed: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        val error = envelope.get("error").asString
+        assertTrue("the message must still name the accepted keys: $error", error.contains("'conceptRefs'"))
+        assertTrue(
+            "the message must end with a copy-pasteable retry line: $error",
+            error.contains("Retry with conceptRefs set to the value you passed as conceptReference"),
+        )
+    }
+
+    @Test
+    fun `search-concepts rejects a missing searchTexts with a copy-pasteable retry line`() {
+        // M5b for the round-3 `query`/`searchTexts` near-miss (S1-sonnet-1:56-58).
+        val response = callThroughBridge(
+            JetBrainsMPSLanguageMcpToolset(),
+            "mps_mcp_search_concepts",
+            mapOf("query" to McpJsonPrimitive("ConceptDeclaration")),
+        )
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("an unknown top-level key must not silently succeed: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        val error = envelope.get("error").asString
+        assertTrue("the message must still name the accepted key: $error", error.contains("searchTexts is required"))
+        assertTrue(
+            "the message must end with a copy-pasteable retry line: $error",
+            error.contains("Retry with searchTexts set to the value you passed as query/q/text."),
+        )
+    }
+
     @Test
     fun `get-concept-details expands an entire language into its concept set`() {
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
@@ -372,16 +564,17 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // the request JSON and rejects any parameter that is absent from the JSON and not
         // KParameter.isOptional with "No argument is passed for required parameter 'conceptRefs'".
         // A Kotlin parameter is isOptional only when it has a default value, so the registered
-        // String-typed wrapper must keep its `= ""` default; otherwise every documented
-        // language-only call (conceptRefs omitted, languageRefs provided) throws before the
-        // body's either/or guard ever runs.
-        // The registered overload is the one whose refs parameters are Strings (the other entry
-        // point takes List<String>); its remaining parameters (detail, includeChildRoleConcepts,
-        // maxInlineBytes) are projections/limits and must be optional for the same reason.
+        // wrapper must keep its default (`JsonOrText.EMPTY` since the D20 conversion, `= ""`
+        // before it); otherwise every documented language-only call (conceptRefs omitted,
+        // languageRefs provided) throws before the body's either/or guard ever runs.
+        // The registered overload is the `@McpTool`-annotated one (the other entry point takes
+        // List<String> and is not registered); its remaining parameters (detail,
+        // includeChildRoleConcepts, maxInlineBytes) are projections/limits and must be optional
+        // for the same reason.
         val fn = JetBrainsMPSLanguageMcpToolset::class.declaredFunctions
             .single { function ->
                 function.name == "mps_mcp_get_concept_details" &&
-                        function.valueParameters.first().type.classifier == String::class
+                        function.findAnnotation<McpTool>() != null
             }
         for (parameter in fn.valueParameters) {
             assertTrue(
@@ -808,7 +1001,7 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // The registered String-typed overload must wrap a bare single value into a one-element
         // list so a client is not forced to send a JSON array for the common single-term case.
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_search_concepts(searchTexts = "ConceptDeclaration")
+            it.mps_mcp_search_concepts(searchTexts = JsonOrText("ConceptDeclaration"))
         }
 
         val qualifiedNames = readSearchArray(response)
@@ -822,7 +1015,7 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `search-concepts accepts a JSON array string`() {
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_search_concepts(searchTexts = "[\"ConceptDeclaration\"]")
+            it.mps_mcp_search_concepts(searchTexts = JsonOrText("[\"ConceptDeclaration\"]"))
         }
 
         val qualifiedNames = readSearchArray(response)

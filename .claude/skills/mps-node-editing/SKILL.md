@@ -78,6 +78,7 @@ Where a parameter's documented null means something (`SET` × `CHILD` deleting t
 The tools that accept a node JSON blueprint (`mps_mcp_update_node` for `ADD`/`SET` × `CHILD`, `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_root_node_from_json`) all use the same `childJson` / `json` parameter convention:
 
 - The parameter can be **either** a JSON string (max 4 KB) **or** an absolute path to a local file containing the JSON.
+- `mps_mcp_insert_root_node_from_json` and `mps_mcp_update_root_node_from_json` additionally accept the blueprint as **real JSON** in the request — an object, or a top-level array for a bulk insert — not only as a string; both shapes are equivalent. `mps_mcp_update_node`'s `childJson` takes the string form (or a file path) only.
 - Files may contain either a **raw node blueprint** or the **full MCP response envelope** produced by `mps_mcp_print_node`; in the latter case the `data` field is used.
 - **Ordinary input files are never deleted.** Only temporary JSON files created by this toolset may be cleaned up after reading (and only when `dryRun=false`).
 - Very large JSON inputs may be truncated by the MCP transport before the tool reads them. If that happens, insert a smaller blueprint first and add children in follow-up calls with `mps_mcp_update_node` (`ADD`/`CHILD` or `SET`/`CHILD`), or pass the JSON as a file path instead of an inline string. See `references/staged-construction.md` for the recommended pattern.

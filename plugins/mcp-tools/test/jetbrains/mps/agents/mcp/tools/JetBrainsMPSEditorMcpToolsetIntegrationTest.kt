@@ -316,10 +316,10 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_scaffold_editor(
                 conceptRef = targetConceptFqn,
                 modelReference = structureModelRef,
-                includeComponents = componentRef,
-                includeProperties = "rootable",
-                includeReferences = "extends",
-                includeChildren = "icon",
+                includeComponents = JsonOrText(componentRef),
+                includeProperties = JsonOrText("rootable"),
+                includeReferences = JsonOrText("extends"),
+                includeChildren = JsonOrText("icon"),
             )
         }
 
@@ -338,10 +338,10 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_scaffold_editor(
                 conceptRef = targetConceptFqn,
                 modelReference = structureModelRef,
-                includeComponents = "[\"$componentRef\"]",
-                includeProperties = "[\"rootable\"]",
-                includeReferences = "[\"extends\"]",
-                includeChildren = "[\"icon\"]",
+                includeComponents = JsonOrText("[\"$componentRef\"]"),
+                includeProperties = JsonOrText("[\"rootable\"]"),
+                includeReferences = JsonOrText("[\"extends\"]"),
+                includeChildren = JsonOrText("[\"icon\"]"),
             )
         }
 
@@ -365,7 +365,7 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_scaffold_editor(
                 conceptRef = targetConceptFqn,
                 modelReference = structureModelRef,
-                includeProperties = "[]",
+                includeProperties = JsonOrText("[]"),
             )
         }).get("editorNodeRef").asString
 

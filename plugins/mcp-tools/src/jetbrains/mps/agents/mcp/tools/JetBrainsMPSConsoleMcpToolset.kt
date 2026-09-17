@@ -38,11 +38,11 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_insert_console_command_from_json(
-        @McpDescription("JSON blueprint (max 4KB) OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics.") json: String,
+        @McpDescription("JSON blueprint (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText,
         @McpDescription("Optional: if true, only validate the JSON, the console availability, and the command-concept assignability without inserting anything into the console. Default: false.") dryRun: Boolean = false
     ): String {
         return withMpsProject("Inserting MPS console command from JSON") { mpsProject ->
-            val actualJson = readNodeJsonOrFile(json, dryRun)
+            val actualJson = readNodeJsonOrFile(json.text, dryRun)
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
 
             val jsonElement = try {

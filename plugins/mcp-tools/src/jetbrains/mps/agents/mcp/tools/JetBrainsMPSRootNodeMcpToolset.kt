@@ -222,13 +222,13 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Searches project models for root nodes whose name matches any of the given names. Finds roots by name only — to find nodes by concept use `mps_mcp_query_nodes` FIND_INSTANCES. `names` accepts a single name or a JSON array of names. `scope` (default `editable`): `editable` searches this project's own editable modules; `all` additionally includes the read-only/library and imported modules in the project's visible dependency closure, including imported modules from other open MPS projects; `models` restricts the search to the references in `models`; `modules` restricts it to the references in `modules`. Explicit `models`/`modules` references may point to another open MPS project and are queried read-only. Each accepts one bare reference or a JSON-array string; the decoded list must be nonempty and every reference must resolve, otherwise the whole search returns INVALID_REQUEST. The `roots` scope of FIND_USAGES/FIND_INSTANCES is not supported here. Returns a JSON array of node info inline, or a path to a temp file when the payload is large.
+        Searches project models for root nodes whose name matches any of the given names. Finds roots by name only — to find nodes by concept use `mps_mcp_query_nodes` FIND_INSTANCES. `names` accepts a single name or a JSON array of names. `scope` (default `editable`): `editable` searches this project's own editable modules; `all` additionally includes the read-only/library and imported modules in the project's visible dependency closure, including imported modules from other open MPS projects; `models` restricts the search to the references in `models`; `modules` restricts it to the references in `modules`. Explicit `models`/`modules` references may point to another open MPS project and are queried read-only. Each accepts one bare reference or a JSON array (a real array or the array written as a string); the decoded list must be nonempty and every reference must resolve, otherwise the whole search returns INVALID_REQUEST. The `roots` scope of FIND_USAGES/FIND_INSTANCES is not supported here. Returns a JSON array of node info inline, or a path to a temp file when the payload is large.
     """)
     suspend fun mps_mcp_search_root_node_by_name(
-        @McpDescription("The name(s) of the root node(s) to search for. Either a single name string or a JSON array: [\"Name1\", \"Name2\"]") names: String,
+        @McpDescription("The name(s) of the root node(s) to search for. Either a single name string or a JSON array: [\"Name1\", \"Name2\"] (a real array or the array written as a string)") names: JsonOrText,
         @McpDescription("Search scope: 'editable' (default) for this project's editable modules, 'all' for this project's visible dependencies, 'models' (requires 'models'), or 'modules' (requires 'modules'). Explicit model/module references may point to another open MPS project and are queried read-only. 'roots' is not supported here.") scope: String = "editable",
-        @McpDescription("Model references, required when scope is 'models'. One bare reference or a nonempty JSON-array string; every reference must resolve.") models: String? = null,
-        @McpDescription("Module references, required when scope is 'modules'. One bare reference or a nonempty JSON-array string; every reference must resolve.") modules: String? = null
+        @McpDescription("Model references, required when scope is 'models'. One bare reference or a nonempty JSON array (a real array or the array written as a string); every reference must resolve.") models: JsonOrText? = null,
+        @McpDescription("Module references, required when scope is 'modules'. One bare reference or a nonempty JSON array (a real array or the array written as a string); every reference must resolve.") modules: JsonOrText? = null
     ): String {
         return withMpsProject("Searching for MPS root node by name") { mpsProject ->
             // Guard before the shared resolver: buildSearchScope does support 'roots', but this
@@ -277,9 +277,9 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
     // Parses a 'models'/'modules' scope parameter into the JsonArray shape buildSearchScope
     // expects. Accepts a JSON array, a JSON-encoded string, or a bare reference string (the
     // latter is common because persistent module/model references are not valid bare JSON).
-    private fun parseScopeRefArray(raw: String?): JsonArray? {
-        if (raw.isNullOrBlank()) return null
-        return JsonArray().apply { parseStringOrJsonArray(raw).forEach { add(it) } }
+    private fun parseScopeRefArray(raw: JsonOrText?): JsonArray? {
+        val values = parseNullableStringOrJsonArray(raw) ?: return null
+        return JsonArray().apply { values.forEach { add(it) } }
     }
 
     @McpTool
@@ -288,12 +288,12 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
     """)
     suspend fun mps_mcp_insert_root_node_from_json(
         @McpDescription("Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String,
-        @McpDescription("JSON blueprint, single object or top-level array (max 4KB) OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. See `mps-node-editing` for the format and file-input semantics.") json: String,
+        @McpDescription("JSON blueprint, single object or top-level array (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText,
         @McpDescription("Optional: if true, only validate JSON and concept-role assignability without mutating the model. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false,
         @McpDescription("Optional: `summary` for `{inserted, roots:[{name, reference, concept}], fixReferences}`, `full` for one complete node-info envelope per inserted root. Defaults to `summary` from 10 roots up and to `full` below that.") responseDetail: String? = null
     ): String {
         return withMpsProject("Inserting MPS root node from JSON") { mpsProject ->
-            val actualJson = readNodeJsonOrFile(json, dryRun)
+            val actualJson = readNodeJsonOrFile(json.text, dryRun)
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
 
             val jsonElement = try {
@@ -451,13 +451,13 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
     """)
     suspend fun mps_mcp_update_root_node_from_json(
         @McpDescription("Persistent form of SNodeReference") nodeReference: String,
-        @McpDescription("JSON blueprint of the root (max 4KB) OR an absolute path to a TEMPORARY file (inside the system temp directory) file containing it. Ignored for DELETE. See `mps-node-editing` for the format and file-input semantics.") json: String = "",
+        @McpDescription("JSON blueprint of the root (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) file containing it. Ignored for DELETE. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional, ignored for DELETE - if true, only validate JSON and concept-role assignability without mutating the node. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false,
         @McpDescription("Operation to perform: UPDATE or DELETE") operation: String = "UPDATE"
     ): String {
         val op = resolveOperationOrNull<RootNodeOperation>(operation)
             ?: return unknownOperation<RootNodeOperation>(operation)
-        return mps_mcp_update_root_node_from_json(nodeReference, json, dryRun, op)
+        return mps_mcp_update_root_node_from_json(nodeReference, json.text, dryRun, op)
     }
 
     /** Internal enum-typed entry point for [mps_mcp_update_root_node_from_json]; see [resolveOperationOrNull]. */

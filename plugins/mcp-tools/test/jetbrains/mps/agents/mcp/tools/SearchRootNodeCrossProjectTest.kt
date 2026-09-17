@@ -47,12 +47,12 @@ class SearchRootNodeCrossProjectTest : McpIntegrationTestBase() {
         val bothNames = """["RootOnlyInProjectA","RootOnlyInProjectB"]"""
 
         // Searching as project A must see only A's root.
-        val asA = searchNames(runTool(searchToolset) { it.mps_mcp_search_root_node_by_name(bothNames) })
+        val asA = searchNames(runTool(searchToolset) { it.mps_mcp_search_root_node_by_name(JsonOrText(bothNames)) })
         assertTrue("project A search must include A's own root: $asA", asA.contains("RootOnlyInProjectA"))
         assertFalse("project A search must NOT leak project B's root: $asA", asA.contains("RootOnlyInProjectB"))
 
         // Searching as project B must see only B's root.
-        val asB = searchNames(runToolForProject(b, searchToolset) { it.mps_mcp_search_root_node_by_name(bothNames) })
+        val asB = searchNames(runToolForProject(b, searchToolset) { it.mps_mcp_search_root_node_by_name(JsonOrText(bothNames)) })
         assertTrue("project B search must include B's own root: $asB", asB.contains("RootOnlyInProjectB"))
         assertFalse("project B search must NOT leak project A's root: $asB", asB.contains("RootOnlyInProjectA"))
     }

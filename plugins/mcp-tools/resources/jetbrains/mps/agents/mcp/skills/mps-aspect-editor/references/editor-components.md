@@ -102,7 +102,7 @@ mps_mcp_scaffold_editor(
   conceptRef        = "AbstractCommand",
   modelReference    = "<lang>.editor",
   type              = "component",
-  includeProperties = "[\"label\", \"comment\"]" // JSON-array string; omit = all, "[]" = none
+  includeProperties = "[\"label\", \"comment\"]" // or the real array ["label","comment"]; omit = all, "[]" = none
 )
 ```
 
@@ -119,8 +119,8 @@ mps_mcp_scaffold_editor(
 )
 ```
 
-- `includeComponents` — one persistent reference or a JSON-array string of references to existing `EditorComponentDeclaration`s to embed; each becomes a `CellModel_Component` in the generated editor. Omit it for no explicit components, or pass `"[]"` for none.
-- `includeProperties`, `includeReferences`, `includeChildren` — each accepts one name or a JSON-array string. Omit a selector to include all of that kind; pass `"[]"` to include none.
+- `includeComponents` — one persistent reference or a JSON array of references (real or written as a string) to existing `EditorComponentDeclaration`s to embed; each becomes a `CellModel_Component` in the generated editor. Omit it for no explicit components, or pass `"[]"` for none.
+- `includeProperties`, `includeReferences`, `includeChildren` — each accepts one name or a JSON array (real or written as a string). Omit a selector to include all of that kind; pass `"[]"` to include none.
 - `detectComponents` — when `true`, the scaffolder automatically finds and embeds suitable existing components (those bound to the concept or one of its super-concepts / implemented interfaces — the inheritance rule).
 - `type` defaults to `"editor"`, so omit it here to generate a `ConceptEditorDeclaration` (not a component).
 

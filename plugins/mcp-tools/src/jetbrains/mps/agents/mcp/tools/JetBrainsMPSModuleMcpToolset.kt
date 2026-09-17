@@ -250,7 +250,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         @McpDescription("For language: also create a generator") withGenerator: Boolean = false,
         @McpDescription("For language: also create a sandbox solution") withSandbox: Boolean = false,
         @McpDescription("For language: also create a runtime solution") withRuntime: Boolean = false,
-        @McpDescription("Optional additional facet type or JSON array of facet types (e.g. `tests` or [\"tests\"] for a test-container Solution). Omit or pass [] for no additional facets. See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: String? = null
+        @McpDescription("Optional additional facet type or JSON array of facet types (e.g. `tests` or [\"tests\"] for a test-container Solution; a real array or the array written as a string). Omit or pass [] for no additional facets. See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: JsonOrText? = null
     ): String = mps_mcp_create_module(
         type,
         name,

@@ -53,6 +53,15 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         const val DETAIL_FULL = "full"
         const val DETAIL_SHAPE = "shape"
 
+        // Copy-pasteable retry lines (study remedy M5b). Both observed incidents showed the agent
+        // fetching the tool schema even though the rejection already named the right key, so the
+        // message ends with the literal edit to make rather than only the key's name.
+        const val RETRY_WITH_CONCEPT_REFS =
+            "Retry with conceptRefs set to the value you passed as conceptReference " +
+                    "(or languageRefs for languageReference)."
+        const val RETRY_WITH_SEARCH_TEXTS =
+            "Retry with searchTexts set to the value you passed as query/q/text."
+
         // Single-character subtokens like "5" or "D" are substrings of almost any docstring and
         // would let unrelated concepts match — keep only subtokens of at least MIN_SUBTOKEN_LENGTH
         // characters. The whole-word fallback only kicks in when the word itself meets the
@@ -73,8 +82,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_get_concept_details(
-        @McpDescription("A persistent reference (SAbstractConcept) or fully qualified name of a concept/interface concept, or a JSON array of them.") conceptRefs: String = "",
-        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them. All concepts and interface concepts of these languages will be returned.") languageRefs: String = "",
+        @McpDescription("A persistent reference (SAbstractConcept) or fully qualified name of a concept/interface concept, or a JSON array of them (a real array or the array written as a string).") conceptRefs: JsonOrText = JsonOrText.EMPTY,
+        @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them (a real array or the array written as a string). All concepts and interface concepts of these languages will be returned.") languageRefs: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Detail level: \"full\" (default) for the complete records, or \"shape\" for the structural projection only (no docs, no sampleNode).") detail: String = "full",
         @McpDescription("If true, also return the concepts targeted by child and reference roles of the requested concepts (one hop, deduplicated) under `relatedConcepts` (default = false).") includeChildRoleConcepts: Boolean = false,
         @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
@@ -104,7 +113,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 "No concepts nor languages have been provided. This tool takes the plural " +
                         "'conceptRefs' and/or 'languageRefs' (a single value or a JSON array of them); " +
                         "the singular 'conceptReference'/'languageReference' spellings used by other " +
-                        "tools are not recognised here."
+                        "tools are not recognised here. " + RETRY_WITH_CONCEPT_REFS,
+                McpErrorCode.INVALID_REQUEST,
             )
         }
         val shapeOnly = when (detail.trim().lowercase()) {
@@ -231,13 +241,14 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_search_concepts(
-        @McpDescription("The text(s) to search for. Either a single search string or a JSON array: [\"Term1\", \"Term2\"]. Multiple words within a string are AND-combined (all required); multiple strings are OR-combined.") searchTexts: String = "",
+        @McpDescription("The text(s) to search for. Either a single search string or a JSON array: [\"Term1\", \"Term2\"] (a real array or the array written as a string). Multiple words within a string are AND-combined (all required); multiple strings are OR-combined.") searchTexts: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional model reference (preferred) or model name to limit search to languages used by this model") modelReference: String? = null
     ): String {
         val terms = parseStringOrJsonArray(searchTexts)
         if (terms.all { it.isBlank() }) {
             return errJson(
-                "searchTexts is required: provide a single search string or a JSON array of strings.",
+                "searchTexts is required: provide a single search string or a JSON array of strings. " +
+                        RETRY_WITH_SEARCH_TEXTS,
                 McpErrorCode.INVALID_REQUEST,
             )
         }

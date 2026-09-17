@@ -120,7 +120,7 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val sourceRef = modelRefOf(sourceModel)
         val targetRef = modelRefOf(targetModel)
 
-        val first = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, targetRef) }
+        val first = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, JsonOrText(targetRef)) }
         val firstData = parseDataObject(JsonParser.parseString(first).asJsonObject.get("data"))
         assertEquals(1, firstData.get("added").asInt)
         assertEquals(0, firstData.get("alreadyPresent").asInt)
@@ -133,7 +133,7 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
 
         // Second call must be a no-op and report it.
-        val second = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, targetRef) }
+        val second = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, JsonOrText(targetRef)) }
         val secondData = parseDataObject(JsonParser.parseString(second).asJsonObject.get("data"))
         assertEquals(0, secondData.get("added").asInt)
         assertEquals(1, secondData.get("alreadyPresent").asInt)
@@ -154,7 +154,7 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) {
             it.mps_mcp_model_dependency(
                 sourceRef,
-                "[\"${targets[0]}\",\"${targets[1]}\"]",
+                JsonOrText("[\"${targets[0]}\",\"${targets[1]}\"]"),
             )
         }
         val data = parseDataObject(JsonParser.parseString(response).asJsonObject.get("data"))
@@ -171,7 +171,7 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     @Test
     fun `add_model_dependency rejects unknown source model`() {
-        val response = runTool(toolset) { it.mps_mcp_model_dependency("no.such.source", "doesnt.matter") }
+        val response = runTool(toolset) { it.mps_mcp_model_dependency("no.such.source", JsonOrText("doesnt.matter")) }
         // Source resolution now goes through the shared resolveEditableModel helper (for cross-project
         // safety), which emits the unified "Model '<ref>' not found" wording.
         val err = expectErr(response)
@@ -183,7 +183,7 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val sourceSolution = createSolution()
         val sourceModel = createModel(sourceSolution, "test.dep.unknown.tgt${System.nanoTime()}")
         val response = runTool(toolset) {
-            it.mps_mcp_model_dependency(modelRefOf(sourceModel), "no.such.target")
+            it.mps_mcp_model_dependency(modelRefOf(sourceModel), JsonOrText("no.such.target"))
         }
         assertTrue(expectErr(response).contains("Target model not found"))
     }
@@ -199,7 +199,7 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val targetRef = modelRefOf(targetModel)
 
         // Seed the import.
-        val addResp = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, targetRef) }
+        val addResp = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, JsonOrText(targetRef)) }
         assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
 
         val removeResp = runTool(toolset) { it.mps_mcp_model_dependency(sourceRef, targetRef, DependencyOperation.DELETE) }
@@ -233,7 +233,7 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
         // Seed both imports.
         val addResp = runTool(toolset) {
-            it.mps_mcp_model_dependency(sourceRef, "[\"$targetRef1\", \"$targetRef2\"]")
+            it.mps_mcp_model_dependency(sourceRef, JsonOrText("[\"$targetRef1\", \"$targetRef2\"]"))
         }
         assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
 
