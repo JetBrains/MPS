@@ -12,8 +12,9 @@ class ToolInputJsonException(message: String) : IllegalArgumentException(message
 class ToolInputSchemaException(message: String) : IllegalArgumentException(message)
 
 /**
- * Readers for a scalar inside a tool's `parameters` JSON blob (`mps_mcp_alter_structure`,
- * `mps_mcp_query_structure`, `mps_mcp_alter_nodes`, `mps_mcp_query_nodes`).
+ * Type-checked boolean and integer readers for scalars inside a tool's `parameters` JSON blob
+ * (`mps_mcp_alter_structure`, `mps_mcp_query_structure`, `mps_mcp_alter_nodes`,
+ * `mps_mcp_query_nodes`).
  *
  * Use these instead of `params.get("x")?.asBoolean` / `?.asInt`. Gson's accessors read a number as
  * `false`, read a one-element array through to its element, wrap an out-of-range integer, and throw
@@ -21,11 +22,19 @@ class ToolInputSchemaException(message: String) : IllegalArgumentException(messa
  * element — which `toolFailure` could only report as `INTERNAL_ERROR` with no mention of the
  * offending key. These delegate to the same readers the blueprint parsers use, so both input paths
  * accept exactly the same shapes and produce the same message; an explicit `null` counts as absent.
+ * [paramString] intentionally follows the separate null-only compatibility contract documented below.
  */
 internal fun JsonObject.paramBoolean(field: String, default: Boolean): Boolean =
   optionalBoolean(field, PARAMETERS_PATH) ?: default
 
 internal fun JsonObject.paramInt(field: String): Int? = optionalInt(field, PARAMETERS_PATH)
+
+/**
+ * Treats only an absent field or field-level JSON null as absent. All other values retain Gson's
+ * existing [JsonElement.asString] coercions and failures.
+ */
+internal fun JsonObject.paramString(field: String): String? =
+  get(field)?.takeUnless { it.isJsonNull }?.asString
 
 private const val PARAMETERS_PATH = "parameters"
 

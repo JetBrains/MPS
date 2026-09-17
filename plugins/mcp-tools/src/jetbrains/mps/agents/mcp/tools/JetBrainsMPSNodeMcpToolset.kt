@@ -202,7 +202,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         params: JsonObject,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.paramString("nodeReference") ?: return errJson("Parameter 'nodeReference' is missing")
         return executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
@@ -251,8 +251,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
-        val scopeParam = params.get("scope")?.asString ?: "editable"
+        val nodeReference = params.paramString("nodeReference") ?: return errJson("Parameter 'nodeReference' is missing")
+        val scopeParam = params.paramString("scope") ?: "editable"
         val monitor = coroutineProgressMonitor()
         return executeBackgroundRead(mpsProject) {
             val repo = mpsProject.repository
@@ -285,27 +285,27 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opMoveChild(params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
-        val childRole = params.get("childRole")?.asString ?: return errJson("Parameter 'childRole' is missing")
-        val childNodeRef = params.get("childNodeRef")?.asString ?: return errJson("Parameter 'childNodeRef' is missing")
+        val nodeReference = params.paramString("nodeReference") ?: return errJson("Parameter 'nodeReference' is missing")
+        val childRole = params.paramString("childRole") ?: return errJson("Parameter 'childRole' is missing")
+        val childNodeRef = params.paramString("childNodeRef") ?: return errJson("Parameter 'childNodeRef' is missing")
         val position = params.paramInt("position") ?: return errJson("Parameter 'position' is missing")
         return moveNodeChild(nodeReference, childRole, childNodeRef, position)
     }
 
     private suspend fun opMoveNodeToParent(params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.paramString("nodeReference") ?: return errJson("Parameter 'nodeReference' is missing")
         if (params.has("newParentRef") && params.get("newParentRef").isJsonNull) {
             return errJson("Parameter 'newParentRef' must not be null", McpErrorCode.INVALID_REQUEST)
         }
-        val newParentRef = params.get("newParentRef")?.asString
-        val role = params.get("role")?.asString
+        val newParentRef = params.paramString("newParentRef")
+        val role = params.paramString("role")
         val position = params.paramInt("position")
-        val modelReference = params.get("modelReference")?.asString
+        val modelReference = params.paramString("modelReference")
         return moveNodeToParent(nodeReference, newParentRef, role, position, modelReference)
     }
 
     private suspend fun opCopyNode(params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.paramString("nodeReference") ?: return errJson("Parameter 'nodeReference' is missing")
         return withMpsProject("Copying MPS node") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -548,7 +548,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opFixReferences(mpsProject: MPSProject, params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.paramString("nodeReference") ?: return errJson("Parameter 'nodeReference' is missing")
         return executeShortCommandOnEdt(mpsProject) {
             val (node, model, console) = when (
                 val r = resolveEditableNodeAllowingConsole(mpsProject, nodeReference)

@@ -298,6 +298,29 @@ class McpToolInputSchemasTest {
     }
 
     @Test
+    fun paramStringTreatsOnlyAbsentAndFieldNullAsAbsent() {
+        assertNull(params("{}").paramString("k"))
+        assertNull(params("""{"k": null}""").paramString("k"))
+    }
+
+    @Test
+    fun paramStringPreservesLegacyAsStringOutcomesForEveryNonNullShape() {
+        val shapes = listOf(
+            """"text"""", """"null"""", """""""", """"  """", "42", "-1.5", "true", "false",
+            """["text"]""", "[42]", "[[true]]", "{}", """{"nested":"value"}""",
+            "[]", """["one","two"]""", "[null]", "[{}]",
+        )
+        for (shape in shapes) {
+            val obj = params("""{"k": $shape}""")
+            assertEquals(
+                "shape $shape must preserve Gson asString's value or exception class",
+                stringOutcome { obj.get("k").asString },
+                stringOutcome { obj.paramString("k") },
+            )
+        }
+    }
+
+    @Test
     fun blueprintAndBlobPathsAcceptTheSameShapes() {
         // The point of routing both through one reader: compared pairwise over every shape in the
         // truth table, for both scalar kinds and for both defaults, so the two paths cannot drift
@@ -367,6 +390,15 @@ class McpToolInputSchemasTest {
         block().toString()
     } catch (e: IllegalArgumentException) {
         "rejected: ${e.javaClass.simpleName}: " + (e.message ?: "").substringAfter("' ")
+    }
+
+    private data class StringOutcome(val value: String?, val exceptionClass: Class<out Exception>?)
+
+    private fun stringOutcome(block: () -> String?): StringOutcome = try {
+        StringOutcome(block(), null)
+    }
+    catch (e: Exception) {
+        StringOutcome(null, e.javaClass)
     }
 
     private fun params(json: String): JsonObject = JsonParser.parseString(json).asJsonObject

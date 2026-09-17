@@ -216,6 +216,36 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
     }
 
     @Test
+    fun `enum with null defaultEnumName matches omission and retains its members`() {
+        for ((enumName, defaultField) in listOf("NoDefaultOmitted" to "", "NoDefaultNull" to ",\"defaultEnumName\":null")) {
+            val parameters = """
+                {
+                  "structureModelRef": "$structureModelRef",
+                  "enumName": "$enumName",
+                  "valuesJson": [
+                    { "enumName": "FIRST", "enumPresentation": "First" },
+                    { "enumName": "SECOND", "enumPresentation": "Second" }
+                  ]$defaultField
+                }
+            """.trimIndent()
+
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_ENUM, parameters)
+            })
+        }
+
+        readOnRepo {
+            for (enumName in listOf("NoDefaultOmitted", "NoDefaultNull")) {
+                val enumeration = structureModel.rootNodes.single { it.name == enumName }
+                val members = enumeration.getChildrenByName("members")
+                assertEquals(listOf("FIRST", "SECOND"), members.mapNotNull { it.name })
+                assertEquals(listOf("First", "Second"), members.mapNotNull { it.getPropertyByName("presentation") })
+                assertNull("$enumName must not select a default member", enumeration.getReferenceTargetByName("defaultMember"))
+            }
+        }
+    }
+
+    @Test
     fun `enum name collides with an existing concept and is rejected`() {
         // Structure models share one root-name space across concepts and data types: an enum
         // 'Foo' must not be creatable alongside an existing concept 'Foo'.
@@ -435,6 +465,45 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         assertFalse("scope errors must not return warnings: $response", envelope.has("warnings"))
     }
 
+    @Test
+    fun `required string null follows the existing missing-parameter path`() {
+        val response = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.IS_SUBCONCEPT_OF,
+                """{"conceptRef":null,"superConceptRef":"anything"}""",
+            )
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("Parameter 'conceptRef' is missing", envelope.get("error").asString)
+    }
+
+    @Test
+    fun `structure query preserves non-null string coercion and failure envelopes`() {
+        for (conceptRef in listOf("42", "[42]")) {
+            val response = runTool {
+                it.mps_mcp_query_structure(
+                    MPSStructureQueryOperation.IS_SUBCONCEPT_OF,
+                    """{"conceptRef":$conceptRef,"superConceptRef":"anything"}""",
+                )
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("NOT_FOUND", envelope.get("code").asString)
+            assertTrue("coerced reference must remain visible: $response", envelope.get("error").asString.contains("42"))
+        }
+
+        val response = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.IS_SUBCONCEPT_OF,
+                """{"conceptRef":{},"superConceptRef":"anything"}""",
+            )
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INTERNAL_ERROR", envelope.get("code").asString)
+    }
+
     // ── UPDATE_CONCEPT_PROPERTY ───────────────────────────────────────────────────────
 
     @Test
@@ -453,25 +522,29 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
     }
 
     @Test
-    fun `UPDATE_CONCEPT_PROPERTY with empty dataType deletes the property`() {
-        val conceptRef = createConceptRoot("HostB")
-        // Seed a property.
-        assertOk(runTool {
-            it.mps_mcp_alter_structure(
-                MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
-                """{"conceptRef":"$conceptRef","propertyName":"toRemove","dataType":"integer"}"""
-            )
-        })
-        // Now delete it by passing an empty dataType.
-        assertOk(runTool {
-            it.mps_mcp_alter_structure(
-                MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
-                """{"conceptRef":"$conceptRef","propertyName":"toRemove","dataType":""}"""
-            )
-        })
-        readOnRepo {
-            val host = structureModel.rootNodes.single { it.name == "HostB" }
-            assertTrue("property must be gone", host.getChildrenByName("propertyDeclaration").isEmpty())
+    fun `UPDATE_CONCEPT_PROPERTY deletes the property for omitted empty or null dataType`() {
+        for ((suffix, dataType) in listOf("Omitted" to null, "Empty" to "\"\"", "Null" to "null")) {
+            val hostName = "HostB$suffix"
+            val conceptRef = createConceptRoot(hostName)
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(
+                    MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
+                    """{"conceptRef":"$conceptRef","propertyName":"toRemove","dataType":"integer"}""",
+                )
+            })
+            val deleteParams = dataType?.let { value ->
+                """{"conceptRef":"$conceptRef","propertyName":"toRemove","dataType":$value}"""
+            } ?: """{"conceptRef":"$conceptRef","propertyName":"toRemove"}"""
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(
+                    MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
+                    deleteParams,
+                )
+            })
+            readOnRepo {
+                val host = structureModel.rootNodes.single { it.name == hostName }
+                assertTrue("property must be gone for dataType=$dataType", host.getChildrenByName("propertyDeclaration").isEmpty())
+            }
         }
     }
 
@@ -562,24 +635,30 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
     }
 
     @Test
-    fun `UPDATE_CONCEPT_CHILD with empty targetConcept deletes the existing link`() {
-        val ownerRef = createConceptRoot("Owner2")
-        val targetRef = createConceptRoot("Target2")
-        assertOk(runTool {
-            it.mps_mcp_alter_structure(
-                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
-                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":"$targetRef","multiple":false,"optional":true}"""
-            )
-        })
-        assertOk(runTool {
-            it.mps_mcp_alter_structure(
-                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
-                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":""}"""
-            )
-        })
-        readOnRepo {
-            val owner = structureModel.rootNodes.single { it.name == "Owner2" }
-            assertTrue("child link must be gone", owner.getChildrenByName("linkDeclaration").isEmpty())
+    fun `UPDATE_CONCEPT_CHILD deletes the existing link for omitted empty or null targetConcept`() {
+        for ((suffix, targetConcept) in listOf("Omitted" to null, "Empty" to "\"\"", "Null" to "null")) {
+            val ownerName = "Owner2$suffix"
+            val ownerRef = createConceptRoot(ownerName)
+            val targetRef = createConceptRoot("Target2$suffix")
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(
+                    MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+                    """{"conceptRef":"$ownerRef","role":"kid","targetConcept":"$targetRef","multiple":false,"optional":true}""",
+                )
+            })
+            val deleteParams = targetConcept?.let { value ->
+                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":$value}"""
+            } ?: """{"conceptRef":"$ownerRef","role":"kid"}"""
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(
+                    MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+                    deleteParams,
+                )
+            })
+            readOnRepo {
+                val owner = structureModel.rootNodes.single { it.name == ownerName }
+                assertTrue("child link must be gone for targetConcept=$targetConcept", owner.getChildrenByName("linkDeclaration").isEmpty())
+            }
         }
     }
 
@@ -607,6 +686,34 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
             // it correctly is indistinguishable from one that skips the call entirely — the
             // distinguishing case for metaClass is exercised by the child-link test above.)
             assertEnumLiteralIs("_1", link.getPropertyByName("sourceCardinality"))
+        }
+    }
+
+    @Test
+    fun `UPDATE_CONCEPT_REFERENCE deletes the existing link for omitted empty or null targetConcept`() {
+        for ((suffix, targetConcept) in listOf("Omitted" to null, "Empty" to "\"\"", "Null" to "null")) {
+            val ownerName = "Owner${suffix}Reference"
+            val ownerRef = createConceptRoot(ownerName)
+            val targetRef = createConceptRoot("Target${suffix}Reference")
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(
+                    MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE,
+                    """{"conceptRef":"$ownerRef","role":"ref","targetConcept":"$targetRef"}""",
+                )
+            })
+            val deleteParams = targetConcept?.let { value ->
+                """{"conceptRef":"$ownerRef","role":"ref","targetConcept":$value}"""
+            } ?: """{"conceptRef":"$ownerRef","role":"ref"}"""
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(
+                    MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE,
+                    deleteParams,
+                )
+            })
+            readOnRepo {
+                val owner = structureModel.rootNodes.single { it.name == ownerName }
+                assertTrue("reference link must be gone for targetConcept=$targetConcept", owner.getChildrenByName("linkDeclaration").isEmpty())
+            }
         }
     }
 
@@ -991,6 +1098,42 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         // are the two values [setLinkMetaClass] selects between.
         assertTrue("expected 'aggregation' among $literalNames", literalNames.contains("aggregation"))
         assertTrue("expected 'reference' among $literalNames", literalNames.contains("reference"))
+    }
+
+    @Test
+    fun `GET_ENUMERATION_LITERALS with null enumerationRef uses the property form`() {
+        val ownerRef = createConceptRoot("EnumLitNullOwner")
+        val targetRef = createConceptRoot("EnumLitNullTarget")
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":"$targetRef"}""",
+            )
+        })
+        val linkRef = readOnRepo {
+            val owner = structureModel.rootNodes.single { it.name == "EnumLitNullOwner" }
+            val link = owner.getChildrenByName("linkDeclaration").single()
+            PersistenceFacade.getInstance().asString(link.reference)
+        }
+
+        val omittedResponse = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
+                """{"nodeReference":"$linkRef","propertyName":"metaClass"}""",
+            )
+        }
+        val nullResponse = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
+                """{"enumerationRef":null,"nodeReference":"$linkRef","propertyName":"metaClass"}""",
+            )
+        }
+        val omittedLiterals = parseDataArray(omittedResponse)
+        val nullLiterals = parseDataArray(nullResponse)
+        assertEquals("explicit null must select the same property form as omission", omittedLiterals, nullLiterals)
+        val names = nullLiterals.map { it.asJsonObject.get("value").asString }.toSet()
+        assertTrue("expected aggregation among $names", names.contains("aggregation"))
+        assertTrue("expected reference among $names", names.contains("reference"))
     }
 
     @Test

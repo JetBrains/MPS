@@ -7,7 +7,9 @@ Two tools cover structure operations:
 
 Both return a JSON object with `'ok':true` and `'data':{...}` on success, or `'ok':false` and `'error':"..."` on failure.
 Failure responses can also include optional stable metadata fields: `'code'`, `'details'`, and `'warnings'`.
-Parameters are passed as a JSON object string. A boolean parameter (`make`, `dryRun`, `multiple`, `optional`, `includeInherited`) takes `true`/`false`, or the same literal quoted in any case (`"true"`, `"TRUE"`); an explicit `null` counts as absent, so the documented default applies. Any other shape — `1`, `"yes"`, `" true "`, an object, an array — is rejected with `'parameters.<name>' must be a boolean` rather than coerced. The same rule applies to booleans *inside* a `conceptsJson` / `interfaceConceptsJson` blueprint (`abstract` and `rootable` on a concept, a link's `multiple` / `optional` in either), where the message names the blueprint path instead — `'conceptsJson[0].rootable' must be a boolean`. Top-level string parameters are not validated this way.
+Parameters are passed as a JSON object string. A boolean parameter (`make`, `dryRun`, `multiple`, `optional`, `includeInherited`) takes `true`/`false`, or the same literal quoted in any case (`"true"`, `"TRUE"`); an explicit `null` counts as absent, so the documented default applies. Any other shape — `1`, `"yes"`, `" true "`, an object, an array — is rejected with `'parameters.<name>' must be a boolean` rather than coerced. The same rule applies to booleans *inside* a `conceptsJson` / `interfaceConceptsJson` blueprint (`abstract` and `rootable` on a concept, a link's `multiple` / `optional` in either), where the message names the blueprint path instead — `'conceptsJson[0].rootable' must be a boolean`.
+
+Direct scalar string fields read by the structure operation dispatcher treat an explicit field-level JSON `null` like an omitted field: required fields take their existing missing-parameter error, while optional fields use their documented default or alternate form. Other JSON values retain Gson's existing `asString` behavior: numbers and booleans are stringified, singleton arrays (including nested singleton arrays) are unwrapped, and objects, empty or multi-element arrays, `[null]`, and `[{}]` keep their existing failure and `INTERNAL_ERROR` envelope. This compatibility rule does not apply to fields inside `conceptsJson`, `interfaceConceptsJson`, or other schema-checked blueprints, and it does not relax the separately documented nonblank string/array rules for search-scope selectors.
 
 ### Supported operations
 
@@ -111,7 +113,7 @@ Parameters:
   "structureModelRef": "Structure model: persistent model reference (preferred) or the model's long/short name as a fallback. Names that match more than one model resolve to the first match in repository iteration order.",
   "enumName": "Name of the enumeration",
   "valuesJson": "The JSON array of enum values (max 4KB) OR an absolute path to a TEMPORARY file (inside the system temp directory) local temporary file containing it. If a file path is provided, the tool will delete the file after reading it (unless 'dryRun' is true). Format: [{\"enumName\": \"val1\", \"enumPresentation\": \"Val 1\"}, ...]",
-  "defaultEnumName": "The enumName that should be used as default (optional)",
+  "defaultEnumName": "The enumName that should be used as default (optional; null is the same as omission)",
   "dryRun": "Optional: if true, only validate input without mutating the model. Default: false."
 }
 ```
@@ -122,8 +124,8 @@ Returns a JSON array of objects, each having `"value"`, `"presentation"`, and `"
 
 Accepts two mutually-exclusive forms:
 
-- **By enumeration declaration** — pass `enumerationRef` pointing at an `EnumerationDeclaration` node. Use this when you know the enum directly.
-- **By property on a host node** — pass `nodeReference` (a node whose concept has an enum-typed property) plus `propertyName`. Use this when you only have an instance.
+- **By enumeration declaration** — pass a non-null `enumerationRef` pointing at an `EnumerationDeclaration` node. Use this when you know the enum directly.
+- **By property on a host node** — omit `enumerationRef` or pass it as `null`, then pass `nodeReference` (a node whose concept has an enum-typed property) plus `propertyName`. Use this when you only have an instance.
 
 Parameters:
 ```
@@ -188,9 +190,11 @@ Parameters:
 {
   "conceptRef": "Persistent reference of the concept (SAbstractConcept) or its root node, or fully qualified concept name",
   "propertyName": "Name of the property",
-  "dataType": "Optional: data type for the property (e.g., 'string', 'integer', 'boolean', or a reference to an enumeration). If empty or missing, the property is deleted."
+  "dataType": "Optional: data type for the property (e.g., 'string', 'integer', 'boolean', or a reference to an enumeration). If empty, null, or missing, the property is deleted."
 }
 ```
+
+Passing `dataType:null` is identical to omitting `dataType`: it deletes the property. Use a nonempty data type when updating or creating one.
 
 #### `UPDATE_CONCEPT_CHILD`
 Creates, updates, or deletes a child definition in a concept.
@@ -200,11 +204,13 @@ Parameters:
 {
   "conceptRef": "Persistent reference of the concept (SAbstractConcept) or its root node, or fully qualified concept name",
   "role": "Name of the child role",
-  "targetConcept": "Optional: reference to the target concept. If empty or missing, the child definition is deleted.",
+  "targetConcept": "Optional: reference to the target concept. If empty, null, or missing, the child definition is deleted.",
   "multiple": "Optional: boolean, whether multiple children are allowed (default: false)",
   "optional": "Optional: boolean, whether the child is optional (default: true)"
 }
 ```
+
+Passing `targetConcept:null` is identical to omitting `targetConcept`: it deletes the child link. Use a nonempty target reference when updating or creating one.
 
 #### `UPDATE_CONCEPT_REFERENCE`
 Creates, updates, or deletes a reference definition in a concept.
@@ -214,10 +220,12 @@ Parameters:
 {
   "conceptRef": "Persistent reference of the concept (SAbstractConcept) or its root node, or fully qualified concept name",
   "role": "Name of the reference role",
-  "targetConcept": "Optional: reference to the target concept. If empty or missing, the reference definition is deleted.",
+  "targetConcept": "Optional: reference to the target concept. If empty, null, or missing, the reference definition is deleted.",
   "optional": "Optional: boolean, whether the reference is optional (default: true)"
 }
 ```
+
+Passing `targetConcept:null` is identical to omitting `targetConcept`: it deletes the reference link. Use a nonempty target reference when updating or creating one.
 
 Unlike `UPDATE_CONCEPT_CHILD` there is no `multiple` parameter: MPS reference links are always single-valued (`0..1` or `1`), so `multiple: true` is rejected. Model a `[0..n]` reference as a smart-reference wrapper concept in a `0..n` child role — see "Multi-valued references" in the `mps-aspect-structure-concepts` skill for the recipe and a blueprint.
 

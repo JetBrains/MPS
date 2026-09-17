@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
 import com.google.gson.JsonElement
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.jetbrains.mps.openapi.model.SNode
@@ -25,7 +26,7 @@ import org.junit.Test
 class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     @Test
-    fun `find-usages returns subconcept that extends the target`() {
+    fun `find-usages with null scope defaults to editable and returns the usage`() {
         val createParams = """
             {
               "structureModelRef": "$structureModelRef",
@@ -49,7 +50,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val findParams = """
             {
               "nodeReference": "$baseRef",
-              "scope": "editable"
+              "scope": null
             }
         """.trimIndent()
 
@@ -117,6 +118,73 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             setOf("Beta"),
             parseResultNames(response)
         )
+    }
+
+    @Test
+    fun `find-instances null scope matches omitted and explicit editable by node identity`() {
+        val uniqueName = "ScopeDefault_${System.nanoTime()}"
+        val createParams = """
+            {
+              "structureModelRef": "$structureModelRef",
+              "conceptsJson": [ { "name": "$uniqueName" } ]
+            }
+        """.trimIndent()
+        assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        val createdRef = readOnRepo {
+            val created = structureModel.rootNodes.single { it.name == uniqueName }
+            PersistenceFacade.getInstance().asString(created.reference)
+        }
+
+        val variants = listOf(
+            "omitted" to JsonObject(),
+            "null" to JsonObject().apply { add("scope", JsonNull.INSTANCE) },
+            "editable" to JsonObject().apply { addProperty("scope", "editable") },
+        )
+        for ((label, params) in variants) {
+            params.addProperty("conceptRef", "jetbrains.mps.lang.structure.structure.ConceptDeclaration")
+            params.add("propertyFilter", JsonObject().apply {
+                addProperty("name", "name")
+                addProperty("value", uniqueName)
+            })
+            val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, params.toString())
+            }
+            assertEquals(
+                "$label scope must select exactly the created node",
+                setOf(createdRef),
+                parseResultReferences(response),
+            )
+        }
+    }
+
+    @Test
+    fun `required string null follows the existing missing-parameter path`() {
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, """{"nodeReference":null}""")
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("Parameter 'nodeReference' is missing", envelope.get("error").asString)
+    }
+
+    @Test
+    fun `non-null string coercion and failure envelopes remain compatible`() {
+        for (nodeReference in listOf("42", "[42]")) {
+            val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, """{"nodeReference":$nodeReference}""")
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("NOT_FOUND", envelope.get("code").asString)
+            assertTrue("coerced reference must remain visible: $response", envelope.get("error").asString.contains("42"))
+        }
+
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, """{"nodeReference":{}}""")
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INTERNAL_ERROR", envelope.get("code").asString)
     }
 
     @Test
@@ -256,6 +324,17 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val data = obj.get("data")
         val rawData = if (data.isJsonPrimitive) data.asString else data.toString()
         return JsonParser.parseString(rawData).asJsonArray.map { it.asJsonObject.get("name").asString }.toSet()
+    }
+
+    /** Parses an ok envelope whose `data` is a JSON-array string and returns the result references. */
+    private fun parseResultReferences(response: String): Set<String> {
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val data = obj.get("data")
+        val rawData = if (data.isJsonPrimitive) data.asString else data.toString()
+        return JsonParser.parseString(rawData).asJsonArray
+            .map { it.asJsonObject.get("reference").asString }
+            .toSet()
     }
 
     private fun assertInvalidRequest(response: String, vararg expectedText: String) {

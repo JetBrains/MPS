@@ -1380,8 +1380,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         params: JsonObject,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
-        val conceptRef = params.get("conceptRef")?.asString ?: return errJson("Parameter 'conceptRef' is missing")
-        val scopeParam = params.get("scope")?.asString ?: "editable"
+        val conceptRef = params.paramString("conceptRef") ?: return errJson("Parameter 'conceptRef' is missing")
+        val scopeParam = params.paramString("scope") ?: "editable"
         val exact = params.paramBoolean("exact", default = false)
         val sampleOnly = params.paramBoolean("sampleOnly", default = false)
         // takeIf: agents commonly pass explicit nulls for optional params; Gson surfaces

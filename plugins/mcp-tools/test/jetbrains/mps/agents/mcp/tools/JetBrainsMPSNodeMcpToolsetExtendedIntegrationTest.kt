@@ -752,7 +752,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     // ── alter_nodes: MOVE_NODE_TO_PARENT ───────────────────────────────────────────
 
     @Test
-    fun `alter_nodes MOVE_NODE_TO_PARENT moves a child between two parents`() {
+    fun `alter_nodes MOVE_NODE_TO_PARENT treats null modelReference as absent when reparenting`() {
         val parentARef = createConceptRoot("MNPParentA")
         val parentBRef = createConceptRoot("MNPParentB")
         addPropertyChild(parentARef, "movee", "string")
@@ -765,7 +765,8 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             {
               "nodeReference": "$moveeRef",
               "newParentRef": "$parentBRef",
-              "role": "propertyDeclaration"
+              "role": "propertyDeclaration",
+              "modelReference": null
             }
         """.trimIndent()
         val response = runTool(toolset) {
@@ -784,6 +785,34 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             val bKids = b.children.filter { it.containmentLink?.name == "propertyDeclaration" }
             assertEquals(1, bKids.size)
             assertEquals("movee", bKids.single().name)
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT treats null role as missing without changing the node`() {
+        val parentARef = createConceptRoot("MNPNullRoleA")
+        val parentBRef = createConceptRoot("MNPNullRoleB")
+        addPropertyChild(parentARef, "movee", "string")
+        val moveeRef = readOnRepo {
+            val movee = resolveNode(parentARef).children.single { it.name == "movee" }
+            PersistenceFacade.getInstance().asString(movee.reference)
+        }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_NODE_TO_PARENT,
+                """{"nodeReference":"$moveeRef","newParentRef":"$parentBRef","role":null}""",
+            )
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        assertTrue(envelope.get("error").asString.contains("role"))
+
+        readOnRepo {
+            val movee = resolveNode(moveeRef)
+            assertEquals(parentARef, PersistenceFacade.getInstance().asString(movee.parent!!.reference))
+            assertTrue(resolveNode(parentBRef).children.none { it.name == "movee" })
         }
     }
 

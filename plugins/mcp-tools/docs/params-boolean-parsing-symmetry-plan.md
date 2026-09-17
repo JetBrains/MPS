@@ -4,9 +4,12 @@ Status: **Phases 1-2 implemented 2026-09-16** (option B chosen by the user). **P
 implemented and validated 2026-09-17**, after one Sol implementation / parent-review cycle.
 The **decisions** in this document are locked 2026-09-17
 (do both halves of `buildSearchScope`; land the `newParentRef` null-reject first; groups 1-2
-are option D or nothing — not a strict sweep). Review update: implement items 1-3 below; defer the
-45-site groups 1-2 sweep. If that sweep is taken up later, option D changes only absent/JSON-null
-handling and preserves every other coercion and failure (user decision, 2026-09-17).
+are option D or nothing — not a strict sweep). Follow-up: the user has now authorized the 45-site
+groups 1-2 sweep, with a Sol implementer and parent review, capped at five iterations. Option D
+changes only absent/JSON-null handling and preserves every other coercion and failure
+(user decision, 2026-09-17). **Sweep implemented and validated 2026-09-17**; the initial cycle
+and subsequent reviewer follow-ups are recorded below. **Three cycles completed; all review
+findings addressed and 712 tests passed in the final run.**
 Origin: round-2 skill study, defect D13 follow-up — the
 `multiple` rejection added to `UPDATE_CONCEPT_REFERENCE`
 type-checked its input, while every neighbouring parameter read in the same `when` still used
@@ -254,7 +257,7 @@ For primitive inputs such as `{"conceptRef": 42}`, strictness upgrades `NOT_FOUN
 `Unsupported scope: true` to `INVALID_REQUEST`. It would also change existing object/array failures.
 That broader change is outside the chosen null-only contract. Do not "do a bit of strictness".
 
-**Option D — precise contract (chosen; implementation deferred):** return Kotlin `null` for an
+**Option D — precise contract (implemented and validated):** return Kotlin `null` for an
 absent field or a field whose value is JSON null; otherwise call `asString` unchanged. Required
 fields retain their existing missing-parameter error, and optional fields retain their existing
 default or alternate-form selection. Preserve empty/blank strings, primitive stringification,
@@ -264,8 +267,9 @@ object may still throw and produce the existing `INTERNAL_ERROR`. D does not pro
 those failures. Do not catch them and return absent, trim strings, or replace coercion with a
 primitive-only guard. Only a field-level JSON null is normalized; `[null]` is not absent.
 
-If D lands, **`newParentRef` first** (next paragraph). Its explicit-null rejection is the intentional
-exception to the generic null-as-absent rule. The 45-site sweep is deferred from this implementation.
+Prerequisite: **`newParentRef` first** (next paragraph). Its explicit-null rejection is the intentional
+exception to the generic null-as-absent rule. That guard is implemented and tested; the 45-site
+sweep is now implemented and validated.
 
 Do **not** implement D by calling `optionalElement` at the `newParentRef` site: that helper
 collapses absent and `JsonNull`, which is exactly the destructive promotion. After the explicit-null
@@ -281,17 +285,25 @@ This helper can throw for the unchanged non-null failure cases; it is not a type
 `{"conceptRef":"  "}` from `NOT_FOUND` to `INVALID_REQUEST`. Never throw inside a model-access frame
 unless the frame is `executeShortCommandOnEdt`.
 
-**Null-as-absent is not free: one site turns destructive — Decision (taken): land it on its own.**
+**Null-as-absent can promote a node to a root — Decision (taken): land the guard on its own.**
 `opMoveNodeToParent` / `moveNodeToParent` in `JetBrainsMPSNodeMcpToolset.kt` (`newParentRef`):
 `if (newParentRef != null)` reparents, `else if (modelReference != null)` calls `detachNode` then
 `addRootNode`, and only with both absent does it error. Today `{"newParentRef": null}` throws
 (`JsonNull.asString`) and comes back `INTERNAL_ERROR`. Under null-as-absent — including option D —
 `{"nodeReference": X, "newParentRef": null, "modelReference": "m"}` would **silently detach the node
-and make it a root**: `ok:true`, a destructive structural change. That is the only destructive
-presence-selects-form site. The other group-2 sites with no `?:` are **not** landmines: `role` /
+and make it a root**: `ok:true`, a destructive structural change. This promotion is deliberately
+excluded from D by the explicit-null guard. The other group-2 sites with no `?:` include `role` /
 `modelReference` on the same op become "role is missing" or the existing "provide one of" error;
 `GET_ENUMERATION_LITERALS` (`enumerationRef` vs `nodeReference`+`propertyName`) just selects the
 other form.
+
+**Structure deletion is an intentional consequence of D.** On UPDATE_CONCEPT_PROPERTY, missing
+or empty `dataType` already deletes the property. On UPDATE_CONCEPT_CHILD / UPDATE_CONCEPT_REFERENCE,
+missing or empty `targetConcept` already deletes the link. Field-level JSON null will now select
+those same deletion branches. The earlier claim that `newParentRef` was the only destructive
+consequence was too broad: its special rejection protects root promotion, while these documented
+delete forms follow the chosen null-as-absent contract. State null explicitly in each operation's
+docs and test omitted, null and empty-string deletion with independent fixtures.
 
 Guard **explicit JSON null** (`has("newParentRef") && isJsonNull`) → `INVALID_REQUEST`, not
 "null-or-absent". ~3 lines, worth doing even if groups 1-2 are skipped, and a prerequisite for any
@@ -322,12 +334,13 @@ three frames all take a *non-suspend* `action: () -> T` (`AbstractOps.kt:2438, 2
 a frame, and any read whose error path compiles as `return@withMpsProject` is in the inline lambda.
 All 45 qualify.
 
-**Practical notes for whoever implements D later.** (1) Preserve existing missing-parameter
+**Option D implementation constraints.** (1) Preserve existing missing-parameter
 messages and non-null failure classification; do not introduce typed-string error messages.
 (2) A third of group 2
 (`newParentRef`, `modelReference`, `role` on MOVE; GET_ENUMERATION_LITERALS) has **no** `?:` at all;
-only `newParentRef` is destructive. (3) Skill docs / re-propagation (`.agents/conventions.md`,
-runbook step 7.9) when D ships. `SkillScriptsDriftTest` will fail a resources-only edit. Document
+`newParentRef` retains its explicit-null rejection. (3) Update the affected bundled API references
+and re-propagate them (runbook step 7.9). `.agents/conventions.md` supplies policy, not string-parsing
+documentation to edit. Document
 field-level null-as-absent, the `newParentRef` exception, and the retained coercions/failures.
 (4) Group-1/2 behaviour is only
 observable through a toolset, so budget a full `McpToolsIntegrationTestSuite` run; reader-level
@@ -471,15 +484,15 @@ takes the flat branch, and silently produces an empty memento that can replace e
    contract above, including validation before format selection, recursive errors, and propagation
    to the final envelope before any persisted changes. Return error values through the raw command
    frame; throwing `McpInvalidRequestException` there still logs a dispatch failure.
-4. **Groups 1-2 — deferred.** If scheduled later, implement the precise D contract above after the
-   `newParentRef` guard. Do not include the 45-site sweep in items 1-3 or add strict validation.
+4. **Groups 1-2 — completed follow-up.** Implemented the precise D contract above after the
+   completed `newParentRef` guard, separately from items 1-3, without adding strict validation.
 5. **Document items 1-3 in their owning API references**, as listed below. Keep current general
    string behavior documented accurately: the new explicit-null rejection is specific to
-   `newParentRef`. Only when D ships, document field-level null-as-absent, its `newParentRef`
+   `newParentRef`. With D implemented, document field-level null-as-absent, its `newParentRef`
    exception, and unchanged non-null coercions and failures, including singleton-array unwrapping.
 
 Group 3's six `?: return@forEachIndexed` skips (`properties[].name`, `children[].role`,
-`references[].role` in instantiate) remain the strongest *later* candidate, ahead of the 45.
+`references[].role` in instantiate) remain a follow-up candidate after the completed sweep.
 Deferring them is a scope decision, not "benign".
 
 **Out of the `?.asString` grep, do not file as already-correct:** GET_SUB_CONCEPTS `languageRefs` —
@@ -522,7 +535,7 @@ Phase 3 acceptance tests (reuse existing registered integration-test classes):
 | Memento compatibility | Flat primitive properties; structured properties/text/children; numeric/boolean text and type; absent text, empty text/type; nested valid children; `enabled=false` with malformed settings | Existing accepted coercions and round-trip behavior remain; disabling still ignores settings |
 | Logging | Exercise scope failures under the real read frame and settings failures through the real tool command path | Capture the relevant logger output and assert no `Action dispatch failed` and no unexpected-failure warning for these newly handled client errors; an error envelope alone is insufficient |
 
-If D is implemented later, add a reader table comparing every non-null input against the existing
+Option D acceptance coverage: a reader table comparing every non-null input against the existing
 `asString` behavior (value or exception class): strings including empty/blank, numbers, booleans,
 objects, empty/multiple-element arrays, singleton/nested-singleton arrays, `[null]`, and `[{}]`.
 Assert absent and field-level null both return Kotlin null. Add tool-level tests for required-null
@@ -532,7 +545,9 @@ absence of the pre-existing failure warning for D's deliberately unchanged malfo
 
 ## Docs to update in the same commit
 
-`.agents/conventions.md` requires it, and `SkillScriptsDriftTest` enforces the script half.
+Update the affected API references listed below and their propagated copies. `.agents/conventions.md`
+is a policy reference, not an edit target: it contains no string-parsing contract. Verify reference
+copy parity directly; `SkillScriptsDriftTest` checks bundled scripts, not this prose.
 
 For Phase 3 items 1-3, update the bundled source references under
 `plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills/` and the affected tool descriptions:
@@ -544,12 +559,12 @@ For Phase 3 items 1-3, update the bundled source references under
 - `mps-mcp-workflow/references/node-editing-rules.md`, plus the MOVE description in
   `mps-node-editing/SKILL.md`: explicit `newParentRef:null` is rejected; omission still
   selects intentional promotion when `modelReference` is supplied. Document that distinction even
-  while D is deferred.
+  independently of D's general null-as-absent policy.
 - The facet entry in `mps-mcp-workflow/references/mcp-tools-index.md` and the settings description
   on `mps_mcp_update_module_facet`: accepted flat/structured forms, primitive text/type coercion,
   malformed/null field handling, and unchanged configuration on validation failure. Link to a
   dedicated settings reference if needed for the full contract, instead of burying it in the index.
-- If D ships later, update the general string policy in both `structure-operation-api.md` and
+- For D, update the general string policy in both `structure-operation-api.md` and
   `analysis-tools.md` to match its precise contract and the MOVE exception.
 
 The following Phase 1-2 documentation work is already implemented; retain it:
@@ -576,11 +591,11 @@ The following Phase 1-2 documentation work is already implemented; retain it:
 Phase 1: ~10 lines + 1 test. Phase 2: 12 call sites, 2 readers, ~6 table tests + 2 integration
 tests. One suite run. Phase 3: decisions locked above; items 1-3 implemented and validated. Items 1-3 of
 Recommended order are the implementation scope, including the memento parser's caller/result flow
-and the acceptance tests above. Item 4 is deferred with its precise D contract fixed. Do not size
+and the acceptance tests above. Item 4 is now also implemented and validated. Do not size
 items 1-3 from accessor replacements alone: scope errors and memento validation require propagation
 and tool-level regression coverage.
 
-## Implementation and review result — 2026-09-17
+## Phase 3 items 1-3 implementation and review result — 2026-09-17
 
 Completed in **one implementation / review cycle** with a Sol subagent and parent guidance/review:
 
@@ -596,6 +611,59 @@ Completed in **one implementation / review cycle** with a Sol subagent and paren
 - `McpToolsIntegrationTestSuite`: **701 tests finished, 0 failures, 0 ignored**; test JVM exited.
   Run output: `/Users/vaclav/Library/Caches/JetBrains/IntelliJIdea2026.2/tmp/ij_run__McpToolsIntegrationTestSuite_11212182518984538504.log`.
 
-No unresolved review findings or implementation items remain for Phase 3 items 1-3. Deferred:
+At completion of that cycle, no unresolved review findings or implementation items remained for
+Phase 3 items 1-3. Then deferred:
 groups 1-2's 45-site option D sweep, the blueprint silent skips, and GET_SUB_CONCEPTS scope widening.
-Changes remain uncommitted; no push or remote CI was performed.
+The user subsequently committed items 1-3 as `840fcbfc6748`.
+
+## Option D sweep implementation and review result — 2026-09-17
+
+The initial sweep completed in **one implementation / review cycle** with a Sol subagent and parent guidance/review:
+
+- Added `paramString` and replaced all 45 dispatcher reads: 2 in `AbstractNodeOps`, 12 in
+  `JetBrainsMPSNodeMcpToolset`, and 31 in `JetBrainsMPSLanguageStructureMcpToolset`
+  (33 required and 12 optional). Parent comparison against the committed files verified that
+  the caller changes are exactly the accessor substitutions, with surrounding logic unchanged.
+- Preserved the explicit-null `newParentRef` guard and all non-null coercions/failures. Added
+  reader compatibility coverage and tool-level required-null, default/alternate-form, MOVE,
+  coercion and error-envelope regressions. Review strengthened the reader comparison to keep
+  literal `"null"` distinct from Kotlin null.
+- Review identified and documented the existing structure-deletion forms: omitted, empty and
+  now null `dataType`/`targetConcept` select deletion. Tests cover each form independently.
+- Updated the bundled string-policy and operation references and their identical `.agents`
+  and `.claude` copies.
+- IDEA diagnostics: zero errors in all 8 edited Kotlin files. JDK 25 incremental build passed.
+  `git diff --check` passed.
+- `McpToolsIntegrationTestSuite`: **709 tests finished, 0 failures, 0 ignored**; test JVM exited.
+  Run output: `/Users/vaclav/Library/Caches/JetBrains/IntelliJIdea2026.2/tmp/ij_run__McpToolsIntegrationTestSuite_12724946836947401339.log`.
+
+The initial cycle had no outstanding parent-review findings; subsequent reviewer feedback is
+recorded below. The blueprint silent skips and GET_SUB_CONCEPTS scope widening remain deferred.
+
+### Reviewer follow-up — cycle 2
+
+- Restored the omitted-field baselines in the two enumeration success tests and added dedicated
+  explicit-null regressions. The property-form query compares complete omitted/null literal arrays;
+  CREATE_ENUM checks both omitted/null default names preserve members and leave the default unset.
+- Parent review found no remaining issues in these additions. IDEA diagnostics reported no errors;
+  the JDK 25 build passed and `git diff --check` was clean.
+- `McpToolsIntegrationTestSuite`: **711 tests finished, 0 failures, 0 ignored**; test JVM exited.
+  Run output: `/Users/vaclav/Library/Caches/JetBrains/IntelliJIdea2026.2/tmp/ij_run__McpToolsIntegrationTestSuite_1701811856168473513.log`.
+- Further feedback received during validation identified weakened FIND_INSTANCES property-filter
+  test isolation and ambiguous helper KDoc. These were addressed in cycle 3.
+
+### Reviewer follow-up — cycle 3
+
+- Restored the original model-scoped property-filter test. Added a separate FIND_INSTANCES test
+  using a uniquely named fixture and exact persistent node-reference assertions for omitted,
+  explicit-null and explicit-editable scopes.
+- Clarified that the shared helper KDoc describes boolean/integer validation and blueprint-reader
+  reuse; `paramString` has a separate null-only compatibility contract. Clarified this plan's
+  conventions link as a policy reference, not a string-parsing documentation edit target.
+- Parent review found no remaining issues. IDEA diagnostics reported no errors or warnings in
+  the two files edited this cycle; the JDK 25 build passed and `git diff --check` was clean.
+- `McpToolsIntegrationTestSuite`: **712 tests finished, 0 failures, 0 ignored**; test JVM exited.
+  Run output: `/Users/vaclav/Library/Caches/JetBrains/IntelliJIdea2026.2/tmp/ij_run__McpToolsIntegrationTestSuite_11451132465776082361.log`.
+
+All reported review findings are addressed after three cycles, within the five-cycle limit.
+No sweep implementation items remain. Changes remain uncommitted; no push or remote CI was performed.
