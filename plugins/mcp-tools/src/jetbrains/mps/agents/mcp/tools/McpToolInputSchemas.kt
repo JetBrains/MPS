@@ -11,6 +11,35 @@ class ToolInputJsonException(message: String) : IllegalArgumentException(message
 
 class ToolInputSchemaException(message: String) : IllegalArgumentException(message)
 
+/**
+ * Readers for a scalar inside a tool's `parameters` JSON blob (`mps_mcp_alter_structure`,
+ * `mps_mcp_query_structure`, `mps_mcp_alter_nodes`, `mps_mcp_query_nodes`).
+ *
+ * Use these instead of `params.get("x")?.asBoolean` / `?.asInt`. Gson's accessors read a number as
+ * `false`, read a one-element array through to its element, wrap an out-of-range integer, and throw
+ * an untyped exception on an explicit JSON `null`, an object, or an array that is not exactly one
+ * element — which `toolFailure` could only report as `INTERNAL_ERROR` with no mention of the
+ * offending key. These delegate to the same readers the blueprint parsers use, so both input paths
+ * accept exactly the same shapes and produce the same message; an explicit `null` counts as absent.
+ */
+internal fun JsonObject.paramBoolean(field: String, default: Boolean): Boolean =
+  optionalBoolean(field, PARAMETERS_PATH) ?: default
+
+internal fun JsonObject.paramInt(field: String): Int? = optionalInt(field, PARAMETERS_PATH)
+
+private const val PARAMETERS_PATH = "parameters"
+
+/**
+ * Shared by every structure write that takes a reference cardinality: the bulk
+ * `CREATE_CONCEPTS` blueprints and `UPDATE_CONCEPT_REFERENCE`. Both used to drop `multiple`
+ * on a reference silently and produce a 0..1 link, which cost a study worker ~40 tool calls
+ * to notice.
+ */
+internal const val REFERENCES_ARE_SINGLE_VALUED =
+  "References are always single-valued in MPS; 'multiple' does not apply. " +
+    "Model a 0..n reference as a smart-reference wrapper concept " +
+    "(see the mps-aspect-structure-concepts skill)."
+
 interface StructureMemberOwnerSpec {
   val name: String
   val properties: List<StructurePropertySpec>
@@ -96,8 +125,8 @@ fun parseStructureConceptSpecs(json: String, sourceName: String): List<Structure
       virtualPackage = obj.optionalStringAlias(listOf("virtualPackage", "virtual package", "virtualFolder", "virtual folder"), path),
       documentation = obj.optionalString("documentation", path),
       properties = obj.optionalProperties(path),
-      children = obj.optionalLinks("children", path),
-      references = obj.optionalLinks("references", path),
+      children = obj.optionalLinks("children", path, multiValuedAllowed = true),
+      references = obj.optionalLinks("references", path, multiValuedAllowed = false),
       extendsRef = obj.optionalString("extends", path),
       implementsRefs = obj.optionalStringListOrString("implements", path).orEmpty(),
     )
@@ -114,8 +143,8 @@ fun parseStructureInterfaceConceptSpecs(json: String, sourceName: String): List<
       virtualPackage = obj.optionalStringAlias(listOf("virtualPackage", "virtual package", "virtualFolder", "virtual folder"), path),
       documentation = obj.optionalString("documentation", path),
       properties = obj.optionalProperties(path),
-      children = obj.optionalLinks("children", path),
-      references = obj.optionalLinks("references", path),
+      children = obj.optionalLinks("children", path, multiValuedAllowed = true),
+      references = obj.optionalLinks("references", path, multiValuedAllowed = false),
       extendedInterfaces = obj.optionalStringListOrString(listOf("extendedInterfaces", "extended interfaces", "extends"), path).orEmpty(),
     )
   }
@@ -331,15 +360,32 @@ private fun JsonObject.optionalStringAlias(fields: List<String>, path: String): 
 
 private fun JsonObject.optionalBoolean(field: String, path: String): Boolean? {
   val element = optionalElement(field) ?: return null
-  if (!element.isJsonPrimitive || !element.asJsonPrimitive.isBoolean) {
-    throw ToolInputSchemaException("'$path.$field' must be a boolean")
+  val primitive = element.takeIf { it.isJsonPrimitive }?.asJsonPrimitive
+  if (primitive != null) {
+    if (primitive.isBoolean) {
+      return primitive.asBoolean
+    }
+    // Tolerate the stringified form: MCP clients routinely quote booleans. Only the literal, in
+    // any case — no surrounding whitespace, so the tolerance matches optionalInt's (`"3"` yes,
+    // `" 3"` no). Nothing else: gson's `asBoolean` reads a number, `"yes"` and `""` all as
+    // `false`, which is the silent-wrong-value case this reader exists to remove.
+    if (primitive.isString) {
+      when (primitive.asString.lowercase()) {
+        "true" -> return true
+        "false" -> return false
+      }
+    }
   }
-  return element.asBoolean
+  throw ToolInputSchemaException("'$path.$field' must be a boolean")
 }
 
 private fun JsonObject.optionalInt(field: String, path: String): Int? {
   val element = optionalElement(field) ?: return null
-  if (!element.isJsonPrimitive || !element.asJsonPrimitive.isNumber) {
+  // A quoted integer is tolerated for the same reason as a quoted boolean. The BigDecimal parse
+  // below rejects a string that is not a number at all (`"x"`, `" 3"`) and `intValueExact` rejects
+  // one that is not a whole int (`"3.5"`, and `2147483648`, which gson's `asInt` silently wrapped).
+  val primitive = element.takeIf { it.isJsonPrimitive }?.asJsonPrimitive
+  if (primitive == null || !(primitive.isNumber || primitive.isString)) {
     throw ToolInputSchemaException("'$path.$field' must be an integer")
   }
   val number = try {
@@ -406,7 +452,16 @@ private fun JsonObject.optionalProperties(path: String): List<StructurePropertyS
   }
 }
 
-private fun JsonObject.optionalLinks(field: String, path: String): List<StructureLinkSpec> {
+private fun JsonObject.optionalLinks(
+  field: String,
+  path: String,
+  /**
+   * Only a child link can be multi-valued. Passed in rather than derived from [field] so that
+   * adding a key alias (the way `virtualPackage` has several spellings) cannot silently let a
+   * reference through with `multiple: true`.
+   */
+  multiValuedAllowed: Boolean,
+): List<StructureLinkSpec> {
   val element = optionalElement(field) ?: return emptyList()
   if (!element.isJsonArray) {
     throw ToolInputSchemaException("'$path.$field' must be an array")
@@ -414,10 +469,16 @@ private fun JsonObject.optionalLinks(field: String, path: String): List<Structur
   return element.asJsonArray.mapIndexed { index, item ->
     val itemPath = "$path.$field[$index]"
     val itemObj = item.asRequiredObject(itemPath)
+    val multiple = itemObj.optionalBoolean("multiple", itemPath) ?: false
+    // `multiple: false` is truthful and stays accepted; `true` would otherwise be honoured for
+    // a child and dropped for a reference within the same blueprint.
+    if (multiple && !multiValuedAllowed) {
+      throw ToolInputSchemaException("'$itemPath.multiple': $REFERENCES_ARE_SINGLE_VALUED")
+    }
     StructureLinkSpec(
       role = itemObj.requiredString("role", itemPath),
       target = itemObj.requiredString("target", itemPath),
-      multiple = itemObj.optionalBoolean("multiple", itemPath) ?: false,
+      multiple = multiple,
       optional = itemObj.optionalBoolean("optional", itemPath) ?: true,
     )
   }

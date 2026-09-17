@@ -137,8 +137,8 @@ them with `isDefault`; an older dump that omits them is filled from the concept 
 `enumerationDefault`).
 
 ```
-python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Recipe
-python3 scripts/mps_dump.py node /var/folders/.../mps-node-123.json Crepes \
+python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Course
+python3 scripts/mps_dump.py node /var/folders/.../mps-node-123.json "Score Reading" \
     --concept-details /var/folders/.../mps-node-456.json
 ```
 

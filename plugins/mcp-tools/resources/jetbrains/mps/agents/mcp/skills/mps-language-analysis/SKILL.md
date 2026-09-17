@@ -60,11 +60,12 @@ per property, reference, and child role (type, enum literals, cardinality): the 
 needed to author a blueprint, instead of the 10–40 KB details file.
 
 ```
-python3 scripts/concept_shape.py /var/folders/.../mps-node-456.json --concept Recipe
-Recipe  mcp.study.recipes.structure.Recipe  rootable
-  prop   servings    integer
-  prop   difficulty  enum Difficulty [EASY|MEDIUM|HARD]
-  child  steps       mcp.study.recipes.structure.Step       1..n
+python3 scripts/concept_shape.py /var/folders/.../mps-node-456.json --concept Course
+Course  com.example.courses.structure.Course  rootable
+  prop   credits        integer
+  prop   level          enum Level [INTRO|CORE|ADVANCED]
+  child  lessons        com.example.courses.structure.Lesson     1..n
+  child  prerequisites  com.example.courses.structure.CourseRef  0..n
 ```
 
 `--all` keeps the inherited `shortDescription` / `virtualPackage` / `smodelAttribute` features

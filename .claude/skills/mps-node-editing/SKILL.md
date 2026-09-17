@@ -28,7 +28,7 @@ All child, property, and reference operations on existing nodes go through `mps_
 | operation × kind        | Required parameters                                           | Notes |
 |-------------------------|---------------------------------------------------------------|-------|
 | `ADD` × `CHILD`         | `nodeReference` (parent), `childRole`, `childJson`            | Optional `position` (0-based; null/-1 = append) and `dryRun`. A `position` ≥ the current child count clamps to an append; a negative value other than -1 is rejected. The response's `data.index` reports the actual landing index. |
-| `SET` × `CHILD`         | `childNodeRef`, `childJson`                                   | Replaces an existing child; preserves its position in the role. Optional `dryRun`. |
+| `SET` × `CHILD`         | `childNodeRef`, `childJson`                                   | Replaces an existing child; preserves its position in the role. Optional `dryRun`. A *null* `childJson` deletes the child instead — prefer `DELETE` × `CHILD` for that. |
 | `DELETE` × `CHILD`      | `childNodeRef`                                                | Removes the child from its parent. |
 | `SET` × `PROPERTY`      | `properties` = `[[nodeRef, propertyName, value], …]`          | Batch operation; returns per-row results. |
 | `DELETE` × `PROPERTY`   | `nodeReference`, `propertyName`                               | Clears a single property. |
@@ -40,6 +40,8 @@ All child, property, and reference operations on existing nodes go through `mps_
 `mps_mcp_update_node` (PROPERTY / REFERENCE / CHILD) and `mps_mcp_alter_nodes` MOVE_CHILD / MOVE_NODE_TO_PARENT / COPY_NODE also work on nodes inside the **current MPS Console input command** — pass the node's normal persistent reference; no extra parameter is needed. The node must be inside the current unexecuted console input (not history/stale). MOVE_NODE_TO_PARENT only relocates a node *within* the current console command — moving a node between the console and a project model, or making a console node a root, is refused. Edits to console nodes skip disk-persistence and refresh the console's imports instead. Nodes outside the selected project are rejected as before.
 
 `childJson` accepts either an inline JSON string (max 4 KB) **or** an absolute path to a file containing the JSON blueprint. Use the file form for large blueprints to avoid MCP-transport truncation.
+
+Where a parameter's documented null means something (`SET` × `CHILD` deleting the child, `SET` × `PROPERTY`/`REFERENCE` clearing a value), express the null by **omitting the parameter** or sending an unquoted JSON null. The 4-character string `"null"` is not the null form — for `childJson` it is rejected as `Input is the string 'null', not a JSON object/array or a file path`.
 
 ## Prerequisites
 
@@ -83,3 +85,28 @@ The tools that accept a node JSON blueprint (`mps_mcp_update_node` for `ADD`/`SE
 - Open `references/json-format.md` when you need the unified JSON blueprint shape — concept/properties/children/references layout, optional-section rules, and reference-resolution semantics (`r:...` vs name auto-resolution).
 - Open `references/staged-construction.md` when the subtree is large (>~4 KB) or its child refs are needed for later edits — the skeleton → validate → incremental-fill → targeted-update → cleanup pattern.
 - Open `references/troubleshooting.md` when an insert call fails with `JsonElement.getAsString()` errors or when the JSON shape diverges from the user's textual notation.
+
+## Scripts
+
+`scripts/table_to_bulk_insert.py` — turns a CSV (or JSON rows) plus a small JSON mapping spec
+into the top-level-array blueprint `mps_mcp_insert_root_node_from_json` accepts, written to a
+file under the system temp directory, and prints `{path, roots, children, references}`. Covers
+typed properties (`int`, enum literals), split-column child lists, and reference-wrapper
+children whose targets are written as names for the tool to resolve after the batch lands.
+
+```
+python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json
+{"children":183,"path":"/var/folders/.../bulk_insert-courses-1234.json","references":65,"roots":40}
+```
+
+Then `mps_mcp_insert_root_node_from_json(modelReference=…, json="<that path>", dryRun=true)`
+and, once it is clean, the same call with `dryRun=false`. Run `--help` for the full mapping-spec
+reference, `--list-tools` for the tools and parameters it depends on; `scripts/examples/`
+holds a 40-row `courses.csv` with its matching `courses.map.json`.
+
+No `python3` (typically Windows): author the array by hand as described in
+`references/json-format.md` — one object per row, `properties` entries omitted for empty cells
+so the MPS default applies, one child role per list column, and one wrapper child per
+reference with `{"role": …, "target": "<name>"}` — write it to a file under the system temp
+directory (not `/tmp` on macOS) and pass that path. Prefer `--limit`-sized batches, or the
+staged construction in `references/staged-construction.md`, over one oversized blueprint.

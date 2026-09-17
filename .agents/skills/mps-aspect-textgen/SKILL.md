@@ -55,6 +55,8 @@ A custom language usually has both: a generator rewrites into BaseLanguage + run
 
 ## Reference Index
 
+**Start here — most common case**: one `ConceptTextGenDeclaration` emitting text for one concept → read only `references/concept-textgen-root.md` and, for the body vocabulary, `references/statements-and-appends.md`; wrong indentation → only `references/indentation-model.md`; no output at all → only `references/common-failures.md`.
+
 - Open `references/concept-textgen-root.md` when adding or editing a `ConceptTextGenDeclaration` — slot purposes (`extension`, `encoding`, `filename`, `filePath`, `layout`, `contextObjects`, `textGenBlock`), the editor shorthand, and what each child holds.
 - Open `references/statements-and-appends.md` when writing the body — `AppendOperation` and its part vocabulary (`ConstantStringAppendPart`, `NodeAppendPart`, `CollectionAppendPart`, `NewLineAppendPart`), the `$list{... with sep}` form, `BinaryWriteOperation` (`write`), `FoundErrorOperation` (`found error`), control flow, and the smodel/behavior accessors usable inside a body.
 - Open `references/indentation-model.md` when indentation is wrong — the depth-counter mental model, rules of thumb (always pair `\n` with `indent buffer`, prefer `with indent { ... }`, use `withIndent` flag for one-shot dispatch), and worked examples from `IfStatement_TextGen`, `BlockStatement_TextGen`, and `ClassConcept_TextGen`.

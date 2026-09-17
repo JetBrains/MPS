@@ -29,6 +29,17 @@ MPS tools use a single JSON blueprint shape for all insertions and updates:
 * **Optional sections**: `properties`, `children`, and `references` can be omitted if empty.
 * **Reference resolution**: `target` accepts a persistent node reference (`r:...`) or a node **name** for auto-resolution in scope. Auto-resolution is ideal for local references within the same blueprint.
 * **Best practices**: avoid deprecated concepts, properties, or roles.
+* **Default property values are invisible**: MPS stores nothing for a property that holds its default value — most visibly the *first/default literal* of an enumeration. Dumps (`mps_mcp_print_node`, `mps_mcp_get_project_structure includeNodes`) therefore **omit** such a property, while report-style output prints `"value": ""`. Read absent / `""` as **"holds its default"**, not as "missing", and do not copy a `""` enum value into a blueprint — simply omit the property.
+
+## Object vs. array, and where the file may live
+
+* `mps_mcp_insert_root_node_from_json` (`json`) accepts a **single object or a top-level array** of blueprints; an array is inserted atomically.
+* `mps_mcp_update_node` (`childJson`, `ADD`/`SET` × `CHILD`) accepts a **single object only** — a top-level array fails with `Expected JsonObject but was JsonArray`. To add N children, call `ADD`/`CHILD` N times, or nest all N under the parent blueprint's `children[].nodes` and insert the parent once.
+* Either parameter may be inline JSON (max 4 KB) **or an absolute file path**, and the file **must be inside the JVM system temp directory**:
+  * macOS/Linux — under `$TMPDIR`; on macOS that is a per-user `/var/folders/...` directory, so **`/tmp` is rejected** with `Input file path '/tmp/…' is not inside the system temp directory`.
+  * Windows — under `%TEMP%`.
+  * Shell example: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` and pass `$f`.
+  * An agent file-writing tool (e.g. `Write`) is fine too, but it needs the **expanded** absolute temp path (`/var/folders/.../blueprint.json`) — no tool expands `$TMPDIR` for you.
 
 ## Response Envelope
 

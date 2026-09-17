@@ -455,6 +455,34 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `set-node-child rejects the string null and says how to express the null`() {
+        // The docs say `childJson = null` deletes the child; a worker sent the 4-character string
+        // and got "neither a valid JSON object/array nor an existing file path" with no way out.
+        val enumRef = createColorEnum()
+        val greenRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(membersOf(enumRef).single { it.name == "GREEN" }.reference)
+        }
+
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD, childNodeRef = greenRef, childJson = "null")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val msg = obj.get("error").asString
+        // Pin the two facts, not the grammar: omit the parameter, or send a real JSON null.
+        assertTrue("error must say to omit the parameter: $msg", msg.contains("omit", ignoreCase = true))
+        assertTrue("error must name the JSON null form: $msg", msg.contains("JSON null"))
+
+        readOnRepo {
+            assertEquals(
+                "the rejected call must neither replace nor delete the child",
+                listOf("RED", "GREEN", "BLUE"),
+                membersOf(enumRef).mapNotNull { it.name },
+            )
+        }
+    }
+
+    @Test
     fun `add-node-child rejects unknown child role on target concept`() {
         val enumRef = createColorEnum()
         // EnumerationMemberDeclaration has no containment links, so any `children` entry is invalid.

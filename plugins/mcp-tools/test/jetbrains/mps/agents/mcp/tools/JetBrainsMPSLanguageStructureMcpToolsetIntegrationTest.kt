@@ -602,6 +602,141 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         assertTrue(expectErr(response).contains("missing"))
     }
 
+    @Test
+    fun `UPDATE_CONCEPT_REFERENCE rejects multiple true and names the wrapper idiom`() {
+        val ownerRef = createConceptRoot("Owner5")
+        val targetRef = createConceptRoot("Target5")
+        val response = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE,
+                """{"conceptRef":"$ownerRef","role":"refs","targetConcept":"$targetRef","multiple":true}"""
+            )
+        }
+        val error = expectErr(response)
+        assertTrue("error must state the rule: $error", error.contains("single-valued"))
+        assertTrue("error must name the workaround: $error", error.contains("smart-reference wrapper concept"))
+        assertEquals("INVALID_REQUEST", JsonParser.parseString(response).asJsonObject.get("code").asString)
+        readOnRepo {
+            val owner = structureModel.rootNodes.single { it.name == "Owner5" }
+            assertTrue("rejected call must not create a link", owner.getChildrenByName("linkDeclaration").isEmpty())
+        }
+    }
+
+    @Test
+    fun `an explicit null boolean parameter takes the default instead of failing`() {
+        // `{"dryRun": null}` used to throw out of `?.asBoolean` — Kotlin's `?.` does not
+        // short-circuit a JsonNull — and answered INTERNAL_ERROR with a WARN in the log.
+        val ownerRef = createConceptRoot("NullBool")
+        val targetRef = createConceptRoot("NullBoolTarget")
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":"$targetRef","multiple":null,"dryRun":null}"""
+            )
+        })
+        readOnRepo {
+            val owner = structureModel.rootNodes.single { it.name == "NullBool" }
+            // dryRun defaulted to false, so the write really happened.
+            val link = owner.getChildrenByName("linkDeclaration").single()
+            assertEquals("kid", link.getPropertyByName("role"))
+            // multiple defaulted to false: 0..1 is sourceCardinality's default literal, which MPS
+            // stores as nothing (the 0..n case is pinned by the quoted-boolean test below).
+            assertNull(link.getPropertyByName("sourceCardinality"))
+        }
+    }
+
+    @Test
+    fun `a quoted boolean parameter is accepted`() {
+        // MCP clients routinely stringify booleans, and this worked before the typed readers
+        // landed; keep it working rather than turning a live call into an error.
+        val ownerRef = createConceptRoot("QuotedBool")
+        val targetRef = createConceptRoot("QuotedBoolTarget")
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+                """{"conceptRef":"$ownerRef","role":"kids","targetConcept":"$targetRef","multiple":"true"}"""
+            )
+        })
+        readOnRepo {
+            val owner = structureModel.rootNodes.single { it.name == "QuotedBool" }
+            val link = owner.getChildrenByName("linkDeclaration").single()
+            assertEnumLiteralIs("_0__n", link.getPropertyByName("sourceCardinality"))
+        }
+    }
+
+    @Test
+    fun `a numeric boolean parameter is rejected by name instead of read as false`() {
+        // The silent-wrong-value case: gson's asBoolean read 1 as false, so the caller got
+        // ok:true and a 0..1 child where it asked for 0..n.
+        val ownerRef = createConceptRoot("NumericBool")
+        val targetRef = createConceptRoot("NumericBoolTarget")
+        val response = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":"$targetRef","multiple":1}"""
+            )
+        }
+        val error = expectErr(response)
+        assertTrue("error must name the offending key: $error", error.contains("parameters.multiple"))
+        assertTrue("error must state the expected type: $error", error.contains("must be a boolean"))
+        assertEquals("INVALID_REQUEST", JsonParser.parseString(response).asJsonObject.get("code").asString)
+        readOnRepo {
+            val owner = structureModel.rootNodes.single { it.name == "NumericBool" }
+            assertTrue("rejected call must not create a link", owner.getChildrenByName("linkDeclaration").isEmpty())
+        }
+    }
+
+    @Test
+    fun `CREATE_CONCEPTS rejects multiple on a references entry`() {
+        // The bulk path shares one link parser with `children`, so it used to accept `multiple`
+        // on a reference and then drop it — the same silent 0..1 result as UPDATE_CONCEPT_REFERENCE.
+        val parameters = """
+            {
+              "structureModelRef": "$structureModelRef",
+              "conceptsJson": [
+                {
+                  "name": "BulkRefOwner",
+                  "references": [ { "role": "refs", "target": "BulkRefOwner", "multiple": true } ]
+                }
+              ]
+            }
+        """.trimIndent()
+        val response = runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, parameters) }
+
+        val error = expectErr(response)
+        assertTrue("error must state the rule: $error", error.contains("single-valued"))
+        assertTrue("error must name the workaround: $error", error.contains("smart-reference wrapper concept"))
+        assertTrue("error must name the offending path: $error", error.contains("references[0].multiple"))
+        readOnRepo {
+            assertTrue(
+                "rejected blueprint must create nothing",
+                structureModel.rootNodes.none { it.name == "BulkRefOwner" },
+            )
+        }
+    }
+
+    @Test
+    fun `UPDATE_CONCEPT_REFERENCE accepts multiple false`() {
+        val ownerRef = createConceptRoot("Owner6")
+        val targetRef = createConceptRoot("Target6")
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE,
+                """{"conceptRef":"$ownerRef","role":"ref","targetConcept":"$targetRef","multiple":false}"""
+            )
+        })
+        readOnRepo {
+            val owner = structureModel.rootNodes.single { it.name == "Owner6" }
+            val link = owner.getChildrenByName("linkDeclaration").single()
+            assertEquals("ref", link.getPropertyByName("role"))
+            assertEquals("Target6", link.getReferenceTargetByName("target")?.name)
+            // `_0__1` is `sourceCardinality`'s default literal, and MPS stores nothing for a
+            // property sitting at its enumeration's default — so "absent" IS 0..1 here. The
+            // mandatory case above is the one that stores a literal (`_1`).
+            assertNull(link.getPropertyByName("sourceCardinality"))
+        }
+    }
+
     // ── RENAME_CONCEPT_PROPERTY ───────────────────────────────────────────────────────
 
     @Test

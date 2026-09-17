@@ -712,6 +712,29 @@ class AbstractOpsPropertyProblemsTest {
     }
 
     @Test
+    fun inputSchemaExceptionMapsToInvalidRequestAndKeepsTheKeyName() {
+        // Classifying these at the boundary is what lets a tool read a `parameters` value through
+        // a throwing typed reader without its own try/catch. The message must survive: it is the
+        // only thing that names the offending key.
+        val obj = JsonParser.parseString(
+            ops.toolFailureForTest("running test tool", ToolInputSchemaException("'parameters.dryRun' must be a boolean"))
+        ).asJsonObject
+
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals("'parameters.dryRun' must be a boolean", obj.get("error").asString)
+    }
+
+    @Test
+    fun inputJsonExceptionMapsToInvalidJson() {
+        val obj = JsonParser.parseString(
+            ops.toolFailureForTest("running test tool", ToolInputJsonException("conceptsJson is not valid JSON"))
+        ).asJsonObject
+
+        assertEquals("INVALID_JSON", obj.get("code").asString)
+        assertEquals("conceptsJson is not valid JSON", obj.get("error").asString)
+    }
+
+    @Test
     fun bareIllegalArgumentExceptionMapsToInternalError() {
         val obj = JsonParser.parseString(
             ops.toolFailureForTest(

@@ -54,6 +54,8 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 
 ## Reference Index
 
+**Start here — most common case**: one `InferenceRule` that types a concept → read only `references/inference-rules.md`, plus `references/json-blueprints.md` when inserting it through MCP; a checking rule that reports an error → only `references/non-typesystem-checking.md`; a type that stays `undefined` → only `references/common-failures.md`.
+
 - Open `references/inference-rules.md` when writing or debugging an `InferenceRule` — the operator vocabulary (`:==:`, `:<=:`, `:>=:`, soft `infer`, strong `:<<=:` / `:>>=:`), free type variables (`var elementType;`), `join(A | B)`, `%(...)%` anti-quotations in `<...>` literals, and the four worked examples (StringLiteral, ParenthesizedExpression, TernaryOperator, ForEachStatement).
 - Open `references/when-concrete.md` when a rule must wait for a resolved concrete type before deciding — `WhenConcreteStatement` shape, nested `when concrete` blocks, `operation type(op, leftType, rightType)`, and the bound-variable plumbing (`WhenConcreteVariableDeclaration` / `WhenConcreteVariableReference`).
 - Open `references/lattice-rules.md` for the type-lattice rules — `SubtypingRule` (single supertype or `nlist<>` of supertypes), `InequationReplacementRule` (a.k.a. "replacement rule", structural subtyping with `isApplicableClause`, `isWeak`, `equationInfo.getNodeWithError()`), `ComparisonRule` (`boolean` body, `weak`), and `SubstituteTypeRule` (`attributedNode`, return-or-null pattern).

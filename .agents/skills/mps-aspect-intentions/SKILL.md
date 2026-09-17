@@ -53,6 +53,8 @@ Intentions are user-invoked transformations shown in the Alt+Enter popup on a no
 
 ## Reference Index
 
+**Start here — most common case**: one plain intention (description / isApplicable / execute) → read only `references/blocks-and-parameters.md`, plus `references/json-blueprints.md` when inserting the root through MCP; the execute body's AST edits → only `references/execute-idioms.md`; the intention never shows up → only `references/common-failures.md`.
+
 - Open `references/blocks-and-parameters.md` when wiring `descriptionFunction`, `isApplicableFunction`, `executeFunction`, or `childFilterFunction`, or when you need to look up the implicit parameter concept FQNs for any of them.
 - Open `references/execute-idioms.md` when writing an `executeFunction` body — typical AST-editing operations (insert sibling, isInstanceOf, asCast, list add, select-in-editor), the verbatim `WrapInParens` and `AddOnEntry` examples, the attach-an-annotation (node attribute) idiom (`forConcept = BaseConcept` + context-gated `isApplicable`, `.@role.add(...)` vs `.@Mark = ...`), and the `SelectInEditorOperation` JSON shape live there.
 - Open `references/factory-initialized.md` when an `executeFunction` allocates new nodes and you want the concept's NodeFactory to seed defaults — the `NF_*` family table, the `add new initialized(<default>)` semantics, and the used-language requirement live there.

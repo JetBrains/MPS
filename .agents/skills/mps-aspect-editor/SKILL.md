@@ -49,6 +49,8 @@ Both roles accept any `EditorCellModel` and are built the same way (collections,
 
 ## Reference Index
 
+**Start here — most common case**: laying out cells for one concept → read only `references/cell-models.md`; a known layout shape (child on its own line, indented block, vertical list) → only `references/editor-patterns.md`; a style item's accepted literals → only `references/stylesheet-values.md`.
+
 - Open `references/cell-models.md` for the catalog of cell-model concepts (`ConceptEditorDeclaration`, `EditorComponentDeclaration`, `CellModel_Collection`, `CellModel_Constant`, `CellModel_Property`, `CellModel_ReadOnlyModelAccessor`, `CellModel_RefNode`, `CellModel_RefNodeList`, `CellModel_RefCell`, `CellModel_Component`, `InlineEditorComponent`) with their suffixes and purpose.
 - Open `references/indent-layout-styles.md` for the style-item catalog (`IndentLayoutOnNewLineStyleClassItem`, `IndentLayoutIndentStyleClassItem`, `IndentLayoutNewLineChildrenStyleClassItem`, `SelectableStyleSheetItem`) used inside `CellLayout_Indent`.
 - Open `references/editor-patterns.md` for ready-to-paste JSON / pseudo-code patterns: indented child on a new line, named concept with keyword header, transparent list, smart-reference cell, a minimal `ConceptEditorDeclaration` JSON template, a concept editor with an inspected cell layout, the empty-constant vertical-gap separator, the editable empty-list placeholder with a disappearing `nullText` hint (`EditableStyleClassItem`), and the annotation (node attribute) editor with `CellModel_AttributedNodeCell` (`attributed node`), guillemet labels, and keyboard-deletability.

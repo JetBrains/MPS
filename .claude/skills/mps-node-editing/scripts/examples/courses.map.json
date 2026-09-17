@@ -1,0 +1,29 @@
+{
+  "concept": "com.example.courses.structure.Course",
+  "nameColumn": "name",
+  "properties": {
+    "credits": { "property": "credits", "type": "int" },
+    "level": { "property": "level", "type": "enum", "values": ["INTRO", "CORE", "ADVANCED"] }
+  },
+  "childLists": {
+    "lessons": {
+      "concept": "com.example.courses.structure.Lesson",
+      "role": "lessons",
+      "splitter": "|",
+      "fieldSplitter": ":",
+      "fields": [
+        { "property": "title" },
+        { "property": "minutes", "type": "int" }
+      ]
+    }
+  },
+  "referenceLists": {
+    "prerequisites": {
+      "concept": "com.example.courses.structure.CourseRef",
+      "role": "prerequisites",
+      "referenceRole": "course",
+      "targetConcept": "com.example.courses.structure.Course",
+      "splitter": "|"
+    }
+  }
+}

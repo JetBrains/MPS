@@ -64,6 +64,8 @@ The **behavior** aspect attaches methods and a constructor to a concept, much li
 
 ## Reference Index
 
+**Start here — most common case**: adding a plain (non-virtual) concept method → read only `references/method-declarations.md`, plus `references/json-blueprints.md` when inserting it through MCP; overriding a `lang.core.behavior` method (`getScope`, `getName`, `getPresentation`) → only `references/lang-core-behavior-overrides.md`; virtual dispatch / `super` puzzles → only `references/inheritance-and-dispatch.md`.
+
 - Open `references/method-declarations.md` when authoring a `ConceptMethodDeclaration` — modifiers, parameters, `overriddenMethod`, `BaseConcept` overrides (`getPresentation` / `getSideIcon`), implicit-return rule, and the MPS-typed return-type Java-parser caveat.
 - Open `references/local-and-super-calls.md` when calling sibling methods of the same `ConceptBehavior` (`LocalBehaviorMethodCall`), distinguishing unqualified `m(args)` from `this.m(args)` (which generates `DotExpression { ThisNodeExpression, Node_ConceptMethodCall }`), or calling `super<Interface>.method(...)` — includes the verbatim Stateful and Kaja `CommentLine_Behavior` examples and the `Stateful_Behavior.getScope` super-call JSON.
 - Open `references/inheritance-and-dispatch.md` when designing or debugging virtual dispatch — the MRO algorithm (own → extended super → interfaces in definition order), how a method on an abstract super-concept covers every concrete sub-concept (Stateful pattern), and when to hoist shared behavior up vs. duplicate per concept.

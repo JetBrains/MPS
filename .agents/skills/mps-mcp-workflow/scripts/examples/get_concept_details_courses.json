@@ -2,14 +2,14 @@
   "ok": true,
   "data": [
     {
-      "name": "Cookbook",
-      "qualifiedName": "mcp.study.recipes.structure.Cookbook",
-      "conceptAlias": "cookbook",
-      "shortDescription": "A named collection of recipe references",
-      "doc": "Groups existing Recipe roots into a titled collection without containing them.",
+      "name": "Curriculum",
+      "qualifiedName": "com.example.courses.structure.Curriculum",
+      "conceptAlias": "curriculum",
+      "shortDescription": "A named collection of course references",
+      "doc": "Groups existing Course roots into a titled collection without containing them.",
       "deprecated": "false",
-      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359703:mcp.study.recipes.structure.Cookbook",
-      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359703:com.example.courses.structure.Curriculum",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
       "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
       "superInterfaces": [
         "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
@@ -20,7 +20,7 @@
           "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
         }
       ],
-      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359703",
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359703",
       "isAbstract": false,
       "isInterfaceConcept": false,
       "isRootable": true,
@@ -55,11 +55,11 @@
       "references": [],
       "children": [
         {
-          "name": "recipes",
-          "targetConcept": "mcp.study.recipes.structure.RecipeRef",
+          "name": "courses",
+          "targetConcept": "com.example.courses.structure.CourseRef",
           "cardinality": "0..n",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359703/2518891257435359717",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359717",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359703/2518891257435359717",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359717",
           "doc": "",
           "deprecated": "false"
         },
@@ -74,7 +74,7 @@
         }
       ],
       "sampleNode": {
-        "concept": "mcp.study.recipes.structure.Cookbook",
+        "concept": "com.example.courses.structure.Curriculum",
         "properties": [
           {
             "name": "shortDescription",
@@ -86,15 +86,15 @@
           },
           {
             "name": "name",
-            "value": "Cookbook"
+            "value": "Curriculum"
           }
         ],
         "references": [],
         "children": [
           {
-            "role": "recipes",
+            "role": "courses",
             "nodes": [
-              "/* Instances of mcp.study.recipes.structure.RecipeRef or its sub-concepts are expected here */"
+              "/* Instances of com.example.courses.structure.CourseRef or its sub-concepts are expected here */"
             ]
           },
           {
@@ -107,14 +107,14 @@
       }
     },
     {
-      "name": "Ingredient",
-      "qualifiedName": "mcp.study.recipes.structure.Ingredient",
-      "conceptAlias": "ingredient",
-      "shortDescription": "A single ingredient, measured in a given unit",
-      "doc": "A named ingredient that recipe steps can refer to. The unit says how amounts of this ingredient are measured.",
+      "name": "Resource",
+      "qualifiedName": "com.example.courses.structure.Resource",
+      "conceptAlias": "resource",
+      "shortDescription": "A single learning resource, delivered in a given format",
+      "doc": "A named resource that course lessons can refer to. The format says how this resource is delivered.",
       "deprecated": "false",
-      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693:mcp.study.recipes.structure.Ingredient",
-      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
       "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
       "superInterfaces": [
         "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
@@ -125,7 +125,7 @@
           "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
         }
       ],
-      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359693",
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359693",
       "isAbstract": false,
       "isInterfaceConcept": false,
       "isRootable": true,
@@ -133,18 +133,18 @@
       "present": true,
       "properties": [
         {
-          "name": "unit",
-          "type": "Unit",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359693/2518891257435359705",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359705",
+          "name": "format",
+          "type": "Format",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693/2518891257435359705",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359705",
           "doc": "",
           "deprecated": "false",
           "enumerationValues": [
-            "G",
-            "ML",
-            "PIECE"
+            "PDF",
+            "AUDIO",
+            "SCORE"
           ],
-          "enumerationDefault": "G"
+          "enumerationDefault": "PDF"
         },
         {
           "name": "shortDescription",
@@ -184,11 +184,11 @@
         }
       ],
       "sampleNode": {
-        "concept": "mcp.study.recipes.structure.Ingredient",
+        "concept": "com.example.courses.structure.Resource",
         "properties": [
           {
-            "name": "unit",
-            "value": "G"
+            "name": "format",
+            "value": "PDF"
           },
           {
             "name": "shortDescription",
@@ -200,7 +200,7 @@
           },
           {
             "name": "name",
-            "value": "Ingredient"
+            "value": "Resource"
           }
         ],
         "references": [],
@@ -215,18 +215,18 @@
       }
     },
     {
-      "name": "IngredientRef",
-      "qualifiedName": "mcp.study.recipes.structure.IngredientRef",
+      "name": "ResourceRef",
+      "qualifiedName": "com.example.courses.structure.ResourceRef",
       "conceptAlias": "",
-      "shortDescription": "Use of an ingredient inside a step",
-      "doc": "Smart reference wrapper that lets a Step point at an Ingredient root node.",
+      "shortDescription": "Use of a resource inside a lesson",
+      "doc": "Smart reference wrapper that lets a Lesson point at a Resource root node.",
       "deprecated": "false",
-      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695:mcp.study.recipes.structure.IngredientRef",
-      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695:com.example.courses.structure.ResourceRef",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
       "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
       "superInterfaces": [],
       "superInterfaceDetails": [],
-      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359695",
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359695",
       "isAbstract": false,
       "isInterfaceConcept": false,
       "isRootable": false,
@@ -252,11 +252,11 @@
       ],
       "references": [
         {
-          "name": "ingredient",
-          "targetConcept": "mcp.study.recipes.structure.Ingredient",
+          "name": "resource",
+          "targetConcept": "com.example.courses.structure.Resource",
           "cardinality": "1",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359695/2518891257435359707",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359707",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695/2518891257435359707",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359707",
           "doc": "",
           "deprecated": "false"
         }
@@ -273,7 +273,7 @@
         }
       ],
       "sampleNode": {
-        "concept": "mcp.study.recipes.structure.IngredientRef",
+        "concept": "com.example.courses.structure.ResourceRef",
         "properties": [
           {
             "name": "shortDescription",
@@ -286,8 +286,8 @@
         ],
         "references": [
           {
-            "role": "ingredient",
-            "target": "/* Reference to mcp.study.recipes.structure.Ingredient */"
+            "role": "resource",
+            "target": "/* Reference to com.example.courses.structure.Resource */"
           }
         ],
         "children": [
@@ -301,14 +301,14 @@
       }
     },
     {
-      "name": "Recipe",
-      "qualifiedName": "mcp.study.recipes.structure.Recipe",
-      "conceptAlias": "recipe",
-      "shortDescription": "A recipe: servings, difficulty and an ordered list of steps",
-      "doc": "Root concept of the recipes language. Has at least one step, and may point at related recipes via seeAlso.",
+      "name": "Course",
+      "qualifiedName": "com.example.courses.structure.Course",
+      "conceptAlias": "course",
+      "shortDescription": "A course: credits, level and an ordered list of lessons",
+      "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
       "deprecated": "false",
-      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701:mcp.study.recipes.structure.Recipe",
-      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
       "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
       "superInterfaces": [
         "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
@@ -319,7 +319,7 @@
           "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
         }
       ],
-      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359701",
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359701",
       "isAbstract": false,
       "isInterfaceConcept": false,
       "isRootable": true,
@@ -327,26 +327,26 @@
       "present": true,
       "properties": [
         {
-          "name": "servings",
+          "name": "credits",
           "type": "integer",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359712",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359712",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359712",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359712",
           "doc": "",
           "deprecated": "false"
         },
         {
-          "name": "difficulty",
-          "type": "Difficulty",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359713",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359713",
+          "name": "level",
+          "type": "Level",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359713",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359713",
           "doc": "",
           "deprecated": "false",
           "enumerationValues": [
-            "EASY",
-            "MEDIUM",
-            "HARD"
+            "INTRO",
+            "CORE",
+            "ADVANCED"
           ],
-          "enumerationDefault": "EASY"
+          "enumerationDefault": "INTRO"
         },
         {
           "name": "shortDescription",
@@ -376,20 +376,20 @@
       "references": [],
       "children": [
         {
-          "name": "steps",
-          "targetConcept": "mcp.study.recipes.structure.Step",
+          "name": "lessons",
+          "targetConcept": "com.example.courses.structure.Lesson",
           "cardinality": "1..n",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359714",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359714",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359714",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359714",
           "doc": "",
           "deprecated": "false"
         },
         {
-          "name": "seeAlso",
-          "targetConcept": "mcp.study.recipes.structure.RecipeRef",
+          "name": "prerequisites",
+          "targetConcept": "com.example.courses.structure.CourseRef",
           "cardinality": "0..n",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359701/2518891257435359715",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359715",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359715",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359715",
           "doc": "",
           "deprecated": "false"
         },
@@ -404,15 +404,15 @@
         }
       ],
       "sampleNode": {
-        "concept": "mcp.study.recipes.structure.Recipe",
+        "concept": "com.example.courses.structure.Course",
         "properties": [
           {
-            "name": "servings",
+            "name": "credits",
             "value": "1"
           },
           {
-            "name": "difficulty",
-            "value": "EASY"
+            "name": "level",
+            "value": "INTRO"
           },
           {
             "name": "shortDescription",
@@ -424,21 +424,21 @@
           },
           {
             "name": "name",
-            "value": "Recipe"
+            "value": "Course"
           }
         ],
         "references": [],
         "children": [
           {
-            "role": "steps",
+            "role": "lessons",
             "nodes": [
-              "/* Instances of mcp.study.recipes.structure.Step or its sub-concepts are expected here */"
+              "/* Instances of com.example.courses.structure.Lesson or its sub-concepts are expected here */"
             ]
           },
           {
-            "role": "seeAlso",
+            "role": "prerequisites",
             "nodes": [
-              "/* Instances of mcp.study.recipes.structure.RecipeRef or its sub-concepts are expected here */"
+              "/* Instances of com.example.courses.structure.CourseRef or its sub-concepts are expected here */"
             ]
           },
           {
@@ -451,18 +451,18 @@
       }
     },
     {
-      "name": "RecipeRef",
-      "qualifiedName": "mcp.study.recipes.structure.RecipeRef",
+      "name": "CourseRef",
+      "qualifiedName": "com.example.courses.structure.CourseRef",
       "conceptAlias": "",
-      "shortDescription": "Reference to a recipe",
-      "doc": "Smart reference wrapper used by Recipe.seeAlso and Cookbook.recipes to point at a Recipe root node.",
+      "shortDescription": "Reference to a course",
+      "doc": "Smart reference wrapper used by Course.prerequisites and Curriculum.courses to point at a Course root node.",
       "deprecated": "false",
-      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699:mcp.study.recipes.structure.RecipeRef",
-      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
       "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
       "superInterfaces": [],
       "superInterfaceDetails": [],
-      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359699",
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359699",
       "isAbstract": false,
       "isInterfaceConcept": false,
       "isRootable": false,
@@ -488,11 +488,11 @@
       ],
       "references": [
         {
-          "name": "recipe",
-          "targetConcept": "mcp.study.recipes.structure.Recipe",
+          "name": "course",
+          "targetConcept": "com.example.courses.structure.Course",
           "cardinality": "1",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359699/2518891257435359711",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359711",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699/2518891257435359711",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359711",
           "doc": "",
           "deprecated": "false"
         }
@@ -509,7 +509,7 @@
         }
       ],
       "sampleNode": {
-        "concept": "mcp.study.recipes.structure.RecipeRef",
+        "concept": "com.example.courses.structure.CourseRef",
         "properties": [
           {
             "name": "shortDescription",
@@ -522,8 +522,8 @@
         ],
         "references": [
           {
-            "role": "recipe",
-            "target": "/* Reference to mcp.study.recipes.structure.Recipe */"
+            "role": "course",
+            "target": "/* Reference to com.example.courses.structure.Course */"
           }
         ],
         "children": [
@@ -537,18 +537,18 @@
       }
     },
     {
-      "name": "Step",
-      "qualifiedName": "mcp.study.recipes.structure.Step",
-      "conceptAlias": "step",
-      "shortDescription": "One step of a recipe, with a duration in minutes",
-      "doc": "A single instruction of a recipe. minutes is the time the step takes; uses lists the ingredients it consumes.",
+      "name": "Lesson",
+      "qualifiedName": "com.example.courses.structure.Lesson",
+      "conceptAlias": "lesson",
+      "shortDescription": "One lesson of a course, with a duration in minutes",
+      "doc": "A single instruction of a course. minutes is the time the lesson takes; uses lists the resources it consumes.",
       "deprecated": "false",
-      "conceptReference": "c:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697:mcp.study.recipes.structure.Step",
-      "languageReference": "l:d10ad89a-c2e1-4c8e-8c6a-1cda312b0664:mcp.study.recipes",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
       "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
       "superInterfaces": [],
       "superInterfaceDetails": [],
-      "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359697",
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359697",
       "isAbstract": false,
       "isInterfaceConcept": false,
       "isRootable": false,
@@ -556,18 +556,18 @@
       "present": true,
       "properties": [
         {
-          "name": "text",
+          "name": "title",
           "type": "string",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697/2518891257435359708",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359708",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697/2518891257435359708",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359708",
           "doc": "",
           "deprecated": "false"
         },
         {
           "name": "minutes",
           "type": "integer",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697/2518891257435359709",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359709",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697/2518891257435359709",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359709",
           "doc": "",
           "deprecated": "false"
         },
@@ -592,10 +592,10 @@
       "children": [
         {
           "name": "uses",
-          "targetConcept": "mcp.study.recipes.structure.IngredientRef",
+          "targetConcept": "com.example.courses.structure.ResourceRef",
           "cardinality": "0..n",
-          "featureId": "d10ad89a-c2e1-4c8e-8c6a-1cda312b0664/2518891257435359697/2518891257435359710",
-          "sourceNode": "r:a791b993-962a-4039-87fd-75573b1dd63d(mcp.study.recipes.structure)/2518891257435359710",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697/2518891257435359710",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359710",
           "doc": "",
           "deprecated": "false"
         },
@@ -610,10 +610,10 @@
         }
       ],
       "sampleNode": {
-        "concept": "mcp.study.recipes.structure.Step",
+        "concept": "com.example.courses.structure.Lesson",
         "properties": [
           {
-            "name": "text",
+            "name": "title",
             "value": "example"
           },
           {
@@ -634,7 +634,7 @@
           {
             "role": "uses",
             "nodes": [
-              "/* Instances of mcp.study.recipes.structure.IngredientRef or its sub-concepts are expected here */"
+              "/* Instances of com.example.courses.structure.ResourceRef or its sub-concepts are expected here */"
             ]
           },
           {

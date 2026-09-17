@@ -47,3 +47,31 @@
     is on, the load-bearing inventory filename, an undocumented SMOKE scenario, the re-run guard).
     → Always dry-run an extracted skill with an agent that is forbidden to read the source runbook.
 
+## From round 2 (2026-09-16, the post-treatment A/B)
+
+19. **A shipped remedy asset can become the study's answer key.** R5's
+    `mps-node-editing/scripts/examples/recipes.csv` was byte-identical (same sha256) to
+    `scenarios/S3/recipes.csv`, shipped alongside a ready-made `recipes.map.json` naming the exact
+    concepts S1 invents. → Derive example assets from a domain no scenario uses, and before a round
+    diff every scenario input against the shipped skill assets.
+20. **The treatment lands in `resources/`, not in the installed copies.** After 2026-09 the
+    bundled catalog had the fixes while the checkout's `.agents/skills`, `.claude/skills` and the
+    golden project were still pre-treatment (42 differing entries). → Refresh the golden project
+    (delete the `mps-*` skill folders, re-run `initialize_project_for_agents`) and assert a treated
+    marker (`grep rootsChecked`, `find -name '*.py'`) before building a fixture; otherwise you
+    measure the old docs against the new server.
+21. **One run can emit several `result` events.** A worker that delegates to a subagent produces one
+    per session, and taking the last reported the subagent's 13 turns / 92 s instead of the run's
+    115 / 952. → `analyze_runs.py` keeps the event with the most turns; when a transcript has
+    `init` or `result` twice, check whether tool counts aggregate two sessions before comparing them
+    with a single-session baseline.
+22. **A frozen prompt can contradict its own fixture.** S3 demands "exactly 40 Recipe roots plus the
+    Cookbook" while the `recipes` fixture already holds 3 (two name-colliding with the CSV) and the
+    done criteria expect 43. Baseline sonnet pushed through; round-2 sonnet stopped and asked, twice
+    — a task FAIL caused by the asset, not the tools. → Check every scenario prompt against the
+    fixture state it actually starts from, and prefer "N new roots in addition to what is there".
+23. **When the mechanical round trips are gone, variance moves to prior knowledge.** The largest
+    single cost in round 2 (~41 tool calls, a quarter of a run) was one worker not knowing a fact
+    its three peers knew for free. → Rank remedies by the variance they remove, not only by the
+    chains they shorten; a one-paragraph doc fix can outrank a tool change.
+

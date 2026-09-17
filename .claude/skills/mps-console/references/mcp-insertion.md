@@ -2,7 +2,7 @@
 
 Use this when the user asks you to **put code into the MPS Console**. The tool builds a command from a JSON blueprint and drops it into the Console tool window's input editor **as an editable, unexecuted command** — the user reviews, edits, and runs it (Ctrl+Enter). After a successful insert the Console tool window is focused and the inserted node selected. Requires the MPS Console plugin to be enabled.
 
-The blueprint uses the **same node format** as `mps_mcp_insert_root_node_from_json` — see `mps-node-editing`. The command's languages and model imports are added to the console model automatically. Inline JSON up to 4 KB, or an absolute path to a file in the system temp directory.
+The blueprint uses the **same node format** as `mps_mcp_insert_root_node_from_json` — see `mps-node-editing`. The command's languages and model imports are added to the console model automatically. Inline JSON up to 4 KB, or an absolute path to a file in the system temp directory — `$TMPDIR` on macOS/Linux (on macOS a `/var/folders/...` path, so `/tmp` is rejected), `%TEMP%` on Windows; e.g. `f="$TMPDIR/command-$$.json"`.
 
 ## The two accepted shapes
 

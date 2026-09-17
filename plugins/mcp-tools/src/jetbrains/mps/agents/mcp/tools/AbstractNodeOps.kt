@@ -1314,8 +1314,8 @@ abstract class AbstractNodeOps : AbstractOps() {
     ): String {
         val conceptRef = params.get("conceptRef")?.asString ?: return errJson("Parameter 'conceptRef' is missing")
         val scopeParam = params.get("scope")?.asString ?: "editable"
-        val exact = params.get("exact")?.asBoolean ?: false
-        val sampleOnly = params.get("sampleOnly")?.asBoolean ?: false
+        val exact = params.paramBoolean("exact", default = false)
+        val sampleOnly = params.paramBoolean("sampleOnly", default = false)
         // takeIf: agents commonly pass explicit nulls for optional params; Gson surfaces
         // "propertyFilter": null as JsonNull, which must mean "no filter", not INVALID_REQUEST.
         val propertyFilter = params.get("propertyFilter")?.takeIf { !it.isJsonNull }

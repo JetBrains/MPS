@@ -351,6 +351,17 @@ abstract class AbstractOps : McpToolset {
         return when (e) {
             is McpUserException -> errJson(e.message, e.errorCode, e.errorDetails)
             is JsonSyntaxException -> invalidJson(e.message)
+            // The two input-schema exceptions are raised only by this plugin's own parsers in
+            // McpToolInputSchemas.kt, always with a message naming the offending key. They are
+            // client mistakes, so they must not be logged as server failures — and classifying
+            // them here is what lets a tool read a `parameters` value through a throwing typed
+            // reader without wrapping every read in its own try/catch.
+            is ToolInputSchemaException -> errJson(e.message, McpErrorCode.INVALID_REQUEST)
+            // Reached only by a `parameters` reader; every blueprint parser that can raise this
+            // one already catches it locally and produces the same envelope. Kept as the matching
+            // half of the pair, so a future blob reader that parses nested JSON classifies itself
+            // correctly instead of regressing to INTERNAL_ERROR.
+            is ToolInputJsonException -> invalidJson(e.message)
             else -> {
                 logger.warn("Unexpected failure in MCP tool: $activity", e)
                 errJson("Internal error while $activity", McpErrorCode.INTERNAL_ERROR)
@@ -3281,6 +3292,17 @@ abstract class AbstractOps : McpToolset {
     protected fun readJsonOrFile(jsonOrPath: String?, dryRun: Boolean = false): String? {
         if (jsonOrPath == null) return null
         val trimmed = jsonOrPath.trim()
+        // Agents that read "childJson = null deletes the child" in the docs tend to send the
+        // 4-character string instead of an absent argument; say how to express the null here.
+        // Kept generic: this helper also serves required parameters (conceptsJson, valuesJson),
+        // where a null means nothing and omitting it is reported as a missing parameter instead.
+        if (trimmed.equals("null", ignoreCase = true)) {
+            throw McpInvalidRequestException(
+                "Input is the string '$jsonOrPath', not a JSON object/array or a file path. " +
+                        "Where a null is meaningful for this parameter, express it by omitting the " +
+                        "parameter entirely or sending an unquoted JSON null."
+            )
+        }
         if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
             if (jsonOrPath.length > 4096) {
                 throw McpInvalidRequestException(

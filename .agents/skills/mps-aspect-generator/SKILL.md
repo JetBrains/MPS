@@ -73,6 +73,8 @@ After a `MAKE`, generators write Java (and TextGen artifacts like `.xml`, `.scxm
 
 ## Reference Index
 
+**Start here — most common case**: one reduction rule with template macros → read only `references/macro-catalog.md`, plus `references/concept-fqns.md` for the blueprint shape; a brand-new generator module → only `references/module-structure.md`; a rule that did not fire or generated code that will not compile → only `references/common-failures.md`.
+
 - Generator module structure (descriptor deps, model used-languages, MappingConfiguration roles): `references/module-structure.md` — read when setting up a generator or fixing "cannot resolve"/missing-concept issues.
 - RuleConsequence catalog (`TemplateDeclarationReference`, `Inline*`, `AbandonInput`, `DismissTop`) + the critical `applicableConcept` ref-form gotcha: `references/rule-consequences.md`.
 - Macro catalog and JSON blueprints for COPY_SRC/COPY_SRCL/PROPERTY/IF/LOOP/CALL: `references/macro-catalog.md` — read before attaching any macro.

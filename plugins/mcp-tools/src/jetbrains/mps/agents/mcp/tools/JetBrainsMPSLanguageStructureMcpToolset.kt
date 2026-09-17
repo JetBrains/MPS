@@ -195,7 +195,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
 
             MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> {
                 val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val includeInherited = params.get("includeInherited")?.asBoolean ?: false
+                val includeInherited = params.paramBoolean("includeInherited", default = false)
                 mps_mcp_list_concept_aspects(conceptRef, includeInherited)
             }
 
@@ -244,12 +244,12 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         } catch (e: Exception) {
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
-        val dryRun = params.get("dryRun")?.asBoolean ?: false
+        val dryRun = params.paramBoolean("dryRun", default = false)
 
         when (operation) {
             MPSStructureAlterOperation.CREATE_CONCEPTS -> {
                 val structureModelRef = params.get("structureModelRef")?.asString ?: return@withMpsProject errJson("Parameter 'structureModelRef' is missing")
-                val make = params.get("make")?.asBoolean ?: false
+                val make = params.paramBoolean("make", default = false)
                 val conceptsJsonPath = readStringOrInlineJsonParam(params, "conceptsJson")
                 val interfaceConceptsJsonPath = readStringOrInlineJsonParam(params, "interfaceConceptsJson")
                 if (conceptsJsonPath != null || interfaceConceptsJsonPath != null) {
@@ -283,16 +283,21 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val role = params.get("role")?.asString ?: return@withMpsProject errJson("Parameter 'role' is missing")
                 val targetConcept = params.get("targetConcept")?.asString
-                val multiple = params.get("multiple")?.asBoolean ?: false
-                val optional = params.get("optional")?.asBoolean ?: true
+                val multiple = params.paramBoolean("multiple", default = false)
+                val optional = params.paramBoolean("optional", default = true)
                 mps_mcp_update_concept_link(conceptRef, role, targetConcept, true, multiple, optional)
             }
 
             MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE -> {
                 val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
                 val role = params.get("role")?.asString ?: return@withMpsProject errJson("Parameter 'role' is missing")
+                // `multiple: false` is truthful, so it is accepted silently; `multiple: true` used to be
+                // dropped and quietly produce a 0..1 link, which cost a study worker ~40 turns to notice.
+                if (params.paramBoolean("multiple", default = false)) {
+                    return@withMpsProject errJson(REFERENCES_ARE_SINGLE_VALUED, McpErrorCode.INVALID_REQUEST)
+                }
                 val targetConcept = params.get("targetConcept")?.asString
-                val optional = params.get("optional")?.asBoolean ?: true
+                val optional = params.paramBoolean("optional", default = true)
                 mps_mcp_update_concept_link(conceptRef, role, targetConcept, false, false, optional)
             }
 

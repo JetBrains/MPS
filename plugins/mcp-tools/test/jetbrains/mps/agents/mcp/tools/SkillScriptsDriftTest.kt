@@ -87,8 +87,8 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
 
         val result = runPython(
             scriptDir.resolve("table_to_bulk_insert.py").toString(),
-            scriptDir.resolve("examples").resolve("recipes.csv").toString(),
-            scriptDir.resolve("examples").resolve("recipes.map.json").toString(),
+            scriptDir.resolve("examples").resolve("courses.csv").toString(),
+            scriptDir.resolve("examples").resolve("courses.map.json").toString(),
         )
         assertEquals("script must exit 0, output: ${result.output}", 0, result.exitCode)
 

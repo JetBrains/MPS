@@ -48,6 +48,8 @@ This skill covers the *wiring* layer of an MPS language — the module descripto
 
 ## Reference Index
 
+**Start here — most common case**: adding a module-level dependency, used language, extended language or devkit → read only `references/module-level-deps.md`; importing a language or model into **one** model → only `references/model-level-imports.md`; a concrete symptom ("Cannot resolve concept X", `ClassNotFoundException`, version mismatch) → only `references/pitfalls.md`.
+
 - Open `references/module-level-deps.md` for the full list of `.mpl` declarations (dependencies, usedLanguages, usedDevKits, extendedLanguages, runtimeModules, generators, accessoryModels, version stamps), their scopes, and the `mps_mcp_module_dependency` scope-dispatch table.
 - Open `references/model-level-imports.md` for per-model `dependencies`, used languages, used devkits, and the auto-import behavior of node-insertion tools.
 - Open `references/accessory-models.md` when shipping a model that should be available to every consumer of the language without an explicit import — including the `.mpl` `<accessoryModels>` XML shape and the hand-edit caveat.

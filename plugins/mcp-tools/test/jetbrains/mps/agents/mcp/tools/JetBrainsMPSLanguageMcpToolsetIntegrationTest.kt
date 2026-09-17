@@ -92,6 +92,30 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 )
             }
         }
+        // The shape projection is what a worker should be able to answer "is this role
+        // multi-valued?" from, without escalating to detail="full" — which the tool description
+        // now promises ("cardinality is identical at both levels"). Pin that by comparing the two
+        // projections role by role; asserting only that a reference reads 0..1/1 would be a
+        // tautology, since linkCardinality dispatches on the Kotlin link type.
+        val fullResponse = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(
+                conceptRefs = listOf("jetbrains.mps.lang.structure.structure.ConceptDeclaration"),
+                detail = "full",
+            )
+        }
+        val full = payloadArrayFromOkData(fullResponse).single().asJsonObject
+        for (block in listOf("references", "children")) {
+            val shapeCardinalities = concept.getAsJsonArray(block)
+                .associate { it.asJsonObject.get("name").asString to it.asJsonObject.get("cardinality").asString }
+            val fullCardinalities = full.getAsJsonArray(block)
+                .associate { it.asJsonObject.get("name").asString to it.asJsonObject.get("cardinality").asString }
+            assertTrue("ConceptDeclaration must expose $block: $concept", shapeCardinalities.isNotEmpty())
+            assertEquals(
+                "$block must report the same number of roles at both detail levels",
+                full.getAsJsonArray(block).size(), concept.getAsJsonArray(block).size(),
+            )
+            assertEquals("$block cardinality must be identical at both detail levels", fullCardinalities, shapeCardinalities)
+        }
     }
 
     @Test
@@ -256,10 +280,16 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val error = obj.get("error").asString
         assertTrue(
             "an empty string must preserve the existing empty-input error: $response",
-            obj.get("error").asString.contains("No concepts nor languages"),
+            error.contains("No concepts nor languages"),
         )
+        // A worker that passed the singular `conceptReference` (the spelling print_node and
+        // scaffold_editor use) got this error without being told either the offending key or the
+        // right one, so the message must name both spellings.
+        assertTrue("the error must name the accepted parameter: $response", error.contains("conceptRefs"))
+        assertTrue("the error must name the rejected spelling: $response", error.contains("conceptReference"))
     }
 
     @Test

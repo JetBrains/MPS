@@ -1,5 +1,17 @@
 # Reference (Referent) Constraints
 
+## Contents / when to read what
+
+This file is ~47 KB. Read the one section you need, not the whole file.
+
+| Section | Read it when |
+|---|---|
+| [Imperative reference-side scope](#imperative-reference-side-scope) (largest section: verbatim example, `ListScope` with computed sequences, `CompositeScope`, cross-model filtering, meta-level scopes) | the scope is computed at the reference site — you are writing a `ConstraintFunction_ReferentSearchScope_Scope` body |
+| [Inherited scope via `InheritedNodeScopeFactory` + `ScopeProvider`](#inherited-scope-via-inheritednodescopefactory--scopeprovider) | the scope belongs to an ancestor (block / declaration / program) — the preferred style; pairs with a `getScope` behavior method |
+| [Choosing between the two approaches](#choosing-between-the-two-approaches) | you have not decided yet which of the two styles fits — start here, it is two screens |
+| [ReferentSetHandler: side effects on reference assignment](#referentsethandler-side-effects-on-reference-assignment) | setting the reference must also rename, copy fields, or keep the original target |
+| [Default Scope (concept-level, not reference-level)](#default-scope-concept-level-not-reference-level) | every reference *to* a concept should be restricted, rather than one specific role |
+
 Open this file when defining a `NodeReferentConstraint` — choosing between imperative reference-side scopes and ancestor-supplied `InheritedNodeScopeFactory`, attaching a `referentSetHandler`, or configuring concept-level `Default Scope`.
 
 A reference's **scope** is the set of nodes the editor offers as completion and against which MPS validates the stored target. Without any constraint MPS falls back to a default scope: *all nodes of the reference's target concept in the current model plus all imported models*. For anything narrower, choose one of two approaches.

@@ -7,7 +7,7 @@ Two tools cover structure operations:
 
 Both return a JSON object with `'ok':true` and `'data':{...}` on success, or `'ok':false` and `'error':"..."` on failure.
 Failure responses can also include optional stable metadata fields: `'code'`, `'details'`, and `'warnings'`.
-Parameters are passed as a JSON object string.
+Parameters are passed as a JSON object string. A boolean parameter (`make`, `dryRun`, `multiple`, `optional`, `includeInherited`) takes `true`/`false`, or the same literal quoted in any case (`"true"`, `"TRUE"`); an explicit `null` counts as absent, so the documented default applies. Any other shape — `1`, `"yes"`, `" true "`, an object, an array — is rejected with `'parameters.<name>' must be a boolean` rather than coerced. The same rule applies to booleans *inside* a `conceptsJson` / `interfaceConceptsJson` blueprint (`abstract` and `rootable` on a concept, a link's `multiple` / `optional` in either), where the message names the blueprint path instead — `'conceptsJson[0].rootable' must be a boolean`. Top-level string parameters are not validated this way.
 
 ### Supported operations
 
@@ -219,6 +219,8 @@ Parameters:
 }
 ```
 
+Unlike `UPDATE_CONCEPT_CHILD` there is no `multiple` parameter: MPS reference links are always single-valued (`0..1` or `1`), so `multiple: true` is rejected. Model a `[0..n]` reference as a smart-reference wrapper concept in a `0..n` child role — see "Multi-valued references" in the `mps-aspect-structure-concepts` skill for the recipe and a blueprint.
+
 #### `RENAME_CONCEPT_PROPERTY`
 Renames a property definition in a concept.
 
@@ -307,7 +309,7 @@ Parameters:
 
 #### `IS_SMART_REFERENCE`
 Checks whether a concept is a smart reference concept (either explicitly annotated with `SmartReferenceAttribute` or implicitly qualifying as one).
-A concept is an implicit smart reference if it is non-abstract, has no concept alias, and has exactly one mandatory own reference link.
+A concept is an implicit smart reference if it is non-abstract, has no concept alias, declares no own properties and no own containment links, and has exactly one own reference link, which must be mandatory and must not specialize an inherited link (features inherited from `BaseConcept` do not count as "own"; the specialization check is skipped for a compiled or stub language, whose link declaration cannot be resolved). An explicit `SmartReferenceAttribute` short-circuits all of those checks.
 Returns a JSON object with `'isSmartReference': boolean`, and when true, `'characteristicReferenceName': string` with the name of the characteristic reference link.
 
 Parameters:

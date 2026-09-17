@@ -257,6 +257,15 @@ Per scenario, in this order: S1, S3, S2, S8 (StateChart fixture), S4, S5 (recipe
 - [x] 7.7 Windows fallback (8): every `## Scripts` section states what to do without `python3`.
 - [x] 7.8 (scripts implementer verified the live install copies `scripts/` byte-identically into both skill dirs; template tarballs no longer kept) Re-run `mps_mcp_initialize_project_for_agents` into a fresh ProjectX copy and confirm
       scripts arrive; refresh `fixtures/empty-project.tar.gz` as the treated template.
+- [x] 7.9 (round-2 defect D16: after the 2026-09 treatment both trees were 42 entries behind, so
+      every agent working on MPS itself read pre-treatment docs; propagated 2026-09-16) Propagate the treated catalog to **this checkout's own installed copies**: for every
+      `mps-*` folder in `resources/.../skills/`, replace `./.agents/skills/<name>` and
+      `./.claude/skills/<name>` (delete then copy, so dropped files do not linger). Keep every
+      non-`mps-*` skill — the checkout-local ones (`actions`, `bugfix-workflow`, `code-style`,
+      `commits`, `debugging`, `registry`, `skill-optimization-study`, `ssr`, `teamcity-cli`) and
+      any project-local `*-dsl` skills. Verify: `diff -rq resources/.../skills .claude/skills`
+      lists only those extras, and `diff -rq .agents/skills .claude/skills` is empty. Do this last
+      in any treatment, after the `resources/` edits are final.
 
 ## 8. Phase 7 — A/B and final report (4.5) — A/B SKIPPED by gate-2 decision 9.12; final report still due
 

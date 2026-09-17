@@ -43,6 +43,8 @@ These address the same problem at different abstraction levels: `lang.migration`
 
 ## Reference Index
 
+**Start here — most common case**: if the form is not decided yet, read only `references/form-selection.md` — it routes you to the single file for the chosen form (declarative rename/move → `references/pure-migration-parts.md`; programmatic body → `references/migration-script-body.md`; instance sweep → `references/enhancement-scripts.md`), plus `references/json-blueprints.md` when inserting through MCP.
+
 - Form selection guide — open before authoring to pick between `PureMigrationScript`, `MigrationScript`, and Enhancement Script for the change at hand. Covers ordering, data flow, and model setup. See [references/form-selection.md](references/form-selection.md).
 - `lang.migration` concept reference — open when you need exact members, cardinalities, properties, or concept IDs for `MigrationScript`, `PureMigrationScript`, `IMigrationUnit`, ordering and data-exchange concepts, and `RefactoringLog`. See [references/lang-migration-reference.md](references/lang-migration-reference.md).
 - `PureMigrationPart`, node references, and move specializations — open when defining concept/link/property renames or composing migration units via `IncludeMigrationPart`. See [references/pure-migration-parts.md](references/pure-migration-parts.md).

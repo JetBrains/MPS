@@ -71,6 +71,8 @@ For a typical "let the user invoke action X when they do Y" task:
 
 ## Reference Index
 
+**Start here — most common case**: if you are not yet sure which artefact to build, read only `references/landscape.md` — its table routes you to the one further file you need (e.g. a keystroke on a cell → `references/keymaps.md`; a completion item → `references/substitute-menus.md`; overriding DELETE/BACKSPACE → `references/action-maps.md`).
+
 - Open `references/landscape.md` when **choosing which artefact to build** — the master table of root concepts, attachment-point roles, file conventions, naming conventions, and the `BaseConcept_TransformationMenu` super-chain rule. Also covers the `TransformationMenu_Default` / `_Named` deprecation note (future merge into `TransformationMenuImpl`).
 - Open `references/action-maps.md` when **overriding standard cell actions** (DELETE, BACKSPACE, SELECT_ALL, LEFT_TRANSFORM, RIGHT_TRANSFORM, …) — `CellActionMapDeclaration` fields, item structure, the `Not_ActionMap` example from Kaja, `BACKSPACE` auto-registration, the keyboard-deletable-annotation pattern (delete a node attribute from its label cell and reselect the host node), importing maps via `CellActionMapImport`/wildcard/by-action-id selectors, import rules (transitive, winner, no cycles, cross-language), `SELECT_ALL` customisation.
 - Open `references/keymaps.md` when **binding arbitrary keystrokes to a cell** — `CellKeyMapDeclaration` fields, `everyModel` flag, `CellKeyMapItem` properties (keystroke, executeFunction, isApplicableFunction, description, caretPolicy, showInPopup, menuAlwaysShown), `CastExpression_KeyMap` template, `modifiers` string syntax (`ctrl alt shift meta`), caret-policy semantics, when to prefer an action map.

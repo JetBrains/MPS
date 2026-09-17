@@ -1,6 +1,9 @@
 package jetbrains.mps.agents.mcp.tools
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
@@ -218,6 +221,179 @@ class McpToolInputSchemasTest {
         assertSchemaFailure("'conceptsJson[0].abstract' must be a boolean") {
             parseStructureConceptSpecs("""[{"name":"Foo","abstract":"yes"}]""", "conceptsJson")
         }
+    }
+
+    // ── `parameters` blob readers ──────────────────────────────────────────────────────
+    // These replace `params.get("x")?.asBoolean` / `?.asInt` at every blob call site. Gson's own
+    // accessors read a number as `false` and throw an untyped exception on an explicit JSON null,
+    // an object or an array, which the tool boundary could only report as INTERNAL_ERROR. One row
+    // per shape, so the accepted set is pinned rather than inferred.
+
+    @Test
+    fun paramBooleanAcceptsBooleansAndTheirQuotedForm() {
+        assertTrue(params("""{"k": true}""").paramBoolean("k", default = false))
+        assertFalse(params("""{"k": false}""").paramBoolean("k", default = true))
+        assertTrue(params("""{"k": "true"}""").paramBoolean("k", default = false))
+        assertFalse(params("""{"k": "false"}""").paramBoolean("k", default = true))
+        assertTrue(params("""{"k": "TRUE"}""").paramBoolean("k", default = false))
+    }
+
+    @Test
+    fun paramBooleanTreatsAbsentAndExplicitNullAsTheDefault() {
+        // The explicit-null row is the regression: Kotlin's `?.` does not short-circuit a
+        // JsonNull, so `?.asBoolean` threw and every such call answered INTERNAL_ERROR.
+        for (json in listOf("{}", """{"k": null}""")) {
+            assertTrue("$json must take the default", params(json).paramBoolean("k", default = true))
+            assertFalse("$json must take the default", params(json).paramBoolean("k", default = false))
+        }
+    }
+
+    @Test
+    fun paramBooleanRejectsEverythingElseByName() {
+        // `1` is the important row: gson read it as `false`, i.e. the opposite of what a caller
+        // writing `"multiple": 1` meant, with an ok:true envelope.
+        val rejected = listOf(
+            """{"k": 1}""", """{"k": 0}""", """{"k": -1}""", """{"k": "1"}""", """{"k": "yes"}""",
+            """{"k": ""}""", """{"k": " "}""",
+            // Whitespace is not trimmed, so the tolerance matches paramInt's (`"3"` yes, `" 3"` no).
+            """{"k": " true "}""",
+            // gson reads a one-element array through to its element, so `[true]` used to be `true`.
+            """{"k": [true]}""", """{"k": {}}""", """{"k": []}""",
+        )
+        for (json in rejected) {
+            assertSchemaFailure("'parameters.k' must be a boolean") {
+                params(json).paramBoolean("k", default = false)
+            }
+        }
+    }
+
+    @Test
+    fun paramIntAcceptsIntegersAndTheirQuotedForm() {
+        assertEquals(3, params("""{"k": 3}""").paramInt("k"))
+        assertEquals(-3, params("""{"k": -3}""").paramInt("k"))
+        assertEquals(3, params("""{"k": "3"}""").paramInt("k"))
+        // These three follow from the BigDecimal parse the reader delegates to; they are tolerated,
+        // not promised, and no doc states them. A switch to Integer.parseInt would reject all three
+        // — that is a deliberate narrowing, not a regression.
+        assertEquals(300, params("""{"k": "3e2"}""").paramInt("k"))
+        assertEquals(3, params("""{"k": "+3"}""").paramInt("k"))
+        assertEquals(10, params("""{"k": "010"}""").paramInt("k"))
+        assertNull(params("{}").paramInt("k"))
+        assertNull(params("""{"k": null}""").paramInt("k"))
+    }
+
+    @Test
+    fun paramIntRejectsNonIntegersByName() {
+        val rejected = listOf(
+            """{"k": 1.5}""", """{"k": "1.5"}""", """{"k": "x"}""", """{"k": ""}""",
+            // No whitespace tolerance, matching paramBoolean.
+            """{"k": " 3"}""", """{"k": "3 "}""",
+            """{"k": true}""", """{"k": [3]}""", """{"k": {}}""", """{"k": []}""",
+            // Out of int range: gson's asInt silently wrapped 2147483648 to -2147483648.
+            """{"k": 2147483648}""", """{"k": 99999999999}""", """{"k": "2147483648"}""",
+        )
+        for (json in rejected) {
+            assertSchemaFailure("'parameters.k' must be an integer") { params(json).paramInt("k") }
+        }
+    }
+
+    @Test
+    fun blueprintAndBlobPathsAcceptTheSameShapes() {
+        // The point of routing both through one reader: compared pairwise over every shape in the
+        // truth table, for both scalar kinds and for both defaults, so the two paths cannot drift
+        // on any row. Both sides call the same private reader today, so no shape can fail this
+        // test as written — it is a tripwire against forking that reader, not a discriminator.
+        val booleanShapes = listOf(
+            "true", "false", """"true"""", """"TRUE"""", """"false"""", """" true """",
+            "1", "0", "-1", """"1"""", """"yes"""", """""""", "[true]", "{}", "[]", "null",
+        )
+        for (shape in booleanShapes) {
+            // default = false, via `rootable`.
+            assertEquals(
+                "boolean shape $shape must behave the same on both input paths (default false)",
+                outcome { params("""{"rootable": $shape}""").paramBoolean("rootable", default = false) },
+                outcome {
+                    read(parseStructureConceptSpecs("""[{"name":"Foo","rootable":$shape}]""", "conceptsJson").single(), "getRootable")
+                },
+            )
+            // default = true, via a link's `optional` — the variant `optional` uses at two call sites.
+            assertEquals(
+                "boolean shape $shape must behave the same on both input paths (default true)",
+                outcome { params("""{"optional": $shape}""").paramBoolean("optional", default = true) },
+                outcome {
+                    val spec = parseStructureConceptSpecs(
+                        """[{"name":"Foo","children":[{"role":"c","target":"Foo","optional":$shape}]}]""",
+                        "conceptsJson",
+                    ).single()
+                    read((read(spec, "getChildren") as List<*>).single()!!, "getOptional")
+                },
+            )
+        }
+        val intShapes = listOf("3", "-3", """"3"""", "1.5", """"1.5"""", """"x"""", """" 3"""", "true", "[3]", "{}", "[]", "2147483648", "null")
+        for (shape in intShapes) {
+            assertEquals(
+                "integer shape $shape must behave the same on both input paths",
+                outcome { params("""{"position": $shape}""").paramInt("position") },
+                outcome {
+                    val request = parseJavaParseInsertRequest(
+                        """{"code":"class Foo {}","featureKind":"CLASS","insert":{"mode":"child","parentRef":"r:m#p","role":"statement","position":$shape}}"""
+                    )
+                    read(read(request, "getInsert")!!, "getPosition")
+                },
+            )
+        }
+        // Non-vacuous: each list must produce both an accept and a reject *through its own
+        // reader*. Reducing the int list with paramBoolean would accept only its `true` and `null`
+        // rows — through a reader the int comparison never uses — so the guard would pass even if
+        // every shape paramInt accepts were deleted.
+        val readers = listOf<Pair<List<String>, (String) -> Any?>>(
+            booleanShapes to { s -> params("""{"k": $s}""").paramBoolean("k", default = false) },
+            intShapes to { s -> params("""{"k": $s}""").paramInt("k") },
+        )
+        for ((shapes, reader) in readers) {
+            val outcomes = shapes.map { s -> outcome { reader(s) } }
+            assertTrue("$shapes must contain an accepted shape", outcomes.any { !it.startsWith("rejected") })
+            assertTrue("$shapes must contain a rejected shape", outcomes.any { it.startsWith("rejected") })
+        }
+    }
+
+    /**
+     * Reduces a read to a comparable outcome: its value, or `rejected` plus the exception class and
+     * the message with its path prefix stripped. The class name matters — `ToolInputSchemaException`
+     * and `ToolInputJsonException` answer different MCP codes, so two paths that reject the same
+     * shape for different reasons are not symmetric.
+     */
+    private fun outcome(block: () -> Any?): String = try {
+        block().toString()
+    } catch (e: IllegalArgumentException) {
+        "rejected: ${e.javaClass.simpleName}: " + (e.message ?: "").substringAfter("' ")
+    }
+
+    private fun params(json: String): JsonObject = JsonParser.parseString(json).asJsonObject
+
+    @Test
+    fun structureLinkRejectsMultipleOnAReference() {
+        // `children` and `references` share one link parser, so `multiple` used to be parsed and
+        // then dropped for a reference — a silent 0..1 result. A child still accepts it, and
+        // `multiple: false` on a reference is truthful and stays accepted.
+        val expected = "'conceptsJson[0].references[0].multiple': $REFERENCES_ARE_SINGLE_VALUED"
+        assertSchemaFailure(expected) {
+            parseStructureConceptSpecs(
+                """[{"name":"Foo","references":[{"role":"r1","target":"Bar","multiple":true}]}]""",
+                "conceptsJson",
+            )
+        }
+        assertSchemaFailure("'interfaceConceptsJson[0].references[0].multiple': $REFERENCES_ARE_SINGLE_VALUED") {
+            parseStructureInterfaceConceptSpecs(
+                """[{"name":"IFoo","references":[{"role":"r1","target":"Bar","multiple":true}]}]""",
+                "interfaceConceptsJson",
+            )
+        }
+        parseStructureConceptSpecs(
+            """[{"name":"Foo","references":[{"role":"r1","target":"Bar","multiple":false}]},
+                {"name":"Baz","children":[{"role":"c1","target":"Bar","multiple":true}]}]""",
+            "conceptsJson",
+        )
     }
 
     @Test

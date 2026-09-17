@@ -45,9 +45,53 @@ Concepts (`ConceptDeclaration`), interface concepts (`InterfaceConceptDeclaratio
 8. **Property definition**:
     * For enum properties: create the `EnumerationDeclaration` first, then set the property `dataType` to reference it.
 9. **Proper cardinality**: make sure intended child collections have the cardinality of `0..n` or `1..n`.
+    * **Reference links are always single-valued** — `0..1` or `1`. There is no `0..n` reference in MPS, and no `multiple` parameter for references. Model a `[0..n]` reference as a `0..n` *child* role holding smart-reference wrapper concepts; see "Multi-valued references" below.
 10. **Bulk operations**: use `mps_mcp_alter_structure` for creating multiple concepts or enums efficiently.
     * Local references within the same JSON blueprint can use names for resolution.
 11. **Reload runtime**: always rebuild the language (via `mps_mcp_alter_nodes` with `MAKE` and `rebuild="true"`) after structural changes to make concepts discoverable.
+
+## Multi-valued references (`[0..n]`)
+
+An MPS reference link is always single-valued: `0..1` (optional) or `1` (mandatory). Cardinality on
+references does not exist, so `multiple: true` is rejected on both write paths —
+`UPDATE_CONCEPT_REFERENCE` and a `references` entry of a `CREATE_CONCEPTS` blueprint. Only a
+`children` entry takes `multiple`.
+
+Model a `[0..n]` reference as a thin **smart-reference wrapper concept** held in a `0..n` *child*
+role on the owner. The wrapper is a non-rootable `BaseConcept` subconcept with exactly one mandatory
+reference, no alias, and no own properties or children — so the editor shows it transparently and the
+user just types the target's name. This is what MPS itself does: `ConceptDeclaration.implements` is a
+`0..n` child list of `InterfaceConceptReference`, each holding one `intfc` reference.
+
+```json
+[
+  {
+    "name": "CourseRef",
+    "shortDescription": "Reference to a Course",
+    "references": [
+      { "role": "course", "target": "Course", "optional": false }
+    ]
+  },
+  {
+    "name": "Curriculum",
+    "rootable": true,
+    "conceptAlias": "curriculum",
+    "implements": ["jetbrains.mps.lang.core.structure.INamedConcept"],
+    "children": [
+      { "role": "courses", "target": "CourseRef", "multiple": true, "optional": true }
+    ]
+  }
+]
+```
+
+Keep the wrapper bare: give it an own property, an own containment link, or a plain `conceptAlias`
+and it stops qualifying *implicitly*, so the user has to instantiate it explicitly instead of typing
+the target's name. Two things do still make a non-bare concept smart, but neither is worth the
+trouble here: an explicit `SmartReferenceAttribute`, which short-circuits every structural check, and
+a *smart alias* of the form `pre<{role}>post`, which MPS's editor honours (though
+`IS_SMART_REFERENCE` reports it as not smart). Confirm with `mps_mcp_query_structure`
+`IS_SMART_REFERENCE` on the wrapper: expect `isSmartReference: true` and
+`characteristicReferenceName` naming its single reference role.
 
 ## Attributes (Annotations)
 
@@ -65,6 +109,8 @@ Attributes let one language attach extra children, references, or property data 
 - **`mps-language-inheritance`** — for `extendedLanguages` and concept super/interface relationships.
 
 ## Reference Index
+
+**Start here — most common case**: creating or changing concepts, enumerations, or data types → read only `references/structure-operation-api.md` (the exact `mps_mcp_alter_structure` / `mps_mcp_query_structure` parameter surface); attributes/annotations → only `references/attributes-and-annotations.md`.
 
 - Open `references/structure-operation-api.md` for exact `mps_mcp_alter_structure` and `mps_mcp_query_structure` operation names, JSON parameter formats, structure blueprint schemas, `make` flag handling, and `makeStatus` semantics (success / runtime_stale / failed / skipped).
 - Open `references/attributes-and-annotations.md` for attributes/annotations: the four attribute kinds (`NodeAttribute` / `PropertyAttribute` / `ChildAttribute` / `LinkAttribute`), how to choose between them (feature-pinned kinds need a visible feature cell — whole-role markers should be a `NodeAttribute` + `LinkDeclaration` reference, converted at runtime via `MetaAdapterByDeclaration`), the `AttributeInfo` extension-point spec (`role`, `attributed`, `multiple`), the two-step MCP creation flow, the `smodelAttribute` slot, and worked examples (`RequirementTrace`, generator macros, doc/comment annotations).

@@ -1,10 +1,15 @@
 # Analyzing MPS Code and Languages
 
+**Boolean and integer parameters in a `parameters` blob are type-checked.** In the operation tools (`mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure`, `mps_mcp_alter_structure`) a boolean takes `true`/`false` or the same literal quoted in any case (`"true"`, `"TRUE"`), an integer takes a number or a quoted number (`"3"`), and an explicit `null` counts as absent so the documented default applies. Any other shape — `1` for a boolean, `1.5` or an out-of-range value for an integer, surrounding whitespace, an object, an array — is rejected with a message naming the key rather than silently coerced. String parameters are **not** yet validated this way: a number passed where a string is expected is still stringified silently, so check those yourself.
+
+**Read tools inline small results.** `mps_mcp_print_node`, `mps_mcp_get_project_structure`, `mps_mcp_get_concept_details`, `mps_mcp_query_nodes` and `mps_mcp_check_root_node_problems` return `data` inline when it is at most `maxInlineBytes` (default 20000) and a temp-file path only above that — do not assume `data` is a path, and do not spend a second call reading a file that is not there.
+
 - Use `mps_mcp_print_node` for the structural JSON form or for a textual or HTML projection.
 - Use `mps_mcp_check_root_node_problems` to find errors in the code (each problem may carry `quickFixes`; `autoApplyQuickFixes=true` repairs them in one shot).
 - Use `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` to discover and apply the node's Alt+Enter context actions (intentions and quick-fixes) headlessly — see *Intentions & quick-fixes* below.
 - Use `mps_mcp_query_nodes` for node search and navigation (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE). FIND_INSTANCES finds nodes of a concept (see below); FIND_USAGES finds nodes whose references point at a given node.
 - Use `mps_mcp_query_structure` to investigate the relationships between concepts and their assignability.
+- Use `mps_mcp_get_concept_details` to inspect a concept's shape. `mps_mcp_get_concept_details(detail = "shape")` returns only `{qualifiedName, conceptReference, isAbstract, isRootable, properties, references, children}` (with type/enum literals, target concept and cardinality) — use it instead of scripting that reduction yourself; add `includeChildRoleConcepts = true` to get the one-hop child/reference role targets in the same call under `relatedConcepts` (`data` then becomes `{"concepts": [...], "relatedConcepts": [...]}`).
 - Use `mps_mcp_alter_nodes` (`FIX_REFERENCES`) to repair broken or mispointed references in a node and all its descendants. Typical situations where this helps:
     - After moving or copying nodes across models or modules, references to nodes in the original location may break.
     - After refactoring a BaseLanguage method signature, `overrides` references in subclasses may point to the wrong overload ("Reference to wrong overridden method") — FIX_REFERENCES corrects this generically without any language-specific logic.
@@ -14,7 +19,7 @@
 
 ## `mps_mcp_query_nodes` (`FIND_INSTANCES`) — Finding Nodes of a Concept
 
-Returns all nodes that are instances of the specified concept (or one random sample). Returns a JSON array of node info objects (non-root entries include `rootName`), or a path to a temporary JSON file if the data is large.
+Returns all nodes that are instances of the specified concept (or one random sample). Returns a JSON array of node info objects (non-root entries include `rootName`), inline in `data` when the serialized array is at most `maxInlineBytes` characters (default 20000), otherwise the path of a temp file holding the same envelope (`mps_mcp_query_nodes` takes `maxInlineBytes` as a top-level parameter, next to `operation` and `parameters`).
 
 Parameters:
 ```
@@ -39,7 +44,11 @@ Parameters:
 
 ## `mps_mcp_print_node` — Output Format
 
-Saves the node JSON to a local text file (path returned in `data`). Behaviour depends on `deep`:
+`format` accepts exactly three literals — `JSON` (default), `HTML`, `PLAIN TEXT`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT`).
+
+`nodeReference` must be a **node** reference (`r:<uuid>(name)#<node-id>`). Unlike `mps_mcp_check_root_node_problems`, this tool does **not** accept a model reference (`r:<uuid>(name)`) — it answers NOT_FOUND. To dump a whole model use `mps_mcp_get_project_structure` (`includeNodes=true`), or print its roots one by one.
+
+`data` is inline when the printout is at most `maxInlineBytes` characters (default 20000) and the absolute path of a temp file above that; the file holds the same `{ok, data}` envelope. Pass a small `maxInlineBytes` to force the file form, or a large one to keep a big dump inline. Behaviour depends on `deep`:
 
 - `deep=true` recursively inlines all descendants.
 - `deep=false` (shallow) lists properties, children roles with references, and reference roles.
@@ -76,9 +85,15 @@ The saved file contains the full MCP response envelope; its `data` field contain
 }
 ```
 
+**Default property values are invisible in dumps.** MPS stores nothing for a property that holds its default value. Such a property is therefore **omitted** from the `properties` array above (and from `mps_mcp_get_project_structure` `includeNodes` dumps) — except an enum property holding its enumeration's default value: it is printed with the default literal's name and `"isDefault": true` (the name is also in `mps_mcp_get_concept_details` as `enumerationDefault`) — it is a real value, not missing data, and the printout still round-trips through the blueprint-insert tools. Report-style output (`mps_mcp_check_root_node_problems` with `onlyNodesWithProblems=false`) prints an omitted property as `"value": ""`. Read an absent property or `"value": ""` as **"holds its default value"**, never as "missing": verification code must substitute the default (a missing key is not an error — it caused a `KeyError` in one study run), and the `PLAIN TEXT` projection shows the resolved literal (e.g. `easy`) when you need to see it spelled out.
+
 ## `mps_mcp_check_root_node_problems` — Output Format
 
-Validates the specified node (and its descendants) or the specified model. Accepts either an `SNodeReference` or an `SModelReference`. If no problems are found, returns `data: "no problems found"`; otherwise saves the report to a temp file and returns its path.
+Validates the specified node (and its descendants) or the specified model. Accepts either an `SNodeReference` or an `SModelReference`. If no problems are found, returns `data: "no problems found"`; otherwise it returns the problem report inline in `data` when the serialized report is at most `maxInlineBytes` characters (default 20000), and a temp-file path above that.
+
+> **Passing the MODEL reference checks every root of the model in one call and is exhaustive; do NOT re-check roots individually after a clean model-level result.** `data: "no problems found"` for a model means every root in it is clean — a per-root sweep afterwards costs one call per root and cannot find anything new. Use `autoApplyQuickFixes=true` to apply single auto-applicable fixes in the same call (node/root references only; with a model reference the flag is ignored and the envelope says so in `warnings`).
+
+Checking a **model** reference is exhaustive: it validates the model itself (imports, used languages, devkits) and runs the full checker stack on every root, so `details.rootsChecked: <N>` together with `details.scope: "model"` states the coverage — do not re-check the roots individually. Problems are reported as the model object plus a `roots` array, one entry per offending root (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` following `onlyNodesWithProblems`); `perRoot=true` returns `[{root, name, concept, errors, warnings}]` for every root, clean ones included, which replaces N single-root calls with one.
 
 - `onlyNodesWithProblems=true` (default) returns a flat list of just the nodes that have problems — easier to skim.
 - `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to each node, property, reference, and child role; useful when sibling context matters.

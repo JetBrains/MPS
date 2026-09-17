@@ -1,0 +1,2 @@
+# Fixture tarballs are regenerated on demand (see README.md) and never kept in git.
+*.tar.gz

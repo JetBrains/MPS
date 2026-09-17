@@ -663,6 +663,55 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `alter_nodes MOVE_CHILD rejects a fractional position instead of truncating it`() {
+        // `?.asInt` truncated 1.5 to 1 and moved the child there; the typed reader rejects it by
+        // name. The companion case — an explicit `null` — used to throw out of `?.asInt` and
+        // answer INTERNAL_ERROR; it now reads as absent, i.e. "position is missing" here.
+        val parentRef = createConceptRoot("MoveHostFraction")
+        addPropertyChild(parentRef, "x", "string")
+        addPropertyChild(parentRef, "y", "string")
+
+        val yRef = readOnRepo {
+            val y = resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+                .single { it.name == "y" }
+            PersistenceFacade.getInstance().asString(y.reference)
+        }
+
+        for ((position, expected) in listOf(
+            "1.5" to "must be an integer",
+            "null" to "is missing",
+            // gson's asInt wrapped this to -2147483648, which then hit the negative-position
+            // branch and answered "position -2147483648 is invalid" — about a number the caller
+            // never sent.
+            "2147483648" to "must be an integer",
+        )) {
+            val params = """
+                {
+                  "nodeReference": "$parentRef",
+                  "childRole": "propertyDeclaration",
+                  "childNodeRef": "$yRef",
+                  "position": $position
+                }
+            """.trimIndent()
+            val response = runTool(toolset) {
+                it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, params)
+            }
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("position $position must be rejected: $response", obj.get("ok").asBoolean)
+            val error = obj.get("error").asString
+            assertTrue("position $position: error should say '$expected', got: $error", error.contains(expected))
+            assertTrue("position $position must not be reported as an internal error: $error", !error.contains("Internal error"))
+        }
+
+        readOnRepo {
+            val kids = resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+            assertEquals("a rejected move must not reorder the role", listOf("x", "y"), kids.mapNotNull { it.name })
+        }
+    }
+
+    @Test
     fun `alter_nodes MOVE_CHILD rejects a negative position other than -1`() {
         val parentRef = createConceptRoot("MoveHostNeg")
         addPropertyChild(parentRef, "x", "string")
@@ -735,6 +784,43 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             val bKids = b.children.filter { it.containmentLink?.name == "propertyDeclaration" }
             assertEquals(1, bKids.size)
             assertEquals("movee", bKids.single().name)
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT treats an explicit null position as an append`() {
+        // The one shape in the typed-reader change that turned an error into a successful
+        // mutation: this site read `params.get("position").asInt` with no `?.`, so an explicit
+        // JSON null threw and answered INTERNAL_ERROR. It now reads as absent, which this op
+        // documents as "omit position to append".
+        val parentARef = createConceptRoot("MNPNullPosA")
+        val parentBRef = createConceptRoot("MNPNullPosB")
+        addPropertyChild(parentARef, "movee", "string")
+        addPropertyChild(parentBRef, "first", "string")
+        addPropertyChild(parentBRef, "second", "string")
+        val moveeRef = readOnRepo {
+            val p = resolveNode(parentARef).children.single { it.containmentLink?.name == "propertyDeclaration" }
+            PersistenceFacade.getInstance().asString(p.reference)
+        }
+
+        val params = """
+            {
+              "nodeReference": "$moveeRef",
+              "newParentRef": "$parentBRef",
+              "role": "propertyDeclaration",
+              "position": null
+            }
+        """.trimIndent()
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_NODE_TO_PARENT, params)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+
+        readOnRepo {
+            val bKids = resolveNode(parentBRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+            assertEquals("a null position must append, not insert", listOf("first", "second", "movee"), bKids.mapNotNull { it.name })
         }
     }
 

@@ -287,7 +287,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
         val childRole = params.get("childRole")?.asString ?: return errJson("Parameter 'childRole' is missing")
         val childNodeRef = params.get("childNodeRef")?.asString ?: return errJson("Parameter 'childNodeRef' is missing")
-        val position = params.get("position")?.asInt ?: return errJson("Parameter 'position' is missing")
+        val position = params.paramInt("position") ?: return errJson("Parameter 'position' is missing")
         return moveNodeChild(nodeReference, childRole, childNodeRef, position)
     }
 
@@ -295,7 +295,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
         val newParentRef = params.get("newParentRef")?.asString
         val role = params.get("role")?.asString
-        val position = if (params.has("position")) params.get("position").asInt else null
+        val position = params.paramInt("position")
         val modelReference = params.get("modelReference")?.asString
         return moveNodeToParent(nodeReference, newParentRef, role, position, modelReference)
     }
@@ -479,8 +479,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
         val modelsArray = modelsElem?.asJsonArray
         val modulesArray = modulesElem?.asJsonArray
-        val rebuild = params.get("rebuild")?.asBoolean ?: false
-        val wholeProject = params.get("wholeProject")?.asBoolean ?: false
+        val rebuild = params.paramBoolean("rebuild", default = false)
+        val wholeProject = params.paramBoolean("wholeProject", default = false)
 
         if (wholeProject && (modelsArray != null || modulesArray != null)) {
             return errJson("Parameters 'models' and 'modules' must not be provided when 'wholeProject' is true")
@@ -841,7 +841,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
         SET × CHILD — Replace an existing child node with a new node described by a JSON blueprint. Deletes the child if `childJson = null`.
           childNodeRef: persistent ref of the child to replace.
-          childJson: `null` deletes the child. JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
+          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
           Returns the inserted node's info envelope or the parent's one, if deletion (`childJson = null`).
 
         SET × PROPERTY — Set or delete properties on a batch of nodes. The value `propertyValue = null` DELETES the property.
@@ -863,7 +863,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Parent node ref for ADD CHILD") nodeReference: String? = null,
         @McpDescription("Containment role name for ADD CHILD") childRole: String? = null,
         @McpDescription("0-based insert index for ADD CHILD multi-cardinality roles; null/-1 = append. A value at or beyond the current child count is clamped to an append; a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.") position: Int? = null,
-        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation.") childJson: String? = null,
+        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected.") childJson: String? = null,
         @McpDescription("Ref of the child to replace or delete (SET CHILD)") childNodeRef: String? = null,
         @McpDescription("If true, validate without mutating (ADD CHILD, SET CHILD only). Default: false.") dryRun: Boolean = false,
         @McpDescription("Batch triplets [nodeRef, propertyName, value] for SET PROPERTY") properties: List<List<String?>>? = null,

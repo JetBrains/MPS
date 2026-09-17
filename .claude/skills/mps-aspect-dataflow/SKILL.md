@@ -48,6 +48,8 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 
 ## Reference Index
 
+**Start here — most common case**: writing one builder for one concept → read only `references/json-patterns.md` (the verified blueprint shapes), plus `references/concept-catalog.md` when you need an exact concept/role name; a builder that validates but analyses wrongly → only `references/rules-and-pitfalls.md`.
+
 - Concept catalog — open when you need exact concept names, properties, children, cardinalities, or abstract bases for `DataFlowBuilderDeclaration`, `BuilderBlock`, every emit statement, every position type, and the abstract bases. See [references/concept-catalog.md](references/concept-catalog.md).
 - Verified JSON patterns — open when constructing or editing a builder as JSON for `mps_mcp_*` tools. Includes variable read, single-child delegation, return-with-finally, if/elsif/else, while loop, assignment, variable declaration, break to ancestor, and a custom inverted-condition statement. See [references/json-patterns.md](references/json-patterns.md).
 - Rules and pitfalls — open when a builder validates but the engine reports surprising reachability or variable-use results, when choosing between `AfterPosition` and `LabelPosition`, or before using `modes`/`IBuilderMode`. See [references/rules-and-pitfalls.md](references/rules-and-pitfalls.md).

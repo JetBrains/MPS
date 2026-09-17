@@ -1,5 +1,7 @@
 # Analyzing MPS Code and Languages
 
+**Boolean and integer parameters in a `parameters` blob are type-checked.** In the operation tools (`mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure`, `mps_mcp_alter_structure`) a boolean takes `true`/`false` or the same literal quoted in any case (`"true"`, `"TRUE"`), an integer takes a number or a quoted number (`"3"`), and an explicit `null` counts as absent so the documented default applies. Any other shape — `1` for a boolean, `1.5` or an out-of-range value for an integer, surrounding whitespace, an object, an array — is rejected with a message naming the key rather than silently coerced. String parameters are **not** yet validated this way: a number passed where a string is expected is still stringified silently, so check those yourself.
+
 **Read tools inline small results.** `mps_mcp_print_node`, `mps_mcp_get_project_structure`, `mps_mcp_get_concept_details`, `mps_mcp_query_nodes` and `mps_mcp_check_root_node_problems` return `data` inline when it is at most `maxInlineBytes` (default 20000) and a temp-file path only above that — do not assume `data` is a path, and do not spend a second call reading a file that is not there.
 
 - Use `mps_mcp_print_node` for the structural JSON form or for a textual or HTML projection.
