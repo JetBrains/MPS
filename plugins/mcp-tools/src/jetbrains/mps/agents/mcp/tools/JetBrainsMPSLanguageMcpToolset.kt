@@ -78,20 +78,18 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept and cardinality) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). `includeChildRoleConcepts = true` additionally returns, under `relatedConcepts`, each concept that is the target of a child or reference role of the requested concepts (one hop, deduplicated, same detail level); in that case `data` is the object `{"concepts": [...], "relatedConcepts": [...]}` instead of the bare concept array. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple to paste into `PROPERTY`/`REF` macros and smodel `SPropertyAccess`/`SLinkAccess`) and `sourceNode` (the declaration node's persistent ref, e.g. `r:...(...structure)/<id>`; this is the right node-ref *form* for APIs that expect a structure declaration such as `applicableConcept`, but a feature declaration ref is informational only and is not itself a valid `applicableConcept` target) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. If a concept was just created via `CREATE_CONCEPTS` and the response carried `makeStatus: "runtime_stale"`, the runtime descriptor returned here may be hollow (empty properties/references/children, `isAbstract: true`); each affected entry is marked with `descriptorStatus: "hollow"` and a `descriptorRecoveryAction` string — `mps_mcp_reload_all` alone is not sufficient, a clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true` targeting the language module (not just the structure model) is required. See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
+        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept and cardinality) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). To learn the shapes of the concepts a concept's child/reference roles target, pass `languageRefs`: one call returns every concept of the language, which is cheaper than a refinement call per target. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple to paste into `PROPERTY`/`REF` macros and smodel `SPropertyAccess`/`SLinkAccess`) and `sourceNode` (the declaration node's persistent ref, e.g. `r:...(...structure)/<id>`; this is the right node-ref *form* for APIs that expect a structure declaration such as `applicableConcept`, but a feature declaration ref is informational only and is not itself a valid `applicableConcept` target) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. If a concept was just created via `CREATE_CONCEPTS` and the response carried `makeStatus: "runtime_stale"`, the runtime descriptor returned here may be hollow (empty properties/references/children, `isAbstract: true`); each affected entry is marked with `descriptorStatus: "hollow"` and a `descriptorRecoveryAction` string — `mps_mcp_reload_all` alone is not sufficient, a clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true` targeting the language module (not just the structure model) is required. See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
     """
     )
     suspend fun mps_mcp_get_concept_details(
         @McpDescription("A persistent reference (SAbstractConcept) or fully qualified name of a concept/interface concept, or a JSON array of them (a real array or the array written as a string).") conceptRefs: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("A persistent reference (SLanguage) or qualified language name, or a JSON array of them (a real array or the array written as a string). All concepts and interface concepts of these languages will be returned.") languageRefs: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Detail level: \"full\" (default) for the complete records, or \"shape\" for the structural projection only (no docs, no sampleNode).") detail: String = "full",
-        @McpDescription("If true, also return the concepts targeted by child and reference roles of the requested concepts (one hop, deduplicated) under `relatedConcepts` (default = false).") includeChildRoleConcepts: Boolean = false,
         @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String = mps_mcp_get_concept_details(
         parseStringOrJsonArray(conceptRefs),
         parseStringOrJsonArray(languageRefs),
         detail,
-        includeChildRoleConcepts,
         maxInlineBytes,
     )
 
@@ -105,7 +103,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         conceptRefs: List<String>,
         languageRefs: List<String> = emptyList(),
         detail: String = DETAIL_FULL,
-        includeChildRoleConcepts: Boolean = false,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         if (conceptRefs.isEmpty() && languageRefs.isEmpty()) {
@@ -178,18 +175,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     results.add(conceptDetailsJsonObject(concept, repo, mpsProject, cache, shapeOnly))
                 }
 
-                val payload = if (includeChildRoleConcepts) {
-                    val related = JsonArray()
-                    for (target in roleTargetConcepts(conceptSet)) {
-                        related.add(conceptDetailsJsonObject(target, repo, mpsProject, cache, shapeOnly))
-                    }
-                    jsonObject {
-                        add("concepts", results)
-                        add("relatedConcepts", related)
-                    }.toString()
-                } else {
-                    results.toString()
-                }
+                val payload = results.toString()
 
                 val anyUnresolved = unresolvedConceptRefs.isNotEmpty() || unresolvedLanguageRefs.isNotEmpty()
                 if (!anyUnresolved) {
@@ -497,21 +483,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         is SContainmentLink -> getCardinality(link)
         is SReferenceLink -> getCardinality(link)
         else -> "0..1"
-    }
-
-    /**
-     * Target concepts of every child and reference role of [concepts], in encounter order,
-     * deduplicated and without the requested concepts themselves. One hop only: `relatedConcepts`
-     * answers "what can I put in these roles", not "give me the whole reachable graph".
-     */
-    private fun roleTargetConcepts(concepts: Collection<SAbstractConcept>): List<SAbstractConcept> {
-        val targets = LinkedHashSet<SAbstractConcept>()
-        for (concept in concepts) {
-            for (link in concept.containmentLinks) targets.add(link.targetConcept)
-            for (link in concept.referenceLinks) targets.add(link.targetConcept)
-        }
-        targets.removeAll(concepts.toSet())
-        return targets.toList()
     }
 
     /**

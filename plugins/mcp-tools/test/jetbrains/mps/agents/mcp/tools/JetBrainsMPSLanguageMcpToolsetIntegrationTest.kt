@@ -186,45 +186,6 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `get-concept-details includeChildRoleConcepts adds the role targets as relatedConcepts`() {
-        val requested = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
-        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(
-                conceptRefs = listOf(requested),
-                detail = "shape",
-                includeChildRoleConcepts = true,
-            )
-        }
-
-        val payload = payloadObjectFromOkData(response)
-        val concepts = payload.getAsJsonArray("concepts").map { it.asJsonObject }
-        assertEquals(listOf(requested), concepts.map { it.get("qualifiedName").asString })
-
-        val related = payload.getAsJsonArray("relatedConcepts").map { it.asJsonObject }
-        val relatedNames = related.map { it.get("qualifiedName").asString }.toSet()
-        assertEquals("relatedConcepts must be deduplicated", related.size, relatedNames.size)
-        assertFalse(
-            "a requested concept must not be repeated in relatedConcepts; got=$relatedNames",
-            relatedNames.contains(requested),
-        )
-        val roleTargets = listOf("children", "references")
-            .flatMap { block -> concepts.single().getAsJsonArray(block).map { it.asJsonObject.get("targetConcept").asString } }
-            .toSet() - requested
-        assertTrue("ConceptDeclaration must declare child/reference roles to expand", roleTargets.isNotEmpty())
-        assertEquals(
-            "relatedConcepts must be exactly the one-hop child/reference role targets",
-            roleTargets, relatedNames,
-        )
-        for (entry in related) {
-            assertEquals(
-                "relatedConcepts must use the requested detail level",
-                setOf("qualifiedName", "conceptReference", "isAbstract", "isRootable", "properties", "references", "children"),
-                entry.keySet(),
-            )
-        }
-    }
-
-    @Test
     fun `get-concept-details falls back to a temp-file path above maxInlineBytes`() {
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
             it.mps_mcp_get_concept_details(
@@ -568,9 +529,8 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // before it); otherwise every documented language-only call (conceptRefs omitted,
         // languageRefs provided) throws before the body's either/or guard ever runs.
         // The registered overload is the `@McpTool`-annotated one (the other entry point takes
-        // List<String> and is not registered); its remaining parameters (detail,
-        // includeChildRoleConcepts, maxInlineBytes) are projections/limits and must be optional
-        // for the same reason.
+        // List<String> and is not registered); its remaining parameters (detail, maxInlineBytes)
+        // are projections/limits and must be optional for the same reason.
         val fn = JetBrainsMPSLanguageMcpToolset::class.declaredFunctions
             .single { function ->
                 function.name == "mps_mcp_get_concept_details" &&
