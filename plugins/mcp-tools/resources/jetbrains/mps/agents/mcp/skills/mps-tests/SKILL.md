@@ -49,7 +49,7 @@ If the only goal is plain JUnit on hand-written Java/Kotlin (no MPS-specific ass
 
 ## Related Skills
 
-- `mps-model-manipulation` — the smodel / closures / collections reference for assertion bodies.
+- `mps-model-manipulation` — the smodel / closures / collections reference for assertion bodies; for an assertion body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-node-editing` — MCP recipes for inserting children and harvesting persistent refs (used heavily by the `ScopesTest` staged-construction recipe).
 - `mps-aspect-typesystem` — when the system-under-test is the typesystem; `has error/type` annotations here verify those rules.
 - `mps-aspect-constraints` — when validating `can-be` / scope / validator rules from the constraints aspect.

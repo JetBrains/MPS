@@ -71,7 +71,7 @@ Where a parameter's documented null means something (`SET` × `CHILD` deleting t
 - **`mps-baselanguage`** — when the nodes you edit are BaseLanguage / Java.
 - **`mps-quotations`** — embedding inline node literals inside model code.
 - **`mps-language-analysis`** — exploring an unfamiliar language before editing.
-- **`mps-model-manipulation`** — when the edit also requires navigating the tree from model code (`.ancestor<C>`, `.descendants<C>`, siblings, containingRoot).
+- **`mps-model-manipulation`** — when the edit also requires navigating the tree from model code (`.ancestor<C>`, `.descendants<C>`, siblings, containingRoot); open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## JSON Input — File-Path Semantics
 

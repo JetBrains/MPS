@@ -2,9 +2,14 @@
 
 1. `mps_mcp_get_project_structure(includeModels=true)`: language `mcp.study.recipes` and solution
    `mcp.study.kitchen` with model `mcp.study.kitchen.samples` exist.
-2. `mps_mcp_query_structure` / `mps_mcp_search_concepts` on `mcp.study.recipes`: concepts Recipe,
-   Step, Ingredient, Cookbook; enums Difficulty {EASY, MEDIUM, HARD}, Unit {G, ML, PIECE}; Recipe has
-   servings:int, difficulty, steps [1..n], seeAlso ref [0..n]; Step has text, minutes:int, uses [0..n].
+2. `mps_mcp_get_project_structure(startingPoint=mcp.study.recipes.structure, includeRootNodes=true)`
+   for the inventory, then `mps_mcp_get_concept_details(languageRefs=mcp.study.recipes)` for the
+   shapes: concepts Recipe, Step, Ingredient, Cookbook; Recipe has servings:int, difficulty,
+   steps [1..n], seeAlso ref [0..n]; Step has text, minutes:int, uses [0..n]. Enums are not concepts
+   and cannot be looked up by qualified name — take the `EnumerationDeclaration` roots from the same
+   roots dump, then read their literals with `mps_mcp_print_node(deep=true)` or
+   `mps_mcp_query_structure GET_ENUMERATION_LITERALS(enumerationRef=<that node reference>)`:
+   Difficulty {EASY, MEDIUM, HARD}, Unit {G, ML, PIECE}.
 3. `mps_mcp_get_concept_details` for each concept: editor present (not scaffold-only: at least one
    constant/label cell per concept); constraints model has 2 rules; typesystem has 1 checking rule;
    behavior has `totalMinutes`.

@@ -4,9 +4,9 @@
 
 **Direct scalar string fields in the operation dispatchers are null-tolerant and otherwise retain Gson compatibility.** An omitted field or field-level JSON `null` takes the existing required-field error, optional default, or alternate form. Other values keep `asString` behavior: primitive numbers and booleans are stringified, singleton arrays (including nested ones) are unwrapped, and objects, empty or multi-element arrays, `[null]`, and `[{}]` keep their existing failure and `INTERNAL_ERROR` envelope. This applies to direct operation fields such as `conceptRef`, `nodeReference`, and `scope`; it does not change schema-checked blueprint fields or the stricter nonblank string/array rules for `models`, `modules`, and `roots`. `MOVE_NODE_TO_PARENT` is the deliberate exception: an explicit `newParentRef:null` is rejected with `INVALID_REQUEST` so it cannot select the destructive promote-to-root branch; omitting `newParentRef` still selects promotion when `modelReference` is supplied.
 
-**Read tools inline small results.** `mps_mcp_print_node`, `mps_mcp_get_project_structure`, `mps_mcp_get_concept_details`, `mps_mcp_query_nodes` and `mps_mcp_check_root_node_problems` return `data` inline when it is at most `maxInlineBytes` (default 20000) and a temp-file path only above that — do not assume `data` is a path, and do not spend a second call reading a file that is not there.
+**Read tools inline small results.** `mps_mcp_print_node`, `mps_mcp_get_project_structure`, `mps_mcp_get_concept_details`, `mps_mcp_query_nodes` and `mps_mcp_check_root_node_problems` return `data` inline when it is at most `maxInlineBytes` (default 20000) and a temp-file path only above that — do not assume `data` is a path, and do not spend a second call reading a file that is not there. When `data` *is* a path, the file holds the **complete** `{"ok":…,"data":…}` envelope, not the bare payload: read the payload out of its `data` field, because splicing the whole file in as `data` gives you `data.data`. The JSON mutation tools accept either form of file (see `mps_mcp_print_node — Output Format` below).
 
-- Use `mps_mcp_print_node` for the structural JSON form or for a textual or HTML projection.
+- Use `mps_mcp_print_node` for the structural JSON form or for a textual or HTML projection. To verify a whole root, one call with `deep=true` (JSON) or `format: "PLAIN TEXT"` (projection) beats walking its children.
 - Use `mps_mcp_check_root_node_problems` to find errors in the code (each problem may carry `quickFixes`; `autoApplyQuickFixes=true` repairs them in one shot).
 - Use `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` to discover and apply the node's Alt+Enter context actions (intentions and quick-fixes) headlessly — see *Intentions & quick-fixes* below.
 - Use `mps_mcp_query_nodes` for node search and navigation (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE). FIND_INSTANCES finds nodes of a concept (see below); FIND_USAGES finds nodes whose references point at a given node.
@@ -22,6 +22,8 @@
 ## `mps_mcp_query_nodes` (`FIND_INSTANCES`) — Finding Nodes of a Concept
 
 Returns all nodes that are instances of the specified concept (or one random sample). Returns a JSON array of node info objects (non-root entries include `rootName`), inline in `data` when the serialized array is at most `maxInlineBytes` characters (default 20000), otherwise the path of a temp file holding the same envelope (`mps_mcp_query_nodes` takes `maxInlineBytes` as a top-level parameter, next to `operation` and `parameters`).
+
+**Counting roots does not need this tool.** For "how many roots of each concept does this model hold", one `mps_mcp_get_project_structure(startingPoint=<model>, includeRootNodes=true)` dump answers for every concept at once; reduce it locally with `python3 scripts/mps_dump.py count <dumpFile>` (roots per concept) instead of one FIND_INSTANCES call per concept, each of which serialises every node it found. Use FIND_INSTANCES when you need instances at any depth, a `propertyFilter`/`exact` subset, or the nodes themselves.
 
 Parameters:
 ```
@@ -56,6 +58,10 @@ For `scope: "models"`, `"modules"`, or `"roots"`, the matching selector must be 
 
 - `deep=true` recursively inlines all descendants.
 - `deep=false` (shallow) lists properties, children roles with references, and reference roles.
+
+**Verifying a whole root costs one call.** Pass `deep=true` for machine-readable JSON of the root and every descendant, or `format: "PLAIN TEXT"` for the editor projection when you only need to read it (~10× cheaper than walking the tree). The default is **shallow**, and a shallow printout gives a child as `{name, reference}` only — nothing about its properties is in the answer, which is what turns a naive verification loop into one call per child.
+
+**`PLAIN TEXT` renders an empty collection as an editor placeholder.** An empty `0..n` role prints as its placeholder cell, e.g. `see also: << ... >>`, which reads like a one-element list; it means the role is **empty**. Never count elements from the projection — take counts from the JSON form.
 
 The saved file contains the full MCP response envelope; its `data` field contains the node JSON object shown below. **JSON mutation tools accept either that full envelope file or a file containing only the raw `data` object** — load the `mps-node-editing` companion skill from the same origin, then see its File-Path Semantics section and `references/json-format.md` in the `mps-node-editing` skill root.
 
@@ -93,7 +99,7 @@ The saved file contains the full MCP response envelope; its `data` field contain
 
 ## `mps_mcp_check_root_node_problems` — Output Format
 
-Validates the specified node (and its descendants) or the specified model. Accepts either an `SNodeReference` or an `SModelReference`. If no problems are found, returns `data: "no problems found"`; otherwise it returns the problem report inline in `data` when the serialized report is at most `maxInlineBytes` characters (default 20000), and a temp-file path above that.
+Validates the specified node (and its descendants) or the specified model. Accepts either an `SNodeReference` or an `SModelReference`. If no problems are found, returns `data: "no problems found"`; otherwise it returns the problem report inline in `data` when the serialized report is at most `maxInlineBytes` characters (default 20000), and a temp-file path above that. It reports *problems*, not content: to verify what a root actually contains, print it — `mps_mcp_print_node` with `deep=true` or `format: "PLAIN TEXT"` covers a whole root in one call (see *Output Format* above).
 
 > **Passing the MODEL reference checks every root of the model in one call and is exhaustive; do NOT re-check roots individually after a clean model-level result.** `data: "no problems found"` for a model means every root in it is clean — a per-root sweep afterwards costs one call per root and cannot find anything new. Use `autoApplyQuickFixes=true` to apply single auto-applicable fixes in the same call (node/root references only; with a model reference the flag is ignored and the envelope says so in `warnings`).
 

@@ -65,7 +65,7 @@ For a typical "let the user invoke action X when they do Y" task:
 - `mps-aspect-editor` — overall workflow for creating and changing MPS editor definitions; cell models, layout styles, style inheritance.
 - `mps-aspect-actions` — `NodeFactory` initialisation of new nodes (in the actions language, often referenced from menus).
 - `mps-aspect-intentions` — Alt+Enter context actions. Intentions can be surfaced inside a transformation menu via the `intention` adapter.
-- `mps-model-manipulation` — smodel operations used in execute/text/condition bodies.
+- `mps-model-manipulation` — smodel operations used in execute/text/condition bodies; for the edit an execute body performs (`replace with`, `.set(...)`, `add new`) open only `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-baselanguage` — BaseLanguage JSON mechanics.
 - `mps-node-editing`, `mps-mcp-workflow` — concept identification / blueprint hygiene.
 

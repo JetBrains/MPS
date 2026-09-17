@@ -49,7 +49,7 @@ Constraints are enforced at edit time and also consulted by the typesystem/edito
 - `mps-aspect-editor-menus-and-keymaps` — completion menus consume the scope built here; substitute / transformation menus are the place for actions that go *beyond* picking an existing target.
 - `mps-aspect-actions` — when a constructor-style initialization is needed, use `NodeFactory` (actions aspect), not a constraint.
 - `mps-aspect-intentions` — when a *suggested fix* belongs on a node, write an intention; constraints only accept or reject.
-- `mps-model-manipulation` — full BaseLanguage / smodel / collections / closures reference for constraint and scope bodies. Indispensable for `ancestor<concept = X, +>`, `selectMany`, `siblings.ofConcept<X>.all(...)`, anonymous-class scopes, and the smodel operation FQNs.
+- `mps-model-manipulation` — full BaseLanguage / smodel / collections / closures reference for constraint and scope bodies; for a scope or `canBe*` body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin. Indispensable for `ancestor<concept = X, +>`, `selectMany`, `siblings.ofConcept<X>.all(...)`, anonymous-class scopes, and the smodel operation FQNs.
 - `mps-aspect-typesystem` — type checks belong in typesystem; constraints are about value/scope/placement.
 - `mps-aspect-textgen` and `mps-aspect-constraints`-co-located utility classes — see `references/concept-roots.md` for the BaseLanguage `ClassConcept` co-location pattern (used by `XmlNameUtil`).
 

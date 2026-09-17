@@ -56,7 +56,7 @@ The **behavior** aspect attaches methods and a constructor to a concept, much li
 
 - `mps-aspect-actions` — `NodeFactory` is the right place for initialization that needs parent/model context (constructors run before the node is attached).
 - `mps-aspect-intentions`, `mps-aspect-constraints`, `mps-aspect-generator`, `mps-aspect-typesystem` — call behavior methods via `node.m(...)`; behavior is one of the most-used aspects from these.
-- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference. Covers the `LinkList_AddNewChildOperation` family and the `List<SNode>` → `sequence<node<X>>` return-type fix.
+- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference; for a method body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin. Covers the `LinkList_AddNewChildOperation` family and the `List<SNode>` → `sequence<node<X>>` return-type fix.
 - `mps-aspect-constraints` — `ScopeProvider.getScope` is most often overridden in a behavior; constraints describe where the reference lives.
 - `mps-aspect-structure-concepts` — when introducing the concept that the behavior attaches to.
 - `mps-language-inheritance` — to design the abstract-super-concept refactors discussed in `references/inheritance-and-dispatch.md`.

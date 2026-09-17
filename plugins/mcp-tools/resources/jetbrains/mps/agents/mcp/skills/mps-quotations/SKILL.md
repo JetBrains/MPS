@@ -58,7 +58,7 @@ A **quotation** is a node literal — a concise expression that evaluates to an 
 - `mps-aspect-migrations` — `<NewConcept>` plus `^(oldNode.target)^` is the canonical shape inside migration rewrite scripts (`references/antiquotation-reference.md` includes the verbatim example).
 - `mps-aspect-intentions` — the `replace_invokeOperation_with_compactInvoke` example shipping with the closures language uses `<%(...)%>` + `*(...)*` to rebuild an expression tree.
 - `mps-aspect-structure-concepts` — when the quoted concept's link/property metadata is needed; `propertyId` / `linkId` encode the persistent form of those declarations.
-- `mps-model-manipulation` — the smodel operations and BaseLanguage expressions used inside antiquotation `expression` slots.
+- `mps-model-manipulation` — the smodel operations and BaseLanguage expressions used inside antiquotation `expression` slots; for the spliced expression open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## Reference Index
 

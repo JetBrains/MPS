@@ -73,7 +73,7 @@ Seed `mps_mcp_print_node` / `mps_mcp_query_nodes` (FIND_USAGES) with these:
 - `mps-aspect-intentions` — Alt+Enter context actions *inside* the projectional editor.
 - `mps-aspect-editor-menus-and-keymaps` — editor cell actions, substitute menus, side transforms (a different layer from the IDE shell).
 - `mps-build-language` — packaging a plugin solution into a distributable MPS/IDEA plugin (the build script must copy `startup.properties` from the solution's resources).
-- `mps-quotations` / `mps-model-manipulation` — writing the base-language bodies inside `execute`/`isApplicable`/`init`/`dispose` blocks.
+- `mps-quotations` / `mps-model-manipulation` — writing the base-language bodies inside `execute`/`isApplicable`/`init`/`dispose` blocks. These bodies do **not** already hold a model lock the way a rule or behavior body does, so open only `references/concurrent-access.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin — the `command` / `read action` / `execute command in EDT` wrappers.
 - `mps-baselanguage` — mechanics of building BaseLanguage JSON.
 
 ## Reference Index

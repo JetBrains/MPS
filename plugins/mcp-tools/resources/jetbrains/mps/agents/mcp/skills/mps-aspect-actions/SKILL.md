@@ -48,7 +48,7 @@ Signature surfaced in the editor: `(newNode, sampleNode, enclosingNode, index, m
 - `mps-aspect-behavior` — concept constructors are the place to set defaults that don't depend on the node being replaced. Use a constructor for *intrinsic* defaults, a `NodeFactory` for context-sensitive carry-over.
 - `mps-aspect-intentions` — intentions that call `add new initialized(...)` route through factories. Load the `mps-aspect-intentions` companion skill from the same origin when this applies, then open `references/factory-initialized.md` in the `mps-aspect-intentions` skill root for the `NF_*` family.
 - `mps-aspect-generator` — generator output bypasses factories (quotations and `add new root` do not fire factories). Document where the generator must mimic the factory behavior.
-- `mps-model-manipulation` — full smodel reference: `SLinkAccess` vs `SPropertyAccess`, `IfInstanceOfStatement`, `IfInstanceOfVariable`, and the `NF_*` family.
+- `mps-model-manipulation` — full smodel reference: `SLinkAccess` vs `SPropertyAccess`, `IfInstanceOfStatement`, `IfInstanceOfVariable`, and the `NF_*` family. For a setup-function body — copying properties and child links onto `newNode` — open only `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-aspect-structure-concepts` — when adding the concept that `applicableConcept` targets.
 - `mps-aspect-constraints` — for `canBe*` rules that gate insertion before a factory ever runs.
 

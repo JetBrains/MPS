@@ -48,7 +48,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 - `mps-aspect-behavior` — behavior methods called from rule bodies via `node.method()`; common host for `getType` / `isAssignableFrom`-style helpers callable from typesystem.
 - `mps-aspect-constraints` — non-type validation often lives in constraints; consider whether a check belongs there before adding a `NonTypesystemRule`.
 - `mps-aspect-intentions` — distinct from `TypesystemQuickFix` (intentions are user-invoked from caret; quick fixes attach to a report).
-- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference used inside rule bodies (`StatementList`, `DotExpression`, smodel operations, the `List<SNode>` → `sequence<node<X>>` return-type fix).
+- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference used inside rule bodies (`StatementList`, `DotExpression`, smodel operations, the `List<SNode>` → `sequence<node<X>>` return-type fix); for an inference or checking rule body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-quotations` — `<type>` literals in rule bodies are heavy quotations; `%(expr)%` splices use the `Antiquotation` family. The typesystem model usually uses `jetbrains.mps.lang.quotation` as a used language.
 - `mps-aspect-structure-concepts` — when introducing the type concept(s) the rules target.
 

@@ -67,7 +67,7 @@ After a `MAKE`, generators write Java (and TextGen artifacts like `.xml`, `.scxm
 - `mps-aspect-generation-plan` — priorities, checkpoints, plan contributions; pair this with priority-ordering questions.
 - `mps-aspect-textgen` — converting the final model to plain text (last pipeline stage).
 - `mps-aspect-behavior` — put non-trivial per-concept logic in behavior methods called from macros.
-- `mps-model-manipulation` — smodel-access idioms (`SPropertyAccess`, `SLinkAccess`, `Node_GetChildrenOperation`) inside query bodies.
+- `mps-model-manipulation` — smodel-access idioms (`SPropertyAccess`, `SLinkAccess`, `Node_GetChildrenOperation`) inside query bodies; for a macro query body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-quotations` — quotation/anti-quotation syntax for building nodes inside `$INSERT$` and `$MAP_SRC$.mapperFunction`.
 - `mps-baselanguage` — host language for macro query bodies and `RulesFunctions_*` helpers.
 

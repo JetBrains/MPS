@@ -39,7 +39,7 @@ These address the same problem at different abstraction levels: `lang.migration`
 - `mps-aspect-typesystem`, `mps-aspect-constraints` — when a migration depends on or alters typesystem rules.
 - `mps-aspect-generator` — when version changes also touch generator templates.
 - `mps-quotations` — for `QuotationConsequence` consequence bodies inside `MigrationScript.execute()`.
-- `mps-model-manipulation` — BL + smodel constructs used inside `MigrationScript.execute()` and Enhancement Script updaters.
+- `mps-model-manipulation` — BL + smodel constructs used inside `MigrationScript.execute()` and Enhancement Script updaters; for the rewrite itself open only `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## Reference Index
 

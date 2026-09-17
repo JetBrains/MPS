@@ -41,7 +41,7 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 
 ## Related Skills
 
-- `mps-model-manipulation` — BL + smodel code inside builder bodies (`DotExpression`, `SLinkAccess`, `NodeParameter`, behavior method calls).
+- `mps-model-manipulation` — BL + smodel code inside builder bodies (`DotExpression`, `SLinkAccess`, `NodeParameter`, behavior method calls); for a builder body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-aspect-behavior` — for behavior methods called from builders to compute target nodes (e.g. `getLoopOrSwitch`, `getReturnJumpTarget`).
 - `mps-aspect-typesystem` — when the dataflow you emit must agree with type checks.
 - `mps-node-editing` — generic JSON-blueprint node creation/replacement workflow.

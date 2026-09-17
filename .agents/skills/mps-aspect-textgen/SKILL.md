@@ -49,7 +49,7 @@ A custom language usually has both: a generator rewrites into BaseLanguage + run
 
 - `mps-aspect-generator` — model-to-model step that usually precedes TextGen; emits the AST you serialise.
 - `mps-aspect-behavior` — host for layout-heuristic helper methods called from textgen bodies.
-- `mps-model-manipulation` — BaseLanguage + smodel + collections used inside textgen bodies (`StatementList`, `DotExpression`, `SLinkAccess`, `SLinkListAccess`, `StaticMethodCall`).
+- `mps-model-manipulation` — BaseLanguage + smodel + collections used inside textgen bodies (`StatementList`, `DotExpression`, `SLinkAccess`, `SLinkListAccess`, `StaticMethodCall`); for a `textGenBlock` body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-quotations` — anti-quotations may appear inside `Quotation`s used as `${...}` expression values.
 - `mps-aspect-structure-concepts` — when introducing the concepts a textgen will serialise.
 
