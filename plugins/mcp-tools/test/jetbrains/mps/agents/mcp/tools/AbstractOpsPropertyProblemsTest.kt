@@ -449,10 +449,11 @@ class AbstractOpsPropertyProblemsTest {
 
     @Test
     fun parseJsonOnTruncatedInputAppendsBraceImbalanceHint() {
+        val json = """{"a":1"""
         try {
             // Truncated object (missing closing brace): Gson throws a JsonSyntaxException backed by an
             // EOFException whose message is "End of input at line N column M ...".
-            ops.parseJson("""{"a":1""")
+            ops.parseJson(json)
             fail("Expected truncated JSON to fail")
         } catch (e: AbstractOps.McpInvalidRequestException) {
             // Assert against the REAL Gson message (we fed malformed JSON), so a future Gson reword of
@@ -465,6 +466,44 @@ class AbstractOpsPropertyProblemsTest {
                 "Expected the brace-imbalance hint, got: ${e.message}",
                 e.message.orEmpty().contains("unbalanced")
             )
+            assertTrue(e.message.orEmpty().contains("received ${json.length} chars (inline limit 4096)"))
+            assertTrue(e.message.orEmpty().contains("absolute temp-file path"))
+        }
+    }
+
+    @Test
+    fun parseJsonElementDiagnosesMalformedNestedChildAndArrayInput() {
+        val inputs = listOf(
+            """{"children":[{"role":"child","nodes":[{"concept":"test.C","name":"unfinished"""",
+            """[{"concept":"test.C"},{"concept":"test.D","properties":[{"name":"x","value":"unfinished"""",
+        )
+
+        for (json in inputs) {
+            try {
+                ops.parseJsonElement(json)
+                fail("Expected malformed JSON to fail: $json")
+            } catch (e: AbstractOps.McpInvalidRequestException) {
+                val message = e.message.orEmpty()
+                assertTrue("Expected real Gson location: $message", message.contains("at line 1 column"))
+                assertTrue(message.contains("received ${json.length} chars (inline limit 4096)"))
+                assertTrue(message.contains("unbalanced"))
+                assertTrue(message.contains("absolute temp-file path"))
+            }
+        }
+    }
+
+    @Test
+    fun parseJsonElementDoesNotAddEofHintToOtherSyntaxErrors() {
+        val json = """{"value":"\q"}"""
+        try {
+            ops.parseJsonElement(json)
+            fail("Expected malformed JSON to fail")
+        } catch (e: AbstractOps.McpInvalidRequestException) {
+            val message = e.message.orEmpty()
+            assertTrue("Expected real Gson location: $message", message.contains("at line 1 column"))
+            assertFalse(message.contains("received ${json.length} chars"))
+            assertFalse(message.contains("unbalanced"))
+            assertFalse(message.contains("absolute temp-file path"))
         }
     }
 

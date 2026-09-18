@@ -2,7 +2,6 @@ package jetbrains.mps.agents.mcp.tools
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
@@ -311,9 +310,9 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
 
             val jsonElement = try {
-                JsonParser.parseString(actualJson)
-            } catch (e: Exception) {
-                return@withMpsProject invalidJson("Failed to parse JSON: ${e.message}")
+                parseJsonElement(actualJson)
+            } catch (e: McpInvalidRequestException) {
+                return@withMpsProject invalidJson(e.message)
             }
             val jsonObjects: List<JsonObject> = when {
                 jsonElement.isJsonArray -> jsonElement.asJsonArray.mapIndexed { i, elem ->
@@ -497,23 +496,23 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     )
                 }
 
-                val jsonObject = try {
-                    val elem = JsonParser.parseString(actualJson)
-                    when {
-                        elem.isJsonObject -> elem.asJsonObject
-                        elem.isJsonArray -> {
-                            val arr = elem.asJsonArray
-                            if (arr.size() == 1 && arr[0].isJsonObject) arr[0].asJsonObject
-                            else {
-                                return@executeShortCommandOnEdt errJson("JSON array with ${arr.size()} elements is not valid for a node update; provide a single JSON object", McpErrorCode.INVALID_JSON)
-                            }
-                        }
-                        else -> {
-                            return@executeShortCommandOnEdt errJson("Expected a JSON object, got ${elem.javaClass.simpleName}", McpErrorCode.INVALID_JSON)
+                val elem = try {
+                    parseJsonElement(actualJson)
+                } catch (e: McpInvalidRequestException) {
+                    return@executeShortCommandOnEdt invalidJson(e.message)
+                }
+                val jsonObject = when {
+                    elem.isJsonObject -> elem.asJsonObject
+                    elem.isJsonArray -> {
+                        val arr = elem.asJsonArray
+                        if (arr.size() == 1 && arr[0].isJsonObject) arr[0].asJsonObject
+                        else {
+                            return@executeShortCommandOnEdt errJson("JSON array with ${arr.size()} elements is not valid for a node update; provide a single JSON object", McpErrorCode.INVALID_JSON)
                         }
                     }
-                } catch (e: Exception) {
-                    return@executeShortCommandOnEdt invalidJson(e.message)
+                    else -> {
+                        return@executeShortCommandOnEdt errJson("Expected a JSON object, got ${elem.javaClass.simpleName}", McpErrorCode.INVALID_JSON)
+                    }
                 }
 
                 val updateWarnings = if (dryRun) mutableListOf<String>() else null

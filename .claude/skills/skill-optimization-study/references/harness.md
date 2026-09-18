@@ -8,7 +8,12 @@ Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/
 `<id>-worker.jsonl`, `<id>-worker.stderr`, `<id>-server.jsonl` (call-log slice by byte offsets),
 `<id>-install.json`. Before taking the call-log offsets it runs `install_skills.py --project
 <project-dir>`, so the worker always reads the live catalog and the install's own MCP calls stay
-out of the run's server slice; a failed install exits 3 and the run does not start. The meta gains
+out of the run's server slice; a failed install exits 3 and the run does not start. Before that,
+`check_user_agents.py` recursively inspects Markdown definitions below `~/.claude/agents` and exits
+3 if a filename matches `*mps*`, a body contains `mps_mcp` (case-insensitive), or the catalog cannot
+be read. This mandatory, read-only guard also runs with `SKIP_SKILL_INSTALL=1`, before any run side
+effect. Missing/empty catalogs and unrelated definitions pass. Built-in `Explore`/`Task` are outside
+this pin. The meta gains
 `skillsSha256` (catalog fingerprint) and `skillsInstalled`. Launch detached and poll:
 ```
 nohup sh -c "RUNS=$RUNS $STUDY/scripts/run_worker.sh S1 opus 1 $PROJ; echo EXIT_CODE=\$?" \
@@ -34,8 +39,19 @@ reads + bytes (Read and Bash `cat`/`sed` of `*/skills/*`), temp-file envelopes (
 Bash reads of those files, Bash blueprint writes, authored tool-input chars (all / MCP), tool-result
 bytes, error envelopes (`is_error` or `{"ok":false`), error→retry pairs (same tool within 2 calls),
 validation loops (≥ 3 `check_root_node_problems` on one root), stale-runtime text hits, server
-calls/ms (slice filtered by the run's project). Chains = bigrams/trigrams of `tool[:operation/kind]`.
-Cross-check: `server_calls == mps_calls` unless a call was rejected before dispatch (no projectPath).
+calls/ms (slice filtered by the run's project). New audit columns are `pre_dispatch_rejections`,
+`expected_server_mps_calls`, `agent_calls`, `server_mps_calls`, and `server_call_surplus`. The
+analyser recognizes only known platform rejection signatures, then computes
+`expected_server_mps_calls = mps_calls - pre_dispatch_rejections` and
+`server_call_surplus = server_mps_calls - expected_server_mps_calls`. A positive surplus produces
+one stderr warning and is persisted in `errors.json` and `hotspots.md`; it means server calls are
+absent from the parent transcript, with delegation one possible cause (same-project observer
+traffic may also be inside a time-window slice). Missing/empty server evidence leaves surplus
+unavailable and produces no warning. `agent_calls` counts parent `Agent` tool-use events, not prose
+or explicitly child-tagged events. Chains = bigrams/trigrams of `tool[:operation/kind]`.
+
+`--setting-sources project` remains deferred. Adopting it requires a separate SMOKE proving login,
+the live project catalog, and skills still work; it is not needed for the user-agent guard.
 
 ## show_steps.py `<worker.jsonl> <from> <to> [--input-chars N --result-chars N]`
 Compact view of a step range (1-based tool_use ordinals as in `chains.json` examples) with inputs,

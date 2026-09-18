@@ -14,6 +14,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 
 /**
  * End-to-end integration tests for [JetBrainsMPSRootNodeMcpToolset].
@@ -339,7 +340,25 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) {
             it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText("{ not really JSON"), dryRun = false)
         }
-        assertTrue(expectErr(response).contains("Failed to parse JSON"))
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse(envelope.get("ok").asBoolean)
+        assertEquals("INVALID_JSON", envelope.get("code").asString)
+    }
+
+    @Test
+    fun `insert_root_node_from_json diagnoses incomplete nested child without inserting`() {
+        val before = structureRoots().size
+        val prefix = """[{"concept":"$conceptDeclarationFqn"},""" +
+                """{"concept":"$conceptDeclarationFqn","children":[{"role":"propertyDeclaration","nodes":[""" +
+                """{"concept":"$propertyDeclarationFqn","properties":[{"name":"name","value":""""
+        val json = prefix + "x".repeat(1245 - prefix.length)
+
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
+        }
+
+        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1)
+        assertEquals("parse failure must not insert any root", before, structureRoots().size)
     }
 
     @Test
@@ -476,6 +495,79 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         readOnRepo {
             val node = PersistenceFacade.getInstance().createNodeReference(rootRef).resolve(structureModel.repository)
             assertEquals("KeepMe", node!!.name)
+        }
+    }
+
+    @Test
+    fun `update_root_node_from_json accepts a one-object array`() {
+        val rootRef = createConceptRoot("ArrayUpdateBefore")
+        val json = """[{"concept":"$conceptDeclarationFqn","properties":[{"name":"name","value":"ArrayUpdateAfter"}]}]"""
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = false)
+        }
+
+        assertEquals("ArrayUpdateAfter", expectOk(response).get("name").asString)
+        assertEquals("ArrayUpdateAfter", readOnRepo {
+            PersistenceFacade.getInstance().createNodeReference(rootRef).resolve(structureModel.repository)!!.name
+        })
+    }
+
+    @Test
+    fun `update_root_node_from_json diagnoses incomplete top-level array without mutation`() {
+        val rootRef = createConceptRoot("UnchangedAfterBadArray")
+        val json = """[{"concept":"$conceptDeclarationFqn","properties":[]}"""
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = false)
+        }
+
+        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1)
+        assertEquals("UnchangedAfterBadArray", readOnRepo {
+            PersistenceFacade.getInstance().createNodeReference(rootRef).resolve(structureModel.repository)!!.name
+        })
+    }
+
+    @Test
+    fun `root JSON distinguishes inline boundary from temp-file input`() {
+        val minimal = """{"concept":"$conceptDeclarationFqn"}"""
+        val inlineAtLimit = minimal.padEnd(4096, ' ')
+        val accepted = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(inlineAtLimit), dryRun = true)
+        }
+        assertTrue(
+            "4096 valid inline characters must reach parsing: $accepted",
+            JsonParser.parseString(accepted).asJsonObject.get("ok").asBoolean,
+        )
+
+        val inlineOverLimit = minimal.padEnd(4097, ' ')
+        val rejected = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(inlineOverLimit), dryRun = true)
+        }
+        assertTrue(expectErr(rejected).contains("Direct JSON input is too large (4097 chars)"))
+
+        val validFile = File.createTempFile("mps-root-valid-", ".json")
+        val incompleteFile = File.createTempFile("mps-root-incomplete-", ".json")
+        try {
+            validFile.writeText(minimal.padEnd(4200, ' '))
+            val fromFile = runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(validFile.absolutePath), dryRun = true)
+            }
+            assertTrue(
+                "valid file over 4096 characters must work: $fromFile",
+                JsonParser.parseString(fromFile).asJsonObject.get("ok").asBoolean,
+            )
+
+            val incomplete = ("""{"concept":"$conceptDeclarationFqn","properties":[{"name":"name","value":"""" +
+                    "x".repeat(4200)).take(4200)
+            incompleteFile.writeText(incomplete)
+            val malformedFromFile = runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(incompleteFile.absolutePath), dryRun = true)
+            }
+            assertIncompleteJson(malformedFromFile, incomplete.length, expectedColumn = incomplete.length + 1)
+        } finally {
+            validFile.delete()
+            incompleteFile.delete()
         }
     }
 
@@ -828,6 +920,18 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("INVALID_REQUEST", envelope.get("code").asString)
         assertTrue("error must name '$expectedText': $errorJson", envelope.get("error").asString.contains(expectedText))
         assertFalse("scope errors must not return warnings: $errorJson", envelope.has("warnings"))
+    }
+
+    private fun assertIncompleteJson(response: String, length: Int, expectedColumn: Int) {
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_JSON", envelope.get("code").asString)
+        val error = envelope.get("error").asString
+        assertTrue("expected received length: $error", error.contains("received $length chars (inline limit 4096)"))
+        assertTrue("expected Gson location: $error", error.contains("at line 1 column $expectedColumn"))
+        assertTrue("expected brace hint: $error", error.contains("unbalanced"))
+        assertTrue("expected temp-file hint: $error", error.contains("absolute temp-file path"))
+        assertFalse("syntax diagnosis must not claim the inline guard fired: $error", error.contains("Direct JSON input is too large"))
     }
 
     private fun addScopePropertyChild(parentRef: String): String {

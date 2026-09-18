@@ -120,6 +120,7 @@ abstract class AbstractOps : McpToolset {
         private const val TEMP_JSON_PREFIX = "mps-node-"
         private const val TEMP_JSON_SUFFIX = ".json"
         private const val MAX_INPUT_FILE_SIZE_BYTES = 10L * 1024 * 1024
+        private const val MAX_INLINE_JSON_CHARS = 4096
 
         /**
          * Default inline/temp-file cut-off for read tools that expose a `maxInlineBytes`
@@ -1150,6 +1151,10 @@ abstract class AbstractOps : McpToolset {
         return parseJson(jsonString, JsonObject::class.java)
     }
 
+    fun parseJsonElement(jsonString: String): JsonElement {
+        return parseJson(jsonString, JsonElement::class.java)
+    }
+
     fun <T> parseJson(jsonString: String, type: java.lang.reflect.Type): T {
         if (jsonString.isBlank()) {
             throw McpInvalidRequestException("JSON string is empty or blank")
@@ -1168,7 +1173,8 @@ abstract class AbstractOps : McpToolset {
             val looksTruncated = message.contains("End of input", ignoreCase = true) ||
                                  message.contains("Unterminated", ignoreCase = true)
             val hint = if (looksTruncated) {
-                "\n\nThis usually means an unbalanced '{'/'[' — verify every brace/bracket is closed. " +
+                "\n\nreceived ${jsonString.length} chars (inline limit $MAX_INLINE_JSON_CHARS). " +
+                "This usually means an unbalanced '{'/'[' — verify every brace/bracket is closed. " +
                 "For large blueprints, pass an absolute temp-file path instead of inline JSON " +
                 "(see the mps-node-editing skill)."
             } else ""
@@ -3384,11 +3390,11 @@ abstract class AbstractOps : McpToolset {
             )
         }
         if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-            if (jsonOrPath.length > 4096) {
+            if (jsonOrPath.length > MAX_INLINE_JSON_CHARS) {
                 throw McpInvalidRequestException(
                     "Direct JSON input is too large (${jsonOrPath.length} chars). " +
                             "To prevent MCP truncation errors, please save the JSON to a temporary file and pass the absolute path instead. " +
-                            "The limit for direct JSON is 4096 characters."
+                            "The limit for direct JSON is $MAX_INLINE_JSON_CHARS characters."
                 )
             }
             return jsonOrPath

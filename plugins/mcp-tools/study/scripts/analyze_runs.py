@@ -28,6 +28,10 @@ from pathlib import Path
 SKILL_DIR_RE = re.compile(r"(?:\.agents|\.claude)/skills/|\bmps-[a-z0-9-]+/(?:SKILL\.md|references/)")
 TEMP_RESULT_RE = re.compile(r"mps-node-\d+\.json|/T/mps-[a-z-]*\d+|mps-mcp-result")
 BLUEPRINT_WRITE_RE = re.compile(r"cat\s*>|tee\s|open\([^)]*['\"]w['\"]|json\.dump\(|>\s*\S+\.json")
+PRE_DISPATCH_REJECTION_RES = (
+    re.compile(r"Unable to determine the target project for the current MCP tool call\."),
+    re.compile(r"MCP tool call has been failed: No argument is passed for required parameter\s+['‘][^'’]+['’]"),
+)
 
 
 def classify_bash(command: str) -> str:
@@ -77,6 +81,14 @@ def is_error_result(block, text: str) -> bool:
     return head.startswith("{") and '"ok":false' in head.replace(" ", "")
 
 
+def is_pre_dispatch_rejection(error: bool, text: str) -> bool:
+    return error and any(pattern.search(text) for pattern in PRE_DISPATCH_REJECTION_RES)
+
+
+def is_child_event(event: dict) -> bool:
+    return event.get("parent_tool_use_id") is not None or event.get("parentToolUseId") is not None
+
+
 def root_ref_of(inp) -> str | None:
     if not isinstance(inp, dict):
         return None
@@ -105,12 +117,14 @@ def load_jsonl(path: Path):
 def analyse_run(run_id: str, runs: Path):
     events = load_jsonl(runs / f"{run_id}-worker.jsonl")
     meta = json.loads((runs / f"{run_id}.meta.json").read_text()) if (runs / f"{run_id}.meta.json").exists() else {}
-    server = load_jsonl(runs / f"{run_id}-server.jsonl")
+    server_path = runs / f"{run_id}-server.jsonl"
+    server = load_jsonl(server_path)
     # The server slice is cut by time window; drop lines from other projects (e.g. the observer
     # evaluating a previous run while this one was running).
     if meta.get("project"):
         server = [s for s in server if not s.get("project") or s["project"].rstrip("/") == meta["project"].rstrip("/")]
 
+    server_evidence_available = bool(server)
     calls = []            # ordered tool_use steps: dict(step, name, key, input_chars, result_bytes, error, root)
     by_id = {}
     usage = Counter()
@@ -134,6 +148,8 @@ def analyse_run(run_id: str, runs: Path):
                     call = {"step": step, "name": name, "key": key_of(name, inp),
                             "input_chars": len(json.dumps(inp)) if inp is not None else 0,
                             "result_bytes": 0, "error": False, "root": root_ref_of(inp), "result_is_temp_file": False,
+                            "pre_dispatch_rejection": False,
+                            "parent_event": not is_child_event(ev),
                             "skill_read": (name == "Read" and isinstance(inp, dict)
                                            and bool(SKILL_DIR_RE.search(str(inp.get("file_path", "")))))
                                           or (name == "Bash" and isinstance(inp, dict)
@@ -154,6 +170,7 @@ def analyse_run(run_id: str, runs: Path):
                         call["result_is_temp_file"] = bool(re.match(r'\s*\{"ok":true,"data":"/[^"]+"', text))
                         call["result_bytes"] = n
                         call["error"] = is_error_result(block, text)
+                        call["pre_dispatch_rejection"] = is_pre_dispatch_rejection(call["error"], text)
                         if call["skill_read"]:
                             skill_bytes += n
         elif t == "result":
@@ -187,6 +204,13 @@ def analyse_run(run_id: str, runs: Path):
                 e["examples"].append(f"{run_id}:{calls[i]['step']}-{calls[i + n - 1]['step']}")
 
     tool_calls = Counter(c["name"] for c in calls if c["name"].startswith("mps_mcp_"))
+    mps_calls = sum(tool_calls.values())
+    pre_dispatch_rejections = sum(
+        1 for c in calls if c["name"].startswith("mps_mcp_") and c["pre_dispatch_rejection"]
+    )
+    expected_server_mps_calls = mps_calls - pre_dispatch_rejections
+    server_mps_calls = sum(1 for s in server if mcp_name(s.get("tool") or "").startswith("mps_mcp_"))
+    server_call_surplus = server_mps_calls - expected_server_mps_calls if server_evidence_available else None
     # NOTE: logs from rounds 1-4 carry the old call-log semantics, where `ok` just meant
     # "the tool call didn't throw" and there was no `threw`/`errorCode` field. Later logs'
     # `ok` also reflects the tool's own returned envelope (see McpCallLogListener.kt), so
@@ -205,7 +229,10 @@ def analyse_run(run_id: str, runs: Path):
         "input_tokens": usage.get("input_tokens", 0), "output_tokens": usage.get("output_tokens", 0),
         "cache_read": usage.get("cache_read_input_tokens", 0), "cache_write": usage.get("cache_creation_input_tokens", 0),
         "cost_usd": final.get("total_cost_usd"),
-        "tool_calls": len(calls), "mps_calls": sum(tool_calls.values()),
+        "tool_calls": len(calls), "mps_calls": mps_calls,
+        "pre_dispatch_rejections": pre_dispatch_rejections,
+        "expected_server_mps_calls": expected_server_mps_calls,
+        "agent_calls": sum(1 for c in calls if c["name"] == "Agent" and c["parent_event"]),
         "authored_input_chars": sum(c["input_chars"] for c in calls),
         "mps_authored_chars": sum(c["input_chars"] for c in calls if c["name"].startswith("mps_mcp_")),
         "tool_result_bytes": result_total, "skill_read_bytes": skill_bytes,
@@ -216,7 +243,9 @@ def analyse_run(run_id: str, runs: Path):
         "temp_file_envelopes": sum(1 for c in calls if c["name"].startswith("mps_mcp_") and c["result_is_temp_file"]),
         "errors": sum(1 for c in calls if c["error"]), "retries": len(retries),
         "validation_loops": len(loops), "stale_incidents": stale,
-        "server_calls": len(server), "server_errors": len(server) - server_ok,
+        "server_calls": len(server), "server_mps_calls": server_mps_calls,
+        "server_call_surplus": server_call_surplus,
+        "server_errors": len(server) - server_ok,
         "server_ms": sum(s.get("ms", 0) or 0 for s in server),
     }
     return metrics, calls, chains, retries, loops, server
@@ -255,7 +284,18 @@ def main(argv=None) -> int:
             # See the rounds-1-4 `ok`-semantics note in analyse_run() above.
             tools[s.get("tool") or "?"]["server_errors"] += int(not s.get("ok"))
             tools[s.get("tool") or "?"]["server_ms"] += int(s.get("ms") or 0)
-        errors[rid] = {"retries": retries, "validation_loops": loops}
+        warning = None
+        if m["server_call_surplus"] is not None and m["server_call_surplus"] > 0:
+            warning = (
+                f"{rid}: {m['server_mps_calls']} server MPS calls - "
+                f"({m['mps_calls']} transcript MPS calls - {m['pre_dispatch_rejections']} pre-dispatch rejections) "
+                f"= {m['server_call_surplus']} server calls absent from the parent transcript; "
+                f"parent Agent calls={m['agent_calls']}. Delegation is one possible cause; the time-window "
+                "slice can also include observer traffic from the same project."
+            )
+            print(f"WARNING: {warning}", file=sys.stderr)
+        errors[rid] = {"retries": retries, "validation_loops": loops,
+                       "server_call_surplus_warning": warning}
 
     with (out / "metrics.csv").open("w", newline="") as fh:
         if all_metrics:
@@ -275,6 +315,13 @@ def main(argv=None) -> int:
         fh.write(f"# Hotspot candidates (chains with >= {args.min_occurrences} occurrences, ranked by total chars)\n\n")
         fh.write("Assign determinism (1.0 / 0.5 / 0) per chain by inspecting the examples, then\n"
                  "score = count x avg_chars x determinism x (1 + retry_rate).\n\n")
+        surplus_warnings = [e["server_call_surplus_warning"] for e in errors.values()
+                            if e["server_call_surplus_warning"]]
+        if surplus_warnings:
+            fh.write("## Measurement-integrity warnings\n\n")
+            for warning in surplus_warnings:
+                fh.write(f"- {warning}\n")
+            fh.write("\n")
         fh.write("| # | chain | count | avg chars | examples |\n|---|---|---|---|---|\n")
         for i, r in enumerate(ranked[:args.top], 1):
             fh.write(f"| {i} | `{r['chain']}` | {r['count']} | {r['avg_chars']} | {', '.join(r['examples'][:3])} |\n")

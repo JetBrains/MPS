@@ -265,7 +265,7 @@ D3 — the `/tmp` rejection did not fire (the worker pre-emptively copied to `$T
 | D28 | `update_node` | `target`/`parentRef`/`role` (a natural guess) → platform message "No argument is passed for required parameter 'kind'": names 1 of 3 wrong keys, names no correct key |
 | D29 | `alter_nodes` | `MAKE` with `moduleName`/`rebuild` at top level → "No argument is passed for required parameter 'parameters'", without saying the module list belongs inside `parameters` |
 | D30 | `query_nodes FIND_INSTANCES` | `scope:"roots"` reads as "root nodes only" but means "within these root references" and requires `roots`; a caller after root counts picks it naturally (`S3-sonnet-1:25`) |
-| D31 | study harness | User-level `~/.claude/agents/*.md` leak into every worker. `mps-constraints-agent` was used 3× in `S1-sonnet-1`; its 7 MPS calls appear in the server log under the same session id but **not** in the parent transcript, and its tokens are not in the `result` event |
+| D31 | study harness | User-level `~/.claude/agents/*.md` leak into every worker. The raw `S1-sonnet-1` transcript contains three parent `Agent` tool-use events: one `mps-constraints-agent` invocation and two built-in `Explore` invocations. The constraints invocation's 7 MPS calls appear in the server evidence under the same session id but not as top-level parent events, and its tokens are not in the parent's `result` event |
 
 ## 5. Validity
 
@@ -273,12 +273,13 @@ D3 — the `/tmp` rejection did not fire (the worker pre-emptively copied to `$T
   running plugin at run time, so "the current skills" is a verified fact.
 - **Answer-key contamination stays resolved.** The shipped example assets are `courses.csv` /
   `courses.map.json`; `scenarios/S3/recipes.csv` (`7118013074e8…`) matches nothing in the catalog.
-- **The S1 numbers understate the round-4 cost.** The worker invoked `mps-constraints-agent`
-  three times and `Explore` twice. The parent logs the `Agent` tool-use events but omits the
+- **The S1 numbers understate the round-4 cost.** The raw transcript records one
+  `mps-constraints-agent` invocation and two `Explore` invocations as three parent `Agent`
+  tool-use events. The top-level parent events omit the constraints invocation's
   child MCP calls. Cross-check: 102 transcript MCP calls − 9 rejected
   before dispatch = 93 expected, but the server logged **100**; the 7-call delta is 6 `update_node`
   + 1 `alter_nodes` from the subagent. Those calls, their turns and their tokens are absent from
-  `metrics.csv`. Rounds 1 and 3 had **zero** `Agent` calls, round 2 had one — so this asymmetry is
+  `metrics.csv`. Rounds 1 and 3 had **zero** parent `Agent` events, round 2 had one — so this asymmetry is
   new, is caused by an uncontrolled user-level asset (D31), and makes S1's +23.7 % call delta a
   **lower bound**.
 - **S3's fixture start state was verified live** before launch (0 Recipe, 0 Cookbook, 3 Ingredient),
@@ -305,8 +306,8 @@ than renumbered.
 | P3 | **Move the jump tables out of the large references.** Each `mps-aspect-*/SKILL.md` should carry the section index of its own big reference (or the reference must be split), so an agent can pick a section without reading 48 KB. Round-3 M2 landed for `mps-model-manipulation` and that skill behaved well — do the same for `referent-constraints.md` (54 KB), `structure-operation-api.md` (26 KB), `property-constraints.md` (16 KB) | **D** → T | §2.10 / hotspot 3 | docs only | ~100 KB per greenfield run; the metric that is worst vs baseline | none |
 | P4 | **Rename or re-document `scope:"roots"`** as `scope:"withinRoots"` (or accept `scope:"roots"` with no `roots` as "all root nodes") | **S** or **D** | D30 | one enum value | 1 call per verification pass | low |
 | P5 | **`projectPath`, re-scoped after §2.12.** The doc half (round-3 M3(a)) **is done and measurable** — the first-call CWD probe eliminated that sub-family. What remains is the mid-run omission on the two `parameters`-string tools, which no wording has moved in three rounds. Options, cheapest first: (a) let `alter_structure` / `alter_nodes` also accept `projectPath` **inside** `parameters` (where the model already thinks it belongs); (b) auto-resolve the pre-dispatch rejection when exactly one project is open — the message already prints that project; (c) the upstream routing question in `projectpath-pre-dispatch-rejection-upstream.md`. Do **not** spend another round on wording | **S** (a/b) + **S (upstream)** (c) | D18/D4, §2.12 | (a) accept the key in either position; (b) single-open-project fallback | 2 calls + 1 turn per greenfield run, stable across rounds 2–4 | (a) low, additive; (b) changes routing semantics — must still reject when >1 project is open; (c) may not be locally actionable |
-| P6 | **Abort on MPS-related user agents and expose missing transcript calls.** Fail in `run_worker.sh` with exit 3 when `~/.claude/agents` contains a definition whose filename matches `*mps*` or whose body matches `mps_mcp`; sync both study-skill preflight assertions; make `analyze_runs.py` warn and emit a metrics column when `server_calls > mps_calls − pre-dispatch rejections`, and count parent `Agent` tool-use events | study harness | D31 | harness only; preserve developer agents; no `--agents '{}'` or “cleared” `--agents`; details below | measurement integrity, not worker turns; without this, S1 deltas remain a lower bound | low; intentionally aborts contaminated runs |
-| P7 | **Reuse the existing EOF hint on insert/update-root parse failures.** Route both through the shared parser helper with a `JsonElement` variant for top-level arrays; retain brace-imbalance wording and the temp-file hint, adding `received N chars (inline limit 4096)` on EOF/unterminated input | **S** | H1 | shared parse diagnostics plus insert/update-root regression coverage; never claim EOF proves a 4 KB transport cut | ~1 retry per greenfield run | low; preserve object/array handling |
+| P6 — implemented 2026-09-18 | **Abort on MPS-related user agents and expose missing transcript calls.** Fail in `run_worker.sh` with exit 3 when `~/.claude/agents` contains a definition whose filename matches `*mps*` or whose body matches `mps_mcp`; sync both study-skill preflight assertions; make `analyze_runs.py` warn and emit a metrics column when `server_calls > mps_calls − pre-dispatch rejections`, and count parent `Agent` tool-use events | study harness | D31 | harness only; preserve developer agents; no `--agents '{}'` or “cleared” `--agents`; details below | measurement integrity, not worker turns; without this, S1 deltas remain a lower bound | low; intentionally aborts contaminated runs |
+| P7 — implemented 2026-09-18 | **Reuse the existing EOF hint on insert/update-root parse failures.** Route both through the shared parser helper with a `JsonElement` variant for top-level arrays; retain brace-imbalance wording and the temp-file hint, adding `received N chars (inline limit 4096)` on EOF/unterminated input | **S** | H1 | shared parse diagnostics plus insert/update-root regression coverage; never claim EOF proves a 4 KB transport cut | ~1 retry per greenfield run | low; preserve object/array handling |
 
 ### P6 implementation contract — harness only (D31)
 
@@ -357,6 +358,22 @@ EOF: writing a file does not finish an incomplete string. Add regression coverag
 `parseJsonOnTruncatedInputAppendsBraceImbalanceHint` that exercises the insert/update-root
 parse paths, rather than testing only the helper. No separate round to chase a transport limit
 is justified by this failure.
+
+### P6/P7 implementation verification — 2026-09-18
+
+- `bash -n study/scripts/run_worker.sh` and the stdlib study-script unit suite pass (10 tests),
+  including the isolated shell gate with stub installer/Claude executables and
+  `SKIP_SKILL_INSTALL=1`.
+- Reanalysis of the unchanged `runs-r4` evidence into a new temporary directory reports the P6
+  oracle exactly: S1 `102 − 9 = 93` expected MPS dispatches, 100 server MPS calls, surplus 7,
+  and 3 parent `Agent` events; S3 and SMOKE have zero surplus and no warning. All analyser-derived
+  historical columns match the original analysis. S3's `pass` cell now reads `True` because the
+  current meta was evaluated after the original analysis artifact was written; this is evidence
+  metadata drift, not a metrics-calculation change.
+- IDEA reports no errors in the four changed Kotlin files. `AbstractOpsPropertyProblemsTest`
+  passes on JDK 25. The JDK 25 `McpToolsIntegrationTestSuite` run completes 798/798 tests with no
+  failures, including the new insert/update-root malformed-JSON, array, inline-boundary, and
+  temp-file cases.
 
 Not proposed: anything aimed at hotspots 1, 2, 4, 5, 9, 10 — all fixed and holding. No P-on script
 is justified.

@@ -36,8 +36,14 @@ ID="$SCENARIO-$MODEL-$RUN"
 
 [ -f "$PROMPT" ] || { echo "no prompt: $PROMPT" >&2; exit 2; }
 [ -d "$PROJECT" ] || { echo "no project dir: $PROJECT" >&2; exit 2; }
-mkdir -p "$RUNS"
 [ -e "$RUNS/$ID-worker.jsonl" ] && { echo "run id already exists: $ID — bump the run number" >&2; exit 2; }
+
+# User-level MPS agents can delegate calls that are missing from the parent transcript. Prove the
+# catalog is clean before installation, call-log offsets, metadata, or any other run side effect.
+# This remains mandatory when skill installation is skipped.
+python3 "$STUDY/scripts/check_user_agents.py" || exit 3
+
+mkdir -p "$RUNS"
 
 # Fresh skills BEFORE the call-log offsets are taken, so the install's own MCP calls stay out of
 # the run's server slice. A failed install aborts the run: measuring an unknown doc surface is

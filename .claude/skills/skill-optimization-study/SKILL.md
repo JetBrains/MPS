@@ -52,9 +52,12 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
    Record the tool inventory: `python3 $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json`.
    Assert there are no user-level `mps-*` skills (`ls ~/.claude/skills`) — those shadow the
-   per-project catalog and would silently replace the thing being measured — and no MPS-related
-   user-level **agents** (`ls ~/.claude/agents`): a worker that delegates to one makes MPS calls
-   that never appear in its transcript, so the metrics understate that cell (lesson 26).
+   per-project catalog and would silently replace the thing being measured. Also assert there
+   are no MPS-related Markdown definitions anywhere below `~/.claude/agents`: a filename matching
+   `*mps*` or a body containing `mps_mcp`, both case-insensitively, is contamination. The mandatory
+   `run_worker.sh` guard enforces this before any run side effect and exits 3 on a match or an
+   unreadable catalog; it never modifies user agents (lesson 26). Built-in `Explore` and `Task`
+   agents are outside this pin and remain enabled.
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
    `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Add the option to the `MPS` run
    configuration for the study only and REVERT it afterwards (it hard-codes a home path).
@@ -80,7 +83,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    regenerated per `study/fixtures/README.md`, not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
    projects). Per run: copy fixture → human opens → confirm with `list_open_projects` → launch
-   detached (`run_worker.sh` installs the live skills first; it aborts the run if that fails) →
+   detached (`run_worker.sh` first rejects MPS-related user agents, then installs the live skills;
+   either guard failure aborts with exit 3) →
    poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
    (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in `<id>.meta.json`
    → human closes. Sequential, never two workers against one MPS. Check that every meta's
