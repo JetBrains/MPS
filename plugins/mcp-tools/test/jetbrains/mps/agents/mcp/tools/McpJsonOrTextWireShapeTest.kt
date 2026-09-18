@@ -52,16 +52,6 @@ import kotlin.reflect.full.valueParameters
  *     not re-tested here: they share a binding shape with a parameter above and route through the
  *     same `parseNullableStringOrJsonArray` / `readNodeJsonOrFile` call, so a separate case would
  *     assert the serializer twice rather than anything new.
- *
- * **Keep this class registered next to the other node-writing toolset tests in
- * [McpToolsIntegrationTestSuite], not at the end.** Registered last, the two tests that create a
- * `ConceptDeclaration` root fail in fixture setup — `CREATE_CONCEPTS` ends in a bare
- * `UnsupportedOperationException` and name-based concept resolution reaches a null-named
- * declaration node (`MetaAdapterByDeclaration: concept or property is created for a node with
- * name==null`) — while the same fixtures work from this position. That is suite-state degradation
- * across the shared MPS environment, unrelated to [JsonOrText]: the failing calls
- * (`mps_mcp_create_root_node`'s `concept` / `conceptReference`, and the blueprint's `concept`
- * field) are all still plain `String`.
  */
 class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
 

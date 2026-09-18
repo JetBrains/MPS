@@ -20,6 +20,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
+import org.junit.AfterClass
 import org.junit.Assume
 import org.junit.BeforeClass
 import org.junit.Test
@@ -59,14 +60,27 @@ class AbstractOpsPropertyProblemsTest {
 
     companion object {
         private val TEST_ACCESS_UTIL = TestSNodeAccessUtil()
+        private var previousAccessUtil: SNodeAccessUtil? = null
 
         @JvmStatic
         @BeforeClass
         fun setUpSNodeAccessUtil() {
-            SNodeAccessUtil.setInstance(TEST_ACCESS_UTIL)
-            if (PersistenceFacade.getInstance() == null) {
-                PersistenceRegistry(null, null).init()
+            previousAccessUtil = TEST_ACCESS_UTIL.globalInstance()
+            try {
+                SNodeAccessUtil.setInstance(TEST_ACCESS_UTIL)
+                if (PersistenceFacade.getInstance() == null) {
+                    PersistenceRegistry(null, null).init()
+                }
+            } catch (t: Throwable) {
+                SNodeAccessUtil.setInstance(previousAccessUtil)
+                throw t
             }
+        }
+
+        @JvmStatic
+        @AfterClass
+        fun restoreSNodeAccessUtil() {
+            SNodeAccessUtil.setInstance(previousAccessUtil)
         }
     }
 
@@ -1240,6 +1254,8 @@ class AbstractOpsPropertyProblemsTest {
 
     private class TestSNodeAccessUtil : SNodeAccessUtil() {
         private val values = WeakHashMap<SNode, MutableMap<SProperty, Any?>>()
+
+        fun globalInstance(): SNodeAccessUtil? = myInstance
 
         fun setRawProperty(node: SNode, property: SProperty, value: Any?) {
             values.computeIfAbsent(node) { linkedMapOf() }[property] = value
