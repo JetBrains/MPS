@@ -52,7 +52,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
    Record the tool inventory: `python3 $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json`.
    Assert there are no user-level `mps-*` skills (`ls ~/.claude/skills`) — those shadow the
-   per-project catalog and would silently replace the thing being measured.
+   per-project catalog and would silently replace the thing being measured — and no MPS-related
+   user-level **agents** (`ls ~/.claude/agents`): a worker that delegates to one makes MPS calls
+   that never appear in its transcript, so the metrics understate that cell (lesson 26).
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
    `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Add the option to the `MPS` run
    configuration for the study only and REVERT it afterwards (it hard-codes a home path).
