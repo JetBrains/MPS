@@ -294,7 +294,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     ): String {
         currentCoroutineContext().reportToolActivity("Running the current MPS console command")
         val project = currentCoroutineContext().project
-        return try {
+        return McpCallOutcomes.record(try {
             var reply: String = errJson(
                 "Running the current MPS console command did not complete",
                 McpErrorCode.INTERNAL_ERROR
@@ -362,7 +362,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
             reply
         } catch (e: Exception) {
             toolFailure("Running the current MPS console command", e)
-        }
+        })
     }
 
     /**

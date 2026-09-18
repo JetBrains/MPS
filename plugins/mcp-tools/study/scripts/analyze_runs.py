@@ -187,6 +187,10 @@ def analyse_run(run_id: str, runs: Path):
                 e["examples"].append(f"{run_id}:{calls[i]['step']}-{calls[i + n - 1]['step']}")
 
     tool_calls = Counter(c["name"] for c in calls if c["name"].startswith("mps_mcp_"))
+    # NOTE: logs from rounds 1-4 carry the old call-log semantics, where `ok` just meant
+    # "the tool call didn't throw" and there was no `threw`/`errorCode` field. Later logs'
+    # `ok` also reflects the tool's own returned envelope (see McpCallLogListener.kt), so
+    # server_ok/server_errors computed here are not directly comparable across that boundary.
     server_ok = sum(1 for s in server if s.get("ok"))
     wall_ms = final.get("duration_ms")
     if wall_ms is None and meta.get("startTs") and meta.get("endTs"):
@@ -248,6 +252,7 @@ def main(argv=None) -> int:
             tool_chars[c["name"]] += c["input_chars"]; tool_bytes[c["name"]] += c["result_bytes"]
         for s in server:
             tools[s.get("tool") or "?"]["server_calls"] += 1
+            # See the rounds-1-4 `ok`-semantics note in analyse_run() above.
             tools[s.get("tool") or "?"]["server_errors"] += int(not s.get("ok"))
             tools[s.get("tool") or "?"]["server_ms"] += int(s.get("ms") or 0)
         errors[rid] = {"retries": retries, "validation_loops": loops}

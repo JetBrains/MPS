@@ -44,7 +44,14 @@ class JetBrainsMPSInitMcpToolset : AbstractOps() {
                     "whereas `targetDirectory` is where files are written and may be an ancestor of the project."
         )
         targetDirectory: String? = null
-    ): String {
+    ): String = McpCallOutcomes.record(initializeProjectForAgents(targetDirectory))
+
+    /**
+     * Actual implementation of [mps_mcp_initialize_project_for_agents], split out so its several
+     * early-return paths can all be recorded through one [McpCallOutcomes.record] call at the
+     * public tool boundary instead of wrapping each `return`/`return@withSkillsResourceFs`.
+     */
+    private suspend fun initializeProjectForAgents(targetDirectory: String?): String {
         val targetDir: Path = when (val resolution = resolveTargetDirectory(targetDirectory)) {
             is TargetResolution.Ok -> resolution.dir
             is TargetResolution.Err -> return resolution.json

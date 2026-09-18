@@ -540,11 +540,11 @@ abstract class AbstractOps : McpToolset {
     protected suspend inline fun withMpsProject(activity: String, block: (MPSProject) -> String): String {
         currentCoroutineContext().reportToolActivity(activity)
         val mpsProject = ProjectHelper.fromIdeaProject(currentCoroutineContext().project)
-            ?: return errJson("No MPS project available", McpErrorCode.NOT_FOUND)
+            ?: return McpCallOutcomes.record(errJson("No MPS project available", McpErrorCode.NOT_FOUND))
         return try {
-            block(mpsProject)
+            McpCallOutcomes.record(block(mpsProject))
         } catch (e: Throwable) {
-            toolFailure(activity, e)
+            McpCallOutcomes.record(toolFailure(activity, e))
         }
     }
 
