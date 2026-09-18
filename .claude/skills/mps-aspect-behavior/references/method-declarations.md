@@ -14,7 +14,7 @@ Concept methods may be:
 
 - **non-virtual** (**default** — no modifier flags) — inherited by subconcepts and called as `node.m(...)`, but **statically bound**: it cannot be overridden. A same-named method in a subconcept's behavior *shadows* it (which method runs depends on the static type at the call site) — a common source of bugs. Most utility methods in baseLanguage's `Classifier_Behavior` (`getAllSuperClassifiers`, `isDescendant`, `isSame`, …) are non-virtual.
 - **`virtual`** — overridable by subconcept behaviors; calls dispatch at runtime on the node's actual concept. Called as `node.m(...)`. Examples: `Expression.isLValue`, `Expression.getVariableExpectedName`, and effectively every method of `Type_Behavior` (`getSupertypes`, `isReifiable`, `getBoxedType`, …) in baseLanguage.
-- **`abstract`** — no body; every non-abstract subconcept must provide an implementation. **Implies virtual: set both `isAbstract` and `isVirtual` to `true`** (baseLanguage does, e.g. `Classifier.findAncestor`, `IMemberContainer.getMembers`). Declare on abstract concepts or concept interfaces. Called as `node.m(...)` (virtually dispatched).
+- **`abstract`** — no implementation; every non-abstract subconcept must provide one. **Implies virtual: set both `isAbstract` and `isVirtual` to `true`** (baseLanguage does, e.g. `Classifier.findAncestor`, `IMemberContainer.getMembers`). Declare on abstract concepts or concept interfaces. Called as `node.m(...)` (virtually dispatched). Note that "no implementation" still means an **empty `body` `StatementList`, not a missing `body` child** — the role is obligatory (see `references/json-blueprints.md`), so an abstract method without one is reported as `No child in the obligatory role 'body'`.
 - **`final`** — a virtual method that cannot be overridden further. Rarely needed: a plain non-virtual method is already non-overridable.
 - **`static`** — belongs to the concept, not an instance. No `this`. Called as **`Concept.m(...)`** (i.e., qualify with the concept name, not a node). Used for concept-wide utilities, often taking nodes as parameters — e.g. `Classifier.getContextClassifier(node)`, `Classifier.banParent(...)` in baseLanguage.
 - **`virtual static`** (`isVirtual` + `isStatic`) — a static method dispatched on a runtime **concept value** (`concept<X>` expression): `conceptValue.m(...)`. Subconcept behaviors override it like any virtual method (matching signature + `overriddenMethod`). Use when the result varies per concept but no node instance is needed. baseLanguage examples: `Expression.getPrecedenceLevel`, `Expression.lvalue`, `Expression.constant`, `Type.isValueType` — each overridden across many subconcept behaviors (smodel, collections, …).
@@ -30,6 +30,37 @@ A subconcept's `ConceptBehavior` overriding a virtual/abstract method must match
 - `returnType` (child, 1, `Type`) — any BaseLanguage/smodel type, incl. `node<X>`, `sequence<node<X>>`, primitives, void
 - `body` (child, 1, `StatementList`) — BaseLanguage statement list
 - `overriddenMethod` (reference, 0..1, `ConceptMethodDeclaration`) — explicitly links this method to the one it overrides in a super-concept or implemented behavior-interface. Required when implementing a method declared on an interface concept (e.g. `jetbrains.mps.lang.core.behavior.ScopeProvider.getScope`); MPS uses it for dispatch and to validate the signature. Set the reference after creating the method stub with the matching name/parameters.
+
+## Creating a method with `mps_mcp_parse_java_and_insert`
+
+For a method whose modifiers a plain Java signature already expresses, parse the whole method — signature and body together — straight into the `ConceptBehavior` root, instead of building a JSON blueprint:
+
+```json
+{
+  "code": "public int getPrecedence() { return 5; }",
+  "featureKind": "METHOD",
+  "contextNodeRef": "<ConceptBehavior-node-ref>",
+  "insert": { "mode": "child", "parentRef": "<same-ConceptBehavior-node-ref>", "role": "method" }
+}
+```
+
+`contextNodeRef` and `insert.parentRef` are the **same** `ConceptBehavior` node. The parser converts the parsed method into a `ConceptMethodDeclaration` and inserts it into the behavior's `method` role in one call. Only MPS-typed return/parameter types (`node<X>`, `sequence<node<X>>`, …) may still need fixing up afterward.
+
+How the Java modifiers carry over:
+
+| Java | Result |
+|---|---|
+| `static` | `isStatic: true` (and `isVirtual` stays `false` — a `virtual static` method has no Java spelling) |
+| `abstract` | `isAbstract: true` **and** `isVirtual: true`, keeping the empty `body` `StatementList` the parser produced (the role is obligatory — see the `abstract` note above) |
+| `synchronized` | `isSynchronized: true` |
+| `final` | **dropped.** `ConceptMethodDeclaration` only accepts `isFinal` on a *virtual* method (otherwise the `isFinal does not make sense on the non-virtual method` check fires), and a parsed Java method is never virtual unless it is `abstract` — while `abstract final` is not legal Java in the first place. So `final void m() {}` silently yields a plain non-virtual method. For a genuinely final virtual method, set `isVirtual` and `isFinal` with `mps_mcp_update_node` after parsing. |
+| `private` / `protected` / `public` | carried over as the `visibility` child, as in any BaseLanguage method |
+
+Inside the body, a Java field access on the receiver is rewritten to real smodel access against the owning concept: `this.<property>` becomes an `SPropertyAccess`, `this.<singleChildRole>` (and any reference role) an `SLinkAccess`, and `this.<multipleChildRole>` an `SLinkListAccess` — so `String n() { return this.name; }` type-checks as written, including for properties inherited from a super-concept or an interface such as `INamedConcept`. The lookup reads the concept's *declaration*, so it works on a language that has not been rebuilt since the concept was created. A name that matches no property or link on the concept is deliberately left as an unresolved `FieldReferenceOperation` rather than guessed at — fix those by hand. Method calls are not rewritten: `this.someBehaviorMethod(...)` still needs the usual post-parse resolution — for that, read `references/parse-java-tips.md` in the `mps-baselanguage` skill root after loading that companion skill from the same origin.
+
+Use this METHOD call instead of a JSON blueprint whenever the method needs no `virtual` (non-abstract), `virtual static`, `overriddenMethod`, or `thisConcept` (the current concept value available inside a `virtual static` body, typed `concept<OwningConcept>`) — none of these has a Java keyword or syntax the parser recognizes, so they must be set via `mps_mcp_update_node` after parsing, or the method built as a JSON blueprint from the start (`json-blueprints.md`).
+
+Once a `ConceptMethodDeclaration` stub already exists — e.g. a JSON blueprint used specifically for one of the constructs above — use `featureKind: "STATEMENTS"` with `insert.mode: "replace"`/`"child"` targeting its `body` to fill in just the logic, as for any other method body.
 
 ## Body environment
 

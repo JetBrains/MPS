@@ -141,8 +141,13 @@ Reproduced deterministically twice after the round (see §4, D26). Omitting `con
 produces a **good** message — `"'contextNodeRef' is required for featureKind 'METHOD' to provide
 the target Classifier"` — so the tool already knows the constraint and simply does not check it
 when the parameter is present but of the wrong type. Since a `ConceptBehavior` root can never be a
-`Classifier`, `featureKind:"METHOD"` is unusable for behavior methods, which is the single most
-common place an agent wants a Java method in a language.
+`Classifier`, `featureKind:"METHOD"` is unusable for behavior methods *as measured*, which is the
+single most common place an agent wants a Java method in a language. **P1 does not document around
+this.** The chosen shape is to accept a `ConceptBehavior` `contextNodeRef` for METHOD/CLASS_CONTENT:
+parse against a detached synthetic `ClassConcept`, convert the result to `ConceptMethodDeclaration`,
+and keep structured errors for every remaining wrong context. The original P1 wording (reject the
+node and tell agents to use STATEMENTS or JSON instead) is superseded; §6 below is the corrected
+contract.
 
 Cost: `S1-sonnet-1:93-109` — 7 `get_concept_details` calls to learn the BaseLanguage AST by hand,
 4 skill reads (55 KB), 2 `Explore` subagents, 3 Bash probes, a `/tmp`→`$TMPDIR` copy, then the
@@ -268,8 +273,9 @@ D3 — the `/tmp` rejection did not fire (the worker pre-emptively copied to `$T
   running plugin at run time, so "the current skills" is a verified fact.
 - **Answer-key contamination stays resolved.** The shipped example assets are `courses.csv` /
   `courses.map.json`; `scenarios/S3/recipes.csv` (`7118013074e8…`) matches nothing in the catalog.
-- **The S1 numbers understate the round-4 cost.** The worker delegated to three subagents
-  (`mps-constraints-agent`, `Explore` ×2). Cross-check: 102 transcript MCP calls − 9 rejected
+- **The S1 numbers understate the round-4 cost.** The worker invoked `mps-constraints-agent`
+  three times and `Explore` twice. The parent logs the `Agent` tool-use events but omits the
+  child MCP calls. Cross-check: 102 transcript MCP calls − 9 rejected
   before dispatch = 93 expected, but the server logged **100**; the 7-call delta is 6 `update_node`
   + 1 `alter_nodes` from the subagent. Those calls, their turns and their tokens are absent from
   `metrics.csv`. Rounds 1 and 3 had **zero** `Agent` calls, round 2 had one — so this asymmetry is
@@ -294,13 +300,63 @@ than renumbered.
 
 | # | Remedy | Tier | Hotspot / defect | Contract | Est. saving | Risk |
 |---|---|---|---|---|---|---|
-| P1 | **Validate `contextNodeRef` in `parse_java_and_insert`** — if it does not resolve to a BaseLanguage `Classifier`, return the message the absent-parameter path already emits, naming the constraint; and state in `mps-aspect-behavior/SKILL.md` + `parse-java-tips.md` that a behavior method body must go through `featureKind:"STATEMENTS"` against a `Classifier` context or a JSON blueprint, never `METHOD` against `ConceptBehavior`. Consider accepting a `ConceptBehavior` by parsing against a synthetic classifier | **S** + **D** | §2.8 / D26 | reuse the existing check for the wrong-type case | ~16 calls and ~10 turns per greenfield run; removes the round's single largest cost | low; the good message already exists |
+| P1 | **Accept `ConceptBehavior` as `contextNodeRef` for METHOD/CLASS_CONTENT** — parse against a detached synthetic `ClassConcept`, convert `InstanceMethodDeclaration`/`StaticMethodDeclaration` into `ConceptMethodDeclaration` in the `method` role (owner `this` → `ThisNodeExpression`; nested-class `this` stays `ThisExpression`; `abstract` → `isAbstract`+`isVirtual` and no body; snapshot child moves). Remaining wrong contexts (FIELD/NESTED_CLASS or a constructor on a behavior; any non-Classifier/non-behavior context) return a structured `INVALID_REQUEST` naming the actual concept — never `INTERNAL_ERROR`. Advertise the working METHOD-on-behavior call in `@McpDescription`, `mps-aspect-behavior/SKILL.md`, `method-declarations.md`, and `parse-java-tips.md`; do **not** document around the crash. Second half of D26: the call log must report the returned envelope (`ok` end-to-end, plus `threw`/`errorCode`), so `{"ok":false}` is no longer logged as success | **S** + **D** | §2.8 / D26 | working METHOD-on-behavior path; structured errors elsewhere; call-log envelope visibility | ~16 calls and ~10 turns per greenfield run; removes the round's single largest cost | medium; conversion + `this` rewrite + call-log semantics |
 | P2 | **Name every wrong key, and the right ones, in rejections.** For `update_node`, `alter_nodes`, `get_concept_details`, `query_nodes`: validate the whole argument map and answer with the unknown keys received plus the expected keys for that operation. Add `conceptRef` to the spellings D27's message enumerates (or alias the near misses) | **S** | §2.9 / D27–D30 | error text only; no schema change | 17 rejected calls and ~6 turns in this round, and the family has produced new members in all four rounds | low |
 | P3 | **Move the jump tables out of the large references.** Each `mps-aspect-*/SKILL.md` should carry the section index of its own big reference (or the reference must be split), so an agent can pick a section without reading 48 KB. Round-3 M2 landed for `mps-model-manipulation` and that skill behaved well — do the same for `referent-constraints.md` (54 KB), `structure-operation-api.md` (26 KB), `property-constraints.md` (16 KB) | **D** → T | §2.10 / hotspot 3 | docs only | ~100 KB per greenfield run; the metric that is worst vs baseline | none |
 | P4 | **Rename or re-document `scope:"roots"`** as `scope:"withinRoots"` (or accept `scope:"roots"` with no `roots` as "all root nodes") | **S** or **D** | D30 | one enum value | 1 call per verification pass | low |
 | P5 | **`projectPath`, re-scoped after §2.12.** The doc half (round-3 M3(a)) **is done and measurable** — the first-call CWD probe eliminated that sub-family. What remains is the mid-run omission on the two `parameters`-string tools, which no wording has moved in three rounds. Options, cheapest first: (a) let `alter_structure` / `alter_nodes` also accept `projectPath` **inside** `parameters` (where the model already thinks it belongs); (b) auto-resolve the pre-dispatch rejection when exactly one project is open — the message already prints that project; (c) the upstream routing question in `projectpath-pre-dispatch-rejection-upstream.md`. Do **not** spend another round on wording | **S** (a/b) + **S (upstream)** (c) | D18/D4, §2.12 | (a) accept the key in either position; (b) single-open-project fallback | 2 calls + 1 turn per greenfield run, stable across rounds 2–4 | (a) low, additive; (b) changes routing semantics — must still reject when >1 project is open; (c) may not be locally actionable |
-| P6 | **Pin the worker's agent surface.** `run_worker.sh` should launch with `--agents` cleared (or assert that `~/.claude/agents` holds nothing MPS-related) and the preflight assertion must cover agents as well as skills; the analyser should warn when `server_calls` exceeds transcript MCP calls minus pre-dispatch rejections | study harness | D31 | harness only | removes an uncontrolled variable that silently hides work from the metrics | none |
-| P7 | **Chase the inline-blueprint truncation** (`EOFException` mid-string). It has appeared in the baseline and in round 4; if it is a transport limit, the 4 KB inline/file-path boundary should be stated in the rejection | **S** | H1 | error text or limit doc | 1 retry per greenfield run | low |
+| P6 | **Abort on MPS-related user agents and expose missing transcript calls.** Fail in `run_worker.sh` with exit 3 when `~/.claude/agents` contains a definition whose filename matches `*mps*` or whose body matches `mps_mcp`; sync both study-skill preflight assertions; make `analyze_runs.py` warn and emit a metrics column when `server_calls > mps_calls − pre-dispatch rejections`, and count parent `Agent` tool-use events | study harness | D31 | harness only; preserve developer agents; no `--agents '{}'` or “cleared” `--agents`; details below | measurement integrity, not worker turns; without this, S1 deltas remain a lower bound | low; intentionally aborts contaminated runs |
+| P7 | **Reuse the existing EOF hint on insert/update-root parse failures.** Route both through the shared parser helper with a `JsonElement` variant for top-level arrays; retain brace-imbalance wording and the temp-file hint, adding `received N chars (inline limit 4096)` on EOF/unterminated input | **S** | H1 | shared parse diagnostics plus insert/update-root regression coverage; never claim EOF proves a 4 KB transport cut | ~1 retry per greenfield run | low; preserve object/array handling |
+
+### P6 implementation contract — harness only (D31)
+
+`--agents <json>` defines custom agents; `--agent <name>` selects one. Neither clearing
+`--agents` nor passing `--agents '{}'` unloads `~/.claude/agents/*.md`. The directory still
+contains `mps-constraints-agent.md` (alongside `babysit-build.md`), so a preflight note alone
+does not pin the worker environment.
+
+1. Make the `run_worker.sh` check mandatory before launching the worker: reject an MPS-related
+   definition by filename (`*mps*`) or body (`mps_mcp`) with **exit 3**, the same hardness as a
+   failed skill install. Do not delete or move the developer's agents.
+2. Keep the manual preflight assertion and synchronize
+   `.claude/skills/skill-optimization-study/SKILL.md` (already covers agents, citing lesson 26)
+   and `.agents/skills/skill-optimization-study/SKILL.md` (currently only skills).
+3. `analyze_runs.py` already records `server_calls` and `mps_calls` but never compares them.
+   Emit a warning and a metrics column for a positive surplus over
+   `mps_calls − pre-dispatch rejections`; also count parent `Agent` tool-use events. Round 4's
+   S1 check must expose **100 − (102 − 9) = 7** missing calls. Delegation itself is visible in
+   the parent transcript; the child MCP calls are not.
+4. Built-in `Explore`/`Task` agents are outside this pin. Round 4 used `Explore` twice, but the
+   seven missing MCP calls were attributed to `mps-constraints-agent`. Do not disable built-in
+   subagents unless a later surplus remains after user agents are gone.
+
+`--setting-sources project` is a possible stronger pin that would drop the user source,
+including user agents and skills. It remains unproven against login, project skills, and SMOKE:
+do not add it to the worker until a SMOKE run verifies that the live catalog still loads.
+The benefit of P6 is measurement integrity, not an estimated reduction in worker turns.
+
+### P7 implementation contract — incomplete JSON diagnostics (S / H1)
+
+At `S1-sonnet-1:52`, Gson reports `EOFException … column 1246 path $.children[1]`, the same
+shape as baseline/round 2 (~column 1254): the model cut a nested child mid-string. This is not
+evidence of a 4 KB transport cut. Column 1246 is far below 4096; when the direct-input cap
+actually fires, `AbstractOps.kt` already returns `Direct JSON input is too large (N chars)…`
+and names the **4096-character** limit. The tool description and `mps-node-editing/SKILL.md`
+already document that limit.
+
+`AbstractOps.kt` already treats EOF / unterminated input as brace imbalance and appends a
+temp-file hint; `update_node` uses that helper. The insert/update-root paths in
+`JetBrainsMPSRootNodeMcpToolset.kt` instead call `JsonParser.parseString` and return bare
+`Failed to parse JSON: ${e.message}`, so this worker never saw the hint.
+
+Route `insert_root_node_from_json` and `update_root_node_from_json` parse failures through the
+same helper, adding a `JsonElement` variant because insert accepts a top-level array. On EOF /
+unterminated input, preserve the brace-imbalance wording and temp-file hint and add
+`received N chars (inline limit 4096)`. Do not say “you hit the 4 KB transport limit” on every
+EOF: writing a file does not finish an incomplete string. Add regression coverage beside
+`parseJsonOnTruncatedInputAppendsBraceImbalanceHint` that exercises the insert/update-root
+parse paths, rather than testing only the helper. No separate round to chase a transport limit
+is justified by this failure.
 
 Not proposed: anything aimed at hotspots 1, 2, 4, 5, 9, 10 — all fixed and holding. No P-on script
 is justified.

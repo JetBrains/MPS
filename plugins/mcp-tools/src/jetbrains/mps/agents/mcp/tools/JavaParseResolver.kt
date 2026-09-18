@@ -307,14 +307,26 @@ internal class JavaParseResolver {
     // the model unchanged in memory. The JDK dependency is finalized separately by the caller
     // (finalizeInsertedNodes), which stages the descriptor mutation onto the success path only;
     // ensureJDKDependency is side-effect-free, so it is intentionally not called here.
+    //
+    // parseResult.languages only reflects what JavaParser itself produced. Post-parse adapters
+    // (e.g. ConceptBehaviorJavaParseAdapter) can graft in nodes of languages the parser never
+    // touched, such as smodel's SPropertyAccess/SLinkAccess/SLinkListAccess. When doResolveRefs is
+    // true, updateModelDependencies already scans `inserted` for those inside the loop, but on the
+    // doResolveRefs=false early-return path nothing else scans the actual node tree - so this also
+    // runs a usedLanguages-only scan (no crossModelReferences; that stays loop-only, since it
+    // depends on resolution having run) to catch languages introduced after parsing.
     private fun finalizeResolutionDependencies(
         model: SModel,
         repo: SRepository,
+        inserted: List<SNode>,
         doImportLang: Boolean,
         parseResult: JavaParser.JavaParseResult
     ) {
         if (doImportLang) {
-            addMissingUsedLanguages(model, repo, ModelImports(model), parseResult.languages ?: emptyList())
+            val scanner = ModelDependencyScanner()
+            scanner.usedLanguages(true).walk(inserted)
+            val candidates = (parseResult.languages ?: emptySet()) + scanner.usedLanguages
+            addMissingUsedLanguages(model, repo, ModelImports(model), candidates)
         }
     }
 
@@ -396,7 +408,7 @@ internal class JavaParseResolver {
         // JDK and for non-JDK cross-model refs.
 
         if (!doResolveRefs) {
-            finalizeResolutionDependencies(model, repo, doImportLang, parseResult)
+            finalizeResolutionDependencies(model, repo, inserted, doImportLang, parseResult)
             return
         }
 
@@ -500,7 +512,7 @@ internal class JavaParseResolver {
             }
         }
 
-        finalizeResolutionDependencies(model, repo, doImportLang, parseResult)
+        finalizeResolutionDependencies(model, repo, inserted, doImportLang, parseResult)
     }
 
 }

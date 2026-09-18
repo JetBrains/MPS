@@ -11,7 +11,9 @@
 - Reference `concept` → `AbstractConceptDeclaration` (cardinality 1)
 - Child roles: `constructor` (`ConceptConstructorDeclaration`, cardinality 1 — always present, body may be empty), `method` (`ConceptMethodDeclaration`, 0..n)
 
-## Minimal blueprint (constructor is mandatory; empty body is fine)
+## Minimal blueprint (constructor is mandatory, and so is its `body`)
+
+`ConceptConstructorDeclaration.body` is **obligatory** (`ConceptFunction.body`, cardinality 1). "Empty body is fine" means a `StatementList` with no statements — *not* a missing `body` child. Omit the `StatementList` and the root checker reports `No child in the obligatory role 'body'`, which is easy to mistake for a problem with the concept rather than with the blueprint. The same applies to `ConceptMethodDeclaration.body` (inherited from `BaseMethodDeclaration`), abstract methods included.
 
 ```json
 {
@@ -21,7 +23,13 @@
   ],
   "children": [
     { "role": "constructor", "nodes": [
-      { "concept": "jetbrains.mps.lang.behavior.structure.ConceptConstructorDeclaration" }
+      { "concept": "jetbrains.mps.lang.behavior.structure.ConceptConstructorDeclaration",
+        "children": [
+          { "role": "body", "nodes": [
+            { "concept": "jetbrains.mps.baseLanguage.structure.StatementList" }
+          ]}
+        ]
+      }
     ]}
   ]
 }
@@ -53,4 +61,4 @@
 
 `returnType` (cardinality 1) and `body` (cardinality 1) are mandatory; the body's `StatementList` may be empty. Use `jetbrains.mps.baseLanguage.structure.ProtectedVisibility` / `jetbrains.mps.baseLanguage.structure.PrivateVisibility` in place of `jetbrains.mps.baseLanguage.structure.PublicVisibility` for the other visibilities, or omit the `visibility` child entirely for the language default.
 
-For `static` / `final` / `abstract` methods, set the corresponding boolean modifier property (`{ "name": "isStatic", "value": "true" }`, etc.). `isVirtual` is already `true` by default; explicitly set it to `false` if you want a non-virtual non-static method. Static methods are called as `Concept.method(...)`, instance methods as `node.method(...)`.
+For `static` / `final` / `abstract` methods, set the corresponding boolean modifier property (`{ "name": "isStatic", "value": "true" }`, etc.). **All modifier properties, including `isVirtual`, default to `false`** (confirmed in the generated `StructureAspectDescriptor.createDescriptorForConceptMethodDeclaration`) — a blueprint that sets none of them yields a plain non-virtual instance method; set `isVirtual: "true"` explicitly for a virtual method. `abstract` implies virtual: set **both** `isAbstract` and `isVirtual` to `true` (mirrors what `mps_mcp_parse_java_and_insert` does when it converts a parsed Java `abstract` method). Static methods are called as `Concept.method(...)`, instance methods as `node.method(...)`.

@@ -17,7 +17,12 @@ The tool takes a single JSON-encoded `parameters` argument. Shape:
   "recovery": boolean,                       // optional, default true
   "contextNodeRef": string,                  // optional SNodeReference (r:...) used as parser
                                              //   context. REQUIRED for FIELD, METHOD,
-                                             //   NESTED_CLASS, CLASS_CONTENT.
+                                             //   NESTED_CLASS, CLASS_CONTENT. Must resolve to a
+                                             //   Classifier (class/interface), or — for METHOD /
+                                             //   CLASS_CONTENT only — a ConceptBehavior; in that
+                                             //   case parsed methods convert to
+                                             //   ConceptMethodDeclaration in the behavior's
+                                             //   `method` role (see the mps-aspect-behavior skill).
   "insert": {                                // required
     "mode": "root" | "child" | "replace" | "console",
                                              // required. "console" replaces the current MPS

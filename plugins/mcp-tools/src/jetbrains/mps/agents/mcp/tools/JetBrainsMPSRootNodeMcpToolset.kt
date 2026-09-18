@@ -67,19 +67,21 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
         currentCoroutineContext().reportToolActivity(activity)
         val project = currentCoroutineContext().project
 
-        return try {
-            when (normalizedSource) {
-                "editor" -> currentFileEditorRootNode(project)
-                "console" -> currentConsoleCommandNode(project)
-                "inspector" -> currentInspectorNode(project)
-                else -> errJson(
-                    "Invalid source '$source'. Allowed values: 'editor' (default), 'console', 'inspector'.",
-                    McpErrorCode.INVALID_REQUEST
-                )
+        return McpCallOutcomes.record(
+            try {
+                when (normalizedSource) {
+                    "editor" -> currentFileEditorRootNode(project)
+                    "console" -> currentConsoleCommandNode(project)
+                    "inspector" -> currentInspectorNode(project)
+                    else -> errJson(
+                        "Invalid source '$source'. Allowed values: 'editor' (default), 'console', 'inspector'.",
+                        McpErrorCode.INVALID_REQUEST
+                    )
+                }
+            } catch (e: Exception) {
+                toolFailure(activity, e)
             }
-        } catch (e: Exception) {
-            toolFailure(activity, e)
-        }
+        )
     }
 
     /**

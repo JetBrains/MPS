@@ -2,6 +2,8 @@ package jetbrains.mps.agents.mcp.tools
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.IAttributeDescriptor
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
 import jetbrains.mps.smodel.SModelInternal
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
@@ -392,6 +394,10 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "error should mention the missing contextNodeRef requirement: ${obj.get("error").asString}",
             obj.get("error").asString.contains("contextNodeRef")
         )
+        assertTrue(
+            "the updated wording must mention ConceptBehavior as an admissible context: ${obj.get("error").asString}",
+            obj.get("error").asString.contains("ConceptBehavior")
+        )
 
         readOnRepo {
             assertEquals("schema-level rejection must not touch the model", emptyList<SNode>(), javaModel.rootNodes.toList())
@@ -767,6 +773,558 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue(
             "a clean insert must not leave any error-severity problems: $problems",
             problems.none { it.asJsonObject.get("severity").asString == "error" },
+        )
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior inserts a ConceptMethodDeclaration in the method role`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "void greet() { }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertEquals(
+            "a trivial method must insert with no problems: $response",
+            0,
+            data.getAsJsonArray("problems").size()
+        )
+
+        val inserted = data.getAsJsonArray("inserted")
+        assertEquals("expected one inserted method: $response", 1, inserted.size())
+        assertEquals("greet", inserted.first().asJsonObject.get("name").asString)
+        assertEquals("ConceptMethodDeclaration", inserted.first().asJsonObject.get("concept").asString)
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val methods = behavior.children.filter { it.containmentLink?.name == "method" }
+            assertEquals(1, methods.size)
+            assertEquals("greet", methods.single().name)
+        }
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior rewrites an unqualified this to ThisNodeExpression`() {
+        // `name` is inherited via INamedConcept, not declared on the seeded concept directly, so
+        // this also exercises the "inherited property" case: SConcept.properties includes it.
+        val behaviorRef = createConceptBehaviorRoot(implements = "jetbrains.mps.lang.core.structure.INamedConcept")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "String n() { return this.name; }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertEquals(
+            "this.name must resolve to a real property access with no leftover problems: $response",
+            0,
+            data.getAsJsonArray("problems").size()
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            val descendantConceptNames = SNodeOperations.getNodeDescendants(method, null, true, emptyArray())
+                .map { it.concept.name }
+            assertTrue(
+                "expected a ThisNodeExpression in the converted body: $descendantConceptNames",
+                descendantConceptNames.contains("ThisNodeExpression")
+            )
+            assertFalse(
+                "no BaseLanguage ThisExpression should remain: $descendantConceptNames",
+                descendantConceptNames.contains("ThisExpression")
+            )
+            assertTrue(
+                "this.name must be rewritten to an SPropertyAccess: $descendantConceptNames",
+                descendantConceptNames.contains("SPropertyAccess")
+            )
+            assertFalse(
+                "no unresolved FieldReferenceOperation should remain: $descendantConceptNames",
+                descendantConceptNames.contains("FieldReferenceOperation")
+            )
+        }
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior rewrites this on a single child link to SLinkAccess and a multiple child link to SLinkListAccess`() {
+        val behaviorRef = createConceptBehaviorRoot(
+            childrenJson = """
+                [
+                  { "role": "single", "target": "jetbrains.mps.lang.core.structure.BaseConcept", "multiple": false, "optional": true },
+                  { "role": "many", "target": "jetbrains.mps.lang.core.structure.BaseConcept", "multiple": true, "optional": true }
+                ]
+            """.trimIndent()
+        )
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "void m() { this.single.hashCode(); this.many.hashCode(); }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        assertOkData(response)
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            val descendantConceptNames = SNodeOperations.getNodeDescendants(method, null, true, emptyArray())
+                .map { it.concept.name }
+            assertTrue(
+                "this.single must be rewritten to an SLinkAccess: $descendantConceptNames",
+                descendantConceptNames.contains("SLinkAccess")
+            )
+            assertTrue(
+                "this.many must be rewritten to an SLinkListAccess: $descendantConceptNames",
+                descendantConceptNames.contains("SLinkListAccess")
+            )
+            assertFalse(
+                "no unresolved FieldReferenceOperation should remain: $descendantConceptNames",
+                descendantConceptNames.contains("FieldReferenceOperation")
+            )
+        }
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior leaves this access to an unmatched name untouched`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "Object m() { return this.doesNotExist; }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        assertOkData(response)
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            val descendantConceptNames = SNodeOperations.getNodeDescendants(method, null, true, emptyArray())
+                .map { it.concept.name }
+            assertTrue(
+                "an unmatched name must be left as a FieldReferenceOperation, not guessed: $descendantConceptNames",
+                descendantConceptNames.contains("FieldReferenceOperation")
+            )
+            assertTrue(
+                "the ThisNodeExpression rewrite still applies even when the field access is left alone: $descendantConceptNames",
+                descendantConceptNames.contains("ThisNodeExpression")
+            )
+        }
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior rewriting this to SPropertyAccess imports jetbrains-mps-lang-smodel`() {
+        // The grafted SPropertyAccess is never reported in parseResult.languages (JavaParser never
+        // produced it), so this pins the post-hoc scan of the *inserted* subtree in
+        // finalizeResolutionDependencies/updateModelDependencies as what pulls
+        // jetbrains.mps.lang.smodel in.
+        //
+        // Getting the assertion to mean anything takes two removals. A behavior aspect model is
+        // created with smodel among its explicitly used languages AND with the
+        // jetbrains.mps.devkit.general-purpose devkit, which exports smodel too; while either is in
+        // place addMissingUsedLanguages correctly declines to add an import for a language already
+        // in scope. Nothing the fixture's ConceptBehavior root contains needs either one, and the
+        // fixture adds baseLanguage explicitly, so dropping the devkit does not take that away.
+        val behaviorRef = createConceptBehaviorRoot(implements = "jetbrains.mps.lang.core.structure.INamedConcept")
+
+        val behaviorModel = readOnRepo { resolveNodeRef(behaviorRef).model!! }
+        val modelToolset = JetBrainsMPSModelMcpToolset()
+        for ((name, kind) in listOf(
+            "jetbrains.mps.lang.smodel" to "language",
+            "jetbrains.mps.devkit.general-purpose" to "devkit"
+        )) {
+            expectOk(runTool(modelToolset) {
+                it.mps_mcp_model_used_language(modelRefOf(behaviorModel), name, kind, DependencyOperation.DELETE)
+            })
+        }
+        // usedLanguageNames reads the explicitly used languages only, which is the same set the
+        // post-parse assertion below watches; the devkit removal above is what makes an import
+        // there necessary rather than redundant.
+        readOnRepo {
+            assertFalse(
+                "smodel must not be an explicitly used language before the parse: " +
+                    "${usedLanguageNames(behaviorModel)}",
+                usedLanguageNames(behaviorModel).contains("jetbrains.mps.lang.smodel")
+            )
+        }
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "String n() { return this.name; }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertEquals(
+            "this.name must resolve with no leftover problems: $response",
+            0,
+            data.getAsJsonArray("problems").size()
+        )
+
+        readOnRepo {
+            assertTrue(
+                "jetbrains.mps.lang.smodel must be imported after grafting an SPropertyAccess the parser never produced: " +
+                    "${usedLanguageNames(behaviorModel)}",
+                usedLanguageNames(behaviorModel).contains("jetbrains.mps.lang.smodel")
+            )
+        }
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior leaves this inside a nested anonymous class untouched`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "void report() { Runnable r = new Runnable() { public void run() { System.out.println(this); } }; System.out.println(this); }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        // Errors only: the unused `r` local this snippet needs in order to hold an anonymous class
+        // draws two baseLanguage warnings ("Unused variable", "initializer is redundant") that say
+        // nothing about the `this` rewrite under test.
+        val nestedThisProblems = assertOkData(response).getAsJsonArray("problems")
+        assertTrue(
+            "nested this handling must leave no error-severity problems: $nestedThisProblems",
+            nestedThisProblems.none { it.asJsonObject.get("severity").asString == "error" }
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            val descendants = SNodeOperations.getNodeDescendants(method, null, true, emptyArray())
+            val anonymousClass = descendants.single { it.concept.name == "AnonymousClass" }
+
+            // The `this` nested inside the anonymous class's own method still refers to that
+            // anonymous Classifier, so it must stay a BaseLanguage ThisExpression.
+            val nestedThis = SNodeOperations.getNodeDescendants(anonymousClass, null, true, emptyArray())
+                .filter { it.concept.name == "ThisExpression" || it.concept.name == "ThisNodeExpression" }
+            assertEquals("expected exactly one this inside the anonymous class: $nestedThis", 1, nestedThis.size)
+            assertEquals("ThisExpression", nestedThis.single().concept.name)
+
+            // The outer-level `this` (same method, outside the anonymous class) has no enclosing
+            // Classifier within the converted subtree, so it must be rewritten.
+            val nestedThisSet = nestedThis.toSet()
+            val outerThis = descendants
+                .filter { it.concept.name == "ThisExpression" || it.concept.name == "ThisNodeExpression" }
+                .filterNot { it in nestedThisSet }
+            assertEquals("expected exactly one outer this: $outerThis", 1, outerThis.size)
+            assertEquals("ThisNodeExpression", outerThis.single().concept.name)
+        }
+    }
+
+    @Test
+    fun `static METHOD on a ConceptBehavior sets isStatic and leaves isVirtual unset`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "static int count() { return 0; }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        val staticData = assertOkData(response)
+        assertEquals(
+            "a trivial static method must insert with no problems: $response",
+            0,
+            staticData.getAsJsonArray("problems").size()
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            assertEquals("true", method.getPropertyByName("isStatic"))
+            assertNotEquals("true", method.getPropertyByName("isVirtual"))
+        }
+    }
+
+    @Test
+    fun `abstract METHOD on a ConceptBehavior sets isAbstract and isVirtual and keeps an empty body`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "abstract void hook();",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        // check_ConceptBehaviorForNotImplementedMethods and check_AbstractMethodIsVirtual fire on
+        // the seeded concept during the post-insert problems collection, so `problems` cannot be
+        // asserted empty. The obligatory-role guard below is narrow enough to survive them - and it
+        // is the one that matters: dropping the parser's empty body used to leave every abstract
+        // method structurally invalid with "No child in the obligatory role 'body'".
+        val problems = assertOkData(response).getAsJsonArray("problems")
+        assertTrue(
+            "the obligatory 'body' role must be filled: $problems",
+            problems.none { it.asJsonObject.get("message").asString.contains("obligatory role 'body'") }
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            assertEquals("true", method.getPropertyByName("isAbstract"))
+            assertEquals("true", method.getPropertyByName("isVirtual"))
+            // `body` has cardinality 1 on BaseMethodDeclaration, so an abstract method keeps the
+            // empty StatementList rather than having no body at all - same shape MPS gives an
+            // abstract baseLanguage method.
+            val body = method.children.single { it.containmentLink?.name == "body" }
+            assertEquals("StatementList", body.concept.name)
+            assertTrue("an abstract method's body must be empty: ${body.children.toList()}", body.children.none())
+        }
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior with two parameters inserts both without error`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "void m(int a, String b) {}",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        val twoParamData = assertOkData(response)
+        assertEquals(
+            "a two-parameter method must insert with no problems: $response",
+            0,
+            twoParamData.getAsJsonArray("problems").size()
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            val paramNames = method.children.filter { it.containmentLink?.name == "parameter" }.mapNotNull { it.name }
+            assertEquals(listOf("a", "b"), paramNames)
+        }
+    }
+
+    @Test
+    fun `final synchronized METHOD on a ConceptBehavior keeps isSynchronized but drops isFinal since the method is non-virtual`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "public final synchronized void m() {}",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertEquals(
+            "a non-virtual method must insert with no problems: $response",
+            0,
+            data.getAsJsonArray("problems").size()
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            // `final` only makes sense on a virtual ConceptMethodDeclaration; this method is
+            // non-abstract/non-virtual, so isFinal must not be copied even though the Java source
+            // had `final` - copying it unconditionally used to trip "isFinal does not make sense
+            // on the non-virtual method".
+            assertNotEquals("true", method.getPropertyByName("isFinal"))
+            assertEquals("true", method.getPropertyByName("isSynchronized"))
+        }
+    }
+
+    @Test
+    fun `METHOD on a ConceptBehavior keeps a javadoc MethodDocComment attribute`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "/** Doc. */ void m() {}",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+        val javadocData = assertOkData(response)
+        assertEquals(
+            "a documented method must insert with no problems: $response",
+            0,
+            javadocData.getAsJsonArray("problems").size()
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            val method = behavior.children.single { it.containmentLink?.name == "method" }
+            assertNotNull(
+                "converted method should keep its MethodDocComment attribute",
+                IAttributeDescriptor.NodeAttribute(JavadocLanguageMeta.methodDocCommentConcept).get(method)
+            )
+        }
+    }
+
+    @Test
+    fun `FIELD on a ConceptBehavior is rejected as a structured error, not INTERNAL_ERROR`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "int x;",
+                  "featureKind": "FIELD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+    }
+
+    @Test
+    fun `METHOD parsing a field declaration on a ConceptBehavior is rejected as a structured error`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "int x;",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+    }
+
+    @Test
+    fun `a constructor snippet against a ConceptBehavior is rejected by name, not silently converted`() {
+        val behaviorRef = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "Foo() {}",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$behaviorRef",
+                  "insert": { "mode": "child", "parentRef": "$behaviorRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertTrue(
+            "error should reject the constructor by name: ${obj.get("error").asString}",
+            obj.get("error").asString.contains("constructor")
+        )
+
+        readOnRepo {
+            val behavior = resolveNodeRef(behaviorRef)
+            assertTrue(
+                "the rejected constructor must not have been inserted into the method role",
+                behavior.children.none { it.containmentLink?.name == "method" }
+            )
+        }
+    }
+
+    @Test
+    fun `METHOD against a plain ConceptDeclaration context names the concept in the error`() {
+        val conceptRef = createConceptRoot("PlainConcept${System.nanoTime()}")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "void greet() { }",
+                  "featureKind": "METHOD",
+                  "contextNodeRef": "$conceptRef",
+                  "insert": { "mode": "child", "parentRef": "$conceptRef", "role": "method" }
+                }
+                """.trimIndent()
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertTrue(
+            "error should name the offending context concept: ${obj.get("error").asString}",
+            obj.get("error").asString.contains("ConceptDeclaration")
         )
     }
 

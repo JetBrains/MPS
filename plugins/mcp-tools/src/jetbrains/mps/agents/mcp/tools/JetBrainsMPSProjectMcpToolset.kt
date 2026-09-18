@@ -45,25 +45,27 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
     )
     suspend fun mps_mcp_list_open_projects(): String {
         val currentIdeaProject = currentIdeaProjectOrNull()
-        return try {
-            val projects = ProjectManager.getInstance().openProjects
-                .sortedWith(compareBy({ it.basePath ?: "" }, { it.name }))
-            val array = JsonArray()
-            var mpsProjectCount = 0
-            for (ideaProject in projects) {
-                val projectJson = describeOpenProjectSafely(ideaProject, currentIdeaProject)
-                if (projectJson.get("hasMpsProject")?.asBoolean == true) mpsProjectCount++
-                array.add(projectJson)
+        return McpCallOutcomes.record(
+            try {
+                val projects = ProjectManager.getInstance().openProjects
+                    .sortedWith(compareBy({ it.basePath ?: "" }, { it.name }))
+                val array = JsonArray()
+                var mpsProjectCount = 0
+                for (ideaProject in projects) {
+                    val projectJson = describeOpenProjectSafely(ideaProject, currentIdeaProject)
+                    if (projectJson.get("hasMpsProject")?.asBoolean == true) mpsProjectCount++
+                    array.add(projectJson)
+                }
+                okJson(jsonObject {
+                    addProperty("projectCount", projects.size)
+                    addProperty("mpsProjectCount", mpsProjectCount)
+                    add("projects", array)
+                })
+            } catch (e: Throwable) {
+                rethrowIfCancellation(e)
+                toolFailure("listing open MPS projects", e)
             }
-            okJson(jsonObject {
-                addProperty("projectCount", projects.size)
-                addProperty("mpsProjectCount", mpsProjectCount)
-                add("projects", array)
-            })
-        } catch (e: Throwable) {
-            rethrowIfCancellation(e)
-            toolFailure("listing open MPS projects", e)
-        }
+        )
     }
 
     @McpTool

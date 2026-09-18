@@ -293,13 +293,19 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
 
     /**
      * Creates a `ConceptDeclaration` root named [name] in the test's structure model via the
-     * structure-operation toolset, and returns its persistent SNodeReference.
+     * structure-operation toolset, and returns its persistent SNodeReference. [implements] and
+     * [childrenJson] are spliced into the concept spec verbatim when provided, so a caller can
+     * seed an inherited property (e.g. `INamedConcept`) or child-link roles for a fixture.
      */
-    protected fun createConceptRoot(name: String): String {
+    protected fun createConceptRoot(name: String, implements: String? = null, childrenJson: String? = null): String {
+        val extraFields = buildString {
+            if (implements != null) append(""", "implements": "$implements"""")
+            if (childrenJson != null) append(""", "children": $childrenJson""")
+        }
         val params = """
             {
               "structureModelRef": "$structureModelRef",
-              "conceptsJson": [ { "name": "$name" } ]
+              "conceptsJson": [ { "name": "$name"$extraFields } ]
             }
         """.trimIndent()
         val resp = runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params) }
@@ -309,6 +315,65 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
             val root = structureModel.rootNodes.single { it.name == name }
             PersistenceFacade.getInstance().asString(root.reference)
         }
+    }
+
+    /** Resolves a persistent node reference string to its [SNode], inside a read action. */
+    protected fun resolveNodeRef(ref: String): SNode = readOnRepo {
+        PersistenceFacade.getInstance().createNodeReference(ref).resolve(myProject.repository)
+            ?: error("node '$ref' did not resolve")
+    }
+
+    /**
+     * Seeds a `ConceptDeclaration` named [conceptName], creates a fresh `<lang>.behavior` model
+     * importing `jetbrains.mps.lang.behavior` and `jetbrains.mps.baseLanguage`, and inserts a
+     * `ConceptBehavior` root wired to that concept with its one mandatory `constructor` child (a
+     * `ConceptConstructorDeclaration` with an empty `body`). Returns the behavior root's
+     * persistent SNodeReference — a valid `contextNodeRef`/`parentRef` for a METHOD parse
+     * targeting the `method` role. [implements]/[childrenJson] are forwarded to [createConceptRoot]
+     * to seed an inherited property or child-link roles on the underlying concept.
+     */
+    protected fun createConceptBehaviorRoot(
+        conceptName: String = "TestConcept${System.nanoTime()}",
+        implements: String? = null,
+        childrenJson: String? = null
+    ): String {
+        val conceptRef = createConceptRoot(conceptName, implements, childrenJson)
+
+        val behaviorModel = readOnRepo { language.models.single { it.name.longName.endsWith(".behavior") } }
+        val behaviorModelRef = modelRefOf(behaviorModel)
+
+        val modelToolset = JetBrainsMPSModelMcpToolset()
+        for (usedLanguage in listOf("jetbrains.mps.lang.behavior", "jetbrains.mps.baseLanguage")) {
+            expectOk(runTool(modelToolset) {
+                it.mps_mcp_model_used_language(behaviorModelRef, usedLanguage, "language", DependencyOperation.ADD)
+            })
+        }
+
+        val json = """
+            {
+              "concept": "jetbrains.mps.lang.behavior.structure.ConceptBehavior",
+              "references": [ { "role": "concept", "target": "$conceptRef" } ],
+              "children": [
+                {
+                  "role": "constructor",
+                  "nodes": [
+                    {
+                      "concept": "jetbrains.mps.lang.behavior.structure.ConceptConstructorDeclaration",
+                      "children": [
+                        { "role": "body", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.StatementList" } ] }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val resp = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(behaviorModelRef, JsonOrText(json), dryRun = false, responseDetail = "summary")
+        }
+        val payload = expectOk(resp)
+        return payload.get("roots").asJsonArray.single().asJsonObject.get("reference").asString
     }
 
     /**
