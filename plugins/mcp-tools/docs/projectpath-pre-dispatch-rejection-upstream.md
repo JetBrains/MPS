@@ -250,12 +250,19 @@ call, carrying the recovery. It landed in Phase 1 of the round-3 remedies
 > `mpsProjectBaseDirectory` when it can run. Reuse that one path for every later call in the
 > session.
 
-That is the best a *documentation* fix can do, and it is explicitly a mitigation: it makes the
-rejection recoverable in one turn instead of two-plus and stops the agent hunting for the path, but
-the rejection itself still happens, and still costs the turn. Note the hedge "when it can run" in
-the last sentence — it is there precisely because the discovery tool is behind the same selector.
-Removing the cost needs either a client-configuration answer to question 0 or an upstream change;
-either one would also let that hedge be deleted.
+**2026-09-18 follow-up.** The empty first call above was later replaced by a cheaper probe: if the
+agent is not yet aware of `projectPath`, pass the session CWD on the first call and scrape the
+rejection list only if that is unmatched. That removes the measured omitted-`projectPath` cost when
+CWD is at or inside the open project. It does not remove the ancestor/subdirectory case this
+document is about, nor the gated discovery tool.
+
+That is still the best a *documentation* fix can do, and it is explicitly a mitigation: the CWD
+probe avoids the rejection in the common in-project layout, and otherwise makes it recoverable in
+one turn instead of two-plus. The rejection itself still happens when CWD is an ancestor, and still
+costs the turn. Note the hedge "when it can run" in the last sentence — it is there precisely
+because the discovery tool is behind the same selector. Removing that remaining cost needs either a
+client-configuration answer to question 0 or an upstream change; either one would also let that
+hedge be deleted.
 
 ## Bookkeeping
 
