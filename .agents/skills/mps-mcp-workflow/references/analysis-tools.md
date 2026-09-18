@@ -25,7 +25,7 @@ Returns all nodes that are instances of the specified concepts (or one random sa
 
 **One call per concept is never necessary.** `conceptRefs` takes several concepts and scans once; `detail: "count"` answers with counts instead of node records. The two chains this replaces are the expensive ones: a call per concept, each serialising every node it found only for the nodes to be reduced to an integer afterwards.
 
-**Counting roots does not even need a call.** If you already hold a `mps_mcp_get_project_structure(startingPoint=<model>, includeRootNodes=true)` dump, `python3 scripts/mps_dump.py count <dumpFile>` gives roots per concept locally, with no further server round trip. That route is **roots only** and knows nothing about `propertyFilter`, `exact` or scopes. Use `detail: "count"` when you need instances at any depth, a `propertyFilter`/`exact` subset, a scope other than one model, or when you do not already have the dump; use the node form when you want the nodes themselves.
+**Counting roots does not even need a call.** If you already hold a `mps_mcp_get_project_structure(startingPoint=<model>, includeRootNodes=true)` dump, `python3 scripts/mps_dump.py count <dumpFile>` gives roots per concept locally, with no further server round trip. That route is **roots only** and knows nothing about `propertyFilter`, `exact` or scopes. When querying through `FIND_INSTANCES`, pass `rootsOnly: true` (with optional `detail: "count"`) to match only root nodes (`node.parent == null`); `scope: "roots"` searches *within the subtrees* of specified roots and requires companion `roots: [...]`. Use `detail: "count"` when you need instances at any depth (or with `rootsOnly: true` for roots only), a `propertyFilter`/`exact` subset, a scope other than one model, or when you do not already have the dump; use the node form when you want the nodes themselves.
 
 Parameters:
 ```
@@ -37,6 +37,7 @@ Parameters:
   "models": "Optional: list of persistent model references (required if scope is 'models')",
   "modules": "Optional: list of persistent module references (required if scope is 'modules')",
   "roots": "Optional: list of root node references (required if scope is 'roots'). Restricts the search to nodes within the specified roots.",
+  "rootsOnly": "Boolean (optional, default: false). If true, matches only root nodes (parent == null). Can be combined with any scope or detail.",
   "propertyFilter": "Optional: {\"name\": \"<propertyName>\", \"value\": \"<expectedValue>\"} — only nodes whose property equals the value (e.g. find a literal by its value).",
   "exact": "Boolean (optional, default: false). Whether to exclude instances of subconcepts.",
   "sampleOnly": "Boolean (optional, default: false). If true, returns a single random sample instance to illustrate usage and JSON structure."

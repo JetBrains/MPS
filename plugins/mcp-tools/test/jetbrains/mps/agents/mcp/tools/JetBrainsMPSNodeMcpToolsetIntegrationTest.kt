@@ -563,6 +563,405 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue(envelope.get("error").asString.contains("definitely.missing.structure.Nope"))
     }
 
+    @Test
+    fun `find-instances with rootsOnly true returns only root nodes and excludes child nodes on mixed-depth concept`() {
+        createColorEnum()
+
+        val withoutRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$INAMED_CONCEPT""""),
+            )
+        }
+        val withRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$INAMED_CONCEPT"""", extra = ""","rootsOnly": true"""),
+            )
+        }
+
+        val allNames = parseResultNames(withoutRootsOnly)
+        assertTrue("without rootsOnly must include root enum 'Color': $allNames", allNames.contains("Color"))
+        assertTrue("without rootsOnly must include child members: $allNames", allNames.containsAll(setOf("RED", "GREEN", "BLUE")))
+
+        val rootNames = parseResultNames(withRootsOnly)
+        assertTrue("with rootsOnly must include root enum 'Color': $rootNames", rootNames.contains("Color"))
+        assertFalse("with rootsOnly must exclude child member RED: $rootNames", rootNames.contains("RED"))
+        assertFalse("with rootsOnly must exclude child member GREEN: $rootNames", rootNames.contains("GREEN"))
+        assertFalse("with rootsOnly must exclude child member BLUE: $rootNames", rootNames.contains("BLUE"))
+
+        readOnRepo {
+            val rootRefs = parseResultReferences(withRootsOnly)
+            for (refStr in rootRefs) {
+                val node = PersistenceFacade.getInstance().createNodeReference(refStr).resolve(structureModel.repository)
+                assertNotNull("root node should resolve", node)
+                assertNull("node '${node?.name}' must be a root node (parent == null)", node?.parent)
+            }
+        }
+    }
+
+    @Test
+    fun `find-instances with rootsOnly true filters out child nodes for child concepts`() {
+        createColorEnum()
+        val memberConcept = ENUMERATION_MEMBER_DECL
+
+        val withoutRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$memberConcept""""),
+            )
+        }
+        val explicitFalse = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$memberConcept"""", extra = ""","rootsOnly": false"""),
+            )
+        }
+        val explicitNull = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$memberConcept"""", extra = ""","rootsOnly": null"""),
+            )
+        }
+        val withRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$memberConcept"""", extra = ""","rootsOnly": true"""),
+            )
+        }
+
+        assertEquals(setOf("RED", "GREEN", "BLUE"), parseResultNames(withoutRootsOnly))
+        assertEquals(setOf("RED", "GREEN", "BLUE"), parseResultNames(explicitFalse))
+        assertEquals(setOf("RED", "GREEN", "BLUE"), parseResultNames(explicitNull))
+        assertEquals(emptySet<String>(), parseResultNames(withRootsOnly))
+    }
+
+    @Test
+    fun `find-instances count with rootsOnly true counts only root nodes`() {
+        createColorEnum()
+        val memberConcept = ENUMERATION_MEMBER_DECL
+
+        val rowsWithoutRootsOnly = countRows(countResponse("""[ "$ENUMERATION_DECL", "$memberConcept" ]"""))
+        assertEquals(listOf(ENUMERATION_DECL to 1, memberConcept to 3), rowsWithoutRootsOnly)
+
+        val rowsWithRootsOnly = countRows(countResponse("""[ "$ENUMERATION_DECL", "$memberConcept" ]""", extra = ""","rootsOnly": true"""))
+        assertEquals(listOf(ENUMERATION_DECL to 1, memberConcept to 0), rowsWithRootsOnly)
+    }
+
+    @Test
+    fun `find-instances with rootsOnly true composes with all valid scopes`() {
+        val uniqueName = "RootsOnlyScope_${System.nanoTime()}"
+        val createParams = """
+            {
+              "structureModelRef": "$structureModelRef",
+              "conceptsJson": [ { "name": "$uniqueName" } ]
+            }
+        """.trimIndent()
+        assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        val moduleRef = readOnRepo { PersistenceFacade.getInstance().asString(language.moduleReference) }
+
+        val modelsScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$CONCEPT_DECL",
+                  "scope": "models",
+                  "models": [ "$structureModelRef" ],
+                  "rootsOnly": true,
+                  "propertyFilter": { "name": "name", "value": "$uniqueName" }
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(setOf(uniqueName), parseResultNames(modelsScoped))
+
+        val modulesScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$CONCEPT_DECL",
+                  "scope": "modules",
+                  "modules": [ "$moduleRef" ],
+                  "rootsOnly": true,
+                  "propertyFilter": { "name": "name", "value": "$uniqueName" }
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(setOf(uniqueName), parseResultNames(modulesScoped))
+
+        val editableScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$CONCEPT_DECL",
+                  "scope": "editable",
+                  "rootsOnly": true,
+                  "propertyFilter": { "name": "name", "value": "$uniqueName" }
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(setOf(uniqueName), parseResultNames(editableScoped))
+
+        val allScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$CONCEPT_DECL",
+                  "scope": "all",
+                  "rootsOnly": true,
+                  "propertyFilter": { "name": "name", "value": "$uniqueName" }
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(setOf(uniqueName), parseResultNames(allScoped))
+
+        // Also verify that child concepts with rootsOnly: true return empty across modules and all scopes
+        val modulesChildScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$ENUMERATION_MEMBER_DECL",
+                  "scope": "modules",
+                  "modules": [ "$moduleRef" ],
+                  "rootsOnly": true
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(emptySet<String>(), parseResultNames(modulesChildScoped))
+
+        val allChildScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$ENUMERATION_MEMBER_DECL",
+                  "scope": "all",
+                  "rootsOnly": true
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(emptySet<String>(), parseResultNames(allChildScoped))
+    }
+
+    @Test
+    fun `find-instances with scope roots and rootsOnly true returns only the specified roots and excludes descendant instances`() {
+        val enumRef = createColorEnum()
+
+        // 1. Mixed-depth concept (INamedConcept):
+        // Without rootsOnly: returns the root enum ("Color") AND its 3 member children ("RED", "GREEN", "BLUE")
+        val withoutRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$INAMED_CONCEPT",
+                  "scope": "roots",
+                  "roots": [ "$enumRef" ]
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(setOf("Color", "RED", "GREEN", "BLUE"), parseResultNames(withoutRootsOnly))
+
+        // With rootsOnly: true: returns ONLY the root enum ("Color"), excluding all child descendants!
+        val withRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$INAMED_CONCEPT",
+                  "scope": "roots",
+                  "roots": [ "$enumRef" ],
+                  "rootsOnly": true
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(setOf("Color"), parseResultNames(withRootsOnly))
+
+        // 2. Child-only concept (EnumerationMemberDeclaration):
+        // Without rootsOnly: returns the 3 member children ("RED", "GREEN", "BLUE")
+        val childWithoutRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$ENUMERATION_MEMBER_DECL",
+                  "scope": "roots",
+                  "roots": [ "$enumRef" ]
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(setOf("RED", "GREEN", "BLUE"), parseResultNames(childWithoutRootsOnly))
+
+        // With rootsOnly: true: returns empty because the children are descendants, not roots!
+        val childWithRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """
+                {
+                  "conceptRef": "$ENUMERATION_MEMBER_DECL",
+                  "scope": "roots",
+                  "roots": [ "$enumRef" ],
+                  "rootsOnly": true
+                }
+                """.trimIndent()
+            )
+        }
+        assertEquals(emptySet<String>(), parseResultNames(childWithRootsOnly))
+    }
+
+    @Test
+    fun `find-instances rejects non-boolean rootsOnly`() {
+        for (invalidValue in listOf("\"notABoolean\"", "123", "[]", "{}")) {
+            val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_query_nodes(
+                    MPSQueryOperation.FIND_INSTANCES,
+                    """{ "conceptRef": "$CONCEPT_DECL", "rootsOnly": $invalidValue }""",
+                )
+            }
+            assertInvalidRequest(response, "rootsOnly", "boolean")
+        }
+    }
+
+    @Test
+    fun `find-instances with scope roots and missing roots gives actionable error pointing to rootsOnly`() {
+        for (params in listOf(
+            """{ "conceptRef": "$CONCEPT_DECL", "scope": "roots" }""",
+            """{ "conceptRef": "$CONCEPT_DECL", "scope": "roots", "roots": null }"""
+        )) {
+            val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, params)
+            }
+            assertInvalidRequest(
+                response,
+                "Parameter 'roots' is missing for scope 'roots'",
+                "Scope 'roots' searches within the subtrees of the specified roots",
+                "'rootsOnly': true"
+            )
+        }
+
+        val malformedResponse = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                """{ "conceptRef": "$CONCEPT_DECL", "scope": "roots", "roots": [] }"""
+            )
+        }
+        assertInvalidRequest(malformedResponse, "Parameter 'roots' must be a nonempty array of nonblank strings")
+    }
+
+    @Test
+    fun `find-instances with sampleOnly and rootsOnly true returns only root sample on mixed-depth concept`() {
+        createColorEnum()
+
+        // 1. On mixed-depth concept (INamedConcept) where children outnumber roots (Color vs RED, GREEN, BLUE):
+        // Running sampleOnly with rootsOnly: true must always pick a root node, never a child.
+        val sampleResponse = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$INAMED_CONCEPT"""", extra = ""","sampleOnly": true, "rootsOnly": true"""),
+            )
+        }
+        val sampleNames = parseResultNames(sampleResponse)
+        assertEquals(1, sampleNames.size)
+        val sampleRefs = parseResultReferences(sampleResponse)
+        readOnRepo {
+            val node = PersistenceFacade.getInstance().createNodeReference(sampleRefs.single()).resolve(structureModel.repository)
+            assertNotNull("sampled node must resolve", node)
+            assertNull("sampled node ${node?.name} must be a root node (parent == null)", node?.parent)
+        }
+        assertFalse("sample must not be a child member: $sampleNames", sampleNames.single() in setOf("RED", "GREEN", "BLUE"))
+
+        // 2. On child-only concept (EnumerationMemberDeclaration):
+        // sampleOnly without rootsOnly returns 1 child sample
+        val childSampleWithoutRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$ENUMERATION_MEMBER_DECL"""", extra = ""","sampleOnly": true"""),
+            )
+        }
+        assertEquals(1, parseResultNames(childSampleWithoutRootsOnly).size)
+
+        // sampleOnly with rootsOnly: true returns empty because all candidate instances are children
+        val childSampleWithRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_INSTANCES,
+                findParams(""""$ENUMERATION_MEMBER_DECL"""", extra = ""","sampleOnly": true, "rootsOnly": true"""),
+            )
+        }
+        assertEquals(emptySet<String>(), parseResultNames(childSampleWithRootsOnly))
+    }
+
+    @Test
+    fun `find-usages with rootsOnly true returns only root source nodes`() {
+        val uniqueSuffix = System.nanoTime()
+        val baseName = "Base_$uniqueSuffix"
+        val derivedName = "Derived_$uniqueSuffix"
+        val holderName = "Holder_$uniqueSuffix"
+        val createParams = """
+            {
+              "structureModelRef": "$structureModelRef",
+              "conceptsJson": [
+                { "name": "$baseName" },
+                { "name": "$derivedName", "extends": "$baseName" },
+                {
+                  "name": "$holderName",
+                  "references": [ { "role": "refToBase", "target": "$baseName", "optional": true } ]
+                }
+              ]
+            }
+        """.trimIndent()
+        assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+
+        val baseRef = readOnRepo {
+            val base = structureModel.rootNodes.single { it.name == baseName }
+            PersistenceFacade.getInstance().asString(base.reference)
+        }
+
+        val withoutRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_USAGES,
+                """
+                {
+                  "nodeReference": "$baseRef",
+                  "scope": "models",
+                  "models": [ "$structureModelRef" ]
+                }
+                """.trimIndent()
+            )
+        }
+        val withRootsOnly = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(
+                MPSQueryOperation.FIND_USAGES,
+                """
+                {
+                  "nodeReference": "$baseRef",
+                  "scope": "models",
+                  "models": [ "$structureModelRef" ],
+                  "rootsOnly": true
+                }
+                """.trimIndent()
+            )
+        }
+
+        val allUsageRefs = parseResultReferences(withoutRootsOnly)
+        assertTrue("all usages must include at least two results: $allUsageRefs", allUsageRefs.size >= 2)
+
+        val rootUsageNames = parseResultNames(withRootsOnly)
+        assertEquals(setOf(derivedName), rootUsageNames)
+    }
+
     /**
      * Three `ConceptDeclaration` roots plus one `InterfaceConceptDeclaration` root — four nodes
      * whose concepts overlap under `AbstractConceptDeclaration`.
@@ -1160,5 +1559,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         private const val INTERFACE_CONCEPT_DECL = "jetbrains.mps.lang.structure.structure.InterfaceConceptDeclaration"
         private const val ABSTRACT_CONCEPT_DECL = "jetbrains.mps.lang.structure.structure.AbstractConceptDeclaration"
         private const val ENUMERATION_DECL = "jetbrains.mps.lang.structure.structure.EnumerationDeclaration"
+        private const val ENUMERATION_MEMBER_DECL = "jetbrains.mps.lang.structure.structure.EnumerationMemberDeclaration"
+        private const val INAMED_CONCEPT = "jetbrains.mps.lang.core.structure.INamedConcept"
     }
 }

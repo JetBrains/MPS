@@ -1184,7 +1184,16 @@ abstract class AbstractNodeOps : AbstractOps() {
                 SearchScopeResolution.Ok(filteredScope(repo, allowedModels = null, allowedModules = moduleRefs))
             }
             "roots" -> {
-                val rootRefStrings = when (val r = scopeRefStrings(params, "roots")) {
+                val element = params.get("roots")
+                if (element == null || element.isJsonNull) {
+                    return SearchScopeResolution.Err(
+                        errJson(
+                            "Parameter 'roots' is missing for scope 'roots'. Scope 'roots' searches within the subtrees of the specified roots. If you intended to match only root nodes across the repository, use parameter 'rootsOnly': true with scope 'editable' or 'all'.",
+                            McpErrorCode.INVALID_REQUEST,
+                        )
+                    )
+                }
+                val rootRefStrings = when (val r = refStrings(element, "roots")) {
                     is RefStrings.Ok -> r.references
                     is RefStrings.Err -> return SearchScopeResolution.Err(r.errJson)
                 }
@@ -1445,6 +1454,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         val scopeParam = params.paramString("scope") ?: "editable"
         val exact = params.paramBoolean("exact", default = false)
         val sampleOnly = params.paramBoolean("sampleOnly", default = false)
+        val rootsOnly = params.paramBoolean("rootsOnly", default = false)
         if (countOnly && sampleOnly) {
             return errJson(
                 "detail '$DETAIL_COUNT' and sampleOnly:true ask for opposite things — how many " +
@@ -1500,6 +1510,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 // the requested set so a batched query does not drop a node matching another entry.
                 val accepted = !monitor.isCanceled &&
                     (!exact || requested.any { node.concept == it }) &&
+                    (!rootsOnly || node.parent == null) &&
                     (rootFilter == null || node.containingRoot.reference in rootFilter) &&
                     (filterName == null || propertyValueByName(node, filterName) == filterValue)
                 if (accepted) {
