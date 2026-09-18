@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations

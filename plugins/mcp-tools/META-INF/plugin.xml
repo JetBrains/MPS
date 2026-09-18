@@ -27,6 +27,6 @@
   </extensions>
   <applicationListeners>
     <!-- Optional per-call JSON-lines log; active only with -Dmps.mcp.calllog=<file>. -->
-    <listener class="jetbrains.mps.agents.mcp.tools.McpCallLogListener" topic="com.intellij.mcpserver.ToolCallListener" />
+    <listener class="jetbrains.mps.agents.mcp.tools.logging.McpCallLogListener" topic="com.intellij.mcpserver.ToolCallListener" />
   </applicationListeners>
 </idea-plugin>

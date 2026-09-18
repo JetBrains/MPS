@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType

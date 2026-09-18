@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 // MPS APIs used for CRUD
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser

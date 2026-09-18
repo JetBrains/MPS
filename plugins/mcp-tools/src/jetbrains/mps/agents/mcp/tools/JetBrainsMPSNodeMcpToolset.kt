@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
