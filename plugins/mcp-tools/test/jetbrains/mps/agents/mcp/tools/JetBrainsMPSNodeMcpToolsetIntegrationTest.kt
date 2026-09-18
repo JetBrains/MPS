@@ -707,6 +707,10 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
         assertEquals(setOf(uniqueName), parseResultNames(editableScoped))
 
+        // `scope: "all"` is served by the FindUsages index over the visible-dependency closure.
+        // A just-created project node is often still unindexed, and because ConceptDeclaration
+        // already has indexed library hits the fallback walk never runs — so this query looks up
+        // a well-known indexed root instead of `$uniqueName`.
         val allScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
             it.mps_mcp_query_nodes(
                 MPSQueryOperation.FIND_INSTANCES,
@@ -714,13 +718,21 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 {
                   "conceptRef": "$CONCEPT_DECL",
                   "scope": "all",
+                  "exact": true,
                   "rootsOnly": true,
-                  "propertyFilter": { "name": "name", "value": "$uniqueName" }
+                  "propertyFilter": { "name": "name", "value": "BaseConcept" }
                 }
                 """.trimIndent()
             )
         }
-        assertEquals(setOf(uniqueName), parseResultNames(allScoped))
+        assertEquals(setOf("BaseConcept"), parseResultNames(allScoped))
+        readOnRepo {
+            val node = PersistenceFacade.getInstance()
+                .createNodeReference(parseResultReferences(allScoped).single())
+                .resolve(structureModel.repository)
+            assertNotNull("BaseConcept should resolve", node)
+            assertNull("BaseConcept must be a root node (parent == null)", node?.parent)
+        }
 
         // Also verify that child concepts with rootsOnly: true return empty across modules and all scopes
         val modulesChildScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
