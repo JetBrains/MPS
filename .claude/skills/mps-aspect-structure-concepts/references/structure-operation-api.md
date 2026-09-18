@@ -1,5 +1,7 @@
 ## Structure MCP Tools Reference
 
+Never Read this file in one shot. This index is also in `SKILL.md` — prefer that so you never open this file whole.
+
 Two tools cover structure operations:
 
 - **`mps_mcp_alter_structure`** — write operations: `CREATE_CONCEPTS`, `CREATE_ENUM`, `UPDATE_CONCEPT_PROPERTY`, `UPDATE_CONCEPT_CHILD`, `UPDATE_CONCEPT_REFERENCE`, `RENAME_CONCEPT_PROPERTY`, `RENAME_CONCEPT_CHILD`, `RENAME_CONCEPT_REFERENCE`.
@@ -12,6 +14,29 @@ Parameters are passed as a JSON object string. A boolean parameter (`make`, `dry
 Reference-valued keys accept **both the short and the long suffix**: `conceptRef`/`conceptReference`, `superConceptRef`/`superConceptReference`, `structureModelRef`/`structureModelReference`, `enumerationRef`/`enumerationReference` — and, in `mps_mcp_query_nodes`/`mps_mcp_alter_nodes`, `nodeReference`/`nodeRef`, `childNodeRef`/`childNodeReference`, `newParentRef`/`newParentReference`, `modelReference`/`modelRef`. The short form listed first is the canonical one used throughout these docs; the alias exists only because the tool surface spells the same idea both ways. Sending **both** spellings of one parameter in one `parameters` object is rejected with `INVALID_REQUEST` naming which one to keep, rather than silently picking one.
 
 Direct scalar string fields read by the structure operation dispatcher treat an explicit field-level JSON `null` like an omitted field: required fields take their existing missing-parameter error, while optional fields use their documented default or alternate form. Other JSON values retain Gson's existing `asString` behavior: numbers and booleans are stringified, singleton arrays (including nested singleton arrays) are unwrapped, and objects, empty or multi-element arrays, `[null]`, and `[{}]` keep their existing failure and `INTERNAL_ERROR` envelope. This compatibility rule does not apply to fields inside `conceptsJson`, `interfaceConceptsJson`, or other schema-checked blueprints, and it does not relax the separately documented nonblank string/array rules for search-scope selectors.
+
+## Contents / when to read what
+
+This file is ~24 KB. Pick the `####` operation, `grep -n '^#### '` (four hashes and a space), then `Read` only that range until the next `#### ` line. The two-tool intro above is the one extra range allowed when writing the first `CREATE_CONCEPTS` call.
+
+| Section | Read it when |
+|---|---|
+| CREATE_CONCEPTS | create concepts (greenfield) |
+| CREATE_ENUM | create an enumeration |
+| UPDATE_CONCEPT_PROPERTY | add/change/delete a property |
+| UPDATE_CONCEPT_CHILD | add/change/delete a child |
+| UPDATE_CONCEPT_REFERENCE | add/change/delete a reference |
+| RENAME_CONCEPT_PROPERTY | rename a property |
+| RENAME_CONCEPT_CHILD | rename a child |
+| RENAME_CONCEPT_REFERENCE | rename a reference |
+| GET_ENUMERATION_LITERALS | enum literals |
+| IS_SUBCONCEPT_OF | assignability / is-subconcept |
+| GET_SUB_CONCEPTS | subconcepts |
+| GET_ASSIGNABLE_CONCEPTS | assignable concepts |
+| GET_ALL_SUPERCONCEPTS | superconcepts |
+| GET_ASSIGNABLE_REFERENCES | completion/scope candidates for a reference |
+| LIST_CONCEPT_ASPECTS | find aspect roots for a concept |
+| IS_SMART_REFERENCE | smart-reference check |
 
 ### Supported operations
 

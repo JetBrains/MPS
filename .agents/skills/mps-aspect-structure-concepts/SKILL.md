@@ -20,6 +20,23 @@ Concepts (`ConceptDeclaration`), interface concepts (`InterfaceConceptDeclaratio
 - **Set alias on concepts that can be root** — that's how the user reaches them through the new-root menu.
 - **Always rebuild the language** with `mps_mcp_alter_nodes MAKE` and `rebuild="true"` after structural changes, so the new concepts are discoverable by runtime tools.
 
+## Section index — open one heading, not the file
+
+Never Read `structure-operation-api.md` (~24 KB) in one shot. Pick the row, grep headings, Read only that range, stop.
+
+| Job | Heading in structure-operation-api.md |
+|---|---|
+| create concepts (greenfield) | CREATE_CONCEPTS |
+| create an enumeration | CREATE_ENUM |
+| add/change/delete a property / child / reference | UPDATE_CONCEPT_PROPERTY / UPDATE_CONCEPT_CHILD / UPDATE_CONCEPT_REFERENCE |
+| rename a feature | RENAME_CONCEPT_PROPERTY / RENAME_CONCEPT_CHILD / RENAME_CONCEPT_REFERENCE |
+| enum literals / assignability / subconcepts | GET_ENUMERATION_LITERALS / IS_SUBCONCEPT_OF / GET_SUB_CONCEPTS / GET_ASSIGNABLE_CONCEPTS / GET_ALL_SUPERCONCEPTS |
+| completion/scope candidates for a reference | GET_ASSIGNABLE_REFERENCES |
+| find aspect roots for a concept | LIST_CONCEPT_ASPECTS |
+| smart-reference check | IS_SMART_REFERENCE |
+
+How to open: `grep -n '^#### '` (four hashes and a space — **not** a shorter `^#` prefix, which would also match `##` / `###` and stop too early) then `Read` only that operation (offset/limit until the next `#### ` line). Stop after that section unless a later error names another heading. The two-tool intro above `Supported operations` (boolean / alias / `makeStatus` rules) is the one extra range allowed when writing the first `CREATE_CONCEPTS` call. Do not use line numbers from this skill — they drift.
+
 ## Prerequisites
 
 * Requires the target language and its `structure` model.
@@ -110,7 +127,7 @@ Attributes let one language attach extra children, references, or property data 
 
 ## Reference Index
 
-**Start here — most common case**: creating or changing concepts, enumerations, or data types → read only `references/structure-operation-api.md` (the exact `mps_mcp_alter_structure` / `mps_mcp_query_structure` parameter surface); attributes/annotations → only `references/attributes-and-annotations.md`.
+**Start here — most common case**: creating or changing concepts, enumerations, or data types → pick the matching heading from the Section index above (symptom → one `####` operation), then grep/Read only that range. Never full-Read `structure-operation-api.md`. Attributes/annotations → only `references/attributes-and-annotations.md`.
 
-- Open `references/structure-operation-api.md` for exact `mps_mcp_alter_structure` and `mps_mcp_query_structure` operation names, JSON parameter formats, structure blueprint schemas, `make` flag handling, and `makeStatus` semantics (success / runtime_stale / failed / skipped).
+- Open one `####` heading of `references/structure-operation-api.md` (Section index above) for the exact `mps_mcp_alter_structure` or `mps_mcp_query_structure` operation you are about to call — JSON parameter formats, structure blueprint schemas, `make` flag handling, and `makeStatus` semantics. Never Read the whole file.
 - Open `references/attributes-and-annotations.md` for attributes/annotations: the four attribute kinds (`NodeAttribute` / `PropertyAttribute` / `ChildAttribute` / `LinkAttribute`), how to choose between them (feature-pinned kinds need a visible feature cell — whole-role markers should be a `NodeAttribute` + `LinkDeclaration` reference, converted at runtime via `MetaAdapterByDeclaration`), the `AttributeInfo` extension-point spec (`role`, `attributed`, `multiple`), the two-step MCP creation flow, the `smodelAttribute` slot, and worked examples (`RequirementTrace`, generator macros, doc/comment annotations).

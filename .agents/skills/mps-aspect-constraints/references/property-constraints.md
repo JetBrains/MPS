@@ -1,5 +1,20 @@
 # Property Constraints — Validators, Setters, Getters
 
+Never Read this file in one shot. This index is also in `SKILL.md` — prefer that so you never open this file whole.
+
+## Contents / when to read what
+
+This file is ~14 KB. Pick the heading, `grep -n '^## '` (exactly two hashes and a space, so `###` is not a stop), then `Read` only that range until the next `## ` line.
+
+| Section | Read it when |
+|---|---|
+| Shape of `NodePropertyConstraint` | validator / setter / getter shape |
+| Key concept FQNs for property constraints | validator / getter / setter wrapper FQNs |
+| Validator example — `Compound.cardinality` (ChemMastery) | validator JSON blueprint |
+| Derived getter example — `Element.details_url` (ChemMastery) | derived-getter JSON blueprint |
+| Property getter delegation and read-only semantics | {name} alias / set read-only |
+| Validator that enforces sibling uniqueness | sibling-uniqueness validator |
+
 Open this file when defining a `NodePropertyConstraint` — picking validator vs. setter vs. getter, writing per-property bodies, aliasing the `{name}` property, declaring `set <read-only>`, or building sibling-uniqueness validators.
 
 ## Shape of `NodePropertyConstraint`

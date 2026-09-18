@@ -2,7 +2,9 @@
 
 ## Contents / when to read what
 
-This file is ~47 KB. Read the one section you need, not the whole file.
+Never Read this file in one shot. This index is also in `SKILL.md` — prefer that so you never open this file whole.
+
+This file is ~47 KB. Read the one `## ` section you need, not the whole file. `grep -n '^## '` (two hashes and a space — **not** `^##`, which also matches `###`) then `Read` until the next `## ` line. Include `###` example subsections; they belong to the parent `##` and are not a stop.
 
 | Section | Read it when |
 |---|---|
