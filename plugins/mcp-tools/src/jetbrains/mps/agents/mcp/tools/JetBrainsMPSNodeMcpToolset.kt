@@ -590,7 +590,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 val repo = mpsProject.repository
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
                 val node = sNodeRef?.resolve(repo)
-                    ?: return@executeShortReadOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
+                    ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
 
                 withHeadlessEditor(repo, node) { ctx ->
                     val component = ctx.editorComponent as HeadlessEditorComponent
@@ -608,12 +608,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
+        Validates an MPS node (and its descendants) or an MPS model. Accepts an SNodeReference, an SModelReference, or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts). Pass any of these in `nodeReference` — there is no `modelReference` parameter. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
         A **model reference is exhaustive and is the preferred scope**: it validates the model itself (imports, used languages, devkits) AND runs the full checker stack on every root, so there is no need to follow up with a per-root check. Both the clean and the problem answer carry `details.scope:"model"` and `details.rootsChecked:<N>` stating the coverage; the problem report is the model object plus a `roots` array, one entry per root with problems (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` per `onlyNodesWithProblems`). Pass `perRoot=true` to get `data` as one line per root instead — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — which replaces N single-root calls with one. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
-        @McpDescription("Persistent form of SNodeReference or SModelReference") nodeReference: String,
+        @McpDescription("Persistent form of SNodeReference or SModelReference, or a qualified model name (the same form mps_mcp_get_project_structure startingPoint accepts). Pass any of these here — there is no modelReference parameter.") nodeReference: String,
         @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true,
         @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false,
         @McpDescription("Inline the problem report in `data` when it is at most this many characters; larger reports are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
@@ -734,14 +734,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 finalizeResult(json, maxInlineBytes, details)
             }
         } else {
-            // Try resolving as model reference
-            val sModelRef = try {
-                PersistenceFacade.getInstance().createModelReference(nodeReference)
-            } catch (e: Exception) {
-                rethrowIfCancellation(e)
-                null
-            }
-            val model = sModelRef?.resolve(repo)
+            // Accept a persistent model reference OR a qualified model name — the same
+            // forms get_project_structure startingPoint accepts (study defect D33).
+            // createModelReference on a bare name succeeds but yields a name-only
+            // SModelReference that does not resolve, so name lookup has to go through
+            // resolveModelPreferringProject rather than PersistenceFacade alone.
+            val model = resolveModelPreferringProject(mpsProject, nodeReference)
             return if (model != null) {
                 val modelProblems = mutableListOf<ModelReportItem>()
                 ModelValidator(host, model).validate({ modelProblems.add(it) }, monitor)
@@ -795,8 +793,39 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     }
                 }
             } else {
-                errJson("Reference '$nodeReference' resolved to neither node nor model", McpErrorCode.NOT_FOUND)
+                errJson(
+                    "Reference '$nodeReference' resolved to neither a node nor a model. " +
+                        "Pass a node reference (r:<uuid>(model)/<node-id>), a model reference (r:<uuid>(model)), " +
+                        "or a qualified model name in nodeReference — the same forms mps_mcp_get_project_structure startingPoint accepts. " +
+                        "This tool has no modelReference parameter; retry with nodeReference set to the value you passed as modelReference.",
+                    McpErrorCode.NOT_FOUND,
+                )
             }
+        }
+    }
+
+    /**
+     * [nodeReference] did not resolve as a node. If it is a model (persistent ref or
+     * qualified name), say so with a retry line rather than a generic NOT_FOUND — study
+     * defect D33: agents reused a model-scope string from the checker against print_node.
+     */
+    private fun unresolvedPrintNode(mpsProject: MPSProject, nodeReference: String, parsedAsNode: Boolean): String {
+        val model = resolveModelPreferringProject(mpsProject, nodeReference)
+        if (model != null) {
+            val name = model.name.value
+            val modelRef = PersistenceFacade.getInstance().asString(model.reference)
+            return errJson(
+                "'$nodeReference' is a model ($name), not a node. " +
+                    "mps_mcp_print_node requires a node reference (r:<uuid>(model)/<node-id>). " +
+                    "Retry with mps_mcp_get_project_structure, startingPoint set to '$modelRef', includeNodes=true. " +
+                    "mps_mcp_check_root_node_problems accepts this value in nodeReference as a model-scope check.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        return if (parsedAsNode) {
+            errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
+        } else {
+            invalidReference("Invalid or unresolvable node reference: '$nodeReference'")
         }
     }
 
@@ -816,12 +845,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpDescription(
         """
         Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
+        `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
-        @McpDescription("Persistent form of SNodeReference") nodeReference: String,
+        @McpDescription("Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String,
         @McpDescription("Whether to return a JSON blueprint(default), HTML or PLAIN TEXT. Defaults to JSON.") format: String = "JSON",
         @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
         @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
@@ -834,9 +864,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
-                    ?: return@executeShortReadOnEdt invalidReference("Invalid or unresolvable node reference: '$nodeReference'")
-                val node = sNodeRef.resolve(repo)
-                    ?: return@executeShortReadOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
+                val node = sNodeRef?.resolve(repo)
+                    ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
                 finalizeResult(nodeHierarchyToJson(node, deep, mpsProject), maxInlineBytes)
             }
         }

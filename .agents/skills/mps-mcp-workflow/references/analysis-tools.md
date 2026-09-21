@@ -67,7 +67,7 @@ For `scope: "models"`, `"modules"`, or `"roots"`, the matching selector must be 
 
 `format` accepts exactly three literals — `JSON` (default), `HTML`, `PLAIN TEXT`. The value is upper-cased before matching, but the spelling matters: `PLAIN TEXT` contains a **space** (`PLAIN_TEXT`, `TEXT` and `text` all fail with `Invalid format 'text'. Allowed values: JSON, HTML, PLAIN TEXT`).
 
-`nodeReference` must be a **node** reference (`r:<uuid>(name)#<node-id>`). Unlike `mps_mcp_check_root_node_problems`, this tool does **not** accept a model reference (`r:<uuid>(name)`) — it answers NOT_FOUND. To dump a whole model use `mps_mcp_get_project_structure` (`includeNodes=true`), or print its roots one by one.
+`nodeReference` must be a **node** reference (`r:<uuid>(name)/<node-id>`). A model reference (`r:<uuid>(name)`) or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`). `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
 
 `data` is inline when the printout is at most `maxInlineBytes` characters (default 20000) and the absolute path of a temp file above that; the file holds the same `{ok, data}` envelope. Pass a small `maxInlineBytes` to force the file form, or a large one to keep a big dump inline. Behaviour depends on `deep`:
 
@@ -116,7 +116,7 @@ The saved file contains the full MCP response envelope; its `data` field contain
 
 ## `mps_mcp_check_root_node_problems` — Output Format
 
-Validates the specified node (and its descendants) or the specified model. Accepts either an `SNodeReference` or an `SModelReference`. If no problems are found, returns `data: "no problems found"`; otherwise it returns the problem report inline in `data` when the serialized report is at most `maxInlineBytes` characters (default 20000), and a temp-file path above that. It reports *problems*, not content: to verify what a root actually contains, print it — `mps_mcp_print_node` with `deep=true` or `format: "PLAIN TEXT"` covers a whole root in one call (see *Output Format* above).
+Validates the specified node (and its descendants) or the specified model. Accepts an `SNodeReference`, an `SModelReference`, or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts). Pass any of these in `nodeReference` — there is no `modelReference` parameter. If no problems are found, returns `data: "no problems found"`; otherwise it returns the problem report inline in `data` when the serialized report is at most `maxInlineBytes` characters (default 20000), and a temp-file path above that. It reports *problems*, not content: to verify what a root actually contains, print it — `mps_mcp_print_node` with `deep=true` or `format: "PLAIN TEXT"` covers a whole root in one call (see *Output Format* above).
 
 > **Passing the MODEL reference checks every root of the model in one call and is exhaustive; do NOT re-check roots individually after a clean model-level result.** `data: "no problems found"` for a model means every root in it is clean — a per-root sweep afterwards costs one call per root and cannot find anything new. Use `autoApplyQuickFixes=true` to apply single auto-applicable fixes in the same call (node/root references only; with a model reference the flag is ignored and the envelope says so in `warnings`).
 

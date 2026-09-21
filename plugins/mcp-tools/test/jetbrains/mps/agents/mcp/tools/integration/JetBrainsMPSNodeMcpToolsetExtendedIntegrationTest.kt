@@ -1434,6 +1434,24 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `check_root_node_problems accepts a qualified model name`() {
+        // D33: createModelReference on a bare name yields a name-only ref that does not resolve,
+        // so the checker used to reject the same string get_project_structure startingPoint accepts.
+        val modelName = "test.model.byname${System.nanoTime()}"
+        val solution = createSolution()
+        createModel(solution, modelName)
+
+        val response = runTool(toolset) { it.mps_mcp_check_root_node_problems(modelName) }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope for the qualified model name: $response", envelope.get("ok").asBoolean)
+        assertEquals("no problems found", envelope.get("data").asString)
+        val details = envelope.getAsJsonObject("details")
+        assertEquals("model", details.get("scope").asString)
+        assertEquals(0, details.get("rootsChecked").asInt)
+    }
+
+    @Test
     fun `check_root_node_problems on a model lists the offending root under roots`() {
         val conceptRef = createConceptRoot("ModelScopeProblem")
         clearConceptId(conceptRef)
@@ -1498,7 +1516,37 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
                 onlyNodesWithProblems = true,
             )
         }
-        assertTrue(expectErr(response).contains("neither node nor model"))
+        val error = expectErr(response)
+        assertTrue("must say neither a node nor a model: $error", error.contains("neither a node nor a model"))
+        assertTrue("must name nodeReference: $error", error.contains("nodeReference"))
+        assertTrue("must name a qualified model name: $error", error.contains("qualified model name"))
+        assertTrue("must say there is no modelReference parameter: $error", error.contains("no modelReference parameter"))
+        assertTrue("must offer the retry line: $error", error.contains("retry with nodeReference set to"))
+    }
+
+    @Test
+    fun `print_node rejects a model reference with a retry line`() {
+        // D33: a model reference the checker accepts used to come back from print_node as a
+        // generic NOT_FOUND, so agents retried the same string instead of switching tools.
+        val response = runTool(toolset) { it.mps_mcp_print_node(structureModelRef, deep = false) }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        val error = expectErr(response)
+        assertTrue("must say it is a model: $error", error.contains("is a model"))
+        assertTrue("must name get_project_structure: $error", error.contains("mps_mcp_get_project_structure"))
+        assertTrue("must name includeNodes: $error", error.contains("includeNodes"))
+        assertTrue("must offer a retry line: $error", error.contains("Retry with"))
+        assertTrue("must name startingPoint: $error", error.contains("startingPoint"))
+    }
+
+    @Test
+    fun `print_node rejects a qualified model name with a retry line`() {
+        val modelName = readOnRepo { structureModel.name.value }
+        val response = runTool(toolset) { it.mps_mcp_print_node(modelName, deep = false) }
+        val error = expectErr(response)
+        assertEquals("INVALID_REQUEST", JsonParser.parseString(response).asJsonObject.get("code").asString)
+        assertTrue("must say it is a model: $error", error.contains("is a model"))
+        assertTrue("must name get_project_structure: $error", error.contains("mps_mcp_get_project_structure"))
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────────────────
