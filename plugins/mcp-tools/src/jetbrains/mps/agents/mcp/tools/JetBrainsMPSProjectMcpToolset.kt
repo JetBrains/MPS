@@ -7,11 +7,22 @@ import jetbrains.mps.agents.mcp.tools.logging.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import com.intellij.ide.RecentProjectsManager
+import com.intellij.ide.actions.CloseProjectAction
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.projectOrNull
+import com.intellij.mcpserver.reportToolActivity
+import com.intellij.openapi.actionSystem.impl.SimpleDataContext
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.WriteIntentReadAction
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.ex.ProjectManagerEx
+import com.intellij.openapi.wm.WindowManager
+import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import jetbrains.mps.ide.project.ProjectHelper
+import jetbrains.mps.workbench.action.ActionUtils
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
@@ -23,12 +34,18 @@ import jetbrains.mps.project.structure.modules.LanguageDescriptor
 import jetbrains.mps.smodel.Generator
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelInternal
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withTimeout
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
 // surface, and they are invoked via reflection by the MCP server framework, so static
@@ -86,10 +103,10 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). The full tree is always written to the result temp file regardless of size — there is no truncation — so prefer scoping with `startingPoint`, or use `mps_mcp_print_node` (deep=true) for a single root. Warning: can be extremely large.") includeNodes: Boolean = false,
         @McpDescription(
             "Optional starting point: a persistent reference (module/model/root-node/node id) or a plain name. " +
-            "A plain NAME is resolved in the order node -> model -> module, so a name shared by a model and a " +
-            "module resolves to the MODEL. To target a module unambiguously, pass its persistent reference " +
-            "(<uuid>(<name>)) or use the 'moduleKind' filter (with startingPoint null). Scope heavy 'include...' " +
-            "flags by passing a startingPoint."
+                    "A plain NAME is resolved in the order node -> model -> module, so a name shared by a model and a " +
+                    "module resolves to the MODEL. To target a module unambiguously, pass its persistent reference " +
+                    "(<uuid>(<name>)) or use the 'moduleKind' filter (with startingPoint null). Scope heavy 'include...' " +
+                    "flags by passing a startingPoint."
         ) startingPoint: String? = null,
         @McpDescription("Optional filter by module kind (Solution, Language, DevKit, Generator). Only used if startingPoint is null.") moduleKind: String? = null,
         @McpDescription("Inline the dump in `data` when it is at most this many characters; larger dumps are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
@@ -111,8 +128,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                     // 1. Try Node
                     val nodeRef = if (includeStubModules) {
                         resolveNodeReferencePreferringProject(mpsProject, startingPoint)
-                    }
-                    else {
+                    } else {
                         resolveNodeReference(mpsProject, startingPoint)
                     }
                     val node = nodeRef?.resolve(mpsProject.repository)
@@ -127,7 +143,15 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                         resolveModel(mpsProject, startingPoint, projectOnly = true)
                     }
                     if (model != null) {
-                        return@executeShortReadOnEdt finalizeResult(modelToJson(mpsProject, model, effectiveIncludeRootNodes, includeNodes, includeDependencies), maxInlineBytes)
+                        return@executeShortReadOnEdt finalizeResult(
+                            modelToJson(
+                                mpsProject,
+                                model,
+                                effectiveIncludeRootNodes,
+                                includeNodes,
+                                includeDependencies
+                            ), maxInlineBytes
+                        )
                     }
 
                     // 3. Try Module
@@ -155,8 +179,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                 } else {
                     val modules = if (includeStubModules) {
                         mpsProject.repository.modules
-                    }
-                    else {
+                    } else {
                         mpsProject.projectModulesWithGenerators
                     }
                     val filteredModules = if (!moduleKind.isNullOrBlank()) {
@@ -169,7 +192,17 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                     val moduleArray = JsonArray()
                     val cache = ProjectMembershipCache(mpsProject)
                     for (projectModule in filteredModules) {
-                        moduleArray.add(moduleJsonObject(mpsProject, projectModule, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies, cache))
+                        moduleArray.add(
+                            moduleJsonObject(
+                                mpsProject,
+                                projectModule,
+                                effectiveIncludeModels,
+                                effectiveIncludeRootNodes,
+                                includeNodes,
+                                includeDependencies,
+                                cache
+                            )
+                        )
                     }
                     json.add("modules", moduleArray)
                     finalizeResult(json.toString(), maxInlineBytes)
@@ -366,8 +399,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                 models.add(modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, c))
             }
             obj.add("models", models)
-        }
-        else {
+        } else {
             obj.addProperty("modelsCount", m.models.count())
         }
         return obj
@@ -535,8 +567,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                 rootNodes.add(nodeHierarchyJsonObject(root, includeNodes, project, c))
             }
             obj.add("rootNodes", rootNodes)
-        }
-        else {
+        } else {
             obj.addProperty("rootNodesCount", model.rootNodes.count())
         }
 
@@ -567,5 +598,140 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
             val detail = root.message?.takeIf { it.isNotBlank() } ?: root.javaClass.simpleName
             errJson("Failed to reload modules: $detail (${root.javaClass.simpleName})", McpErrorCode.INTERNAL_ERROR)
         }
+    }
+
+    @McpTool
+    @McpDescription(
+        """
+        Closes the current MPS project selected by the host's `projectPath`. A normal close matches
+        File | Close Project: remaining projects stay open, and if this was the last project the
+        Welcome screen is shown. It saves documents and may show Save/confirmation dialogs. Pass
+        `force=true` to skip those dialogs (unsaved editor changes are discarded) and not wait for
+        an already-open modal.
+
+        TIMEOUT: this call waits at most 20 seconds. If a modal dialog blocks the close, the tool
+        returns `ok:false` with `code: MODAL_BLOCKED` instead of hanging.
+
+        See the Closing a project section of `mps-project-management` for project selection,
+        timeout recovery, and when to force-close.
+
+        Returns `{ok:true, data:{closed:true, name, basePath, force}}` on success. Returns `ok:false`
+        when no project is selected, the project is already closed, the close is cancelled, or the
+        20s modal timeout fires (`code: MODAL_BLOCKED`).
+    """
+    )
+    suspend fun mps_mcp_close_project(
+        @McpDescription("If true, force-close without save/can-close confirmation dialogs and without waiting for an already-open modal. Unsaved editor changes are discarded. Default false.")
+        force: Boolean = false
+    ): String {
+        currentCoroutineContext().reportToolActivity("Closing the current MPS project")
+        return McpCallOutcomes.record(
+            try {
+                val ideaProject = currentCoroutineContext().projectOrNull
+                if (ideaProject == null) {
+                    errJson("No project available", McpErrorCode.NOT_FOUND)
+                } else if (ideaProject.isDisposed) {
+                    errJson("Project is already closed", McpErrorCode.NOT_FOUND)
+                } else {
+                    val projectName = ideaProject.name
+                    val basePath = ideaProject.basePath
+                    val closed = try {
+                        withTimeout(CLOSE_PROJECT_TIMEOUT_MS) {
+                            closeIdeaProjectOnEdt(ideaProject, force)
+                        }
+                    } catch (e: TimeoutCancellationException) {
+                        throw McpModalBlockedException(
+                            "Closing the project timed out after ${CLOSE_PROJECT_TIMEOUT_MS}ms. " +
+                                    "A modal dialog is likely open in MPS. Ask the user to close it manually, then retry. " +
+                                    "To skip save/confirmation dialogs that this close itself would show, retry with force=true.",
+                            mapOf("timeoutMs" to CLOSE_PROJECT_TIMEOUT_MS, "force" to force),
+                        )
+                    }
+                    if (!closed) {
+                        errJson(
+                            "Project '$projectName' was not closed and remains open. " +
+                                    "A Save or confirmation dialog was likely cancelled. " +
+                                    "Ask the user to complete the dialog, or retry with force=true to skip those dialogs.",
+                        )
+                    } else {
+                        okJson(jsonObject {
+                            addProperty("closed", true)
+                            addProperty("name", projectName)
+                            addProperty("force", force)
+                            if (basePath != null) addProperty("basePath", basePath)
+                        })
+                    }
+                }
+            } catch (e: Throwable) {
+                rethrowIfCancellation(e)
+                toolFailure("Closing the current MPS project", e)
+            }
+        )
+    }
+
+    /**
+     * Dispatches project close onto the EDT without occupying this coroutine on that thread, so a
+     * modal dialog shown *by* the close can still trip [CLOSE_PROJECT_TIMEOUT_MS].
+     *
+     * `force=false` uses [ModalityState.nonModal] and [CloseProjectAction] (File | Close Project),
+     * which shows the Welcome screen when no other project remains. `force=true` uses
+     * `ModalityState.any()` plus [ProjectManagerEx.forceCloseProject], then the same Welcome-frame
+     * housekeeping from [com.intellij.ide.actions.CloseProjectsActionBase].
+     */
+    private suspend fun closeIdeaProjectOnEdt(
+        ideaProject: com.intellij.openapi.project.Project,
+        force: Boolean
+    ): Boolean {
+        return suspendCancellableCoroutine { cont ->
+            val abandoned = AtomicBoolean(false)
+            cont.invokeOnCancellation { abandoned.set(true) }
+            val modality = if (force) ModalityState.any() else ModalityState.nonModal()
+            ApplicationManager.getApplication().invokeLater({
+                if (abandoned.get()) return@invokeLater
+                val result = runCatching { closeIdeaProjectNow(ideaProject, force) }
+                if (abandoned.get() || !cont.isActive) return@invokeLater
+                result.fold(
+                    onSuccess = { cont.resume(it) },
+                    onFailure = { cont.resumeWithException(it) },
+                )
+            }, modality)
+        }
+    }
+
+    /**
+     * File | Close Project goes through [CloseProjectAction] / [com.intellij.ide.actions.CloseProjectsActionBase],
+     * not a bare [ProjectManager.closeAndDispose]. The extra steps (default frame info, recent-project
+     * path, [WelcomeFrame.showIfNoProjectOpened]) are what keep other projects visible or bring back
+     * the Welcome screen. `force=true` cannot use the action because it always shows save/can-close
+     * dialogs, so that path replicates the same housekeeping around [ProjectManagerEx.forceCloseProject].
+     */
+    private fun closeIdeaProjectNow(
+        ideaProject: com.intellij.openapi.project.Project,
+        force: Boolean
+    ): Boolean {
+        if (ideaProject.isDisposed) return true
+        if (!force) {
+            val event = ActionUtils.createEvent(
+                "McpCloseProject",
+                SimpleDataContext.getProjectContext(ideaProject),
+            )
+            CloseProjectAction().actionPerformed(event)
+            return ideaProject.isDisposed || !ideaProject.isOpen
+        }
+
+        WindowManager.getInstance().updateDefaultFrameInfoOnProjectClose(ideaProject)
+        var closed = false
+        WriteIntentReadAction.run {
+            closed = ProjectManagerEx.getInstanceEx().forceCloseProject(ideaProject)
+        }
+        if (closed) {
+            RecentProjectsManager.getInstance().updateLastProjectPath()
+            WelcomeFrame.showIfNoProjectOpened()
+        }
+        return closed
+    }
+
+    private companion object {
+        const val CLOSE_PROJECT_TIMEOUT_MS: Long = 20_000
     }
 }
