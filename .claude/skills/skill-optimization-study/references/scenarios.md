@@ -15,10 +15,11 @@ recipes-broken = recipes + `scenarios/S5/PROBLEMS.md`).
 | S6 | Generator → Java per Recipe; behavior via parser and via JSON AST | recipes | H1, H2 |
 | S7 | `@tests` model, 3 NodesTestCases + 1 EditorTestCase, run config | recipes | H2, H7 |
 | S8 | Onboard unknown project → `statechart-dsl` skill via `mps-dsl-memory` | statechart | H4, H7 |
+| S9 | Console MCP: two read-only `#instances` queries (one filtered), recall, print current | recipes | H1, H7 |
 
 | SMOKE | Harness check: list open projects and stop (read-only; no `done_criteria.md`; runs against the golden project; never evaluated) | — | — |
 
-Measured in 2026-09: S1, S3 (both models, all PASS). S2, S4–S8 unmeasured.
+Measured in 2026-09: S1, S3 (both models, all PASS). S2, S4–S9 unmeasured.
 
 ## Writing a prompt
 Developer voice, short, fixed names, numbered steps, explicit "Done when …", closing lines

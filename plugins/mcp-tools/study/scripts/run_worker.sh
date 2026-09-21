@@ -2,7 +2,7 @@
 # Run one headless worker for the skill-script automation study.
 #
 # usage: run_worker.sh <scenario> <model> <run-no> <project-dir>
-#   scenario     S1..S8 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
+#   scenario     S1..S9 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
 #   model        claude model alias, e.g. opus | sonnet
 #   run-no       1, 2, ...
 #   project-dir  absolute path of the scratch MPS project (must be open in MPS)

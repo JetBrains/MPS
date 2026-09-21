@@ -77,7 +77,7 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    <golden>` — bump `<n>` on every re-run (the harness refuses an existing run id). The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
-5. **Scenarios** — `study/scenarios/S1..S8/{worker_prompt.md,done_criteria.md}`; add a scenario for
+5. **Scenarios** — `study/scenarios/S1..S9/{worker_prompt.md,done_criteria.md}`; add a scenario for
    whatever skill/tool changed. Prompts are developer-voice, fixed names, explicit "done", NO reporting
    requirements. Fixtures: `empty-project`, `statechart` (Projectxx5), `recipes` (a passing S1) —
    regenerated per `study/fixtures/README.md`, not stored in git.
