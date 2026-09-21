@@ -673,8 +673,16 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         """
     )
     suspend fun mps_mcp_parse_java_and_insert(
-        @McpDescription("JSON string with parameters, see the description above") parameters: String
-    ): String = withMpsProject("Parsing Java and inserting nodes") { mpsProject ->
+        @McpDescription("Parameters as a JSON object — sent as real JSON or as its string form. See the description above.") parameters: JsonOrText
+    ): String = mps_mcp_parse_java_and_insert(parameters.text)
+
+    /**
+     * Internal string-typed entry point for [mps_mcp_parse_java_and_insert]; the [JsonOrText]
+     * overload above is the registered `@McpTool`, so a client may send the `parameters` object
+     * either as real JSON or as its string form (see [JsonOrText]). Retained for in-process
+     * callers and tests, which have no wire shape to decode.
+     */
+    suspend fun mps_mcp_parse_java_and_insert(parameters: String): String = withMpsProject("Parsing Java and inserting nodes") { mpsProject ->
         val request = try {
             parseJavaParseInsertRequest(parameters)
         } catch (e: ToolInputJsonException) {

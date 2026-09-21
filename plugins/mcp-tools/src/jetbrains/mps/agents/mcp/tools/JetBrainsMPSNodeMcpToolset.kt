@@ -64,36 +64,33 @@ private val MAKE_PARAMETER_SCHEMA: Map<String, String> = linkedMapOf(
 
 private val MAKE_PARAMETER_KEYS: Set<String> = MAKE_PARAMETER_SCHEMA.keys
 
-/**
- * Returns the closest match from [candidates] for [input] if one is reasonably similar,
- * or null otherwise. "Reasonably similar" means edit distance ≤ max(2, length/3) — large
- * enough to catch typos like 'target' → 'modules', strict enough that random keys do not
- * get a misleading suggestion.
- */
-internal fun suggestParameterName(input: String, candidates: Iterable<String>): String? {
-    val threshold = maxOf(2, input.length / 3)
-    return candidates
-        .map { it to editDistance(input.lowercase(), it.lowercase()) }
-        .filter { it.second <= threshold }
-        .minByOrNull { it.second }
-        ?.first
+private val FIND_USAGES_KEYS = ParameterKeys.of(PARAM_NODE_REFERENCE) + SEARCH_SCOPE_KEYS
+
+private val NODE_INFO_KEYS = ParameterKeys.of(PARAM_NODE_REFERENCE)
+
+private val MOVE_CHILD_KEYS = ParameterKeys.of(PARAM_NODE_REFERENCE, "childRole", PARAM_CHILD_NODE_REF, "position")
+
+private val MOVE_NODE_TO_PARENT_KEYS =
+    ParameterKeys.of(PARAM_NODE_REFERENCE, PARAM_NEW_PARENT_REF, "role", "position", PARAM_MODEL_REFERENCE)
+
+/** The accepted `parameters` keys of each [MPSQueryOperation]. */
+private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys = when (operation) {
+    MPSQueryOperation.FIND_INSTANCES -> FIND_INSTANCES_KEYS
+    MPSQueryOperation.FIND_USAGES -> FIND_USAGES_KEYS
+    MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
+    MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE -> NODE_INFO_KEYS
 }
 
-private fun editDistance(a: String, b: String): Int {
-    if (a == b) return 0
-    if (a.isEmpty()) return b.length
-    if (b.isEmpty()) return a.length
-    var prev = IntArray(b.length + 1) { it }
-    var curr = IntArray(b.length + 1)
-    for (i in 1..a.length) {
-        curr[0] = i
-        for (j in 1..b.length) {
-            val cost = if (a[i - 1] == b[j - 1]) 0 else 1
-            curr[j] = minOf(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost)
-        }
-        val tmp = prev; prev = curr; curr = tmp
-    }
-    return prev[b.length]
+/**
+ * The accepted `parameters` keys of each [MPSAlterOperation]. MAKE answers `null`: it keeps its
+ * own richer rejection, which additionally carries the `MAKE_INPUT_INVALID` code and the
+ * `expectedParameters` schema map its callers read.
+ */
+private fun alterNodesParameterKeys(operation: MPSAlterOperation): ParameterKeys? = when (operation) {
+    MPSAlterOperation.MOVE_CHILD -> MOVE_CHILD_KEYS
+    MPSAlterOperation.MOVE_NODE_TO_PARENT -> MOVE_NODE_TO_PARENT_KEYS
+    MPSAlterOperation.COPY_NODE, MPSAlterOperation.FIX_REFERENCES -> NODE_INFO_KEYS
+    MPSAlterOperation.MAKE -> null
 }
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
@@ -125,12 +122,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     """)
     suspend fun mps_mcp_query_nodes(
         @McpDescription("The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String,
+        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val op = resolveOperationOrNull<MPSQueryOperation>(operation)
             ?: return unknownOperation<MPSQueryOperation>(operation)
-        return mps_mcp_query_nodes(op, parameters, maxInlineBytes)
+        return mps_mcp_query_nodes(op, parameters.text, maxInlineBytes)
     }
 
     /**
@@ -149,6 +146,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             } catch (e: Exception) {
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
             }
+            params.rejectUnknownParameterKeys(operation.name, queryNodesParameterKeys(operation))
 
             when (operation) {
                 MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
@@ -163,18 +161,18 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""        
-        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object string. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root. Explicit `newParentRef:null` is rejected. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
+        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root. Explicit `newParentRef:null` is rejected. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
          MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool; node references are not accepted — resolve the node's module or model first. Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
     suspend fun mps_mcp_alter_nodes(
         @McpDescription("The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText
     ): String {
         val op = resolveOperationOrNull<MPSAlterOperation>(operation)
             ?: return unknownOperation<MPSAlterOperation>(operation)
-        return mps_mcp_alter_nodes(op, parameters)
+        return mps_mcp_alter_nodes(op, parameters.text)
     }
 
     /**
@@ -188,6 +186,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             } catch (e: Exception) {
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
             }
+            alterNodesParameterKeys(operation)?.let { params.rejectUnknownParameterKeys(operation.name, it) }
 
             when (operation) {
                 MPSAlterOperation.MOVE_CHILD -> opMoveChild(params)
@@ -463,7 +462,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opMake(mpsProject: MPSProject, params: JsonObject): String {
-        val unknownKeys = params.keySet().filter { it !in MAKE_PARAMETER_KEYS }
+        val unknownKeys = params.keySet().filter { it !in MAKE_PARAMETER_KEYS && it !in TOLERATED_PARAMETER_KEYS }
         if (unknownKeys.isNotEmpty()) {
             val suggestions = unknownKeys.associateWith { suggestParameterName(it, MAKE_PARAMETER_KEYS) }
             val parts = unknownKeys.map { key ->
@@ -879,13 +878,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         ADD × CHILD — Add a new child node.
           nodeReference: persistent ref of the parent node.
           childRole: containment role name.
-          childJson: JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. For large blueprints prefer the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
+          childJson: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints prefer the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
           position: Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. A `position` at or beyond the current child count is clamped to an append (not rejected); a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.
           Returns the inserted node's info envelope (`data.parentReference` carries the parent ref, `data.index` the actual landing index — useful when an over-range `position` was clamped). `responseDetail="summary"` answers with `{added, nodes:[{name, reference, concept}], fixReferences}` instead (no conceptDoc, no index); `full` is the default because one call adds one child.
 
         SET × CHILD — Replace an existing child node with a new node described by a JSON blueprint. Deletes the child if `childJson = null`.
           childNodeRef: persistent ref of the child to replace.
-          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
+          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
           Returns the inserted node's info envelope or the parent's one, if deletion (`childJson = null`).
 
         SET × PROPERTY — Set or delete properties on a batch of nodes. The value `propertyValue = null` DELETES the property.
@@ -907,7 +906,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Parent node ref for ADD CHILD") nodeReference: String? = null,
         @McpDescription("Containment role name for ADD CHILD") childRole: String? = null,
         @McpDescription("0-based insert index for ADD CHILD multi-cardinality roles; null/-1 = append. A value at or beyond the current child count is clamped to an append; a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.") position: Int? = null,
-        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected.") childJson: String? = null,
+        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected.") childJson: JsonOrText? = null,
         @McpDescription("Ref of the child to replace or delete (SET CHILD)") childNodeRef: String? = null,
         @McpDescription("If true, validate without mutating (ADD CHILD, SET CHILD only). Default: false.") dryRun: Boolean = false,
         @McpDescription("Batch triplets [nodeRef, propertyName, value] for SET PROPERTY") properties: List<List<String?>>? = null,
@@ -918,7 +917,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             ?: return unknownOperation<NodeUpdateOperation>(operation)
         val k = resolveOperationOrNull<NodeUpdateKind>(kind)
             ?: return unknownOperation<NodeUpdateKind>(kind)
-        return mps_mcp_update_node(op, k, nodeReference, childRole, position, childJson, childNodeRef, dryRun, properties, references, responseDetail)
+        return mps_mcp_update_node(op, k, nodeReference, childRole, position, childJson?.text, childNodeRef, dryRun, properties, references, responseDetail)
     }
 
     /**

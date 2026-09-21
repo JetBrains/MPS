@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.*
+import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonParser
 import org.jetbrains.mps.openapi.model.SNode
@@ -1488,12 +1489,57 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         assertTrue(expectErr(response).contains("contextNode"))
     }
 
+    // ── `parameters` blob key validation (study defects D14b / D18b) ────────────────────────
+
+    @Test
+    fun `query_structure rejects an unrecognised parameters key instead of dropping it`() {
+        val response = runTool {
+            it.mps_mcp_query_structure(MPSStructureQueryOperation.IS_SMART_REFERENCE, """{"conceptReferece":"X"}""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue("error must name the key that was sent: $error", error.contains("'conceptReferece'"))
+        assertTrue("error must name the key that was meant: $error", error.contains("conceptRef"))
+    }
+
+    @Test
+    fun `alter_structure rejects dryRun on an operation that does not honour it`() {
+        // Only CREATE_CONCEPTS and CREATE_ENUM implement dryRun. Every other operation read the
+        // flag off the blob and mutated anyway — a silent no-op that hid caller misuse, the same
+        // one mps_mcp_parse_java_and_insert already rejects.
+        val conceptRef = createConceptRoot("DryRunProbe")
+        val response = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
+                """{"conceptRef":"$conceptRef","propertyName":"p","dataType":"string","dryRun":true}""",
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertTrue("error must name dryRun: ${obj.get("error").asString}", obj.get("error").asString.contains("'dryRun'"))
+    }
+
+    @Test
+    fun `alter_structure tolerates projectPath inside parameters`() {
+        val conceptRef = createConceptRoot("ProjectPathProbe")
+        val response = runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
+                """{"conceptRef":"$conceptRef","propertyName":"p","dataType":"string","projectPath":"/wherever"}""",
+            )
+        }
+        assertOk(response)
+    }
+
     @Test
     fun `query_structure with unknown operation returns INVALID_REQUEST instead of crashing`() {
         // Regression for the kotlinx SerializationException that escaped argument binding when a
         // caller passed an operation outside MPSStructureQueryOperation (e.g. the hallucinated
         // "LIST_CONCEPTS"). The String-typed tool overload must turn this into a classified error.
-        val response = runTool { it.mps_mcp_query_structure("LIST_CONCEPTS", "{}") }
+        val response = runTool { it.mps_mcp_query_structure("LIST_CONCEPTS", JsonOrText("{}")) }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
@@ -1510,7 +1556,7 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         val response = runTool {
             it.mps_mcp_query_structure(
                 "is_subconcept_of",
-                """{"conceptRef":"$unresolvableNodeRef","superConceptRef":"$unresolvableNodeRef"}"""
+                JsonOrText("""{"conceptRef":"$unresolvableNodeRef","superConceptRef":"$unresolvableNodeRef"}""")
             )
         }
         val error = expectErr(response)
@@ -1519,7 +1565,7 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
 
     @Test
     fun `alter_structure with unknown operation returns INVALID_REQUEST instead of crashing`() {
-        val response = runTool { it.mps_mcp_alter_structure("MAKE_EVERYTHING", "{}") }
+        val response = runTool { it.mps_mcp_alter_structure("MAKE_EVERYTHING", JsonOrText("{}")) }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("INVALID_REQUEST", obj.get("code").asString)

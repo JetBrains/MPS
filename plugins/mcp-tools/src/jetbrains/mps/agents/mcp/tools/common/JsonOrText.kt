@@ -23,7 +23,12 @@ import kotlinx.serialization.json.JsonPrimitive
  * length 0` (an empty tag-stack pop inside `TaggedDecoder`) as soon as the request carries a JSON
  * array or object — before the tool body runs, so no `try`/`catch` inside the tool can recover.
  * That is study defect D20: every parameter whose own description promises "or a JSON array of
- * them" crashes for a client that takes the description literally.
+ * them" crashes for a client that takes the description literally. Study defect D20b is the same
+ * crash one wire shape over — the parameters documented as a JSON *object* (`parameters` on
+ * `query_nodes`/`alter_nodes`/`query_structure`/`alter_structure`/`parse_java_and_insert`,
+ * `update_node.childJson`, `update_module_facet.settingsJson`), where a client that sends
+ * `{"conceptRef":"…"}` instead of `"{\"conceptRef\":\"…\"}"` dies in the same decoder. Both
+ * families are declared [JsonOrText].
  *
  * [JsonOrTextSerializer] keeps the emitted schema byte-identical to `String`'s (its descriptor is
  * a `PrimitiveKind.STRING`, so the per-turn schema cost is unchanged) while accepting any JSON

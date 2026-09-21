@@ -1,6 +1,8 @@
 package jetbrains.mps.agents.mcp.tools.unit
 
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.GET_ASSIGNABLE_REFERENCES_KEYS
+import jetbrains.mps.agents.mcp.tools.references.GetAssignableReferencesRequest
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -11,6 +13,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
 import java.lang.reflect.InvocationTargetException
+import kotlin.reflect.full.primaryConstructor
 
 /**
  * Unit tests for the pure input-schema helpers in `McpToolInputSchemas.kt`.
@@ -1521,6 +1524,116 @@ class McpToolInputSchemasTest {
                 )
             }
         }
+    }
+
+    // ---- parameters-blob key validation (study defects D14b / D18b) ----
+
+    private val demoKeys = ParameterKeys.of(PARAM_CONCEPT_REF, "role", "multiple")
+
+    @Test
+    fun parameterKeysListsOneCanonicalSpellingPerKeyAndAcceptsEverySpelling() {
+        // The rejection lists canonical spellings only — listing every alias would double the
+        // message for no new information — but resolution accepts all of them.
+        assertEquals(listOf("conceptRef", "role", "multiple"), demoKeys.canonical)
+        assertEquals(setOf("conceptRef", "conceptReference", "role", "multiple"), demoKeys.accepted)
+    }
+
+    @Test
+    fun aKnownParameterKeyUnderEitherSpellingIsAccepted() {
+        for (json in listOf("""{"conceptRef":"X"}""", """{"conceptReference":"X"}""", """{"role":"r","multiple":true}""", "{}")) {
+            params(json).rejectUnknownParameterKeys("UPDATE_CONCEPT_CHILD", demoKeys)
+        }
+    }
+
+    @Test
+    fun anUnknownParameterKeyIsRejectedNamingItAndTheAcceptedSet() {
+        // The defect this replaces: an unrecognised blob key was dropped, so the caller got
+        // "Parameter 'conceptRef' is missing" for a value it did pass — or a write performed
+        // under the defaults it thought it had overridden.
+        assertSchemaFailure(
+            "Unknown parameter in 'parameters' for UPDATE_CONCEPT_CHILD: 'cardinality'. " +
+                "Accepted: 'conceptRef', 'role', 'multiple'. An unrecognised key is rejected " +
+                "rather than ignored, so a misspelling cannot silently drop the value you passed."
+        ) {
+            params("""{"conceptRef":"X","role":"r","cardinality":"0..n"}""")
+                .rejectUnknownParameterKeys("UPDATE_CONCEPT_CHILD", demoKeys)
+        }
+    }
+
+    @Test
+    fun aNearMissParameterKeyIsRejectedWithTheSpellingItMeant() {
+        val message = catchSchemaFailure {
+            params("""{"conceptRefs":"X"}""").rejectUnknownParameterKeys("IS_SMART_REFERENCE", demoKeys)
+        }
+        assertTrue(message, message.contains("'conceptRefs' (did you mean 'conceptRef'?)"))
+    }
+
+    @Test
+    fun severalUnknownParameterKeysAreAllNamedInOneRejection() {
+        val message = catchSchemaFailure {
+            params("""{"alpha":1,"omega":2}""").rejectUnknownParameterKeys("MOVE_CHILD", demoKeys)
+        }
+        assertTrue(message, message.startsWith("Unknown parameters in 'parameters' for MOVE_CHILD: "))
+        assertTrue(message, message.contains("'alpha'"))
+        assertTrue(message, message.contains("'omega'"))
+    }
+
+    @Test
+    fun projectPathIsToleratedInsideEveryParametersBlob() {
+        // Study remedy P5(a): the platform has already applied the top-level `projectPath` by the
+        // time the tool body runs, so a caller that also repeats it inside `parameters` — the
+        // position agents reach for — is dropping nothing and must not be failed for it.
+        assertEquals(setOf("projectPath"), TOLERATED_PARAMETER_KEYS)
+        params("""{"conceptRef":"X","projectPath":"/some/project"}""")
+            .rejectUnknownParameterKeys("IS_SMART_REFERENCE", demoKeys)
+    }
+
+    @Test
+    fun anUnknownParameterKeyHoldingAnExplicitNullIsNotRejected() {
+        // It carries no value, so nothing was dropped — the same "explicit null counts as absent"
+        // rule every reader on this surface follows.
+        params("""{"conceptRef":"X","cardinality":null}""")
+            .rejectUnknownParameterKeys("UPDATE_CONCEPT_CHILD", demoKeys)
+    }
+
+    @Test
+    fun anAbsentParametersBlobIsRejectedNamingTheAcceptedKeys() {
+        // Gson answers null for a blank blob and for the literal `null`; the dispatchers used to
+        // dereference that into an opaque INTERNAL_ERROR.
+        val message = catchSchemaFailure {
+            (null as JsonObject?).rejectUnknownParameterKeys("IS_SMART_REFERENCE", demoKeys)
+        }
+        assertTrue(message, message.contains("must be a JSON object carrying the keys for IS_SMART_REFERENCE"))
+        assertTrue(message, message.contains("'conceptRef'"))
+    }
+
+    @Test
+    fun parameterKeySetsCompose() {
+        val composed = ParameterKeys.of("scope") + ParameterKeys.of(PARAM_NODE_REFERENCE)
+        assertEquals(listOf("scope", "nodeReference"), composed.canonical)
+        assertTrue("nodeRef" in composed.accepted)
+    }
+
+    @Test
+    fun assignableReferencesKeysMirrorTheRequestDataClass() {
+        // GET_ASSIGNABLE_REFERENCES is the one operation whose blob Gson deserializes whole, so
+        // its accepted-key list is maintained by hand. A field added to the request class without
+        // the matching key would make the new field unsendable.
+        val fields = GetAssignableReferencesRequest::class.primaryConstructor!!.parameters.mapNotNull { it.name }
+        assertEquals(fields, GET_ASSIGNABLE_REFERENCES_KEYS.canonical)
+    }
+
+    @Test
+    fun suggestParameterNameOnlySuggestsAReasonablyCloseCandidate() {
+        val candidates = listOf("models", "modules", "rebuild", "wholeProject")
+        assertEquals("modules", suggestParameterName("module", candidates))
+        assertEquals("rebuild", suggestParameterName("rebulid", candidates))
+        assertEquals("wholeProject", suggestParameterName("wholeproject", candidates))
+        // Far enough that a suggestion would mislead. `moduleName` — the key a caller after a
+        // MAKE reaches for — is one of these: the accepted-key list the rejection prints, not a
+        // guess, is what names `modules` for that caller.
+        assertNull(suggestParameterName("moduleName", candidates))
+        assertNull(suggestParameterName("zzzzzzzzzzzz", candidates))
     }
 
     private fun read(target: Any, getter: String): Any? {

@@ -1240,7 +1240,7 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         expectOk(updateFacet(moduleName, """{"seed":"keep"}"""))
 
         val response = runTool(toolset) {
-            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = false, settingsJson = "{")
+            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = false, settingsJson = JsonOrText("{"))
         }
         expectOk(response)
         val persisted = expectOk(runTool(toolset) { it.mps_mcp_get_module_facets(moduleName) })
@@ -1281,7 +1281,7 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     private fun updateFacet(moduleName: String, settingsJson: String): String =
         runTool(toolset) {
-            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = true, settingsJson = settingsJson)
+            it.mps_mcp_update_module_facet(moduleName, "tests", enabled = true, settingsJson = JsonOrText(settingsJson))
         }
 
     private fun persistedFacetMemento(moduleName: String): JsonObject {

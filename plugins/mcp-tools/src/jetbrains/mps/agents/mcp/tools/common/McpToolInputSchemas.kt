@@ -65,12 +65,139 @@ internal val PARAM_NEW_PARENT_REF = BlobKey("newParentRef", "newParentReference"
 internal val PARAM_MODEL_REFERENCE = BlobKey("modelReference", "modelRef")
 
 /**
+ * Keys a `parameters` blob accepts in *every* operation, over and above the operation's own.
+ *
+ * `projectPath` is the platform's own top-level tool parameter, and the platform resolves the
+ * target project from it *before* the tool body runs. A caller that also repeats it inside
+ * `parameters` — the position agents reach for, because that is where every other value of the
+ * call lives (study defect D18b) — is therefore not dropping anything: the value it carries has
+ * already been applied. Tolerating it here is study remedy P5(a), "accept the key in either
+ * position"; honouring it is impossible from inside the tool, because a call that omits the
+ * top-level parameter is rejected before dispatch (see
+ * `docs/projectpath-pre-dispatch-rejection-upstream.md`).
+ */
+internal val TOLERATED_PARAMETER_KEYS: Set<String> = setOf("projectPath")
+
+/**
+ * The keys one tool operation's `parameters` blob accepts.
+ *
+ * Built from [BlobKey]s (a key with alternative spellings) and plain [String] keys. [canonical]
+ * is what an unknown-key rejection lists back — one entry per key, in declaration order, never
+ * the alias spellings, which would double the length of the message for no new information.
+ */
+internal class ParameterKeys private constructor(val canonical: List<String>, val accepted: Set<String>) {
+  operator fun plus(other: ParameterKeys): ParameterKeys =
+    ParameterKeys(canonical + other.canonical, accepted + other.accepted)
+
+  companion object {
+    fun of(vararg keys: Any): ParameterKeys {
+      val canonical = keys.map {
+        when (it) {
+          is BlobKey -> it.canonical
+          is String -> it
+          else -> throw IllegalArgumentException("A parameter key is a String or a BlobKey, got ${it.javaClass.name}")
+        }
+      }
+      val accepted = keys.flatMapTo(LinkedHashSet()) { if (it is BlobKey) it.spellings else listOf(it as String) }
+      return ParameterKeys(canonical, accepted)
+    }
+  }
+}
+
+/**
+ * Rejects an absent `parameters` blob, and any key of it that [keys] does not accept and that
+ * carries a non-null value, naming the offending key, the closest accepted key when there is one,
+ * and the whole accepted set.
+ *
+ * An unrecognised blob key used to be *dropped* — the blob is read key by key, so a misspelling
+ * produced either a "Parameter 'X' is missing" for a value the caller did pass, or, worse, a
+ * mutation performed under defaults the caller thought it had overridden (study defect D14b).
+ * Rejecting is the same policy `mps_mcp_parse_java_and_insert` already applies to its own
+ * blob, and the counterpart of the "reject the ignored key" rule [paramString] applies to two
+ * spellings of one key.
+ */
+internal fun JsonObject?.rejectUnknownParameterKeys(context: String, keys: ParameterKeys) {
+  // Gson answers `null` for a blank blob and for the literal `null`, which the dispatchers then
+  // dereferenced into an opaque INTERNAL_ERROR. Reachable from the wire since `parameters` became
+  // a [JsonOrText]: it maps a JSON null to the empty string.
+  val params = this ?: throw ToolInputSchemaException(
+    "'$PARAMETERS_PATH' must be a JSON object carrying the keys for $context, not empty or null. " +
+      "Accepted: ${keys.canonical.joinToString(", ") { "'$it'" }}."
+  )
+  // A field-level JSON null carries no value, so an unrecognised key holding one drops nothing —
+  // and "an explicit null counts as absent" is already the rule every reader on this surface
+  // follows ([paramBoolean], [paramInt], [paramString]).
+  val unknown = params.keySet().filterNot {
+    it in keys.accepted || it in TOLERATED_PARAMETER_KEYS || params.get(it).isJsonNull
+  }
+  if (unknown.isEmpty()) return
+  val named = unknown.joinToString(", ") { key ->
+    val suggestion = suggestParameterName(key, keys.canonical)
+    if (suggestion != null) "'$key' (did you mean '$suggestion'?)" else "'$key'"
+  }
+  throw ToolInputSchemaException(
+    "Unknown ${if (unknown.size == 1) "parameter" else "parameters"} in '$PARAMETERS_PATH' for " +
+      "$context: $named. Accepted: ${keys.canonical.joinToString(", ") { "'$it'" }}. " +
+      "An unrecognised key is rejected rather than ignored, so a misspelling cannot silently " +
+      "drop the value you passed."
+  )
+}
+
+/**
+ * Returns the closest match from [candidates] for [input] if one is reasonably similar,
+ * or null otherwise. "Reasonably similar" means edit distance <= max(2, length/3) — large
+ * enough to catch a typo or a missing plural ('rebulid' -> 'rebuild', 'module' -> 'modules'),
+ * strict enough that a merely *related* word gets no suggestion at all ('moduleName' -> none):
+ * for those, the accepted-key list the rejection prints is what names the right key.
+ */
+internal fun suggestParameterName(input: String, candidates: Iterable<String>): String? {
+  val threshold = maxOf(2, input.length / 3)
+  return candidates
+    .map { it to editDistance(input.lowercase(), it.lowercase()) }
+    .filter { it.second <= threshold }
+    .minByOrNull { it.second }
+    ?.first
+}
+
+private fun editDistance(a: String, b: String): Int {
+  if (a == b) return 0
+  if (a.isEmpty()) return b.length
+  if (b.isEmpty()) return a.length
+  var prev = IntArray(b.length + 1) { it }
+  var curr = IntArray(b.length + 1)
+  for (i in 1..a.length) {
+    curr[0] = i
+    for (j in 1..b.length) {
+      val cost = if (a[i - 1] == b[j - 1]) 0 else 1
+      curr[j] = minOf(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost)
+    }
+    val tmp = prev; prev = curr; curr = tmp
+  }
+  return prev[b.length]
+}
+
+/**
  * FIND_INSTANCES' plural concept selector. Not a [BlobKey] spelling of [PARAM_CONCEPT_REF]: a
  * [BlobKey] groups spellings of one key that all carry one value, while this key carries many
  * (a single reference or an array of them). The two are mutually exclusive at the call site —
  * see `AbstractNodeOps.requestedConceptRefs`.
  */
 internal const val PARAM_CONCEPT_REFS = "conceptRefs"
+
+/**
+ * The scope selectors [AbstractNodeOps.buildSearchScope] reads out of a `parameters` blob, shared
+ * by every operation that takes a `scope`.
+ */
+internal val SEARCH_SCOPE_KEYS = ParameterKeys.of("scope", "models", "modules", "roots", "rootsOnly")
+
+/**
+ * FIND_INSTANCES' own keys. Lives here rather than beside one dispatcher because two tools route
+ * to the same [AbstractNodeOps.opFindInstances]: `mps_mcp_query_nodes` and, still dispatching for
+ * pre-move skill copies, `mps_mcp_query_structure`.
+ */
+internal val FIND_INSTANCES_KEYS = ParameterKeys.of(
+  PARAM_CONCEPT_REF, PARAM_CONCEPT_REFS, "detail", "exact", "sampleOnly", "propertyFilter",
+) + SEARCH_SCOPE_KEYS
 
 /**
  * FIND_INSTANCES' `detail` literals. `count` returns one `{concept, conceptReference, count}` row
@@ -238,13 +365,17 @@ fun parseEnumValueSpecs(json: String, sourceName: String = "valuesJson"): List<E
   }
 }
 
+private val JAVA_INSERT_PARAMETER_KEYS = ParameterKeys.of(
+  "code", "featureKind", "recovery", "contextNodeRef", "insert", "postProcess",
+)
+
 fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
   val obj = parseParametersObject(parameters)
   // Reject unrecognized top-level keys so a misspelled or unsupported field fails loudly
   // instead of being silently dropped. In particular `dryRun` is NOT supported by this tool
   // (unlike `mps_mcp_update_node`); previously passing it was a no-op and the model was mutated
   // anyway, hiding caller misuse.
-  obj.rejectUnknownKeys(setOf("code", "featureKind", "recovery", "contextNodeRef", "insert", "postProcess"), "parameters")
+  obj.rejectUnknownParameterKeys("mps_mcp_parse_java_and_insert", JAVA_INSERT_PARAMETER_KEYS)
   val code = obj.requiredString("code", "parameters")
   if (code.length > 50_000) {
     throw ToolInputSchemaException("Code exceeds maximum allowed length of 50_000 characters")

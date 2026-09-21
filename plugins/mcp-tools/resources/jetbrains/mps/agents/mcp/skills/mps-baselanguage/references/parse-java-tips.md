@@ -4,7 +4,7 @@ The Java parser is the fastest path when the code is plain Java with no BaseLang
 
 ## `parameters` JSON Schema
 
-The tool takes a single JSON-encoded `parameters` argument. Shape:
+The tool takes a single `parameters` argument holding a JSON object — sent either as real JSON or as that object written as a string; both decode identically. Shape:
 
 ```
 {
@@ -61,7 +61,7 @@ The tool takes a single JSON-encoded `parameters` argument. Shape:
 - For `child` insertion into a **multi-cardinality** role, `position` is 0-based. A value at or beyond the current child count is **clamped to an append** — it is *not* rejected — matching common list-insert semantics (e.g. Python `list.insert(big, x)`). A negative value other than `-1` is rejected. The response's `inserted[]` entries each carry the node's **actual `index`** within the parent role, so when a `position` overshoots you can see the resulting append position. This clamp-and-report behavior is consistent across the MCP tool family — `mps_mcp_update_node` (`ADD` × `CHILD`) and `mps_mcp_alter_nodes` (`MOVE_CHILD` / `MOVE_NODE_TO_PARENT` / `COPY_NODE`) clamp the same way.
 - For `replace` mode, the input must parse to exactly one top-level node; multi-node input is rejected.
 - `FIELD`, `METHOD`, and `NESTED_CLASS` are all parsed as **class members** (internally as `CLASS_CONTENT`). The `featureKind` here is **advisory**: the parser accepts any class-body content for these kinds, and what may be placed where is validated against the **target containment role**, not the kind. For example `featureKind:METHOD` with a nested-class body succeeds when the target role accepts a nested class. Constrain placement via the insert target / `role`, not `featureKind`.
-- Unrecognized keys in `parameters` (and in `insert` / `postProcess`) are **rejected** with an error naming the offending key. In particular **`dryRun` is not supported** by this tool (unlike `mps_mcp_update_node`); passing it fails rather than silently mutating.
+- Unrecognized keys in `parameters` (and in `insert` / `postProcess`) are **rejected** with an error naming the offending key, the nearest accepted spelling and the whole accepted set. In particular **`dryRun` is not supported** by this tool (unlike `mps_mcp_update_node`); passing it fails rather than silently mutating. `projectPath` is tolerated inside `parameters`, but it is the platform's top-level tool parameter and must still be passed there.
 
 ## Editing Strategy
 

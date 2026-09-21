@@ -12,6 +12,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
+import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -21,8 +22,8 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.valueParameters
 
 /**
- * Wire-shape contract for every top-level MCP parameter that documents a JSON array
- * (study defect D20, remedy M5a).
+ * Wire-shape contract for every top-level MCP parameter that documents real JSON — a JSON array
+ * (study defect D20, remedy M5a) or a JSON object (study defect D20b).
  *
  * The defect was in the platform's argument binding, not in any MPS tool body:
  * `CallableBridge.call` resolves `serializerOrNull(parameter.type)` per Kotlin parameter and hands
@@ -55,6 +56,12 @@ import kotlin.reflect.full.valueParameters
  *     not re-tested here: they share a binding shape with a parameter above and route through the
  *     same `parseNullableStringOrJsonArray` / `readNodeJsonOrFile` call, so a separate case would
  *     assert the serializer twice rather than anything new.
+ *
+ * The object-shaped family (D20b) is covered on the same principle, but by *consumer* rather than
+ * by parameter, because there the decoded text goes three different places: the operation
+ * dispatchers' `Gson().fromJson(parameters, JsonObject)` (`query_nodes` stands for the five
+ * `parameters` parameters), `readJsonOrFile` (`update_node.childJson`) and `jsonToMemento`
+ * (`update_module_facet.settingsJson`).
  */
 class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
 
@@ -95,15 +102,16 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
     @Test
     fun `every documented-array parameter still publishes a plain string schema`() {
         val converted = jsonOrTextParameters()
-        // Lower bound, not an exact count: 15 is what the D20 sweep converted, and a later
-        // parameter correctly declared JsonOrText must not fail this test. Shrinking below 15
-        // means a conversion was reverted. The real invariant — no String parameter may promise a
-        // JSON array — is enforced by `documented-array parameters are all JsonOrText, never
-        // String` below, which also covers a revert whose description wording changed too.
+        // Lower bound, not an exact count: 15 came from the D20 sweep and 7 more from D20b's
+        // object-shaped family, and a later parameter correctly declared JsonOrText must not fail
+        // this test. Shrinking below 22 means a conversion was reverted. The real invariants — no
+        // String parameter may promise a JSON array, none may carry a JSON payload — are enforced
+        // by the two guard tests below, which also cover a revert whose description wording
+        // changed too.
         assertTrue(
-            "expected at least the 15 parameters converted by the D20 sweep, got " +
+            "expected at least the 22 parameters converted by the D20 and D20b sweeps, got " +
                     "${converted.size}: ${converted.map { it.second + "." + it.third }}",
-            converted.size >= 15,
+            converted.size >= 22,
         )
 
         for ((toolset, toolName, parameterName) in converted) {
@@ -158,6 +166,32 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         assertTrue(
             "these parameters promise a JSON array but are declared String, so a client that sends " +
                     "one crashes the platform's argument decoder (D20) — declare them JsonOrText: $offenders",
+            offenders.isEmpty(),
+        )
+    }
+
+    @Test
+    fun `JSON-payload parameters are all JsonOrText, never String`() {
+        // The D20b half, matched by name rather than by description wording: across this surface a
+        // parameter called `parameters`, or one whose name ends in `json`, always carries a JSON
+        // document. Declared `String`, every one of them is a client-visible crash the moment the
+        // client sends that document as real JSON instead of as its string form.
+        val offenders = mutableListOf<String>()
+        for (toolset in allToolsets()) {
+            for (function in toolset::class.declaredFunctions.filter { it.findAnnotation<McpTool>() != null }) {
+                for (parameter in function.valueParameters) {
+                    if (parameter.type.classifier != String::class) continue
+                    val name = parameter.name ?: continue
+                    if (name == "parameters" || name.endsWith("json", ignoreCase = true)) {
+                        offenders.add("${function.name}.$name")
+                    }
+                }
+            }
+        }
+        assertTrue(
+            "these parameters carry a JSON document but are declared String, so a client that " +
+                    "sends real JSON crashes the platform's argument decoder (D20b) — declare " +
+                    "them JsonOrText: $offenders",
             offenders.isEmpty(),
         )
     }
@@ -380,6 +414,120 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
                 envelope.getAsJsonObject("details").getAsJsonArray("unresolved").size() > 0,
             )
         }
+    }
+
+    // ── object-shaped parameters (D20b) ──────────────────────────────────────────────────
+
+    /** Creates a two-member enumeration in the test's structure model, to add a third child to. */
+    private fun createColorEnum(): String {
+        val response = runTool(JetBrainsMPSLanguageStructureMcpToolset()) {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_ENUM,
+                """
+                {
+                  "structureModelRef": "$structureModelRef",
+                  "enumName": "WireShapeColor",
+                  "valuesJson": [ { "enumName": "RED" }, { "enumName": "GREEN" } ]
+                }
+                """.trimIndent(),
+            )
+        }
+        assertTrue(
+            "creating the fixture enum must succeed: $response",
+            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean,
+        )
+        return readOnRepo {
+            PersistenceFacade.getInstance()
+                .asString(structureModel.rootNodes.single { it.name == "WireShapeColor" }.reference)
+        }
+    }
+
+    @Test
+    fun `query-nodes accepts parameters as a real JSON object`() {
+        val conceptRef = createConceptRoot("WireObjectAlpha")
+
+        fun rootName(parameters: JsonElement): String =
+            expectOk(
+                callThroughBridge(
+                    JetBrainsMPSNodeMcpToolset(),
+                    "mps_mcp_query_nodes",
+                    mapOf("operation" to JsonPrimitive("GET_ROOT"), "parameters" to parameters),
+                )
+            ).get("name").asString
+
+        assertEquals(
+            "the object-as-string shape must keep working",
+            "WireObjectAlpha", rootName(JsonPrimitive("""{"nodeReference":"$conceptRef"}""")),
+        )
+        assertEquals(
+            "a real JSON object must decode",
+            "WireObjectAlpha",
+            rootName(JsonObject(mapOf("nodeReference" to JsonPrimitive(conceptRef)))),
+        )
+    }
+
+    @Test
+    fun `update-node accepts childJson as a real JSON object`() {
+        val enumRef = createColorEnum()
+
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_update_node",
+            mapOf(
+                "operation" to JsonPrimitive("ADD"),
+                "kind" to JsonPrimitive("CHILD"),
+                "nodeReference" to JsonPrimitive(enumRef),
+                "childRole" to JsonPrimitive("members"),
+                "childJson" to JsonObject(
+                    mapOf(
+                        "concept" to JsonPrimitive("jetbrains.mps.lang.structure.structure.EnumerationMemberDeclaration"),
+                        "properties" to JsonArray(
+                            listOf(
+                                JsonObject(mapOf("name" to JsonPrimitive("name"), "value" to JsonPrimitive("BLUE"))),
+                                JsonObject(mapOf("name" to JsonPrimitive("memberId"), "value" to JsonPrimitive("4242"))),
+                            )
+                        ),
+                    )
+                ),
+            ),
+        )
+        assertEquals("a real JSON object blueprint must insert: $response", "BLUE", expectOk(response).get("name").asString)
+
+        readOnRepo {
+            val members = PersistenceFacade.getInstance().createNodeReference(enumRef)
+                .resolve(structureModel.repository)!!
+                .children.filter { it.containmentLink?.name == "members" }
+                .mapNotNull { it.name }
+            assertEquals(listOf("RED", "GREEN", "BLUE"), members)
+        }
+    }
+
+    @Test
+    fun `update-module-facet accepts settingsJson as a real JSON object`() {
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        expectOk(
+            callThroughBridge(
+                JetBrainsMPSModuleMcpToolset(),
+                "mps_mcp_update_module_facet",
+                mapOf(
+                    "moduleName" to JsonPrimitive(moduleName),
+                    "facetType" to JsonPrimitive("tests"),
+                    "enabled" to JsonPrimitive(true),
+                    "settingsJson" to JsonObject(mapOf("seed" to JsonPrimitive("wire-shape"))),
+                ),
+            )
+        )
+
+        val facets = expectOk(runTool(JetBrainsMPSModuleMcpToolset()) { it.mps_mcp_get_module_facets(moduleName) })
+            .getAsJsonArray("persistedFacets")
+        val memento = facets.map { it.asJsonObject }.single { it.get("type").asString == "tests" }
+            .getAsJsonObject("memento")
+        assertEquals(
+            "the real JSON object must reach the memento: $memento",
+            "wire-shape", memento.getAsJsonObject("properties").get("seed").asString,
+        )
     }
 
     @Test

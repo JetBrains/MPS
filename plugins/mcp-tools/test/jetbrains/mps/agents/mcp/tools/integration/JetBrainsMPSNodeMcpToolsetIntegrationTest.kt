@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.*
+import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
@@ -1436,6 +1437,55 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    // ── `parameters` blob key validation (study defects D14b / D18b) ────────────────────────
+
+    @Test
+    fun `query_nodes rejects an unrecognised parameters key instead of dropping it`() {
+        // Before this, an unknown blob key was read past: a caller who misspelled `nodeReference`
+        // got "Parameter 'nodeReference' is missing" for a value it had passed.
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_ROOT, """{"nodeRefernce":"whatever"}""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue("error must name the key that was sent: $error", error.contains("'nodeRefernce'"))
+        assertTrue("error must name the key that was meant: $error", error.contains("nodeReference"))
+        assertTrue("error must name the operation: $error", error.contains("GET_ROOT"))
+    }
+
+    @Test
+    fun `alter_nodes tolerates projectPath inside parameters`() {
+        // Study remedy P5(a). The platform has already resolved the project from the top-level
+        // `projectPath` by the time this runs, so repeating it in the blob drops nothing and must
+        // not fail the call.
+        val enumRef = createColorEnum()
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.FIX_REFERENCES,
+                """{"nodeReference":"$enumRef","projectPath":"/wherever/the/caller/thinks"}""",
+            )
+        }
+        assertOk(response)
+    }
+
+    @Test
+    fun `alter_nodes MAKE still names the accepted keys for a misplaced top-level argument`() {
+        // MAKE keeps its own rejection, richer than the shared one (MAKE_INPUT_INVALID plus an
+        // `expectedParameters` schema map), and that must survive the shared unknown-key check
+        // being added around the dispatcher.
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{"moduleName":"some.module","rebuild":true}""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("MAKE_INPUT_INVALID", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue("error must name the key that was sent: $error", error.contains("'moduleName'"))
+        assertTrue("error must name the accepted keys: $error", error.contains("'modules'"))
+    }
+
     // ── fixtures & helpers ─────────────────────────────────────────────────────────────────
 
     /** Creates `Color` enum with members `[RED, GREEN, BLUE]` and returns its node reference. */
@@ -1538,7 +1588,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // Regression: an operation outside NodeUpdateOperation must be a classified error, not a
         // kotlinx SerializationException escaping the framework's pre-call enum decode.
         val response = runTool(JetBrainsMPSNodeMcpToolset()) {
-            it.mps_mcp_update_node("UPSERT", "CHILD", nodeReference = "x", childRole = "y", childJson = "{}")
+            it.mps_mcp_update_node("UPSERT", "CHILD", nodeReference = "x", childRole = "y", childJson = JsonOrText("{}"))
         }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
@@ -1550,7 +1600,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     fun `update_node with unknown kind returns INVALID_REQUEST instead of crashing`() {
         // `kind` is the second enum selector on this tool; it must be validated as a String too.
         val response = runTool(JetBrainsMPSNodeMcpToolset()) {
-            it.mps_mcp_update_node("ADD", "ATTRIBUTE", nodeReference = "x", childRole = "y", childJson = "{}")
+            it.mps_mcp_update_node("ADD", "ATTRIBUTE", nodeReference = "x", childRole = "y", childJson = JsonOrText("{}"))
         }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)

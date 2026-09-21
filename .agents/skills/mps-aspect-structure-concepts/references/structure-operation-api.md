@@ -9,7 +9,14 @@ Two tools cover structure operations:
 
 Both return a JSON object with `'ok':true` and `'data':{...}` on success, or `'ok':false` and `'error':"..."` on failure.
 Failure responses can also include optional stable metadata fields: `'code'`, `'details'`, and `'warnings'`.
-Parameters are passed as a JSON object string. A boolean parameter (`make`, `dryRun`, `multiple`, `optional`, `includeInherited`) takes `true`/`false`, or the same literal quoted in any case (`"true"`, `"TRUE"`); an explicit `null` counts as absent, so the documented default applies. Any other shape — `1`, `"yes"`, `" true "`, an object, an array — is rejected with `'parameters.<name>' must be a boolean` rather than coerced. The same rule applies to booleans *inside* a `conceptsJson` / `interfaceConceptsJson` blueprint (`abstract` and `rootable` on a concept, a link's `multiple` / `optional` in either), where the message names the blueprint path instead — `'conceptsJson[0].rootable' must be a boolean`.
+Parameters are passed as a JSON object, sent either as real JSON or as that object written as a
+string — both wire shapes decode identically, so a client need not stringify. A key the operation
+does not accept is **rejected** with `INVALID_REQUEST` naming it, the closest accepted spelling,
+and the whole accepted set; it is never silently dropped. `dryRun` therefore belongs only to
+`CREATE_CONCEPTS` and `CREATE_ENUM`, the two operations that honour it — elsewhere it is rejected
+rather than ignored, because ignoring it wrote to the model while the caller believed it had only
+validated. `projectPath` is tolerated inside `parameters` (it must still be passed as the
+top-level tool parameter, which is what actually selects the project). A boolean parameter (`make`, `dryRun`, `multiple`, `optional`, `includeInherited`) takes `true`/`false`, or the same literal quoted in any case (`"true"`, `"TRUE"`); an explicit `null` counts as absent, so the documented default applies. Any other shape — `1`, `"yes"`, `" true "`, an object, an array — is rejected with `'parameters.<name>' must be a boolean` rather than coerced. The same rule applies to booleans *inside* a `conceptsJson` / `interfaceConceptsJson` blueprint (`abstract` and `rootable` on a concept, a link's `multiple` / `optional` in either), where the message names the blueprint path instead — `'conceptsJson[0].rootable' must be a boolean`.
 
 Reference-valued keys accept **both the short and the long suffix**: `conceptRef`/`conceptReference`, `superConceptRef`/`superConceptReference`, `structureModelRef`/`structureModelReference`, `enumerationRef`/`enumerationReference` — and, in `mps_mcp_query_nodes`/`mps_mcp_alter_nodes`, `nodeReference`/`nodeRef`, `childNodeRef`/`childNodeReference`, `newParentRef`/`newParentReference`, `modelReference`/`modelRef`. The short form listed first is the canonical one used throughout these docs; the alias exists only because the tool surface spells the same idea both ways. Sending **both** spellings of one parameter in one `parameters` object is rejected with `INVALID_REQUEST` naming which one to keep, rather than silently picking one.
 

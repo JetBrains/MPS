@@ -72,6 +72,29 @@ schema (`conceptRefs`, `searchTexts`, `nodeReference`, `childNodeRef`, `conceptR
 so the tool answers with its own required-parameter rejection — which names the correct key and
 ends with the literal retry to make. Read that line instead of re-fetching the schema.
 
+### Every other blob key is rejected, not dropped
+
+A key a `parameters` blob does not recognise is answered with `INVALID_REQUEST` naming the key you
+sent, the closest accepted spelling when there is one, and the whole accepted set for that
+operation — it is never read past. Before this, an unrecognised key was silently dropped, so a
+misspelling surfaced either as `Parameter 'X' is missing` for a value you *did* pass or, on a write,
+as a mutation performed under the defaults you thought you had overridden.
+
+Two consequences worth knowing:
+
+- **`dryRun` is accepted only where it is honoured** — `mps_mcp_alter_structure` `CREATE_CONCEPTS`
+  and `CREATE_ENUM`, and the top-level `dryRun` parameter of `mps_mcp_update_node`. On any other
+  `alter_structure` operation it is rejected rather than ignored, because ignoring it wrote to the
+  model while the caller believed it had only validated. `mps_mcp_parse_java_and_insert` rejects it
+  the same way.
+- **`projectPath` is tolerated inside `parameters`.** It is the platform's own *top-level* tool
+  parameter and must still be passed there — the platform resolves the project before the tool runs
+  — but repeating it inside the blob is accepted rather than failed, because the value it carries
+  has already been applied.
+
+A field-level JSON `null` counts as absent for this check too: `{"cardinality": null}` carries no
+value, so it is not reported.
+
 ## MCP Response Envelope
 
 Every MPS MCP tool returns a JSON envelope at the top level:

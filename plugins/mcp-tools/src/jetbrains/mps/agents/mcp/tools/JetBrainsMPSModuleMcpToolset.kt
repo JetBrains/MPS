@@ -1019,8 +1019,9 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         @McpDescription("Module name or reference") moduleName: String,
         @McpDescription("Facet type to update") facetType: String,
         @McpDescription("Whether to enable or disable the facet") @Nullable enabled: Boolean? = null,
-        @McpDescription("Facet settings as a flat JSON object of primitive values, or structured JSON with optional 'properties' object, primitive 'text', and 'children' array. Each child requires a primitive 'type'. Invalid settings leave the existing facet unchanged; ignored when enabled=false.") @Nullable settingsJson: String? = null
+        @McpDescription("Facet settings as a flat JSON object of primitive values, or structured JSON with optional 'properties' object, primitive 'text', and 'children' array; sent as real JSON or as its string form. Each child requires a primitive 'type'. Invalid settings leave the existing facet unchanged; ignored when enabled=false.") @Nullable settingsJson: JsonOrText? = null
     ): String = withMpsProject("Updating module facet") { mpsProject ->
+        val settings = settingsJson?.text
         val validationError = withModalTimeoutOnEdt {
             var commandError: String? = null
             mpsProject.repository.modelAccess.executeCommand {
@@ -1032,14 +1033,14 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
                         if (enabled == false) {
                             descriptor.moduleFacetDescriptors.removeIf { it.type == facetType }
-                        } else if (enabled == true || settingsJson != null) {
+                        } else if (enabled == true || settings != null) {
                             if (FacetsFacade.getInstance().getFacetFactory(facetType) == null) {
                                 throw McpInvalidRequestException("Unknown facet type: $facetType. No factory registered.")
                             }
 
                             val memento = MementoImpl()
-                            if (settingsJson != null) {
-                                when (val parsed = jsonToMemento(settingsJson, memento)) {
+                            if (settings != null) {
+                                when (val parsed = jsonToMemento(settings, memento)) {
                                     MementoParsingResult.Ok -> Unit
                                     is MementoParsingResult.Err -> {
                                         commandError = parsed.errJson

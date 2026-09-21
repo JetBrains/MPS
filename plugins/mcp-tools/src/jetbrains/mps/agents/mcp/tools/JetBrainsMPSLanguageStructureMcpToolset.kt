@@ -51,6 +51,66 @@ enum class MPSStructureAlterOperation {
     RENAME_CONCEPT_REFERENCE
 }
 
+/**
+ * `GET_ASSIGNABLE_REFERENCES` is the one structure operation whose blob is deserialized whole
+ * into a data class ([GetAssignableReferencesRequest]) rather than read key by key, so Gson —
+ * not the dispatcher — is what used to drop an unrecognised key. The list mirrors that class's
+ * constructor; `McpToolInputSchemasTest.assignableReferencesKeysMirrorTheRequestDataClass` fails
+ * if the two drift apart.
+ */
+internal val GET_ASSIGNABLE_REFERENCES_KEYS = ParameterKeys.of(
+    "contextNode", "referenceRole", "owningConcept", "targetConcept", "containmentLink", "position",
+    "mode", "limit", "offset",
+    "scopeMode", "includeModules", "excludeModules",
+    "kindFilter", "expectedDeclaringType", "receiverType", "argumentTypes", "argumentCount",
+    "sortBy", "preferSameModel", "preferSameModule", "preferProjectCode",
+    "includeReason", "includeTypeDistance", "includeInaccessible",
+)
+
+private val CONCEPT_ONLY_KEYS = ParameterKeys.of(PARAM_CONCEPT_REF)
+
+private val CONCEPT_AND_LANGUAGES_KEYS = ParameterKeys.of(PARAM_CONCEPT_REF, "languageRefs")
+
+private val RENAME_ROLE_KEYS = ParameterKeys.of(PARAM_CONCEPT_REF, "oldRole", "newRole")
+
+private val UPDATE_CONCEPT_LINK_KEYS =
+    ParameterKeys.of(PARAM_CONCEPT_REF, "role", "targetConcept", "multiple", "optional")
+
+private fun queryStructureParameterKeys(operation: MPSStructureQueryOperation): ParameterKeys = when (operation) {
+    MPSStructureQueryOperation.GET_ENUMERATION_LITERALS ->
+        ParameterKeys.of(PARAM_ENUMERATION_REF, PARAM_NODE_REFERENCE, "propertyName")
+    MPSStructureQueryOperation.FIND_INSTANCES -> FIND_INSTANCES_KEYS
+    MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> ParameterKeys.of(PARAM_CONCEPT_REF, PARAM_SUPER_CONCEPT_REF)
+    MPSStructureQueryOperation.GET_SUB_CONCEPTS,
+    MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> CONCEPT_AND_LANGUAGES_KEYS
+    MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> GET_ASSIGNABLE_REFERENCES_KEYS
+    MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> CONCEPT_ONLY_KEYS
+    MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> ParameterKeys.of(PARAM_CONCEPT_REF, "includeInherited")
+    MPSStructureQueryOperation.IS_SMART_REFERENCE -> CONCEPT_ONLY_KEYS
+}
+
+/**
+ * `dryRun` is accepted only by the two operations that honour it. Every other operation read it
+ * off the blob and mutated the model anyway — the same silent no-op
+ * `mps_mcp_parse_java_and_insert` already rejects on its own blob.
+ */
+private fun alterStructureParameterKeys(operation: MPSStructureAlterOperation): ParameterKeys = when (operation) {
+    MPSStructureAlterOperation.CREATE_CONCEPTS -> ParameterKeys.of(
+        PARAM_STRUCTURE_MODEL_REF, "make", "conceptsJson", "interfaceConceptsJson", "conceptNames", "dryRun",
+    )
+    MPSStructureAlterOperation.CREATE_ENUM -> ParameterKeys.of(
+        PARAM_STRUCTURE_MODEL_REF, "enumName", "valuesJson", "defaultEnumName", "dryRun",
+    )
+    MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY ->
+        ParameterKeys.of(PARAM_CONCEPT_REF, "propertyName", "dataType")
+    MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+    MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE -> UPDATE_CONCEPT_LINK_KEYS
+    MPSStructureAlterOperation.RENAME_CONCEPT_PROPERTY ->
+        ParameterKeys.of(PARAM_CONCEPT_REF, "oldName", "newName")
+    MPSStructureAlterOperation.RENAME_CONCEPT_CHILD,
+    MPSStructureAlterOperation.RENAME_CONCEPT_REFERENCE -> RENAME_ROLE_KEYS
+}
+
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
 // surface, and they are invoked via reflection by the MCP server framework, so static
 // analysis flags them as "never used".
@@ -60,16 +120,16 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Queries MPS language structure (read-only): check inheritance, list aspects, resolve references, query enumeration literals, check smart-reference status. For nodes that are instances of a concept use `mps_mcp_query_nodes` FIND_INSTANCES. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object string. For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
+        Queries MPS language structure (read-only): check inheritance, list aspects, resolve references, query enumeration literals, check smart-reference status. For nodes that are instances of a concept use `mps_mcp_query_nodes` FIND_INSTANCES. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object (real JSON or its string form). For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
     """
     )
     suspend fun mps_mcp_query_structure(
         @McpDescription("The operation to perform (GET_ENUMERATION_LITERALS, IS_SUBCONCEPT_OF, GET_SUB_CONCEPTS, GET_ASSIGNABLE_CONCEPTS, GET_ALL_SUPERCONCEPTS, LIST_CONCEPT_ASPECTS, GET_ASSIGNABLE_REFERENCES, IS_SMART_REFERENCE)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText
     ): String {
         val op = resolveOperationOrNull<MPSStructureQueryOperation>(operation)
             ?: return unknownOperation<MPSStructureQueryOperation>(operation)
-        return mps_mcp_query_structure(op, parameters)
+        return mps_mcp_query_structure(op, parameters.text)
     }
 
     /**
@@ -86,6 +146,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         } catch (e: Exception) {
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
+        params.rejectUnknownParameterKeys(operation.name, queryStructureParameterKeys(operation))
 
         when (operation) {
             MPSStructureQueryOperation.GET_ENUMERATION_LITERALS -> {
@@ -222,18 +283,18 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Alters MPS language structure: create concepts/enums, manage and rename properties/children/references. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object string. For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
+        Alters MPS language structure: create concepts/enums, manage and rename properties/children/references. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object (real JSON or its string form). For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
 
         For `CREATE_CONCEPTS` with `make:true`, the response includes a `makeStatus` field (one of "success", "runtime_stale", "failed", or "skipped"). `makeStatus` is verified against the live runtime: "success" means the build succeeded AND every created concept's runtime descriptor was read back non-hollow, so dependent tools (`get_concept_details`, `scaffold_editor`) can be trusted immediately. The tool already forces a clean rebuild and, if the first (model-scoped) build leaves any descriptor hollow — which happens for a brand-new, never-before-deployed language — it automatically performs one module-scoped clean rebuild that materializes the runtime (`recoveryStage:"module-rebuild"` is then set). "runtime_stale" means descriptors are still hollow even after that; the still-hollow concept names are listed in `hollowConcepts` and a `descriptorRecoveryAction` is provided — recover by running `mps_mcp_alter_nodes` with `MAKE`, `rebuild=true`, targeting the language module (calling `mps_mcp_reload_all` alone is insufficient; restart MPS if it persists). For the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
     """
     )
     suspend fun mps_mcp_alter_structure(
         @McpDescription("The operation to perform (CREATE_CONCEPTS, CREATE_ENUM, UPDATE_CONCEPT_PROPERTY, RENAME_CONCEPT_PROPERTY, UPDATE_CONCEPT_CHILD, RENAME_CONCEPT_CHILD, UPDATE_CONCEPT_REFERENCE, RENAME_CONCEPT_REFERENCE)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText
     ): String {
         val op = resolveOperationOrNull<MPSStructureAlterOperation>(operation)
             ?: return unknownOperation<MPSStructureAlterOperation>(operation)
-        return mps_mcp_alter_structure(op, parameters)
+        return mps_mcp_alter_structure(op, parameters.text)
     }
 
     /**
@@ -247,6 +308,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         } catch (e: Exception) {
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
+        params.rejectUnknownParameterKeys(operation.name, alterStructureParameterKeys(operation))
         val dryRun = params.paramBoolean("dryRun", default = false)
 
         when (operation) {
