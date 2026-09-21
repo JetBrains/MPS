@@ -9,11 +9,18 @@ Task: refactor the language and migrate the existing models.
 1. Rename the property `Recipe.servings` to `portions`.
 2. Change `Recipe.steps` from `[1..n]` to `[0..n]` and add a new required child `Recipe.summary`
    (concept `Summary` with a string property `text`, cardinality `[1]`).
-3. Write a migration script for the language that gives every existing Recipe a Summary whose
-   text is `TODO` — and bump the language version so the migration applies.
-4. Run the migration on the project (or apply the equivalent change) so every existing Recipe
+3. Write a migration for the language that gives every existing Recipe a Summary whose
+   text is `TODO` — rebuild and see the language version bumped so the migration applies.
+4. Run the migration on the project so every existing Recipe
    has a Summary, all references still resolve, and the editors still show the recipes.
-5. Done when: the language builds cleanly, `mps_mcp_check_root_node_problems` reports no errors
-   on any root in `mcp.study.kitchen.samples`, and you have listed what changed.
+5. Done when: 
+      - the language builds cleanly
+      - structure matches
+      - language's migrations model has that one script
+      - version is bumped
+      - every Recipe has summary with text 'TODO' and preserved the other portions
+      - samples have 0 errors (`mps_mcp_check_root_node_problems` reports no errors
+        on any root in `mcp.study.kitchen.samples`)
+      - you have listed what changed
 
 Do not roll back changes. Do not edit .mps/.mpl files as text. Stop and explain if blocked.
