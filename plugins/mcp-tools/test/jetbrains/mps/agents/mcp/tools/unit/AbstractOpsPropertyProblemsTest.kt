@@ -308,12 +308,17 @@ class AbstractOpsPropertyProblemsTest {
     @Test
     fun fileInputExpandsLeadingTmpdirEnvVar() {
         val json = """{"concept":"test.lang.structure.TestConcept"}"""
-        val tmpdir = File(System.getenv("TMPDIR") ?: System.getProperty("java.io.tmpdir"))
-        val file = File.createTempFile("mcp-tools-json-", ".json", tmpdir)
+        val javaTmp = File(System.getProperty("java.io.tmpdir")).canonicalFile
+        val envTmp = File(System.getenv("TMPDIR") ?: System.getProperty("java.io.tmpdir")).canonicalFile
+        Assume.assumeTrue(
+            "\$TMPDIR must resolve to java.io.tmpdir so the auto-delete prefix check applies",
+            javaTmp == envTmp,
+        )
+        val file = File.createTempFile("mps-node-", ".json", javaTmp)
         try {
             file.writeText(json)
             assertEquals(json, ops.readJsonOrFileForTest("\$TMPDIR/${file.name}"))
-            assertTrue(file.exists())
+            assertTrue("expansion must not auto-delete an unregistered tool-prefix file", file.exists())
         } finally {
             file.delete()
         }
@@ -340,6 +345,7 @@ class AbstractOpsPropertyProblemsTest {
         try {
             file.writeText(json)
             assertEquals(json, ops.readJsonOrFileForTest("%TEMP%/${file.name}"))
+            assertEquals(json, ops.readJsonOrFileForTest("%Temp%/${file.name}"))
         } finally {
             file.delete()
         }
@@ -366,6 +372,61 @@ class AbstractOpsPropertyProblemsTest {
             val message = e.message.orEmpty()
             assertTrue("unexpanded \$HOME must stay in the message: $message", message.contains("\$HOME"))
             assertFalse("\$HOME must not be expanded: $message", message.contains("resolved to"))
+        }
+    }
+
+    @Test
+    fun fileInputRejectsTraversalAfterTempEnvExpansion() {
+        val tmpdir = File(System.getenv("TMPDIR") ?: System.getProperty("java.io.tmpdir")).canonicalFile
+        val outside = firstRegularFileOutside(tmpdir, File("/tmp"))
+        Assume.assumeTrue("needs an existing regular file outside the allowed temp directories", outside != null)
+        val relative = try {
+            tmpdir.toPath().relativize(outside!!.toPath()).toString().replace(File.separatorChar, '/')
+        } catch (_: IllegalArgumentException) {
+            Assume.assumeTrue("tmpdir and outside file must share a filesystem root", false)
+            return
+        }
+        Assume.assumeTrue("needs a '..' traversal from \$TMPDIR to the outside file", relative.contains(".."))
+
+        try {
+            ops.readJsonOrFileForTest("\$TMPDIR/$relative")
+            fail("Expected a post-expansion path traversal to be rejected")
+        } catch (e: AbstractOps.McpInvalidRequestException) {
+            val message = e.message.orEmpty()
+            assertTrue(
+                "traversal must be rejected by the temp-dir guard: $message",
+                message.contains("is not inside the system temp directory"),
+            )
+        }
+    }
+
+    @Test
+    fun fileInputRejectsTmpSymlinkPointingOutside() {
+        val tmp = File("/tmp")
+        Assume.assumeTrue("needs a writable /tmp", tmp.isDirectory && tmp.canWrite())
+        val tmpdir = File(System.getProperty("java.io.tmpdir")).canonicalFile
+        val outside = firstRegularFileOutside(tmpdir, tmp)
+        Assume.assumeTrue("needs an existing regular file outside /tmp and java.io.tmpdir", outside != null)
+
+        val link = File(tmp, "mcp-tools-outside-link-${System.nanoTime()}.json")
+        try {
+            try {
+                Files.createSymbolicLink(link.toPath(), outside!!.toPath())
+            } catch (e: Exception) {
+                Assume.assumeTrue("needs permission to create a symlink in /tmp: ${e.message}", false)
+            }
+            try {
+                ops.readJsonOrFileForTest(link.absolutePath)
+                fail("Expected a /tmp symlink pointing outside to be rejected")
+            } catch (e: AbstractOps.McpInvalidRequestException) {
+                val message = e.message.orEmpty()
+                assertTrue(
+                    "symlink escape must be rejected by the temp-dir guard: $message",
+                    message.contains("is not inside the system temp directory"),
+                )
+            }
+        } finally {
+            link.delete()
         }
     }
 
@@ -1587,6 +1648,23 @@ class AbstractOpsPropertyProblemsTest {
             "getRepository" -> repository
             else -> null
         }
+    }
+
+    private fun firstRegularFileOutside(vararg roots: File): File? {
+        val outside = File(System.getProperty("user.dir")).canonicalFile.listFiles()?.firstOrNull { it.isFile } ?: return null
+        val canonical = outside.canonicalFile
+        for (root in roots) {
+            val dir = try {
+                if (!root.exists()) continue
+                root.canonicalFile
+            } catch (_: Exception) {
+                continue
+            }
+            if (canonical.path == dir.path || canonical.path.startsWith(dir.path + File.separator)) {
+                return null
+            }
+        }
+        return canonical
     }
 
     private fun assertSchemaFailure(expectedMessage: String, block: () -> Unit) {

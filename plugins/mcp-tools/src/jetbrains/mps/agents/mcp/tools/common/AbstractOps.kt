@@ -3425,20 +3425,12 @@ abstract class AbstractOps : McpToolset {
         }
         val allowedTempDirs = allowedTempDirectories()
         if (allowedTempDirs.isNotEmpty() && allowedTempDirs.none { FileUtil.isAncestor(it, canonicalFile, false) }) {
-            val tempDir = try { File(System.getProperty("java.io.tmpdir")).canonicalFile } catch (e: Exception) { null }
-            val accepted = buildString {
-                if (tempDir != null) {
-                    append(tempDir.path)
-                    append(" (\$TMPDIR on macOS/Linux, %TEMP% on Windows)")
-                }
-                if (SystemInfo.isMac) {
-                    if (isNotEmpty()) append(", or ")
-                    append("/tmp")
-                }
-            }
+            val accepted = allowedTempDirs.joinToString(", or ") { it.path }
+                .ifBlank { System.getProperty("java.io.tmpdir") ?: "." }
             throw McpInvalidRequestException(
                 "Input file path '$jsonOrPath' is not inside the system temp directory. " +
-                        "It must be inside the system temp directory $accepted."
+                        "It must be inside the system temp directory $accepted " +
+                        "(\$TMPDIR on macOS/Linux, %TEMP% on Windows)."
             )
         }
         val sizeBytes = file.length()
@@ -3498,8 +3490,9 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
-     * Expands a leading `$TMPDIR` / `${TMPDIR}` / `$TEMP` / `$TMP` or `%TEMP%` / `%TMP%` / `%TMPDIR%`.
-     * Unknown or non-leading variables are left untouched so `$HOME` cannot escape the temp-dir guard.
+     * Expands a leading `$TMPDIR` / `${TMPDIR}` / `$TEMP` / `$TMP` or `%TEMP%` / `%TMP%` / `%TMPDIR%`
+     * (the `%…%` form is matched case-insensitively). Unknown or non-leading variables are left
+     * untouched so `$HOME` cannot escape the temp-dir guard.
      */
     private fun expandLeadingTempEnv(path: String): String {
         val unixNames = arrayOf("TMPDIR", "TEMP", "TMP")
@@ -3507,25 +3500,37 @@ abstract class AbstractOps : McpToolset {
             for (name in unixNames) {
                 val braced = "\${$name}"
                 if (isLeadingTempToken(path, braced)) {
-                    return resolveTempEnv(name) + path.substring(braced.length)
+                    return joinTempPath(resolveTempEnv(name), path.substring(braced.length))
                 }
             }
             for (name in unixNames) {
                 val plain = "\$$name"
                 if (isLeadingTempToken(path, plain)) {
-                    return resolveTempEnv(name) + path.substring(plain.length)
+                    return joinTempPath(resolveTempEnv(name), path.substring(plain.length))
                 }
             }
         }
         if (path.startsWith("%")) {
-            for (name in arrayOf("TEMP", "TMP", "TMPDIR")) {
-                val token = "%$name%"
-                if (isLeadingTempToken(path, token)) {
-                    return resolveTempEnv(name) + path.substring(token.length)
+            val end = path.indexOf('%', 1)
+            if (end > 1) {
+                val name = path.substring(1, end)
+                val canonical = unixNames.firstOrNull { it.equals(name, ignoreCase = true) }
+                if (canonical != null) {
+                    val token = path.substring(0, end + 1)
+                    if (isLeadingTempToken(path, token)) {
+                        return joinTempPath(resolveTempEnv(canonical), path.substring(token.length))
+                    }
                 }
             }
         }
         return path
+    }
+
+    private fun joinTempPath(base: String, rest: String): String {
+        if (rest.isEmpty()) return base
+        val baseEnds = base.endsWith('/') || base.endsWith('\\')
+        val restStarts = rest.startsWith('/') || rest.startsWith('\\')
+        return if (baseEnds && restStarts) base + rest.substring(1) else base + rest
     }
 
     private fun isLeadingTempToken(path: String, token: String): Boolean {

@@ -38,7 +38,7 @@ MPS tools use a single JSON blueprint shape for all insertions and updates:
 * Either parameter may be inline JSON (max 4 KB) **or an absolute file path**, and the file **must be inside the JVM system temp directory**:
   * macOS/Linux — under `$TMPDIR` (on macOS a per-user `/var/folders/...` directory). On macOS, `/tmp` and `/private/tmp` are also accepted (they are aliases).
   * Windows — under `%TEMP%`.
-  * A leading `$TMPDIR`, `${TMPDIR}`, `$TEMP`, `$TMP`, `%TEMP%`, `%TMP%`, or `%TMPDIR%` in the path is expanded by the server.
+  * A leading `$TMPDIR`, `${TMPDIR}`, `$TEMP`, `${TEMP}`, `$TMP`, `${TMP}`, `%TEMP%`, `%TMP%`, or `%TMPDIR%` in the path is expanded by the server.
   * Shell example: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` and pass `$f` (or the unexpanded `$TMPDIR/...` form).
   * An agent file-writing tool (e.g. `Write`) is fine too: write under `$TMPDIR`, or `/tmp` on macOS.
 
