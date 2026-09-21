@@ -21,6 +21,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 > Use `mps_mcp_*` tools instead. If they are not available, ask the user to start MPS and enable the MPS MCP server before continuing.
 
 - **Pass `projectPath` on every `mps_mcp_*` call, starting with the first one.** The platform routes every call by resolving `projectPath` to an open project, so a call without it is rejected *before dispatch* (`"Unable to determine the target project…"`) and costs a turn. Pass the open MPS project's **base directory** — a path at or inside it, never an ancestor such as the repository root. If you are not yet aware of that path, pass the session's current working directory (the one you already have — do not spend a turn discovering it); if that is rejected, take the path from the rejection message, which lists the open projects (`Currently open projects: {...}`). `mps_mcp_list_open_projects` reports the same value as `mpsProjectBaseDirectory` when it can run. Reuse that one path for every later call in the session.
+- **Empty `Currently open projects: {"projects":[]}` is the welcome screen, not a bad path.** Retrying `mps_mcp_*` cannot succeed until some project is open. Load the `mps-project-management` companion skill from the same origin and open the project via CLI.
 - **Always prefer MPS MCP tools over hand-editing `.mps` / `.mpl` XML.** Hand-edits silently corrupt model files.
 - **Preserve node IDs.** Prefer `mps_mcp_update_root_node_from_json` or surgical edits (`mps_mcp_update_node`, …) over delete-and-reinsert. Deleting destroys persistent IDs and breaks incoming references.
 - **Copy-then-modify beats reconstruct-from-JSON.** To create a node that closely resembles an existing one, duplicate it with `mps_mcp_alter_nodes` `COPY_NODE` and adjust the copy with `mps_mcp_update_node`, instead of printing the original and re-authoring it as a JSON blueprint. The copy is guaranteed structurally valid and needs no blueprint authoring at all.
@@ -77,6 +78,7 @@ The MPS catalog contains companion skills for focused task families. Load whiche
 | `mps-quotations`                    | MPS quotations and anti-quotations — node literals creating SNode trees inline in behavior/generator/model code. |
 | `mps-build-language`                | MPS Build Language — declarative DSL generating Ant `build.xml` files for packaging plugins, Java modules, standalone IDEs. |
 | `mps-ide-plugin`                    | MPS IDE plugins — actions, action groups, tool windows, keymaps, preference components. |
+| `mps-project-management`            | Open an MPS project when MCP is stuck on the welcome screen — CLI activation for MPS from sources and standalone, macOS/Linux/Windows. |
 | `bugfix-workflow`                  | MPS bugfixing workflow. |
 
 ## Key Concepts
