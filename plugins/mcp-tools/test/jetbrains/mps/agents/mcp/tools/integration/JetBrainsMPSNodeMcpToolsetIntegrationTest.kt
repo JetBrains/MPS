@@ -993,6 +993,9 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             }
         """.trimIndent()
         assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        // The counts below come from an index-backed search; let the write above finish indexing
+        // first, or the search races the re-index and undercounts.
+        waitForSmartMode()
     }
 
     /** FIND_INSTANCES parameters scoped to the test's structure model, with [conceptRefs] verbatim. */
