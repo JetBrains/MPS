@@ -2,8 +2,9 @@
 
 Location: `plugins/mcp-tools/study/scenarios/<S>/worker_prompt.md` + `done_criteria.md`.
 Fixtures are NOT kept as tarballs in git — regenerate them per `plugins/mcp-tools/study/fixtures/README.md`
-(empty = initialised empty project; statechart = Projectxx5; recipes = a passing S1 project incl. `classes_gen`;
-recipes-broken = recipes + `scenarios/S5/PROBLEMS.md`).
+(empty = initialised empty project; statechart = Projectxx5; recipes = a passing S1 project
+with sample Recipe/Cookbook roots deleted, for S3; recipes-full = the same S1 project with
+those samples kept, for S5/S6; recipes-broken = recipes-full + `scenarios/S5/PROBLEMS.md`).
 
 | # | Scenario | Fixture | Hypotheses |
 |---|---|---|---|
@@ -12,7 +13,7 @@ recipes-broken = recipes + `scenarios/S5/PROBLEMS.md`).
 | S3 | 40 recipes from `recipes.csv` (bulk, cross-refs, cookbook) | recipes (+ csv) | H3 bulk, H6 refs, H1 |
 | S4 | Rename property, change cardinality, migration | recipes | H2, H5 validation, H8 |
 | S5 | Fix 12 injected problems (`fixtures/PROBLEMS.md`) | recipes-broken | H5 |
-| S6 | Generator → Java per Recipe; behavior via parser and via JSON AST | recipes | H1, H2 |
+| S6 | Generator → Java per Recipe; behavior via parser and via JSON AST | recipes-full | H1, H2 |
 | S7 | `@tests` model, 3 NodesTestCases + 1 EditorTestCase, run config | recipes | H2, H7 |
 | S8 | Onboard unknown project → `statechart-dsl` skill via `mps-dsl-memory` | statechart | H4, H7 |
 | S9 | Console MCP: two read-only `#instances` queries (one filtered), recall, print current | recipes | H1, H7 |

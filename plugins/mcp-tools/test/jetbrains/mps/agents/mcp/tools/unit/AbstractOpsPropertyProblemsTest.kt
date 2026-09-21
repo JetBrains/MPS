@@ -216,9 +216,8 @@ class AbstractOpsPropertyProblemsTest {
 
     @Test
     fun printoutKeepsASetEnumValueUnflagged() {
-        // The flag must follow the *stored* value: TestEnumeration renders to null (like a property
-        // whose declaration cannot render its value, e.g. an unresolved concept), so this property
-        // prints as absent — but never as the default, because MPS does hold a value for it.
+        // The flag must follow the *stored* value. A set non-default member is printed as its
+        // declared name with no isDefault flag, even when the data type's toString cannot render it.
         val property = TestEnumProperty()
         val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
         node.setId(SNodeId.Regular(23L))
@@ -226,14 +225,16 @@ class AbstractOpsPropertyProblemsTest {
 
         val json = ops.nodeHierarchyToJsonForTest(node)
 
+        assertTrue("the stored literal name must be printed: $json", json.contains("\"value\":\"OTHER\""))
         assertFalse("an explicitly set value must not be flagged as a default: $json", json.contains("\"isDefault\""))
         assertFalse("the stored value must not be replaced by the default literal: $json", json.contains("DEFAULT"))
     }
 
     @Test
     fun printoutKeepsARenderableSetEnumValueUnflagged() {
-        // Same rule for a property whose data type does render its value: the printed value is the
-        // stored one and carries no flag.
+        // Same rule for a property whose data type renders a presentation string: the printout still
+        // emits the declared literal identifier (the name the property writer accepts), not the
+        // presentation, and carries no default flag.
         val property = TestPresentationEnumProperty()
         val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
         node.setId(SNodeId.Regular(25L))
@@ -241,7 +242,23 @@ class AbstractOpsPropertyProblemsTest {
 
         val json = ops.nodeHierarchyToJsonForTest(node)
 
-        assertTrue("the stored value must be printed: $json", json.contains("\"value\":\"Green Pear\""))
+        assertTrue("the declared literal identifier must be printed: $json", json.contains("\"value\":\"GREEN_PEAR\""))
+        assertFalse("an explicitly set value must not be flagged as a default: $json", json.contains("\"isDefault\""))
+    }
+
+    @Test
+    fun printoutStripsEncodedIdFromNonDefaultEnum() {
+        // D37: SEnumerationAdapter.toString of a non-default member is "<encodedId>/<name>".
+        // Default members already print as the declared identifier (D5); non-default ones must too.
+        val property = TestEncodedEnumProperty()
+        val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property)))
+        node.setId(SNodeId.Regular(26L))
+        TEST_ACCESS_UTIL.setRawProperty(node, property, TestEncodedEnumLiteral("ML"))
+
+        val json = ops.nodeHierarchyToJsonForTest(node)
+
+        assertTrue("the declared literal must be printed: $json", json.contains("\"value\":\"ML\""))
+        assertFalse("the persistence encoding must not leak: $json", json.contains("WtZI0zlAtJ"))
         assertFalse("an explicitly set value must not be flagged as a default: $json", json.contains("\"isDefault\""))
     }
 
@@ -1264,6 +1281,67 @@ class AbstractOpsPropertyProblemsTest {
         override fun getSourceNode(): SNodeReference? = null
 
         override fun getEnumeration(): SEnumeration = TestPresentationEnumeration()
+    }
+
+    /**
+     * Mimics [jetbrains.mps.smodel.adapter.structure.types.SEnumerationAdapter.toString]:
+     * default members serialize as null; non-default members as `<encodedId>/<name>`.
+     */
+    private class TestEncodedEnumProperty : SProperty {
+        private val enumType = TestEncodedEnumeration()
+
+        override fun getName(): String = "unit"
+
+        override fun getOwner(): SAbstractConcept = TestConcept(emptyList())
+
+        override fun isValid(): Boolean = true
+
+        override fun getType(): SDataType = enumType
+
+        override fun isValid(string: String?): Boolean = string == "PIECE" || string == "ML"
+
+        override fun getSourceNode(): SNodeReference? = null
+
+        override fun isTransient(): Boolean = false
+    }
+
+    private class TestEncodedEnumeration : SEnumeration {
+        override fun getName(): String = "Unit"
+
+        override fun getLiteral(name: String?): SEnumerationLiteral? = getLiterals().firstOrNull { it.name == name }
+
+        override fun fromString(string: String?): Any? = when (string) {
+            "PIECE" -> TestEncodedEnumLiteral("PIECE")
+            "ML" -> TestEncodedEnumLiteral("ML")
+            else -> SType.NOT_A_VALUE
+        }
+
+        override fun toString(value: Any?): String? {
+            val literal = value as? TestEncodedEnumLiteral ?: return null
+            if (literal.name == "PIECE") return null
+            return "WtZI0zlAtJ/${literal.name}"
+        }
+
+        override fun isInstanceOf(value: Any?): Boolean = value is TestEncodedEnumLiteral
+
+        override fun getLiterals(): MutableList<out SEnumerationLiteral> =
+            mutableListOf(TestEncodedEnumLiteral("PIECE"), TestEncodedEnumLiteral("ML"))
+
+        override fun getDefault(): SEnumerationLiteral = TestEncodedEnumLiteral("PIECE")
+
+        override fun getSourceNode(): SNodeReference? = null
+    }
+
+    private data class TestEncodedEnumLiteral(private val literalName: String) : SEnumerationLiteral {
+        override fun getName(): String = literalName
+
+        override fun getPresentation(): String = literalName
+
+        override fun getOrdinal(): Int = if (literalName == "PIECE") 0 else 1
+
+        override fun getSourceNode(): SNodeReference? = null
+
+        override fun getEnumeration(): SEnumeration = TestEncodedEnumeration()
     }
 
     private class TestStringProperty : SProperty {

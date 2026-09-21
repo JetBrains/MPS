@@ -1,6 +1,6 @@
 # S6 done criteria (observer)
 
-Fixture: recipes.tar.gz (passing S1 project).
+Fixture: recipes-full.tar.gz (passing S1 project with sample Recipe/Cookbook roots kept).
 1. Generator module `mcp.study.recipes#...` exists with a root mapping rule for Recipe.
 2. `<project>/mcp.study.kitchen/source_gen/mcp/study/generated/*.java`: one file per Recipe root,
    each containing `PORTIONS` and `steps()` (grep).

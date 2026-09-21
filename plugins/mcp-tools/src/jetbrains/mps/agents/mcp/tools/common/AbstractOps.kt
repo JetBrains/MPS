@@ -1369,7 +1369,10 @@ abstract class AbstractOps : McpToolset {
 
         val properties = JsonArray()
         for (prop in node.concept.properties) {
-            val value = SNodeAccessUtil.getPropertyValue(node, prop)?.let { prop.type.toString(it) }
+            // Print the display value (enum → declared literal name). SEnumerationAdapter.toString
+            // of a non-default member is the persistence encoding `<id>/<name>` (e.g. `WtZI0zlAtJ/ML`);
+            // leaking that broke comparisons against declared identifiers (study defect D37).
+            //
             // An enum property left at its enumeration's default literal stores nothing, so it used
             // to vanish from the printout (or print as ""), and readers counted it as missing data
             // (study defects D5/D12). Emit the default literal's name with `isDefault:true` instead:
@@ -1377,23 +1380,20 @@ abstract class AbstractOps : McpToolset {
             // tools, which resolve an enum property value by literal name.
             //
             // "Holds the default" is decided by `hasProperty` — whether the node stores anything for
-            // the property — and not by the rendered string alone: a property MPS does hold, whose
-            // value the data type cannot render (a stale value, or any value on an unresolved
-            // concept declaration), also renders as "" and must stay unflagged. Reading the raw
-            // value cannot make that call either: for an unset enum property the accessor answers
-            // with the enumeration's own default literal rather than with null.
-            val defaultLiteral = if (value.isNullOrEmpty() && !SNodeAccessUtil.hasProperty(node, prop)) {
-                defaultEnumLiteralName(prop)
-            } else {
-                null
-            }
-            if (value.isNullOrEmpty() && defaultLiteral == null) continue
+            // the property — and not by the rendered string alone: getPropertyValue on an unset enum
+            // answers with the enumeration's own default literal, and a stored value whose data type
+            // cannot render it (stale / unresolved) must stay unflagged.
+            val stored = SNodeAccessUtil.hasProperty(node, prop)
+            val displayValue = propertyDisplayValue(node, prop)
+            val defaultLiteral = if (!stored) defaultEnumLiteralName(prop) else null
+            val value = defaultLiteral ?: displayValue
+            if (value.isNullOrEmpty()) continue
             val propDeclarationNode = prop.sourceNode?.resolve(repository)
             val propObj = JsonObject()
             propObj.addProperty("name", prop.name)
             propObj.addProperty("type", getPropertyType(prop))
             addDocAndDeprecated(propObj, getDoc(propDeclarationNode), getDeprecationInfo(propDeclarationNode))
-            propObj.addProperty("value", defaultLiteral ?: value)
+            propObj.addProperty("value", value)
             if (defaultLiteral != null) propObj.addProperty("isDefault", true)
             properties.add(propObj)
         }
@@ -1483,7 +1483,7 @@ abstract class AbstractOps : McpToolset {
     protected fun propertyDisplayValue(node: SNode, prop: SProperty): String? {
         val rawValue = SNodeAccessUtil.getPropertyValue(node, prop)
         return if (prop.type is SEnumeration && rawValue is SEnumerationLiteral) {
-            rawValue.getName()
+            rawValue.getName() ?: rawValue.presentation
         } else {
             rawValue?.let { prop.type.toString(it) }
         }

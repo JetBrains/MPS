@@ -1,6 +1,6 @@
 # S5 fixture: injected problems (recipes-broken.tar.gz)
 
-Built from `recipes.tar.gz` (a passing S1 project) by the observer with `mps_mcp_update_node` /
+Built from `recipes-full.tar.gz` (a passing S1 project with sample Recipe/Cookbook roots kept) by the observer with `mps_mcp_update_node` /
 `mps_mcp_alter_nodes`. Twelve problems across the three checker families the study names
 (dangling references, missing required children, invalid property values). Fill the node column
 after injection; verify with `mps_mcp_check_root_node_problems` that the model reports ≥ 12 errors.

@@ -32,7 +32,8 @@ stdout carries the table (capped by --max-lines) followed by a one-line JSON sum
 full table is always written to a file under the system temp directory, whose path is in
 that summary. Exit codes: 0 ok, 2 usage, 3 bad input.
 
-Enum properties: a set one prints as `<enumRef>/LITERAL`, reduced to `LITERAL` here. A
+Enum properties: `mps_mcp_print_node` emits the declared literal name. Older dumps printed a
+set member as `<enumRef>/LITERAL`; this script still reduces that form to `LITERAL`. A
 property left at its enumeration's default stores nothing; `mps_mcp_print_node` reports it
 with the default literal as its value plus `"isDefault": true`, and this script marks it as
 a default rather than as a set value. For an older dump that omits the property entirely, a
@@ -145,10 +146,11 @@ def _is_node(value):
 def props(node, concept_details=None):
     """Property values of `node` as a dict, with default-valued properties filled in.
 
-    Enum values lose their `<enumRef>/` prefix. A property at its enumeration's default is
-    reported by the printer with that literal and an `isDefault` flag; in an older dump it is
-    absent, and is then filled from `concept_details` (`enumerationDefault`, else the first
-    literal) or, without that file, set to `<default>`.
+    Enum values are the declared literal name; an older dump's `<enumRef>/LITERAL` form is
+    reduced to `LITERAL`. A property at its enumeration's default is reported by the printer
+    with that literal and an `isDefault` flag; in an older dump it is absent, and is then
+    filled from `concept_details` (`enumerationDefault`, else the first literal) or, without
+    that file, set to `<default>`.
     """
     return {name: value for name, (value, _) in props_detail(node, concept_details).items()}
 
@@ -189,7 +191,8 @@ def _plain_value(value):
     if value is None:
         return ""
     value = str(value)
-    # A set enum property prints as `<enumerationRef>/LITERAL`.
+    # Older dumps printed a set enum as `<enumerationRef>/LITERAL`; current dumps already
+    # emit the declared identifier, so this is a no-op unless a slash is present.
     return value.rsplit("/", 1)[-1] if "/" in value else value
 
 

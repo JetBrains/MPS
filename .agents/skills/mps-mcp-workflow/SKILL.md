@@ -155,3 +155,4 @@ file reader, and keep only the `name` / `concept` / `reference` of the roots you
 property holding its enumeration's default is printed with that literal and `"isDefault": true`
 (`mps_mcp_get_concept_details` names it in `enumerationDefault`); in a dump taken before that,
 the property is absent or printed as `""` — either way it is the default, not missing data.
+A non-default enum value is the declared literal name, never the persistence encoding (`<id>/<name>`).
