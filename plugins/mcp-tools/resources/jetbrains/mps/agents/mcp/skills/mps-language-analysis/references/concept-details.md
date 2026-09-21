@@ -21,6 +21,12 @@ The tool distinguishes three response shapes:
 | Some refs failed, at least one resolved | `ok:true` | `data` as above, plus `warnings` naming each unresolved ref and `details.unresolved` with "did you mean" suggestions |
 | Every `conceptRef` and `languageRef` failed | `ok:false`, code `NOT_FOUND` | `details.unresolved` with up to 5 "did you mean" candidates per unresolved ref (qualified names and persistent references) |
 
+## `languageRefs` needs a deployed runtime
+
+`languageRefs` enumerates concepts from the language *runtime* (`LanguageRegistry`). A language module that exists in the open project but has never been made — or whose runtime has not loaded — therefore fails to resolve, for both the qualified name and the canonical `l:<uuid>:<name>` form. That is not a missing-name problem: `mps_mcp_search_concepts` searches the same deployed-runtime haystack and will not find it (and may return a huge unrelated dump).
+
+`conceptRefs` with a fully qualified concept name still works, because that path reads the structure model. This is distinct from a *hollow* descriptor (`descriptorStatus: "hollow"` below): there the runtime *is* loaded but empty; here `languageRefs` never gets as far as a concept record. The error / `details.unresolved[].route` names the module and the two recoveries: `mps_mcp_alter_nodes` `MAKE` with `rebuild=true` targeting the language module, or address the concepts you need by qualified name via `conceptRefs`.
+
 ## An enumeration is not a concept
 
 This tool returns **concepts and interface concepts only**. An `EnumerationDeclaration` — and any

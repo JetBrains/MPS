@@ -719,6 +719,15 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "error envelope must carry the NOT_FOUND code so callers can branch on it: $response",
             obj.has("code") && obj.get("code").asString == "NOT_FOUND"
         )
+        val error = obj.get("error").asString
+        assertTrue(
+            "a genuine unknown language may still point at search_concepts: $error",
+            error.contains("mps_mcp_search_concepts"),
+        )
+        assertFalse(
+            "an unknown language is not an undeployed project module: $error",
+            error.contains("runtime is not deployed"),
+        )
         val entry = unresolvedDetailsOf(obj).singleEntryFor(bogusLanguageRef)
         assertEquals("language", entry.get("kind").asString)
         val suggestionFqns = entry.get("suggestions").asJsonArray
@@ -728,6 +737,50 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 "${JetBrainsMPSLanguageMcpToolset.MAX_SUGGESTIONS_PER_UNRESOLVED}; got=${suggestionFqns.size}",
             suggestionFqns.size <= JetBrainsMPSLanguageMcpToolset.MAX_SUGGESTIONS_PER_UNRESOLVED
         )
+    }
+
+    @Test
+    fun `get-concept-details languageRefs of an unbuilt project language names MAKE not search_concepts`() {
+        // Study D35: languageRefs cannot enumerate a project language whose runtime is not
+        // deployed (qualified name and l:<uuid>:<name> both fail), while conceptRefs with a
+        // fully qualified concept name still works. The rejection must name MAKE / conceptRefs
+        // and must not send the caller to mps_mcp_search_concepts.
+        val languageName = readOnRepo { language.moduleName!! }
+        val persistentRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(MetaAdapterFactory.getLanguage(language.moduleReference))
+        }
+        for (ref in listOf(languageName, persistentRef)) {
+            val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+                it.mps_mcp_get_concept_details(
+                    conceptRefs = emptyList(),
+                    languageRefs = listOf(ref),
+                )
+            }
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope for unbuilt languageRefs='$ref': $response", obj.get("ok").asBoolean)
+            val error = obj.get("error").asString
+            assertTrue("error must name the languageRef: $error", error.contains(ref))
+            assertTrue("error must diagnose missing runtime: $error", error.contains("runtime is not deployed"))
+            assertTrue("error must recommend MAKE: $error", error.contains("mps_mcp_alter_nodes MAKE"))
+            assertTrue("error must recommend conceptRefs: $error", error.contains("conceptRefs"))
+            assertFalse(
+                "unbuilt project language must not send the caller to search_concepts: $error",
+                error.contains("mps_mcp_search_concepts"),
+            )
+            val entry = unresolvedDetailsOf(obj).singleEntryFor(ref)
+            assertEquals("language", entry.get("kind").asString)
+            assertTrue("undeployed flag: $entry", entry.get("undeployed").asBoolean)
+            assertTrue(
+                "route must recommend MAKE / conceptRefs: ${entry.get("route").asString}",
+                entry.get("route").asString.contains("mps_mcp_alter_nodes MAKE") &&
+                    entry.get("route").asString.contains("conceptRefs"),
+            )
+            assertEquals(
+                "registry suggestions are a dead end for an unbuilt language",
+                0,
+                entry.get("suggestions").asJsonArray.size(),
+            )
+        }
     }
 
     @Test
@@ -755,10 +808,19 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "partial-success envelope must warn about the unresolved runtime language; got=$warningTexts",
             warningTexts.any { it.contains(unloadedLanguageRef) }
         )
+        assertTrue(
+            "warning must diagnose missing runtime rather than a search miss; got=$warningTexts",
+            warningTexts.any { it.contains("runtime is not deployed") && it.contains("mps_mcp_alter_nodes MAKE") },
+        )
+        assertTrue(
+            "warning must not send the caller to search_concepts; got=$warningTexts",
+            warningTexts.none { it.contains("mps_mcp_search_concepts") },
+        )
         val entry = unresolvedDetailsOf(obj).singleEntryFor(unloadedLanguageRef)
         assertEquals("language", entry.get("kind").asString)
+        assertTrue("undeployed flag: $entry", entry.get("undeployed").asBoolean)
         val suggestionRefs = entry.get("suggestions").asJsonArray
-            .map { it.asJsonObject.get("languageReference").asString }
+            .map { it.asJsonObject.get("languageReference")?.asString }
         assertTrue(
             "the unloaded language should not suggest itself from the registry-backed candidate list; got=$suggestionRefs",
             suggestionRefs.none { it == unloadedLanguageRef }

@@ -16,6 +16,7 @@ import org.jetbrains.mps.openapi.language.SNamedElement
 import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.ModelDependencyResolver
 import org.jetbrains.mps.openapi.language.SAbstractLink
 import org.jetbrains.mps.openapi.language.SDataType
@@ -64,6 +65,12 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         const val RETRY_WITH_SEARCH_TEXTS =
             "Retry with searchTexts set to the value you passed as query/q/text."
 
+        // Study D35/P10: languageRefs enumerates LanguageRegistry, so an unbuilt project
+        // language looks like a miss. Directing the caller to search_concepts then dumps
+        // the whole deployed-runtime haystack. Name MAKE / conceptRefs instead.
+        const val SEARCH_CONCEPTS_HINT =
+            "See details.unresolved for suggestions, or use mps_mcp_search_concepts."
+
         // Single-character subtokens like "5" or "D" are substrings of almost any docstring and
         // would let unrelated concepts match — keep only subtokens of at least MIN_SUBTOKEN_LENGTH
         // characters. The whole-word fallback only kicks in when the word itself meets the
@@ -80,7 +87,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept and cardinality) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). To learn the shapes of the concepts a concept's child/reference roles target, pass `languageRefs`: one call returns every concept of the language, which is cheaper than a refinement call per target. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple to paste into `PROPERTY`/`REF` macros and smodel `SPropertyAccess`/`SLinkAccess`) and `sourceNode` (the declaration node's persistent ref, e.g. `r:...(...structure)/<id>`; this is the right node-ref *form* for APIs that expect a structure declaration such as `applicableConcept`, but a feature declaration ref is informational only and is not itself a valid `applicableConcept` target) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. If a concept was just created via `CREATE_CONCEPTS` and the response carried `makeStatus: "runtime_stale"`, the runtime descriptor returned here may be hollow (empty properties/references/children, `isAbstract: true`); each affected entry is marked with `descriptorStatus: "hollow"` and a `descriptorRecoveryAction` string — `mps_mcp_reload_all` alone is not sufficient, a clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true` targeting the language module (not just the structure model) is required. See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
+        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept and cardinality) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). To learn the shapes of the concepts a concept's child/reference roles target, pass `languageRefs`: one call returns every concept of the language, which is cheaper than a refinement call per target. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple to paste into `PROPERTY`/`REF` macros and smodel `SPropertyAccess`/`SLinkAccess`) and `sourceNode` (the declaration node's persistent ref, e.g. `r:...(...structure)/<id>`; this is the right node-ref *form* for APIs that expect a structure declaration such as `applicableConcept`, but a feature declaration ref is informational only and is not itself a valid `applicableConcept` target) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup of unknown names. `languageRefs` enumerates the deployed runtime: if the language module exists in the project but has not been made, that is not a search miss — run `mps_mcp_alter_nodes MAKE` (`rebuild=true`) on the language module, or pass fully qualified concept names in `conceptRefs` (those resolve via the structure model). The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. If a concept was just created via `CREATE_CONCEPTS` and the response carried `makeStatus: "runtime_stale"`, the runtime descriptor returned here may be hollow (empty properties/references/children, `isAbstract: true`); each affected entry is marked with `descriptorStatus: "hollow"` and a `descriptorRecoveryAction` string — `mps_mcp_reload_all` alone is not sufficient, a clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true` targeting the language module (not just the structure model) is required. See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
     """
     )
     suspend fun mps_mcp_get_concept_details(
@@ -135,6 +142,9 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 // instead of repeating the same payload several times in the response.
                 val unresolvedConceptRefs = LinkedHashSet<String>()
                 val unresolvedLanguageRefs = LinkedHashSet<String>()
+                // languageRef -> project language module name, when the module exists but
+                // LanguageRegistry has no runtime (never made / not deployed).
+                val undeployedLanguageModules = LinkedHashMap<String, String>()
 
                 // Add explicitly provided concepts
                 for (conceptRef in conceptRefs) {
@@ -153,9 +163,13 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     if (runtime == null) {
                         // Treat both "language reference does not resolve" and "language is not
                         // registered at runtime" as unresolved so the caller gets a hint instead of
-                        // silently missing concepts. The runtime-null case is rare but real (e.g.
-                        // a language declared but not loaded into the registry).
+                        // silently missing concepts. Distinguish an unbuilt *project* language
+                        // (D35) from a genuine unknown name: the former must not send the caller
+                        // to mps_mcp_search_concepts.
                         unresolvedLanguageRefs.add(languageRef)
+                        findProjectLanguageModule(mpsProject, languageRef, lang)?.moduleName?.let {
+                            undeployedLanguageModules[languageRef] = it
+                        }
                         continue
                     }
                     for (c in runtime.concepts) {
@@ -186,7 +200,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
 
                 val nonConcepts = nonConceptDeclarationsFor(mpsProject, unresolvedConceptRefs)
                 val unresolvedJson = buildUnresolvedDetailsJson(
-                    unresolvedConceptRefs, unresolvedLanguageRefs, nonConcepts, registry, repo, cache
+                    unresolvedConceptRefs, unresolvedLanguageRefs, nonConcepts,
+                    undeployedLanguageModules, registry, repo, cache,
                 )
 
                 if (conceptSet.isEmpty()) {
@@ -202,9 +217,17 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                             append("; languageRefs: ")
                             append(unresolvedLanguageRefs.joinToString(", "))
                         }
-                        append(". See details.unresolved for suggestions, or use mps_mcp_search_concepts.")
+                        for (ref in unresolvedLanguageRefs) {
+                            val name = undeployedLanguageModules[ref] ?: continue
+                            append(". ").append(undeployedLanguageDiagnostic(ref, name))
+                        }
                         for (ref in unresolvedConceptRefs) {
                             nonConcepts[ref]?.let { append(" ").append(it.route) }
+                        }
+                        val unknownLanguages = unresolvedLanguageRefs.any { it !in undeployedLanguageModules }
+                        val unknownConcepts = unresolvedConceptRefs.any { it !in nonConcepts }
+                        if (unknownLanguages || unknownConcepts) {
+                            append(". ").append(SEARCH_CONCEPTS_HINT)
                         }
                     }
                     return@executeShortReadOnEdt errJson(
@@ -220,6 +243,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     unresolvedConceptRefs,
                     unresolvedLanguageRefs,
                     nonConcepts,
+                    undeployedLanguageModules,
                     unresolvedJson,
                     maxInlineBytes,
                 )
@@ -800,12 +824,14 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      * (possibly empty) suggestion list so the agent can paste a canonical `qualifiedName` or
      * `conceptReference`/`languageReference` straight into a retry. A ref that names a
      * non-concept declaration carries `declaredAs` and `route` instead of suggestions — see
-     * [NonConceptDeclaration].
+     * [NonConceptDeclaration]. A language whose project module exists but has no deployed
+     * runtime carries `route` and `undeployed: true` instead of registry suggestions (D35).
      */
     private fun buildUnresolvedDetailsJson(
         unresolvedConceptRefs: Collection<String>,
         unresolvedLanguageRefs: Collection<String>,
         nonConcepts: Map<String, NonConceptDeclaration>,
+        undeployedLanguageModules: Map<String, String>,
         registry: LanguageRegistry,
         repository: SRepository,
         cache: ProjectMembershipCache
@@ -838,6 +864,14 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             val entry = JsonObject()
             entry.addProperty("ref", ref)
             entry.addProperty("kind", "language")
+            val undeployedName = undeployedLanguageModules[ref]
+            if (undeployedName != null) {
+                entry.addProperty("route", undeployedLanguageDiagnostic(ref, undeployedName))
+                entry.addProperty("undeployed", true)
+                entry.add("suggestions", JsonArray())
+                arr.add(entry)
+                continue
+            }
             val suggestions = JsonArray()
             for (lang in suggestForUnresolvedLanguageRef(ref, registry, repository, cache)) {
                 val s = JsonObject()
@@ -862,6 +896,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         unresolvedConceptRefs: Collection<String>,
         unresolvedLanguageRefs: Collection<String>,
         nonConcepts: Map<String, NonConceptDeclaration>,
+        undeployedLanguageModules: Map<String, String>,
         unresolvedDetails: JsonArray,
         maxInlineBytes: Int
     ): String {
@@ -872,7 +907,13 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                     ?: "Could not resolve conceptRef '$ref' — see details.unresolved for suggestions"
             )
         }
-        for (ref in unresolvedLanguageRefs) warnings.add("Could not resolve languageRef '$ref' — see details.unresolved for suggestions")
+        for (ref in unresolvedLanguageRefs) {
+            val undeployedName = undeployedLanguageModules[ref]
+            warnings.add(
+                if (undeployedName != null) undeployedLanguageDiagnostic(ref, undeployedName)
+                else "Could not resolve languageRef '$ref' — see details.unresolved for suggestions"
+            )
+        }
         return finalizeResult(
             dataJson,
             maxInlineBytes,
@@ -880,4 +921,35 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             warnings = warnings,
         )
     }
+
+    /**
+     * A language module that is in the selected project, whether or not its runtime is deployed.
+     * `languageRefs` resolution goes through [LanguageRegistry], so this is the check that
+     * distinguishes "unknown name" from "exists but unbuilt" (D35).
+     */
+    private fun findProjectLanguageModule(
+        mpsProject: MPSProject,
+        languageRef: String,
+        lang: SLanguage?,
+    ): Language? {
+        val candidates = LinkedHashSet<String>()
+        candidates.add(languageRef)
+        lang?.qualifiedName?.let { candidates.add(it) }
+        if (languageRef.startsWith("l:")) {
+            val lastColon = languageRef.lastIndexOf(':')
+            if (lastColon in 2 until languageRef.lastIndex) {
+                candidates.add(languageRef.substring(lastColon + 1))
+            }
+        }
+        for (candidate in candidates) {
+            val module = resolveModule(mpsProject, candidate, projectOnly = true)
+            if (module is Language) return module
+        }
+        return null
+    }
+
+    private fun undeployedLanguageDiagnostic(languageRef: String, languageName: String): String =
+        "languageRef '$languageRef' names project language '$languageName' whose runtime is not deployed; " +
+            "run mps_mcp_alter_nodes MAKE (rebuild=true) on the language module, " +
+            "or address concepts by fully qualified name via conceptRefs"
 }
