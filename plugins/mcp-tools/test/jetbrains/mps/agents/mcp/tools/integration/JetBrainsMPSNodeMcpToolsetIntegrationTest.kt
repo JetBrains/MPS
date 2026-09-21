@@ -44,6 +44,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             toolset.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams)
         }
         assertOk(createResponse)
+        waitForSmartMode()
 
         val baseRef = readOnRepo {
             val base = structureModel.rootNodes.single { it.name == "Base" }
@@ -133,6 +134,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             }
         """.trimIndent()
         assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        waitForSmartMode()
         val createdRef = readOnRepo {
             val created = structureModel.rootNodes.single { it.name == uniqueName }
             PersistenceFacade.getInstance().asString(created.reference)
@@ -318,6 +320,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             }
         """.trimIndent()
         assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        waitForSmartMode()
     }
 
     /** Parses an ok envelope whose `data` is a JSON-array string and returns the result names. */
@@ -661,6 +664,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             }
         """.trimIndent()
         assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        waitForSmartMode()
         val moduleRef = readOnRepo { PersistenceFacade.getInstance().asString(language.moduleReference) }
 
         val modelsScoped = runTool(JetBrainsMPSNodeMcpToolset()) {
@@ -938,6 +942,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             }
         """.trimIndent()
         assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        waitForSmartMode()
 
         val baseRef = readOnRepo {
             val base = structureModel.rootNodes.single { it.name == baseName }
@@ -1504,6 +1509,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertOk(runTool { toolset ->
             toolset.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_ENUM, params)
         })
+        waitForSmartMode()
         return readOnRepo {
             val enumNode = structureModel.rootNodes.single { it.name == "Color" }
             PersistenceFacade.getInstance().asString(enumNode.reference)

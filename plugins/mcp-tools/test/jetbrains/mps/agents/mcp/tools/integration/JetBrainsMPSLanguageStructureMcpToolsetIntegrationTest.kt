@@ -421,6 +421,7 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
             }
         """.trimIndent()
         assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        waitForSmartMode()
 
         val findParams = """
             {
@@ -461,6 +462,7 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
             }
         """.trimIndent()
         assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, createParams) })
+        waitForSmartMode()
 
         val findParams = """
             {
