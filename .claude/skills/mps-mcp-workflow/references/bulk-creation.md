@@ -36,12 +36,13 @@ Use this pattern whenever you would otherwise paste a node ref you have not yet 
 Every parameter that accepts *either* inline JSON *or* a path (`childJson`, `json`, `conceptsJson`, …) resolves the path against the **JVM system temp directory** (`java.io.tmpdir`) and rejects anything outside it:
 
 ```
-Input file path '/tmp/blueprint.json' is not inside the system temp directory.
+Input file path '/Users/me/blueprint.json' is not inside the system temp directory.
 ```
 
-- macOS/Linux: write under `$TMPDIR`. On macOS `$TMPDIR` is a per-user `/var/folders/...` directory — **`/tmp` is not inside it and is rejected**.
+- macOS/Linux: write under `$TMPDIR` (on macOS a per-user `/var/folders/...` directory). On macOS, `/tmp` and `/private/tmp` are also accepted.
 - Windows: write under `%TEMP%`.
-- Shell: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` then pass `$f`.
-- Writing the file with an agent file-writing tool (e.g. `Write`) works too — but the path must still be the expanded temp directory (`/var/folders/.../blueprint.json`, `%TEMP%\blueprint.json`), because the tool sees a literal path and does not expand `$TMPDIR`.
+- A leading `$TMPDIR`, `${TMPDIR}`, or `%TEMP%` in the path is expanded by the server.
+- Shell: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` then pass `$f` (or the unexpanded `$TMPDIR/...` form).
+- Writing the file with an agent file-writing tool (e.g. `Write`) works too — write under `$TMPDIR`, or `/tmp` on macOS.
 - The path must be absolute; files this toolset created itself may be deleted after reading, ordinary input files are never deleted.
 

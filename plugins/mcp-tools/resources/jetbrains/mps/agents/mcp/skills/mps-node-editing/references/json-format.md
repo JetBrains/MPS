@@ -36,10 +36,11 @@ MPS tools use a single JSON blueprint shape for all insertions and updates:
 * `mps_mcp_insert_root_node_from_json` (`json`) accepts a **single object or a top-level array** of blueprints; an array is inserted atomically.
 * `mps_mcp_update_node` (`childJson`, `ADD`/`SET` × `CHILD`) accepts a **single object only** — a top-level array fails with `Expected JsonObject but was JsonArray`. To add N children, call `ADD`/`CHILD` N times, or nest all N under the parent blueprint's `children[].nodes` and insert the parent once.
 * Either parameter may be inline JSON (max 4 KB) **or an absolute file path**, and the file **must be inside the JVM system temp directory**:
-  * macOS/Linux — under `$TMPDIR`; on macOS that is a per-user `/var/folders/...` directory, so **`/tmp` is rejected** with `Input file path '/tmp/…' is not inside the system temp directory`.
+  * macOS/Linux — under `$TMPDIR` (on macOS a per-user `/var/folders/...` directory). On macOS, `/tmp` and `/private/tmp` are also accepted (they are aliases).
   * Windows — under `%TEMP%`.
-  * Shell example: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` and pass `$f`.
-  * An agent file-writing tool (e.g. `Write`) is fine too, but it needs the **expanded** absolute temp path (`/var/folders/.../blueprint.json`) — no tool expands `$TMPDIR` for you.
+  * A leading `$TMPDIR`, `${TMPDIR}`, `$TEMP`, `$TMP`, `%TEMP%`, `%TMP%`, or `%TMPDIR%` in the path is expanded by the server.
+  * Shell example: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` and pass `$f` (or the unexpanded `$TMPDIR/...` form).
+  * An agent file-writing tool (e.g. `Write`) is fine too: write under `$TMPDIR`, or `/tmp` on macOS.
 
 ## Response Envelope
 

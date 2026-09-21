@@ -12,6 +12,8 @@ import com.intellij.openapi.application.asContextElement
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.util.io.FileUtil
 import jetbrains.mps.checkers.ConstraintsChecker
 import jetbrains.mps.checkers.RefScopeChecker
 import jetbrains.mps.checkers.TargetConceptChecker2
@@ -3401,27 +3403,42 @@ abstract class AbstractOps : McpToolset {
             }
             return jsonOrPath
         }
-        val file = File(jsonOrPath)
+        val resolvedPath = expandLeadingTempEnv(trimmed)
+        val file = File(resolvedPath)
         if (!file.exists()) {
             forgetCreatedTempFile(file)
-            throw McpInvalidRequestException("Input is neither a valid JSON object/array nor an existing file path: '$jsonOrPath'")
+            val resolvedNote = if (resolvedPath != trimmed) " (resolved to '$resolvedPath')" else ""
+            throw McpInvalidRequestException(
+                "Input is neither a valid JSON object/array nor an existing file path: '$jsonOrPath'$resolvedNote"
+            )
         }
         if (!file.isFile) {
             throw McpInvalidRequestException("Input path is not a regular file: '$jsonOrPath'")
         }
-        // Path-traversal guard: only allow files inside the system temp directory.
+        // Path-traversal guard: only allow files inside the system temp directory
+        // (java.io.tmpdir, $TMPDIR/%TEMP%/%TMP%, and on macOS the /tmp alias).
         // Callers are expected to write JSON to a temp file and pass the absolute path; accepting
         // arbitrary paths would let the AI read any file the MPS process can access (e.g. SSH keys).
         // TODO: also allow paths inside the project root once the project root is threaded through here.
         val canonicalFile = try { file.canonicalFile } catch (e: Exception) {
             throw McpInvalidRequestException("Cannot resolve file path '$jsonOrPath': ${e.message}")
         }
-        val tempDir = try { File(System.getProperty("java.io.tmpdir")).canonicalFile } catch (e: Exception) { null }
-        if (tempDir != null && !canonicalFile.path.startsWith(tempDir.path + File.separator) && canonicalFile.path != tempDir.path) {
+        val allowedTempDirs = allowedTempDirectories()
+        if (allowedTempDirs.isNotEmpty() && allowedTempDirs.none { FileUtil.isAncestor(it, canonicalFile, false) }) {
+            val tempDir = try { File(System.getProperty("java.io.tmpdir")).canonicalFile } catch (e: Exception) { null }
+            val accepted = buildString {
+                if (tempDir != null) {
+                    append(tempDir.path)
+                    append(" (\$TMPDIR on macOS/Linux, %TEMP% on Windows)")
+                }
+                if (SystemInfo.isMac) {
+                    if (isNotEmpty()) append(", or ")
+                    append("/tmp")
+                }
+            }
             throw McpInvalidRequestException(
                 "Input file path '$jsonOrPath' is not inside the system temp directory. " +
-                        "It must be inside the system temp directory ${tempDir.path} " +
-                        "(\$TMPDIR on macOS/Linux, %TEMP% on Windows)."
+                        "It must be inside the system temp directory $accepted."
             )
         }
         val sizeBytes = file.length()
@@ -3467,7 +3484,7 @@ abstract class AbstractOps : McpToolset {
             return false
         }
         // canonicalFile.parentFile is canonical too, so this comparison does not depend on path spelling.
-        return com.intellij.openapi.util.io.FileUtil.filesEqual(file.parentFile, tempDir) &&
+        return FileUtil.filesEqual(file.parentFile, tempDir) &&
                 file.name.startsWith(TEMP_JSON_PREFIX) &&
                 file.name.endsWith(TEMP_JSON_SUFFIX)
     }
@@ -3478,6 +3495,72 @@ abstract class AbstractOps : McpToolset {
         } catch (e: Exception) {
             logger.warn("Failed to resolve JSON input file path for cleanup", e)
         }
+    }
+
+    /**
+     * Expands a leading `$TMPDIR` / `${TMPDIR}` / `$TEMP` / `$TMP` or `%TEMP%` / `%TMP%` / `%TMPDIR%`.
+     * Unknown or non-leading variables are left untouched so `$HOME` cannot escape the temp-dir guard.
+     */
+    private fun expandLeadingTempEnv(path: String): String {
+        val unixNames = arrayOf("TMPDIR", "TEMP", "TMP")
+        if (path.startsWith("$")) {
+            for (name in unixNames) {
+                val braced = "\${$name}"
+                if (isLeadingTempToken(path, braced)) {
+                    return resolveTempEnv(name) + path.substring(braced.length)
+                }
+            }
+            for (name in unixNames) {
+                val plain = "\$$name"
+                if (isLeadingTempToken(path, plain)) {
+                    return resolveTempEnv(name) + path.substring(plain.length)
+                }
+            }
+        }
+        if (path.startsWith("%")) {
+            for (name in arrayOf("TEMP", "TMP", "TMPDIR")) {
+                val token = "%$name%"
+                if (isLeadingTempToken(path, token)) {
+                    return resolveTempEnv(name) + path.substring(token.length)
+                }
+            }
+        }
+        return path
+    }
+
+    private fun isLeadingTempToken(path: String, token: String): Boolean {
+        if (path.length < token.length || !path.startsWith(token)) return false
+        if (path.length == token.length) return true
+        val next = path[token.length]
+        return next == '/' || next == '\\'
+    }
+
+    private fun resolveTempEnv(name: String): String {
+        val env = System.getenv(name)
+        return if (!env.isNullOrBlank()) env else System.getProperty("java.io.tmpdir", "")
+    }
+
+    private fun allowedTempDirectories(): List<File> {
+        val dirs = linkedSetOf<File>()
+        fun addDir(path: String?) {
+            if (path.isNullOrBlank()) return
+            try {
+                val canonical = File(path).canonicalFile
+                if (canonical.isDirectory) {
+                    dirs.add(canonical)
+                }
+            } catch (_: Exception) {
+            }
+        }
+        addDir(System.getProperty("java.io.tmpdir"))
+        addDir(System.getenv("TMPDIR"))
+        addDir(System.getenv("TEMP"))
+        addDir(System.getenv("TMP"))
+        if (SystemInfo.isMac) {
+            addDir("/tmp")
+            addDir("/private/tmp")
+        }
+        return dirs.toList()
     }
 
     /**

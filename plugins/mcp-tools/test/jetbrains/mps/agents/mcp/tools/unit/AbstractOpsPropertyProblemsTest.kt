@@ -306,6 +306,97 @@ class AbstractOpsPropertyProblemsTest {
     }
 
     @Test
+    fun fileInputExpandsLeadingTmpdirEnvVar() {
+        val json = """{"concept":"test.lang.structure.TestConcept"}"""
+        val tmpdir = File(System.getenv("TMPDIR") ?: System.getProperty("java.io.tmpdir"))
+        val file = File.createTempFile("mcp-tools-json-", ".json", tmpdir)
+        try {
+            file.writeText(json)
+            assertEquals(json, ops.readJsonOrFileForTest("\$TMPDIR/${file.name}"))
+            assertTrue(file.exists())
+        } finally {
+            file.delete()
+        }
+    }
+
+    @Test
+    fun fileInputExpandsBracedTmpdirEnvVar() {
+        val json = """{"concept":"test.lang.structure.TestConcept"}"""
+        val tmpdir = File(System.getenv("TMPDIR") ?: System.getProperty("java.io.tmpdir"))
+        val file = File.createTempFile("mcp-tools-json-", ".json", tmpdir)
+        try {
+            file.writeText(json)
+            assertEquals(json, ops.readJsonOrFileForTest("\${TMPDIR}/${file.name}"))
+        } finally {
+            file.delete()
+        }
+    }
+
+    @Test
+    fun fileInputExpandsPercentTempEnvVar() {
+        val json = """{"concept":"test.lang.structure.TestConcept"}"""
+        val tempDir = File(System.getenv("TEMP") ?: System.getProperty("java.io.tmpdir"))
+        val file = File.createTempFile("mcp-tools-json-", ".json", tempDir)
+        try {
+            file.writeText(json)
+            assertEquals(json, ops.readJsonOrFileForTest("%TEMP%/${file.name}"))
+        } finally {
+            file.delete()
+        }
+    }
+
+    @Test
+    fun fileInputDoesNotExpandTmpdirPrefixOfLongerVar() {
+        try {
+            ops.readJsonOrFileForTest("\$TMPDIRECTORY/blueprint.json")
+            fail("Expected a missing non-temp env path to be rejected")
+        } catch (e: AbstractOps.McpInvalidRequestException) {
+            val message = e.message.orEmpty()
+            assertTrue("unexpanded var must stay in the message: $message", message.contains("\$TMPDIRECTORY"))
+            assertFalse("a longer name must not resolve as TMPDIR: $message", message.contains("resolved to"))
+        }
+    }
+
+    @Test
+    fun fileInputDoesNotExpandHomeEnvVar() {
+        try {
+            ops.readJsonOrFileForTest("\$HOME/mcp-tools-should-not-read.json")
+            fail("Expected \$HOME not to be expanded into a readable path")
+        } catch (e: AbstractOps.McpInvalidRequestException) {
+            val message = e.message.orEmpty()
+            assertTrue("unexpanded \$HOME must stay in the message: $message", message.contains("\$HOME"))
+            assertFalse("\$HOME must not be expanded: $message", message.contains("resolved to"))
+        }
+    }
+
+    @Test
+    fun fileInputAcceptsMacTmpAlias() {
+        val tmp = File("/tmp")
+        Assume.assumeTrue("needs a writable /tmp", tmp.isDirectory && tmp.canWrite())
+        val os = System.getProperty("os.name").orEmpty().lowercase()
+        val tmpdir = File(System.getProperty("java.io.tmpdir")).canonicalFile
+        val tmpCanonical = tmp.canonicalFile
+        val alreadyInside = tmpCanonical.path == tmpdir.path ||
+                tmpCanonical.path.startsWith(tmpdir.path + File.separator)
+        Assume.assumeTrue(
+            "macOS /tmp alias, or /tmp already inside java.io.tmpdir",
+            os.contains("mac") || os.contains("darwin") || alreadyInside,
+        )
+        val json = """{"concept":"test.lang.structure.TestConcept"}"""
+        val file = File.createTempFile("mcp-tools-json-", ".json", tmp)
+        try {
+            file.writeText(json)
+            assertEquals(json, ops.readJsonOrFileForTest("/tmp/${file.name}"))
+            val privateTmp = File("/private/tmp")
+            if (privateTmp.isDirectory) {
+                assertEquals(json, ops.readJsonOrFileForTest("/private/tmp/${file.name}"))
+            }
+        } finally {
+            file.delete()
+        }
+    }
+
+    @Test
     fun featureIdValidationAcceptsResolvingId() {
         val node = stubAttributeNode("PropertyMacro")
         val valid = stubFeature(valid = true)

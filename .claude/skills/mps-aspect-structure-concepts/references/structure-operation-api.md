@@ -66,7 +66,7 @@ Parameters:
 }
 ```
 
-"Inside the system temp directory" means the **JVM system temp directory** (`java.io.tmpdir`): `$TMPDIR` on macOS/Linux — on macOS a per-user `/var/folders/...` path, so **`/tmp` is rejected** with `Input file path '/tmp/…' is not inside the system temp directory` — and `%TEMP%` on Windows. Shell: `f="$TMPDIR/concepts-$$.json"`. An agent file-writing tool (e.g. `Write`) may create the file, but needs the expanded absolute path, since it does not expand `$TMPDIR`.
+"Inside the system temp directory" means the **JVM system temp directory** (`java.io.tmpdir`): `$TMPDIR` on macOS/Linux (on macOS a per-user `/var/folders/...` path; `/tmp` is also accepted) and `%TEMP%` on Windows. A leading `$TMPDIR` or `%TEMP%` is expanded by the server. Shell: `f="$TMPDIR/concepts-$$.json"`.
 
 For children and references, the `target` field accepts:
 * Simple name of a concept being created in this operation (e.g., `"MyNewConcept"`)

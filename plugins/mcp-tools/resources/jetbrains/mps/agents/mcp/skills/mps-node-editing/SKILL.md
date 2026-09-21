@@ -110,6 +110,6 @@ holds a 40-row `courses.csv` with its matching `courses.map.json`.
 No `python3` (typically Windows): author the array by hand as described in
 `references/json-format.md` — one object per row, `properties` entries omitted for empty cells
 so the MPS default applies, one child role per list column, and one wrapper child per
-reference with `{"role": …, "target": "<name>"}` — write it to a file under the system temp
-directory (not `/tmp` on macOS) and pass that path. Prefer `--limit`-sized batches, or the
+reference with `{"role": …, "target": "<name>"}` — write it to a file under `$TMPDIR`
+(or `/tmp` on macOS) and pass that path. Prefer `--limit`-sized batches, or the
 staged construction in `references/staged-construction.md`, over one oversized blueprint.
