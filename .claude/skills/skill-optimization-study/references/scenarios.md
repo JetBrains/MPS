@@ -21,6 +21,20 @@ recipes-broken = recipes + `scenarios/S5/PROBLEMS.md`).
 
 Measured in 2026-09: S1, S3 (both models, all PASS). S2, S4–S9 unmeasured.
 
+## Project open / close (orchestrator, every scenario)
+
+The observer opens and closes the scratch project for S1–S9 and, when needed, the golden project for
+SMOKE. Do not ask the user to File→Open or Close Project. Before each action, tell the user the
+absolute path that will close (if any) and the absolute path that will open. Open via the CLI
+protocol in `mps-project-management` (there is still no MCP open tool). Close with
+`mps_mcp_close_project` (`projectPath` = the scratch dir, `force=false`). Details:
+`references/harness.md`.
+
+Workers already assume "MPS is running … and this project open" — do **not** add open/close
+instructions to `worker_prompt.md` (prompts are frozen, sha in meta). Do **not** put swap steps in
+`done_criteria.md` either: evaluators are read-only and must not close the project mid-check.
+SMOKE may use the golden project in place; still announce if you open or close it.
+
 ## Writing a prompt
 Developer voice, short, fixed names, numbered steps, explicit "Done when …", closing lines
 "Do not roll back changes. Do not edit .mps/.mpl files as text. Stop and explain if blocked."
@@ -34,3 +48,5 @@ messages count as errors vs warnings. Known quirk: enum default literal prints a
 ## Adding a scenario for a changed skill/tool
 Pick the smallest task that forces the changed path (e.g. a new tool parameter), reuse a fixture,
 write done criteria first, run once per model, compare its chains with the baseline `chains.json`.
+The observer opens and closes the reused fixture the same way as S1–S9 (announce paths; CLI open;
+`mps_mcp_close_project` close). Do not make the worker or the evaluator perform the swap.

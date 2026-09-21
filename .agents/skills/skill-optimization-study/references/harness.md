@@ -73,11 +73,39 @@ Non-`mps-*` skills are never touched.
 ## mcp_call.py `<tool> '<json-args>' [--url URL] [--raw] [--max-chars N]`
 One MPS MCP tool call from the shell. The observing/evaluating session is normally NOT connected to
 the server (only the workers are, via `--mcp-config`), so this is how the observer and the Opus
-evaluators reach MPS. Pass `projectPath` inside the JSON args — the platform requires it on every
-tool. A temp-file envelope is resolved and inlined automatically, including the duplicate-envelope
+evaluators reach MPS. If this session already has `mps_mcp_*` tools, call them directly instead.
+Pass `projectPath` inside the JSON args — the platform requires it on every tool. A temp-file envelope is resolved and inlined automatically, including the duplicate-envelope
 shape (the file holds a whole `{"ok":…,"data":…}`, not the bare payload — defect D25).
-Read-only by convention only: give evaluators the tool list from the scenario's `done_criteria.md`
-and tell them not to stray from it. Exit: 0 ok, 2 usage, 3 MCP/tool error, 4 unreachable.
+Evaluators stay read-only (the tool list in the scenario's `done_criteria.md`). The observer may
+mutate with `mps_mcp_close_project` to swap scratch projects. Exit: 0 ok, 2 usage, 3 MCP/tool error, 4 unreachable.
+
+## Opening and closing scratch projects (observer)
+
+The observer performs every project swap. Load the sibling `mps-project-management` skill from this
+catalog and follow it; do not ask the user to File→Open or Close Project. **Always tell the user the
+absolute path about to close (if any) and the absolute path about to open before acting** — present
+the information, do not wait for approval.
+
+**Open** (still no MCP tool — Welcome-screen MCP is rejected before dispatch):
+1. Announce the paths.
+2. If another study scratch is open, close it first (below). Golden/SMOKE may stay open only when
+   this run is SMOKE against that same golden directory.
+3. Follow `mps-project-management` (`references/open-via-cli.md` + the OS examples): a short-lived
+   second process activates the running MPS with the scratch directory as a positional argument.
+4. Confirm with `mps_mcp_list_open_projects` (or `mcp_call.py mps_mcp_list_open_projects '{"projectPath":"<dir>"}'`).
+   The new project must be listed; no other open project may share module names with what the worker
+   will create. `install_skills.py` needs it open.
+
+**Close:**
+1. Announce the absolute path.
+2. `mps_mcp_close_project` with `projectPath` = that directory and `force=false`
+   (`mcp_call.py mps_mcp_close_project '{"projectPath":"<dir>"}'` when this session has no MPS MCP).
+3. On `{ok:true, data.closed:true}`, stop. Closing the last project leaves the Welcome screen — the
+   next open is CLI again.
+4. On `MODAL_BLOCKED` or a cancelled close: ask the user only to dismiss the MPS dialog, then retry.
+   Use `force=true` only after a timed-out or cancelled close.
+
+Sequential, never two workers against one MPS. One scratch project open at a time (lesson 2).
 
 ## tools_inventory.py `--out $RUNS/inventory.json`
 Use exactly this path: `run_worker.sh` stores its sha256 as `inventorySha256` in every meta file.
@@ -87,9 +115,13 @@ names, description/schema bytes. Its `McpClient` class is the seed of an online 
 ## Per-run procedure card
 1. `tar -xzf study/fixtures/<fixture>.tar.gz -C ~/MPSProjects/mcp-study/proj/<id> --strip-components=1`
    (+ scenario inputs such as `recipes.csv`). The extracted tree must have NO `.claude/`, `.agents/`,
-   `AGENTS.md` or `CLAUDE.md`. 2. Human opens it; `mps_mcp_list_open_projects` must show it and NO
-   other project with the same module names — the install in step 3 needs it open. 3. Launch
+   `AGENTS.md` or `CLAUDE.md`. 2. Tell the user the path you will close (if a previous scratch is
+   still open) and the path you will open; close the previous scratch with `mps_mcp_close_project`
+   if needed; open the new copy via CLI (`mps-project-management`). `mps_mcp_list_open_projects`
+   must show it and NO other project with the same module names — the install in step 3 needs it
+   open. 3. Launch
    detached; poll. `run_worker.sh` installs the live skills first and writes `<id>-install.json`;
    confirm `skillsSha256` matches the round's other runs. 4. Evaluate via an Opus subagent
    (read-only, `projectPath` on every call, temp-file `data` is a path to read).
-5. `meta.taskPass/taskEvidence`; save the report as `<id>.eval.md`. 6. Human closes the project.
+5. `meta.taskPass/taskEvidence`; save the report as `<id>.eval.md`. 6. Tell the user the path, then
+   close with `mps_mcp_close_project` (`force=false`; `MODAL_BLOCKED` → user dismisses the dialog).

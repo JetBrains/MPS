@@ -25,11 +25,15 @@ RUNS=$HOME/MPSProjects/mcp-study/runs                            # evidence dir,
 ## Roles
 
 - **Observer** (this session, Opus-class): orchestrates, never performs the MPS task, never tells
-  workers they are measured, evaluates results read-only, writes the report.
+  workers they are measured, evaluates results read-only, writes the report. Opens scratch projects
+  via CLI (`mps-project-management`) and closes them with `mps_mcp_close_project`. Before each swap,
+  tell the user the absolute path about to close (if any) and the absolute path about to open — do
+  not ask them to perform the swap and do not wait for approval.
 - **Workers**: headless `claude -p` processes, one per (scenario, model, run), launched by
   `study/scripts/run_worker.sh`. Evidence = their stream-json transcript + the server call log.
-- **Human**: opens/closes scratch projects in MPS, restarts MPS when the plugin changed, answers the
-  gate questions, approves pushes.
+- **Human**: restarts MPS when the plugin changed, answers the gate questions, approves pushes, and
+  dismisses MPS dialogs when a close returns `MODAL_BLOCKED`. Does **not** open or close scratch
+  projects.
 
 ## Gate questions to ask before starting (use them verbatim)
 
@@ -44,7 +48,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
 1. **Preflight** — MPS running with MCP on `http://localhost:64343/stream`. Check the toolchain:
    `claude --version` (≥ 2.1; must accept `--output-format stream-json --strict-mcp-config`),
    `python3 -c 'import sys; assert sys.version_info >= (3, 9)'`, `jq --version`.
-   `mps_mcp_list_open_projects(projectPath=<golden>)` must list the golden project — "empty" means
+   If the golden project is not open, announce its path and open it via CLI (`mps-project-management`);
+   if the Welcome screen is up, do not retry MCP until that open has landed.
+   `mps_mcp_list_open_projects(projectPath=<golden>)` must then list the golden project — "empty" means
    no modules of its own (`mps_mcp_get_project_structure` returns no modules), e.g.
    `~/MPSProjects/ProjectX`. Other projects may be open only if their module names are disjoint
    from what workers will create. Is the call log on? `grep -c mps.mcp.calllog <MPS>/log/idea.log`
@@ -73,7 +79,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    with `--strict-mcp-config`.
 4. **Smoke** — `SMOKE` is a harness check, not a scenario: a read-only prompt that lists open
    projects and stops, so it may run against the golden project itself (no template copy, no
-   evaluation, `pass` stays empty). `RUNS=$RUNS MAX_TURNS=6 $STUDY/scripts/run_worker.sh SMOKE sonnet <n>
+   evaluation, `pass` stays empty). If golden is not open, announce its path and open it via CLI;
+   do not close it afterwards unless the next run needs a different project.
+   `RUNS=$RUNS MAX_TURNS=6 $STUDY/scripts/run_worker.sh SMOKE sonnet <n>
    <golden>` — bump `<n>` on every re-run (the harness refuses an existing run id). The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
@@ -82,14 +90,18 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    requirements. Fixtures: `empty-project`, `statechart` (Projectxx5), `recipes` (a passing S1) —
    regenerated per `study/fixtures/README.md`, not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
-   projects). Per run: copy fixture → human opens → confirm with `list_open_projects` → launch
+   projects). Per run: copy fixture → announce the scratch path (and any path you will close first)
+   → close a previous scratch with `mps_mcp_close_project` if one is still open → open the new copy
+   via CLI (`mps-project-management`) → confirm with `list_open_projects` → launch
    detached (`run_worker.sh` first rejects MPS-related user agents, then installs the live skills;
    either guard failure aborts with exit 3) →
    poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
    (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in `<id>.meta.json`
-   → human closes. Sequential, never two workers against one MPS. Check that every meta's
+   → announce the path and close with `mps_mcp_close_project` (`force=false`; on `MODAL_BLOCKED`
+   ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Check
+   that every meta's
    `skillsSha256` is the same value before comparing runs; a differing one means the catalog moved
-   mid-round.
+   mid-round. Open/close details: `references/harness.md`.
 7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
    → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
    each run's meta after evaluation. Filter chains containing `mps_mcp`, group into families, have an
@@ -106,13 +118,15 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
     ≥ 25 % fewer context tokens on treated scenarios, no drop in pass rate; delete remedies that do
     not pay.
 11. **Wrap up** — fold conclusions into the study doc; revert the VM option; delete fixture tarballs
-    (keep the SMOKE scenario — step 4 needs it); clean `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
+    (keep the SMOKE scenario — step 4 needs it); announce and close any remaining scratch with
+    `mps_mcp_close_project`; clean `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
     `~/.claude/projects/-…-mcp-study-proj-*/` memory dirs; keep the call-log listener.
 
 ## References
 
 - `references/harness.md` — run_worker.sh, analyze_runs.py, show_steps.py, tools_inventory.py usage;
-  clean-environment rule; per-run procedure card.
-- `references/scenarios.md` — the scenario set, fixtures, done-criteria style, adding a scenario.
+  clean-environment rule; observer open/close protocol; per-run procedure card.
+- `references/scenarios.md` — the scenario set, fixtures, orchestrator project swap, done-criteria
+  style, adding a scenario.
 - `references/analysis.md` — metrics, chain scoring, rubric, report template, thresholds.
 - `references/lessons.md` — what went wrong the first time and the rule that came out of it.

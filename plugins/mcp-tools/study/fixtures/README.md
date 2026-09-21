@@ -25,3 +25,5 @@ Verify before use: `tar -tzf <fixture>.tar.gz | grep -E '(^|/)(\.claude|\.agents
 must print nothing.
 
 Scratch copies go to `~/MPSProjects/mcp-study/proj/<run-id>/` (`tar -xzf … --strip-components=1`).
+The study observer opens that copy via CLI (`mps-project-management`) and closes it with
+`mps_mcp_close_project` — announce the absolute paths to the user; do not ask them to open or close.

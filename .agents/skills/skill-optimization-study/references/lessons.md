@@ -18,7 +18,11 @@
    Read/Write (sonnet) — classify Bash commands, don't just count them.
 8. **Study claims go stale fast.** The design doc's "index omits three tools" was already fixed.
    Verify every claim against the tree before repeating it.
-9. **Project open/close is a human step.** No MCP tool opens a project; plan swaps as the bottleneck.
+9. **Project open/close was a human step (superseded).** No MCP tool opens a project; plan swaps
+   were the bottleneck. → **Superseded 2026-09:** the observer opens via CLI (`mps-project-management`)
+   and closes via `mps_mcp_close_project`. Announce the absolute paths before each swap; do not ask
+   the user to perform it. Human remains for MPS restart, gate answers, push approval, and dismissing
+   `MODAL_BLOCKED` dialogs. Opening is still CLI-only — Welcome-screen MCP cannot help.
 10. **Polling in an agent harness is bounded.** Foreground waits ≤ ~9 min per call (raise the Bash
     tool timeout); launch workers detached (`nohup sh -c …&`), poll the wrapper pid `$!` in loops;
     the meta file's `pid` is `run_worker.sh` itself, for `kill` only.

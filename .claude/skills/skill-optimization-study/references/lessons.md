@@ -18,7 +18,11 @@
    Read/Write (sonnet) — classify Bash commands, don't just count them.
 8. **Study claims go stale fast.** The design doc's "index omits three tools" was already fixed.
    Verify every claim against the tree before repeating it.
-9. **Project open/close is a human step.** No MCP tool opens a project; plan swaps as the bottleneck.
+9. **Project open/close was a human step (superseded).** No MCP tool opens a project; plan swaps
+   were the bottleneck. → **Superseded 2026-09:** the observer opens via CLI (`mps-project-management`)
+   and closes via `mps_mcp_close_project`. Announce the absolute paths before each swap; do not ask
+   the user to perform it. Human remains for MPS restart, gate answers, push approval, and dismissing
+   `MODAL_BLOCKED` dialogs. Opening is still CLI-only — Welcome-screen MCP cannot help.
 10. **Polling in an agent harness is bounded.** Foreground waits ≤ ~9 min per call (raise the Bash
     tool timeout); launch workers detached (`nohup sh -c …&`), poll the wrapper pid `$!` in loops;
     the meta file's `pid` is `run_worker.sh` itself, for `kill` only.
@@ -96,30 +100,4 @@
     emptied the fixture's samples model instead of rewording the prompt, keeping `promptSha256`
     comparable across all three rounds. → When a prompt and its fixture disagree, prefer changing
     the side that is not the comparison key.
-
-## From round 4 (2026-09-18)
-
-26. **User-level *agents* leak into workers, and they hide work from the metrics.** Round-4 S1
-    invoked `~/.claude/agents/mps-constraints-agent.md` three times. A subagent's MPS calls land in
-    the server call log under the *parent's* session id but never appear in the parent transcript,
-    and its turns and tokens are absent from the `result` event — that cell's `metrics.csv`
-    understated it by 7 MCP calls. Rounds 1 and 3 had zero `Agent` calls, so the variable was also
-    uncontrolled between rounds. → The preflight assertion must cover `~/.claude/agents` as well
-    as `~/.claude/skills`, and the cross-check `server_calls == mps_calls − pre-dispatch rejections`
-    is the detector: an unexplained *surplus* of server calls means work happened off-transcript.
-27. **Parallel tool-calling multiplies input-validation defects by the fan-out.** A wrong parameter
-    name used to cost one rejection and one retry; in round 4 the worker fired 6–8 same-shaped
-    calls per assistant turn, so single mistakes cost 8, 6 and 2 rejections (17 of 21 errors from
-    four mistakes). → Rank a rejection-text defect by *calls*, not by turns, and treat "the error
-    names every wrong key and the correct ones" as a first-class remedy rather than polish.
-28. **A jump table inside a large reference cannot pay for itself.** R6 put a "read only the
-    section you need" table at the top of the 54 KB `referent-constraints.md`; the round-4 worker
-    read the whole file to reach the table, then `grep`ed and `sed`ed the same file three more
-    times. → Navigation aids belong in the *referring* `SKILL.md`, outside the file they index, or
-    the file must be split.
-29. **A tool defect can outrank every documentation remedy in one round.** One
-    `parse_java_and_insert` call failing with an unhandled cast (`INTERNAL_ERROR`, no detail) cost
-    ~16 calls and ~10 turns of hand-authoring recovery — more than the round's one clear win (M1)
-    saved. → When a round regresses, look for an unhandled exception before concluding the docs
-    got worse; grep `log/idea.log` for `Unexpected failure in MCP tool` over the run's window.
 
