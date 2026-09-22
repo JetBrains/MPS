@@ -3,6 +3,7 @@ package jetbrains.mps.agents.mcp.tools.unit
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.integration.*
 
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.net.URL
@@ -68,29 +69,43 @@ class SkillScriptsPackagingTest {
         }
     }
 
+    @Test
+    fun `every script and example in the catalog is pinned in this test`() {
+        withSkillsRoot { skillsRoot ->
+            val shipped = sortedSetOf<String>()
+            val shippingSkills = sortedSetOf<String>()
+            Files.list(skillsRoot).use { skills ->
+                for (skill in skills.filter { it.isDirectory() }) {
+                    val scripts = skill.resolve("scripts")
+                    if (!scripts.isDirectory()) {
+                        continue
+                    }
+                    shippingSkills.add(skill.name)
+                    Files.walk(scripts).use { files ->
+                        files.filter { Files.isRegularFile(it) }
+                            .forEach { shipped.add(skillsRoot.relativize(it).toString().replace('\\', '/')) }
+                    }
+                }
+            }
+            // Reverse of the checks above: a file nobody pinned would never be packaged-tested,
+            // and SkillScriptsDriftTest would never run its --list-tools.
+            assertEquals(
+                "add every skill that owns a scripts/ directory to BundledSkillScripts.SKILLS",
+                SKILLS_WITH_SCRIPTS.toSortedSet(), shippingSkills
+            )
+            assertEquals(
+                "every file under a scripts/ directory must be pinned in BundledSkillScripts: " +
+                        "a .py in SCRIPTS (which also enrolls it in the drift test), anything else in EXAMPLES",
+                (BUNDLED_SCRIPTS + BUNDLED_EXAMPLES).toSortedSet(), shipped
+            )
+        }
+    }
+
     private companion object {
         private const val SKILLS_RESOURCE_PATH = "jetbrains/mps/agents/mcp/skills"
-
-        private val SKILLS_WITH_SCRIPTS = listOf(
-            "mps-mcp-workflow",
-            "mps-node-editing",
-            "mps-language-analysis",
-        )
-
-        private val BUNDLED_SCRIPTS = listOf(
-            "mps-mcp-workflow/scripts/mps_dump.py",
-            "mps-node-editing/scripts/table_to_bulk_insert.py",
-            "mps-language-analysis/scripts/concept_shape.py",
-        )
-
-        private val BUNDLED_EXAMPLES = listOf(
-            "mps-mcp-workflow/scripts/examples/get_concept_details_courses.json",
-            "mps-mcp-workflow/scripts/examples/get_project_structure_model_roots.json",
-            "mps-mcp-workflow/scripts/examples/print_node_deep.json",
-            "mps-mcp-workflow/scripts/examples/print_node_shallow.json",
-            "mps-node-editing/scripts/examples/courses.csv",
-            "mps-node-editing/scripts/examples/courses.map.json",
-        )
+        private val SKILLS_WITH_SCRIPTS = BundledSkillScripts.SKILLS
+        private val BUNDLED_SCRIPTS = BundledSkillScripts.SCRIPTS
+        private val BUNDLED_EXAMPLES = BundledSkillScripts.EXAMPLES
     }
 
     /**

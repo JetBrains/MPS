@@ -9,7 +9,6 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
-import org.junit.Assume
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Path
@@ -29,8 +28,7 @@ import kotlin.reflect.full.valueParameters
  * into a temp directory), which also covers the installed layout the scripts rely on —
  * `concept_shape.py` imports `mps_dump.py` from `../../mps-mcp-workflow/scripts`.
  *
- * Skipped when `python3` is absent (Windows agents follow the manual fallback documented in
- * each skill's `## Scripts` section).
+ * Needs `python3`: an assumption on a developer machine, a failure on CI — see [Python3].
  */
 class SkillScriptsDriftTest : McpIntegrationTestBase() {
 
@@ -53,7 +51,7 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
 
     @Test
     fun `bundled scripts name only tools and parameters that exist`() {
-        assumePython3()
+        Python3.require()
         val skillsDir = installSkills()
         val registry = liveToolRegistry()
 
@@ -61,6 +59,10 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
             val result = runPython(skillsDir.resolve(script).toString(), "--list-tools")
             assertEquals("$script --list-tools must exit 0, output: ${result.output}", 0, result.exitCode)
             val entries = JsonParser.parseString(result.output.trim()).asJsonArray
+            if (script in SCRIPTS_WITHOUT_TOOL_DEPENDENCIES) {
+                assertEquals("$script must declare no tool dependency", 0, entries.size())
+                continue
+            }
             assertTrue("$script must declare at least one tool dependency", entries.size() > 0)
             for (entry in entries) {
                 val tool = entry.asJsonObject.get("tool").asString
@@ -84,7 +86,7 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
 
     @Test
     fun `table_to_bulk_insert turns the bundled example into a bulk blueprint`() {
-        assumePython3()
+        Python3.require()
         val skillsDir = installSkills()
         val scriptDir = skillsDir.resolve("mps-node-editing").resolve("scripts")
 
@@ -149,23 +151,11 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
         return PythonResult(process.exitValue(), output)
     }
 
-    private fun assumePython3() {
-        val available = try {
-            ProcessBuilder("python3", "--version").redirectErrorStream(true).start().waitFor(30, TimeUnit.SECONDS)
-        } catch (_: Exception) {
-            false
-        }
-        Assume.assumeTrue("python3 is not available; the skills document a manual fallback", available)
-    }
-
     private companion object {
         private const val EXAMPLE_ROW_COUNT = 40
 
-        private val BUNDLED_SCRIPTS = listOf(
-            "mps-mcp-workflow/scripts/mps_dump.py",
-            "mps-node-editing/scripts/table_to_bulk_insert.py",
-            "mps-language-analysis/scripts/concept_shape.py",
-        )
+        private val BUNDLED_SCRIPTS = BundledSkillScripts.SCRIPTS
+        private val SCRIPTS_WITHOUT_TOOL_DEPENDENCIES = BundledSkillScripts.SCRIPTS_WITHOUT_TOOL_DEPENDENCIES
 
         // Every toolset registered in META-INF/plugin.xml. Listed explicitly so that renaming a
         // toolset class breaks compilation here rather than silently shrinking the registry.
