@@ -536,7 +536,6 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
             rawArguments,
             JsonObject(emptyMap()),
             sessionOptions,
-            emptyMap(),
         )
     }
 }
