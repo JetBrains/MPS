@@ -1504,39 +1504,57 @@ abstract class AbstractNodeOps : AbstractOps() {
             var sample: SNode? = null
             var count = 0
             val random = Random()
-            findInstancesWithFallback(searchScope, requested.toSet(), exact, monitor) { node ->
-                // Defensive: both paths already report exact instances of the requested concepts
-                // for an exact query (the facade does not expand the query set, the fallback walk
-                // asks FastNodeFinder with includeInherited=false), so this narrows nothing today.
-                // Kept because neither guarantee is part of either contract, and generalised over
-                // the requested set so a batched query does not drop a node matching another entry.
-                val accepted = !monitor.isCanceled &&
-                    (!exact || requested.any { node.concept == it }) &&
-                    (!rootsOnly || node.parent == null) &&
-                    (rootFilter == null || node.containingRoot.reference in rootFilter) &&
-                    (filterName == null || propertyValueByName(node, filterName) == filterValue)
-                if (accepted) {
-                    synchronized(results) {
-                        if (sampleOnly) {
-                            // Reservoir sampling: every accepted node becomes the sample with
-                            // probability 1/count without materializing the full result set.
-                            count++
-                            if (count == 1 || random.nextInt(count) == 0) {
-                                sample = node
-                            }
-                        } else if (results.add(node) && countOnly) {
-                            // Tally on first sight only. Both the facade and the fallback walk can
-                            // report one node once per concept it matches (the facade expands a
-                            // non-exact query with the concepts' descendants, the fallback loops
-                            // over the requested set), so the dedup set is what keeps a count from
-                            // counting the same node twice. Rows overlap by construction: with
-                            // exact:false an instance of a subconcept counts for every requested
-                            // superconcept too, so the rows do not sum to a node total.
-                            for (i in requested.indices) {
-                                if (conceptMatches(node, requested[i], exact)) counts[i]++
-                            }
+            val collectAccepted: (SNode) -> Unit = { node ->
+                synchronized(results) {
+                    if (sampleOnly) {
+                        // Reservoir sampling: every accepted node becomes the sample with
+                        // probability 1/count without materializing the full result set.
+                        count++
+                        if (count == 1 || random.nextInt(count) == 0) {
+                            sample = node
+                        }
+                    } else if (results.add(node) && countOnly) {
+                        // Tally on first sight only. Both the facade and the fallback walk can
+                        // report one node once per concept it matches (the facade expands a
+                        // non-exact query with the concepts' descendants, the fallback loops
+                        // over the requested set), so the dedup set is what keeps a count from
+                        // counting the same node twice. Rows overlap by construction: with
+                        // exact:false an instance of a subconcept counts for every requested
+                        // superconcept too, so the rows do not sum to a node total.
+                        for (i in requested.indices) {
+                            if (conceptMatches(node, requested[i], exact)) counts[i]++
                         }
                     }
+                }
+            }
+            if (rootFilter != null) {
+                // The specified roots are already in memory. An index query of their containing
+                // models can miss a just-created subtree when other hits of a wide concept skip
+                // the FastNodeFinder fallback, then rootFilter drops every remaining candidate.
+                val repo = mpsProject.repository
+                for (rootRef in rootFilter) {
+                    if (monitor.isCanceled) break
+                    val root = rootRef.resolve(repo) ?: continue
+                    for (node in org.jetbrains.mps.openapi.model.SNodeUtil.getDescendants(root)) {
+                        if (monitor.isCanceled) break
+                        val accepted = requested.any { conceptMatches(node, it, exact) } &&
+                            (!rootsOnly || node.parent == null) &&
+                            (filterName == null || propertyValueByName(node, filterName) == filterValue)
+                        if (accepted) collectAccepted(node)
+                    }
+                }
+            } else {
+                findInstancesWithFallback(searchScope, requested.toSet(), exact, monitor) { node ->
+                    // Defensive: both paths already report exact instances of the requested concepts
+                    // for an exact query (the facade does not expand the query set, the fallback walk
+                    // asks FastNodeFinder with includeInherited=false), so this narrows nothing today.
+                    // Kept because neither guarantee is part of either contract, and generalised over
+                    // the requested set so a batched query does not drop a node matching another entry.
+                    val accepted = !monitor.isCanceled &&
+                        (!exact || requested.any { node.concept == it }) &&
+                        (!rootsOnly || node.parent == null) &&
+                        (filterName == null || propertyValueByName(node, filterName) == filterValue)
+                    if (accepted) collectAccepted(node)
                 }
             }
             if (monitor.isCanceled) {

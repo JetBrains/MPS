@@ -21,6 +21,7 @@ import com.intellij.mcpserver.impl.util.asTools
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.project.DumbService
+import com.intellij.testFramework.IndexingTestUtil
 import jetbrains.mps.ide.ModuleInProjectTest
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.Solution
@@ -167,21 +168,25 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         myProject.modelAccess.computeReadAction<T> { block() }
 
     /**
-     * Blocks until [project] leaves dumb mode, so a following index-backed search sees the models
-     * this test just created.
+     * Blocks until [project] leaves dumb mode and its file indexes are ready, so a following
+     * index-backed search sees the models this test just created.
      *
      * The MCP search tools go through [org.jetbrains.mps.openapi.module.FindUsagesFacade], whose
      * fast participants query the IDEA file index. Creating models mid-test starts a background
      * re-index, and a search racing it gets partial index coverage: the facade answers from
      * whatever is indexed so far, which is neither the complete answer nor the empty one the
-     * tools' fallback walk is gated on. Call this between a fixture that writes models and an
-     * assertion on what a search returns.
+     * tools' fallback walk is gated on. [DumbService.waitForSmartMode] is a no-op when the
+     * project is already smart, so incremental indexing of an existing model still needs
+     * [IndexingTestUtil.waitUntilIndexesAreReady]. Call this between a fixture that writes
+     * models and an assertion on what a search returns.
      *
      * Safe from the test thread — [ModuleInProjectTest.after] waits the same way — but not from
      * the EDT or inside a read action, which the platform forbids while dumb.
      */
     protected fun waitForSmartMode(project: MPSProject = myProject) {
-        DumbService.getInstance(project.project).waitForSmartMode()
+        val ideaProject = project.project
+        DumbService.getInstance(ideaProject).waitForSmartMode()
+        IndexingTestUtil.waitUntilIndexesAreReady(ideaProject)
     }
 
     protected fun <T> captureLogMessages(block: () -> T): Pair<T, List<String>> {
