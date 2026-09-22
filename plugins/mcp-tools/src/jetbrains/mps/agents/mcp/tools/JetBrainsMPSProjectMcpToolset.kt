@@ -1,9 +1,5 @@
 package jetbrains.mps.agents.mcp.tools
 
-import jetbrains.mps.agents.mcp.tools.common.*
-import jetbrains.mps.agents.mcp.tools.config.*
-import jetbrains.mps.agents.mcp.tools.logging.*
-
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
@@ -17,12 +13,15 @@ import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.WriteIntentReadAction
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
 import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
+import jetbrains.mps.agents.mcp.tools.common.AbstractOps
+import jetbrains.mps.agents.mcp.tools.config.AgentConfigRootResolver
+import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.ide.project.ProjectHelper
-import jetbrains.mps.workbench.action.ActionUtils
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
@@ -34,6 +33,7 @@ import jetbrains.mps.project.structure.modules.LanguageDescriptor
 import jetbrains.mps.smodel.Generator
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelInternal
+import jetbrains.mps.workbench.action.ActionUtils
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -621,6 +621,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_close_project(
+        @McpDescription("If true, shut down the MPS application if this project being closed is the only project currently open.")
+        shutdownWithLastProject: Boolean = false,
         @McpDescription("If true, force-close without save/can-close confirmation dialogs and without waiting for an already-open modal. Unsaved editor changes are discarded. Default false.")
         force: Boolean = false
     ): String {
@@ -637,7 +639,9 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                     val basePath = ideaProject.basePath
                     val closed = try {
                         withTimeout(CLOSE_PROJECT_TIMEOUT_MS) {
-                            closeIdeaProjectOnEdt(ideaProject, force)
+                            val performShutdown = shutdownWithLastProject &&
+                                ProjectManager.getInstance().openProjects.filterNot { it.isDisposed }.filter { it != ideaProject }.isEmpty()
+                            closeIdeaProjectOnEdt(ideaProject, performShutdown, force)
                         }
                     } catch (e: TimeoutCancellationException) {
                         throw McpModalBlockedException(
@@ -679,7 +683,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
      * housekeeping from [com.intellij.ide.actions.CloseProjectsActionBase].
      */
     private suspend fun closeIdeaProjectOnEdt(
-        ideaProject: com.intellij.openapi.project.Project,
+        ideaProject: Project,
+        performShutdown: Boolean,
         force: Boolean
     ): Boolean {
         return suspendCancellableCoroutine { cont ->
@@ -688,7 +693,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
             val modality = if (force) ModalityState.any() else ModalityState.nonModal()
             ApplicationManager.getApplication().invokeLater({
                 if (abandoned.get()) return@invokeLater
-                val result = runCatching { closeIdeaProjectNow(ideaProject, force) }
+                val result = runCatching { closeIdeaProjectNow(ideaProject, performShutdown, force) }
                 if (abandoned.get() || !cont.isActive) return@invokeLater
                 result.fold(
                     onSuccess = { cont.resume(it) },
@@ -706,7 +711,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
      * dialogs, so that path replicates the same housekeeping around [ProjectManagerEx.forceCloseProject].
      */
     private fun closeIdeaProjectNow(
-        ideaProject: com.intellij.openapi.project.Project,
+        ideaProject: Project,
+        performShutdown: Boolean,
         force: Boolean
     ): Boolean {
         if (ideaProject.isDisposed) return true
@@ -716,7 +722,13 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                 SimpleDataContext.getProjectContext(ideaProject),
             )
             CloseProjectAction().actionPerformed(event)
-            return ideaProject.isDisposed || !ideaProject.isOpen
+            val closed = ideaProject.isDisposed || !ideaProject.isOpen
+            if (closed && performShutdown) {
+                ApplicationManager.getApplication().invokeLater({
+                    ApplicationManager.getApplication().exit()
+                })
+            }
+            return closed
         }
 
         WindowManager.getInstance().updateDefaultFrameInfoOnProjectClose(ideaProject)
@@ -726,7 +738,13 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         }
         if (closed) {
             RecentProjectsManager.getInstance().updateLastProjectPath()
-            WelcomeFrame.showIfNoProjectOpened()
+            if (performShutdown) {
+                ApplicationManager.getApplication().invokeLater({
+                    ApplicationManager.getApplication().exit()
+                })
+            } else {
+                WelcomeFrame.showIfNoProjectOpened()
+            }
         }
         return closed
     }
