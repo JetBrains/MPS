@@ -6,11 +6,6 @@ import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.util.PlatformUtils;
-import java.util.List;
-import com.intellij.ide.plugins.PluginLoadingError;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
-import java.util.ArrayList;
-import com.intellij.ide.plugins.PluginManagerCore;
 import jetbrains.mps.ide.MPSCoreComponents;
 import jetbrains.mps.util.annotation.Hack;
 import java.util.StringJoiner;
@@ -37,6 +32,8 @@ import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.application.Application;
 import jetbrains.mps.project.ProjectManager;
+import java.util.List;
+import java.util.ArrayList;
 import com.intellij.testFramework.PlatformTestUtil;
 import com.intellij.openapi.vfs.impl.jar.JarFileSystemImpl;
 import com.intellij.util.indexing.FileBasedIndexImpl;
@@ -79,13 +76,6 @@ public final class IdeaEnvironment extends EnvironmentBase {
     addRequiredPlugins(myConfig);
     createIdeaApplication();
 
-    // this is the only way currently to access the plugin loading errors 
-    List<PluginLoadingError> errors = ListSequence.fromListWithValues(new ArrayList<>(), PluginManagerCore.INSTANCE.getAndClearPluginLoadingErrors());
-    for (PluginLoadingError err : errors) {
-      if (LOG.isErrorLevel()) {
-        LOG.error("" + err.getHtmlMessage().toString());
-      }
-    }
 
     // FIXME IJ doesn't allow to use our own logging initialization.
     //      to trick it into using our configuration, we initialize one prior to IdeaEnviroment init

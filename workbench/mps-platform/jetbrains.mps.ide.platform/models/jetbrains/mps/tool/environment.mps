@@ -293,9 +293,6 @@
       <concept id="1226511727824" name="jetbrains.mps.baseLanguage.collections.structure.SetType" flags="in" index="2hMVRd">
         <child id="1226511765987" name="elementType" index="2hN53Y" />
       </concept>
-      <concept id="1151688443754" name="jetbrains.mps.baseLanguage.collections.structure.ListType" flags="in" index="_YKpA">
-        <child id="1151688676805" name="elementType" index="_ZDj9" />
-      </concept>
       <concept id="1153943597977" name="jetbrains.mps.baseLanguage.collections.structure.ForEachStatement" flags="nn" index="2Gpval">
         <child id="1153944400369" name="variable" index="2Gsz3X" />
         <child id="1153944424730" name="inputSequence" index="2GsD0m" />
@@ -304,10 +301,6 @@
       <concept id="1153944233411" name="jetbrains.mps.baseLanguage.collections.structure.ForEachVariableReference" flags="nn" index="2GrUjf">
         <reference id="1153944258490" name="variable" index="2Gs0qQ" />
       </concept>
-      <concept id="1237721394592" name="jetbrains.mps.baseLanguage.collections.structure.AbstractContainerCreator" flags="nn" index="HWqM0">
-        <child id="1237731803878" name="copyFrom" index="I$8f6" />
-      </concept>
-      <concept id="1160600644654" name="jetbrains.mps.baseLanguage.collections.structure.ListCreatorWithInit" flags="nn" index="Tc6Ow" />
       <concept id="1165530316231" name="jetbrains.mps.baseLanguage.collections.structure.IsEmptyOperation" flags="nn" index="1v1jN8" />
       <concept id="1176501494711" name="jetbrains.mps.baseLanguage.collections.structure.IsNotEmptyOperation" flags="nn" index="3GX2aA" />
     </language>
@@ -432,104 +425,6 @@
           </node>
         </node>
         <node concept="3clFbH" id="7RQMtR$gjsW" role="3cqZAp" />
-        <node concept="3SKdUt" id="6Vc2CbrnZxf" role="3cqZAp">
-          <node concept="1PaTwC" id="6Vc2CbrnZxg" role="1aUNEU">
-            <node concept="3oM_SD" id="6Vc2CbrnZxj" role="1PaTwD">
-              <property role="3oM_SC" value="this" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4fs" role="1PaTwD">
-              <property role="3oM_SC" value="is" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4ft" role="1PaTwD">
-              <property role="3oM_SC" value="the" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4fI" role="1PaTwD">
-              <property role="3oM_SC" value="only" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4fZ" role="1PaTwD">
-              <property role="3oM_SC" value="way" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4gg" role="1PaTwD">
-              <property role="3oM_SC" value="currently" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4h3" role="1PaTwD">
-              <property role="3oM_SC" value="to" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4h4" role="1PaTwD">
-              <property role="3oM_SC" value="access" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4hl" role="1PaTwD">
-              <property role="3oM_SC" value="the" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4hA" role="1PaTwD">
-              <property role="3oM_SC" value="plugin" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4iS" role="1PaTwD">
-              <property role="3oM_SC" value="loading" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4jp" role="1PaTwD">
-              <property role="3oM_SC" value="errors" />
-            </node>
-            <node concept="3oM_SD" id="6Vc2Cbro4in" role="1PaTwD">
-              <property role="3oM_SC" value="" />
-            </node>
-          </node>
-        </node>
-        <node concept="3cpWs8" id="7RQMtR$hEgL" role="3cqZAp">
-          <node concept="3cpWsn" id="7RQMtR$hEgM" role="3cpWs9">
-            <property role="TrG5h" value="errors" />
-            <node concept="_YKpA" id="2VpW0qBl95D" role="1tU5fm">
-              <node concept="3uibUv" id="7z47wMIFOth" role="_ZDj9">
-                <ref role="3uigEE" to="ctgy:~PluginLoadingError" resolve="PluginLoadingError" />
-              </node>
-            </node>
-            <node concept="2ShNRf" id="7RQMtR$hEgN" role="33vP2m">
-              <node concept="Tc6Ow" id="7RQMtR$hEgO" role="2ShVmc">
-                <node concept="2OqwBi" id="5eJ8wgjuOF7" role="I$8f6">
-                  <node concept="10M0yZ" id="5eJ8wgjuL8Q" role="2Oq$k0">
-                    <ref role="3cqZAo" to="ctgy:~PluginManagerCore.INSTANCE" resolve="INSTANCE" />
-                    <ref role="1PxDUh" to="ctgy:~PluginManagerCore" resolve="PluginManagerCore" />
-                  </node>
-                  <node concept="liA8E" id="5eJ8wgjv1mS" role="2OqNvi">
-                    <ref role="37wK5l" to="ctgy:~PluginManagerCore.getAndClearPluginLoadingErrors()" resolve="getAndClearPluginLoadingErrors" />
-                  </node>
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1DcWWT" id="7RQMtR$hTt4" role="3cqZAp">
-          <node concept="3clFbS" id="7RQMtR$hTt7" role="2LFqv$">
-            <node concept="RRSsy" id="7RQMtR$i3ZO" role="3cqZAp">
-              <property role="RRSoG" value="gZ5fh_4/error" />
-              <node concept="3cpWs3" id="7RQMtR$iiax" role="RRSoy">
-                <node concept="2OqwBi" id="2VpW0qBlt2J" role="3uHU7w">
-                  <node concept="liA8E" id="2VpW0qBlwOE" role="2OqNvi">
-                    <ref role="37wK5l" to="zdap:~HtmlChunk.toString()" resolve="toString" />
-                  </node>
-                  <node concept="2OqwBi" id="7RQMtR$impo" role="2Oq$k0">
-                    <node concept="37vLTw" id="7RQMtR$iiko" role="2Oq$k0">
-                      <ref role="3cqZAo" node="7RQMtR$hTt8" resolve="err" />
-                    </node>
-                    <node concept="liA8E" id="7RQMtR$iqac" role="2OqNvi">
-                      <ref role="37wK5l" to="ctgy:~PluginLoadingError.getHtmlMessage()" resolve="getHtmlMessage" />
-                    </node>
-                  </node>
-                </node>
-                <node concept="Xl_RD" id="7RQMtR$i3ZQ" role="3uHU7B" />
-              </node>
-            </node>
-          </node>
-          <node concept="3cpWsn" id="7RQMtR$hTt8" role="1Duv9x">
-            <property role="TrG5h" value="err" />
-            <node concept="3uibUv" id="7z47wMIFTwY" role="1tU5fm">
-              <ref role="3uigEE" to="ctgy:~PluginLoadingError" resolve="PluginLoadingError" />
-            </node>
-          </node>
-          <node concept="37vLTw" id="7RQMtR$hTtd" role="1DdaDG">
-            <ref role="3cqZAo" node="7RQMtR$hEgM" resolve="errors" />
-          </node>
-        </node>
         <node concept="3clFbH" id="7RQMtR$gjsY" role="3cqZAp" />
         <node concept="3SKdUt" id="61n5glKfyo1" role="3cqZAp">
           <node concept="1PaTwC" id="61n5glKfyo2" role="1aUNEU">
