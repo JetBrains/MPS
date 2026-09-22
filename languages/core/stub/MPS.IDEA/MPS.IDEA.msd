@@ -6,7 +6,7 @@
         <sourceRoot location="platform-loader.jar" />
         <sourceRoot location="util-8.jar" />
         <sourceRoot location="util.jar" />
-        <sourceRoot location="annotations.jar" />
+        <sourceRoot location="intellij.libraries.jetbrains.annotations.jar" />
         <sourceRoot location="app-backend.jar" />
         <sourceRoot location="eclipse.lsp4j.jar" />
         <sourceRoot location="eclipse.lsp4j.jsonrpc.jar" />
@@ -312,7 +312,7 @@
       <library location="${mps_home}/lib/platform-loader.jar" />
       <library location="${mps_home}/lib/util-8.jar" />
       <library location="${mps_home}/lib/util.jar" />
-      <library location="${mps_home}/lib/annotations.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.jetbrains.annotations.jar" />
       <library location="${mps_home}/lib/app-backend.jar" />
       <library location="${mps_home}/lib/eclipse.lsp4j.jar" />
       <library location="${mps_home}/lib/eclipse.lsp4j.jsonrpc.jar" />

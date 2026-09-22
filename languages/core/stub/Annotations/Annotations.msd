@@ -3,7 +3,7 @@
   <readOnlyStubs/>
   <models>
     <modelRoot type="java_classes">
-      <sourceRoot path="${mps_home}/lib/annotations.jar" />
+      <sourceRoot path="${mps_home}/lib/intellij.libraries.jetbrains.annotations.jar" />
       <!--
         MPS used to expose IDEA annotations.jar only through this stub solution, and [mps-annotations] were exposed through MPS.Core;
         I don't see a reason to keep MPS annotations part of much bigger MPS.Core, therefore, copied them here.
@@ -14,7 +14,7 @@
   </models>
   <facets>
     <facet type="java" compile="ext" classes="provided" ext="no">
-      <library location="${mps_home}/lib/annotations.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.jetbrains.annotations.jar" />
       <library location="${mps_home}/lib/mps-annotations.jar" />
     </facet>
   </facets>
