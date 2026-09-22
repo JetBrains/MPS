@@ -175,4 +175,7 @@ internal object BaseLanguageMeta {
     internal val isSynchronizedProperty = MetaAdapterFactory.getProperty(
         baseLanguageId, baseLanguageStructureModelId, 0xf8cc56b1fcL, 0x3b576cda23612c7aL, "isSynchronized"
     )
+    internal val packageNameProperty = MetaAdapterFactory.getProperty(
+        baseLanguageId, baseLanguageStructureModelId, 0x101d9d3ca30L, 0x26be0cf68be19d69L, "packageName"
+    )
 }

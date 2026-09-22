@@ -62,6 +62,139 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `root CLASS insert copies a divergent package onto packageName and warns`() {
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "package mcp.study.generated;\npublic class RecipeTemplate {}",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok=true envelope, got: $response", envelope.get("ok").asBoolean)
+        val warnings = envelope.getAsJsonArray("warnings").map { it.asString }
+        assertTrue(
+            "top-level warnings must name Classifier.packageName: $warnings",
+            warnings.any { it.contains("Classifier.packageName") }
+        )
+        assertTrue(
+            "divergent package warning must state the package differs from the model name: $warnings",
+            warnings.any { it.contains("differs from the destination model name") }
+        )
+        assertTrue(
+            "divergent package warning must name the undo hatch: $warnings",
+            warnings.any { it.contains("mps_mcp_update_node") && it.contains("packageName") && it.contains("empty") }
+        )
+
+        val data = assertOkData(response)
+        assertEquals("mcp.study.generated", data.get("package").asString)
+
+        readOnRepo {
+            val root = javaModel.rootNodes.single()
+            assertEquals("RecipeTemplate", root.name)
+            assertEquals("mcp.study.generated", root.getPropertyByName("packageName"))
+        }
+    }
+
+    @Test
+    fun `root CLASS insert without a package leaves packageName empty and does not warn`() {
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "class Foo {}",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok=true envelope, got: $response", envelope.get("ok").asBoolean)
+        val warningsEl = envelope.get("warnings")
+        val warnings = if (warningsEl == null || warningsEl.isJsonNull) emptyList()
+        else warningsEl.asJsonArray.map { it.asString }
+        assertTrue(
+            "envelope must not warn about packageName when source has no package: $warnings",
+            warnings.none { it.contains("packageName") }
+        )
+
+        readOnRepo {
+            val root = javaModel.rootNodes.single()
+            val pkg = root.getPropertyByName("packageName")
+            assertTrue("packageName must stay empty without a package statement, got: $pkg", pkg.isNullOrEmpty())
+        }
+    }
+
+    @Test
+    fun `root CLASS insert applies one package to both types in a compilation unit`() {
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "package p.q;\nclass A {}\nclass B {}",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertEquals("p.q", data.get("package").asString)
+        assertEquals(2, data.getAsJsonArray("inserted").size())
+
+        readOnRepo {
+            val roots = javaModel.rootNodes.associateBy { it.name }
+            assertEquals(setOf("A", "B"), roots.keys)
+            assertEquals("p.q", roots.getValue("A").getPropertyByName("packageName"))
+            assertEquals("p.q", roots.getValue("B").getPropertyByName("packageName"))
+        }
+    }
+
+    @Test
+    fun `child CLASS insert does not set packageName on the nested classifier`() {
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+        val toolset = JetBrainsMPSJavaMcpToolset()
+        val classRef = seedClassRoot(toolset, javaModelRef, "Outer")
+
+        val response = runTool(toolset) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "package nested.pkg;\nclass Inner {}",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "child", "parentRef": "$classRef", "role": "member" }
+                }
+                """.trimIndent()
+            )
+        }
+        assertOkData(response)
+
+        readOnRepo {
+            val outer = javaModel.rootNodes.single { it.name == "Outer" }
+            val inner = outer.children.single { it.containmentLink?.name == "member" }
+            val pkg = inner.getPropertyByName("packageName")
+            assertTrue("child CLASS insert must not set packageName, got: $pkg", pkg.isNullOrEmpty())
+        }
+    }
+
+    @Test
     fun `child mode appends a method to an existing class`() {
         val javaModel = createJavaModel()
         val javaModelRef = modelRefOf(javaModel)

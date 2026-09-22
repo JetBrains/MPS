@@ -323,14 +323,24 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             is EditableModelResolution.Err -> return InsertOutcome.Err(r.errJson)
         }
 
+        val pkg = parseResult.getPackage()?.trim().orEmpty()
+        var packageNameWrites = 0
         val inserted = mutableListOf<SNode>()
         for (n in parsedNodes) {
             model.addRootNode(n)
             if (insertTarget.virtualPackage != null) {
                 n.setProperty(SNodeUtil.property_BaseConcept_virtualPackage, insertTarget.virtualPackage)
             }
+            if (pkg.isNotEmpty() && SNodeOperations.isInstanceOf(n, BaseLanguageMeta.classifierConcept)) {
+                n.setProperty(BaseLanguageMeta.packageNameProperty, pkg)
+                packageNameWrites++
+            }
             inserted.add(n)
         }
+
+        val packageWarnings =
+            if (packageNameWrites > 0) listOf(buildPackageNameWarning(pkg, model.name.longName))
+            else emptyList()
 
         finalizeInsertedNodes(
             model,
@@ -345,7 +355,23 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             // detaches a root from its model — the same undo the language-structure toolset relies on.
             safelyRollbackNodes(inserted.asReversed())
         }
-        return InsertOutcome.Ok(inserted)
+        return InsertOutcome.Ok(inserted, packageWarnings)
+    }
+
+    private fun buildPackageNameWarning(pkg: String, modelLongName: String): String {
+        val warning =
+            "Set Classifier.packageName to '$pkg' from the Java package declaration. " +
+                "Classifier.packageName (not the model name and not virtualPackage) controls " +
+                "the generated package statement, the source_gen unit path, and Classifier.getFqName."
+        return if (pkg != modelLongName) {
+            warning +
+                " This package differs from the destination model name '$modelLongName'; " +
+                "generated Java will land outside the model's default directory because " +
+                "the unitPath replaces the model-namespace segment. " +
+                "To undo, call mps_mcp_update_node SET packageName to empty."
+        } else {
+            warning
+        }
     }
 
     private fun insertAsChild(
