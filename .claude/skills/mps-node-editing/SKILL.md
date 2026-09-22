@@ -23,19 +23,16 @@ The core workflow for mutating MPS nodes through MCP tools. JSON blueprints desc
 
 ## `mps_mcp_update_node` — Unified Node-Mutation Tool
 
-All child, property, and reference operations on existing nodes go through `mps_mcp_update_node`. The operation is selected via `operation` (`ADD`/`SET`/`DELETE`) × `kind` (`CHILD`/`PROPERTY`/`REFERENCE`).
+All child, property, and reference operations on existing nodes go through `mps_mcp_update_node`. The operation is selected via `operation` (`ADD`/`SET`) × `kind` (`CHILD`/`PROPERTY`/`REFERENCE`). **There is no `DELETE` operation** — deletion is a `SET`: omit `childJson` to delete a child, or pass an explicit `null` as a triplet's value to clear a property or reference. A *shortened* triplet is rejected (`Invalid property triplet: expected at least 3 elements`, and the `reference` equivalent), so the null has to be written out.
 
 | operation × kind        | Required parameters                                           | Notes |
 |-------------------------|---------------------------------------------------------------|-------|
 | `ADD` × `CHILD`         | `nodeReference` (parent), `childRole`, `childJson`            | Optional `position` (0-based; null/-1 = append) and `dryRun`. A `position` ≥ the current child count clamps to an append; a negative value other than -1 is rejected. The response's `data.index` reports the actual landing index. |
-| `SET` × `CHILD`         | `childNodeRef`, `childJson`                                   | Replaces an existing child; preserves its position in the role. Optional `dryRun`. A *null* `childJson` deletes the child instead — prefer `DELETE` × `CHILD` for that. |
-| `DELETE` × `CHILD`      | `childNodeRef`                                                | Removes the child from its parent. |
-| `SET` × `PROPERTY`      | `properties` = `[[nodeRef, propertyName, value], …]`          | Batch operation; returns per-row results. |
-| `DELETE` × `PROPERTY`   | `nodeReference`, `propertyName`                               | Clears a single property. |
-| `SET` × `REFERENCE`     | `references` = `[[nodeRef, role, targetRefOrName], …]`        | Batch operation; `targetRefOrName` accepts an `r:...` ref or a plain name. A plain name is resolved within the reference role's search scope; if it cannot be resolved the call fails (`NOT_FOUND`), preserves the previous reference value, and stores no dangling reference. |
-| `DELETE` × `REFERENCE`  | `nodeReference`, `referenceRole`                              | Clears a single reference. |
+| `SET` × `CHILD`         | `childNodeRef` (+ `childJson` to replace)                     | Replaces an existing child; preserves its position in the role. Optional `dryRun`. **Omit `childJson` to delete the child** — `mps_mcp_update_node` offers no other way to delete one (a whole-root rewrite via `mps_mcp_update_root_node_from_json` can also drop children). |
+| `SET` × `PROPERTY`      | `properties` = `[[nodeRef, propertyName, value], …]`          | Batch operation; returns per-row results. A row whose `value` is an explicit `null` deletes that property; a two-element row is rejected, not treated as a delete. |
+| `SET` × `REFERENCE`     | `references` = `[[nodeRef, role, targetRefOrName], …]`        | Batch operation; `targetRefOrName` accepts an `r:...` ref or a plain name. A plain name is resolved within the reference role's search scope; if it cannot be resolved the call fails (`NOT_FOUND`), preserves the previous reference value, and stores no dangling reference. A row whose `targetRefOrName` is an explicit `null` deletes that reference; a two-element row is rejected, not treated as a delete. |
 
-`ADD` × `PROPERTY` and `ADD` × `REFERENCE` are not valid combinations and return an error envelope.
+`ADD` × `PROPERTY` and `ADD` × `REFERENCE` are not valid combinations and return an error envelope. So does any other `operation` value, `DELETE` included.
 
 `mps_mcp_update_node` (PROPERTY / REFERENCE / CHILD) and `mps_mcp_alter_nodes` MOVE_CHILD / MOVE_NODE_TO_PARENT / COPY_NODE also work on nodes inside the **current MPS Console input command** — pass the node's normal persistent reference; no extra parameter is needed. The node must be inside the current unexecuted console input (not history/stale). MOVE_NODE_TO_PARENT only relocates a node *within* the current console command — moving a node between the console and a project model, or making a console node a root, is refused. Edits to console nodes skip disk-persistence and refresh the console's imports instead. Nodes outside the selected project are rejected as before.
 
@@ -43,7 +40,7 @@ For project models, `MOVE_NODE_TO_PARENT` has two intentional forms. Supply a no
 
 `childJson` accepts the blueprint as real JSON, as that JSON written as a string (max 4 KB), **or** as an absolute path to a file containing it. Use the file form for large blueprints to avoid MCP-transport truncation.
 
-Where a parameter's documented null means something (`SET` × `CHILD` deleting the child, `SET` × `PROPERTY`/`REFERENCE` clearing a value), express the null by **omitting the parameter** or sending an unquoted JSON null. The 4-character string `"null"` is not the null form — for `childJson` it is rejected as `Input is the string 'null', not a JSON object/array or a file path`.
+Where a documented null means something, how you express it depends on where it sits. For `SET` × `CHILD`, the null is the `childJson` *parameter*: express it by **omitting the parameter** or sending an unquoted JSON null. For `SET` × `PROPERTY`/`REFERENCE` the null is the third *element* of a triplet, so it must be written out as an unquoted JSON null — omitting the `properties`/`references` parameter is rejected as missing, and a two-element row is rejected as a malformed triplet, not read as a delete. In neither case is the 4-character string `"null"` the null form — for `childJson` it is rejected as `Input is the string 'null', not a JSON object/array or a file path`.
 
 ## Prerequisites
 
@@ -59,7 +56,7 @@ Where a parameter's documented null means something (`SET` × `CHILD` deleting t
 ## Common Workflow
 
 1. **Identify** the target node (existing) or parent model (new root).
-2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET`/`DELETE` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
+2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
 3. **Author the JSON** following the unified blueprint format.
 4. **Insert** with `dryRun: true` first if the blueprint is large. Check the response: an empty `warnings` array means staging was clean; a non-empty list means the production write will produce dynamic (unresolved) references for the listed targets — resolve those first or expect broken refs.
 5. **Validate** with `mps_mcp_check_root_node_problems`. Reported problems may carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.

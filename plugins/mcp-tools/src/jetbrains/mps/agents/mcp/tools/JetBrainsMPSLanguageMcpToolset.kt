@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -60,8 +61,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         // fetching the tool schema even though the rejection already named the right key, so the
         // message ends with the literal edit to make rather than only the key's name.
         const val RETRY_WITH_CONCEPT_REFS =
-            "Retry with conceptRefs set to the value you passed as conceptReference " +
-                    "(or languageRefs for languageReference)."
+            "Retry with conceptRefs set to the value you passed as conceptRef/conceptReference " +
+                    "(or languageRefs for languageRef/languageReference)."
         const val RETRY_WITH_SEARCH_TEXTS =
             "Retry with searchTexts set to the value you passed as query/q/text."
 
@@ -115,20 +116,36 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         if (conceptRefs.isEmpty() && languageRefs.isEmpty()) {
-            return errJson(
-                "No concepts nor languages have been provided. This tool takes the plural " +
-                        "'conceptRefs' and/or 'languageRefs' (a single value or a JSON array of them); " +
-                        "the singular 'conceptReference'/'languageReference' spellings used by other " +
-                        "tools are not recognised here. " + RETRY_WITH_CONCEPT_REFS,
-                McpErrorCode.INVALID_REQUEST,
+            // Study D27: the singular 'conceptRef' is the *canonical* key inside the parameters
+            // blob of the blob-taking tools (PARAM_CONCEPT_REF), so guessing it here is natural.
+            // The round-3 wording named only the '-erence' spellings and so never echoed the key
+            // the caller had actually sent; all four near-misses are listed now.
+            // Recorded because this returns before withMpsProject, the only other call site
+            // that reports the envelope to the call log (see McpCallOutcomes) — D27's entire
+            // rejection path runs through here, so leaving it unrecorded would log every one of
+            // these as ok:true and make the study's own server_errors column understate it.
+            return McpCallOutcomes.record(
+                errJson(
+                    "No concepts nor languages have been provided. This tool takes the plural " +
+                            "'conceptRefs' and/or 'languageRefs' (a single value or a JSON array of them). " +
+                            "The singular near-misses 'conceptRef'/'conceptReference'/'languageRef'/" +
+                            "'languageReference' are not recognised here; 'conceptRef' is the canonical " +
+                            "key inside the parameters blob of the blob-taking tools, which is what makes " +
+                            "it a natural guess. " + RETRY_WITH_CONCEPT_REFS,
+                    McpErrorCode.INVALID_REQUEST,
+                )
             )
         }
         val shapeOnly = when (detail.trim().lowercase()) {
             DETAIL_FULL -> false
             DETAIL_SHAPE -> true
-            else -> return errJson(
-                "Invalid detail '$detail'. Allowed values: $DETAIL_FULL, $DETAIL_SHAPE",
-                McpErrorCode.INVALID_REQUEST,
+            // Recorded for the same reason as the empty-input rejection above: it returns before
+            // withMpsProject, so an unrecorded envelope would reach the call log as ok:true.
+            else -> return McpCallOutcomes.record(
+                errJson(
+                    "Invalid detail '$detail'. Allowed values: $DETAIL_FULL, $DETAIL_SHAPE",
+                    McpErrorCode.INVALID_REQUEST,
+                )
             )
         }
         return withMpsProject("Getting MPS language concept details") { mpsProject ->

@@ -8,6 +8,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
@@ -126,7 +127,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val op = resolveOperationOrNull<MPSQueryOperation>(operation)
-            ?: return unknownOperation<MPSQueryOperation>(operation)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSQueryOperation>(operation))
         return mps_mcp_query_nodes(op, parameters.text, maxInlineBytes)
     }
 
@@ -168,10 +169,17 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     """)
     suspend fun mps_mcp_alter_nodes(
         @McpDescription("The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES)") operation: String,
-        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText
+        // Study D29: Kotlin-optional so that MAKE called with its arguments at the top level
+        // reaches the body, instead of the platform rejecting the call for the missing required
+        // argument without ever saying the arguments belong inside this object. It stays
+        // semantically required — the default exists only to buy the body a chance to say so — so
+        // the description carries "Required.": dropping out of the published `required` array
+        // removes the client's only structural signal, and the rejection itself says
+        // "'parameters' is required". See missingAlterNodesParameters.
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
         val op = resolveOperationOrNull<MPSAlterOperation>(operation)
-            ?: return unknownOperation<MPSAlterOperation>(operation)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSAlterOperation>(operation))
         return mps_mcp_alter_nodes(op, parameters.text)
     }
 
@@ -180,12 +188,19 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      * registered `@McpTool` (see [resolveOperationOrNull] for the rationale).
      */
     suspend fun mps_mcp_alter_nodes(operation: MPSAlterOperation, parameters: String): String {
+        // Guarded here rather than in the wrapper so neither entry point can reach the Gson parse
+        // with no object to parse: blank text and a bare `null` both decode to a null JsonObject.
+        // `rejectUnknownParameterKeys` already answers that for the four operations with a key
+        // list, but MAKE has none and dereferenced it into an opaque INTERNAL_ERROR. Recorded
+        // explicitly because this returns before `withMpsProject`, the only other call site that
+        // reports the envelope to the call log (see McpCallOutcomes).
+        if (parameters.isBlank()) return McpCallOutcomes.record(missingAlterNodesParameters(operation))
         return withMpsProject("Altering MPS nodes: $operation") { mpsProject ->
             val params = try {
                 Gson().fromJson(parameters, JsonObject::class.java)
             } catch (e: Exception) {
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
-            }
+            } ?: return@withMpsProject missingAlterNodesParameters(operation)
             alterNodesParameterKeys(operation)?.let { params.rejectUnknownParameterKeys(operation.name, it) }
 
             when (operation) {
@@ -459,6 +474,38 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
 
         return MakeTargetResolution.Ok(modelsToMake, modulesToMake, unresolvedModels, unresolvedModules)
+    }
+
+    /**
+     * Omitted-`parameters` rejection for [mps_mcp_alter_nodes] (study D29). The observed call put
+     * MAKE's own arguments at the top level, where the binder drops them, so the message says the
+     * arguments belong inside the object and lists that operation's keys. The near-miss spellings
+     * are phrased conditionally: the binder cannot report which keys it dropped, so this must stay
+     * true for the caller who sent nothing at all.
+     */
+    private fun missingAlterNodesParameters(operation: MPSAlterOperation): String {
+        if (operation == MPSAlterOperation.MAKE) {
+            // MAKE_INPUT_INVALID, not INVALID_REQUEST: MAKE input rejections are classified
+            // under that code (the contract D14b records), and an `expectedParameters` map rides
+            // along as it does on opMake's unknown-key rejection. Using INVALID_REQUEST here would
+            // put the most common MAKE input error in a different class from the rest.
+            return makeInputInvalid(
+                "'parameters' is required for MAKE, and MAKE's own arguments belong inside that " +
+                    "object (keys: ${MAKE_PARAMETER_KEYS.joinToString(", ")}). Anything sent at " +
+                    "the top level instead is dropped before the call reaches this tool, so a " +
+                    "'rebuild' put there never arrives — and 'moduleName' is not a key here at " +
+                    "all: a module list is 'modules', inside the object.",
+                mapOf("expectedParameters" to MAKE_PARAMETER_SCHEMA),
+            )
+        }
+        // Every non-MAKE operation requires at least 'nodeReference', so the key list is never
+        // empty; alterNodesParameterKeys returns null for MAKE alone, handled above.
+        val keys = alterNodesParameterKeys(operation)?.canonical.orEmpty()
+        return errJson(
+            "'parameters' is required for ${operation.name}, and its arguments belong inside that " +
+                "object (keys: ${keys.joinToString(", ")}).",
+            McpErrorCode.INVALID_REQUEST,
+        )
     }
 
     private suspend fun opMake(mpsProject: MPSProject, params: JsonObject): String {
@@ -851,14 +898,16 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     )
     suspend fun mps_mcp_print_node(
         @McpDescription("Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String,
-        @McpDescription("Whether to return a JSON blueprint(default), HTML or PLAIN TEXT. Defaults to JSON.") format: String = "JSON",
+        @McpDescription("One of exactly three literals: JSON (default), HTML, PLAIN TEXT.") format: String = "JSON",
         @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
         @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val normalizedFormat = format.uppercase().trim()
         if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true, maxInlineBytes = maxInlineBytes)
         if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false, maxInlineBytes = maxInlineBytes)
-        if (normalizedFormat != "JSON") return errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT", McpErrorCode.INVALID_REQUEST)
+        if (normalizedFormat != "JSON") return McpCallOutcomes.record(
+            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT", McpErrorCode.INVALID_REQUEST)
+        )
         return withMpsProject(if (deep) "Deep printing MPS node" else "Shallow printing MPS node") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -901,8 +950,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_update_node(
-        @McpDescription("The operation to perform (ADD or SET)") operation: String,
-        @McpDescription("The kind of element to operate on (CHILD, PROPERTY, REFERENCE)") kind: String,
+        @McpDescription("Required. The operation to perform (ADD or SET)") operation: String = "",
+        @McpDescription("Required. The kind of element to operate on (CHILD, PROPERTY, REFERENCE)") kind: String = "",
         @McpDescription("Parent node ref for ADD CHILD") nodeReference: String? = null,
         @McpDescription("Containment role name for ADD CHILD") childRole: String? = null,
         @McpDescription("0-based insert index for ADD CHILD multi-cardinality roles; null/-1 = append. A value at or beyond the current child count is clamped to an append; a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.") position: Int? = null,
@@ -913,10 +962,22 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Batch triplets [nodeRef, referenceRole, targetNodeRefOrName] for SET REFERENCE") references: List<List<String?>>? = null,
         @McpDescription("ADD CHILD only: `summary` for `{added, nodes:[{name, reference, concept}], fixReferences}`, `full` (the default for a single child) for the complete node-info envelope with `index`.") responseDetail: String? = null,
     ): String {
+        // Study D28: both selectors default to blank so a call that omits one still reaches this
+        // body. As required parameters they were rejected by the platform with "No argument is
+        // passed for required parameter 'kind'", which names one wrong key and none of the right
+        // ones. Both stay semantically required and say so in their descriptions — leaving the
+        // published `required` array costs the client its only structural signal, which the
+        // wording has to replace. `operation` is resolved before `kind` is checked so that operation=DELETE gets the
+        // deletion recipe (D36) rather than a "kind is required" that is a dead end for it.
+        // Every selector rejection is recorded: these return before `withMpsProject`, the only
+        // other call site that reports the envelope to the call log, and a rejection that reaches
+        // the log as ok:true is exactly the mis-measurement D26 was fixed to remove.
+        if (operation.isBlank()) return McpCallOutcomes.record(missingUpdateNodeSelector(operation, kind))
         val op = resolveOperationOrNull<NodeUpdateOperation>(operation)
-            ?: return unknownOperation<NodeUpdateOperation>(operation)
+            ?: return McpCallOutcomes.record(unknownNodeUpdateOperation(operation, kind))
+        if (kind.isBlank()) return McpCallOutcomes.record(missingUpdateNodeSelector(operation, kind))
         val k = resolveOperationOrNull<NodeUpdateKind>(kind)
-            ?: return unknownOperation<NodeUpdateKind>(kind)
+            ?: return McpCallOutcomes.record(unknownOperation<NodeUpdateKind>(kind))
         return mps_mcp_update_node(op, k, nodeReference, childRole, position, childJson?.text, childNodeRef, dryRun, properties, references, responseDetail)
     }
 
@@ -941,28 +1002,30 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         return when (kind) {
             NodeUpdateKind.CHILD -> when (operation) {
                 NodeUpdateOperation.ADD -> {
-                    val parentRef = nodeReference ?: return missingUpdateNodeParameter(
-                        "nodeReference", "ADD CHILD", "the parent node's reference", "parentRef/nodeRef"
-                    )
-                    val role = childRole ?: return missingUpdateNodeParameter(
-                        "childRole", "ADD CHILD", "the containment role name", "role"
-                    )
-                    val json = childJson ?: return missingUpdateNodeParameter(
-                        "childJson", "ADD CHILD",
-                        "the child's JSON blueprint, or an absolute path to a file holding it", "json"
-                    )
-                    update_node_child(parentRef, role, json, null, position, dryRun, responseDetail)
+                    // Reported together rather than one per round trip: study D28's incident sent
+                    // parentRef/role/target, so all three keys were wrong at once. Kotlin
+                    // smart-casts the three parameters past this early return.
+                    if (nodeReference == null || childRole == null || childJson == null) {
+                        return missingAddChildParameters(nodeReference, childRole, childJson)
+                    }
+                    update_node_child(nodeReference, childRole, childJson, null, position, dryRun, responseDetail)
                 }
                 NodeUpdateOperation.SET -> {
+                    // 'target' belongs on this near-miss list, not ADD CHILD's: in
+                    // mps_mcp_parse_java_and_insert — the tool study D28 names as the source of
+                    // the guess — `targetRef` is the node being *replaced* under mode "replace",
+                    // whose counterpart here is childNodeRef, not the ADD CHILD parent.
                     val childRef = childNodeRef ?: return missingUpdateNodeParameter(
                         "childNodeRef", "SET CHILD", "the reference of the child to replace or delete",
-                        "childNodeReference/nodeReference"
+                        "childNodeReference/nodeReference/target"
                     )
                     update_node_child(null, null, childJson, childRef, null, dryRun)
                 }
             }
             NodeUpdateKind.PROPERTY -> when (operation) {
-                NodeUpdateOperation.ADD -> errJson("ADD is not a valid operation for PROPERTY")
+                NodeUpdateOperation.ADD -> McpCallOutcomes.record(
+                    errJson("ADD is not a valid operation for PROPERTY", McpErrorCode.INVALID_REQUEST)
+                )
                 NodeUpdateOperation.SET -> {
                     val triplets = properties ?: return missingUpdateNodeParameter(
                         "properties", "SET PROPERTY",
@@ -980,17 +1043,22 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                                 else -> update_node_property(nodeRef, propName, triplet[2])
                             }
                         } else {
-                            errJson("Invalid property triplet: expected at least 3 elements")
+                            errJson("Invalid property triplet: expected at least 3 elements", McpErrorCode.INVALID_REQUEST)
                         }
                         results.add(itemResult)
                         if (!itemResult.startsWith("{\"ok\":true")) allSucceeded = false
                     }
                     val array = "[" + results.joinToString(",") + "]"
-                    "{" + "\"ok\":$allSucceeded,\"data\":" + array + "}"
+                    // Recorded because the per-item helpers each recorded their own envelope and
+                    // McpCallOutcomes is last-write-wins: without this the call log reports the
+                    // batch as whatever its final row happened to be, not as the aggregate.
+                    McpCallOutcomes.record("{" + "\"ok\":$allSucceeded,\"data\":" + array + "}")
                 }
             }
             NodeUpdateKind.REFERENCE -> when (operation) {
-                NodeUpdateOperation.ADD -> errJson("ADD is not a valid operation for REFERENCE")
+                NodeUpdateOperation.ADD -> McpCallOutcomes.record(
+                    errJson("ADD is not a valid operation for REFERENCE", McpErrorCode.INVALID_REQUEST)
+                )
                 NodeUpdateOperation.SET -> {
                     val triplets = references ?: return missingUpdateNodeParameter(
                         "references", "SET REFERENCE",
@@ -1008,13 +1076,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                                 else -> update_node_reference(nodeRef, refRole, triplet[2])
                             }
                         } else {
-                            errJson("Invalid reference triplet: expected at least 3 elements")
+                            errJson("Invalid reference triplet: expected at least 3 elements", McpErrorCode.INVALID_REQUEST)
                         }
                         results.add(itemResult)
                         if (!itemResult.startsWith("{\"ok\":true")) allSucceeded = false
                     }
                     val array = "[" + results.joinToString(",") + "]"
-                    "{" + "\"ok\":$allSucceeded,\"data\":" + array + "}"
+                    McpCallOutcomes.record("{" + "\"ok\":$allSucceeded,\"data\":" + array + "}")
                 }
             }
         }
@@ -1027,17 +1095,115 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      * near-miss this tool does *not* accept. No alias parameter is added: a top-level alias is
      * paid for in every turn's published schema, whereas a named rejection costs one retry only
      * to the caller who already guessed wrong.
+     *
+     * Records its own envelope: every caller returns straight out of [mps_mcp_update_node]'s
+     * dispatch without reaching `withMpsProject`, the only other call site that reports to the
+     * call log, and a rejection logged as ok:true is the mis-measurement D26 was fixed to remove.
      */
-    private fun missingUpdateNodeParameter(
+    private suspend fun missingUpdateNodeParameter(
         parameter: String,
         operation: String,
         value: String,
         nearMisses: String? = null,
-    ): String = errJson(
-        "$parameter is required for $operation. Retry with $parameter set to $value." +
-            (nearMisses?.let { " This tool spells it '$parameter', not '$it'." } ?: ""),
+    ): String = McpCallOutcomes.record(
+        errJson(
+            "$parameter is required for $operation. Retry with $parameter set to $value." +
+                (nearMisses?.let { " This tool spells it '$parameter', not '$it'." } ?: ""),
+            McpErrorCode.INVALID_REQUEST,
+        )
+    )
+
+    /** One required key of [mps_mcp_update_node], with the spelling this tool does *not* accept. */
+    private class UpdateNodeParameter(val name: String, val value: String, val nearMisses: String)
+
+    /**
+     * ADD CHILD rejection naming *every* missing key at once. Study D28 observed a caller sending
+     * `parentRef`/`role`/`target` — all three keys wrong together — so reporting them one at a
+     * time costs a round trip per key. A single missing key still goes through
+     * [missingUpdateNodeParameter] so the settled singular wording is untouched.
+     */
+    private suspend fun missingAddChildParameters(
+        nodeReference: String?,
+        childRole: String?,
+        childJson: String?,
+    ): String {
+        val missing = listOfNotNull(
+            UpdateNodeParameter("nodeReference", "the parent node's reference", "parentRef/nodeRef")
+                .takeIf { nodeReference == null },
+            UpdateNodeParameter("childRole", "the containment role name", "role")
+                .takeIf { childRole == null },
+            UpdateNodeParameter(
+                "childJson", "the child's JSON blueprint, or an absolute path to a file holding it", "json"
+            ).takeIf { childJson == null },
+        )
+        // Exactly one of the three shapes is reachable, and the caller has already established
+        // that `missing` is not empty, so there is no empty case to answer here.
+        missing.singleOrNull()?.let {
+            return missingUpdateNodeParameter(it.name, "ADD CHILD", it.value, it.nearMisses)
+        }
+        return McpCallOutcomes.record(
+            errJson(
+                missing.joinToString(", ") { it.name } + " are required for ADD CHILD. Retry with " +
+                    missing.joinToString("; ") {
+                        "${it.name} set to ${it.value} (not '${it.nearMisses}')"
+                    } + ".",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        )
+    }
+
+    /**
+     * [NodeUpdateOperation] has no DELETE, and study D36 recorded the same DELETE guess three
+     * times across two runs because the generic rejection lists the valid operations but never
+     * says *how* to delete. Kept local so the operation enums that really do carry a DELETE
+     * (root nodes, [DependencyOperation]) keep the generic [unknownOperation] wording.
+     */
+    private fun unknownNodeUpdateOperation(raw: String, kind: String): String = errJson(
+        "Unknown operation '$raw'. Valid operations: " +
+            NodeUpdateOperation.entries.joinToString(", ") { it.name } + ". " +
+            deletionRecipeFor(kind) + " There is no DELETE operation.",
         McpErrorCode.INVALID_REQUEST,
     )
+
+    /**
+     * How to delete, for the `kind` the caller asked about. Deletion is a `SET`, but *which* SET
+     * differs: a child is deleted by omitting `childJson`, whereas a property or reference needs
+     * an explicit null as the third element of its triplet — a shortened triplet is rejected. A
+     * recipe naming only the child form would be wrong advice for two of the three kinds.
+     */
+    private fun deletionRecipeFor(kind: String): String =
+        when (resolveOperationOrNull<NodeUpdateKind>(kind)) {
+            NodeUpdateKind.PROPERTY ->
+                "Deletion is SET PROPERTY with an explicit null as the triplet's third element."
+            NodeUpdateKind.REFERENCE ->
+                "Deletion is SET REFERENCE with an explicit null as the triplet's third element."
+            NodeUpdateKind.CHILD -> "Deletion is SET CHILD with childJson omitted (or a JSON null)."
+            // kind blank or unresolvable: name both forms rather than guess one.
+            null -> "Deletion is a SET — SET CHILD with childJson omitted for a child, " +
+                "SET PROPERTY / SET REFERENCE with an explicit null triplet value for a property or reference."
+        }
+
+    /**
+     * Blank-selector rejection for [mps_mcp_update_node] (study D28). Names whichever selector is
+     * actually blank — the caller who supplied `operation` must not be told it is missing — then
+     * the valid pairs and the ADD CHILD keys, since omitting `kind` went with guessed key names
+     * in every observed incident.
+     */
+    private fun missingUpdateNodeSelector(operation: String, kind: String): String {
+        val subject = when {
+            operation.isBlank() && kind.isBlank() -> "operation and kind are"
+            operation.isBlank() -> "operation is"
+            else -> "kind is"
+        }
+        return errJson(
+            "$subject required. Received operation='$operation', kind='$kind'. " +
+                "Valid pairs: ADD CHILD, SET CHILD, SET PROPERTY, SET REFERENCE — ADD is not " +
+                "valid for PROPERTY or REFERENCE. " +
+                "For ADD CHILD also supply nodeReference, childRole and childJson; " +
+                "this tool does not accept parentRef/nodeRef/role/target.",
+            McpErrorCode.INVALID_REQUEST,
+        )
+    }
 
     private suspend fun update_node_child(
         nodeReference: String?,

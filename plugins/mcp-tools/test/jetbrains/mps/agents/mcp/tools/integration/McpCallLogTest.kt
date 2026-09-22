@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.integration
 
+import jetbrains.mps.agents.mcp.tools.JetBrainsMPSLanguageMcpToolset
+import jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset
 import jetbrains.mps.agents.mcp.tools.logging.*
 
 import com.google.gson.JsonParser
@@ -11,6 +13,8 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlinx.serialization.json.JsonElement as McpJsonElement
+import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 
 /**
  * Tests for [McpCallLogListener]. The listener is driven directly with the same stub
@@ -206,5 +210,128 @@ class McpCallLogTest : McpIntegrationTestBase() {
             fire(McpCallLogListener())
         }
         assertFalse("no file may be created when disabled", Files.exists(file))
+    }
+
+    /**
+     * Drives a *real* tool rejection through the bridge with the log enabled, instead of feeding
+     * [McpCallOutcomes] a synthetic envelope. Every other test here supplies the envelope itself,
+     * so none of them would notice a tool that never records one: a rejection returning before
+     * `withMpsProject` then reaches the log as `ok:true`, and
+     * `study/scripts/analyze_runs.py` computes `server_errors` off exactly that field. These are
+     * the paths the P2 remedy (D27/D28/D29/D32/D36) moved from pre-dispatch into the tool body,
+     * which is what put them at risk of being logged as successes.
+     */
+    @Test
+    fun `an in-tool rejection returning before withMpsProject is logged as ok=false`() {
+        data class Case(val tool: String, val args: Map<String, McpJsonElement>, val expectedCode: String)
+
+        val cases = listOf(
+            // D28: blank selector, and an operation this tool does not have.
+            Case("mps_mcp_update_node", emptyMap(), "INVALID_REQUEST"),
+            Case("mps_mcp_update_node", mapOf("operation" to McpJsonPrimitive("DELETE")), "INVALID_REQUEST"),
+            // D28: a missing ADD CHILD key.
+            Case(
+                "mps_mcp_update_node",
+                mapOf("operation" to McpJsonPrimitive("ADD"), "kind" to McpJsonPrimitive("CHILD")),
+                "INVALID_REQUEST",
+            ),
+            // D29: MAKE with no parameters blob keeps MAKE's own error code.
+            Case("mps_mcp_alter_nodes", mapOf("operation" to McpJsonPrimitive("MAKE")), "MAKE_INPUT_INVALID"),
+            // D32: an unknown print_node format.
+            Case(
+                "mps_mcp_print_node",
+                mapOf(
+                    "nodeReference" to McpJsonPrimitive("r:00000000-0000-0000-0000-000000000000(dummy)/1"),
+                    "format" to McpJsonPrimitive("structural"),
+                ),
+                "INVALID_REQUEST",
+            ),
+        )
+
+        for (case in cases) {
+            val file = Files.createTempDirectory("mcp-calllog").resolve("in-tool.jsonl")
+            val response = withCallLog(file) {
+                val listener = McpCallLogListener()
+                val info = stubMcpCallInfo(myProject)
+                listener.beforeMcpToolCall(info.mcpToolDescriptor, info)
+                val result = callThroughBridge(JetBrainsMPSNodeMcpToolset(), case.tool, case.args)
+                listener.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
+                result
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("${case.tool} must have rejected: $response", envelope.get("ok").asBoolean)
+
+            val line = readLines(file).single()
+            assertFalse("${case.tool} rejection must log ok=false: $line", line.get("ok").asBoolean)
+            assertEquals("${case.tool} must log its errorCode: $line", case.expectedCode, line.get("errorCode").asString)
+        }
+    }
+
+    /**
+     * A partly-failed `SET PROPERTY` batch must log `ok:false`, even when its *last* row succeeded.
+     *
+     * This is the one scenario that separates "the aggregate envelope was recorded" from "whatever
+     * the final row recorded": each row goes through `update_node_property`, which is
+     * `withMpsProject`-wrapped and records its own envelope, and [McpCallOutcomes] is
+     * last-write-wins. With the bad row last the log would read `ok:false` by luck; the row order
+     * here is deliberately bad-then-good, so an unrecorded aggregate logs the call as a success.
+     */
+    @Test
+    fun `a batch whose last row succeeded still logs ok=false when an earlier row failed`() {
+        val conceptRef = createConceptRoot("CallLogBatchFixture")
+        val file = Files.createTempDirectory("mcp-calllog").resolve("batch.jsonl")
+        val response = withCallLog(file) {
+            val listener = McpCallLogListener()
+            val info = stubMcpCallInfo(myProject)
+            listener.beforeMcpToolCall(info.mcpToolDescriptor, info)
+            val result = runBlocking(McpCallAdditionalDataElement(stubMcpCallInfo(myProject))) {
+                JetBrainsMPSNodeMcpToolset().mps_mcp_update_node(
+                    operation = "SET",
+                    kind = "PROPERTY",
+                    properties = listOf(
+                        listOf("r:00000000-0000-0000-0000-000000000000(nope)/1", "name", "Fails"),
+                        listOf(conceptRef, "name", "Succeeds"),
+                    ),
+                )
+            }
+            listener.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
+            result
+        }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("the batch envelope itself must say ok=false: $response", envelope.get("ok").asBoolean)
+        val rows = envelope.getAsJsonArray("data")
+        assertEquals("expected one result row per triplet: $response", 2, rows.size())
+        assertTrue(
+            "the last row must have succeeded, or this test proves nothing: $response",
+            rows.get(1).asJsonObject.get("ok").asBoolean,
+        )
+
+        val line = readLines(file).single()
+        assertFalse("the call log must report the aggregate, not the last row: $line", line.get("ok").asBoolean)
+    }
+
+    /**
+     * D27's rejection lives in a second toolset and is likewise returned before `withMpsProject`.
+     */
+    @Test
+    fun `get-concept-details empty-input rejection is logged as ok=false`() {
+        val file = Files.createTempDirectory("mcp-calllog").resolve("concept-details.jsonl")
+        val response = withCallLog(file) {
+            val listener = McpCallLogListener()
+            val info = stubMcpCallInfo(myProject)
+            listener.beforeMcpToolCall(info.mcpToolDescriptor, info)
+            val result = callThroughBridge(
+                JetBrainsMPSLanguageMcpToolset(),
+                "mps_mcp_get_concept_details",
+                mapOf("conceptRef" to McpJsonPrimitive("jetbrains.mps.lang.core.structure.BaseConcept")),
+            )
+            listener.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
+            result
+        }
+        assertFalse("must have rejected: $response", JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+        val line = readLines(file).single()
+        assertFalse("rejection must log ok=false: $line", line.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", line.get("errorCode").asString)
     }
 }

@@ -15,6 +15,8 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlinx.serialization.json.JsonNull as McpJsonNull
+import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 
 /**
  * End-to-end integration tests for [JetBrainsMPSNodeMcpToolset].
@@ -1600,6 +1602,17 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
         assertTrue("error should list valid operations: ${obj.get("error").asString}", obj.get("error").asString.contains("ADD"))
+        // The deletion recipe rides on every unresolvable operation, not just DELETE: the caller
+        // who reached for one verb this tool does not have is the one who needs to be told what it
+        // does have. See `update_node DELETE names the deletion recipe for the kind asked about`.
+        assertTrue(
+            "error should name the deletion recipe: ${obj.get("error").asString}",
+            obj.get("error").asString.contains("Deletion is SET CHILD with childJson omitted"),
+        )
+        assertTrue(
+            "error should deny a DELETE operation: ${obj.get("error").asString}",
+            obj.get("error").asString.contains("There is no DELETE operation"),
+        )
     }
 
     @Test
@@ -1612,6 +1625,338 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
         assertTrue("error should list valid kinds: ${obj.get("error").asString}", obj.get("error").asString.contains("CHILD"))
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Study hotspot 7 (D28, D29, D32, D36): a rejection the caller can retry from.
+    //
+    // These go through `callThroughBridge`, not `runTool`: the defects being fixed lived in the
+    // *binder*, which rejected the call for a missing required argument before the tool body ran.
+    // A direct Kotlin call can never reproduce that, so only the bridge proves the body now
+    // answers. `mps_mcp_update_node.operation`/`kind` and `mps_mcp_alter_nodes.parameters` must
+    // therefore stay optional — the schema test below states that requirement on its own, so a
+    // regression names itself instead of surfacing as a bridge failure in every test here.
+    // ---------------------------------------------------------------------------------------
+
+    @Test
+    fun `published schema keeps the selectors of update_node and alter_nodes optional`() {
+        fun required(tool: String): Set<String> =
+            publishedInputSchema(JetBrainsMPSNodeMcpToolset(), tool).requiredProperties
+        assertEquals(
+            "update_node's selectors must stay optional so a call that omits one reaches the body " +
+                    "and gets missingUpdateNodeSelector instead of the binder's missing-argument line",
+            emptySet<String>(),
+            setOf("operation", "kind").intersect(required("mps_mcp_update_node")),
+        )
+        assertEquals(
+            "alter_nodes.parameters must stay optional so MAKE called with top-level arguments " +
+                    "reaches the body and gets missingAlterNodesParameters",
+            emptySet<String>(),
+            setOf("parameters").intersect(required("mps_mcp_alter_nodes")),
+        )
+        assertTrue(
+            "query_nodes.parameters stays required on purpose — D29 covered alter_nodes only",
+            "parameters" in required("mps_mcp_query_nodes"),
+        )
+    }
+
+    @Test
+    fun `update_node DELETE names the deletion recipe for the kind asked about`() {
+        // D36: `DELETE` was guessed three times across two study runs because the rejection listed
+        // the valid operations but never said how to delete. Asserted with `kind` both present and
+        // absent: an unresolvable `operation` must win over the missing-`kind` path, or the caller
+        // who guessed DELETE is sent to fix `kind` and guesses DELETE again on the retry.
+        // The recipe is kind-dependent: telling a DELETE/PROPERTY caller to use SET CHILD would be
+        // wrong advice, so each kind must get its own form and a blank kind must get both.
+        val recipePerKind = mapOf(
+            "CHILD" to "Deletion is SET CHILD with childJson omitted",
+            "PROPERTY" to "Deletion is SET PROPERTY with an explicit null as the triplet's third element",
+            "REFERENCE" to "Deletion is SET REFERENCE with an explicit null as the triplet's third element",
+            "" to "SET PROPERTY / SET REFERENCE with an explicit null triplet value",
+            // An unresolvable kind cannot select a form either, so it gets both, like a blank one.
+            "ATTRIBUTE" to "SET PROPERTY / SET REFERENCE with an explicit null triplet value",
+        )
+        for ((kind, expectedRecipe) in recipePerKind) {
+            val args = buildMap {
+                put("operation", McpJsonPrimitive("DELETE"))
+                if (kind.isNotEmpty()) put("kind", McpJsonPrimitive(kind))
+            }
+            val response = callThroughBridge(JetBrainsMPSNodeMcpToolset(), "mps_mcp_update_node", args)
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope for kind='$kind': $response", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            val error = obj.get("error").asString
+            assertTrue("must quote the rejected value: $error", error.contains("Unknown operation 'DELETE'"))
+            assertTrue("must list the valid operations: $error", error.contains("ADD, SET"))
+            assertTrue("kind='$kind' must get its own recipe: $error", error.contains(expectedRecipe))
+            if (expectedRecipe.startsWith("SET PROPERTY")) {
+                // The both-forms answer has to name the child form too, not only the triplet one.
+                assertTrue(
+                    "kind='$kind' must also name the child form: $error",
+                    error.contains("SET CHILD with childJson omitted for a child"),
+                )
+            }
+            assertTrue("must deny a DELETE operation outright: $error", error.contains("There is no DELETE operation"))
+            assertFalse(
+                "an unresolvable operation must not be answered as a missing kind: $error",
+                error.contains("required. Received operation="),
+            )
+        }
+        // A CHILD caller must not be handed the triplet form, nor a PROPERTY caller the child form.
+        val childOnly = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_update_node",
+            mapOf("operation" to McpJsonPrimitive("DELETE"), "kind" to McpJsonPrimitive("CHILD")),
+        )
+        assertFalse(
+            "a CHILD caller must not be sent to the triplet form: $childOnly",
+            JsonParser.parseString(childOnly).asJsonObject.get("error").asString.contains("triplet"),
+        )
+        val propertyOnly = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_update_node",
+            mapOf("operation" to McpJsonPrimitive("DELETE"), "kind" to McpJsonPrimitive("PROPERTY")),
+        )
+        assertFalse(
+            "a PROPERTY caller must not be sent to SET CHILD: $propertyOnly",
+            JsonParser.parseString(propertyOnly).asJsonObject.get("error").asString.contains("SET CHILD"),
+        )
+    }
+
+    @Test
+    fun `update_node names whichever selector is blank and never reports a supplied one as missing`() {
+        // D28. The binder used to answer this with "No argument is passed for required parameter
+        // 'kind'" — one wrong key named, none of the right ones.
+        val cases = mapOf(
+            emptyMap<String, McpJsonPrimitive>() to "operation and kind are required",
+            mapOf("operation" to McpJsonPrimitive("ADD")) to "kind is required",
+            mapOf("kind" to McpJsonPrimitive("CHILD")) to "operation is required",
+        )
+        for ((args, expectedSubject) in cases) {
+            val response = callThroughBridge(JetBrainsMPSNodeMcpToolset(), "mps_mcp_update_node", args)
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            val error = obj.get("error").asString
+            assertFalse(
+                "the platform's missing-argument line must not reach the caller: $error",
+                error.contains("No argument is passed for required parameter"),
+            )
+            assertTrue("must name only the blank selector(s) — expected '$expectedSubject': $error", error.startsWith(expectedSubject))
+            assertFalse("a blank selector is not an unknown one: $error", error.contains("Unknown operation"))
+            assertTrue("must echo what was received: $error", error.contains("Received operation="))
+            assertTrue(
+                "must name the valid pairs: $error",
+                error.contains("Valid pairs: ADD CHILD, SET CHILD, SET PROPERTY, SET REFERENCE"),
+            )
+            // ADD is rejected for PROPERTY and REFERENCE, so the message must not advertise the
+            // full cross product to a caller who has already guessed wrong once.
+            assertTrue(
+                "must say ADD is not valid for PROPERTY/REFERENCE: $error",
+                error.contains("ADD is not valid for PROPERTY or REFERENCE"),
+            )
+            assertTrue(
+                "must name the ADD CHILD keys, since omitting kind went with guessed key names: $error",
+                listOf("nodeReference", "childRole", "childJson").all { error.contains(it) },
+            )
+            assertTrue("must name the near-misses: $error", error.contains("parentRef/nodeRef/role/target"))
+        }
+    }
+
+    @Test
+    fun `update_node ADD CHILD reports every missing key in one rejection`() {
+        // D28's actual incident: `parentRef`/`role`/`target` — all three keys wrong at once. The
+        // bridge drops all three as unknown, so the tool sees three nulls and must name all three
+        // correct keys; answering one per call would cost three round trips.
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_update_node",
+            mapOf(
+                "operation" to McpJsonPrimitive("ADD"),
+                "kind" to McpJsonPrimitive("CHILD"),
+                "parentRef" to McpJsonPrimitive("r:00000000-0000-0000-0000-000000000000(dummy)/1"),
+                "role" to McpJsonPrimitive("members"),
+                "target" to McpJsonPrimitive("r:00000000-0000-0000-0000-000000000000(dummy)/2"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue("must name all three required keys: $error", error.contains("nodeReference, childRole, childJson are required"))
+        assertTrue("must keep the copy-pasteable 'set to' phrasing: $error", error.contains("nodeReference set to the parent node's reference"))
+        assertTrue("must name the parentRef/nodeRef near-miss: $error", error.contains("(not 'parentRef/nodeRef')"))
+        assertTrue("must name the role near-miss: $error", error.contains("(not 'role')"))
+        assertTrue("must name the json near-miss: $error", error.contains("(not 'json')"))
+        // 'target' is NOT offered as a near-miss for nodeReference: in parse_java_and_insert it
+        // names the node being replaced, whose counterpart is SET CHILD's childNodeRef. Sending
+        // such a caller to ADD CHILD's parent would mis-route them into the wrong operation.
+        val nodeReferenceClause = error.substringAfter("nodeReference set to").substringBefore(";")
+        assertFalse(
+            "must not map 'target' onto nodeReference: $nodeReferenceClause",
+            nodeReferenceClause.contains("target"),
+        )
+    }
+
+    @Test
+    fun `update_node ADD CHILD keeps the singular wording when only one key is missing`() {
+        // The many-missing message must not regress the settled single-key shape, which the
+        // parameter-name sweep fixed on and which the rest of this tool's rejections follow.
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_update_node",
+            mapOf(
+                "operation" to McpJsonPrimitive("ADD"),
+                "kind" to McpJsonPrimitive("CHILD"),
+                "nodeReference" to McpJsonPrimitive("r:00000000-0000-0000-0000-000000000000(dummy)/1"),
+                "childRole" to McpJsonPrimitive("members"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            "childJson is required for ADD CHILD. Retry with childJson set to the child's JSON blueprint, " +
+                    "or an absolute path to a file holding it. This tool spells it 'childJson', not 'json'.",
+            obj.get("error").asString,
+        )
+    }
+
+    @Test
+    fun `alter_nodes MAKE without parameters says the arguments belong inside the object`() {
+        // D29. The study call put MAKE's own arguments at the top level, where the binder drops
+        // them; it then failed the call for the missing `parameters` argument without ever saying
+        // that is where they belong.
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_alter_nodes",
+            mapOf(
+                "operation" to McpJsonPrimitive("MAKE"),
+                "rebuild" to McpJsonPrimitive(true),
+                "moduleName" to McpJsonPrimitive("mcp.study.kitchen"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        // MAKE input rejections all carry MAKE_INPUT_INVALID; a missing blob must not be the one
+        // that lands in a different errorCode class (the D14b contract).
+        assertEquals("MAKE_INPUT_INVALID", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertFalse(
+            "the platform's missing-argument line must not reach the caller: $error",
+            error.contains("No argument is passed for required parameter"),
+        )
+        assertTrue("must name the parameter: $error", error.contains("'parameters' is required for MAKE"))
+        assertTrue("must say the arguments go inside it: $error", error.contains("belong inside that object"))
+        assertTrue(
+            "must list the MAKE keys: $error",
+            listOf("models", "modules", "wholeProject", "rebuild").all { error.contains(it) },
+        )
+        assertTrue("must name the dropped top-level near-miss: $error", error.contains("'moduleName'"))
+        assertTrue("must say a top-level send is dropped: $error", error.contains("dropped before the call reaches this tool"))
+        assertTrue("must carry the machine-readable schema: $response", obj.getAsJsonObject("details").has("expectedParameters"))
+    }
+
+    @Test
+    fun `alter_nodes MOVE_CHILD without parameters names its own keys and not the MAKE schema`() {
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_alter_nodes",
+            mapOf("operation" to McpJsonPrimitive("MOVE_CHILD")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue("must name the parameter: $error", error.contains("'parameters' is required for MOVE_CHILD"))
+        assertTrue(
+            "must name MOVE_CHILD's own keys: $error",
+            listOf("nodeReference", "childRole", "childNodeRef", "position").all { error.contains(it) },
+        )
+        assertFalse(
+            "MAKE's schema must not leak into another operation's rejection: $error",
+            error.contains("wholeProject") || error.contains("modules"),
+        )
+    }
+
+    @Test
+    fun `alter_nodes answers a bare JSON null for parameters like an omitted one`() {
+        // The JsonOrText serializer maps a JSON null to the empty string, the same state as an
+        // omitted argument, so both have to land on the same in-tool rejection. FIX_REFERENCES was
+        // never the operation that crashed on this — `rejectUnknownParameterKeys` already answered
+        // a null blob for every operation with a key list. MAKE, which has none, is the one that
+        // dereferenced it; this case pins the uniform answer rather than a former crash.
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_alter_nodes",
+            mapOf("operation" to McpJsonPrimitive("FIX_REFERENCES"), "parameters" to McpJsonNull),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertTrue(
+            "must be the in-tool rejection, not an internal failure: ${obj.get("error").asString}",
+            obj.get("error").asString.contains("'parameters' is required for FIX_REFERENCES"),
+        )
+    }
+
+    @Test
+    fun `update_node and alter_nodes still accept a well-formed call through the bridge`() {
+        // The happy path is otherwise only covered by direct Kotlin calls, which cannot see the
+        // binder. Since this change altered both signatures, one end-to-end bridge call per tool
+        // guards against the defaults having broken ordinary dispatch — a blank-selector or
+        // missing-parameters rejection here would mean the supplied arguments never bound.
+        val enumRef = createColorEnum()
+        val added = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_update_node",
+            mapOf(
+                "operation" to McpJsonPrimitive("ADD"),
+                "kind" to McpJsonPrimitive("CHILD"),
+                "nodeReference" to McpJsonPrimitive(enumRef),
+                "childRole" to McpJsonPrimitive("members"),
+                "childJson" to McpJsonPrimitive(memberJson("BRIDGED")),
+            ),
+        )
+        assertOk(added)
+        readOnRepo {
+            assertTrue(
+                "the bridged ADD CHILD must really have inserted: $added",
+                membersOf(enumRef).mapNotNull { it.name }.contains("BRIDGED"),
+            )
+        }
+
+        val fixed = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_alter_nodes",
+            mapOf(
+                "operation" to McpJsonPrimitive("FIX_REFERENCES"),
+                "parameters" to McpJsonPrimitive("""{"nodeReference":"$enumRef"}"""),
+            ),
+        )
+        assertOk(fixed)
+    }
+
+    @Test
+    fun `print_node rejects an unknown format quoting the rejected value`() {
+        // D32: `format` is a free String — a Kotlin enum at the tool boundary throws
+        // SerializationException in the framework's pre-call decode (see
+        // AbstractOps.resolveOperationOrNull's KDoc for why every selector here takes a String) —
+        // so a plausible fourth literal can always be guessed. The rejection carries the allowed
+        // set because nothing in the schema can.
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_print_node",
+            mapOf(
+                "nodeReference" to McpJsonPrimitive("r:00000000-0000-0000-0000-000000000000(dummy)/1"),
+                "format" to McpJsonPrimitive("structural"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            "Invalid format 'structural'. Allowed values: JSON, HTML, PLAIN TEXT",
+            obj.get("error").asString,
+        )
     }
 
     /** node-info responses arrive as a JSON-string inside the `data` field; normalise either form. */

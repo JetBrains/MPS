@@ -457,26 +457,36 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `get-concept-details rejects the singular conceptReference with a copy-pasteable retry line`() {
-        // M5b. The rejection already named the correct key, and in both observed incidents the
-        // model fetched the tool schema anyway; the message now ends with the literal edit to make.
-        // `conceptReference` is not a declared parameter, so the bridge simply ignores the unknown
-        // request key and the Kotlin default applies — which is what reaches this message.
-        val response = callThroughBridge(
-            JetBrainsMPSLanguageMcpToolset(),
-            "mps_mcp_get_concept_details",
-            mapOf("conceptReference" to McpJsonPrimitive("jetbrains.mps.lang.core.structure.BaseConcept")),
-        )
+    fun `get-concept-details rejects every singular near-miss with a copy-pasteable retry line`() {
+        // M5b, widened for study D27. None of these four spellings is a declared parameter, so the
+        // bridge drops the unknown request key and the Kotlin default applies — every one of them
+        // arrives here as "no input at all", and the message cannot know which was sent. It
+        // therefore has to name all four; the round-3 wording listed only the '-erence' pair, so a
+        // caller who sent `conceptRef` (the canonical key inside the blob-taking tools) never saw
+        // their own spelling. The singular quoting matters: 'conceptRef' without the quotes is a
+        // substring of the 'conceptRefs' this same message names, so it would assert nothing.
+        for (nearMiss in listOf("conceptRef", "conceptReference", "languageRef", "languageReference")) {
+            val response = callThroughBridge(
+                JetBrainsMPSLanguageMcpToolset(),
+                "mps_mcp_get_concept_details",
+                mapOf(nearMiss to McpJsonPrimitive("jetbrains.mps.lang.core.structure.BaseConcept")),
+            )
 
-        val envelope = JsonParser.parseString(response).asJsonObject
-        assertFalse("an unknown top-level key must not silently succeed: $response", envelope.get("ok").asBoolean)
-        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
-        val error = envelope.get("error").asString
-        assertTrue("the message must still name the accepted keys: $error", error.contains("'conceptRefs'"))
-        assertTrue(
-            "the message must end with a copy-pasteable retry line: $error",
-            error.contains("Retry with conceptRefs set to the value you passed as conceptReference"),
-        )
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("'$nearMiss' must not silently succeed: $response", envelope.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+            val error = envelope.get("error").asString
+            assertTrue("the message must still name the accepted keys: $error", error.contains("'conceptRefs'"))
+            assertTrue("the message must name the accepted plural languageRefs: $error", error.contains("'languageRefs'"))
+            assertTrue("the message must name the '$nearMiss' near-miss: $error", error.contains("'$nearMiss'"))
+            assertTrue(
+                "the message must end with a copy-pasteable retry line: $error",
+                error.contains(
+                    "Retry with conceptRefs set to the value you passed as conceptRef/conceptReference " +
+                            "(or languageRefs for languageRef/languageReference)."
+                ),
+            )
+        }
     }
 
     @Test
