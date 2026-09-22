@@ -6,6 +6,14 @@ Tokens: input, output, cache_read, cache_write (cache_read ≈ turns × fixed co
 temp_file_envelopes, bash_temp_result_reads, bash_blueprint_writes. Payload: authored_input_chars,
 mps_authored_chars, tool_result_bytes. Reliability: errors, retries, validation_loops,
 stale_incidents, server_errors, task pass (from the evaluator).
+Lifecycle: `welcome_rejections` (pre-dispatch rejections with an empty project listing — the
+Welcome screen, where no `projectPath` could have helped; 0 is the good value everywhere, S10
+included: the first S10 run read the skill and never probed blind. One is the acceptable cost of
+discovering the state; more than one is waste), `close_project_calls`, `modal_blocked`.
+`server_call_surplus` now warns in both directions — negative means the slice is missing calls the
+transcript shows (unlisted project path, MPS restart mid-run, call log off for part of it), i.e. an
+evidence gap. Lifecycle scenarios (`S10*`) are exempt both ways: they span several projects by
+design, and their server slice is kept only because the run meta lists `relatedProjects`.
 
 ## Chains and scoring
 `chains.json` ranks n-grams of `tool[:op]` by total chars. Filter to those containing `mps_mcp`,

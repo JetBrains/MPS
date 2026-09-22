@@ -2,7 +2,7 @@
 # Run one headless worker for the skill-script automation study.
 #
 # usage: run_worker.sh <scenario> <model> <run-no> <project-dir>
-#   scenario     S1..S9 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
+#   scenario     S1..S10 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
 #   model        claude model alias, e.g. opus | sonnet
 #   run-no       1, 2, ...
 #   project-dir  absolute path of the scratch MPS project (must be open in MPS)
@@ -13,6 +13,13 @@
 #   <id>-server.jsonl     slice of the server call log covering this run
 #   <id>-install.json     result of the pre-run skill install
 # where <id> = <scenario>-<model>-<run-no>.
+#
+# The meta also pins the MPS process the run was measured against (`mpsPid`, `mpsStartTs`) and the
+# isolation level (one MPS per round), so a round proves process continuity from the evidence
+# instead of arguing it in prose. `PROJECT_SYNTHESIZED=1` records that the project came from
+# `new_study_project.py` rather than a fixture tarball. For a lifecycle scenario (S10) the meta
+# lists `relatedProjects` — the `<project>-target` directory the worker creates — because the
+# analyser filters the server call log by project and would otherwise discard the whole run.
 #
 # Before every run the LIVE bundled skill catalog and AGENTS.md/CLAUDE.md are installed into the
 # project through `mps_mcp_initialize_project_for_agents` (scripts/install_skills.py). Fixtures
@@ -31,6 +38,8 @@ STUDY=${STUDY:-"$(cd "$(dirname "$0")/.." && pwd)"}
 RUNS=${RUNS:-"$HOME/MPSProjects/mcp-study/runs"}
 CALLLOG=${CALLLOG:-"$RUNS/server-calllog.jsonl"}
 MAX_TURNS=${MAX_TURNS:-400}
+ISOLATION=${ISOLATION:-per-round}
+PROJECT_SYNTHESIZED=${PROJECT_SYNTHESIZED:-0}
 PROMPT="$STUDY/scenarios/$SCENARIO/worker_prompt.md"
 ID="$SCENARIO-$MODEL-$RUN"
 
@@ -60,6 +69,24 @@ else
   SKILLS_SHA=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["skillsSha256"])' "$RUNS/$ID-install.json")
 fi
 
+# The MPS process under measurement. A round is one process (ISOLATION=per-round); recording it
+# per run is what makes that checkable afterwards.
+MPS_PID=$(pgrep -f '[j]etbrains\.mps\.Launcher' | head -1 || true)
+# Epoch, not `ps -o lstart=`: that prints a locale-dependent string ("út 22 zář …") that two runs
+# of the same process cannot be compared on. `etime` ([[dd-]hh:]mm:ss) is locale-free and exists on
+# both macOS and Linux (`etimes` is Linux-only), so derive the start epoch from it.
+MPS_START=$( [ -n "$MPS_PID" ] && ps -p "$MPS_PID" -o etime= | python3 -c '
+import re, sys, time
+raw = sys.stdin.read().strip()
+m = re.match(r"(?:(\d+)-)?(?:(\d+):)?(\d+):(\d+)$", raw)
+print(int(time.time()) - (int(m[1] or 0)*86400 + int(m[2] or 0)*3600 + int(m[3])*60 + int(m[4])) if m else "")
+' || true )
+# A lifecycle scenario drives a second project; name it so the analyser keeps its server traffic.
+case "$SCENARIO" in
+  S10*) RELATED="$PROJECT-target" ;;
+  *)    RELATED=${RELATED_PROJECTS:-} ;;
+esac
+
 touch "$CALLLOG"
 START_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 START_OFF=$(stat -f %z "$CALLLOG" 2>/dev/null || stat -c %s "$CALLLOG")
@@ -69,8 +96,11 @@ INVENTORY_SHA=$( [ -f "$RUNS/inventory.json" ] && shasum -a 256 "$RUNS/inventory
 python3 - "$RUNS/$ID.meta.json" <<PY
 import json,sys
 json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","run":$RUN,"project":"$PROJECT",
+  "relatedProjects":[p for p in "$RELATED".split(":") if p],
   "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA",
   "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
+  "isolationLevel":"$ISOLATION","projectSynthesized":"$PROJECT_SYNTHESIZED"=="1",
+  "mpsPid":int("$MPS_PID") if "$MPS_PID" else None,"mpsStartEpoch":int("$MPS_START") if "$MPS_START" else None,
   "startTs":"$START_TS","callLogStartOffset":$START_OFF,"status":"running","pid":$$},
   open(sys.argv[1],"w"),indent=1)
 PY

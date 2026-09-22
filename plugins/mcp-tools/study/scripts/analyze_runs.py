@@ -32,6 +32,13 @@ PRE_DISPATCH_REJECTION_RES = (
     re.compile(r"Unable to determine the target project for the current MCP tool call\."),
     re.compile(r"MCP tool call has been failed: No argument is passed for required parameter\s+['‘][^'’]+['’]"),
 )
+# A rejection whose listing is empty means the Welcome screen: no project is open at all, so no
+# projectPath could have helped. Lifecycle scenarios pass through this state deliberately.
+WELCOME_REJECTION_RE = re.compile(r'Currently open projects:\s*\{\s*"projects"\s*:\s*\[\s*\]')
+MODAL_BLOCKED_RE = re.compile(r"MODAL_BLOCKED")
+# Scenarios that drive the project lifecycle themselves: they close and open projects, so their
+# server slice spans several project paths and their surplus is not interpretable.
+LIFECYCLE_SCENARIO_RE = re.compile(r"^S10\b")
 
 
 def classify_bash(command: str) -> str:
@@ -120,9 +127,13 @@ def analyse_run(run_id: str, runs: Path):
     server_path = runs / f"{run_id}-server.jsonl"
     server = load_jsonl(server_path)
     # The server slice is cut by time window; drop lines from other projects (e.g. the observer
-    # evaluating a previous run while this one was running).
-    if meta.get("project"):
-        server = [s for s in server if not s.get("project") or s["project"].rstrip("/") == meta["project"].rstrip("/")]
+    # evaluating a previous run while this one was running). A lifecycle run legitimately drives a
+    # second project, so `relatedProjects` from the meta counts as this run's traffic too —
+    # without it S10's whole server evidence would be filtered away.
+    own_projects = {p.rstrip("/") for p in
+                    [meta.get("project"), *(meta.get("relatedProjects") or [])] if p}
+    if own_projects:
+        server = [s for s in server if not s.get("project") or s["project"].rstrip("/") in own_projects]
 
     server_evidence_available = bool(server)
     calls = []            # ordered tool_use steps: dict(step, name, key, input_chars, result_bytes, error, root)
@@ -149,6 +160,7 @@ def analyse_run(run_id: str, runs: Path):
                             "input_chars": len(json.dumps(inp)) if inp is not None else 0,
                             "result_bytes": 0, "error": False, "root": root_ref_of(inp), "result_is_temp_file": False,
                             "pre_dispatch_rejection": False,
+                            "welcome_rejection": False, "modal_blocked": False,
                             "parent_event": not is_child_event(ev),
                             "skill_read": (name == "Read" and isinstance(inp, dict)
                                            and bool(SKILL_DIR_RE.search(str(inp.get("file_path", "")))))
@@ -171,6 +183,9 @@ def analyse_run(run_id: str, runs: Path):
                         call["result_bytes"] = n
                         call["error"] = is_error_result(block, text)
                         call["pre_dispatch_rejection"] = is_pre_dispatch_rejection(call["error"], text)
+                        call["welcome_rejection"] = (call["pre_dispatch_rejection"]
+                                                     and bool(WELCOME_REJECTION_RE.search(text)))
+                        call["modal_blocked"] = bool(MODAL_BLOCKED_RE.search(text))
                         if call["skill_read"]:
                             skill_bytes += n
         elif t == "result":
@@ -231,6 +246,9 @@ def analyse_run(run_id: str, runs: Path):
         "cost_usd": final.get("total_cost_usd"),
         "tool_calls": len(calls), "mps_calls": mps_calls,
         "pre_dispatch_rejections": pre_dispatch_rejections,
+        "welcome_rejections": sum(1 for c in calls if c["welcome_rejection"]),
+        "close_project_calls": tool_calls.get("mps_mcp_close_project", 0),
+        "modal_blocked": sum(1 for c in calls if c["modal_blocked"]),
         "expected_server_mps_calls": expected_server_mps_calls,
         "agent_calls": sum(1 for c in calls if c["name"] == "Agent" and c["parent_event"]),
         "authored_input_chars": sum(c["input_chars"] for c in calls),
@@ -285,14 +303,23 @@ def main(argv=None) -> int:
             tools[s.get("tool") or "?"]["server_errors"] += int(not s.get("ok"))
             tools[s.get("tool") or "?"]["server_ms"] += int(s.get("ms") or 0)
         warning = None
-        if m["server_call_surplus"] is not None and m["server_call_surplus"] > 0:
-            warning = (
-                f"{rid}: {m['server_mps_calls']} server MPS calls - "
-                f"({m['mps_calls']} transcript MPS calls - {m['pre_dispatch_rejections']} pre-dispatch rejections) "
-                f"= {m['server_call_surplus']} server calls absent from the parent transcript; "
-                f"parent Agent calls={m['agent_calls']}. Delegation is one possible cause; the time-window "
-                "slice can also include observer traffic from the same project."
-            )
+        lifecycle = bool(LIFECYCLE_SCENARIO_RE.match(str(m["scenario"] or "")))
+        surplus = m["server_call_surplus"]
+        if surplus is not None and surplus != 0 and not lifecycle:
+            head = (f"{rid}: {m['server_mps_calls']} server MPS calls - "
+                    f"({m['mps_calls']} transcript MPS calls - {m['pre_dispatch_rejections']} pre-dispatch rejections) "
+                    f"= {surplus} ")
+            if surplus > 0:
+                warning = (head + "server calls absent from the parent transcript; "
+                           f"parent Agent calls={m['agent_calls']}. Delegation is one possible cause; the time-window "
+                           "slice can also include observer traffic from the same project.")
+            else:
+                # Fewer server lines than the transcript accounts for: the slice is incomplete —
+                # a project path outside `relatedProjects`, a restarted MPS, or a call log that
+                # was off for part of the run. Treat it as an evidence gap, not as a clean run.
+                warning = (head + "server calls MISSING from the slice; the server evidence is "
+                           "incomplete (unlisted project path, MPS restart mid-run, or the call log "
+                           "was off). Check the run's relatedProjects and mpsPid before comparing it.")
             print(f"WARNING: {warning}", file=sys.stderr)
         errors[rid] = {"retries": retries, "validation_loops": loops,
                        "server_call_surplus_warning": warning}

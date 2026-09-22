@@ -23,6 +23,9 @@
    and closes via `mps_mcp_close_project`. Announce the absolute paths before each swap; do not ask
    the user to perform it. Human remains for MPS restart, gate answers, push approval, and dismissing
    `MODAL_BLOCKED` dialogs. Opening is still CLI-only — Welcome-screen MCP cannot help.
+   **Superseded again 2026-09-22:** creating an empty project and restarting or shutting MPS down
+   are observer actions too (lessons 26-30). The human is left with gate answers, push approval and
+   dismissing dialogs.
 10. **Polling in an agent harness is bounded.** Foreground waits ≤ ~9 min per call (raise the Bash
     tool timeout); launch workers detached (`nohup sh -c …&`), poll the wrapper pid `$!` in loops;
     the meta file's `pid` is `run_worker.sh` itself, for `kill` only.
@@ -101,3 +104,45 @@
     comparable across all three rounds. → When a prompt and its fixture disagree, prefer changing
     the side that is not the comparison key.
 
+## From the project-lifecycle adoption (2026-09-22)
+
+26. **A user-level MPS agent can absorb calls the parent transcript never shows.** Definitions under
+    `~/.claude/agents` that mention MPS shadow nothing visibly, but a worker that delegates to one
+    produces server calls with no matching `tool_use` — the `server_call_surplus` audit. → The
+    catalog is proven clean by `check_user_agents.py` before any run side effect (exit 3 on a
+    `*mps*` filename, an `mps_mcp` body, or an unreadable catalog), and the guard never modifies
+    user agents. Built-in `Explore`/`Task` are outside the pin. (`SKILL.md` step 1 cites this as
+    lesson 26; it was missing from this file until the lifecycle change.)
+27. **Capture the launch command line before shutting MPS down.** After `application.exit()` there
+    is no process to `jcmd`, so a shutdown without a stored capture strands the round. →
+    `mps_control.sh capture` runs while MPS is alive, `shutdown` refuses without its output, and
+    the file lives in `$TMPDIR` — not in `$RUNS`, which wrap-up deletes. With neither, fall back to
+    the IDEA `MPS` run configuration rather than reconstructing a command.
+28. **Shutdown rides on the last close, and the exit is fire-and-forget.**
+    `mps_mcp_close_project(shutdownWithLastProject=true)` exits only when the project being closed
+    is the last one open, and never from the Welcome screen; the exit is posted *after* the close
+    succeeds. → Never close everything and then try to shut down. A confirm-exit dialog can leave
+    the project closed and the app alive at the Welcome screen, where MCP is dead — recover with a
+    relaunch, not by retrying the close.
+29. **A derived precondition beats a snapshotted one.** The `empty-project` fixture was a tarball of
+    a hand-maintained project that still carried `.agents/`, `.claude/` and both guides, with a
+    `migration.xml` correct only for the release it was made on. → Synthesize it
+    (`new_study_project.py`), deriving the migration baseline from the MPS that will open it. This
+    generalises lesson 24 from fixtures to the whole environment: anything a round depends on should
+    be produced from the live source at run time, not preserved from an earlier one.
+30. **Two open projects means a modal in a default-configured IDE.** With
+    `confirmOpenNewProject2 = -1` (the default), opening a project while another is open raises the
+    *New Window / This Window* prompt: every `mps_mcp_*` call blocks, and "This Window" closes the
+    project under measurement. → A scenario that touches two projects is sequential (close, then
+    open — a Welcome-screen MPS opens without prompting), rather than one that mutates the user's
+    IDE preferences for the study.
+31. **An MPS started with a project path poisons the documented activation recipe.** `jcmd`'s
+    `java_command` is `"<main-class> [args]"`. While MPS was only ever launched from the IDEA run
+    configuration it held just `jetbrains.mps.Launcher`, so the recipe's
+    `[java, *vmOptions, "-classpath", cp, java_command, project]` worked by accident. Once the
+    observer starts MPS with a project (`mps_control.sh start <dir>`), every later activation built
+    that way dies with `ClassNotFoundException: jetbrains.mps.Launcher .path.to.previous.project`.
+    → Take `java_command.split()[0]`; `capture` stores exactly that as `mainClass`, and
+    `mps_control.sh open` is why the observer never meets it (defect D39, still open in the
+    `mps-project-management` examples). Generalisation: a new automation capability can turn a
+    dormant documentation bug into a per-run cost — re-read the recipes it makes reachable.

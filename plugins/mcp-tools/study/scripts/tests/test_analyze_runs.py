@@ -40,9 +40,10 @@ class AnalyzeRunsTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.temp_dir.cleanup()
 
-    def write_run(self, run_id: str, events: list[dict], server: list[dict] | None) -> None:
+    def write_run(self, run_id: str, events: list[dict], server: list[dict] | None,
+                  meta: dict | None = None) -> None:
         (self.runs / f"{run_id}-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
-        (self.runs / f"{run_id}.meta.json").write_text(json.dumps({"project": "/project"}))
+        (self.runs / f"{run_id}.meta.json").write_text(json.dumps({"project": "/project", **(meta or {})}))
         if server is not None:
             (self.runs / f"{run_id}-server.jsonl").write_text(
                 "".join(json.dumps(e) + "\n" for e in server)
@@ -99,7 +100,9 @@ class AnalyzeRunsTest(unittest.TestCase):
         self.assertIn("server calls absent from the parent transcript", errors["positive"]["server_call_surplus_warning"])
         self.assertIn("## Measurement-integrity warnings", (self.out / "hotspots.md").read_text())
 
-    def test_zero_negative_and_missing_server_evidence_do_not_warn(self) -> None:
+    def test_zero_and_missing_server_evidence_do_not_warn_but_negative_does(self) -> None:
+        """A negative surplus means the slice is missing calls the transcript shows: an evidence
+        gap, warned about since the lifecycle change. Zero and absent evidence stay silent."""
         events = [assistant("a", "mcp__server__mps_mcp_one"), result("a", "ok")]
         self.write_run("zero", events, [{"tool": "mps_mcp_one", "ok": True, "project": "/project"}])
         self.write_run("negative", events, [{"tool": "read_file", "ok": True, "project": "/project"}])
@@ -109,13 +112,75 @@ class AnalyzeRunsTest(unittest.TestCase):
         completed = self.run_analyzer()
 
         self.assertEqual(0, completed.returncode, completed)
-        self.assertEqual("", completed.stderr)
+        self.assertEqual(1, completed.stderr.count("WARNING:"), completed.stderr)
+        self.assertIn("MISSING from the slice", completed.stderr)
         with (self.out / "metrics.csv").open(newline="") as stream:
             rows = {row["run"]: row for row in csv.DictReader(stream)}
         self.assertEqual("0", rows["zero"]["server_call_surplus"])
         self.assertEqual("-1", rows["negative"]["server_call_surplus"])
         self.assertEqual("", rows["missing"]["server_call_surplus"])
         self.assertEqual("", rows["empty"]["server_call_surplus"])
+        errors = json.loads((self.out / "errors.json").read_text())
+        self.assertIsNotNone(errors["negative"]["server_call_surplus_warning"])
+        self.assertTrue(all(errors[rid]["server_call_surplus_warning"] is None
+                            for rid in ("zero", "missing", "empty")))
+
+
+    def test_lifecycle_columns_count_welcome_rejections_closes_and_modals(self) -> None:
+        welcome = ('Unable to determine the target project for the current MCP tool call.\n'
+                   '  | Currently open projects: {"projects":[]}')
+        listed = ('Unable to determine the target project for the current MCP tool call.\n'
+                  '  | Currently open projects: {"projects":[{"basePath":"/project"}]}')
+        blocked = '{"ok":false,"code":"MODAL_BLOCKED","error":"a modal dialog is open"}'
+        events = [
+            assistant("a", "mcp__server__mps_mcp_close_project"), result("a", '{"ok":true}'),
+            assistant("b", "mcp__server__mps_mcp_list_open_projects"), result("b", welcome, error=True),
+            assistant("c", "mcp__server__mps_mcp_list_open_projects"), result("c", listed, error=True),
+            assistant("d", "mcp__server__mps_mcp_close_project"), result("d", blocked, error=True),
+        ]
+        self.write_run("S10-opus-1", events, None, meta={"scenario": "S10"})
+
+        self.assertEqual(0, self.run_analyzer().returncode)
+        row = self.metrics()
+        self.assertEqual("1", row["welcome_rejections"])   # only the empty listing counts
+        self.assertEqual("2", row["pre_dispatch_rejections"])
+        self.assertEqual("2", row["close_project_calls"])
+        self.assertEqual("1", row["modal_blocked"])
+
+    def test_related_projects_keep_the_target_projects_server_lines(self) -> None:
+        """A lifecycle run drives `<project>-target`; without relatedProjects the project filter
+        would discard its whole server slice."""
+        events = [assistant("a", "mcp__server__mps_mcp_one"), result("a", "ok"),
+                  assistant("b", "mcp__server__mps_mcp_two"), result("b", "ok")]
+        server = [{"tool": "mps_mcp_one", "ok": True, "project": "/project"},
+                  {"tool": "mps_mcp_two", "ok": True, "project": "/project-target"},
+                  {"tool": "mps_mcp_elsewhere", "ok": True, "project": "/other"}]
+        self.write_run("S10-opus-2", events, server,
+                       meta={"scenario": "S10", "relatedProjects": ["/project-target"]})
+        self.write_run("S1-opus-1", events, server, meta={"scenario": "S1"})
+
+        self.assertEqual(0, self.run_analyzer().returncode)
+        with (self.out / "metrics.csv").open(newline="") as stream:
+            rows = {row["run"]: row for row in csv.DictReader(stream)}
+        self.assertEqual("2", rows["S10-opus-2"]["server_mps_calls"])
+        self.assertEqual("1", rows["S1-opus-1"]["server_mps_calls"])
+
+    def test_lifecycle_runs_are_exempt_from_the_surplus_warning_in_both_directions(self) -> None:
+        events = [assistant("a", "mcp__server__mps_mcp_one"), result("a", "ok"),
+                  assistant("b", "mcp__server__mps_mcp_two"), result("b", "ok")]
+        self.write_run("S10-opus-3", events,
+                       [{"tool": "read_file", "ok": True, "project": "/project"}],
+                       meta={"scenario": "S10"})                      # surplus -2
+        self.write_run("S10-opus-4", events,
+                       [{"tool": "mps_mcp_one", "ok": True, "project": "/project"},
+                        {"tool": "mps_mcp_two", "ok": True, "project": "/project"},
+                        {"tool": "mps_mcp_three", "ok": True, "project": "/project"}],
+                       meta={"scenario": "S10"})                      # surplus +1
+
+        completed = self.run_analyzer()
+
+        self.assertEqual(0, completed.returncode, completed)
+        self.assertEqual("", completed.stderr)
         errors = json.loads((self.out / "errors.json").read_text())
         self.assertTrue(all(entry["server_call_surplus_warning"] is None for entry in errors.values()))
 
