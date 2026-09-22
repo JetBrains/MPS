@@ -19,7 +19,6 @@
     <orderEntry type="library" name="Diff-utils" level="project" />
     <orderEntry type="library" name="JUnit4" level="project" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="idea-runtime" level="project" />
     <orderEntry type="library" name="Idea-vcs" level="project" />
     <orderEntry type="library" name="gnu.trove" level="project" />

@@ -14,7 +14,6 @@
     <orderEntry type="module" module-name="kernel" />
     <orderEntry type="module" module-name="closures-runtime" />
     <orderEntry type="module" module-name="collections-runtime" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="library" scope="TEST" name="JUnit4" level="project" />
     <orderEntry type="module" module-name="environment" scope="TEST" />
     <orderEntry type="library" name="eclipse.ecj" level="project" />

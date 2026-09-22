@@ -23,7 +23,6 @@
     <orderEntry type="module" module-name="debugger-api-runtime" />
     <orderEntry type="module" module-name="debugger-api-api" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="module" module-name="behavior-api" />
     <orderEntry type="module" module-name="behavior-runtime" />
     <orderEntry type="module" module-name="typechecking" />

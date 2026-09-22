@@ -16,7 +16,6 @@
     <orderEntry type="module" module-name="collections-runtime" />
     <orderEntry type="module" module-name="tuples-runtime" />
     <orderEntry type="module" module-name="closures-runtime" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="module" module-name="components" />
     <orderEntry type="module" module-name="behavior-api" />
     <orderEntry type="module" module-name="behavior-runtime" />

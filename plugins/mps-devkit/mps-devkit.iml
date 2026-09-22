@@ -10,7 +10,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="module" module-name="mps-platform" />
     <orderEntry type="module" module-name="tuples-runtime" />
     <orderEntry type="module" module-name="editor-runtime" />

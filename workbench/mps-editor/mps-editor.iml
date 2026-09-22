@@ -18,7 +18,6 @@
     <orderEntry type="module" module-name="typesystemIntegration" />
     <orderEntry type="module" module-name="findUsages-runtime" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="module" module-name="closures-runtime" />
     <orderEntry type="module" module-name="actions-runtime" />
     <orderEntry type="module" module-name="intentions-runtime" />

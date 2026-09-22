@@ -13,6 +13,5 @@
     <orderEntry type="module" module-name="ideaIntegrationCommon" />
     <orderEntry type="library" name="Idea-platform" level="project" />
     <orderEntry type="library" name="java-impl" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
   </component>
 </module>

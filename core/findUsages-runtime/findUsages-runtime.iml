@@ -13,7 +13,6 @@
     <orderEntry type="module" module-name="collections-runtime" />
     <orderEntry type="module" module-name="closures-runtime" />
     <orderEntry type="module" module-name="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="module" module-name="components" />
     <orderEntry type="library" name="gnu.trove" level="project" />
     <orderEntry type="library" name="org.jdom" level="project" />

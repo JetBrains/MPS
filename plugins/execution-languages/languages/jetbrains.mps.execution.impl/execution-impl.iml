@@ -20,6 +20,5 @@
     <orderEntry type="module" module-name="mps-workbench" />
     <orderEntry type="module" module-name="execution-api" exported="" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
   </component>
 </module>

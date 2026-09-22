@@ -23,7 +23,6 @@
     <orderEntry type="module" module-name="debugger-api-api" />
     <orderEntry type="module" module-name="debugger-java-api" />
     <orderEntry type="module" module-name="debugger-core" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="library" name="Idea-platform" level="project" />
     <orderEntry type="module" module-name="findUsages-runtime" />
     <orderEntry type="module" module-name="mps-ui" />

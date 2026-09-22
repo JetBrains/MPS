@@ -21,7 +21,6 @@
     <orderEntry type="module" module-name="tuples-runtime" />
     <orderEntry type="module" module-name="debugger-core" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="module" module-name="debugger-api-api" />
     <orderEntry type="module" module-name="execution-api" />
     <orderEntry type="module" module-name="mps-icons" />

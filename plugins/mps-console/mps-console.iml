@@ -20,7 +20,6 @@
     <orderEntry type="module" module-name="mps-icons" />
     <orderEntry type="module" module-name="make-runtime" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="module" module-name="behavior-api" />
     <orderEntry type="module" module-name="generator-engine" />
     <orderEntry type="module" module-name="behavior-runtime" />

@@ -10,7 +10,6 @@
     <orderEntry type="jdk" jdkName="JBR 25" jdkType="JavaSDK" />
     <orderEntry type="library" name="KotlinCoreLibs" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Annotations" level="project" />
     <orderEntry type="library" name="idea-bootstrap" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="google.guava" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="MPS runtime" level="project" />
