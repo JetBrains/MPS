@@ -1,6 +1,6 @@
 ---
 name: mps-project-management
-description: Open an MPS project in a running or freshly started MPS instance when MCP tools fail because no project is open (welcome screen), or close an open project with `mps_mcp_close_project`. Covers MPS built from sources vs a standalone install, detecting which case you are in, macOS/Linux/Windows CLI activation, and close timeout / force-close recovery. Use when `mps_mcp_*` is rejected with empty `Currently open projects`, when MPS shows the welcome screen, when an agent must open a project via the command line, or when closing a project.
+description: Open an MPS project in a running or freshly started MPS instance when MCP tools fail because no project is open (welcome screen), close an open project with `mps_mcp_close_project`, or create a new empty MPS project headlessly. Covers MPS built from sources vs a standalone install, detecting which case you are in, macOS/Linux/Windows CLI activation, close timeout / force-close recovery, and empty project creation file templates. Use when `mps_mcp_*` is rejected with empty `Currently open projects`, when MPS shows the welcome screen, when an agent must open a project via the command line, when creating a new empty MPS project, or when closing a project.
 type: reference
 ---
 
@@ -45,6 +45,27 @@ Use `mps_mcp_close_project` to close the project selected by the host's `project
 4. If the close was cancelled (the project remains open): ask the user to complete the dialog, or retry with `force=true`.
 5. If `code: MODAL_BLOCKED`: ask the user to close the blocking dialog, then retry. Use `force=true` only to skip save/confirmation dialogs that this close itself would show.
 
+## Creating a new empty project
+
+There is **no MCP tool to create a new MPS project**. To create a new empty project headlessly, write the minimal project descriptor files directly on disk: create the project root directory containing `.mps/modules.xml` (empty `MPSProject`), `.mps/.gitignore`, and `.mps/migration.xml`. Then open the directory in MPS via the CLI activation workflow above. `migration.xml` is the one file whose content is MPS-version-specific: generate it from the MPS installation that will open the project — never hardcode migration ids from memory and never reuse a file written for another MPS version, or the modal Migration Assistant blocks every `mps_mcp_*` call on first open.
+
+See `references/create-empty-project.md` for file templates and instructions.
+
+## Scripts
+
+`scripts/new_project_migration_xml.py` — builds the `.mps/migration.xml` of a new empty project from
+the MPS that will open it (install directory, macOS `.app`, or source checkout), offline: no running
+MPS and no existing project to copy from. Needed for every MPS other than 2026.1, whose file
+`references/create-empty-project.md` gives verbatim.
+
+```
+python3 scripts/new_project_migration_xml.py "/Applications/MPS 2025.3.app" /path/to/new/project
+baseline 253 from MPS-253.29346.537 (/Applications/MPS 2025.3.app/Contents/Resources/build.txt)
+         243 jetbrains.mps.ide.mpsmigration.v_2024_3.LangResourceImport4Migration -
+<?xml version="1.0" encoding="UTF-8"?>
+...
+```
+
 ## Related Skills
 
 - `mps-mcp-workflow` — once a project is open, this is the entry point for model and language work.
@@ -56,3 +77,5 @@ Use `mps_mcp_close_project` to close the project selected by the host's `project
 - Open `references/detect-source-vs-standalone.md` to classify the running process.
 - Open `references/open-via-cli.md` for the activation protocol (what to keep, what to strip, success criteria).
 - Open `references/examples-macos.md`, `references/examples-linux.md`, or `references/examples-windows.md` for copy-paste commands.
+- Open `references/create-empty-project.md` for file templates and instructions on creating a new empty MPS project.
+- Open `references/derive-migration-xml.md` when that project will be opened by an MPS other than 2026.1, to generate `.mps/migration.xml` for that release.
