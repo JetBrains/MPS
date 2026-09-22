@@ -105,6 +105,12 @@ teamcity-info.xml
 /plugins/platform-images
 /plugins/mps-devkit/lib
 /plugins/jcef-plugin
+/plugins/mcpserver-plugin
+/plugins/platform-problemView-plugin
+/plugins/platform-tasks-plugin
+/plugins/platform-vcs-plugin
+/plugins/xml-plugin
+
 
 # Main libraries folder: dependencies are downloaded before complilation with task 'install' from build/getDependencies.xml
 /lib/
