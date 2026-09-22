@@ -22,6 +22,7 @@ Reconstruct and launch. Export `PROJECT` and `JAVA` (the process java from above
 ```bash
 export PROJECT="/Users/you/work/MPS/myMPS-fix"
 export JAVA
+export CWD
 
 python3 - <<'PY'
 import os, subprocess, time
@@ -30,6 +31,7 @@ from pathlib import Path
 text = Path(os.environ.get("TMPDIR", "/tmp"), "mps-jcmd.txt").read_text()
 project = os.environ["PROJECT"]
 java = os.environ.get("JAVA") or "/usr/bin/java"
+cwd = os.environ.get("CWD") or (project + "/bin")
 
 def field(name, end_keys):
     key = name + ": "
@@ -59,7 +61,7 @@ filtered = [t for t in tokens
             and not (t.startswith("-javaagent:") and "idea_rt.jar" in t)]
 
 cmd = [java, *filtered, "-classpath", classpath, java_command, project]
-p = subprocess.run(cmd, cwd=project + "/bin", capture_output=True, text=True, timeout=90)
+p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=90)
 print("exit", p.returncode, "seconds-not-printed")
 print(p.stdout)
 print(p.stderr)
