@@ -26,10 +26,6 @@
         <child id="8618885170173601778" name="tail" index="2Ry0An" />
       </concept>
       <concept id="6647099934206700647" name="jetbrains.mps.build.structure.BuildJavaPlugin" flags="ng" index="10PD9b" />
-      <concept id="7181125477683417252" name="jetbrains.mps.build.structure.BuildExternalLayoutDependency" flags="ng" index="13uUGR">
-        <reference id="7181125477683417255" name="layout" index="13uUGO" />
-        <child id="7181125477683417254" name="artifacts" index="13uUGP" />
-      </concept>
       <concept id="7389400916848050060" name="jetbrains.mps.build.structure.BuildLayout_NamedContainer" flags="ng" index="3981dR">
         <child id="4380385936562148502" name="containerName" index="Nbhlr" />
       </concept>
@@ -113,12 +109,6 @@
     <property role="2DA0ip" value="../../../" />
     <property role="TrG5h" value="p1" />
     <property role="turDy" value="p1.xml" />
-    <node concept="13uUGR" id="6CVsFO$gXav" role="1l3spa">
-      <ref role="13uUGO" to="ffeo:6eCuTcwOnJO" resolve="IDEA" />
-      <node concept="398BVA" id="6CVsFO$gXaB" role="13uUGP">
-        <ref role="398BVh" node="4X5j05vNi7p" resolve="mps_home" />
-      </node>
-    </node>
     <node concept="10PD9b" id="3Af5TgnEeC1" role="10PD9s" />
     <node concept="2sgV4H" id="3Af5TgnBvtw" role="1l3spa">
       <ref role="1l3spb" to="ffeo:3IKDaVZmzS6" resolve="mps" />
