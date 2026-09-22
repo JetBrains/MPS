@@ -12,7 +12,9 @@ import jetbrains.mps.project.modules.SolutionProducer
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import org.jetbrains.mps.openapi.language.SAbstractConcept
+import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -502,6 +504,68 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
             assertFalse(
                 "a read-only library concept is owned by no open project and stays a candidate",
                 probe.isForeign(myProject, libraryConcept, repository),
+            )
+        }
+    }
+
+    @Test
+    fun `search scope predicate separates own languages from library and sibling ones`() {
+        // D38/P9: `search_concepts scope="project"` is built on this predicate — "defined by a
+        // module of the selected project" — unioned with what those modules use. It is NOT the
+        // negation of isFromAnotherOpenProject: a read-only library language is neither foreign
+        // nor in the project, and conflating the two would either re-admit the whole registry
+        // (the 183 KB noise the scope exists to remove) or drop `jetbrains.mps.baseLanguage` in
+        // a project that merely uses it.
+        //
+        // Same fixture limitation as the suggestion test below: a language produced by
+        // LanguageProducer has no compiled runtime, so the predicate is pinned directly rather
+        // than through a search call.
+        val projectB = openProjectB()
+        val aLanguage = createLanguageIn(myProject, "mcp.test.scopeown${System.nanoTime()}")
+        val bLanguage = createLanguageIn(projectB, "mcp.test.scopesibling${System.nanoTime()}")
+
+        val probe = object : AbstractOps() {
+            fun isOwn(project: MPSProject, language: SLanguage, repository: SRepository): Boolean =
+                ProjectMembershipCache(project).isInCurrentProject(language, repository)
+
+            fun isForeign(project: MPSProject, language: SLanguage, repository: SRepository): Boolean =
+                ProjectMembershipCache(project).isFromAnotherOpenProject(language, repository)
+        }
+
+        readIn(myProject) {
+            val repository = myProject.repository
+            val ownLanguage = MetaAdapterFactory.getLanguage(aLanguage.moduleReference)
+            val siblingLanguage = MetaAdapterFactory.getLanguage(bLanguage.moduleReference)
+            // A bundled language the fixture loads read-only: owned by no open project. Asserted
+            // to resolve first, so the two "false" checks below cannot pass vacuously on a
+            // language that simply is not there.
+            val baseLanguageRef = PersistenceFacade.getInstance()
+                .createModuleReference("f3061a53-9226-4cc5-a443-f952ceaf5816(jetbrains.mps.baseLanguage)")
+            assertNotNull("the fixture must load jetbrains.mps.baseLanguage read-only", baseLanguageRef.resolve(repository))
+            val libraryLanguage = MetaAdapterFactory.getLanguage(baseLanguageRef)
+
+            assertTrue(
+                "a language the selected project defines must be in its search scope",
+                probe.isOwn(myProject, ownLanguage, repository),
+            )
+            assertFalse(
+                "a language defined by a sibling project must not be in the search scope",
+                probe.isOwn(myProject, siblingLanguage, repository),
+            )
+            assertTrue(
+                "a sibling project's language must still read as foreign",
+                probe.isForeign(myProject, siblingLanguage, repository),
+            )
+            // The asymmetry the scope helper depends on: a library language is not "in the
+            // project" (so it enters the scope only by being used) and not foreign either (so
+            // the sibling filter never drops it).
+            assertFalse(
+                "a read-only library language is owned by no open project",
+                probe.isOwn(myProject, libraryLanguage, repository),
+            )
+            assertFalse(
+                "a read-only library language must not read as foreign",
+                probe.isForeign(myProject, libraryLanguage, repository),
             )
         }
     }

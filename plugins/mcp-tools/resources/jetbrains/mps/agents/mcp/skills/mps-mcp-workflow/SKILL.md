@@ -150,8 +150,9 @@ depends on. Bundled dumps to try it on, and to read when you need a shape remind
 `scripts/examples/`. Stdout is the table plus a one-line JSON summary; the full table is
 always written to a file under the system temp directory and named in that summary.
 
-No `python3` (typically Windows): do it by hand — call the tool, read the result file with the
-file reader, and keep only the `name` / `concept` / `reference` of the roots you need. An enum
+No `python3` (typically Windows): ask the server for the reduction instead —
+`mps_mcp_get_project_structure` with `nodeDetail: "names"` returns exactly the `name` /
+`concept` / `reference` of each root, small enough to read inline with no file at all. An enum
 property holding its enumeration's default is printed with that literal and `"isDefault": true`
 (`mps_mcp_get_concept_details` names it in `enumerationDefault`); in a dump taken before that,
 the property is absent or printed as `""` — either way it is the default, not missing data.

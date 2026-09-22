@@ -419,6 +419,198 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("inlined root must carry a children container: $root", root.has("children"))
     }
 
+    // ── D38/P9: node projection ─────────────────────────────────────────────────────────────
+
+    /**
+     * One child link declaration, so the created `ConceptDeclaration` root has a populated
+     * containment role for the depth-bound test to cut at.
+     */
+    private val CONCEPT_WITH_ONE_PROPERTY_CHILD = """
+        [ { "role": "part", "target": "jetbrains.mps.lang.core.structure.BaseConcept", "multiple": false, "optional": true } ]
+    """.trimIndent()
+
+    @Test
+    fun `get-project-structure nodeDetail names reduces a root listing to name concept and reference`() {
+        // "What roots does this model have, and what are their names and ids" used to cost the
+        // full record for every root — concept javadoc, every property with its own javadoc,
+        // every reference, and the per-role children scaffolding (study defect D38).
+        val rootName = "NamesProjectionRoot${System.nanoTime()}"
+        createConceptRoot(rootName)
+
+        val projected = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(
+                startingPoint = structureModelRef,
+                includeRootNodes = true,
+                nodeDetail = "names",
+            )
+        }
+        val root = rootNamed(readJsonObjectFromOkPath(projected), rootName)
+        assertEquals("ConceptDeclaration", root.get("concept").asString)
+        assertTrue("the names projection must keep the addressable reference: $root", root.has("reference"))
+        for (projectedAway in listOf("doc", "deprecated", "conceptReference", "properties", "references", "children")) {
+            assertFalse("the names projection must not carry '$projectedAway': $root", root.has(projectedAway))
+        }
+
+        val full = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(
+                startingPoint = structureModelRef,
+                includeRootNodes = true,
+            )
+        }
+        val fullRoot = rootNamed(readJsonObjectFromOkPath(full), rootName)
+        assertTrue(
+            "the default projection must still be the full record: $fullRoot",
+            fullRoot.has("properties") && fullRoot.has("references") && fullRoot.has("children")
+        )
+        assertTrue(
+            "the names projection must be smaller than the full record",
+            root.toString().length < fullRoot.toString().length
+        )
+    }
+
+    @Test
+    fun `get-project-structure nodeDepth bounds how far includeNodes inlines the AST`() {
+        // nodeDepth=0 keeps the root record but stops before inlining its children, so the role
+        // falls back to the {name, reference} summaries and says it did.
+        val rootName = "DepthBoundRoot${System.nanoTime()}"
+        createConceptRoot(rootName, childrenJson = CONCEPT_WITH_ONE_PROPERTY_CHILD)
+
+        val bounded = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(
+                startingPoint = structureModelRef,
+                includeNodes = true,
+                nodeDepth = 0,
+            )
+        }
+        val boundedRoot = rootNamed(readJsonObjectFromOkPath(bounded), rootName)
+        val boundedRole = nonEmptyChildRole(boundedRoot)
+        assertTrue("a cut-off role must be marked: $boundedRole", boundedRole.get("childrenTruncated")?.asBoolean == true)
+        assertFalse("a cut-off role must not inline its children: $boundedRole", boundedRole.has("nodes"))
+        assertTrue("a cut-off role must still list its children: $boundedRole", boundedRole.has("children"))
+
+        val unbounded = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(
+                startingPoint = structureModelRef,
+                includeNodes = true,
+            )
+        }
+        val unboundedRole = nonEmptyChildRole(rootNamed(readJsonObjectFromOkPath(unbounded), rootName))
+        assertTrue("the default depth must inline the children: $unboundedRole", unboundedRole.has("nodes"))
+        assertFalse("the default depth must not mark a cut-off: $unboundedRole", unboundedRole.has("childrenTruncated"))
+    }
+
+    @Test
+    fun `get-project-structure nodeDepth default is identical to the unlimited descent`() {
+        // Requirement that the whole projection rests on: a caller that does not opt in gets
+        // exactly what it got before. -1 is the documented spelling of the default, so the two
+        // must be indistinguishable, and nodeDepth must stay inert without includeNodes.
+        val rootName = "DepthIdentityRoot${System.nanoTime()}"
+        createConceptRoot(rootName, childrenJson = CONCEPT_WITH_ONE_PROPERTY_CHILD)
+
+        val omitted = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = structureModelRef, includeNodes = true)
+        }
+        val explicit = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = structureModelRef, includeNodes = true, nodeDepth = -1)
+        }
+        assertEquals(
+            "nodeDepth=-1 must be the default, byte for byte",
+            readJsonObjectFromOkPath(omitted).toString(),
+            readJsonObjectFromOkPath(explicit).toString()
+        )
+
+        val inertWithoutNodes = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = structureModelRef, includeRootNodes = true, nodeDepth = 0)
+        }
+        val plainRootNodes = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = structureModelRef, includeRootNodes = true)
+        }
+        assertEquals(
+            "nodeDepth must be inert when includeNodes is false",
+            readJsonObjectFromOkPath(plainRootNodes).toString(),
+            readJsonObjectFromOkPath(inertWithoutNodes).toString()
+        )
+    }
+
+    @Test
+    fun `get-project-structure nodeDepth one inlines exactly one level below the starting point`() {
+        // Pins the descend() arithmetic at the only value where an off-by-one is invisible both
+        // at depth 0 and at the default. Needs a genuinely three-level tree: a ConceptBehavior
+        // root is `constructor` -> ConceptConstructorDeclaration -> `body` -> StatementList,
+        // whereas the structure-model fixture bottoms out at a leaf LinkDeclaration and could
+        // only be asserted on vacuously.
+        val behaviorRoot = createConceptBehaviorRoot()
+
+        val response = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(
+                startingPoint = behaviorRoot,
+                includeNodes = true,
+                nodeDepth = 1,
+            )
+        }
+
+        // A node starting point serializes that node directly, not a model wrapper.
+        val root = readJsonObjectFromOkPath(response)
+        val constructorRole = childRole(root, "constructor")
+        assertFalse(
+            "the starting point's own role must be inlined at nodeDepth=1: $constructorRole",
+            constructorRole.has("childrenTruncated")
+        )
+
+        val constructor = constructorRole.getAsJsonArray("nodes").single().asJsonObject
+        assertEquals("ConceptConstructorDeclaration", constructor.get("concept").asString)
+        val bodyRole = childRole(constructor, "body")
+        assertTrue("the role one level further down must be cut off: $bodyRole", bodyRole.get("childrenTruncated").asBoolean)
+        assertFalse("a cut-off role must not inline its children: $bodyRole", bodyRole.has("nodes"))
+        assertEquals(
+            "a cut-off role must still name the child it did not inline",
+            1, bodyRole.getAsJsonArray("children").size()
+        )
+
+        // Same root, unlimited: the body that was cut off above is inlined as a full record.
+        val unbounded = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = behaviorRoot, includeNodes = true)
+        }
+        val unboundedBody = childRole(
+            childRole(readJsonObjectFromOkPath(unbounded), "constructor").getAsJsonArray("nodes").single().asJsonObject,
+            "body",
+        )
+        assertFalse("the default depth must not cut off the body role: $unboundedBody", unboundedBody.has("childrenTruncated"))
+        assertEquals(
+            "StatementList",
+            unboundedBody.getAsJsonArray("nodes").single().asJsonObject.get("concept").asString
+        )
+    }
+
+    @Test
+    fun `get-project-structure rejects an unknown nodeDetail by naming the allowed values`() {
+        val response = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = structureModelRef, nodeDetail = "shape")
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val error = obj.get("error").asString
+        assertTrue(
+            "the rejection must name the value and the allowed set: $error",
+            error.contains("'shape'") && error.contains("full") && error.contains("names")
+        )
+    }
+
+    private fun rootNamed(payload: JsonObject, rootName: String): JsonObject =
+        payload.getAsJsonArray("rootNodes")?.map { it.asJsonObject }?.singleOrNull { it.get("name").asString == rootName }
+            ?: error("root '$rootName' must appear in the dump: $payload")
+
+    private fun childRole(node: JsonObject, role: String): JsonObject =
+        node.getAsJsonArray("children").map { it.asJsonObject }.singleOrNull { it.get("role").asString == role }
+            ?: error("node must carry a '$role' containment role: $node")
+
+    /** The first containment role of [node] that actually holds children. */
+    private fun nonEmptyChildRole(node: JsonObject): JsonObject =
+        node.getAsJsonArray("children").map { it.asJsonObject }
+            .firstOrNull { (it.getAsJsonArray("nodes")?.size() ?: 0) > 0 || (it.getAsJsonArray("children")?.size() ?: 0) > 0 }
+            ?: error("root must have at least one populated containment role: $node")
+
     /**
      * `mps_mcp_get_project_structure` returns its payload inline when small and as a temp-file
      * path when it exceeds `maxInlineBytes`; the base helper accepts both shapes.

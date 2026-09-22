@@ -825,6 +825,18 @@ abstract class AbstractOps : McpToolset {
         fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean =
             isForeign(ownerOfLanguage(repository, language))
 
+        /**
+         * True when [language] is defined by a module of [currentProject]. The complement of
+         * [isFromAnotherOpenProject] only for elements some open project owns: a library or stub
+         * language is neither foreign nor in the current project, so a scope that wants "what
+         * this project defines" must ask this rather than negate the foreignness test.
+         */
+        fun isInCurrentProject(language: SLanguage, repository: SRepository): Boolean {
+            val current = currentProject ?: return false
+            val owner = ownerOfLanguage(repository, language) ?: return false
+            return sameOpenProject(owner, current)
+        }
+
         private fun isForeign(owner: MPSProject?): Boolean {
             val current = currentProject ?: return false
             return owner != null && !sameOpenProject(owner, current)
@@ -1352,23 +1364,89 @@ abstract class AbstractOps : McpToolset {
             }
         }
 
-    protected fun nodeHierarchyToJson(node: SNode, deep: Boolean, currentProject: MPSProject? = null, cache: ProjectMembershipCache? = null): String {
-        return nodeHierarchyJsonObject(node, deep, currentProject, cache).toString()
+    /**
+     * How much of each node record [nodeHierarchyJsonObject] writes, and how far it descends.
+     *
+     * [FULL] reproduces the only shape this serializer had before projection existed, so every
+     * caller that does not opt in keeps its output byte for byte. A [names] projection keeps just
+     * enough to identify a node and address it again — the question "what roots does this model
+     * have, and what are their names and ids", which used to cost the whole AST (study defect
+     * D38). Concept-level documentation and deprecation are not reported at that level.
+     *
+     * [depth] bounds the descent below the node the dump starts at, and is only consulted when
+     * the caller asked for the inlined tree at all (`deep`). `-1` descends without a bound; at a
+     * bound, the role object falls back to the same `{name, reference}` child summary the
+     * non-deep path writes, marked with `childrenTruncated`.
+     */
+    protected class NodeProjection private constructor(val names: Boolean, val depth: Int) {
+        /** The projection for the children of a node rendered at this level. */
+        fun descend(): NodeProjection = if (depth < 0) this else NodeProjection(names, depth - 1)
+
+        /** True when the children of a node rendered at this level must not be inlined. */
+        fun atDepthLimit(): Boolean = depth == 0
+
+        companion object {
+            val FULL: NodeProjection = NodeProjection(names = false, depth = -1)
+
+            fun of(names: Boolean, depth: Int): NodeProjection =
+                NodeProjection(names, if (depth < 0) -1 else depth)
+        }
     }
 
-    protected fun nodeHierarchyJsonObject(node: SNode, deep: Boolean, currentProject: MPSProject? = null, cache: ProjectMembershipCache? = null): JsonObject {
+    protected fun nodeHierarchyToJson(
+        node: SNode,
+        deep: Boolean,
+        currentProject: MPSProject? = null,
+        cache: ProjectMembershipCache? = null,
+        projection: NodeProjection = NodeProjection.FULL
+    ): String {
+        return nodeHierarchyJsonObject(node, deep, currentProject, cache, projection).toString()
+    }
+
+    protected fun nodeHierarchyJsonObject(
+        node: SNode,
+        deep: Boolean,
+        currentProject: MPSProject? = null,
+        cache: ProjectMembershipCache? = null,
+        projection: NodeProjection = NodeProjection.FULL
+    ): JsonObject {
         val repository = node.model?.repository
         val c = cache ?: ProjectMembershipCache(currentProject)
+        val names = projection.names
         val obj = JsonObject()
-        val declarationNode = node.concept.sourceNode?.resolve(repository)
         obj.addProperty("name", node.name ?: node.presentation)
         obj.addProperty("concept", node.concept.name)
-        addDocAndDeprecated(obj, getDoc(declarationNode), getDeprecationInfo(declarationNode))
-        obj.addProperty("conceptReference", PersistenceFacade.getInstance().asString(node.concept))
+        if (!names) {
+            val declarationNode = node.concept.sourceNode?.resolve(repository)
+            addDocAndDeprecated(obj, getDoc(declarationNode), getDeprecationInfo(declarationNode))
+            obj.addProperty("conceptReference", PersistenceFacade.getInstance().asString(node.concept))
+        }
         obj.addProperty("reference", PersistenceFacade.getInstance().asString(node.reference))
         addContainingProjectIfForeign(obj, currentProject, node, cache = c)
-        repository?.let { addContainingProjectIfForeign(obj, currentProject, node.concept, it, "concept", c) }
+        if (!names) {
+            repository?.let { addContainingProjectIfForeign(obj, currentProject, node.concept, it, "concept", c) }
+        }
+        if (names && !deep) {
+            // `names` answers "what is here and how do I address it". Without `deep` the caller
+            // did not ask for the tree at all, so the per-role child summaries are dropped too —
+            // that is what makes a roots listing cheap. mps_mcp_print_node reads the children.
+            return obj
+        }
+        if (!names) {
+            addNodeFeatures(obj, node, repository, currentProject, c)
+        }
+        addNodeChildren(obj, node, deep, repository, currentProject, c, projection)
+        return obj
+    }
 
+    /** The `properties` and `references` arrays of a full node record. */
+    private fun addNodeFeatures(
+        obj: JsonObject,
+        node: SNode,
+        repository: SRepository?,
+        currentProject: MPSProject?,
+        c: ProjectMembershipCache
+    ) {
         val properties = JsonArray()
         for (prop in node.concept.properties) {
             // Print the display value (enum → declared literal name). SEnumerationAdapter.toString
@@ -1418,7 +1496,25 @@ abstract class AbstractOps : McpToolset {
             references.add(refObj)
         }
         obj.add("references", references)
+    }
 
+    /**
+     * The `children` array of a node record: one entry per containment role, holding either the
+     * inlined child records ([deep]) or the `{name, reference}` summaries. A [projection] that has
+     * run out of depth falls back to the summaries and marks the role `childrenTruncated`, so the
+     * caller can see the tree continues and drill in with `mps_mcp_print_node`.
+     */
+    private fun addNodeChildren(
+        obj: JsonObject,
+        node: SNode,
+        deep: Boolean,
+        repository: SRepository?,
+        currentProject: MPSProject?,
+        c: ProjectMembershipCache,
+        projection: NodeProjection
+    ) {
+        val truncated = deep && projection.atDepthLimit()
+        val inline = deep && !truncated
         val children = JsonArray()
         val childrenByRole = node.children.groupBy { it.containmentLink }
         for (link in node.concept.containmentLinks) {
@@ -1426,14 +1522,15 @@ abstract class AbstractOps : McpToolset {
             if (childrenInRole.isEmpty() && link.isOptional) continue
 
             val childRole = containmentLinkInfoJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
-            if (deep) {
+            if (inline) {
                 val nodes = JsonArray()
                 for (child in childrenInRole) {
-                    nodes.add(nodeHierarchyJsonObject(child, deep, currentProject, c))
+                    nodes.add(nodeHierarchyJsonObject(child, deep, currentProject, c, projection.descend()))
                 }
                 childRole.add("nodes", nodes)
             }
             else {
+                if (truncated) childRole.addProperty("childrenTruncated", true)
                 val childSummaries = JsonArray()
                 for (child in childrenInRole) {
                     val childObj = JsonObject()
@@ -1447,7 +1544,6 @@ abstract class AbstractOps : McpToolset {
             children.add(childRole)
         }
         obj.add("children", children)
-        return obj
     }
 
     private fun getPropertyType(prop: SProperty): String {
@@ -3124,14 +3220,22 @@ abstract class AbstractOps : McpToolset {
         // clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true`;
         // `mps_mcp_reload_all` alone is not sufficient because the StructureAspectDescriptor
         // class files on disk are still stale.
-        if (isHollowDescriptor(concept)) {
-            obj.addProperty("descriptorStatus", "hollow")
-            obj.addProperty(
-                "descriptorRecoveryAction",
-                "Run mps_mcp_alter_nodes with operation=MAKE and rebuild=true targeting the language module (not just the structure model), then retry."
-            )
-        }
+        addHollowDescriptorMarker(obj, concept)
         return obj
+    }
+
+    /**
+     * Marks [obj] when [concept] is served from a stale runtime descriptor. Shared so every
+     * record that names a concept carries the same marker and the same recovery action — a
+     * projection that drops it would report a hollow concept as a healthy one.
+     */
+    protected fun addHollowDescriptorMarker(obj: JsonObject, concept: SAbstractConcept) {
+        if (!isHollowDescriptor(concept)) return
+        obj.addProperty("descriptorStatus", "hollow")
+        obj.addProperty(
+            "descriptorRecoveryAction",
+            "Run mps_mcp_alter_nodes with operation=MAKE and rebuild=true targeting the language module (not just the structure model), then retry."
+        )
     }
 
     /**

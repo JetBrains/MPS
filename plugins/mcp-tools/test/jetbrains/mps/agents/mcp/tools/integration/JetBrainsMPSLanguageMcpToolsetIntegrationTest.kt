@@ -8,6 +8,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import jetbrains.mps.smodel.language.LanguageRegistry
+import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -1022,8 +1024,8 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // can match a concept ONLY if it happens to appear inside that concept's own name,
         // alias, short description, or documentation — which is rare. A regression that folded
         // the full qualified name into the haystack would instead make every concept in the
-        // registry a strict match (the strict path is uncapped, so the result would balloon to
-        // thousands). Anchors:
+        // registry a strict match, which the cap would still surface as MAX_STRICT_RESULTS (50)
+        // hits — well above the fallback bound asserted below. Anchors:
         //   1. Result is bounded by MAX_FALLBACK_RESULTS — impossible if the strict path
         //      matched on the namespace prefix.
         //   2. A short list of well-known, namespace-agnostic concepts (BaseConcept,
@@ -1038,7 +1040,7 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
         val results = readSearchArray(response)
         assertTrue(
-            "common namespace prefix must not trigger the uncapped strict path; got ${results.size()} concepts",
+            "common namespace prefix must not trigger the strict path; got ${results.size()} concepts",
             results.size() <= JetBrainsMPSLanguageMcpToolset.MAX_FALLBACK_RESULTS
         )
         val qualifiedNames = results.map { it.asJsonObject.get("qualifiedName").asString }.toSet()
@@ -1232,6 +1234,281 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             obj.get("error").asString.contains("not found")
         )
     }
+
+    // ── D38/P9: projection, capping and scoping of search_concepts ──────────────────────────
+
+    @Test
+    fun `search-concepts returns the compact record by default and the full one on request`() {
+        // The default projection is what every caller that does not opt in receives, so the
+        // regression that matters is `doc` (and the other full-record-only fields) creeping back
+        // into it — that field is what made a four-term query 183 KB (study defect D38).
+        val summary = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"))
+        }
+        val summaryRecord = recordFor(readSearchArray(summary), "jetbrains.mps.lang.structure.structure.ConceptDeclaration")
+        for (projectedAway in listOf("doc", "sourceNode", "virtualFolder", "superConcept", "superInterfaces", "superInterfaceDetails")) {
+            assertFalse(
+                "the default summary record must not carry '$projectedAway': $summaryRecord",
+                summaryRecord.has(projectedAway)
+            )
+        }
+        for (kept in listOf("name", "qualifiedName", "conceptReference", "languageReference", "isAbstract", "isRootable")) {
+            assertTrue("the summary record must still carry '$kept': $summaryRecord", summaryRecord.has(kept))
+        }
+
+        val full = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"), detail = "full")
+        }
+        val fullRecord = recordFor(readSearchArray(full), "jetbrains.mps.lang.structure.structure.ConceptDeclaration")
+        assertTrue("detail=full must restore the complete record: $fullRecord", fullRecord.has("doc"))
+        assertTrue("detail=full must restore the complete record: $fullRecord", fullRecord.has("sourceNode"))
+        assertTrue(
+            "the summary record must be smaller than the full one",
+            summaryRecord.toString().length < fullRecord.toString().length
+        )
+    }
+
+    @Test
+    fun `search-concepts rejects an unknown detail and an unknown scope by naming the allowed values`() {
+        val badDetail = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"), detail = "shape")
+        }
+        val detailError = JsonParser.parseString(badDetail).asJsonObject
+        assertFalse("expected error envelope: $badDetail", detailError.get("ok").asBoolean)
+        assertTrue(
+            "the rejection must name the value and the allowed set: ${detailError.get("error").asString}",
+            detailError.get("error").asString.let { it.contains("'shape'") && it.contains("summary") && it.contains("full") }
+        )
+
+        val badScope = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"), scope = "global")
+        }
+        val scopeError = JsonParser.parseString(badScope).asJsonObject
+        assertFalse("expected error envelope: $badScope", scopeError.get("ok").asBoolean)
+        assertTrue(
+            "the rejection must name the value and the allowed set: ${scopeError.get("error").asString}",
+            scopeError.get("error").asString.let { it.contains("'global'") && it.contains("project") && it.contains("all") }
+        )
+    }
+
+    @Test
+    fun `search-concepts rejects scope all combined with modelReference naming both keys`() {
+        // Silently honouring one of the two would be the D14b failure mode: the caller believes
+        // it narrowed (or widened) the search and the tool did the opposite.
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(
+                searchTexts = listOf("ConceptDeclaration"),
+                modelReference = structureModelRef,
+                scope = "all",
+            )
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val error = obj.get("error").asString
+        assertTrue("the rejection must name 'scope': $error", error.contains("scope"))
+        assertTrue("the rejection must name 'modelReference': $error", error.contains("modelReference"))
+    }
+
+    @Test
+    fun `search-concepts honours maxInlineBytes on both sides of the threshold`() {
+        val inline = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"))
+        }
+        assertTrue(
+            "a small default-threshold result must be inline: $inline",
+            JsonParser.parseString(inline).asJsonObject.get("data").isJsonArray
+        )
+
+        val spilled = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"), maxInlineBytes = 1)
+        }
+        val spilledEnvelope = JsonParser.parseString(spilled).asJsonObject
+        assertTrue("expected ok envelope: $spilled", spilledEnvelope.get("ok").asBoolean)
+        assertTrue(
+            "maxInlineBytes=1 must push the payload to a temp file: $spilled",
+            spilledEnvelope.get("data").isJsonPrimitive
+        )
+        // The helper follows the temp-file path, so the content must still be the same array.
+        assertTrue(
+            "the spilled payload must still be the result array",
+            readSearchArray(spilled).size() > 0
+        )
+    }
+
+    @Test
+    fun `search-concepts caps strict matches and reports how many it is not showing`() {
+        // "concept" strictly matches far more than MAX_STRICT_RESULTS across the bootstrapped
+        // languages. Before the cap, every one of them was serialized — the uncapped strict path
+        // is what produced the 183 KB envelope the study measured.
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("concept"), scope = "all")
+        }
+
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        val results = readSearchArray(response)
+        assertTrue(
+            "the strict path must never return more than MAX_STRICT_RESULTS; got ${results.size()}",
+            results.size() <= JetBrainsMPSLanguageMcpToolset.MAX_STRICT_RESULTS
+        )
+
+        // Asserted as a biconditional rather than skipped when the registry is small: both
+        // directions pin `strictTruncated`, and neither can pass by not running.
+        val details = envelope.get("details")?.asJsonObject
+        val narrowingWarning = warningsOf(envelope).any { it.contains("Narrow the query") }
+        if (results.size() == JetBrainsMPSLanguageMcpToolset.MAX_STRICT_RESULTS) {
+            assertTrue("a truncated result must carry details: $response", details != null)
+            assertTrue("a truncated result must report the real total: $details", details!!.has("totalStrictMatches"))
+            assertTrue(
+                "the reported total must exceed what was returned: $details",
+                details.get("totalStrictMatches").asInt > results.size()
+            )
+            assertTrue("a truncated result must be flagged: $details", details.get("truncated").asBoolean)
+            assertTrue("a truncated result must tell the caller how to narrow: $response", narrowingWarning)
+        } else {
+            assertFalse(
+                "an untruncated result must not claim truncation: $details",
+                details != null && details.has("truncated")
+            )
+            assertFalse("an untruncated result must not warn about narrowing: $response", narrowingWarning)
+        }
+    }
+
+    @Test
+    fun `search-concepts floats an exact name match above the strict cap`() {
+        // The cap keeps the first N in registry scan order, which is arbitrary relative to
+        // relevance. Without the exact-name tier, a query naming a concept could come back as
+        // fifty unrelated concepts that merely mention the word — and "narrow the query" is no
+        // advice at all when the name already is the query. "Statement" matches far more than
+        // the cap through docs and compound names; the concept literally called Statement must
+        // survive regardless, and must come first.
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("Statement"), scope = "all")
+        }
+
+        val records = readSearchArray(response).map { it.asJsonObject }
+        assertTrue(
+            "a concept whose name is exactly the query must never be the one the cap drops; got ${records.size} results",
+            records.any { it.get("name").asString == "Statement" }
+        )
+        val lastExact = records.indexOfLast { it.get("name").asString == "Statement" }
+        val firstOther = records.indexOfFirst { it.get("name").asString != "Statement" }
+        if (firstOther >= 0) {
+            assertTrue(
+                "exact name matches must be ordered ahead of the rest; lastExact=$lastExact firstOther=$firstOther",
+                lastExact < firstOther
+            )
+        }
+    }
+
+    @Test
+    fun `search-concepts widens to the whole registry when the project scope matches nothing`() {
+        // The project scope must not create a dead end: a concept outside the project's own and
+        // used languages still comes back, with a warning saying the scope was widened. Whether
+        // the narrow pass hits at all depends on what this test project's one produced language
+        // module records as used, so the test asserts the invariants that hold either way:
+        //   - the default scope reaches the concept, narrow pass or widened;
+        //   - when the widening fires, the answer is exactly the scope='all' answer, and the
+        //     warning names the escape hatch;
+        //   - scope='all' never widens, because it is already the widest.
+        val defaultScope = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"))
+        }
+        val envelope = JsonParser.parseString(defaultScope).asJsonObject
+        assertTrue("expected ok envelope: $defaultScope", envelope.get("ok").asBoolean)
+
+        val defaultNames = readSearchArray(defaultScope).map { it.asJsonObject.get("qualifiedName").asString }.toSet()
+        assertTrue(
+            "the default scope must reach ConceptDeclaration, narrow pass or widened; got=$defaultNames",
+            defaultNames.contains("jetbrains.mps.lang.structure.structure.ConceptDeclaration")
+        )
+
+        // Deterministic, not environment-dependent: LanguageProducer.create ends with
+        // ModuleDependencyVersions.update, so the fixture language's descriptor records
+        // jetbrains.mps.lang.structure and the narrow pass finds ConceptDeclaration on its own.
+        // Asserting the *absence* of the widening is what proves the project scope is populated
+        // — a scope helper that returned an empty list would widen here and still answer
+        // correctly, so only this assertion can tell the two apart.
+        assertTrue(
+            "the project scope must reach ConceptDeclaration without widening: ${warningsOf(envelope)}",
+            warningsOf(envelope).none { it.contains("widened") }
+        )
+
+        val all = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"), scope = "all")
+        }
+        assertTrue(
+            "scope='all' is already the widest and must never report a widening: ${warningsOf(JsonParser.parseString(all).asJsonObject)}",
+            warningsOf(JsonParser.parseString(all).asJsonObject).none { it.contains("widened") }
+        )
+    }
+
+    @Test
+    fun `search-concepts project scope is a populated strict subset of the registry`() {
+        // The end-to-end tests cannot see this: if languagesInProjectScope returned an empty
+        // list, every project-scoped search would simply auto-widen and answer correctly, and
+        // the whole narrowing feature would be a green no-op. Assert the set directly.
+        val (scoped, all) = readOnRepo<Pair<List<SLanguage>, Set<SLanguage>>> {
+            val repository = myProject.repository
+            JetBrainsMPSLanguageMcpToolset().projectSearchScope(myProject, repository) to
+                    LanguageRegistry.getInstance(repository).allLanguages.toSet()
+        }
+
+        assertTrue("the project scope must not be empty", scoped.isNotEmpty())
+        assertTrue(
+            "the project scope must contain a language the fixture module uses; got=${scoped.map { it.qualifiedName }}",
+            scoped.any { it.qualifiedName == "jetbrains.mps.lang.structure" }
+        )
+        assertTrue(
+            "the project scope must be a subset of the registry; extra=${scoped.filter { it !in all }.map { l -> l.qualifiedName }}",
+            all.containsAll(scoped)
+        )
+        assertTrue(
+            "the project scope must be strictly smaller than the registry, otherwise it narrows nothing; " +
+                    "scoped=${scoped.size} all=${all.size}",
+            scoped.size < all.size
+        )
+    }
+
+    @Test
+    fun `search-concepts scope project never returns more than scope all`() {
+        // The scoping predicate cannot be demonstrated end to end in this checkout — every
+        // bundled language is a module of the MPS project itself, so "owned or used" is very
+        // nearly the whole registry here (recorded in study/docs-defects.md D38). What does hold
+        // unconditionally is containment: the project scope is a subset of the full registry, so
+        // a regression that widened the project scope past `all`, or narrowed `all`, fails here.
+        // The filter itself is pinned by the ProjectMembershipCache predicate tests.
+        // "ConceptDeclaration" deliberately, not a common word: both sides must stay under
+        // MAX_STRICT_RESULTS or the comparison is between two differently ordered truncations
+        // and says nothing about containment. A word like "Declaration" caps out on both sides
+        // and would make the assertion unreachable.
+        val scoped = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"), scope = "project")
+        }
+        val all = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"), scope = "all")
+        }
+
+        val scopedNames = readSearchArray(scoped).map { it.asJsonObject.get("qualifiedName").asString }.toSet()
+        val allNames = readSearchArray(all).map { it.asJsonObject.get("qualifiedName").asString }.toSet()
+        assertTrue(
+            "the fixture must keep both sides under the cap for this comparison to mean anything; " +
+                    "scoped=${scopedNames.size} all=${allNames.size}",
+            scopedNames.size < JetBrainsMPSLanguageMcpToolset.MAX_STRICT_RESULTS &&
+                    allNames.size < JetBrainsMPSLanguageMcpToolset.MAX_STRICT_RESULTS
+        )
+        assertTrue(
+            "scope=project must be a subset of scope=all; extra=${scopedNames - allNames}",
+            allNames.containsAll(scopedNames)
+        )
+    }
+
+    private fun recordFor(results: JsonArray, qualifiedName: String) =
+        results.map { it.asJsonObject }.single { it.get("qualifiedName").asString == qualifiedName }
+
+    private fun warningsOf(envelope: com.google.gson.JsonObject): List<String> =
+        envelope.get("warnings")?.asJsonArray?.map { it.asString } ?: emptyList()
 
     /**
      * `mps_mcp_get_concept_details` returns the concept array inline when it fits in

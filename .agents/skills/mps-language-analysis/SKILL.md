@@ -50,7 +50,7 @@ Use `mps_mcp_query_structure` with `LIST_CONCEPT_ASPECTS` to find associated def
 
 ## Reference Index
 
-- Open `references/search-concepts.md` for the `mps_mcp_search_concepts` matching algorithm — haystack composition, subtoken splitting, fallback ranking, `modelReference` scoping, and the sub-2-char failure mode.
+- Open `references/search-concepts.md` for the `mps_mcp_search_concepts` matching algorithm — haystack composition, subtoken splitting, fallback ranking, the three scopes (`modelReference` / `scope`) and the auto-widen, the `detail` projections, the 50-match cap, and the sub-2-char failure mode.
 - Open `references/concept-details.md` for the `mps_mcp_get_concept_details` result schema and the unresolved-ref policy (all-failed vs partial-success envelopes and the suggestion heuristic).
 
 ## Scripts

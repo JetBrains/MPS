@@ -7,12 +7,15 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.language.LanguageRegistry
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes
 import org.jetbrains.mps.openapi.language.SEnumeration
+import org.jetbrains.mps.openapi.language.SInterfaceConcept
 import org.jetbrains.mps.openapi.language.SNamedElement
 import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.module.SRepository
@@ -56,6 +59,23 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         // agents otherwise re-implement in throwaway scripts on top of the "full" record.
         const val DETAIL_FULL = "full"
         const val DETAIL_SHAPE = "shape"
+
+        // `detail` literals of mps_mcp_search_concepts. "summary" is the default: search is a
+        // discovery step whose answer is a name to feed to get_concept_details, and the `doc`
+        // field of the full record is what turned a four-term query into 183 KB (study defect
+        // D38).
+        const val SEARCH_DETAIL_SUMMARY = "summary"
+        const val SEARCH_DETAIL_FULL = "full"
+
+        // `scope` literals of mps_mcp_search_concepts.
+        const val SEARCH_SCOPE_PROJECT = "project"
+        const val SEARCH_SCOPE_ALL = "all"
+
+        // Cap on strictly matching concepts returned by mps_mcp_search_concepts. Strict matches
+        // used to be unbounded (only the fallback heap was capped), so a common single-word query
+        // could serialize a large part of the registry. The overflow is reported through the
+        // envelope's `details`/`warnings` rather than by changing `data` from an array.
+        const val MAX_STRICT_RESULTS = 50
 
         // Copy-pasteable retry lines (study remedy M5b). Both observed incidents showed the agent
         // fetching the tool schema even though the rejection already named the right key, so the
@@ -271,12 +291,15 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Searches for concepts and interface concepts by free-form text. Multi-word search strings are AND-combined; multiple search strings are OR-combined. Each word is split on camelCase / underscore / digit boundaries; subtokens shorter than 2 characters are rejected with an explicit error naming the offending words. Pass `modelReference` to restrict to languages used by that model (recommended first attempt); fall back to a global search if nothing is found. Returns a list of concept info records inline, or a path to a temp file when the payload is large. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. See `mps-language-analysis/references/search-concepts.md` for the matching algorithm, fallback ranking, result schema, and `modelReference` error strings.
+        Searches for concepts and interface concepts by free-form text. Multi-word search strings are AND-combined; multiple search strings are OR-combined. Each word is split on camelCase / underscore / digit boundaries; subtokens shorter than 2 characters are rejected with an explicit error naming the offending words. By default the search covers the languages this project owns plus the ones its modules use (`scope="project"`); pass `scope="all"` for the whole language registry. A project-scoped search with no strict match is retried over the whole registry automatically and says so in `warnings`. Pass `modelReference` to restrict further to the languages used by one model — it is the narrowest scope and cannot be combined with any explicit `scope`. Records are the compact projection by default (`detail="summary"`: no `doc`, no `sourceNode`, no super-concept details); pass `detail="full"` for the same records `mps_mcp_get_concept_details` returns. At most 50 strictly matching concepts come back; when more matched, `details.totalStrictMatches` and a warning say so. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. See `mps-language-analysis/references/search-concepts.md` for the matching algorithm, scoping, fallback ranking, result schema, and `modelReference` error strings.
     """
     )
     suspend fun mps_mcp_search_concepts(
         @McpDescription("The text(s) to search for. Either a single search string or a JSON array: [\"Term1\", \"Term2\"] (a real array or the array written as a string). Multiple words within a string are AND-combined (all required); multiple strings are OR-combined.") searchTexts: JsonOrText = JsonOrText.EMPTY,
-        @McpDescription("Optional model reference (preferred) or model name to limit search to languages used by this model") modelReference: String? = null
+        @McpDescription("Optional model reference (preferred) or model name to limit search to languages used by this model") modelReference: String? = null,
+        @McpDescription("Per-record projection: \"summary\" (default) for the compact record, or \"full\" for the same record mps_mcp_get_concept_details returns (adds doc, sourceNode, virtualFolder, superConcept and superInterfaces).") detail: String = SEARCH_DETAIL_SUMMARY,
+        @McpDescription("Language scope, defaulting to \"project\": the languages this project owns plus the ones its modules use. \"all\" searches the whole language registry. Cannot be combined with modelReference, which is narrower still.") scope: String? = null,
+        @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val terms = parseStringOrJsonArray(searchTexts)
         if (terms.all { it.isBlank() }) {
@@ -286,7 +309,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 McpErrorCode.INVALID_REQUEST,
             )
         }
-        return mps_mcp_search_concepts(terms, modelReference)
+        return mps_mcp_search_concepts(terms, modelReference, detail, scope, maxInlineBytes)
     }
 
     /**
@@ -299,21 +322,81 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      */
     suspend fun mps_mcp_search_concepts(
         searchTexts: List<String>,
-        modelReference: String? = null
+        modelReference: String? = null,
+        detail: String = SEARCH_DETAIL_SUMMARY,
+        scope: String? = null,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+    ): String {
+        // These three rejections return before withMpsProject, the only other call site that
+        // reports the envelope to the call log (see McpCallOutcomes), so they record themselves.
+        val summaryOnly = when (detail.trim().lowercase()) {
+            SEARCH_DETAIL_SUMMARY -> true
+            SEARCH_DETAIL_FULL -> false
+            else -> return McpCallOutcomes.record(
+                errJson(
+                    "Invalid detail '$detail'. Allowed values: $SEARCH_DETAIL_SUMMARY, $SEARCH_DETAIL_FULL",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
+        }
+        val requestedScope = scope?.trim()?.lowercase()
+        if (requestedScope != null && requestedScope != SEARCH_SCOPE_PROJECT && requestedScope != SEARCH_SCOPE_ALL) {
+            return McpCallOutcomes.record(
+                errJson(
+                    "Invalid scope '$scope'. Allowed values: $SEARCH_SCOPE_PROJECT, $SEARCH_SCOPE_ALL",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
+        }
+        // Any explicit scope alongside modelReference is rejected, not just the widening one:
+        // honouring one and dropping the other silently is the D14b failure mode, and the caller
+        // cannot tell which of the two it got. `scope` is nullable precisely so "the caller said
+        // project" is distinguishable from "the caller said nothing".
+        if (modelReference != null && requestedScope != null) {
+            return McpCallOutcomes.record(
+                errJson(
+                    "Parameters 'scope' and 'modelReference' cannot be used together: modelReference " +
+                            "is already the narrowest scope (the languages used by that one model). Retry " +
+                            "with modelReference alone for the model's languages, or with scope='$requestedScope' " +
+                            "alone to search the project's languages or the whole registry.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
+        }
+        return runConceptSearch(
+            searchTexts, modelReference, summaryOnly, requestedScope ?: SEARCH_SCOPE_PROJECT, maxInlineBytes
+        )
+    }
+
+    /**
+     * The validated search. Named apart from the two `mps_mcp_search_concepts` overloads on
+     * purpose: it would otherwise differ from the public `List<String>` one only by a positional
+     * `Boolean` where that one takes a `String`, and a future parameter could silently re-dispatch
+     * between them.
+     */
+    private suspend fun runConceptSearch(
+        searchTexts: List<String>,
+        modelReference: String?,
+        summaryOnly: Boolean,
+        requestedScope: String,
+        maxInlineBytes: Int
     ): String = withMpsProject("Searching for MPS concepts") { mpsProject ->
         executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val registry = LanguageRegistry.getInstance(repo)
             val cache = ProjectMembershipCache(mpsProject)
+            // An explicit `modelReference` is the narrowest scope and is honoured as given; the
+            // two `scope` values differ only in how much of the shared repository they admit.
+            // Both drop languages owned by another open project, so a free-form query cannot
+            // answer with a same-named concept from a sibling project (study defect D4).
             val languages: Iterable<SLanguage> = if (modelReference != null) {
                 val model = resolveModelPreferringProject(mpsProject, modelReference)
                     ?: return@executeShortReadOnEdt errJson("Model not found: $modelReference")
                 val mdr = ModelDependencyResolver(registry, repo)
                 mdr.usedLanguages(model)
+            } else if (requestedScope == SEARCH_SCOPE_PROJECT) {
+                languagesInProjectScope(mpsProject, registry, repo, cache)
             } else {
-                // Global search: drop languages owned by another open project so a free-form query
-                // cannot answer with a same-named concept from a sibling project (the repository is
-                // shared). An explicit `modelReference` is an explicit scope and is honoured as given.
                 languagesInProject(registry, repo, cache)
             }
 
@@ -345,91 +428,179 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 )
             }
 
-            val strictMatches = JsonArray()
-            // Bounded top-K min-heap on (concept, score): the heap head is always the lowest
-            // score among the K best so far. We replace the head whenever a strictly larger
-            // score arrives, so the heap never grows beyond MAX_FALLBACK_RESULTS even if the
-            // query scores most of the registry (e.g. a single common subtoken like "type").
-            val rankedHeap = PriorityQueue<Pair<SAbstractConcept, Int>>(MAX_FALLBACK_RESULTS, compareBy { it.second })
-            // Tracked once instead of repeatedly probing strictMatches.size(): once any concept
-            // matches strictly, the fallback path is irrelevant for the rest of the scan.
-            var strictFound = false
-
-            for (lang in languages) {
-                val runtime = registry.getLanguage(lang) ?: continue
-                // Use only the trailing segment of the qualified name so that natural queries
-                // like "<concept> <language fragment>" work (e.g. "collections", "smodel") without
-                // letting common prefixes ("jetbrains", "mps", "lang", "baseLanguage") act as
-                // near-universal wildcards that would expand the match set across the whole
-                // language registry.
-                val langSimpleName = lang.qualifiedName.substringAfterLast('.')
-                for (concept in runtime.concepts) {
-                    val doc = getDoc(concept.sourceNode?.resolve(repo))
-                    // The language-name fragment is kept out of this string so it does not have
-                    // to be concatenated for every concept (a language has up to hundreds);
-                    // subtoken matching checks it separately below.
-                    val alias = concept.conceptAlias ?: ""
-                    val desc = concept.shortDescription ?: ""
-                    val perConceptInfo = "${concept.name} $alias $desc $doc"
-
-                    var anyGroupAllMatch = false
-                    var bestGroupScore = 0
-                    for (group in groupSubtokens) {
-                        var groupScore = 0
-                        var groupAllMatch = true
-                        for (subtokens in group) {
-                            // An empty subtoken list comes from a too-short query word and must
-                            // never match — otherwise `all { }` would be vacuously true and the
-                            // word would behave as a wildcard.
-                            val wordMatches = subtokens.isNotEmpty() && subtokens.all {
-                                perConceptInfo.contains(it, ignoreCase = true) ||
-                                    langSimpleName.contains(it, ignoreCase = true)
-                            }
-                            if (wordMatches) groupScore++ else groupAllMatch = false
-                        }
-                        if (groupAllMatch) {
-                            anyGroupAllMatch = true
-                            break
-                        }
-                        if (groupScore > bestGroupScore) bestGroupScore = groupScore
-                    }
-
-                    if (anyGroupAllMatch) {
-                        if (!strictFound) {
-                            strictFound = true
-                            if (rankedHeap.isNotEmpty()) {
-                                // The fallback list is only consulted when no strict match was
-                                // found; free the candidates accumulated before the first strict
-                                // hit so we do not carry them through the rest of the scan.
-                                rankedHeap.clear()
-                            }
-                        }
-                        strictMatches.add(conceptInfoJsonObject(concept, repo, mpsProject, cache))
-                    } else if (!strictFound && bestGroupScore > 0) {
-                        // Maintain the heap as a running top-K by score. While under capacity,
-                        // accept every positive-score candidate; once full, only candidates with
-                        // a strictly higher score than the current worst displace the head.
-                        if (rankedHeap.size < MAX_FALLBACK_RESULTS) {
-                            rankedHeap.offer(concept to bestGroupScore)
-                        } else if (bestGroupScore > rankedHeap.peek().second) {
-                            rankedHeap.poll()
-                            rankedHeap.offer(concept to bestGroupScore)
-                        }
-                    }
+            // Original query words, used to float an exact name match above the cap.
+            val queryWords = termGroups.flatten().toSet()
+            var matches = matchConcepts(languages, registry, repo, groupSubtokens, queryWords)
+            val warnings = mutableListOf<String>()
+            // A project-scoped miss must not become a dead end: the caller asked a question the
+            // narrow scope cannot answer, and telling it to retry costs a turn (study defect D35
+            // is exactly that shape). Widen once, and say so. Only the project scope can widen —
+            // `all` is already the widest, and `modelReference` is a scope the caller chose
+            // deliberately, so neither is second-guessed.
+            //
+            // The trigger is "no strict match", not "nothing at all": a narrow pass that fell
+            // back to weak partial matches has, by the matcher's own definition, found nothing
+            // that really matches, and would otherwise hide an exact hit sitting one scope out.
+            if (!matches.strictFound && modelReference == null && requestedScope == SEARCH_SCOPE_PROJECT) {
+                // In a monolithic project — this MPS checkout above all — the project scope is
+                // very nearly the whole registry, and rescanning it would double the cost of
+                // every miss. matchConcepts resolves and reads the doc of every concept it sees,
+                // so the set comparison is free next to the scan it avoids.
+                val allLanguages = languagesInProject(registry, repo, cache)
+                val widened = if (allLanguages.toSet() == languages.toSet()) matches
+                else matchConcepts(allLanguages, registry, repo, groupSubtokens, queryWords)
+                // Keep the widened answer only when it is actually better: a strict hit, or
+                // anything at all where the narrow pass had nothing. Registry-wide *fallback*
+                // candidates are less relevant than the project's own, so they do not displace them.
+                if (widened !== matches && (widened.strictFound || (matches.isEmpty() && !widened.isEmpty()))) {
+                    matches = widened
+                    warnings.add(
+                        "No concept matched inside this project's languages; the search was widened to " +
+                                "the whole language registry. The matches below may belong to languages this " +
+                                "project does not use. Pass scope='$SEARCH_SCOPE_ALL' to skip the narrow pass."
+                    )
                 }
             }
 
-            val results: JsonArray = if (strictFound) {
-                strictMatches
-            } else {
-                val arr = JsonArray()
-                for ((concept, _) in rankedHeap.sortedByDescending { it.second }) {
-                    arr.add(conceptInfoJsonObject(concept, repo, mpsProject, cache))
-                }
-                arr
+            val details = mutableMapOf<String, Any?>()
+            if (matches.strictTruncated) {
+                details["totalStrictMatches"] = matches.strictTotal
+                details["truncated"] = true
+                warnings.add(
+                    "${matches.strictTotal} concepts matched; the first $MAX_STRICT_RESULTS are returned. " +
+                            "Narrow the query with more words, or pass modelReference to search only one model's languages."
+                )
             }
-            finalizeResult(results.toString())
+
+            val results = JsonArray()
+            for (concept in matches.concepts) {
+                results.add(searchResultJsonObject(concept, repo, mpsProject, cache, summaryOnly))
+            }
+            finalizeResult(results.toString(), maxInlineBytes, details, warnings)
         }
+    }
+
+    /**
+     * Concepts matching one parsed query, in the order the registry was scanned.
+     *
+     * [strictTotal] counts every strict match, including the ones past [MAX_STRICT_RESULTS] that
+     * [concepts] does not carry, so the caller can say how much it is not showing. Fallback
+     * candidates are never truncated — the heap already bounds them at [MAX_FALLBACK_RESULTS].
+     * [strictFound] distinguishes "these are real matches" from "these are ranked near-misses",
+     * which is what decides whether a narrow scope is worth widening.
+     */
+    private class ConceptMatches(
+        val concepts: List<SAbstractConcept>,
+        val strictTotal: Int,
+        val strictFound: Boolean
+    ) {
+        val strictTruncated: Boolean get() = strictTotal > concepts.size
+        fun isEmpty(): Boolean = concepts.isEmpty()
+    }
+
+    /**
+     * Scans [languages] for concepts matching [groupSubtokens] (OR over groups, AND within a
+     * group). Extracted from the tool body so the project-scoped pass and the widened pass run
+     * exactly the same matcher.
+     */
+    private fun matchConcepts(
+        languages: Iterable<SLanguage>,
+        registry: LanguageRegistry,
+        repo: SRepository,
+        groupSubtokens: List<List<List<String>>>,
+        queryWords: Set<String>
+    ): ConceptMatches {
+        // Two tiers so the cap cannot drop the concept the caller actually named. Scan order is
+        // arbitrary relative to relevance, so a plain "first 50" could answer a query for
+        // `Statement` with fifty unrelated `*Statement*` concepts and not `Statement` itself —
+        // and the "narrow the query" advice is useless when the name already is the query.
+        val exactNameMatches = mutableListOf<SAbstractConcept>()
+        val otherMatches = mutableListOf<SAbstractConcept>()
+        var strictTotal = 0
+        // Bounded top-K min-heap on (concept, score): the heap head is always the lowest
+        // score among the K best so far. We replace the head whenever a strictly larger
+        // score arrives, so the heap never grows beyond MAX_FALLBACK_RESULTS even if the
+        // query scores most of the registry (e.g. a single common subtoken like "type").
+        val rankedHeap = PriorityQueue<Pair<SAbstractConcept, Int>>(MAX_FALLBACK_RESULTS, compareBy { it.second })
+        // Tracked once instead of repeatedly probing strictMatches.size(): once any concept
+        // matches strictly, the fallback path is irrelevant for the rest of the scan.
+        var strictFound = false
+
+        for (lang in languages) {
+            val runtime = registry.getLanguage(lang) ?: continue
+            // Use only the trailing segment of the qualified name so that natural queries
+            // like "<concept> <language fragment>" work (e.g. "collections", "smodel") without
+            // letting common prefixes ("jetbrains", "mps", "lang", "baseLanguage") act as
+            // near-universal wildcards that would expand the match set across the whole
+            // language registry.
+            val langSimpleName = lang.qualifiedName.substringAfterLast('.')
+            for (concept in runtime.concepts) {
+                val doc = getDoc(concept.sourceNode?.resolve(repo))
+                // The language-name fragment is kept out of this string so it does not have
+                // to be concatenated for every concept (a language has up to hundreds);
+                // subtoken matching checks it separately below.
+                val alias = concept.conceptAlias ?: ""
+                val desc = concept.shortDescription ?: ""
+                val perConceptInfo = "${concept.name} $alias $desc $doc"
+
+                var anyGroupAllMatch = false
+                var bestGroupScore = 0
+                for (group in groupSubtokens) {
+                    var groupScore = 0
+                    var groupAllMatch = true
+                    for (subtokens in group) {
+                        // An empty subtoken list comes from a too-short query word and must
+                        // never match — otherwise `all { }` would be vacuously true and the
+                        // word would behave as a wildcard.
+                        val wordMatches = subtokens.isNotEmpty() && subtokens.all {
+                            perConceptInfo.contains(it, ignoreCase = true) ||
+                                langSimpleName.contains(it, ignoreCase = true)
+                        }
+                        if (wordMatches) groupScore++ else groupAllMatch = false
+                    }
+                    if (groupAllMatch) {
+                        anyGroupAllMatch = true
+                        break
+                    }
+                    if (groupScore > bestGroupScore) bestGroupScore = groupScore
+                }
+
+                if (anyGroupAllMatch) {
+                    if (!strictFound) {
+                        strictFound = true
+                        if (rankedHeap.isNotEmpty()) {
+                            // The fallback list is only consulted when no strict match was
+                            // found; free the candidates accumulated before the first strict
+                            // hit so we do not carry them through the rest of the scan.
+                            rankedHeap.clear()
+                        }
+                    }
+                    strictTotal++
+                    // Keep counting past the cap: the count is what the truncation warning
+                    // reports, and dropping the concept here is what keeps the payload bounded.
+                    val tier = if (queryWords.any { it.equals(concept.name, ignoreCase = true) }) exactNameMatches
+                    else otherMatches
+                    if (tier.size < MAX_STRICT_RESULTS) tier.add(concept)
+                } else if (!strictFound && bestGroupScore > 0) {
+                    // Maintain the heap as a running top-K by score. While under capacity,
+                    // accept every positive-score candidate; once full, only candidates with
+                    // a strictly higher score than the current worst displace the head.
+                    if (rankedHeap.size < MAX_FALLBACK_RESULTS) {
+                        rankedHeap.offer(concept to bestGroupScore)
+                    } else if (bestGroupScore > rankedHeap.peek().second) {
+                        rankedHeap.poll()
+                        rankedHeap.offer(concept to bestGroupScore)
+                    }
+                }
+            }
+        }
+
+        if (strictFound) {
+            val kept = (exactNameMatches + otherMatches).take(MAX_STRICT_RESULTS)
+            return ConceptMatches(kept, strictTotal, strictFound = true)
+        }
+        val fallback = rankedHeap.sortedByDescending { it.second }.map { it.first }
+        return ConceptMatches(fallback, fallback.size, strictFound = false)
     }
 
     /**
@@ -751,6 +922,105 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             MAX_SUGGESTIONS_PER_UNRESOLVED
         )
     }
+
+    /**
+     * One `mps_mcp_search_concepts` hit, at the requested detail.
+     *
+     * The `summary` projection is the default because search answers "which concept do I want",
+     * and the answer the caller carries forward is a name it then feeds to
+     * `mps_mcp_get_concept_details`. Everything a reader cannot act on from a hit list is
+     * dropped — above all `doc`, which is what made a four-term query 183 KB (study defect D38).
+     * `deprecated` is deliberately kept: projecting it away would let a caller pick a deprecated
+     * concept off a hit list without ever seeing the flag.
+     */
+    private fun searchResultJsonObject(
+        concept: SAbstractConcept,
+        repository: SRepository,
+        mpsProject: MPSProject,
+        cache: ProjectMembershipCache,
+        summaryOnly: Boolean
+    ): JsonObject {
+        if (!summaryOnly) return conceptInfoJsonObject(concept, repository, mpsProject, cache)
+        val obj = JsonObject()
+        obj.addProperty("name", concept.name)
+        obj.addProperty("qualifiedName", structureQualifiedName(concept))
+        obj.addProperty("conceptAlias", concept.conceptAlias)
+        obj.addProperty("shortDescription", concept.shortDescription)
+        // Omitted when empty, unlike the full record's always-present field: a hit list is read
+        // for what stands out, and a deprecation must not be one blank string among fifty.
+        val deprecated = getDeprecationInfo(concept.sourceNode?.resolve(repository))
+        if (deprecated.isNotEmpty()) obj.addProperty("deprecated", deprecated)
+        obj.addProperty("conceptReference", PersistenceFacade.getInstance().asString(concept))
+        obj.addProperty("languageReference", PersistenceFacade.getInstance().asString(concept.language))
+        obj.addProperty("isAbstract", concept.isAbstract)
+        obj.addProperty("isInterfaceConcept", concept is SInterfaceConcept)
+        obj.addProperty("isRootable", isRootable(concept, repository))
+        // Same argument as `deprecated`, and stronger: a deprecated concept still works, a
+        // concept served from a stale runtime descriptor produces wrong assignability answers
+        // downstream. `detail:"shape"` on get_concept_details can omit this because a hollow
+        // descriptor self-reveals there as all-empty features; a hit list has no such tell.
+        addHollowDescriptorMarker(obj, concept)
+        addContainingProjectIfForeign(obj, mpsProject, concept, repository, cache = cache)
+        return obj
+    }
+
+    /**
+     * The languages a query issued against this project can plausibly mean: the ones the
+     * project's own modules define, plus the ones those modules use (including everything their
+     * used devkits export).
+     *
+     * The shared module repository registers every deployed language, bundled ones included, so
+     * an unscoped free-form query answers out of languages the project never touches — one
+     * four-term query came back as 183 KB dominated by `jetbrains.mps.transformation.test.outputLang`
+     * (study defect D38, the registry-noise reading of D4). Scoping strictly to project-*owned*
+     * languages would be wrong in the other direction: in an ordinary DSL project
+     * `jetbrains.mps.baseLanguage` is a library module, and dropping it would make `ClassConcept`
+     * unfindable. "Owned or used" is the set that keeps recall and drops the noise.
+     *
+     * Module descriptors are the cheap source for "used": `languageVersions` is the record
+     * `ModuleDependencyVersions` already maintains per module — and it is the *extended-language
+     * closure* of what the module uses, so recall is better than `ModelDependencyResolver`, which
+     * deliberately excludes extended languages. The trade-off is staleness: a language imported
+     * into a model this session but not yet written through to the descriptor is missing here.
+     * The auto-widen covers that case, which is a second reason to trigger it on "no strict
+     * match" rather than on "no results at all".
+     *
+     */
+    private fun languagesInProjectScope(
+        project: MPSProject,
+        registry: LanguageRegistry,
+        repository: SRepository,
+        cache: ProjectMembershipCache
+    ): List<SLanguage> {
+        val scoped = LinkedHashSet<SLanguage>()
+        for (module in project.projectModulesWithGenerators) {
+            val descriptor = (module as? AbstractModule)?.moduleDescriptor ?: continue
+            scoped.addAll(descriptor.languageVersions.keys)
+            for (devkitRef in descriptor.usedDevkits) {
+                val devkit = devkitRef.resolve(repository) as? DevKit ?: continue
+                scoped.addAll(devkit.allExportedLanguageIds)
+            }
+        }
+        // A language module the project owns is in scope even when nothing uses it yet — that is
+        // the language the caller is most likely working on right now.
+        for (language in registry.allLanguages) {
+            if (cache.isInCurrentProject(language, repository)) scoped.add(language)
+        }
+        // Same sibling-project filter the widened scope applies: a used language could itself be
+        // owned by another open project, and the caller cannot edit that one either.
+        return scoped.filter { !cache.isFromAnotherOpenProject(it, repository) }
+    }
+
+    /**
+     * [languagesInProjectScope] with its own membership cache, for callers outside the search
+     * path. Exists so the scope can be asserted directly: a regression that returned an empty
+     * list would be invisible end to end, because the auto-widen would quietly restore the
+     * full-registry answer.
+     */
+    internal fun projectSearchScope(project: MPSProject, repository: SRepository): List<SLanguage> =
+        languagesInProjectScope(
+            project, LanguageRegistry.getInstance(repository), repository, ProjectMembershipCache(project)
+        )
 
     /**
      * Registered languages minus the ones owned by another open MPS project. The module

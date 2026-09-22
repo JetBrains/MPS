@@ -92,7 +92,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
+        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. Two projection knobs cut the payload without changing the envelope: `nodeDetail="names"` reduces every node record to name/concept/reference (the cheap way to list a model's roots and their ids), and `nodeDepth` bounds how far `includeNodes` inlines the AST. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
     """
     )
     suspend fun mps_mcp_get_project_structure(
@@ -100,7 +100,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         @McpDescription("Include models within modules.") includeModels: Boolean = false,
         @McpDescription("Include module/model dependencies and used languages.") includeDependencies: Boolean = false,
         @McpDescription("Include root nodes of models.") includeRootNodes: Boolean = false,
-        @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). The full tree is always written to the result temp file regardless of size — there is no truncation — so prefer scoping with `startingPoint`, or use `mps_mcp_print_node` (deep=true) for a single root. Warning: can be extremely large.") includeNodes: Boolean = false,
+        @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). Unbounded unless you pass nodeDepth, so prefer scoping with `startingPoint`, `nodeDetail` and `nodeDepth`, or use `mps_mcp_print_node` (deep=true) for a single root. Warning: can be extremely large.") includeNodes: Boolean = false,
         @McpDescription(
             "Optional starting point: a persistent reference (module/model/root-node/node id) or a plain name. " +
                     "A plain NAME is resolved in the order node -> model -> module, so a name shared by a model and a " +
@@ -109,11 +109,31 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                     "flags by passing a startingPoint."
         ) startingPoint: String? = null,
         @McpDescription("Optional filter by module kind (Solution, Language, DevKit, Generator). Only used if startingPoint is null.") moduleKind: String? = null,
+        @McpDescription("Projection of every node record: \"full\" (default) for the complete records, or \"names\" for name/concept/reference only — no docs (so no concept deprecation), no properties, references or child roles. Use \"names\" with includeRootNodes to list a model's roots and their ids cheaply.") nodeDetail: String = NODE_DETAIL_FULL,
+        @McpDescription("With includeNodes, how many levels to inline below each root: -1 (default) for the whole tree, 0 for the root record alone, n for n levels. At the cut-off a role lists its children as {name, reference} and is marked childrenTruncated.") nodeDepth: Int = -1,
         @McpDescription("Inline the dump in `data` when it is at most this many characters; larger dumps are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         if (!startingPoint.isNullOrBlank() && !moduleKind.isNullOrBlank()) {
-            return errJson("Parameters 'startingPoint' and 'moduleKind' cannot be used together.")
+            return McpCallOutcomes.record(
+                errJson(
+                    "Parameters 'startingPoint' and 'moduleKind' cannot be used together.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
         }
+        val names = when (nodeDetail.trim().lowercase()) {
+            NODE_DETAIL_FULL -> false
+            NODE_DETAIL_NAMES -> true
+            // Recorded because this returns before withMpsProject, the only other call site that
+            // reports the envelope to the call log (see McpCallOutcomes).
+            else -> return McpCallOutcomes.record(
+                errJson(
+                    "Invalid nodeDetail '$nodeDetail'. Allowed values: $NODE_DETAIL_FULL, $NODE_DETAIL_NAMES",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            )
+        }
+        val projection = NodeProjection.of(names, nodeDepth)
         // includeNodes (full AST) is only meaningful if we actually descend into models and
         // their root nodes. Treat it as implying includeRootNodes (and includeModels for
         // module/project dumps) so a caller that asks for nodes always gets the inlined trees
@@ -133,7 +153,10 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                     }
                     val node = nodeRef?.resolve(mpsProject.repository)
                     if (node != null) {
-                        return@executeShortReadOnEdt finalizeResult(nodeHierarchyToJson(node, includeNodes, mpsProject), maxInlineBytes)
+                        return@executeShortReadOnEdt finalizeResult(
+                            nodeHierarchyToJson(node, includeNodes, mpsProject, projection = projection),
+                            maxInlineBytes
+                        )
                     }
 
                     // 2. Try Model
@@ -149,7 +172,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                                 model,
                                 effectiveIncludeRootNodes,
                                 includeNodes,
-                                includeDependencies
+                                includeDependencies,
+                                projection = projection
                             ), maxInlineBytes
                         )
                     }
@@ -165,7 +189,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                         val isProjectModule = isModuleInSelectedProject(mpsProject, module)
                         if (includeStubModules || isProjectModule) {
                             return@executeShortReadOnEdt finalizeResult(
-                                moduleToJson(mpsProject, module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies),
+                                moduleToJson(mpsProject, module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies, projection = projection),
                                 maxInlineBytes
                             )
                         }
@@ -200,7 +224,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                                 effectiveIncludeRootNodes,
                                 includeNodes,
                                 includeDependencies,
-                                cache
+                                cache,
+                                projection
                             )
                         )
                     }
@@ -218,9 +243,10 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         includeRootNodes: Boolean,
         includeNodes: Boolean,
         includeDependencies: Boolean,
-        cache: ProjectMembershipCache? = null
+        cache: ProjectMembershipCache? = null,
+        projection: NodeProjection = NodeProjection.FULL
     ): String {
-        return moduleJsonObject(project, m, includeModels, includeRootNodes, includeNodes, includeDependencies, cache).toString()
+        return moduleJsonObject(project, m, includeModels, includeRootNodes, includeNodes, includeDependencies, cache, projection).toString()
     }
 
     private fun moduleJsonObject(
@@ -230,7 +256,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         includeRootNodes: Boolean,
         includeNodes: Boolean,
         includeDependencies: Boolean,
-        cache: ProjectMembershipCache? = null
+        cache: ProjectMembershipCache? = null,
+        projection: NodeProjection = NodeProjection.FULL
     ): JsonObject {
         val c = cache ?: ProjectMembershipCache(project)
         val vf = try {
@@ -396,7 +423,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         if (includeModels) {
             val models = JsonArray()
             for (model in m.models) {
-                models.add(modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, c))
+                models.add(modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, c, projection))
             }
             obj.add("models", models)
         } else {
@@ -488,9 +515,10 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         includeRootNodes: Boolean,
         includeNodes: Boolean,
         includeDependencies: Boolean,
-        cache: ProjectMembershipCache? = null
+        cache: ProjectMembershipCache? = null,
+        projection: NodeProjection = NodeProjection.FULL
     ): String {
-        return modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, cache).toString()
+        return modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, cache, projection).toString()
     }
 
     private fun modelJsonObject(
@@ -499,7 +527,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         includeRootNodes: Boolean,
         includeNodes: Boolean,
         includeDependencies: Boolean,
-        cache: ProjectMembershipCache? = null
+        cache: ProjectMembershipCache? = null,
+        projection: NodeProjection = NodeProjection.FULL
     ): JsonObject {
         val c = cache ?: ProjectMembershipCache(project)
         val obj = JsonObject()
@@ -564,7 +593,7 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         if (includeRootNodes) {
             val rootNodes = JsonArray()
             for (root in model.rootNodes) {
-                rootNodes.add(nodeHierarchyJsonObject(root, includeNodes, project, c))
+                rootNodes.add(nodeHierarchyJsonObject(root, includeNodes, project, c, projection))
             }
             obj.add("rootNodes", rootNodes)
         } else {
@@ -751,5 +780,8 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
 
     private companion object {
         const val CLOSE_PROJECT_TIMEOUT_MS: Long = 20_000
+
+        const val NODE_DETAIL_FULL = "full"
+        const val NODE_DETAIL_NAMES = "names"
     }
 }

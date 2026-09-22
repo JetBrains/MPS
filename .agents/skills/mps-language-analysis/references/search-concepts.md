@@ -1,6 +1,6 @@
 # `mps_mcp_search_concepts` — Matching Algorithm & Tuning
 
-Free-form discovery for concepts and interface concepts. Returns the same per-concept records as `mps_mcp_get_concept_details` (see `concept-details.md` for the schema).
+Free-form discovery for concepts and interface concepts. Returns a compact per-concept record by default; `detail: "full"` returns the same records as `mps_mcp_get_concept_details` (see `concept-details.md` for that schema).
 
 ## Haystack
 
@@ -44,24 +44,52 @@ This catches typos symmetrically across all search strings — the tool never si
 
 ## Result cap and fallback
 
-- **Strict matches** (all query words matched) are returned in full and are **NOT capped**. A common single-word query like `"node"` or `"type"` can therefore return many concepts; rely on the temp-file fallback for large payloads.
+- **Strict matches** (all query words matched) are capped at **50** (`MAX_STRICT_RESULTS`). When more matched, the envelope carries `details.totalStrictMatches` (the real total), `details.truncated: true`, and a warning naming the two ways to narrow: more query words, or `modelReference`. `data` stays a plain array either way.
 - **Fallback ranking**: if no concept strictly matches all words of any search string, the tool ranks concepts by the number of matching words and returns up to `MAX_FALLBACK_RESULTS` (currently 20) best candidates instead of an empty result.
 - Within the fallback, equal-score candidates are admitted in registry iteration order while the heap fills. That makes the tie-break **deterministic for a given MPS session and language load order**, but **not stable across sessions**. Treat the fallback result as a candidate set rather than a ranked list.
+- Concepts whose **name is exactly one of your query words** are returned first and are never the ones the cap drops, so searching for a name always finds it. Beyond that tier the order is registry iteration order, not relevance: a truncated result is a signal to narrow the query, not a top-50 ranking.
 
-## `modelReference` scoping
+## Scoping
 
-If `modelReference` is provided, the search is restricted to languages used by that model — faster than searching all languages, and concepts in already-used languages are more likely to be suitable. Recommended workflow: try with a model first, then fall back to a global search if nothing turns up.
+Three scopes, narrowest first. **Pick the narrowest one you can** — every widening costs payload, not just time.
 
-Accepts a persistent model reference (preferred) or a model's long/short name as a fallback; names matching more than one model resolve to the first match in repository iteration order.
+| | what it searches | when |
+|---|---|---|
+| `modelReference` | the languages used by that one model | you already know which model the node will live in — the recommended first attempt |
+| `scope: "project"` (**default**) | the languages this project's modules **define**, plus the ones they **use** (including everything their used devkits export) | ordinary discovery |
+| `scope: "all"` | every language in the registry, minus those owned by another open MPS project | the concept is genuinely outside what this project touches |
+
+`scope: "project"` is "owned **or** used" on purpose. Scoping to owned-only would drop `jetbrains.mps.baseLanguage` in any project that merely uses it, which would make `ClassConcept` unfindable; scoping to the whole registry is what made a four-term query return 183 KB dominated by languages the project never touches.
+
+**Auto-widening.** A `scope: "project"` search with **no strict match** is retried over the whole registry automatically, and the envelope carries a warning saying so. You never have to retry a project-scoped miss by hand. The widened answer is kept only when it is better — a strict hit, or anything at all where the narrow pass found nothing; registry-wide *fallback* candidates never displace the project's own, which are more likely to be what you want. `scope: "all"` never widens; it is already the widest.
+
+`scope` and `modelReference` **cannot be combined** — *any* explicit `scope`, including `"project"`. `modelReference` is already the narrowest scope, and honouring one key while silently dropping the other is the failure the rejection exists to prevent, so the call is refused with `INVALID_REQUEST` naming both. Omitting `scope` entirely alongside `modelReference` is the normal case and is fine.
+
+`modelReference` accepts a persistent model reference (preferred) or a model's long/short name as a fallback; names matching more than one model resolve to the first match in repository iteration order.
 
 Error strings:
 
 - Model not found by reference or name → `"Model not found: ..."`.
+- Unknown `detail` / `scope` value → `"Invalid detail '...'. Allowed values: summary, full"` / `"Invalid scope '...'. Allowed values: project, all"`.
 
 
 ## Result schema
 
-Returns either `data:[{...}]` inline or a path to a temp file when the payload is large. Each record has:
+Returns either `data:[{...}]` inline (up to `maxInlineBytes`, default 20000) or a path to a temp file above that.
+
+`detail: "summary"` is the **default**, because search answers "which concept do I want" and the answer you carry forward is a name you then feed to `mps_mcp_get_concept_details`:
+
+```
+name, qualifiedName, conceptAlias, shortDescription, deprecated?,
+conceptReference, languageReference,
+isAbstract, isInterfaceConcept, isRootable,
+descriptorStatus?, descriptorRecoveryAction?,
+containingProject?, editableFromCurrentProject?
+```
+
+`deprecated` is present only when the concept actually is deprecated. `descriptorStatus: "hollow"` (with its `descriptorRecoveryAction`) appears at **both** detail levels, for the same reason: a concept served from a stale runtime descriptor gives wrong answers downstream, and a hit list must not hide that. Everything else a hit list cannot be acted on from — above all `doc` — is projected away; `doc` is what made a four-term query 183 KB.
+
+`detail: "full"` returns the same record `mps_mcp_get_concept_details` produces:
 
 ```
 name, qualifiedName, conceptAlias, shortDescription, doc, deprecated,
@@ -71,5 +99,7 @@ superInterfaces, superInterfaceDetails,
 sourceNode, isAbstract, isInterfaceConcept, isRootable, virtualFolder,
 containingProject?, editableFromCurrentProject?, present:true
 ```
+
+Escalate to `"full"` only when you need the documentation or the super-concept chain for the hits themselves. To learn a concept's *shape* (properties, references, children), call `mps_mcp_get_concept_details` with `detail: "shape"` on the one name you picked — that is cheaper than `"full"` here and answers a different question.
 
 Use the `qualifiedName` field (e.g. `"jetbrains.mps.baseLanguage.structure.ClassConcept"`) as the `concept` field in JSON node blueprints — it is unambiguous and does not require a `conceptReference`.

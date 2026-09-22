@@ -3,7 +3,7 @@
 
 Library + CLI over the JSON envelopes written by the read-only analysis tools:
 
-  mps_mcp_get_project_structure   project / module / model dumps, with or without includeNodes
+  mps_mcp_get_project_structure   project / module / model dumps, any nodeDetail / nodeDepth
   mps_mcp_print_node              deep=true (descendants inlined) and deep=false (child refs)
   mps_mcp_get_concept_details     concept / language details, used for the concept shape
 
@@ -63,7 +63,7 @@ NOISE_FEATURES = ("shortDescription", "virtualPackage", "smodelAttribute")
 TOOL_DEPENDENCIES = [
     {
         "tool": "mps_mcp_get_project_structure",
-        "parameters": ["startingPoint", "includeModels", "includeRootNodes", "includeNodes"],
+        "parameters": ["startingPoint", "includeModels", "includeRootNodes", "includeNodes", "nodeDetail", "nodeDepth"],
     },
     {
         "tool": "mps_mcp_print_node",

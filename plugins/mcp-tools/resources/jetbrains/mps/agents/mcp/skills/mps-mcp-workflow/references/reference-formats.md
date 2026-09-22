@@ -6,7 +6,7 @@
 - **CRITICAL**: never use a concept reference (`c:...`) where a node reference (`r:...`) is expected. If you need a reference to point to the **declaration node** of a concept (its definition), you must use its node reference.
 - To obtain the node reference (`r:...`) for a concept:
     - Use `mps_mcp_get_concept_details` and check the **`sourceNode`** field in the response.
-    - Alternatively, use `mps_mcp_search_concepts` and check the `sourceNode` field for each match.
+    - Alternatively, use `mps_mcp_search_concepts` with `detail: "full"` and check the `sourceNode` field for each match — the default `"summary"` record does not carry it.
 - The `mps_mcp_insert_root_node_from_json` and `mps_mcp_update_node` tools will reject `c:...` strings in reference roles and will fail if a provided node reference cannot be resolved.
 - **Model References**: `r:<model-uuid>(<model-name>)` — a node reference without the `#<node-id>` part.
 - Tools that accept a model reference also accept the model's **qualified name** (the `name` field, stereotype included, e.g. `foo.bar@tests`) — the same form `mps_mcp_get_project_structure` `startingPoint` accepts.
