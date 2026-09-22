@@ -19,7 +19,6 @@
   <module value="com.intellij.modules.xml"/>
 
   <xi:include href="/META-INF/IdeTipsAndTricks.xml"/>
-  <xi:include href="/META-INF/PlatformLangPlugin.xml"/>
 
   <xi:include href="intellij.json.xml">
     <xi:fallback/>
