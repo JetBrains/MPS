@@ -87,12 +87,11 @@ MPS process control. Env: `CAPTURE` (default `$TMPDIR/mps-study-cmdline.json`), 
   stripped). **Must run while MPS is alive**; `shutdown` refuses without it, because after the exit
   there is nothing left to inspect.
 - `open` — activates the **running** MPS with `[project-dir]`: a short-lived second process that
-  exits in about a second. Use this instead of hand-writing the recipe from
-  `mps-project-management/examples-macos.md`, which passes the whole `java_command` field as the
-  main class and breaks whenever MPS was itself started with a project path (defect D39);
-  `capture` stores only the first token. `open` also confirms the project is listed afterwards — a
-  clean exit means only that the request was handed over. Open from the Welcome screen unless you
-  know `confirmOpenNewProject2` is not "ask" (lesson 30).
+  exits in about a second. Prefer it over hand-writing the recipe from
+  `mps-project-management/examples-macos.md`: it reuses the capture, and it confirms the project is
+  listed afterwards, which the recipe does not — a clean exit means only that the request was handed
+  over. Open from the Welcome screen unless you know `confirmOpenNewProject2` is not "ask"
+  (lesson 30).
 - `shutdown` — needs exactly one open project and closes it with `shutdownWithLastProject=true`.
   Discovering that project survives the pre-dispatch gate: a `list_open_projects` call with no
   `projectPath` is rejected, and the rejection carries the `Currently open projects: {…}` listing,
@@ -155,8 +154,8 @@ for approval.
    this run is SMOKE against that same golden directory.
 3. `mps_control.sh open <dir>` — a short-lived second process activates the running MPS with the
    scratch directory as a positional argument, then confirms it is listed. It implements
-   `mps-project-management` (`references/open-via-cli.md` + the OS examples) with defect D39
-   corrected; reach for the skill's raw recipe only if the script is unavailable.
+   `mps-project-management` (`references/open-via-cli.md` + the OS examples); the skill's own recipe
+   is equivalent since `65bd60680c01` and remains the fallback when the script is unavailable.
 4. Confirm with `mps_mcp_list_open_projects` (or `mcp_call.py mps_mcp_list_open_projects '{"projectPath":"<dir>"}'`).
    The new project must be listed; no other open project may share module names with what the worker
    will create. `install_skills.py` needs it open.

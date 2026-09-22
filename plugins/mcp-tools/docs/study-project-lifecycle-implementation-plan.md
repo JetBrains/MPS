@@ -393,7 +393,7 @@ Landed:
 
 ## Rehearsal (2026-09-22, live MPS from sources, pid 4104 → 6073)
 
-Run in the §Validation order. Everything passed; three defects surfaced, all fixed except D39.
+Run in the §Validation order. Everything passed; three defects surfaced, all since fixed.
 
 | step | result |
 |---|---|
@@ -416,15 +416,19 @@ Defects the rehearsal found, all three invisible offline:
 2. **`ps -o etimes=` is Linux-only**, and `-o lstart=` prints a locale-dependent string
    (`út 22 zář 19:26:31 2026`) that cannot be compared between runs. Fixed: the meta now carries
    `mpsStartEpoch`, derived from the portable `etime`.
-3. **Defect D39 (open, in another skill).** The documented activation recipe passes the whole
-   `java_command` field as the main class. An MPS started *with* a project path — which
-   `mps_control.sh start <dir>` now does routinely — reports
-   `jetbrains.mps.Launcher /path/to/previous/project`, so the reconstruction dies with
+3. **Defect D39 (in another skill; raised here, fixed separately).** The documented activation
+   recipe passed the whole `java_command` field as the main class. An MPS started *with* a project
+   path — which `mps_control.sh start <dir>` now does routinely — reports
+   `jetbrains.mps.Launcher /path/to/previous/project`, so the reconstruction died with
    `ClassNotFoundException`. The S10 worker hit it at `:18` and recovered at `:19` with
-   `.split()[0]`, costing one turn. The study is immune (`capture` stores only the first token),
-   and a new `mps_control.sh open` subcommand keeps the observer off the broken recipe entirely,
-   but the fix belongs to `mps-project-management` in three trees — a declared non-goal here, so it
-   is recorded in `study/docs-defects.md` as **D39, open**.
+   `.split()[0]`, costing one turn. The study was never exposed (`capture` stores only the first
+   token, and the new `mps_control.sh open` subcommand uses it). The fix belonged to
+   `mps-project-management` across three trees — a declared non-goal of this plan — so it was
+   recorded as D39 and **fixed in `65bd60680c01`**: all three OS recipes, `open-via-cli.md`
+   (Keep list, tokenize rules, failure-symptom table) and a Critical Directive in the skill,
+   propagated to both agent catalogs and the bundled `classes/` copy. Verified by re-running the
+   corrected recipe verbatim against an MPS whose `java_command` carried a leftover project path:
+   exit 0, project opened. D39 is archived.
 
 One scope addition from the rehearsal: `mps_control.sh` gained **`open`** (activate a running MPS
 with a project, then confirm it is listed). The observer performs that activation on every run and
@@ -445,5 +449,7 @@ Deviations and open items:
    step 20 on the same session).
 4. **Lesson 18 dry-run outstanding.** A fresh agent should follow the rewritten lifecycle sections
    before the next measured round.
-5. **D39 is open** and belongs to `mps-project-management` (blueprint + both catalogs, three OS
-   example files). One-line fix, out of this plan's scope by decision.
+5. **D39 is fixed** in `65bd60680c01` (`mps-project-management`: blueprint, both catalogs, three
+   OS example files, `open-via-cli.md`, `SKILL.md`), outside this plan's scope by decision and
+   verified live afterwards. Nothing pins those markdown recipes against future rot — a test that
+   extracts the snippet and asserts it never passes the raw `java_command` remains unwritten.

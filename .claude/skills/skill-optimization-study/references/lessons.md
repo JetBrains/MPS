@@ -143,6 +143,9 @@
     observer starts MPS with a project (`mps_control.sh start <dir>`), every later activation built
     that way dies with `ClassNotFoundException: jetbrains.mps.Launcher .path.to.previous.project`.
     → Take `java_command.split()[0]`; `capture` stores exactly that as `mainClass`, and
-    `mps_control.sh open` is why the observer never meets it (defect D39, still open in the
-    `mps-project-management` examples). Generalisation: a new automation capability can turn a
-    dormant documentation bug into a per-run cost — re-read the recipes it makes reachable.
+    `mps_control.sh open` is why the observer never met it. Raised as defect D39 and **fixed in
+    `65bd60680c01`** — all three OS recipes, `open-via-cli.md` (including its failure-symptom
+    table) and a Critical Directive in the skill; verified by re-running the corrected recipe
+    against an MPS whose `java_command` carried a leftover project path. Generalisation: a new
+    automation capability can turn a dormant documentation bug into a per-run cost — re-read the
+    recipes it makes reachable.
