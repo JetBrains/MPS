@@ -17,7 +17,7 @@ CWD=$(readlink /proc/$PID/cwd)   # typically $PROJECT/bin
 "$JCMD" "$PID" VM.command_line > "$TMPDIR/mps-jcmd.txt"
 ```
 
-Reconstruct (same joining/stripping as macOS):
+Reconstruct (same joining/stripping as macOS). Use only the first token of `java_command` as the main class — `jcmd` reports `"<main-class> [args]"`, and a leftover project path is args, not part of the class name:
 
 ```bash
 export PROJECT="/home/you/work/MPS/myMPS-fix"
@@ -44,6 +44,8 @@ def field(name, end_keys):
 jvm_args = field("jvm_args", ["\njava_command:"])
 classpath = field("java_class_path (initial)", ["\nLauncher Type:"])
 java_command = field("java_command", ["\njava_class_path", "\nLauncher Type:"])
+# jcmd reports "<main-class> [args]"; leftover project path is args, not part of the class name
+main_class = (java_command.split() or ["jetbrains.mps.Launcher"])[0]
 
 raw = jvm_args.split()
 tokens = []
@@ -57,7 +59,7 @@ filtered = [t for t in tokens
             if not t.startswith("-agentlib:jdwp")
             and not (t.startswith("-javaagent:") and "idea_rt.jar" in t)]
 
-cmd = [java, *filtered, "-classpath", classpath, java_command, project]
+cmd = [java, *filtered, "-classpath", classpath, main_class, project]
 p = subprocess.run(cmd, cwd=project + "/bin", capture_output=True, text=True, timeout=90)
 print(p.stdout)
 print(p.stderr)

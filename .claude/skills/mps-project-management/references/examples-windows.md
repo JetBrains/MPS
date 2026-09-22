@@ -26,7 +26,7 @@ $jcmd = Join-Path (Split-Path $java) "jcmd.exe"
 & $jcmd $pid VM.command_line | Set-Content -Encoding utf8 $env:TEMP\mps-jcmd.txt
 ```
 
-Reconstruct and launch (PowerShell). Rejoin tokens that do not start with `-` (paths like `C:\Program Files\…` and `IntelliJ IDEA.app` analogues). Strip jdwp and `idea_rt.jar` when activating:
+Reconstruct and launch (PowerShell). Rejoin tokens that do not start with `-` (paths like `C:\Program Files\…` and `IntelliJ IDEA.app` analogues). Strip jdwp and `idea_rt.jar` when activating. Use only the first token of `java_command` as the main class — `jcmd` reports `"<main-class> [args]"`, and a leftover project path is args, not part of the class name:
 
 ```powershell
 $project = "C:\work\MPS\myMPS-fix"
@@ -46,6 +46,8 @@ function Get-Field([string]$name, [string[]]$ends) {
 $jvmArgs = Get-Field "jvm_args" @("`njava_command:")
 $classpath = Get-Field "java_class_path (initial)" @("`nLauncher Type:")
 $javaCommand = Get-Field "java_command" @("`njava_class_path", "`nLauncher Type:")
+# jcmd reports "<main-class> [args]"; leftover project path is args, not part of the class name
+$mainClass = ($javaCommand.Split(" ", [System.StringSplitOptions]::RemoveEmptyEntries) + @("jetbrains.mps.Launcher"))[0]
 
 $raw = $jvmArgs.Split(" ", [System.StringSplitOptions]::RemoveEmptyEntries)
 $tokens = New-Object System.Collections.Generic.List[string]
@@ -57,7 +59,7 @@ $filtered = $tokens | Where-Object {
   -not $_.StartsWith("-agentlib:jdwp") -and -not ($_ -like "-javaagent:*idea_rt.jar*")
 }
 
-$cmd = @($java) + $filtered + @("-classpath", $classpath, $javaCommand, $project)
+$cmd = @($java) + $filtered + @("-classpath", $classpath, $mainClass, $project)
 $cwd = Join-Path $project "bin"
 $proc = Start-Process -FilePath $cmd[0] -ArgumentList $cmd[1..($cmd.Length-1)] `
   -WorkingDirectory $cwd -Wait -PassThru -NoNewWindow

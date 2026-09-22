@@ -24,7 +24,7 @@ Keep:
 
 - every VM option except the two strips below
 - the full classpath as **one** token (it often contains spaces)
-- main class `jetbrains.mps.Launcher`
+- main class: the **first token** of jcmd `java_command` (normally `jetbrains.mps.Launcher`). The field is `"<main-class> [args]"` — if MPS was started with a project path, the rest is that leftover path. Passing the whole field as the main class fails with `Could not find or load main class jetbrains.mps.Launcher …`
 - `-Didea.paths.selector=…` and any `-Didea.config.path` / `-Didea.system.path`
 - working directory `<checkout>/bin` (the run configuration default)
 
@@ -36,6 +36,7 @@ Strip **only when activating** (the first instance already holds these):
 Tokenize safely:
 
 - `jcmd` `jvm_args` may still break `IntelliJ IDEA.app` into two tokens. Rejoin any token that does **not** start with `-` onto the previous token.
+- Take only `java_command.split()[0]` as the main class. Never pass the raw `java_command` field — leftover args (a previous project path) are not part of the class name.
 - Never `ps … | tr ' ' '\n'` for the classpath.
 
 If the reconstructed command dies in ~0.1s with `ClassNotFoundException: com.intellij.util.lang.PathClassLoader`, the classpath was split. Fix joining and retry.
@@ -66,6 +67,7 @@ Wait until MCP tools appear, then call `mps_mcp_list_open_projects`.
 | Second process exits 0 in ~2–15s; MCP then lists the project | Activation worked |
 | Second process stays alive, new window, different `idea.paths.selector` | Started a second IDE — kill it, fix selector |
 | Immediate exit, `PathClassLoader` / empty classpath | Split a path that contained spaces |
+| Immediate exit, `Could not find or load main class jetbrains.mps.Launcher …` | Passed the whole `java_command` field (it included leftover args). Use the first token only |
 | `ACTIVATE_NOT_INITIALIZED` | First instance still bootstrapping — wait and retry |
 | MCP still `"projects":[]` after a clean exit | Project open may still be in progress — wait, retry `list_open_projects`; check `log/idea.log` for `Opening project` / scanning |
 

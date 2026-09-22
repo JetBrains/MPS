@@ -18,6 +18,7 @@ There is **no MCP tool that can open a project**. The IntelliJ MCP server reject
 - **Detect source-vs-standalone before choosing a command.** `open -a MPS.app` will not talk to an MPS started as `jetbrains.mps.Launcher` from a checkout. Reconstructing a JVM command is the wrong move for a standalone `.app` / `mps.sh` / `mps64.exe`.
 - **Match `idea.paths.selector` (and any explicit config/system dirs).** `MPS (2nd inst.)` uses a different selector and starts a real second IDE. See `references/detect-source-vs-standalone.md`.
 - **Do not split process command lines on spaces.** Classpaths often contain `IntelliJ IDEA.app` or `Program Files`. Prefer `jcmd PID VM.command_line` (or `/proc/PID/cmdline` on Linux). When activating an already-running instance, strip `-agentlib:jdwp` and the IntelliJ `idea_rt.jar` javaagent.
+- **`java_command` from `jcmd VM.command_line` is `"<main-class> [args]"`.** Use only the first token as the main class. If MPS was itself started with a project path, the field is `jetbrains.mps.Launcher /path/to/previous/project`; passing it whole dies with `ClassNotFoundException`.
 - **Do not write helper scripts or `jcmd` dumps into the checkout.** Use `$TMPDIR` / `%TEMP%` only.
 - **A `MODAL_BLOCKED` close is not a closed project.** Ask the user to dismiss the MPS dialog, then retry `mps_mcp_close_project`. Use `force=true` only after a timed-out or cancelled close.
 
