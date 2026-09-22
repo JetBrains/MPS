@@ -3,9 +3,8 @@
   <readOnlyStubs/>
   <models>
     <modelRoot contentPath="${mps_home}/lib/" type="java_classes">
-      <sourceRoot location="junit4.jar" />
-      <sourceRoot location="lib.jar" />
-      <sourceRoot location="hamcrest.jar" />
+      <sourceRoot location="intellij.libraries.junit4.jar" />
+      <sourceRoot location="intellij.libraries.hamcrest.jar" />
       <sourceRoot location="intellij.libraries.junit5.jar" />
       <sourceRoot location="intellij.libraries.junit5.jupiter.jar" />
       <sourceRoot location="intellij.libraries.junit5.launcher.jar" />
@@ -20,9 +19,8 @@
   <facets>
     <facet type="java" compile="ext" classes="provided" ext="no">
       <classes generated="true" />
-      <library location="${mps_home}/lib/junit4.jar" />
-      <library location="${mps_home}/lib/lib.jar" />
-      <library location="${mps_home}/lib/hamcrest.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit4.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.hamcrest.jar" />
       <library location="${mps_home}/lib/intellij.libraries.junit5.jar" />
       <library location="${mps_home}/lib/intellij.libraries.junit5.jupiter.jar" />
       <library location="${mps_home}/lib/intellij.libraries.junit5.launcher.jar" />
