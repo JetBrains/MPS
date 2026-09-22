@@ -37,6 +37,7 @@ Use `mps_mcp_close_project` to close the project selected by the host's `project
 - **A normal close may show dialogs.** It saves documents and runs can-close checks. Save / confirmation dialogs block the call until they are dismissed.
 - **Do not wait past 20 seconds.** If the tool returns `ok:false` with `code: MODAL_BLOCKED`, a modal dialog is likely open in MPS (Save, confirmation, Find Usages, Search, etc.). Ask the user to close that dialog manually, then retry. Do not assume the project closed.
 - **Prefer `force=false`.** Pass `force=true` only after a previous close timed out or was cancelled on a confirmation dialog. Force-close skips the save/can-close dialogs this close would show (unsaved editor changes are discarded) and does not wait for an already-open unrelated modal.
+- **Shut down MPS with `shutdownWithLastProject=true`.** When asking MPS to close a project, it can also be instructed in the same MCP call to shut down, if MPS sees no other open projects (it checks for open projects itself, no need to check yourself). When MPS is displaying the welcome screen (no projects are open), it cannot be shut down via MCP. A modal confirmation dialog may (if configured) prevent MPS from shutting down.
 
 1. If several projects are open, list them and pass the intended `mpsProjectBaseDirectory` as `projectPath`.
 2. Call `mps_mcp_close_project` with the default `force=false`.
