@@ -6,6 +6,7 @@
     <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
     <use id="3a13115c-633c-4c5c-bbcc-75c4219e9555" name="jetbrains.mps.lang.quotation" version="5" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
+    <use id="760a0a8c-eabb-4521-8bfd-65db761a9ba3" name="jetbrains.mps.baseLanguage.logging" version="0" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -233,6 +234,13 @@
     <language id="aee9cad2-acd4-4608-aef2-0004f6a1cdbd" name="jetbrains.mps.lang.actions">
       <concept id="7776141288922801652" name="jetbrains.mps.lang.actions.structure.NF_Concept_NewInstance" flags="nn" index="q_SaT" />
       <concept id="5480835971642155304" name="jetbrains.mps.lang.actions.structure.NF_Model_CreateNewNodeOperation" flags="nn" index="15TzpJ" />
+    </language>
+    <language id="760a0a8c-eabb-4521-8bfd-65db761a9ba3" name="jetbrains.mps.baseLanguage.logging">
+      <concept id="2034914114981261497" name="jetbrains.mps.baseLanguage.logging.structure.LogLowLevelStatement" flags="ng" index="RRSsy">
+        <property id="2034914114981261751" name="severity" index="RRSoG" />
+        <child id="2034914114981261755" name="throwable" index="RRSow" />
+        <child id="2034914114981261753" name="message" index="RRSoy" />
+      </concept>
     </language>
     <language id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel">
       <concept id="1204834851141" name="jetbrains.mps.lang.smodel.structure.PoundExpression" flags="ng" index="25Kdxt">
@@ -2315,14 +2323,13 @@
               </node>
             </node>
             <node concept="3clFbS" id="2VRROcY8Dnt" role="1zc67A">
-              <node concept="3clFbF" id="2VRROcY8Dnu" role="3cqZAp">
-                <node concept="2OqwBi" id="2VRROcY8Dnv" role="3clFbG">
-                  <node concept="37vLTw" id="2VRROcY8Dnw" role="2Oq$k0">
-                    <ref role="3cqZAo" node="2VRROcY8Dnr" resolve="e" />
-                  </node>
-                  <node concept="liA8E" id="2VRROcY8Dnx" role="2OqNvi">
-                    <ref role="37wK5l" to="wyt6:~Throwable.printStackTrace()" resolve="printStackTrace" />
-                  </node>
+              <node concept="RRSsy" id="S6p3JsAmRS" role="3cqZAp">
+                <property role="RRSoG" value="gZ5fh_4/error" />
+                <node concept="Xl_RD" id="S6p3JsAmRU" role="RRSoy">
+                  <property role="Xl_RC" value="Failed to run the DSL initializer; node left partially initialized" />
+                </node>
+                <node concept="37vLTw" id="S6p3JsAmRV" role="RRSow">
+                  <ref role="3cqZAo" node="2VRROcY8Dnr" resolve="e" />
                 </node>
               </node>
             </node>

@@ -2,12 +2,20 @@
 
 Real, verified examples copied from the codebase. Use as starting templates for `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`.
 
-> **`insert_root_node_from_json` does not run node factories.** `MigrationScript` is an `AutoInitDSLClass`, so creating one *through the editor or through `mps_mcp_create_root_node`* fires a factory that sets `fromVersion` to the language's current version and bumps the language version for you. The JSON-blueprint insert path bypasses that factory entirely and silently — nothing is reported. When inserting a migration script from a blueprint you must therefore do both by hand:
+> **`MigrationScript` only: the insert runs a node factory that sets `fromVersion` and bumps the language. `PureMigrationScript` has no factory — there you still do both by hand.**
 >
-> 1. put an explicit `fromVersion` property in the blueprint (the language's version *before* the bump), and
-> 2. bump the language separately with `mps_mcp_update_module(moduleName = "<language>", operation = "SET_VERSION")`.
+> `MigrationScript` is an `AutoInitDSLClass`, so creating one — through the editor, through `mps_mcp_create_root_node`, *or* through `mps_mcp_insert_root_node_from_json` / `mps_mcp_update_node` — fires a factory that sets `fromVersion` to the language's current version, bumps the language version by 1, and wires the script's `superclass`.
 >
-> Omitting either leaves `fromVersion` at its default `0` and the language version unchanged, which `MigrationsCheckUtil` flags with a quick fix that is not reachable from MCP. See [form-selection.md](form-selection.md).
+> For a **`MigrationScript`**:
+>
+> - **Do not also call `mps_mcp_update_module(operation = "SET_VERSION")`.** The factory already bumped the language; a second bump leaves a gap no migration is gated on.
+> - **Omit `fromVersion`** and let the factory fill it. A `fromVersion` in the blueprint *overrides* the factory's value (properties are applied after the factory runs), which is what you want only when reproducing an existing script verbatim — as the examples below do.
+> - **Omit the `superclass` role** unless you mean to replace it. Roles the blueprint names are cleared before its children are added; roles it omits keep what the factory put there.
+> - The factory's version block is guarded by `SModuleOperations.isAspect(futureModel, "migration")`. Insert into the language's real `migration` aspect model, or you get neither `fromVersion` nor the bump, with nothing reported.
+>
+> For a **`PureMigrationScript`** (and for `lang.script` Enhancement Scripts) none of that applies — the concept is not an `AutoInitDSLClass` and the migration language registers no factory for it. Set `fromVersion` explicitly in the blueprint and bump the language yourself with `mps_mcp_update_module(moduleName = "<language>", operation = "SET_VERSION")`.
+>
+> Either way, **verify rather than assume**: re-read `languageVersion` after the insert and check `max(fromVersion) == languageVersion - 1`. A factory that *throws* is reported in the response's `warnings`, but a lightweight-DSL initializer that fails internally is swallowed and reaches only `idea.log`, so a clean envelope is not proof the initialization ran. See [form-selection.md](form-selection.md) for the two different version numbers involved.
 
 ## `MigrationScript` (lang.migration) — `MigrateReferences`
 

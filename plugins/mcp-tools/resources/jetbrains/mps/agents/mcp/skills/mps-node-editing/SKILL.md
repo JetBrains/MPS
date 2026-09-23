@@ -20,6 +20,7 @@ The core workflow for mutating MPS nodes through MCP tools. JSON blueprints desc
 - **Don't delete-and-reinsert** to make a small change — deletion destroys persistent IDs and breaks incoming references.
 - **Cloning an existing node? Use `mps_mcp_alter_nodes` `COPY_NODE`, not a JSON blueprint.** It clones the subtree natively — correct concept, properties, refs, nested structure — as the next sibling (multi-child role) or new root, then tweak with `mps_mcp_update_node`. Reserve JSON blueprints for nodes with no close match to copy from.
 - **Validate frequently** — call `mps_mcp_check_root_node_problems` immediately after inserting or modifying a complex node. `"ok": true` from insert does not mean the AST is semantically valid.
+- **A blueprint is not the whole node** — the concept's node factory runs first and may add properties, children, and references your JSON never mentions. Do not re-do its work by hand, and do not assume an inserted node contains exactly what you wrote. See "Node factories" below.
 
 ## `mps_mcp_update_node` — Unified Node-Mutation Tool
 
@@ -65,6 +66,7 @@ Where a documented null means something, how you express it depends on where it 
 ## Related Skills
 
 - **`mps-aspect-structure-concepts`** — defines what concepts exist and what roles they expose.
+- **`mps-aspect-actions`** — node factories: what a concept initializes on creation, before your blueprint is applied.
 - **`mps-baselanguage`** — when the nodes you edit are BaseLanguage / Java.
 - **`mps-quotations`** — embedding inline node literals inside model code.
 - **`mps-language-analysis`** — exploring an unfamiliar language before editing.
@@ -79,6 +81,65 @@ The tools that accept a node JSON blueprint (`mps_mcp_update_node` for `ADD`/`SE
 - Files may contain either a **raw node blueprint** or the **full MCP response envelope** produced by `mps_mcp_print_node`; in the latter case the `data` field is used.
 - **Ordinary input files are never deleted.** Only temporary JSON files created by this toolset may be cleaned up after reading (and only when `dryRun=false`).
 - Very large JSON inputs may be truncated by the MCP transport before the tool reads them. If that happens, insert a smaller blueprint first and add children in follow-up calls with `mps_mcp_update_node` (`ADD`/`CHILD` or `SET`/`CHILD`), or pass the JSON as a file path instead of an inline string. See `references/staged-construction.md` for the recommended pattern.
+
+## Node factories
+
+Many concepts ship a **node factory** (the language's `actions` aspect) that initializes a freshly
+created node. It fires *before* your blueprint is applied, and it may set properties, add children,
+wire references, and reach outside the node entirely: add a used language or model import, add a
+module dependency, or bump the language's version. Factories are inherited, so a concept gets the
+factories of its super-concepts **and** its implemented interfaces.
+
+A factory runs for every node that is newly **created**, and not for a node that already exists:
+
+| Tool | Factory runs for |
+|---|---|
+| the editor, `mps_mcp_create_root_node` | the new node |
+| `mps_mcp_insert_root_node_from_json` | each new root and every nested blueprint child |
+| `mps_mcp_update_node` `ADD` × `CHILD`, `SET` × `CHILD` with a `childJson` | the new child and its nested children |
+| `mps_mcp_insert_console_command_from_json` | the new command node and its children |
+| `mps_mcp_update_root_node_from_json` | **only the staged children** — the root itself already exists, so nothing runs for it |
+| `mps_mcp_update_node` `SET` × `CHILD` with no `childJson` (a delete) | nothing |
+
+How a blueprint composes with the factory:
+
+| Blueprint says | Result |
+|---|---|
+| nothing about a property | the factory's value stands |
+| a property the factory also set | **your value wins** (properties are applied after the factory) |
+| nothing about a child role | the factory's children in that role stand |
+| a child role | that role is **cleared first**, then filled from your blueprint |
+| nothing about a reference role | the factory's target stands |
+| a reference role | **your target wins** |
+
+Practical consequences:
+
+- **Do not hand-write what the factory already does.** Duplicating a factory side effect is how
+  double-counting bugs appear — e.g. a `MigrationScript`'s language-version bump (see the
+  `mps-aspect-migrations` skill).
+- **Name a role only to override it.** Listing a role you meant to leave alone silently discards
+  the factory's contribution to it.
+- **Mandatory roles are not auto-filled.** The blueprint paths deliberately skip MPS's
+  "create default child for every 1-cardinality role" step, so a role you omit stays empty and
+  `mps_mcp_check_root_node_problems` will report it. That is intentional: the blueprint stays exact.
+- **`dryRun: true` does not run factories at all** — their side effects land on the model and module
+  and nothing rolls them back. A dry run therefore validates the blueprint, not the final node.
+- **Factory side effects survive a failed call.** They are applied while the blueprint is being
+  built, before anything is attached, and no tool rolls them back. If a batch insert fails on its
+  third root, the first two roots are not inserted but whatever their factories wrote to the model
+  and module — imports, module dependencies, a language-version bump — stays. Re-read the affected
+  state instead of assuming a failed call changed nothing.
+- **A factory that *throws* is reported; one that swallows its own exception is not.** A throw
+  becomes a `warnings` entry naming the concept, and the node is still created — treat its
+  factory-initialized state as absent. But a factory that catches internally reports nothing and
+  the envelope looks clean. That is the norm for `AutoInitDSLClass` concepts (`MigrationScript`
+  among them), whose initializer runs behind its own `catch` and surfaces only in `idea.log`. For
+  those, verify the state the factory was supposed to set rather than trusting `ok: true`.
+
+To see whether a concept has a factory at all, use
+`mps_mcp_query_structure(operation = "LIST_CONCEPT_ASPECTS", …)` — it reports which aspect models
+declare something for the concept, including `actions`. (`mps_mcp_get_concept_details` does **not**
+list aspects.) The `mps-aspect-actions` skill covers authoring and reading factories.
 
 ## Reference Index
 

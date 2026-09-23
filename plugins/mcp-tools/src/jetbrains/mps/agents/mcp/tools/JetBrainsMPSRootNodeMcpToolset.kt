@@ -300,7 +300,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays insert atomically with batch rollback on failure). Returns the new node's info envelope, or an array of envelopes when the input was an array (`responseDetail="full"`). From 10 roots up the response defaults to `responseDetail="summary"` — `{inserted:N, roots:[{name, reference, concept}], fixReferences:{fixed, repointed, stillBroken}}`, without the per-root `conceptDoc`/`conceptReference`/model/module fields — because the full form grew larger than the blueprint it answers; pass `responseDetail="full"` to force the envelopes, or `"summary"` to get the compact form for a smaller insert. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.
+        Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays attach atomically — a failure inserts no roots at all. Node-factory side effects are the exception: a concept's factory runs while its node is being built, so anything it wrote to the model or module — a used language, a model import, a module dependency, a language-version bump — persists even when the batch then fails. Re-read that state rather than assuming a failed call changed nothing). Returns the new node's info envelope, or an array of envelopes when the input was an array (`responseDetail="full"`). From 10 roots up the response defaults to `responseDetail="summary"` — `{inserted:N, roots:[{name, reference, concept}], fixReferences:{fixed, repointed, stillBroken}}`, without the per-root `conceptDoc`/`conceptReference`/model/module fields — because the full form grew larger than the blueprint it answers; pass `responseDetail="full"` to force the envelopes, or `"summary"` to get the compact form for a smaller insert. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.
     """)
     suspend fun mps_mcp_insert_root_node_from_json(
         @McpDescription("Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String,
@@ -338,7 +338,9 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
 
                 // Two-pass: validate-then-attach, so a late failure can't leave earlier roots committed.
                 val preparedNodes = mutableListOf<org.jetbrains.mps.openapi.model.SNode>()
-                val batchWarnings = if (dryRun) mutableListOf<String>() else null
+                // Collected on both paths: a real insert is exactly where a node-factory failure
+                // matters, since the half-initialized node is the one that gets committed.
+                val batchWarnings = mutableListOf<String>()
                 for ((index, jsonObject) in jsonObjects.withIndex()) {
                     val indexLabel = if (jsonObjects.size > 1) " [$index]" else ""
                     when (val r = resolveRootableConcept(
@@ -354,10 +356,10 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     val newNode = try {
                         instantiateNode(jsonObject, model, dryRun, warnings = batchWarnings, mpsProject = mpsProject)
                     } catch (e: Exception) {
-                        return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST)
+                        return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST, warnings = batchWarnings)
                     }
                     if (newNode == null) {
-                        return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON", McpErrorCode.INVALID_REQUEST)
+                        return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON", McpErrorCode.INVALID_REQUEST, warnings = batchWarnings)
                     }
                     preparedNodes.add(newNode)
                 }
@@ -388,7 +390,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for root node insertion")
-                    }, warnings = batchWarnings ?: emptyList())
+                    }, warnings = batchWarnings)
                 } else {
                     saveModelAndModule(model)
                     when {
@@ -396,9 +398,9 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                             addProperty("inserted", preparedNodes.size)
                             add("roots", JsonArray().apply { preparedNodes.forEach { add(createdNodeSummaryJsonObject(it)) } })
                             add("fixReferences", aggregateFixReferencesJsonObject(fixResults))
-                        })
-                        jsonObjects.size == 1 -> okJson(nodeInfos.first())
-                        else -> okJson(JsonArray().apply { nodeInfos.forEach { add(it) } })
+                        }, warnings = batchWarnings)
+                        jsonObjects.size == 1 -> okJson(nodeInfos.first(), warnings = batchWarnings)
+                        else -> okJson(JsonArray().apply { nodeInfos.forEach { add(it) } }, warnings = batchWarnings)
                     }
                 }
             }
@@ -518,18 +520,20 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     }
                 }
 
-                val updateWarnings = if (dryRun) mutableListOf<String>() else null
+                // Collected on both paths so a node-factory failure in a staged child is reported
+                // for a real update too, not only for a dry run.
+                val updateWarnings = mutableListOf<String>()
                 updateNodeFromBlueprint(node, jsonObject, dryRun, warnings = updateWarnings, mpsProject = mpsProject)
 
                 if (!dryRun) {
                     val fixResult = performFixReferences(mpsProject, node)
                     saveModelAndModule(model)
-                    okJson(withFixReferencesInfo(nodeInfoJsonObject(node, mpsProject), fixResult))
+                    okJson(withFixReferencesInfo(nodeInfoJsonObject(node, mpsProject), fixResult), warnings = updateWarnings)
                 } else {
                     okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for root node update")
-                    }, warnings = updateWarnings ?: emptyList())
+                    }, warnings = updateWarnings)
                 }
             }
         }

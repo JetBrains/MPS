@@ -102,7 +102,8 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 // (including McpUserException) so nothing escapes the command and trips
                 // ActionDispatcher's "Action dispatch failed" log; the message still carries the
                 // specific cause. Cancellation is rethrown so coroutine cancellation is honoured.
-                val warnings = if (dryRun) mutableListOf<String>() else null
+                // Collected on both paths so a node-factory failure is reported for a real insert too.
+                val warnings = mutableListOf<String>()
                 val command = try {
                     instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings)
                 } catch (e: Exception) {
@@ -132,7 +133,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                     return@executeShortCommandOnEdt okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for console command insertion")
-                    }, warnings = warnings ?: emptyList())
+                    }, warnings = warnings)
                 }
 
                 // DialogConsoleTab.insertCommand adds the command's imports to the console model
@@ -163,7 +164,10 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                         .invoke(console.tab, command)
                 }
 
-                okJson(nodeInfoJsonObject(command, mpsProject), warnings = listOfNotNull(activateWarning, selectWarning))
+                okJson(
+                    nodeInfoJsonObject(command, mpsProject),
+                    warnings = warnings + listOfNotNull(activateWarning, selectWarning)
+                )
             }
         }
     }

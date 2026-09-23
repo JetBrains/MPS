@@ -14,6 +14,7 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import jetbrains.mps.findUsages.InstanceLookup
 import jetbrains.mps.findUsages.NodeUsageLookup
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations
 import jetbrains.mps.nodeEditor.cells.EditorCell_Property
 import jetbrains.mps.nodeEditor.cells.PropertyAccessor
 import jetbrains.mps.nodeEditor.cells.SPropertyAccessor
@@ -34,7 +35,7 @@ import jetbrains.mps.smodel.BaseScope
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
 import jetbrains.mps.smodel.SNodeUtil
-import jetbrains.mps.smodel.action.SNodeFactoryOperations
+import jetbrains.mps.smodel.action.NodeFactoryManager
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.constraints.ModelConstraints
 import kotlinx.coroutines.currentCoroutineContext
@@ -131,13 +132,24 @@ abstract class AbstractNodeOps : AbstractOps() {
         return element.asJsonArray
     }
 
+    /**
+     * Builds a detached [SNode] tree from a JSON blueprint. The caller attaches the result.
+     *
+     * [enclosingNode] is the node the result will become a child of, when the caller knows it. It is
+     * handed to the concept's node factories, several of which need it — `jetbrains.mps.lang.behavior`'s
+     * `ConceptMethod` factory reads the enclosing `ConceptBehavior` to decide `isAbstract` / `isVirtual`,
+     * and `jetbrains.mps.lang.structure`'s `SetStructureIds` scans the enclosing concept declaration so
+     * a generated `propertyId` / `linkId` / `memberId` cannot collide with a sibling's. Nested blueprint
+     * children get their (not yet attached) parent automatically.
+     */
     fun instantiateNode(
         jsonObject: JsonObject,
         model: SModel,
         dryRun: Boolean = false,
         jsonPath: String = "$",
         warnings: MutableList<String>? = null,
-        mpsProject: MPSProject? = null
+        mpsProject: MPSProject? = null,
+        enclosingNode: SNode? = null
     ): SNode? {
         val conceptName = jsonObject.get("concept")?.asString
         val conceptRef = jsonObject.get("conceptReference")?.asString
@@ -169,8 +181,48 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
         }
 
-        val newNode = SNodeFactoryOperations.createNewNode(sConcept, null)
-        newNode.children.toList().forEach { it.delete() }
+        // Node factories (the language's "actions" aspect) must see the target model and the enclosing
+        // node. Several of them set up state that cannot be derived from the concept alone:
+        // `jetbrains.mps.lang.behavior`'s ConceptMethod factory walks up to the enclosing
+        // ConceptBehavior to decide isAbstract/isVirtual, `jetbrains.mps.lang.structure`'s
+        // SetStructureIds scans the model (or the enclosing concept declaration) so a generated
+        // conceptId/propertyId/linkId cannot collide, and lightweight-DSL concepts such as
+        // `MigrationScript` run a whole initializer off the model (fromVersion, the language-version
+        // bump, model imports, a module dependency). Passing nulls here made those factories silently
+        // no-op — every smodel helper on the path is null-tolerant, and the one real NPE is swallowed
+        // by the DSL descriptor's own `catch (Exception e) { e.printStackTrace(); }` — so the caller
+        // got an ordinary success envelope with a half-built node.
+        //
+        // Deliberately NOT SNodeFactoryOperations.createNewNode / NodeFactoryManager.createNode: those
+        // also run createNodeStructure, which auto-fills every mandatory containment role with a default
+        // concrete child. A blueprint is authoritative about the roles it names and the roles it omits are
+        // the caller's to fill later, so we run setupNode alone and keep mandatory roles empty — the same
+        // observable shape as before this call passed a model at all.
+        //
+        // A dry run withholds the model: factory side effects land on the model and module, not on the
+        // detached node, and nothing rolls them back.
+        val newNode = SModelOperations.createNewNode(if (dryRun) null else model, null, sConcept)
+        if (!dryRun) {
+            // A throwing factory must not turn an otherwise valid insert into a failure: it is not the
+            // blueprint that is wrong. Report it and keep the node we have. Cancellation is not a
+            // factory failure and must propagate.
+            //
+            // Note this only catches a factory that actually throws. A factory that swallows its own
+            // exception is still invisible here — notably every `AutoInitDSLClass` initializer, which
+            // runs through `DSLDescriptor.initializeInstance`'s own catch and only reaches idea.log.
+            try {
+                NodeFactoryManager.setupNode(newNode.concept, newNode, null, enclosingNode, model)
+            } catch (t: Throwable) {
+                rethrowIfCancellation(t)
+                val detail = t.message ?: t.javaClass.name
+                warnings?.add(
+                    "node factory for concept '${sConcept.name}' at $jsonPath failed: $detail — " +
+                        "the node was created but may be missing factory-initialized properties, " +
+                        "children or references"
+                )
+                nodeOpsLogger.warn("node factory failed for concept '${sConcept.name}' at $jsonPath", t)
+            }
+        }
 
         // Set name if present and supported
         val name = jsonObject.get("name")?.asString
@@ -197,38 +249,18 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
         }
 
-        // Children
-        val children = jsonObject.requireArray("children", jsonPath)
-        if (children != null) {
-            children.forEachIndexed { roleIndex, childRoleElement ->
-                val childRoleObject = childRoleElement.asJsonObject
-                val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
-                val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
-                val link = sConcept.containmentLinks.find { it.name == roleName }
-                    ?: throw McpInvalidRequestException(
-                        "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
-                                "concept '${sConcept.name}' has no such containment link"
-                    )
-                childNodes.forEachIndexed { nodeIndex, nodeElement ->
-                    val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
-                    val childNode = instantiateNode(nodeElement.asJsonObject, model, dryRun, childPath, warnings, mpsProject)
-                    if (childNode != null) {
-                        if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
-                            throw AssignabilityException(
-                                jsonPath = childPath,
-                                actualConcept = childNode.concept.name,
-                                expectedConcepts = listOf(link.targetConcept.name),
-                                parentConcept = sConcept.name,
-                                role = link.name
-                            )
-                        }
-                        newNode.addChild(link, childNode)
-                    }
-                }
-            }
-        }
-
-        // References
+        // References BEFORE children, deliberately: a nested child is created by a recursive call
+        // that hands the child's node factory this node as its `enclosingNode`, and some factories
+        // read the enclosing node's references — `jetbrains.mps.lang.behavior`'s ConceptMethod
+        // factory follows `ConceptBehavior.concept` to decide isAbstract/isVirtual. Applying
+        // children first left those references unset, so a one-call blueprint silently produced a
+        // different node than the same content split across two calls: the same class of silent
+        // divergence this method was fixed for.
+        //
+        // The trade-off, accepted: a reference given as a *name* is resolved against the role's
+        // scope, and a scope that draws on this node's own children can no longer see them. That
+        // direction fails loudly (an unresolved reference, reported in `warnings` and by
+        // check_root_node_problems) rather than silently, which is the better failure.
         val references = jsonObject.requireArray("references", jsonPath)
         if (references != null) {
             references.forEachIndexed { index, refElement ->
@@ -257,6 +289,51 @@ abstract class AbstractNodeOps : AbstractOps() {
                         assignResolvedReferenceOnDryRun = true,
                         mpsProject = mpsProject
                     )?.let { warnings?.add(it) }
+                }
+            }
+        }
+
+        // Children
+        val children = jsonObject.requireArray("children", jsonPath)
+        if (children != null) {
+            // Roles whose factory-produced content has already been dropped, see below.
+            val clearedRoles = mutableSetOf<String>()
+            children.forEachIndexed { roleIndex, childRoleElement ->
+                val childRoleObject = childRoleElement.asJsonObject
+                val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
+                val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
+                val link = sConcept.containmentLinks.find { it.name == roleName }
+                    ?: throw McpInvalidRequestException(
+                        "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
+                                "concept '${sConcept.name}' has no such containment link"
+                    )
+                // The blueprint is authoritative for the roles it names: drop whatever the node factory
+                // put in this role so the two don't accumulate. Roles the blueprint does NOT name keep
+                // their factory content — that is how `MigrationScript` keeps the `superclass` the
+                // migration factory wires to its design-time-only classifier.
+                // Guarded so a blueprint listing the same role twice doesn't wipe the children its own
+                // earlier entry just added.
+                if (clearedRoles.add(roleName)) {
+                    newNode.getChildren(link).toList().forEach { it.delete() }
+                }
+                childNodes.forEachIndexed { nodeIndex, nodeElement ->
+                    val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
+                    val childNode = instantiateNode(
+                        nodeElement.asJsonObject, model, dryRun, childPath, warnings, mpsProject,
+                        enclosingNode = newNode
+                    )
+                    if (childNode != null) {
+                        if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
+                            throw AssignabilityException(
+                                jsonPath = childPath,
+                                actualConcept = childNode.concept.name,
+                                expectedConcepts = listOf(link.targetConcept.name),
+                                parentConcept = sConcept.name,
+                                role = link.name
+                            )
+                        }
+                        newNode.addChild(link, childNode)
+                    }
                 }
             }
         }
@@ -447,8 +524,10 @@ abstract class AbstractNodeOps : AbstractOps() {
                     )
                 childNodes.forEachIndexed { nodeIndex, nodeElement ->
                     val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
-                    val childNode = instantiateNode(nodeElement.asJsonObject, model, dryRun, childPath, warnings, mpsProject)
-                        ?: return@forEachIndexed
+                    val childNode = instantiateNode(
+                        nodeElement.asJsonObject, model, dryRun, childPath, warnings, mpsProject,
+                        enclosingNode = node
+                    ) ?: return@forEachIndexed
                     if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
                         throw AssignabilityException(
                             jsonPath = childPath,
@@ -587,13 +666,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         } catch (e: Exception) {
             return invalidJson(e.message)
         }
-        val nodeWarnings = if (dryRun) mutableListOf<String>() else null
+        val nodeWarnings = mutableListOf<String>()
         val newChild = try {
-            instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject)
+            instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject, enclosingNode = parent)
         } catch (e: Exception) {
-            return errJson("Failed to instantiate new child node from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST)
+            return errJson("Failed to instantiate new child node from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
         }
-        if (newChild == null) return errJson("Failed to instantiate new child node from JSON", McpErrorCode.INVALID_REQUEST)
+        if (newChild == null) return errJson("Failed to instantiate new child node from JSON", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
 
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
             throw AssignabilityException(
@@ -609,14 +688,17 @@ abstract class AbstractNodeOps : AbstractOps() {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node replacement")
-            }, warnings = nodeWarnings ?: emptyList())
+            }, warnings = nodeWarnings)
         }
 
         parent.insertChildBefore(role, newChild, childNode)
         childNode.delete()
         val fixResult = performFixReferences(mpsProject, newChild)
         val warn = persistOrRefreshConsole(model, console)
-        return okJson(withFixReferencesInfo(nodeInfoJsonObject(parent, mpsProject), fixResult), warnings = listOfNotNull(warn))
+        return okJson(
+            withFixReferencesInfo(nodeInfoJsonObject(parent, mpsProject), fixResult),
+            warnings = nodeWarnings + listOfNotNull(warn)
+        )
     }
 
     // Deletion: no fix-references step — removing a child doesn't relocate
@@ -711,13 +793,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         } catch (e: Exception) {
             return invalidJson(e.message)
         }
-        val nodeWarnings = if (dryRun) mutableListOf<String>() else null
+        val nodeWarnings = mutableListOf<String>()
         val newChild = try {
-            instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject)
+            instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject, enclosingNode = parent)
         } catch (e: Exception) {
-            return errJson("Failed to instantiate child node from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST)
+            return errJson("Failed to instantiate child node from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
         }
-        if (newChild == null) return errJson("Failed to instantiate child node from JSON", McpErrorCode.INVALID_REQUEST)
+        if (newChild == null) return errJson("Failed to instantiate child node from JSON", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
 
         if (!role.isMultiple && !dryRun) {
             parent.getChildren(role).forEach { it.delete() }
@@ -737,7 +819,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node addition")
-            }, warnings = nodeWarnings ?: emptyList())
+            }, warnings = nodeWarnings)
         }
 
         when (insertIndex) {
@@ -756,11 +838,14 @@ abstract class AbstractNodeOps : AbstractOps() {
                 addProperty("added", 1)
                 add("nodes", JsonArray().apply { add(createdNodeSummaryJsonObject(newChild)) })
                 add("fixReferences", aggregateFixReferencesJsonObject(listOf(fixResult)))
-            }, warnings = listOfNotNull(warn))
+            }, warnings = nodeWarnings + listOfNotNull(warn))
         }
         // Report the new child's actual index so a caller that overshot `position` (now clamped
         // to an append) can see where it landed.
-        return okJson(withFixReferencesInfo(nodeInfoJsonObjectWithIndex(newChild, mpsProject), fixResult), warnings = listOfNotNull(warn))
+        return okJson(
+            withFixReferencesInfo(nodeInfoJsonObjectWithIndex(newChild, mpsProject), fixResult),
+            warnings = nodeWarnings + listOfNotNull(warn)
+        )
     }
 
     protected suspend fun update_node_reference(mpsProject: MPSProject, nodeReference: String, referenceRole: String, targetNodeRefStr: String?): String {
