@@ -51,7 +51,9 @@ import kotlin.coroutines.resumeWithException
 // surface, and they are invoked via reflection by the MCP server framework, so static
 // analysis flags them as "never used".
 @Suppress("FunctionName", "unused")
-class JetBrainsMPSProjectMcpToolset : AbstractOps() {
+class JetBrainsMPSProjectMcpToolset(
+    private val runtimeVersionSource: () -> MpsRuntimeVersion? = { MpsRuntimeVersion.fromApplicationOrNull() },
+) : AbstractOps() {
 
     @McpTool
     @McpDescription(
@@ -61,7 +63,10 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
         workspace root that may contain several MPS project subdirectories. The `mpsProjectBaseDirectory`
         value is the path to pass through the MCP host's `projectPath` selector for ordinary
         `mps_mcp_*` tools; `agentConfigRoot` is the repository/workspace root where
-        `mps_mcp_initialize_project_for_agents.targetDirectory` belongs.
+        `mps_mcp_initialize_project_for_agents.targetDirectory` belongs. Top-level `mpsVersion`,
+        `mpsBuild`, and `mpsEap` are this IDE's identity, not a property of any listed project;
+        all three are omitted when the IDE cannot report them. Read the running version here —
+        do not call the initializer for it.
     """
     )
     suspend fun mps_mcp_list_open_projects(): String {
@@ -80,6 +85,12 @@ class JetBrainsMPSProjectMcpToolset : AbstractOps() {
                 okJson(jsonObject {
                     addProperty("projectCount", projects.size)
                     addProperty("mpsProjectCount", mpsProjectCount)
+                    // IDE identity, not a per-project field. Omitted entirely when unavailable.
+                    runtimeVersionSource()?.let { identity ->
+                        addProperty("mpsVersion", identity.version)
+                        addProperty("mpsBuild", identity.build)
+                        addProperty("mpsEap", identity.eap)
+                    }
                     add("projects", array)
                 })
             } catch (e: Throwable) {

@@ -64,6 +64,12 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             current.get("mpsProjectBaseDirectory").asString
         )
         assertTrue("listing must include the derived agent config root: $current", current.has("agentConfigRoot"))
+
+        val live = MpsRuntimeVersion.fromApplicationOrNull()
+        assertNotNull("integration run must see ApplicationInfo", live)
+        assertEquals(live!!.version, data.get("mpsVersion").asString)
+        assertEquals(live.build, data.get("mpsBuild").asString)
+        assertEquals(live.eap, data.get("mpsEap").asBoolean)
     }
 
     @Test

@@ -163,6 +163,110 @@ class JetBrainsMPSInitMcpToolsetTest {
     }
 
     @Test
+    fun `a successful install writes identical skill stamps and echoes the identity`() {
+        val toolset = JetBrainsMPSInitMcpToolset { SAMPLE_VERSION }
+        val response = runBlocking { toolset.mps_mcp_initialize_project_for_agents(tmpProjectRoot.toString()) }
+        val data = okData(response)
+
+        assertEquals("2026.1", data.get("mpsVersion").asString)
+        assertEquals("261.25134", data.get("mpsBuild").asString)
+        assertTrue(data.get("mpsEap").asBoolean)
+        assertFalse(data.has("skillVersionWarning"))
+        val reported = stringArray(data, "skillVersionFiles")
+        val stamps = stampPaths()
+        assertEquals(stamps.map { it.toString() }, reported)
+        val expected = SAMPLE_VERSION.toStampText()
+        for (stamp in stamps) {
+            assertEquals(expected, Files.readString(stamp))
+        }
+    }
+
+    @Test
+    fun `a second successful install overwrites both skill stamps`() {
+        val first = JetBrainsMPSInitMcpToolset { SAMPLE_VERSION }
+        runBlocking { first.mps_mcp_initialize_project_for_agents(tmpProjectRoot.toString()) }
+        val replacement = MpsRuntimeVersion("2026.1.2", "262.1", eap = false)
+        val second = JetBrainsMPSInitMcpToolset { replacement }
+        // The initializer still refuses to replace existing skill folders, so overwrite is the
+        // delete-and-reinstall refresh, not a colliding re-run.
+        for (skillsDir in targetSkillsDirs()) {
+            Files.walk(skillsDir).use { stream ->
+                stream.sorted(Comparator.reverseOrder()).forEach { Files.deleteIfExists(it) }
+            }
+        }
+
+        val data = okData(runBlocking { second.mps_mcp_initialize_project_for_agents(tmpProjectRoot.toString()) })
+        assertEquals("2026.1.2", data.get("mpsVersion").asString)
+        val expected = replacement.toStampText()
+        for (stamp in stampPaths()) {
+            assertEquals(expected, Files.readString(stamp))
+        }
+    }
+
+    @Test
+    fun `a null version source still installs skills and removes a stale stamp`() {
+        val stale = tmpProjectRoot.resolve(".agents").resolve("skills").resolve(MpsRuntimeVersion.STAMP_FILE_NAME)
+        Files.createDirectories(stale.parent)
+        Files.writeString(stale, "version=2025.3\nbuild=253.1\neap=false\n")
+        val toolset = JetBrainsMPSInitMcpToolset { null }
+        val data = okData(runBlocking { toolset.mps_mcp_initialize_project_for_agents(tmpProjectRoot.toString()) })
+
+        assertTrue("skillVersionFiles must be present and empty", stringArray(data, "skillVersionFiles").isEmpty())
+        assertFalse(data.has("mpsVersion"))
+        assertFalse(data.has("mpsBuild"))
+        assertFalse(data.has("mpsEap"))
+        for (stamp in stampPaths()) {
+            assertFalse("null identity must leave no stamp at $stamp", Files.exists(stamp))
+        }
+        assertTrue(Files.isDirectory(targetSkillsDirs().first().resolve(REAL_SKILL_NAME)))
+    }
+
+    @Test
+    fun `a collision writes no stamp and leaves a pre-existing stamp untouched`() {
+        val skillsDir = tmpProjectRoot.resolve(".agents").resolve("skills")
+        Files.createDirectories(skillsDir.resolve(REAL_SKILL_NAME))
+        val preexisting = skillsDir.resolve(MpsRuntimeVersion.STAMP_FILE_NAME)
+        val original = "version=2025.3\nbuild=253.1\neap=false\n"
+        Files.writeString(preexisting, original)
+
+        val toolset = JetBrainsMPSInitMcpToolset { SAMPLE_VERSION }
+        val response = runBlocking { toolset.mps_mcp_initialize_project_for_agents(tmpProjectRoot.toString()) }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope on collision: $response", obj.get("ok").asBoolean)
+        assertEquals(original, Files.readString(preexisting))
+        assertFalse(Files.exists(tmpProjectRoot.resolve(".claude")))
+    }
+
+    @Test
+    fun `a present guide file does not skip the skill stamp`() {
+        Files.writeString(tmpProjectRoot.resolve("AGENTS.md"), "KEEP ME — hand-authored")
+        val toolset = JetBrainsMPSInitMcpToolset { SAMPLE_VERSION }
+
+        val data = okData(runBlocking { toolset.mps_mcp_initialize_project_for_agents(tmpProjectRoot.toString()) })
+
+        assertEquals("KEEP ME — hand-authored", Files.readString(tmpProjectRoot.resolve("AGENTS.md")))
+        assertEquals(SAMPLE_VERSION.toStampText(), Files.readString(stampPaths().first()))
+        assertTrue(data.has("mpsBuild"))
+    }
+
+    @Test
+    fun `a failed second stamp write removes the first stamp and still succeeds with a warning`() {
+        val claudeSkills = tmpProjectRoot.resolve(".claude").resolve("skills")
+        // A directory where the second stamp file should be makes that write fail after the first succeeds.
+        Files.createDirectories(claudeSkills.resolve(MpsRuntimeVersion.STAMP_FILE_NAME))
+        val toolset = JetBrainsMPSInitMcpToolset { SAMPLE_VERSION }
+
+        val data = okData(runBlocking { toolset.mps_mcp_initialize_project_for_agents(tmpProjectRoot.toString()) })
+        assertTrue("skillVersionFiles must be empty", stringArray(data, "skillVersionFiles").isEmpty())
+        assertTrue("skillVersionWarning must describe the failure: $data", data.get("skillVersionWarning").asString.isNotBlank())
+        assertEquals("261.25134", data.get("mpsBuild").asString)
+        assertFalse(
+            "the first stamp must be removed so the pair cannot disagree",
+            Files.exists(tmpProjectRoot.resolve(".agents").resolve("skills").resolve(MpsRuntimeVersion.STAMP_FILE_NAME)),
+        )
+    }
+
+    @Test
     fun `mps_mcp_initialize_project_for_agents fails when a target skill folder already exists`() {
         val skillsDir = tmpProjectRoot.resolve(".agents").resolve("skills")
         Files.createDirectories(skillsDir.resolve(REAL_SKILL_NAME))
@@ -404,7 +508,12 @@ class JetBrainsMPSInitMcpToolsetTest {
         }
     }
 
+    private fun stampPaths(): List<Path> =
+        targetSkillsDirs().map { it.resolve(MpsRuntimeVersion.STAMP_FILE_NAME) }
+
     private companion object {
+        private val SAMPLE_VERSION = MpsRuntimeVersion(version = "2026.1", build = "261.25134", eap = true)
+
         // A real bundled skill that ships only with `SKILL.md` at its root — used to verify
         // the simple per-skill copy and the collision-error path. Keep this in sync with
         // `plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills/`.

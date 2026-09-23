@@ -83,6 +83,8 @@ Write `.mps-skills-manifest.json` in each of `.agents/skills/` and `.claude/skil
 }
 ```
 
+When the manifest is implemented, its `mpsVersion` must come from `MpsRuntimeVersion`, not a second format.
+
 Outer skill keys are single directory names. Inner keys are `/`-separated paths relative to that
 skill, not the skills directory. Own only successfully installed catalog files; never include
 preserved extras, backups, manifests, guides, or templates. Publish each manifest with a temporary

@@ -24,7 +24,9 @@ import kotlin.io.path.name
 // surface, and they are invoked via reflection by the MCP server framework, so static
 // analysis flags them as "never used".
 @Suppress("FunctionName", "unused")
-class JetBrainsMPSInitMcpToolset : AbstractOps() {
+class JetBrainsMPSInitMcpToolset(
+    private val runtimeVersionSource: () -> MpsRuntimeVersion? = { MpsRuntimeVersion.fromApplicationOrNull() },
+) : AbstractOps() {
 
     @McpTool
     @McpDescription("""
@@ -34,7 +36,7 @@ class JetBrainsMPSInitMcpToolset : AbstractOps() {
 
         DISCOVERY: if this MPS project has no `mps-*` skill folders under `.agents/skills/` or `.claude/skills/`, it has not yet been initialized for agents — before doing substantial MPS work, proactively tell the user that and ask whether to run this tool (do not run it without approval).
 
-        REFRESHING STALE SKILLS AND AGENT GUIDES (on user request): when the user asks to update/refresh out-of-date MPS skills or the `AGENTS.md`/`CLAUDE.md` guidance, perform a clean reinstall: (1) delete every bundled MPS skill folder — the `mps-*` skills this tool installs, i.e. exactly the folder names it reports as collisions when run against an already-initialized project — from BOTH `.agents/skills/` and `.claude/skills/`, so dropped/renamed skills do not linger; leave any non-`mps-*` skills (e.g. project-local `<dsl-name>-dsl` skills) in place; (2) call this tool again to install the current catalog (with the collisions removed it now succeeds); (3) the existing `AGENTS.md`/`CLAUDE.md` are reported in `guideFilesAlreadyPresent` and left untouched — carefully update them from the returned `agentsFileText`, refreshing the MPS guidance sections to match the template while preserving project-specific content (e.g. the "Project-Specific Notes" section and any hand-authored details), rather than blindly overwriting the whole file.
+        REFRESHING STALE SKILLS AND AGENT GUIDES (on user request): a successful install writes the same `MPS_MCP_SKILL_VERSION.txt` (`version`, `build`, `eap`) into both `.agents/skills/` and `.claude/skills/` (reported in `skillVersionFiles`); compare its `build` with top-level `mpsBuild` from `mps_mcp_list_open_projects`, do not call this tool just to learn the version, and see the installed `AGENTS.md` for the staleness rules. When the user approves a refresh: (1) delete every bundled MPS skill folder — the `mps-*` skills this tool installs, i.e. exactly the folder names it reports as collisions when run against an already-initialized project — from BOTH `.agents/skills/` and `.claude/skills/`, so dropped/renamed skills do not linger; leave any non-`mps-*` skills (e.g. project-local `<dsl-name>-dsl` skills) in place; (2) call this tool again to install the current catalog (with the collisions removed it now succeeds, and a successful re-run overwrites both stamps); (3) the existing `AGENTS.md`/`CLAUDE.md` are reported in `guideFilesAlreadyPresent` and left untouched — carefully update them from the returned `agentsFileText`, refreshing the MPS guidance sections to match the template while preserving project-specific content (e.g. the "Project-Specific Notes" section and any hand-authored details), rather than blindly overwriting the whole file.
     """
     )
     suspend fun mps_mcp_initialize_project_for_agents(
@@ -139,13 +141,40 @@ class JetBrainsMPSInitMcpToolset : AbstractOps() {
                     }
                 }
 
+                // Stamp last, and only on this success path. A null identity still succeeds, and
+                // removes any old stamp so it cannot describe a different install. A failed stamp
+                // write leaves no stamp and is reported as a warning, not as a failed install.
+                val runtimeVersion = runtimeVersionSource()
+                val stampPaths = targetSkillsDirs.map { it.resolve(MpsRuntimeVersion.STAMP_FILE_NAME) }
+                var skillVersionWarning: String? = null
+                val skillVersionFiles: List<Path> = try {
+                    if (runtimeVersion == null) {
+                        for (stamp in stampPaths) Files.deleteIfExists(stamp)
+                        emptyList()
+                    } else {
+                        writeIdenticalFiles(stampPaths, runtimeVersion.toStampText().toByteArray(Charsets.UTF_8))
+                    }
+                } catch (e: Exception) {
+                    rethrowIfCancellation(e)
+                    skillVersionWarning = "Skills were installed, but '${MpsRuntimeVersion.STAMP_FILE_NAME}' " +
+                            "could not be updated: ${e.javaClass.simpleName}: ${e.message}"
+                    emptyList()
+                }
+
                 val data = jsonObject {
                     addProperty("targetDirectory", targetDir.toString())
                     addProperty("installedSkillCount", skillFolders.size)
                     add("skillsDirectories", stringJsonArray(targetSkillsDirs))
                     add("guideFilesWritten", stringJsonArray(guideFilesWritten))
                     add("guideFilesAlreadyPresent", stringJsonArray(guideFilesAlreadyPresent))
+                    add("skillVersionFiles", stringJsonArray(skillVersionFiles))
+                    skillVersionWarning?.let { addProperty("skillVersionWarning", it) }
                     addProperty("agentsFileText", agentsMdText)
+                    if (runtimeVersion != null) {
+                        addProperty("mpsVersion", runtimeVersion.version)
+                        addProperty("mpsBuild", runtimeVersion.build)
+                        addProperty("mpsEap", runtimeVersion.eap)
+                    }
                 }
                 okJson(data)
             }
@@ -248,6 +277,30 @@ class JetBrainsMPSInitMcpToolset : AbstractOps() {
 
     private fun stringJsonArray(paths: Iterable<Path>): JsonArray =
         JsonArray().apply { for (p in paths) add(p.toString()) }
+
+    /**
+     * Writes [bytes] to every path. On a later failure, deletes the files this call already
+     * wrote and rethrows, so a partial stamp pair is not left behind.
+     */
+    private fun writeIdenticalFiles(paths: List<Path>, bytes: ByteArray): List<Path> {
+        val written = mutableListOf<Path>()
+        try {
+            for (path in paths) {
+                Files.write(path, bytes)
+                written.add(path)
+            }
+        } catch (e: Exception) {
+            for (path in written) {
+                try {
+                    Files.deleteIfExists(path)
+                } catch (_: Exception) {
+                    // The original I/O error is what the caller sees.
+                }
+            }
+            throw e
+        }
+        return written
+    }
 
     /**
      * Resolves the bundled-skills resource directory to a [Path] regardless of whether the

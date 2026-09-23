@@ -4,6 +4,7 @@ import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.unit.*
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
@@ -58,6 +59,16 @@ class JetBrainsMPSInitMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             )
             assertTrue("AGENTS.md must be created under the derived root", Files.isRegularFile(base.resolve("AGENTS.md")))
             assertTrue("CLAUDE.md must be created under the derived root", Files.isRegularFile(base.resolve("CLAUDE.md")))
+            val live = MpsRuntimeVersion.fromApplicationOrNull()
+            assertNotNull("integration run must see ApplicationInfo", live)
+            val expectedStamp = live!!.toStampText()
+            for (catalog in listOf(".agents", ".claude")) {
+                val stamp = base.resolve(catalog).resolve("skills").resolve(MpsRuntimeVersion.STAMP_FILE_NAME)
+                assertEquals(expectedStamp, Files.readString(stamp))
+            }
+            assertEquals(live.version, data.get("mpsVersion").asString)
+            assertEquals(live.build, data.get("mpsBuild").asString)
+            assertEquals(live.eap, data.get("mpsEap").asBoolean)
         } finally {
             // Tidy the artifacts we created. The harness also deletes the temp project directory on
             // teardown, but removing them here keeps the project's own close/save unaffected and is
