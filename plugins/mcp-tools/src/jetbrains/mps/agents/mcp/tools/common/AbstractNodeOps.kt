@@ -32,6 +32,7 @@ import jetbrains.mps.resolve.ResolverComponent
 import jetbrains.mps.scope.ErrorScope
 import jetbrains.mps.scope.VisibleDepsSearchScope
 import jetbrains.mps.smodel.BaseScope
+import jetbrains.mps.smodel.ConceptDescendantsCache
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
 import jetbrains.mps.smodel.SNodeUtil
@@ -1462,12 +1463,15 @@ abstract class AbstractNodeOps : AbstractOps() {
      * previous gate used raw callbacks: the fallback compensates for missing index coverage, not
      * for caller-side filter misses.
      *
-     * The fallback walk reports **exact** instances of the requested concepts only: [InstanceLookup]
-     * asks `FastNodeFinder` with `includeInherited=false` and, unlike the facade
-     * (`InstancesSearchType`), does not expand the query set with the concepts' descendants. So a
-     * non-exact query served by the fallback sees no subconcept instances, and an exact one needs
-     * no extra filtering. Either way the collector must apply its own per-concept predicate to
-     * whatever arrives instead of assuming a pre-filtered stream, as [opFindInstances] does.
+     * The fallback walk answers the same question the facade does: [InstanceLookup] asks
+     * `FastNodeFinder` with `includeInherited=false`, so for a non-exact query the uncovered
+     * concepts are expanded with their descendants first, exactly as `InstancesSearchType` expands
+     * its query set. Without that expansion a non-exact query served by the fallback silently
+     * drops every subconcept instance — e.g. counting `AbstractConceptDeclaration` over a model
+     * whose index entry lags a just-saved write yields only the `ConceptDeclaration` nodes the
+     * requested `ConceptDeclaration` concept also pulls in, never the `InterfaceConceptDeclaration`
+     * ones. The collector must still apply its own per-concept predicate to whatever arrives, as
+     * [opFindInstances] does.
      *
      * [collector] may be invoked concurrently; synchronize shared state inside it.
      */
@@ -1492,7 +1496,10 @@ abstract class AbstractNodeOps : AbstractOps() {
         FindUsagesFacade.getInstance().findInstances(searchScope, concepts, exact, { counting(it) }, monitor)
         val uncovered = synchronized(unseen) { unseen.toSet() }
         if (uncovered.isNotEmpty() && !monitor.isCanceled) {
-            val lookup = InstanceLookup(uncovered) { collector(it) }
+            val lookupConcepts =
+                if (exact) uncovered
+                else uncovered.flatMapTo(LinkedHashSet()) { ConceptDescendantsCache.getInstance().getDescendants(it) }
+            val lookup = InstanceLookup(lookupConcepts) { collector(it) }
             for (m in searchScope.models) {
                 if (monitor.isCanceled) break
                 lookup.collectInstances(m, monitor)

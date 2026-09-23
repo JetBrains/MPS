@@ -7,8 +7,15 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import org.jetbrains.mps.openapi.language.SAbstractConcept
+import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.model.SModelReference
 import org.jetbrains.mps.openapi.model.SNode
+import org.jetbrains.mps.openapi.model.SReference
+import org.jetbrains.mps.openapi.module.FindUsagesFacade
+import org.jetbrains.mps.openapi.module.SearchScope
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import org.jetbrains.mps.openapi.util.ProgressMonitor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -438,10 +445,58 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `find-instances count keeps subconcept instances when the index lags behind the model`() {
+        createCountFixture()
+
+        // A saved model whose index entry has not caught up yet is claimed by the index participant
+        // but yields no hit, so the tool's direct-walk fallback answers instead. That fallback must
+        // honour exact:false just like the facade: here it used to report only the requested
+        // concepts' exact instances, so AbstractConceptDeclaration counted the three
+        // ConceptDeclarations and lost IMarker.
+        val rows = IndexLaggingFindUsagesFacade().use {
+            countRows(countResponse("""[ "$ABSTRACT_CONCEPT_DECL", "$CONCEPT_DECL" ]"""))
+        }
+        assertEquals(listOf(ABSTRACT_CONCEPT_DECL to 4, CONCEPT_DECL to 3), rows)
+
+        val exactRows = IndexLaggingFindUsagesFacade().use {
+            countRows(countResponse("""[ "$ABSTRACT_CONCEPT_DECL", "$CONCEPT_DECL" ]""", extra = ""","exact": true"""))
+        }
+        assertEquals(listOf(ABSTRACT_CONCEPT_DECL to 0, CONCEPT_DECL to 3), exactRows)
+    }
+
+    /** Stands in for an index that has not caught up with the model yet: every search finds nothing. */
+    private class IndexLaggingFindUsagesFacade : FindUsagesFacade(), AutoCloseable {
+        private val previous: FindUsagesFacade? = getInstance()
+
+        init {
+            INSTANCE = this
+        }
+
+        override fun close() {
+            INSTANCE = previous
+        }
+
+        @Deprecated("Deprecated in Java")
+        override fun findUsages(scope: SearchScope, nodes: Set<SNode>, monitor: ProgressMonitor?): Set<SReference> = emptySet()
+
+        @Deprecated("Deprecated in Java")
+        override fun findInstances(
+            scope: SearchScope,
+            concepts: Set<SAbstractConcept>,
+            exact: Boolean,
+            monitor: ProgressMonitor?,
+        ): Set<SNode> = emptySet()
+
+        @Deprecated("Deprecated in Java")
+        override fun findModelUsages(scope: SearchScope, modelReferences: Set<SModelReference>, monitor: ProgressMonitor?): Set<SModel> =
+            emptySet()
+    }
+
+    @Test
     fun `find-instances count of one concept is unchanged by batching others alongside it`() {
         createCountFixture()
 
-        // Guards the two ways batching could corrupt a count: a node reported once per matching
+        // Guards Creathe two ways batching could corrupt a count: a node reported once per matching
         // concept being tallied more than once, and one concept's index coverage deciding whether
         // another concept gets the fallback walk.
         val alone = countRows(countResponse(""""$ABSTRACT_CONCEPT_DECL""""))
