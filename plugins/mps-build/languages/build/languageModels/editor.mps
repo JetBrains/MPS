@@ -11022,5 +11022,36 @@
       <property role="Xl_RC" value="TODO" />
     </node>
   </node>
+  <node concept="24kQdi" id="4SVbBfBwQCG">
+    <property role="3GE5qa" value="Layout.File.Text" />
+    <property role="TrG5h" value="BuildLayout_EchoText_Editor" />
+    <ref role="1XX52x" to="3ior:4SVbBfBw8M7" />
+    <node concept="3EZMnI" id="4SVbBfBwQCH" role="2wV5jI">
+      <node concept="3F0ifn" id="4SVbBfBwQCI" role="3EZMnx">
+        <property role="3F0ifm" value="text file" />
+        <ref role="1k5W1q" node="hwW5xkg" resolve="keyword" />
+      </node>
+      <node concept="3F1sOY" id="4SVbBfBwQCJ" role="3EZMnx">
+        <ref role="1NtTu8" to="3ior:4SVbBfBw8M8" />
+        <node concept="ljvvj" id="4SVbBfBwQCK" role="3F10Kt">
+          <property role="VOm3f" value="true" />
+        </node>
+      </node>
+      <node concept="3F2HdR" id="4SVbBfBwQCL" role="3EZMnx">
+        <ref role="1NtTu8" to="3ior:4SVbBfBw8M9" />
+        <node concept="l2Vlx" id="4SVbBfBwQCM" role="2czzBx" />
+        <node concept="lj46D" id="4SVbBfBwQCN" role="3F10Kt">
+          <property role="VOm3f" value="true" />
+        </node>
+        <node concept="pj6Ft" id="4SVbBfBwQCO" role="3F10Kt">
+          <property role="VOm3f" value="true" />
+        </node>
+      </node>
+      <node concept="3F0ifn" id="4SVbBfBwQCP" role="3EZMnx">
+        <property role="3F0ifm" value="" />
+      </node>
+      <node concept="l2Vlx" id="4SVbBfBwQCQ" role="2iSdaV" />
+    </node>
+  </node>
 </model>
 

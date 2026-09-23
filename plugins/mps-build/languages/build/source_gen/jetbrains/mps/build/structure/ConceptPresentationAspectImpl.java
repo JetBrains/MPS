@@ -53,6 +53,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_BuildLayout_CustomCopy;
   private ConceptPresentation props_BuildLayout_EchoProperties;
   private ConceptPresentation props_BuildLayout_EchoPropertyEntry;
+  private ConceptPresentation props_BuildLayout_EchoText;
   private ConceptPresentation props_BuildLayout_EchoXml;
   private ConceptPresentation props_BuildLayout_ExportAsJavaLibrary;
   private ConceptPresentation props_BuildLayout_File;
@@ -449,6 +450,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_BuildLayout_EchoPropertyEntry = cpb.create();
         }
         return props_BuildLayout_EchoPropertyEntry;
+      case LanguageConceptSwitch.BuildLayout_EchoText:
+        if (props_BuildLayout_EchoText == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("plain text file with the specified content");
+          cpb.rawPresentation("text file");
+          props_BuildLayout_EchoText = cpb.create();
+        }
+        return props_BuildLayout_EchoText;
       case LanguageConceptSwitch.BuildLayout_EchoXml:
         if (props_BuildLayout_EchoXml == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();

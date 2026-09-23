@@ -2205,5 +2205,30 @@
       <property role="3tVfz5" value="1979010778009209127" />
     </node>
   </node>
+  <node concept="1TIwiD" id="4SVbBfBw8M7">
+    <property role="EcuMT" value="5637150433924385927" />
+    <property role="TrG5h" value="BuildLayout_EchoText" />
+    <property role="34LRSv" value="text file" />
+    <property role="R4oN_" value="plain text file with the specified content" />
+    <property role="3GE5qa" value="Layout.File.Text" />
+    <ref role="1TJDcQ" node="6qcrfIJF4M5" resolve="BuildLayout_Node" />
+    <node concept="1TJgyj" id="4SVbBfBw8M8" role="1TKVEi">
+      <property role="IQ2ns" value="5637150433924385928" />
+      <property role="20kJfa" value="fileName" />
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" node="IFRVVI5ZTn" resolve="BuildStringNotEmpty" />
+    </node>
+    <node concept="1TJgyj" id="4SVbBfBw8M9" role="1TKVEi">
+      <property role="IQ2ns" value="5637150433924385929" />
+      <property role="20kJfa" value="lines" />
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <property role="20lbJX" value="fLJekj5/_0__n" />
+      <ref role="20lvS9" node="3NagsOfThPf" resolve="BuildString" />
+    </node>
+    <node concept="PrWs8" id="4SVbBfBw8Ma" role="PzmwI">
+      <ref role="PrY4T" node="7XQqoCTkVIO" resolve="BuildStringContainer" />
+    </node>
+  </node>
 </model>
 
