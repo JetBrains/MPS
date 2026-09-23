@@ -16,7 +16,9 @@
 
   <module value="com.intellij.modules.mps"/>
   <module value="com.intellij.modules.all"/>
-  <module value="com.intellij.modules.xml"/>
+  <module value="com.intellij.modules.lang"/>
+  <module value="com.intellij.modules.lang.actions"/>
+  <module value="com.intellij.modules.platform"/>
 
   <xi:include href="/META-INF/IdeTipsAndTricks.xml"/>
 
