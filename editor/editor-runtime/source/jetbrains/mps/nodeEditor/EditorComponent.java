@@ -2435,8 +2435,16 @@ public abstract class EditorComponent extends JComponent implements Scrollable, 
     }
   }
 
+  private int getVerticalScrollBarOverlap() {
+    if (!hasUI() || myEditorConfiguration.rightToLeft || !(myScrollPane instanceof JBScrollPane scrollPane) || scrollPane.verticalScrollBarNeedsSpace()) {
+      return 0;
+    }
+    JScrollBar vsb = scrollPane.getVerticalScrollBar();
+    return vsb != null && vsb.isVisible() ? vsb.getPreferredSize().width : 0;
+  }
+
   Dimension getPreferredComponentSize() {
-    return isDisposed() ? new Dimension(0, 0) : new Dimension(myRootCell.getWidth() + myShiftX + 10, myRootCell.getHeight() + myShiftY + 10);
+    return isDisposed() ? new Dimension(0, 0) : new Dimension(myRootCell.getWidth() + myShiftX + 10 + getVerticalScrollBarOverlap(), myRootCell.getHeight() + myShiftY + 10);
   }
 
   @Override
