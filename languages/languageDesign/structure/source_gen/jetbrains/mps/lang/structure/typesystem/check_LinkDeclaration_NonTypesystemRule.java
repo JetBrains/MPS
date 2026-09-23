@@ -13,6 +13,9 @@ import java.util.List;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
 import jetbrains.mps.lang.structure.behavior.AbstractConceptDeclaration__BehaviorDescriptor;
+import java.util.Set;
+import jetbrains.mps.internal.collections.runtime.SetSequence;
+import java.util.HashSet;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.errors.messageTargets.MessageTarget;
 import jetbrains.mps.errors.messageTargets.NodeMessageTarget;
@@ -37,8 +40,14 @@ public class check_LinkDeclaration_NonTypesystemRule extends AbstractNonTypesyst
     }
     SNode declaringConcept = SNodeOperations.getNodeAncestor(linkToCheck, CONCEPTS.AbstractConceptDeclaration$KA, false, false);
     List<SNode> allLinks = Sequence.fromIterable(SLinkOperations.collectMany(AbstractConceptDeclaration__BehaviorDescriptor.getAllSuperConcepts_id2A8AB0rAWpG.invoke(declaringConcept, ((boolean) true)), LINKS.linkDeclaration$YU1f)).toList();
+    Set<SNode> specializedLinks = SetSequence.fromSet(new HashSet<SNode>());
+    SNode specialized = SLinkOperations.getTarget(linkToCheck, LINKS.specializedLink$7ZCN);
+    while (specialized != null && !(SetSequence.fromSet(specializedLinks).contains(specialized))) {
+      SetSequence.fromSet(specializedLinks).addElement(specialized);
+      specialized = SLinkOperations.getTarget(specialized, LINKS.specializedLink$7ZCN);
+    }
     for (SNode link : ListSequence.fromList(allLinks)) {
-      if (linkToCheck != link && SPropertyOperations.getString(linkToCheck, PROPS.role$Nsjf).equals(SPropertyOperations.getString(link, PROPS.role$Nsjf)) && SLinkOperations.getTarget(linkToCheck, LINKS.specializedLink$7ZCN) != link) {
+      if (linkToCheck != link && SPropertyOperations.getString(linkToCheck, PROPS.role$Nsjf).equals(SPropertyOperations.getString(link, PROPS.role$Nsjf)) && !(SetSequence.fromSet(specializedLinks).contains(link))) {
         {
           final MessageTarget errorTarget = new NodeMessageTarget();
           IErrorReporter _reporter_2309309498 = typeCheckingContext.reportTypeError(linkToCheck, String.format("link '%s' is already declared in %s", SPropertyOperations.getString(link, PROPS.role$Nsjf), SPropertyOperations.getString(SNodeOperations.getNodeAncestor(link, CONCEPTS.AbstractConceptDeclaration$KA, false, false), PROPS.name$MnvL)), "r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "1212181840083", null, errorTarget);
