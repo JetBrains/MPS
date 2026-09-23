@@ -53,5 +53,10 @@
       <unit id="5610619299013213201" at="1,0,53,10" name="jetbrains.mps.build.sandbox.build1.buildE" />
     </file>
   </root>
+  <root nodeRef="r:bcfe2964-5744-4773-9086-0090dbda0712(jetbrains.mps.build.sandbox.build1)/7701421889489571165">
+    <file name="buildF.xml">
+      <unit id="7701421889489571165" at="1,0,39,10" name="jetbrains.mps.build.sandbox.build1.buildF" />
+    </file>
+  </root>
 </debug-info>
 
