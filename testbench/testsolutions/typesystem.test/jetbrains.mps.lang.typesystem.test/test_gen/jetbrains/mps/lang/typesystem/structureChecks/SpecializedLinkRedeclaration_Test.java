@@ -17,7 +17,6 @@ import jetbrains.mps.errors.item.NodeReportItem;
 import jetbrains.mps.typesystemEngine.checker.NonTypesystemChecker;
 import jetbrains.mps.lang.test.runtime.CheckExpectedMessageRunnable;
 import jetbrains.mps.errors.MessageStatus;
-import jetbrains.mps.smodel.SNodePointer;
 
 @MPSLaunch
 public class SpecializedLinkRedeclaration_Test extends BaseTransformationTest {
@@ -37,8 +36,48 @@ public class SpecializedLinkRedeclaration_Test extends BaseTransformationTest {
     new TestBody(this).test_linkSpecializingDirectSuperIsNotRedeclaration();
   }
   @Test
-  public void test_NodeLinkIsAlreadyDeclaredCheck1010605374656788914() throws Throwable {
-    new TestBody(this).test_NodeLinkIsAlreadyDeclaredCheck1010605374656788914();
+  public void test_NodeErrorCheck1010605374658393904() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658393904();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658393906() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658393906();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658393908() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658393908();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658393910() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658393910();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658393912() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658393912();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658396875() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658396875();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658396873() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658396873();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658398980() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658398980();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658398982() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658398982();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658398978() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658398978();
+  }
+  @Test
+  public void test_NodeErrorCheck1010605374658398976() throws Throwable {
+    new TestBody(this).test_NodeErrorCheck1010605374658398976();
   }
 
   /*package*/ static class TestBody extends BaseTestBody {
@@ -82,11 +121,81 @@ public class SpecializedLinkRedeclaration_Test extends BaseTransformationTest {
         }
       });
     }
-    public void test_NodeLinkIsAlreadyDeclaredCheck1010605374656788914() throws Exception {
+    public void test_NodeErrorCheck1010605374658393904() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788877");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658393906() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788880");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658393908() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788884");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658393910() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788888");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658393912() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788889");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658396875() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788895");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658396873() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788894");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658398980() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788904");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658398982() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788908");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658398978() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         SNode nodeToCheck = getNodeById("1010605374656788912");
-        new CheckExpectedMessageRunnable.CheckExpectedRuleMessageRunnable(nodeToCheck, MessageStatus.ERROR, new SNodePointer("r:00000000-0000-4000-0000-011c8959028f(jetbrains.mps.lang.structure.typesystem)", "1212181840083"), "", myProject.getRepository(), myProject.getPlatform()).run();
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
+      });
+    }
+    public void test_NodeErrorCheck1010605374658398976() throws Exception {
+      initTestNodes();
+      runWithinCommand(() -> {
+        SNode nodeToCheck = getNodeById("1010605374656788911");
+        new CheckExpectedMessageRunnable.CheckAnyMessageRunnable(nodeToCheck, MessageStatus.ERROR, "", myProject.getRepository(), myProject.getPlatform()).run();
       });
     }
 

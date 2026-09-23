@@ -11,89 +11,229 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/1164991038168:jetbrains.mps.baseLanguage.structure.ThrowStatement" />
   <root nodeRef="r:5e77cc98-4b02-41db-8bdb-56ac74f14d4a(jetbrains.mps.lang.typesystem.structureChecks@tests)/1010605374656788871">
     <file name="SpecializedLinkRedeclaration_Test.java">
-      <node id="1010605374656788871" at="27,46,28,60" concept="7" />
-      <node id="1010605374656837998" at="32,87,33,78" concept="1" />
-      <node id="1010605374656838003" at="36,85,37,76" concept="1" />
-      <node id="1010605374656788914" at="40,89,41,80" concept="1" />
-      <node id="1010605374656788871" at="46,52,47,19" concept="7" />
-      <node id="1010605374656788871" at="51,36,52,253" concept="1" />
-      <node id="1010605374656837998" at="55,89,56,22" concept="1" />
-      <node id="1010605374656865731" at="57,30,58,56" concept="5" />
-      <node id="1010605374656865735" at="58,56,59,54" concept="5" />
-      <node id="1010605374656865753" at="61,112,62,42" concept="1" />
-      <node id="1010605374656865774" at="65,34,66,83" concept="8" />
-      <node id="1010605374656838003" at="70,87,71,22" concept="1" />
-      <node id="1010605374656855909" at="72,30,73,53" concept="5" />
-      <node id="1010605374656855913" at="73,53,74,54" concept="5" />
-      <node id="1010605374656855931" at="76,112,77,42" concept="1" />
-      <node id="1010605374656855952" at="80,34,81,83" concept="8" />
-      <node id="1010605374656788914" at="85,91,86,22" concept="1" />
-      <node id="1010605374656788914" at="87,30,88,63" concept="5" />
-      <node id="1010605374656788914" at="88,63,89,288" concept="1" />
-      <node id="1010605374656788871" at="24,0,26,0" concept="6" trace="ourParametersCacheExtension" />
-      <node id="1010605374656788871" at="27,0,30,0" concept="0" trace="SpecializedLinkRedeclaration_Test#()V" />
-      <node id="1010605374656788871" at="46,0,49,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
-      <node id="1010605374656865743" at="60,133,63,11" concept="3" />
-      <node id="1010605374656865764" at="64,9,67,9" concept="3" />
-      <node id="1010605374656855921" at="75,133,78,11" concept="3" />
-      <node id="1010605374656855942" at="79,9,82,9" concept="3" />
-      <node id="1010605374656837998" at="31,0,35,0" concept="4" trace="test_multiLevelSpecializationChainIsNotRedeclaration#()V" />
-      <node id="1010605374656838003" at="35,0,39,0" concept="4" trace="test_linkSpecializingDirectSuperIsNotRedeclaration#()V" />
-      <node id="1010605374656788914" at="39,0,43,0" concept="4" trace="test_NodeLinkIsAlreadyDeclaredCheck1010605374656788914#()V" />
-      <node id="1010605374656788871" at="50,0,54,0" concept="4" trace="initTestNodes#()V" />
-      <node id="1010605374656788914" at="86,22,90,9" concept="1" />
-      <node id="1010605374656865740" at="59,54,64,9" concept="2" />
-      <node id="1010605374656855918" at="74,54,79,9" concept="2" />
-      <node id="1010605374656788914" at="85,0,92,0" concept="4" trace="test_NodeLinkIsAlreadyDeclaredCheck1010605374656788914#()V" />
-      <node id="1010605374656837998" at="56,22,68,9" concept="1" />
-      <node id="1010605374656838003" at="71,22,83,9" concept="1" />
-      <node id="1010605374656837998" at="55,0,70,0" concept="4" trace="test_multiLevelSpecializationChainIsNotRedeclaration#()V" />
-      <node id="1010605374656838003" at="70,0,85,0" concept="4" trace="test_linkSpecializingDirectSuperIsNotRedeclaration#()V" />
-      <scope id="1010605374656788871" at="27,46,28,60" />
-      <scope id="1010605374656837998" at="32,87,33,78" />
-      <scope id="1010605374656838003" at="36,85,37,76" />
-      <scope id="1010605374656788914" at="40,89,41,80" />
-      <scope id="1010605374656788871" at="46,52,47,19" />
-      <scope id="1010605374656788871" at="51,36,52,253" />
-      <scope id="1010605374656865752" at="61,112,62,42" />
-      <scope id="1010605374656865769" at="65,34,66,83" />
-      <scope id="1010605374656855930" at="76,112,77,42" />
-      <scope id="1010605374656855947" at="80,34,81,83" />
-      <scope id="1010605374656788914" at="87,30,89,288">
-        <var name="nodeToCheck" id="1010605374656788914" />
+      <node id="1010605374656788871" at="26,46,27,60" concept="7" />
+      <node id="1010605374656837998" at="31,87,32,78" concept="1" />
+      <node id="1010605374656838003" at="35,85,36,76" concept="1" />
+      <node id="1010605374658393904" at="39,73,40,64" concept="1" />
+      <node id="1010605374658393906" at="43,73,44,64" concept="1" />
+      <node id="1010605374658393908" at="47,73,48,64" concept="1" />
+      <node id="1010605374658393910" at="51,73,52,64" concept="1" />
+      <node id="1010605374658393912" at="55,73,56,64" concept="1" />
+      <node id="1010605374658396875" at="59,73,60,64" concept="1" />
+      <node id="1010605374658396873" at="63,73,64,64" concept="1" />
+      <node id="1010605374658398980" at="67,73,68,64" concept="1" />
+      <node id="1010605374658398982" at="71,73,72,64" concept="1" />
+      <node id="1010605374658398978" at="75,73,76,64" concept="1" />
+      <node id="1010605374658398976" at="79,73,80,64" concept="1" />
+      <node id="1010605374656788871" at="85,52,86,19" concept="7" />
+      <node id="1010605374656788871" at="90,36,91,253" concept="1" />
+      <node id="1010605374656837998" at="94,89,95,22" concept="1" />
+      <node id="1010605374656865731" at="96,30,97,56" concept="5" />
+      <node id="1010605374656865735" at="97,56,98,54" concept="5" />
+      <node id="1010605374656865753" at="100,112,101,42" concept="1" />
+      <node id="1010605374656865774" at="104,34,105,83" concept="8" />
+      <node id="1010605374656838003" at="109,87,110,22" concept="1" />
+      <node id="1010605374656855909" at="111,30,112,53" concept="5" />
+      <node id="1010605374656855913" at="112,53,113,54" concept="5" />
+      <node id="1010605374656855931" at="115,112,116,42" concept="1" />
+      <node id="1010605374656855952" at="119,34,120,83" concept="8" />
+      <node id="1010605374658393904" at="124,75,125,22" concept="1" />
+      <node id="1010605374658393904" at="126,30,127,63" concept="5" />
+      <node id="1010605374658393904" at="127,63,128,161" concept="1" />
+      <node id="1010605374658393906" at="131,75,132,22" concept="1" />
+      <node id="1010605374658393906" at="133,30,134,63" concept="5" />
+      <node id="1010605374658393906" at="134,63,135,161" concept="1" />
+      <node id="1010605374658393908" at="138,75,139,22" concept="1" />
+      <node id="1010605374658393908" at="140,30,141,63" concept="5" />
+      <node id="1010605374658393908" at="141,63,142,161" concept="1" />
+      <node id="1010605374658393910" at="145,75,146,22" concept="1" />
+      <node id="1010605374658393910" at="147,30,148,63" concept="5" />
+      <node id="1010605374658393910" at="148,63,149,161" concept="1" />
+      <node id="1010605374658393912" at="152,75,153,22" concept="1" />
+      <node id="1010605374658393912" at="154,30,155,63" concept="5" />
+      <node id="1010605374658393912" at="155,63,156,161" concept="1" />
+      <node id="1010605374658396875" at="159,75,160,22" concept="1" />
+      <node id="1010605374658396875" at="161,30,162,63" concept="5" />
+      <node id="1010605374658396875" at="162,63,163,161" concept="1" />
+      <node id="1010605374658396873" at="166,75,167,22" concept="1" />
+      <node id="1010605374658396873" at="168,30,169,63" concept="5" />
+      <node id="1010605374658396873" at="169,63,170,161" concept="1" />
+      <node id="1010605374658398980" at="173,75,174,22" concept="1" />
+      <node id="1010605374658398980" at="175,30,176,63" concept="5" />
+      <node id="1010605374658398980" at="176,63,177,161" concept="1" />
+      <node id="1010605374658398982" at="180,75,181,22" concept="1" />
+      <node id="1010605374658398982" at="182,30,183,63" concept="5" />
+      <node id="1010605374658398982" at="183,63,184,161" concept="1" />
+      <node id="1010605374658398978" at="187,75,188,22" concept="1" />
+      <node id="1010605374658398978" at="189,30,190,63" concept="5" />
+      <node id="1010605374658398978" at="190,63,191,161" concept="1" />
+      <node id="1010605374658398976" at="194,75,195,22" concept="1" />
+      <node id="1010605374658398976" at="196,30,197,63" concept="5" />
+      <node id="1010605374658398976" at="197,63,198,161" concept="1" />
+      <node id="1010605374656788871" at="23,0,25,0" concept="6" trace="ourParametersCacheExtension" />
+      <node id="1010605374656788871" at="26,0,29,0" concept="0" trace="SpecializedLinkRedeclaration_Test#()V" />
+      <node id="1010605374656788871" at="85,0,88,0" concept="0" trace="TestBody#(Ljetbrains/mps/lang/test/runtime/TransformationTest;)V" />
+      <node id="1010605374656865743" at="99,133,102,11" concept="3" />
+      <node id="1010605374656865764" at="103,9,106,9" concept="3" />
+      <node id="1010605374656855921" at="114,133,117,11" concept="3" />
+      <node id="1010605374656855942" at="118,9,121,9" concept="3" />
+      <node id="1010605374656837998" at="30,0,34,0" concept="4" trace="test_multiLevelSpecializationChainIsNotRedeclaration#()V" />
+      <node id="1010605374656838003" at="34,0,38,0" concept="4" trace="test_linkSpecializingDirectSuperIsNotRedeclaration#()V" />
+      <node id="1010605374658393904" at="38,0,42,0" concept="4" trace="test_NodeErrorCheck1010605374658393904#()V" />
+      <node id="1010605374658393906" at="42,0,46,0" concept="4" trace="test_NodeErrorCheck1010605374658393906#()V" />
+      <node id="1010605374658393908" at="46,0,50,0" concept="4" trace="test_NodeErrorCheck1010605374658393908#()V" />
+      <node id="1010605374658393910" at="50,0,54,0" concept="4" trace="test_NodeErrorCheck1010605374658393910#()V" />
+      <node id="1010605374658393912" at="54,0,58,0" concept="4" trace="test_NodeErrorCheck1010605374658393912#()V" />
+      <node id="1010605374658396875" at="58,0,62,0" concept="4" trace="test_NodeErrorCheck1010605374658396875#()V" />
+      <node id="1010605374658396873" at="62,0,66,0" concept="4" trace="test_NodeErrorCheck1010605374658396873#()V" />
+      <node id="1010605374658398980" at="66,0,70,0" concept="4" trace="test_NodeErrorCheck1010605374658398980#()V" />
+      <node id="1010605374658398982" at="70,0,74,0" concept="4" trace="test_NodeErrorCheck1010605374658398982#()V" />
+      <node id="1010605374658398978" at="74,0,78,0" concept="4" trace="test_NodeErrorCheck1010605374658398978#()V" />
+      <node id="1010605374658398976" at="78,0,82,0" concept="4" trace="test_NodeErrorCheck1010605374658398976#()V" />
+      <node id="1010605374656788871" at="89,0,93,0" concept="4" trace="initTestNodes#()V" />
+      <node id="1010605374658393904" at="125,22,129,9" concept="1" />
+      <node id="1010605374658393906" at="132,22,136,9" concept="1" />
+      <node id="1010605374658393908" at="139,22,143,9" concept="1" />
+      <node id="1010605374658393910" at="146,22,150,9" concept="1" />
+      <node id="1010605374658393912" at="153,22,157,9" concept="1" />
+      <node id="1010605374658396875" at="160,22,164,9" concept="1" />
+      <node id="1010605374658396873" at="167,22,171,9" concept="1" />
+      <node id="1010605374658398980" at="174,22,178,9" concept="1" />
+      <node id="1010605374658398982" at="181,22,185,9" concept="1" />
+      <node id="1010605374658398978" at="188,22,192,9" concept="1" />
+      <node id="1010605374658398976" at="195,22,199,9" concept="1" />
+      <node id="1010605374656865740" at="98,54,103,9" concept="2" />
+      <node id="1010605374656855918" at="113,54,118,9" concept="2" />
+      <node id="1010605374658393904" at="124,0,131,0" concept="4" trace="test_NodeErrorCheck1010605374658393904#()V" />
+      <node id="1010605374658393906" at="131,0,138,0" concept="4" trace="test_NodeErrorCheck1010605374658393906#()V" />
+      <node id="1010605374658393908" at="138,0,145,0" concept="4" trace="test_NodeErrorCheck1010605374658393908#()V" />
+      <node id="1010605374658393910" at="145,0,152,0" concept="4" trace="test_NodeErrorCheck1010605374658393910#()V" />
+      <node id="1010605374658393912" at="152,0,159,0" concept="4" trace="test_NodeErrorCheck1010605374658393912#()V" />
+      <node id="1010605374658396875" at="159,0,166,0" concept="4" trace="test_NodeErrorCheck1010605374658396875#()V" />
+      <node id="1010605374658396873" at="166,0,173,0" concept="4" trace="test_NodeErrorCheck1010605374658396873#()V" />
+      <node id="1010605374658398980" at="173,0,180,0" concept="4" trace="test_NodeErrorCheck1010605374658398980#()V" />
+      <node id="1010605374658398982" at="180,0,187,0" concept="4" trace="test_NodeErrorCheck1010605374658398982#()V" />
+      <node id="1010605374658398978" at="187,0,194,0" concept="4" trace="test_NodeErrorCheck1010605374658398978#()V" />
+      <node id="1010605374658398976" at="194,0,201,0" concept="4" trace="test_NodeErrorCheck1010605374658398976#()V" />
+      <node id="1010605374656837998" at="95,22,107,9" concept="1" />
+      <node id="1010605374656838003" at="110,22,122,9" concept="1" />
+      <node id="1010605374656837998" at="94,0,109,0" concept="4" trace="test_multiLevelSpecializationChainIsNotRedeclaration#()V" />
+      <node id="1010605374656838003" at="109,0,124,0" concept="4" trace="test_linkSpecializingDirectSuperIsNotRedeclaration#()V" />
+      <scope id="1010605374656788871" at="26,46,27,60" />
+      <scope id="1010605374656837998" at="31,87,32,78" />
+      <scope id="1010605374656838003" at="35,85,36,76" />
+      <scope id="1010605374658393904" at="39,73,40,64" />
+      <scope id="1010605374658393906" at="43,73,44,64" />
+      <scope id="1010605374658393908" at="47,73,48,64" />
+      <scope id="1010605374658393910" at="51,73,52,64" />
+      <scope id="1010605374658393912" at="55,73,56,64" />
+      <scope id="1010605374658396875" at="59,73,60,64" />
+      <scope id="1010605374658396873" at="63,73,64,64" />
+      <scope id="1010605374658398980" at="67,73,68,64" />
+      <scope id="1010605374658398982" at="71,73,72,64" />
+      <scope id="1010605374658398978" at="75,73,76,64" />
+      <scope id="1010605374658398976" at="79,73,80,64" />
+      <scope id="1010605374656788871" at="85,52,86,19" />
+      <scope id="1010605374656788871" at="90,36,91,253" />
+      <scope id="1010605374656865752" at="100,112,101,42" />
+      <scope id="1010605374656865769" at="104,34,105,83" />
+      <scope id="1010605374656855930" at="115,112,116,42" />
+      <scope id="1010605374656855947" at="119,34,120,83" />
+      <scope id="1010605374658393904" at="126,30,128,161">
+        <var name="nodeToCheck" id="1010605374658393904" />
       </scope>
-      <scope id="1010605374656788871" at="27,0,30,0" />
-      <scope id="1010605374656788871" at="46,0,49,0">
+      <scope id="1010605374658393906" at="133,30,135,161">
+        <var name="nodeToCheck" id="1010605374658393906" />
+      </scope>
+      <scope id="1010605374658393908" at="140,30,142,161">
+        <var name="nodeToCheck" id="1010605374658393908" />
+      </scope>
+      <scope id="1010605374658393910" at="147,30,149,161">
+        <var name="nodeToCheck" id="1010605374658393910" />
+      </scope>
+      <scope id="1010605374658393912" at="154,30,156,161">
+        <var name="nodeToCheck" id="1010605374658393912" />
+      </scope>
+      <scope id="1010605374658396875" at="161,30,163,161">
+        <var name="nodeToCheck" id="1010605374658396875" />
+      </scope>
+      <scope id="1010605374658396873" at="168,30,170,161">
+        <var name="nodeToCheck" id="1010605374658396873" />
+      </scope>
+      <scope id="1010605374658398980" at="175,30,177,161">
+        <var name="nodeToCheck" id="1010605374658398980" />
+      </scope>
+      <scope id="1010605374658398982" at="182,30,184,161">
+        <var name="nodeToCheck" id="1010605374658398982" />
+      </scope>
+      <scope id="1010605374658398978" at="189,30,191,161">
+        <var name="nodeToCheck" id="1010605374658398978" />
+      </scope>
+      <scope id="1010605374658398976" at="196,30,198,161">
+        <var name="nodeToCheck" id="1010605374658398976" />
+      </scope>
+      <scope id="1010605374656788871" at="26,0,29,0" />
+      <scope id="1010605374656788871" at="85,0,88,0">
         <var name="owner" id="1010605374656788871" />
       </scope>
-      <scope id="1010605374656865742" at="60,133,63,11" />
-      <scope id="1010605374656855920" at="75,133,78,11" />
-      <scope id="1010605374656837998" at="31,0,35,0" />
-      <scope id="1010605374656838003" at="35,0,39,0" />
-      <scope id="1010605374656788914" at="39,0,43,0" />
-      <scope id="1010605374656788871" at="50,0,54,0" />
-      <scope id="1010605374656865740" at="59,54,64,9">
+      <scope id="1010605374656865742" at="99,133,102,11" />
+      <scope id="1010605374656855920" at="114,133,117,11" />
+      <scope id="1010605374656837998" at="30,0,34,0" />
+      <scope id="1010605374656838003" at="34,0,38,0" />
+      <scope id="1010605374658393904" at="38,0,42,0" />
+      <scope id="1010605374658393906" at="42,0,46,0" />
+      <scope id="1010605374658393908" at="46,0,50,0" />
+      <scope id="1010605374658393910" at="50,0,54,0" />
+      <scope id="1010605374658393912" at="54,0,58,0" />
+      <scope id="1010605374658396875" at="58,0,62,0" />
+      <scope id="1010605374658396873" at="62,0,66,0" />
+      <scope id="1010605374658398980" at="66,0,70,0" />
+      <scope id="1010605374658398982" at="70,0,74,0" />
+      <scope id="1010605374658398978" at="74,0,78,0" />
+      <scope id="1010605374658398976" at="78,0,82,0" />
+      <scope id="1010605374656788871" at="89,0,93,0" />
+      <scope id="1010605374656865740" at="98,54,103,9">
         <var name="item" id="1010605374656865756" />
       </scope>
-      <scope id="1010605374656855918" at="74,54,79,9">
+      <scope id="1010605374656855918" at="113,54,118,9">
         <var name="item" id="1010605374656855934" />
       </scope>
-      <scope id="1010605374656788914" at="85,91,90,9" />
-      <scope id="1010605374656788914" at="85,0,92,0" />
-      <scope id="1010605374656837998" at="57,30,67,9">
+      <scope id="1010605374658393904" at="124,75,129,9" />
+      <scope id="1010605374658393906" at="131,75,136,9" />
+      <scope id="1010605374658393908" at="138,75,143,9" />
+      <scope id="1010605374658393910" at="145,75,150,9" />
+      <scope id="1010605374658393912" at="152,75,157,9" />
+      <scope id="1010605374658396875" at="159,75,164,9" />
+      <scope id="1010605374658396873" at="166,75,171,9" />
+      <scope id="1010605374658398980" at="173,75,178,9" />
+      <scope id="1010605374658398982" at="180,75,185,9" />
+      <scope id="1010605374658398978" at="187,75,192,9" />
+      <scope id="1010605374658398976" at="194,75,199,9" />
+      <scope id="1010605374658393904" at="124,0,131,0" />
+      <scope id="1010605374658393906" at="131,0,138,0" />
+      <scope id="1010605374658393908" at="138,0,145,0" />
+      <scope id="1010605374658393910" at="145,0,152,0" />
+      <scope id="1010605374658393912" at="152,0,159,0" />
+      <scope id="1010605374658396875" at="159,0,166,0" />
+      <scope id="1010605374658396873" at="166,0,173,0" />
+      <scope id="1010605374658398980" at="173,0,180,0" />
+      <scope id="1010605374658398982" at="180,0,187,0" />
+      <scope id="1010605374658398978" at="187,0,194,0" />
+      <scope id="1010605374658398976" at="194,0,201,0" />
+      <scope id="1010605374656837998" at="96,30,106,9">
         <var name="errors" id="1010605374656865734" />
         <var name="link" id="1010605374656865730" />
       </scope>
-      <scope id="1010605374656838003" at="72,30,82,9">
+      <scope id="1010605374656838003" at="111,30,121,9">
         <var name="errors" id="1010605374656855912" />
         <var name="link" id="1010605374656855908" />
       </scope>
-      <scope id="1010605374656837998" at="55,89,68,9" />
-      <scope id="1010605374656838003" at="70,87,83,9" />
-      <scope id="1010605374656837998" at="55,0,70,0" />
-      <scope id="1010605374656838003" at="70,0,85,0" />
-      <unit id="1010605374656788871" at="44,0,94,0" name="jetbrains.mps.lang.typesystem.structureChecks.SpecializedLinkRedeclaration_Test$TestBody" />
-      <unit id="1010605374656788871" at="22,0,95,0" name="jetbrains.mps.lang.typesystem.structureChecks.SpecializedLinkRedeclaration_Test" />
+      <scope id="1010605374656837998" at="94,89,107,9" />
+      <scope id="1010605374656838003" at="109,87,122,9" />
+      <scope id="1010605374656837998" at="94,0,109,0" />
+      <scope id="1010605374656838003" at="109,0,124,0" />
+      <unit id="1010605374656788871" at="83,0,203,0" name="jetbrains.mps.lang.typesystem.structureChecks.SpecializedLinkRedeclaration_Test$TestBody" />
+      <unit id="1010605374656788871" at="21,0,204,0" name="jetbrains.mps.lang.typesystem.structureChecks.SpecializedLinkRedeclaration_Test" />
     </file>
   </root>
 </debug-info>
