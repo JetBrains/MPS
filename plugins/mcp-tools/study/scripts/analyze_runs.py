@@ -28,9 +28,18 @@ from pathlib import Path
 SKILL_DIR_RE = re.compile(r"(?:\.agents|\.claude)/skills/|\bmps-[a-z0-9-]+/(?:SKILL\.md|references/)")
 TEMP_RESULT_RE = re.compile(r"mps-node-\d+\.json|/T/mps-[a-z-]*\d+|mps-mcp-result")
 BLUEPRINT_WRITE_RE = re.compile(r"cat\s*>|tee\s|open\([^)]*['\"]w['\"]|json\.dump\(|>\s*\S+\.json")
+# Rejected by the platform BEFORE the call is dispatched, so `ToolCallListener` never fires and the
+# call is absent from the server call log. Only project resolution behaves this way.
 PRE_DISPATCH_REJECTION_RES = (
     re.compile(r"Unable to determine the target project for the current MCP tool call\."),
-    re.compile(r"MCP tool call has been failed: No argument is passed for required parameter\s+['‘][^'’]+['’]"),
+)
+# A missing required parameter LOOKS pre-dispatch but is not: the platform binds arguments inside
+# the dispatch, so the listener fires and the call log carries the entry (as `threw`, with
+# "IllegalStateException: No argument is passed for required parameter '<x>'"). Counting these as
+# pre-dispatch rejections under-states `expected_server_mps_calls` and fabricates a
+# `server_call_surplus` of +1 per occurrence — round 8 hit exactly that on S1:109 and S2:75.
+ARG_VALIDATION_ERROR_RE = re.compile(
+    r"MCP tool call has been failed: No argument is passed for required parameter\s+['‘][^'’]+['’]"
 )
 # A rejection whose listing is empty means the Welcome screen: no project is open at all, so no
 # projectPath could have helped. Lifecycle scenarios pass through this state deliberately.
@@ -90,6 +99,11 @@ def is_error_result(block, text: str) -> bool:
 
 def is_pre_dispatch_rejection(error: bool, text: str) -> bool:
     return error and any(pattern.search(text) for pattern in PRE_DISPATCH_REJECTION_RES)
+
+
+def is_arg_validation_error(error: bool, text: str) -> bool:
+    """A required parameter the caller omitted. Dispatched, so it IS in the server call log."""
+    return error and bool(ARG_VALIDATION_ERROR_RE.search(text))
 
 
 def is_child_event(event: dict) -> bool:
@@ -159,7 +173,7 @@ def analyse_run(run_id: str, runs: Path):
                     call = {"step": step, "name": name, "key": key_of(name, inp),
                             "input_chars": len(json.dumps(inp)) if inp is not None else 0,
                             "result_bytes": 0, "error": False, "root": root_ref_of(inp), "result_is_temp_file": False,
-                            "pre_dispatch_rejection": False,
+                            "pre_dispatch_rejection": False, "arg_validation_error": False,
                             "welcome_rejection": False, "modal_blocked": False,
                             "parent_event": not is_child_event(ev),
                             "skill_read": (name == "Read" and isinstance(inp, dict)
@@ -183,6 +197,7 @@ def analyse_run(run_id: str, runs: Path):
                         call["result_bytes"] = n
                         call["error"] = is_error_result(block, text)
                         call["pre_dispatch_rejection"] = is_pre_dispatch_rejection(call["error"], text)
+                        call["arg_validation_error"] = is_arg_validation_error(call["error"], text)
                         call["welcome_rejection"] = (call["pre_dispatch_rejection"]
                                                      and bool(WELCOME_REJECTION_RE.search(text)))
                         call["modal_blocked"] = bool(MODAL_BLOCKED_RE.search(text))
@@ -246,6 +261,9 @@ def analyse_run(run_id: str, runs: Path):
         "cost_usd": final.get("total_cost_usd"),
         "tool_calls": len(calls), "mps_calls": mps_calls,
         "pre_dispatch_rejections": pre_dispatch_rejections,
+        "arg_validation_errors": sum(
+            1 for c in calls if c["name"].startswith("mps_mcp_") and c["arg_validation_error"]
+        ),
         "welcome_rejections": sum(1 for c in calls if c["welcome_rejection"]),
         "close_project_calls": tool_calls.get("mps_mcp_close_project", 0),
         "modal_blocked": sum(1 for c in calls if c["modal_blocked"]),

@@ -3,16 +3,18 @@
 #
 # usage: run_worker.sh <scenario> <model> <run-no> <project-dir>
 #   scenario     S1..S10 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
-#   model        claude model alias, e.g. opus | sonnet
+#   model        worker model id for the observer harness (claude alias or Junie CLI id)
 #   run-no       1, 2, ...
 #   project-dir  absolute path of the scratch MPS project (must be open in MPS)
 #
 # Writes to $RUNS (default ~/MPSProjects/mcp-study/runs):
-#   <id>.meta.json        start/end timestamps, exit code, prompt sha, call-log byte offsets
-#   <id>-worker.jsonl     claude stream-json transcript
-#   <id>-server.jsonl     slice of the server call log covering this run
-#   <id>-install.json     result of the pre-run skill install
-# where <id> = <scenario>-<model>-<run-no>.
+#   <id>.meta.json              start/end timestamps, exit code, prompt sha, call-log byte offsets
+#   <id>-worker.jsonl           claude stream-json transcript (Junie: filled after normalize)
+#   <id>-worker.native.jsonl    Junie --json-output-file capture
+#   <id>-worker.stdout          Junie stdout sidecar (startup banner; not JSON)
+#   <id>-server.jsonl           slice of the server call log covering this run
+#   <id>-install.json           result of the pre-run skill install
+# where <id> = <scenario>-<modelSlug>-<run-no>.
 #
 # The meta also pins the MPS process the run was measured against (`mpsPid`, `mpsStartTs`) and the
 # isolation level (one MPS per round), so a round proves process continuity from the evidence
@@ -29,8 +31,10 @@
 # every run is retro-auditable against the docs it actually read. Set SKIP_SKILL_INSTALL=1 to skip
 # it; the meta then records the sha of whatever was already there and `skillsInstalled: false`.
 #
-# Requires: claude CLI, python3, MPS running with the MCP server on $MPS_MCP_URL and the
-# call log enabled (-Dmps.mcp.calllog=$CALLLOG). The worker prompt is passed verbatim.
+# Requires: the observer harness CLI (`claude` or `junie`), python3, MPS running with the MCP
+# server on $MPS_MCP_URL and the call log enabled (-Dmps.mcp.calllog=$CALLLOG). The worker prompt
+# is passed verbatim. WORKER_HARNESS (claude|junie) overrides auto-detect; default is claude when
+# neither observer env is set, so `run_worker.sh SMOKE sonnet N` still works.
 set -euo pipefail
 
 SCENARIO=${1:?scenario}; MODEL=${2:?model}; RUN=${3:?run-no}; PROJECT=${4:?project-dir}
@@ -41,16 +45,56 @@ MAX_TURNS=${MAX_TURNS:-400}
 ISOLATION=${ISOLATION:-per-round}
 PROJECT_SYNTHESIZED=${PROJECT_SYNTHESIZED:-0}
 PROMPT="$STUDY/scenarios/$SCENARIO/worker_prompt.md"
-ID="$SCENARIO-$MODEL-$RUN"
+# Same character class as the plan: anything other than [A-Za-z0-9._-] becomes '-'.
+MODEL_SLUG=$(printf '%s' "$MODEL" | python3 -c 'import re,sys; print(re.sub(r"[^A-Za-z0-9._-]", "-", sys.stdin.read().rstrip("\n")))')
+ID="$SCENARIO-$MODEL_SLUG-$RUN"
+
+# Same rules as list_worker_models.py. Observer JUNIE_* / CLAUDE_CODE_* are still visible here
+# (this is the parent script, before env -i).
+resolve_worker_harness() {
+  local override="${WORKER_HARNESS:-}"
+  if [ -n "$override" ]; then
+    case "$override" in
+      claude|junie) printf '%s\n' "$override"; return 0 ;;
+      *) echo "unknown harness: $override (expected claude or junie)" >&2; return 2 ;;
+    esac
+  fi
+  local junie=0 claude=0
+  if [ -n "${JUNIE_TMPDIR:-}" ] || [ -n "${JUNIE_DATA:-}" ]; then
+    junie=1
+  fi
+  if [ -n "${CLAUDE_CODE:-}" ] || [ -n "${CLAUDE_CODE_ENTRYPOINT:-}" ]; then
+    claude=1
+  fi
+  if [ "$junie" -eq 1 ] && [ "$claude" -eq 1 ]; then
+    echo "both Junie and Claude observer env vars are set; pass --harness or set WORKER_HARNESS" >&2
+    return 2
+  fi
+  if [ "$junie" -eq 1 ]; then
+    printf '%s\n' junie
+  else
+    printf '%s\n' claude
+  fi
+}
 
 [ -f "$PROMPT" ] || { echo "no prompt: $PROMPT" >&2; exit 2; }
 [ -d "$PROJECT" ] || { echo "no project dir: $PROJECT" >&2; exit 2; }
-[ -e "$RUNS/$ID-worker.jsonl" ] && { echo "run id already exists: $ID — bump the run number" >&2; exit 2; }
+if [ -e "$RUNS/$ID.meta.json" ] || [ -e "$RUNS/$ID-worker.jsonl" ] || [ -e "$RUNS/$ID-worker.native.jsonl" ]; then
+  echo "run id already exists: $ID — bump the run number" >&2
+  exit 2
+fi
 
 # User-level MPS agents can delegate calls that are missing from the parent transcript. Prove the
 # catalog is clean before installation, call-log offsets, metadata, or any other run side effect.
 # This remains mandatory when skill installation is skipped.
 python3 "$STUDY/scripts/check_user_agents.py" || exit 3
+
+HARNESS=$(resolve_worker_harness) || exit 2
+if [ "$HARNESS" = junie ]; then
+  command -v junie >/dev/null || { echo "junie CLI not on PATH" >&2; exit 2; }
+else
+  command -v claude >/dev/null || { echo "claude CLI not on PATH" >&2; exit 2; }
+fi
 
 mkdir -p "$RUNS"
 
@@ -95,7 +139,8 @@ INVENTORY_SHA=$( [ -f "$RUNS/inventory.json" ] && shasum -a 256 "$RUNS/inventory
 
 python3 - "$RUNS/$ID.meta.json" <<PY
 import json,sys
-json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","run":$RUN,"project":"$PROJECT",
+json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","modelSlug":"$MODEL_SLUG",
+  "harness":"$HARNESS","run":$RUN,"project":"$PROJECT",
   "relatedProjects":[p for p in "$RELATED".split(":") if p],
   "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA",
   "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
@@ -107,17 +152,38 @@ PY
 
 set +e
 # Clean environment: the harness may itself run inside an agent session whose provider/proxy
-# settings (ANTHROPIC_BASE_URL, CLAUDE_CODE_*) would otherwise leak into the worker.
-( cd "$PROJECT" && env -i HOME="$HOME" PATH="$PATH" USER="${USER:-$(id -un)}" SHELL="${SHELL:-/bin/zsh}" \
-    LANG="${LANG:-en_US.UTF-8}" TERM="${TERM:-xterm-256color}" TMPDIR="${TMPDIR:-/tmp}" \
-    ${MPS_MCP_URL:+MPS_MCP_URL="$MPS_MCP_URL"} \
-    claude -p "$(cat "$PROMPT")" --model "$MODEL" \
-    --output-format stream-json --verbose --max-turns "$MAX_TURNS" \
-    --permission-mode bypassPermissions \
-    --mcp-config "$STUDY/mcp.study.json" --strict-mcp-config \
-    < /dev/null > "$RUNS/$ID-worker.jsonl" 2> "$RUNS/$ID-worker.stderr" )
+# settings (ANTHROPIC_BASE_URL, CLAUDE_CODE_*, JUNIE_TMPDIR, JUNIE_DATA) would otherwise leak
+# into the worker. env -i lists the allowlist; do not pass observer JUNIE_TMPDIR / JUNIE_DATA.
+WORKER_ENV=(env -i HOME="$HOME" PATH="$PATH" USER="${USER:-$(id -un)}" SHELL="${SHELL:-/bin/zsh}" \
+  LANG="${LANG:-en_US.UTF-8}" TERM="${TERM:-xterm-256color}" TMPDIR="${TMPDIR:-/tmp}" \
+  ${MPS_MCP_URL:+MPS_MCP_URL="$MPS_MCP_URL"})
+if [ "$HARNESS" = junie ]; then
+  ( cd "$PROJECT" && "${WORKER_ENV[@]}" \
+      junie --task "$(cat "$PROMPT")" --model "$MODEL" \
+      -p "$PROJECT" \
+      --output-format json-stream --json-output-file "$RUNS/$ID-worker.native.jsonl" \
+      --skip-update-check \
+      --mcp-default-locations=false --mcp-location "$STUDY/mcp-junie" \
+      < /dev/null > "$RUNS/$ID-worker.stdout" 2> "$RUNS/$ID-worker.stderr" )
+else
+  ( cd "$PROJECT" && "${WORKER_ENV[@]}" \
+      claude -p "$(cat "$PROMPT")" --model "$MODEL" \
+      --output-format stream-json --verbose --max-turns "$MAX_TURNS" \
+      --permission-mode bypassPermissions \
+      --mcp-config "$STUDY/mcp.study.json" --strict-mcp-config \
+      < /dev/null > "$RUNS/$ID-worker.jsonl" 2> "$RUNS/$ID-worker.stderr" )
+fi
 EXIT=$?
 set -e
+
+if [ "$HARNESS" = junie ]; then
+  if [ -f "$RUNS/$ID-worker.native.jsonl" ]; then
+    python3 "$STUDY/scripts/normalize_transcript.py" \
+      "$RUNS/$ID-worker.native.jsonl" "$RUNS/$ID-worker.jsonl"
+  else
+    : > "$RUNS/$ID-worker.jsonl"
+  fi
+fi
 
 END_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 END_OFF=$(stat -f %z "$CALLLOG" 2>/dev/null || stat -c %s "$CALLLOG")
@@ -128,11 +194,15 @@ else
 fi
 
 python3 - "$RUNS/$ID.meta.json" <<PY
-import json,sys
+import json,os,sys
 p=sys.argv[1]; m=json.load(open(p))
+worker="$RUNS/$ID-worker.jsonl"
+native="$RUNS/$ID-worker.native.jsonl"
+events_path = worker if os.path.exists(worker) else native
+events = sum(1 for l in open(events_path) if l.strip()) if os.path.exists(events_path) else 0
 m.update({"endTs":"$END_TS","exitCode":$EXIT,"callLogEndOffset":$END_OFF,"status":"finished",
   "serverLines":sum(1 for l in open("$RUNS/$ID-server.jsonl") if l.strip()),
-  "workerEvents":sum(1 for l in open("$RUNS/$ID-worker.jsonl") if l.strip()),
+  "workerEvents":events,
   "taskPass":None,"taskEvidence":None})
 json.dump(m,open(p,"w"),indent=1)
 print(json.dumps({k:m[k] for k in ("id","exitCode","serverLines","workerEvents","startTs","endTs")}))

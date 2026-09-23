@@ -149,3 +149,37 @@
     against an MPS whose `java_command` carried a leftover project path. Generalisation: a new
     automation capability can turn a dormant documentation bug into a per-run cost — re-read the
     recipes it makes reachable.
+
+## From round 8 (2026-09-23, first round on the observer-owned lifecycle)
+
+32. **A preflight assertion with no script is an assertion that does not hold.** Step 1 told the
+    observer to check for user-level `mps-*` skills in prose, while the sibling agent check had a
+    guard script wired into `run_worker.sh`. Round 8 opened with `mps-api-research` installed in
+    both `~/.claude/skills` and `~/.junie/skills` — invisible to every automated gate, and it would
+    have shadowed the catalog under measurement in all four cells. → `check_user_agents.py` now
+    rejects `mps-*` folders in both skill catalogs too, read-only, with the same exit 3. Anything
+    the procedure calls an assertion belongs in the guard the harness already runs; prose checks
+    are only reliable on the day someone remembers them.
+33. **An instrumentation step must be executable from the state the round actually starts in.**
+    Step 2 said "capture preserves the VM options of the live process, so a relaunch keeps the
+    call-log option" — true, and useless when MPS is running *without* the option, which is the
+    normal state after any ordinary IDE launch. The only documented path back was editing the
+    tracked `MPS.xml` run configuration and restarting through the IDE, reintroducing the lesson-13
+    revert step the automation was meant to remove. → `mps_control.sh calllog <file>` writes the
+    option into the capture; `start`/`restart` pick it up. Write preconditions as "from state X do
+    Y", and check the step against the state a fresh round is really in.
+34. **A platform error that reads like a rejection may still have been dispatched.**
+    `analyze_runs.py` treated `No argument is passed for required parameter 'x'` as a pre-dispatch
+    rejection and subtracted it from `expected_server_mps_calls`. The platform binds arguments
+    *inside* the dispatch, so `ToolCallListener` fires and the call log carries the entry (as
+    `threw`): every round with one such error reported a spurious `server_call_surplus` of +1 and a
+    measurement-integrity warning on otherwise perfect evidence. → Only project resolution is
+    pre-dispatch; missing parameters are counted separately as `arg_validation_errors`. Before
+    trusting a signature-based classifier, verify one instance against the log it predicts.
+35. **Turn cost moved from tool results to skill navigation.** With discovery payloads projected
+    down (temp-file envelopes 23 → 0 on S1-sonnet), the top eight chains in round 8 were all
+    `Bash ↔ Read` over the skill catalog: 45 fetch operations for 189 KB in S1, 34 % of all tool
+    calls. The reference files' "Contents / when to read what" blocks were not consumed — the agent
+    re-derived them with `grep -n '^## '` and then read a line range. → When a payload hotspot is
+    treated, re-rank before assuming the next remedy is also about payload; and a navigation aid
+    only pays if the agent reads it instead of rebuilding it.

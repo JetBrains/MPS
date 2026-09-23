@@ -1,40 +1,75 @@
 # Harness
 
-All scripts: `plugins/mcp-tools/study/scripts/`, Python ≥ 3.9 stdlib, `--help`.
+All scripts: `plugins/mcp-tools/study/scripts/`, Python ≥ 3.9 stdlib, `--help`. Their unit tests
+run with the stdlib runner — `cd plugins/mcp-tools/study/scripts && python3 -m unittest discover
+-s tests -p 'test_*.py'`; there is no pytest dependency and the system python3 has no pytest.
+Run them once at preflight: a harness bug is cheaper to find there than in a round's evidence.
 
 ## run_worker.sh `<scenario> <model> <run-no> <project-dir>`
 Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/server-calllog.jsonl`),
-`MAX_TURNS` (400), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0), `ISOLATION` (`per-round`),
+`MAX_TURNS` (400, Claude only), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0), `ISOLATION` (`per-round`),
 `PROJECT_SYNTHESIZED` (0 — set 1 when the project came from `new_study_project.py`),
-`RELATED_PROJECTS` (colon-separated; auto-set to `<project>-target` for S10). Writes `<id>.meta.json`,
-`<id>-worker.jsonl`, `<id>-worker.stderr`, `<id>-server.jsonl` (call-log slice by byte offsets),
-`<id>-install.json`. Before taking the call-log offsets it runs `install_skills.py --project
+`RELATED_PROJECTS` (colon-separated; auto-set to `<project>-target` for S10),
+`WORKER_HARNESS` (`claude`|`junie`; overrides auto-detect). Auto-detect uses observer `JUNIE_TMPDIR` /
+`JUNIE_DATA` vs `CLAUDE_CODE` / `CLAUDE_CODE_ENTRYPOINT`. Default is `claude` when neither env is set,
+so `run_worker.sh SMOKE sonnet N` still works; both env vars without an override exit 2. The run id
+is `<scenario>-<modelSlug>-<run-no>` (`modelSlug` replaces characters other than `[A-Za-z0-9._-]`
+with `-`). Writes `<id>.meta.json` (includes `harness` and `modelSlug`), `<id>-worker.jsonl`,
+`<id>-worker.stderr`, `<id>-server.jsonl` (call-log slice by byte offsets), `<id>-install.json`.
+A Junie worker also writes `<id>-worker.native.jsonl` (from `--json-output-file`, never stdout —
+Junie prints a non-JSON startup banner) and `<id>-worker.stdout` as a debug sidecar. Before taking
+the call-log offsets it runs `install_skills.py --project
 <project-dir>`, so the worker always reads the live catalog and the install's own MCP calls stay
 out of the run's server slice; a failed install exits 3 and the run does not start. Before that,
-`check_user_agents.py` recursively inspects Markdown definitions below `~/.claude/agents` and exits
-3 if a filename matches `*mps*`, a body contains `mps_mcp` (case-insensitive), or the catalog cannot
-be read. This mandatory, read-only guard also runs with `SKIP_SKILL_INSTALL=1`, before any run side
-effect. Missing/empty catalogs and unrelated definitions pass. Built-in `Explore`/`Task` are outside
-this pin. The meta gains
+`check_user_agents.py` recursively inspects Markdown definitions below `~/.claude/agents` **and**
+`~/.junie/agents` and exits
+3 if a filename matches `*mps*`, a body contains `mps_mcp` (case-insensitive), or either catalog cannot
+be read; it then rejects any `mps-*` folder at the top level of `~/.claude/skills` or
+`~/.junie/skills` for the same reason — a user-level MPS skill shadows the per-project catalog the
+round installs, and `install_skills.py` cannot purge it (lesson 32). This mandatory, read-only
+guard also runs with `SKIP_SKILL_INSTALL=1`, before any run side
+effect. Missing/empty catalogs, unrelated definitions and unrelated skills pass. Built-in
+`Explore`/`Task` are outside this pin. Do not pass `--skill-default-locations=false` until a Junie SMOKE proves project
+`.agents/skills` still load without it; user-skill isolation for the first Junie matrix is the
+preflight `~/.junie/skills` check. The meta gains
 `skillsSha256` (catalog fingerprint) and `skillsInstalled`, plus the MPS process under measurement
 (`mpsPid`, `mpsStartTs`), `isolationLevel`, `projectSynthesized` and `relatedProjects`. `mpsPid`
 is what makes "one MPS per round" checkable after the fact instead of argued in prose;
 `relatedProjects` is load-bearing for S10 — the analyser filters the server call log by project,
 so without it a lifecycle run's whole server slice is discarded. Launch detached and poll:
 ```
-nohup sh -c "RUNS=$RUNS $STUDY/scripts/run_worker.sh S1 opus 1 $PROJ; echo EXIT_CODE=\$?" \
-  > $RUNS/S1-opus-1.harness.log 2>&1 &
+nohup sh -c "RUNS=$RUNS $STUDY/scripts/run_worker.sh S1 \$MODEL 1 $PROJ; echo EXIT_CODE=\$?" \
+  > $RUNS/S1-$MODEL-1.harness.log 2>&1 &
 WRAPPER=$!            # poll THIS pid: the sh wrapper exits when run_worker.sh (and the worker) exit
 for i in $(seq 1 100); do ps -p $WRAPPER >/dev/null || break; sleep 5; done
 ```
 Set the Bash tool's `timeout` to ≥ 540000 ms for polling calls (the default is 2 min); one call
-covers ≈ 8–9 min, so repeat the loop in further calls for long runs. The meta file's `pid` is
-`run_worker.sh`'s own pid (useful for `kill`), not the `claude` process. Re-running an id is
+covers ≈ 8–9 min, so repeat the loop in further calls for long runs. That poll loop is the only run
+bound for Junie: Junie 3452.1 has no `--max-turns` (and no `--verbose` / `--permission-mode`;
+`--brave` is interactive-only). The meta file's `pid` is
+`run_worker.sh`'s own pid (useful for `kill`), not the worker CLI process. Re-running an id is
 refused (exit 2) — bump the run number instead. Worker prompts use the cwd as `projectPath`.
 The child CLI runs under `env -i HOME PATH USER SHELL LANG TERM TMPDIR` because an agent session
-leaks `ANTHROPIC_BASE_URL` / `CLAUDE_CODE_*` (worker reports "Not logged in" otherwise), with
-`--permission-mode bypassPermissions --mcp-config study/mcp.study.json --strict-mcp-config
---output-format stream-json --verbose --max-turns $MAX_TURNS < /dev/null`.
+leaks `ANTHROPIC_BASE_URL` / `CLAUDE_CODE_*` / `JUNIE_TMPDIR` / `JUNIE_DATA` (do not pass observer
+Junie temp dirs). Claude: `--permission-mode bypassPermissions --mcp-config study/mcp.study.json
+--strict-mcp-config --output-format stream-json --verbose --max-turns $MAX_TURNS < /dev/null`.
+Junie: `junie --task --model -p "$PROJECT" --output-format json-stream --json-output-file
+<id>-worker.native.jsonl --skip-update-check --mcp-default-locations=false --mcp-location
+$STUDY/mcp-junie` (study MCP URL only, analogue of `--strict-mcp-config`). Junie workers may leave
+session files under `~/.junie/sessions`; do not auto-delete them.
+
+## list_worker_models.py
+Prints JSON `{ok, harness, orchestratorModel, models[]}` for gate question 2. Same harness
+detection as `run_worker.sh` (`--harness` / `WORKER_HARNESS` override). Orchestrator model comes
+from `~/.junie/config.json` `model` or `~/.claude/settings.json` `model` (trailing `[…]` stripped);
+`~/.junie/settings.json` `modelForLaunch` is ignored.
+
+## normalize_transcript.py `<native.jsonl> <worker.jsonl>`
+Junie `--json-output-file` dumps JSONL `session` / `step` / `result` events (not Claude
+`assistant`+`tool_use`). `run_worker.sh` keeps the native file and writes analyser input via this
+script: each non-final `step` becomes a `tool_use` / `tool_result` pair; `result.errorCode` is
+mapped onto `message.usage`. Claude-shaped input is a no-op. Unknown event types are counted on
+stderr and do not drop tool pairs.
 
 ## analyze_runs.py `$RUNS [--out DIR (default $RUNS/analysis)] [--min-occurrences 3] [--top 25]`
 Outputs: `metrics.csv`, `tools.json` (per-tool calls/errors/avg sizes, transcript + server),
@@ -52,7 +87,11 @@ calls/ms (slice filtered by the run's project). New audit columns are `pre_dispa
 the skill closes and re-opens without probing blind, as the first S10 run did. One is the
 acceptable cost of discovering the state that way; more than one is waste), `close_project_calls`, `modal_blocked`,
 `expected_server_mps_calls`, `agent_calls`, `server_mps_calls`, and `server_call_surplus`. The
-analyser recognizes only known platform rejection signatures, then computes
+analyser recognizes only known platform rejection signatures — **project resolution alone**
+(`Unable to determine the target project…`). A missing required parameter
+(`No argument is passed for required parameter 'x'`) reads like a rejection but is bound inside
+the dispatch, so the listener fires and the call *is* in the log; it is counted separately as
+`arg_validation_errors` and never subtracted (lesson 34). Then it computes
 `expected_server_mps_calls = mps_calls - pre_dispatch_rejections` and
 `server_call_surplus = server_mps_calls - expected_server_mps_calls`. A **non-zero** surplus produces one
 stderr warning and is persisted in `errors.json` and `hotspots.md`. Positive means server calls are
@@ -79,13 +118,18 @@ migrationEntries, files}`. Compare `migrationEntries` semantically, never the ra
 ends the document with a newline, an MPS-written one does not. Exit: 0 ok, 2 usage, 3 bad MPS home,
 4 target not empty.
 
-## mps_control.sh `capture|open|shutdown|start|wait|restart [project-dir]`
+## mps_control.sh `capture|calllog|open|shutdown|start|wait|restart [project-dir]`
 MPS process control. Env: `CAPTURE` (default `$TMPDIR/mps-study-cmdline.json`), `SHUTDOWN_WAIT`
 (60 s), `READY_WAIT` (300 s), `MPS_MCP_URL`.
 - `capture` — records the live launch command line (java binary + cwd from `ps`/`lsof`, VM options
   and classpath from `jcmd VM.command_line`, spaced tokens rejoined, jdwp and `idea_rt.jar`
   stripped). **Must run while MPS is alive**; `shutdown` refuses without it, because after the exit
   there is nothing left to inspect.
+- `calllog <file>` — writes `-Dmps.mcp.calllog=<file>` into the **capture** (creating the
+  directory), so the next `start`/`restart` brings the call log up; with no argument it clears the
+  option. `capture` can only preserve what the live process already carries, so this is how a round
+  turns the call log on when MPS was started without it — no tracked run configuration is edited
+  and there is no revert step at wrap-up (lesson 33). It does not affect the running MPS.
 - `open` — activates the **running** MPS with `[project-dir]`: a short-lived second process that
   exits in about a second. Prefer it over hand-writing the recipe from
   `mps-project-management/examples-macos.md`: it reuses the capture, and it confirms the project is
@@ -198,7 +242,7 @@ names, description/schema bytes. Its `McpClient` class is the seed of an online 
    if needed; open the new copy via CLI (`mps-project-management`). `mps_mcp_list_open_projects`
    must show it and NO other project with the same module names — the install in step 3 needs it
    open. 3. Launch
-   detached; poll. `run_worker.sh` installs the live skills first and writes `<id>-install.json`;
+   detached (`run_worker.sh S1 $MODEL 1 $PROJ`); poll. `run_worker.sh` installs the live skills first and writes `<id>-install.json`;
    confirm `skillsSha256` matches the round's other runs, and `mpsPid` too — a differing pid means
    MPS was restarted mid-round and the runs are not directly comparable. 4. For S10 only: record
    the left-behind `list_open_projects` state **the moment the worker exits** (a Welcome-screen

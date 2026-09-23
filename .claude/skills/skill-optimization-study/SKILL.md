@@ -31,25 +31,31 @@ RUNS=$HOME/MPSProjects/mcp-study/runs                            # evidence dir,
   and shuts MPS down** with `scripts/mps_control.sh`. Before each swap, tell the user the absolute
   path about to close (if any) and the absolute path about to open — do not ask them to perform the
   swap and do not wait for approval.
-- **Workers**: headless `claude -p` processes, one per (scenario, model, run), launched by
-  `study/scripts/run_worker.sh`. Evidence = their stream-json transcript + the server call log.
+- **Workers**: headless CLI processes (`claude -p` or `junie --task`), one per (scenario, model, run),
+  launched by `study/scripts/run_worker.sh`. Evidence = their transcript + the server call log.
 - **Human**: answers the gate questions, approves pushes, and dismisses MPS dialogs when a call
   returns `MODAL_BLOCKED` or a close/exit hangs on a confirmation. Does **not** open, close or
   create projects and does **not** restart MPS — those are observer actions now.
 
 ## Gate questions to ask before starting (use them verbatim)
 
+Before question 2, run `python3 $STUDY/scripts/list_worker_models.py` and present `models` as a
+multi-select. The orchestrator model is first and marked; default-select that model only. Extra
+ids the user types are allowed. Ask question 3 only when the detected harness is Claude; Junie
+non-interactive has no `bypassPermissions` equivalent (`--brave` is interactive-only).
+
 1. Instrumentation: server call log first (needs a plugin rebuild; the observer restarts MPS
    itself with `mps_control.sh restart`) or transcript-only?
-2. Worker models (default: opus + sonnet).
+2. Worker models (run list_worker_models.py; default: the orchestrator model from that list).
 3. Permission mode for workers (default: `bypassPermissions` on the developer's machine).
-4. Scope of the first pass before gate 1 (default: S1 + S3 on both models = 4 runs).
+4. Scope of the first pass before gate 1 (default: S1 + S3 on the selected models).
 Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies; A/B yes/no.
 
 ## Procedure (tick as you go; details in the references)
 
 1. **Preflight** — MPS running with MCP on `http://localhost:64343/stream`. Check the toolchain:
-   `claude --version` (≥ 2.1; must accept `--output-format stream-json --strict-mcp-config`),
+   `claude --version` (≥ 2.1; must accept `--output-format stream-json --strict-mcp-config`)
+   when the detected harness is Claude, or `junie --version` when it is Junie,
    `python3 -c 'import sys; assert sys.version_info >= (3, 9)'`, `jq --version`.
    Preflight is self-healing, and every step of it is yours:
    - MPS not running → `mps_control.sh start` (or, with no capture on file, the IDEA `MPS` run
@@ -62,25 +68,38 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    - `mps_mcp_list_open_projects(projectPath=<harness>)` must then list it. A synthesized project is
      empty by construction (`mps_mcp_get_project_structure` returns no modules); nothing in the study
      depends on a hand-maintained one, though an existing empty project may be substituted if
-     synthesis fails. Other projects may be open only if their module names are disjoint from what
-     workers will create. Is the call log on? `grep -c mps.mcp.calllog <MPS>/log/idea.log`
-   ≥ 1 and the log file grows after any tool call; if not (gate question 1 = transcript-only),
+     synthesis fails. **Every other project must be closed first** — including the developer's own
+     checkout, the common case when MPS was started from the IDEA run configuration. Disjoint
+     module names are not enough: with `confirmOpenNewProject2 = -1` (the default) the second open
+     raises the modal New Window / This Window prompt and blocks the round (lesson 30). Announce
+     the path you close; it is an observer action, not one to ask for.
+   - Is the call log on? Ask the process, not the log:
+   `ps -ww -p $(pgrep -f '[j]etbrains\.mps\.Launcher') -o args= | tr ' ' '\n' | grep calllog`
+   must print the option, and the file must grow after a tool call. If it is off and gate question
+   1 said call-log, step 2 turns it on; if gate 1 said transcript-only,
    expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
    Record the tool inventory: `python3 $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json`.
-   Assert there are no user-level `mps-*` skills (`ls ~/.claude/skills`) — those shadow the
-   per-project catalog and would silently replace the thing being measured. Also assert there
-   are no MPS-related Markdown definitions anywhere below `~/.claude/agents`: a filename matching
-   `*mps*` or a body containing `mps_mcp`, both case-insensitively, is contamination. The mandatory
-   `run_worker.sh` guard enforces this before any run side effect and exits 3 on a match or an
-   unreadable catalog; it never modifies user agents (lesson 26). Built-in `Explore` and `Task`
+   Run the harness's own unit tests once (`cd $STUDY/scripts && python3 -m unittest discover -s
+   tests -p 'test_*.py'`) — a broken script is cheaper to find here than in the evidence.
+   Then run the contamination guard yourself: `python3 $STUDY/scripts/check_user_agents.py`
+   (exit 0 clean, 3 contaminated). It rejects MPS-related Markdown definitions below
+   `~/.claude/agents` / `~/.junie/agents` — a filename matching `*mps*` or a body containing
+   `mps_mcp`, both case-insensitively — **and** any `mps-*` folder in `~/.claude/skills` or
+   `~/.junie/skills`, which would shadow the per-project catalog and silently replace the thing
+   being measured (lessons 26, 32). `run_worker.sh` runs the same guard before any run side effect.
+   The guard never modifies anything: move an offending user skill out of the skills directory
+   for the round and restore it at wrap-up. Built-in `Explore` and `Task`
    agents are outside this pin and remain enabled.
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
-   `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Add the option to the `MPS` run
-   configuration for the study only and REVERT it afterwards (lesson 13). Then pick it up without a
-   human: `mps_control.sh capture` **while MPS is still alive**, then `shutdown` (the close of the
-   last project carries the exit), `start <project>`, `wait`, and one SMOKE run as the readiness
-   gate. `capture` preserves the VM options of the live process, so a relaunch keeps the call-log
-   option; a relaunch through the run configuration instead needs the option still in the tree.
+   `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Turn it on without a human and
+   without touching a tracked file: `mps_control.sh capture` **while MPS is still alive**, then
+   `mps_control.sh calllog $RUNS/server-calllog.jsonl` (writes the option into the capture), then
+   `shutdown` (the close of the last project carries the exit), `start <project>`, `wait`, and one
+   SMOKE run as the readiness gate. `capture` only preserves VM options the live process already
+   carries, which is why `calllog` exists — adding the option to the `MPS` run configuration works
+   too but is study-only and must be reverted at wrap-up (lesson 13), so prefer the capture route.
+   Confirm the relaunched process actually carries it (`ps -ww -p <pid> -o args= | tr ' ' '\n' |
+   grep calllog`) and that the file grows.
 3. **Template** — the empty fixture is **synthesized, not snapshotted**
    (`scripts/new_study_project.py`): three descriptor files, no doc surface possible, and a
    `migration.xml` derived from the MPS that will open it. Module-bearing fixtures (`statechart`,
@@ -101,8 +120,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    restart** — a live process is not readiness. If the harness project is not open, announce its
    path, synthesize it if needed and open it via CLI; do not close it afterwards unless the next
    run needs a different project.
-   `RUNS=$RUNS MAX_TURNS=6 $STUDY/scripts/run_worker.sh SMOKE sonnet <n>
-   <harness-project>` — bump `<n>` on every re-run (the harness refuses an existing run id). The transcript
+   `RUNS=$RUNS MAX_TURNS=6 PROJECT_SYNTHESIZED=1 $STUDY/scripts/run_worker.sh SMOKE $MODEL <n>
+   <harness-project>` — bump `<n>` on every re-run (the harness refuses an existing run id);
+   drop `PROJECT_SYNTHESIZED=1` if the harness project was not synthesized. The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
 5. **Scenarios** — `study/scenarios/S1..S10/{worker_prompt.md,done_criteria.md}`; add a scenario for
@@ -153,7 +173,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
     should go down — the shutdown rides on that last close, because a Welcome-screen MPS cannot be
     stopped over MCP; delete any `<proj>-target` directory an S10 run left; clean
     `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
-    `~/.claude/projects/-…-mcp-study-proj-*/` memory dirs; keep the call-log listener. The capture
+    `~/.claude/projects/-…-mcp-study-proj-*/` memory dirs; Junie workers may leave
+    `~/.junie/sessions` — do not auto-delete them; keep the call-log listener. The capture
     file lives in `$TMPDIR`, outside that cleanup, so a later round can still relaunch.
 
 ## References

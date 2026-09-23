@@ -10,6 +10,11 @@ Lifecycle: `welcome_rejections` (pre-dispatch rejections with an empty project l
 Welcome screen, where no `projectPath` could have helped; 0 is the good value everywhere, S10
 included: the first S10 run read the skill and never probed blind. One is the acceptable cost of
 discovering the state; more than one is waste), `close_project_calls`, `modal_blocked`.
+`arg_validation_errors` counts `No argument is passed for required parameter 'x'` results: the
+caller omitted a required parameter. These reach the server and are in the call log, so they are
+NOT subtracted from `expected_server_mps_calls` — only project-resolution rejections are
+(lesson 34). Two of them in round 8 were the single largest recurring retry cause, so the column
+doubles as a hotspot signal, not just an accounting correction.
 `server_call_surplus` now warns in both directions — negative means the slice is missing calls the
 transcript shows (unlisted project path, MPS restart mid-run, call log off for part of it), i.e. an
 evidence gap. Lifecycle scenarios (`S10*`) are exempt both ways: they span several projects by

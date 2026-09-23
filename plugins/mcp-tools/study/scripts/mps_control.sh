@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # MPS process control for the study observer: capture, shutdown, start, wait, restart.
 #
-# usage: mps_control.sh capture|open|shutdown|start|wait|restart [project-dir]
+# usage: mps_control.sh capture|calllog|open|shutdown|start|wait|restart [project-dir]
 #
 # [project-dir] is optional everywhere and always the SAME project: the one to close on shutdown,
 # to open on start, to require as loaded on wait. Pass it whenever you know it — without it,
 # shutdown and wait fall back to parsing the platform's pre-dispatch rejection listing.
 #
 #   capture   record the running MPS's launch command line (idempotent while MPS lives)
+#   calllog   set/clear -Dmps.mcp.calllog=<file> IN THE CAPTURE, for the next `start`
 #   open      activate the RUNNING MPS with [project-dir] (short-lived second process)
 #   shutdown  close the single open project WITH shutdownWithLastProject=true, then poll the pid
 #   start     relaunch MPS DETACHED from the capture, optionally opening [project-dir]
@@ -94,6 +95,35 @@ json.dump({"pid": int(os.environ["PID"]), "javaBin": os.environ["JAVA"],
 print(json.dumps({"ok": True, "capture": os.environ["OUT"], "pid": int(os.environ["PID"]),
                   "selector": selector, "callLog": calllog is not None,
                   "vmOptions": len(vm), "classpathChars": len(classpath)}))
+PY
+}
+
+# --- calllog ----------------------------------------------------------------------------------
+# `capture` can only preserve what the live process already carries, so a round that wants the
+# server call log on an MPS started without it had no scripted path: the documented alternative was
+# editing the tracked `.idea/runConfigurations/MPS.xml` and restarting through the IDE (study
+# lesson 13's revert dance). This edits the CAPTURE instead — nothing tracked is touched, and the
+# option is picked up by the next `start`/`restart`. Pass no file to clear it.
+# The directory must exist before MPS starts; the script creates it.
+do_calllog() {
+  [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — run 'capture' while MPS is still alive"
+  local file="${1:-}"
+  [ -n "$file" ] && mkdir -p "$(dirname "$file")"
+  CAPTURE="$CAPTURE" CL="$file" python3 - <<'PY'
+import json, os
+cap = os.environ["CAPTURE"]
+cl = os.environ["CL"]
+d = json.load(open(cap))
+d["vmOptions"] = [o for o in d["vmOptions"] if not o.startswith("-Dmps.mcp.calllog=")]
+opt = None
+if cl:
+    opt = "-Dmps.mcp.calllog=" + os.path.abspath(os.path.expanduser(cl))
+    d["vmOptions"].append(opt)
+d["callLogOption"] = opt
+json.dump(d, open(cap, "w"), indent=1)
+print(json.dumps({"ok": True, "capture": cap, "callLogOption": opt,
+                  "vmOptions": len(d["vmOptions"]),
+                  "note": "takes effect on the next start/restart, not on the running MPS"}))
 PY
 }
 
@@ -291,6 +321,7 @@ print(json.dumps({"ok": True, "tools": len(d.get("tools", [])),
 
 case "${1:-}" in
   capture)  do_capture ;;
+  calllog)  do_calllog "${2:-}" ;;
   open)     do_open "${2:-}" ;;
   shutdown) do_shutdown "${2:-}" ;;
   start)    do_start "${2:-}" ;;
@@ -298,5 +329,7 @@ case "${1:-}" in
   restart)
     [ -f "$CAPTURE" ] || do_capture >/dev/null
     do_shutdown "${2:-}" && do_start "${2:-}" && do_wait "${2:-}" ;;
-  *) echo "usage: $(basename "$0") capture|open|shutdown|start|wait|restart [project-dir]" >&2; exit 2 ;;
+  *) echo "usage: $(basename "$0") capture|calllog|open|shutdown|start|wait|restart [project-dir]
+       calllog takes a call-log FILE (or nothing, to clear it), not a project directory" >&2
+     exit 2 ;;
 esac

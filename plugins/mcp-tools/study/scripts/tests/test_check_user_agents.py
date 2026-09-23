@@ -37,8 +37,8 @@ class CheckUserAgentsTest(unittest.TestCase):
             [sys.executable, str(CHECKER)], env=env, text=True, capture_output=True, check=False,
         )
 
-    def definition(self, relative: str, body: str = "unrelated") -> Path:
-        path = self.home / ".claude" / "agents" / relative
+    def definition(self, relative: str, body: str = "unrelated", *, catalog: str = ".claude") -> Path:
+        path = self.home / catalog / "agents" / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(body)
         return path
@@ -48,9 +48,35 @@ class CheckUserAgentsTest(unittest.TestCase):
         self.assertIn(str(path), result.stderr)
         self.assertIn(rule, result.stderr)
 
+    def skill(self, name: str, *, catalog: str = ".claude") -> Path:
+        path = self.home / catalog / "skills" / name
+        path.mkdir(parents=True, exist_ok=True)
+        (path / "SKILL.md").write_text("---\nname: %s\n---\nbody\n" % name)
+        return path
+
+    def test_user_level_mps_skill_is_rejected_without_modification(self) -> None:
+        """Round 8 started with ~/.claude/skills/mps-api-research present: it shadows the
+        per-project catalog and install_skills.py cannot purge it."""
+        path = self.skill("mps-api-research")
+        before = sorted(p.name for p in path.iterdir())
+        self.assertRejected(self.run_checker(), path, "shadows the per-project catalog")
+        self.assertEqual(before, sorted(p.name for p in path.iterdir()))
+
+    def test_user_level_mps_skill_in_the_junie_catalog_is_rejected(self) -> None:
+        path = self.skill("mps-node-editing", catalog=".junie")
+        self.assertRejected(self.run_checker(), path, "shadows the per-project catalog")
+
+    def test_unrelated_user_skills_and_stray_files_pass(self) -> None:
+        self.skill("local-model-delegate")
+        self.skill("context-search", catalog=".junie")
+        (self.home / ".claude" / "skills" / ".DS_Store").write_text("")
+        (self.home / ".claude" / "skills" / "mps-not-a-folder.md").write_text("a file, not a skill")
+        self.assertEqual(0, self.run_checker().returncode, self.run_checker().stderr)
+
     def test_absent_and_empty_catalogs_pass(self) -> None:
         self.assertEqual(0, self.run_checker().returncode)
         (self.home / ".claude" / "agents").mkdir(parents=True)
+        (self.home / ".junie" / "agents").mkdir(parents=True)
         self.assertEqual(0, self.run_checker().returncode)
 
     def test_unrelated_definition_passes(self) -> None:
@@ -87,6 +113,21 @@ class CheckUserAgentsTest(unittest.TestCase):
         result = self.run_checker()
         self.assertEqual(3, result.returncode, result)
         self.assertIn("cannot inspect user agent catalog", result.stderr)
+
+    def test_junie_filename_match_is_rejected_when_claude_is_clean(self) -> None:
+        self.definition("babysit-build.md", "Build babysitter")
+        path = self.definition("foo-mps.md", "unrelated", catalog=".junie")
+        self.assertRejected(self.run_checker(), path, "filename matches *mps*")
+
+    def test_junie_body_match_is_rejected_when_claude_is_clean(self) -> None:
+        self.definition("babysit-build.md", "Build babysitter")
+        path = self.definition("helper.md", "use mps_mcp", catalog=".junie")
+        self.assertRejected(self.run_checker(), path, "body matches mps_mcp")
+
+    def test_claude_contamination_still_fails_when_junie_is_clean(self) -> None:
+        (self.home / ".junie" / "agents").mkdir(parents=True)
+        path = self.definition("helper.md", "use mps_mcp")
+        self.assertRejected(self.run_checker(), path, "body matches mps_mcp")
 
     def test_shell_gate_runs_before_installer_and_worker_even_when_install_is_skipped(self) -> None:
         study = self.root / "study"

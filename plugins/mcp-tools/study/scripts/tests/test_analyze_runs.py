@@ -76,6 +76,9 @@ class AnalyzeRunsTest(unittest.TestCase):
         ]
         server = [
             {"tool": "mps_mcp_one", "ok": True, "project": "/project"},
+            # mps_mcp_three is the missing-argument call: the platform binds arguments inside the
+            # dispatch, so the listener fires and the call IS logged.
+            {"tool": "mps_mcp_three", "ok": False, "project": "/project"},
             {"tool": "mps_mcp_four", "ok": False, "project": "/project"},
             {"tool": "mps_mcp_five", "ok": False, "project": "/project"},
             {"tool": "mps_mcp_hidden", "ok": True, "project": "/project"},
@@ -89,13 +92,14 @@ class AnalyzeRunsTest(unittest.TestCase):
         self.assertTrue(json.loads(completed.stdout)["ok"])
         row = self.metrics()
         self.assertEqual("5", row["mps_calls"])
-        self.assertEqual("2", row["pre_dispatch_rejections"])
-        self.assertEqual("3", row["expected_server_mps_calls"])
-        self.assertEqual("4", row["server_mps_calls"])
-        self.assertEqual("1", row["server_call_surplus"])
+        self.assertEqual("1", row["pre_dispatch_rejections"])   # only the project-resolution one
+        self.assertEqual("1", row["arg_validation_errors"])     # dispatched, so not subtracted
+        self.assertEqual("4", row["expected_server_mps_calls"])
+        self.assertEqual("5", row["server_mps_calls"])
+        self.assertEqual("1", row["server_call_surplus"])       # mps_mcp_hidden, the delegated call
         self.assertEqual("1", row["agent_calls"])
         self.assertEqual(1, completed.stderr.count("WARNING:"), completed.stderr)
-        self.assertIn("4 server MPS calls - (5 transcript MPS calls - 2 pre-dispatch rejections) = 1", completed.stderr)
+        self.assertIn("5 server MPS calls - (5 transcript MPS calls - 1 pre-dispatch rejections) = 1", completed.stderr)
         errors = json.loads((self.out / "errors.json").read_text())
         self.assertIn("server calls absent from the parent transcript", errors["positive"]["server_call_surplus_warning"])
         self.assertIn("## Measurement-integrity warnings", (self.out / "hotspots.md").read_text())
@@ -125,6 +129,35 @@ class AnalyzeRunsTest(unittest.TestCase):
         self.assertTrue(all(errors[rid]["server_call_surplus_warning"] is None
                             for rid in ("zero", "missing", "empty")))
 
+
+    def test_a_missing_required_parameter_is_dispatched_and_does_not_fabricate_a_surplus(self) -> None:
+        """Round 8's false positive: one omitted required parameter per run (S1:109 modelReference,
+        S2:75 moduleName) was counted as a pre-dispatch rejection, so `expected_server_mps_calls`
+        came out one short of a complete, correct server slice and every run warned."""
+        missing_argument = ("MCP tool call has been failed: "
+                            "No argument is passed for required parameter 'modelReference'")
+        events = [
+            assistant("a", "mcp__server__mps_mcp_insert_root_node_from_json"),
+            result("a", missing_argument, error=True),
+            assistant("b", "mcp__server__mps_mcp_insert_root_node_from_json"), result("b", '{"ok":true}'),
+        ]
+        server = [
+            {"tool": "mps_mcp_insert_root_node_from_json", "ok": False, "threw": True,
+             "error": "IllegalStateException: No argument is passed for required parameter "
+                      "'modelReference'", "project": "/project"},
+            {"tool": "mps_mcp_insert_root_node_from_json", "ok": True, "project": "/project"},
+        ]
+        self.write_run("S1-sonnet-1", events, server, meta={"scenario": "S1"})
+
+        completed = self.run_analyzer()
+
+        self.assertEqual(0, completed.returncode, completed)
+        row = self.metrics()
+        self.assertEqual("0", row["pre_dispatch_rejections"])
+        self.assertEqual("1", row["arg_validation_errors"])
+        self.assertEqual("2", row["expected_server_mps_calls"])
+        self.assertEqual("0", row["server_call_surplus"])
+        self.assertEqual("", completed.stderr)
 
     def test_lifecycle_columns_count_welcome_rejections_closes_and_modals(self) -> None:
         welcome = ('Unable to determine the target project for the current MCP tool call.\n'

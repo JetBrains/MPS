@@ -24,7 +24,9 @@ those samples kept, for S5/S6; recipes-broken = recipes-full + `scenarios/S5/PRO
 
 Measured in 2026-09: S1, S3 (both models, all PASS); S2, S5, S6 in round 6 (S6 FAIL);
 S10 rehearsed 2026-09-22 (sonnet, PASS on all five criteria, 29 turns / 116 s / 26 tool calls,
-`welcome_rejections` 0, one self-recovered error — defect D39). S4, S7–S9 unmeasured.
+`welcome_rejections` 0, one self-recovered error — defect D39); S1 + S2 re-measured in round 8
+(2026-09-23, sonnet, both PASS) — the first round on the observer-owned lifecycle, which found
+harness defects D40–D42. S4, S7–S9 unmeasured.
 **S10 runs last in a round** — see its exception and recovery notes below.
 
 ## Project create / open / close (orchestrator, every scenario)
@@ -85,7 +87,7 @@ observer's job, after the left-behind state has been recorded.
 
 ## Adding a scenario for a changed skill/tool
 Pick the smallest task that forces the changed path (e.g. a new tool parameter), reuse a fixture,
-write done criteria first, run once per model, compare its chains with the baseline `chains.json`.
+write done criteria first, run once per selected model, compare its chains with the baseline `chains.json`.
 The observer opens and closes the reused fixture the same way as S1–S9 (announce paths; CLI open;
 `mps_mcp_close_project` close). Do not make the worker or the evaluator perform the swap — unless
 the swap itself is the changed surface, which is S10's declared exception above and should stay the
