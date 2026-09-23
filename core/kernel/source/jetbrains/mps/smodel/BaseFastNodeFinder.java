@@ -53,6 +53,7 @@ public class BaseFastNodeFinder implements FastNodeFinder {
   /**
    * Walk associated model and build concept instance map. Subclasses
    * may override e.g. if they need to control read events during the walk.
+   * Always invoked while holding the index lock, hence overrides shall not block on other threads or locks.
    */
   protected ConceptInstanceMap build(Computable<ConceptInstanceMap> b) {
     return b.compute();
@@ -62,12 +63,11 @@ public class BaseFastNodeFinder implements FastNodeFinder {
    * Subclasses shall invoke once model had changed
    */
   protected void added(SNode n) {
-    if (myNodeMap.isEmpty()) {
-      return;
-    }
-    ConceptInstanceMap toAdd = build(new ConceptNodeMapBuilder(n));
     synchronized (myNodeMap) {
-      myNodeMap.merge(toAdd);
+      if (myNodeMap.isEmpty()) {
+        return;
+      }
+      myNodeMap.merge(build(new ConceptNodeMapBuilder(n)));
     }
   }
 
@@ -75,12 +75,11 @@ public class BaseFastNodeFinder implements FastNodeFinder {
    * Subclasses shall invoke once model had changed
    */
   protected void removed(SNode n) {
-    if (myNodeMap.isEmpty()) {
-      return;
-    }
-    ConceptInstanceMap toDelete = build(new ConceptNodeMapBuilder(n));
     synchronized (myNodeMap) {
-      myNodeMap.forget(toDelete);
+      if (myNodeMap.isEmpty()) {
+        return;
+      }
+      myNodeMap.forget(build(new ConceptNodeMapBuilder(n)));
     }
   }
 
@@ -104,42 +103,32 @@ public class BaseFastNodeFinder implements FastNodeFinder {
     // notify 'model nodes read access'
     myModel.getRootNodes().iterator();
 
-    if (!myNodeMap.isEmpty()) {
-      return getNodesImpl(concept, includeInherited);
-    }
+    // not under myNodeMap lock to avoid nesting ConceptDescendantsCache lock inside it, see MPS-40189
+    final Set<SAbstractConcept> allDescendantsOfConcept = includeInherited ? ConceptDescendantsCache.getInstance().getDescendants(concept) : null;
+    final ArrayList<List<SNode>> nodesOfConcept;
+    int cnt = 0;
     synchronized (myNodeMap) {
       if (myNodeMap.isEmpty()) {
         ConceptInstanceMap all = build(new ConceptNodeMapBuilder(myModel));
         all.trimValues(); // merge may reuse lists,
         myNodeMap.merge(all);
       }
-      return getNodesImpl(concept, includeInherited);
-    }
-  }
-
-  @NotNull
-  private List<SNode> getNodesImpl(SAbstractConcept concept, boolean includeInherited) {
-    if (includeInherited) {
-      Set<SAbstractConcept> allDescendantsOfConcept = ConceptDescendantsCache.getInstance().getDescendants(concept);
-      final ArrayList<List<SNode>> nodesOfConcept = new ArrayList<>(allDescendantsOfConcept.size());
-      int cnt = 0;
-      synchronized (myNodeMap) { // utilize the fact values in map are immutable
-        for (SAbstractConcept d : allDescendantsOfConcept) {
-          List<SNode> n = myNodeMap.get(d);
-          nodesOfConcept.add(n);
-          cnt += n.size();
-        }
-      }
-      final ArrayList<SNode> result = new ArrayList<>(cnt);
-      for (List<SNode> l : nodesOfConcept) {
-        result.addAll(l);
-      }
-      return result;
-    } else {
-      synchronized (myNodeMap) {
+      if (allDescendantsOfConcept == null) {
         return myNodeMap.get(concept);
       }
+      nodesOfConcept = new ArrayList<>(allDescendantsOfConcept.size());
+      for (SAbstractConcept d : allDescendantsOfConcept) {
+        List<SNode> n = myNodeMap.get(d);
+        nodesOfConcept.add(n);
+        cnt += n.size();
+      }
     }
+    // values in map are immutable, safe to copy outside of the lock
+    final ArrayList<SNode> result = new ArrayList<>(cnt);
+    for (List<SNode> l : nodesOfConcept) {
+      result.addAll(l);
+    }
+    return result;
   }
 
   private static class ConceptNodeMapBuilder implements Computable<ConceptInstanceMap> {

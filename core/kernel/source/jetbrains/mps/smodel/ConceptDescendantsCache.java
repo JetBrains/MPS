@@ -52,6 +52,7 @@ public class ConceptDescendantsCache implements CoreComponent {
   private final ConceptRegistry myConceptRegistry;
   private final LanguageRegistry myLanguageRegistry;
 
+  // access to both collections is synchronized on myNotProcessedRuntimes
   private final Map<LanguageRuntime, Set<ConceptDescriptor>> myLoadedLanguageToConceptsMap = new HashMap<>();
   private final Set<LanguageRuntime> myNotProcessedRuntimes = new LinkedHashSet<>();
   private final LanguageRegistryListener myLanguageRegistryListener = new LanguageRegistryListener() {
@@ -70,8 +71,8 @@ public class ConceptDescendantsCache implements CoreComponent {
         notYetLoaded.retainAll(c);
         myNotProcessedRuntimes.removeAll(notYetLoaded);
         c.removeAll(notYetLoaded);
+        unloadConcepts(c);
       }
-      unloadConcepts(c);
     }
   };
 
