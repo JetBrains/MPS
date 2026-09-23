@@ -4,7 +4,7 @@ Rules that, if violated, make the AST fail structural / assignability / typesyst
 
 ## Expressions and Statements
 * **Expressions** must be wrapped in `ExpressionStatement` to be valid in a `StatementList`.
-* **StatementList vs Single Statement**: Always check whether a role expects a `StatementList` or a single `Statement`. Most loop and branch bodies expect a `StatementList`.
+* **StatementList vs Single Statement**: Always check whether a role expects a `StatementList` or a single `Statement`. Most loop and branch bodies expect a `StatementList`. This applies to JSON blueprints, which never wrap for you; `mps_mcp_parse_java_and_insert` does auto-wrap `STATEMENTS` into a `StatementList`-typed role — see [parse-java-tips.md](parse-java-tips.md).
 * **`IfStatement` `else` branch is a single `Statement`**: `IfStatement.ifTrue` is a `StatementList`, but the `else` branch (`IfStatement.ifFalseStatement`) accepts a **single `Statement`**, not a `StatementList`. Do not pass a `StatementList` into `ifFalseStatement` the way you do for `ifTrue` — it fails assignability. For a normal `else { ... }` block use a `BlockStatement` (the most typical concrete concept here) and put the statements in its inner `StatementList`; for `else if` use another `IfStatement` (or the `elsifClauses` children).
 
 ## Dot Expressions

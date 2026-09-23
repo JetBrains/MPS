@@ -715,6 +715,184 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `child mode wraps statements into the empty StatementList of a body role`() {
+        // D45: a body-like role declares `StatementList` as its target concept, so bare parsed
+        // statements used to be rejected and the caller had to insert a StatementList itself and
+        // re-target its `statement` role. The tool now redirects into that list instead. The
+        // pre-existing empty StatementList (MPS fills the obligatory `body` role) must be reused,
+        // not duplicated, and the warning must say where the reported index refers to.
+        val (methodRef, bodyRef) = seedMethodWithBody("Holder", "void run() {}")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"int a = 1;\nint b = 2;","featureKind":"STATEMENTS",
+                    "insert":{"mode":"child","parentRef":"$methodRef","role":"body"}}"""
+            )
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        val data = assertOkData(response)
+        val inserted = data.getAsJsonArray("inserted")
+        assertEquals("both statements must be reported as inserted: $response", 2, inserted.size())
+        assertEquals(
+            "each inserted node must report its index inside the statement list",
+            listOf(0, 1),
+            inserted.map { it.asJsonObject.get("index").asInt },
+        )
+        val warnings = envelope.getAsJsonArray("warnings").map { it.asString }
+        assertTrue(
+            "the auto-wrap must be reported in warnings: $warnings",
+            warnings.any { it.contains("StatementList") && it.contains("'body'") },
+        )
+
+        readOnRepo {
+            val method = resolveNodeRef(methodRef)
+            val body = method.children.single { it.containmentLink?.name == "body" }
+            assertEquals(
+                "the existing empty StatementList must be reused, not replaced",
+                bodyRef,
+                PersistenceFacade.getInstance().asString(body.reference),
+            )
+            assertEquals(
+                "both statements must land inside the statement list",
+                2,
+                bodyStatements(body).size,
+            )
+        }
+    }
+
+    @Test
+    fun `child mode appends into a non-empty body at the requested position`() {
+        // D45: the wrap must never discard an existing body — appending is the non-destructive
+        // reading, and it makes `position` index within the statement list.
+        val (methodRef, _) = seedMethodWithBody("Appender", "void run() { int first = 1; }")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"int second = 2;","featureKind":"STATEMENTS",
+                    "insert":{"mode":"child","parentRef":"$methodRef","role":"body","position":0}}"""
+            )
+        }
+        val inserted = assertOkData(response).getAsJsonArray("inserted")
+        assertEquals("expected one inserted statement: $response", 1, inserted.size())
+        assertEquals(
+            "an explicit position must index within the statement list",
+            0,
+            inserted.first().asJsonObject.get("index").asInt,
+        )
+
+        readOnRepo {
+            val method = resolveNodeRef(methodRef)
+            val body = method.children.single { it.containmentLink?.name == "body" }
+            assertEquals(
+                "the pre-existing statement must survive, with the new one ahead of it",
+                listOf("second", "first"),
+                bodyStatements(body).flatMap { statement -> statement.children.mapNotNull { it.name } },
+            )
+        }
+    }
+
+    @Test
+    fun `child mode still rejects an expression in a StatementList role`() {
+        // D45 guard: the wrap is gated on the parsed nodes actually being statements, so an
+        // Expression into a body-like role keeps the pre-existing rejection and mutates nothing.
+        val (methodRef, bodyRef) = seedMethodWithBody("Strict", "void run() {}")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"1 + 2","featureKind":"EXPRESSION",
+                    "insert":{"mode":"child","parentRef":"$methodRef","role":"body"}}"""
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertTrue(
+            "error must still call out the role assignability mismatch: $response",
+            obj.get("error").asString.contains("cannot be placed in role 'body'"),
+        )
+
+        readOnRepo {
+            val body = resolveNodeRef(bodyRef)
+            assertTrue(
+                "the rejection must not have touched the body: ${body.children.toList()}",
+                body.children.none(),
+            )
+        }
+    }
+
+    @Test
+    fun `replace mode wraps several statements into one StatementList`() {
+        // D45: replacing a StatementList-typed slot is the same two-step. Several statements
+        // collapse into exactly one replacement node, so the single-node check must not fire
+        // before the wrap.
+        val (methodRef, bodyRef) = seedMethodWithBody("Swapper", "void run() { int old = 0; }")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"int a = 1;\nint b = 2;","featureKind":"STATEMENTS",
+                    "insert":{"mode":"replace","targetRef":"$bodyRef"}}"""
+            )
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        val inserted = assertOkData(response).getAsJsonArray("inserted")
+        assertEquals("the replacement must be the single wrapping list: $response", 1, inserted.size())
+        assertEquals("StatementList", inserted.first().asJsonObject.get("concept").asString)
+        val warnings = envelope.getAsJsonArray("warnings").map { it.asString }
+        assertTrue(
+            "the destructive wrap must be reported in warnings: $warnings",
+            warnings.any { it.contains("StatementList") && it.contains("replaced") },
+        )
+
+        readOnRepo {
+            val method = resolveNodeRef(methodRef)
+            val body = method.children.single { it.containmentLink?.name == "body" }
+            assertEquals("StatementList", body.concept.name)
+            assertEquals(
+                "the new body must hold exactly the parsed statements",
+                listOf("a", "b"),
+                bodyStatements(body).flatMap { statement -> statement.children.mapNotNull { it.name } },
+            )
+        }
+    }
+
+    private fun bodyStatements(body: SNode): List<SNode> =
+        body.children.filter { it.containmentLink?.name == "statement" }
+
+    /**
+     * Seeds a class named [className] with the single method parsed from [methodCode] and returns
+     * the method's persistent reference together with the reference of the `StatementList` MPS
+     * installs in its obligatory `body` role.
+     */
+    private fun seedMethodWithBody(className: String, methodCode: String): Pair<String, String> {
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+        val toolset = JetBrainsMPSJavaMcpToolset()
+
+        val seedClass = runTool(toolset) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"class $className {}","featureKind":"CLASS",
+                    "insert":{"mode":"root","modelRef":"$javaModelRef"}}"""
+            )
+        }
+        val classRef = assertOkData(seedClass).getAsJsonArray("inserted")
+            .first().asJsonObject.get("reference").asString
+
+        val seedMethod = runTool(toolset) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"$methodCode","featureKind":"METHOD","contextNodeRef":"$classRef",
+                    "insert":{"mode":"child","parentRef":"$classRef","role":"member"}}"""
+            )
+        }
+        val methodRef = assertOkData(seedMethod).getAsJsonArray("inserted")
+            .first().asJsonObject.get("reference").asString
+
+        val bodyRef = readOnRepo {
+            val body = resolveNodeRef(methodRef).children.single { it.containmentLink?.name == "body" }
+            PersistenceFacade.getInstance().asString(body.reference)
+        }
+        return methodRef to bodyRef
+    }
+
+    @Test
     fun `child mode clamps an out-of-range position to an append and reports the actual index`() {
         // INC-5: a multi-cardinality child insert with a `position` past the current child count
         // used to fail hard with "Target index N is out of bounds (count: …)". It must now clamp
