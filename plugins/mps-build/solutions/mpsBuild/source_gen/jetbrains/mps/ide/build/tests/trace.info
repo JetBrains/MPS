@@ -17,7 +17,7 @@
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/2201735946498405745">
     <file name="mpsTypesystem.xml">
-      <unit id="2201735946498405745" at="1,0,1931,10" name="jetbrains.mps.ide.build.tests.mpsTypesystem" />
+      <unit id="2201735946498405745" at="1,0,1936,10" name="jetbrains.mps.ide.build.tests.mpsTypesystem" />
     </file>
   </root>
   <root nodeRef="r:42d04941-551b-420d-9485-a5f496e15594(jetbrains.mps.ide.build.tests)/2883693069523015134">

@@ -13765,6 +13765,11 @@
           <ref role="3bR37D" to="ffeo:7Kfy9QB6Lh7" resolve="jetbrains.mps.typesystemEngine" />
         </node>
       </node>
+      <node concept="1SiIV0" id="S6p3JsBnN1" role="3bR37C">
+        <node concept="3bR9La" id="S6p3JsBnN2" role="1SiIV1">
+          <ref role="3bR37D" to="ffeo:7Kfy9QB6LaO" resolve="jetbrains.mps.lang.structure" />
+        </node>
+      </node>
     </node>
     <node concept="1E1JtA" id="2j4NQWLGvNo" role="3989C9">
       <property role="TrG5h" value="testSubstituteType" />
