@@ -140,6 +140,12 @@
          intellij.platform.feedback content module. Unlike service overrides, registry key overrides do not depend on
          registration order (RegistryKeyBean.putNewDescriptorConsideringOverrides), so declaring it here is enough. -->
     <registryKey key="csat.survey.enabled" defaultValue="false" description="Enables periodic CSAT survey" overrides="true"/>
+    <!-- MPS-40138: MPS does not support the platform's automatic error reporting (MPS uses its own CharismaReporter),
+         so the consent must not appear in Settings | Data Sharing. The platform declares the key with defaultValue="true"
+         in intellij.platform.ide.impl; IDEA turns it off in intellij.idea.community.ide.customization, which is not part
+         of the MPS product layout. -->
+    <registryKey key="ea.auto.report.feature.visible" defaultValue="false" restartRequired="true" overrides="true"
+                 description="Makes the automatic error reporting feature visible in UI and available to enable/disable"/>
     <!-- Similar to community/java/ide-customization/resources/META-INF/plugin.xml -->
     <!-- preload because in any case will be requested to reopen last projects -->
     <applicationService serviceInterface="com.intellij.ide.RecentProjectsManager"
