@@ -30,6 +30,22 @@ Present whenever the module has a `JavaModuleFacet`.
 - `"Plugin"` is reported only when the descriptor explicitly persists `loadExtensions = yes` (plugin/contributor modules).
 - A freshly created Language will therefore surface `"NotAvailable"`, not `"Plugin"`.
 
+## Language-only fields
+
+### `languageVersion`
+
+Present on Language modules only (absent — not `0` — for Solutions, Generators and DevKits). This is the **language's own version integer**: the number a `MigrationScript`'s `fromVersion` gates on, persisted as the `languageVersion` attribute of the `.mpl`.
+
+- **Read it** here, or from `mps_mcp_get_project_structure` (emitted on every Language module without `includeDependencies`).
+- **Write it** with `mps_mcp_update_module(moduleName, operation = "SET_VERSION")` — omit `newName` to bump by 1, or pass the new value as a decimal string. Never hand-edit the `.mpl`: MPS holds the descriptor in memory and rewrites the file on the next save.
+- **Do not confuse it** with `usedLanguages[].version` (the `languageVersions` / `dependencyVersions` stamps), which record which version of some *other* language this module was last migrated against. They are unrelated numbers that happen to share a word. `SET_VERSION` never touches the stamps.
+
+`SET_VERSION` responses additionally carry:
+
+- `previousLanguageVersion` and `changed` — `changed: false` when the requested value already matched (no save performed).
+- `runtimeLanguageVersion?`, `runtimeStale`, `runtimeRecoveryAction?` — the version reported by the *compiled* `LanguageRuntime`. Migration execution reads that one, not the descriptor, so `runtimeStale: true` means the bump is recorded but not yet effective; rebuild the language module (`mps_mcp_alter_nodes` `MAKE`, `rebuild=true`). No make is performed by `SET_VERSION` itself.
+- `warnings` on the envelope when the version was lowered. Lowering is permitted (MPS's own "Correct language version" action lowers it when a trailing migration script is deleted), but it re-offers migrations on models already past that point.
+
 ## DevKit-only fields
 
 When the module is a DevKit, the response also includes:

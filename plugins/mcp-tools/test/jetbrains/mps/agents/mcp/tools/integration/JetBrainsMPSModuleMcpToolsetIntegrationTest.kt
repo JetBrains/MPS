@@ -783,6 +783,179 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue(expectErr(response).contains("Nothing to rename"))
     }
 
+    // ── lifecycle: SET_VERSION (the language's own migration-gating version) ──────────────
+
+    @Test
+    fun `update_module SET_VERSION bumps the language version by one when no value is given`() {
+        val name = language.moduleName!!
+        val before = readOnRepo { language.languageVersion }
+
+        val data = expectOk(runTool(toolset) {
+            it.mps_mcp_update_module(name, null, ModuleOperation.SET_VERSION)
+        })
+
+        assertEquals(before + 1, data.get("languageVersion").asInt)
+        assertEquals(before, data.get("previousLanguageVersion").asInt)
+        assertTrue(data.get("changed").asBoolean)
+        assertEquals(before + 1, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SET_VERSION sets an explicit version and writes it to the descriptor file`() {
+        val name = language.moduleName!!
+        val descriptorPath = readOnRepo { language.descriptorFile!!.path }
+
+        val data = expectOk(runTool(toolset) {
+            it.mps_mcp_update_module(name, "7", ModuleOperation.SET_VERSION)
+        })
+        assertEquals(7, data.get("languageVersion").asInt)
+        assertTrue(data.get("changed").asBoolean)
+        assertEquals(7, readOnRepo { language.languageVersion })
+
+        // Regression guard for a missing save(): setLanguageVersion() only marks the module
+        // dirty, so without the explicit save() the .mpl on disk would still hold the old value
+        // and the next MPS start would silently revert the bump.
+        val onDisk = File(descriptorPath).readText()
+        assertTrue(
+            "descriptor file must carry the new languageVersion; got:\n$onDisk",
+            onDisk.contains("languageVersion=\"7\""),
+        )
+    }
+
+    @Test
+    fun `update_module SET_VERSION is a no-op when the requested version equals the current one`() {
+        val name = language.moduleName!!
+        val current = readOnRepo { language.languageVersion }
+
+        val data = expectOk(runTool(toolset) {
+            it.mps_mcp_update_module(name, current.toString(), ModuleOperation.SET_VERSION)
+        })
+        assertFalse("equal version must report changed=false", data.get("changed").asBoolean)
+        assertEquals(current, data.get("languageVersion").asInt)
+        assertEquals(current, data.get("previousLanguageVersion").asInt)
+        assertEquals(current, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SET_VERSION warns but succeeds when the version is lowered`() {
+        val name = language.moduleName!!
+        expectOk(runTool(toolset) { it.mps_mcp_update_module(name, "5", ModuleOperation.SET_VERSION) })
+
+        // Lowering is legal: MPS's own CorrectLanguageVersion action does it when a trailing
+        // migration script was deleted. It must succeed and warn, not be rejected.
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module(name, "3", ModuleOperation.SET_VERSION)
+        }
+        val data = expectOk(response)
+        assertEquals(3, data.get("languageVersion").asInt)
+        assertEquals(5, data.get("previousLanguageVersion").asInt)
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("lowering must be reported in warnings: $response", envelope.has("warnings"))
+        assertTrue(
+            "warning must name the lowering: $response",
+            envelope.getAsJsonArray("warnings").joinToString(" ") { it.asString }.contains("lowered"),
+        )
+        assertEquals(3, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SET_VERSION reports the runtime as stale for a language that was never built`() {
+        // The fixture language is never made, so the compiled LanguageRuntime either does not
+        // exist or still reports the pre-bump version. Either way the descriptor and the value
+        // MigrationScriptCollector reads disagree, and the caller must be told so.
+        val name = language.moduleName!!
+        val data = expectOk(runTool(toolset) {
+            it.mps_mcp_update_module(name, "11", ModuleOperation.SET_VERSION)
+        })
+        assertTrue("an unbuilt language must be flagged runtimeStale: $data", data.get("runtimeStale").asBoolean)
+        assertTrue("stale runtime must carry a recovery action: $data", data.has("runtimeRecoveryAction"))
+        assertTrue(
+            "recovery action must point at a rebuild: $data",
+            data.get("runtimeRecoveryAction").asString.contains("rebuild=true"),
+        )
+    }
+
+    @Test
+    fun `update_module SET_VERSION rejects a non-Language module`() {
+        val solution = createSolution()
+        val err = expectErr(runTool(toolset) {
+            it.mps_mcp_update_module(solution.moduleName!!, "3", ModuleOperation.SET_VERSION)
+        })
+        assertTrue("error must say the op is Language-only: $err", err.contains("only to Language modules"))
+        assertTrue("error must name the actual kind: $err", err.contains("Solution"))
+    }
+
+    @Test
+    fun `update_module SET_VERSION rejects an unparseable or negative version`() {
+        val name = language.moduleName!!
+        val before = readOnRepo { language.languageVersion }
+
+        val garbage = expectErr(runTool(toolset) {
+            it.mps_mcp_update_module(name, "seven", ModuleOperation.SET_VERSION)
+        })
+        assertTrue("expected a parse rejection: $garbage", garbage.contains("decimal integer"))
+
+        val negative = expectErr(runTool(toolset) {
+            it.mps_mcp_update_module(name, "-1", ModuleOperation.SET_VERSION)
+        })
+        assertTrue("expected a negative rejection: $negative", negative.contains("must not be negative"))
+
+        assertEquals("a rejected request must not change the version", before, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SET_VERSION returns NOT_FOUND for an unknown module`() {
+        val err = expectErr(runTool(toolset) {
+            it.mps_mcp_update_module("ghost.language", "2", ModuleOperation.SET_VERSION)
+        })
+        assertTrue("expected a not-found rejection: $err", err.contains("not found"))
+    }
+
+    @Test
+    fun `update_module SET_VERSION leaves consumer languageVersions stamps untouched`() {
+        // The whole point of keeping SET_VERSION narrow: refreshing the dependent modules'
+        // `languageVersions` stamps here would mark the pending migration as already applied.
+        val consumer = createSolution()
+        val stampsBefore = readOnRepo {
+            (consumer as AbstractModule).moduleDescriptor!!.languageVersions.toMap()
+        }
+        val ownStampsBefore = readOnRepo { language.moduleDescriptor!!.languageVersions.toMap() }
+
+        expectOk(runTool(toolset) {
+            it.mps_mcp_update_module(language.moduleName!!, "9", ModuleOperation.SET_VERSION)
+        })
+
+        val stampsAfter = readOnRepo {
+            (consumer as AbstractModule).moduleDescriptor!!.languageVersions.toMap()
+        }
+        assertEquals("SET_VERSION must not touch consumer version stamps", stampsBefore, stampsAfter)
+        assertEquals(
+            "SET_VERSION must not refresh the language's own dependency stamps either",
+            ownStampsBefore,
+            readOnRepo { language.moduleDescriptor!!.languageVersions.toMap() },
+        )
+        // ... while the language's own version did move.
+        assertEquals(9, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `module info envelope exposes languageVersion for languages and omits it elsewhere`() {
+        // The create_module envelope is built by moduleInfoJsonObject, so this pins the new
+        // Language-only field on the shared read path rather than only on SET_VERSION's response.
+        val langName = "test.lang.verfield${System.nanoTime()}"
+        val langInfo = expectOk(runTool(toolset) {
+            it.mps_mcp_create_module("language", langName, freshPathInProject(langName), null, null, false, false, false)
+        })
+        assertTrue("a Language envelope must carry languageVersion: $langInfo", langInfo.has("languageVersion"))
+        assertEquals(0, langInfo.get("languageVersion").asInt)
+
+        val solName = "test.sol.verfield${System.nanoTime()}"
+        val solInfo = expectOk(runTool(toolset) {
+            it.mps_mcp_create_module("solution", solName, freshPathInProject(solName), null, null, false, false, false)
+        })
+        assertFalse("a Solution has no language version: $solInfo", solInfo.has("languageVersion"))
+    }
+
     @Test
     fun `delete_module removes the module from the project`() {
         val solution = createSolution()

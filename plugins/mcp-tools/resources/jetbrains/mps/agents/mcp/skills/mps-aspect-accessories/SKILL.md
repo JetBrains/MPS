@@ -17,7 +17,8 @@ This skill covers the *wiring* layer of an MPS language — the module descripto
 ## Critical Directives
 
 - **Prefer MCP wiring tools over hand-editing `.mpl` XML.** Hand-editing can silently corrupt the module descriptor. If you must hand-edit (e.g. for `accessoryModels`, which has no dedicated MCP tool), make a backup, edit only the targeted block, and rebuild the module immediately afterwards so MPS re-reads the descriptor.
-- **Don't hand-edit `languageVersions` / `dependencyVersions`.** MPS maintains these. Use the MPS "Update language/dependency versions" action.
+- **Don't hand-edit `languageVersions` / `dependencyVersions`.** These are the *consumer-side* stamps recording which version of another language a module was last migrated against; MPS maintains them. Use the MPS "Update language/dependency versions" action.
+- **A language's OWN version is a different number**, exposed as `languageVersion` on every Language module in `mps_mcp_get_project_structure` and written with `mps_mcp_update_module(operation = "SET_VERSION")`. It is the integer a `MigrationScript`'s `fromVersion` gates on. Never hand-edit it in the `.mpl`, and never "fix" a migration by refreshing the consumer stamps instead — that marks the migration as already applied. See [module-info-fields.md](references/module-info-fields.md) and the `mps-aspect-migrations` skill.
 - **Generator modules have their own dependency list.** Add target-language deps to the generator, not the parent language.
 - **Used languages auto-import** when nodes are inserted via `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`. Manually add a used language only for hand-written code or implicit dependencies.
 - **A runtime solution holds the *stable* part of generation** (code that doesn't vary with the model). Generate thin code that calls it; don't regenerate it. No MCP tool wires the language's `<runtime>` block — see `references/runtime-solutions.md`.

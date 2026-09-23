@@ -2,6 +2,13 @@
 
 Real, verified examples copied from the codebase. Use as starting templates for `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`.
 
+> **`insert_root_node_from_json` does not run node factories.** `MigrationScript` is an `AutoInitDSLClass`, so creating one *through the editor or through `mps_mcp_create_root_node`* fires a factory that sets `fromVersion` to the language's current version and bumps the language version for you. The JSON-blueprint insert path bypasses that factory entirely and silently — nothing is reported. When inserting a migration script from a blueprint you must therefore do both by hand:
+>
+> 1. put an explicit `fromVersion` property in the blueprint (the language's version *before* the bump), and
+> 2. bump the language separately with `mps_mcp_update_module(moduleName = "<language>", operation = "SET_VERSION")`.
+>
+> Omitting either leaves `fromVersion` at its default `0` and the language version unchanged, which `MigrationsCheckUtil` flags with a quick fix that is not reachable from MCP. See [form-selection.md](form-selection.md).
+
 ## `MigrationScript` (lang.migration) — `MigrateReferences`
 
 Source: `r:bfbc3842-c5ca-4fa2-826a-4befb946143a(references.migration)`.

@@ -46,6 +46,7 @@ import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.ProjectRepository
 import jetbrains.mps.project.facets.JavaModuleFacet
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
+import jetbrains.mps.project.structure.modules.LanguageDescriptor
 import jetbrains.mps.project.structure.modules.ModuleDescriptor
 import jetbrains.mps.project.validation.StructureChecker
 import jetbrains.mps.smodel.Language
@@ -2455,6 +2456,15 @@ abstract class AbstractOps : McpToolset {
         val descriptor = (m as? AbstractModule)?.moduleDescriptor
         obj.addProperty("kind", moduleKindLabel(m, descriptor))
 
+        // Language-only: the module's OWN version integer, i.e. the number a MigrationScript's
+        // `fromVersion` gates on. Distinct from the consumer-side `languageVersions` stamps that
+        // `get_project_structure` reports under `usedLanguages` (those say which version of some
+        // OTHER language this module was last migrated against). Nothing else exposed this value,
+        // so agents had no way to read it before writing a migration.
+        if (descriptor is LanguageDescriptor) {
+            obj.addProperty("languageVersion", descriptor.languageVersion)
+        }
+
         if (descriptor is DevkitDescriptor) {
             obj.add("extendedDevkits", devkitExtendedDevkitsJsonArray(descriptor, project))
             obj.add("exportedLanguages", devkitExportedLanguagesJsonArray(descriptor, project))
@@ -2495,7 +2505,7 @@ abstract class AbstractOps : McpToolset {
      * rather than a normal value; callers that switch on the documented set won't silently
      * mis-classify a standard module.
      */
-    private fun moduleKindLabel(m: SModule, descriptor: ModuleDescriptor?): String {
+    protected fun moduleKindLabel(m: SModule, descriptor: ModuleDescriptor?): String {
         return when {
             descriptor is DevkitDescriptor -> "DevKit"
             m is jetbrains.mps.smodel.Generator -> "Generator"

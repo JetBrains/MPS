@@ -20,7 +20,9 @@ These address the same problem at different abstraction levels: `lang.migration`
 ## Critical Directives
 
 - **Do not confuse the two `MigrationScript` concepts.** One is in `lang.migration` (BL ClassConcept, version-gated). The other (alias "Enhancement Script") is in `lang.script` (instance-level transformer). Always disambiguate by language ref.
-- **`fromVersion` is the version migrated FROM**, not to. Bump the language's `version` integer in the `.mpl` solution manifest whenever you add a migration step.
+- **`fromVersion` is the version migrated FROM**, not to. Whenever you add a migration step, set `fromVersion` to the language's *current* version and then bump that version by one with `mps_mcp_update_module(moduleName = "<language>", operation = "SET_VERSION")` — omitting `newName` bumps by 1, which is exactly the step a new migration needs. Read the current value from the `languageVersion` field that `mps_mcp_get_project_structure` reports on every Language module. Do **not** hand-edit the `.mpl`: MPS holds the descriptor in memory and would overwrite the edit.
+- **A version bump is not effective for migration execution until the language module is rebuilt.** The checker compares against the descriptor, but the migration executor reads the version off the *generated* `LanguageRuntime`, so a bumped-but-unbuilt language silently never offers the migration. `SET_VERSION` reports this as `runtimeStale: true` with a `runtimeRecoveryAction`; clear it with `mps_mcp_alter_nodes` `MAKE` (`rebuild=true`) on the language module.
+- **The language's own version is not the `languageVersions` stamp.** `usedLanguages[].version` / `dependencyVersions` in a module descriptor record which version of *another* language that module was last migrated against. `SET_VERSION` deliberately leaves them alone — refreshing them marks pending migrations as already applied.
 - **Model naming is convention-driven and load-bearing.** `lang.migration` scripts live in `<language.fqn>.migration`. `lang.script` Enhancement Scripts live in `<language.fqn>.scripts`. MPS discovers them by these names at startup.
 - **Migration scripts run in dependency order**, determined by `OrderDependency` / `ExecuteAfterDeclaration`. Always declare ordering when the result of one script feeds the next.
 - **Do not hand-edit serialized `.mps` migration files.** Use MPS MCP node tools.
@@ -29,10 +31,10 @@ These address the same problem at different abstraction levels: `lang.migration`
 
 1. Decide form: `PureMigrationScript` for structural moves/renames/removals; `MigrationScript` for programmatic transforms; Enhancement Script for instance-level updates. See [references/form-selection.md](references/form-selection.md).
 2. Create or locate the migration model with `mps_mcp_create_model`: `<language.fqn>.migration` for `lang.migration` (aspect ID `migration`); `<language.fqn>.scripts` for Enhancement Scripts (aspect ID `scripts`). Both aspect IDs are case-sensitive and carry no `@` suffix — see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md). Add the used languages required for that form.
-3. Bump the language `version` integer in the `.mpl` and set `fromVersion` on the new script to the previous version.
+3. Read the language's current version (`languageVersion` in `mps_mcp_get_project_structure`), set `fromVersion` on the new script to **that** value, then bump the language with `mps_mcp_update_module(operation = "SET_VERSION")` (omit `newName` to bump by 1). Order matters: `MigrationsCheckUtil` requires `max(fromVersion) == languageVersion - 1`, and it reports the mismatch with **no working quick fix**, so `check_root_node_problems(autoApplyQuickFixes = true)` will not repair it.
 4. Build the script body (declarative parts, BL `execute()` method, or `MigrationScriptPart_Instance` updater) using the JSON blueprints in [references/json-blueprints.md](references/json-blueprints.md).
 5. Wire ordering (`OrderDependency` / `ExecuteAfterDeclaration`) and data flow (`putData` / `getData`) if needed.
-6. Validate via `mps_mcp_check_root_node_problems`, then run the migration on a test model.
+6. Validate via `mps_mcp_check_root_node_problems`, then `MAKE` the language module (`rebuild=true`) so the generated `LanguageRuntime` carries the new version, then run the migration on a test model. Skipping the make leaves `runtimeStale: true` and the migration is never offered.
 
 ## Related Skills
 

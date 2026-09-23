@@ -125,6 +125,31 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `get-project-structure reports a language's own languageVersion without includeDependencies`() {
+        // D46: nothing exposed the language's own version integer (the one a MigrationScript's
+        // `fromVersion` gates on), only the consumer-side `usedLanguages[].version` stamps —
+        // which is what made agents mistake one for the other. It must be readable from a plain
+        // discovery dump, i.e. without paying for includeDependencies.
+        val moduleName = language.moduleName!!
+        expectOk(runTool(JetBrainsMPSModuleMcpToolset()) {
+            it.mps_mcp_update_module(moduleName, "6", ModuleOperation.SET_VERSION)
+        })
+
+        val data = payloadObjectFromOkData(runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = moduleName)
+        })
+        assertEquals("Language", data.get("kind").asString)
+        assertEquals(6, data.get("languageVersion").asInt)
+
+        // A Solution has no such field — the key must be absent, not 0.
+        val solution = createSolution()
+        val solData = payloadObjectFromOkData(runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = solution.moduleName!!)
+        })
+        assertFalse("a Solution must not report a languageVersion: $solData", solData.has("languageVersion"))
+    }
+
+    @Test
     fun `get-project-structure with a model starting point returns the model JSON`() {
         val response = runTool(JetBrainsMPSProjectMcpToolset()) {
             it.mps_mcp_get_project_structure(

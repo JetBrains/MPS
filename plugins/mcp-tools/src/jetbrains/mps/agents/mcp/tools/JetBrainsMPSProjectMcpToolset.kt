@@ -103,7 +103,7 @@ class JetBrainsMPSProjectMcpToolset(
     @McpTool
     @McpDescription(
         """
-        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. Two projection knobs cut the payload without changing the envelope: `nodeDetail="names"` reduces every node record to name/concept/reference (the cheap way to list a model's roots and their ids), and `nodeDepth` bounds how far `includeNodes` inlines the AST. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
+        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. Two projection knobs cut the payload without changing the envelope: `nodeDetail="names"` reduces every node record to name/concept/reference (the cheap way to list a model's roots and their ids), and `nodeDepth` bounds how far `includeNodes` inlines the AST. Every Language module carries a `languageVersion` field (emitted without `includeDependencies`): the language's OWN version integer, the one a `MigrationScript`'s `fromVersion` gates on and the one `mps_mcp_update_module` SET_VERSION writes. Do not confuse it with the consumer-side `usedLanguages[].version` stamps below, which say which version of some *other* language a module was last migrated against. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
     """
     )
     suspend fun mps_mcp_get_project_structure(
@@ -286,6 +286,14 @@ class JetBrainsMPSProjectMcpToolset(
         }
         obj.addProperty("readOnly", m.isReadOnly)
         obj.addProperty("kind", getModuleKind(m))
+        // Language-only, and emitted unconditionally (not gated on includeDependencies): this is
+        // the language's OWN version integer, the one a MigrationScript's `fromVersion` gates on.
+        // It is deliberately not behind the expensive dependency flag — discovery is exactly where
+        // an agent needs to read it, and it must not be confused with the consumer-side
+        // `usedLanguages[].version` stamps emitted below under includeDependencies.
+        ((m as? AbstractModule)?.moduleDescriptor as? LanguageDescriptor)?.let {
+            obj.addProperty("languageVersion", it.languageVersion)
+        }
         addContainingProjectIfForeign(obj, project, m, cache = c)
 
         if (includeDependencies) {
