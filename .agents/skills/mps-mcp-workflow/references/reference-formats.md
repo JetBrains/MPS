@@ -68,9 +68,25 @@ JSON `null` still counts as absent under either spelling, so `{"enumerationRef":
 
 **Top-level tool parameters have no aliases**: the only accepted spelling is the one in the tool's
 schema (`conceptRefs`, `searchTexts`, `nodeReference`, `childNodeRef`, `conceptRef` for
-`mps_mcp_scaffold_editor`, …). A wrong key is silently ignored and the parameter's default applies,
-so the tool answers with its own required-parameter rejection — which names the correct key and
-ends with the literal retry to make. Read that line instead of re-fetching the schema.
+`mps_mcp_scaffold_editor`, …). Every parameter is optional in the published schema, so its
+`required` array is empty and tells you nothing; a required parameter says "Required." at the start
+of its description. A wrong key is silently ignored and the parameter's default applies, but a
+required parameter left blank is caught by the tool itself: the rejection names the key, the literal
+retry (`<key> set to …`), and the spellings that never reached it, and repeats the missing keys in
+`details.missingParameters`. Read that line instead of re-fetching the schema.
+
+#### Top-level naming conventions
+
+| Parameter | Accepts | Used by |
+|---|---|---|
+| `moduleName` | module name or module reference | module tools, `mps_mcp_create_model` |
+| `modelReference` | model reference, or the model's long or short name | model-targeting tools (e.g. `mps_mcp_scaffold_editor`, `mps_mcp_update_model`) |
+| `nodeReference` | persistent node reference | node-targeting tools |
+| `conceptRef` (singular) | one concept reference or qualified name | `mps_mcp_scaffold_editor` |
+| `conceptRefs` / `languageRefs` (plural) | one value or a JSON array of them | `mps_mcp_get_concept_details` |
+
+Blob keys nested inside a `parameters` payload follow the separate table above (e.g.
+`enumerationRef`), not this one.
 
 ### Every other blob key is rejected, not dropped
 

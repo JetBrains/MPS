@@ -12,7 +12,7 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 
 MPS ships a dedicated **test language** — `jetbrains.mps.lang.test` — for testing language artefacts (typesystem, scopes, constraints, dataflow, editor, generator, migrations). Plain JUnit-style tests against runtime classes use `jetbrains.mps.baseLanguage.unitTest` (the `BTestCase` concept).
 
-A test is a **root node** living in a model whose **stereotype is `tests`** (pass `modelName: "<name>@tests"` to `mps_mcp_create_model`; the on-disk file ends in `@tests.mps`). See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers. The test model lives in a Solution module carrying the **`tests` facet**, not in the language module itself, so it can depend on the language under test plus arbitrary runtime libraries.
+A test is a **root node** living in a model whose **stereotype is `tests`** (pass `moduleName: "<hosting solution>"` and `modelName: "<name>@tests"` to `mps_mcp_create_model`; the on-disk file ends in `@tests.mps`). See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers. The test model lives in a Solution module carrying the **`tests` facet**, not in the language module itself, so it can depend on the language under test plus arbitrary runtime libraries.
 
 This skill is the reference for *what to put in a test model* and *what each test type means*. For the mechanics of creating/modifying nodes via MCP, see `mps-model-manipulation` and the `mps_mcp_*` tool docs. Documentation: <https://www.jetbrains.com/help/mps/testing-languages.html>. Source: `plugins/mps-testing/languages/lang.test/`.
 

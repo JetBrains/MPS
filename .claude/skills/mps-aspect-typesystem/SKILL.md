@@ -34,7 +34,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 
 ## Common-Path Workflow
 
-1. Create a `typesystem` model (`mps_mcp_create_model` with `modelName: "<lang>.typesystem"` — aspect ID `typesystem`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
+1. Create a `typesystem` model (`mps_mcp_create_model` with `moduleName: "<lang>"` and `modelName: "<lang>.typesystem"` — aspect ID `typesystem`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
 2. Add used languages: `jetbrains.mps.lang.typesystem`, and any languages used in bodies (`smodel`, `collections`, `closures`, `baseLanguage`).
 3. Add `InferenceRule` roots for concepts whose types you compute (see `references/inference-rules.md`).
 4. Add `SubtypingRule` / `ComparisonRule` / `InequationReplacementRule` / `SubstituteTypeRule` roots for the type lattice (see `references/lattice-rules.md`).

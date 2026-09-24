@@ -62,6 +62,7 @@ import java.lang.reflect.Field;
     JetBrainsMPSInitMcpToolsetTest.class,
     JetBrainsMPSInitMcpToolsetIntegrationTest.class,
     McpToolInputSchemasTest.class,
+    McpToolParameterOptionalityTest.class,
     McpCallLogTest.class,
     SkillScriptsPackagingTest.class,
     SkillScriptsDriftTest.class,

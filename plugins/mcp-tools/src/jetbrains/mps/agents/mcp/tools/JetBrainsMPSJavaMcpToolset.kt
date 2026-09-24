@@ -808,8 +808,18 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         """
     )
     suspend fun mps_mcp_parse_java_and_insert(
-        @McpDescription("Parameters as a JSON object — sent as real JSON or as its string form. See the description above.") parameters: JsonOrText
-    ): String = mps_mcp_parse_java_and_insert(parameters.text)
+        @McpDescription("Required. Parameters as a JSON object — sent as real JSON or as its string form. See the description above.") parameters: JsonOrText = JsonOrText.EMPTY
+    ): String = rejectMissingParameters(
+        // D43: Kotlin-optional so that `code`/`featureKind`/`insert` sent at the top level, where
+        // the binder drops them, get a rejection saying they belong inside this object.
+        "mps_mcp_parse_java_and_insert",
+        RequiredParameter(
+            "parameters",
+            parameters.text,
+            "a JSON object holding `code`, `featureKind` and `insert` (plus `contextNodeRef` for a class-member " +
+                "featureKind, and optionally `recovery` and `postProcess`), which go inside it rather than at the top level",
+        ),
+    ) ?: mps_mcp_parse_java_and_insert(parameters.text)
 
     /**
      * Internal string-typed entry point for [mps_mcp_parse_java_and_insert]; the [JsonOrText]

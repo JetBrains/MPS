@@ -17,6 +17,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 
 /**
  * End-to-end integration tests for [JetBrainsMPSModelMcpToolset].
@@ -61,6 +62,76 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "error should mention the missing module: $err",
             err.contains("no.such.module") && err.contains("not found"),
         )
+    }
+
+    @Test
+    fun `create_model names moduleName when the caller sent moduleReference`() {
+        // D43, round 8 S2:75: the caller sent a valid module reference under the neighbouring
+        // tools' spelling. The bridge used to reject that with "No argument is passed for required
+        // parameter 'moduleName'", which never said the reference had been dropped.
+        val solution = createSolution()
+        val moduleReference = PersistenceFacade.getInstance().asString(solution.moduleReference)
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_model",
+            mapOf("moduleReference" to McpJsonPrimitive(moduleReference), "modelName" to McpJsonPrimitive("irrelevant")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("moduleName"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and say a reference is accepted under it: $error",
+            error.startsWith("moduleName is required.") && error.contains("module reference"))
+        assertTrue("must say the sent spelling never arrived: $error", error.contains("'moduleReference'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_create_model",
+            mapOf("moduleName" to McpJsonPrimitive(moduleReference), "modelName" to McpJsonPrimitive("test.retry${System.nanoTime()}")),
+        )
+        expectOk(retried)
+    }
+
+    @Test
+    fun `create_model reports both missing keys at once`() {
+        val obj = JsonParser.parseString(callThroughBridge(toolset, "mps_mcp_create_model", emptyMap())).asJsonObject
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("moduleName", "modelName"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+    }
+
+    @Test
+    fun `update_model names modelReference when the caller sent modelRef`() {
+        // D43: 'modelRef' is the neighbouring tools' spelling for the same target-model idea.
+        val solution = createSolution()
+        val target = createModel(solution, "test.rename.wrongkey${System.nanoTime()}")
+        val ref = modelRefOf(target)
+        val newName = "${target.name.longName}.renamed"
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_update_model",
+            mapOf(
+                "modelRef" to McpJsonPrimitive(ref),
+                "newModelName" to McpJsonPrimitive(newName),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("modelReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("modelReference is required.") && error.contains("'modelRef'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_update_model",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(ref),
+                "newModelName" to McpJsonPrimitive(newName),
+            ),
+        )
+        expectOk(retried)
     }
 
     @Test
@@ -112,6 +183,44 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     // ── dependencies ───────────────────────────────────────────────────────────────────────
+
+    @Test
+    fun `model_dependency names modelReference and targetModels when the caller sends wrong keys`() {
+        // D43: the caller sent both required values under the neighbouring tools' spellings at once.
+        val sourceSolution = createSolution("test.dep.wrongkey.src${System.nanoTime()}")
+        val targetSolution = createSolution("test.dep.wrongkey.tgt${System.nanoTime()}")
+        val sourceModel = createModel(sourceSolution, "test.dep.wrongkey.src.model${System.nanoTime()}")
+        val targetModel = createModel(targetSolution, "test.dep.wrongkey.tgt.model${System.nanoTime()}")
+        val sourceRef = modelRefOf(sourceModel)
+        val targetRef = modelRefOf(targetModel)
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_model_dependency",
+            mapOf(
+                "modelRef" to McpJsonPrimitive(sourceRef),
+                "targetModel" to McpJsonPrimitive(targetRef),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("modelReference", "targetModels"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue("must name both dropped spellings: $error",
+            error.contains("'modelRef'") && error.contains("'targetModel'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_model_dependency",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(sourceRef),
+                "targetModels" to McpJsonPrimitive(targetRef),
+            ),
+        )
+        expectOk(retried)
+    }
 
     @Test
     fun `add_model_dependency imports a model and counts duplicates on the second call`() {
@@ -339,6 +448,41 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     // ── used languages / devkits ──────────────────────────────────────────────────────────
+
+    @Test
+    fun `model_used_language names usedLanguage when the caller sent language`() {
+        // D43: 'language' is the natural neighbouring spelling for usedLanguage.
+        val knownLang = "jetbrains.mps.lang.core"
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.wrongkey${System.nanoTime()}")
+        val modelReference = modelRefOf(model)
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_model_used_language",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(modelReference),
+                "language" to McpJsonPrimitive(knownLang),
+                "kind" to McpJsonPrimitive("language"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("usedLanguage"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("usedLanguage is required.") && error.contains("'language'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_model_used_language",
+            mapOf(
+                "modelReference" to McpJsonPrimitive(modelReference),
+                "usedLanguage" to McpJsonPrimitive(knownLang),
+                "kind" to McpJsonPrimitive("language"),
+            ),
+        )
+        expectOk(retried)
+    }
 
     @Test
     fun `add_model_used_language adds a language to the model`() {

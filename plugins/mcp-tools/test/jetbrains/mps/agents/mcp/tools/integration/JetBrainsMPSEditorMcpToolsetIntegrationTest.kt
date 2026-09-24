@@ -1192,6 +1192,50 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         )
     }
 
+    // ── D43: missing-required-parameter rejections through the real bridge ────────────────
+    // These go through callThroughBridge, not runTool: only the bridge's own argument binding
+    // can observe a wrong-key spelling being silently dropped before the tool body runs.
+
+    @Test
+    fun `scaffold_editor names conceptRef and modelReference when the caller sent conceptReference and modelRef`() {
+        val response = callThroughBridge(
+            toolset, "mps_mcp_scaffold_editor",
+            mapOf(
+                "conceptReference" to kotlinx.serialization.json.JsonPrimitive("jetbrains.mps.lang.core.structure.BaseConcept"),
+                "modelRef" to kotlinx.serialization.json.JsonPrimitive(structureModelRef),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("conceptRef", "modelReference"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name both keys and both dropped spellings: $error",
+            error.contains("conceptRef") && error.contains("modelReference") &&
+                error.contains("'conceptReference'") && error.contains("'modelRef'"),
+        )
+    }
+
+    @Test
+    fun `scaffold_editor reaches concept resolution once retried with the correct keys`() {
+        val response = callThroughBridge(
+            toolset, "mps_mcp_scaffold_editor",
+            mapOf(
+                "conceptRef" to kotlinx.serialization.json.JsonPrimitive("totally.unknown.concept.Reference"),
+                "modelReference" to kotlinx.serialization.json.JsonPrimitive(structureModelRef),
+            ),
+        )
+        assertErrorContains(
+            response,
+            "totally.unknown.concept.Reference",
+            "the rejection is no longer a missing-parameter one; the resolver ran and echoed the unresolved concept ref",
+        )
+    }
+
     // ── helpers ──────────────────────────────────────────────────────────────────────────
 
     private fun scaffold(type: String): String = scaffoldFor(targetConceptFqn, type)

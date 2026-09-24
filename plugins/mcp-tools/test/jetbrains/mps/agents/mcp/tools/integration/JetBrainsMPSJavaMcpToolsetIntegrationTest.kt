@@ -451,6 +451,37 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `blob keys sent at the top level are answered as a missing parameters blob naming where they belong`() {
+        // D43: `parameters` used to be required in the Kotlin signature, so a caller who sent
+        // `code`/`featureKind`/`insert` as top-level arguments got the binder's generic
+        // "No argument is passed for required parameter 'parameters'" — never that those keys
+        // belong inside the object.
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+        val response = callThroughBridge(
+            JetBrainsMPSJavaMcpToolset(), "mps_mcp_parse_java_and_insert",
+            mapOf(
+                "code" to kotlinx.serialization.json.JsonPrimitive("class Foo {}"),
+                "featureKind" to kotlinx.serialization.json.JsonPrimitive("CLASS"),
+                "insert" to kotlinx.serialization.json.JsonPrimitive("""{"mode":"root","modelRef":"$javaModelRef"}"""),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("parameters"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertFalse(error, error.contains("No argument is passed for required parameter"))
+        assertTrue(error, error.startsWith("parameters is required."))
+        assertTrue("must name the blob's own keys: $error", listOf("`code`", "`featureKind`", "`insert`").all { error.contains(it) })
+        assertTrue("must say they go inside the object: $error", error.contains("rather than at the top level"))
+        assertTrue("must name the near-miss spellings: $error", error.contains("'params'"))
+        readOnRepo {
+            assertEquals("rejected request must not mutate the model", emptyList<SNode>(), javaModel.rootNodes.toList())
+        }
+    }
+
+    @Test
     fun `replace mode rejects code that parses to multiple top-level nodes`() {
         // Replace mode substitutes the target node with a single replacement; multiple parsed
         // nodes cannot fill a single containment slot. Previously the toolset silently consumed

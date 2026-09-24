@@ -249,4 +249,73 @@ class JetBrainsMPSIntentionsMcpToolsetIntegrationTest : McpIntegrationTestBase()
         val code = JsonParser.parseString(response).asJsonObject.get("code").asString
         assertEquals("NOT_FOUND", code)
     }
+
+    // ── D43: missing-required-parameter rejections through the real bridge ────────────────
+    // These go through callThroughBridge, not runTool: only the bridge's own argument binding
+    // can observe a wrong-key spelling being silently dropped before the tool body runs.
+
+    @Test
+    fun `list_node_intentions names nodeReference when the caller sent node`() {
+        val response = callThroughBridge(
+            JetBrainsMPSIntentionsMcpToolset(), "mps_mcp_list_node_intentions",
+            mapOf("node" to kotlinx.serialization.json.JsonPrimitive("r:00000000-0000-0000-0000-000000000000(ghost)/0")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("nodeReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name the key and the dropped spelling: $error",
+            error.startsWith("nodeReference is required.") && error.contains("'node'"),
+        )
+    }
+
+    @Test
+    fun `list_node_intentions succeeds once retried with the correct key`() {
+        val conceptRef = createConceptRoot("BridgeList")
+        val response = callThroughBridge(
+            JetBrainsMPSIntentionsMcpToolset(), "mps_mcp_list_node_intentions",
+            mapOf("nodeReference" to kotlinx.serialization.json.JsonPrimitive(conceptRef)),
+        )
+        assertTrue("expected ok envelope: $response", JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+    }
+
+    @Test
+    fun `apply_intention names both nodeReference and intentionId when the caller sent node and intention`() {
+        val response = callThroughBridge(
+            JetBrainsMPSIntentionsMcpToolset(), "mps_mcp_apply_intention",
+            mapOf(
+                "node" to kotlinx.serialization.json.JsonPrimitive("r:00000000-0000-0000-0000-000000000000(ghost)/1"),
+                "intention" to kotlinx.serialization.json.JsonPrimitive(toggleAbstractIntentionId),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("nodeReference", "intentionId"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name both keys and both dropped spellings: $error",
+            error.contains("nodeReference") && error.contains("intentionId") &&
+                error.contains("'node'") && error.contains("'intention'"),
+        )
+    }
+
+    @Test
+    fun `apply_intention succeeds once retried with the correct keys`() {
+        val conceptRef = createConceptRoot("BridgeApply")
+        val response = callThroughBridge(
+            JetBrainsMPSIntentionsMcpToolset(), "mps_mcp_apply_intention",
+            mapOf(
+                "nodeReference" to kotlinx.serialization.json.JsonPrimitive(conceptRef),
+                "intentionId" to kotlinx.serialization.json.JsonPrimitive(toggleAbstractIntentionId),
+            ),
+        )
+        val data = expectOk(response)
+        assertTrue("apply should report applied=true: $response", data.get("applied").asBoolean)
+    }
 }

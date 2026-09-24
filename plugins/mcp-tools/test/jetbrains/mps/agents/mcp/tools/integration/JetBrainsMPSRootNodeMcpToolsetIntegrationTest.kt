@@ -98,6 +98,28 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     // ── insert_root_node_from_json ───────────────────────────────────────────────────────
 
     @Test
+    fun `insert_root_node_from_json names modelReference when the caller sent modelRef`() {
+        // D43, round 8 S1:109: `modelRef` is the blob-key spelling of the same idea, so it is the
+        // natural guess — and the bridge used to drop it with a message that never said so.
+        val rootsBefore = structureRoots().size
+        val response = callThroughBridge(
+            toolset, "mps_mcp_insert_root_node_from_json",
+            mapOf(
+                "modelRef" to kotlinx.serialization.json.JsonPrimitive(structureModelRef),
+                "json" to kotlinx.serialization.json.JsonPrimitive("""{"concept":"jetbrains.mps.lang.structure.structure.ConceptDeclaration"}"""),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("modelReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("modelReference is required.") && error.contains("'modelRef'"))
+        assertEquals("nothing may be inserted", rootsBefore, structureRoots().size)
+    }
+
+    @Test
     fun `insert_root_node_from_json with single object inserts one root`() {
         val json = """
             {
@@ -646,20 +668,38 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `search_root_node_by_name rejects a blank names instead of answering an empty array`() {
+    fun `search_root_node_by_name rejects a blank or missing names instead of answering an empty array`() {
         // A blank `names` used to answer ok:true with `[]`, which reads as "no such root" rather
         // than "you did not say what to look for" — and `null` decodes to the empty string, so a
-        // caller who sent the wrong key (name/q/searchTexts) hit exactly this. Same guard as
-        // mps_mcp_search_concepts' searchTexts; no alias parameter is added.
-        for (blank in listOf(JsonOrText(""), JsonOrText("   "), JsonOrText("""["", "  "]"""))) {
+        // caller who sent the wrong key (name/q/searchTexts) hit exactly this. D43: this is now the
+        // shared rejectMissingParameters path, checked before any MPS work runs.
+        for (blank in listOf(JsonOrText(""), JsonOrText("   "))) {
             val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name(blank) }
             val obj = JsonParser.parseString(response).asJsonObject
             assertFalse("blank names must be rejected: $response", obj.get("ok").asBoolean)
             assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            assertEquals(
+                listOf("names"),
+                obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+            )
             val error = obj.get("error").asString
-            assertTrue("$error must name the key", error.contains("names is required"))
+            assertTrue("$error must name the key", error.startsWith("names is required."))
             assertTrue("$error must offer the retry line", error.contains("Retry with names set to"))
         }
+    }
+
+    @Test
+    fun `search_root_node_by_name rejects a JSON array of only-blank names after parsing`() {
+        // names.text is a nonblank JSON array here, so rejectMissingParameters (which only sees
+        // the raw text) lets it through; the tool's own residual check catches the parsed-empty
+        // set once parseStringOrJsonArray discards every blank entry.
+        val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name(JsonOrText("""["", "  "]""")) }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("an all-blank names array must be rejected: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue("$error must explain why", error.contains("resolved to no usable name"))
+        assertTrue("$error must offer the retry line", error.contains("Retry with names set to"))
     }
 
     // ── scope confinement (project-scoped, not instance-global) ───────────────────────────
@@ -1004,6 +1044,106 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) { it.mps_mcp_get_current_editor_root_node(source = "inspector") }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope when the inspector is unavailable: $response", obj.get("ok").asBoolean)
+    }
+
+    // ── D43: missing-required-parameter rejections through the real bridge ────────────────
+    // These go through callThroughBridge, not runTool: only the bridge's own argument binding
+    // can observe a wrong-key spelling being silently dropped before the tool body runs.
+
+    @Test
+    fun `open_node names nodeReference when the caller sent a plausible wrong key`() {
+        val response = callThroughBridge(
+            toolset, "mps_mcp_open_node",
+            mapOf("nodeRef" to kotlinx.serialization.json.JsonPrimitive("r:00000000-0000-0000-0000-000000000000(ghost)/0")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("nodeReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name the key and the dropped spelling: $error",
+            error.startsWith("nodeReference is required.") && error.contains("'nodeRef'"),
+        )
+    }
+
+    @Test
+    fun `open_node succeeds once retried with the correct key`() {
+        val rootRef = createConceptRoot("OpenMe")
+        val response = callThroughBridge(
+            toolset, "mps_mcp_open_node",
+            mapOf("nodeReference" to kotlinx.serialization.json.JsonPrimitive(rootRef)),
+        )
+        assertTrue(expectOk(response).get("present").asBoolean)
+    }
+
+    @Test
+    fun `create_root_node names the missing concept when the caller sent conceptName`() {
+        val rootsBefore = structureRoots().size
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_root_node",
+            mapOf(
+                "modelReference" to kotlinx.serialization.json.JsonPrimitive(structureModelRef),
+                "conceptName" to kotlinx.serialization.json.JsonPrimitive(conceptDeclarationFqn),
+                "name" to kotlinx.serialization.json.JsonPrimitive("ShouldNotBeCreated"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("concept"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name the key and offer conceptReference as the alternative: $error",
+            error.startsWith("concept is required.") && error.contains("conceptReference"),
+        )
+        assertEquals("nothing may be created", rootsBefore, structureRoots().size)
+    }
+
+    @Test
+    fun `create_root_node accepts conceptReference alone without concept`() {
+        // Resolve a real 'c:...' persistent concept reference from an ordinary create, then
+        // replay it as the sole concept identifier to prove the either-of accepts it.
+        val first = runTool(toolset) {
+            it.mps_mcp_create_root_node(
+                modelReference = structureModelRef,
+                concept = conceptDeclarationFqn,
+                conceptReference = null,
+                name = "ConceptRefSeed",
+            )
+        }
+        val conceptRef = expectOk(first).get("conceptReference").asString
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_root_node",
+            mapOf(
+                "modelReference" to kotlinx.serialization.json.JsonPrimitive(structureModelRef),
+                "conceptReference" to kotlinx.serialization.json.JsonPrimitive(conceptRef),
+                "name" to kotlinx.serialization.json.JsonPrimitive("ViaConceptReference"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("conceptReference alone must be accepted: $response", obj.get("ok").asBoolean)
+    }
+
+    @Test
+    fun `update_root_node_from_json names nodeReference when the caller sent node`() {
+        val response = callThroughBridge(
+            toolset, "mps_mcp_update_root_node_from_json",
+            mapOf(
+                "node" to kotlinx.serialization.json.JsonPrimitive("r:00000000-0000-0000-0000-000000000000(ghost)/2"),
+                "json" to kotlinx.serialization.json.JsonPrimitive("""{ "concept": "$conceptDeclarationFqn" }"""),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("nodeReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name the key and the dropped spelling: $error",
+            error.startsWith("nodeReference is required.") && error.contains("'node'"),
+        )
     }
 
 }

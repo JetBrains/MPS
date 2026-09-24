@@ -44,12 +44,13 @@ import kotlin.reflect.full.valueParameters
  *     string schema` is the regression gate for that.
  *  2. **Both wire shapes decode, and a plain string is unchanged.** Covered per *binding shape*
  *     rather than per parameter, because the decode is entirely [JsonOrTextSerializer] plus
- *     `KParameter.isOptional` — once the three shapes a converted parameter can have are pinned,
- *     no individual parameter can behave differently:
- *       - required non-null: `search_root_node_by_name.names`, `model_dependency.targetModels`,
- *         `insert_root_node_from_json.json`;
- *       - optional with a non-null default: `get_concept_details.conceptRefs` / `.languageRefs`
- *         (in [JetBrainsMPSLanguageMcpToolsetIntegrationTest]), `search_concepts.searchTexts`;
+ *     `KParameter.isOptional` — once the shapes a converted parameter can have are pinned, no
+ *     individual parameter can behave differently. Since D43 no published parameter is required
+ *     in the signature (see `McpToolParameterOptionalityTest`), so two shapes remain:
+ *       - non-null with a default: `search_root_node_by_name.names`, `model_dependency.targetModels`,
+ *         `insert_root_node_from_json.json` (semantically required, rejected in the body when
+ *         blank), `get_concept_details.conceptRefs` / `.languageRefs` (in
+ *         [JetBrainsMPSLanguageMcpToolsetIntegrationTest]), `search_concepts.searchTexts`;
  *       - nullable optional: `search_root_node_by_name.models`, `create_module.facets`.
  *     The four `scaffold_editor` include-selectors and
  *     `update_root_node_from_json.json` / `insert_console_command_from_json.json` are deliberately
@@ -196,7 +197,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         )
     }
 
-    // ── required non-null parameters ──────────────────────────────────────────────────────
+    // ── semantically required parameters (non-null with a default since D43) ──────────────
 
     /**
      * Creates a named `ConceptDeclaration` root directly, rather than through `CREATE_CONCEPTS`,

@@ -130,6 +130,29 @@ class AnalyzeRunsTest(unittest.TestCase):
                             for rid in ("zero", "missing", "empty")))
 
 
+    def test_a_tool_authored_missing_parameter_rejection_counts_as_arg_validation(self) -> None:
+        """D43 moved the rejection from the platform binder into the tool body. The column must
+        count the new envelope, or round 10 would show the hotspot vanishing by relabelling."""
+        rejection = ('{"ok":false,"error":"moduleName is required. Retry with moduleName set to …",'
+                     '"code":"INVALID_REQUEST","details":{"missingParameters":["moduleName"]}}')
+        events = [
+            assistant("a", "mcp__server__mps_mcp_create_model"), result("a", rejection),
+            assistant("b", "mcp__server__mps_mcp_create_model"), result("b", '{"ok":true}'),
+        ]
+        server = [
+            {"tool": "mps_mcp_create_model", "ok": False, "code": "INVALID_REQUEST", "project": "/project"},
+            {"tool": "mps_mcp_create_model", "ok": True, "project": "/project"},
+        ]
+        self.write_run("S2-sonnet-1", events, server, meta={"scenario": "S2"})
+
+        completed = self.run_analyzer()
+
+        self.assertEqual(0, completed.returncode, completed)
+        row = self.metrics()
+        self.assertEqual("1", row["arg_validation_errors"])
+        self.assertEqual("0", row["pre_dispatch_rejections"])
+        self.assertEqual("0", row["server_call_surplus"])
+
     def test_a_missing_required_parameter_is_dispatched_and_does_not_fabricate_a_surplus(self) -> None:
         """Round 8's false positive: one omitted required parameter per run (S1:109 modelReference,
         S2:75 moduleName) was counted as a pre-dispatch rejection, so `expected_server_mps_calls`

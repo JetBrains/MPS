@@ -9,6 +9,7 @@ import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations
 import jetbrains.mps.progress.EmptyProgressMonitor
@@ -124,11 +125,25 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_query_structure(
-        @McpDescription("The operation to perform (GET_ENUMERATION_LITERALS, IS_SUBCONCEPT_OF, GET_SUB_CONCEPTS, GET_ASSIGNABLE_CONCEPTS, GET_ALL_SUPERCONCEPTS, LIST_CONCEPT_ASPECTS, GET_ASSIGNABLE_REFERENCES, IS_SMART_REFERENCE)") operation: String,
-        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText
+        @McpDescription("Required. The operation to perform (GET_ENUMERATION_LITERALS, IS_SUBCONCEPT_OF, GET_SUB_CONCEPTS, GET_ASSIGNABLE_CONCEPTS, GET_ALL_SUPERCONCEPTS, LIST_CONCEPT_ASPECTS, GET_ASSIGNABLE_REFERENCES, IS_SMART_REFERENCE)") operation: String = "",
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
+        // D43: both are Kotlin-optional so an omitted one is answered here, naming the key; see
+        // mps_mcp_query_nodes for the order (a supplied but unknown operation wins over a blank blob).
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_query_structure",
+                requiredOperation<MPSStructureQueryOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
+        // Recorded because it returns before withMpsProject (D26).
         val op = resolveOperationOrNull<MPSStructureQueryOperation>(operation)
-            ?: return unknownOperation<MPSStructureQueryOperation>(operation)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSStructureQueryOperation>(operation))
+        rejectMissingParameters(
+            "mps_mcp_query_structure",
+            requiredParametersBlob(parameters.text, op.name, queryStructureParameterKeys(op)),
+        )?.let { return it }
         return mps_mcp_query_structure(op, parameters.text)
     }
 
@@ -289,11 +304,24 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_alter_structure(
-        @McpDescription("The operation to perform (CREATE_CONCEPTS, CREATE_ENUM, UPDATE_CONCEPT_PROPERTY, RENAME_CONCEPT_PROPERTY, UPDATE_CONCEPT_CHILD, RENAME_CONCEPT_CHILD, UPDATE_CONCEPT_REFERENCE, RENAME_CONCEPT_REFERENCE)") operation: String,
-        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText
+        @McpDescription("Required. The operation to perform (CREATE_CONCEPTS, CREATE_ENUM, UPDATE_CONCEPT_PROPERTY, RENAME_CONCEPT_PROPERTY, UPDATE_CONCEPT_CHILD, RENAME_CONCEPT_CHILD, UPDATE_CONCEPT_REFERENCE, RENAME_CONCEPT_REFERENCE)") operation: String = "",
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
+        // D43: as in mps_mcp_query_structure.
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_alter_structure",
+                requiredOperation<MPSStructureAlterOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
+        // Recorded because it returns before withMpsProject (D26).
         val op = resolveOperationOrNull<MPSStructureAlterOperation>(operation)
-            ?: return unknownOperation<MPSStructureAlterOperation>(operation)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSStructureAlterOperation>(operation))
+        rejectMissingParameters(
+            "mps_mcp_alter_structure",
+            requiredParametersBlob(parameters.text, op.name, alterStructureParameterKeys(op)),
+        )?.let { return it }
         return mps_mcp_alter_structure(op, parameters.text)
     }
 

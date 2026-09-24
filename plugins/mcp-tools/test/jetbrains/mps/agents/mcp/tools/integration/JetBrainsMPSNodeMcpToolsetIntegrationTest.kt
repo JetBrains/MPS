@@ -1688,13 +1688,13 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     // These go through `callThroughBridge`, not `runTool`: the defects being fixed lived in the
     // *binder*, which rejected the call for a missing required argument before the tool body ran.
     // A direct Kotlin call can never reproduce that, so only the bridge proves the body now
-    // answers. `mps_mcp_update_node.operation`/`kind` and `mps_mcp_alter_nodes.parameters` must
-    // therefore stay optional — the schema test below states that requirement on its own, so a
-    // regression names itself instead of surfacing as a bridge failure in every test here.
+    // answers. Since D43 no parameter of these tools may be required in the signature — the schema
+    // test below states that on its own, so a regression names itself instead of surfacing as a
+    // bridge failure in every test here.
     // ---------------------------------------------------------------------------------------
 
     @Test
-    fun `published schema keeps the selectors of update_node and alter_nodes optional`() {
+    fun `published schema of the node tools requires no parameter`() {
         fun required(tool: String): Set<String> =
             publishedInputSchema(JetBrainsMPSNodeMcpToolset(), tool).requiredProperties
         assertEquals(
@@ -1709,10 +1709,11 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             emptySet<String>(),
             setOf("parameters").intersect(required("mps_mcp_alter_nodes")),
         )
-        assertTrue(
-            "query_nodes.parameters stays required on purpose — D29 covered alter_nodes only",
-            "parameters" in required("mps_mcp_query_nodes"),
-        )
+        // D43 extended D29's lever to every published parameter: nothing is left for the binder to
+        // reject, so each tool's own rejection names the key a dropped value should have used.
+        for (tool in listOf("mps_mcp_query_nodes", "mps_mcp_alter_nodes", "mps_mcp_check_root_node_problems", "mps_mcp_print_node")) {
+            assertEquals("$tool must publish no required parameter (D43)", emptySet<String>(), required(tool))
+        }
     }
 
     @Test
@@ -2012,6 +2013,148 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "Invalid format 'structural'. Allowed values: JSON, HTML, PLAIN TEXT",
             obj.get("error").asString,
         )
+    }
+
+    // ---------------------------------------------------------------------------------------
+    // Study D43: every published parameter is Kotlin-optional, so an omitted required one is
+    // answered by the tool — naming the key and the spellings that never reached it — instead of
+    // the binder's "No argument is passed for required parameter 'x'".
+    // ---------------------------------------------------------------------------------------
+
+    /** Asserts a D43 missing-parameter envelope and returns its `error` text. */
+    private fun assertMissingParameters(response: String, vararg expected: String): String {
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            expected.toList(),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertFalse(
+            "the platform's missing-argument line must not reach the caller: $error",
+            error.contains("No argument is passed for required parameter"),
+        )
+        return error
+    }
+
+    @Test
+    fun `query_nodes names parameters when the caller sent params`() {
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSNodeMcpToolset(), "mps_mcp_query_nodes",
+                mapOf(
+                    "operation" to McpJsonPrimitive("GET_PARENT"),
+                    "params" to McpJsonPrimitive("""{"nodeReference":"r:00000000-0000-0000-0000-000000000000(dummy)/1"}"""),
+                ),
+            ),
+            "parameters",
+        )
+        assertTrue(error, error.startsWith("parameters is required."))
+        assertTrue("must name the dropped spelling: $error", error.contains("'params'"))
+        assertTrue("must name the operation's own keys: $error", error.contains("GET_PARENT's arguments") && error.contains("nodeReference"))
+        assertTrue("must say the arguments go inside the object: $error", error.contains("rather than at the top level"))
+    }
+
+    @Test
+    fun `query_nodes reports a missing operation as missing, not unknown`() {
+        val both = assertMissingParameters(
+            callThroughBridge(JetBrainsMPSNodeMcpToolset(), "mps_mcp_query_nodes", emptyMap()),
+            "operation", "parameters",
+        )
+        assertTrue(both, both.startsWith("operation and parameters are required."))
+        assertFalse("a blank selector is not an unknown one: $both", both.contains("Unknown operation"))
+
+        val opOnly = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSNodeMcpToolset(), "mps_mcp_query_nodes",
+                mapOf(
+                    "op" to McpJsonPrimitive("GET_ROOT"),
+                    "parameters" to McpJsonPrimitive("""{"nodeReference":"r:00000000-0000-0000-0000-000000000000(dummy)/1"}"""),
+                ),
+            ),
+            "operation",
+        )
+        assertTrue(opOnly, opOnly.startsWith("operation is required."))
+        assertTrue("must name the dropped spelling: $opOnly", opOnly.contains("'op'"))
+        assertTrue("must list the valid operations: $opOnly", opOnly.contains("FIND_INSTANCES") && opOnly.contains("GET_CHILD_ROLE"))
+    }
+
+    @Test
+    fun `query_nodes answers an unknown operation before a blank parameters blob`() {
+        // The caller who guessed a verb must fix that first; being told about `parameters` would
+        // send them back with the same wrong operation (the D36 ordering).
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_query_nodes",
+            mapOf("operation" to McpJsonPrimitive("LIST_ROOTS")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertTrue(response, obj.get("error").asString.contains("Unknown operation 'LIST_ROOTS'"))
+        assertFalse("an unknown operation is not a missing parameter: $response", obj.has("details"))
+    }
+
+    @Test
+    fun `alter_nodes reports a missing operation and keeps D29 for a missing blob`() {
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSNodeMcpToolset(), "mps_mcp_alter_nodes",
+                mapOf(
+                    "action" to McpJsonPrimitive("MAKE"),
+                    "parameters" to McpJsonPrimitive("""{"wholeProject":true}"""),
+                ),
+            ),
+            "operation",
+        )
+        assertTrue(error, error.startsWith("operation is required."))
+        assertTrue("must name the dropped spelling: $error", error.contains("'action'"))
+        assertTrue("must list the valid operations: $error", error.contains("MOVE_CHILD") && error.contains("FIX_REFERENCES"))
+
+        val both = assertMissingParameters(
+            callThroughBridge(JetBrainsMPSNodeMcpToolset(), "mps_mcp_alter_nodes", emptyMap()),
+            "operation", "parameters",
+        )
+        assertTrue(both, both.startsWith("operation and parameters are required."))
+    }
+
+    @Test
+    fun `check_root_node_problems names nodeReference when the caller sent modelReference`() {
+        // D33 already made the checker accept a model under `nodeReference`; the natural guess
+        // `modelReference` used to die in the binder without that ever being said.
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+                mapOf("modelReference" to McpJsonPrimitive(structureModelRef)),
+            ),
+            "nodeReference",
+        )
+        assertTrue(error, error.startsWith("nodeReference is required."))
+        assertTrue("must say a model goes under nodeReference: $error", error.contains("model reference") && error.contains("no modelReference parameter"))
+
+        val retried = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(structureModelRef)),
+        )
+        assertOk(retried)
+    }
+
+    @Test
+    fun `print_node names nodeReference when the caller sent nodeRef`() {
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSNodeMcpToolset(), "mps_mcp_print_node",
+                mapOf(
+                    "nodeRef" to McpJsonPrimitive("r:00000000-0000-0000-0000-000000000000(dummy)/1"),
+                    // A bad format must not win over the missing key: the retry has to name it.
+                    "format" to McpJsonPrimitive("structural"),
+                ),
+            ),
+            "nodeReference",
+        )
+        assertTrue(error, error.startsWith("nodeReference is required."))
+        assertTrue("must name the dropped spelling: $error", error.contains("'nodeRef'"))
+        assertTrue("must say a model is not accepted: $error", error.contains("a model is not accepted"))
     }
 
     /** node-info responses arrive as a JSON-string inside the `data` field; normalise either form. */

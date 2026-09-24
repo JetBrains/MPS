@@ -34,8 +34,11 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
         Returns a JSON object with 'ok':true and 'data':{"present":true} on success, or 'ok':false and 'error':"..." on failure.
     """)
     suspend fun mps_mcp_open_node(
-        @McpDescription("Persistent form of SNodeReference; may point to any node — non-root references open the containing root and focus the target.") nodeReference: String
-    ): String = withMpsProject("Opening MPS node in editor") { mpsProject ->
+        @McpDescription("Required. Persistent form of SNodeReference; may point to any node — non-root references open the containing root and focus the target.") nodeReference: String = ""
+    ): String = rejectMissingParameters(
+        "mps_mcp_open_node",
+        RequiredParameter("nodeReference", nodeReference, "the persistent node reference to open"),
+    ) ?: withMpsProject("Opening MPS node in editor") { mpsProject ->
         // resolveNodeReferencePreferringProject resolves the reference against the model
         // (SNodeReference.resolve), so it must run inside a read action — otherwise MPS throws
         // IllegalModelAccessError ("You can read model only inside read actions"). It handles
@@ -229,11 +232,20 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
         Searches project models for root nodes whose name matches any of the given names. Finds roots by name only — to find nodes by concept use `mps_mcp_query_nodes` FIND_INSTANCES. `names` accepts a single name or a JSON array of names. `scope` (default `editable`): `editable` searches this project's own editable modules; `all` additionally includes the read-only/library and imported modules in the project's visible dependency closure, including imported modules from other open MPS projects; `models` restricts the search to the references in `models`; `modules` restricts it to the references in `modules`. Explicit `models`/`modules` references may point to another open MPS project and are queried read-only. Each accepts one bare reference or a JSON array (a real array or the array written as a string); the decoded list must be nonempty and every reference must resolve, otherwise the whole search returns INVALID_REQUEST. The `roots` scope of FIND_USAGES/FIND_INSTANCES is not supported here. Returns a JSON array of node info inline, or a path to a temp file when the payload is large.
     """)
     suspend fun mps_mcp_search_root_node_by_name(
-        @McpDescription("The name(s) of the root node(s) to search for. Either a single name string or a JSON array: [\"Name1\", \"Name2\"] (a real array or the array written as a string)") names: JsonOrText,
+        @McpDescription("Required. The name(s) of the root node(s) to search for. Either a single name string or a JSON array: [\"Name1\", \"Name2\"] (a real array or the array written as a string)") names: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Search scope: 'editable' (default) for this project's editable modules, 'all' for this project's visible dependencies, 'models' (requires 'models'), or 'modules' (requires 'modules'). Explicit model/module references may point to another open MPS project and are queried read-only. 'roots' is not supported here.") scope: String = "editable",
         @McpDescription("Model references, required when scope is 'models'. One bare reference or a nonempty JSON array (a real array or the array written as a string); every reference must resolve.") models: JsonOrText? = null,
         @McpDescription("Module references, required when scope is 'modules'. One bare reference or a nonempty JSON array (a real array or the array written as a string); every reference must resolve.") modules: JsonOrText? = null
     ): String {
+        // A blank `names` used to answer `ok:true` with an empty array, which reads as "no such
+        // root" rather than "you did not say what to look for" — the same silent-drop the
+        // `searchTexts` guard of mps_mcp_search_concepts removes. Named rejection instead, with
+        // the retry line; no alias parameter is added (a top-level alias costs schema bytes on
+        // every turn).
+        rejectMissingParameters(
+            "mps_mcp_search_root_node_by_name",
+            RequiredParameter("names", names.text, "a single root-node name or a JSON array of names"),
+        )?.let { return it }
         return withMpsProject("Searching for MPS root node by name") { mpsProject ->
             // Guard before the shared resolver: buildSearchScope does support 'roots', but this
             // tool exposes no 'roots' parameter, so letting it through would fail with the
@@ -246,16 +258,14 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     McpErrorCode.INVALID_REQUEST,
                 )
             }
-            // A blank `names` used to answer `ok:true` with an empty array, which reads as "no such
-            // root" rather than "you did not say what to look for" — the same silent-drop the
-            // `searchTexts` guard of mps_mcp_search_concepts removes. Named rejection instead, with
-            // the retry line; no alias parameter is added (a top-level alias costs schema bytes on
-            // every turn).
+            // names.text can be non-blank (e.g. a JSON array of blank strings) yet still resolve to
+            // no usable name once parsed; rejectMissingParameters above only sees the raw text, so
+            // this residual check catches that parsed-empty case specifically.
             val nameSet: Set<String> = parseStringOrJsonArray(names).filter { it.isNotBlank() }.toSet()
             if (nameSet.isEmpty()) {
                 return@withMpsProject errJson(
-                    "names is required: provide a single root-node name or a JSON array of names. " +
-                            "Retry with names set to the value you passed as name/q/searchTexts.",
+                    "names resolved to no usable name: every entry was blank. " +
+                            "Retry with names set to a nonempty root-node name or a JSON array containing at least one nonblank name.",
                     McpErrorCode.INVALID_REQUEST,
                 )
             }
@@ -303,11 +313,16 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
         Bulk-creates one or more MPS root nodes from a JSON blueprint (a single object or a top-level array; arrays attach atomically — a failure inserts no roots at all. Node-factory side effects are the exception: a concept's factory runs while its node is being built, so anything it wrote to the model or module — a used language, a model import, a module dependency, a language-version bump — persists even when the batch then fails. Re-read that state rather than assuming a failed call changed nothing). Returns the new node's info envelope, or an array of envelopes when the input was an array (`responseDetail="full"`). From 10 roots up the response defaults to `responseDetail="summary"` — `{inserted:N, roots:[{name, reference, concept}], fixReferences:{fixed, repointed, stillBroken}}`, without the per-root `conceptDoc`/`conceptReference`/model/module fields — because the full form grew larger than the blueprint it answers; pass `responseDetail="full"` to force the envelopes, or `"summary"` to get the compact form for a smaller insert. Two blueprint values fail silently rather than erroring: a reference role given a `c:` concept ref (instead of an `r:` node ref or a plain name) yields an unresolved reference, and an encoded id inside a property value (e.g. a `PropertyMacro.propertyId`) is not validated — both surface only via `mps_mcp_check_root_node_problems`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`) and `mps-mcp-workflow/references/bulk-creation.md` for the array contract and large-input strategies.
     """)
     suspend fun mps_mcp_insert_root_node_from_json(
-        @McpDescription("Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String,
-        @McpDescription("JSON blueprint, single object or top-level array (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText,
+        @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String = "",
+        @McpDescription("Required. JSON blueprint, single object or top-level array (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional: if true, only validate JSON and concept-role assignability without mutating the model. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false,
         @McpDescription("Optional: `summary` for `{inserted, roots:[{name, reference, concept}], fixReferences}`, `full` for one complete node-info envelope per inserted root. Defaults to `summary` from 10 roots up and to `full` below that.") responseDetail: String? = null
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_insert_root_node_from_json",
+            RequiredParameter("modelReference", modelReference, "the target model's persistent reference or name"),
+            RequiredParameter("json", json.text, "the JSON blueprint (a single object or a top-level array), or an absolute path to a temporary file holding it"),
+        )?.let { return it }
         return withMpsProject("Inserting MPS root node from JSON") { mpsProject ->
             val actualJson = readNodeJsonOrFile(json.text, dryRun)
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
@@ -413,11 +428,16 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
         Returns a JSON object with 'ok':true and 'data':{ name, concept, conceptReference, reference, parentReference, rootReference, modelReference, moduleReference, virtualFolder, isRoot, present:true } on success, or 'ok':false and 'error':"..." on failure.
     """)
     suspend fun mps_mcp_create_root_node(
-        @McpDescription("Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String,
-        @McpDescription("Fully qualified concept name or name") concept: String,
+        @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String = "",
+        @McpDescription("Required unless `conceptReference` is given. Fully qualified concept name or name") concept: String = "",
         @McpDescription("Optional: Persistent form of SConcept (c:...) or fully qualified concept name") conceptReference: String? = null,
-        @McpDescription("Name for the new root node") name: String
+        @McpDescription("Name for the new root node") name: String = ""
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_create_root_node",
+            RequiredParameter("modelReference", modelReference, "the target model's persistent reference or name"),
+            RequiredParameter("concept", concept.ifBlank { conceptReference.orEmpty() }, "a fully qualified concept name, or pass conceptReference"),
+        )?.let { return it }
         return withMpsProject("Creating MPS root node") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val model = when (val r = resolveEditableModel(mpsProject, modelReference)) {
@@ -468,11 +488,15 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
         Updates or deletes an MPS root node from a JSON blueprint. The root node's persistent ID is preserved; its properties, references, and children are re-set to match the blueprint. The `name` property is included in the rewrite, so a different `name` in the blueprint renames the root (the ID is unchanged); omit `name` to keep the current one. This is a **full-root rewrite** — for partial updates prefer surgical tools if `mps_mcp_update_node`. See `mps-node-editing` SKILL (File-Path Semantics, `references/json-format.md`).
     """)
     suspend fun mps_mcp_update_root_node_from_json(
-        @McpDescription("Persistent form of SNodeReference") nodeReference: String,
+        @McpDescription("Required. Persistent form of SNodeReference") nodeReference: String = "",
         @McpDescription("JSON blueprint of the root (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) file containing it. Ignored for DELETE. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional, ignored for DELETE - if true, only validate JSON and concept-role assignability without mutating the node. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false,
         @McpDescription("Operation to perform: UPDATE or DELETE") operation: String = "UPDATE"
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_update_root_node_from_json",
+            RequiredParameter("nodeReference", nodeReference, "the persistent reference of the root node to update"),
+        )?.let { return it }
         val op = resolveOperationOrNull<RootNodeOperation>(operation)
             ?: return unknownOperation<RootNodeOperation>(operation)
         return mps_mcp_update_root_node_from_json(nodeReference, json.text, dryRun, op)

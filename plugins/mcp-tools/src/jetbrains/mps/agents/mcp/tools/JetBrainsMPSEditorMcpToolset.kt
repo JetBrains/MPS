@@ -100,8 +100,8 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_scaffold_editor(
-        @McpDescription("The persistent reference c:... or r:... of the declaration of the concept that needs an editor, or its fully qualified name.") conceptRef: String,
-        @McpDescription("Target editor model where the editor node should be created: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String,
+        @McpDescription("Required. The persistent reference c:... or r:... of the declaration of the concept that needs an editor, or its fully qualified name.") conceptRef: String = "",
+        @McpDescription("Required. Target editor model where the editor node should be created: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String = "",
         @McpDescription("Optional: A persistent reference to a StyleClass to automatically apply to constant cells like the concept alias.") keywordStyle: String? = null,
         @McpDescription("Optional: A persistent reference to a StyleClass to apply to reference cells.") referenceStyle: String? = null,
         @McpDescription("Whether to automatically detect and include existing suitable editor components.") detectComponents: Boolean = false,
@@ -110,7 +110,11 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
         @McpDescription("Optional: A property name or JSON array of property names to include (a real array or the array written as a string). Omit for all; [] for none.") includeProperties: JsonOrText? = null,
         @McpDescription("Optional: A reference name or JSON array of reference names to include (a real array or the array written as a string). Omit for all; [] for none.") includeReferences: JsonOrText? = null,
         @McpDescription("Optional: A containment link name or JSON array of containment link names to include (a real array or the array written as a string). Omit for all; [] for none.") includeChildren: JsonOrText? = null
-    ): String = mps_mcp_scaffold_editor(
+    ): String = rejectMissingParameters(
+        "mps_mcp_scaffold_editor",
+        RequiredParameter("conceptRef", conceptRef, "the target concept's persistent reference (c:... or r:...) or fully qualified name"),
+        RequiredParameter("modelReference", modelReference, "the target editor model's persistent reference or name"),
+    ) ?: mps_mcp_scaffold_editor(
         conceptRef,
         modelReference,
         keywordStyle,

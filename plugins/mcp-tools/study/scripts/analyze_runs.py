@@ -38,8 +38,13 @@ PRE_DISPATCH_REJECTION_RES = (
 # "IllegalStateException: No argument is passed for required parameter '<x>'"). Counting these as
 # pre-dispatch rejections under-states `expected_server_mps_calls` and fabricates a
 # `server_call_surplus` of +1 per occurrence — round 8 hit exactly that on S1:109 and S2:75.
+# Since D43 no published parameter is required in the Kotlin signature, so the tool body rejects a
+# missing one itself, with an INVALID_REQUEST envelope listing `details.missingParameters`. Both
+# shapes are the same failure mode (the parameter-name guessing hotspot), so both count here and
+# the column stays comparable across the change.
 ARG_VALIDATION_ERROR_RE = re.compile(
     r"MCP tool call has been failed: No argument is passed for required parameter\s+['‘][^'’]+['’]"
+    r'|"missingParameters"\s*:'
 )
 # A rejection whose listing is empty means the Welcome screen: no project is open at all, so no
 # projectPath could have helped. Lifecycle scenarios pass through this state deliberately.

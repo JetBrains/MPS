@@ -295,6 +295,30 @@ abstract class AbstractOps : McpToolset {
         return obj.toString()
     }
 
+    /**
+     * The `INVALID_REQUEST` envelope for every blank [parameters] entry of [tool], or `null` when
+     * none is blank. Call it before anything else in the `@McpTool` function: as
+     * `rejectMissingParameters(...)?.let { return it }` in a block body, or as
+     * `rejectMissingParameters(...) ?: withMpsProject(...) { ... }` in an expression body. See
+     * [RequiredParameter] for why a required parameter is Kotlin-optional and which ones to list.
+     * `details.missingParameters` lists the names, which the study's `analyze_runs.py` counts as
+     * `arg_validation_errors`.
+     *
+     * Records its own envelope: it returns before `withMpsProject`, which would otherwise record
+     * it, and an unrecorded rejection would be logged as ok:true (D26).
+     */
+    protected suspend fun rejectMissingParameters(tool: String, vararg parameters: RequiredParameter): String? {
+        val missing = parameters.filter { it.supplied.isBlank() }
+        if (missing.isEmpty()) return null
+        return McpCallOutcomes.record(
+            errJson(
+                missingParametersMessage(tool, missing),
+                McpErrorCode.INVALID_REQUEST,
+                mapOf("missingParameters" to missing.map { it.name }),
+            )
+        )
+    }
+
     protected fun invalidJson(message: String?, details: Map<String, Any?> = emptyMap()): String =
         errJson(message, McpErrorCode.INVALID_JSON, details)
 

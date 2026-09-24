@@ -122,12 +122,26 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
     """)
     suspend fun mps_mcp_query_nodes(
-        @McpDescription("The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String,
-        @McpDescription("Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText,
+        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String = "",
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
+        // D43: both are Kotlin-optional so an omitted one is answered here, naming the key. A blank
+        // operation reports a blank blob alongside it; a supplied but unknown operation wins over
+        // a blank blob, as in update_node (D36), so the caller fixes the selector first.
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_query_nodes",
+                requiredOperation<MPSQueryOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
         val op = resolveOperationOrNull<MPSQueryOperation>(operation)
             ?: return McpCallOutcomes.record(unknownOperation<MPSQueryOperation>(operation))
+        rejectMissingParameters(
+            "mps_mcp_query_nodes",
+            requiredParametersBlob(parameters.text, op.name, queryNodesParameterKeys(op)),
+        )?.let { return it }
         return mps_mcp_query_nodes(op, parameters.text, maxInlineBytes)
     }
 
@@ -168,7 +182,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
     suspend fun mps_mcp_alter_nodes(
-        @McpDescription("The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES)") operation: String,
+        @McpDescription("Required. The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES)") operation: String = "",
         // Study D29: Kotlin-optional so that MAKE called with its arguments at the top level
         // reaches the body, instead of the platform rejecting the call for the missing required
         // argument without ever saying the arguments belong inside this object. It stays
@@ -178,6 +192,17 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         // "'parameters' is required". See missingAlterNodesParameters.
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
+        // D43: only a blank *operation* is answered here. Once the operation is known, a blank
+        // `parameters` keeps D29's per-operation missingAlterNodesParameters (MAKE_INPUT_INVALID
+        // plus `expectedParameters` for MAKE) in the overload below; it cannot be chosen without
+        // an operation, so a blank blob beside a blank operation is reported here instead.
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_alter_nodes",
+                requiredOperation<MPSAlterOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
         val op = resolveOperationOrNull<MPSAlterOperation>(operation)
             ?: return McpCallOutcomes.record(unknownOperation<MPSAlterOperation>(operation))
         return mps_mcp_alter_nodes(op, parameters.text)
@@ -495,7 +520,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     "the top level instead is dropped before the call reaches this tool, so a " +
                     "'rebuild' put there never arrives — and 'moduleName' is not a key here at " +
                     "all: a module list is 'modules', inside the object.",
-                mapOf("expectedParameters" to MAKE_PARAMETER_SCHEMA),
+                mapOf("expectedParameters" to MAKE_PARAMETER_SCHEMA, "missingParameters" to listOf("parameters")),
             )
         }
         // Every non-MAKE operation requires at least 'nodeReference', so the key list is never
@@ -505,6 +530,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             "'parameters' is required for ${operation.name}, and its arguments belong inside that " +
                 "object (keys: ${keys.joinToString(", ")}).",
             McpErrorCode.INVALID_REQUEST,
+            // Same key as rejectMissingParameters, so the study counts this case alike (D43).
+            mapOf("missingParameters" to listOf("parameters")),
         )
     }
 
@@ -659,12 +686,21 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
-        @McpDescription("Persistent form of SNodeReference or SModelReference, or a qualified model name (the same form mps_mcp_get_project_structure startingPoint accepts). Pass any of these here — there is no modelReference parameter.") nodeReference: String,
+        @McpDescription("Required. Persistent form of SNodeReference or SModelReference, or a qualified model name (the same form mps_mcp_get_project_structure startingPoint accepts). Pass any of these here — there is no modelReference parameter.") nodeReference: String = "",
         @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true,
         @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false,
         @McpDescription("Inline the problem report in `data` when it is at most this many characters; larger reports are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
         @McpDescription("Model references only: if true, `data` is one compact entry per root — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — instead of the problem tree (default = false). Ignored for a node reference.") perRoot: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_check_root_node_problems",
+            RequiredParameter(
+                "nodeReference",
+                nodeReference,
+                "a node reference, a model reference, or a qualified model name — all three go under nodeReference, " +
+                    "since this tool has no modelReference parameter",
+            ),
+        )?.let { return it }
         return withMpsProject("Checking MPS problems") { mpsProject ->
             // Auto-apply mutates the model, so it needs a write command; the default (report-only)
             // mode keeps the read wrapper to avoid needless write locks.
@@ -897,11 +933,20 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_print_node(
-        @McpDescription("Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String,
+        @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String = "",
         @McpDescription("One of exactly three literals: JSON (default), HTML, PLAIN TEXT.") format: String = "JSON",
         @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
         @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_print_node",
+            RequiredParameter(
+                "nodeReference",
+                nodeReference,
+                "the node's persistent reference, `r:<uuid>(model)/<node-id>` (a model is not accepted here; " +
+                    "list a model's nodes with mps_mcp_get_project_structure instead)",
+            ),
+        )?.let { return it }
         val normalizedFormat = format.uppercase().trim()
         if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true, maxInlineBytes = maxInlineBytes)
         if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false, maxInlineBytes = maxInlineBytes)

@@ -25,7 +25,7 @@ The **actions** aspect customizes how new nodes of a concept are constructed by 
 
 ## Common-Path Workflow
 
-1. Ensure an actions model exists (`<lang>/models/<lang>.actions.mps`; create with `mps_mcp_create_model` and `modelName: "<lang>.actions"` — aspect ID `actions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.actions`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel`. Add `jetbrains.mps.lang.core` as the base. Import the structure model of your language.
+1. Ensure an actions model exists (`<lang>/models/<lang>.actions.mps`; create with `mps_mcp_create_model`, passing `moduleName: "<lang>"` and `modelName: "<lang>.actions"` — aspect ID `actions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.actions`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel`. Add `jetbrains.mps.lang.core` as the base. Import the structure model of your language.
 2. Create the `NodeFactories` root via `mps_mcp_insert_root_node_from_json` (blueprint in `references/json-blueprints.md`). Set `name`.
 3. For each concept that needs custom initialization, add a `NodeFactory` child via `mps_mcp_update_node`. Set `applicableConcept`; attach a `NodeSetupFunction` with a `StatementList` body.
 4. Fill the body. Typical pattern: `ifInstanceOf (sampleNode is <Concept> original) { newNode.<prop> = original.<prop>; ... }`. Cross-type narrowing is allowed — see `references/setup-function-bodies.md`.

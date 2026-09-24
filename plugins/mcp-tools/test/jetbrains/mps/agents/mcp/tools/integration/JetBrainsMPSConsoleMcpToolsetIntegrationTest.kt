@@ -110,4 +110,54 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
      * path when it exceeds `maxInlineBytes`; the base helper accepts both shapes.
      */
     private fun readJsonObjectFromOkPath(response: String): JsonObject = payloadObjectFromOkData(response)
+
+    // ── D43: missing-required-parameter rejections through the real bridge ────────────────
+    // These go through callThroughBridge, not runTool: only the bridge's own argument binding
+    // can observe a wrong-key spelling being silently dropped before the tool body runs.
+
+    @Test
+    fun `insert_console_command_from_json names json when the caller sent blueprint`() {
+        val response = callThroughBridge(
+            JetBrainsMPSConsoleMcpToolset(), "mps_mcp_insert_console_command_from_json",
+            mapOf("blueprint" to kotlinx.serialization.json.JsonPrimitive("""{"concept":"jetbrains.mps.console.base.structure.BLExpression"}""")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("json"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name the key and the dropped spelling: $error",
+            error.startsWith("json is required.") && error.contains("'blueprint'"),
+        )
+    }
+
+    @Test
+    fun `recall_console_command names historyNodeReference when the caller sent nodeReference`() {
+        val response = callThroughBridge(
+            JetBrainsMPSConsoleMcpToolset(), "mps_mcp_recall_console_command",
+            mapOf("nodeReference" to kotlinx.serialization.json.JsonPrimitive("r:does-not-exist/0")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("historyNodeReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name the key and the dropped spelling: $error",
+            error.startsWith("historyNodeReference is required.") && error.contains("'nodeReference'"),
+        )
+    }
+
+    @Test
+    fun `recall_console_command reaches the console-unavailable branch once retried with the correct key`() {
+        val response = callThroughBridge(
+            JetBrainsMPSConsoleMcpToolset(), "mps_mcp_recall_console_command",
+            mapOf("historyNodeReference" to kotlinx.serialization.json.JsonPrimitive("r:does-not-exist/0")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope when the console is unavailable: $response", obj.get("ok").asBoolean)
+        assertFalse("must not be the missing-parameter rejection anymore", obj.get("code")?.asString == "INVALID_REQUEST" &&
+            obj.get("error").asString.startsWith("historyNodeReference is required."))
+    }
 }

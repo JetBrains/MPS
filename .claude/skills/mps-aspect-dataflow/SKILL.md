@@ -32,7 +32,7 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 
 ## Common-Path Workflow
 
-1. Create the dataflow model with `mps_mcp_create_model` and `modelName: "<lang>.dataFlow"` if absent. **The aspect ID is `dataFlow` — camelCase, case-sensitive, no `@` suffix**; spelling it `dataflow` (lowercase) produces a utility model that MPS will not recognise. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md). Add `jetbrains.mps.lang.dataFlow` (and transitively `jetbrains.mps.baseLanguage`) as used languages on the model.
+1. Create the dataflow model with `mps_mcp_create_model` (`moduleName: "<lang>"`, `modelName: "<lang>.dataFlow"`) if absent. **The aspect ID is `dataFlow` — camelCase, case-sensitive, no `@` suffix**; spelling it `dataflow` (lowercase) produces a utility model that MPS will not recognise. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md). Add `jetbrains.mps.lang.dataFlow` (and transitively `jetbrains.mps.baseLanguage`) as used languages on the model.
 2. Create a `DataFlowBuilderDeclaration` root node; set `conceptDeclaration` to the concept being described; give it a `name`.
 3. Add a `BuilderBlock` child with a `body` (BL `StatementList`).
 4. Emit instructions: delegate to children with `EmitCodeForStatement`; model branches with `EmitIfJumpStatement` + `EmitLabelStatement`; record variable use with `EmitReadStatement` / `EmitWriteStatement`; mark exits with `EmitRetStatement`.

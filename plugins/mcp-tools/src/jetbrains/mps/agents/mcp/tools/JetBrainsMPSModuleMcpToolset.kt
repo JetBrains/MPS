@@ -52,17 +52,23 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         For DELETE: Both the regular `<dependencies>` list and the per-kind `Extends` collection are probed; any removal counts as success. See `mps-aspect-accessories/references/module-level-deps.md` for the dispatch details.
     """)
     suspend fun mps_mcp_module_dependency(
-        @McpDescription("Source module name or reference")
-        moduleName: String,
-        @McpDescription("Target module name or reference")
-        targetModule: String,
-        @McpDescription("Operation to perform: ADD or DELETE")
-        operation: String,
+        @McpDescription("Required. Source module name or reference")
+        moduleName: String = "",
+        @McpDescription("Required. Target module name or reference")
+        targetModule: String = "",
+        @McpDescription("Required. Operation to perform: ADD or DELETE")
+        operation: String = "",
         @McpDescription("Dependency scope (Default by default)")
         @Nullable scope: String? = null,
         @McpDescription("Whether to reexport the dependency (false by default)")
         reexport: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_module_dependency",
+            RequiredParameter("moduleName", moduleName, "the source module's name or reference"),
+            RequiredParameter("targetModule", targetModule, "the target module's name or reference"),
+            RequiredParameter("operation", operation, "ADD or DELETE"),
+        )?.let { return it }
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
         return mps_mcp_module_dependency(moduleName, targetModule, op, scope, reexport)
@@ -244,8 +250,8 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_create_module(
-        @McpDescription("Module type: solution|language|devkit|generator") type: String,
-        @McpDescription("Module name or namespace. Ignored for type='generator' — the generator's name is derived as '<parentLanguage>.generator'.") name: String,
+        @McpDescription("Required. Module type: solution|language|devkit|generator") type: String = "",
+        @McpDescription("Required. Module name or namespace. Ignored for type='generator' — the generator's name is derived as '<parentLanguage>.generator'.") name: String = "",
         @McpDescription("Absolute directory for the module; created by the tool if missing. Required for solution/language/devkit. Optional for 'generator': omit or leave blank to default to '<parent-language-dir>/generator'; an existing empty directory at the target is reused.") @Nullable directory: String? = null,
         @McpDescription("Optional Project View virtual folder") @Nullable virtualFolder: String? = null,
         @McpDescription("Required only when type='generator'; ignored otherwise") @Nullable parentLanguage: String? = null,
@@ -253,7 +259,15 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         @McpDescription("For language: also create a sandbox solution") withSandbox: Boolean = false,
         @McpDescription("For language: also create a runtime solution") withRuntime: Boolean = false,
         @McpDescription("Optional additional facet type or JSON array of facet types (e.g. `tests` or [\"tests\"] for a test-container Solution; a real array or the array written as a string). Omit or pass [] for no additional facets. See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: JsonOrText? = null
-    ): String = mps_mcp_create_module(
+    ): String = rejectMissingParameters(
+        "mps_mcp_create_module",
+        *listOfNotNull(
+            RequiredParameter("type", type, "solution, language, devkit, or generator"),
+            // A generator's name is derived from its parent language, so a blank one is meaningful.
+            RequiredParameter("name", name, "the new module's name or namespace")
+                .takeUnless { type.lowercase() == "generator" },
+        ).toTypedArray(),
+    ) ?: mps_mcp_create_module(
         type,
         name,
         directory,
@@ -686,11 +700,15 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_update_module(
-        @McpDescription("Existing module name or reference") moduleName: String,
+        @McpDescription("Required. Existing module name or reference") moduleName: String = "",
         @McpDescription("New name or value for the operation: new qualified name for RENAME, new folder path for CHANGE_VIRTUAL_FOLDER, the new language version as a decimal string for SET_VERSION (omit to bump the current version by 1), or ignored for DELETE.") @Nullable newName: String? = null,
         @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, SET_VERSION, or DELETE. Default is RENAME.") operation: String = "RENAME",
         @McpDescription("For DELETE only: whether to also delete module files from disk.") deleteFiles: Boolean = false,
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_update_module",
+            RequiredParameter("moduleName", moduleName, "the existing module's name or reference"),
+        )?.let { return it }
         val op = resolveOperationOrNull<ModuleOperation>(operation)
             ?: return unknownOperation<ModuleOperation>(operation)
         return mps_mcp_update_module(moduleName, newName, op, deleteFiles)
@@ -1041,8 +1059,11 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
     @Suppress("DEPRECATION")
     suspend fun mps_mcp_get_module_facets(
-        @McpDescription("Module name or reference") moduleName: String
-    ): String = withMpsProject("Getting module facets") { mpsProject ->
+        @McpDescription("Required. Module name or reference") moduleName: String = ""
+    ): String = rejectMissingParameters(
+        "mps_mcp_get_module_facets",
+        RequiredParameter("moduleName", moduleName, "the module's name or reference"),
+    ) ?: withMpsProject("Getting module facets") { mpsProject ->
         executeShortReadOnEdt(mpsProject) {
             val module = resolveModulePreferringProject(mpsProject, moduleName)
             if (module == null) {
@@ -1112,11 +1133,15 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
     @Suppress("DEPRECATION")
     suspend fun mps_mcp_update_module_facet(
-        @McpDescription("Module name or reference") moduleName: String,
-        @McpDescription("Facet type to update") facetType: String,
+        @McpDescription("Required. Module name or reference") moduleName: String = "",
+        @McpDescription("Required. Facet type to update") facetType: String = "",
         @McpDescription("Whether to enable or disable the facet") @Nullable enabled: Boolean? = null,
         @McpDescription("Facet settings as a flat JSON object of primitive values, or structured JSON with optional 'properties' object, primitive 'text', and 'children' array; sent as real JSON or as its string form. Each child requires a primitive 'type'. Invalid settings leave the existing facet unchanged; ignored when enabled=false.") @Nullable settingsJson: JsonOrText? = null
-    ): String = withMpsProject("Updating module facet") { mpsProject ->
+    ): String = rejectMissingParameters(
+        "mps_mcp_update_module_facet",
+        RequiredParameter("moduleName", moduleName, "the module's name or reference"),
+        RequiredParameter("facetType", facetType, "the facet type to update"),
+    ) ?: withMpsProject("Updating module facet") { mpsProject ->
         val settings = settingsJson?.text
         val validationError = withModalTimeoutOnEdt {
             var commandError: String? = null

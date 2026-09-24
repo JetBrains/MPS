@@ -1575,6 +1575,105 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
                    obj.get("error").asString.contains("CREATE_CONCEPTS"))
     }
 
+    // ── D43: required parameters are answered by the tool, not the binder ────────────────
+
+    /** Asserts a D43 missing-parameter envelope and returns its `error` text. */
+    private fun assertMissingParameters(response: String, vararg expected: String): String {
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            expected.toList(),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertFalse(
+            "the platform's missing-argument line must not reach the caller: $error",
+            error.contains("No argument is passed for required parameter"),
+        )
+        return error
+    }
+
+    @Test
+    fun `query_structure with its arguments at the top level names parameters and the operation's keys`() {
+        // The blob-less call a caller makes when it reads `conceptRef` as a tool parameter: the
+        // binder drops the key, and the rejection has to say where it belongs.
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSLanguageStructureMcpToolset(), "mps_mcp_query_structure",
+                mapOf(
+                    "operation" to kotlinx.serialization.json.JsonPrimitive("IS_SMART_REFERENCE"),
+                    "conceptRef" to kotlinx.serialization.json.JsonPrimitive(unresolvableNodeRef),
+                ),
+            ),
+            "parameters",
+        )
+        assertTrue(error, error.startsWith("parameters is required."))
+        assertTrue("must name the operation's keys: $error", error.contains("IS_SMART_REFERENCE's arguments") && error.contains("conceptRef"))
+        assertTrue("must say they go inside the object: $error", error.contains("rather than at the top level"))
+        assertTrue("must name the near-miss spellings: $error", error.contains("'params'"))
+    }
+
+    @Test
+    fun `query_structure reports a missing operation as missing, not unknown`() {
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSLanguageStructureMcpToolset(), "mps_mcp_query_structure",
+                mapOf(
+                    "op" to kotlinx.serialization.json.JsonPrimitive("IS_SMART_REFERENCE"),
+                    "parameters" to kotlinx.serialization.json.JsonPrimitive("""{"conceptRef":"$unresolvableNodeRef"}"""),
+                ),
+            ),
+            "operation",
+        )
+        assertTrue(error, error.startsWith("operation is required."))
+        assertFalse("a blank selector is not an unknown one: $error", error.contains("Unknown operation"))
+        assertTrue("must name the dropped spelling: $error", error.contains("'op'"))
+        assertTrue("must list the valid operations: $error", error.contains("IS_SUBCONCEPT_OF"))
+    }
+
+    @Test
+    fun `alter_structure names parameters when the caller sent params`() {
+        val rootsBefore = structureRoots().size
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSLanguageStructureMcpToolset(), "mps_mcp_alter_structure",
+                mapOf(
+                    "operation" to kotlinx.serialization.json.JsonPrimitive("CREATE_CONCEPTS"),
+                    "params" to kotlinx.serialization.json.JsonPrimitive(
+                        """{"structureModelRef":"$structureModelRef","conceptNames":["NeverCreated"]}"""
+                    ),
+                ),
+            ),
+            "parameters",
+        )
+        assertTrue(error, error.startsWith("parameters is required."))
+        assertTrue("must name the dropped spelling: $error", error.contains("'params'"))
+        assertTrue("must name the operation's keys: $error", error.contains("structureModelRef") && error.contains("conceptsJson"))
+        assertEquals("nothing may be created", rootsBefore, structureRoots().size)
+    }
+
+    @Test
+    fun `alter_structure with nothing reports both missing keys at once`() {
+        val error = assertMissingParameters(
+            callThroughBridge(JetBrainsMPSLanguageStructureMcpToolset(), "mps_mcp_alter_structure", emptyMap()),
+            "operation", "parameters",
+        )
+        assertTrue(error, error.startsWith("operation and parameters are required."))
+    }
+
+    @Test
+    fun `alter_structure answers an unknown operation before a blank parameters blob`() {
+        val response = callThroughBridge(
+            JetBrainsMPSLanguageStructureMcpToolset(), "mps_mcp_alter_structure",
+            mapOf("operation" to kotlinx.serialization.json.JsonPrimitive("DELETE_CONCEPT")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertTrue(response, obj.get("error").asString.contains("Unknown operation 'DELETE_CONCEPT'"))
+    }
+
     /**
      * Returns the java.io.File for the test language's structure model on disk.
      * The path follows the MPS convention: `<moduleDir>/languageModels/<longModelName>.mps`.

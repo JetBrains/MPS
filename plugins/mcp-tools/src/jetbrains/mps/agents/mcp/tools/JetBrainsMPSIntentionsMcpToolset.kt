@@ -79,11 +79,15 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_list_node_intentions(
-        @McpDescription("Persistent form of the SNodeReference to inspect") nodeReference: String,
+        @McpDescription("Required. Persistent form of the SNodeReference to inspect") nodeReference: String = "",
         @McpDescription("Also list intentions/quick-fixes of ancestor nodes, like the editor (default = true)") includeAncestors: Boolean = true,
         @McpDescription("Also list intentions the user has disabled (default = false)") includeDisabled: Boolean = false,
         @McpDescription("Merge checker quick-fixes for problems on this node/ancestors (default = true)") includeQuickFixes: Boolean = true,
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_list_node_intentions",
+            RequiredParameter("nodeReference", nodeReference, "the persistent reference of the node to inspect"),
+        )?.let { return it }
         return withMpsProject("Listing MPS node intentions") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -196,11 +200,16 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_apply_intention(
-        @McpDescription("The entry's targetNode (intention/quick-fix listing) or the problem node's reference (check report)") nodeReference: String,
-        @McpDescription("The entry's id — an intention persistentStateKey or a quick-fix runtime-class FQN") intentionId: String,
+        @McpDescription("Required. The entry's targetNode (intention/quick-fix listing) or the problem node's reference (check report)") nodeReference: String = "",
+        @McpDescription("Required. The entry's id — an intention persistentStateKey or a quick-fix runtime-class FQN") intentionId: String = "",
         @McpDescription("Disambiguator; required when several instances share the id") description: String? = null,
         @McpDescription("Quick-fix only: pins the fix to a specific problem message on the node") problemMessage: String? = null,
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_apply_intention",
+            RequiredParameter("nodeReference", nodeReference, "the entry's targetNode or the problem node's reference"),
+            RequiredParameter("intentionId", intentionId, "the entry's id (intention persistentStateKey or quick-fix runtime-class FQN)"),
+        )?.let { return it }
         return withMpsProject("Applying MPS intention/quick fix") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository

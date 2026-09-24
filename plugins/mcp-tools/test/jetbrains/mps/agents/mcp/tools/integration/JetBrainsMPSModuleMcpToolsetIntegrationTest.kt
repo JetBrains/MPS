@@ -16,6 +16,7 @@ import org.jetbrains.mps.openapi.module.SDependencyScope
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.*
 import org.junit.Test
+import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 
 /**
  * End-to-end integration tests for [JetBrainsMPSModuleMcpToolset]. Covers the lifecycle
@@ -25,6 +26,47 @@ import org.junit.Test
 class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     private val toolset = JetBrainsMPSModuleMcpToolset()
+
+    @Test
+    fun `create_module names type and name when the caller sends wrong keys`() {
+        // D43: the caller sent both required values under plausible neighbouring spellings.
+        val solutionName = "test.wrongkey.create${System.nanoTime()}"
+        val directory = freshPathInProject(solutionName)
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_module",
+            mapOf(
+                "moduleType" to McpJsonPrimitive("solution"),
+                "moduleName" to McpJsonPrimitive(solutionName),
+                "directory" to McpJsonPrimitive(directory),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("type", "name"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue("must name both keys and their dropped spellings: $error",
+            error.contains("type") && error.contains("name") &&
+                error.contains("'moduleType'") && error.contains("'moduleName'"))
+        readOnRepo {
+            assertNull("rejected create must not register a module",
+                myProject.projectModules.firstOrNull { it.moduleName == solutionName })
+        }
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_create_module",
+            mapOf(
+                "type" to McpJsonPrimitive("solution"),
+                "name" to McpJsonPrimitive(solutionName),
+                "directory" to McpJsonPrimitive(directory),
+            ),
+        )
+        expectOk(retried)
+    }
 
     @Test
     fun `solution happy path registers a new solution with the project`() {
@@ -505,6 +547,20 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `generator creation through the bridge does not require a name`() {
+        // D43: `name` is required for every other type, but a generator's is derived from its
+        // parent language — omitting it must not trip the missing-parameter rejection.
+        val response = callThroughBridge(
+            toolset, "mps_mcp_create_module",
+            mapOf("type" to McpJsonPrimitive("generator"), "parentLanguage" to McpJsonPrimitive(language.moduleName!!)),
+        )
+        assertTrue(
+            "a generator's derived name must be accepted without 'name': $response",
+            expectOk(response).get("name").asString.startsWith(language.moduleName!!),
+        )
+    }
+
+    @Test
     fun `generator creation into an explicit fresh directory succeeds`() {
         // Regression for the create-then-abort bug: a non-empty `directory` used to be
         // pre-created by the shared directory-resolution step, after which the generator
@@ -639,6 +695,38 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     // ── lifecycle: update / delete ────────────────────────────────────────────────────────
+
+    @Test
+    fun `update_module names moduleName when the caller sent moduleReference`() {
+        // D43: 'moduleReference' is a neighbouring tool's spelling of the same idea.
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+        val newName = "${moduleName}.renamed"
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_update_module",
+            mapOf(
+                "moduleReference" to McpJsonPrimitive(moduleName),
+                "newName" to McpJsonPrimitive(newName),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("moduleName"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("moduleName is required.") && error.contains("'moduleReference'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_update_module",
+            mapOf(
+                "moduleName" to McpJsonPrimitive(moduleName),
+                "newName" to McpJsonPrimitive(newName),
+            ),
+        )
+        expectOk(retried)
+    }
 
     @Test
     fun `update_module sets the virtual folder when only that is requested`() {
@@ -1010,6 +1098,46 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     // ── dependencies ───────────────────────────────────────────────────────────────────────
 
     @Test
+    fun `module_dependency names moduleName, targetModule and operation when the caller sends wrong keys`() {
+        // D43: the caller sent all three required values under neighbouring-tool spellings at once.
+        val source = createSolution("test.dep.wrongkey.src${System.nanoTime()}")
+        val target = createSolution("test.dep.wrongkey.tgt${System.nanoTime()}")
+        val sourceName = source.moduleName!!
+        val targetName = target.moduleName!!
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_module_dependency",
+            mapOf(
+                "moduleReference" to McpJsonPrimitive(sourceName),
+                "dependencyModule" to McpJsonPrimitive(targetName),
+                "action" to McpJsonPrimitive("ADD"),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("moduleName", "targetModule", "operation"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name every dropped spelling: $error",
+            error.contains("'moduleReference'") && error.contains("'dependencyModule'") && error.contains("'action'"),
+        )
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_module_dependency",
+            mapOf(
+                "moduleName" to McpJsonPrimitive(sourceName),
+                "targetModule" to McpJsonPrimitive(targetName),
+                "operation" to McpJsonPrimitive("ADD"),
+            ),
+        )
+        expectOk(retried)
+    }
+
+    @Test
     fun `add_module_dependency registers a default dependency in the descriptor`() {
         val source = createSolution("test.dep.module.src${System.nanoTime()}")
         val target = createSolution("test.dep.module.tgt${System.nanoTime()}")
@@ -1304,6 +1432,31 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `get_module_facets names moduleName when the caller sent moduleRef`() {
+        // D43: 'moduleRef' is a neighbouring tool's spelling of the same idea.
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_get_module_facets",
+            mapOf("moduleRef" to McpJsonPrimitive(moduleName)),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("moduleName"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue("must name the key and the dropped spelling: $error",
+            error.startsWith("moduleName is required.") && error.contains("'moduleRef'"))
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_get_module_facets",
+            mapOf("moduleName" to McpJsonPrimitive(moduleName)),
+        )
+        expectOk(retried)
+    }
+
+    @Test
     fun `get_module_facets returns containers for active and persisted facets`() {
         val solution = createSolution()
         val response = runTool(toolset) { it.mps_mcp_get_module_facets(solution.moduleName!!) }
@@ -1322,6 +1475,44 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     fun `get_module_facets returns NOT_FOUND for unknown module`() {
         val response = runTool(toolset) { it.mps_mcp_get_module_facets("ghost") }
         assertTrue(expectErr(response).contains("not found"))
+    }
+
+    @Test
+    fun `update_module_facet names moduleName and facetType when the caller sends wrong keys`() {
+        // D43: the caller sent both required values under neighbouring-tool spellings at once.
+        val solution = createSolution()
+        val moduleName = solution.moduleName!!
+
+        val response = callThroughBridge(
+            toolset, "mps_mcp_update_module_facet",
+            mapOf(
+                "moduleReference" to McpJsonPrimitive(moduleName),
+                "facet" to McpJsonPrimitive("tests"),
+                "enabled" to kotlinx.serialization.json.JsonPrimitive(true),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(
+            listOf("moduleName", "facetType"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name both dropped spellings: $error",
+            error.contains("'moduleReference'") && error.contains("'facet'"),
+        )
+
+        val retried = callThroughBridge(
+            toolset, "mps_mcp_update_module_facet",
+            mapOf(
+                "moduleName" to McpJsonPrimitive(moduleName),
+                "facetType" to McpJsonPrimitive("tests"),
+                "enabled" to kotlinx.serialization.json.JsonPrimitive(true),
+            ),
+        )
+        expectOk(retried)
     }
 
     @Test

@@ -34,13 +34,18 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_model_dependency(
-        @McpDescription("Source model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
-        modelReference: String,
-        @McpDescription("Target model name(s) or reference(s). Single string or JSON array: [\"model1\", \"model2\"] (a real array or the array written as a string)")
-        targetModels: JsonOrText,
+        @McpDescription("Required. Source model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
+        modelReference: String = "",
+        @McpDescription("Required. Target model name(s) or reference(s). Single string or JSON array: [\"model1\", \"model2\"] (a real array or the array written as a string)")
+        targetModels: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Operation to perform: ADD or DELETE")
         operation: String = "ADD"
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_model_dependency",
+            RequiredParameter("modelReference", modelReference, "the source model's persistent reference or name"),
+            RequiredParameter("targetModels", targetModels.text, "the target model's name/reference, or a JSON array of them"),
+        )?.let { return it }
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
         return mps_mcp_model_dependency(modelReference, targetModels.text, op)
@@ -203,15 +208,21 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_model_used_language(
-        @McpDescription("Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
-        modelReference: String,
-        @McpDescription("Language or devkit to add/remove. Accepts a persistent reference (`l:<uuid>:<qualifiedName>` for a language, `<uuid>(<name>)` for a devkit) or a plain qualified name. A plain name resolves against languages/devkits loaded in the project; a Language module that was created but never built is also resolved by name via the project repository.")
-        usedLanguage: String,
-        @McpDescription("Kind: 'language' or 'devkit'")
-        kind: String,
+        @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
+        modelReference: String = "",
+        @McpDescription("Required. Language or devkit to add/remove. Accepts a persistent reference (`l:<uuid>:<qualifiedName>` for a language, `<uuid>(<name>)` for a devkit) or a plain qualified name. A plain name resolves against languages/devkits loaded in the project; a Language module that was created but never built is also resolved by name via the project repository.")
+        usedLanguage: String = "",
+        @McpDescription("Required. Kind: 'language' or 'devkit'")
+        kind: String = "",
         @McpDescription("Operation to perform: ADD or DELETE")
         operation: String = "ADD"
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_model_used_language",
+            RequiredParameter("modelReference", modelReference, "the target model's persistent reference or name"),
+            RequiredParameter("usedLanguage", usedLanguage, "the language or devkit's persistent reference or qualified name"),
+            RequiredParameter("kind", kind, "'language' or 'devkit'"),
+        )?.let { return it }
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
         return mps_mcp_model_used_language(modelReference, usedLanguage, kind, op)
@@ -372,9 +383,13 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_create_model(
-        @McpDescription("Module name or reference") moduleName: String,
-        @McpDescription("Model name. For a language aspect model use the case-sensitive aspect id, e.g. `myLang.textGen`. For generator/genplan/tests/descriptor models append `@stereotype`, e.g. `myTests@tests`.") modelName: String
-    ): String = withMpsProject("Create MPS model") { mpsProject ->
+        @McpDescription("Required. The owning module: its name or its module reference — both are accepted under this key.") moduleName: String = "",
+        @McpDescription("Required. Model name. For a language aspect model use the case-sensitive aspect id, e.g. `myLang.textGen`. For generator/genplan/tests/descriptor models append `@stereotype`, e.g. `myTests@tests`.") modelName: String = ""
+    ): String = rejectMissingParameters(
+        "mps_mcp_create_model",
+        RequiredParameter("moduleName", moduleName, "the owning module's name or its module reference"),
+        RequiredParameter("modelName", modelName, "the new model's name, e.g. `myLang.textGen` or `myTests@tests`"),
+    ) ?: withMpsProject("Create MPS model") { mpsProject ->
         executeShortCommandOnEdt(mpsProject) {
             val module = resolveModule(mpsProject, moduleName, projectOnly = true)
                 ?: return@executeShortCommandOnEdt errJson("Module '$moduleName' not found", McpErrorCode.NOT_FOUND)
@@ -416,13 +431,17 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
     """
     )
     suspend fun mps_mcp_update_model(
-        @McpDescription("Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
-        modelReference: String,
+        @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
+        modelReference: String = "",
         @McpDescription("New model name")
         newModelName: String = "",
         @McpDescription("Operation to perform: RENAME or DELETE")
         operation: String = "RENAME"
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_update_model",
+            RequiredParameter("modelReference", modelReference, "the target model's persistent reference or name"),
+        )?.let { return it }
         val op = resolveOperationOrNull<ModelOperation>(operation)
             ?: return unknownOperation<ModelOperation>(operation)
         return mps_mcp_update_model(modelReference, newModelName, op)

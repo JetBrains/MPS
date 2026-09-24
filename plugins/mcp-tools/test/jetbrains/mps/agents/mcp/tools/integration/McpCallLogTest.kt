@@ -1,6 +1,8 @@
 package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.JetBrainsMPSLanguageMcpToolset
+import jetbrains.mps.agents.mcp.tools.JetBrainsMPSLanguageStructureMcpToolset
+import jetbrains.mps.agents.mcp.tools.JetBrainsMPSModelMcpToolset
 import jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset
 import jetbrains.mps.agents.mcp.tools.logging.*
 
@@ -223,7 +225,12 @@ class McpCallLogTest : McpIntegrationTestBase() {
      */
     @Test
     fun `an in-tool rejection returning before withMpsProject is logged as ok=false`() {
-        data class Case(val tool: String, val args: Map<String, McpJsonElement>, val expectedCode: String)
+        data class Case(
+            val tool: String,
+            val args: Map<String, McpJsonElement>,
+            val expectedCode: String,
+            val toolset: com.intellij.mcpserver.McpToolset = JetBrainsMPSNodeMcpToolset(),
+        )
 
         val cases = listOf(
             // D28: blank selector, and an operation this tool does not have.
@@ -246,6 +253,23 @@ class McpCallLogTest : McpIntegrationTestBase() {
                 ),
                 "INVALID_REQUEST",
             ),
+            // D43: a missing required parameter, answered by rejectMissingParameters.
+            Case("mps_mcp_query_nodes", emptyMap(), "INVALID_REQUEST"),
+            Case("mps_mcp_check_root_node_problems", emptyMap(), "INVALID_REQUEST"),
+            Case("mps_mcp_create_model", emptyMap(), "INVALID_REQUEST", JetBrainsMPSModelMcpToolset()),
+            Case(
+                "mps_mcp_query_structure",
+                mapOf("operation" to McpJsonPrimitive("IS_SMART_REFERENCE")),
+                "INVALID_REQUEST",
+                JetBrainsMPSLanguageStructureMcpToolset(),
+            ),
+            // D43 review: alter_structure's unknown-operation return was unrecorded before.
+            Case(
+                "mps_mcp_alter_structure",
+                mapOf("operation" to McpJsonPrimitive("DELETE_CONCEPT")),
+                "INVALID_REQUEST",
+                JetBrainsMPSLanguageStructureMcpToolset(),
+            ),
         )
 
         for (case in cases) {
@@ -254,7 +278,7 @@ class McpCallLogTest : McpIntegrationTestBase() {
                 val listener = McpCallLogListener()
                 val info = stubMcpCallInfo(myProject)
                 listener.beforeMcpToolCall(info.mcpToolDescriptor, info)
-                val result = callThroughBridge(JetBrainsMPSNodeMcpToolset(), case.tool, case.args)
+                val result = callThroughBridge(case.toolset, case.tool, case.args)
                 listener.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
                 result
             }

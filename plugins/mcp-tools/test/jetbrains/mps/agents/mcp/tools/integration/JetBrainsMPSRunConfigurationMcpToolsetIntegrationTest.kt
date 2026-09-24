@@ -132,10 +132,12 @@ class JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest : McpIntegrationTest
     }
 
     @Test
-    fun `empty or whitespace-only node reference is rejected as NOT_FOUND`() {
-        // Any input that the reference resolver cannot map to a real node must produce a
-        // NOT_FOUND envelope and leave the configuration list untouched. "" and "   " both
-        // fall into that bucket; iterate over them so the single contract is asserted once.
+    fun `empty or whitespace-only node reference is rejected as INVALID_REQUEST before any resolution runs`() {
+        // D43: a blank nodeReference is now caught by rejectMissingParameters before the
+        // reference resolver even runs, so it is INVALID_REQUEST rather than the resolver's
+        // NOT_FOUND (still the outcome for a well-formed-but-unresolvable reference, covered by
+        // `unknown node reference is rejected as NOT_FOUND` above). "" and "   " both fall into
+        // that bucket; iterate over them so the single contract is asserted once.
         for (input in listOf("", "   ")) {
             val beforeCount = currentConfigurationCount()
             val response = runTool(JetBrainsMPSRunConfigurationMcpToolset()) {
@@ -144,7 +146,15 @@ class JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest : McpIntegrationTest
 
             val obj = JsonParser.parseString(response).asJsonObject
             assertFalse("expected error envelope for input '$input': $response", obj.get("ok").asBoolean)
-            assertEquals("input '$input' must map to NOT_FOUND", "NOT_FOUND", obj.get("code").asString)
+            assertEquals("input '$input' must map to INVALID_REQUEST", "INVALID_REQUEST", obj.get("code").asString)
+            assertEquals(
+                listOf("nodeReference"),
+                obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+            )
+            assertTrue(
+                "error for input '$input' must name the key: ${obj.get("error").asString}",
+                obj.get("error").asString.startsWith("nodeReference is required."),
+            )
             assertEquals(
                 "validation failure for input '$input' must not leave a run configuration behind",
                 beforeCount, currentConfigurationCount()
@@ -170,6 +180,43 @@ class JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest : McpIntegrationTest
             "validation failure must not leave a run configuration behind",
             beforeCount, currentConfigurationCount()
         )
+    }
+
+    // ── D43: missing-required-parameter rejection through the real bridge ────────────────
+    // Goes through callThroughBridge, not runTool: only the bridge's own argument binding can
+    // observe a wrong-key spelling being silently dropped before the tool body runs.
+
+    @Test
+    fun `create_run_configuration names nodeReference when the caller sent node`() {
+        val beforeCount = currentConfigurationCount()
+        val response = callThroughBridge(
+            JetBrainsMPSRunConfigurationMcpToolset(), "mps_mcp_create_run_configuration",
+            mapOf("node" to kotlinx.serialization.json.JsonPrimitive("no.such.model.NoSuchRoot")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        assertEquals(listOf("nodeReference"), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+        val error = obj.get("error").asString
+        assertTrue(
+            "must name the key and the dropped spelling: $error",
+            error.startsWith("nodeReference is required.") && error.contains("'node'"),
+        )
+        assertEquals(
+            "the rejection must not create a run configuration",
+            beforeCount, currentConfigurationCount()
+        )
+    }
+
+    @Test
+    fun `create_run_configuration reaches the resolver once retried with the correct key`() {
+        val response = callThroughBridge(
+            JetBrainsMPSRunConfigurationMcpToolset(), "mps_mcp_create_run_configuration",
+            mapOf("nodeReference" to kotlinx.serialization.json.JsonPrimitive("no.such.model.NoSuchRoot")),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", obj.get("code").asString)
     }
 
     @Test

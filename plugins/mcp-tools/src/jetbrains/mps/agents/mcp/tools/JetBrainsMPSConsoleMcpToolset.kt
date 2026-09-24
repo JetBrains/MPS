@@ -41,9 +41,13 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_insert_console_command_from_json(
-        @McpDescription("JSON blueprint (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText,
+        @McpDescription("Required. JSON blueprint (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional: if true, only validate the JSON, the console availability, and the command-concept assignability without inserting anything into the console. Default: false.") dryRun: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_insert_console_command_from_json",
+            RequiredParameter("json", json.text, "the JSON blueprint (a console Command, a baseLanguage Statement, or a JSON array of Statements), or an absolute path to a temporary file holding it"),
+        )?.let { return it }
         return withMpsProject("Inserting MPS console command from JSON") { mpsProject ->
             val actualJson = readNodeJsonOrFile(json.text, dryRun)
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
@@ -220,9 +224,13 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_recall_console_command(
-        @McpDescription("Reference of a console history entry to recall, as returned by `mps_mcp_get_console_history` (its node `reference`). Must be a `CommandHolder` in the current console's history.") historyNodeReference: String,
+        @McpDescription("Required. Reference of a console history entry to recall, as returned by `mps_mcp_get_console_history` (its node `reference`). Must be a `CommandHolder` in the current console's history.") historyNodeReference: String = "",
         @McpDescription("Optional: if true, only validate that the reference resolves to a recallable history entry, without changing the console input. Default: false.") dryRun: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_recall_console_command",
+            RequiredParameter("historyNodeReference", historyNodeReference, "the persistent reference of a CommandHolder entry from mps_mcp_get_console_history"),
+        )?.let { return it }
         return withMpsProject("Recalling MPS console command from history") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val console = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
