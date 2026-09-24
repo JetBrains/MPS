@@ -91,9 +91,6 @@ public class UndoActionsCollector {
     myActions.add(action);
     myIsGlobal |= action.getAssociatedVfsChange() != VFSChange.NOT_CHANGED;
 
-    MPSNodeVirtualFile fileToUpdate = null;
-    // UndoContext may change virtualFileNode, e.g. like EditorCommand does (which ignores affected node of e.g. AddRootUndoableAction), while
-    // respecting action's getAssociatedVfsChange(). It's odd. I suppose MPS-31758 is about this.
     for (SNode virtualFileNode : myUndoContext.getVirtualFileNodes(action)) {
       if (virtualFileNode.getModel() == null) {
         continue;
@@ -102,11 +99,6 @@ public class UndoActionsCollector {
       assert file.hasValidMPSNode() :
           "Invalid file was returned by VFS node is not available: " + virtualFileNode + ", deleted = " + (virtualFileNode.getModel() == null);
 
-      assert action.getAssociatedVfsChange() == VFSChange.NOT_CHANGED || fileToUpdate == null || fileToUpdate.equals(file);
-      if (action.getAssociatedVfsChange() != VFSChange.NOT_CHANGED) {
-        fileToUpdate = file;
-      }
-
       Document document = MPSUndoUtil.getDoc(file);
       if (document == null) {
         continue;
@@ -114,7 +106,15 @@ public class UndoActionsCollector {
       myDocumentReferences.add(MPSUndoUtil.getRefForDoc(document));
       myChangedFiles.computeIfAbsent(virtualFileNode.getModel().getReference(), k -> new ArrayList<>()).add(file);
     }
-    if (fileToUpdate != null && action.getAssociatedVfsChange() != VFSChange.NOT_CHANGED) {
+    // the created/deleted file is the one of the affected root, whatever other files the UndoContext reports
+    MPSNodeVirtualFile fileToUpdate = null;
+    if (action.getAssociatedVfsChange() != VFSChange.NOT_CHANGED && action.getAffectedNode() != null) {
+      SNode affectedRoot = action.getAffectedNode().getContainingRoot();
+      if (affectedRoot.getModel() != null) {
+        fileToUpdate = NodeVirtualFileSystem.getInstance().getFileFor(myUndoContext.getRepository(), affectedRoot);
+      }
+    }
+    if (fileToUpdate != null) {
       // recording deleted &  created files, using this information later for restoring vFiles in VFS cache
       // keeping track of files which was deleted & then re-created
 

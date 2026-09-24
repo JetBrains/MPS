@@ -24,8 +24,6 @@ import jetbrains.mps.nodeEditor.IntentionActionsProvider;
 import jetbrains.mps.openapi.editor.EditorComponent;
 import jetbrains.mps.openapi.editor.EditorContext;
 import jetbrains.mps.openapi.intentions.IntentionExecutable;
-import jetbrains.mps.smodel.SNodeUndoableAction;
-import jetbrains.mps.smodel.SNodeUndoableAction.VFSChange;
 import jetbrains.mps.smodel.UndoRunnable;
 import jetbrains.mps.typechecking.TypecheckingFacade;
 import jetbrains.mps.typechecking.TypecheckingSession;
@@ -40,7 +38,6 @@ import javax.swing.Icon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -206,25 +203,6 @@ public class IntentionMenuProducer {
     @Override
     protected void doExecute() {
       myIntention.execute(myNode, myEditor.getEditorContext());
-    }
-
-    @Override
-    public Iterable<SNode> getVirtualFileNodes(SNodeUndoableAction action) {
-      // This is weird code, indeed. I don't quite understand the logic behind EditorCommand.getVirtualFileNodes()
-      // in conjunction with getAssociatedVfsChange() processing in UndoActionsCollector - what's the purpose of
-      // EC.getVirtualFileNodes() implementation - to give "quick" answer with a node we know for sure got a virtual file?
-      // If yes, why doesn't it account for add/remove root scenarios when it's completely different root node (or virtual file)?
-      // The logic in UndoActionsCollector that tolerates only single !NOT_CHANGED node/file during Undo is not clear, either,
-      // I wonder if these implementations (EditorCommand and UndoActionsCollector) are related/dependant.
-      SNode changed = null;
-      if (action.getAssociatedVfsChange() != VFSChange.NOT_CHANGED) {
-        changed = action.getAffectedNode();
-      }
-      if (changed == null) {
-        return super.getVirtualFileNodes(action);
-      } else {
-        return Collections.singleton(changed.getContainingRoot());
-      }
     }
   }
 }

@@ -37,9 +37,8 @@ public abstract class SNodeUndoableAction implements UndoItem {
    * deletion. Such actions should return corresponding {@link VFSChange} member in order to
    * indicate that VFS state may require update during undo/redo operations for such actions.
    * <p>
-   * It is supposed that only single file may be affected by such actions. This means, there is only
-   * one (same) virtual file available in NodeVirtualFileSystem for the node (all nodes), returned
-   * from UndoContext.getVirtualFileNodes() for such actions.
+   * The created or deleted file contains the root of {@link #getAffectedNode()}, regardless of
+   * what UndoContext.getVirtualFileNodes() returns for the action.
    *
    * @return FILE_CREATED or FILE_DELETED for {@link AddRootUndoableAction} or {@link RemoveRootUndoableAction}
    * in accordance.
