@@ -483,6 +483,12 @@
   </target>
 
   <target name="embed-module-descriptors">
+    <!--    Module "intellij.platform.customization.min" declares projectViewPane, which conflicts with MPS's LogicalView-->
+    <replaceregexp
+            file="${basedir}/../lib/module-descriptors.xml"
+            match="(?m)^[ \t]*&lt;projectViewPane implementation=&quot;com.intellij.ide.projectView.impl.ProjectViewPane&quot; /&gt;[ \t]*(\r?\n|$)"
+            replace=""
+            byline="false"/>
     <loadfile property="fileContent" srcFile="${basedir}/../lib/module-descriptors.xml"/>
     <copy overwrite="true" file="${basedir}/../workbench/mps-workbench/source/META-INF/MPSPlugin.template.xml" tofile="${basedir}/../workbench/mps-workbench/source/META-INF/MPSPlugin.xml"/>
     <replace failOnNoReplacements="true" file="${basedir}/../workbench/mps-workbench/source/META-INF/MPSPlugin.xml" token="@@MODULE_DESCRIPTORS@@" value="${fileContent}"/>

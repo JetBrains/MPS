@@ -1,0 +1,30 @@
+<idea-plugin visibility="public" package="jetbrains.mps.platform.lang.impl">
+  <dependencies>
+    <module name="jetbrains.mps.ide.projectPane"/>
+    <module name="intellij.platform.lang.impl"/>
+    <module name="intellij.platform.vcs"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <projectService serviceInterface="com.intellij.ide.projectView.ProjectView"
+                    serviceImplementation="jetbrains.mps.ide.projectView.ProjectViewImpl"
+                    overrides="true"/>
+  </extensions>
+  <actions>
+    <action id="MPSProjectView.ShowErrorsOnly"
+            class="jetbrains.mps.ide.projectView.ProjectViewImpl$Action$ShowErrorsOnly">
+      <add-to-group group-id="ProjectView.ToolWindow.Appearance.Actions" anchor="after" relative-to-action="ProjectView.ShowLibraryContents"/>
+    </action>
+    <action id="MPSProjectView.ShowDescriptorModels"
+            class="jetbrains.mps.ide.projectView.ProjectViewImpl$Action$ShowDescriptorModels">
+      <add-to-group group-id="ProjectView.ToolWindow.Appearance.Actions" anchor="after" relative-to-action="ProjectView.ShowLibraryContents"/>
+    </action>
+    <unregister id="ProjectView.SortByType"/>
+    <action id="MPSProjectView.SortRootsByConcept"
+            class="jetbrains.mps.ide.projectView.ProjectViewImpl$Action$SortRootsByConcept">
+      <add-to-group group-id="ProjectView.ToolWindow.Sort.Actions" anchor="after" relative-to-action="ProjectView.SortByName"/>
+    </action>
+    <unregister id="ProjectView.FoldersAlwaysOnTop"/>
+    <unregister id="ViewInplaceComments"/>
+    <unregister id="ProjectView.CustomizeTrees"/>
+  </actions>
+</idea-plugin>

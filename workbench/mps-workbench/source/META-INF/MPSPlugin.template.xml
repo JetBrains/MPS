@@ -11,6 +11,8 @@
   <content namespace="jetbrains">
     <module name="jetbrains.mps.ide.whatsNew"/>      <!-- MPS-39970: WhatsNewInVisionContentProvider override -->
     <module name="jetbrains.mps.ide.customization"/> <!-- MPS-40020: ExternalProductResourceUrls override -->
+    <module name="jetbrains.mps.platform.lang.impl"/>
+    <module name="jetbrains.mps.ide.projectPane"/>
   </content>
   @@MODULE_DESCRIPTORS@@
 
@@ -111,9 +113,6 @@
     <applicationActivity implementation="com.intellij.internal.statistic.updater.StatisticsJobsScheduler"/>
     <applicationActivity implementation="com.intellij.internal.statistic.updater.StatisticsStateCollectorsScheduler"/>
 
-    <projectViewPane implementation="jetbrains.mps.ide.projectPane.ProjectPane"/>
-    <projectViewPane implementation="jetbrains.mps.ide.projectPane.fileSystem.FileViewProjectPane"/>
-
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
     <analyzeStacktraceFilter implementation="jetbrains.mps.ide.actions.StandaloneMPSStackTraceFilter"/>
 
@@ -178,9 +177,6 @@
 
     <gotoFileContributor implementation="jetbrains.mps.MPSGoToFileContributor"/>
 
-    <projectService serviceInterface="com.intellij.ide.projectView.ProjectView"
-                    serviceImplementation="jetbrains.mps.ide.projectView.ProjectViewImpl"
-                    overrides="true"/>
     <projectService serviceInterface="jetbrains.mps.ide.projectView.MPSProjectViewState"
                     serviceImplementation="jetbrains.mps.ide.projectView.MPSProjectViewState"/>
 
@@ -222,22 +218,6 @@
     <action id="WhatsNewProjectWizard"
             class="jetbrains.mps.workbench.actions.whatsnew.WhatsNewProjectWizard">
     </action>
-    <action id="MPSProjectView.ShowErrorsOnly"
-            class="jetbrains.mps.ide.projectView.ProjectViewImpl$Action$ShowErrorsOnly">
-      <add-to-group group-id="ProjectView.ToolWindow.Appearance.Actions" anchor="after" relative-to-action="ProjectView.ShowLibraryContents"/>
-    </action>
-    <action id="MPSProjectView.ShowDescriptorModels"
-            class="jetbrains.mps.ide.projectView.ProjectViewImpl$Action$ShowDescriptorModels">
-      <add-to-group group-id="ProjectView.ToolWindow.Appearance.Actions" anchor="after" relative-to-action="ProjectView.ShowLibraryContents"/>
-    </action>
-    <unregister id="ProjectView.SortByType"/>
-    <action id="MPSProjectView.SortRootsByConcept"
-            class="jetbrains.mps.ide.projectView.ProjectViewImpl$Action$SortRootsByConcept">
-      <add-to-group group-id="ProjectView.ToolWindow.Sort.Actions" anchor="after" relative-to-action="ProjectView.SortByName"/>
-    </action>
-    <unregister id="ProjectView.FoldersAlwaysOnTop"/>
-    <unregister id="ViewInplaceComments"/>
-    <unregister id="ProjectView.CustomizeTrees"/>
   </actions>
 
 </idea-plugin>
