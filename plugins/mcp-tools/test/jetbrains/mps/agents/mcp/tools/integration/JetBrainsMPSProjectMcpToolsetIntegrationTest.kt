@@ -131,9 +131,7 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // which is what made agents mistake one for the other. It must be readable from a plain
         // discovery dump, i.e. without paying for includeDependencies.
         val moduleName = language.moduleName!!
-        expectOk(runTool(JetBrainsMPSModuleMcpToolset()) {
-            it.mps_mcp_update_module(moduleName, "6", ModuleOperation.SET_VERSION)
-        })
+        executeCommand { language.setLanguageVersion(6) }
 
         val data = payloadObjectFromOkData(runTool(JetBrainsMPSProjectMcpToolset()) {
             it.mps_mcp_get_project_structure(startingPoint = moduleName)

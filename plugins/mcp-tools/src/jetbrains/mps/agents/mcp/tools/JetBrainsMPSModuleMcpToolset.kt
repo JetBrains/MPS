@@ -695,14 +695,14 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         Updates or deletes an MPS module based on the `operation` parameter:
         - RENAME (default): renames the module (Solution / Language / DevKit). `newName` must be a valid Java-package qualified name. Generator modules cannot be renamed through this tool; rename the parent Language instead (the rename cascades into owned generators). Returns the module info envelope plus optional `renameWarnings` / `renameCriticalProblems` arrays. See `mps-aspect-accessories/references/module-rename.md` for the cascade behavior, in-project-only reference rewrites, and the warnings semantics.
         - CHANGE_VIRTUAL_FOLDER: changes the Project View virtual folder of the module. `newName` is the new folder path (e.g. "Group/Subgroup").
-        - SET_VERSION: sets the **language module's own** `version` integer — the number a `MigrationScript.fromVersion` gates on, and the only writable spelling of it (Language modules only; every other module kind is rejected). `newName` carries the new value as a decimal string; **omit it to bump the current version by 1**, which is what a migration script needs (`fromVersion` = the version before the bump). Do NOT confuse this with the consumer-side `languageVersions` / `dependencyVersions` stamps that `mps_mcp_get_project_structure` reports under `usedLanguages` — those record which version of a language a *client* module was last migrated against, and this operation deliberately leaves them untouched (refreshing them would silently mark pending migrations as already applied). Lowering the version is allowed but reported in `warnings`, mirroring MPS's own "Correct language version" repair action. Returns the module info envelope plus `languageVersion`, `previousLanguageVersion`, `changed`, and — when the compiled language runtime disagrees with the descriptor — `runtimeLanguageVersion`, `runtimeStale:true` and `runtimeRecoveryAction`: the migration executor reads the version off the *generated* `LanguageRuntime`, so the bump only takes effect for migrations after the language module is rebuilt (`mps_mcp_alter_nodes` MAKE with `rebuild=true`). No make is performed here. See `mps-aspect-migrations/references/form-selection.md`.
+        - SYNC_VERSION: derives the **language module's own** version from its migration scripts and writes it — the headless equivalent of MPS's "Correct Language Version" action (Language modules only; every other module kind is rejected). Whenever a versioned script exists, the version becomes `max(fromVersion) + 1` over the `migration` aspect's scripts (`MigrationScript` / `PureMigrationScript` roots that have a `fromVersion`), which is the only value the migration checker and generator accept; it is never set directly, so `newName` must be omitted. Idempotent: repeating it is a no-op (`changed:false`). Use it after adding a `PureMigrationScript` (a `MigrationScript` created through any MCP write tool already bumped the version itself) and whenever the checker or the generator reports a language-version mismatch. Without a `migration` aspect or without versioned scripts nothing is derived and the version is left alone (`note` says why). Lowering happens when a trailing script was deleted and is reported in `warnings`, naming any module whose recorded used-language version is now ahead of the language. Consumer-side `usedLanguages[].version` stamps are never touched (refreshing them would mark pending migrations as already applied). Returns the module info envelope plus `languageVersion`, `previousLanguageVersion`, `changed`, `maxFromVersion` (absent when no script has a version), `migrationUnitCount`, `migrationProblems` (`[{unit, reference, concept, problem}]` — scripts without a version, several scripts for one version, a missing version in the sequence; SYNC_VERSION does not fix these: correct the script's `fromVersion`, then sync again), and — when the compiled language runtime disagrees with the descriptor — `runtimeLanguageVersion`, `runtimeStale:true` and `runtimeRecoveryAction`: the migration executor reads the version off the *generated* `LanguageRuntime`, so a new version only takes effect for migrations after the language module is rebuilt (`mps_mcp_alter_nodes` MAKE with `rebuild=true`). No make is performed here. See `mps-aspect-migrations/references/form-selection.md`.
         - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk.
     """
     )
     suspend fun mps_mcp_update_module(
         @McpDescription("Required. Existing module name or reference") moduleName: String = "",
-        @McpDescription("New name or value for the operation: new qualified name for RENAME, new folder path for CHANGE_VIRTUAL_FOLDER, the new language version as a decimal string for SET_VERSION (omit to bump the current version by 1), or ignored for DELETE.") @Nullable newName: String? = null,
-        @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, SET_VERSION, or DELETE. Default is RENAME.") operation: String = "RENAME",
+        @McpDescription("New name or value for the operation: new qualified name for RENAME, new folder path for CHANGE_VIRTUAL_FOLDER, or ignored for DELETE. Must be omitted for SYNC_VERSION, which derives the version from the migration scripts.") @Nullable newName: String? = null,
+        @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, SYNC_VERSION, or DELETE. Default is RENAME.") operation: String = "RENAME",
         @McpDescription("For DELETE only: whether to also delete module files from disk.") deleteFiles: Boolean = false,
     ): String {
         rejectMissingParameters(
@@ -818,27 +818,15 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
             okJson(info)
         }
 
-        ModuleOperation.SET_VERSION -> withMpsProject("Update MPS module") { mpsProject ->
-            val requested = newName?.trim()?.takeIf { it.isNotEmpty() }
-            // `newName` doubles as the value carrier for every non-RENAME operation (see
-            // CHANGE_VIRTUAL_FOLDER). Parse before touching the repository so a typo costs
-            // no model lock.
-            val explicitVersion: Int? = if (requested == null) {
-                null
-            } else {
-                val parsed = requested.toIntOrNull()
-                    ?: return@withMpsProject errJson(
-                        "SET_VERSION expects the new language version as a decimal integer in `newName` " +
-                            "(or omit `newName` to bump the current version by 1); got '$requested'",
-                        McpErrorCode.INVALID_REQUEST,
-                    )
-                if (parsed < 0) {
-                    return@withMpsProject errJson(
-                        "Language version must not be negative; got $parsed",
-                        McpErrorCode.INVALID_REQUEST,
-                    )
-                }
-                parsed
+        ModuleOperation.SYNC_VERSION -> withMpsProject("Update MPS module") { mpsProject ->
+            newName?.trim()?.takeIf { it.isNotEmpty() }?.let { given ->
+                return@withMpsProject errJson(
+                    "SYNC_VERSION takes no value (got newName='$given'): a language's version is derived " +
+                        "from its migration scripts — max(fromVersion) + 1 — and is never set directly. " +
+                        "To fix a wrong version, correct the offending script's `fromVersion` (or delete " +
+                        "the script) and call SYNC_VERSION again without `newName`.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
             }
 
             executeShortCommandOnEdt(mpsProject) {
@@ -853,15 +841,16 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 // target instead of guessing why the operation was refused.
                 if (abstractModule !is Language || descriptor !is LanguageDescriptor) {
                     return@executeShortCommandOnEdt errJson(
-                        "SET_VERSION applies only to Language modules — '$moduleName' is a " +
+                        "SYNC_VERSION applies only to Language modules — '$moduleName' is a " +
                             "${moduleKindLabel(abstractModule, descriptor)}. The version integer a " +
-                            "MigrationScript's `fromVersion` gates on exists only on a Language.",
+                            "migration script's `fromVersion` gates on exists only on a Language.",
                         McpErrorCode.INVALID_REQUEST,
                     )
                 }
 
                 val previous = abstractModule.languageVersion
-                val target = explicitVersion ?: (previous + 1)
+                val analysis = MigrationUnitVersions.analyze(abstractModule)
+                val target = analysis.maxFromVersion?.let { it + 1 } ?: previous
                 val changed = target != previous
                 if (changed) {
                     // setLanguageVersion() itself calls fireChanged()/setChanged(); save() flushes
@@ -873,12 +862,29 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 val warnings = mutableListOf<String>()
                 if (changed && target < previous) {
                     // Not an error: MPS's own CorrectLanguageVersion action lowers the version when a
-                    // trailing migration script was deleted. Warn rather than reject so this tool is
-                    // not strictly less capable than the IDE repair action it stands in for.
+                    // trailing migration script was deleted.
+                    val language = MetaAdapterByDeclaration.getLanguage(abstractModule)
+                    val consumersAhead = mpsProject.repository.modules
+                        .mapNotNull { m ->
+                            val stamp = (m as? AbstractModule)?.moduleDescriptor?.languageVersions?.get(language)
+                            if (stamp != null && stamp > target) "${m.moduleName ?: m.moduleReference} (records $stamp)" else null
+                        }
+                        .sorted()
+                    warnings.add(buildString {
+                        append("Language version lowered from $previous to $target because the highest migration ")
+                        append("script now migrates from ${target - 1}. Only expected after a trailing migration ")
+                        append("script was deleted.")
+                        if (consumersAhead.isNotEmpty()) {
+                            append(" These modules record a used-language version above $target and are now ")
+                            append("ahead of their language: ${consumersAhead.joinToString(", ")}.")
+                        }
+                    })
+                }
+                if (analysis.problems.isNotEmpty()) {
                     warnings.add(
-                        "Language version lowered from $previous to $target. Migrations whose " +
-                            "fromVersion is >= $target will be offered again on models already at the " +
-                            "higher version. Only lower the version when a trailing migration script was removed."
+                        "The migration scripts have ${analysis.problems.size} ordering problem(s) listed in " +
+                            "`migrationProblems`. SYNC_VERSION does not fix them: correct each script's " +
+                            "`fromVersion` (or delete a duplicate), then call SYNC_VERSION again."
                     )
                 }
 
@@ -886,9 +892,22 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 info.addProperty("languageVersion", target)
                 info.addProperty("previousLanguageVersion", previous)
                 info.addProperty("changed", changed)
+                analysis.maxFromVersion?.let { info.addProperty("maxFromVersion", it) }
+                info.addProperty("migrationUnitCount", analysis.unitCount)
+                info.add("migrationProblems", JsonArray().apply {
+                    for (p in analysis.problems) {
+                        add(jsonObject {
+                            addProperty("unit", p.unit)
+                            addProperty("reference", p.reference)
+                            addProperty("concept", p.concept)
+                            addProperty("problem", p.problem)
+                        })
+                    }
+                })
+                analysis.noOpReason?.let { info.addProperty("note", it) }
 
                 // The migration executor (MigrationScriptCollector) reads the version off the
-                // *generated* LanguageRuntime, not off the descriptor we just wrote, so a bump only
+                // *generated* LanguageRuntime, not off the descriptor we just wrote, so a change only
                 // becomes effective for migrations after the language module is rebuilt. Surface the
                 // disagreement instead of hiding it; deliberately do not make here (expensive, and the
                 // caller usually has further edits to build in the same pass).
@@ -1461,6 +1480,6 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 enum class ModuleOperation {
     RENAME,
     CHANGE_VIRTUAL_FOLDER,
-    SET_VERSION,
+    SYNC_VERSION,
     DELETE
 }

@@ -296,8 +296,8 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
         // inside the lightweight-DSL descriptor's own `catch (Exception e) { printStackTrace(); }`,
         // so fromVersion stayed 0, the language version stayed put and the superclass was never
         // wired — all reported as a plain success envelope. That silent failure is what made D46's
-        // S4 task fail, and it is the reason the migrations skill no longer tells agents to call
-        // SET_VERSION after creating a script: the factory already did the bump.
+        // S4 task fail, and it is the reason the migrations skill tells agents that nothing is left
+        // to do after creating a MigrationScript: the factory already did the bump.
         val languageName = readOnRepo { checkNotNull(language.moduleName) { "test language has no name" } }
         val migrationModelRef = run {
             val response = runTool(JetBrainsMPSModelMcpToolset()) {
@@ -327,8 +327,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
                 script.getPropertyByName("fromVersion"),
             )
             assertEquals(
-                "the factory must bump the language version by exactly 1 — an agent adding its own " +
-                    "SET_VERSION on top of this would double-bump: $response",
+                "the factory must bump the language version by exactly 1: $response",
                 versionBefore + 1,
                 language.languageVersion,
             )

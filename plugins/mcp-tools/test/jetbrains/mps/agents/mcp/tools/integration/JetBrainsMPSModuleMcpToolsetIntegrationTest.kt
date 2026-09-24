@@ -11,6 +11,7 @@ import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.structure.modules.LanguageDescriptor
 import jetbrains.mps.smodel.Generator
 import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.SModelStereotype
 import org.jetbrains.mps.openapi.module.SDependencyScope
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -871,92 +872,287 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue(expectErr(response).contains("Nothing to rename"))
     }
 
-    // ── lifecycle: SET_VERSION (the language's own migration-gating version) ──────────────
+    // ── lifecycle: SYNC_VERSION (the language's own version, derived from its migrations) ──
+
+    private val pureMigrationScriptFqn = "jetbrains.mps.lang.migration.structure.PureMigrationScript"
+
+    private fun setLanguageVersion(version: Int) = executeCommand { language.setLanguageVersion(version) }
+
+    private fun createMigrationModel(): String {
+        val languageName = readOnRepo { language.moduleName!! }
+        return expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+            it.mps_mcp_create_model(languageName, "$languageName.migration")
+        }).get("reference").asString
+    }
+
+    /** Inserts a `PureMigrationScript` root (which has no node factory) and returns its reference. */
+    private fun insertPureMigrationScript(migrationModelRef: String, name: String, fromVersion: Int?): String {
+        val versionProperty = fromVersion?.let { """, { "name": "fromVersion", "value": "$it" }""" } ?: ""
+        val json = """
+            {
+              "concept": "$pureMigrationScriptFqn",
+              "properties": [ { "name": "name", "value": "$name" }$versionProperty ]
+            }
+        """.trimIndent()
+        return expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(json), dryRun = false)
+        }).get("reference").asString
+    }
+
+    private fun syncVersion(moduleName: String = language.moduleName!!, newName: String? = null): String =
+        runTool(toolset) { it.mps_mcp_update_module(moduleName, newName, ModuleOperation.SYNC_VERSION) }
+
+    private fun warningsOf(response: String): String =
+        JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.joinToString(" ") { it.asString } ?: ""
 
     @Test
-    fun `update_module SET_VERSION bumps the language version by one when no value is given`() {
-        val name = language.moduleName!!
-        val before = readOnRepo { language.languageVersion }
+    fun `update_module SYNC_VERSION is a no-op for a language without a migration aspect`() {
+        setLanguageVersion(4)
 
-        val data = expectOk(runTool(toolset) {
-            it.mps_mcp_update_module(name, null, ModuleOperation.SET_VERSION)
-        })
+        val data = expectOk(syncVersion())
 
-        assertEquals(before + 1, data.get("languageVersion").asInt)
-        assertEquals(before, data.get("previousLanguageVersion").asInt)
-        assertTrue(data.get("changed").asBoolean)
-        assertEquals(before + 1, readOnRepo { language.languageVersion })
+        assertFalse(data.get("changed").asBoolean)
+        assertEquals("a language without migrations must keep its version, never be reset to 0", 4, data.get("languageVersion").asInt)
+        assertEquals(4, data.get("previousLanguageVersion").asInt)
+        assertEquals(0, data.get("migrationUnitCount").asInt)
+        assertFalse("no script, no maxFromVersion: $data", data.has("maxFromVersion"))
+        assertEquals(0, data.getAsJsonArray("migrationProblems").size())
+        assertTrue("the no-op must be explained: $data", data.get("note").asString.contains("no `migration` aspect"))
+        assertEquals(4, readOnRepo { language.languageVersion })
     }
 
     @Test
-    fun `update_module SET_VERSION sets an explicit version and writes it to the descriptor file`() {
-        val name = language.moduleName!!
+    fun `update_module SYNC_VERSION is a no-op for a migration aspect without scripts`() {
+        createMigrationModel()
+        setLanguageVersion(4)
+
+        val data = expectOk(syncVersion())
+
+        assertFalse(data.get("changed").asBoolean)
+        assertEquals(4, data.get("languageVersion").asInt)
+        assertEquals(0, data.get("migrationUnitCount").asInt)
+        assertTrue("the no-op must be explained: $data", data.get("note").asString.contains("has no root nodes"))
+        assertEquals(4, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION is an idempotent no-op when the version already matches`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "First", 0)
+        insertPureMigrationScript(migrationModelRef, "Second", 1)
+        setLanguageVersion(2)
+
+        repeat(2) { attempt ->
+            val data = expectOk(syncVersion())
+            assertFalse("attempt $attempt must not change anything: $data", data.get("changed").asBoolean)
+            assertEquals(2, data.get("languageVersion").asInt)
+            assertEquals(2, data.get("previousLanguageVersion").asInt)
+            assertEquals(1, data.get("maxFromVersion").asInt)
+            assertEquals(2, data.get("migrationUnitCount").asInt)
+            assertEquals(0, data.getAsJsonArray("migrationProblems").size())
+            assertFalse("a consistent language needs no note: $data", data.has("note"))
+        }
+        assertEquals(2, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION is a no-op after a MigrationScript created through an MCP write tool`() {
+        // MigrationScript's node factory sets fromVersion to the current version and bumps the
+        // language itself, so the sync reads the class-based script's own fromVersion property
+        // (a different property id from PureMigrationScript's) and finds nothing to do.
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(3)
+        val json = """
+            {
+              "concept": "jetbrains.mps.lang.migration.structure.MigrationScript",
+              "properties": [ { "name": "name", "value": "FactoryBumped" } ]
+            }
+        """.trimIndent()
+        expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(json), dryRun = false)
+        })
+        assertEquals("precondition: the factory bumped the version", 4, readOnRepo { language.languageVersion })
+
+        val data = expectOk(syncVersion())
+
+        assertFalse("the factory already bumped; syncing must not bump again: $data", data.get("changed").asBoolean)
+        assertEquals(4, data.get("languageVersion").asInt)
+        assertEquals(3, data.get("maxFromVersion").asInt)
+        assertEquals(1, data.get("migrationUnitCount").asInt)
+        assertEquals(0, data.getAsJsonArray("migrationProblems").size())
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION raises the version after a PureMigrationScript and writes the descriptor`() {
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(2)
+        insertPureMigrationScript(migrationModelRef, "FromTwo", 2)
         val descriptorPath = readOnRepo { language.descriptorFile!!.path }
 
-        val data = expectOk(runTool(toolset) {
-            it.mps_mcp_update_module(name, "7", ModuleOperation.SET_VERSION)
-        })
-        assertEquals(7, data.get("languageVersion").asInt)
+        val data = expectOk(syncVersion())
+
         assertTrue(data.get("changed").asBoolean)
-        assertEquals(7, readOnRepo { language.languageVersion })
-
-        // Regression guard for a missing save(): setLanguageVersion() only marks the module
-        // dirty, so without the explicit save() the .mpl on disk would still hold the old value
-        // and the next MPS start would silently revert the bump.
-        val onDisk = File(descriptorPath).readText()
-        assertTrue(
-            "descriptor file must carry the new languageVersion; got:\n$onDisk",
-            onDisk.contains("languageVersion=\"7\""),
-        )
-    }
-
-    @Test
-    fun `update_module SET_VERSION is a no-op when the requested version equals the current one`() {
-        val name = language.moduleName!!
-        val current = readOnRepo { language.languageVersion }
-
-        val data = expectOk(runTool(toolset) {
-            it.mps_mcp_update_module(name, current.toString(), ModuleOperation.SET_VERSION)
-        })
-        assertFalse("equal version must report changed=false", data.get("changed").asBoolean)
-        assertEquals(current, data.get("languageVersion").asInt)
-        assertEquals(current, data.get("previousLanguageVersion").asInt)
-        assertEquals(current, readOnRepo { language.languageVersion })
-    }
-
-    @Test
-    fun `update_module SET_VERSION warns but succeeds when the version is lowered`() {
-        val name = language.moduleName!!
-        expectOk(runTool(toolset) { it.mps_mcp_update_module(name, "5", ModuleOperation.SET_VERSION) })
-
-        // Lowering is legal: MPS's own CorrectLanguageVersion action does it when a trailing
-        // migration script was deleted. It must succeed and warn, not be rejected.
-        val response = runTool(toolset) {
-            it.mps_mcp_update_module(name, "3", ModuleOperation.SET_VERSION)
-        }
-        val data = expectOk(response)
         assertEquals(3, data.get("languageVersion").asInt)
-        assertEquals(5, data.get("previousLanguageVersion").asInt)
-        val envelope = JsonParser.parseString(response).asJsonObject
-        assertTrue("lowering must be reported in warnings: $response", envelope.has("warnings"))
-        assertTrue(
-            "warning must name the lowering: $response",
-            envelope.getAsJsonArray("warnings").joinToString(" ") { it.asString }.contains("lowered"),
-        )
+        assertEquals(2, data.get("previousLanguageVersion").asInt)
+        assertEquals(2, data.get("maxFromVersion").asInt)
+        assertEquals(3, readOnRepo { language.languageVersion })
+        // Regression guard for a missing save(): setLanguageVersion() only marks the module
+        // dirty, so without the explicit save() the .mpl on disk would still hold the old value.
+        val onDisk = File(descriptorPath).readText()
+        assertTrue("descriptor file must carry the new languageVersion; got:\n$onDisk", onDisk.contains("languageVersion=\"3\""))
+
+        assertFalse("a repeat must be a no-op", expectOk(syncVersion()).get("changed").asBoolean)
         assertEquals(3, readOnRepo { language.languageVersion })
     }
 
     @Test
-    fun `update_module SET_VERSION reports the runtime as stale for a language that was never built`() {
-        // The fixture language is never made, so the compiled LanguageRuntime either does not
-        // exist or still reports the pre-bump version. Either way the descriptor and the value
-        // MigrationScriptCollector reads disagree, and the caller must be told so.
-        val name = language.moduleName!!
-        val data = expectOk(runTool(toolset) {
-            it.mps_mcp_update_module(name, "11", ModuleOperation.SET_VERSION)
+    fun `update_module SYNC_VERSION lowers the version after the trailing script is deleted and names consumers ahead`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "Zero", 0)
+        insertPureMigrationScript(migrationModelRef, "One", 1)
+        val trailing = insertPureMigrationScript(migrationModelRef, "Two", 2)
+        setLanguageVersion(3)
+        val consumer = createSolution()
+        val consumerAtTarget = createSolution()
+        val consumerBelow = createSolution()
+        executeCommand {
+            val slanguage = MetaAdapterByDeclaration.getLanguage(language)
+            consumer.moduleDescriptor.languageVersions[slanguage] = 3
+            consumerAtTarget.moduleDescriptor.languageVersions[slanguage] = 2
+            consumerBelow.moduleDescriptor.languageVersions[slanguage] = 1
+            PersistenceFacade.getInstance().createNodeReference(trailing).resolve(myProject.repository)!!.delete()
+        }
+
+        val response = syncVersion()
+        val data = expectOk(response)
+
+        assertTrue(data.get("changed").asBoolean)
+        assertEquals(2, data.get("languageVersion").asInt)
+        assertEquals(3, data.get("previousLanguageVersion").asInt)
+        val warnings = warningsOf(response)
+        assertTrue("lowering must be reported in warnings: $response", warnings.contains("lowered"))
+        assertTrue("the consumer ahead of the language must be named: $response", warnings.contains(consumer.moduleName!!))
+        assertFalse("a consumer at the new version is not ahead: $response", warnings.contains(consumerAtTarget.moduleName!!))
+        assertFalse("a consumer below the new version is not ahead: $response", warnings.contains(consumerBelow.moduleName!!))
+        assertEquals(2, readOnRepo { language.languageVersion })
+        assertEquals(
+            "lowering must not rewrite the consumer's stamp",
+            3, readOnRepo { consumer.moduleDescriptor.languageVersions[MetaAdapterByDeclaration.getLanguage(language)] },
+        )
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION reports duplicate, gap and unversioned scripts in migrationProblems`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "DupA", 0)
+        insertPureMigrationScript(migrationModelRef, "DupB", 0)
+        val gap = insertPureMigrationScript(migrationModelRef, "AfterGap", 2)
+        insertPureMigrationScript(migrationModelRef, "Unversioned", null)
+
+        val response = syncVersion()
+        val data = expectOk(response)
+
+        assertEquals("the version still follows the highest fromVersion", 3, data.get("languageVersion").asInt)
+        assertEquals(4, data.get("migrationUnitCount").asInt)
+        val problems = data.getAsJsonArray("migrationProblems").map { it.asJsonObject }
+        val byUnit = problems.groupBy({ it.get("unit").asString }, { it.get("problem").asString })
+        assertEquals("one entry per problem: $problems", 4, problems.size)
+        assertTrue(byUnit["DupA"].orEmpty().single().contains("Multiple scripts for version 0"))
+        assertTrue(byUnit["DupB"].orEmpty().single().contains("Multiple scripts for version 0"))
+        assertTrue(byUnit["AfterGap"].orEmpty().single().contains("Missing script for version 1"))
+        assertTrue(byUnit["Unversioned"].orEmpty().single().contains("does not have version"))
+        assertEquals(gap, problems.single { it.get("unit").asString == "AfterGap" }.get("reference").asString)
+        assertTrue("the caller must be told syncing does not fix them: $response", warningsOf(response).contains("does not fix"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION ignores migration-aspect roots that are not migration units`() {
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(4)
+        val helperJson = """{ "concept": "jetbrains.mps.baseLanguage.structure.ClassConcept", "properties": [ { "name": "name", "value": "MigrationHelper" } ] }"""
+        expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(helperJson), dryRun = false)
         })
+
+        val onlyHelper = expectOk(syncVersion())
+        assertFalse(onlyHelper.get("changed").asBoolean)
+        assertEquals(4, onlyHelper.get("languageVersion").asInt)
+        assertEquals(0, onlyHelper.get("migrationUnitCount").asInt)
+        assertTrue(
+            "the note must say the roots are not migration units: $onlyHelper",
+            onlyHelper.get("note").asString.contains("1 root node(s), none of them a migration unit"),
+        )
+
+        insertPureMigrationScript(migrationModelRef, "FromFour", 4)
+        val withScript = expectOk(syncVersion())
+        assertEquals("the helper class must not count as a unit: $withScript", 1, withScript.get("migrationUnitCount").asInt)
+        assertEquals(5, withScript.get("languageVersion").asInt)
+        assertEquals(0, withScript.getAsJsonArray("migrationProblems").size())
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION reports an unversioned MigrationScript and leaves it out of the maximum`() {
+        // isVersionSet() goes through MigrationScript's own override here, not PureMigrationScript's.
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(7)
+        val json = """
+            {
+              "concept": "jetbrains.mps.lang.migration.structure.MigrationScript",
+              "properties": [ { "name": "name", "value": "LostItsVersion" } ]
+            }
+        """.trimIndent()
+        val scriptRef = expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(migrationModelRef, JsonOrText(json), dryRun = false)
+        }).get("reference").asString
+        executeCommand {
+            val script = PersistenceFacade.getInstance().createNodeReference(scriptRef).resolve(myProject.repository)!!
+            script.setProperty(script.concept.properties.single { it.name == "fromVersion" }, null)
+        }
+        insertPureMigrationScript(migrationModelRef, "FromTwo", 2)
+
+        val data = expectOk(syncVersion())
+
+        assertEquals(2, data.get("migrationUnitCount").asInt)
+        assertEquals("the unversioned script must not feed the maximum: $data", 2, data.get("maxFromVersion").asInt)
+        assertEquals(3, data.get("languageVersion").asInt)
+        val problem = data.getAsJsonArray("migrationProblems").map { it.asJsonObject }.single()
+        assertEquals("LostItsVersion", problem.get("unit").asString)
+        assertEquals("MigrationScript", problem.get("concept").asString)
+        assertTrue(problem.get("problem").asString.contains("does not have version"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION rejects an explicit value`() {
+        setLanguageVersion(2)
+        val err = expectErr(syncVersion(newName = "7"))
+        assertTrue("must explain the version is derived: $err", err.contains("derived"))
+        assertTrue("must point at fromVersion as the fix: $err", err.contains("fromVersion"))
+        assertEquals("a rejected request must not change the version", 2, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION rejects a non-Language module`() {
+        val solution = createSolution()
+        val err = expectErr(syncVersion(moduleName = solution.moduleName!!))
+        assertTrue("error must say the op is Language-only: $err", err.contains("only to Language modules"))
+        assertTrue("error must name the actual kind: $err", err.contains("Solution"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION returns NOT_FOUND for an unknown module`() {
+        val err = expectErr(syncVersion(moduleName = "ghost.language"))
+        assertTrue("expected a not-found rejection: $err", err.contains("not found"))
+    }
+
+    @Test
+    fun `update_module SYNC_VERSION reports the runtime as stale for a language that was never built`() {
+        // The fixture language is never made, so the compiled LanguageRuntime either does not
+        // exist or still reports the pre-sync version. Either way the descriptor and the value
+        // MigrationScriptCollector reads disagree, and the caller must be told so.
+        insertPureMigrationScript(createMigrationModel(), "Initial", 0)
+        val data = expectOk(syncVersion())
+        assertEquals(1, data.get("languageVersion").asInt)
         assertTrue("an unbuilt language must be flagged runtimeStale: $data", data.get("runtimeStale").asBoolean)
-        assertTrue("stale runtime must carry a recovery action: $data", data.has("runtimeRecoveryAction"))
         assertTrue(
             "recovery action must point at a rebuild: $data",
             data.get("runtimeRecoveryAction").asString.contains("rebuild=true"),
@@ -964,72 +1160,34 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `update_module SET_VERSION rejects a non-Language module`() {
-        val solution = createSolution()
-        val err = expectErr(runTool(toolset) {
-            it.mps_mcp_update_module(solution.moduleName!!, "3", ModuleOperation.SET_VERSION)
-        })
-        assertTrue("error must say the op is Language-only: $err", err.contains("only to Language modules"))
-        assertTrue("error must name the actual kind: $err", err.contains("Solution"))
-    }
-
-    @Test
-    fun `update_module SET_VERSION rejects an unparseable or negative version`() {
-        val name = language.moduleName!!
-        val before = readOnRepo { language.languageVersion }
-
-        val garbage = expectErr(runTool(toolset) {
-            it.mps_mcp_update_module(name, "seven", ModuleOperation.SET_VERSION)
-        })
-        assertTrue("expected a parse rejection: $garbage", garbage.contains("decimal integer"))
-
-        val negative = expectErr(runTool(toolset) {
-            it.mps_mcp_update_module(name, "-1", ModuleOperation.SET_VERSION)
-        })
-        assertTrue("expected a negative rejection: $negative", negative.contains("must not be negative"))
-
-        assertEquals("a rejected request must not change the version", before, readOnRepo { language.languageVersion })
-    }
-
-    @Test
-    fun `update_module SET_VERSION returns NOT_FOUND for an unknown module`() {
-        val err = expectErr(runTool(toolset) {
-            it.mps_mcp_update_module("ghost.language", "2", ModuleOperation.SET_VERSION)
-        })
-        assertTrue("expected a not-found rejection: $err", err.contains("not found"))
-    }
-
-    @Test
-    fun `update_module SET_VERSION leaves consumer languageVersions stamps untouched`() {
-        // The whole point of keeping SET_VERSION narrow: refreshing the dependent modules'
-        // `languageVersions` stamps here would mark the pending migration as already applied.
+    fun `update_module SYNC_VERSION leaves consumer languageVersions stamps untouched`() {
+        // Refreshing the dependent modules' `languageVersions` stamps here would mark the pending
+        // migration as already applied.
         val consumer = createSolution()
-        val stampsBefore = readOnRepo {
-            (consumer as AbstractModule).moduleDescriptor!!.languageVersions.toMap()
-        }
+        executeCommand { consumer.moduleDescriptor.languageVersions[MetaAdapterByDeclaration.getLanguage(language)] = 0 }
+        val stampsBefore = readOnRepo { consumer.moduleDescriptor.languageVersions.toMap() }
         val ownStampsBefore = readOnRepo { language.moduleDescriptor!!.languageVersions.toMap() }
+        insertPureMigrationScript(createMigrationModel(), "Initial", 0)
 
-        expectOk(runTool(toolset) {
-            it.mps_mcp_update_module(language.moduleName!!, "9", ModuleOperation.SET_VERSION)
-        })
+        expectOk(syncVersion())
 
-        val stampsAfter = readOnRepo {
-            (consumer as AbstractModule).moduleDescriptor!!.languageVersions.toMap()
-        }
-        assertEquals("SET_VERSION must not touch consumer version stamps", stampsBefore, stampsAfter)
         assertEquals(
-            "SET_VERSION must not refresh the language's own dependency stamps either",
+            "SYNC_VERSION must not touch consumer version stamps",
+            stampsBefore, readOnRepo { consumer.moduleDescriptor.languageVersions.toMap() },
+        )
+        assertEquals(
+            "SYNC_VERSION must not refresh the language's own dependency stamps either",
             ownStampsBefore,
             readOnRepo { language.moduleDescriptor!!.languageVersions.toMap() },
         )
         // ... while the language's own version did move.
-        assertEquals(9, readOnRepo { language.languageVersion })
+        assertEquals(1, readOnRepo { language.languageVersion })
     }
 
     @Test
     fun `module info envelope exposes languageVersion for languages and omits it elsewhere`() {
         // The create_module envelope is built by moduleInfoJsonObject, so this pins the new
-        // Language-only field on the shared read path rather than only on SET_VERSION's response.
+        // Language-only field on the shared read path rather than only on SYNC_VERSION's response.
         val langName = "test.lang.verfield${System.nanoTime()}"
         val langInfo = expectOk(runTool(toolset) {
             it.mps_mcp_create_module("language", langName, freshPathInProject(langName), null, null, false, false, false)

@@ -10,28 +10,31 @@ MPS applies all scripts whose `fromVersion` matches the stored version of the us
 
 ## Reading and writing the language version
 
-**Who performs steps 2 and 3 depends on the form**, and this is the single easiest thing to get wrong:
+The language version is **derived, never chosen**: when migration scripts exist, the only value the checker (`MigrationScriptVersions_NonTypesystemRule`) and the migration generator accept is the highest `fromVersion` plus one. `mps_mcp_update_module(moduleName = "<language>", operation = "SYNC_VERSION")` computes and writes exactly that — the headless "Correct Language Version" action. It takes no value, is idempotent, and is safe to repeat.
+
+**Who performs steps 2 and 3 depends on the form**:
 
 | Form | `fromVersion` and the version bump |
 |---|---|
-| `MigrationScript` (`lang.migration`) | **Done for you.** The concept is an `AutoInitDSLClass`, so creating it through any MCP write tool fires a factory that sets `fromVersion` and bumps `languageVersion` by 1. Do not repeat either. |
-| `PureMigrationScript` (`lang.migration`) | **Yours.** No factory exists for it — the migration language registers factories only for `ConsequenceFunction` and `ReflectionNodeReference`. Set `fromVersion` in the blueprint and call `SET_VERSION` yourself. |
+| `MigrationScript` (`lang.migration`) | **Done for you.** The concept is an `AutoInitDSLClass`, so creating it through any MCP write tool fires a factory that sets `fromVersion` and bumps `languageVersion` by 1. Nothing else to do. |
+| `PureMigrationScript` (`lang.migration`) | No factory exists for it — the migration language registers factories only for `ConsequenceFunction` and `ReflectionNodeReference`. Call `SYNC_VERSION`, use the `languageVersion` it returns as the blueprint's `fromVersion`, insert, then `SYNC_VERSION` again. |
 | Enhancement Script (`lang.script`) | Not version-gated this way; see the bottom of this file. |
 
 | What | How |
 |---|---|
 | Read the current version | `mps_mcp_get_project_structure(startingPoint = "<language>")` → the `languageVersion` field on the Language module. Emitted without `includeDependencies`. |
-| Bump it by one | `mps_mcp_update_module(moduleName = "<language>", operation = "SET_VERSION")`, omitting `newName` — for `PureMigrationScript`, and to repair a mismatch. Nothing to do after creating a `MigrationScript`. |
-| Set an exact value (repair) | same call with `newName = "<n>"` (decimal string). Lowering is allowed but returns a warning; it is only correct when a trailing migration script was removed, or when an extra bump has to be undone. |
-| Make the bump effective for migration *execution* | `mps_mcp_alter_nodes` `MAKE` with `rebuild=true` on the language module. |
+| Bring the version in line with the scripts | `SYNC_VERSION` — after a `PureMigrationScript`, after editing or deleting a script, and on any version-mismatch error. |
+| Make the new version effective for migration *execution* | `mps_mcp_alter_nodes` `MAKE` with `rebuild=true` on the language module. |
 
-Five traps, in the order agents hit them:
+`SYNC_VERSION` returns `languageVersion`, `previousLanguageVersion`, `changed`, `maxFromVersion`, `migrationUnitCount` and `migrationProblems`. Without a `migration` aspect or without a versioned script it changes nothing and says why in `note`. Deleting the trailing script lowers the version; the response warns and names any module whose recorded used-language version is now above it.
 
-- **Bump the version yourself for `PureMigrationScript`, never for `MigrationScript`.** The `MigrationScript` factory already set `fromVersion` and incremented `languageVersion`; a `SET_VERSION` on top skips a version no script is gated on. `PureMigrationScript` gets neither unless you do it. Both mistakes surface the same way — `MigrationsCheckUtil` failing `max(fromVersion) == languageVersion - 1` — so after either form, re-read `languageVersion` and check that equation rather than trusting the tool's envelope.
-- **Do not hand-edit the `.mpl`.** MPS keeps the module descriptor in memory and rewrites the file on the next save, so a text edit is silently lost. `SET_VERSION` mutates the descriptor and saves it in one command.
-- **`languageVersion` ≠ `usedLanguages[].version`.** The latter (also called the `languageVersions` / `dependencyVersions` stamps) records which version of some *other* language a client module was last migrated against. `SET_VERSION` deliberately does not touch those — refreshing them would mark the migration you just wrote as already applied everywhere.
-- **Ordering is checked, but the quick fix is unreachable — repair it yourself with `SET_VERSION`.** `MigrationsCheckUtil` asserts `max(fromVersion) == languageVersion - 1`. The mismatch is reported through a rule that passes no intention provider, so the `FixLanguageVersion` quick fix is never offered and `check_root_node_problems(autoApplyQuickFixes = true)` will not repair it. That is not a dead end: the IDE's "Correct language version" action is simply `setLanguageVersion(max(fromVersion) + 1)`, which you reproduce exactly with `mps_mcp_update_module(moduleName = "<language>", operation = "SET_VERSION", newName = "<max(fromVersion) + 1>")`.
-- **A descriptor-only bump is invisible to the migration executor.** `MigrationScriptCollector` reads the version from the *generated* `LanguageRuntime`, not the descriptor. `SET_VERSION` returns `runtimeStale: true` plus a `runtimeRecoveryAction` whenever the two disagree; until you `MAKE` the language module, the migration will simply never be offered. The factory's own bump has the same property — it writes the descriptor, so the make is still required.
+Traps, in the order agents hit them:
+
+- **Any "language version" mismatch → `SYNC_VERSION`.** The checker's mismatch is reported through a rule that passes no intention provider, so the `FixLanguageVersion` quick fix is never offered and `check_root_node_problems(autoApplyQuickFixes = true)` will not repair it; the generator raises the same mismatch as a generation error. `SYNC_VERSION` repairs both.
+- **Duplicate and missing versions are yours to fix.** `migrationProblems` lists scripts without a `fromVersion`, several scripts for one version, and a gap in the sequence, each with the script's name and node reference. Syncing does not change scripts: correct the offending `fromVersion` (or delete the duplicate), then sync again.
+- **Do not hand-edit the `.mpl`.** MPS keeps the module descriptor in memory and rewrites the file on the next save, so a text edit is silently lost. `SYNC_VERSION` mutates the descriptor and saves it in one command.
+- **`languageVersion` ≠ `usedLanguages[].version`.** The latter (also called the `languageVersions` / `dependencyVersions` stamps) records which version of some *other* language a client module was last migrated against. `SYNC_VERSION` deliberately does not touch those — refreshing them would mark the migration you just wrote as already applied everywhere.
+- **A descriptor-only change is invisible to the migration executor.** `MigrationScriptCollector` reads the version from the *generated* `LanguageRuntime`, not the descriptor. `SYNC_VERSION` returns `runtimeStale: true` plus a `runtimeRecoveryAction` whenever the two disagree; until you `MAKE` the language module, the migration will simply never be offered. The factory's own bump has the same property — it writes the descriptor, so the make is still required.
 
 Enhancement scripts (`lang.script`) live in models named `<language>.scripts` and are run separately, not version-gated in the same way — they can be applied on demand or as migration steps.
 
