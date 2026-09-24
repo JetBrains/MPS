@@ -30,21 +30,25 @@ public class ReloadSession {
     ListSequence.fromList(myListeners).addSequence(Sequence.fromIterable(listeners));
   }
 
-  /*package*/ boolean isBeingEmployed() {
+  /*package*/
+  public boolean isBeingEmployed() {
     return myEmployCount.get() > 0;
   }
 
-  /*package*/ void incEmployCount() {
+  /*package*/
+  public void incEmployCount() {
     int count = myEmployCount.incrementAndGet();
     assert count >= 0;
   }
 
-  /*package*/ void decEmployCount() {
+  /*package*/
+  public void decEmployCount() {
     int count = myEmployCount.decrementAndGet();
     assert count >= 0;
   }
 
-  /*package*/ boolean isEmpty() {
+  /*package*/
+  public boolean isEmpty() {
     return myEmpty;
   }
 
@@ -53,11 +57,13 @@ public class ReloadSession {
     return Sequence.fromIterable(getParticipants()).any((it) -> it.wantsToShowProgress());
   }
 
-  /*package*/ void updateStatus() {
+  /*package*/
+  public void updateStatus() {
     myEmpty = Sequence.fromIterable(getParticipants()).all((it) -> it.isEmpty());
   }
 
-  /*package*/ void doReload(ProgressMonitor monitor) {
+  /*package*/
+  public void doReload(ProgressMonitor monitor) {
     assert !(myReloaded) : "Contract: do not call doReload twice on one reload session";
     myReloaded = true;
 
@@ -93,7 +99,7 @@ public class ReloadSession {
   }
 
   @Nullable
-  /*package*/ <T extends ReloadParticipant> T getParticipant(Object participantKey, Supplier<T> participantInstance) {
+  public/*package*/ <T extends ReloadParticipant> T getParticipant(Object participantKey, Supplier<T> participantInstance) {
     ReloadParticipant p = MapSequence.fromMap(myParticipants).get(participantKey);
     if (p == null) {
       p = participantInstance.get();

@@ -82,9 +82,6 @@
     <applicationService
             serviceInterface="org.jetbrains.mps.openapi.module.ModelAccess"
             serviceImplementation="jetbrains.mps.smodel.WorkbenchModelAccess" />
-    <applicationService
-            serviceInterface="jetbrains.mps.ide.platform.watching.ReloadManager"
-            serviceImplementation="jetbrains.mps.ide.platform.watching.ReloadManagerComponent" />
 
     <applicationService serviceImplementation="jetbrains.mps.ide.vfs.IdeaFileSystem" />
 

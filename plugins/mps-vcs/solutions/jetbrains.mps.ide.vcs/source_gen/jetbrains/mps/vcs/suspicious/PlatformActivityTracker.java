@@ -5,7 +5,7 @@ package jetbrains.mps.vcs.suspicious;
 import jetbrains.mps.annotations.GeneratedClass;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.vfs.VirtualFileManager;
-import jetbrains.mps.ide.platform.watching.ReloadManagerComponent;
+import jetbrains.mps.ide.platform.watching.impl.ReloadManagerComponent;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.ProjectLevelVcsManager;
 import com.intellij.openapi.vfs.VirtualFileManagerListener;

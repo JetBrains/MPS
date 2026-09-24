@@ -1,0 +1,10 @@
+<idea-plugin visibility="public" package="jetbrains.mps.ide.platform.watching.impl">
+  <dependencies>
+    <module name="intellij.platform.vcs"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService
+            serviceInterface="jetbrains.mps.ide.platform.watching.ReloadManager"
+            serviceImplementation="jetbrains.mps.ide.platform.watching.impl.ReloadManagerComponent" />
+  </extensions>
+</idea-plugin>
