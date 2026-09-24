@@ -277,7 +277,6 @@
       <root url="jar://$PROJECT_DIR$/lib/util_rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/util-8.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/util.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/nio-fs.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
