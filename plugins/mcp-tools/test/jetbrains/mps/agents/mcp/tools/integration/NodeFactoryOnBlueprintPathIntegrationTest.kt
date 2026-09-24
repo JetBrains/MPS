@@ -5,10 +5,14 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonParser
 import jetbrains.mps.smodel.SNodeId
+import jetbrains.mps.smodel.action.NodeFactoryManager
+import java.io.File
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -337,6 +341,121 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
                 soleChild(script, "superclass").concept.name,
             )
         }
+    }
+
+    // ── PureMigrationScript's own factory (jetbrains.mps.lang.migration actions aspect) ──
+
+    private val pureMigrationScriptFqn = "jetbrains.mps.lang.migration.structure.PureMigrationScript"
+
+    private fun createLanguageModel(simpleName: String): String {
+        val languageName = readOnRepo { checkNotNull(language.moduleName) { "test language has no name" } }
+        return expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+            it.mps_mcp_create_model(languageName, "$languageName.$simpleName")
+        }).get("reference").asString
+    }
+
+    private fun insertPureMigrationScript(modelRef: String, name: String, fromVersion: Int? = null, dryRun: Boolean = false): String {
+        val versionProperty = fromVersion?.let { """, { "name": "fromVersion", "value": "$it" }""" } ?: ""
+        val json = """
+            {
+              "concept": "$pureMigrationScriptFqn",
+              "properties": [ { "name": "name", "value": "$name" }$versionProperty ]
+            }
+        """.trimIndent()
+        return runTool(rootNodeToolset) { it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText(json), dryRun = dryRun) }
+    }
+
+    private fun fromVersionOf(nodeRef: String): String? = readOnRepo { resolveNodeRef(nodeRef).getPropertyByName("fromVersion") }
+
+    private fun descriptorOnDisk(): String = File(readOnRepo { checkNotNull(language.descriptorFile).path }).readText()
+
+    @Test
+    fun `inserting a PureMigrationScript sets fromVersion, bumps the language once and writes the descriptor`() {
+        val migrationModelRef = createLanguageModel("migration")
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        val response = insertPureMigrationScript(migrationModelRef, "BlueprintPure")
+        val scriptRef = expectOk(response).get("reference").asString
+
+        assertEquals("fromVersion must be the version before the bump: $response", versionBefore.toString(), fromVersionOf(scriptRef))
+        assertEquals("the language must be bumped exactly once: $response", versionBefore + 1, readOnRepo { language.languageVersion })
+        assertTrue(
+            "the insert must save the bumped descriptor",
+            descriptorOnDisk().contains("languageVersion=\"${versionBefore + 1}\""),
+        )
+    }
+
+    @Test
+    fun `a blueprint fromVersion equal to the current version still bumps once and SYNC_VERSION is a no-op`() {
+        // What the migrations skill told agents before the factory existed: put the current
+        // version in the blueprint and sync. The factory and the blueprint now agree.
+        val migrationModelRef = createLanguageModel("migration")
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        val scriptRef = expectOk(insertPureMigrationScript(migrationModelRef, "ExplicitVersion", versionBefore)).get("reference").asString
+
+        assertEquals(versionBefore.toString(), fromVersionOf(scriptRef))
+        assertEquals("exactly one bump", versionBefore + 1, readOnRepo { language.languageVersion })
+        val languageName = readOnRepo { checkNotNull(language.moduleName) }
+        val sync = expectOk(runTool(JetBrainsMPSModuleMcpToolset()) {
+            it.mps_mcp_update_module(languageName, null, ModuleOperation.SYNC_VERSION)
+        })
+        assertFalse("the factory already did the sync's work: $sync", sync.get("changed").asBoolean)
+        assertEquals(versionBefore + 1, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `a dry run of a PureMigrationScript does not bump the language`() {
+        val migrationModelRef = createLanguageModel("migration")
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        val response = insertPureMigrationScript(migrationModelRef, "NeverInserted", dryRun = true)
+
+        assertTrue("expected a dryRun envelope: $response", expectOk(response).get("dryRun").asBoolean)
+        assertEquals("a dry run must not bump the language version", versionBefore, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `a PureMigrationScript outside the migration aspect is neither versioned nor bumps the language`() {
+        val otherModelRef = createLanguageModel("helpers")
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        val scriptRef = expectOk(insertPureMigrationScript(otherModelRef, "NotAMigration")).get("reference").asString
+
+        assertNull("the factory must leave fromVersion unset outside the migration aspect", fromVersionOf(scriptRef))
+        assertEquals(versionBefore, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `create_root_node of a PureMigrationScript bumps the language`() {
+        val migrationModelRef = createLanguageModel("migration")
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        val response = runTool(rootNodeToolset) {
+            it.mps_mcp_create_root_node(migrationModelRef, pureMigrationScriptFqn, null, "CreatedRoot")
+        }
+        val scriptRef = expectOk(response).get("reference").asString
+
+        assertEquals(versionBefore.toString(), fromVersionOf(scriptRef))
+        assertEquals(versionBefore + 1, readOnRepo { language.languageVersion })
+    }
+
+    @Test
+    fun `a PureMigrationScript replacing a versioned unit inherits its fromVersion without a bump`() {
+        // The sampleNode branch, reached by `replace with new initialized`: the replaced unit's
+        // version slot carries over, so bumping would open a gap in the version sequence.
+        val migrationModelRef = createLanguageModel("migration")
+        val sampleRef = expectOk(insertPureMigrationScript(migrationModelRef, "Replaced", 5)).get("reference").asString
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        var created: SNode? = null
+        executeCommand {
+            val sample = resolveNodeRef(sampleRef)
+            created = NodeFactoryManager.createNode(sample.concept, sample, null, sample.model)
+        }
+
+        assertEquals("5", readOnRepo { checkNotNull(created).getPropertyByName("fromVersion") })
+        assertEquals("a replacement must not bump the language", versionBefore, readOnRepo { language.languageVersion })
     }
 
     // ── dry run must not fire factories ─────────────────────────────────────────────────

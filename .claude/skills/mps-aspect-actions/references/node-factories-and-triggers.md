@@ -18,7 +18,7 @@ One `NodeFactories` root holds every `NodeFactory` in the language. You do not c
 - FQN: `jetbrains.mps.lang.actions.structure.NodeFactory`
 - Concept ref: `c:aee9cad2-acd4-4608-aef2-0004f6a1cdbd/1158700725281`
 - Property `description` (string, optional) — human hint shown next to the entry.
-- Reference `applicableConcept` → `AbstractConceptDeclaration` (cardinality 1) — the concept whose instances this factory sets up. MPS picks this factory when it needs to *create* a node of `applicableConcept` (including subconcepts, unless a more specific factory exists).
+- Reference `applicableConcept` → `AbstractConceptDeclaration` (cardinality 1) — the concept whose instances this factory sets up. `NodeFactoryManager.setupNode` walks a `DepthFirstConceptIterator` over the concept being created **and all of its super-concepts and implemented interfaces**, and runs every factory found along the way — a factory on a supertype is not shadowed by a more specific one; both run.
 - Child `setupFunction` → `NodeSetupFunction` (cardinality 1)
 
 Multiple `NodeFactory` children for the *same* `applicableConcept` are not merged — keep one per concept.

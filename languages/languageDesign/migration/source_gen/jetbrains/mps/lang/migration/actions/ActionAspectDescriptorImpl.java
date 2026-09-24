@@ -18,6 +18,8 @@ public class ActionAspectDescriptorImpl extends BaseActionAspectDescriptor imple
       switch (concept.getName()) {
         case "ConsequenceFunction":
           return Collections.<NodeFactory>singletonList(new TransformStatement.NodeFactory_1901572971594206036());
+        case "PureMigrationScript":
+          return Collections.<NodeFactory>singletonList(new MigrationUnit_factories.NodeFactory_5739476106122288500());
         case "ReflectionNodeReference":
           return Collections.<NodeFactory>singletonList(new NodeReference_factories.NodeFactory_2864063292004380727());
         default:

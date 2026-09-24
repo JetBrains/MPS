@@ -885,9 +885,15 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }).get("reference").asString
     }
 
-    /** Inserts a `PureMigrationScript` root (which has no node factory) and returns its reference. */
+    /**
+     * Inserts a `PureMigrationScript` root and returns its reference. The concept's node factory
+     * runs first — it sets `fromVersion` to the current language version and bumps the language —
+     * and the blueprint's `fromVersion` then overrides the factory's value. A null [fromVersion]
+     * names the property without a `value`, which unsets it (JSON `null` would be rejected).
+     */
     private fun insertPureMigrationScript(migrationModelRef: String, name: String, fromVersion: Int?): String {
-        val versionProperty = fromVersion?.let { """, { "name": "fromVersion", "value": "$it" }""" } ?: ""
+        val versionProperty = fromVersion?.let { """, { "name": "fromVersion", "value": "$it" }""" }
+            ?: """, { "name": "fromVersion" }"""
         val json = """
             {
               "concept": "$pureMigrationScriptFqn",
@@ -985,8 +991,10 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `update_module SYNC_VERSION raises the version after a PureMigrationScript and writes the descriptor`() {
         val migrationModelRef = createMigrationModel()
-        setLanguageVersion(2)
         insertPureMigrationScript(migrationModelRef, "FromTwo", 2)
+        // The script's node factory already bumped the language; put the descriptor behind the
+        // script again, as it is after e.g. a VCS update that brought the script but not the .mpl.
+        setLanguageVersion(2)
         val descriptorPath = readOnRepo { language.descriptorFile!!.path }
 
         val data = expectOk(syncVersion())
@@ -1182,6 +1190,157 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         )
         // ... while the language's own version did move.
         assertEquals(1, readOnRepo { language.languageVersion })
+    }
+
+    // ── the checker's FixLanguageVersion quick fix (restored on the version-mismatch error) ──
+
+    private val fixLanguageVersionFqn = "jetbrains.mps.lang.migration.typesystem.FixLanguageVersion_QuickFix"
+
+    /** The problems `check_root_node_problems` reports on the root [nodeRef] itself (empty when clean). */
+    private fun problemsOn(nodeRef: String, autoApplyQuickFixes: Boolean = false): Pair<String, List<JsonObject>> {
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_check_root_node_problems(nodeRef, autoApplyQuickFixes = autoApplyQuickFixes)
+        }
+        val data = JsonParser.parseString(response).asJsonObject.get("data")
+        if (data.isJsonPrimitive && data.asString == "no problems found") return response to emptyList()
+        val problems = payloadFromOkData(response).asJsonArray
+            .map { it.asJsonObject }
+            .filter { it.get("reference").asString.substringAfterLast('/') == nodeRef.substringAfterLast('/') }
+            .flatMap { node -> node.getAsJsonArray("problems").map { it.asJsonObject } }
+        return response to problems
+    }
+
+    private fun quickFixIds(problem: JsonObject): List<String> =
+        problem.getAsJsonArray("quickFixes")?.map { it.asJsonObject.get("id").asString }.orEmpty()
+
+    private fun descriptorOnDisk(): String = File(readOnRepo { language.descriptorFile!!.path }).readText()
+
+    /** Sets the language version and saves the descriptor, so a later on-disk check sees the tool's own save. */
+    private fun setLanguageVersionOnDisk(version: Int) = executeCommand {
+        language.setLanguageVersion(version)
+        language.save()
+    }
+
+    @Test
+    fun `a language version mismatch carries the FixLanguageVersion quick fix, not auto-applicable`() {
+        val scriptRef = insertPureMigrationScript(createMigrationModel(), "Zero", 0)
+        setLanguageVersion(3)
+
+        val (response, problems) = problemsOn(scriptRef)
+
+        val mismatch = problems.single { it.get("message").asString.contains("Language version (3) is not equal") }
+        val fix = mismatch.getAsJsonArray("quickFixes").map { it.asJsonObject }.single { it.get("id").asString == fixLanguageVersionFqn }
+        assertEquals("Set correct language version", fix.get("description").asString)
+        assertFalse("the fix is Alt+Enter only, never applied behind the user's back: $response", fix.get("autoApplicable").asBoolean)
+    }
+
+    @Test
+    fun `autoApplyQuickFixes leaves a language version mismatch alone`() {
+        val scriptRef = insertPureMigrationScript(createMigrationModel(), "Zero", 0)
+        setLanguageVersion(3)
+
+        val (response, problems) = problemsOn(scriptRef, autoApplyQuickFixes = true)
+
+        val applied = JsonParser.parseString(response).asJsonObject.getAsJsonObject("details")?.getAsJsonArray("appliedQuickFixes")
+        assertTrue("nothing may be auto-applied: $response", applied == null || applied.size() == 0)
+        assertEquals("the version must not change", 3, readOnRepo { language.languageVersion })
+        assertTrue("the mismatch must still be reported: $response", problems.any { fixLanguageVersionFqn in quickFixIds(it) })
+    }
+
+    @Test
+    fun `apply_intention with FixLanguageVersion raises the version and writes the descriptor`() {
+        val scriptRef = insertPureMigrationScript(createMigrationModel(), "Zero", 0)
+        setLanguageVersionOnDisk(0)
+        assertTrue("precondition: the stale version is on disk", descriptorOnDisk().contains("languageVersion=\"0\""))
+
+        val data = expectOk(runTool(JetBrainsMPSIntentionsMcpToolset()) { it.mps_mcp_apply_intention(scriptRef, fixLanguageVersionFqn) })
+
+        assertTrue("apply should report applied=true: $data", data.get("applied").asBoolean)
+        assertEquals("quickFix", data.get("type").asString)
+        assertEquals(1, readOnRepo { language.languageVersion })
+        assertTrue("the descriptor on disk must carry the repaired version", descriptorOnDisk().contains("languageVersion=\"1\""))
+        assertTrue("the mismatch must be gone", problemsOn(scriptRef).second.none { fixLanguageVersionFqn in quickFixIds(it) })
+    }
+
+    @Test
+    fun `apply_intention with FixLanguageVersion lowers the version and writes the descriptor`() {
+        val migrationModelRef = createMigrationModel()
+        val firstRef = insertPureMigrationScript(migrationModelRef, "Zero", 0)
+        val lastRef = insertPureMigrationScript(migrationModelRef, "One", 1)
+        setLanguageVersionOnDisk(7)
+        assertTrue("precondition: the stale version is on disk", descriptorOnDisk().contains("languageVersion=\"7\""))
+        val nonMax = problemsOn(firstRef).second
+        assertTrue("a unit below the maximum carries no mismatch: $nonMax", nonMax.none { it.get("message").asString.contains("Language version") })
+        assertTrue("a unit below the maximum carries no fix: $nonMax", nonMax.none { fixLanguageVersionFqn in quickFixIds(it) })
+
+        val data = expectOk(runTool(JetBrainsMPSIntentionsMcpToolset()) { it.mps_mcp_apply_intention(lastRef, fixLanguageVersionFqn) })
+
+        assertTrue("apply should report applied=true: $data", data.get("applied").asBoolean)
+        assertEquals("wanted is max(fromVersion) + 1", 2, readOnRepo { language.languageVersion })
+        assertTrue("the descriptor on disk must carry the repaired version", descriptorOnDisk().contains("languageVersion=\"2\""))
+    }
+
+    @Test
+    fun `every script at the maximum carries the mismatch and the fix exactly once`() {
+        val migrationModelRef = createMigrationModel()
+        insertPureMigrationScript(migrationModelRef, "Zero", 0)
+        val dupA = insertPureMigrationScript(migrationModelRef, "MaxA", 1)
+        val dupB = insertPureMigrationScript(migrationModelRef, "MaxB", 1)
+        setLanguageVersion(5)
+
+        for (ref in listOf(dupA, dupB)) {
+            val problems = problemsOn(ref).second
+            val mismatches = problems.filter { it.get("message").asString.contains("Language version (5) is not equal") }
+            assertEquals("exactly one mismatch error on $ref: $problems", 1, mismatches.size)
+            assertEquals("exactly one fix on the mismatch of $ref: $problems", 1, quickFixIds(mismatches.single()).count { it == fixLanguageVersionFqn })
+            val duplicate = problems.single { it.get("message").asString.contains("Multiple scripts for version 1") }
+            assertTrue("the duplicate stays a plain error: $problems", fixLanguageVersionFqn !in quickFixIds(duplicate))
+        }
+    }
+
+    @Test
+    fun `a blueprint fromVersion below the current version bumps once and leaves a fixable mismatch`() {
+        val migrationModelRef = createMigrationModel()
+        setLanguageVersion(3)
+
+        val scriptRef = insertPureMigrationScript(migrationModelRef, "Stale", 1)
+
+        assertEquals("the factory bumps exactly once, whatever the blueprint says", 4, readOnRepo { language.languageVersion })
+        val mismatch = problemsOn(scriptRef).second.single { it.get("message").asString.contains("Language version (4) is not equal") }
+        assertTrue("the mismatch carries the fix: $mismatch", fixLanguageVersionFqn in quickFixIds(mismatch))
+    }
+
+    @Test
+    fun `COPY_NODE of a PureMigrationScript does not bump and shows up as a duplicate`() {
+        val migrationModelRef = createMigrationModel()
+        val originalRef = insertPureMigrationScript(migrationModelRef, "Original", 0)
+        val versionBefore = readOnRepo { language.languageVersion }
+
+        val copy = expectOk(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.COPY_NODE, """{"nodeReference":"$originalRef"}""")
+        })
+        val copyRef = copy.get("reference").asString
+
+        assertEquals("a copy is not a creation: no factory, no bump", versionBefore, readOnRepo { language.languageVersion })
+        val problems = problemsOn(copyRef).second
+        assertTrue("the copy duplicates the original's version: $problems", problems.any { it.get("message").asString.contains("Multiple scripts for version 0") })
+    }
+
+    @Test
+    fun `only the version mismatch carries the quick fix`() {
+        val migrationModelRef = createMigrationModel()
+        val dupA = insertPureMigrationScript(migrationModelRef, "DupA", 0)
+        insertPureMigrationScript(migrationModelRef, "DupB", 0)
+        val unversioned = insertPureMigrationScript(migrationModelRef, "Unversioned", null)
+        setLanguageVersion(1)
+
+        val duplicate = problemsOn(dupA).second
+        assertTrue("the duplicate must be reported: $duplicate", duplicate.any { it.get("message").asString.contains("Multiple scripts for version 0") })
+        assertTrue("a consistent language has no mismatch to fix: $duplicate", duplicate.none { fixLanguageVersionFqn in quickFixIds(it) })
+
+        val missing = problemsOn(unversioned).second
+        assertTrue("the unset version must be reported: $missing", missing.any { it.get("message").asString.contains("does not have version") })
+        assertTrue("an unset version carries no quick fix: $missing", missing.none { fixLanguageVersionFqn in quickFixIds(it) })
     }
 
     @Test

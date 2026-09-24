@@ -16,6 +16,10 @@ import jetbrains.mps.internal.collections.runtime.MapSequence;
 import jetbrains.mps.errors.messageTargets.MessageTarget;
 import jetbrains.mps.errors.messageTargets.NodeMessageTarget;
 import jetbrains.mps.errors.IErrorReporter;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModuleOperations;
+import jetbrains.mps.lang.migration.behavior.IMigrationUnit__BehaviorDescriptor;
+import jetbrains.mps.smodel.Language;
+import jetbrains.mps.errors.BaseQuickFixProvider;
 import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import org.jetbrains.mps.openapi.language.SInterfaceConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
@@ -24,13 +28,29 @@ public class MigrationScriptVersions_NonTypesystemRule extends AbstractNonTypesy
   public MigrationScriptVersions_NonTypesystemRule() {
   }
   public void applyRule(final SNode iMigrationUnit, final TypeCheckingContext typeCheckingContext, IsApplicableStatus status) {
-    Map<SNode, Collection<String>> errors = MigrationsCheckUtil.checkMigrationsVersions(SNodeOperations.getModel(iMigrationUnit).getModule());
+    Map<SNode, Collection<String>> errors = MigrationsCheckUtil.checkMigrationsVersions(SNodeOperations.getModel(iMigrationUnit).getModule(), false);
     CollectionSequence.fromCollection(MapSequence.fromMap(errors).get(iMigrationUnit)).visitAll((it) -> {
       {
         final MessageTarget errorTarget = new NodeMessageTarget();
         IErrorReporter _reporter_2309309498 = typeCheckingContext.reportTypeError(iMigrationUnit, it, "r:47a77104-3b09-4998-a2bd-ada4655c0c77(jetbrains.mps.lang.migration.typesystem)", "1987432259747751432", null, errorTarget);
       }
     });
+    int expected = MigrationsCheckUtil.expectedLanguageVersion(SNodeOperations.getModel(iMigrationUnit).getModule());
+    if (expected != -1 && SNodeOperations.getModel(iMigrationUnit) == SModuleOperations.getAspect(SNodeOperations.getModel(iMigrationUnit).getModule(), "migration") && (boolean) IMigrationUnit__BehaviorDescriptor.isVersionSet_id4uVwhQyFpOe.invoke(iMigrationUnit) && (int) IMigrationUnit__BehaviorDescriptor.fromVersion_id4uVwhQyFcnl.invoke(iMigrationUnit) + 1 == expected) {
+      Language language = (Language) SNodeOperations.getModel(iMigrationUnit).getModule();
+      if (language.getLanguageVersion() != expected) {
+        {
+          final MessageTarget errorTarget = new NodeMessageTarget();
+          IErrorReporter _reporter_2309309498 = typeCheckingContext.reportTypeError(iMigrationUnit, MigrationsCheckUtil.languageVersionMismatchMessage(language.getLanguageVersion(), expected), "r:47a77104-3b09-4998-a2bd-ada4655c0c77(jetbrains.mps.lang.migration.typesystem)", "5739476106122405421", null, errorTarget);
+          {
+            BaseQuickFixProvider intentionProvider = new BaseQuickFixProvider("jetbrains.mps.lang.migration.typesystem.FixLanguageVersion_QuickFix", "5739476106122405428", false);
+            intentionProvider.putArgument("wanted", expected);
+            intentionProvider.putArgument("l", language);
+            _reporter_2309309498.addIntentionProvider(intentionProvider);
+          }
+        }
+      }
+    }
   }
   public SAbstractConcept getApplicableConcept() {
     return CONCEPTS.IMigrationUnit$xq;

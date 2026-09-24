@@ -2,19 +2,18 @@
 
 Real, verified examples copied from the codebase. Use as starting templates for `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`.
 
-> **`MigrationScript` only: the insert runs a node factory that sets `fromVersion` and bumps the language. `PureMigrationScript` has no factory — set `fromVersion` yourself and sync the version.**
+> **Both `MigrationScript` and `PureMigrationScript`: the insert runs a node factory that sets `fromVersion` and bumps the language. Do not set `fromVersion` yourself.**
 >
-> `MigrationScript` is an `AutoInitDSLClass`, so creating one — through the editor, through `mps_mcp_create_root_node`, *or* through `mps_mcp_insert_root_node_from_json` / `mps_mcp_update_node` — fires a factory that sets `fromVersion` to the language's current version, bumps the language version by 1, and wires the script's `superclass`.
+> `MigrationScript` is an `AutoInitDSLClass`, so creating one — through the editor, through `mps_mcp_create_root_node`, *or* through `mps_mcp_insert_root_node_from_json` / `mps_mcp_update_node` — fires a factory that sets `fromVersion` to the language's current version, bumps the language version by 1, and wires the script's `superclass`. `PureMigrationScript` has its own factory (root `MigrationUnit_factories` in the migration language's `actions` model) that does the same for `fromVersion` and the bump, without a `superclass` to wire.
 >
-> For a **`MigrationScript`**:
+> For **either form**:
 >
 > - **Omit `fromVersion`** and let the factory fill it. A `fromVersion` in the blueprint *overrides* the factory's value (properties are applied after the factory runs), which is what you want only when reproducing an existing script verbatim — as the examples below do.
-> - **Omit the `superclass` role** unless you mean to replace it. Roles the blueprint names are cleared before its children are added; roles it omits keep what the factory put there.
+> - For `MigrationScript`, **omit the `superclass` role** unless you mean to replace it. Roles the blueprint names are cleared before its children are added; roles it omits keep what the factory put there.
 > - The factory's version block is guarded by `SModuleOperations.isAspect(futureModel, "migration")`. Insert into the language's real `migration` aspect model, or you get neither `fromVersion` nor the bump, with nothing reported.
+> - The factory only runs on **factory-running paths**: `mps_mcp_insert_root_node_from_json`, `mps_mcp_create_root_node`, the editor's New root, and `replace with new initialized`. `dryRun`, `mps_mcp_alter_nodes` `COPY_NODE`, copy/paste, `SNodeBuilder`/quotations/plain `new node<>()`, and `update_root_node_from_json` on an existing root do not run it — a copy therefore duplicates the source's `fromVersion` and needs a manual fix. `lang.script` Enhancement Scripts have no factory at all, and are not migration units, so they neither carry this `fromVersion` nor affect the synced version.
 >
-> For a **`PureMigrationScript`** none of that applies — the concept is not an `AutoInitDSLClass` and the migration language registers no factory for it. Call `mps_mcp_update_module(moduleName = "<language>", operation = "SYNC_VERSION")` first, set the `languageVersion` it returns as `fromVersion` in the blueprint, insert, then call `SYNC_VERSION` again. `lang.script` Enhancement Scripts have no factory either, and are not migration units, so they neither carry this `fromVersion` nor affect the synced version.
->
-> Either way, **verify rather than assume**: `SYNC_VERSION` is idempotent, so calling it after a `MigrationScript` insert is harmless — it should report `changed: false` and an empty `migrationProblems`; a script listed as "does not have version" means its factory never ran. A factory that *throws* is reported in the response's `warnings`, but a lightweight-DSL initializer that fails internally is swallowed and reaches only `idea.log`, so a clean envelope is not proof the initialization ran. See [form-selection.md](form-selection.md) for the two different version numbers involved.
+> Either way, **verify rather than assume**: `SYNC_VERSION` is idempotent, so calling it after an insert is harmless — it should report `changed: false` and an empty `migrationProblems`; a script listed as "does not have version" means its factory never ran (e.g. it was inserted through a non-factory path). A factory that *throws* is reported in the response's `warnings`, but a lightweight-DSL initializer that fails internally is swallowed and reaches only `idea.log`, so a clean envelope is not proof the initialization ran. See [form-selection.md](form-selection.md) for the two different version numbers involved.
 
 ## `MigrationScript` (lang.migration) — `MigrateReferences`
 

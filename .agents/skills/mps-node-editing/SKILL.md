@@ -115,8 +115,8 @@ How a blueprint composes with the factory:
 Practical consequences:
 
 - **Do not hand-write what the factory already does.** Duplicating a factory side effect is how
-  double-counting bugs appear — e.g. a `MigrationScript`'s language-version bump (see the
-  `mps-aspect-migrations` skill).
+  double-counting bugs appear — e.g. a `MigrationScript`'s or `PureMigrationScript`'s
+  language-version bump (see the `mps-aspect-migrations` skill).
 - **Name a role only to override it.** Listing a role you meant to leave alone silently discards
   the factory's contribution to it.
 - **Mandatory roles are not auto-filled.** The blueprint paths deliberately skip MPS's

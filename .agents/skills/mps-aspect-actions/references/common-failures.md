@@ -2,7 +2,7 @@
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| New node always has defaults, even after replace | No `NodeFactory` for that concept, or `applicableConcept` points at a supertype that isn't actually chosen | Add a factory whose `applicableConcept` exactly matches the target concept |
+| New node always has defaults, even after replace | No `NodeFactory` exists for that concept **or any of its super-concepts/implemented interfaces** — MPS runs every factory it finds walking up that chain, so the gap is a missing factory anywhere on it, not a mismatch with a more-specific concept | Add a `NodeFactory` whose `applicableConcept` is the concept (or an ancestor of it) that needs the initialization |
 | `sampleNode.<prop>` does not compile | `sampleNode` is typed as `BaseConcept` | Narrow it with `ifInstanceOf (sampleNode is <Concept> original)`, then use `original.<prop>` |
 | Factory body edits take no effect at runtime | Language not rebuilt after edit | Rebuild; also check the factory's model is listed in the language's aspect models |
 | NullPointer on `sampleNode.*` | Directly dereferenced `sampleNode` which may be null | Always guard with `ifInstanceOf` or `if (sampleNode != null)` |
