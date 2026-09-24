@@ -11265,7 +11265,7 @@
                         <ref role="37wK5l" to="ze1i:~ConceptPresentationBuilder.rawPresentation(java.lang.String)" resolve="rawPresentation" />
                         <uo k="s:originTrace" v="n:1219352745532" />
                         <node concept="Xl_RD" id="121" role="37wK5m">
-                          <property role="Xl_RC" value="node/&lt;name&gt;/" />
+                          <property role="Xl_RC" value="node /&lt;name&gt;/" />
                           <uo k="s:originTrace" v="n:1219352745532" />
                         </node>
                         <node concept="asaX9" id="122" role="lGtFl">
@@ -50968,7 +50968,7 @@
             <node concept="liA8E" id="4Db" role="2OqNvi">
               <ref role="37wK5l" to="bzg8:~ConceptDescriptorBuilder2.alias(java.lang.String)" resolve="alias" />
               <node concept="Xl_RD" id="4Dc" role="37wK5m">
-                <property role="Xl_RC" value="node/&lt;name&gt;/" />
+                <property role="Xl_RC" value="node /&lt;name&gt;/" />
               </node>
             </node>
           </node>

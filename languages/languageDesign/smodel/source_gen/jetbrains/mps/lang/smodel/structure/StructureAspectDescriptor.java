@@ -1828,7 +1828,7 @@ public class StructureAspectDescriptor extends BaseStructureAspectDescriptor {
     b.version(3);
     b.associate("referentNode", 0x11be7172e8cL).target(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x110396eaaa4L).optional(false).origin("1219352800908").done();
     b.kind(ConceptKind.NORMAL, StaticScope.NONE);
-    b.alias("node/<name>/");
+    b.alias("node /<name>/");
     return b.create();
   }
   private static ConceptDescriptor createDescriptorForNode_ConceptMethodCall() {

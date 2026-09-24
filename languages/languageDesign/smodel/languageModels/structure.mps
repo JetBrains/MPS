@@ -1251,7 +1251,7 @@
     <property role="TrG5h" value="NodeRefExpression" />
     <property role="2_RsDV" value="4G1g3fIR8JG" />
     <property role="3GE5qa" value="reference" />
-    <property role="34LRSv" value="node/&lt;name&gt;/" />
+    <property role="34LRSv" value="node /&lt;name&gt;/" />
     <property role="EcuMT" value="1219352745532" />
     <ref role="1TJDcQ" node="36vPRrqnoSW" resolve="AbstractNodeRefExpression" />
     <node concept="1TJgyj" id="hJB5MUc" role="1TKVEi">

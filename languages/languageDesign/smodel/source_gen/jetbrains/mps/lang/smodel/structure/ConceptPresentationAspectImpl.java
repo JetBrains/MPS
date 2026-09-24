@@ -1096,7 +1096,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
           cpb.deprecated(true);
           cpb.shortDesc("named node reference");
-          cpb.rawPresentation("node/<name>/");
+          cpb.rawPresentation("node /<name>/");
           props_NodeRefExpression = cpb.create();
         }
         return props_NodeRefExpression;
