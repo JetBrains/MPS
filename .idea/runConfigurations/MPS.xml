@@ -17,6 +17,28 @@
     <ConfigurationWrapper RunnerId="Run" />
     <method v="2">
       <option name="MakeProject" enabled="true" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="bootstrap:aspects-feedback" />
+        <artifact name="bootstrap:mps-annotations" />
+        <artifact name="bootstrap:mps-core" />
+        <artifact name="bootstrap:mps-editor" />
+        <artifact name="bootstrap:mps-openapi" />
+        <artifact name="bootstrap:mps-platform" />
+        <artifact name="bootstrap:mps-testbench" />
+        <artifact name="bootstrap:mps-workbench" />
+        <artifact name="bootstrap:scripts-runtime" />
+        <artifact name="debugger-api" />
+        <artifact name="debugger-java" />
+        <artifact name="execution-languages" />
+        <artifact name="migration-platform" />
+        <artifact name="mps-idea-integration-plugin" />
+        <artifact name="mps-java-core" />
+        <artifact name="mps-java-platform" />
+        <artifact name="mpsdevkit" />
+        <artifact name="vcs-core" />
+        <artifact name="vcs-ide" />
+        <artifact name="vcs-platform" />
+      </option>
     </method>
   </configuration>
 </component>
