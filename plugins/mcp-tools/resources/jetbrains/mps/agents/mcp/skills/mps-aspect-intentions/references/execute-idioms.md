@@ -74,7 +74,7 @@ intention MarkUnorderedChildrenInResultMatch for concept BaseConcept {
 - For an attribute declared **`multiple`**, `node.@<role>` yields a list — append with `.add(...)`. For a single (non-`multiple`) attribute, assign instead: `node.@MyMark = m;`. JSON blueprints for the `.@` operator are in `references/attribute-access.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `new initialized node<...>()` runs the concept's NodeFactory — requires `jetbrains.mps.lang.actions` as used language (see `factory-initialized.md`).
 - End by selecting the new attribute node (`FIRST_EDITABLE`) so the user can immediately fill in its cells (e.g. a mark's `link` reference).
-- Pair the intention with a `delete_action_id` action map on the annotation's own editor cell so `Delete`/`Backspace` removes the mark again — see `references/action-maps.md` in the `mps-aspect-editor-menus-and-keymaps` skill root after loading that companion skill from the same origin §"Keyboard-Deletable Annotation".
+- Pair the intention with a `delete_action_id` action map on the annotation's own editor cell so `Delete`/`Backspace` removes the mark again — see `references/action-maps/example-keyboard-deletable-annotation.md` in the `mps-aspect-editor-menus-and-keymaps` skill root after loading that companion skill from the same origin.
 
 Verbatim JSON of the `executeFunction` body (the `body` → `StatementList`), extracted from the live intention. After insertion, point the two `variableDeclaration` references at the freshly created `m` local variable:
 

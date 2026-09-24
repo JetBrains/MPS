@@ -54,7 +54,7 @@ reworked. The working design is:
 - name the role explicitly with a **reference `link : LinkDeclaration`** on the attribute concept —
   type-safe, refactoring-friendly, and completable (constrain the referent scope to the host
   concept's own multi-valued containment links; see
-  `references/referent-constraints.md` in the `mps-aspect-constraints` skill root after loading that companion skill from the same origin §"Meta-level scope").
+  `references/referent-constraints/meta-level-scope.md` in the `mps-aspect-constraints` skill root after loading that companion skill from the same origin)
 
 At runtime, convert the referenced declaration node to the meta-object with
 `jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getContainmentLink(linkDeclarationNode)`
@@ -149,7 +149,7 @@ Structure only declares *that* a node may be attributed and *with what shape*. T
   cell; without one the annotation is invisible. The editor must include a
   `CellModel_AttributedNodeCell` (`attributed node`) that re-embeds the host node's editor — the
   full pattern (guillemet labels, attributed-node placement, keyboard-deletability) is in
-  `references/editor-patterns.md` in the `mps-aspect-editor` skill root after loading that companion skill from the same origin §"Annotation (Node Attribute) Editor". Users
+  `references/editor-patterns/annotation-editor.md` in the `mps-aspect-editor` skill root after loading that companion skill from the same origin. Users
   add annotations via an intention (`references/execute-idioms.md` in the `mps-aspect-intentions` skill root after loading that companion skill from the same origin) and
   remove them via a `delete_action_id` action map
   (`references/action-maps.md` in the `mps-aspect-editor-menus-and-keymaps` skill root after loading that companion skill from the same origin).

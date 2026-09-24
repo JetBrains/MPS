@@ -12,6 +12,7 @@
 - Bundled skills under `plugins/mcp-tools/resources/.../skills/` may ship executable helpers in `<skill>/scripts/` (Python ≥ 3.9, stdlib only). They depend on `mps_mcp_*` tool names and parameter names.
 - Whoever changes an `mps_mcp_*` tool signature (name, parameter name, operation/kind literal, result envelope shape) must update the affected scripts, their bundled `examples/`, and the `## Scripts` section of the owning `SKILL.md` in the same commit. `SkillScriptsDriftTest` fails the build otherwise.
 - Scripts stay skill-local: the only cross-skill import allowed is the shared library in `mps-mcp-workflow/scripts/` via a relative `sys.path` insert. Validate with `plugins/mcp-tools/scripts/validate_skill_catalog.py`.
+- A `references/*.md` file over 12 KB is split with `plugins/mcp-tools/scripts/split_skill_reference.py` (one file per heading under `references/<stem>/`, with the old path rewritten as an index); a section file it produces is not split further.
 
 ## MPS
 

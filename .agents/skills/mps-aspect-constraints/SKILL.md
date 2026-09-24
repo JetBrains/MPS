@@ -32,31 +32,33 @@ Constraints are enforced at edit time and also consulted by the typesystem/edito
 - `Concept_IsSubConceptOfOperation` matches a concept **and** its sub-concepts; `Concept_IsExactlyOperation` excludes sub-concepts. Use `isExactly` for guards that must not fire on specialisations.
 - Edit constraint models through MPS MCP (`mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`, `mps_mcp_parse_java_and_insert`). Do not hand-edit `.mps` files. Validate with `mps_mcp_check_root_node_problems` and rebuild the language; if the new constraint is invisible at runtime, run `mps_mcp_reload_all`.
 
-## Section index — open one heading, not the file
+## Section index — one row, one read
 
-`references/` is a lookup catalog. Never Read `referent-constraints.md` (~48 KB) or `property-constraints.md` (~14 KB) in one shot. Pick the row, grep headings, Read only that range, stop.
+Each row names the file(s) for one job. Read them — two files in one parallel batch — and nothing else in `references/`.
 
-| Job | File | Heading to open |
-|---|---|---|
-| have not chosen scope style yet | referent-constraints.md | Choosing between the two approaches |
-| scope computed at the reference site | referent-constraints.md | Imperative reference-side scope |
-| scope belongs to an ancestor / getScope | referent-constraints.md | Inherited scope via `InheritedNodeScopeFactory` + `ScopeProvider` |
-| setting a ref must rename/copy/keep original | referent-constraints.md | ReferentSetHandler: side effects on reference assignment |
-| every ref *to* this concept shares one scope | referent-constraints.md | Default Scope (concept-level, not reference-level) |
-| validator / setter / getter shape | property-constraints.md | Shape of `NodePropertyConstraint` |
-| validator / getter / setter wrapper FQNs | property-constraints.md | Key concept FQNs for property constraints |
-| validator JSON blueprint | property-constraints.md | Validator example — `Compound.cardinality` (ChemMastery) |
-| derived-getter JSON blueprint | property-constraints.md | Derived getter example — `Element.details_url` (ChemMastery) |
-| sibling-uniqueness validator | property-constraints.md | Validator that enforces sibling uniqueness |
-| {name} alias / set read-only | property-constraints.md | Property getter delegation and read-only semantics |
-
-How to open: `grep -n '^## '` (two hashes and a space — **not** `^##`, which also matches `###` and would stop before the examples) then `Read` with offset/limit covering that heading until the next `## ` line. Include any `###` example subsections that belong to that `##`; they are part of the section, not a stop. Stop after that section unless a later error names another heading. Do not use line numbers from this skill — they drift.
+| Job | Read |
+|---|---|
+| have not chosen scope style yet | `references/referent-constraints/choosing-scope-style.md` |
+| scope computed at the reference site (shape + verbatim example) | `references/referent-constraints/imperative-scope.md`, `references/referent-constraints/imperative-scope-calculator-example.md` |
+| reference-site scope over a computed sequence (`ListScope` + anonymous `getName`) | `references/referent-constraints/computed-sequences-listscope.md`, `references/referent-constraints/computed-sequences-blueprint.md` |
+| reference-site scope assembled with `CompositeScope.addScope` | `references/referent-constraints/composite-scope-addscope.md` |
+| reference-site scope over imported models' roots (`rootsIncludingImported`) | `references/referent-constraints/cross-model-filtered-scope.md` |
+| scope that offers structure declarations (`LinkDeclaration` referents) | `references/referent-constraints/meta-level-scope.md` |
+| scope belongs to an ancestor / getScope | `references/referent-constraints/inherited-scope.md` |
+| setting a ref must rename/copy/keep original | `references/referent-constraints/referent-set-handler.md` |
+| every ref *to* this concept shares one scope | `references/referent-constraints/default-scope.md` |
+| validator / setter / getter shape | `references/property-constraints/nodepropertyconstraint-shape.md` |
+| validator / getter / setter wrapper FQNs | `references/property-constraints/key-concept-fqns.md` |
+| validator JSON blueprint | `references/property-constraints/validator-example-compound-cardinality.md` |
+| derived-getter JSON blueprint | `references/property-constraints/derived-getter-example.md` |
+| sibling-uniqueness validator | `references/property-constraints/sibling-uniqueness-validator.md` |
+| {name} alias / set read-only | `references/property-constraints/getter-delegation-read-only.md` |
 
 ## Common-Path Workflow
 
 1. Ensure the language has a `constraints` model; create it with `mps_mcp_create_model` (`moduleName: "<lang>"`, `modelName: "<lang>.constraints"` — aspect ID `constraints`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
 2. Add `jetbrains.mps.lang.constraints` to the model's used languages. For scope bodies also add `jetbrains.mps.lang.smodel`, `jetbrains.mps.lang.scopes`, `jetbrains.mps.lang.behavior`, `jetbrains.mps.baseLanguage`; import models `jetbrains.mps.scope` and `jetbrains.mps.lang.core.behavior`.
-   - **Module-level dependency for scope classes**: the language module must have a `Default` dependency on solution `jetbrains.mps.kernel` (which ships model `jetbrains.mps.scope`). `mps_mcp_model_dependency` adds it automatically when importing `jetbrains.mps.scope`; `mps_mcp_create_module type=language` does not. See `references/scope-fqn-reference.md` → "Required module-level dependency".
+   - **Module-level dependency for scope classes**: the language module must have a `Default` dependency on solution `jetbrains.mps.kernel` (which ships model `jetbrains.mps.scope`). `mps_mcp_model_dependency` adds it automatically when importing `jetbrains.mps.scope`; `mps_mcp_create_module type=language` does not. See `references/scope-fqn-reference/required-languages-imports-dependencies.md`.
 3. For each concept to constrain, create one `ConceptConstraints` root (`mps_mcp_create_root_node`); set `concept` ref. Minimal blueprint and validated FQN/c-ref in `references/concept-roots.md`.
 4. Add `NodePropertyConstraint` / `NodeReferentConstraint` / `canBe*` children as needed. For inherited scopes, also add a `getScope` method to the owning ancestor's `ConceptBehavior` (see `mps-aspect-behavior`).
 5. Write bodies in BaseLanguage + smodel — follow the `mps-model-manipulation` skill for smodel / collections / closures syntax. Prefer `mps_mcp_parse_java_and_insert` for the BaseLanguage skeleton, then drop in scope / constraint-specific concepts via MCP.
@@ -75,11 +77,11 @@ How to open: `grep -n '^## '` (two hashes and a space — **not** `^##`, which a
 
 ## Reference Index
 
-**Start here — most common case**: creating the `ConceptConstraints` root or setting `defaultConcreteConcept` → read only `references/concept-roots.md`. A property validator / setter / getter, a referent search scope, or a `referentSetHandler` → pick the matching heading from the Section index above (symptom → heading), then grep/Read only that range. Never full-Read `referent-constraints.md` or `property-constraints.md`.
+**Start here — most common case**: creating the `ConceptConstraints` root or setting `defaultConcreteConcept` → read only `references/concept-roots.md`. A property validator / setter / getter, a referent search scope, or a `referentSetHandler` → read the file(s) in the matching Section index row above.
 
 - Open `references/concept-roots.md` when creating the `ConceptConstraints` root, setting `defaultConcreteConcept` to a concrete subconcept of an abstract concept, looking up the validated concept c-ref, or co-locating a BaseLanguage helper `ClassConcept` next to constraint roots.
-- Open one heading of `references/property-constraints.md` (Section index above) when writing `NodePropertyConstraint` bodies — validator vs. setter vs. getter shape, wrapper FQNs, the validator / derived-getter JSON blueprints, the `{name}` aliasing pattern with `set <read-only>`, or sibling-uniqueness validators. Never Read the whole file.
-- Open one heading of `references/referent-constraints.md` (Section index above) when writing `NodeReferentConstraint` — choosing scope style, imperative `ConstraintFunction_ReferentSearchScope_Scope`, ancestor-supplied `InheritedNodeScopeFactory`, `referentSetHandler`, or concept-level `Default Scope`. Never Read the whole file.
+- Open the Section index row for `references/property-constraints.md` when writing `NodePropertyConstraint` bodies — validator vs. setter vs. getter shape, wrapper FQNs, the validator / derived-getter JSON blueprints, the `{name}` aliasing pattern with `set <read-only>`, or sibling-uniqueness validators.
+- Open the Section index row for `references/referent-constraints.md` when writing `NodeReferentConstraint` — choosing scope style, imperative `ConstraintFunction_ReferentSearchScope_Scope`, ancestor-supplied `InheritedNodeScopeFactory`, `referentSetHandler`, or concept-level `Default Scope`.
 - Open `references/scope-helpers.md` when picking among `EmptyScope`, `ListScope`, `SimpleRoleScope`, `CompositeScope`, `FilteringScope`, `DelegatingScope`, `ModelsScope`, `ModelPlusImportedScope`, `Scopes.forConcepts`, `HidingByNameScope`, or `ListScope.forResolvableElements`; or when caching with `for model [...]`, `visible roots [C]`, `visible nodes [C]`. Includes the verbatim StateChart `Stateful_Behavior.getScope` (`ListScope` + anonymous `getName` + `HidingByNameScope` over `parent scope`) idiom.
 - Open `references/scope-fqn-reference.md` when constructing scope bodies via MCP — the full surface-syntax-to-FQN table (`parent scope`, `come from`, `isSubConceptOf` vs `isExactly`, `RefConcept_Reference` vs `ConceptIdRefExpression`, `LinkIdRefExpression`, `Node_GetAncestorOperation` + `OperationParm_Concept`, `Node_GetDescendantsOperation`, `Node_GetModelOperation`, `Model_RootsIncludingImportedOperation`, `Node_GetParentOperation`, `Node_IsInstanceOfOperation`), required used-languages and model imports, the validated `ScopeProvider.getScope` overriddenMethod ref, and JSON blueprints for the `getScope` skeleton, `parent scope` return, and the guarded local-scope `if`-branch.
 - Open `references/canbe-rules.md` when authoring `ConstraintFunction_CanBeAChild` / `CanBeAParent` / `CanBeAnAncestor` / `CanBeARoot` — each block's parameter set (note `canBeAnAncestor` has only 3 parameters; no `parentNode` or `link`), the `parentNode.parent.isInstanceOf(...)` grandparent-traversal pattern (Kaja `RoutineDefinition` and `Require`), the `node.isInRole(link/C : role/)` pattern, the `model` parameter for `canBeRoot`, and the minimal `ConstraintFunction_CanBeAChild` blueprint.

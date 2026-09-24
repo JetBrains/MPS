@@ -39,7 +39,7 @@ A `ConceptEditorDeclaration` holds **two** editor sections:
 - **Node cell layout** — the `cellModel` child (cardinality `1`). The main editor, shown inline in the document where the node appears.
 - **Inspected cell layout** — the `inspectedCellModel` child (cardinality `0..1`). A *secondary* definition shown in the **Inspector** tool window when the caret is on this node in the main editor. Typically used for less-important or less-frequently read/modified properties so they stay out of the main layout.
 
-Both roles accept any `EditorCellModel` and are built the same way (collections, property cells, ref cells, …). The inspected section is optional — omit `inspectedCellModel` when everything belongs in the main editor. See the *Concept Editor with an Inspected Cell Layout* pattern in `references/editor-patterns.md`.
+Both roles accept any `EditorCellModel` and are built the same way (collections, property cells, ref cells, …). The inspected section is optional — omit `inspectedCellModel` when everything belongs in the main editor. See `references/editor-patterns/inspected-cell-layout.md`.
 
 ## Related Skills
 

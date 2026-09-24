@@ -67,6 +67,7 @@ import java.lang.reflect.Field;
     SkillScriptsPackagingTest.class,
     SkillScriptsDriftTest.class,
     SkillCatalogReplicationTest.class,
+    SkillReferenceLayoutTest.class,
     MigrationXmlExampleTest.class,
 })
 public class McpToolsIntegrationTestSuite extends BaseMpsSuite {

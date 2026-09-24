@@ -1,21 +1,5 @@
 # DotExpression: The Universal Chaining Node
 
-## Contents / when to read what
-
-This file is ~24 KB. Jump to the section that matches the expression you are building.
-
-| Section | Read it when |
-|---|---|
-| [Cardinality cheatsheet — `SLinkAccess` vs `SLinkListAccess`](#cardinality-cheatsheet--slinkaccess-vs-slinklistaccess) | choosing the operation concept for a link access (`0..1`/`1` vs `0..n`/`1..n`) |
-| [Operand must be a typed `node<X>` — cast an untyped operand](#operand-must-be-a-typed-nodex--cast-an-untyped-operand) | the operand is `node<>`/`BaseConcept` and the dot call does not resolve |
-| [Navigation blueprints](#navigation-blueprints) | walking the tree: `.linkName`, `.parent`, `.children`, `.ancestor<C>`, `.ancestors<C>`, `.descendants<C>` |
-| [`node as C` vs `node:C`](#node-as-c-vs-nodec--two-forms-of-smodel-type-cast) | casting between concepts (checked vs unchecked form) |
-| [`expr /` — `SemanticDowncastExpression`](#expr---semanticdowncastexpression-smodel-type--java-api-type) | crossing from an smodel type to the Java `SNode`/openapi type |
-| [`DowncastExpression` (collections)](#downcastexpression-collections--mps-collection-type--java-interface) | crossing from an MPS collection type to a Java `List`/`Iterable` |
-| [`node.isInstanceOf(C)`](#nodeisinstanceofc--runtime-concept-check) / [`.isNotNull` / `.isNull`](#nodeisnotnull--nodeisnull--null-checks) | guarding before a cast, or null-checking a node-typed expression |
-| [`node.behaviorMethod(args)`](#nodebehaviormethodargs--behavior-method-call) | calling a behavior method from model code |
-| [`sequence.where`](#sequencewhere--it--condition---filter) / [`.any`](#sequenceany--it--predicate---existential-check) / [`.translate`](#sequencetranslate--it---yield-----generator-style-flatmap) / [`list.add`](#listaddelement--mutation) | filtering, testing, flat-mapping or mutating a sequence |
-
 **Every smodel/collections operation on a node is expressed as a `DotExpression`.** The `operand` is the receiver and `operation` is the action.
 
 ```
