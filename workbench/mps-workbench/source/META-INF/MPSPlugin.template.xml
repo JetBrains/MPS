@@ -11,6 +11,7 @@
   <content namespace="jetbrains">
     <module name="jetbrains.mps.ide.whatsNew"/>      <!-- MPS-39970: WhatsNewInVisionContentProvider override -->
     <module name="jetbrains.mps.ide.customization"/> <!-- MPS-40020: ExternalProductResourceUrls override -->
+    <module name="jetbrains.mps.platform.ide.impl"/>
     <module name="jetbrains.mps.platform.lang.impl"/>
     <module name="jetbrains.mps.ide.projectPane"/>
   </content>
@@ -120,10 +121,6 @@
 
     <featureStatisticsBundle qualifiedName="messages.MPSFeatureStatisticsBundle"/>
 
-    <!-- MPS patch: allows show custom info when no editors opened-->
-    <applicationService serviceInterface="com.intellij.openapi.fileEditor.impl.EditorEmptyTextPainter"
-                        serviceImplementation="jetbrains.mps.ide.ui.fileEditor.MPSEditorEmptyTextPainter"
-                        overrides="true"/>
     <!-- MPS-39970: the WhatsNewInVisionContentProvider override lives in the jetbrains.mps.ide.whatsNew content module -->
     <!-- MPS does not show the periodic CSAT survey. The platform declares the key with defaultValue="true" in the
          intellij.platform.feedback content module. Unlike service overrides, registry key overrides do not depend on

@@ -36,9 +36,6 @@
   </projectListeners>
 
   <extensions defaultExtensionNs="com.intellij">
-    <!-- requested by FileBasedIndexImpl, so, to make start-up more flat, also preload -->
-    <applicationService serviceInterface="com.intellij.openapi.fileEditor.FileDocumentManager" overrides="true" preload="true"
-                        serviceImplementation="jetbrains.mps.ide.editor.MPSFileDocumentManagerImpl"/>
     <applicationService serviceImplementation="jetbrains.mps.nodeEditor.EditorSettings"/>
     <applicationService serviceImplementation="jetbrains.mps.intentions.IntentionsManager"/>
     <applicationService serviceImplementation="jetbrains.mps.nodeEditor.documentation.MPSDocumentationManager"/>

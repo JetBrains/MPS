@@ -1,0 +1,14 @@
+<idea-plugin visibility="public" package="jetbrains.mps.platform.ide.impl">
+  <dependencies>
+    <module name="intellij.platform.ide.impl"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- requested by FileBasedIndexImpl, so, to make start-up more flat, also preload -->
+    <applicationService serviceInterface="com.intellij.openapi.fileEditor.FileDocumentManager" overrides="true" preload="true"
+                        serviceImplementation="jetbrains.mps.ide.editor.MPSFileDocumentManagerImpl"/>
+    <!-- MPS patch: allows show custom info when no editors opened-->
+    <applicationService serviceInterface="com.intellij.openapi.fileEditor.impl.EditorEmptyTextPainter"
+                        serviceImplementation="jetbrains.mps.ide.ui.fileEditor.MPSEditorEmptyTextPainter"
+                        overrides="true"/>
+  </extensions>
+</idea-plugin>
