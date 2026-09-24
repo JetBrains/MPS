@@ -126,17 +126,6 @@
                         serviceImplementation="jetbrains.mps.ide.ui.fileEditor.MPSEditorEmptyTextPainter"
                         overrides="true"/>
     <!-- MPS-39970: the WhatsNewInVisionContentProvider override lives in the jetbrains.mps.ide.whatsNew content module -->
-    <!-- MPS-40020: the base service is declared in the platform's main descriptor (PlatformExtensions.xml), so it is
-         already registered and this override applies. It is not enough on its own, though: MPS's product layout
-         (MPSProperties.getProductContentDescriptor in intellij-community) includes intellij.idea.customization.base,
-         whose content module overrides the same service with IDEA's URLs later and wins. jetbrains.mps.ide.customization
-         therefore overrides it once more, after IDEA's.
-         This registration stays as the fallback for when intellij.idea.customization.base leaves the product layout
-         (then jetbrains.mps.ide.customization is excluded together with it). open="true" because the two later
-         overrides are expected; without it each logs InstanceNotOverridableException. -->
-    <applicationService serviceInterface="com.intellij.platform.ide.customization.ExternalProductResourceUrls"
-                        serviceImplementation="jetbrains.mps.intellij.integration.MPSExternalResourceUrls"
-                        overrides="true" open="true"/>
     <!-- MPS does not show the periodic CSAT survey. The platform declares the key with defaultValue="true" in the
          intellij.platform.feedback content module. Unlike service overrides, registry key overrides do not depend on
          registration order (RegistryKeyBean.putNewDescriptorConsideringOverrides), so declaring it here is enough. -->
@@ -147,11 +136,6 @@
          of the MPS product layout. -->
     <registryKey key="ea.auto.report.feature.visible" defaultValue="false" restartRequired="true" overrides="true"
                  description="Makes the automatic error reporting feature visible in UI and available to enable/disable"/>
-    <!-- Similar to community/java/ide-customization/resources/META-INF/plugin.xml -->
-    <!-- preload because in any case will be requested to reopen last projects -->
-    <applicationService serviceInterface="com.intellij.ide.RecentProjectsManager"
-                        serviceImplementation="jetbrains.mps.intellij.integration.MPSRecentProjectsManagerBase"
-                        overrides="true" preload="notHeadless"/>
 
     <!-- Global Code Style -->
     <projectConfigurable parentId="preferences.sourceCode" displayName="MPS" instance="jetbrains.mps.ide.codeStyle.CodeStyleSettingsConfigurable" />

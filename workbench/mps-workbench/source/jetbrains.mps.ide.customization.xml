@@ -19,10 +19,21 @@
 <idea-plugin package="jetbrains.mps.ide.customization">
   <dependencies>
     <module name="intellij.idea.customization.base"/>
+    <module name="intellij.platform.backend"/>
   </dependencies>
   <extensions defaultExtensionNs="com.intellij">
+    <!-- MPS-40020: the base service is declared in the platform's main descriptor (PlatformExtensions.xml), so it is
+     already registered and this override applies. It is not enough on its own, though: MPS's product layout
+     (MPSProperties.getProductContentDescriptor in intellij-community) includes intellij.idea.customization.base,
+     whose content module overrides the same service with IDEA's URLs later and wins. jetbrains.mps.ide.customization
+     therefore overrides it once more, after IDEA's.-->
     <applicationService serviceInterface="com.intellij.platform.ide.customization.ExternalProductResourceUrls"
                         serviceImplementation="jetbrains.mps.intellij.integration.MPSExternalResourceUrls"
                         overrides="true"/>
+    <!-- Similar to community/java/ide-customization/resources/META-INF/plugin.xml -->
+    <!-- preload because in any case will be requested to reopen last projects -->
+    <applicationService serviceInterface="com.intellij.ide.RecentProjectsManager"
+                        serviceImplementation="jetbrains.mps.intellij.integration.MPSRecentProjectsManagerBase"
+                        overrides="true" preload="notHeadless"/>
   </extensions>
 </idea-plugin>
