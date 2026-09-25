@@ -522,7 +522,94 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         }
         val envelope = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
-        assertEquals("Parameter 'conceptRef' is missing", envelope.get("error").asString)
+        assertEquals(
+            "conceptRef is required in 'parameters' for IS_SUBCONCEPT_OF. " +
+                "Retry with conceptRef set to the concept's reference or fully qualified name.",
+            envelope.get("error").asString,
+        )
+    }
+
+    @Test
+    fun `every structure operation rejects every absent required key in one rejection`() {
+        // Per operation: what `{}` lacks, and the keys of a payload carrying just the required
+        // ones, all unresolvable. The coverage asserts make a new operation fail here until listed.
+        val queries = mapOf(
+            MPSStructureQueryOperation.GET_ENUMERATION_LITERALS to listOf("nodeReference", "propertyName"),
+            MPSStructureQueryOperation.FIND_INSTANCES to listOf("one of conceptRef/conceptRefs"),
+            MPSStructureQueryOperation.IS_SUBCONCEPT_OF to listOf("conceptRef", "superConceptRef"),
+            MPSStructureQueryOperation.GET_SUB_CONCEPTS to listOf("conceptRef"),
+            MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS to listOf("conceptRef"),
+            MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS to listOf("conceptRef"),
+            MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS to listOf("conceptRef"),
+            MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES to listOf("contextNode", "referenceRole"),
+            MPSStructureQueryOperation.IS_SMART_REFERENCE to listOf("conceptRef"),
+        )
+        assertEquals(MPSStructureQueryOperation.entries.toSet(), queries.keys)
+        for ((operation, missing) in queries) {
+            assertMissingParameterKeys(runTool { it.mps_mcp_query_structure(operation, "{}") }, missing)
+            assertPastMissingParameterKeys(operation.name, runTool { it.mps_mcp_query_structure(operation, onlyRequired(missing)) })
+        }
+
+        val alterations = mapOf(
+            MPSStructureAlterOperation.CREATE_CONCEPTS to
+                listOf("structureModelRef", "one of conceptsJson/interfaceConceptsJson/conceptNames"),
+            MPSStructureAlterOperation.CREATE_ENUM to listOf("structureModelRef", "enumName", "valuesJson"),
+            MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY to listOf("conceptRef", "propertyName"),
+            MPSStructureAlterOperation.RENAME_CONCEPT_PROPERTY to listOf("conceptRef", "oldName", "newName"),
+            MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD to listOf("conceptRef", "role"),
+            MPSStructureAlterOperation.RENAME_CONCEPT_CHILD to listOf("conceptRef", "oldRole", "newRole"),
+            MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE to listOf("conceptRef", "role"),
+            MPSStructureAlterOperation.RENAME_CONCEPT_REFERENCE to listOf("conceptRef", "oldRole", "newRole"),
+        )
+        assertEquals(MPSStructureAlterOperation.entries.toSet(), alterations.keys)
+        for ((operation, missing) in alterations) {
+            assertMissingParameterKeys(runTool { it.mps_mcp_alter_structure(operation, "{}") }, missing)
+            // Unresolvable references, so no operation reaches the model: the deletion forms of the
+            // UPDATE_* operations and CREATE_* stop at resolution.
+            assertPastMissingParameterKeys(operation.name, runTool { it.mps_mcp_alter_structure(operation, onlyRequired(missing)) })
+        }
+    }
+
+    @Test
+    fun `GET_ENUMERATION_LITERALS requires its property form only without enumerationRef`() {
+        fun literals(parameters: String) =
+            runTool { it.mps_mcp_query_structure(MPSStructureQueryOperation.GET_ENUMERATION_LITERALS, parameters) }
+        val envelope = JsonParser.parseString(literals("""{"nodeReference":"$unresolvableNodeRef"}""")).asJsonObject
+        assertEquals(
+            "propertyName is required in 'parameters' for GET_ENUMERATION_LITERALS. Retry with propertyName set to " +
+                "the name of an enumeration-typed property of nodeReference's concept.",
+            envelope.get("error").asString,
+        )
+        assertPastMissingParameterKeys("GET_ENUMERATION_LITERALS", literals("""{"enumerationRef":"$unresolvableNodeRef"}"""))
+    }
+
+    @Test
+    fun `RENAME_CONCEPT_CHILD names both missing keys with the retry for each`() {
+        val envelope = JsonParser.parseString(
+            runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.RENAME_CONCEPT_CHILD, """{"oldRole":"a"}""") }
+        ).asJsonObject
+        assertEquals(
+            "conceptRef and newRole are required in 'parameters' for RENAME_CONCEPT_CHILD. Retry with " +
+                "conceptRef set to the concept's reference or fully qualified name; newRole set to the role's new name.",
+            envelope.get("error").asString,
+        )
+    }
+
+    /**
+     * A payload satisfying every requirement in [missing] with a value that resolves to nothing;
+     * a choice (`one of a/b`) is satisfied by its last alternative.
+     */
+    private fun onlyRequired(missing: List<String>): String = missing.joinToString(",", "{", "}") { name ->
+        val key = name.substringAfterLast('/').removePrefix("one of ")
+        val value = when (key) {
+            "valuesJson" -> "[]"
+            "conceptNames" -> "[\"NoSuchConcept\"]"
+            "nodeReference", "contextNode" -> "\"$unresolvableNodeRef\""
+            "structureModelRef" -> "\"${unresolvableNodeRef.substringBeforeLast('/')}\""
+            "conceptRef", "conceptRefs", "superConceptRef" -> "\"no.such.language.structure.NoSuchConcept\""
+            else -> "\"x\""
+        }
+        "\"$key\":$value"
     }
 
     @Test
@@ -1479,9 +1566,9 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
 
     @Test
     fun `GET_ASSIGNABLE_REFERENCES returns error envelope when contextNode is missing`() {
-        // The service requires both 'contextNode' and 'referenceRole'; absent contextNode is the
-        // first guard. Test only the dispatcher → service plumbing here; the rest of the service
-        // is covered by AssignableReferenceServiceTest at the unit level.
+        // Both 'contextNode' and 'referenceRole' are required; the dispatcher's missing-key check
+        // reports an absent one before the service runs. The service itself is covered by
+        // AssignableReferenceServiceTest at the unit level.
         val response = runTool {
             it.mps_mcp_query_structure(
                 MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES,

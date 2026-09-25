@@ -38,6 +38,9 @@ object RequiredParameterNearMisses {
         "facetType" to listOf("facet", "type"),
         "historyNodeReference" to listOf("nodeReference", "historyNode", "historyRef"),
         "intentionId" to listOf("intention", "intentionName", "id"),
+        "childJson" to listOf("json"),
+        "childNodeRef" to listOf("childNodeReference", "target"),
+        "childRole" to listOf("role"),
         "json" to listOf("blueprint", "nodeJson", "jsonBlueprint"),
         "kind" to listOf("type", "languageKind"),
         "modelName" to listOf("name", "model"),
@@ -54,6 +57,8 @@ object RequiredParameterNearMisses {
         "usedLanguage" to listOf("language", "languageRef", "languageReference"),
         "mps_mcp_create_module.name" to listOf("moduleName", "moduleReference"),
         "mps_mcp_check_root_node_problems.nodeReference" to listOf("modelReference", "model", "nodeRef", "node"),
+        // ADD CHILD's parent. Not 'target', which parse_java_and_insert uses for the node replaced.
+        "mps_mcp_update_node.nodeReference" to listOf("parentRef", "nodeRef"),
     )
 
     fun of(tool: String, parameter: String): List<String> =
@@ -64,22 +69,42 @@ object RequiredParameterNearMisses {
  * The rejection text for [missing] (non-empty) on [tool], in the voice the parameter-name sweep
  * settled on (D14b, D28): name the key, end with the literal retry, and name the spellings that
  * never reached the tool. All missing keys are reported at once, since a caller who got one key
- * wrong often got its neighbours wrong too (D28).
+ * wrong often got its neighbours wrong too (D28). [operation] names the operation that requires
+ * them, for a tool whose required parameters differ by operation.
  */
-fun missingParametersMessage(tool: String, missing: List<RequiredParameter>): String {
+fun missingParametersMessage(tool: String, missing: List<RequiredParameter>, operation: String? = null): String {
     fun spelledNot(parameter: RequiredParameter): String? =
         RequiredParameterNearMisses.of(tool, parameter.name).takeIf { it.isNotEmpty() }
             ?.joinToString("'/'", prefix = "'", postfix = "'")
 
+    val qualifier = operation?.let { " for $it" }.orEmpty()
     missing.singleOrNull()?.let { parameter ->
-        return "${parameter.name} is required. Retry with ${parameter.name} set to ${parameter.expected}." +
+        return retrySentence(missing, qualifier) +
             (spelledNot(parameter)?.let { " This tool spells it '${parameter.name}'; a value sent as $it never reaches it." } ?: "")
     }
+    return retrySentence(missing, qualifier) { parameter -> spelledNot(parameter)?.let { " (not $it)" }.orEmpty() } +
+        " A value sent under another name never reaches this tool."
+}
+
+/**
+ * The same rejection for keys inside the `parameters` object of operation [context]. It names no
+ * near-misses: `rejectUnknownParameterKeys` runs first and rejects a misspelled key with a
+ * suggestion, so no value sent under another name can have been dropped.
+ */
+internal fun missingParameterKeysMessage(context: String, missing: List<RequiredParameter>): String =
+    retrySentence(missing, " in 'parameters' for $context")
+
+/** "<keys> <is|are> required<qualifier>. Retry with <key> set to <expected><note>; …." */
+private fun retrySentence(
+    missing: List<RequiredParameter>,
+    qualifier: String,
+    note: (RequiredParameter) -> String = { "" },
+): String {
     val names = missing.map { it.name }
-    return names.dropLast(1).joinToString(", ") + " and " + names.last() + " are required. Retry with " +
-        missing.joinToString("; ") { parameter ->
-            "${parameter.name} set to ${parameter.expected}" + (spelledNot(parameter)?.let { " (not $it)" } ?: "")
-        } + ". A value sent under another name never reaches this tool."
+    val subject = names.singleOrNull()?.let { "$it is" }
+        ?: (names.dropLast(1).joinToString(", ") + " and " + names.last() + " are")
+    return "$subject required$qualifier. Retry with " +
+        missing.joinToString("; ") { "${it.name} set to ${it.expected}${note(it)}" } + "."
 }
 
 /**

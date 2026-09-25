@@ -306,18 +306,35 @@ abstract class AbstractOps : McpToolset {
      *
      * Records its own envelope: it returns before `withMpsProject`, which would otherwise record
      * it, and an unrecorded rejection would be logged as ok:true (D26).
+     *
+     * [operation] names the operation that requires [parameters], for a tool whose required
+     * parameters differ by operation (`mps_mcp_update_node`).
      */
-    protected suspend fun rejectMissingParameters(tool: String, vararg parameters: RequiredParameter): String? {
+    protected suspend fun rejectMissingParameters(
+        tool: String,
+        vararg parameters: RequiredParameter,
+        operation: String? = null,
+    ): String? {
         val missing = parameters.filter { it.supplied.isBlank() }
         if (missing.isEmpty()) return null
-        return McpCallOutcomes.record(
-            errJson(
-                missingParametersMessage(tool, missing),
-                McpErrorCode.INVALID_REQUEST,
-                mapOf("missingParameters" to missing.map { it.name }),
-            )
-        )
+        return missingParametersResponse(tool, missing, operation)
     }
+
+    /**
+     * The recorded [rejectMissingParameters] envelope for parameters the caller already knows are
+     * absent — one that is not a `String`, such as a triplet list, has no blank value to test.
+     */
+    protected suspend fun missingParametersResponse(
+        tool: String,
+        missing: List<RequiredParameter>,
+        operation: String? = null,
+    ): String = McpCallOutcomes.record(
+        errJson(
+            missingParametersMessage(tool, missing, operation),
+            McpErrorCode.INVALID_REQUEST,
+            mapOf("missingParameters" to missing.map { it.name }),
+        )
+    )
 
     protected fun invalidJson(message: String?, details: Map<String, Any?> = emptyMap()): String =
         errJson(message, McpErrorCode.INVALID_JSON, details)
@@ -386,7 +403,7 @@ abstract class AbstractOps : McpToolset {
             // client mistakes, so they must not be logged as server failures — and classifying
             // them here is what lets a tool read a `parameters` value through a throwing typed
             // reader without wrapping every read in its own try/catch.
-            is ToolInputSchemaException -> errJson(e.message, McpErrorCode.INVALID_REQUEST)
+            is ToolInputSchemaException -> errJson(e.message, McpErrorCode.INVALID_REQUEST, e.details)
             // Reached only by a `parameters` reader; every blueprint parser that can raise this
             // one already catches it locally and produces the same envelope. Kept as the matching
             // half of the pair, so a future blob reader that parses nested JSON classifies itself

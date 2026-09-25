@@ -65,14 +65,34 @@ private val MAKE_PARAMETER_SCHEMA: Map<String, String> = linkedMapOf(
 
 private val MAKE_PARAMETER_KEYS: Set<String> = MAKE_PARAMETER_SCHEMA.keys
 
-private val FIND_USAGES_KEYS = ParameterKeys.of(PARAM_NODE_REFERENCE) + SEARCH_SCOPE_KEYS
+private val FIND_USAGES_KEYS =
+    ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose usages to find")) + SEARCH_SCOPE_KEYS
 
-private val NODE_INFO_KEYS = ParameterKeys.of(PARAM_NODE_REFERENCE)
+private val NODE_INFO_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to inspect"))
 
-private val MOVE_CHILD_KEYS = ParameterKeys.of(PARAM_NODE_REFERENCE, "childRole", PARAM_CHILD_NODE_REF, "position")
+private val COPY_NODE_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to copy"))
 
-private val MOVE_NODE_TO_PARENT_KEYS =
-    ParameterKeys.of(PARAM_NODE_REFERENCE, PARAM_NEW_PARENT_REF, "role", "position", PARAM_MODEL_REFERENCE)
+private val FIX_REFERENCES_KEYS =
+    ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose subtree's references to fix"))
+
+private val MOVE_CHILD_KEYS = ParameterKeys.of(
+    required(PARAM_NODE_REFERENCE, "the parent node's reference"),
+    required("childRole", "the containment role name"),
+    required(PARAM_CHILD_NODE_REF, "the reference of the child to move"),
+    required("position", "the 0-based target index, or -1 to move to the end"),
+)
+
+private val MOVE_NODE_TO_PARENT_KEYS = ParameterKeys.of(
+    required(PARAM_NODE_REFERENCE, "the reference of the node to move"),
+    PARAM_NEW_PARENT_REF,
+    required("role", "the containment role under newParentRef", onlyWith = PARAM_NEW_PARENT_REF),
+    "position", PARAM_MODEL_REFERENCE,
+    requiredOneOf(
+        PARAM_NEW_PARENT_REF, PARAM_MODEL_REFERENCE,
+        expected = "the new parent's reference (with role) to reparent the node, or a model reference to make it " +
+            "a root there; an explicit newParentRef:null is rejected",
+    ),
+)
 
 /** The accepted `parameters` keys of each [MPSQueryOperation]. */
 private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys = when (operation) {
@@ -90,7 +110,8 @@ private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys
 private fun alterNodesParameterKeys(operation: MPSAlterOperation): ParameterKeys? = when (operation) {
     MPSAlterOperation.MOVE_CHILD -> MOVE_CHILD_KEYS
     MPSAlterOperation.MOVE_NODE_TO_PARENT -> MOVE_NODE_TO_PARENT_KEYS
-    MPSAlterOperation.COPY_NODE, MPSAlterOperation.FIX_REFERENCES -> NODE_INFO_KEYS
+    MPSAlterOperation.COPY_NODE -> COPY_NODE_KEYS
+    MPSAlterOperation.FIX_REFERENCES -> FIX_REFERENCES_KEYS
     MPSAlterOperation.MAKE -> null
 }
 
@@ -162,6 +183,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
             }
             params.rejectUnknownParameterKeys(operation.name, queryNodesParameterKeys(operation))
+            params.rejectMissingParameterKeys(operation.name, queryNodesParameterKeys(operation))
 
             when (operation) {
                 MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
@@ -226,7 +248,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             } catch (e: Exception) {
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
             } ?: return@withMpsProject missingAlterNodesParameters(operation)
-            alterNodesParameterKeys(operation)?.let { params.rejectUnknownParameterKeys(operation.name, it) }
+            alterNodesParameterKeys(operation)?.let {
+                params.rejectUnknownParameterKeys(operation.name, it)
+                params.rejectMissingParameterKeys(operation.name, it)
+            }
 
             when (operation) {
                 MPSAlterOperation.MOVE_CHILD -> opMoveChild(params)
@@ -250,7 +275,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         params: JsonObject,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
-        val nodeReference = params.paramString(PARAM_NODE_REFERENCE) ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         return executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
@@ -299,7 +324,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
-        val nodeReference = params.paramString(PARAM_NODE_REFERENCE) ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         val scopeParam = params.paramString("scope") ?: "editable"
         val rootsOnly = params.paramBoolean("rootsOnly", default = false)
         val monitor = coroutineProgressMonitor()
@@ -335,15 +360,15 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opMoveChild(params: JsonObject): String {
-        val nodeReference = params.paramString(PARAM_NODE_REFERENCE) ?: return errJson("Parameter 'nodeReference' is missing")
-        val childRole = params.paramString("childRole") ?: return errJson("Parameter 'childRole' is missing")
-        val childNodeRef = params.paramString(PARAM_CHILD_NODE_REF) ?: return errJson("Parameter 'childNodeRef' is missing")
-        val position = params.paramInt("position") ?: return errJson("Parameter 'position' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
+        val childRole = params.requiredParamString("childRole")
+        val childNodeRef = params.requiredParamString(PARAM_CHILD_NODE_REF)
+        val position = params.requiredParamInt("position")
         return moveNodeChild(nodeReference, childRole, childNodeRef, position)
     }
 
     private suspend fun opMoveNodeToParent(params: JsonObject): String {
-        val nodeReference = params.paramString(PARAM_NODE_REFERENCE) ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         if (params.paramIsExplicitNull(PARAM_NEW_PARENT_REF)) {
             return errJson("Parameter 'newParentRef' must not be null", McpErrorCode.INVALID_REQUEST)
         }
@@ -355,7 +380,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opCopyNode(params: JsonObject): String {
-        val nodeReference = params.paramString(PARAM_NODE_REFERENCE) ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         return withMpsProject("Copying MPS node") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -632,7 +657,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opFixReferences(mpsProject: MPSProject, params: JsonObject): String {
-        val nodeReference = params.paramString(PARAM_NODE_REFERENCE) ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         return executeShortCommandOnEdt(mpsProject) {
             val (node, model, console) = when (
                 val r = resolveEditableNodeAllowingConsole(mpsProject, nodeReference)
@@ -1048,23 +1073,29 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             NodeUpdateKind.CHILD -> when (operation) {
                 NodeUpdateOperation.ADD -> {
                     // Reported together rather than one per round trip: study D28's incident sent
-                    // parentRef/role/target, so all three keys were wrong at once. Kotlin
-                    // smart-casts the three parameters past this early return.
-                    if (nodeReference == null || childRole == null || childJson == null) {
-                        return missingAddChildParameters(nodeReference, childRole, childJson)
-                    }
+                    // parentRef/role/target, so all three keys were wrong at once.
+                    rejectMissingParameters(
+                        "mps_mcp_update_node",
+                        RequiredParameter("nodeReference", nodeReference.orEmpty(), "the parent node's reference"),
+                        RequiredParameter("childRole", childRole.orEmpty(), "the containment role name"),
+                        RequiredParameter(
+                            "childJson", childJson.orEmpty(),
+                            "the child's JSON blueprint, or an absolute path to a file holding it",
+                        ),
+                        operation = "ADD CHILD",
+                    )?.let { return it }
                     update_node_child(nodeReference, childRole, childJson, null, position, dryRun, responseDetail)
                 }
                 NodeUpdateOperation.SET -> {
-                    // 'target' belongs on this near-miss list, not ADD CHILD's: in
-                    // mps_mcp_parse_java_and_insert — the tool study D28 names as the source of
-                    // the guess — `targetRef` is the node being *replaced* under mode "replace",
-                    // whose counterpart here is childNodeRef, not the ADD CHILD parent.
-                    val childRef = childNodeRef ?: return missingUpdateNodeParameter(
-                        "childNodeRef", "SET CHILD", "the reference of the child to replace or delete",
-                        "childNodeReference/nodeReference/target"
-                    )
-                    update_node_child(null, null, childJson, childRef, null, dryRun)
+                    rejectMissingParameters(
+                        "mps_mcp_update_node",
+                        RequiredParameter(
+                            "childNodeRef", childNodeRef.orEmpty(),
+                            "the reference of the child to replace or delete (SET CHILD ignores nodeReference)",
+                        ),
+                        operation = "SET CHILD",
+                    )?.let { return it }
+                    update_node_child(null, null, childJson, childNodeRef, null, dryRun)
                 }
             }
             NodeUpdateKind.PROPERTY -> when (operation) {
@@ -1072,9 +1103,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     errJson("ADD is not a valid operation for PROPERTY", McpErrorCode.INVALID_REQUEST)
                 )
                 NodeUpdateOperation.SET -> {
-                    val triplets = properties ?: return missingUpdateNodeParameter(
-                        "properties", "SET PROPERTY",
-                        "the triplet array [[nodeRef, propertyName, value], ...]"
+                    val triplets = properties ?: return missingParametersResponse(
+                        "mps_mcp_update_node",
+                        listOf(RequiredParameter("properties", "", "the triplet array [[nodeRef, propertyName, value], ...]")),
+                        "SET PROPERTY",
                     )
                     val results = mutableListOf<String>()
                     var allSucceeded = true
@@ -1105,9 +1137,14 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     errJson("ADD is not a valid operation for REFERENCE", McpErrorCode.INVALID_REQUEST)
                 )
                 NodeUpdateOperation.SET -> {
-                    val triplets = references ?: return missingUpdateNodeParameter(
-                        "references", "SET REFERENCE",
-                        "the triplet array [[nodeRef, referenceRole, targetNodeRefOrName], ...]"
+                    val triplets = references ?: return missingParametersResponse(
+                        "mps_mcp_update_node",
+                        listOf(
+                            RequiredParameter(
+                                "references", "", "the triplet array [[nodeRef, referenceRole, targetNodeRefOrName], ...]",
+                            ),
+                        ),
+                        "SET REFERENCE",
                     )
                     val results = mutableListOf<String>()
                     var allSucceeded = true
@@ -1131,70 +1168,6 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 }
             }
         }
-    }
-
-    /**
-     * "Required parameter missing" rejection for [mps_mcp_update_node], in the shape the
-     * parameter-name sweep settled on: name the correct key, then end with the literal edit to
-     * make and — where the surface really carries a competing spelling for the same idea — the
-     * near-miss this tool does *not* accept. No alias parameter is added: a top-level alias is
-     * paid for in every turn's published schema, whereas a named rejection costs one retry only
-     * to the caller who already guessed wrong.
-     *
-     * Records its own envelope: every caller returns straight out of [mps_mcp_update_node]'s
-     * dispatch without reaching `withMpsProject`, the only other call site that reports to the
-     * call log, and a rejection logged as ok:true is the mis-measurement D26 was fixed to remove.
-     */
-    private suspend fun missingUpdateNodeParameter(
-        parameter: String,
-        operation: String,
-        value: String,
-        nearMisses: String? = null,
-    ): String = McpCallOutcomes.record(
-        errJson(
-            "$parameter is required for $operation. Retry with $parameter set to $value." +
-                (nearMisses?.let { " This tool spells it '$parameter', not '$it'." } ?: ""),
-            McpErrorCode.INVALID_REQUEST,
-        )
-    )
-
-    /** One required key of [mps_mcp_update_node], with the spelling this tool does *not* accept. */
-    private class UpdateNodeParameter(val name: String, val value: String, val nearMisses: String)
-
-    /**
-     * ADD CHILD rejection naming *every* missing key at once. Study D28 observed a caller sending
-     * `parentRef`/`role`/`target` — all three keys wrong together — so reporting them one at a
-     * time costs a round trip per key. A single missing key still goes through
-     * [missingUpdateNodeParameter] so the settled singular wording is untouched.
-     */
-    private suspend fun missingAddChildParameters(
-        nodeReference: String?,
-        childRole: String?,
-        childJson: String?,
-    ): String {
-        val missing = listOfNotNull(
-            UpdateNodeParameter("nodeReference", "the parent node's reference", "parentRef/nodeRef")
-                .takeIf { nodeReference == null },
-            UpdateNodeParameter("childRole", "the containment role name", "role")
-                .takeIf { childRole == null },
-            UpdateNodeParameter(
-                "childJson", "the child's JSON blueprint, or an absolute path to a file holding it", "json"
-            ).takeIf { childJson == null },
-        )
-        // Exactly one of the three shapes is reachable, and the caller has already established
-        // that `missing` is not empty, so there is no empty case to answer here.
-        missing.singleOrNull()?.let {
-            return missingUpdateNodeParameter(it.name, "ADD CHILD", it.value, it.nearMisses)
-        }
-        return McpCallOutcomes.record(
-            errJson(
-                missing.joinToString(", ") { it.name } + " are required for ADD CHILD. Retry with " +
-                    missing.joinToString("; ") {
-                        "${it.name} set to ${it.value} (not '${it.nearMisses}')"
-                    } + ".",
-                McpErrorCode.INVALID_REQUEST,
-            )
-        )
     }
 
     /**
@@ -1403,9 +1376,6 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 }
 
                 if (newParentRef != null) {
-                    if (role == null) {
-                        return@executeShortCommandOnEdt errJson("Parameter 'role' is missing for MOVE_NODE_TO_PARENT with newParentRef", McpErrorCode.INVALID_REQUEST)
-                    }
                     val (newParent, targetModel, targetConsole) = when (
                         val r = resolveEditableNodeAllowingConsole(mpsProject, newParentRef,
                             { "New parent node '$it' not found" },
@@ -1476,8 +1446,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     // (now clamped to an append) can see where it landed.
                     okJson(nodeInfoJsonObjectWithIndex(node, mpsProject), warnings = listOfNotNull(warn))
 
-                } else if (modelReference != null) {
-                    val targetModel = when (val r = resolveEditableModel(mpsProject, modelReference)) {
+                } else {
+                    val targetModel = when (val r = resolveEditableModel(mpsProject, checkNotNull(modelReference))) {
                         is EditableModelResolution.Ok -> r.model
                         is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
                     }
@@ -1498,8 +1468,6 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         saveModelAndModule(sourceModel)
                     }
                     okJson(nodeInfoJson(node, mpsProject))
-                } else {
-                    errJson("Either 'newParentRef' or 'modelReference' must be provided for MOVE_NODE_TO_PARENT", McpErrorCode.INVALID_REQUEST)
                 }
             }
         }

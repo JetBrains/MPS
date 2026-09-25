@@ -178,7 +178,11 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
         val envelope = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
-        assertEquals("Parameter 'nodeReference' is missing", envelope.get("error").asString)
+        assertEquals(
+            "nodeReference is required in 'parameters' for GET_PARENT. " +
+                "Retry with nodeReference set to the reference of the node to inspect.",
+            envelope.get("error").asString,
+        )
     }
 
     @Test
@@ -1837,9 +1841,9 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
         val error = obj.get("error").asString
-        assertTrue("must name all three required keys: $error", error.contains("nodeReference, childRole, childJson are required"))
+        assertTrue("must name all three required keys: $error", error.contains("nodeReference, childRole and childJson are required for ADD CHILD"))
         assertTrue("must keep the copy-pasteable 'set to' phrasing: $error", error.contains("nodeReference set to the parent node's reference"))
-        assertTrue("must name the parentRef/nodeRef near-miss: $error", error.contains("(not 'parentRef/nodeRef')"))
+        assertTrue("must name the parentRef/nodeRef near-miss: $error", error.contains("(not 'parentRef'/'nodeRef')"))
         assertTrue("must name the role near-miss: $error", error.contains("(not 'role')"))
         assertTrue("must name the json near-miss: $error", error.contains("(not 'json')"))
         // 'target' is NOT offered as a near-miss for nodeReference: in parse_java_and_insert it
@@ -1850,12 +1854,14 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "must not map 'target' onto nodeReference: $nodeReferenceClause",
             nodeReferenceClause.contains("target"),
         )
+        assertEquals(
+            listOf("nodeReference", "childRole", "childJson"),
+            obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString },
+        )
     }
 
     @Test
-    fun `update_node ADD CHILD keeps the singular wording when only one key is missing`() {
-        // The many-missing message must not regress the settled single-key shape, which the
-        // parameter-name sweep fixed on and which the rest of this tool's rejections follow.
+    fun `update_node ADD CHILD uses the shared singular wording when only one key is missing`() {
         val response = callThroughBridge(
             JetBrainsMPSNodeMcpToolset(),
             "mps_mcp_update_node",
@@ -1871,9 +1877,91 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
         assertEquals(
             "childJson is required for ADD CHILD. Retry with childJson set to the child's JSON blueprint, " +
-                    "or an absolute path to a file holding it. This tool spells it 'childJson', not 'json'.",
+                    "or an absolute path to a file holding it. This tool spells it 'childJson'; " +
+                    "a value sent as 'json' never reaches it.",
             obj.get("error").asString,
         )
+    }
+
+    @Test
+    fun `alter_nodes MOVE_CHILD names every missing parameter at once`() {
+        // D49: round 10 learned about nodeReference and childRole on two sequential retries.
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(),
+            "mps_mcp_alter_nodes",
+            mapOf(
+                "operation" to McpJsonPrimitive("MOVE_CHILD"),
+                "parameters" to McpJsonPrimitive("""{"childNodeRef":"$DUMMY_NODE_REF","position":0}"""),
+            ),
+        )
+        assertMissingParameterKeys(response, listOf("nodeReference", "childRole"))
+        assertEquals(
+            "nodeReference and childRole are required in 'parameters' for MOVE_CHILD. Retry with " +
+                "nodeReference set to the parent node's reference; childRole set to the containment role name.",
+            JsonParser.parseString(response).asJsonObject.get("error").asString,
+        )
+    }
+
+    @Test
+    fun `every node operation rejects every absent required key in one rejection`() {
+        val toolset = JetBrainsMPSNodeMcpToolset()
+        val dummyModel = DUMMY_NODE_REF.substringBeforeLast('/')
+        // Per operation: what `{}` lacks, and a payload carrying just the required keys, all
+        // unresolvable. The coverage asserts make a new operation fail here until it is listed.
+        val queries = listOf(
+            MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
+            MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
+            MPSQueryOperation.FIND_USAGES,
+        ).associateWith { listOf("nodeReference") to """{"nodeReference":"$DUMMY_NODE_REF"}""" } +
+            (MPSQueryOperation.FIND_INSTANCES to (listOf("one of conceptRef/conceptRefs") to """{"conceptRef":"$NO_SUCH_CONCEPT"}"""))
+        assertEquals(MPSQueryOperation.entries.toSet(), queries.keys)
+        for ((operation, expectation) in queries) {
+            val (missing, onlyRequired) = expectation
+            assertMissingParameterKeys(runTool(toolset) { it.mps_mcp_query_nodes(operation, "{}") }, missing)
+            assertPastMissingParameterKeys(operation.name, runTool(toolset) { it.mps_mcp_query_nodes(operation, onlyRequired) })
+        }
+
+        val alterations = mapOf(
+            MPSAlterOperation.MOVE_CHILD to (listOf("nodeReference", "childRole", "childNodeRef", "position") to
+                """{"nodeReference":"$DUMMY_NODE_REF","childRole":"kid","childNodeRef":"$DUMMY_NODE_REF","position":0}"""),
+            MPSAlterOperation.MOVE_NODE_TO_PARENT to (listOf("nodeReference", "one of newParentRef/modelReference") to
+                """{"nodeReference":"$DUMMY_NODE_REF","modelReference":"$dummyModel"}"""),
+            MPSAlterOperation.COPY_NODE to (listOf("nodeReference") to """{"nodeReference":"$DUMMY_NODE_REF"}"""),
+            MPSAlterOperation.FIX_REFERENCES to (listOf("nodeReference") to """{"nodeReference":"$DUMMY_NODE_REF"}"""),
+        )
+        // MAKE keeps its own MAKE_INPUT_INVALID rejection, which carries the expectedParameters map.
+        assertEquals(MPSAlterOperation.entries.toSet(), alterations.keys + MPSAlterOperation.MAKE)
+        for ((operation, expectation) in alterations) {
+            val (missing, onlyRequired) = expectation
+            assertMissingParameterKeys(runTool(toolset) { it.mps_mcp_alter_nodes(operation, "{}") }, missing)
+            assertPastMissingParameterKeys(operation.name, runTool(toolset) { it.mps_mcp_alter_nodes(operation, onlyRequired) })
+        }
+    }
+
+    @Test
+    fun `MOVE_NODE_TO_PARENT requires role only together with newParentRef`() {
+        val toolset = JetBrainsMPSNodeMcpToolset()
+        fun move(parameters: String) = runTool(toolset) { it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_NODE_TO_PARENT, parameters) }
+        assertMissingParameterKeys(move("""{"newParentRef":"$DUMMY_NODE_REF"}"""), listOf("nodeReference", "role"))
+        assertMissingParameterKeys(move("""{"nodeReference":"$DUMMY_NODE_REF"}"""), listOf("one of newParentRef/modelReference"))
+        assertPastMissingParameterKeys(
+            "MOVE_NODE_TO_PARENT",
+            move("""{"nodeReference":"$DUMMY_NODE_REF","newParentRef":"$DUMMY_NODE_REF","role":"kid"}"""),
+        )
+    }
+
+    @Test
+    fun `a required key counts as present under an alias, as an empty string, or ill-typed`() {
+        val toolset = JetBrainsMPSNodeMcpToolset()
+        fun missing(parameters: String): List<String> {
+            val obj = JsonParser.parseString(runTool(toolset) { it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, parameters) }).asJsonObject
+            return obj.getAsJsonObject("details")?.getAsJsonArray("missingParameters")?.map { it.asString }.orEmpty()
+        }
+        assertEquals(listOf("childRole", "position"), missing("""{"nodeRef":"$DUMMY_NODE_REF","childNodeReference":"$DUMMY_NODE_REF"}"""))
+        assertEquals(listOf("nodeReference", "position"), missing("""{"nodeRef":null,"childRole":"","childNodeRef":"x","position":null}"""))
+        assertEquals(listOf("nodeReference", "childRole"), missing("""{"childNodeRef":["x"],"position":"end"}"""))
+        // Two spellings of one key are rejected by the typed read, which runs only once nothing is absent.
+        assertEquals(listOf("childRole", "childNodeRef"), missing("""{"nodeReference":"x","nodeRef":"x","position":0}"""))
     }
 
     @Test
@@ -2177,5 +2265,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         private const val ENUMERATION_DECL = "jetbrains.mps.lang.structure.structure.EnumerationDeclaration"
         private const val ENUMERATION_MEMBER_DECL = "jetbrains.mps.lang.structure.structure.EnumerationMemberDeclaration"
         private const val INAMED_CONCEPT = "jetbrains.mps.lang.core.structure.INamedConcept"
+        private const val DUMMY_NODE_REF = "r:00000000-0000-0000-0000-000000000000(dummy)/1"
+        private const val NO_SUCH_CONCEPT = "no.such.language.structure.NoSuchConcept"
     }
 }

@@ -10,7 +10,8 @@ import jetbrains.mps.java.core.newparser.FeatureKind
 
 class ToolInputJsonException(message: String) : IllegalArgumentException(message)
 
-class ToolInputSchemaException(message: String) : IllegalArgumentException(message)
+/** [details] rides along into the error envelope, as `McpUserException.errorDetails` does. */
+class ToolInputSchemaException(message: String, val details: Map<String, Any?> = emptyMap()) : IllegalArgumentException(message)
 
 /**
  * Type-checked boolean and integer readers for scalars inside a tool's `parameters` JSON blob
@@ -79,27 +80,67 @@ internal val PARAM_MODEL_REFERENCE = BlobKey("modelReference", "modelRef")
 internal val TOLERATED_PARAMETER_KEYS: Set<String> = setOf("projectPath")
 
 /**
- * The keys one tool operation's `parameters` blob accepts.
- *
- * Built from [BlobKey]s (a key with alternative spellings) and plain [String] keys. [canonical]
- * is what an unknown-key rejection lists back — one entry per key, in declaration order, never
- * the alias spellings, which would double the length of the message for no new information.
+ * A requirement [rejectMissingParameterKeys] checks on an operation's `parameters` blob: at least
+ * one of [alternatives] carries a value. [onlyWith] limits it to calls that carry that key (`role`
+ * goes with MOVE_NODE_TO_PARENT's `newParentRef`); [unlessWith] waives it for calls that carry that
+ * key (GET_ENUMERATION_LITERALS' property form, which `enumerationRef` replaces). [expected]
+ * completes "Retry with <name> set to …".
  */
-internal class ParameterKeys private constructor(val canonical: List<String>, val accepted: Set<String>) {
+internal class RequiredKey(
+  val alternatives: List<BlobKey>,
+  val expected: String,
+  val onlyWith: BlobKey? = null,
+  val unlessWith: BlobKey? = null,
+) {
+  /** The key's canonical spelling, or `one of a/b` for a choice between keys. */
+  val name: String = alternatives.singleOrNull()?.canonical
+    ?: alternatives.joinToString("/", prefix = "one of ") { it.canonical }
+}
+
+internal fun required(key: BlobKey, expected: String, onlyWith: BlobKey? = null, unlessWith: BlobKey? = null): RequiredKey =
+  RequiredKey(listOf(key), expected, onlyWith, unlessWith)
+
+internal fun required(key: String, expected: String, onlyWith: BlobKey? = null, unlessWith: BlobKey? = null): RequiredKey =
+  required(BlobKey(key), expected, onlyWith, unlessWith)
+
+/** A choice: at least one of [keys], each a [BlobKey] or a [String], must carry a value. */
+internal fun requiredOneOf(vararg keys: Any, expected: String): RequiredKey =
+  RequiredKey(keys.map(::blobKeyOf), expected)
+
+private fun blobKeyOf(key: Any): BlobKey = when (key) {
+  is BlobKey -> key
+  is String -> BlobKey(key)
+  else -> throw IllegalArgumentException("A parameter key is a String, a BlobKey or a RequiredKey, got ${key.javaClass.name}")
+}
+
+/**
+ * The keys one tool operation's `parameters` blob accepts, and which of them it requires.
+ *
+ * Built from [BlobKey]s (a key with alternative spellings), plain [String] keys, and
+ * [RequiredKey]s. [canonical] is what an unknown-key rejection lists back — one entry per key, in
+ * order of first appearance, never the alias spellings, which would double the length of the
+ * message for no new information. A [RequiredKey] may name keys listed earlier, which keeps a
+ * choice such as [requiredOneOf] from reordering the list. [required] is what
+ * [rejectMissingParameterKeys] checks, in declaration order.
+ */
+internal class ParameterKeys private constructor(
+  val canonical: List<String>,
+  val accepted: Set<String>,
+  val required: List<RequiredKey>,
+) {
   operator fun plus(other: ParameterKeys): ParameterKeys =
-    ParameterKeys(canonical + other.canonical, accepted + other.accepted)
+    ParameterKeys(canonical + other.canonical, accepted + other.accepted, required + other.required)
 
   companion object {
     fun of(vararg keys: Any): ParameterKeys {
-      val canonical = keys.map {
-        when (it) {
-          is BlobKey -> it.canonical
-          is String -> it
-          else -> throw IllegalArgumentException("A parameter key is a String or a BlobKey, got ${it.javaClass.name}")
-        }
-      }
-      val accepted = keys.flatMapTo(LinkedHashSet()) { if (it is BlobKey) it.spellings else listOf(it as String) }
-      return ParameterKeys(canonical, accepted)
+      val blobKeys = keys
+        .flatMap { if (it is RequiredKey) it.alternatives else listOf(blobKeyOf(it)) }
+        .distinctBy { it.canonical }
+      return ParameterKeys(
+        blobKeys.map { it.canonical },
+        blobKeys.flatMapTo(LinkedHashSet()) { it.spellings },
+        keys.filterIsInstance<RequiredKey>(),
+      )
     }
   }
 }
@@ -140,6 +181,31 @@ internal fun JsonObject?.rejectUnknownParameterKeys(context: String, keys: Param
       "$context: $named. Accepted: ${keys.canonical.joinToString(", ") { "'$it'" }}. " +
       "An unrecognised key is rejected rather than ignored, so a misspelling cannot silently " +
       "drop the value you passed."
+  )
+}
+
+/**
+ * Rejects every unmet [ParameterKeys.required] requirement, all of them in one message, so a
+ * caller who omitted several keys learns about each on the first retry (study D49) — the blob
+ * counterpart of `AbstractOps.rejectMissingParameters`. `details.missingParameters` lists their
+ * [RequiredKey.name]s.
+ *
+ * Run it after [rejectUnknownParameterKeys]. A misspelled key has then already been rejected
+ * with a suggestion, so unlike the top-level rejection this one names no near-misses. A key is
+ * absent under the rule every reader here follows: no accepted spelling carries a non-null value.
+ * An empty string or an ill-typed value is present, and left to the typed read that follows.
+ */
+internal fun JsonObject.rejectMissingParameterKeys(context: String, keys: ParameterKeys) {
+  fun present(key: BlobKey) = key.spellings.any { optionalElement(it) != null }
+  val missing = keys.required.filter { requirement ->
+    requirement.alternatives.none(::present) &&
+      requirement.onlyWith?.let(::present) != false &&
+      requirement.unlessWith?.let(::present) != true
+  }
+  if (missing.isEmpty()) return
+  throw ToolInputSchemaException(
+    missingParameterKeysMessage(context, missing.map { RequiredParameter(it.name, "", it.expected) }),
+    mapOf("missingParameters" to missing.map { it.name }),
   )
 }
 
@@ -197,6 +263,10 @@ internal val SEARCH_SCOPE_KEYS = ParameterKeys.of("scope", "models", "modules", 
  */
 internal val FIND_INSTANCES_KEYS = ParameterKeys.of(
   PARAM_CONCEPT_REF, PARAM_CONCEPT_REFS, "detail", "exact", "sampleOnly", "propertyFilter",
+  requiredOneOf(
+    PARAM_CONCEPT_REF, PARAM_CONCEPT_REFS,
+    expected = "one concept reference or qualified name (conceptRef), or one or an array of them (conceptRefs)",
+  ),
 ) + SEARCH_SCOPE_KEYS
 
 /**
@@ -232,6 +302,19 @@ internal fun JsonObject.paramString(key: BlobKey): String? {
  */
 internal fun JsonObject.paramIsExplicitNull(key: BlobKey): Boolean =
   key.spellings.any { has(it) && get(it).isJsonNull }
+
+/**
+ * Readers for a key its operation declares with [required], which [rejectMissingParameterKeys]
+ * has therefore already found present. Absence here is a key read as required but not declared
+ * so — a programming error, not the caller's.
+ */
+internal fun JsonObject.requiredParamString(key: BlobKey): String =
+  checkNotNull(paramString(key)) { "'${key.canonical}' is read as required but not declared with required()" }
+
+internal fun JsonObject.requiredParamString(field: String): String = requiredParamString(BlobKey(field))
+
+internal fun JsonObject.requiredParamInt(field: String): Int =
+  checkNotNull(paramInt(field)) { "'$field' is read as required but not declared with required()" }
 
 /**
  * Shared by every structure write that takes a reference cardinality: the bulk

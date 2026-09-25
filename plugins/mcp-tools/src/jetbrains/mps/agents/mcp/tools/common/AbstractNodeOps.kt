@@ -1680,21 +1680,14 @@ abstract class AbstractNodeOps : AbstractOps() {
      * the plural together with either singular spelling is rejected naming the one to keep — the
      * same "reject the ignored key" policy [paramString] applies to two spellings of one key,
      * because a caller who sent both cannot tell which one won. The arity conflict is reported
-     * first when all three are present, so the message names the key that survives.
+     * first when all three are present, so the message names the key that survives. Neither being
+     * present never gets here: [FIND_INSTANCES_KEYS] requires one, and the dispatcher checks it.
      */
     private fun requestedConceptRefs(params: JsonObject): RefStrings {
         val plural = params.get(PARAM_CONCEPT_REFS)?.takeUnless { it.isJsonNull }
         val singular = PARAM_CONCEPT_REF.spellings.filter { params.get(it)?.takeUnless { v -> v.isJsonNull } != null }
         if (plural == null) {
-            val single = params.paramString(PARAM_CONCEPT_REF)
-                ?: return RefStrings.Err(
-                    errJson(
-                        "Parameter 'conceptRef' is missing: pass '${PARAM_CONCEPT_REF.canonical}' with one " +
-                            "concept reference or qualified name, or '$PARAM_CONCEPT_REFS' with several.",
-                        McpErrorCode.INVALID_REQUEST,
-                    )
-                )
-            return RefStrings.Ok(listOf(single))
+            return RefStrings.Ok(listOf(checkNotNull(params.paramString(PARAM_CONCEPT_REF))))
         }
         if (singular.isNotEmpty()) {
             return RefStrings.Err(

@@ -133,6 +133,25 @@ class McpToolParameterOptionalityTest {
     }
 
     @Test
+    fun `an operation-scoped rejection names the operation that requires the parameters`() {
+        assertEquals(
+            "childRole is required for ADD CHILD. Retry with childRole set to R. This tool spells it " +
+                "'childRole'; a value sent as 'role' never reaches it.",
+            missingParametersMessage("mps_mcp_update_node", listOf(RequiredParameter("childRole", "", "R")), "ADD CHILD"),
+        )
+        assertEquals(
+            "nodeReference and childJson are required for ADD CHILD. Retry with nodeReference set to N " +
+                "(not 'parentRef'/'nodeRef'); childJson set to J (not 'json'). A value sent under another " +
+                "name never reaches this tool.",
+            missingParametersMessage(
+                "mps_mcp_update_node",
+                listOf(RequiredParameter("nodeReference", "", "N"), RequiredParameter("childJson", "", "J")),
+                "ADD CHILD",
+            ),
+        )
+    }
+
+    @Test
     fun `a tool-qualified near-miss entry overrides the shared one`() {
         assertEquals(listOf("moduleName", "moduleReference"), RequiredParameterNearMisses.of("mps_mcp_create_module", "name"))
         assertEquals(listOf("nodeName", "rootName"), RequiredParameterNearMisses.of("mps_mcp_create_root_node", "name"))

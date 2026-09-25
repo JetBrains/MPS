@@ -1614,6 +1614,112 @@ class McpToolInputSchemasTest {
         assertTrue("nodeRef" in composed.accepted)
     }
 
+    // ---- required parameters-blob keys (study defect D49) ----
+
+    private val requiredDemoKeys = ParameterKeys.of(
+        required(PARAM_CONCEPT_REF, "C"), "role", required("position", "P"), required(PARAM_NODE_REFERENCE, "N"),
+    )
+
+    @Test
+    fun requiredKeysAreAcceptedKeysAndComposeInDeclarationOrder() {
+        assertEquals(listOf("conceptRef", "role", "position", "nodeReference"), requiredDemoKeys.canonical)
+        assertTrue("conceptReference" in requiredDemoKeys.accepted)
+        val composed = ParameterKeys.of(required("scope", "S")) + requiredDemoKeys
+        assertEquals(listOf("scope", "conceptRef", "position", "nodeReference"), composed.required.map { it.name })
+    }
+
+    @Test
+    fun aChoiceBetweenKeysNeedsOneAndKeepsTheKeysWhereTheyWereListed() {
+        val keys = ParameterKeys.of("a", "b", "c", requiredOneOf("a", PARAM_NODE_REFERENCE, expected = "A or N"))
+        assertEquals(listOf("a", "b", "c", "nodeReference"), keys.canonical)
+        assertEquals(listOf("one of a/nodeReference"), keys.required.map { it.name })
+        params("""{"nodeRef":"N"}""").rejectMissingParameterKeys("OP", keys)
+        val failure = catchMissingKeys { params("""{"a":null,"b":1}""").rejectMissingParameterKeys("OP", keys) }
+        assertEquals(
+            "one of a/nodeReference is required in 'parameters' for OP. Retry with one of a/nodeReference set to A or N.",
+            failure.message,
+        )
+        assertEquals(mapOf("missingParameters" to listOf("one of a/nodeReference")), failure.details)
+    }
+
+    @Test
+    fun aConditionalKeyIsRequiredOnlyWithItsTriggerAndNotWithItsReplacement() {
+        val keys = ParameterKeys.of(
+            "parent", "model",
+            required("role", "R", onlyWith = BlobKey("parent")),
+            required("property", "P", unlessWith = BlobKey("model")),
+        )
+        fun missing(json: String): List<Any?> = try {
+            params(json).rejectMissingParameterKeys("OP", keys)
+            emptyList()
+        } catch (e: ToolInputSchemaException) {
+            e.details.getValue("missingParameters") as List<*>
+        }
+        assertEquals(listOf("property"), missing("{}"))
+        assertEquals(listOf("role", "property"), missing("""{"parent":"p"}"""))
+        assertEquals(listOf("role"), missing("""{"parent":"p","model":"m"}"""))
+        assertEquals(emptyList<Any?>(), missing("""{"parent":null,"model":"m"}"""))
+    }
+
+    @Test
+    fun everyAbsentRequiredKeyIsNamedInOneRejection() {
+        val failure = catchMissingKeys { params("""{"role":"r"}""").rejectMissingParameterKeys("MOVE_CHILD", requiredDemoKeys) }
+        assertEquals(
+            "conceptRef, position and nodeReference are required in 'parameters' for MOVE_CHILD. " +
+                "Retry with conceptRef set to C; position set to P; nodeReference set to N.",
+            failure.message,
+        )
+        assertEquals(mapOf("missingParameters" to listOf("conceptRef", "position", "nodeReference")), failure.details)
+    }
+
+    @Test
+    fun aSingleAbsentRequiredKeyUsesTheSingularForm() {
+        val failure = catchMissingKeys {
+            params("""{"conceptRef":"X","nodeRef":"N"}""").rejectMissingParameterKeys("MOVE_CHILD", requiredDemoKeys)
+        }
+        assertEquals("position is required in 'parameters' for MOVE_CHILD. Retry with position set to P.", failure.message)
+    }
+
+    @Test
+    fun aRequiredKeyIsAbsentOnlyWhenNoSpellingCarriesANonNullValue() {
+        // An alias, an empty string, an ill-typed value and two spellings at once are all present:
+        // each is left to the typed read, so none of them can hide a key that really is absent.
+        for (json in listOf(
+            """{"conceptReference":"X","position":0,"nodeRef":"N"}""",
+            """{"conceptRef":"","position":"end","nodeReference":{}}""",
+            """{"conceptRef":["X"],"position":0,"nodeReference":"N","nodeRef":"N"}""",
+        )) {
+            params(json).rejectMissingParameterKeys("MOVE_CHILD", requiredDemoKeys)
+        }
+        val failure = catchMissingKeys {
+            params("""{"conceptRef":null,"conceptReference":null,"position":0,"nodeRef":"N"}""")
+                .rejectMissingParameterKeys("MOVE_CHILD", requiredDemoKeys)
+        }
+        assertEquals(mapOf("missingParameters" to listOf("conceptRef")), failure.details)
+    }
+
+    @Test
+    fun aRequiredReadOfAnUndeclaredAbsentKeyIsAProgrammingError() {
+        try {
+            params("{}").requiredParamString(PARAM_CONCEPT_REF)
+            fail("expected IllegalStateException")
+        } catch (e: IllegalStateException) {
+            assertTrue(e.message, e.message!!.contains("'conceptRef' is read as required"))
+        }
+        assertEquals("X", params("""{"conceptReference":"X"}""").requiredParamString(PARAM_CONCEPT_REF))
+        assertEquals(3, params("""{"position":"3"}""").requiredParamInt("position"))
+    }
+
+    private fun catchMissingKeys(block: () -> Unit): ToolInputSchemaException {
+        try {
+            block()
+        } catch (e: ToolInputSchemaException) {
+            return e
+        }
+        fail("expected ToolInputSchemaException")
+        throw AssertionError()
+    }
+
     @Test
     fun assignableReferencesKeysMirrorTheRequestDataClass() {
         // GET_ASSIGNABLE_REFERENCES is the one operation whose blob Gson deserializes whole, so

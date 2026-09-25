@@ -110,3 +110,25 @@ Two consequences worth knowing:
 
 A field-level JSON `null` counts as absent for this check too: `{"cardinality": null}` carries no
 value, so it is not reported.
+
+### Every missing required blob key is reported at once
+
+In `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure` and
+`mps_mcp_alter_structure`, once no unknown key is left, the operation checks the keys it requires
+and answers **every absent one in a single `INVALID_REQUEST`** — `nodeReference and childRole are
+required in 'parameters' for MOVE_CHILD. Retry with nodeReference set to …; childRole set to ….` —
+repeating them in `details.missingParameters`, as a top-level rejection does. A key is absent when
+no accepted spelling carries a non-null value; an empty string or a value of the wrong type counts
+as present and gets the operation's own error instead.
+
+Alternative forms are part of the same check:
+
+- A choice between keys is named `one of a/b`: `one of conceptRef/conceptRefs` for FIND_INSTANCES,
+  `one of conceptsJson/interfaceConceptsJson/conceptNames` for CREATE_CONCEPTS, and
+  `one of newParentRef/modelReference` for MOVE_NODE_TO_PARENT.
+- MOVE_NODE_TO_PARENT requires `role` only together with `newParentRef`.
+- GET_ENUMERATION_LITERALS requires `nodeReference` and `propertyName` only without `enumerationRef`.
+
+Two operations keep their own rejections: MAKE answers `MAKE_INPUT_INVALID` with an
+`expectedParameters` map, and `mps_mcp_parse_java_and_insert` validates its object as a blueprint,
+reporting `Missing 'parameters.<key>'` for one key per call.

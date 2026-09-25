@@ -38,6 +38,7 @@ import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.After
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -166,6 +167,29 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
 
     protected fun <T> readOnRepo(block: () -> T): T =
         myProject.modelAccess.computeReadAction<T> { block() }
+
+    /** [response] is the missing-key rejection (study D49) listing exactly [expected], in order. */
+    protected fun assertMissingParameterKeys(response: String, expected: List<String>) {
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        assertEquals(expected, envelope.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
+    }
+
+    /**
+     * [response], to a call carrying every required key but only unresolvable values, got past the
+     * missing-key check and failed on resolution — not internally, which is what a key read as
+     * required without being declared so produces.
+     */
+    protected fun assertPastMissingParameterKeys(operation: String, response: String) {
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("$operation must not succeed on unresolvable input: $response", envelope.get("ok").asBoolean)
+        assertFalse(
+            "$operation must not reject its required keys as missing: $response",
+            envelope.getAsJsonObject("details")?.has("missingParameters") == true,
+        )
+        assertFalse("$operation must not fail internally: $response", envelope.get("code")?.asString == "INTERNAL_ERROR")
+    }
 
     /**
      * Blocks until [project] leaves dumb mode and its file indexes are ready, so a following

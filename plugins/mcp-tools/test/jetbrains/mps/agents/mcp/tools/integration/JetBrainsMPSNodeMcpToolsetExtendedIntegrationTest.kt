@@ -669,7 +669,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     fun `alter_nodes MOVE_CHILD rejects a fractional position instead of truncating it`() {
         // `?.asInt` truncated 1.5 to 1 and moved the child there; the typed reader rejects it by
         // name. The companion case — an explicit `null` — used to throw out of `?.asInt` and
-        // answer INTERNAL_ERROR; it now reads as absent, i.e. "position is missing" here.
+        // answer INTERNAL_ERROR; it now reads as absent, i.e. "position is required" here.
         val parentRef = createConceptRoot("MoveHostFraction")
         addPropertyChild(parentRef, "x", "string")
         addPropertyChild(parentRef, "y", "string")
@@ -683,7 +683,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
 
         for ((position, expected) in listOf(
             "1.5" to "must be an integer",
-            "null" to "is missing",
+            "null" to "position is required",
             // gson's asInt wrapped this to -2147483648, which then hit the negative-position
             // branch and answered "position -2147483648 is invalid" — about a number the caller
             // never sent.
@@ -966,7 +966,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
                 """{ "nodeReference": "$ref" }""",
             )
         }
-        assertTrue(expectErr(response).contains("Either 'newParentRef' or 'modelReference'"))
+        assertTrue(expectErr(response).contains("one of newParentRef/modelReference is required"))
     }
 
     // ── alter_nodes: MAKE input validation ─────────────────────────────────────────
@@ -2077,16 +2077,17 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val cases = listOf(
             Case(runTool(toolset) {
                 it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, childRole = "r", childJson = "{}")
-            }, "nodeReference", "parentRef/nodeRef"),
+            }, "nodeReference", "'parentRef'/'nodeRef'"),
             Case(runTool(toolset) {
                 it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = "r:x(y)/1", childJson = "{}")
-            }, "childRole", "role"),
+            }, "childRole", "'role'"),
             Case(runTool(toolset) {
                 it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = "r:x(y)/1", childRole = "r")
-            }, "childJson", "json"),
+            }, "childJson", "'json'"),
+            // nodeReference is a real update_node parameter, so it is named as ignored, not as a near-miss.
             Case(runTool(toolset) {
                 it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD)
-            }, "childNodeRef", "childNodeReference/nodeReference"),
+            }, "childNodeRef", "'childNodeReference'/'target'"),
             Case(runTool(toolset) {
                 it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY)
             }, "properties", null),
@@ -2102,6 +2103,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             val error = obj.get("error").asString
             assertTrue("$error must name '$key'", error.contains(key))
             assertTrue("$error must offer the retry line", error.contains("Retry with $key set to"))
+            assertEquals(listOf(key), obj.getAsJsonObject("details").getAsJsonArray("missingParameters").map { it.asString })
             if (nearMiss != null) {
                 assertTrue("$error must name the near-miss spelling '$nearMiss'", error.contains(nearMiss))
             }
