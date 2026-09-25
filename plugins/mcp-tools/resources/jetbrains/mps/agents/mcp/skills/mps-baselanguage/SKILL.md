@@ -17,6 +17,7 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 - **Node equality**: always use `:eq:` and `:ne:` (concepts `NPEEqualsExpression` / `NPENotEqualsExpression`). Never `==` or `.equals()` between SNode references.
 - **Constructor return type**: `ConstructorDeclaration.returnType` MUST be a `VoidType` node. Leaving it empty fails validation.
 - **`ClassCreator` wiring**: `ClassCreator.baseMethodDeclaration` points at the **constructor declaration**, not the class. `InstanceMethodCallOperation.baseMethodDeclaration` points at the **method declaration**.
+- **`new …` is a `GenericNewExpression` plus a creator**: the `GenericNewExpression` is the `Expression`; its `creator` child is `ClassCreator`, `ArrayCreator`, `ArrayCreatorWithInitializer`, `AnonymousClassCreator`, a collections creator, or smodel `SNodeCreator` (`new node<C>()`). Creators are `AbstractCreator`s, not `Expression`s, so none of them can stand alone in `ReturnStatement.expression`, an argument, or an initializer.
 - **Inherited methods**: use the **declaring class** ref for `baseMethodDeclaration`, not the subclass that calls the method. E.g. `addActionListener` is declared on `AbstractButton`, so use the `AbstractButton` class ref.
 - **Expressions in statement lists**: any `Expression` must be wrapped in `ExpressionStatement` to be valid inside a `StatementList`.
 - **Variable declarations**: in method bodies wrap `LocalVariableDeclaration` in `LocalVariableDeclarationStatement`. In `ForStatement.variable` use `LocalVariableDeclaration` directly, no wrapper.
@@ -57,7 +58,7 @@ Pick the right authoring tool before you start:
 ## Reference Index
 
 - Open `references/concept-mapping.md` when you need the Java-syntax → MPS-concept lookup table and the key role names (statements, expressions, types, declarations).
-- Open `references/json-patterns.md` when you need ready-to-paste JSON blueprints for common constructs (local variable, node-equality, instance-method call, anonymous class, array creation, super-constructor call, empty class template).
+- Open `references/json-patterns.md` when you need ready-to-paste JSON blueprints for common constructs (local variable, node-equality, instance-method call, anonymous class, array creation (sized or with initializer), super-constructor call, empty class template).
 - Open `references/critical-rules.md` when something fails validation and you want the rulebook on `ExpressionStatement`, `ClassCreator`, anonymous classes, mandatory bodies, `FieldReferenceOperation`, etc.
 - Open `references/parse-java-tips.md` when using `mps_mcp_parse_java_and_insert` and you need binary-expression priority handling, placeholder strategy, or post-insert verification steps.
 - Open `references/stub-references.md` when you need to point a `baseMethodDeclaration` at a JDK or library member — covers ref derivation, URL encoding, inherited-method handling, and the GET_ASSIGNABLE_REFERENCES fallback.

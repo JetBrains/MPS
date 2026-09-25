@@ -266,10 +266,11 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `get-concept-details emits a featureId and sourceNode on each property reference and child`() {
         // The id-harvesting fix: every property/reference/child entry must carry the encoded
-        // featureId (so $PROPERTY$/SPropertyAccess can be built without deep print_node calls) and
-        // the declaration's persistent sourceNode ref. ConceptDeclaration is a rich fixture — it
-        // has properties (e.g. `abstract`, `final`), references, and children — so the union of the
-        // three arrays is guaranteed non-empty.
+        // featureId (the id a $PROPERTY$/$REF$ macro stores) and the declaration's persistent
+        // sourceNode ref (the SPropertyAccess/SLinkAccess target), so neither needs deep print_node
+        // calls. ConceptDeclaration is a rich fixture — it has properties (e.g. `abstract`,
+        // `final`), references, and children — so the union of the three arrays is guaranteed
+        // non-empty.
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
             it.mps_mcp_get_concept_details(
                 conceptRefs = listOf("jetbrains.mps.lang.structure.structure.ConceptDeclaration"),
@@ -284,7 +285,7 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         for (feature in features) {
             val name = feature.get("name").asString
             assertTrue(
-                "feature '$name' must carry a featureId so macros/smodel accesses can be built without deep print_node",
+                "feature '$name' must carry a featureId so macros can be built without deep print_node",
                 feature.has("featureId")
             )
             val featureId = feature.get("featureId").asString

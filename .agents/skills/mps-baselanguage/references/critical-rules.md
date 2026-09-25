@@ -19,7 +19,7 @@ Rules that, if violated, make the AST fail structural / assignability / typesyst
 
 ## ClassCreator
 * **`ClassCreator` is minimal**: Only needs the `baseMethodDeclaration` reference (pointing to the constructor) plus `actualArgument` children. No `classifier` or other references are required.
-* **Must be wrapped**: `ClassCreator` cannot stand alone as an expression — it must appear as the `creator` child of a `GenericNewExpression`. The same wrapping rule applies to `ArrayCreator` and `AnonymousClassCreator`.
+* **Must be wrapped**: `ClassCreator` cannot stand alone as an expression — it must appear as the `creator` child of a `GenericNewExpression`. The same wrapping rule applies to every `AbstractCreator` subconcept: `ArrayCreator`, `ArrayCreatorWithInitializer`, `AnonymousClassCreator`, the collections creators, and smodel `SNodeCreator`.
 
 ## Inherited Methods
 * Use the **declaring class** ref for `baseMethodDeclaration`, not the subclass.

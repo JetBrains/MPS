@@ -26,6 +26,7 @@ Use this lookup when constructing JSON blueprints for BaseLanguage code. Every J
 | `int` / `boolean` / `void` | `IntegerType` / `BooleanType` / `VoidType` | (Primitive types)                                                    |
 | `String` / `MyClass`       | `StringType` / `ClassifierType` | `classifier` (for ClassifierType)                                    |
 | `new int[N]`               | `GenericNewExpression` | `creator` -> `ArrayCreator` (`componentType`, `dimensionExpression`) |
+| `new T[]{a, b}`            | `GenericNewExpression` | `creator` -> `ArrayCreatorWithInitializer` (`componentType`, `initValue` 0..n) |
 | `i++` / `++i`              | `PostfixIncrementExpression` / `PrefixIncrementExpression` | `expression`                                                         |
 | `123` / `"..."` / `null`   | `IntegerConstant` / `StringLiteral` / `NullLiteral` | `value` (for constants/literals)                                     |
 | `true` / `false`           | `BooleanConstant` | `value`                                                              |

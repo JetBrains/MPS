@@ -131,8 +131,8 @@ Each item in these three arrays carries the identifiers needed to reference the 
 }
 ```
 
-- **`featureId`** is the exact value to paste into a `$PROPERTY$` macro's `propertyId`, or to encode smodel `SPropertyAccess` / `SLinkAccess` targets.
-- **`sourceNode`** is the `r:...(...structure)/<id>` form. That is the correct *kind* of ref when another API expects a structure declaration node (for example `applicableConcept`), but this particular feature-declaration ref is informational only and is not itself a valid `applicableConcept` target. It is omitted when the feature has no resolvable declaration (rare; e.g. a hollow descriptor).
+- **`featureId`** is the encoded id an attribute stores — a `$PROPERTY$` macro's `propertyId`, a `$REF$` macro's `linkId` — taken from the concept of the node the macro is attached to. It is not a node ref: as a blueprint reference `target` it becomes a dynamic reference that never resolves, silently — the insert and its dry run succeed; only `fixReferences.stillBroken` and `mps_mcp_check_root_node_problems` show it.
+- **`sourceNode`** is the feature declaration's persistent ref, `r:...(...structure)/<id>`. Paste it as the `target` of smodel feature access — `SPropertyAccess.property`, `SLinkAccess.link`, `SLinkListAccess.link`. An inherited feature's `sourceNode` is in the declaring concept's model (`name` → `jetbrains.mps.lang.core.structure`). It is not an `applicableConcept` target; that takes the concept's own `sourceNode`. It is omitted when the feature has no resolvable declaration (rare; e.g. a hollow descriptor).
 
 ## Stale runtime descriptors (`descriptorStatus: "hollow"`)
 

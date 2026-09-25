@@ -66,7 +66,7 @@ A closure body may use **either** `return` **or** `yield`, never both. A closure
   ```
   new sequence<node<T>>({ => ... yield expr; ... })
   ```
-  `GenericNewExpression` with a `SequenceType` creator and a single `ClosureLiteral` argument. (There is no `new` on closure literals themselves — only on collection types wrapping them.)
+  `GenericNewExpression` whose `creator` is a `SequenceCreator` with a single `ClosureLiteral` argument. (There is no `new` on closure literals themselves — only on collection types wrapping them.)
 
 ## SAM auto-conversion
 

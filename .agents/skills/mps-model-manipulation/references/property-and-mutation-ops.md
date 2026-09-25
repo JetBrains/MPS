@@ -1,6 +1,6 @@
 # Property Access and Tree Mutation Operations
 
-Property reads/writes, the seven `SNodeCreator` / `add new` / `set new` / `replace with new` mutation operations, and the `NF_*` factory-initialized variants. All sit in the `operation` role of a `DotExpression` (except `SNodeCreator` which is standalone).
+Property reads/writes, the seven `SNodeCreator` / `add new` / `set new` / `replace with new` mutation operations, and the `NF_*` factory-initialized variants. All sit in the `operation` role of a `DotExpression`, except `SNodeCreator`, which is the `creator` of a `GenericNewExpression`.
 
 ## Property access and assignment
 
@@ -18,6 +18,8 @@ Property reads/writes, the seven `SNodeCreator` / `add new` / `set new` / `repla
   ]
 }
 ```
+
+`<PropertyDeclaration-noderef>` is the property's `sourceNode` from `mps_mcp_get_concept_details` on the operand's concept, not the concept's own `sourceNode` and not `featureId`. An inherited property lives in the declaring concept's model: `name` is `r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001`.
 
 ### `node.propertyName = value` — assignment
 
@@ -71,22 +73,25 @@ All sit in the `operation` role of a `DotExpression` on the target node or link.
 
 ### `new node<C>()` — bare node factory expression
 
-`SNodeCreator` is a **top-level Expression**, not a DotExpression operation. The concept to create is carried by a child `createdType` of concept `SNodeType`:
+`SNodeCreator` is neither a DotExpression operation nor an `Expression`: like every `AbstractCreator` it is the `creator` child of a `GenericNewExpression`. The concept to create is carried by a `createdType` child of concept `SNodeType`:
 
 ```json
 {
-  "concept": "jetbrains.mps.lang.smodel.structure.SNodeCreator",
-  "children": [{
-    "role": "createdType",
-    "nodes": [{
-      "concept": "jetbrains.mps.lang.smodel.structure.SNodeType",
-      "references": [{ "role": "concept", "target": "<ConceptDeclaration-noderef>" }]
+  "concept": "jetbrains.mps.baseLanguage.structure.GenericNewExpression",
+  "children": [{ "role": "creator", "nodes": [{
+    "concept": "jetbrains.mps.lang.smodel.structure.SNodeCreator",
+    "children": [{
+      "role": "createdType",
+      "nodes": [{
+        "concept": "jetbrains.mps.lang.smodel.structure.SNodeType",
+        "references": [{ "role": "concept", "target": "<ConceptDeclaration-noderef>" }]
+      }]
     }]
-  }]
+  }]}]
 }
 ```
 
-Optional `prototypeNode` child (Expression) supplies a node to copy from. For **initialized** factories (the `new node<C>() { ... }` block form), use `SNodeCreatorAndInitializer` from `jetbrains.mps.lang.actions` instead.
+Optional `prototypeNode` child (Expression) supplies a node to copy from. For **initialized** factories (`new initialized node<C>()`, which runs the concept's node factory), use `SNodeCreatorAndInitializer` from `jetbrains.mps.lang.actions` instead (a subconcept of `SNodeCreator`, wrapped the same way).
 
 ### `node.linkList.add new(C)` — create & append a child to a 0..n link
 
@@ -112,7 +117,7 @@ Optional `prototypeNode` child (Expression) supplies a node to copy from. For **
 }
 ```
 
-Omit the `concept` reference to default to the link's declared target concept. For the initializer-block form (`add new(C) { … }`), use `NF_LinkList_AddNewChildOperation` — it has the same reference plus a child holding the closure block.
+Omit the `concept` reference to default to the link's declared target concept. For `add new initialized(C)`, which runs the concept's node factory, use `NF_LinkList_AddNewChildOperation` — same shape, same `concept` reference.
 
 ### `node.link.set new(C)` — create & set a 0..1 child
 
