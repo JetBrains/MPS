@@ -80,9 +80,11 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         // Copy-pasteable retry lines (study remedy M5b). Both observed incidents showed the agent
         // fetching the tool schema even though the rejection already named the right key, so the
         // message ends with the literal edit to make rather than only the key's name.
-        const val RETRY_WITH_CONCEPT_REFS =
-            "Retry with conceptRefs set to the value you passed as conceptRef/conceptReference " +
-                    "(or languageRefs for languageRef/languageReference)."
+        private val CONCEPT_REFS_NEAR_MISSES = RequiredParameterNearMisses.of("mps_mcp_get_concept_details", "conceptRefs")
+        private val LANGUAGE_REFS_NEAR_MISSES = RequiredParameterNearMisses.of("mps_mcp_get_concept_details", "languageRefs")
+        val RETRY_WITH_CONCEPT_REFS =
+            "Retry with conceptRefs set to the value you passed as ${CONCEPT_REFS_NEAR_MISSES.joinToString("/")} " +
+                    "(or languageRefs for ${LANGUAGE_REFS_NEAR_MISSES.joinToString("/")})."
         const val RETRY_WITH_SEARCH_TEXTS =
             "Retry with searchTexts set to the value you passed as query/q/text."
 
@@ -139,7 +141,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             // Study D27: the singular 'conceptRef' is the *canonical* key inside the parameters
             // blob of the blob-taking tools (PARAM_CONCEPT_REF), so guessing it here is natural.
             // The round-3 wording named only the '-erence' spellings and so never echoed the key
-            // the caller had actually sent; all four near-misses are listed now.
+            // the caller had actually sent. The spellings now come from RequiredParameterNearMisses,
+            // which D56 widened with the blueprint-style 'concept'/'conceptName'/'conceptNames'.
             // Recorded because this returns before withMpsProject, the only other call site
             // that reports the envelope to the call log (see McpCallOutcomes) — D27's entire
             // rejection path runs through here, so leaving it unrecorded would log every one of
@@ -148,8 +151,9 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 errJson(
                     "No concepts nor languages have been provided. This tool takes the plural " +
                             "'conceptRefs' and/or 'languageRefs' (a single value or a JSON array of them). " +
-                            "The singular near-misses 'conceptRef'/'conceptReference'/'languageRef'/" +
-                            "'languageReference' are not recognised here; 'conceptRef' is the canonical " +
+                            "The near-misses " +
+                            (CONCEPT_REFS_NEAR_MISSES + LANGUAGE_REFS_NEAR_MISSES).joinToString("/") { "'$it'" } +
+                            " are not recognised here; 'conceptRef' is the canonical " +
                             "key inside the parameters blob of the blob-taking tools, which is what makes " +
                             "it a natural guess. " + RETRY_WITH_CONCEPT_REFS,
                     McpErrorCode.INVALID_REQUEST,

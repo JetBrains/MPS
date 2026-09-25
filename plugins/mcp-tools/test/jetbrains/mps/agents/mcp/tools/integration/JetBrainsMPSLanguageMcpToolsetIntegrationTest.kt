@@ -460,15 +460,20 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `get-concept-details rejects every singular near-miss with a copy-pasteable retry line`() {
-        // M5b, widened for study D27. None of these four spellings is a declared parameter, so the
-        // bridge drops the unknown request key and the Kotlin default applies — every one of them
-        // arrives here as "no input at all", and the message cannot know which was sent. It
-        // therefore has to name all four; the round-3 wording listed only the '-erence' pair, so a
-        // caller who sent `conceptRef` (the canonical key inside the blob-taking tools) never saw
-        // their own spelling. The singular quoting matters: 'conceptRef' without the quotes is a
-        // substring of the 'conceptRefs' this same message names, so it would assert nothing.
-        for (nearMiss in listOf("conceptRef", "conceptReference", "languageRef", "languageReference")) {
+    fun `get-concept-details rejects every near-miss with a copy-pasteable retry line`() {
+        // M5b, widened for study D27 and aligned with RequiredParameterNearMisses for D56. None of
+        // these spellings is a declared parameter, so the bridge drops the unknown request key and
+        // the Kotlin default applies — every one of them arrives here as "no input at all", and the
+        // message cannot know which was sent. It therefore has to name all of them; the round-3
+        // wording listed only the '-erence' pair, so a caller who sent `conceptRef` (the canonical
+        // key inside the blob-taking tools) never saw their own spelling. The quoting matters:
+        // 'conceptRef' without the quotes is a substring of the 'conceptRefs' this same message
+        // names, and 'conceptName' of 'conceptNames', so it would assert nothing.
+        val nearMisses = listOf(
+            "conceptRef", "conceptReference", "concept", "conceptName", "conceptNames",
+            "languageRef", "languageReference",
+        )
+        for (nearMiss in nearMisses) {
             val response = callThroughBridge(
                 JetBrainsMPSLanguageMcpToolset(),
                 "mps_mcp_get_concept_details",
@@ -485,7 +490,8 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertTrue(
                 "the message must end with a copy-pasteable retry line: $error",
                 error.contains(
-                    "Retry with conceptRefs set to the value you passed as conceptRef/conceptReference " +
+                    "Retry with conceptRefs set to the value you passed as " +
+                            "conceptRef/conceptReference/concept/conceptName/conceptNames " +
                             "(or languageRefs for languageRef/languageReference)."
                 ),
             )

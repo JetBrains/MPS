@@ -35,6 +35,7 @@ object RequiredParameterNearMisses {
     val byParameter: Map<String, List<String>> = mapOf(
         "concept" to listOf("conceptName", "conceptRef"),
         "conceptRef" to listOf("conceptReference", "concept", "conceptName"),
+        "conceptRefs" to listOf("conceptRef", "conceptReference", "concept", "conceptName", "conceptNames"),
         "facetType" to listOf("facet", "type"),
         "historyNodeReference" to listOf("nodeReference", "historyNode", "historyRef"),
         "intentionId" to listOf("intention", "intentionName", "id"),
@@ -43,6 +44,7 @@ object RequiredParameterNearMisses {
         "childRole" to listOf("role"),
         "json" to listOf("blueprint", "nodeJson", "jsonBlueprint"),
         "kind" to listOf("type", "languageKind"),
+        "languageRefs" to listOf("languageRef", "languageReference"),
         "modelName" to listOf("name", "model"),
         "modelReference" to listOf("modelRef", "model", "modelName"),
         "moduleName" to listOf("moduleReference", "moduleRef", "module"),
