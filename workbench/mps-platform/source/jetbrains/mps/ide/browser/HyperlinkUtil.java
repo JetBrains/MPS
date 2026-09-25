@@ -34,7 +34,7 @@ public final class HyperlinkUtil {
     editorPane.setEditable(false);
     editorPane.addHyperlinkListener(e -> {
       if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-        BrowserUtil.launchBrowser(url);
+        BrowserUtil.browse(url);
       }
     });
     editorPane.setFocusable(false);

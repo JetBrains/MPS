@@ -147,7 +147,7 @@ public abstract class BaseStep extends StepAdapter {
   private static void launchBrowserAction(String cmd, String prefix) {
     if (cmd != null && cmd.trim().length() > 0) {
       try {
-        BrowserUtil.launchBrowser(prefix + cmd.trim());
+        BrowserUtil.browse(prefix + cmd.trim());
       } catch (IllegalThreadStateException ex) {/* not a problem */}
     }
   }
