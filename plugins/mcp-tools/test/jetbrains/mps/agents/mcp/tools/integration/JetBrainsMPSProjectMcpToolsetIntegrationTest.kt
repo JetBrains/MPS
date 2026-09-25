@@ -219,6 +219,37 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("NOT_FOUND", obj.get("code").asString)
+        assertFalse(
+            "a genuinely unknown name must not be reported as filtered out: $response",
+            obj.get("error").asString.contains("filtered out"),
+        )
+    }
+
+    @Test
+    fun `get-project-structure names includeStubModules for a library model or module starting point`() {
+        for ((startingPoint, kind) in listOf(
+            "jetbrains.mps.lang.core.structure" to "model",
+            "jetbrains.mps.lang.core" to "module",
+        )) {
+            val response = runTool(JetBrainsMPSProjectMcpToolset()) {
+                it.mps_mcp_get_project_structure(startingPoint = startingPoint)
+            }
+
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+            assertEquals("NOT_FOUND", obj.get("code").asString)
+            val error = obj.get("error").asString
+            assertTrue(
+                "a library $kind must be reported as filtered out, naming includeStubModules: $error",
+                error.contains("resolved to a non-project $kind and was filtered out") &&
+                    error.contains("'includeStubModules' to true"),
+            )
+
+            val included = runTool(JetBrainsMPSProjectMcpToolset()) {
+                it.mps_mcp_get_project_structure(startingPoint = startingPoint, includeStubModules = true)
+            }
+            assertEquals(startingPoint, readJsonObjectFromOkPath(included).get("name").asString)
+        }
     }
 
     @Test

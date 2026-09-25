@@ -204,10 +204,20 @@ class JetBrainsMPSProjectMcpToolset(
                                 maxInlineBytes
                             )
                         }
-                        return@executeShortReadOnEdt errJson(
-                            "Starting point '$startingPoint' resolved to a non-project module and was filtered out. Set 'includeStubModules' to true to include read-only libraries/stubs and modules from other open MPS projects.",
-                            McpErrorCode.NOT_FOUND
-                        )
+                        return@executeShortReadOnEdt filteredOutStartingPoint(startingPoint, "module")
+                    }
+
+                    // A library/stub model or module (e.g. `jetbrains.mps.scope`) is only looked up
+                    // project-first above; say it exists instead of reporting it as unknown, so the
+                    // caller does not have to guess that includeStubModules was the missing flag.
+                    if (!includeStubModules) {
+                        val repository = mpsProject.repository
+                        when {
+                            resolveModel(repository, startingPoint) != null ->
+                                return@executeShortReadOnEdt filteredOutStartingPoint(startingPoint, "model")
+                            resolveModule(repository, startingPoint) != null ->
+                                return@executeShortReadOnEdt filteredOutStartingPoint(startingPoint, "module")
+                        }
                     }
 
                     errJson("Starting point '$startingPoint' not found", McpErrorCode.NOT_FOUND)
@@ -246,6 +256,11 @@ class JetBrainsMPSProjectMcpToolset(
             }
         }
     }
+
+    private fun filteredOutStartingPoint(startingPoint: String, kind: String): String = errJson(
+        "Starting point '$startingPoint' resolved to a non-project $kind and was filtered out. Set 'includeStubModules' to true to include read-only libraries/stubs and modules from other open MPS projects.",
+        McpErrorCode.NOT_FOUND
+    )
 
     private fun moduleToJson(
         project: MPSProject,

@@ -19,6 +19,7 @@ Library (import from a sibling script, see concept_shape.py):
   children(node, role=None)            child nodes of one or of every containment role
   find(dump, concept=None, name=None)  matching nodes at any depth
   shape(concept_details, concept=None) one entry per property / reference / child role
+  dump_kind(dump)                      concept-details, node, model, module, project, empty, unknown
 
 CLI:
 
@@ -30,7 +31,10 @@ CLI:
 
 stdout carries the table (capped by --max-lines) followed by a one-line JSON summary; the
 full table is always written to a file under the system temp directory, whose path is in
-that summary. Exit codes: 0 ok, 2 usage, 3 bad input.
+that summary. Exit codes: 0 ok, 2 usage, 3 bad input. A dump of the wrong kind for the
+subcommand (`shape` on a node or model dump, `roots` / `node` / `count` on a concept-details
+dump) is bad input, and the message names the subcommand that reads it; a dump of the right
+kind with nothing matching still exits 0 with a zero count.
 
 Enum properties: `mps_mcp_print_node` emits the declared literal name. Older dumps printed a
 set member as `<enumRef>/LITERAL`; this script still reduces that form to `LITERAL`. A
@@ -139,6 +143,49 @@ def roots(dump):
 
 def _is_node(value):
     return isinstance(value, dict) and "concept" in value
+
+
+def dump_kind(dump):
+    """What `dump` holds: concept-details, node, model, module, project, empty, or unknown."""
+    if concept_entries(dump):
+        return "concept-details"
+    if isinstance(dump, list):
+        if not dump:
+            return "empty"
+        return "node" if any(_is_node(n) for n in dump) else "unknown"
+    if isinstance(dump, dict):
+        if "rootNodes" in dump or "rootNodesCount" in dump:
+            return "model"
+        if "models" in dump or "modelsCount" in dump:
+            return "module"
+        if "modules" in dump:
+            return "project"
+        if _is_node(dump):
+            return "node"
+    return "unknown"
+
+
+_KIND_LABELS = {
+    "concept-details": ("a get_concept_details concept dump", "shape"),
+    "node": ("a print_node / get_project_structure node dump", "node"),
+    "model": ("a get_project_structure model dump", "roots"),
+    "module": ("a get_project_structure module dump", "roots"),
+    "project": ("a get_project_structure project dump", "roots"),
+}
+
+
+def _require_kind(dump, wanted, command):
+    """Raises BadInput when `dump` is a recognised dump of a kind `command` does not read.
+
+    An empty or unrecognised payload passes, so a right-kind dump with nothing in it still
+    yields an ordinary zero count.
+    """
+    kind = dump_kind(dump)
+    if kind in wanted or kind not in _KIND_LABELS:
+        return
+    label, use = _KIND_LABELS[kind]
+    what = "concept entries" if command == "shape" else "nodes"
+    raise BadInput("no %s for `%s`: this looks like %s; use `%s` instead" % (what, command, label, use))
 
 
 # ── node projections ──────────────────────────────────────────────────────────────────
@@ -362,8 +409,12 @@ def _table(rows):
             for row in rows]
 
 
+_NODE_KINDS = ("node", "model", "module", "project")
+
+
 def _cmd_roots(args):
     dump = load(args.file)
+    _require_kind(dump, _NODE_KINDS, "roots")
     selected = [r for r in roots(dump) if args.concept is None
                 or _same_concept(r.get("concept"), args.concept)]
     lines = _table([(r.get("name") or "", r.get("concept") or "", r.get("reference") or "")
@@ -373,6 +424,7 @@ def _cmd_roots(args):
 
 def _cmd_count(args):
     dump = load(args.file)
+    _require_kind(dump, _NODE_KINDS, "count")
     counts = {}
     for root in roots(dump):
         counts[root.get("concept")] = counts.get(root.get("concept"), 0) + 1
@@ -382,6 +434,7 @@ def _cmd_count(args):
 
 def _cmd_node(args):
     dump = load(args.file)
+    _require_kind(dump, _NODE_KINDS, "node")
     details = load(args.concept_details) if args.concept_details else None
     node = node_by_key(dump, args.node)
     lines = ["%s : %s" % (node.get("name") or "<unnamed>", node.get("concept")),
@@ -408,7 +461,9 @@ def _cmd_node(args):
 
 
 def _cmd_shape(args):
-    shapes = shape(load(args.file), args.concept, args.all)
+    details = load(args.file)
+    _require_kind(details, ("concept-details",), "shape")
+    shapes = shape(details, args.concept, args.all)
     lines = []
     for entry in shapes:
         flags = [k for k, v in (("abstract", entry["abstract"]), ("rootable", entry["rootable"]))

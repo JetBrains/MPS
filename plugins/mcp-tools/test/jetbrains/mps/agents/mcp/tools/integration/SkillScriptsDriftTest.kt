@@ -116,6 +116,35 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
         }
     }
 
+    @Test
+    fun `mps_dump rejects a dump of the wrong kind and names the subcommand that reads it`() {
+        Python3.require()
+        val scriptDir = installSkills().resolve("mps-mcp-workflow").resolve("scripts")
+        val script = scriptDir.resolve("mps_dump.py").toString()
+        fun example(name: String) = scriptDir.resolve("examples").resolve(name).toString()
+
+        for ((args, use) in listOf(
+            listOf("shape", example("print_node_deep.json")) to "node",
+            listOf("shape", example("get_project_structure_model_roots.json")) to "roots",
+            listOf("roots", example("get_concept_details_courses.json")) to "shape",
+            listOf("count", example("get_concept_details_courses.json")) to "shape",
+            listOf("node", example("get_concept_details_courses.json"), "Course") to "shape",
+        )) {
+            val result = runPython(script, *args.toTypedArray(), "--quiet")
+            assertEquals("${args.joinToString(" ")} must fail as bad input, output: ${result.output}", 3, result.exitCode)
+            assertTrue(
+                "${args.joinToString(" ")} must name the subcommand to use, output: ${result.output}",
+                result.output.contains("use `$use` instead"),
+            )
+        }
+
+        val noMatch = runPython(script, "roots", example("get_project_structure_model_roots.json"), "--concept", "NoSuchConcept", "--quiet")
+        assertEquals("a right-kind dump with no match must still succeed, output: ${noMatch.output}", 0, noMatch.exitCode)
+        val summary = JsonParser.parseString(noMatch.output.trim()).asJsonObject
+        generatedFiles.add(Path.of(summary.get("file").asString))
+        assertEquals(0, summary.get("roots").asInt)
+    }
+
     /** Installs the bundled catalog into a fresh temp directory and returns its skills root. */
     private fun installSkills(): Path {
         val root = Files.createTempDirectory("mps-skill-scripts")

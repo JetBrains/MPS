@@ -165,7 +165,8 @@ python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json
 Then `mps_mcp_insert_root_node_from_json(modelReference=…, json="<that path>", dryRun=true)`
 and, once it is clean, the same call with `dryRun=false`. Run `--help` for the full mapping-spec
 reference, `--list-tools` for the tools and parameters it depends on; `scripts/examples/`
-holds a 40-row `courses.csv` with its matching `courses.map.json`.
+holds a 40-row `courses.csv` with its matching `courses.map.json`. This usage block plus
+`--help` are the contract: there is no need to read the script source or the examples first.
 
 No `python3` (typically Windows): author the array by hand as described in
 `references/json-format.md` — one object per row, `properties` entries omitted for empty cells
