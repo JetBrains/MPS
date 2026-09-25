@@ -802,10 +802,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         if (newChild == null) return errJson("Failed to instantiate child node from JSON", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
 
-        if (!role.isMultiple && !dryRun) {
-            parent.getChildren(role).forEach { it.delete() }
-        }
-
+        // Check before replacing the occupant of a single-cardinality role: MPS commands do not roll
+        // back, so a delete ahead of a failing check would stick.
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
             throw AssignabilityException(
                 jsonPath = "$",
@@ -814,6 +812,10 @@ abstract class AbstractNodeOps : AbstractOps() {
                 parentConcept = parent.concept.name,
                 role = role.name
             )
+        }
+
+        if (!role.isMultiple && !dryRun) {
+            parent.getChildren(role).forEach { it.delete() }
         }
 
         if (dryRun) {

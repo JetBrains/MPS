@@ -1307,6 +1307,44 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `add-node-child with a non-assignable concept on occupied single-cardinality role keeps the existing child`() {
+        // helpURL is a 0..1 child link on AbstractConceptDeclaration. A rejected ADD must not delete
+        // the occupant: the command wrapper commits even when the tool throws a user error.
+        val fooRef = createFooConcept()
+        val firstUrl = "https://example.org/first"
+
+        val firstAdd = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = fooRef, childRole = "helpURL", childJson = helpUrlJson(firstUrl))
+        }
+        assertOk(firstAdd)
+        val firstChildRef = parseChildRef(firstAdd)
+
+        val wrongConceptJson = """
+            {
+              "concept": "jetbrains.mps.lang.structure.structure.PropertyDeclaration",
+              "name": "notAHelpUrl"
+            }
+        """.trimIndent()
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = fooRef, childRole = "helpURL", childJson = wrongConceptJson)
+        }
+
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val msg = obj.get("error").asString
+        assertTrue("error should report the assignability mismatch: $msg", msg.contains("Concept assignability error"))
+
+        readOnRepo {
+            val foo = PersistenceFacade.getInstance().createNodeReference(fooRef)
+                .resolve(structureModel.repository)!!
+            val helpKids = foo.children.filter { it.containmentLink?.name == "helpURL" }
+            assertEquals("rejected ADD must leave the existing child in place", 1, helpKids.size)
+            assertEquals(firstUrl, helpKids.single().getPropertyByName("url"))
+            assertEquals(firstChildRef, PersistenceFacade.getInstance().asString(helpKids.single().reference))
+        }
+    }
+
+    @Test
     fun `add-node-child response carries data fixReferences with zero counts for a leaf insert`() {
         // EnumerationMemberDeclaration has no references, so performFixReferences finds nothing
         // and returns the "No references found" message. The response should now expose those
