@@ -354,10 +354,33 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             payload.has("fixReferences"),
         )
 
+        assertFalse("a blueprint without references must not warn: $response", obj.has("warnings"))
+
         readOnRepo {
             val after = structureModel.rootNodes.mapNotNull { it.name }.toSet()
             assertEquals("dryRun must not mutate the model", before, after)
         }
+    }
+
+    @Test
+    fun `insert_root_node_from_json dryRun warns about a reference a real run would make dynamic`() {
+        // A bare name does not resolve up front: a real run stores it as a dynamic reference for
+        // the fix-references pass, which a dry run skips, so the dry run must not report a plain success.
+        val json = """
+            { "concept": "$conceptDeclarationFqn",
+              "properties": [ { "name": "name", "value": "DryWithRef" } ],
+              "references": [ { "role": "extends", "target": "BaseConcept" } ] }
+        """.trimIndent()
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        assertEquals(
+            listOf("Dry run at $.references[0]: target 'BaseConcept' did not resolve; " +
+                "production run would create a dynamic reference, but dry-run skips this step."),
+            obj.getAsJsonArray("warnings")?.map { it.asString },
+        )
     }
 
     @Test
@@ -517,10 +540,34 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             payload.has("fixReferences"),
         )
 
+        assertFalse("a blueprint without references must not warn: $response", obj.has("warnings"))
+
         readOnRepo {
             val node = PersistenceFacade.getInstance().createNodeReference(rootRef).resolve(structureModel.repository)
             assertEquals("KeepMe", node!!.name)
         }
+    }
+
+    @Test
+    fun `update_root_node_from_json dryRun warns about a reference a real run would make dynamic`() {
+        // Top-level references are staged outside applyReferenceUpdate, so they need their own
+        // warning to match the nested children, which go through instantiateNode.
+        val rootRef = createConceptRoot("KeepMeToo")
+        val json = """
+            { "concept": "$conceptDeclarationFqn",
+              "properties": [ { "name": "name", "value": "KeepMeToo" } ],
+              "references": [ { "role": "extends", "target": "BaseConcept" } ] }
+        """.trimIndent()
+        val response = runTool(toolset) {
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        assertEquals(
+            listOf("Dry run at $.references[0]: target 'BaseConcept' did not resolve; " +
+                "production run would create a dynamic reference, but dry-run skips this step."),
+            obj.getAsJsonArray("warnings")?.map { it.asString },
+        )
     }
 
     @Test

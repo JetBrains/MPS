@@ -286,7 +286,6 @@ abstract class AbstractNodeOps : AbstractOps() {
                         xmlReferencePath = jsonPath,
                         xmlReferenceIndex = index,
                         dryRun = dryRun,
-                        allowDynamicReference = !dryRun,
                         assignResolvedReferenceOnDryRun = true,
                         mpsProject = mpsProject
                     )?.let { warnings?.add(it) }
@@ -390,7 +389,6 @@ abstract class AbstractNodeOps : AbstractOps() {
         xmlReferencePath: String,
         xmlReferenceIndex: Int,
         dryRun: Boolean,
-        allowDynamicReference: Boolean,
         assignResolvedReferenceOnDryRun: Boolean = false,
         validateXmlReference: Boolean = true,
         persistentReferencesOnly: Boolean = true,
@@ -419,19 +417,20 @@ abstract class AbstractNodeOps : AbstractOps() {
             if (!dryRun || assignResolvedReferenceOnDryRun) {
                 ownerNode.setReference(link, targetRef)
             }
-        } else if (!dryRun && allowDynamicReference) {
+        } else if (!dryRun) {
             ownerNode.setReference(link, ResolveInfo.of(targetRefStr))
-        } else if (dryRun && allowDynamicReference) {
-            // Production run would create a dynamic reference here; dry-run reports success
-            // without doing so. Surface the divergence through the caller's warnings channel
-            // so it is visible in the MCP response, not only in the IDE log.
-            val msg = "Dry run at $errorPath: target '$targetRefStr' did not resolve; " +
-                    "production run would create a dynamic reference, but dry-run skips this step."
-            nodeOpsLogger.warn(msg)
-            return msg
+        } else {
+            return dryRunDynamicReferenceWarning(errorPath, targetRefStr)
         }
         return null
     }
+
+    // A production run stores an unresolved target as a dynamic reference and leaves it to the
+    // fix-references pass; a dry run does neither, so it says so through the caller's warnings
+    // channel instead of reporting a plain success.
+    private fun dryRunDynamicReferenceWarning(errorPath: String, targetRefStr: String): String =
+        "Dry run at $errorPath: target '$targetRefStr' did not resolve; " +
+            "production run would create a dynamic reference, but dry-run skips this step."
 
     private fun resolveReferenceTarget(mpsProject: MPSProject?, repository: SRepository, targetRefStr: String): SNodeReference? {
         val isPersistentRef = targetRefStr.startsWith("r:") || targetRefStr.startsWith("i:") || targetRefStr.contains(".")
@@ -564,6 +563,8 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val targetNode = targetRef?.resolve(model.repository)
                 if (targetNode != null) {
                     validateReferenceTarget(targetNode, link, sConcept.name, roleName, "$jsonPath.references[$index]")
+                } else if (dryRun && targetRef == null) {
+                    warnings?.add(dryRunDynamicReferenceWarning("$jsonPath.references[$index]", targetRefStr))
                 }
 
                 stagedReferences += StagedReference(
@@ -631,7 +632,6 @@ abstract class AbstractNodeOps : AbstractOps() {
                 xmlReferencePath = staged.xmlReferencePath,
                 xmlReferenceIndex = staged.xmlReferenceIndex,
                 dryRun = false,
-                allowDynamicReference = true,
                 validateXmlReference = false,
                 mpsProject = mpsProject
             )
@@ -876,7 +876,6 @@ abstract class AbstractNodeOps : AbstractOps() {
                     xmlReferencePath = "$",
                     xmlReferenceIndex = 0,
                     dryRun = false,
-                    allowDynamicReference = true,
                     validateXmlReference = false,
                     // Keep this true so a bare plain name is NOT routed through the global
                     // first-match root lookup (resolveNodeReference), which ignores the reference
