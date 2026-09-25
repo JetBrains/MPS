@@ -244,6 +244,32 @@ class AnalyzeRunsTest(unittest.TestCase):
         self.assertEqual("2", row["close_project_calls"])
         self.assertEqual("1", row["modal_blocked"])
 
+    def test_assignability_columns_count_hints_and_calls_until_the_same_tool_kind_succeeds(self) -> None:
+        """D51/D52: a recovery window ends at the next ok call of the same tool and operation/kind, a
+        rejection inside it is not counted again, and one fixed through another operation is unrecovered."""
+        hinted = ('{"ok":false,"error":"Failed to instantiate node from JSON: Concept assignability error at '
+                  'JSON path \'$\'","code":"INVALID_REQUEST","details":{"wrapperCandidates":[],"wrapperCandidatesTotal":1}}')
+        plain = ('{"ok":false,"data":[{"ok":false,"error":"Concept assignability error at JSON path '
+                 '\'targetNodeReference\'","code":"INVALID_REFERENCE"}]}')
+        add_child = {"operation": "ADD", "kind": "CHILD"}
+        events = [
+            *call("a", "mcp__server__mps_mcp_update_node", add_child, hinted),
+            *call("b", "mcp__server__mps_mcp_get_concept_details", {}),
+            *call("c", "mcp__server__mps_mcp_update_node", add_child, hinted),
+            *call("d", "mcp__server__mps_mcp_update_node", {"operation": "SET", "kind": "CHILD"}),
+            *call("e", "mcp__server__mps_mcp_update_node", add_child, '{"ok":true,"data":{}}'),
+            *call("f", "mcp__server__mps_mcp_update_node", {"operation": "SET", "kind": "REFERENCE"}, plain),
+            *read("g", f"{SKILLS}/mps-console/references/mcp-insertion.md", "Concept assignability error … 'Make'"),
+        ]
+        self.write_run("S6-sonnet-1", events, None)
+
+        self.assertEqual(0, self.run_analyzer().returncode)
+        row = self.metrics()
+        self.assertEqual("3", row["assignability_errors"])  # a skill file quoting the message is no rejection
+        self.assertEqual("2", row["assignability_hinted"])
+        self.assertEqual("3", row["assignability_recovery_calls"])  # b, c and d, between a and e
+        self.assertEqual("1", row["assignability_unrecovered"])
+
     def test_related_projects_keep_the_target_projects_server_lines(self) -> None:
         """A lifecycle run drives `<project>-target`; without relatedProjects the project filter
         would discard its whole server slice."""

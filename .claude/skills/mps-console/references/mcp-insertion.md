@@ -17,7 +17,7 @@ The query commands (`#nodes`, `#instances`, …), the IDE commands `#make` / `#c
 Concept assignability error … Actual concept: 'Make' … Expected concept(s): 'Statement' … Role: 'statement'
 ```
 
-**Fix:** wrap the expression in a `BLExpression` (`expression` role), or in an `ExpressionStatement` if you are sending a statement array.
+**Fix:** wrap the expression in a `BLExpression` (`expression` role), or in an `ExpressionStatement` if you are sending a statement array. (The error's hint offers `ExpressionStatement`; both work.)
 
 ## Validated working blueprints
 

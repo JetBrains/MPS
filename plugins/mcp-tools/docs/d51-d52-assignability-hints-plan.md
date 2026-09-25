@@ -1,7 +1,9 @@
 # Plan: next-step hints on concept-assignability errors (D51/D52, server side)
 
-Status: plan only, not implemented (2026-09-25). Revised the same day after a review; its claims were
-re-checked against the code and against a simulation of §2a over all 254 generated
+Status: implemented 2026-09-25, not yet measured; progress and deviations are in
+`d51-d52-assignability-hints-task-list.md`. `McpToolsIntegrationTestSuite`: 1,023 tests, 0 failed (14 in
+`AssignabilityHintIntegrationTest`). Before that, a plan only (2026-09-25), revised the same day after a review;
+its claims were re-checked against the code and against a simulation of §2a over all 254 generated
 `StructureAspectDescriptor.java` files (testbench excluded), not against a running MPS. The D51/D52
 docs fixes are in a separate change; see `study/docs-defects-archive.md`.
 

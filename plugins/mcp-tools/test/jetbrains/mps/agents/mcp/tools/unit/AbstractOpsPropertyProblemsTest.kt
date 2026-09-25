@@ -21,6 +21,7 @@ import jetbrains.mps.smodel.adapter.structure.concept.SConceptAdapter
 import jetbrains.mps.smodel.runtime.ConceptDescriptor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.AfterClass
@@ -148,6 +149,9 @@ class AbstractOpsPropertyProblemsTest {
 
         fun setPropertyForTest(node: SNode, sProperty: SProperty, propertyValue: String?) =
             setProperty(node, sProperty, propertyValue)
+
+        fun instantiationFailedForTest(prefix: String, e: Exception, warnings: List<String>) =
+            instantiationFailed(prefix, e, warnings)
     }
 
     private val nodeToolset = JetBrainsMPSNodeMcpToolset()
@@ -1111,6 +1115,66 @@ class AbstractOpsPropertyProblemsTest {
         assertTrue(message.contains("'test.lang.structure.A', 'test.lang.structure.B'"))
         assertTrue(message.contains("'test.lang.structure.Container'"))
         assertTrue(message.contains("'items'"))
+    }
+
+    private fun hintedAssignabilityException(hint: AbstractOps.AssignabilityHint?) = AbstractOps.AssignabilityException(
+        jsonPath = "$.children[0].nodes[0]",
+        actualConcept = "ArrayCreatorWithInitializer",
+        expectedConcepts = listOf("Expression"),
+        parentConcept = "ReturnStatement",
+        role = "expression",
+        hint = hint
+    )
+
+    private val wrapperHint = AbstractOps.AssignabilityHint(
+        listOf(" - Wrap it: 'GenericNewExpression' is an 'Expression' …", "   {\"concept\":\"…GenericNewExpression\"}"),
+        mapOf("wrapperCandidates" to listOf(mapOf("role" to "creator")), "wrapperCandidatesTotal" to 1)
+    )
+
+    @Test
+    fun assignabilityHintLinesFollowTheUnchangedMessageBody() {
+        val plain = hintedAssignabilityException(null)
+        val hinted = hintedAssignabilityException(wrapperHint)
+
+        assertEquals(plain.message + "\n" + wrapperHint.lines.joinToString("\n"), hinted.message)
+        assertTrue("no hint, no details: ${plain.errorDetails}", plain.errorDetails.isEmpty())
+        assertEquals(wrapperHint.details, hinted.errorDetails)
+    }
+
+    @Test
+    fun toolFailureCarriesTheAssignabilityHintDetails() {
+        val obj = JsonParser.parseString(
+            ops.toolFailureForTest("running test tool", hintedAssignabilityException(wrapperHint))
+        ).asJsonObject
+
+        assertEquals("INVALID_REFERENCE", obj.get("code").asString)
+        val details = obj.getAsJsonObject("details")
+        assertEquals(1, details.get("wrapperCandidatesTotal").asInt)
+        assertEquals("creator", details.getAsJsonArray("wrapperCandidates")[0].asJsonObject.get("role").asString)
+    }
+
+    @Test
+    fun instantiationFailedForwardsDetailsAndWarnings() {
+        // The rewrap sites (insert_root_node_from_json, update_node ADD/SET CHILD, the console insert) used to
+        // keep only e.message; the console insert also dropped its warnings.
+        val hinted = JsonParser.parseString(
+            nodeOps.instantiationFailedForTest(
+                "Failed to instantiate node from JSON", hintedAssignabilityException(wrapperHint), listOf("factory warning")
+            )
+        ).asJsonObject
+
+        assertEquals("INVALID_REQUEST", hinted.get("code").asString)
+        assertTrue(hinted.get("error").asString.startsWith("Failed to instantiate node from JSON: Concept assignability error"))
+        assertTrue(hinted.get("error").asString.contains(" - Wrap it: 'GenericNewExpression'"))
+        assertEquals(1, hinted.getAsJsonObject("details").get("wrapperCandidatesTotal").asInt)
+        assertEquals("factory warning", hinted.getAsJsonArray("warnings").single().asString)
+
+        val plain = JsonParser.parseString(
+            nodeOps.instantiationFailedForTest("Failed to instantiate node from JSON", IllegalStateException("boom"), emptyList())
+        ).asJsonObject
+        assertEquals("Failed to instantiate node from JSON: boom", plain.get("error").asString)
+        assertNull("a non-MCP exception carries no details: $plain", plain.get("details"))
+        assertNull("no warnings, no warnings key: $plain", plain.get("warnings"))
     }
 
     @Test

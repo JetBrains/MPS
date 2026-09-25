@@ -246,6 +246,22 @@ abstract class AbstractOps : McpToolset {
         // Specialization label for the synthetic structure-level problems reported by
         // [checkAttributeFeatureIds]; surfaces as the issue kind in check results.
         private const val ATTRIBUTE_FEATURE_ID_ISSUE = "invalid attribute feature id"
+
+        internal fun getCardinality(link: SContainmentLink): String {
+            return if (link.isMultiple) {
+                if (link.isOptional) "0..n" else "1..n"
+            } else {
+                if (link.isOptional) "0..1" else "1"
+            }
+        }
+
+        internal fun getCardinality(link: SReferenceLink): String {
+            return if (link.isOptional) "0..1" else "1"
+        }
+
+        internal fun structureQualifiedName(concept: SAbstractConcept): String {
+            return concept.language.qualifiedName + ".structure." + concept.name
+        }
     }
 
     // ---- helpers ----
@@ -1203,19 +1219,28 @@ abstract class AbstractOps : McpToolset {
         }
     }
 
+    /**
+     * What would fit where an [AssignabilityException] was raised: [lines] are appended to its message
+     * verbatim, [details] become the envelope's `details`.
+     */
+    class AssignabilityHint(val lines: List<String>, val details: Map<String, Any?>)
+
     class AssignabilityException(
         val jsonPath: String,
         val actualConcept: String,
         val expectedConcepts: List<String>,
         val parentConcept: String,
-        val role: String
+        val role: String,
+        val hint: AssignabilityHint? = null
     ) : McpUserException(
         McpErrorCode.INVALID_REFERENCE,
         "Concept assignability error at JSON path '$jsonPath':\n" +
                 " - Actual concept: '$actualConcept'\n" +
                 " - Expected concept(s): ${expectedConcepts.joinToString(", ") { "'$it'" }}\n" +
                 " - Parent concept: '$parentConcept'\n" +
-                " - Role: '$role'"
+                " - Role: '$role'" +
+                hint?.lines.orEmpty().joinToString("") { "\n$it" },
+        hint?.details.orEmpty()
     )
 
     fun parseJson(jsonString: String): JsonObject {
@@ -1652,18 +1677,6 @@ abstract class AbstractOps : McpToolset {
         return PropertyState(value, isEmptyEnum, isInvalid)
     }
 
-    protected fun getCardinality(link: SContainmentLink): String {
-        return if (link.isMultiple) {
-            if (link.isOptional) "0..n" else "1..n"
-        } else {
-            if (link.isOptional) "0..1" else "1"
-        }
-    }
-
-    protected fun getCardinality(link: SReferenceLink): String {
-        return if (link.isOptional) "0..1" else "1"
-    }
-
     /**
      * Classifies a concept feature into `"property"` / `"reference"` / `"child"`, or `""` for anything
      * else. Shared so every feature-kind dispatch (e.g. the editor caret's feature) uses one mapping.
@@ -1678,10 +1691,6 @@ abstract class AbstractOps : McpToolset {
     protected fun addDocAndDeprecated(obj: JsonObject, doc: String, deprecated: String) {
         obj.addProperty("doc", doc)
         obj.addProperty("deprecated", deprecated)
-    }
-
-    protected fun structureQualifiedName(concept: SAbstractConcept): String {
-        return concept.language.qualifiedName + ".structure." + concept.name
     }
 
     private fun problemJsonObject(severity: MessageStatus, message: String): JsonObject {

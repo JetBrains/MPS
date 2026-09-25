@@ -371,7 +371,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     val newNode = try {
                         instantiateNode(jsonObject, model, dryRun, warnings = batchWarnings, mpsProject = mpsProject)
                     } catch (e: Exception) {
-                        return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST, warnings = batchWarnings)
+                        return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate node$indexLabel from JSON", e, batchWarnings)
                     }
                     if (newNode == null) {
                         return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON", McpErrorCode.INVALID_REQUEST, warnings = batchWarnings)

@@ -14,6 +14,7 @@
 - Concepts extend other concepts and implement interface concepts. These are transitive relationships. Both extended concepts and implemented interfaces have an effect on assignability.
 - When setting a reference to a target node, make sure the concept of the target node is assignable to the required concept of the reference role.
 - When adding/changing a child node, make sure the node's concept is not abstract and is assignable to the concept of the role.
+- When an insert or update fails with `Concept assignability error`, read the lines under it first: ` - Wrap it:` / ` - Possible wrappers` (a child in the wrong role: the wrapper and the JSON to paste, `details.wrapperCandidates`) or ` - Target '…'` (a wrong reference target: nodes that fit, `details.targetCandidates`). Look concepts up only when there is no such line.
 - Child roles as well as reference roles may be optional or required. Optional roles may be null. Required roles must have a value.
 - Child roles may be single-valued or multivalued. Single-valued roles can only have one child node. Multivalued roles can have multiple child nodes.
 - You must not create nodes of concept interfaces and abstract concepts.

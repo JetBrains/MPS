@@ -45,6 +45,7 @@ import java.lang.reflect.Field;
     JetBrainsMPSIntentionsMcpToolsetIntegrationTest.class,
     JetBrainsMPSRootNodeMcpToolsetIntegrationTest.class,
     NodeFactoryOnBlueprintPathIntegrationTest.class,
+    AssignabilityHintIntegrationTest.class,
     McpJsonOrTextWireShapeTest.class,
     EditorCaretSelectionSerializerTest.class,
     SearchRootNodeCrossProjectTest.class,

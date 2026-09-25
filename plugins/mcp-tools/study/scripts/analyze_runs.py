@@ -7,7 +7,8 @@ Inputs: a runs/ directory holding, per run id, <id>-worker.jsonl (claude stream-
 Outputs (written into --out, default <runs>/analysis):
   metrics.csv   one row per run: tokens (in/out/cache), authored tool-input chars, tool-result bytes,
                 skill-file bytes read, tool calls, errors, retries, validation loops, wall-clock, pass,
-                skill navigation (messages, greps by scope, re-reads, index hops), auto-compactions
+                skill navigation (messages, greps by scope, re-reads, index hops), auto-compactions,
+                concept-assignability rejections (with a hint, and calls until the same tool/kind succeeds)
   phases.csv    one row per run and aspect phase: skill navigation cost of that phase
   navigation.json per run: compactions, re-reads, index hops, greps, phases, every skill-touching call
   tools.json    per-tool call counts, error counts, avg input chars, avg result bytes (transcript + server)
@@ -55,6 +56,9 @@ ARG_VALIDATION_ERROR_RE = re.compile(
 # projectPath could have helped. Lifecycle scenarios pass through this state deliberately.
 WELCOME_REJECTION_RE = re.compile(r'Currently open projects:\s*\{\s*"projects"\s*:\s*\[\s*\]')
 MODAL_BLOCKED_RE = re.compile(r"MODAL_BLOCKED")
+# D51/D52: a concept-assignability rejection, and whether it carried a next-step hint.
+ASSIGNABILITY_ERROR_RE = re.compile(r"Concept assignability error")
+ASSIGNABILITY_HINT_RE = re.compile(r'"(?:wrapperCandidates|targetCandidates)"\s*:')
 # Scenarios that drive the project lifecycle themselves: they close and open projects, so their
 # server slice spans several project paths and their surplus is not interpretable.
 LIFECYCLE_SCENARIO_RE = re.compile(r"^S10\b")
@@ -487,6 +491,26 @@ def is_arg_validation_error(error: bool, text: str) -> bool:
     return error and bool(ARG_VALIDATION_ERROR_RE.search(text))
 
 
+def assignability_recovery(calls: list[dict]) -> tuple[int, int]:
+    """(calls, unrecovered): the calls between an assignability rejection and the next ok call of the
+    same tool/kind (D51/D52 plan section 6), and the rejections never followed by one. A rejection
+    inside a window already counted adds nothing. An unrecovered rejection was usually fixed through
+    another tool or operation (baseline S1-sonnet-1:79 SET/REFERENCE, fixed by SET/CHILD at :87), so
+    its cost is not in `calls`."""
+    total, unrecovered, covered_until = 0, 0, -1
+    for i, c in enumerate(calls):
+        if i <= covered_until or not c["assignability_error"]:
+            continue
+        j = next((j for j in range(i + 1, len(calls))
+                  if calls[j]["key"] == c["key"] and not calls[j]["error"]), None)
+        if j is None:
+            unrecovered += 1
+        else:
+            total += j - i - 1
+            covered_until = j
+    return total, unrecovered
+
+
 def is_child_event(event: dict) -> bool:
     return event.get("parent_tool_use_id") is not None or event.get("parentToolUseId") is not None
 
@@ -573,6 +597,7 @@ def analyse_run(run_id: str, runs: Path):
                             "result_bytes": 0, "error": False, "root": root_ref_of(inp), "result_is_temp_file": False,
                             "pre_dispatch_rejection": False, "arg_validation_error": False,
                             "welcome_rejection": False, "modal_blocked": False,
+                            "assignability_error": False, "assignability_hinted": False,
                             "parent_event": not is_child_event(ev),
                             "skill_read": (name == "Read" and isinstance(inp, dict)
                                            and bool(SKILL_DIR_RE.search(str(inp.get("file_path", "")))))
@@ -599,6 +624,9 @@ def analyse_run(run_id: str, runs: Path):
                         call["welcome_rejection"] = (call["pre_dispatch_rejection"]
                                                      and bool(WELCOME_REJECTION_RE.search(text)))
                         call["modal_blocked"] = bool(MODAL_BLOCKED_RE.search(text))
+                        call["assignability_error"] = call["error"] and bool(ASSIGNABILITY_ERROR_RE.search(text))
+                        call["assignability_hinted"] = (call["assignability_error"]
+                                                        and bool(ASSIGNABILITY_HINT_RE.search(text)))
                         reset = CWD_RESET_RE.search(text) if call["name"] == "Bash" else None
                         call["cwd_reset"] = reset.group(1) if reset else None
         elif t == "result":
@@ -610,6 +638,7 @@ def analyse_run(run_id: str, runs: Path):
                 final = ev
 
     navigation = analyse_navigation(calls, compactions, init_cwd or meta.get("project"))
+    recovery_calls, unrecovered = assignability_recovery(calls)
     # Without result usage (killed run, Junie) the per-message sum is the closest quantity; it can
     # differ from the result's figure by a few percent (r11 S5: 1.50 M vs 1.57 M). A message's
     # `output_tokens` is a streaming placeholder (r13 S1-opus: 1,501 over all messages vs 33,707
@@ -679,6 +708,10 @@ def analyse_run(run_id: str, runs: Path):
         "welcome_rejections": sum(1 for c in calls if c["welcome_rejection"]),
         "close_project_calls": tool_calls.get("mps_mcp_close_project", 0),
         "modal_blocked": sum(1 for c in calls if c["modal_blocked"]),
+        "assignability_errors": sum(1 for c in calls if c["assignability_error"]),
+        "assignability_hinted": sum(1 for c in calls if c["assignability_hinted"]),
+        "assignability_recovery_calls": recovery_calls,
+        "assignability_unrecovered": unrecovered,
         "expected_server_mps_calls": expected_server_mps_calls,
         "agent_calls": sum(1 for c in calls if c["name"] == "Agent" and c["parent_event"]),
         "authored_input_chars": sum(c["input_chars"] for c in calls),

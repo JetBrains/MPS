@@ -344,14 +344,21 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
 
     /**
      * Creates a `ConceptDeclaration` root named [name] in the test's structure model via the
-     * structure-operation toolset, and returns its persistent SNodeReference. [implements] and
-     * [childrenJson] are spliced into the concept spec verbatim when provided, so a caller can
-     * seed an inherited property (e.g. `INamedConcept`) or child-link roles for a fixture.
+     * structure-operation toolset, and returns its persistent SNodeReference. [implements],
+     * [childrenJson] and [propertiesJson] are spliced into the concept spec verbatim when provided, so
+     * a caller can seed an inherited property (e.g. `INamedConcept`), child-link roles or own
+     * properties for a fixture.
      */
-    protected fun createConceptRoot(name: String, implements: String? = null, childrenJson: String? = null): String {
+    protected fun createConceptRoot(
+        name: String,
+        implements: String? = null,
+        childrenJson: String? = null,
+        propertiesJson: String? = null
+    ): String {
         val extraFields = buildString {
             if (implements != null) append(""", "implements": "$implements"""")
             if (childrenJson != null) append(""", "children": $childrenJson""")
+            if (propertiesJson != null) append(""", "properties": $propertiesJson""")
         }
         val params = """
             {
@@ -380,15 +387,17 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
      * `ConceptBehavior` root wired to that concept with its one mandatory `constructor` child (a
      * `ConceptConstructorDeclaration` with an empty `body`). Returns the behavior root's
      * persistent SNodeReference — a valid `contextNodeRef`/`parentRef` for a METHOD parse
-     * targeting the `method` role. [implements]/[childrenJson] are forwarded to [createConceptRoot]
-     * to seed an inherited property or child-link roles on the underlying concept.
+     * targeting the `method` role. [implements]/[childrenJson]/[propertiesJson] are forwarded to
+     * [createConceptRoot] to seed an inherited property, child-link roles or own properties on the
+     * underlying concept.
      */
     protected fun createConceptBehaviorRoot(
         conceptName: String = "TestConcept${System.nanoTime()}",
         implements: String? = null,
-        childrenJson: String? = null
+        childrenJson: String? = null,
+        propertiesJson: String? = null
     ): String {
-        val conceptRef = createConceptRoot(conceptName, implements, childrenJson)
+        val conceptRef = createConceptRoot(conceptName, implements, childrenJson, propertiesJson)
 
         val behaviorModel = readOnRepo { language.models.single { it.name.longName.endsWith(".behavior") } }
         val behaviorModelRef = modelRefOf(behaviorModel)

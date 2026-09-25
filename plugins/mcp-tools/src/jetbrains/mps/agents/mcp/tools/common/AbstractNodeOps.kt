@@ -37,8 +37,14 @@ import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.action.NodeFactoryManager
+import jetbrains.mps.smodel.adapter.ids.SConceptId
+import jetbrains.mps.smodel.adapter.ids.SContainmentLinkId
+import jetbrains.mps.smodel.adapter.ids.SPropertyId
+import jetbrains.mps.smodel.adapter.ids.SReferenceLinkId
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.constraints.ModelConstraints
+import jetbrains.mps.smodel.language.ConceptRegistry
+import jetbrains.mps.smodel.runtime.illegal.IllegalConceptDescriptor
 import kotlinx.coroutines.currentCoroutineContext
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.language.SConcept
@@ -324,13 +330,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                     )
                     if (childNode != null) {
                         if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
-                            throw AssignabilityException(
-                                jsonPath = childPath,
-                                actualConcept = childNode.concept.name,
-                                expectedConcepts = listOf(link.targetConcept.name),
-                                parentConcept = sConcept.name,
-                                role = link.name
-                            )
+                            throw childAssignabilityFailure(childPath, childNode.concept, link, sConcept, model)
                         }
                         newNode.addChild(link, childNode)
                     }
@@ -398,7 +398,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             failIfXMLReferenceIsUsed(targetRefStr, xmlReferencePath, xmlReferenceIndex)
         }
         val targetRef = if (persistentReferencesOnly) {
-            resolveReferenceTarget(mpsProject, repository, targetRefStr)
+            resolveReferenceTarget(mpsProject, repository, targetRefStr, errorPath)
         } else {
             if (mpsProject != null) resolveNodeReferencePreferringProject(mpsProject, targetRefStr) else resolveNodeReference(repository, targetRefStr)
         }
@@ -432,13 +432,50 @@ abstract class AbstractNodeOps : AbstractOps() {
         "Dry run at $errorPath: target '$targetRefStr' did not resolve; " +
             "production run would create a dynamic reference, but dry-run skips this step."
 
-    private fun resolveReferenceTarget(mpsProject: MPSProject?, repository: SRepository, targetRefStr: String): SNodeReference? {
+    private fun resolveReferenceTarget(mpsProject: MPSProject?, repository: SRepository, targetRefStr: String, errorPath: String): SNodeReference? {
+        failIfFeatureIdIsUsed(targetRefStr, errorPath)
         val isPersistentRef = targetRefStr.startsWith("r:") || targetRefStr.startsWith("i:") || targetRefStr.contains(".")
         if (!isPersistentRef) return null
         if (mpsProject == null) return resolveNodeReference(repository, targetRefStr)
 
         resolveNodeReference(mpsProject, targetRefStr)?.let { return it }
         return resolveNodeReference(repository, targetRefStr)
+    }
+
+    /**
+     * Rejects a `featureId` from `mps_mcp_get_concept_details` (`<languageUUID>/<conceptId>/<featureId>`)
+     * given as a reference target. It is no node reference, so it used to be stored as a dynamic reference
+     * that never resolves (a dry run did not even warn). Rejected rather than resolved, like an XML short
+     * id, so the caller learns the declaration's `sourceNode` is what a reference takes.
+     */
+    private fun failIfFeatureIdIsUsed(targetRefStr: String, errorPath: String) {
+        val match = FEATURE_ID_SHAPE.matchEntire(targetRefStr) ?: return
+        val prefix = "Invalid node reference at $errorPath: '$targetRefStr' is a featureId (the encoded " +
+            "<languageUUID>/<conceptId>/<featureId> triple from mps_mcp_get_concept_details), not a node reference."
+        val generic = McpInvalidReferenceException(
+            "$prefix Pass the feature declaration's `sourceNode` from mps_mcp_get_concept_details instead."
+        )
+        val (languageId, conceptNumber, featureNumber) = match.destructured
+        val featureId = featureNumber.toLongOrNull()
+        if (featureId == null || conceptNumber.toLongOrNull() == null) throw generic
+        val conceptId = SConceptId.deserialize("$languageId/$conceptNumber")
+        // An unbuilt (hollow) language has no descriptor; IllegalConceptDescriptor would log on every lookup.
+        val concept = ConceptRegistry.getInstance().getConceptDescriptor(conceptId)
+            .takeUnless { it is IllegalConceptDescriptor } ?: throw generic
+        val (kind, name, sourceNode) = concept.getPropertyDescriptor(SPropertyId(conceptId, featureId))
+            ?.let { Triple("property", it.name, it.sourceNode) }
+            ?: concept.getLinkDescriptor(SContainmentLinkId(conceptId, featureId))
+                ?.let { Triple("child role", it.name, it.sourceNode) }
+            ?: concept.getRefDescriptor(SReferenceLinkId(conceptId, featureId))
+                ?.let { Triple("reference role", it.name, it.sourceNode) }
+            ?: throw generic
+        val conceptName = concept.conceptFqName.substringAfterLast('.')
+        val declaration = sourceNode?.let { "'${PersistenceFacade.getInstance().asString(it)}'" }
+            ?: "its `sourceNode` from mps_mcp_get_concept_details"
+        throw McpInvalidReferenceException(
+            "$prefix It identifies the $kind '$name' of concept '$conceptName'; a reference to that declaration " +
+                "takes its `sourceNode`: set the target to $declaration."
+        )
     }
 
     private fun validateReferenceTarget(
@@ -449,14 +486,57 @@ abstract class AbstractNodeOps : AbstractOps() {
         errorPath: String
     ) {
         if (!targetNode.concept.isSubConceptOf(link.targetConcept)) {
-            throw AssignabilityException(
-                jsonPath = errorPath,
-                actualConcept = targetNode.concept.name,
-                expectedConcepts = listOf(link.targetConcept.name),
-                parentConcept = parentConceptName,
-                role = roleName
-            )
+            throw assignabilityFailure(errorPath, targetNode.concept, link.targetConcept, parentConceptName, roleName) {
+                AssignabilityHints.referenceTargetHint(targetNode, link)
+            }
         }
+    }
+
+    private fun childAssignabilityFailure(
+        jsonPath: String,
+        actual: SAbstractConcept,
+        link: SContainmentLink,
+        parentConcept: SAbstractConcept,
+        model: SModel
+    ): AssignabilityException =
+        assignabilityFailure(jsonPath, actual, link.targetConcept, parentConcept.name, link.name) {
+            AssignabilityHints.wrapperHint(actual, link, parentConcept, model)
+        }
+
+    /**
+     * The one way to build an [AssignabilityException]. [hint] is best-effort: it reads every deployed
+     * language's runtime descriptors, and a failure there must not replace the assignability error.
+     */
+    private fun assignabilityFailure(
+        jsonPath: String,
+        actual: SAbstractConcept,
+        expected: SAbstractConcept,
+        parentConceptName: String,
+        role: String,
+        hint: () -> AssignabilityHint?
+    ): AssignabilityException {
+        val computedHint = try {
+            hint()
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            nodeOpsLogger.warn("Failed to compute the assignability hint at $jsonPath", e)
+            null
+        }
+        return AssignabilityException(jsonPath, actual.name, listOf(expected.name), parentConceptName, role, computedHint)
+    }
+
+    /**
+     * The `INVALID_REQUEST` envelope for a blueprint that failed to instantiate. Keeps the exception's
+     * `details` (an assignability hint's candidates), which a bare `e.message` rewrap would drop.
+     */
+    protected fun instantiationFailed(prefix: String, e: Exception, warnings: List<String> = emptyList()): String {
+        rethrowIfCancellation(e)
+        return errJson(
+            "$prefix: ${e.message}",
+            McpErrorCode.INVALID_REQUEST,
+            (e as? McpUserException)?.errorDetails.orEmpty(),
+            warnings
+        )
     }
 
     private fun ensureReferenceDependencies(model: SModel, targetRef: SNodeReference, targetNode: SNode) {
@@ -529,13 +609,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                         enclosingNode = node
                     ) ?: return@forEachIndexed
                     if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
-                        throw AssignabilityException(
-                            jsonPath = childPath,
-                            actualConcept = childNode.concept.name,
-                            expectedConcepts = listOf(link.targetConcept.name),
-                            parentConcept = sConcept.name,
-                            role = link.name
-                        )
+                        throw childAssignabilityFailure(childPath, childNode.concept, link, sConcept, model)
                     }
                     stagedChildren += link to childNode
                 }
@@ -559,7 +633,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 if (targetRefStr.isNullOrEmpty()) return@forEachIndexed
 
                 failIfXMLReferenceIsUsed(targetRefStr, jsonPath, index)
-                val targetRef = resolveReferenceTarget(mpsProject, model.repository, targetRefStr)
+                val targetRef = resolveReferenceTarget(mpsProject, model.repository, targetRefStr, "$jsonPath.references[$index]")
                 val targetNode = targetRef?.resolve(model.repository)
                 if (targetNode != null) {
                     validateReferenceTarget(targetNode, link, sConcept.name, roleName, "$jsonPath.references[$index]")
@@ -671,18 +745,12 @@ abstract class AbstractNodeOps : AbstractOps() {
         val newChild = try {
             instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject, enclosingNode = parent)
         } catch (e: Exception) {
-            return errJson("Failed to instantiate new child node from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
+            return instantiationFailed("Failed to instantiate new child node from JSON", e, nodeWarnings)
         }
         if (newChild == null) return errJson("Failed to instantiate new child node from JSON", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
 
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
-            throw AssignabilityException(
-                jsonPath = "$",
-                actualConcept = newChild.concept.name,
-                expectedConcepts = listOf(role.targetConcept.name),
-                parentConcept = parent.concept.name,
-                role = role.name
-            )
+            throw childAssignabilityFailure("$", newChild.concept, role, parent.concept, model)
         }
 
         if (dryRun) {
@@ -798,20 +866,14 @@ abstract class AbstractNodeOps : AbstractOps() {
         val newChild = try {
             instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject, enclosingNode = parent)
         } catch (e: Exception) {
-            return errJson("Failed to instantiate child node from JSON: ${e.message}", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
+            return instantiationFailed("Failed to instantiate child node from JSON", e, nodeWarnings)
         }
         if (newChild == null) return errJson("Failed to instantiate child node from JSON", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
 
         // Check before replacing the occupant of a single-cardinality role: MPS commands do not roll
         // back, so a delete ahead of a failing check would stick.
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
-            throw AssignabilityException(
-                jsonPath = "$",
-                actualConcept = newChild.concept.name,
-                expectedConcepts = listOf(role.targetConcept.name),
-                parentConcept = parent.concept.name,
-                role = role.name
-            )
+            throw childAssignabilityFailure("$", newChild.concept, role, parent.concept, model)
         }
 
         if (!role.isMultiple && !dryRun) {
@@ -1724,6 +1786,9 @@ abstract class AbstractNodeOps : AbstractOps() {
         private const val CONSOLE_PLUGIN_ID = "jetbrains.mps.console"
         private const val CONSOLE_TOOL_FQN = "jetbrains.mps.console.plugin.ConsoleTool_Tool"
         private const val PROJECT_PLUGIN_MANAGER_FQN = "jetbrains.mps.plugins.projectplugins.ProjectPluginManager"
+
+        /** `SPropertyId` / `SContainmentLinkId` / `SReferenceLinkId.serialize()`: language UUID, concept id, feature id. */
+        private val FEATURE_ID_SHAPE = Regex("([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(-?\\d+)/(-?\\d+)")
 
         // jetbrains.mps.console.base.structure.CommandHolder.command — the single editable command
         // the console input editor renders; its target concept is the console `Command` interface.

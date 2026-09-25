@@ -209,28 +209,10 @@ internal object ConceptBehaviorJavaParseAdapter {
                 .firstOrNull { it.getProperty(StructureLanguageMeta.linkDeclarationRoleProperty) == name }
                 ?.let { return linkAccessTo(it) }
 
-            queue.addAll(superConceptDeclarations(decl))
+            queue.addAll(StructureDeclarations.superConceptDeclarations(decl))
         }
         return null
     }
-
-    /** The directly extended concept and implemented/extended interfaces of a declaration node. */
-    private fun superConceptDeclarations(decl: SNode): List<SNode> {
-        val supers = mutableListOf<SNode>()
-        if (SNodeOperations.isInstanceOf(decl, StructureLanguageMeta.conceptDeclarationConcept)) {
-            decl.getReference(StructureLanguageMeta.conceptDeclarationExtendsLink)?.targetNode?.let { supers.add(it) }
-            supers.addAll(intfcTargets(decl, StructureLanguageMeta.conceptDeclarationImplementsLink))
-        }
-        if (SNodeOperations.isInstanceOf(decl, StructureLanguageMeta.interfaceConceptDeclarationConcept)) {
-            supers.addAll(intfcTargets(decl, StructureLanguageMeta.interfaceConceptDeclarationExtendsLink))
-        }
-        return supers
-    }
-
-    private fun intfcTargets(decl: SNode, link: org.jetbrains.mps.openapi.language.SContainmentLink): List<SNode> =
-        decl.getChildren(link).mapNotNull {
-            it.getReference(StructureLanguageMeta.interfaceConceptReferenceIntfcLink)?.targetNode
-        }
 
     private fun propertyAccessTo(propertyDecl: SNode): SNode =
         SConceptOperations.createNewNode(SmodelLanguageMeta.sPropertyAccessConcept).also {
@@ -240,7 +222,7 @@ internal object ConceptBehaviorJavaParseAdapter {
     // Only a multiple containment link maps to SLinkListAccess: MPS reference links are always
     // single-valued regardless of the cardinality the declaration carries.
     private fun linkAccessTo(linkDecl: SNode): SNode {
-        val genuine = genuineLink(linkDecl)
+        val genuine = StructureDeclarations.genuineLink(linkDecl)
         val isAggregation = SEnumOperations.isMember(
             SPropertyOperations.getEnum(genuine, StructureLanguageMeta.linkDeclarationMetaClassProperty),
             StructureLanguageMeta.LINK_METACLASS_AGGREGATION
@@ -258,21 +240,6 @@ internal object ConceptBehaviorJavaParseAdapter {
             SConceptOperations.createNewNode(SmodelLanguageMeta.sLinkAccessConcept).also {
                 it.setReferenceTarget(SmodelLanguageMeta.sLinkAccessLinkLink, linkDecl)
             }
-        }
-    }
-
-    // Mirrors LinkDeclaration.getGenuineLink(): a declaration that specializes another may leave
-    // metaClass/sourceCardinality at the specialized link's values, so those two are read off the
-    // end of the specialization chain. The reference target stays the most derived declaration.
-    private fun genuineLink(linkDecl: SNode): SNode {
-        var current = linkDecl
-        val visited = mutableSetOf(current)
-        while (true) {
-            val specialized =
-                current.getReference(StructureLanguageMeta.linkDeclarationSpecializedLinkLink)?.targetNode
-                    ?: return current
-            if (!visited.add(specialized)) return current
-            current = specialized
         }
     }
 }

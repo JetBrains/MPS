@@ -116,11 +116,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 val command = try {
                     instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings)
                 } catch (e: Exception) {
-                    rethrowIfCancellation(e)
-                    return@executeShortCommandOnEdt errJson(
-                        "Failed to instantiate console command from JSON: ${e.message}",
-                        McpErrorCode.INVALID_REQUEST
-                    )
+                    return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate console command from JSON", e, warnings)
                 } ?: return@executeShortCommandOnEdt errJson(
                     "Failed to instantiate console command from JSON",
                     McpErrorCode.INVALID_REQUEST
