@@ -75,7 +75,7 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Lists the intentions and quick-fixes available on an MPS node — the headless equivalent of the editor's Alt+Enter menu, so an agent can discover and then apply a context action without opening an editor. Returns a temp-file path whose JSON is an array of entries; each has `type` ("intention" | "quickFix"), `id` (pass to mps_mcp_apply_intention), `kind` (ERROR | QUICKFIX | MIGRATION | NORMAL), `description` (the row text), `targetNode` (the node the entry applies to — pass THIS as nodeReference to apply), and `declarationNode` (the IntentionDeclaration / QuickFix source node — inspect with mps_mcp_print_node). `parameterized` entries (intention only) need `description` on apply; `enabled: false` marks user-disabled intentions (intention only, omitted when enabled). quickFix entries also carry `problemMessage` and `autoApplicable`. `includeAncestors` (default true) mirrors the editor by also listing ancestor-node actions; `includeDisabled` lists disabled intentions; `includeQuickFixes` (default true) merges checker quick-fixes. Surround-with intentions are not listed. See mps-mcp-workflow/references/analysis-tools.md.
+        Lists the intentions and quick-fixes available on an MPS node — the headless equivalent of the editor's Alt+Enter menu, so an agent can discover and then apply a context action without opening an editor. `data` is a JSON array of entries, inline when the serialized array is <= `maxInlineBytes` (default 20000), otherwise a temp-file path; each entry has `type` ("intention" | "quickFix"), `id` (pass to mps_mcp_apply_intention), `kind` (ERROR | QUICKFIX | MIGRATION | NORMAL), `description` (the row text), `targetNode` (the node the entry applies to — pass THIS as nodeReference to apply), and `declarationNode` (the IntentionDeclaration / QuickFix source node — inspect with mps_mcp_print_node). `parameterized` entries (intention only) need `description` on apply; `enabled: false` marks user-disabled intentions (intention only, omitted when enabled). quickFix entries also carry `problemMessage` and `autoApplicable`. `includeAncestors` (default true) mirrors the editor by also listing ancestor-node actions; `includeDisabled` lists disabled intentions; `includeQuickFixes` (default true) merges checker quick-fixes. Surround-with intentions are not listed. See mps-mcp-workflow/references/analysis-tools.md.
     """
     )
     suspend fun mps_mcp_list_node_intentions(
@@ -83,6 +83,7 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
         @McpDescription("Also list intentions/quick-fixes of ancestor nodes, like the editor (default = true)") includeAncestors: Boolean = true,
         @McpDescription("Also list intentions the user has disabled (default = false)") includeDisabled: Boolean = false,
         @McpDescription("Merge checker quick-fixes for problems on this node/ancestors (default = true)") includeQuickFixes: Boolean = true,
+        @McpDescription("Inline the listing in `data` when it is at most this many characters; larger listings are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
     ): String {
         rejectMissingParameters(
             "mps_mcp_list_node_intentions",
@@ -102,7 +103,7 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
                 if (includeQuickFixes) {
                     collectQuickFixEntries(mpsProject, repo, node, root, includeAncestors, entries)
                 }
-                saveToTempFileResult(entries.toString())
+                finalizeResult(entries.toString(), maxInlineBytes)
             }
         }
     }

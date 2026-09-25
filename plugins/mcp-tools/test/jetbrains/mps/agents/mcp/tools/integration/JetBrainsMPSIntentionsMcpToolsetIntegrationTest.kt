@@ -54,13 +54,10 @@ class JetBrainsMPSIntentionsMcpToolsetIntegrationTest : McpIntegrationTestBase()
     }
 
     /**
-     * The intentions list tool saves its array to a temp file wrapped in the standard
-     * `{"ok":true,"data":[...]}` envelope (via `saveToTempFile` → `okJson`); read and unwrap it.
+     * The intentions list tool returns its array inline in `data` up to `maxInlineBytes`, and as a
+     * temp-file path above it; the base helper accepts both shapes.
      */
-    private fun listEntries(response: String): JsonArray {
-        val path = extractFilePathFromData(response)
-        return JsonParser.parseString(File(path).readText()).asJsonObject.getAsJsonArray("data")
-    }
+    private fun listEntries(response: String): JsonArray = payloadArrayFromOkData(response)
 
     private fun JsonArray.objects(): List<JsonObject> = map { it.asJsonObject }
 
@@ -134,6 +131,35 @@ class JetBrainsMPSIntentionsMcpToolsetIntegrationTest : McpIntegrationTestBase()
             toggleAbstract != null,
         )
         assertEquals("NORMAL", toggleAbstract!!.get("kind").asString)
+    }
+
+    @Test
+    fun `list honours maxInlineBytes on both sides of the threshold`() {
+        val conceptRef = createConceptRoot("Inl")
+
+        // A fresh concept's intention listing is a few KB, well under the 20000-character default.
+        val inline = runTool(JetBrainsMPSIntentionsMcpToolset()) {
+            it.mps_mcp_list_node_intentions(conceptRef, includeQuickFixes = false)
+        }
+        val inlineEnvelope = JsonParser.parseString(inline).asJsonObject
+        assertTrue("expected ok envelope: $inline", inlineEnvelope.get("ok").asBoolean)
+        val inlineData = inlineEnvelope.get("data")
+        assertTrue("a small listing must be inlined as a JSON array in `data`, got: $inlineData", inlineData.isJsonArray)
+        assertTrue(
+            "the inlined listing must carry ToggleConceptAbstract",
+            inlineData.asJsonArray.objects().any { it.get("id").asString == toggleAbstractIntentionId },
+        )
+
+        val spilled = runTool(JetBrainsMPSIntentionsMcpToolset()) {
+            it.mps_mcp_list_node_intentions(conceptRef, includeQuickFixes = false, maxInlineBytes = 1)
+        }
+        val path = extractFilePathFromData(spilled)
+        assertTrue("`data` must be a temp-file path above maxInlineBytes: $path", File(path).isFile)
+        assertEquals(
+            "the saved listing must carry the same entries as the inline one",
+            inlineData.asJsonArray.objects().map { it.get("id").asString }.toSet(),
+            listEntries(spilled).objects().map { it.get("id").asString }.toSet(),
+        )
     }
 
     @Test

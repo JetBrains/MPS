@@ -2,9 +2,10 @@
 
 Two tools bring the editor's Alt+Enter context actions to a node **without opening an editor**:
 
-- `mps_mcp_list_node_intentions(nodeReference, includeAncestors=true, includeDisabled=false, includeQuickFixes=true)` —
-  lists the intentions and quick-fixes available on a node. Returns a temp-file path whose JSON is an
-  array of entries:
+- `mps_mcp_list_node_intentions(nodeReference, includeAncestors=true, includeDisabled=false, includeQuickFixes=true, maxInlineBytes=20000)` —
+  lists the intentions and quick-fixes available on a node. `data` is an array of entries, inline
+  when the serialized array is at most `maxInlineBytes` characters and a temp-file path above that
+  (the file holds the same `{ok, data}` envelope):
 
   ```
   { "type": "intention" | "quickFix",
