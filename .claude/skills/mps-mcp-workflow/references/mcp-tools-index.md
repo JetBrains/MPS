@@ -42,7 +42,7 @@
 
 - `mps_mcp_insert_console_command_from_json`: inserts a console `Command` node or one or more BaseLanguage statements into the current MPS Console input without executing it.
 - `mps_mcp_get_current_editor_root_node` with `source="console"`: returns the current unexecuted command in the MPS Console input editor.
-- `mps_mcp_get_console_history`: lists executed console commands, optionally interleaved with response/output entries.
+- `mps_mcp_get_console_history`: lists executed console commands, optionally interleaved with response/output entries, each with a one-line `preview` and a `previewComplete` flag (true: the preview is the exact printed text). A sequence of nodes, references, models, or modules prints only as a count; see the `mps-console` skill for reading a command's output.
 - `mps_mcp_recall_console_command`: copies a command from console history back into the input editor without executing it.
 - `mps_mcp_run_console_command`: runs the command currently in the Console input editor; it can have side effects and returns only that execution was triggered, so read results from console history or the Console UI.
 

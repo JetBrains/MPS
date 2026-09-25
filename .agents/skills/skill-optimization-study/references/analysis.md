@@ -1,10 +1,16 @@
 # Analysis
 
 ## Metrics (per run, `metrics.csv`)
-Tokens: input, output, cache_read, cache_write (cache_read ≈ turns × fixed context; 27 M for a
-180-turn run). Turns/calls: turns, tool_calls, mps_calls, bash_calls, skill_reads(+bytes),
+Tokens: input, output, cache_read, cache_write (cache_read ≈ turns × fixed context). Since D50
+M-0, `cache_read` comes from the `result` events plus subagent messages (see `harness.md`). `cache_read_events` keeps the old per-event sum,
+which stream-json inflates 1.5–3.4× because it repeats a message's usage on every content block.
+Reports before M-0 quote that sum (e.g. 27 M for a 180-turn run). Turns/calls: turns, tool_calls,
+mps_calls, bash_calls, skill_reads(+bytes),
 temp_file_envelopes, bash_temp_result_reads, bash_blueprint_writes. Payload: authored_input_chars,
-mps_authored_chars, tool_result_bytes. Reliability: errors, retries, validation_loops,
+mps_authored_chars, tool_result_bytes. Skill navigation: skill_msgs, skill_loads,
+skill_greps_{catalog,skill,file}, rereads, rereads_after_compaction, index_hops, compactions,
+compaction_s, first_compaction_step, plus `phases.csv` per aspect phase (definitions in
+`harness.md`). Reliability: errors, retries, validation_loops,
 stale_incidents, server_errors, task pass (from the evaluator).
 Lifecycle: `welcome_rejections` (pre-dispatch rejections with an empty project listing — the
 Welcome screen, where no `projectPath` could have helped; 0 is the good value everywhere, S10

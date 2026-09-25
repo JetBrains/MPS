@@ -8,8 +8,8 @@ Task: run two read-only instance queries from the MPS Console via the Console MC
 
 1. Insert into the Console input, then run: `#instances(Ingredient)`.
 2. Insert into the Console input, then run:
-   `#instances(Ingredient).where({~it => it.name.length > 0})`.
-3. Read the Console history including the printed responses.
+   `#instances(Ingredient).where({~it => it.name.length > 0}).select({~it => it.name})`.
+3. Read the Console history including the printed responses, and report what each query printed.
 4. Recall the first command from history back into the Console input; leave it unexecuted.
 5. Print the current Console command as PLAIN TEXT and as JSON.
 

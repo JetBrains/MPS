@@ -32,6 +32,11 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
         // BLCommand extends GeneratedCommand which implements the console `Command` interface.
         private const val BL_COMMAND_CONCEPT = "jetbrains.mps.console.base.structure.BLCommand"
         private const val STATEMENT_LIST_CONCEPT = "jetbrains.mps.baseLanguage.structure.StatementList"
+
+        // A response preview lays out the whole Response in a headless editor only to keep 200 chars, so
+        // a response with more printed items than this (e.g. a `forEach` that `#print`s every node) gets
+        // no preview; the full text stays available via mps_mcp_print_node on the response reference.
+        private const val MAX_PREVIEW_RESPONSE_ITEMS = 100
     }
 
     @McpTool
@@ -179,11 +184,11 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Lists the MPS Console's command history — the commands previously executed in the Console tool window's current tab — in execution order (oldest first). Each entry is a node-info envelope plus `index`, `kind` (`command`), `reference` (the history `CommandHolder` to recall), `effectiveCommandReference` (the command node that would be recalled, for printing/inspection), and a best-effort one-line `preview`. Feed `reference` to `mps_mcp_recall_console_command` to copy a command back into the input. Feed `effectiveCommandReference` to `mps_mcp_print_node` for the full JSON blueprint or notational (PLAIN TEXT / HTML) printout. Set `includeResponses=true` to also include the printed responses (`kind`:`response`) interleaved in order; pass `limit` to keep only the most recent N entries. Requires the MPS Console plugin. The returned references are only valid until the next console interaction (execute / clear / history navigation), so use them promptly. Returns the list inline, or a temp-file path when large.
+        Lists the MPS Console's command history — the commands previously executed in the Console tool window's current tab — in execution order (oldest first). Each entry is a node-info envelope plus `index`, `kind` (`command`), `reference` (the history `CommandHolder` to recall), `effectiveCommandReference` (the command node that would be recalled, for printing/inspection), and a best-effort one-line `preview`. Feed `reference` to `mps_mcp_recall_console_command` to copy a command back into the input. Feed `effectiveCommandReference` to `mps_mcp_print_node` for the full JSON blueprint or notational (PLAIN TEXT / HTML) printout. Set `includeResponses=true` to also include the printed responses (`kind`:`response`) interleaved in order, each with a `preview` of its printed text (whitespace and line breaks collapsed to single spaces, cut at 200 chars, omitted when empty, unrenderable, or over 100 items, where each printed value and each line break counts). Every `preview` comes with `previewComplete`: when true, the preview is the exact printed text (only the Console's leading and trailing padding removed), so do not print the node again; when false (cut, or collapsed from several lines), print the response's `reference` with `mps_mcp_print_node` (`PLAIN TEXT`) for the exact full text. The printed text is what the Console shows, so a non-empty sequence of nodes, references, models, or modules reads only as a count (e.g. `3 nodes`, `12 models`) and an empty one as `empty sequence`; select a property first (`.select({~it => it.name; })`) to get the values. A command that printed nothing has no response entry. Pass `limit` to keep only the most recent N entries. Requires the MPS Console plugin. The returned references are only valid until the next console interaction (execute / clear / history navigation), so use them promptly. Returns the list inline, or a temp-file path when large.
     """
     )
     suspend fun mps_mcp_get_console_history(
-        @McpDescription("Optional: also include the printed responses (output) interleaved with commands, as `kind`:`response` entries. Default: false (commands only).") includeResponses: Boolean = false,
+        @McpDescription("Optional: also include the printed responses (output) interleaved with commands, as `kind`:`response` entries, each with a one-line `preview` of the printed text when it is short enough to render, and `previewComplete` saying whether that preview is already the exact text. Default: false (commands only).") includeResponses: Boolean = false,
         @McpDescription("Optional: keep only the most recent N entries (after the response filter). Default: all.") limit: Int? = null
     ): String {
         return withMpsProject("Getting MPS console history") { mpsProject ->
@@ -205,10 +210,13 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                         obj.addProperty("kind", "command")
                         effectiveConsoleCommand(item)?.let { cmd ->
                             obj.addProperty("effectiveCommandReference", facade.asString(cmd.reference))
-                            consoleNodePreview(mpsProject.repository, cmd)?.let { obj.addProperty("preview", it) }
+                            consoleNodePreview(mpsProject.repository, cmd)?.addTo(obj)
                         }
                     } else {
                         obj.addProperty("kind", "response")
+                        if (item.children.count() <= MAX_PREVIEW_RESPONSE_ITEMS) {
+                            consoleNodePreview(mpsProject.repository, item)?.addTo(obj)
+                        }
                     }
                     array.add(obj)
                 }
@@ -381,18 +389,34 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     }
 
     /**
-     * Best-effort one-line notational preview of a console command node (truncated to 200 chars), rendered
+     * A console node preview. [complete] is true when [text] equals the trimmed `mps_mcp_print_node` PLAIN TEXT,
+     * i.e. nothing was cut and the rendering had no line breaks or whitespace runs to collapse.
+     */
+    private class ConsolePreview(val text: String, val complete: Boolean) {
+        fun addTo(obj: JsonObject) {
+            obj.addProperty("preview", text)
+            obj.addProperty("previewComplete", complete)
+        }
+    }
+
+    /**
+     * Best-effort one-line notational preview of a console command or response node (truncated to 200 chars), rendered
      * via the same headless editor projection as `mps_mcp_print_node`'s PLAIN TEXT format. Returns null on
      * any rendering failure — a preview is a convenience and must never fail the listing. Must run on the
      * EDT under a read action.
      */
-    private fun consoleNodePreview(repository: SRepository, node: SNode): String? {
+    private fun consoleNodePreview(repository: SRepository, node: SNode): ConsolePreview? {
         return try {
             val component = HeadlessEditorComponent(repository)
             try {
                 component.editNode(node)
-                val text = component.rootCell.renderText().getText().replace(Regex("\\s+"), " ").trim()
-                if (text.isEmpty()) null else if (text.length > 200) text.take(200) + "…" else text
+                val raw = component.rootCell.renderText().getText().trim()
+                val text = raw.replace(Regex("\\s+"), " ")
+                when {
+                    text.isEmpty() -> null
+                    text.length > 200 -> ConsolePreview(text.take(200) + "…", complete = false)
+                    else -> ConsolePreview(text, complete = text == raw)
+                }
             } finally {
                 component.dispose()
             }

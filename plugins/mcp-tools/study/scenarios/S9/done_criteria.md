@@ -14,18 +14,22 @@ state** in the still-open MPS — evaluate before the project is closed.
    each followed by a `kind:response`. Print each command via
    `mps_mcp_print_node(effectiveCommandReference, format=PLAIN TEXT)` (do not use the history
    `reference` — that is the `CommandHolder` for recall only).
-   - One command is `#instances(Ingredient)` with no `where` (or equivalent
+   - One command is `#instances(Ingredient)` with no `where` and no `select` (or equivalent
      `InstancesExpression` of `mcp.study.recipes.structure.Ingredient`).
-   - Another is that query plus a `where` (or equivalent filter) on the name.
-   Wrapping in `#print` or a `{ … }` `BLCommand` is accepted. The unfiltered response is a
-   sequence whose printed items include all 3 Ingredient names from check 1. The filtered
-   response includes those same names (the prescribed filter is non-empty name). Equivalent
-   filters (`isNotEmpty`, `!= ""`, `:ne: null`, `length > 0`) are accepted if the response still
-   contains all 3 names.
+   - Another is that query plus a `where` (or equivalent filter) on the name, then a `select` of
+     the name.
+   Wrapping in `#print` or a `{ … }` `BLCommand` is accepted. Read each response's printed text
+   from its `kind:response` entry's `preview`, or from `mps_mcp_print_node(<that entry's
+   reference>, format=PLAIN TEXT)` when the running plugin has no response `preview`. The
+   unfiltered response is `3 nodes`: the Console prints a sequence of nodes as a count only, so
+   the names are not expected there. The filtered response lists all 3 Ingredient names from
+   check 1 as one bracketed list (`[<name>, <name>, <name>]`, any order). The prescribed filter
+   is non-empty name. Equivalent filters (`isNotEmpty`, `!= ""`, `:ne: null`, `length > 0`) are
+   accepted if the response still lists all 3 names.
 
 3. `mps_mcp_get_current_editor_root_node(source=console)` returns a command (not empty).
    `mps_mcp_print_node` on it (`PLAIN TEXT` and `JSON`) is the recalled first query:
-   `#instances(Ingredient)` without a `where`. Equivalent: a `BLExpression` / `BLCommand` whose
-   expression is `InstancesExpression` of Ingredient.
+   `#instances(Ingredient)` without a `where` or `select`. Equivalent: a `BLExpression` /
+   `BLCommand` whose expression is `InstancesExpression` of Ingredient.
 
 Pass = all three hold.

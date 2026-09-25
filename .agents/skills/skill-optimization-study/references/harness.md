@@ -72,12 +72,12 @@ mapped onto `message.usage`. Claude-shaped input is a no-op. Unknown event types
 stderr and do not drop tool pairs.
 
 ## analyze_runs.py `$RUNS [--out DIR (default $RUNS/analysis)] [--min-occurrences 3] [--top 25]`
-Outputs: `metrics.csv`, `tools.json` (per-tool calls/errors/avg sizes, transcript + server),
-`chains.json`, `errors.json`, `hotspots.md`. `pass` comes from `<id>.meta.json.taskPass` (empty until
+Outputs: `metrics.csv`, `phases.csv`, `navigation.json`, `tools.json` (per-tool calls/errors/avg
+sizes, transcript + server), `chains.json`, `errors.json`, `hotspots.md`. `pass` comes from `<id>.meta.json.taskPass` (empty until
 the observer evaluates; always empty for SMOKE).
 The server slice is filtered to `meta.project` plus every path in `meta.relatedProjects`.
 Per run: tokens (input/output/cache read/write), tool calls, MCP calls, Bash/Read/Write, skill-file
-reads + bytes (Read and Bash `cat`/`sed` of `*/skills/*`), temp-file envelopes (`data` = path),
+reads + bytes (Read, Grep, Glob and Bash calls that touch `*/skills/*`), temp-file envelopes (`data` = path),
 Bash reads of those files, Bash blueprint writes, authored tool-input chars (all / MCP), tool-result
 bytes, error envelopes (`is_error` or `{"ok":false`), error→retry pairs (same tool within 2 calls),
 validation loops (≥ 3 `check_root_node_problems` on one root), stale-runtime text hits, server
@@ -102,6 +102,37 @@ part of it — so the evidence is incomplete rather than clean. Missing/empty se
 surplus unavailable and produces no warning, and lifecycle scenarios (`S10*`) are exempt in both
 directions because they legitimately span several projects. `agent_calls` counts parent `Agent` tool-use events, not prose
 or explicitly child-tagged events. Chains = bigrams/trigrams of `tool[:operation/kind]`.
+
+**Skill navigation (D50 M-0).** Bash commands are parsed, and the old `SKILL_DIR_RE` match is OR-ed
+in so `skill_reads` only grows. The persisted cwd of a `cd` carries into later calls until the
+result says `Shell cwd was reset to …`. `VAR=…` and `for f in …; do … "$VAR/$f"; done` are
+expanded. Heredoc bodies and comment lines are skipped, and a path with an unknown `$VAR` is
+ignored. Every skill access is recorded as one of: read (whole = `Read` without offset/limit, or a
+lone `cat`), grep, list, script, or other (e.g. `tee`, `echo`). `.agents/skills/X` and
+`.claude/skills/X` count as the same file. Metrics columns:
+- `skill_msgs`: distinct assistant messages carrying skill calls. `skill_loads`: `Skill` tool calls.
+- `skill_greps_{catalog,skill,file}`: one per grep call, at its widest target. catalog = the skills
+  root, a glob over skill names, or a catalog-level file such as `MPS_MCP_SKILL_VERSION.txt`;
+  skill = a skill tree or a glob in one; file = named files only (one or several).
+- `rereads`: calls that whole-read a file an earlier call of the same session already read whole.
+  `rereads_after_compaction`: the ones with an auto-compaction between the two reads.
+- `index_hops`: reads of a split directory's index `X.md` followed by a section `X/…` in a later
+  call of the same message or of the next skill message. The same-message case (a parallel batch)
+  counts, as D50's hand counts did.
+- `compactions`, `compaction_s`, `first_compaction_step`: from `compact_boundary` events. A step is
+  the last `tool_use` ordinal before the compaction.
+- `cache_read`: the sum over the `result` events (a resumed run has one per query), plus subagent
+  messages counted once per message id. Without result usage (killed run, Junie), the per-message
+  sum is used instead. `cache_read_events` is the old per-event sum, 1.5–3.4× larger (D50 E6).
+  `input_tokens`, `output_tokens` and `cache_write` are still per-event sums.
+
+`phases.csv` has one row per run and aspect phase. A phase runs from the first access of an
+`mps-aspect-*` skill to the step before the next new aspect's first access. A `Skill` load counts as
+an access, so a worker that loads several aspects in one batch gets near-empty early phases (r8
+S2). A call that touches an aspect skill counts for that aspect; other calls count for the phase
+they fall in; `(pre)` is everything before the first aspect. Columns: span, skill calls, loads, messages, bytes, greps by
+scope, re-reads, index hops, distinct files read. `navigation.json` holds the per-run detail:
+compactions, re-reads, hops, greps, phases, and every skill call with its accesses.
 
 `--setting-sources project` remains deferred. Adopting it requires a separate SMOKE proving login,
 the live project catalog, and skills still work; it is not needed for the user-agent guard.

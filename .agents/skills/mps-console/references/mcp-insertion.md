@@ -68,6 +68,57 @@ All of the following pass `dryRun` and insert cleanly against a live MPS.
    {"concept":"jetbrains.mps.console.ideCommands.structure.Make"}]}]}
 ```
 
+## A query with closures: `.where(…)` and `.select(…)`
+
+The Console's typical job is a query that filters and maps with closures. As a raw blueprint, `#instances(ConceptDeclaration).where({~it => it.name.endsWith("Literal")}).select({~it => it.conceptAlias})` is about 3.8 KB of JSON with brackets nested 39 deep, too deep to write or edit by hand without miscounting brackets. Generate it instead: the script below writes the verified blueprint. Change only the `CUSTOMIZE` constants and the two closure bodies, run it, and pass the printed path as `json`.
+
+```bash
+python3 - <<'PY'
+import json, os
+# CUSTOMIZE: the concept to query (FQN), the property the filter reads, the property the result selects.
+# A property target is the `sourceNode` that mps_mcp_get_concept_details lists for the property.
+CONCEPT = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
+FILTER_PROP = "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001"    # name
+SELECT_PROP = "r:00000000-0000-4000-0000-011c89590292(jetbrains.mps.lang.structure.structure)/5092175715804935370"  # conceptAlias
+# CUSTOMIZE: a JDK String method, as ~String.<method>%28<parameter type FQNs, comma-separated>%29 (%28%29 when it takes none).
+STRING_METHOD = "6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)/~String.endsWith%28java.lang.String%29"
+
+BL, COLL, CL = "jetbrains.mps.baseLanguage.structure.", "jetbrains.mps.baseLanguage.collections.structure.", "jetbrains.mps.baseLanguage.closures.structure."
+def n(concept, props=None, children=None, refs=None):
+    d = {"concept": concept}
+    if props: d["properties"] = [{"name": k, "value": v} for k, v in props.items()]
+    if refs: d["references"] = [{"role": r, "target": t} for r, t in refs.items()]
+    if children: d["children"] = [{"role": r, "nodes": ns} for r, ns in children]
+    return d
+def dot(operand, operation): return n(BL + "DotExpression", children=[("operand", [operand]), ("operation", [operation])])
+def it(): return n(BL + "VariableReference", refs={"variableDeclaration": "it"})
+def prop(expr, target): return dot(expr, n("jetbrains.mps.lang.smodel.structure.SPropertyAccess", refs={"property": target}))
+def call(expr, method, *args): return dot(expr, n(BL + "InstanceMethodCallOperation", refs={"baseMethodDeclaration": method}, children=[("actualArgument", list(args))] if args else None))
+def closure(body):  # {~it => <body>; }
+    param = n(CL + "InferredClosureParameterDeclaration", {"name": "it"}, [("type", [n(BL + "UndefinedType")])])
+    stmt = n(BL + "ExpressionStatement", children=[("expression", [body])])
+    return n(CL + "ClosureLiteral", children=[("parameter", [param]), ("body", [n(BL + "StatementList", children=[("statement", [stmt])])])])
+
+query = n("jetbrains.mps.lang.smodel.query.structure.InstancesExpression", children=[("conceptArg", [
+    n("jetbrains.mps.lang.smodel.structure.RefConcept_Reference", refs={"conceptDeclaration": CONCEPT})])])
+# CUSTOMIZE: the filter body (any boolean expression over it()) and the select body.
+query = dot(query, n(COLL + "WhereOperation", children=[("closure", [closure(
+    call(prop(it(), FILTER_PROP), STRING_METHOD, n(BL + "StringLiteral", {"value": "Literal"})))])]))
+query = dot(query, n(COLL + "SelectOperation", children=[("closure", [closure(prop(it(), SELECT_PROP))])]))
+
+path = os.path.join(os.environ.get("TMPDIR", "/tmp"), "console-query-%d.json" % os.getpid())
+json.dump(n("jetbrains.mps.console.base.structure.BLExpression", children=[("expression", [query])]), open(path, "w"))
+print(path)
+PY
+```
+
+What to expect, verified against a live MPS:
+
+- **Dry run:** `ok:true` with two warnings of the form `target 'it' did not resolve; production run would create a dynamic reference`, one per closure. They are expected. The real insert binds each `it` to its closure parameter, and `mps_mcp_check_root_node_problems` on the inserted command then reports no problems.
+- **The inserted command** prints (`mps_mcp_print_node`, `PLAIN TEXT`) as `#instances(ConceptDeclaration).where({it => it.name.endsWith("Literal"); }).select({it => it.conceptAlias; })`. The editor shows the inferred parameter without its `~`.
+- **The response** is one bracketed list of the selected values, with `null` for a node where the property is unset. Read it as `SKILL.md` "Reading a command's output" describes. A long list gets a cut `preview` with `previewComplete:false`.
+- **Another chained operation** is one more `query = dot(query, n(<operation concept>, …))` line. `mps-model-manipulation` has the operation concepts and their child roles.
+
 ## Concept FQNs you need for blueprints
 
 | Surface | Concept FQN |
@@ -94,4 +145,4 @@ All of the following pass `dryRun` and insert cleanly against a live MPS.
 3. **Tell the user it is not executed** — they run it with Ctrl+Enter. Offer to insert a different command if they want to iterate.
 4. **Pass `projectPath`** whenever you know it, to avoid ambiguous-project errors. If the console plugin is disabled, ask the user to enable it.
 
-Building the smodel/collections expressions that go *inside* these blueprints (e.g. the `.where(…).forEach(…)` / `.refactor(…)` chain, closure literals) is the job of `mps-model-manipulation` and `mps-node-editing`.
+For a query with closures, start from the generator script in "A query with closures" above. Other smodel/collections expressions that go *inside* these blueprints (e.g. a `.forEach(…)` / `.refactor(…)` chain, or statements in a closure body) are the job of `mps-model-manipulation` and `mps-node-editing`.
