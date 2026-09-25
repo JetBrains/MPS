@@ -66,6 +66,18 @@ to keep — a caller who sent both could not otherwise tell which one the tool u
 JSON `null` still counts as absent under either spelling, so `{"enumerationRef": null,
 "enumerationReference": "…"}` is one value, not a conflict.
 
+The `mps_mcp_query_structure` operations that take exactly one concept (`IS_SUBCONCEPT_OF`,
+`GET_SUB_CONCEPTS`, `GET_ASSIGNABLE_CONCEPTS`, `GET_ALL_SUPERCONCEPTS`, `LIST_CONCEPT_ASPECTS`,
+`IS_SMART_REFERENCE`) also accept the plural `conceptRefs`, the spelling
+`mps_mcp_get_concept_details` and `FIND_INSTANCES` use, in the shape `FIND_INSTANCES` accepts: a
+nonblank string or a nonempty array of nonblank strings. One value, or a one-element array, is read
+as `conceptRef`. With several values only the **first** is used, and the response — success or
+failure — carries a `warnings` entry naming it and saying how many were ignored; send one call per
+concept instead. `conceptRefs` beside `conceptRef` / `conceptReference` is the two-spellings
+rejection above, which says to keep `conceptRef`; `FIND_INSTANCES`, which reads every concept, says
+to keep `conceptRefs` instead. `mps_mcp_alter_structure` does not take `conceptRefs`: a write
+applied to the first of several concepts would be a partial mutation.
+
 **Top-level tool parameters have no aliases**: the only accepted spelling is the one in the tool's
 schema (`conceptRefs`, `searchTexts`, `nodeReference`, `childNodeRef`, `conceptRef` for
 `mps_mcp_scaffold_editor`, …). Every parameter is optional in the published schema, so its

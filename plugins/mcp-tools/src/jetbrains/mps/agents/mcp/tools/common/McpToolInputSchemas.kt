@@ -6,6 +6,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import jetbrains.mps.java.core.newparser.FeatureKind
 
 class ToolInputJsonException(message: String) : IllegalArgumentException(message)
@@ -50,9 +51,22 @@ private const val PARAMETERS_PATH = "parameters"
  * other spelling inside the blob is free: a blob key is read out of one string parameter and never
  * appears in the published MCP schema, so unlike a top-level alias it costs nothing on the
  * per-turn schema floor. That asymmetry is why aliases stop at the blob boundary.
+ *
+ * [plural] is one more accepted spelling, for a single-valued key whose plural form sibling tools
+ * take (`conceptRefs` on `mps_mcp_get_concept_details` and FIND_INSTANCES, study D55). It may carry
+ * a single value or an array; before any reader sees it, [collapsePluralParameterKeys] checks its
+ * shape and reduces it to one string — unless another spelling of the key is present too, which is
+ * left for [paramString] to reject — so every reader of the key keeps working unchanged.
  */
-internal class BlobKey(val canonical: String, vararg aliases: String) {
-  val spellings: List<String> = listOf(canonical, *aliases)
+internal class BlobKey(val canonical: String, vararg aliases: String, val plural: String? = null) {
+  val spellings: List<String> = listOf(canonical, *aliases) + listOfNotNull(plural)
+
+  /** This key, also accepting [plural]. For operations that take exactly one value of the key. */
+  fun withPlural(plural: String): BlobKey {
+    check(this.plural == null) { "'$canonical' already accepts the plural '${this.plural}'" }
+    return BlobKey(canonical, *spellings.drop(1).toTypedArray(), plural = plural)
+  }
+
   override fun toString(): String = canonical
 }
 
@@ -127,9 +141,12 @@ internal class ParameterKeys private constructor(
   val canonical: List<String>,
   val accepted: Set<String>,
   val required: List<RequiredKey>,
+  /** The keys that accept a [BlobKey.plural] spelling, which [collapsePluralParameterKeys] reads. */
+  val withPlural: List<BlobKey>,
 ) {
-  operator fun plus(other: ParameterKeys): ParameterKeys =
-    ParameterKeys(canonical + other.canonical, accepted + other.accepted, required + other.required)
+  operator fun plus(other: ParameterKeys): ParameterKeys = ParameterKeys(
+    canonical + other.canonical, accepted + other.accepted, required + other.required, withPlural + other.withPlural,
+  )
 
   companion object {
     fun of(vararg keys: Any): ParameterKeys {
@@ -140,6 +157,7 @@ internal class ParameterKeys private constructor(
         blobKeys.map { it.canonical },
         blobKeys.flatMapTo(LinkedHashSet()) { it.spellings },
         keys.filterIsInstance<RequiredKey>(),
+        blobKeys.filter { it.plural != null },
       )
     }
   }
@@ -210,6 +228,53 @@ internal fun JsonObject.rejectMissingParameterKeys(context: String, keys: Parame
 }
 
 /**
+ * Reduces the value sent under a [BlobKey.plural] spelling to one string, in place, and returns one
+ * warning for every plural that carried more than one value. The value must have the shape
+ * FIND_INSTANCES' `conceptRefs` accepts — a nonblank string, or a nonempty array of nonblank
+ * strings — because the plural spelling carries none of the singular key's legacy `asString`
+ * leniency. A plural sent beside another spelling of its key is left for [paramString] to reject
+ * as two spellings, so the message names the conflict rather than the plural's shape.
+ *
+ * The first element is used rather than rejecting the call, because these are read-only operations
+ * that take exactly one value, and the warning tells the caller to issue one call per value. Run it
+ * after [rejectMissingParameterKeys], which already counts the plural spelling as present.
+ */
+internal fun JsonObject.collapsePluralParameterKeys(context: String, keys: ParameterKeys): List<String> =
+  keys.withPlural.mapNotNull { key ->
+    val plural = checkNotNull(key.plural)
+    val value = optionalElement(plural) ?: return@mapNotNull null
+    if (key.spellings.any { it != plural && optionalElement(it) != null }) return@mapNotNull null
+    val values = pluralStrings(value, plural)
+    add(plural, JsonPrimitive(values.first()))
+    if (values.size == 1) return@mapNotNull null
+    val ignored = values.size - 1
+    "$context takes a single '${key.canonical}', so only the first of the ${values.size} values in " +
+      "'$plural' was used ('${values.first()}'); " +
+      (if (ignored == 1) "the other value was ignored. " else "the other $ignored were ignored. ") +
+      "Call $context once per value."
+  }
+
+private fun pluralStrings(value: JsonElement, plural: String): List<String> {
+  fun nonblankString(element: JsonElement): String? =
+    element.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString && it.asString.isNotBlank() }?.asString
+  if (!value.isJsonArray) {
+    return listOf(
+      nonblankString(value) ?: throw ToolInputSchemaException(
+        "'$PARAMETERS_PATH.$plural' must be a nonblank string or a nonempty array of nonblank strings"
+      )
+    )
+  }
+  val values = value.asJsonArray
+  if (values.isEmpty) {
+    throw ToolInputSchemaException("'$PARAMETERS_PATH.$plural' must be a nonempty array of nonblank strings")
+  }
+  return values.mapIndexed { index, element ->
+    nonblankString(element)
+      ?: throw ToolInputSchemaException("'$PARAMETERS_PATH.$plural[$index]' must be a nonblank string")
+  }
+}
+
+/**
  * Returns the closest match from [candidates] for [input] if one is reasonably similar,
  * or null otherwise. "Reasonably similar" means edit distance <= max(2, length/3) — large
  * enough to catch a typo or a missing plural ('rebulid' -> 'rebuild', 'module' -> 'modules'),
@@ -243,10 +308,11 @@ private fun editDistance(a: String, b: String): Int {
 }
 
 /**
- * FIND_INSTANCES' plural concept selector. Not a [BlobKey] spelling of [PARAM_CONCEPT_REF]: a
- * [BlobKey] groups spellings of one key that all carry one value, while this key carries many
- * (a single reference or an array of them). The two are mutually exclusive at the call site —
- * see `AbstractNodeOps.requestedConceptRefs`.
+ * FIND_INSTANCES' plural concept selector. There it is its own key, not a [BlobKey] spelling of
+ * [PARAM_CONCEPT_REF], because it carries many concepts (a single reference or an array of them);
+ * the two are mutually exclusive at the call site — see `AbstractNodeOps.requestedConceptRefs`.
+ * The single-concept `mps_mcp_query_structure` operations accept it as the [BlobKey.plural] of
+ * their concept key instead, reduced to one concept by [collapsePluralParameterKeys].
  */
 internal const val PARAM_CONCEPT_REFS = "conceptRefs"
 

@@ -72,12 +72,22 @@ internal val GET_ASSIGNABLE_REFERENCES_KEYS = ParameterKeys.of(
 
 private val REQUIRED_CONCEPT_REF = required(PARAM_CONCEPT_REF, "the concept's reference or fully qualified name")
 
+/**
+ * The concept selector of the query operations that take exactly one concept. It also accepts
+ * `conceptRefs`, the spelling `mps_mcp_get_concept_details` and FIND_INSTANCES use (study D55); an
+ * array there is reduced to its first concept with a warning. The alter operations keep the strict
+ * key: applying a write to the first of several concepts would be a partial mutation.
+ */
+private val QUERY_CONCEPT_REF = PARAM_CONCEPT_REF.withPlural(PARAM_CONCEPT_REFS)
+
+private val REQUIRED_QUERY_CONCEPT_REF = required(QUERY_CONCEPT_REF, "the concept's reference or fully qualified name")
+
 private val REQUIRED_STRUCTURE_MODEL_REF =
     required(PARAM_STRUCTURE_MODEL_REF, "the language's structure model reference")
 
-private val CONCEPT_ONLY_KEYS = ParameterKeys.of(REQUIRED_CONCEPT_REF)
+private val CONCEPT_ONLY_KEYS = ParameterKeys.of(REQUIRED_QUERY_CONCEPT_REF)
 
-private val CONCEPT_AND_LANGUAGES_KEYS = ParameterKeys.of(REQUIRED_CONCEPT_REF, "languageRefs")
+private val CONCEPT_AND_LANGUAGES_KEYS = ParameterKeys.of(REQUIRED_QUERY_CONCEPT_REF, "languageRefs")
 
 private val RENAME_ROLE_KEYS = ParameterKeys.of(
     REQUIRED_CONCEPT_REF,
@@ -105,16 +115,18 @@ private fun queryStructureParameterKeys(operation: MPSStructureQueryOperation): 
     )
     MPSStructureQueryOperation.FIND_INSTANCES -> FIND_INSTANCES_KEYS
     MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> ParameterKeys.of(
-        REQUIRED_CONCEPT_REF,
+        REQUIRED_QUERY_CONCEPT_REF,
         required(PARAM_SUPER_CONCEPT_REF, "the candidate super-concept's or interface's reference or fully qualified name"),
     )
     MPSStructureQueryOperation.GET_SUB_CONCEPTS,
     MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> CONCEPT_AND_LANGUAGES_KEYS
     MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> GET_ASSIGNABLE_REFERENCES_KEYS
     MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> CONCEPT_ONLY_KEYS
-    MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> ParameterKeys.of(REQUIRED_CONCEPT_REF, "includeInherited")
+    MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> ParameterKeys.of(REQUIRED_QUERY_CONCEPT_REF, "includeInherited")
     MPSStructureQueryOperation.IS_SMART_REFERENCE -> CONCEPT_ONLY_KEYS
 }
+
+private fun queryStructureActivity(operation: MPSStructureQueryOperation) = "Performing MPS structure query: $operation"
 
 /**
  * `dryRun` is accepted only by the two operations that honour it. Every other operation read it
@@ -195,7 +207,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
      * framework's pre-call enum decode (see [resolveOperationOrNull]). Retained as a direct enum
      * entry point for in-process callers and tests.
      */
-    suspend fun mps_mcp_query_structure(operation: MPSStructureQueryOperation, parameters: String): String = withMpsProject("Performing MPS structure query: $operation") { mpsProject ->
+    suspend fun mps_mcp_query_structure(operation: MPSStructureQueryOperation, parameters: String): String = withMpsProject(queryStructureActivity(operation)) { mpsProject ->
         val gson = Gson()
         val params = try {
             gson.fromJson(parameters, JsonObject::class.java)
@@ -204,135 +216,143 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         }
         params.rejectUnknownParameterKeys(operation.name, queryStructureParameterKeys(operation))
         params.rejectMissingParameterKeys(operation.name, queryStructureParameterKeys(operation))
+        val pluralWarnings = params.collapsePluralParameterKeys(operation.name, queryStructureParameterKeys(operation))
 
-        when (operation) {
-            MPSStructureQueryOperation.GET_ENUMERATION_LITERALS -> {
-                val enumerationRef = params.paramString(PARAM_ENUMERATION_REF)
-                val nodeReference = params.paramString(PARAM_NODE_REFERENCE)
-                val propertyName = params.paramString("propertyName")
-                if (enumerationRef != null) {
-                    if (nodeReference != null || propertyName != null) {
-                        return@withMpsProject errJson(
-                            "Pass either 'enumerationRef' or both 'nodeReference' and 'propertyName', not both forms",
-                            McpErrorCode.INVALID_REQUEST,
-                        )
-                    }
-                    mps_mcp_get_enumeration_literals_by_declaration(enumerationRef)
-                } else {
-                    mps_mcp_get_enumeration_literals(checkNotNull(nodeReference), checkNotNull(propertyName))
-                }
-            }
-
-            // Not advertised in the tool description anymore — FIND_INSTANCES moved to
-            // mps_mcp_query_nodes. Kept dispatching so pre-move skill copies installed in
-            // other projects continue to work.
-            MPSStructureQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params)
-
-            MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> {
-                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
-                val superConceptRef = params.requiredParamString(PARAM_SUPER_CONCEPT_REF)
-                executeShortReadOnEdt(mpsProject) {
-                    val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
-                    val superConcept = resolveConceptPreferringProject(mpsProject, superConceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Super concept '$superConceptRef' not found", McpErrorCode.NOT_FOUND)
-                    okJson(concept.isSubConceptOf(superConcept).toString())
-                }
-            }
-
-            MPSStructureQueryOperation.GET_SUB_CONCEPTS,
-            MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> {
-                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
-                val languageRefsElement = params.get("languageRefs")
-                executeShortReadOnEdt(mpsProject) {
-                    val targetConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
-                    val allConcepts = mutableSetOf<SAbstractConcept>()
-                    val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
-
-                    val languages = if (languageRefsElement != null && languageRefsElement.isJsonArray) {
-                        val refs = gson.fromJson<List<String>>(languageRefsElement, object : TypeToken<List<String>>() {}.type)
-                        if (refs.isEmpty()) {
-                            languageRegistry.allLanguages
-                        } else {
-                            refs.mapNotNull { resolveLanguagePreferringProject(mpsProject, it) }
+        // Caught here rather than by withMpsProject, so a typed read that throws after the collapse
+        // still reports which of the caller's concepts it was about.
+        val response = try {
+            when (operation) {
+                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS -> {
+                    val enumerationRef = params.paramString(PARAM_ENUMERATION_REF)
+                    val nodeReference = params.paramString(PARAM_NODE_REFERENCE)
+                    val propertyName = params.paramString("propertyName")
+                    if (enumerationRef != null) {
+                        if (nodeReference != null || propertyName != null) {
+                            return@withMpsProject errJson(
+                                "Pass either 'enumerationRef' or both 'nodeReference' and 'propertyName', not both forms",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
                         }
+                        mps_mcp_get_enumeration_literals_by_declaration(enumerationRef)
                     } else {
-                        languageRegistry.allLanguages
+                        mps_mcp_get_enumeration_literals(checkNotNull(nodeReference), checkNotNull(propertyName))
                     }
+                }
 
-                    val onlyAssignable = operation == MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS
-                    for (lang in languages) {
-                        val runtime = languageRegistry.getLanguage(lang) ?: continue
-                        for (concept in runtime.concepts) {
-                            if (concept.isSubConceptOf(targetConcept)) {
-                                if (onlyAssignable) {
-                                    if (!concept.isAbstract) {
+                // Not advertised in the tool description anymore — FIND_INSTANCES moved to
+                // mps_mcp_query_nodes. Kept dispatching so pre-move skill copies installed in
+                // other projects continue to work.
+                MPSStructureQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params)
+
+                MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    val superConceptRef = params.requiredParamString(PARAM_SUPER_CONCEPT_REF)
+                    executeShortReadOnEdt(mpsProject) {
+                        val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+                        val superConcept = resolveConceptPreferringProject(mpsProject, superConceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Super concept '$superConceptRef' not found", McpErrorCode.NOT_FOUND)
+                        okJson(concept.isSubConceptOf(superConcept).toString())
+                    }
+                }
+
+                MPSStructureQueryOperation.GET_SUB_CONCEPTS,
+                MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    val languageRefsElement = params.get("languageRefs")
+                    executeShortReadOnEdt(mpsProject) {
+                        val targetConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+                        val allConcepts = mutableSetOf<SAbstractConcept>()
+                        val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
+
+                        val languages = if (languageRefsElement != null && languageRefsElement.isJsonArray) {
+                            val refs = gson.fromJson<List<String>>(languageRefsElement, object : TypeToken<List<String>>() {}.type)
+                            if (refs.isEmpty()) {
+                                languageRegistry.allLanguages
+                            } else {
+                                refs.mapNotNull { resolveLanguagePreferringProject(mpsProject, it) }
+                            }
+                        } else {
+                            languageRegistry.allLanguages
+                        }
+
+                        val onlyAssignable = operation == MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS
+                        for (lang in languages) {
+                            val runtime = languageRegistry.getLanguage(lang) ?: continue
+                            for (concept in runtime.concepts) {
+                                if (concept.isSubConceptOf(targetConcept)) {
+                                    if (onlyAssignable) {
+                                        if (!concept.isAbstract) {
+                                            allConcepts.add(concept)
+                                        }
+                                    } else {
                                         allConcepts.add(concept)
                                     }
-                                } else {
-                                    allConcepts.add(concept)
                                 }
                             }
                         }
+                        val cache = ProjectMembershipCache(mpsProject)
+                        val jsonResults = allConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
+                        finalizeResult("[" + jsonResults.joinToString(",") + "]")
                     }
-                    val cache = ProjectMembershipCache(mpsProject)
-                    val jsonResults = allConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
-                    finalizeResult("[" + jsonResults.joinToString(",") + "]")
-                }
-            }
-
-            MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> {
-                val request = try {
-                    Gson().fromJson(parameters, GetAssignableReferencesRequest::class.java)
-                } catch (e: Exception) {
-                    return@withMpsProject invalidJson("Invalid parameters for GET_ASSIGNABLE_REFERENCES: ${e.message}")
                 }
 
-                val service = AssignableReferenceService(mpsProject)
-                val response = service.getAssignableReferences(request)
-
-                if (response.ok) {
-                    Gson().toJson(response)
-                } else {
-                    errJson(response.error)
-                }
-            }
-
-            MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> {
-                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
-                executeShortReadOnEdt(mpsProject) {
-                    val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
-                    val allSuperConcepts = mutableSetOf<SAbstractConcept>()
-                    populateSuperConceptsAndInterfaces(concept, allSuperConcepts)
-                    val cache = ProjectMembershipCache(mpsProject)
-                    val jsonResults = allSuperConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
-                    finalizeResult("[" + jsonResults.joinToString(",") + "]")
-                }
-            }
-
-            MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> {
-                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
-                val includeInherited = params.paramBoolean("includeInherited", default = false)
-                mps_mcp_list_concept_aspects(conceptRef, includeInherited)
-            }
-
-            MPSStructureQueryOperation.IS_SMART_REFERENCE -> {
-                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
-                executeShortReadOnEdt(mpsProject) {
-                    val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept not found: $conceptRef", McpErrorCode.NOT_FOUND)
-                    val smartRefLink = getSmartReferenceLink(concept, mpsProject.repository)
-                    val result = JsonObject()
-                    result.addProperty("isSmartReference", smartRefLink != null)
-                    if (smartRefLink != null) {
-                        result.addProperty("characteristicReferenceName", smartRefLink.name)
+                MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> {
+                    val request = try {
+                        Gson().fromJson(parameters, GetAssignableReferencesRequest::class.java)
+                    } catch (e: Exception) {
+                        return@withMpsProject invalidJson("Invalid parameters for GET_ASSIGNABLE_REFERENCES: ${e.message}")
                     }
-                    okJson(gson.toJson(result))
+
+                    val service = AssignableReferenceService(mpsProject)
+                    val response = service.getAssignableReferences(request)
+
+                    if (response.ok) {
+                        Gson().toJson(response)
+                    } else {
+                        errJson(response.error)
+                    }
+                }
+
+                MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    executeShortReadOnEdt(mpsProject) {
+                        val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+                        val allSuperConcepts = mutableSetOf<SAbstractConcept>()
+                        populateSuperConceptsAndInterfaces(concept, allSuperConcepts)
+                        val cache = ProjectMembershipCache(mpsProject)
+                        val jsonResults = allSuperConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
+                        finalizeResult("[" + jsonResults.joinToString(",") + "]")
+                    }
+                }
+
+                MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    val includeInherited = params.paramBoolean("includeInherited", default = false)
+                    mps_mcp_list_concept_aspects(conceptRef, includeInherited)
+                }
+
+                MPSStructureQueryOperation.IS_SMART_REFERENCE -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    executeShortReadOnEdt(mpsProject) {
+                        val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept not found: $conceptRef", McpErrorCode.NOT_FOUND)
+                        val smartRefLink = getSmartReferenceLink(concept, mpsProject.repository)
+                        val result = JsonObject()
+                        result.addProperty("isSmartReference", smartRefLink != null)
+                        if (smartRefLink != null) {
+                            result.addProperty("characteristicReferenceName", smartRefLink.name)
+                        }
+                        okJson(gson.toJson(result))
+                    }
                 }
             }
+        } catch (e: Throwable) {
+            toolFailure(queryStructureActivity(operation), e)
         }
+        withWarnings(response, pluralWarnings)
     }
 
     @McpTool

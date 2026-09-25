@@ -1676,8 +1676,10 @@ abstract class AbstractNodeOps : AbstractOps() {
      * Reads FIND_INSTANCES' concept selector: the plural `conceptRefs` (a single reference or a
      * nonempty array of them) or the singular `conceptRef` / `conceptReference`.
      *
-     * `conceptRefs` is deliberately **not** a third spelling folded into [PARAM_CONCEPT_REF]: a
-     * [BlobKey] holds spellings of one key with one arity, and this key takes many values. Sending
+     * `conceptRefs` is deliberately **not** a third spelling folded into [PARAM_CONCEPT_REF] here:
+     * this key takes many values, while a [BlobKey] spelling is read as one. (The single-concept
+     * `mps_mcp_query_structure` operations do accept it as a [BlobKey.plural], collapsed to its
+     * first concept; FIND_INSTANCES keeps every concept.) Sending
      * the plural together with either singular spelling is rejected naming the one to keep — the
      * same "reject the ignored key" policy [paramString] applies to two spellings of one key,
      * because a caller who sent both cannot tell which one won. The arity conflict is reported

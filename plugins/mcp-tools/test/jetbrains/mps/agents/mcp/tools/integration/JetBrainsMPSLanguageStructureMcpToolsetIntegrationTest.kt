@@ -1484,6 +1484,125 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         assertTrue(expectErr(response).contains("this.does.not.exist"))
     }
 
+    // ── Plural conceptRefs on single-concept queries (study D55) ──────────────────────
+
+    @Test
+    fun `single-concept queries accept conceptRefs as one value without a warning`() {
+        val conceptRef = createConceptRoot("PluralSingle")
+        for (value in listOf("\"$conceptRef\"", "[\"$conceptRef\"]")) {
+            val response = runTool {
+                it.mps_mcp_query_structure(
+                    MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS,
+                    """{"conceptRefs":$value}"""
+                )
+            }
+            assertEquals(response, 0, parseDataArray(response).size())
+            assertFalse("one value is not a collapse: $response", JsonParser.parseString(response).asJsonObject.has("warnings"))
+        }
+    }
+
+    @Test
+    fun `single-concept queries use the first of several conceptRefs and warn about the rest`() {
+        val first = createConceptRoot("PluralFirst")
+        val second = createConceptRoot("PluralSecond")
+        val response = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.IS_SUBCONCEPT_OF,
+                """{"conceptRefs":["$first","$second"],"superConceptRef":"jetbrains.mps.lang.core.structure.BaseConcept"}"""
+            )
+        }
+        assertTrue(expectDataBoolean(response))
+        val warnings = JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")
+        assertNotNull("expected a warning for the ignored concept: $response", warnings)
+        assertEquals(response, 1, warnings.size())
+        val warning = warnings[0].asString
+        assertTrue(warning, warning.contains("IS_SUBCONCEPT_OF takes a single 'conceptRef'"))
+        assertTrue(warning, warning.contains("'$first'"))
+        assertTrue(warning, warning.contains("the other value was ignored"))
+
+        // The warning rides along on a failure envelope too, returned or thrown: the caller learns
+        // the lookup that failed was only the first of its values.
+        val notFound = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS,
+                """{"conceptRefs":["this.does.not.exist","$second"]}"""
+            )
+        }
+        assertTrue(expectErr(notFound).contains("this.does.not.exist"))
+        assertEquals(notFound, 1, JsonParser.parseString(notFound).asJsonObject.getAsJsonArray("warnings")?.size())
+        val badBoolean = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS,
+                """{"conceptRefs":["$first","$second"],"includeInherited":"yes"}"""
+            )
+        }
+        assertTrue(expectErr(badBoolean).contains("'parameters.includeInherited' must be a boolean"))
+        assertEquals(badBoolean, 1, JsonParser.parseString(badBoolean).asJsonObject.getAsJsonArray("warnings")?.size())
+    }
+
+    @Test
+    fun `GET_SUB_CONCEPTS combines a collapsed conceptRefs with languageRefs`() {
+        val parent = createConceptRoot("PluralParent")
+        val response = runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.GET_SUB_CONCEPTS,
+                """{"conceptRefs":["jetbrains.mps.lang.structure.structure.AbstractConceptDeclaration","$parent"],""" +
+                    """"languageRefs":["jetbrains.mps.lang.structure"]}"""
+            )
+        }
+        val names = parseDataArray(response).map { it.asJsonObject.get("name").asString }.toSet()
+        assertTrue("the first concept's subconcepts, in the listed language: $names", names.contains("ConceptDeclaration"))
+        assertEquals(response, 1, JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.size())
+    }
+
+    @Test
+    fun `the registered query_structure tool collapses a real conceptRefs array`() {
+        val first = createConceptRoot("PluralWire")
+        val response = runTool {
+            it.mps_mcp_query_structure(
+                "GET_ALL_SUPERCONCEPTS",
+                JsonOrText("""{"conceptRefs":["$first","jetbrains.mps.lang.core.structure.BaseConcept"]}"""),
+            )
+        }
+        assertTrue(response, parseDataArray(response).any { it.asJsonObject.get("name")?.asString?.endsWith("BaseConcept") == true })
+        assertEquals(response, 1, JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.size())
+    }
+
+    @Test
+    fun `single-concept queries reject an empty conceptRefs and conceptRefs beside conceptRef`() {
+        val conceptRef = createConceptRoot("PluralRejected")
+        val empty = expectErr(runTool {
+            it.mps_mcp_query_structure(MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS, """{"conceptRefs":[]}""")
+        })
+        assertTrue(empty, empty.contains("'parameters.conceptRefs' must be a nonempty array of nonblank strings"))
+
+        // FIND_INSTANCES' shape rule, not the singular key's legacy asString leniency.
+        val nullFirst = expectErr(runTool {
+            it.mps_mcp_query_structure(MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS, """{"conceptRefs":[null,"$conceptRef"]}""")
+        })
+        assertTrue(nullFirst, nullFirst.contains("'parameters.conceptRefs[0]' must be a nonblank string"))
+
+        val both = expectErr(runTool {
+            it.mps_mcp_query_structure(
+                MPSStructureQueryOperation.IS_SMART_REFERENCE,
+                """{"conceptRef":"$conceptRef","conceptRefs":["$conceptRef"]}"""
+            )
+        })
+        assertTrue("must name the winner: $both", both.contains("Keep 'conceptRef'"))
+    }
+
+    @Test
+    fun `structure alterations keep rejecting conceptRefs`() {
+        val conceptRef = createConceptRoot("PluralAlter")
+        val message = expectErr(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY,
+                """{"conceptRefs":["$conceptRef"],"propertyName":"p","dataType":"string"}"""
+            )
+        })
+        assertTrue(message, message.contains("'conceptRefs' (did you mean 'conceptRef'?)"))
+    }
+
     // ── Persistence: concept-mutation methods flush to disk ───────────────────────────
     //
     // These tests read the structure-model .mps file from disk after calling a mutation

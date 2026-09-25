@@ -296,6 +296,19 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
+     * Appends [warnings] to the `warnings` of an already built [envelope], success or failure, for a
+     * warning the dispatcher knows before the operation runs (a collapsed plural key, see
+     * [collapsePluralParameterKeys]). Returns [envelope] untouched when there is nothing to add.
+     */
+    protected fun withWarnings(envelope: String, warnings: List<String>): String {
+        if (warnings.isEmpty()) return envelope
+        val obj = JsonParser.parseString(envelope).asJsonObject
+        val all = obj.getAsJsonArray("warnings") ?: JsonArray().also { obj.add("warnings", it) }
+        warnings.forEach(all::add)
+        return obj.toString()
+    }
+
+    /**
      * The `INVALID_REQUEST` envelope for every blank [parameters] entry of [tool], or `null` when
      * none is blank. Call it before anything else in the `@McpTool` function: as
      * `rejectMissingParameters(...)?.let { return it }` in a block body, or as

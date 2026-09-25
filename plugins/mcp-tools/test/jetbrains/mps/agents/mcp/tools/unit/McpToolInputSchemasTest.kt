@@ -1526,6 +1526,96 @@ class McpToolInputSchemasTest {
         }
     }
 
+    // ---- plural spelling of a single-valued key (study D55) ----
+
+    private val pluralConceptRef = PARAM_CONCEPT_REF.withPlural(PARAM_CONCEPT_REFS)
+    private val pluralKeys = ParameterKeys.of(required(pluralConceptRef, "a concept"), "other")
+
+    @Test
+    fun withPluralAddsThePluralAsTheLastSpellingAndKeepsTheCanonicalList() {
+        assertEquals(listOf("conceptRef", "conceptReference", "conceptRefs"), pluralConceptRef.spellings)
+        assertEquals(listOf("conceptRef", "conceptReference"), PARAM_CONCEPT_REF.spellings)
+        assertEquals(listOf("conceptRef", "other"), pluralKeys.canonical)
+        assertTrue(pluralKeys.accepted.contains("conceptRefs"))
+        assertEquals(listOf(pluralConceptRef), (pluralKeys + ParameterKeys.of("more")).withPlural)
+    }
+
+    @Test
+    fun collapsePluralLeavesASingleValueAloneWithoutAWarning() {
+        for (json in listOf("""{"conceptRefs": "a"}""", """{"conceptRefs": ["a"]}""", """{"conceptRef": "a"}""", "{}")) {
+            val obj = params(json)
+            assertEquals(json, emptyList<String>(), obj.collapsePluralParameterKeys("OP", pluralKeys))
+            assertEquals(json, if (json == "{}") null else "a", obj.paramString(pluralConceptRef))
+        }
+    }
+
+    @Test
+    fun collapsePluralUsesTheFirstOfSeveralValuesAndWarnsAboutTheRest() {
+        val obj = params("""{"conceptRefs": ["a", "b", "c"]}""")
+        val warnings = obj.collapsePluralParameterKeys("OP", pluralKeys)
+        assertEquals("a", obj.paramString(pluralConceptRef))
+        assertEquals(1, warnings.size)
+        assertEquals(
+            "OP takes a single 'conceptRef', so only the first of the 3 values in 'conceptRefs' was " +
+                "used ('a'); the other 2 were ignored. Call OP once per value.",
+            warnings.single(),
+        )
+    }
+
+    @Test
+    fun collapsePluralNamesASingleIgnoredValueInTheSingular() {
+        val warning = params("""{"conceptRefs": ["a", "b"]}""").collapsePluralParameterKeys("OP", pluralKeys).single()
+        assertTrue(warning, warning.contains("the other value was ignored."))
+    }
+
+    @Test
+    fun collapsePluralRejectsEveryShapeFindInstancesRejects() {
+        val rejected = mapOf(
+            "[]" to "'parameters.conceptRefs' must be a nonempty array of nonblank strings",
+            "\"\"" to "'parameters.conceptRefs' must be a nonblank string or a nonempty array of nonblank strings",
+            "5" to "'parameters.conceptRefs' must be a nonblank string or a nonempty array of nonblank strings",
+            "{}" to "'parameters.conceptRefs' must be a nonblank string or a nonempty array of nonblank strings",
+            "[null]" to "'parameters.conceptRefs[0]' must be a nonblank string",
+            "[null, \"a\"]" to "'parameters.conceptRefs[0]' must be a nonblank string",
+            "[5]" to "'parameters.conceptRefs[0]' must be a nonblank string",
+            "[\"\"]" to "'parameters.conceptRefs[0]' must be a nonblank string",
+            "[[\"a\"]]" to "'parameters.conceptRefs[0]' must be a nonblank string",
+            // An ignored value is checked too, so a malformed array is never half-used.
+            "[\"a\", {}]" to "'parameters.conceptRefs[1]' must be a nonblank string",
+        )
+        for ((value, expected) in rejected) {
+            val message = catchSchemaFailure {
+                params("""{"conceptRefs": $value}""").collapsePluralParameterKeys("OP", pluralKeys)
+            }
+            assertEquals(value, expected, message)
+        }
+    }
+
+    @Test
+    fun collapsedPluralBesideAnotherSpellingIsStillTwoSpellings() {
+        // Left uncollapsed, so even an ill-shaped plural reports the conflict, not its shape.
+        for (json in listOf(
+            """{"conceptRef": "a", "conceptRefs": ["a", "b"]}""",
+            """{"conceptReference": "a", "conceptRefs": ["a"]}""",
+            """{"conceptRef": "a", "conceptRefs": []}""",
+        )) {
+            val obj = params(json)
+            assertEquals(json, emptyList<String>(), obj.collapsePluralParameterKeys("OP", pluralKeys))
+            val message = catchSchemaFailure { obj.paramString(pluralConceptRef) }
+            assertTrue(message, message.contains("Keep 'conceptRef'"))
+        }
+    }
+
+    @Test
+    fun withPluralRefusesToReplaceAnExistingPlural() {
+        try {
+            pluralConceptRef.withPlural("conceptReferences")
+            fail("expected IllegalStateException")
+        } catch (e: IllegalStateException) {
+            assertTrue(e.message, e.message!!.contains("already accepts the plural 'conceptRefs'"))
+        }
+    }
+
     // ---- parameters-blob key validation (study defects D14b / D18b) ----
 
     private val demoKeys = ParameterKeys.of(PARAM_CONCEPT_REF, "role", "multiple")
