@@ -13,23 +13,6 @@ generic form, and only because it is cheap: D52 alone saves 2 calls, and the doc
 error entirely. The featureId rejection (§2c) fixes a silent failure and is cheaper still. If scope has
 to be cut, cut the reference hint and keep §2c.
 
-**Adjacent bug found while planning — fixed in 80b2681a649c**, separately from the hint work. In
-`AbstractNodeOps.addNodeChild` (ADD CHILD) the existing child of a single-cardinality role was deleted
-*before* the assignability check ran. MPS commands do not roll back (`WorkbenchModelAccess` runs a plain
-`CommandProcessor.executeCommand`), so an ADD CHILD with the wrong concept into an occupied `0..1`/`1`
-role was rejected, but the old child was gone anyway. The cause was the ordering;
-`executeShortCommandOnEdt` catching the `McpUserException` inside the command only decides whether the
-IDE logs it. The fix moves the check (~807) above the delete (~818). Out of scope here: every rejected non-dry
-instantiation also keeps what `instantiateNode` did before the throw — language imports (~178),
-node-factory side effects on the model and module (~203–215), and the model imports and module
-dependencies added by `ensureReferenceDependencies`.
-
-**Second adjacent finding: the dry-run dynamic-reference warning is dead code.** `instantiateNode`
-passes `allowDynamicReference = !dryRun` (~289) and the other two `applyReferenceUpdate` callers pass
-`dryRun = false` (~622, ~865), so the `dryRun && allowDynamicReference` branch never runs. The `dryRun`
-parameter descriptions in `JetBrainsMPSRootNodeMcpToolset.kt` (~318, ~493) still promise those
-warnings. Not fixed here; §2c makes the featureId case loud on its own.
-
 ## 1. Why the current message is correct but not actionable
 
 `AssignabilityException` (`AbstractOps.kt`) states five facts: path, actual, expected, parent, role.
