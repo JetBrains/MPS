@@ -199,3 +199,21 @@
     columns are pre-M-0 event sums (27.06 M cache read vs 18.31 M result-based for S1-opus). Give
     every round its own `runs-rN`, and treat the same-model cell (sonnet here, or the latest round on
     the current opus) as the clean comparison.
+
+## From round 16 (2026-09-25, S5–S10 × opus+sonnet, compared with the 2026-09 baseline families)
+
+37. **A scenario with no baseline cell is still comparable, by family and by prior cell.** The
+    baseline measured only S1 and S3. Round 16 compared S5–S10 two ways: the baseline's chain
+    families normalised per 100 tool calls (envelopes 19.5 → 2.2, per-root re-checks 48 → 2), and
+    the latest earlier run of each scenario on the same sonnet model with a byte-identical prompt.
+    → Check `promptSha256` and `init.model` against the prior cell before quoting a delta. Count
+    chains by distinct assistant message, not by `tool_use` pair: a six-call parallel batch is one
+    turn, and `chains.json` reports it as five pairs.
+38. **A soft note in a skill does not set an order; only a numbered step does.** S10's "close
+    first" lived in a "may … can" note under "Step 2: Open". One sonnet run followed it and one
+    did not, and the one that did not hit the modal, `MODAL_BLOCKED` and a force close. Likewise, the
+    "defaults are omitted from JSON" rule sat in a sub-reference that the run that needed it
+    never opened, and the skill it wrote shipped an inverted fact. → When a remedy is a sentence,
+    put it where the step or the call happens: in the numbered step list, the tool description or
+    the skill section the agent is already in. A note is not enough, and a far-away reference is
+    not enough either.

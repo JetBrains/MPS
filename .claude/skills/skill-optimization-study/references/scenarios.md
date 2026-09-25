@@ -27,7 +27,9 @@ S10 rehearsed 2026-09-22 (sonnet, PASS on all five criteria, 29 turns / 116 s / 
 `welcome_rejections` 0, one self-recovered error — defect D39); S1 + S2 re-measured in round 8
 (2026-09-23, sonnet, both PASS) — the first round on the observer-owned lifecycle, which found
 harness defects D40–D42. S1 + S2 + S3 × (opus, sonnet) re-measured in round 15 (2026-09-25,
-all six PASS; the first S2-opus cell). Later rounds are listed in `study/HOTSPOT_REPORT_round*.md`.
+all six PASS; the first S2-opus cell). S5–S10 × (opus, sonnet) re-measured in round 16
+(2026-09-25, all twelve PASS; the first opus cells for S5–S8 and S10). Later rounds are listed in
+`study/HOTSPOT_REPORT_round*.md`.
 **S10 runs last in a round** — see its exception and recovery notes below.
 
 ## Project create / open / close (orchestrator, every scenario)
