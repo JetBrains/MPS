@@ -1,12 +1,12 @@
 # Archived documentation defects (skill-script automation study)
 
-Moved out of [`docs-defects.md`](docs-defects.md) on 2026-09-22, with D43–D47 added on 2026-09-24 and D49, D51, D52, D54, D55, D56, D57, D58, D59, D60, D61, D62, and D69 on 2026-09-25. These entries are **no longer to be handled**: they are fixed or closed, out of scope, rejected, or not locally actionable.
+Moved out of [`docs-defects.md`](docs-defects.md) on 2026-09-22, with D43–D47 added on 2026-09-24 and D49, D51, D52, D54, D55, D56, D57, D58, D59, D60, D61, D62 (`b727f965586a`), and D69 (`edbc0a14a9ec`) on 2026-09-25. These entries are **no longer to be handled**: they are fixed or closed, out of scope, rejected, or not locally actionable.
 
 The live open list is [`docs-defects.md`](docs-defects.md).
 
 ### Why these left the live list
 
-- **Fixed / closed** — D1, D3–D13, D14b, D15–D17, D19–D30, D31, D33–D39, D43–D47, D49, D51, D52, D54, D55, D57, D58, D59, D60, D61, D62, D69, A1, H2.8. (D31's live status was stale: round-4 remedy P6 shipped 2026-09-18. D43–D47 were archived 2026-09-24; D49, D51, D52, D54, D55, D57, D58, D59, D60, D61, D62, and D69 on 2026-09-25. D49, D51, D52, D54, D55, D58, D59, D60, D61, D62, and D69 leave with re-measure still outstanding; the optional D51/D52 server hint stays in [`../docs/d51-d52-assignability-hints-plan.md`](../docs/d51-d52-assignability-hints-plan.md), not on the live list.)
+- **Fixed / closed** — D1, D3–D13, D14b, D15–D17, D19–D30, D31, D33–D39, D43–D47, D49, D51, D52, D54, D55, D57, D58, D59, D60, D61, D62, D69, A1, H2.8. (D31's live status was stale: round-4 remedy P6 shipped 2026-09-18. D43–D47 were archived 2026-09-24; D49, D51, D52, D54, D55, D57, D58, D59, D60, D61, D62 (`b727f965586a`), and D69 (`edbc0a14a9ec`) on 2026-09-25. D49, D51, D52, D54, D55, D58, D59, D60, D61, D62, and D69 leave with re-measure still outstanding; the optional D51/D52 server hint stays in [`../docs/d51-d52-assignability-hints-plan.md`](../docs/d51-d52-assignability-hints-plan.md), not on the live list.)
 - **Out of scope** — D2 (not a worker prompt; fixture-builder note only).
 - **Rejected / removed / no further local work** — D14 (no top-level alias; decision 2), D18 and D18b (remaining `projectPath` cost is platform pre-dispatch routing, outside `mcp-tools`; filing is the user's decision), D32 (constrained `format` type blocked by the enum-decode trap; description tightening is not a fix), R7 (`includeChildRoleConcepts` removed after 14 unused runs), D56 (archived 2026-09-25: each cited repeated miss was one parallel batch, recovered in one turn; only the rejection wording was aligned with the shared near-miss list).
 
