@@ -42,6 +42,7 @@
     <fileset dir="${artifacts.IDEA}/plugins/vcs-git/lib" includes="*.jar" />
     <fileset dir="${artifacts.IDEA}/plugins/vcs-git/lib/modules" includes="*.jar" />
     <fileset dir="${artifacts.IDEA}/lib" includes="*.jar" />
+    <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
   </path>
   
   <path id="path.mps.ant.path">
@@ -101,7 +102,6 @@
         <dependencies>
           <module ref="3f233e7f-b8a6-46d2-a57f-795d56775243(Annotations)" kind="cl" />
           <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
-          <module ref="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="cl" />
           <module ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b(jetbrains.mps.vcs.idea.stubs)" kind="cl" />
         </dependencies>
         <uses />
@@ -123,21 +123,16 @@
           <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
         </dependencies>
         <uses />
-        <library jar="/lib/intellij.platform.vcs.dvcs.impl.jar" />
-        <library jar="/lib/intellij.platform.vcs.dvcs.impl.shared.jar" />
-        <library jar="/lib/intellij.platform.vcs.dvcs.jar" />
-        <library jar="/lib/intellij.platform.vcs.impl.exec.jar" />
-        <library jar="/lib/intellij.platform.vcs.impl.jar" />
-        <library jar="/lib/intellij.platform.vcs.impl.lang.actions.jar" />
-        <library jar="/lib/intellij.platform.vcs.impl.lang.jar" />
-        <library jar="/lib/intellij.platform.vcs.impl.shared.jar" />
-        <library jar="/lib/intellij.platform.vcs.log.graph.impl.jar" />
-        <library jar="/lib/intellij.platform.vcs.log.graph.jar" />
-        <library jar="/lib/intellij.platform.vcs.log.impl.jar" />
-        <library jar="/lib/intellij.platform.vcs.log.jar" />
-        <library jar="/lib/intellij.platform.vcs.jar" />
-        <library jar="/lib/intellij.platform.vcs.shared.jar" />
-        <library jar="/lib/intellij.platform.vcs.core.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.dvcs.impl.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.dvcs.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules//intellij.platform.vcs.impl.exec.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.lang.actions.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.lang.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.graph.impl.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.graph.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.impl.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.jar" />
         <sources jar="." descriptor="jetbrains.mps.vcs.idea.stubs.msd" />
       </module>
     </echoxml>
@@ -240,7 +235,7 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-context.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-constraints-runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-persistence.jar" />
-        <fileset file="${artifacts.IDEA}/lib/annotations.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-vcs" />
         <path refid="path.jdk.classpath" />
       </classpath>
@@ -280,25 +275,19 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-platform.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-environment.jar" />
         <pathelement path="${build.tmp}/java/out/vcs-core" />
-        <fileset file="${artifacts.IDEA}/lib/annotations.jar" />
-        <fileset file="${artifacts.IDEA}/lib/app.jar" />
-        <fileset file="${artifacts.IDEA}/lib/app-client.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
-        <fileset file="${artifacts.IDEA}/lib/lib-client.jar" />
         <fileset file="${artifacts.IDEA}/lib/util.jar" />
         <fileset file="${artifacts.IDEA}/lib/util_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/util-8.jar" />
         <fileset file="${artifacts.IDEA}/lib/forms_rt.jar" />
-        <fileset file="${artifacts.IDEA}/lib/java-frontback.jar" />
         <fileset file="${artifacts.IDEA}/lib/jps-model.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
-        <fileset file="${artifacts.IDEA}/lib/stats.jar" />
-        <fileset file="${artifacts.IDEA}/lib/hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/platform-loader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.asm.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.fastutil.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.gson.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.http.client.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.collections.immutable.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
@@ -310,6 +299,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -323,11 +313,15 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.execution.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.execution.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.feedback.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.bootstrap.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.netty.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.indexing.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.indexing.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lang.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lang.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lang.impl.jar" />
@@ -336,6 +330,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectFrame.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectModel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectModel.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.refactoring.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
@@ -344,8 +340,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
+        <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
+        <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <path refid="path.java.library.idea-vcs" />
         <path refid="path.jdk.classpath" />
       </classpath>

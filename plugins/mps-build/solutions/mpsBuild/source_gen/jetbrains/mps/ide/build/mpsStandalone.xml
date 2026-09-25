@@ -84,9 +84,9 @@
     <copy todir="${build.layout}/plugins/markdown">
       <fileset dir="${basedir}/plugins/markdown" />
     </copy>
-    <mkdir dir="${build.layout}/plugins/mcpserver" />
-    <copy todir="${build.layout}/plugins/mcpserver">
-      <fileset dir="${basedir}/plugins/mcpserver" />
+    <mkdir dir="${build.layout}/plugins/mcpserver-plugin" />
+    <copy todir="${build.layout}/plugins/mcpserver-plugin">
+      <fileset dir="${basedir}/plugins/mcpserver-plugin" />
     </copy>
     <mkdir dir="${build.layout}/plugins/properties" />
     <copy todir="${build.layout}/plugins/properties">
@@ -99,10 +99,6 @@
     <mkdir dir="${build.layout}/plugins/grazie" />
     <copy todir="${build.layout}/plugins/grazie">
       <fileset dir="${basedir}/plugins/grazie" />
-    </copy>
-    <mkdir dir="${build.layout}/plugins/libraries-misc-plugin" />
-    <copy todir="${build.layout}/plugins/libraries-misc-plugin">
-      <fileset dir="${basedir}/plugins/libraries-misc-plugin" />
     </copy>
     <mkdir dir="${build.layout}/plugins/platform-bookmarks-plugin" />
     <copy todir="${build.layout}/plugins/platform-bookmarks-plugin">
@@ -119,6 +115,18 @@
     <mkdir dir="${build.layout}/plugins/platform-testRunner-plugin" />
     <copy todir="${build.layout}/plugins/platform-testRunner-plugin">
       <fileset dir="${basedir}/plugins/platform-testRunner-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/platform-vcs-plugin" />
+    <copy todir="${build.layout}/plugins/platform-vcs-plugin">
+      <fileset dir="${basedir}/plugins/platform-vcs-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/platform-problemView-plugin" />
+    <copy todir="${build.layout}/plugins/platform-problemView-plugin">
+      <fileset dir="${basedir}/plugins/platform-problemView-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/xml-plugin" />
+    <copy todir="${build.layout}/plugins/xml-plugin">
+      <fileset dir="${basedir}/plugins/xml-plugin" />
     </copy>
     <echo file="${build.layout}/build.properties">mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major}${line.separator}mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor}${line.separator}mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr}${line.separator}mpsBootstrapCore.version.eap=${mpsBootstrapCore.version.eap}${line.separator}mpsBootstrapCore.version=${mpsBootstrapCore.version}</echo>
   </target>

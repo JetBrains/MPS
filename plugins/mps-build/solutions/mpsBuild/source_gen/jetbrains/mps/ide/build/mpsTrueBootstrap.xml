@@ -29,11 +29,10 @@
   </path>
   
   <path id="path.java.library.annotations-lib">
-    <fileset file="${artifacts.IDEA}/lib/annotations.jar" />
+    <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
   </path>
   
   <path id="path.java.library.idea-runtime">
-    <fileset file="${artifacts.IDEA}/lib/app.jar" />
     <fileset file="${artifacts.IDEA}/lib/util.jar" />
   </path>
   
@@ -48,7 +47,6 @@
   </path>
   
   <path id="path.java.library.eclipse.ecj">
-    <fileset file="${artifacts.IDEA}/lib/app.jar" />
     <fileset file="${artifacts.IDEA}/plugins/java/lib/ecj/eclipse.jar" />
   </path>
   
