@@ -20,6 +20,8 @@ Closed, fixed, rejected, and out-of-scope entries were moved to [`docs-defects-a
 D39 and everything before it were archived on 2026-09-22; D43–D47 on 2026-09-24.
 D49–D56 were filed on 2026-09-24 from `HOTSPOT_REPORT_round10.md` and `HOTSPOT_REPORT_round11.md`. Those rounds were measurement only; no remedy was chosen there.
 
+Round 12 (`HOTSPOT_REPORT_round12.md`, 2026-09-25, S1+S3 × opus+sonnet, same `skillsSha256 78064c75…` / `inventorySha256 e6b87321…` as rounds 10–11) adds evidence to open entries without changing their status: **D50**: `S1-sonnet-1:36–:48` 13 reference reads for one constraints root, `:59–:60` reads of `computed-sequences-*.md` under the wrong sibling folder `scope-fqn-reference/`, `:62–:64` re-reads of `:46–:48` (opus: 2 `cat` calls); **D51**: a second creator kind, `AnonymousClassCreator` placed as a bare expression (`S1-sonnet-1:73`), found the `GenericNewExpression.creator` wrapper only at `:86` after a 6-call search, although `computed-sequences-blueprint.md` (read at `:47`, `:63`) shows the wrapped form; **D56**: singular `conceptRef` ×3 in one parallel batch (`S1-sonnet-1:65–:67`→`:68`). Two one-off near-misses, not filed: `alter_nodes MAKE` `moduleReference` (`:90`→`:91`) and plural `nodeReferences` array on `check_root_node_problems` (`:92`→`:93`); both error messages named the fix. D3 did not reproduce again (`/tmp/*.json` accepted at `S1-sonnet-1:89, :107, :123`).
+
 Not opened from those rounds:
 
 - D34 is confirmed fixed (round 11 §3.6: S6 generated correctly packaged Java with zero package-related errors). Already in the archive.
