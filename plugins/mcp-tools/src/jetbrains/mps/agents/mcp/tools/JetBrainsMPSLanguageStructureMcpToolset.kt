@@ -174,7 +174,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Queries MPS language structure (read-only): check inheritance, list aspects, resolve references, query enumeration literals, check smart-reference status. For nodes that are instances of a concept use `mps_mcp_query_nodes` FIND_INSTANCES. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object (real JSON or its string form). For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
+        Queries MPS language structure (read-only): check inheritance, list aspects, resolve references, query enumeration literals, check smart-reference status. For nodes that are instances of a concept use `mps_mcp_query_nodes` FIND_INSTANCES. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields; a success response may carry 'warnings' too. The operations that take one concept accept `conceptRef` or `conceptRefs`; given several concepts they use only the first and say so in 'warnings'. Parameters are passed as a JSON object (real JSON or its string form). For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
     """
     )
     suspend fun mps_mcp_query_structure(
