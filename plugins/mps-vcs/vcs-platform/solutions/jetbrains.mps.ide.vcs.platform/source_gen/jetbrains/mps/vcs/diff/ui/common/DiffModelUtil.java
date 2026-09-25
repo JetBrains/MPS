@@ -10,7 +10,7 @@ import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
 import jetbrains.mps.extapi.module.SModuleBase;
 import jetbrains.mps.extapi.model.SModelBase;
-import jetbrains.mps.kernel.model.MissingDependenciesFixer;
+import jetbrains.mps.smodel.ModelDependencyUpdate;
 import org.jetbrains.mps.openapi.model.SModelReference;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
 import java.util.Set;
@@ -35,8 +35,12 @@ public class DiffModelUtil {
     renameModelAndRegister(model, version, false);
   }
   public static void renameModelAndRegister(SModel model, String version, boolean fixReferences) {
+    renameModelAndRegister(model, version, fixReferences, false);
+  }
+  public static void renameModelAndRegister(SModel model, String version, boolean fixReferences, boolean addLanguages) {
     // if fixRefeneces == true => set links to hanged static references back to the original model (that is most probably in repository
-    // This can help in per root persistence when only one root is in the model: reference to other root will point to repository model
+    // if addLanguages == true => add languages for all nodes to the model used languages
+    // This can help in per root persistence when only one root is in the model: reference to other root will point to repository model, languages allow editor hints
     if (version != null) {
       renameModel(model, version, fixReferences);
     }
@@ -44,7 +48,11 @@ public class DiffModelUtil {
     MapSequence.fromMap(myRegisteredModels).put(model, mo);
     SModuleBase module = (SModuleBase) mo.createModule();
     module.registerModel((SModelBase) model);
-    new MissingDependenciesFixer(model).fixModuleDependencies();
+    ModelDependencyUpdate update = new ModelDependencyUpdate(model);
+    if (addLanguages) {
+      update.updateUsedLanguages();
+    }
+    update.updateModuleDependencies(module.getRepository());
   }
   public static void unregisterModel(SModel model) {
     TempModuleOptions mo = MapSequence.fromMap(myRegisteredModels).removeKey(model);
@@ -61,7 +69,7 @@ public class DiffModelUtil {
   private static void renameModel(SModel model, String version, boolean fixReferences) {
     SModelReference modelRef = SModelOperations.getPointer(model);
     SModelReference newModelRef = genDiffSModelRef(modelRef, version);
-    as_5x16vn_a0a2a6(model, SModelBase.class).changeModelReference(newModelRef);
+    as_5x16vn_a0a2a7(model, SModelBase.class).changeModelReference(newModelRef);
     if (fixReferences) {
       resetMissedReferences(model, modelRef, newModelRef);
     }
@@ -82,7 +90,7 @@ public class DiffModelUtil {
   public static void restoreModelName(SModel model) {
     SModelReference modelRef = SModelOperations.getPointer(model);
     assert modelRef.getModelId() instanceof SModelId.ForeignSModelId;
-    as_5x16vn_a0a2a8(model, SModelBase.class).changeModelReference(getOriginalSModelRef(modelRef));
+    as_5x16vn_a0a2a9(model, SModelBase.class).changeModelReference(getOriginalSModelRef(modelRef));
   }
 
   public static void fixModelReferences(SModel model, SModelReference modelRef) {
@@ -102,19 +110,19 @@ public class DiffModelUtil {
     return PersistenceFacade.getInstance().createModelReference(ref.getModuleReference(), newId, newName);
   }
   private static SModelReference getOriginalSModelRef(SModelReference ref) {
-    String id = as_5x16vn_a0a0a0n(ref.getModelId(), SModelId.ForeignSModelId.class).getId();
+    String id = as_5x16vn_a0a0a0o(ref.getModelId(), SModelId.ForeignSModelId.class).getId();
     String name = ref.getModelName();
     org.jetbrains.mps.openapi.model.SModelId oldId = SModelId.fromString(id.substring(id.indexOf("#") + 1));
     String oldName = name.substring(0, name.lastIndexOf("@"));
     return PersistenceFacade.getInstance().createModelReference(ref.getModuleReference(), oldId, oldName);
   }
-  private static <T> T as_5x16vn_a0a2a6(Object o, Class<T> type) {
+  private static <T> T as_5x16vn_a0a2a7(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_5x16vn_a0a2a8(Object o, Class<T> type) {
+  private static <T> T as_5x16vn_a0a2a9(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
-  private static <T> T as_5x16vn_a0a0a0n(Object o, Class<T> type) {
+  private static <T> T as_5x16vn_a0a0a0o(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 }

@@ -8571,6 +8571,43 @@
                   </node>
                 </node>
               </node>
+              <node concept="3SKdUt" id="1Kz8odU2Nn2" role="3cqZAp">
+                <node concept="1PaTwC" id="1Kz8odU2Nn3" role="1aUNEU">
+                  <node concept="3oM_SD" id="1Kz8odU2Nn4" role="1PaTwD">
+                    <property role="3oM_SC" value="fix" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU2QoS" role="1PaTwD">
+                    <property role="3oM_SC" value="references" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU33dR" role="1PaTwD">
+                    <property role="3oM_SC" value="and" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU33dS" role="1PaTwD">
+                    <property role="3oM_SC" value="add" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU38Xd" role="1PaTwD">
+                    <property role="3oM_SC" value="languages" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU3esS" role="1PaTwD">
+                    <property role="3oM_SC" value="to" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU3g6W" role="1PaTwD">
+                    <property role="3oM_SC" value="unregistered" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU3krq" role="1PaTwD">
+                    <property role="3oM_SC" value="model" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU3mEg" role="1PaTwD">
+                    <property role="3oM_SC" value="for" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU3mEh" role="1PaTwD">
+                    <property role="3oM_SC" value="per-root" />
+                  </node>
+                  <node concept="3oM_SD" id="1Kz8odU3vju" role="1PaTwD">
+                    <property role="3oM_SC" value="persistence" />
+                  </node>
+                </node>
+              </node>
               <node concept="3clFbF" id="1X_O_$4EAig" role="3cqZAp">
                 <node concept="2OqwBi" id="1X_O_$4EGMy" role="3clFbG">
                   <node concept="37vLTw" id="1X_O_$4EAie" role="2Oq$k0">
@@ -8586,6 +8623,9 @@
                               <ref role="3cqZAo" node="5W7E4fV0XMI" resolve="it" />
                             </node>
                             <node concept="37vLTw" id="1X_O_$4GhxN" role="37wK5m">
+                              <ref role="3cqZAo" node="69TGyf2zb7R" resolve="perRootPersistence" />
+                            </node>
+                            <node concept="37vLTw" id="1Kz8odU2G8c" role="37wK5m">
                               <ref role="3cqZAo" node="69TGyf2zb7R" resolve="perRootPersistence" />
                             </node>
                           </node>
@@ -9674,6 +9714,10 @@
         <property role="TrG5h" value="fixReferences" />
         <node concept="10P_77" id="1X_O_$4$M$d" role="1tU5fm" />
       </node>
+      <node concept="37vLTG" id="1Kz8odU1Ydx" role="3clF46">
+        <property role="TrG5h" value="addLanguages" />
+        <node concept="10P_77" id="1Kz8odU27VH" role="1tU5fm" />
+      </node>
       <node concept="3clFbS" id="1X_O_$4lqCE" role="3clF47">
         <node concept="3clFbJ" id="1X_O_$4_3ac" role="3cqZAp">
           <node concept="3clFbS" id="1X_O_$4_3ae" role="3clFbx">
@@ -9722,18 +9766,21 @@
             </node>
           </node>
         </node>
-        <node concept="3clFbF" id="1X_O_$4$R5L" role="3cqZAp">
-          <node concept="2YIFZM" id="1X_O_$4$R5M" role="3clFbG">
+        <node concept="3clFbF" id="1Kz8odTThw5" role="3cqZAp">
+          <node concept="2YIFZM" id="1Kz8odTTqVP" role="3clFbG">
             <ref role="1Pybhc" to="hdhb:42hl10VHaSb" resolve="DiffModelUtil" />
-            <ref role="37wK5l" to="hdhb:6o37A5sInP5" resolve="renameModelAndRegister" />
-            <node concept="37vLTw" id="1X_O_$4$R5N" role="37wK5m">
+            <ref role="37wK5l" to="hdhb:1Kz8odTT09r" resolve="renameModelAndRegister" />
+            <node concept="37vLTw" id="1Kz8odTTqVQ" role="37wK5m">
               <ref role="3cqZAo" node="1X_O_$4l$OM" resolve="model" />
             </node>
-            <node concept="37vLTw" id="76edEkA9_J_" role="37wK5m">
+            <node concept="37vLTw" id="1Kz8odTTqVR" role="37wK5m">
               <ref role="3cqZAo" node="76edEkA8z4o" resolve="version" />
             </node>
-            <node concept="37vLTw" id="1X_O_$4$R5P" role="37wK5m">
+            <node concept="37vLTw" id="1Kz8odTTqVS" role="37wK5m">
               <ref role="3cqZAo" node="1X_O_$4$GmU" resolve="fixReferences" />
+            </node>
+            <node concept="37vLTw" id="1Kz8odU2v5V" role="37wK5m">
+              <ref role="3cqZAo" node="1Kz8odU1Ydx" resolve="addLanguages" />
             </node>
           </node>
         </node>

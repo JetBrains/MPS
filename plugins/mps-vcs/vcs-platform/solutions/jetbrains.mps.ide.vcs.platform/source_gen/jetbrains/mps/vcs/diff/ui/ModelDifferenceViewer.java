@@ -104,7 +104,8 @@ public class ModelDifferenceViewer implements DataProvider {
       // create metamodels before renaming the models in order to avoid problems
       // with stereotypes like in MPS-32651 and MPS-33991
       myMetadataModels = ListSequence.fromList(myModels).select((it) -> createRegisteredMetaModel(it)).toList();
-      ListSequence.fromList(myModels).visitAll((it) -> registerModelIfNeeded(it, perRootPersistence));
+      // fix references and add languages to unregistered model for per-root persistence
+      ListSequence.fromList(myModels).visitAll((it) -> registerModelIfNeeded(it, perRootPersistence, perRootPersistence));
     });
     final boolean trackMovedNodes = DiffSettingsUtil.getTrackMovedNodesDiffOption();
     // TODO changesets should be probably built in a separate thread
@@ -178,12 +179,12 @@ public class ModelDifferenceViewer implements DataProvider {
     return model instanceof EditableSModel && model.getRepository() != null;
   }
 
-  private void registerModelIfNeeded(@Nullable SModel model, boolean fixReferences) {
+  private void registerModelIfNeeded(@Nullable SModel model, boolean fixReferences, boolean addLanguages) {
     if (model == null || model.getRepository() != null) {
       return;
     }
     String version = "diff_model_" + ListSequence.fromList(myModels).indexOf(model);
-    DiffModelUtil.renameModelAndRegister(model, version, fixReferences);
+    DiffModelUtil.renameModelAndRegister(model, version, fixReferences, addLanguages);
     CollectionSequence.fromCollection(myRegisteredModels).addElement(model);
   }
 
