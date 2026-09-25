@@ -183,3 +183,19 @@
     re-derived them with `grep -n '^## '` and then read a line range. → When a payload hotspot is
     treated, re-rank before assuming the next remedy is also about payload; and a navigation aid
     only pays if the agent reads it instead of rebuilding it.
+
+## From round 15 (2026-09-25, S1+S2+S3 × opus+sonnet against the 2026-09 baseline)
+
+36. **The baseline's evidence is not where `$RUNS` points, and `opus` is not a fixed model.**
+    `~/MPSProjects/mcp-study/runs` — the conventional `$RUNS` — holds **round 2** (2026-09-16,
+    S1-opus 104 turns), not the 2026-09-15 baseline the report quotes (181 turns). The baseline raw
+    runs live in `~/MPSProjects/mcp-study-baseline/runs`, recovered from
+    `~/MPSProjects/mcp-study-runs-2026-09-15.tar.gz`. A first comparison table built against `runs/`
+    looked plausible and was wrong in every cell. Separately, the `opus` alias moved from
+    `claude-opus-5` (baseline, round 2) to `claude-opus-5-5` (round 12 onwards), so an opus delta
+    against the baseline mixes a model upgrade with the treatment. → Before comparing, match each
+    baseline meta's `startTs` against the report date and each transcript's `init.model` against the
+    current worker's. Re-analyse the baseline with today's `analyze_runs.py`: its published token
+    columns are pre-M-0 event sums (27.06 M cache read vs 18.31 M result-based for S1-opus). Give
+    every round its own `runs-rN`, and treat the same-model cell (sonnet here, or the latest round on
+    the current opus) as the clean comparison.
