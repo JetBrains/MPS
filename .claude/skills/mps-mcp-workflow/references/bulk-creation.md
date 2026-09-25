@@ -7,6 +7,11 @@
 - Include the IDs of these nodes in the JSON blueprint wherever they fit the role of target nodes.
 - For nodes that are created as part of the same bulk operation, you can use their **name** as a placeholder in the `target` field. The tool will automatically resolve these "local" references once all nodes are created.
 - If automatic resolution is not possible or desired, leave the target references empty and set them later with `mps_mcp_update_node` (`SET`/`REFERENCE`) once you have discovered the IDs of the newly created nodes.
+- **A `dryRun: true` call cannot see those names.** It does not attach the batch, so it warns "target '<name>' did not resolve" once for every reference to a node of the same batch, and the real insert then resolves them. Those warnings are expected, not errors. For a batch whose references point at each other, skip the dry run and read `fixReferences.stillBroken` after the real insert.
+
+### From a table (CSV or JSON rows)
+
+When the roots come from a table (one root per row, columns for properties, list columns for children or references), do not write your own converter. Load the `mps-node-editing` companion skill from the same origin and run its `scripts/table_to_bulk_insert.py`. It turns the table and a small JSON mapping spec into the top-level array, written to a file under the system temp directory. After the insert, the same script with `--verify <dumpFile>` compares a `mps_mcp_get_project_structure(startingPoint=<model>, includeNodes=true, nodeDepth=1)` dump against the table, row by row. Its usage block in that skill's `SKILL.md` (section "Scripts") is the contract.
 
 From 10 roots up, a bulk insert answers with the summary `{inserted: N, roots: [{name, reference, concept}], fixReferences: {fixed, repointed, stillBroken}}` instead of one full node envelope per root (the full form used to be larger than the blueprint it answered); check `fixReferences.stillBroken` for unresolved references and pass `responseDetail="full"` only when the per-root `conceptDoc`/model/module fields are actually needed.
 

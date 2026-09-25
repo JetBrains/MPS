@@ -3,6 +3,8 @@ package jetbrains.mps.agents.mcp.tools.integration
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.mcpserver.annotations.McpTool
 import org.junit.After
@@ -117,6 +119,44 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `table_to_bulk_insert --verify reports only the differences between a model dump and the table`() {
+        Python3.require()
+        val scriptDir = installSkills().resolve("mps-node-editing").resolve("scripts")
+        val script = scriptDir.resolve("table_to_bulk_insert.py").toString()
+        val table = scriptDir.resolve("examples").resolve("courses.csv").toString()
+        val mapping = scriptDir.resolve("examples").resolve("courses.map.json").toString()
+
+        val built = runPython(script, table, mapping)
+        assertEquals("script must exit 0, output: ${built.output}", 0, built.exitCode)
+        val blueprintFile = Path.of(JsonParser.parseString(built.output.trim()).asJsonObject.get("path").asString)
+        generatedFiles.add(blueprintFile)
+        val dump = modelDumpOf(JsonParser.parseString(Files.readString(blueprintFile)).asJsonArray)
+
+        val cleanDump = Files.createTempFile("verify-clean", ".json")
+        generatedFiles.add(cleanDump)
+        Files.writeString(cleanDump, dump.toString())
+        val clean = runPython(script, table, mapping, "--verify", cleanDump.toString())
+        assertEquals("a dump of exactly the table must verify, output: ${clean.output}", 0, clean.exitCode)
+        assertEquals(EXAMPLE_ROW_COUNT, JsonParser.parseString(clean.output.trim()).asJsonObject.get("matched").asInt)
+
+        val firstLesson = dump.getAsJsonObject("data").getAsJsonArray("rootNodes")[0].asJsonObject
+            .getAsJsonArray("children").map { it.asJsonObject }.first { it.get("role").asString == "lessons" }
+            .getAsJsonArray("nodes")[0].asJsonObject
+        firstLesson.getAsJsonArray("properties").map { it.asJsonObject }
+            .first { it.get("name").asString == "minutes" }.addProperty("value", "999")
+        val changedDump = Files.createTempFile("verify-changed", ".json")
+        generatedFiles.add(changedDump)
+        Files.writeString(changedDump, dump.toString())
+        val changed = runPython(script, table, mapping, "--verify", changedDump.toString())
+        assertEquals("one changed value must fail the verification, output: ${changed.output}", 1, changed.exitCode)
+        val lines = changed.output.trim().lines()
+        assertEquals("exactly one difference and the summary, output: ${changed.output}", 2, lines.size)
+        assertTrue("the difference must name the row and the field: ${lines[0]}",
+                   lines[0].startsWith("row 1 (") && lines[0].contains("lessons[0].minutes") && lines[0].contains("'999'"))
+        assertEquals(1, JsonParser.parseString(lines[1]).asJsonObject.get("mismatched").asInt)
+    }
+
+    @Test
     fun `mps_dump rejects a dump of the wrong kind and names the subcommand that reads it`() {
         Python3.require()
         val scriptDir = installSkills().resolve("mps-mcp-workflow").resolve("scripts")
@@ -155,6 +195,58 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
             JsonParser.parseString(response).asJsonObject.get("ok").asBoolean
         )
         return root.resolve(".claude").resolve("skills")
+    }
+
+    /**
+     * The `mps_mcp_get_project_structure(includeNodes=true)` envelope MPS prints for a model that
+     * holds exactly [blueprint]: short concept names, a node ref per node, and every reference
+     * resolved to the root of the same name.
+     */
+    private fun modelDumpOf(blueprint: JsonArray): JsonObject {
+        var nextId = 0
+        val referenceByName = mutableMapOf<String, String>()
+        fun record(node: JsonObject): JsonObject {
+            val reference = "r:00000000-0000-4000-0000-000000000001(verify.samples)/${++nextId}"
+            val properties = node.getAsJsonArray("properties") ?: JsonArray()
+            val name = properties.map { it.asJsonObject }.firstOrNull { it.get("name").asString == "name" }?.get("value")?.asString
+            if (name != null) referenceByName[name] = reference
+            val children = JsonArray()
+            for (role in node.getAsJsonArray("children") ?: JsonArray()) {
+                val nodes = JsonArray()
+                role.asJsonObject.getAsJsonArray("nodes").forEach { nodes.add(record(it.asJsonObject)) }
+                children.add(JsonObject().apply {
+                    addProperty("role", role.asJsonObject.get("role").asString)
+                    add("nodes", nodes)
+                })
+            }
+            return JsonObject().apply {
+                addProperty("name", name ?: node.get("concept").asString.substringAfterLast('.'))
+                addProperty("concept", node.get("concept").asString.substringAfterLast('.'))
+                addProperty("reference", reference)
+                add("properties", properties.deepCopy())
+                add("references", node.getAsJsonArray("references")?.deepCopy() ?: JsonArray())
+                add("children", children)
+            }
+        }
+        fun resolve(node: JsonObject) {
+            for (reference in node.getAsJsonArray("references")) {
+                val target = reference.asJsonObject.get("target").asString
+                reference.asJsonObject.addProperty("targetReference", referenceByName.getValue(target))
+            }
+            for (role in node.getAsJsonArray("children")) {
+                role.asJsonObject.getAsJsonArray("nodes").forEach { resolve(it.asJsonObject) }
+            }
+        }
+        val roots = JsonArray()
+        blueprint.forEach { roots.add(record(it.asJsonObject)) }
+        roots.forEach { resolve(it.asJsonObject) }
+        return JsonObject().apply {
+            addProperty("ok", true)
+            add("data", JsonObject().apply {
+                addProperty("name", "verify.samples")
+                add("rootNodes", roots)
+            })
+        }
     }
 
     /** Tool name to declared parameter names, read off the `@McpTool` methods of every toolset. */

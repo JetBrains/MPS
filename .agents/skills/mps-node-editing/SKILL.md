@@ -59,7 +59,7 @@ Where a documented null means something, how you express it depends on where it 
 1. **Identify** the target node (existing) or parent model (new root).
 2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
 3. **Author the JSON** following the unified blueprint format.
-4. **Insert** with `dryRun: true` first if the blueprint is large. Check the response: an empty `warnings` array means staging was clean; a non-empty list means the production write will produce dynamic (unresolved) references for the listed targets — resolve those first or expect broken refs.
+4. **Insert** with `dryRun: true` first if the blueprint is large. Check the response: an empty `warnings` array means staging was clean. A "did not resolve" warning means the target is not in the model yet, and the production write will store a dynamic reference for it. That is expected for a name defined by another root of the same batch, which the real insert resolves, so a dry run adds nothing for a batch whose references point at each other; check `fixReferences.stillBroken` after the real insert instead. Any other listed target will stay broken, so resolve it first.
 5. **Validate** with `mps_mcp_check_root_node_problems`. Reported problems may carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.
 6. **Repair** broken refs with `mps_mcp_alter_nodes FIX_REFERENCES` if validation surfaces resolvable-but-unresolved targets.
 
@@ -162,11 +162,29 @@ python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json
 {"children":183,"path":"/var/folders/.../bulk_insert-courses-1234.json","references":65,"roots":40}
 ```
 
-Then `mps_mcp_insert_root_node_from_json(modelReference=…, json="<that path>", dryRun=true)`
-and, once it is clean, the same call with `dryRun=false`. Run `--help` for the full mapping-spec
-reference, `--list-tools` for the tools and parameters it depends on; `scripts/examples/`
-holds a 40-row `courses.csv` with its matching `courses.map.json`. This usage block plus
-`--help` are the contract: there is no need to read the script source or the examples first.
+Then `mps_mcp_insert_root_node_from_json(modelReference=…, json="<that path>")` and read
+`fixReferences.stillBroken` in its response. Skip the `dryRun=true` call, or ignore its "did
+not resolve" warnings for names the table itself defines: a dry run cannot see roots of the
+same batch, and the real insert resolves them.
+
+To check the inserted model against the table, dump it once and run the same script with
+`--verify`. That replaces a hand-written comparison script:
+
+```
+mps_mcp_get_project_structure(startingPoint=<model>, includeNodes=true, nodeDepth=1)
+python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json --verify <dumpFile>
+row 7 (Conducting): lessons[2].minutes: expected '10', got '12'
+{"differences":1,"extraRoots":0,"matched":39,"mismatched":1,"missing":0,"rows":40}
+```
+
+It pairs rows with roots by the spec's `nameColumn`, and compares every property, child and
+reference target the spec produces. It exits 0 when every row matches and 1 on any
+difference.
+
+Run `--help` for the full mapping-spec reference, `--list-tools` for the tools and parameters
+it depends on; `scripts/examples/` holds a 40-row `courses.csv` with its matching
+`courses.map.json`. This usage block plus `--help` are the contract: there is no need to read
+the script source or the examples first.
 
 No `python3` (typically Windows): author the array by hand as described in
 `references/json-format.md` — one object per row, `properties` entries omitted for empty cells
