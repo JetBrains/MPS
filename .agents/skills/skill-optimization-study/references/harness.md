@@ -121,10 +121,14 @@ lone `cat`), grep, list, script, or other (e.g. `tee`, `echo`). `.agents/skills/
   counts, as D50's hand counts did.
 - `compactions`, `compaction_s`, `first_compaction_step`: from `compact_boundary` events. A step is
   the last `tool_use` ordinal before the compaction.
-- `cache_read`: the sum over the `result` events (a resumed run has one per query), plus subagent
-  messages counted once per message id. Without result usage (killed run, Junie), the per-message
-  sum is used instead. `cache_read_events` is the old per-event sum, 1.5–3.4× larger (D50 E6).
-  `input_tokens`, `output_tokens` and `cache_write` are still per-event sums.
+- Token columns (`input_tokens`, `output_tokens`, `cache_read`, `cache_write`) are the sum over
+  the `result` events (a resumed run has one per query), plus subagent messages counted once per
+  message id. Without result usage (killed run, Junie), the per-message sum is used instead.
+  - Each also has an `*_events` column: the old per-event sum, kept for comparison with pre-D50
+    reports. `cache_read_events` is 1.5–3.4× too large (D50 E6).
+  - A message's `output_tokens` is a streaming placeholder (r13 S1-opus: 1,501 vs 33,707 in the
+    result). So `output_tokens` is exact only where a result event covers it; its subagent and
+    fallback parts are lower bounds.
 
 `phases.csv` has one row per run and aspect phase. A phase runs from the first access of an
 `mps-aspect-*` skill to the step before the next new aspect's first access. A `Skill` load counts as

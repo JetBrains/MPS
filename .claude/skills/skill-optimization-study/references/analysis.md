@@ -2,9 +2,11 @@
 
 ## Metrics (per run, `metrics.csv`)
 Tokens: input, output, cache_read, cache_write (cache_read ≈ turns × fixed context). Since D50
-M-0, `cache_read` comes from the `result` events plus subagent messages (see `harness.md`). `cache_read_events` keeps the old per-event sum,
-which stream-json inflates 1.5–3.4× because it repeats a message's usage on every content block.
-Reports before M-0 quote that sum (e.g. 27 M for a 180-turn run). Turns/calls: turns, tool_calls,
+M-0, all four come from the `result` events plus subagent messages (see `harness.md`). The
+`*_events` columns keep the old per-event sums. Stream-json repeats a message's usage on every
+content block, so the old sum inflates `cache_read` 1.5–3.4×. Because `output_tokens` per message
+is a streaming placeholder, the old sum under-counts `output_tokens` 10–120× (median 43× over 43 runs). Reports before M-0
+quote the old sums (e.g. 27 M cache read for a 180-turn run). Turns/calls: turns, tool_calls,
 mps_calls, bash_calls, skill_reads(+bytes),
 temp_file_envelopes, bash_temp_result_reads, bash_blueprint_writes. Payload: authored_input_chars,
 mps_authored_chars, tool_result_bytes. Skill navigation: skill_msgs, skill_loads,
