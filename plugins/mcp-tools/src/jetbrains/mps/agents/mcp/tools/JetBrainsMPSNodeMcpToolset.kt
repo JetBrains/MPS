@@ -90,7 +90,7 @@ private val MOVE_NODE_TO_PARENT_KEYS = ParameterKeys.of(
     requiredOneOf(
         PARAM_NEW_PARENT_REF, PARAM_MODEL_REFERENCE,
         expected = "the new parent's reference (with role) to reparent the node, or a model reference to make it " +
-            "a root there; an explicit newParentRef:null is rejected",
+            "a root there (an explicit newParentRef:null is rejected)",
     ),
 )
 

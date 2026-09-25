@@ -125,10 +125,14 @@ Alternative forms are part of the same check:
 
 - A choice between keys is named `one of a/b`: `one of conceptRef/conceptRefs` for FIND_INSTANCES,
   `one of conceptsJson/interfaceConceptsJson/conceptNames` for CREATE_CONCEPTS, and
-  `one of newParentRef/modelReference` for MOVE_NODE_TO_PARENT.
+  `one of newParentRef/modelReference` for MOVE_NODE_TO_PARENT. That name appears verbatim in
+  `details.missingParameters` too, so an entry there is either a key or such a choice, never a
+  key to send as written.
 - MOVE_NODE_TO_PARENT requires `role` only together with `newParentRef`.
 - GET_ENUMERATION_LITERALS requires `nodeReference` and `propertyName` only without `enumerationRef`.
 
-Two operations keep their own rejections: MAKE answers `MAKE_INPUT_INVALID` with an
-`expectedParameters` map, and `mps_mcp_parse_java_and_insert` validates its object as a blueprint,
-reporting `Missing 'parameters.<key>'` for one key per call.
+Two exceptions keep their own rejections. The MAKE operation answers `MAKE_INPUT_INVALID` with an
+`expectedParameters` map. The separate tool `mps_mcp_parse_java_and_insert` validates its object as a
+blueprint and reports one key per call — `Missing 'parameters.<key>'` (or `Missing
+'parameters.insert' object`), and inside `insert` `'<key>' is required for <mode>` (for example
+`'parentRef' is required for child insertion`).

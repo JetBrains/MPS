@@ -581,7 +581,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(JetBrainsMPSNodeMcpToolset()) {
             it.mps_mcp_query_nodes(MPSQueryOperation.FIND_INSTANCES, """{ "scope": "editable" }""")
         }
-        assertInvalidRequest(response, "'conceptRef'", "'conceptRefs'")
+        assertMissingParameterKeys(response, listOf("one of conceptRef/conceptRefs"))
     }
 
     @Test
