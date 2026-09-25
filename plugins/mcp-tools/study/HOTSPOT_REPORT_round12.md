@@ -201,17 +201,18 @@ and D56 (singular `conceptRef` again). One new study-asset defect:
   saying that the field appears only when a descriptor is hollow. Both evaluators this round
   reported the criterion as unverifiable or inferred. **D:** add "absent = healthy" to the
   criterion. It changes only the evaluator side, so the prompt sha is unaffected (lesson 25).
+  **Fixed after the round (2026-09-25)**; archived in `docs-defects-archive.md`.
 
 Parameter asymmetry (§4.3) is a candidate, not a filed defect. The two new keys appeared once each
 and cost one turn each. File it only if a later round repeats them.
 
-## 7. Remedy candidates for Gate 2 (none implemented)
+## 7. Remedy candidates for Gate 2 (only R-c implemented)
 
 | # | remedy | tier | evidence | est. saving | risk |
 |---|---|---|---|---|---|
 | R-a | **D50**: in `mps-aspect-constraints/SKILL.md`, a per-job row that names **one** file for "reference scope excluding the enclosing node / self" (the S1 constraint), and says the `computed-sequences-*` files live under `referent-constraints/`, not `scope-fqn-reference/` | D | `S1-sonnet-1:36–:64` | ~15 calls on S1-sonnet | none; check the new row is not an S1 answer key (lesson 19): keep it pattern-level |
 | R-b | **D51**: state the general `AbstractCreator` → `GenericNewExpression.creator` rule in `mps-baselanguage` Critical Directives (in-flight in this worktree, uncommitted, not measured) | D | `S1-sonnet-1:73–:89` | ~6–8 calls | none |
-| R-c | **D57**: done-criteria wording | D (study) | both S1 evals | evaluator time only | none |
+| R-c | **D57**: done-criteria wording (**done 2026-09-25**) | D (study) | both S1 evals | evaluator time only | none |
 | R-d | accept `nodeReferences` (array) on `check_root_node_problems` and `moduleReference` on MAKE as aliases | S | `S1-sonnet-1:90, :92` | 2 turns, once each | widens the D43 near-miss surface; wait for a repeat |
 
 **Not proposed.** Nothing for hotspots #1, #2 and #5 (fixed). Nothing for ToolSearch (harness).

@@ -3,7 +3,7 @@
 Kept separately from the hotspot work (study section 8) so fixes are not blocked on scripting.
 Each entry: where, what is wrong, evidence (run id + step, or commit), status.
 
-Closed, fixed, rejected, and out-of-scope entries were moved to [`docs-defects-archive.md`](docs-defects-archive.md) on 2026-09-22, and D43–D47 on 2026-09-24. This file holds only issues still to be handled.
+Closed, fixed, rejected, and out-of-scope entries were moved to [`docs-defects-archive.md`](docs-defects-archive.md) on 2026-09-22, and D43–D47 on 2026-09-24; D57 on 2026-09-25. This file holds only issues still to be handled.
 
 | id | where | what is wrong | evidence | status |
 |---|-------|--------------|----------|--------|

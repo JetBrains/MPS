@@ -17,5 +17,8 @@
 4. `mps_mcp_get_project_structure(startingPoint=mcp.study.kitchen.samples, includeRootNodes=true)`:
    3 Ingredient roots, 3 Recipe roots, 1 Cookbook root. Print one Recipe: 2–4 steps, ≥1 seeAlso.
 5. `mps_mcp_check_root_node_problems` on every root of the samples model: 0 errors.
-6. Language descriptors not hollow (`mps_mcp_get_concept_details` descriptorStatus).
+6. Language descriptors not hollow: `mps_mcp_get_concept_details(languageRefs=mcp.study.recipes)`.
+   An entry carries `descriptorStatus` **only** when its descriptor is hollow (then always
+   `"hollow"`, with a `descriptorRecoveryAction`); a healthy concept has no such field. Pass = no
+   entry has `descriptorStatus`. Its absence is direct evidence, not an inference.
 Pass = all six hold. Record which failed with the evidence excerpt.
