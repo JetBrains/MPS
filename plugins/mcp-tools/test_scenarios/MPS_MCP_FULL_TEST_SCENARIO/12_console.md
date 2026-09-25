@@ -98,7 +98,8 @@ returned here — read it via history in 12.06.
 }
 ```
 - Validation: `ok==true`; `data` is an array with at least one `kind:"command"` entry
-  (preview shows the string literal) and a following `kind:"response"` entry.
+  (preview shows the string literal) and a following `kind:"response"` entry whose `preview` is
+  `hello from MCP test` with `previewComplete==true`.
 - **Capture** the `reference` of the `kind:"command"` entry (a `CommandHolder`) as
   `{{HISTORY_REF}}`. (These references are valid only until the next console interaction — use
   them promptly in 12.07–12.08; if a later call reports a stale reference, re-run this step to

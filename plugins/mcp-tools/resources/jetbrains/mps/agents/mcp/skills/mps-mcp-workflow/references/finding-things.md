@@ -2,13 +2,15 @@
 
 ## Finding Nodes
 
-- To find nodes that are instances of a concept — e.g. an example node to study or copy as a JSON template — use `mps_mcp_query_nodes` (`FIND_INSTANCES`) with `conceptRef`. `sampleOnly: true` returns one random example; `scope: "roots"` searches within given roots; `propertyFilter: {"name", "value"}` matches a property value (e.g. find a literal by its value).
+- To find nodes that are instances of a concept — e.g. an example node to study or copy as a JSON template — use `mps_mcp_query_nodes` (`FIND_INSTANCES`) with `conceptRef`. `rootsOnly: true` matches only root nodes (`node.parent == null`); `sampleOnly: true` returns one random example; `scope: "roots"` searches within given roots; `propertyFilter: {"name", "value"}` matches a property value (e.g. find a literal by its value).
+- To ask about **several** concepts, or about *how many* instead of *which*, stay in one call: `conceptRefs` takes an array and `detail: "count"` returns `[{concept, conceptReference, count}]` — never one FIND_INSTANCES call per concept. See `analysis-tools.md` for the row semantics (rows overlap unless `exact: true`).
 - To find the nodes that reference a given node, use `FIND_USAGES` (`nodeReference`). Usages are incoming references — FIND_USAGES does **not** return instances of a concept.
 - To find root nodes by name, use `mps_mcp_search_root_node_by_name`. Aspect roots like `<Concept>_Editor` have no name property and are not findable this way — use `mps_mcp_query_structure` (`LIST_CONCEPT_ASPECTS`) on the concept instead.
+- Explicit `models`, `modules`, and `roots` search scopes are all-or-error: pass one nonblank reference string or a nonempty array of nonblank strings, and every reference must resolve. A missing, null, empty, malformed, or partly unresolved selector returns `INVALID_REQUEST`; the tools never search only the resolvable subset. `mps_mcp_search_root_node_by_name` exposes `models`/`modules` as top-level list parameters, so use either one bare reference or a JSON array — a real array or the array written as a string, `models='["r:...", "r:..."]'`; it applies the same nonempty, usable, full-resolution rule after decoding.
 
 ## Finding Concepts
 
-- To find a concept by name, alias, or short description, use `mps_mcp_search_concepts` (`searchTexts`; optionally scope to a model's languages via `modelReference`). It also returns each feature's `featureId` and the declaration's `sourceNode` ref.
+- To find a concept by name, alias, or short description, use `mps_mcp_search_concepts` (`searchTexts`; optionally scope to a model's languages via `modelReference`). It searches this project's languages by default and widens automatically when they hold no match. `detail: "full"` adds the declaration's `sourceNode` ref; per-feature `featureId`s come from `mps_mcp_get_concept_details`, not from this tool.
 - There is no "list all concepts" operation: `mps_mcp_query_structure` has no such op. Use `mps_mcp_search_concepts`, or `GET_SUB_CONCEPTS` / `GET_ASSIGNABLE_CONCEPTS` to enumerate the sub/assignable concepts of a given concept.
 
 ## Finding Models, Modules, and Languages
@@ -23,6 +25,7 @@
 - Newly created languages might not be discoverable by specialized language tools until they are compiled. Use `mps_mcp_get_project_structure` to find them as modules and investigate their `structure` model.
 - Use `mps_mcp_get_project_structure` to read the organization of an MPS project and to understand the dependencies of a module or dependencies and used languages of a model.
 - Use `includeStubModules=true` when you need read-only libraries/stubs or modules from other open MPS projects in project-structure output.
+- **Ask for the smallest projection that answers the question.** To list a model's roots and their ids, use `includeRootNodes=true, nodeDetail="names"` — the full record per root carries the concept javadoc, every property with its own javadoc, every reference, and the per-role child scaffolding, none of which a roots listing needs. To look inside one root, `nodeDepth` bounds how far `includeNodes` inlines, or use `mps_mcp_print_node(deep=true)` on that one root. `includeNodes=true` with no `nodeDepth` inlines the whole AST and can run to tens of kilobytes per model.
 - `mps_mcp_get_project_structure(startingPoint=<module>)` returns `facets` (e.g. `["java","tests"]`) and `loadExtensions` for each module — use these to check whether a solution is a test container (`"tests"` in `facets`) or whether a module loads plugin extensions.
 - When not explicitly pointing to a node, assume the user is referring to the root node currently open in the editor and possibly also a selected node within that root node. Use `mps_mcp_get_current_editor_root_node`.
 - WHEN asked for the 'current model' or 'current module/solution/language/generator', it is the model/module of the root node currently open in the editor — use `mps_mcp_get_current_editor_root_node`.

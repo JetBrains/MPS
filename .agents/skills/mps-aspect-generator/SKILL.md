@@ -6,6 +6,10 @@ type: reference
 
 # MPS Generator Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 A **generator** transforms models written in the source language into models of one or more *target* languages (usually BaseLanguage or another DSL). It is a separate MPS module — a *generator module* — owned by the language and driven by **templates**: target-language code snippets annotated with **macros**.
 
 ## Generator architecture (read first)
@@ -16,7 +20,7 @@ A generator definition has a **stable part** and a **variable part**:
 - the **stable part** does not change with the model being generated — engines, base classes, helpers. Provide it **once in a runtime solution** (an MPS `Solution` the language declares as a runtime module — as MPS-authored source or a bundled JAR), not as a template.
 - the **variable part** *is* the templates + macros, which react to the input model and choose different output.
 
-Idiomatic generators keep the stable part **out** of the templates and emit thin code that **calls into** the runtime solution. Before adding rules, decide how much is stable: see the **architecture ladder** in `references/cookbook.md` and the stable-vs-variable split + wiring in `mps-aspect-accessories/references/runtime-solutions.md` (worked example: the `Kaja` language + its `JavaKaja` runtime).
+Idiomatic generators keep the stable part **out** of the templates and emit thin code that **calls into** the runtime solution. Before adding rules, decide how much is stable: see the **architecture ladder** in `references/cookbook.md` and the stable-vs-variable split + wiring in `references/runtime-solutions.md` in the `mps-aspect-accessories` skill root after loading that companion skill from the same origin (worked example: the `Kaja` language + its `JavaKaja` runtime).
 
 ## Critical Directives
 
@@ -31,7 +35,7 @@ Idiomatic generators keep the stable part **out** of the templates and emit thin
 ## Common-path workflow
 
 1. **Locate or create the generator module.** List languages with `mps_mcp_get_project_structure(moduleKind="Language")` and find yours by `name`: each language entry carries a `generators` array (unconditional — not gated on `includeDependencies`) listing every owned generator's `name` and `reference`. Prefer this over `startingPoint="<language-name>"` — a language and its owned generator share a base name, so a *name* starting point can resolve to the **generator** module instead, and then the `generators` array is never emitted. (If you already hold the language's persistent `reference`, `startingPoint="<reference>"` resolves by id and is also unambiguous.) To go the other direction, each generator entry carries a `sourceLanguage` field (only when `includeDependencies=true`) with the owning language's `name` and `reference`; follow it with `mps_mcp_get_project_structure(startingPoint="<sourceLanguage.reference>", includeModels=true)`. If no generator exists yet: `mps_mcp_create_module(type="generator", parentLanguage="<lang>")`.
-2. In `template/main@generator.mps` (the `generator` model stereotype — `name@generator`; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md) for all model identifiers), add the used languages you target (`jetbrains.mps.devkit.templates` is the quickest umbrella) and ensure the target language is also a *module* `generate-into` dependency on the language `.mpl` (see `references/module-structure.md`).
+2. In `template/main@generator.mps` (the `generator` model stereotype — `name@generator`; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers), add the used languages you target (`jetbrains.mps.devkit.templates` is the quickest umbrella) and ensure the target language is also a *module* `generate-into` dependency on the language `.mpl` (see `references/module-structure.md`).
 3. Create or edit the `MappingConfiguration` root (`mps_mcp_create_root_node` with the FQN in `references/concept-fqns.md`).
 4. Add the rule(s):
    - `Root_MappingRule` for whole-root mapping;
@@ -63,11 +67,13 @@ After a `MAKE`, generators write Java (and TextGen artifacts like `.xml`, `.scxm
 - `mps-aspect-generation-plan` — priorities, checkpoints, plan contributions; pair this with priority-ordering questions.
 - `mps-aspect-textgen` — converting the final model to plain text (last pipeline stage).
 - `mps-aspect-behavior` — put non-trivial per-concept logic in behavior methods called from macros.
-- `mps-model-manipulation` — smodel-access idioms (`SPropertyAccess`, `SLinkAccess`, `Node_GetChildrenOperation`) inside query bodies.
+- `mps-model-manipulation` — smodel-access idioms (`SPropertyAccess`, `SLinkAccess`, `Node_GetChildrenOperation`) inside query bodies; for a macro query body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-quotations` — quotation/anti-quotation syntax for building nodes inside `$INSERT$` and `$MAP_SRC$.mapperFunction`.
 - `mps-baselanguage` — host language for macro query bodies and `RulesFunctions_*` helpers.
 
 ## Reference Index
+
+**Start here — most common case**: one reduction rule with template macros → read only `references/macro-catalog.md`, plus `references/concept-fqns.md` for the blueprint shape; a brand-new generator module → only `references/module-structure.md`; a rule that did not fire or generated code that will not compile → only `references/common-failures.md`.
 
 - Generator module structure (descriptor deps, model used-languages, MappingConfiguration roles): `references/module-structure.md` — read when setting up a generator or fixing "cannot resolve"/missing-concept issues.
 - RuleConsequence catalog (`TemplateDeclarationReference`, `Inline*`, `AbandonInput`, `DismissTop`) + the critical `applicableConcept` ref-form gotcha: `references/rule-consequences.md`.

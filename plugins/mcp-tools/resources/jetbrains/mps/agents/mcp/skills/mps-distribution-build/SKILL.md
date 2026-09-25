@@ -6,6 +6,10 @@ type: reference
 
 # MPS Distribution Build — Ant Pipeline & Plugin Bundling
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 This skill explains how the generated Ant scripts under `build/mps*.xml` assemble MPS distribution archives, and how to add a new plain Java/Kotlin plugin module (e.g. `plugins/mcp-tools`) so it ends up in the produced archives. Authoring the model that *generates* these Ant scripts is covered separately by `mps-build-language` — this skill focuses on the **output side** and the plugin-bundling touchpoints.
 
 ## Critical Directives

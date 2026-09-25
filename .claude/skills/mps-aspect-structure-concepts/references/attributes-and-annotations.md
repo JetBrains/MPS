@@ -54,7 +54,7 @@ reworked. The working design is:
 - name the role explicitly with a **reference `link : LinkDeclaration`** on the attribute concept —
   type-safe, refactoring-friendly, and completable (constrain the referent scope to the host
   concept's own multi-valued containment links; see
-  `mps-aspect-constraints/references/referent-constraints.md` §"Meta-level scope").
+  `references/referent-constraints/meta-level-scope.md` in the `mps-aspect-constraints` skill root after loading that companion skill from the same origin)
 
 At runtime, convert the referenced declaration node to the meta-object with
 `jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getContainmentLink(linkDeclarationNode)`
@@ -149,16 +149,16 @@ Structure only declares *that* a node may be attributed and *with what shape*. T
   cell; without one the annotation is invisible. The editor must include a
   `CellModel_AttributedNodeCell` (`attributed node`) that re-embeds the host node's editor — the
   full pattern (guillemet labels, attributed-node placement, keyboard-deletability) is in
-  `mps-aspect-editor/references/editor-patterns.md` §"Annotation (Node Attribute) Editor". Users
-  add annotations via an intention (`mps-aspect-intentions/references/execute-idioms.md`) and
+  `references/editor-patterns/annotation-editor.md` in the `mps-aspect-editor` skill root after loading that companion skill from the same origin. Users
+  add annotations via an intention (`references/execute-idioms.md` in the `mps-aspect-intentions` skill root after loading that companion skill from the same origin) and
   remove them via a `delete_action_id` action map
-  (`mps-aspect-editor-menus-and-keymaps/references/action-maps.md`).
+  (`references/action-maps.md` in the `mps-aspect-editor-menus-and-keymaps` skill root after loading that companion skill from the same origin).
 - **Constraints** — `canBeChild`/`canBeParent` can further gate placement beyond `attributed`.
 - **Behavior / smodel** — read or attach an attribute on a node with the smodel **`.@` operator**
   (`node.@MyAttribute`), then reach the children/refs/properties it grafts on with ordinary smodel
   access; under the hood attributes live in the node's `smodelAttribute` slot
   (`jetbrains.mps.lang.smodel.generator.smodelAdapter.AttributeOperations`). Full blueprints and the
-  read/set/remove patterns: `mps-model-manipulation/references/attribute-access.md`.
+  read/set/remove patterns: `references/attribute-access.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## Validation
 

@@ -9,4 +9,4 @@ Open this file when a constraint produces a wrong behavior at runtime — a sett
 | "cannot be child" in editor | `ConstraintFunction_CanBeAChild` returns `false`, or structure cardinality violated | Check both; structure comes first |
 | Constraints don't apply to subconcepts | `ConceptConstraints` targets an exact concept; canBe blocks are inherited but property/referent constraints are not | Add separate `ConceptConstraints` for subconcepts or move the rule to the superconcept |
 | Changes invisible at runtime | Language module not rebuilt / MPS still using old runtime | Rebuild the language module; `mps_mcp_reload_all` |
-| Unresolved scope classes (`SimpleRoleScope`, `ListScope`, `CompositeScope`, …) on language build | Language module missing `Default` dependency on `jetbrains.mps.kernel` | See `scope-fqn-reference.md` → "Required module-level dependency" |
+| Unresolved scope classes (`SimpleRoleScope`, `ListScope`, `CompositeScope`, …) on language build | Language module missing `Default` dependency on `jetbrains.mps.kernel` | See `references/scope-fqn-reference/required-languages-imports-dependencies.md` |

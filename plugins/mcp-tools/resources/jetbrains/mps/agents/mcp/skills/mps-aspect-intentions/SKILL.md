@@ -6,6 +6,10 @@ type: reference
 
 # MPS Intentions Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 Intentions are user-invoked transformations shown in the Alt+Enter popup on a node. They are the canonical way to offer optional refactorings (wrap, convert, introduce, preview) alongside quick-fixes. Authoring lives in `<lang>/languageModels/intentions.mps`, language `jetbrains.mps.lang.intentions`.
 
 ## Critical Directives
@@ -20,7 +24,7 @@ Intentions are user-invoked transformations shown in the Alt+Enter popup on a no
 
 ## Common-Path Workflow
 
-1. Ensure an `intentions` model exists in the language (create with `mps_mcp_create_model` and `modelName: "<lang>.intentions"` — aspect ID `intentions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.intentions`; add `jetbrains.mps.lang.actions` if you will use factory-initialized splicing.
+1. Ensure an `intentions` model exists in the language (create with `mps_mcp_create_model`, passing `moduleName: "<lang>"` and `modelName: "<lang>.intentions"` — aspect ID `intentions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.intentions`; add `jetbrains.mps.lang.actions` if you will use factory-initialized splicing.
 2. Insert an `IntentionDeclaration` root with `mps_mcp_insert_root_node_from_json` (see blueprint in `references/json-blueprints.md`). Set `name`, `forConcept`, and `isAvailableInChildNodes` if the popup should bubble from descendants.
 3. Fill `descriptionFunction` (returns a short label String), `executeFunction` (the transformation), and optionally `isApplicableFunction` (gate predicate) and `childFilterFunction` (per-descendant filter when `isAvailableInChildNodes=true`).
 4. For multiple menu entries per blueprint use `ParameterizedIntentionDeclaration` with `paramType` + `queryFunction`; use `IntentionParameter` wherever you want "the current value" inside other blocks.
@@ -41,13 +45,15 @@ Intentions are user-invoked transformations shown in the Alt+Enter popup on a no
 - `mps-aspect-actions` — when the intention needs factory-initialized children, the NodeFactories live there.
 - `mps-aspect-constraints` — for gating that should apply everywhere (not just Alt+Enter), prefer can-be rules over `isApplicable`.
 - `mps-aspect-editor-menus-and-keymaps` — when the action belongs on a substitute/transformation menu or a keystroke, not in the Alt+Enter popup.
-- `mps-model-manipulation` — full smodel/baseLanguage/collections reference; covers the `NF_*` family and the dual `IsEmptyOperation`.
+- `mps-model-manipulation` — full smodel/baseLanguage/collections reference; covers the `NF_*` family and the dual `IsEmptyOperation`. For an `executeFunction` body — the AST edit itself — open only `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-node-editing` — MCP recipes for inserting children, updating references, and staged construction.
 - `mps-aspect-structure-concepts` — when adding the concept that `forConcept` targets.
 - `mps-quotations` — when the execute body builds a complex subtree literal.
 - `mps-tests` → `EditorTestCase` — for testing that an intention is offered and produces the expected tree.
 
 ## Reference Index
+
+**Start here — most common case**: one plain intention (description / isApplicable / execute) → read only `references/blocks-and-parameters.md`, plus `references/json-blueprints.md` when inserting the root through MCP; the execute body's AST edits → only `references/execute-idioms.md`; the intention never shows up → only `references/common-failures.md`.
 
 - Open `references/blocks-and-parameters.md` when wiring `descriptionFunction`, `isApplicableFunction`, `executeFunction`, or `childFilterFunction`, or when you need to look up the implicit parameter concept FQNs for any of them.
 - Open `references/execute-idioms.md` when writing an `executeFunction` body — typical AST-editing operations (insert sibling, isInstanceOf, asCast, list add, select-in-editor), the verbatim `WrapInParens` and `AddOnEntry` examples, the attach-an-annotation (node attribute) idiom (`forConcept = BaseConcept` + context-gated `isApplicable`, `.@role.add(...)` vs `.@Mark = ...`), and the `SelectInEditorOperation` JSON shape live there.

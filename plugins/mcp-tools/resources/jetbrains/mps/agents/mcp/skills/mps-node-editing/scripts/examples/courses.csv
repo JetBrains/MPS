@@ -1,0 +1,41 @@
+name,credits,level,lessons,prerequisites
+Music Theory I,6,ADVANCED,Review the scales:15|Review the etudes:2|Review the repertoire:30|Model the cadences:8,Music Business|Copyright Basics|Home Recording
+Sight Reading,6,INTRO,Outline the scales:20|Demo the repertoire:2|Rehearse the repertoire:10|Assess the intervals:30,Modern Composers|Baroque Studies|Teaching Practice
+Ear Training,8,ADVANCED,Practise the repertoire:5|Analyse the cadences:10|Recap the rhythms:10|Discuss the rhythms:15|Notate the rhythms:8,Sight Reading|Hand Percussion
+Harmony Basics,2,INTRO,Demo the dynamics:2|Demo the cadences:10|Model the phrasing:2|Analyse the etudes:2,Orchestration|Romantic Studies
+Counterpoint,8,ADVANCED,Discuss the rhythms:2|Assess the repertoire:20|Demo the dynamics:10|Notate the cadences:0|Model the repertoire:2,
+Orchestration,6,CORE,Outline the rhythms:10|Review the intervals:5|Demo the repertoire:15,Arranging|Classical Guitar
+Conducting,4,CORE,Notate the rhythms:2|Review the intervals:20|Recap the cadences:10|Discuss the intervals:10|Notate the dynamics:0|Discuss the dynamics:0,Recital Prep|Classical Guitar|Harmony Basics
+Jazz Improvisation,4,ADVANCED,Recap the dynamics:10|Demo the etudes:0|Review the repertoire:0|Perform the intervals:30|Model the dynamics:5,Violin Basics|Vocal Health
+Blues Guitar,8,CORE,Model the rhythms:2|Assess the scales:10|Notate the cadences:10|Outline the dynamics:5|Recap the rhythms:2,
+Classical Guitar,4,ADVANCED,Recap the cadences:30|Rehearse the phrasing:15|Demo the cadences:30|Model the cadences:2|Assess the cadences:15,Hand Percussion
+Piano Basics,6,INTRO,Review the dynamics:5|Discuss the intervals:10|Analyse the dynamics:20,Romantic Studies|Teaching Practice
+Piano Repertoire,8,INTRO,Rehearse the cadences:0|Analyse the rhythms:8|Assess the etudes:10|Notate the dynamics:8|Practise the intervals:2|Outline the repertoire:0,Modern Composers
+Violin Basics,8,INTRO,Analyse the phrasing:5|Notate the intervals:8|Recap the repertoire:20,
+Cello Basics,4,ADVANCED,Rehearse the intervals:30|Assess the dynamics:8|Outline the phrasing:2|Rehearse the cadences:10|Rehearse the repertoire:30,Harmony Basics|Hand Percussion|Trumpet Basics
+Flute Basics,4,CORE,Assess the etudes:15|Assess the repertoire:5|Assess the phrasing:0|Practise the etudes:0|Demo the phrasing:30|Perform the scales:15,
+Clarinet Basics,8,CORE,Review the intervals:15|Model the cadences:15|Discuss the phrasing:5|Notate the repertoire:20|Practise the scales:0|Perform the etudes:20,
+Trumpet Basics,6,INTRO,Perform the etudes:15|Discuss the rhythms:30|Assess the cadences:8,Recital Prep|Counterpoint
+Drum Rudiments,8,INTRO,Rehearse the repertoire:15|Perform the intervals:2|Analyse the phrasing:20|Recap the phrasing:15|Review the phrasing:0|Analyse the scales:8,Ear Training|Live Sound|Orchestration
+Hand Percussion,1,INTRO,Rehearse the repertoire:15|Practise the repertoire:2|Recap the etudes:10|Review the intervals:2|Assess the cadences:2|Notate the phrasing:0,Teaching Practice|Piano Repertoire
+Choir Singing,2,CORE,Recap the cadences:30|Review the rhythms:10|Perform the rhythms:15|Notate the rhythms:2,Mastering Basics|Clarinet Basics|Romantic Studies
+Solo Voice,8,ADVANCED,Rehearse the rhythms:5|Rehearse the phrasing:30|Demo the etudes:30|Review the scales:5|Model the cadences:5|Review the dynamics:8,Romantic Studies|Stagecraft
+Vocal Health,8,ADVANCED,Outline the intervals:0|Model the etudes:20|Outline the scales:15|Outline the dynamics:30|Rehearse the rhythms:30,Sound Design
+Songwriting,2,INTRO,Analyse the phrasing:20|Demo the repertoire:30|Outline the cadences:2,Trumpet Basics
+Lyric Writing,4,CORE,Rehearse the scales:0|Model the scales:0|Perform the scales:20|Practise the phrasing:2|Practise the intervals:10,
+Arranging,1,CORE,Assess the repertoire:15|Perform the rhythms:20|Analyse the phrasing:8|Recap the etudes:20|Rehearse the dynamics:2,Counterpoint|Modern Composers
+Music History,4,ADVANCED,Practise the dynamics:15|Analyse the intervals:10|Practise the dynamics:2|Recap the etudes:15|Assess the intervals:5,Piano Repertoire
+Baroque Studies,4,CORE,Practise the phrasing:5|Perform the rhythms:10|Recap the scales:30|Analyse the intervals:5|Demo the phrasing:2|Demo the scales:20,Conducting|Drum Rudiments
+Romantic Studies,4,CORE,Rehearse the repertoire:30|Notate the intervals:8|Demo the dynamics:15,Film Scoring|Music Business|Counterpoint
+Modern Composers,2,CORE,Rehearse the intervals:2|Recap the phrasing:2|Rehearse the cadences:20,Blues Guitar|Recital Prep|Stagecraft
+Film Scoring,4,ADVANCED,Notate the scales:5|Outline the intervals:15|Model the repertoire:30|Discuss the rhythms:15,Mixing Basics|Live Sound
+Sound Design,1,ADVANCED,Assess the cadences:0|Practise the cadences:30|Rehearse the etudes:8|Outline the cadences:0|Notate the etudes:2|Review the intervals:5,Film Scoring
+Home Recording,2,INTRO,Assess the dynamics:8|Notate the phrasing:30|Notate the repertoire:15,Vocal Health|Songwriting
+Mixing Basics,6,INTRO,Demo the phrasing:15|Outline the phrasing:8|Discuss the cadences:30,Conducting|Ear Training
+Mastering Basics,6,CORE,Demo the scales:20|Analyse the etudes:2|Notate the rhythms:8|Recap the etudes:10,
+Live Sound,2,INTRO,Analyse the scales:30|Assess the intervals:15|Perform the etudes:15|Review the rhythms:8|Assess the cadences:10|Perform the scales:30,Piano Basics
+Music Business,6,CORE,Review the rhythms:5|Recap the repertoire:5|Practise the scales:30|Analyse the scales:0,
+Copyright Basics,8,INTRO,Discuss the repertoire:0|Outline the rhythms:0|Discuss the etudes:0|Outline the cadences:2|Discuss the etudes:8,Vocal Health
+Teaching Practice,1,INTRO,Practise the repertoire:10|Model the etudes:10|Analyse the cadences:10|Assess the dynamics:15|Perform the phrasing:0,Orchestration|Recital Prep|Music Theory I
+Recital Prep,1,CORE,Assess the scales:0|Analyse the repertoire:8|Recap the dynamics:8,Vocal Health|Sound Design|Songwriting
+Stagecraft,6,CORE,Review the rhythms:2|Model the scales:20|Practise the rhythms:15|Notate the rhythms:5|Demo the rhythms:15,Lyric Writing

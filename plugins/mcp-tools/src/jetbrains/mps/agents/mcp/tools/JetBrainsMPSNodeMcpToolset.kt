@@ -1,10 +1,14 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
@@ -61,36 +65,54 @@ private val MAKE_PARAMETER_SCHEMA: Map<String, String> = linkedMapOf(
 
 private val MAKE_PARAMETER_KEYS: Set<String> = MAKE_PARAMETER_SCHEMA.keys
 
-/**
- * Returns the closest match from [candidates] for [input] if one is reasonably similar,
- * or null otherwise. "Reasonably similar" means edit distance ≤ max(2, length/3) — large
- * enough to catch typos like 'target' → 'modules', strict enough that random keys do not
- * get a misleading suggestion.
- */
-internal fun suggestParameterName(input: String, candidates: Iterable<String>): String? {
-    val threshold = maxOf(2, input.length / 3)
-    return candidates
-        .map { it to editDistance(input.lowercase(), it.lowercase()) }
-        .filter { it.second <= threshold }
-        .minByOrNull { it.second }
-        ?.first
+private val FIND_USAGES_KEYS =
+    ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose usages to find")) + SEARCH_SCOPE_KEYS
+
+private val NODE_INFO_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to inspect"))
+
+private val COPY_NODE_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to copy"))
+
+private val FIX_REFERENCES_KEYS =
+    ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose subtree's references to fix"))
+
+private val MOVE_CHILD_KEYS = ParameterKeys.of(
+    required(PARAM_NODE_REFERENCE, "the parent node's reference"),
+    required("childRole", "the containment role name"),
+    required(PARAM_CHILD_NODE_REF, "the reference of the child to move"),
+    required("position", "the 0-based target index, or -1 to move to the end"),
+)
+
+private val MOVE_NODE_TO_PARENT_KEYS = ParameterKeys.of(
+    required(PARAM_NODE_REFERENCE, "the reference of the node to move"),
+    PARAM_NEW_PARENT_REF,
+    required("role", "the containment role under newParentRef", onlyWith = PARAM_NEW_PARENT_REF),
+    "position", PARAM_MODEL_REFERENCE,
+    requiredOneOf(
+        PARAM_NEW_PARENT_REF, PARAM_MODEL_REFERENCE,
+        expected = "the new parent's reference (with role) to reparent the node, or a model reference to make it " +
+            "a root there (an explicit newParentRef:null is rejected)",
+    ),
+)
+
+/** The accepted `parameters` keys of each [MPSQueryOperation]. */
+private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys = when (operation) {
+    MPSQueryOperation.FIND_INSTANCES -> FIND_INSTANCES_KEYS
+    MPSQueryOperation.FIND_USAGES -> FIND_USAGES_KEYS
+    MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
+    MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE -> NODE_INFO_KEYS
 }
 
-private fun editDistance(a: String, b: String): Int {
-    if (a == b) return 0
-    if (a.isEmpty()) return b.length
-    if (b.isEmpty()) return a.length
-    var prev = IntArray(b.length + 1) { it }
-    var curr = IntArray(b.length + 1)
-    for (i in 1..a.length) {
-        curr[0] = i
-        for (j in 1..b.length) {
-            val cost = if (a[i - 1] == b[j - 1]) 0 else 1
-            curr[j] = minOf(curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost)
-        }
-        val tmp = prev; prev = curr; curr = tmp
-    }
-    return prev[b.length]
+/**
+ * The accepted `parameters` keys of each [MPSAlterOperation]. MAKE answers `null`: it keeps its
+ * own richer rejection, which additionally carries the `MAKE_INPUT_INVALID` code and the
+ * `expectedParameters` schema map its callers read.
+ */
+private fun alterNodesParameterKeys(operation: MPSAlterOperation): ParameterKeys? = when (operation) {
+    MPSAlterOperation.MOVE_CHILD -> MOVE_CHILD_KEYS
+    MPSAlterOperation.MOVE_NODE_TO_PARENT -> MOVE_NODE_TO_PARENT_KEYS
+    MPSAlterOperation.COPY_NODE -> COPY_NODE_KEYS
+    MPSAlterOperation.FIX_REFERENCES -> FIX_REFERENCES_KEYS
+    MPSAlterOperation.MAKE -> null
 }
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
@@ -101,22 +123,47 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""
-        Read-only node queries. FIND_INSTANCES: find nodes that are instances of a concept (`conceptRef`; optional `scope`
-        all|editable|models|modules|roots with matching `models`/`modules`/`roots` (each a single reference or a JSON array),
-        `propertyFilter` {"name","value"}, `exact`, `sampleOnly`:true for one example node). `all` and `editable` are rooted
-        at the project selected by `projectPath`; explicit `models`/`modules`/`roots` may point to models, modules, or roots
-        from another open MPS project and are queried read-only. FIND_USAGES: find nodes whose references point at the given
-        node — incoming references, not instances (`nodeReference`; optional `scope` as above). GET_PARENT, GET_ROOT,
+        Read-only node queries. FIND_INSTANCES: find nodes that are instances of a concept (`conceptRef`, or `conceptRefs`
+        for several concepts in one scan — a single reference or a JSON array; passing both is rejected; optional `scope`
+        all|editable|models|modules|roots with matching `models`/`modules`/`roots` (each a single reference or a JSON array;
+        scope `roots` searches within the subtrees of those specified roots), optional `rootsOnly`:true to match only root nodes
+        (parent == null), `propertyFilter` {"name","value"}, `exact`, `sampleOnly`:true for one example node). `detail`:"count"
+        answers with `[{concept, conceptReference, count}]`, one row per requested concept in input order (count 0 included),
+        and builds no node records — use it to count instances instead of one call per concept, each serializing every node it found;
+        it cannot be combined with `sampleOnly`. Rows overlap by design: with `exact`:false an instance of a subconcept
+        counts for every requested superconcept too, so the rows do not sum to a distinct-node total. `all` and `editable`
+        are rooted at the project selected by `projectPath`; explicit `models`/`modules`/`roots` may point to models,
+        modules, or roots from another open MPS project and are queried read-only. An explicit selector must be a nonblank
+        string or nonempty string array, and every reference must resolve or the whole query returns INVALID_REQUEST. FIND_USAGES: find nodes
+        whose references point at the given node — incoming references, not instances (`nodeReference`; optional `scope` as above,
+        optional `rootsOnly`:true to match only root source nodes). GET_PARENT, GET_ROOT,
         GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE take `nodeReference`. Returns `{"ok":true,"data":{...}}`
-        on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+        on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
+        FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
+        otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
     """)
     suspend fun mps_mcp_query_nodes(
-        @McpDescription("The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String = "",
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
+        @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
+        // D43: both are Kotlin-optional so an omitted one is answered here, naming the key. A blank
+        // operation reports a blank blob alongside it; a supplied but unknown operation wins over
+        // a blank blob, as in update_node (D36), so the caller fixes the selector first.
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_query_nodes",
+                requiredOperation<MPSQueryOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
         val op = resolveOperationOrNull<MPSQueryOperation>(operation)
-            ?: return unknownOperation<MPSQueryOperation>(operation)
-        return mps_mcp_query_nodes(op, parameters)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSQueryOperation>(operation))
+        rejectMissingParameters(
+            "mps_mcp_query_nodes",
+            requiredParametersBlob(parameters.text, op.name, queryNodesParameterKeys(op)),
+        )?.let { return it }
+        return mps_mcp_query_nodes(op, parameters.text, maxInlineBytes)
     }
 
     /**
@@ -124,39 +171,63 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      * registered `@McpTool`, so an unrecognised `operation` is an INVALID_REQUEST error instead of
      * a crash in the framework's pre-call enum decode (see [resolveOperationOrNull]).
      */
-    suspend fun mps_mcp_query_nodes(operation: MPSQueryOperation, parameters: String): String {
+    suspend fun mps_mcp_query_nodes(
+        operation: MPSQueryOperation,
+        parameters: String,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+    ): String {
         return withMpsProject("Querying MPS nodes: $operation") { mpsProject ->
             val params = try {
                 Gson().fromJson(parameters, JsonObject::class.java)
             } catch (e: Exception) {
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
             }
+            params.rejectUnknownParameterKeys(operation.name, queryNodesParameterKeys(operation))
+            params.rejectMissingParameterKeys(operation.name, queryNodesParameterKeys(operation))
 
             when (operation) {
                 MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
                 MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE ->
-                    opNodeInfoRead(mpsProject, operation, params)
+                    opNodeInfoRead(mpsProject, operation, params, maxInlineBytes)
 
-                MPSQueryOperation.FIND_USAGES -> opFindUsages(mpsProject, params)
-                MPSQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params)
+                MPSQueryOperation.FIND_USAGES -> opFindUsages(mpsProject, params, maxInlineBytes)
+                MPSQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params, maxInlineBytes)
             }
         }
     }
 
     @McpTool
     @McpDescription("""        
-        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object string. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
+        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root. Explicit `newParentRef:null` is rejected. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
          MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool; node references are not accepted — resolve the node's module or model first. Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
     suspend fun mps_mcp_alter_nodes(
-        @McpDescription("The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("Required. The operation to perform (MOVE_CHILD, MOVE_NODE_TO_PARENT, COPY_NODE, MAKE, FIX_REFERENCES)") operation: String = "",
+        // Study D29: Kotlin-optional so that MAKE called with its arguments at the top level
+        // reaches the body, instead of the platform rejecting the call for the missing required
+        // argument without ever saying the arguments belong inside this object. It stays
+        // semantically required — the default exists only to buy the body a chance to say so — so
+        // the description carries "Required.": dropping out of the published `required` array
+        // removes the client's only structural signal, and the rejection itself says
+        // "'parameters' is required". See missingAlterNodesParameters.
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
+        // D43: only a blank *operation* is answered here. Once the operation is known, a blank
+        // `parameters` keeps D29's per-operation missingAlterNodesParameters (MAKE_INPUT_INVALID
+        // plus `expectedParameters` for MAKE) in the overload below; it cannot be chosen without
+        // an operation, so a blank blob beside a blank operation is reported here instead.
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_alter_nodes",
+                requiredOperation<MPSAlterOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
         val op = resolveOperationOrNull<MPSAlterOperation>(operation)
-            ?: return unknownOperation<MPSAlterOperation>(operation)
-        return mps_mcp_alter_nodes(op, parameters)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSAlterOperation>(operation))
+        return mps_mcp_alter_nodes(op, parameters.text)
     }
 
     /**
@@ -164,11 +235,22 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      * registered `@McpTool` (see [resolveOperationOrNull] for the rationale).
      */
     suspend fun mps_mcp_alter_nodes(operation: MPSAlterOperation, parameters: String): String {
+        // Guarded here rather than in the wrapper so neither entry point can reach the Gson parse
+        // with no object to parse: blank text and a bare `null` both decode to a null JsonObject.
+        // `rejectUnknownParameterKeys` already answers that for the four operations with a key
+        // list, but MAKE has none and dereferenced it into an opaque INTERNAL_ERROR. Recorded
+        // explicitly because this returns before `withMpsProject`, the only other call site that
+        // reports the envelope to the call log (see McpCallOutcomes).
+        if (parameters.isBlank()) return McpCallOutcomes.record(missingAlterNodesParameters(operation))
         return withMpsProject("Altering MPS nodes: $operation") { mpsProject ->
             val params = try {
                 Gson().fromJson(parameters, JsonObject::class.java)
             } catch (e: Exception) {
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
+            } ?: return@withMpsProject missingAlterNodesParameters(operation)
+            alterNodesParameterKeys(operation)?.let {
+                params.rejectUnknownParameterKeys(operation.name, it)
+                params.rejectMissingParameterKeys(operation.name, it)
             }
 
             when (operation) {
@@ -190,9 +272,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     private suspend fun opNodeInfoRead(
         mpsProject: MPSProject,
         operation: MPSQueryOperation,
-        params: JsonObject
+        params: JsonObject,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         return executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
@@ -211,7 +294,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     else errJson("Node '$nodeReference' is not in a model")
                 }
                 MPSQueryOperation.NODE_INDEX -> opNodeIndex(node)
-                MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject)
+                MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject, maxInlineBytes)
                 MPSQueryOperation.GET_CHILD_ROLE -> opGetChildRole(node, mpsProject)
                 MPSQueryOperation.FIND_USAGES,
                 MPSQueryOperation.FIND_INSTANCES -> errJson("Unsupported operation: $operation")
@@ -226,13 +309,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         return okJson(parent.getChildren(link).indexOf(node).toString())
     }
 
-    private fun opSiblings(node: SNode, mpsProject: MPSProject): String {
+    private fun opSiblings(node: SNode, mpsProject: MPSProject, maxInlineBytes: Int): String {
         val parent = node.parent ?: return errJson("Node is a root node")
         val link = node.containmentLink ?: return errJson("Node does not have a containment role")
         if (!link.isMultiple) return errJson("Node is not in a multiple role")
         val siblings = parent.getChildren(link)
         val cache = ProjectMembershipCache(mpsProject)
-        return finalizeResult("[" + siblings.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]")
+        return finalizeResult("[" + siblings.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]", maxInlineBytes)
     }
 
     private fun opGetChildRole(node: SNode, mpsProject: MPSProject): String {
@@ -240,9 +323,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         return okJson(containmentLinkInfoJsonObject(link, mpsProject.repository, currentProject = mpsProject))
     }
 
-    private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
-        val scopeParam = params.get("scope")?.asString ?: "editable"
+    private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
+        val scopeParam = params.paramString("scope") ?: "editable"
+        val rootsOnly = params.paramBoolean("rootsOnly", default = false)
         val monitor = coroutineProgressMonitor()
         return executeBackgroundRead(mpsProject) {
             val repo = mpsProject.repository
@@ -258,6 +342,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             val results = mutableSetOf<SNode>()
             findUsagesWithFallback(searchScope, setOf(node), monitor) { ref ->
                 if (!monitor.isCanceled &&
+                    (!rootsOnly || ref.sourceNode.parent == null) &&
                     (rootFilter == null || ref.sourceNode.containingRoot.reference in rootFilter)
                 ) {
                     synchronized(results) {
@@ -269,30 +354,33 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 errJson("Operation canceled")
             } else {
                 val cache = ProjectMembershipCache(mpsProject)
-                finalizeResult("[" + results.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]")
+                finalizeResult("[" + results.joinToString(",") { nodeInfoJson(it, mpsProject, cache) } + "]", maxInlineBytes)
             }
         }
     }
 
     private suspend fun opMoveChild(params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
-        val childRole = params.get("childRole")?.asString ?: return errJson("Parameter 'childRole' is missing")
-        val childNodeRef = params.get("childNodeRef")?.asString ?: return errJson("Parameter 'childNodeRef' is missing")
-        val position = params.get("position")?.asInt ?: return errJson("Parameter 'position' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
+        val childRole = params.requiredParamString("childRole")
+        val childNodeRef = params.requiredParamString(PARAM_CHILD_NODE_REF)
+        val position = params.requiredParamInt("position")
         return moveNodeChild(nodeReference, childRole, childNodeRef, position)
     }
 
     private suspend fun opMoveNodeToParent(params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
-        val newParentRef = params.get("newParentRef")?.asString
-        val role = params.get("role")?.asString
-        val position = if (params.has("position")) params.get("position").asInt else null
-        val modelReference = params.get("modelReference")?.asString
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
+        if (params.paramIsExplicitNull(PARAM_NEW_PARENT_REF)) {
+            return errJson("Parameter 'newParentRef' must not be null", McpErrorCode.INVALID_REQUEST)
+        }
+        val newParentRef = params.paramString(PARAM_NEW_PARENT_REF)
+        val role = params.paramString("role")
+        val position = params.paramInt("position")
+        val modelReference = params.paramString(PARAM_MODEL_REFERENCE)
         return moveNodeToParent(nodeReference, newParentRef, role, position, modelReference)
     }
 
     private suspend fun opCopyNode(params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         return withMpsProject("Copying MPS node") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -438,8 +526,42 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         return MakeTargetResolution.Ok(modelsToMake, modulesToMake, unresolvedModels, unresolvedModules)
     }
 
+    /**
+     * Omitted-`parameters` rejection for [mps_mcp_alter_nodes] (study D29). The observed call put
+     * MAKE's own arguments at the top level, where the binder drops them, so the message says the
+     * arguments belong inside the object and lists that operation's keys. The near-miss spellings
+     * are phrased conditionally: the binder cannot report which keys it dropped, so this must stay
+     * true for the caller who sent nothing at all.
+     */
+    private fun missingAlterNodesParameters(operation: MPSAlterOperation): String {
+        if (operation == MPSAlterOperation.MAKE) {
+            // MAKE_INPUT_INVALID, not INVALID_REQUEST: MAKE input rejections are classified
+            // under that code (the contract D14b records), and an `expectedParameters` map rides
+            // along as it does on opMake's unknown-key rejection. Using INVALID_REQUEST here would
+            // put the most common MAKE input error in a different class from the rest.
+            return makeInputInvalid(
+                "'parameters' is required for MAKE, and MAKE's own arguments belong inside that " +
+                    "object (keys: ${MAKE_PARAMETER_KEYS.joinToString(", ")}). Anything sent at " +
+                    "the top level instead is dropped before the call reaches this tool, so a " +
+                    "'rebuild' put there never arrives — and 'moduleName' is not a key here at " +
+                    "all: a module list is 'modules', inside the object.",
+                mapOf("expectedParameters" to MAKE_PARAMETER_SCHEMA, "missingParameters" to listOf("parameters")),
+            )
+        }
+        // Every non-MAKE operation requires at least 'nodeReference', so the key list is never
+        // empty; alterNodesParameterKeys returns null for MAKE alone, handled above.
+        val keys = alterNodesParameterKeys(operation)?.canonical.orEmpty()
+        return errJson(
+            "'parameters' is required for ${operation.name}, and its arguments belong inside that " +
+                "object (keys: ${keys.joinToString(", ")}).",
+            McpErrorCode.INVALID_REQUEST,
+            // Same key as rejectMissingParameters, so the study counts this case alike (D43).
+            mapOf("missingParameters" to listOf("parameters")),
+        )
+    }
+
     private suspend fun opMake(mpsProject: MPSProject, params: JsonObject): String {
-        val unknownKeys = params.keySet().filter { it !in MAKE_PARAMETER_KEYS }
+        val unknownKeys = params.keySet().filter { it !in MAKE_PARAMETER_KEYS && it !in TOLERATED_PARAMETER_KEYS }
         if (unknownKeys.isNotEmpty()) {
             val suggestions = unknownKeys.associateWith { suggestParameterName(it, MAKE_PARAMETER_KEYS) }
             val parts = unknownKeys.map { key ->
@@ -470,8 +592,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
         val modelsArray = modelsElem?.asJsonArray
         val modulesArray = modulesElem?.asJsonArray
-        val rebuild = params.get("rebuild")?.asBoolean ?: false
-        val wholeProject = params.get("wholeProject")?.asBoolean ?: false
+        val rebuild = params.paramBoolean("rebuild", default = false)
+        val wholeProject = params.paramBoolean("wholeProject", default = false)
 
         if (wholeProject && (modelsArray != null || modulesArray != null)) {
             return errJson("Parameters 'models' and 'modules' must not be provided when 'wholeProject' is true")
@@ -535,7 +657,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opFixReferences(mpsProject: MPSProject, params: JsonObject): String {
-        val nodeReference = params.get("nodeReference")?.asString ?: return errJson("Parameter 'nodeReference' is missing")
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         return executeShortCommandOnEdt(mpsProject) {
             val (node, model, console) = when (
                 val r = resolveEditableNodeAllowingConsole(mpsProject, nodeReference)
@@ -556,14 +678,17 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
     }
 
-    suspend private fun showNodeAppearance(nodeReference: String, asHtml: Boolean = false
+    suspend private fun showNodeAppearance(
+        nodeReference: String,
+        asHtml: Boolean = false,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         return withMpsProject("Getting MPS node ${if (asHtml) "HTML" else "text"} representation") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
                 val node = sNodeRef?.resolve(repo)
-                    ?: return@executeShortReadOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
+                    ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
 
                 withHeadlessEditor(repo, node) { ctx ->
                     val component = ctx.editorComponent as HeadlessEditorComponent
@@ -572,7 +697,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     } else {
                         component.rootCell.renderText().getText()
                     }
-                    saveToTempFileResult(JsonPrimitive(text).toString())
+                    finalizeResult(JsonPrimitive(text).toString(), maxInlineBytes)
                 }
             }
         }
@@ -581,21 +706,33 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants) or an MPS model. Accepts either an SNodeReference or SModelReference. Returns `data:"no problems found"` when clean, or a path to a temp file containing the problem tree. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
+        Validates an MPS node (and its descendants) or an MPS model. Accepts an SNodeReference, an SModelReference, or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts). Pass any of these in `nodeReference` — there is no `modelReference` parameter. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
+        A **model reference is exhaustive and is the preferred scope**: it validates the model itself (imports, used languages, devkits) AND runs the full checker stack on every root, so there is no need to follow up with a per-root check. Both the clean and the problem answer carry `details.scope:"model"` and `details.rootsChecked:<N>` stating the coverage; the problem report is the model object plus a `roots` array, one entry per root with problems (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` per `onlyNodesWithProblems`). Pass `perRoot=true` to get `data` as one line per root instead — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — which replaces N single-root calls with one. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
-        @McpDescription("Persistent form of SNodeReference or SModelReference") nodeReference: String,
+        @McpDescription("Required. Persistent form of SNodeReference or SModelReference, or a qualified model name (the same form mps_mcp_get_project_structure startingPoint accepts). Pass any of these here — there is no modelReference parameter.") nodeReference: String = "",
         @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true,
-        @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false
+        @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false,
+        @McpDescription("Inline the problem report in `data` when it is at most this many characters; larger reports are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        @McpDescription("Model references only: if true, `data` is one compact entry per root — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — instead of the problem tree (default = false). Ignored for a node reference.") perRoot: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_check_root_node_problems",
+            RequiredParameter(
+                "nodeReference",
+                nodeReference,
+                "a node reference, a model reference, or a qualified model name — all three go under nodeReference, " +
+                    "since this tool has no modelReference parameter",
+            ),
+        )?.let { return it }
         return withMpsProject("Checking MPS problems") { mpsProject ->
             // Auto-apply mutates the model, so it needs a write command; the default (report-only)
             // mode keeps the read wrapper to avoid needless write locks.
             if (autoApplyQuickFixes) {
-                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true) }
+                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot) }
             } else {
-                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false) }
+                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot) }
             }
         }
     }
@@ -605,6 +742,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         nodeReference: String,
         onlyNodesWithProblems: Boolean,
         applyFixes: Boolean,
+        maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
+        perRoot: Boolean = false,
     ): String {
         val repo = mpsProject.repository
         val host = mpsProject.platform
@@ -699,67 +838,153 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 } else {
                     nodeWithProblemsToJson(reportNode, problems, currentProject = mpsProject)
                 }
-                saveToTempFileResult(json, details)
+                finalizeResult(json, maxInlineBytes, details)
             }
         } else {
-            // Try resolving as model reference
-            val sModelRef = try {
-                PersistenceFacade.getInstance().createModelReference(nodeReference)
-            } catch (e: Exception) {
-                rethrowIfCancellation(e)
-                null
-            }
-            val model = sModelRef?.resolve(repo)
+            // Accept a persistent model reference OR a qualified model name — the same
+            // forms get_project_structure startingPoint accepts (study defect D33).
+            // createModelReference on a bare name succeeds but yields a name-only
+            // SModelReference that does not resolve, so name lookup has to go through
+            // resolveModelPreferringProject rather than PersistenceFacade alone.
+            val model = resolveModelPreferringProject(mpsProject, nodeReference)
             return if (model != null) {
-                val problems = mutableListOf<ModelReportItem>()
-                ModelValidator(host, model).validate({ problems.add(it) }, monitor)
+                val modelProblems = mutableListOf<ModelReportItem>()
+                ModelValidator(host, model).validate({ modelProblems.add(it) }, monitor)
 
-                val modelBranchWarnings = if (applyFixes) {
-                    listOf("autoApplyQuickFixes applies only to node references; ignored for a model reference")
-                } else {
-                    emptyList()
+                // ModelValidator only inspects model-level metadata (imports, used languages, devkits,
+                // aspect/generator sanity) — it never looks at the roots. Sweeping every root through
+                // the same checkers the node branch runs is what makes the model-scope answer
+                // exhaustive, which is what `details.rootsChecked` states and what spares agents the
+                // per-root re-check they were doing out of distrust (study hotspot 2, defect D7).
+                val roots = model.rootNodes.toList()
+                val rootProblems = roots.map { runRootCheckers(mpsProject, it, repo) }
+
+                val warnings = mutableListOf<String>()
+                if (applyFixes) {
+                    warnings.add("autoApplyQuickFixes applies only to node references; ignored for a model reference")
                 }
-                if (problems.isEmpty()) {
-                    okJson(JsonPrimitive("no problems found"), warnings = modelBranchWarnings)
+                val details = mutableMapOf<String, Any?>("scope" to "model", "rootsChecked" to roots.size)
+
+                if (perRoot) {
+                    val perRootArray = JsonArray()
+                    for ((index, root) in roots.withIndex()) {
+                        perRootArray.add(rootProblemSummary(root, rootProblems[index]))
+                    }
+                    if (modelProblems.isNotEmpty()) {
+                        details["modelProblems"] = modelProblems.size
+                        warnings.add(
+                            "The model itself has ${modelProblems.size} problem(s) (imports / used languages / devkits); " +
+                                "re-run with perRoot=false to see them"
+                        )
+                    }
+                    finalizeResult(perRootArray.toString(), maxInlineBytes, details, warnings)
                 } else {
-                    if (applyFixes) {
-                        saveToTempFileResult(modelWithProblemsToJson(model, problems, mpsProject),
-                            details = mapOf("warning" to modelBranchWarnings.first()))
+                    val problemRoots = JsonArray()
+                    for ((index, root) in roots.withIndex()) {
+                        val problems = rootProblems[index]
+                        if (!hasAnyProblems(root, problems)) continue
+                        problemRoots.add(rootProblemSummary(root, problems).apply {
+                            if (onlyNodesWithProblems) {
+                                add("nodes", nodeWithProblemsListJsonArray(root, problems, mpsProject))
+                            } else {
+                                add("tree", nodeWithProblemsJsonObject(root, problems, true, mpsProject))
+                            }
+                        })
+                    }
+                    if (modelProblems.isEmpty() && problemRoots.isEmpty()) {
+                        okJson(JsonPrimitive("no problems found"), warnings = warnings, details = details)
                     } else {
-                        saveToTempFileResult(modelWithProblemsToJson(model, problems, mpsProject))
+                        val report = modelWithProblemsJsonObject(model, modelProblems, mpsProject)
+                        report.add("roots", problemRoots)
+                        finalizeResult(report.toString(), maxInlineBytes, details, warnings)
                     }
                 }
             } else {
-                errJson("Reference '$nodeReference' resolved to neither node nor model", McpErrorCode.NOT_FOUND)
+                errJson(
+                    "Reference '$nodeReference' resolved to neither a node nor a model. " +
+                        "Pass a node reference (r:<uuid>(model)/<node-id>), a model reference (r:<uuid>(model)), " +
+                        "or a qualified model name in nodeReference — the same forms mps_mcp_get_project_structure startingPoint accepts. " +
+                        "This tool has no modelReference parameter; retry with nodeReference set to the value you passed as modelReference.",
+                    McpErrorCode.NOT_FOUND,
+                )
             }
+        }
+    }
+
+    /**
+     * [nodeReference] did not resolve as a node. If it is a model (persistent ref or
+     * qualified name), say so with a retry line rather than a generic NOT_FOUND — study
+     * defect D33: agents reused a model-scope string from the checker against print_node.
+     */
+    private fun unresolvedPrintNode(mpsProject: MPSProject, nodeReference: String, parsedAsNode: Boolean): String {
+        val model = resolveModelPreferringProject(mpsProject, nodeReference)
+        if (model != null) {
+            val name = model.name.value
+            val modelRef = PersistenceFacade.getInstance().asString(model.reference)
+            return errJson(
+                "'$nodeReference' is a model ($name), not a node. " +
+                    "mps_mcp_print_node requires a node reference (r:<uuid>(model)/<node-id>). " +
+                    "Retry with mps_mcp_get_project_structure, startingPoint set to '$modelRef', includeNodes=true. " +
+                    "mps_mcp_check_root_node_problems accepts this value in nodeReference as a model-scope check.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        return if (parsedAsNode) {
+            errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
+        } else {
+            invalidReference("Invalid or unresolvable node reference: '$nodeReference'")
+        }
+    }
+
+    /** `{root, name, concept, errors, warnings}` for one root of a model-scope problem check. */
+    private fun rootProblemSummary(root: SNode, problems: Map<SNode, List<NodeReportItem>>): JsonObject {
+        val counts = problemCounts(root, problems)
+        return jsonObject {
+            addProperty("root", PersistenceFacade.getInstance().asString(root.reference))
+            addProperty("name", root.name ?: root.presentation)
+            addProperty("concept", root.concept.name)
+            addProperty("errors", counts.errors)
+            addProperty("warnings", counts.warnings)
         }
     }
 
     @McpTool
     @McpDescription(
         """
-        Saves a JSON printout of the specified node to a temp file (path returned in `data`). `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The saved envelope is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
-        Alternatively, if HTML or PLAIN TEXT format is required, it saves the editor-projected representation of the specified node to a temp file (path returned in `data`).
+        Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
+        `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
+        Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
     )
     suspend fun mps_mcp_print_node(
-        @McpDescription("Persistent form of SNodeReference") nodeReference: String,
-        @McpDescription("Whether to return a JSON blueprint(default), HTML or PLAIN TEXT. Defaults to JSON.") format: String = "JSON",
-        @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false
+        @McpDescription("Required. Persistent form of SNodeReference (r:<uuid>(model)/<node-id>). A model reference or qualified model name is rejected with a retry line pointing at mps_mcp_get_project_structure.") nodeReference: String = "",
+        @McpDescription("One of exactly three literals: JSON (default), HTML, PLAIN TEXT.") format: String = "JSON",
+        @McpDescription("Whether to perform a deep (true) or shallow (false) printout. Only relevant for JSON format. Defaults to false.") deep: Boolean = false,
+        @McpDescription("Inline the printout in `data` when it is at most this many characters; larger printouts are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_print_node",
+            RequiredParameter(
+                "nodeReference",
+                nodeReference,
+                "the node's persistent reference, `r:<uuid>(model)/<node-id>` (a model is not accepted here; " +
+                    "list a model's nodes with mps_mcp_get_project_structure instead)",
+            ),
+        )?.let { return it }
         val normalizedFormat = format.uppercase().trim()
-        if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true)
-        if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false)
-        if (normalizedFormat != "JSON") return errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT", McpErrorCode.INVALID_REQUEST)
+        if (normalizedFormat == "HTML") return showNodeAppearance(nodeReference, asHtml = true, maxInlineBytes = maxInlineBytes)
+        if (normalizedFormat == "PLAIN TEXT") return showNodeAppearance(nodeReference, asHtml = false, maxInlineBytes = maxInlineBytes)
+        if (normalizedFormat != "JSON") return McpCallOutcomes.record(
+            errJson("Invalid format '$format'. Allowed values: JSON, HTML, PLAIN TEXT", McpErrorCode.INVALID_REQUEST)
+        )
         return withMpsProject(if (deep) "Deep printing MPS node" else "Shallow printing MPS node") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
-                    ?: return@executeShortReadOnEdt invalidReference("Invalid or unresolvable node reference: '$nodeReference'")
-                val node = sNodeRef.resolve(repo)
-                    ?: return@executeShortReadOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
-                saveToTempFileResult(nodeHierarchyToJson(node, deep, mpsProject))
+                val node = sNodeRef?.resolve(repo)
+                    ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
+                finalizeResult(nodeHierarchyToJson(node, deep, mpsProject), maxInlineBytes)
             }
         }
     }
@@ -772,13 +997,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         ADD × CHILD — Add a new child node.
           nodeReference: persistent ref of the parent node.
           childRole: containment role name.
-          childJson: JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. For large blueprints prefer the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
+          childJson: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints prefer the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
           position: Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. A `position` at or beyond the current child count is clamped to an append (not rejected); a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.
-          Returns the inserted node's info envelope (`data.parentReference` carries the parent ref, `data.index` the actual landing index — useful when an over-range `position` was clamped).
+          Returns the inserted node's info envelope (`data.parentReference` carries the parent ref, `data.index` the actual landing index — useful when an over-range `position` was clamped). `responseDetail="summary"` answers with `{added, nodes:[{name, reference, concept}], fixReferences}` instead (no conceptDoc, no index); `full` is the default because one call adds one child.
 
         SET × CHILD — Replace an existing child node with a new node described by a JSON blueprint. Deletes the child if `childJson = null`.
           childNodeRef: persistent ref of the child to replace.
-          childJson: `null` deletes the child. JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
+          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
           Returns the inserted node's info envelope or the parent's one, if deletion (`childJson = null`).
 
         SET × PROPERTY — Set or delete properties on a batch of nodes. The value `propertyValue = null` DELETES the property.
@@ -795,22 +1020,35 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_update_node(
-        @McpDescription("The operation to perform (ADD or SET)") operation: String,
-        @McpDescription("The kind of element to operate on (CHILD, PROPERTY, REFERENCE)") kind: String,
+        @McpDescription("Required. The operation to perform (ADD or SET)") operation: String = "",
+        @McpDescription("Required. The kind of element to operate on (CHILD, PROPERTY, REFERENCE)") kind: String = "",
         @McpDescription("Parent node ref for ADD CHILD") nodeReference: String? = null,
         @McpDescription("Containment role name for ADD CHILD") childRole: String? = null,
         @McpDescription("0-based insert index for ADD CHILD multi-cardinality roles; null/-1 = append. A value at or beyond the current child count is clamped to an append; a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.") position: Int? = null,
-        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint as an inline string (max 4 KB) OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation.") childJson: String? = null,
+        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected.") childJson: JsonOrText? = null,
         @McpDescription("Ref of the child to replace or delete (SET CHILD)") childNodeRef: String? = null,
         @McpDescription("If true, validate without mutating (ADD CHILD, SET CHILD only). Default: false.") dryRun: Boolean = false,
         @McpDescription("Batch triplets [nodeRef, propertyName, value] for SET PROPERTY") properties: List<List<String?>>? = null,
         @McpDescription("Batch triplets [nodeRef, referenceRole, targetNodeRefOrName] for SET REFERENCE") references: List<List<String?>>? = null,
+        @McpDescription("ADD CHILD only: `summary` for `{added, nodes:[{name, reference, concept}], fixReferences}`, `full` (the default for a single child) for the complete node-info envelope with `index`.") responseDetail: String? = null,
     ): String {
+        // Study D28: both selectors default to blank so a call that omits one still reaches this
+        // body. As required parameters they were rejected by the platform with "No argument is
+        // passed for required parameter 'kind'", which names one wrong key and none of the right
+        // ones. Both stay semantically required and say so in their descriptions — leaving the
+        // published `required` array costs the client its only structural signal, which the
+        // wording has to replace. `operation` is resolved before `kind` is checked so that operation=DELETE gets the
+        // deletion recipe (D36) rather than a "kind is required" that is a dead end for it.
+        // Every selector rejection is recorded: these return before `withMpsProject`, the only
+        // other call site that reports the envelope to the call log, and a rejection that reaches
+        // the log as ok:true is exactly the mis-measurement D26 was fixed to remove.
+        if (operation.isBlank()) return McpCallOutcomes.record(missingUpdateNodeSelector(operation, kind))
         val op = resolveOperationOrNull<NodeUpdateOperation>(operation)
-            ?: return unknownOperation<NodeUpdateOperation>(operation)
+            ?: return McpCallOutcomes.record(unknownNodeUpdateOperation(operation, kind))
+        if (kind.isBlank()) return McpCallOutcomes.record(missingUpdateNodeSelector(operation, kind))
         val k = resolveOperationOrNull<NodeUpdateKind>(kind)
-            ?: return unknownOperation<NodeUpdateKind>(kind)
-        return mps_mcp_update_node(op, k, nodeReference, childRole, position, childJson, childNodeRef, dryRun, properties, references)
+            ?: return McpCallOutcomes.record(unknownOperation<NodeUpdateKind>(kind))
+        return mps_mcp_update_node(op, k, nodeReference, childRole, position, childJson?.text, childNodeRef, dryRun, properties, references, responseDetail)
     }
 
     /**
@@ -829,24 +1067,47 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         dryRun: Boolean = false,
         properties: List<List<String?>>? = null,
         references: List<List<String?>>? = null,
+        responseDetail: String? = null,
     ): String {
         return when (kind) {
             NodeUpdateKind.CHILD -> when (operation) {
                 NodeUpdateOperation.ADD -> {
-                    val parentRef = nodeReference ?: return errJson("nodeReference is required for ADD CHILD")
-                    val role = childRole ?: return errJson("childRole is required for ADD CHILD")
-                    val json = childJson ?: return errJson("childJson is required for ADD CHILD")
-                    update_node_child(parentRef, role, json, null, position, dryRun)
+                    // Reported together rather than one per round trip: study D28's incident sent
+                    // parentRef/role/target, so all three keys were wrong at once.
+                    rejectMissingParameters(
+                        "mps_mcp_update_node",
+                        RequiredParameter("nodeReference", nodeReference.orEmpty(), "the parent node's reference"),
+                        RequiredParameter("childRole", childRole.orEmpty(), "the containment role name"),
+                        RequiredParameter(
+                            "childJson", childJson.orEmpty(),
+                            "the child's JSON blueprint, or an absolute path to a file holding it",
+                        ),
+                        operation = "ADD CHILD",
+                    )?.let { return it }
+                    update_node_child(nodeReference, childRole, childJson, null, position, dryRun, responseDetail)
                 }
                 NodeUpdateOperation.SET -> {
-                    val childRef = childNodeRef ?: return errJson("childNodeRef is required for SET CHILD")
-                    update_node_child(null, null, childJson, childRef, null, dryRun)
+                    rejectMissingParameters(
+                        "mps_mcp_update_node",
+                        RequiredParameter(
+                            "childNodeRef", childNodeRef.orEmpty(),
+                            "the reference of the child to replace or delete (SET CHILD ignores nodeReference)",
+                        ),
+                        operation = "SET CHILD",
+                    )?.let { return it }
+                    update_node_child(null, null, childJson, childNodeRef, null, dryRun)
                 }
             }
             NodeUpdateKind.PROPERTY -> when (operation) {
-                NodeUpdateOperation.ADD -> errJson("ADD is not a valid operation for PROPERTY")
+                NodeUpdateOperation.ADD -> McpCallOutcomes.record(
+                    errJson("ADD is not a valid operation for PROPERTY", McpErrorCode.INVALID_REQUEST)
+                )
                 NodeUpdateOperation.SET -> {
-                    val triplets = properties ?: return errJson("properties is required for SET PROPERTY")
+                    val triplets = properties ?: return missingParametersResponse(
+                        "mps_mcp_update_node",
+                        listOf(RequiredParameter("properties", "", "the triplet array [[nodeRef, propertyName, value], ...]")),
+                        "SET PROPERTY",
+                    )
                     val results = mutableListOf<String>()
                     var allSucceeded = true
                     for (triplet in triplets) {
@@ -859,19 +1120,32 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                                 else -> update_node_property(nodeRef, propName, triplet[2])
                             }
                         } else {
-                            errJson("Invalid property triplet: expected at least 3 elements")
+                            errJson("Invalid property triplet: expected at least 3 elements", McpErrorCode.INVALID_REQUEST)
                         }
                         results.add(itemResult)
                         if (!itemResult.startsWith("{\"ok\":true")) allSucceeded = false
                     }
                     val array = "[" + results.joinToString(",") + "]"
-                    "{" + "\"ok\":$allSucceeded,\"data\":" + array + "}"
+                    // Recorded because the per-item helpers each recorded their own envelope and
+                    // McpCallOutcomes is last-write-wins: without this the call log reports the
+                    // batch as whatever its final row happened to be, not as the aggregate.
+                    McpCallOutcomes.record("{" + "\"ok\":$allSucceeded,\"data\":" + array + "}")
                 }
             }
             NodeUpdateKind.REFERENCE -> when (operation) {
-                NodeUpdateOperation.ADD -> errJson("ADD is not a valid operation for REFERENCE")
+                NodeUpdateOperation.ADD -> McpCallOutcomes.record(
+                    errJson("ADD is not a valid operation for REFERENCE", McpErrorCode.INVALID_REQUEST)
+                )
                 NodeUpdateOperation.SET -> {
-                    val triplets = references ?: return errJson("references is required for SET REFERENCE")
+                    val triplets = references ?: return missingParametersResponse(
+                        "mps_mcp_update_node",
+                        listOf(
+                            RequiredParameter(
+                                "references", "", "the triplet array [[nodeRef, referenceRole, targetNodeRefOrName], ...]",
+                            ),
+                        ),
+                        "SET REFERENCE",
+                    )
                     val results = mutableListOf<String>()
                     var allSucceeded = true
                     for (triplet in triplets) {
@@ -884,16 +1158,69 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                                 else -> update_node_reference(nodeRef, refRole, triplet[2])
                             }
                         } else {
-                            errJson("Invalid reference triplet: expected at least 3 elements")
+                            errJson("Invalid reference triplet: expected at least 3 elements", McpErrorCode.INVALID_REQUEST)
                         }
                         results.add(itemResult)
                         if (!itemResult.startsWith("{\"ok\":true")) allSucceeded = false
                     }
                     val array = "[" + results.joinToString(",") + "]"
-                    "{" + "\"ok\":$allSucceeded,\"data\":" + array + "}"
+                    McpCallOutcomes.record("{" + "\"ok\":$allSucceeded,\"data\":" + array + "}")
                 }
             }
         }
+    }
+
+    /**
+     * [NodeUpdateOperation] has no DELETE, and study D36 recorded the same DELETE guess three
+     * times across two runs because the generic rejection lists the valid operations but never
+     * says *how* to delete. Kept local so the operation enums that really do carry a DELETE
+     * (root nodes, [DependencyOperation]) keep the generic [unknownOperation] wording.
+     */
+    private fun unknownNodeUpdateOperation(raw: String, kind: String): String = errJson(
+        "Unknown operation '$raw'. Valid operations: " +
+            NodeUpdateOperation.entries.joinToString(", ") { it.name } + ". " +
+            deletionRecipeFor(kind) + " There is no DELETE operation.",
+        McpErrorCode.INVALID_REQUEST,
+    )
+
+    /**
+     * How to delete, for the `kind` the caller asked about. Deletion is a `SET`, but *which* SET
+     * differs: a child is deleted by omitting `childJson`, whereas a property or reference needs
+     * an explicit null as the third element of its triplet — a shortened triplet is rejected. A
+     * recipe naming only the child form would be wrong advice for two of the three kinds.
+     */
+    private fun deletionRecipeFor(kind: String): String =
+        when (resolveOperationOrNull<NodeUpdateKind>(kind)) {
+            NodeUpdateKind.PROPERTY ->
+                "Deletion is SET PROPERTY with an explicit null as the triplet's third element."
+            NodeUpdateKind.REFERENCE ->
+                "Deletion is SET REFERENCE with an explicit null as the triplet's third element."
+            NodeUpdateKind.CHILD -> "Deletion is SET CHILD with childJson omitted (or a JSON null)."
+            // kind blank or unresolvable: name both forms rather than guess one.
+            null -> "Deletion is a SET — SET CHILD with childJson omitted for a child, " +
+                "SET PROPERTY / SET REFERENCE with an explicit null triplet value for a property or reference."
+        }
+
+    /**
+     * Blank-selector rejection for [mps_mcp_update_node] (study D28). Names whichever selector is
+     * actually blank — the caller who supplied `operation` must not be told it is missing — then
+     * the valid pairs and the ADD CHILD keys, since omitting `kind` went with guessed key names
+     * in every observed incident.
+     */
+    private fun missingUpdateNodeSelector(operation: String, kind: String): String {
+        val subject = when {
+            operation.isBlank() && kind.isBlank() -> "operation and kind are"
+            operation.isBlank() -> "operation is"
+            else -> "kind is"
+        }
+        return errJson(
+            "$subject required. Received operation='$operation', kind='$kind'. " +
+                "Valid pairs: ADD CHILD, SET CHILD, SET PROPERTY, SET REFERENCE — ADD is not " +
+                "valid for PROPERTY or REFERENCE. " +
+                "For ADD CHILD also supply nodeReference, childRole and childJson; " +
+                "this tool does not accept parentRef/nodeRef/role/target.",
+            McpErrorCode.INVALID_REQUEST,
+        )
     }
 
     private suspend fun update_node_child(
@@ -902,10 +1229,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         childJson: String?,
         childToReplaceOrDeleteRef: String?,
         position: Int?,
-        dryRun: Boolean = false
+        dryRun: Boolean = false,
+        responseDetail: String? = null
     ): String = withMpsProject("Updating MPS node child") { mpsProject ->
         val actualJson = readNodeJsonOrFile(childJson, dryRun)
-        update_node_child(mpsProject, nodeReference, childRole, actualJson, childToReplaceOrDeleteRef, position, dryRun)
+        update_node_child(mpsProject, nodeReference, childRole, actualJson, childToReplaceOrDeleteRef, position, dryRun, responseDetail)
     }
 
     private suspend fun update_node_reference(
@@ -1048,9 +1376,6 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 }
 
                 if (newParentRef != null) {
-                    if (role == null) {
-                        return@executeShortCommandOnEdt errJson("Parameter 'role' is missing for MOVE_NODE_TO_PARENT with newParentRef", McpErrorCode.INVALID_REQUEST)
-                    }
                     val (newParent, targetModel, targetConsole) = when (
                         val r = resolveEditableNodeAllowingConsole(mpsProject, newParentRef,
                             { "New parent node '$it' not found" },
@@ -1121,8 +1446,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     // (now clamped to an append) can see where it landed.
                     okJson(nodeInfoJsonObjectWithIndex(node, mpsProject), warnings = listOfNotNull(warn))
 
-                } else if (modelReference != null) {
-                    val targetModel = when (val r = resolveEditableModel(mpsProject, modelReference)) {
+                } else {
+                    val targetModel = when (val r = resolveEditableModel(mpsProject, checkNotNull(modelReference))) {
                         is EditableModelResolution.Ok -> r.model
                         is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
                     }
@@ -1143,8 +1468,6 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         saveModelAndModule(sourceModel)
                     }
                     okJson(nodeInfoJson(node, mpsProject))
-                } else {
-                    errJson("Either 'newParentRef' or 'modelReference' must be provided for MOVE_NODE_TO_PARENT", McpErrorCode.INVALID_REQUEST)
                 }
             }
         }

@@ -1,0 +1,77 @@
+{
+  "ok": true,
+  "data": {
+    "name": "Sight Reading",
+    "concept": "Course",
+    "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+    "deprecated": "false",
+    "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+    "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048003",
+    "properties": [
+      {
+        "name": "credits",
+        "type": "integer",
+        "doc": "",
+        "deprecated": "false",
+        "value": "4"
+      },
+      {
+        "name": "level",
+        "type": "enum:Level",
+        "doc": "",
+        "deprecated": "false",
+        "value": "7tUWsHqcKpu/CORE"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "doc": "",
+        "deprecated": "false",
+        "value": "Sight Reading"
+      }
+    ],
+    "references": [],
+    "children": [
+      {
+        "role": "lessons",
+        "type": "Lesson",
+        "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+        "cardinality": "1..n",
+        "doc": "",
+        "deprecated": "false",
+        "children": [
+          {
+            "name": "lesson",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048005"
+          },
+          {
+            "name": "lesson",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048009"
+          },
+          {
+            "name": "lesson",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048010"
+          }
+        ]
+      },
+      {
+        "role": "prerequisites",
+        "type": "CourseRef",
+        "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+        "cardinality": "0..n",
+        "doc": "",
+        "deprecated": "false",
+        "children": [
+          {
+            "name": "Score Reading",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048028"
+          },
+          {
+            "name": "ChamberMusic",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048029"
+          }
+        ]
+      }
+    ]
+  }
+}

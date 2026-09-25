@@ -34,7 +34,7 @@ These wrap an inner expression (`object: Expression[1]`) and control how the res
 | `#printNodeRef` | `PrintNodeReferenceExpression` | print a clickable reference (opens the editor) |
 | `#printSequence` | `PrintSequenceExpression` | print the size with a link to the usages view (docs abbreviate this `#printSeq`) |
 
-A bare `BLExpression` already prints its value, so explicit printers are only needed to *change* the rendering (e.g. force a clickable ref, or a usages-view link for a big sequence).
+A bare `BLExpression` already prints its value, so explicit printers are only needed to *change* the rendering (e.g. force a clickable ref, or a usages-view link (`#printSequence`) for a sequence not already printed that way). A sequence of nodes already prints as a count only (`3 nodes`), so its items cannot be read back from that response. Select a property first (`.select({~it => it.name; })`) to print values, or print each node (`.forEach({~it => #print it; })`) to get node references. The "Reading a command's output" section of this skill's `SKILL.md` has the full read path.
 
 ### Scopes defined here
 

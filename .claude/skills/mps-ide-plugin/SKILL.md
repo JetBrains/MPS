@@ -7,6 +7,10 @@ type: reference
 
 # MPS IDE Plugin Language
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 This skill covers **IDE plugins**: code that integrates with the MPS/IntelliJ host IDE — menu actions, tool windows, shortcuts, settings panels. Plugin code lives in a regular `Solution` module (compilation mode: "Regular MPS module contributing extensions to MPS") with model(s) using `jetbrains.mps.lang.plugin` and `jetbrains.mps.lang.plugin.standalone`. The canonical model name is `<solution_name>.plugin` — MPS auto-registers it on that convention.
 
 Official documentation: <https://www.jetbrains.com/help/mps/plugin.html>
@@ -69,7 +73,7 @@ Seed `mps_mcp_print_node` / `mps_mcp_query_nodes` (FIND_USAGES) with these:
 - `mps-aspect-intentions` — Alt+Enter context actions *inside* the projectional editor.
 - `mps-aspect-editor-menus-and-keymaps` — editor cell actions, substitute menus, side transforms (a different layer from the IDE shell).
 - `mps-build-language` — packaging a plugin solution into a distributable MPS/IDEA plugin (the build script must copy `startup.properties` from the solution's resources).
-- `mps-quotations` / `mps-model-manipulation` — writing the base-language bodies inside `execute`/`isApplicable`/`init`/`dispose` blocks.
+- `mps-quotations` / `mps-model-manipulation` — writing the base-language bodies inside `execute`/`isApplicable`/`init`/`dispose` blocks. These bodies do **not** already hold a model lock the way a rule or behavior body does, so open only `references/concurrent-access.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin — the `command` / `read action` / `execute command in EDT` wrappers.
 - `mps-baselanguage` — mechanics of building BaseLanguage JSON.
 
 ## Reference Index

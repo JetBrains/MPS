@@ -442,8 +442,11 @@ Confirms `DELETE` is **not** a valid `operation` (only `ADD`/`SET`; delete is vi
   }
 }
 ```
-- Validation: `ok==false`; error: `Unknown operation 'DELETE'. Valid operations: ADD, SET.`
-  with `code:"INVALID_REQUEST"`.
+- Validation: `ok==false`; error starts with `Unknown operation 'DELETE'. Valid operations: ADD, SET.`
+  and goes on to name the recipe for the `kind` that was sent — here `kind:"CHILD"`, so
+  `Deletion is SET CHILD with childJson omitted (or a JSON null). There is no DELETE operation.`
+  (a `PROPERTY` or `REFERENCE` kind instead names the explicit-null-triplet form) — with
+  `code:"INVALID_REQUEST"`.
 
 ---
 

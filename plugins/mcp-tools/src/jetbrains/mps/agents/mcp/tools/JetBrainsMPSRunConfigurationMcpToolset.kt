@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 import com.intellij.execution.RunManager
 import com.intellij.execution.configurations.ConfigurationFactory
 import com.intellij.execution.configurations.ConfigurationType
@@ -89,11 +91,14 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
         """
     )
     suspend fun mps_mcp_create_run_configuration(
-        @McpDescription("Reference of the root node that the run configuration should target (r:... or i:... or 'ModelName.RootName').")
-        nodeReference: String,
+        @McpDescription("Required. Reference of the root node that the run configuration should target (r:... or i:... or 'ModelName.RootName').")
+        nodeReference: String = "",
         @McpDescription("Optional name for the new run configuration. Defaults to a name derived from the node.")
         configurationName: String? = null,
-    ): String = withMpsProject("Creating MPS run configuration") { mpsProject ->
+    ): String = rejectMissingParameters(
+        "mps_mcp_create_run_configuration",
+        RequiredParameter("nodeReference", nodeReference, "the reference of the root node to target (r:... or i:... or 'ModelName.RootName')"),
+    ) ?: withMpsProject("Creating MPS run configuration") { mpsProject ->
         executeShortCommandOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val node = resolveNodeReference(mpsProject, nodeReference)?.resolve(repo)

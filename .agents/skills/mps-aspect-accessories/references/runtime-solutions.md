@@ -8,7 +8,7 @@ A generator's output has two parts:
 - a **stable part** — code that does not change in reaction to the model being generated (engines, base classes, data structures, helper APIs). Provide it **once, in a runtime solution.** It is not a template.
 - a **variable part** — code whose shape *is* driven by the model. This is the **generator templates + macros**, which react to the input and emit different output.
 
-Idiomatic split: **keep the stable part out of the templates** and generate thin code that *calls into* the runtime solution — rather than regenerating the engine inline for every program, or generating one fat artifact that dispatches at run time on a generated constant (see the architecture ladder in `mps-aspect-generator/references/cookbook.md`). Result: far less generated code, one place to fix bugs, and a runtime you can debug as ordinary Java.
+Idiomatic split: **keep the stable part out of the templates** and generate thin code that *calls into* the runtime solution — rather than regenerating the engine inline for every program, or generating one fat artifact that dispatches at run time on a generated constant (see the architecture ladder in `references/cookbook.md` in the `mps-aspect-generator` skill root after loading that companion skill from the same origin). Result: far less generated code, one place to fix bugs, and a runtime you can debug as ordinary Java.
 
 ## Worked example — Kaja / JavaKaja (`samples/robot_Kaja` in this repo)
 

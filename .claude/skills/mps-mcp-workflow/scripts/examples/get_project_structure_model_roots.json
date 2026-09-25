@@ -1,0 +1,744 @@
+{
+  "ok": true,
+  "data": {
+    "name": "com.example.catalog.samples",
+    "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)",
+    "readOnly": false,
+    "rootNodes": [
+      {
+        "name": "ScaleSheets",
+        "concept": "Resource",
+        "doc": "A named resource that course lessons can refer to. The format says how this resource is delivered.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048000",
+        "properties": [
+          {
+            "name": "format",
+            "type": "enum:Format",
+            "doc": "",
+            "deprecated": "false",
+            "value": "PDF",
+            "isDefault": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "ScaleSheets"
+          }
+        ],
+        "references": [],
+        "children": []
+      },
+      {
+        "name": "MetronomeTrack",
+        "concept": "Resource",
+        "doc": "A named resource that course lessons can refer to. The format says how this resource is delivered.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048001",
+        "properties": [
+          {
+            "name": "format",
+            "type": "enum:Format",
+            "doc": "",
+            "deprecated": "false",
+            "value": "1x81nr4PfaY/AUDIO"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "MetronomeTrack"
+          }
+        ],
+        "references": [],
+        "children": []
+      },
+      {
+        "name": "ChordChart",
+        "concept": "Resource",
+        "doc": "A named resource that course lessons can refer to. The format says how this resource is delivered.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048002",
+        "properties": [
+          {
+            "name": "format",
+            "type": "enum:Format",
+            "doc": "",
+            "deprecated": "false",
+            "value": "3tSupaEUlNW/SCORE"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "ChordChart"
+          }
+        ],
+        "references": [],
+        "children": []
+      },
+      {
+        "name": "Sight Reading",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048003",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "4"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "7tUWsHqcKpu/CORE"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Sight Reading"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048005"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048009"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048010"
+              }
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Score Reading",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048028"
+              },
+              {
+                "name": "ChamberMusic",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048029"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Score Reading",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048011",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "INTRO",
+            "isDefault": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Score Reading"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048013"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048017"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048018"
+              }
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Sight Reading",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048030"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "ChamberMusic",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048019",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "6"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/ADVANCED"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "ChamberMusic"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048021"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048023"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048026"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048027"
+              }
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Sight Reading",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048031"
+              },
+              {
+                "name": "Score Reading",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048032"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Music Theory I",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329296",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "6"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/ADVANCED"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Music Theory I"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329298"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329299"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329300"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329301"
+              }
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Music Business",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329302"
+              },
+              {
+                "name": "Copyright Basics",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329303"
+              },
+              {
+                "name": "Home Recording",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329304"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Sight Reading",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329305",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "6"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "INTRO",
+            "isDefault": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Sight Reading"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329307"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329308"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329309"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329310"
+              }
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Modern Composers",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329311"
+              },
+              {
+                "name": "Baroque Studies",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329312"
+              },
+              {
+                "name": "Teaching Practice",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329313"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Ear Training",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329314",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "8"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/ADVANCED"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Ear Training"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329316"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329317"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329318"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329319"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329320"
+              }
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Sight Reading",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329623"
+              },
+              {
+                "name": "Hand Percussion",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329321"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Harmony Basics",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329322",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "INTRO",
+            "isDefault": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Harmony Basics"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329324"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329325"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329326"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329327"
+              }
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Orchestration",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329328"
+              },
+              {
+                "name": "Romantic Studies",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329329"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Counterpoint",
+        "concept": "Course",
+        "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329330",
+        "properties": [
+          {
+            "name": "credits",
+            "type": "integer",
+            "doc": "",
+            "deprecated": "false",
+            "value": "8"
+          },
+          {
+            "name": "level",
+            "type": "enum:Level",
+            "doc": "",
+            "deprecated": "false",
+            "value": "2iUggKgmNmz/ADVANCED"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "Counterpoint"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "type": "Lesson",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "cardinality": "1..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329332"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329333"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329334"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329335"
+              },
+              {
+                "name": "lesson",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436329336"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "FoundationTrack",
+        "concept": "Curriculum",
+        "doc": "Groups existing Course roots into a titled collection without containing them.",
+        "deprecated": "false",
+        "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359703:com.example.courses.structure.Curriculum",
+        "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048033",
+        "properties": [
+          {
+            "name": "name",
+            "type": "string",
+            "doc": "",
+            "deprecated": "false",
+            "value": "FoundationTrack"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "courses",
+            "type": "CourseRef",
+            "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "cardinality": "0..n",
+            "doc": "",
+            "deprecated": "false",
+            "children": [
+              {
+                "name": "Sight Reading",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048034"
+              },
+              {
+                "name": "Score Reading",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048035"
+              },
+              {
+                "name": "ChamberMusic",
+                "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048036"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

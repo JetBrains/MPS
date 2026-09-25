@@ -29,8 +29,8 @@ output; that is exactly the signal this smoke test exists to produce.
 
 1. **All calls are MPS MCP tools.** Your session exposes them with a server prefix
    (e.g. `mcp__mps-mcp-XXXX__mps_mcp_create_module`). Below they are written with bare names
-   (`mps_mcp_*`). Plain-file reads of the temp files the tools return are done with your normal
-   file-read tool.
+   (`mps_mcp_*`). Plain-file reads of any temp files the tools return (rule 8) are done with your
+   normal file-read tool.
 2. **Determine `<PROJECT_PATH>` in step S-00 and pass it as `projectPath` on every call.**
 3. **No cleanup.** Leave everything in place; §7 tells the human what to delete manually.
    Do not delete, undo, or "fix" anything beyond what a step instructs.
@@ -45,11 +45,13 @@ output; that is exactly the signal this smoke test exists to produce.
 7. **Assert by field values and substrings**, not whole-response equality. Rendered text layout
    (spaces, line breaks) may differ; when a step says *assert text contains X*, a substring match
    on the printed text is enough.
-8. **Tools that return a temp-file path** (`mps_mcp_list_node_intentions`,
-   `mps_mcp_check_root_node_problems` when problems exist, `mps_mcp_print_node`) put the path in
-   `data`. Read that file to check the expectations. Note: for `mps_mcp_print_node` with
-   `format: "PLAIN TEXT"` the temp file is still a JSON envelope — the printed text is the value
-   of its `data` string, not raw file content.
+8. **Read tools return small results inline.** `mps_mcp_list_node_intentions`,
+   `mps_mcp_check_root_node_problems` and `mps_mcp_print_node` put the result itself in `data`
+   when it is at most `maxInlineBytes` characters (default 20000), and a temp-file path only above
+   that. Check the expectations on the inline `data`; read a file only when `data` is a path. That
+   file holds the complete `{ok, data}` envelope, so take the result from its `data` field. For
+   `mps_mcp_print_node` with `format: "PLAIN TEXT"` the result is the printed text as a JSON
+   string, inline or in the file's `data`.
 9. **Never read or edit `.mps` files directly.** Everything goes through the MCP tools.
 10. **Never apply an intention or quick-fix a step does not name.** In particular
     `Replace Field with Property ...` (a full refactoring) will appear in listings — it must never
@@ -260,7 +262,7 @@ Node lookup pattern used throughout this phase — `mps_mcp_query_nodes` with
 Unless stated otherwise each query is expected to return exactly one node.
 
 After each apply, verify with `mps_mcp_print_node` on `«I_ROOT»` with `format = "PLAIN TEXT"`,
-reading the returned temp file.
+reading the printed text from `data` (rule 8).
 
 ### I-01 — Invert If Condition
 1. Locate: FIND_INSTANCES of `jetbrains.mps.baseLanguage.structure.IfStatement` in `«I_ROOT»`
@@ -363,7 +365,7 @@ reading the returned temp file.
 ## 4. Phase Q — Manual quick-fixes
 
 ### Q-00 — the check report carries the fixes (foundation for Q-01…Q-06)
-`mps_mcp_check_root_node_problems(nodeReference = «QF_ROOT»)` → read the report file.
+`mps_mcp_check_root_node_problems(nodeReference = «QF_ROOT»)` → read the report (rule 8).
 Record the `reference` of each node entry named below.
 
 **Expected (live-verified):**

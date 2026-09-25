@@ -6,6 +6,10 @@ type: reference
 
 # MPS Behavior Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The **behavior** aspect attaches methods and a constructor to a concept, much like adding methods to a Java class. Bodies are written in BaseLanguage + smodel and are callable from any other aspect (editor, constraints, typesystem, generator, intentions, plugin) via `node.methodName(...)`. Lives in `<lang>/languageModels/behavior.mps`, language `jetbrains.mps.lang.behavior`.
 
 ## Critical Directives
@@ -20,15 +24,15 @@ The **behavior** aspect attaches methods and a constructor to a concept, much li
 - Methods are **non-virtual by default**: all modifier booleans (`isVirtual`, `isAbstract`, `isStatic`, `isFinal`) default to `false`. Only `virtual` methods can be overridden; mark a method `virtual` up front if sub-concepts may ever need to specialise it.
 - When the same piece of node-handling logic repeats across several places or several aspects of one concept (editor, constraints, typesystem, generator, intentions, textgen), **extract it into a behavior method** and call it everywhere via `node.m(...)` — this de-duplication is the behavior aspect's primary purpose. Pick the modifier with the table below.
 - Edit behavior models through MPS MCP tools (`mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`, `mps_mcp_parse_java_and_insert`). Do not hand-edit `.mps` files.
-- For MPS-typed return types (`sequence<node<X>>`, `list<node<X>>`), `mps_mcp_parse_java_and_insert` produces Java `List<SNode>` — replace `returnType` afterwards with the correct MPS blueprint (see `mps-model-manipulation/references/variable-declarations.md`).
+- For MPS-typed return types (`sequence<node<X>>`, `list<node<X>>`), `mps_mcp_parse_java_and_insert` produces Java `List<SNode>` — replace `returnType` afterwards with the correct MPS blueprint (see `references/variable-declarations.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin).
 - After edits run `mps_mcp_check_root_node_problems` and rebuild the language.
 
 ## Common-Path Workflow
 
-1. Create a `behavior` model if missing (`mps_mcp_create_model` with `modelName: "<lang>.behavior"` — aspect ID `behavior`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)). Use languages: `jetbrains.mps.lang.behavior`, plus any languages referenced in bodies (`smodel`, `collections`, `closures`, `baseLanguage`).
+1. Create a `behavior` model if missing (`mps_mcp_create_model` with `moduleName: "<lang>"` and `modelName: "<lang>.behavior"` — aspect ID `behavior`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Use languages: `jetbrains.mps.lang.behavior`, plus any languages referenced in bodies (`smodel`, `collections`, `closures`, `baseLanguage`).
 2. Add a `ConceptBehavior` root for the target concept; set `concept` ref. The minimal blueprint (with the mandatory empty `constructor`) is in `references/json-blueprints.md`.
 3. Add `ConceptConstructorDeclaration` (at most one) and/or `ConceptMethodDeclaration` children.
-4. Write bodies. For non-trivial logic prefer `mps_mcp_parse_java_and_insert` with `featureKind: "STATEMENTS"` or `"METHOD"`, then fix MPS-typed return/parameter types.
+4. Write bodies. For a whole new method, prefer `mps_mcp_parse_java_and_insert` with `featureKind: "METHOD"`, `contextNodeRef` set to the `ConceptBehavior` root, and `insert: {mode: "child", parentRef: <same ConceptBehavior ref>, role: "method"}` — this parses the Java method straight into a `ConceptMethodDeclaration` under `method`, rewriting `this` to `ThisNodeExpression` and a `this.<property>` / `this.<childRole>` field access to the matching smodel access, so you do not have to patch those up by hand. To fill in the body of a method that already exists (e.g. one built as a JSON blueprint for `virtual`/`overriddenMethod`), use `featureKind: "STATEMENTS"` targeting its `body` instead. Either way, fix MPS-typed return/parameter types afterward, and note that Java `final` does not survive the parse — see `references/method-declarations.md`.
 5. Validate with `mps_mcp_check_root_node_problems`, rebuild the language.
 
 ## Method Modifier Quick Reference
@@ -52,13 +56,15 @@ The **behavior** aspect attaches methods and a constructor to a concept, much li
 
 - `mps-aspect-actions` — `NodeFactory` is the right place for initialization that needs parent/model context (constructors run before the node is attached).
 - `mps-aspect-intentions`, `mps-aspect-constraints`, `mps-aspect-generator`, `mps-aspect-typesystem` — call behavior methods via `node.m(...)`; behavior is one of the most-used aspects from these.
-- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference. Covers the `LinkList_AddNewChildOperation` family and the `List<SNode>` → `sequence<node<X>>` return-type fix.
+- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference; for a method body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin. Covers the `LinkList_AddNewChildOperation` family and the `List<SNode>` → `sequence<node<X>>` return-type fix.
 - `mps-aspect-constraints` — `ScopeProvider.getScope` is most often overridden in a behavior; constraints describe where the reference lives.
 - `mps-aspect-structure-concepts` — when introducing the concept that the behavior attaches to.
 - `mps-language-inheritance` — to design the abstract-super-concept refactors discussed in `references/inheritance-and-dispatch.md`.
 - `mps-quotations` — quotations bypass behavior constructors; document the workaround in the generator.
 
 ## Reference Index
+
+**Start here — most common case**: adding a plain (non-virtual) concept method → read only `references/method-declarations.md`, plus `references/json-blueprints.md` when inserting it through MCP; overriding a `lang.core.behavior` method (`getScope`, `getName`, `getPresentation`) → only `references/lang-core-behavior-overrides.md`; virtual dispatch / `super` puzzles → only `references/inheritance-and-dispatch.md`.
 
 - Open `references/method-declarations.md` when authoring a `ConceptMethodDeclaration` — modifiers, parameters, `overriddenMethod`, `BaseConcept` overrides (`getPresentation` / `getSideIcon`), implicit-return rule, and the MPS-typed return-type Java-parser caveat.
 - Open `references/local-and-super-calls.md` when calling sibling methods of the same `ConceptBehavior` (`LocalBehaviorMethodCall`), distinguishing unqualified `m(args)` from `this.m(args)` (which generates `DotExpression { ThisNodeExpression, Node_ConceptMethodCall }`), or calling `super<Interface>.method(...)` — includes the verbatim Stateful and Kaja `CommentLine_Behavior` examples and the `Stateful_Behavior.getScope` super-call JSON.

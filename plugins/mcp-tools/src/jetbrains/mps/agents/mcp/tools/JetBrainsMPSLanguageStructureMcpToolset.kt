@@ -1,11 +1,15 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.references.*
+
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations
 import jetbrains.mps.progress.EmptyProgressMonitor
@@ -48,6 +52,119 @@ enum class MPSStructureAlterOperation {
     RENAME_CONCEPT_REFERENCE
 }
 
+/**
+ * `GET_ASSIGNABLE_REFERENCES` is the one structure operation whose blob is deserialized whole
+ * into a data class ([GetAssignableReferencesRequest]) rather than read key by key, so Gson —
+ * not the dispatcher — is what used to drop an unrecognised key. The list mirrors that class's
+ * constructor; `McpToolInputSchemasTest.assignableReferencesKeysMirrorTheRequestDataClass` fails
+ * if the two drift apart.
+ */
+internal val GET_ASSIGNABLE_REFERENCES_KEYS = ParameterKeys.of(
+    required("contextNode", "the reference of the node holding the reference, or of its closest existing ancestor"),
+    required("referenceRole", "the reference link's role name"),
+    "owningConcept", "targetConcept", "containmentLink", "position",
+    "mode", "limit", "offset",
+    "scopeMode", "includeModules", "excludeModules",
+    "kindFilter", "expectedDeclaringType", "receiverType", "argumentTypes", "argumentCount",
+    "sortBy", "preferSameModel", "preferSameModule", "preferProjectCode",
+    "includeReason", "includeTypeDistance", "includeInaccessible",
+)
+
+private val REQUIRED_CONCEPT_REF = required(PARAM_CONCEPT_REF, "the concept's reference or fully qualified name")
+
+/**
+ * The concept selector of the query operations that take exactly one concept. It also accepts
+ * `conceptRefs`, the spelling `mps_mcp_get_concept_details` and FIND_INSTANCES use (study D55); an
+ * array there is reduced to its first concept with a warning. The alter operations keep the strict
+ * key: applying a write to the first of several concepts would be a partial mutation.
+ */
+private val QUERY_CONCEPT_REF = PARAM_CONCEPT_REF.withPlural(PARAM_CONCEPT_REFS)
+
+private val REQUIRED_QUERY_CONCEPT_REF = required(QUERY_CONCEPT_REF, "the concept's reference or fully qualified name")
+
+private val REQUIRED_STRUCTURE_MODEL_REF =
+    required(PARAM_STRUCTURE_MODEL_REF, "the language's structure model reference")
+
+private val CONCEPT_ONLY_KEYS = ParameterKeys.of(REQUIRED_QUERY_CONCEPT_REF)
+
+private val CONCEPT_AND_LANGUAGES_KEYS = ParameterKeys.of(REQUIRED_QUERY_CONCEPT_REF, "languageRefs")
+
+private val RENAME_ROLE_KEYS = ParameterKeys.of(
+    REQUIRED_CONCEPT_REF,
+    required("oldRole", "the role's current name"),
+    required("newRole", "the role's new name"),
+)
+
+private val UPDATE_CONCEPT_LINK_KEYS = ParameterKeys.of(
+    REQUIRED_CONCEPT_REF, required("role", "the link's role name"), "targetConcept", "multiple", "optional",
+)
+
+private fun queryStructureParameterKeys(operation: MPSStructureQueryOperation): ParameterKeys = when (operation) {
+    // The property form, which enumerationRef replaces.
+    MPSStructureQueryOperation.GET_ENUMERATION_LITERALS -> ParameterKeys.of(
+        PARAM_ENUMERATION_REF,
+        required(
+            PARAM_NODE_REFERENCE,
+            "the reference of a node whose concept has an enumeration-typed property (or pass enumerationRef alone instead)",
+            unlessWith = PARAM_ENUMERATION_REF,
+        ),
+        required(
+            "propertyName", "the name of an enumeration-typed property of nodeReference's concept",
+            unlessWith = PARAM_ENUMERATION_REF,
+        ),
+    )
+    MPSStructureQueryOperation.FIND_INSTANCES -> FIND_INSTANCES_KEYS
+    MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> ParameterKeys.of(
+        REQUIRED_QUERY_CONCEPT_REF,
+        required(PARAM_SUPER_CONCEPT_REF, "the candidate super-concept's or interface's reference or fully qualified name"),
+    )
+    MPSStructureQueryOperation.GET_SUB_CONCEPTS,
+    MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> CONCEPT_AND_LANGUAGES_KEYS
+    MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> GET_ASSIGNABLE_REFERENCES_KEYS
+    MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> CONCEPT_ONLY_KEYS
+    MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> ParameterKeys.of(REQUIRED_QUERY_CONCEPT_REF, "includeInherited")
+    MPSStructureQueryOperation.IS_SMART_REFERENCE -> CONCEPT_ONLY_KEYS
+}
+
+private fun queryStructureActivity(operation: MPSStructureQueryOperation) = "Performing MPS structure query: $operation"
+
+/**
+ * `dryRun` is accepted only by the two operations that honour it. Every other operation read it
+ * off the blob and mutated the model anyway — the same silent no-op
+ * `mps_mcp_parse_java_and_insert` already rejects on its own blob.
+ */
+private fun alterStructureParameterKeys(operation: MPSStructureAlterOperation): ParameterKeys = when (operation) {
+    MPSStructureAlterOperation.CREATE_CONCEPTS -> ParameterKeys.of(
+        REQUIRED_STRUCTURE_MODEL_REF, "make", "conceptsJson", "interfaceConceptsJson", "conceptNames", "dryRun",
+        requiredOneOf(
+            "conceptsJson", "interfaceConceptsJson", "conceptNames",
+            expected = "the concept blueprints (conceptsJson, interfaceConceptsJson — both may be sent) " +
+                "or a list of concept names to create bare (conceptNames)",
+        ),
+    )
+    MPSStructureAlterOperation.CREATE_ENUM -> ParameterKeys.of(
+        REQUIRED_STRUCTURE_MODEL_REF,
+        required("enumName", "the enumeration's name"),
+        required(
+            "valuesJson",
+            "the literal array [{\"enumName\": …, \"enumPresentation\": …}, …], inline or as a temporary file path",
+        ),
+        "defaultEnumName", "dryRun",
+    )
+    MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY -> ParameterKeys.of(
+        REQUIRED_CONCEPT_REF, required("propertyName", "the property's name"), "dataType",
+    )
+    MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
+    MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE -> UPDATE_CONCEPT_LINK_KEYS
+    MPSStructureAlterOperation.RENAME_CONCEPT_PROPERTY -> ParameterKeys.of(
+        REQUIRED_CONCEPT_REF,
+        required("oldName", "the property's current name"),
+        required("newName", "the property's new name"),
+    )
+    MPSStructureAlterOperation.RENAME_CONCEPT_CHILD,
+    MPSStructureAlterOperation.RENAME_CONCEPT_REFERENCE -> RENAME_ROLE_KEYS
+}
+
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
 // surface, and they are invoked via reflection by the MCP server framework, so static
 // analysis flags them as "never used".
@@ -57,16 +174,30 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Queries MPS language structure (read-only): check inheritance, list aspects, resolve references, query enumeration literals, check smart-reference status. For nodes that are instances of a concept use `mps_mcp_query_nodes` FIND_INSTANCES. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object string. For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
+        Queries MPS language structure (read-only): check inheritance, list aspects, resolve references, query enumeration literals, check smart-reference status. For nodes that are instances of a concept use `mps_mcp_query_nodes` FIND_INSTANCES. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields; a success response may carry 'warnings' too. The operations that take one concept accept `conceptRef` or `conceptRefs`; given several concepts they use only the first and say so in 'warnings'. Parameters are passed as a JSON object (real JSON or its string form). For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
     """
     )
     suspend fun mps_mcp_query_structure(
-        @McpDescription("The operation to perform (GET_ENUMERATION_LITERALS, IS_SUBCONCEPT_OF, GET_SUB_CONCEPTS, GET_ASSIGNABLE_CONCEPTS, GET_ALL_SUPERCONCEPTS, LIST_CONCEPT_ASPECTS, GET_ASSIGNABLE_REFERENCES, IS_SMART_REFERENCE)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("Required. The operation to perform (GET_ENUMERATION_LITERALS, IS_SUBCONCEPT_OF, GET_SUB_CONCEPTS, GET_ASSIGNABLE_CONCEPTS, GET_ALL_SUPERCONCEPTS, LIST_CONCEPT_ASPECTS, GET_ASSIGNABLE_REFERENCES, IS_SMART_REFERENCE)") operation: String = "",
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
+        // D43: both are Kotlin-optional so an omitted one is answered here, naming the key; see
+        // mps_mcp_query_nodes for the order (a supplied but unknown operation wins over a blank blob).
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_query_structure",
+                requiredOperation<MPSStructureQueryOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
+        // Recorded because it returns before withMpsProject (D26).
         val op = resolveOperationOrNull<MPSStructureQueryOperation>(operation)
-            ?: return unknownOperation<MPSStructureQueryOperation>(operation)
-        return mps_mcp_query_structure(op, parameters)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSStructureQueryOperation>(operation))
+        rejectMissingParameters(
+            "mps_mcp_query_structure",
+            requiredParametersBlob(parameters.text, op.name, queryStructureParameterKeys(op)),
+        )?.let { return it }
+        return mps_mcp_query_structure(op, parameters.text)
     }
 
     /**
@@ -76,161 +207,182 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
      * framework's pre-call enum decode (see [resolveOperationOrNull]). Retained as a direct enum
      * entry point for in-process callers and tests.
      */
-    suspend fun mps_mcp_query_structure(operation: MPSStructureQueryOperation, parameters: String): String = withMpsProject("Performing MPS structure query: $operation") { mpsProject ->
+    suspend fun mps_mcp_query_structure(operation: MPSStructureQueryOperation, parameters: String): String = withMpsProject(queryStructureActivity(operation)) { mpsProject ->
         val gson = Gson()
         val params = try {
             gson.fromJson(parameters, JsonObject::class.java)
         } catch (e: Exception) {
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
+        params.rejectUnknownParameterKeys(operation.name, queryStructureParameterKeys(operation))
+        params.rejectMissingParameterKeys(operation.name, queryStructureParameterKeys(operation))
+        val pluralWarnings = params.collapsePluralParameterKeys(operation.name, queryStructureParameterKeys(operation))
 
-        when (operation) {
-            MPSStructureQueryOperation.GET_ENUMERATION_LITERALS -> {
-                val enumerationRef = params.get("enumerationRef")?.asString
-                val nodeReference = params.get("nodeReference")?.asString
-                val propertyName = params.get("propertyName")?.asString
-                if (enumerationRef != null) {
-                    if (nodeReference != null || propertyName != null) {
-                        return@withMpsProject errJson(
-                            "Pass either 'enumerationRef' or both 'nodeReference' and 'propertyName', not both forms",
-                            McpErrorCode.INVALID_REQUEST,
-                        )
-                    }
-                    mps_mcp_get_enumeration_literals_by_declaration(enumerationRef)
-                } else {
-                    if (nodeReference == null) return@withMpsProject errJson("Parameter 'nodeReference' is missing")
-                    if (propertyName == null) return@withMpsProject errJson("Parameter 'propertyName' is missing")
-                    mps_mcp_get_enumeration_literals(nodeReference, propertyName)
-                }
-            }
-
-            // Not advertised in the tool description anymore — FIND_INSTANCES moved to
-            // mps_mcp_query_nodes. Kept dispatching so pre-move skill copies installed in
-            // other projects continue to work.
-            MPSStructureQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params)
-
-            MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val superConceptRef = params.get("superConceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'superConceptRef' is missing")
-                executeShortReadOnEdt(mpsProject) {
-                    val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
-                    val superConcept = resolveConceptPreferringProject(mpsProject, superConceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Super concept '$superConceptRef' not found", McpErrorCode.NOT_FOUND)
-                    okJson(concept.isSubConceptOf(superConcept).toString())
-                }
-            }
-
-            MPSStructureQueryOperation.GET_SUB_CONCEPTS,
-            MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val languageRefsElement = params.get("languageRefs")
-                executeShortReadOnEdt(mpsProject) {
-                    val targetConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
-                    val allConcepts = mutableSetOf<SAbstractConcept>()
-                    val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
-
-                    val languages = if (languageRefsElement != null && languageRefsElement.isJsonArray) {
-                        val refs = gson.fromJson<List<String>>(languageRefsElement, object : TypeToken<List<String>>() {}.type)
-                        if (refs.isEmpty()) {
-                            languageRegistry.allLanguages
-                        } else {
-                            refs.mapNotNull { resolveLanguagePreferringProject(mpsProject, it) }
+        // Caught here rather than by withMpsProject, so a typed read that throws after the collapse
+        // still reports which of the caller's concepts it was about.
+        val response = try {
+            when (operation) {
+                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS -> {
+                    val enumerationRef = params.paramString(PARAM_ENUMERATION_REF)
+                    val nodeReference = params.paramString(PARAM_NODE_REFERENCE)
+                    val propertyName = params.paramString("propertyName")
+                    if (enumerationRef != null) {
+                        if (nodeReference != null || propertyName != null) {
+                            return@withMpsProject errJson(
+                                "Pass either 'enumerationRef' or both 'nodeReference' and 'propertyName', not both forms",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
                         }
+                        mps_mcp_get_enumeration_literals_by_declaration(enumerationRef)
                     } else {
-                        languageRegistry.allLanguages
+                        mps_mcp_get_enumeration_literals(checkNotNull(nodeReference), checkNotNull(propertyName))
                     }
+                }
 
-                    val onlyAssignable = operation == MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS
-                    for (lang in languages) {
-                        val runtime = languageRegistry.getLanguage(lang) ?: continue
-                        for (concept in runtime.concepts) {
-                            if (concept.isSubConceptOf(targetConcept)) {
-                                if (onlyAssignable) {
-                                    if (!concept.isAbstract) {
+                // Not advertised in the tool description anymore — FIND_INSTANCES moved to
+                // mps_mcp_query_nodes. Kept dispatching so pre-move skill copies installed in
+                // other projects continue to work.
+                MPSStructureQueryOperation.FIND_INSTANCES -> opFindInstances(mpsProject, params)
+
+                MPSStructureQueryOperation.IS_SUBCONCEPT_OF -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    val superConceptRef = params.requiredParamString(PARAM_SUPER_CONCEPT_REF)
+                    executeShortReadOnEdt(mpsProject) {
+                        val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+                        val superConcept = resolveConceptPreferringProject(mpsProject, superConceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Super concept '$superConceptRef' not found", McpErrorCode.NOT_FOUND)
+                        okJson(concept.isSubConceptOf(superConcept).toString())
+                    }
+                }
+
+                MPSStructureQueryOperation.GET_SUB_CONCEPTS,
+                MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    val languageRefsElement = params.get("languageRefs")
+                    executeShortReadOnEdt(mpsProject) {
+                        val targetConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+                        val allConcepts = mutableSetOf<SAbstractConcept>()
+                        val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
+
+                        val languages = if (languageRefsElement != null && languageRefsElement.isJsonArray) {
+                            val refs = gson.fromJson<List<String>>(languageRefsElement, object : TypeToken<List<String>>() {}.type)
+                            if (refs.isEmpty()) {
+                                languageRegistry.allLanguages
+                            } else {
+                                refs.mapNotNull { resolveLanguagePreferringProject(mpsProject, it) }
+                            }
+                        } else {
+                            languageRegistry.allLanguages
+                        }
+
+                        val onlyAssignable = operation == MPSStructureQueryOperation.GET_ASSIGNABLE_CONCEPTS
+                        for (lang in languages) {
+                            val runtime = languageRegistry.getLanguage(lang) ?: continue
+                            for (concept in runtime.concepts) {
+                                if (concept.isSubConceptOf(targetConcept)) {
+                                    if (onlyAssignable) {
+                                        if (!concept.isAbstract) {
+                                            allConcepts.add(concept)
+                                        }
+                                    } else {
                                         allConcepts.add(concept)
                                     }
-                                } else {
-                                    allConcepts.add(concept)
                                 }
                             }
                         }
+                        val cache = ProjectMembershipCache(mpsProject)
+                        val jsonResults = allConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
+                        finalizeResult("[" + jsonResults.joinToString(",") + "]")
                     }
-                    val cache = ProjectMembershipCache(mpsProject)
-                    val jsonResults = allConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
-                    finalizeResult("[" + jsonResults.joinToString(",") + "]")
-                }
-            }
-
-            MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> {
-                val request = try {
-                    Gson().fromJson(parameters, GetAssignableReferencesRequest::class.java)
-                } catch (e: Exception) {
-                    return@withMpsProject invalidJson("Invalid parameters for GET_ASSIGNABLE_REFERENCES: ${e.message}")
                 }
 
-                val service = AssignableReferenceService(mpsProject)
-                val response = service.getAssignableReferences(request)
-
-                if (response.ok) {
-                    Gson().toJson(response)
-                } else {
-                    errJson(response.error)
-                }
-            }
-
-            MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                executeShortReadOnEdt(mpsProject) {
-                    val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
-                    val allSuperConcepts = mutableSetOf<SAbstractConcept>()
-                    populateSuperConceptsAndInterfaces(concept, allSuperConcepts)
-                    val cache = ProjectMembershipCache(mpsProject)
-                    val jsonResults = allSuperConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
-                    finalizeResult("[" + jsonResults.joinToString(",") + "]")
-                }
-            }
-
-            MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val includeInherited = params.get("includeInherited")?.asBoolean ?: false
-                mps_mcp_list_concept_aspects(conceptRef, includeInherited)
-            }
-
-            MPSStructureQueryOperation.IS_SMART_REFERENCE -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                executeShortReadOnEdt(mpsProject) {
-                    val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                        ?: return@executeShortReadOnEdt errJson("Concept not found: $conceptRef", McpErrorCode.NOT_FOUND)
-                    val smartRefLink = getSmartReferenceLink(concept, mpsProject.repository)
-                    val result = JsonObject()
-                    result.addProperty("isSmartReference", smartRefLink != null)
-                    if (smartRefLink != null) {
-                        result.addProperty("characteristicReferenceName", smartRefLink.name)
+                MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> {
+                    val request = try {
+                        Gson().fromJson(parameters, GetAssignableReferencesRequest::class.java)
+                    } catch (e: Exception) {
+                        return@withMpsProject invalidJson("Invalid parameters for GET_ASSIGNABLE_REFERENCES: ${e.message}")
                     }
-                    okJson(gson.toJson(result))
+
+                    val service = AssignableReferenceService(mpsProject)
+                    val response = service.getAssignableReferences(request)
+
+                    if (response.ok) {
+                        Gson().toJson(response)
+                    } else {
+                        errJson(response.error)
+                    }
+                }
+
+                MPSStructureQueryOperation.GET_ALL_SUPERCONCEPTS -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    executeShortReadOnEdt(mpsProject) {
+                        val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+                        val allSuperConcepts = mutableSetOf<SAbstractConcept>()
+                        populateSuperConceptsAndInterfaces(concept, allSuperConcepts)
+                        val cache = ProjectMembershipCache(mpsProject)
+                        val jsonResults = allSuperConcepts.map { conceptInfoJson(it, mpsProject.repository, mpsProject, cache) }
+                        finalizeResult("[" + jsonResults.joinToString(",") + "]")
+                    }
+                }
+
+                MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    val includeInherited = params.paramBoolean("includeInherited", default = false)
+                    mps_mcp_list_concept_aspects(conceptRef, includeInherited)
+                }
+
+                MPSStructureQueryOperation.IS_SMART_REFERENCE -> {
+                    val conceptRef = params.requiredParamString(QUERY_CONCEPT_REF)
+                    executeShortReadOnEdt(mpsProject) {
+                        val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                            ?: return@executeShortReadOnEdt errJson("Concept not found: $conceptRef", McpErrorCode.NOT_FOUND)
+                        val smartRefLink = getSmartReferenceLink(concept, mpsProject.repository)
+                        val result = JsonObject()
+                        result.addProperty("isSmartReference", smartRefLink != null)
+                        if (smartRefLink != null) {
+                            result.addProperty("characteristicReferenceName", smartRefLink.name)
+                        }
+                        okJson(gson.toJson(result))
+                    }
                 }
             }
+        } catch (e: Throwable) {
+            toolFailure(queryStructureActivity(operation), e)
         }
+        withWarnings(response, pluralWarnings)
     }
 
     @McpTool
     @McpDescription(
         """
-        Alters MPS language structure: create concepts/enums, manage and rename properties/children/references. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object string. For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
+        Alters MPS language structure: create concepts/enums, manage and rename properties/children/references. Returns a JSON object with 'ok':true and 'data':{...} on success, or 'ok':false and 'error':"..." on failure. Failure responses may also include optional 'code', 'details', and 'warnings' fields. Parameters are passed as a JSON object (real JSON or its string form). For the full operation list, parameter formats, and JSON blueprint schemas, see the `mps-aspect-structure-concepts` skill.
 
         For `CREATE_CONCEPTS` with `make:true`, the response includes a `makeStatus` field (one of "success", "runtime_stale", "failed", or "skipped"). `makeStatus` is verified against the live runtime: "success" means the build succeeded AND every created concept's runtime descriptor was read back non-hollow, so dependent tools (`get_concept_details`, `scaffold_editor`) can be trusted immediately. The tool already forces a clean rebuild and, if the first (model-scoped) build leaves any descriptor hollow — which happens for a brand-new, never-before-deployed language — it automatically performs one module-scoped clean rebuild that materializes the runtime (`recoveryStage:"module-rebuild"` is then set). "runtime_stale" means descriptors are still hollow even after that; the still-hollow concept names are listed in `hollowConcepts` and a `descriptorRecoveryAction` is provided — recover by running `mps_mcp_alter_nodes` with `MAKE`, `rebuild=true`, targeting the language module (calling `mps_mcp_reload_all` alone is insufficient; restart MPS if it persists). For the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
     """
     )
     suspend fun mps_mcp_alter_structure(
-        @McpDescription("The operation to perform (CREATE_CONCEPTS, CREATE_ENUM, UPDATE_CONCEPT_PROPERTY, RENAME_CONCEPT_PROPERTY, UPDATE_CONCEPT_CHILD, RENAME_CONCEPT_CHILD, UPDATE_CONCEPT_REFERENCE, RENAME_CONCEPT_REFERENCE)") operation: String,
-        @McpDescription("JSON string representing the parameters for the operation") parameters: String
+        @McpDescription("Required. The operation to perform (CREATE_CONCEPTS, CREATE_ENUM, UPDATE_CONCEPT_PROPERTY, RENAME_CONCEPT_PROPERTY, UPDATE_CONCEPT_CHILD, RENAME_CONCEPT_CHILD, UPDATE_CONCEPT_REFERENCE, RENAME_CONCEPT_REFERENCE)") operation: String = "",
+        @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY
     ): String {
+        // D43: as in mps_mcp_query_structure.
+        if (operation.isBlank()) {
+            rejectMissingParameters(
+                "mps_mcp_alter_structure",
+                requiredOperation<MPSStructureAlterOperation>(operation),
+                requiredParametersBlob(parameters.text),
+            )?.let { return it }
+        }
+        // Recorded because it returns before withMpsProject (D26).
         val op = resolveOperationOrNull<MPSStructureAlterOperation>(operation)
-            ?: return unknownOperation<MPSStructureAlterOperation>(operation)
-        return mps_mcp_alter_structure(op, parameters)
+            ?: return McpCallOutcomes.record(unknownOperation<MPSStructureAlterOperation>(operation))
+        rejectMissingParameters(
+            "mps_mcp_alter_structure",
+            requiredParametersBlob(parameters.text, op.name, alterStructureParameterKeys(op)),
+        )?.let { return it }
+        return mps_mcp_alter_structure(op, parameters.text)
     }
 
     /**
@@ -244,20 +396,20 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         } catch (e: Exception) {
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
-        val dryRun = params.get("dryRun")?.asBoolean ?: false
+        params.rejectUnknownParameterKeys(operation.name, alterStructureParameterKeys(operation))
+        params.rejectMissingParameterKeys(operation.name, alterStructureParameterKeys(operation))
+        val dryRun = params.paramBoolean("dryRun", default = false)
 
         when (operation) {
             MPSStructureAlterOperation.CREATE_CONCEPTS -> {
-                val structureModelRef = params.get("structureModelRef")?.asString ?: return@withMpsProject errJson("Parameter 'structureModelRef' is missing")
-                val make = params.get("make")?.asBoolean ?: false
+                val structureModelRef = params.requiredParamString(PARAM_STRUCTURE_MODEL_REF)
+                val make = params.paramBoolean("make", default = false)
                 val conceptsJsonPath = readStringOrInlineJsonParam(params, "conceptsJson")
                 val interfaceConceptsJsonPath = readStringOrInlineJsonParam(params, "interfaceConceptsJson")
                 if (conceptsJsonPath != null || interfaceConceptsJsonPath != null) {
                     createConceptsFull(conceptsJsonPath, interfaceConceptsJsonPath, structureModelRef, make, dryRun)
                 } else {
-                    val conceptNamesElement =
-                        params.get("conceptNames")
-                            ?: return@withMpsProject errJson("Parameter 'conceptsJson', 'interfaceConceptsJson' or 'conceptNames' is missing")
+                    val conceptNamesElement = checkNotNull(params.get("conceptNames"))
                     val conceptNames: Collection<String> = gson.fromJson(conceptNamesElement, object : TypeToken<Collection<String>>() {}.type)
                     if (dryRun) return@withMpsProject okJson("{}")
                     createConcepts(conceptNames, structureModelRef)
@@ -265,55 +417,60 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             }
 
             MPSStructureAlterOperation.CREATE_ENUM -> {
-                val structureModelRef = params.get("structureModelRef")?.asString ?: return@withMpsProject errJson("Parameter 'structureModelRef' is missing")
-                val enumName = params.get("enumName")?.asString ?: return@withMpsProject errJson("Parameter 'enumName' is missing")
-                val valuesJson = readStringOrInlineJsonParam(params, "valuesJson") ?: return@withMpsProject errJson("Parameter 'valuesJson' is missing")
-                val defaultEnumName = params.get("defaultEnumName")?.asString
+                val structureModelRef = params.requiredParamString(PARAM_STRUCTURE_MODEL_REF)
+                val enumName = params.requiredParamString("enumName")
+                val valuesJson = checkNotNull(readStringOrInlineJsonParam(params, "valuesJson"))
+                val defaultEnumName = params.paramString("defaultEnumName")
                 mps_mcp_create_enum(structureModelRef, enumName, valuesJson, defaultEnumName, dryRun)
             }
 
             MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val propertyName = params.get("propertyName")?.asString ?: return@withMpsProject errJson("Parameter 'propertyName' is missing")
-                val dataType = params.get("dataType")?.asString
+                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
+                val propertyName = params.requiredParamString("propertyName")
+                val dataType = params.paramString("dataType")
                 mps_mcp_update_concept_property(conceptRef, propertyName, dataType)
             }
 
             MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val role = params.get("role")?.asString ?: return@withMpsProject errJson("Parameter 'role' is missing")
-                val targetConcept = params.get("targetConcept")?.asString
-                val multiple = params.get("multiple")?.asBoolean ?: false
-                val optional = params.get("optional")?.asBoolean ?: true
+                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
+                val role = params.requiredParamString("role")
+                val targetConcept = params.paramString("targetConcept")
+                val multiple = params.paramBoolean("multiple", default = false)
+                val optional = params.paramBoolean("optional", default = true)
                 mps_mcp_update_concept_link(conceptRef, role, targetConcept, true, multiple, optional)
             }
 
             MPSStructureAlterOperation.UPDATE_CONCEPT_REFERENCE -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val role = params.get("role")?.asString ?: return@withMpsProject errJson("Parameter 'role' is missing")
-                val targetConcept = params.get("targetConcept")?.asString
-                val optional = params.get("optional")?.asBoolean ?: true
+                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
+                val role = params.requiredParamString("role")
+                // `multiple: false` is truthful, so it is accepted silently; `multiple: true` used to be
+                // dropped and quietly produce a 0..1 link, which cost a study worker ~40 turns to notice.
+                if (params.paramBoolean("multiple", default = false)) {
+                    return@withMpsProject errJson(REFERENCES_ARE_SINGLE_VALUED, McpErrorCode.INVALID_REQUEST)
+                }
+                val targetConcept = params.paramString("targetConcept")
+                val optional = params.paramBoolean("optional", default = true)
                 mps_mcp_update_concept_link(conceptRef, role, targetConcept, false, false, optional)
             }
 
             MPSStructureAlterOperation.RENAME_CONCEPT_PROPERTY -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val oldName = params.get("oldName")?.asString ?: return@withMpsProject errJson("Parameter 'oldName' is missing")
-                val newName = params.get("newName")?.asString ?: return@withMpsProject errJson("Parameter 'newName' is missing")
+                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
+                val oldName = params.requiredParamString("oldName")
+                val newName = params.requiredParamString("newName")
                 mps_mcp_rename_concept_property(conceptRef, oldName, newName)
             }
 
             MPSStructureAlterOperation.RENAME_CONCEPT_CHILD -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val oldRole = params.get("oldRole")?.asString ?: return@withMpsProject errJson("Parameter 'oldRole' is missing")
-                val newRole = params.get("newRole")?.asString ?: return@withMpsProject errJson("Parameter 'newRole' is missing")
+                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
+                val oldRole = params.requiredParamString("oldRole")
+                val newRole = params.requiredParamString("newRole")
                 mps_mcp_rename_concept_link(conceptRef, oldRole, newRole, true)
             }
 
             MPSStructureAlterOperation.RENAME_CONCEPT_REFERENCE -> {
-                val conceptRef = params.get("conceptRef")?.asString ?: return@withMpsProject errJson("Parameter 'conceptRef' is missing")
-                val oldRole = params.get("oldRole")?.asString ?: return@withMpsProject errJson("Parameter 'oldRole' is missing")
-                val newRole = params.get("newRole")?.asString ?: return@withMpsProject errJson("Parameter 'newRole' is missing")
+                val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
+                val oldRole = params.requiredParamString("oldRole")
+                val newRole = params.requiredParamString("newRole")
                 mps_mcp_rename_concept_link(conceptRef, oldRole, newRole, false)
             }
         }
@@ -1095,12 +1252,27 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, enumerationRef)
-                ?: return@executeShortReadOnEdt invalidReference("Invalid or unresolvable node reference: '$enumerationRef'")
-            val node = sNodeRef.resolve(repo)
-                ?: return@executeShortReadOnEdt errJson("Node '$enumerationRef' not found", McpErrorCode.NOT_FOUND)
+            // A node reference first, then the enumeration's qualified name. `resolveNodeReference`
+            // already covers `<model>.<EnumName>` and a bare `<EnumName>` (its by-name fallback runs
+            // because `SNodePointer.deserialize` throws on a string without a '/'), but not the
+            // language-qualified `<language>.<EnumName>` form — which is the shape a caller holds
+            // after `get_concept_details` refuses an enumeration and routes it here (study defect
+            // D22). A structure-model scan closes that gap.
+            val node = sNodeRef?.resolve(repo)
+                ?: resolveStructureDeclarationPreferringProject(mpsProject, enumerationRef)
+                ?: return@executeShortReadOnEdt if (sNodeRef != null) {
+                    errJson("Node '$enumerationRef' not found", McpErrorCode.NOT_FOUND)
+                } else {
+                    invalidReference(
+                        "Could not resolve 'enumerationRef' '$enumerationRef': it takes an " +
+                                "EnumerationDeclaration's node reference (r:...) or its qualified name " +
+                                "(<language>.structure.<EnumName>). To read the literals of an enum-typed " +
+                                "property instead, pass 'nodeReference' plus 'propertyName'."
+                    )
+                }
             if (!node.concept.isSubConceptOf(CONCEPT_EnumerationDeclaration)) {
                 return@executeShortReadOnEdt errJson(
-                    "Node '$enumerationRef' is not an EnumerationDeclaration (was '${node.concept.name}')",
+                    "'enumerationRef' '$enumerationRef' is not an EnumerationDeclaration (was '${node.concept.name}')",
                     McpErrorCode.INVALID_REQUEST,
                 )
             }
@@ -1399,16 +1571,6 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 0x8389f407dc1158b7uL.toLong(),
                 0x110356fc618L,
                 "jetbrains.mps.lang.structure.structure.InterfaceConceptReference"
-            )
-    }
-    private val CONCEPT_EnumerationDeclaration: SConcept by lazy {
-        val registry = MPSCoreComponents.getInstance()?.platform?.findComponent(LanguageRegistry::class.java)
-        registry?.getLanguage(LANG_STRUCTURE)?.concepts?.filterIsInstance<SConcept>()?.find { it.name == "EnumerationDeclaration" }
-            ?: MetaAdapterFactory.getConcept(
-                0xc72da2b97cce4447uL.toLong(),
-                0x8389f407dc1158b7uL.toLong(),
-                0x2e770ca32c607c5fuL.toLong(),
-                "jetbrains.mps.lang.structure.structure.EnumerationDeclaration"
             )
     }
     private val CONCEPT_EnumerationMemberDeclaration: SConcept by lazy {

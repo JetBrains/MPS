@@ -7,6 +7,10 @@ type: reference
 
 # MPS Quotations and Anti-quotations
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 A **quotation** is a node literal — a concise expression that evaluates to an `SNode` (or tree of `SNode`s) at runtime. Instead of building nodes manually via the smodel API, you write the desired structure in the target language syntax and let MPS wrap it. Anti-quotations ("antiquotations") are escape holes inside a quotation where a runtime expression is spliced in.
 
 **Required used language:** `jetbrains.mps.lang.quotation` (UUID `3a13115c-633c-4c5c-bbcc-75c4219e9555`)
@@ -54,7 +58,7 @@ A **quotation** is a node literal — a concise expression that evaluates to an 
 - `mps-aspect-migrations` — `<NewConcept>` plus `^(oldNode.target)^` is the canonical shape inside migration rewrite scripts (`references/antiquotation-reference.md` includes the verbatim example).
 - `mps-aspect-intentions` — the `replace_invokeOperation_with_compactInvoke` example shipping with the closures language uses `<%(...)%>` + `*(...)*` to rebuild an expression tree.
 - `mps-aspect-structure-concepts` — when the quoted concept's link/property metadata is needed; `propertyId` / `linkId` encode the persistent form of those declarations.
-- `mps-model-manipulation` — the smodel operations and BaseLanguage expressions used inside antiquotation `expression` slots.
+- `mps-model-manipulation` — the smodel operations and BaseLanguage expressions used inside antiquotation `expression` slots; for the spliced expression open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## Reference Index
 

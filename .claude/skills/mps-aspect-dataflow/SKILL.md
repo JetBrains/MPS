@@ -6,6 +6,10 @@ type: reference
 
 # MPS Dataflow Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The dataflow aspect (`jetbrains.mps.lang.dataFlow`, `l:7fa12e9c-b949-4976-b4fa-19accbc320b4`) lets a language describe how control and data flow through nodes of a concept. MPS uses that information for reachability analysis, uninitialised-variable checks, and (via `IBuilderMode`) richer flow analyses such as nullable tracking.
 
 ## Mental Model
@@ -28,7 +32,7 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 
 ## Common-Path Workflow
 
-1. Create the dataflow model with `mps_mcp_create_model` and `modelName: "<lang>.dataFlow"` if absent. **The aspect ID is `dataFlow` — camelCase, case-sensitive, no `@` suffix**; spelling it `dataflow` (lowercase) produces a utility model that MPS will not recognise. See [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md). Add `jetbrains.mps.lang.dataFlow` (and transitively `jetbrains.mps.baseLanguage`) as used languages on the model.
+1. Create the dataflow model with `mps_mcp_create_model` (`moduleName: "<lang>"`, `modelName: "<lang>.dataFlow"`) if absent. **The aspect ID is `dataFlow` — camelCase, case-sensitive, no `@` suffix**; spelling it `dataflow` (lowercase) produces a utility model that MPS will not recognise. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md). Add `jetbrains.mps.lang.dataFlow` (and transitively `jetbrains.mps.baseLanguage`) as used languages on the model.
 2. Create a `DataFlowBuilderDeclaration` root node; set `conceptDeclaration` to the concept being described; give it a `name`.
 3. Add a `BuilderBlock` child with a `body` (BL `StatementList`).
 4. Emit instructions: delegate to children with `EmitCodeForStatement`; model branches with `EmitIfJumpStatement` + `EmitLabelStatement`; record variable use with `EmitReadStatement` / `EmitWriteStatement`; mark exits with `EmitRetStatement`.
@@ -37,12 +41,14 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 
 ## Related Skills
 
-- `mps-model-manipulation` — BL + smodel code inside builder bodies (`DotExpression`, `SLinkAccess`, `NodeParameter`, behavior method calls).
+- `mps-model-manipulation` — BL + smodel code inside builder bodies (`DotExpression`, `SLinkAccess`, `NodeParameter`, behavior method calls); for a builder body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-aspect-behavior` — for behavior methods called from builders to compute target nodes (e.g. `getLoopOrSwitch`, `getReturnJumpTarget`).
 - `mps-aspect-typesystem` — when the dataflow you emit must agree with type checks.
 - `mps-node-editing` — generic JSON-blueprint node creation/replacement workflow.
 
 ## Reference Index
+
+**Start here — most common case**: writing one builder for one concept → read only `references/json-patterns.md` (the verified blueprint shapes), plus `references/concept-catalog.md` when you need an exact concept/role name; a builder that validates but analyses wrongly → only `references/rules-and-pitfalls.md`.
 
 - Concept catalog — open when you need exact concept names, properties, children, cardinalities, or abstract bases for `DataFlowBuilderDeclaration`, `BuilderBlock`, every emit statement, every position type, and the abstract bases. See [references/concept-catalog.md](references/concept-catalog.md).
 - Verified JSON patterns — open when constructing or editing a builder as JSON for `mps_mcp_*` tools. Includes variable read, single-child delegation, return-with-finally, if/elsif/else, while loop, assignment, variable declaration, break to ancestor, and a custom inverted-condition statement. See [references/json-patterns.md](references/json-patterns.md).

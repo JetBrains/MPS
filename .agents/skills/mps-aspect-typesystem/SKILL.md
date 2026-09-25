@@ -7,6 +7,10 @@ type: reference
 
 # MPS Typesystem and Checking Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The **typesystem** aspect gives nodes *types* and reports semantic errors. It combines two related sub-aspects:
 
 - **Typesystem rules** — compute types and constraints on them (`InferenceRule`, `SubtypingRule`, `InequationReplacementRule`, `ComparisonRule`, `SubstituteTypeRule`).
@@ -24,13 +28,13 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 - `when concrete (typeof(expr) as v) { ... }` defers a block until the type is fully resolved — use it before deciding whether to report an error or assign a result type.
 - Quick fixes (`TypesystemQuickFix`) are roots, **not** executed automatically — the user triggers them via the UI. Wire them into a report through the `helginsIntention` slot (`TypesystemIntention` wrapper with `quickFix` ref + `actualArgument`s). See `references/quick-fixes.md`.
 - Reusable helper code (utility classes, shared algorithms) can live as a plain BaseLanguage `ClassConcept` root **directly in the typesystem model**. No separate utility module is required.
-- For MPS-typed return types (`sequence<node<X>>`, `list<node<X>>`) the Java parser gives back `List<SNode>` — fix per `mps-model-manipulation/references/variable-declarations.md`.
+- For MPS-typed return types (`sequence<node<X>>`, `list<node<X>>`) the Java parser gives back `List<SNode>` — fix per `references/variable-declarations.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - Edit typesystem models through MPS MCP tools (`mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`, `mps_mcp_parse_java_and_insert`). Do not hand-edit `.mps` files.
 - After edits run `mps_mcp_check_root_node_problems`, compile the language, and test on sample models.
 
 ## Common-Path Workflow
 
-1. Create a `typesystem` model (`mps_mcp_create_model` with `modelName: "<lang>.typesystem"` — aspect ID `typesystem`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)) if absent.
+1. Create a `typesystem` model (`mps_mcp_create_model` with `moduleName: "<lang>"` and `modelName: "<lang>.typesystem"` — aspect ID `typesystem`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
 2. Add used languages: `jetbrains.mps.lang.typesystem`, and any languages used in bodies (`smodel`, `collections`, `closures`, `baseLanguage`).
 3. Add `InferenceRule` roots for concepts whose types you compute (see `references/inference-rules.md`).
 4. Add `SubtypingRule` / `ComparisonRule` / `InequationReplacementRule` / `SubstituteTypeRule` roots for the type lattice (see `references/lattice-rules.md`).
@@ -44,11 +48,13 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 - `mps-aspect-behavior` — behavior methods called from rule bodies via `node.method()`; common host for `getType` / `isAssignableFrom`-style helpers callable from typesystem.
 - `mps-aspect-constraints` — non-type validation often lives in constraints; consider whether a check belongs there before adding a `NonTypesystemRule`.
 - `mps-aspect-intentions` — distinct from `TypesystemQuickFix` (intentions are user-invoked from caret; quick fixes attach to a report).
-- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference used inside rule bodies (`StatementList`, `DotExpression`, smodel operations, the `List<SNode>` → `sequence<node<X>>` return-type fix).
+- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference used inside rule bodies (`StatementList`, `DotExpression`, smodel operations, the `List<SNode>` → `sequence<node<X>>` return-type fix); for an inference or checking rule body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-quotations` — `<type>` literals in rule bodies are heavy quotations; `%(expr)%` splices use the `Antiquotation` family. The typesystem model usually uses `jetbrains.mps.lang.quotation` as a used language.
 - `mps-aspect-structure-concepts` — when introducing the type concept(s) the rules target.
 
 ## Reference Index
+
+**Start here — most common case**: one `InferenceRule` that types a concept → read only `references/inference-rules.md`, plus `references/json-blueprints.md` when inserting it through MCP; a checking rule that reports an error → only `references/non-typesystem-checking.md`; a type that stays `undefined` → only `references/common-failures.md`.
 
 - Open `references/inference-rules.md` when writing or debugging an `InferenceRule` — the operator vocabulary (`:==:`, `:<=:`, `:>=:`, soft `infer`, strong `:<<=:` / `:>>=:`), free type variables (`var elementType;`), `join(A | B)`, `%(...)%` anti-quotations in `<...>` literals, and the four worked examples (StringLiteral, ParenthesizedExpression, TernaryOperator, ForEachStatement).
 - Open `references/when-concrete.md` when a rule must wait for a resolved concrete type before deciding — `WhenConcreteStatement` shape, nested `when concrete` blocks, `operation type(op, leftType, rightType)`, and the bound-variable plumbing (`WhenConcreteVariableDeclaration` / `WhenConcreteVariableReference`).

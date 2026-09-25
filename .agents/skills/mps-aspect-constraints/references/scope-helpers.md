@@ -2,7 +2,7 @@
 
 Open this file when picking the right `jetbrains.mps.scope` helper class for a scope body, combining a local `ListScope` with `HidingByNameScope` over `parent scope`, or using the `for model` / `visible roots` / `visible nodes` caches.
 
-> **Module-dependency prerequisite.** Every helper class below is defined in model `jetbrains.mps.scope`, which ships inside solution `jetbrains.mps.kernel` (uuid `2d3c70e9-aab2-4870-8d8d-6036800e4103`). The language module that owns the constraints (or behavior) model must declare a `Default` dependency on `jetbrains.mps.kernel`, otherwise these classes are absent from the compile classpath. `mps_mcp_model_dependency` wires the module dependency automatically when it imports `jetbrains.mps.scope`; if you imported the model some other way, add the module dependency explicitly with `mps_mcp_module_dependency`. See `scope-fqn-reference.md` → "Required module-level dependency".
+> **Module-dependency prerequisite.** Every helper class below is defined in model `jetbrains.mps.scope`, which ships inside solution `jetbrains.mps.kernel` (uuid `2d3c70e9-aab2-4870-8d8d-6036800e4103`). The language module that owns the constraints (or behavior) model must declare a `Default` dependency on `jetbrains.mps.kernel`, otherwise these classes are absent from the compile classpath. `mps_mcp_model_dependency` wires the module dependency automatically when it imports `jetbrains.mps.scope`; if you imported the model some other way, add the module dependency explicitly with `mps_mcp_module_dependency`. See `references/scope-fqn-reference/required-languages-imports-dependencies.md`.
 
 ## Scope helper classes
 
@@ -11,7 +11,7 @@ From `jetbrains.mps.scope` (auto-imported in `getScope` bodies and constraint sc
 | Class | Purpose |
 |---|---|
 | `EmptyScope` | Contains nothing. |
-| `ListScope` | Wraps an explicit `list<node<>>` or any `sequence<node<>>`. Static factory `ListScope.forNamedElements(sequence<>)` (method ref `r:.../5455284157994035599`, class ref `r:.../5455284157994035575`) returns a name-indexed scope when every element implements `INamedConcept` — no anonymous subclass required. Use the anonymous subclass approach (see `referent-constraints.md` → "Computed sequences") only when elements do not carry a `name` property or you need a custom naming strategy. |
+| `ListScope` | Wraps an explicit `list<node<>>` or any `sequence<node<>>`. Static factory `ListScope.forNamedElements(sequence<>)` (method ref `r:.../5455284157994035599`, class ref `r:.../5455284157994035575`) returns a name-indexed scope when every element implements `INamedConcept` — no anonymous subclass required. Use the anonymous subclass approach (see `references/referent-constraints/computed-sequences-listscope.md`) only when elements do not carry a `name` property or you need a custom naming strategy. |
 | `SimpleRoleScope` | Children of a host node in a given containment role; `forNamedElements(host, link/.../)` optimises name-keyed lookup. |
 | `CompositeScope` | Union of several scopes (e.g. locals + fields + globals). |
 | `FilteringScope` / `FilteringByNameScope` | Wrap a scope with a predicate / name blacklist. |

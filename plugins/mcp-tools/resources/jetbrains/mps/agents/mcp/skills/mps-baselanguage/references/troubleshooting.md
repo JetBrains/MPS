@@ -4,7 +4,7 @@ Common error messages and their root cause. Read this when validation fails and 
 
 ## Symptoms During JSON AST Insertion
 
-* **`dryRun` JSON path error**: the concept named at that path is not assignable to the role declared there. Cross-check the role's required concept with `mps_mcp_get_concept_details` for the parent.
+* **`dryRun` JSON path error** (`Concept assignability error`): the concept named at that path is not assignable to the role declared there. The error's last lines usually name the fix: a creator such as `ArrayCreatorWithInitializer` or `AnonymousClassCreator` gets ` - Wrap it: 'GenericNewExpression' …` with the JSON to paste, and an expression in a statement role lists `ExpressionStatement` first. Only when there is no such line, cross-check the role's required concept with `mps_mcp_get_concept_details` for the parent.
 * **`Target node is null for role baseMethodDeclaration`**: a constructor or method ref did not resolve. Re-harvest from the live AST or re-derive from the class ref.
 * **`Unknown target for role baseMethodDeclaration`** (during text generation): the ref points to a stale member from a prior root rewrite. Re-harvest after the rewrite.
 

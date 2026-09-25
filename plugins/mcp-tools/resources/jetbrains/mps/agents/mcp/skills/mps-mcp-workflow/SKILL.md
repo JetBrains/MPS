@@ -6,6 +6,10 @@ type: reference
 
 # Projectional Agent Toolkit – JetBrains MPS for Agents
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 Entry point for working with JetBrains MPS (Meta Programming System) models, languages, generators, and the MPS MCP tools.
 
 Read this together with `AGENTS.md` whenever the task involves MPS artifacts or MPS MCP tooling.
@@ -16,6 +20,8 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 > MPS model files are opaque serialized XML: you cannot safely understand or edit them as plain text, and doing so will corrupt the model.
 > Use `mps_mcp_*` tools instead. If they are not available, ask the user to start MPS and enable the MPS MCP server before continuing.
 
+- **Pass `projectPath` on every `mps_mcp_*` call, starting with the first one.** The platform routes every call by resolving `projectPath` to an open project, so a call without it is rejected *before dispatch* (`"Unable to determine the target project…"`) and costs a turn. Pass the open MPS project's **base directory** — a path at or inside it, never an ancestor such as the repository root. If you are not yet aware of that path, pass the session's current working directory (the one you already have — do not spend a turn discovering it); if that is rejected, take the path from the rejection message, which lists the open projects (`Currently open projects: {...}`). `mps_mcp_list_open_projects` reports the same value as `mpsProjectBaseDirectory` when it can run. Reuse that one path for every later call in the session.
+- **Empty `Currently open projects: {"projects":[]}` is the welcome screen, not a bad path.** Retrying `mps_mcp_*` cannot succeed until some project is open. Load the `mps-project-management` companion skill from the same origin and open the project via CLI.
 - **Always prefer MPS MCP tools over hand-editing `.mps` / `.mpl` XML.** Hand-edits silently corrupt model files.
 - **Preserve node IDs.** Prefer `mps_mcp_update_root_node_from_json` or surgical edits (`mps_mcp_update_node`, …) over delete-and-reinsert. Deleting destroys persistent IDs and breaks incoming references.
 - **Copy-then-modify beats reconstruct-from-JSON.** To create a node that closely resembles an existing one, duplicate it with `mps_mcp_alter_nodes` `COPY_NODE` and adjust the copy with `mps_mcp_update_node`, instead of printing the original and re-authoring it as a JSON blueprint. The copy is guaranteed structurally valid and needs no blueprint authoring at all.
@@ -32,7 +38,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 > **Tool name note**: MPS MCP tools are named with a `mps_mcp_` prefix (e.g. `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_get_concept_details`). Your MCP client wraps these with a server-specific prefix (e.g. `mcp__mps-mcp-server__<env>___`), which varies by environment. Match tools by the stable `mps_mcp_*` suffix.
 
-> **Which project the tools act on (subdirectory & multi-project checkouts).** The `mps_mcp_*` tools operate on the MPS project currently open in the running MPS instance. That project often lives in a **subdirectory** of your repository (e.g. `<repo>/tools/BigProject`, as in mbeddr or MPS-extensions), and one checkout may even hold **several** MPS projects. The host resolves the project from your client's workspace roots, then falls back to the single open project. If a tool call is rejected with "no project opened" or "multiple projects opened", call `mps_mcp_list_open_projects`, then supply the intended project's `mpsProjectBaseDirectory` — the folder MPS actually opened, i.e. a path *at or inside* it, **not** the repository root — via the host's project-path argument. This is the opposite of `mps_mcp_initialize_project_for_agents`, whose `targetDirectory` is the *repository / workspace root* (where `.agents/`, `.claude/`, `AGENTS.md`, and `CLAUDE.md` belong), which may be an *ancestor* of the MPS project directory.
+> **Which project the tools act on (subdirectory & multi-project checkouts).** The `mps_mcp_*` tools operate on the MPS project currently open in the running MPS instance. That project often lives in a **subdirectory** of your repository (e.g. `<repo>/tools/BigProject`, as in mbeddr or MPS-extensions), and one checkout may even hold **several** MPS projects. Supply that project's `mpsProjectBaseDirectory` — the folder MPS actually opened, i.e. a path *at or inside* it, **not** the repository root — as `projectPath` on every call, per the Critical Directive above. The first-call CWD probe in that directive still applies when the path is unknown, even if CWD is the repository root. This is the opposite of `mps_mcp_initialize_project_for_agents`, whose `targetDirectory` is the *repository / workspace root* (where `.agents/`, `.claude/`, `AGENTS.md`, and `CLAUDE.md` belong), which may be an *ancestor* of the MPS project directory.
 >
 > **Multi-project repository rules.** All open MPS projects share the same module repository. Write targets — models, modules, root nodes, and nodes being mutated — must belong to the project selected by `projectPath`; tools refuse writes to another open project's elements. Read/reference/dependency targets may come from another open MPS project when they are explicitly named or imported: model/module dependencies, model used languages/devkits, node concepts, and reference targets can point across projects, and the foreign elements are treated like read-only library/stub elements. Returned JSON for an element from another open project includes `containingProject: { name, mpsProjectBaseDirectory }` and `editableFromCurrentProject: false`; nested references use prefixes such as `conceptContainingProject`, `targetContainingProject`, or `typeContainingProject`. These markers appear *only* for elements owned by another open project — their absence does not imply an element is editable (a read-only library/stub in the current project carries `readOnly: true` but no `containingProject`), so decide editability from `readOnly` together with these markers.
 >
@@ -40,9 +46,13 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 ## Companion Skills
 
-All MPS skills live in a per-harness directory loaded by the agent host (e.g. `.agents/skills/<skill-name>/SKILL.md` for AGENTS.md-aware hosts, `.claude/skills/<skill-name>/SKILL.md` for Claude Code). Load whichever ones apply to your current task.
+The MPS catalog contains companion skills for focused task families. Load whichever ones apply to your current task, following the origin rules above.
 
-> **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed and refreshed by the `mps_mcp_initialize_project_for_agents` MCP tool. It installs into a `targetDirectory` — normally your **repository / workspace root** (the folder containing `.git`), which may be an *ancestor* of the MPS project directory when the project sits in a subdirectory; leave `targetDirectory` empty to let the tool derive that root from the open project's enclosing VCS folder, and do **not** pass it `projectPath`. If no `mps-*` skills exist yet, the project has not been initialized for agents — tell the user and offer to run it. If the catalog looks stale or incomplete, offer to refresh it (with approval): delete every `mps-*` skill folder from `.agents/skills/` and `.claude/skills/` — keeping repository-local skills (such as `bugfix-workflow` and `*-dsl` skills) — re-run the tool, then carefully merge its returned `agentsFileText` into `AGENTS.md`/`CLAUDE.md`, preserving project-specific sections. See that tool's description for the exact refresh contract.
+> **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed and refreshed by the `mps_mcp_initialize_project_for_agents` MCP tool. It installs into a `targetDirectory` — normally your **repository / workspace root** (the folder containing `.git`), which may be an *ancestor* of the MPS project directory when the project sits in a subdirectory; leave `targetDirectory` empty to let the tool derive that root from the open project's enclosing VCS folder, while still passing the project's base directory as `projectPath` like every other `mps_mcp_*` call (`targetDirectory` and `projectPath` are different arguments — an ancestor is valid for the first and rejected for the second). If no `mps-*` skills exist yet, the project has not been initialized for agents — tell the user and offer to run it.
+>
+> A successful install writes `MPS_MCP_SKILL_VERSION.txt` into both `.agents/skills/` and `.claude/skills/`; compare its `build` with top-level `mpsBuild` from `mps_mcp_list_open_projects` (never call the initializer to learn the version). The installed `AGENTS.md` states the staleness rules.
+>
+> If the catalog looks stale or incomplete, offer to refresh it (with approval): delete every `mps-*` skill folder from `.agents/skills/` and `.claude/skills/` — keeping repository-local skills (such as `bugfix-workflow` and `*-dsl` skills) — re-run the tool, then carefully merge its returned `agentsFileText` into `AGENTS.md`/`CLAUDE.md`, preserving project-specific sections. See that tool's description for the exact refresh contract.
 
 | Skill | What it covers |
 |-------|---------------|
@@ -72,6 +82,7 @@ All MPS skills live in a per-harness directory loaded by the agent host (e.g. `.
 | `mps-quotations`                    | MPS quotations and anti-quotations — node literals creating SNode trees inline in behavior/generator/model code. |
 | `mps-build-language`                | MPS Build Language — declarative DSL generating Ant `build.xml` files for packaging plugins, Java modules, standalone IDEs. |
 | `mps-ide-plugin`                    | MPS IDE plugins — actions, action groups, tool windows, keymaps, preference components. |
+| `mps-project-management`            | Open an MPS project when MCP is stuck on the welcome screen — CLI activation for MPS from sources and standalone, macOS/Linux/Windows. |
 | `bugfix-workflow`                  | MPS bugfixing workflow. |
 
 ## Key Concepts
@@ -106,7 +117,7 @@ Open `references/finding-things.md` for the protocol on finding models, modules,
 
 Open `references/node-editing-rules.md` for the full rulebook on adding/updating nodes (concept selection, role types, cardinality, assignability, persistent IDs, surgical edits, reload after compiled-aspect changes).
 
-Open `references/reference-formats.md` for the reference-format protocol: node refs (`r:`/`i:`), concept refs (`c:`), and the critical "never use a concept ref where a node ref is expected" rule.
+Open `references/reference-formats.md` for the reference-format protocol: node refs (`r:`/`i:`), concept refs (`c:`), the critical "never use a concept ref where a node ref is expected" rule, and how to pass a list to a top-level parameter (a real JSON array and the array written as a string are equivalent).
 
 Open `references/bulk-creation.md` for the print-shallow-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
 
@@ -121,3 +132,32 @@ Open `references/mcp-tools-index.md` for the complete inventory of MPS MCP tools
 - **Do not** edit serialized `.mps` model files as plain text unless the user explicitly asks for it.
 - **Do not** edit `.mpl` module descriptors manually if an MCP wiring tool (`mps_mcp_module_dependency`, `mps_mcp_update_module`, …) covers the change.
 - **Do not** delete-and-reinsert a node to "change" it when surgical tools exist.
+
+## Scripts
+
+`scripts/mps_dump.py` — projects an MPS MCP result file (`mps_mcp_get_project_structure`,
+`mps_mcp_print_node`, `mps_mcp_get_concept_details`) down to the lines you need, instead of
+reading the whole 10–40 KB file: `roots`, `node`, `shape`, `count`. It is also the library the
+other skills' scripts import (`load`, `roots`, `props`, `refs`, `children`, `find`, `shape`);
+`props` marks enum properties that sit at their enumeration's default value (the printer flags
+them with `isDefault`; an older dump that omits them is filled from the concept details'
+`enumerationDefault`).
+
+```
+python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Course
+python3 scripts/mps_dump.py node /var/folders/.../mps-node-123.json "Score Reading" \
+    --concept-details /var/folders/.../mps-node-456.json
+```
+
+Run `--help` for every subcommand and `--list-tools` for the MPS MCP tools and parameters it
+depends on. Bundled dumps to try it on, and to read when you need a shape reminder, are in
+`scripts/examples/`. Stdout is the table plus a one-line JSON summary; the full table is
+always written to a file under the system temp directory and named in that summary.
+
+No `python3` (typically Windows): ask the server for the reduction instead —
+`mps_mcp_get_project_structure` with `nodeDetail: "names"` returns exactly the `name` /
+`concept` / `reference` of each root, small enough to read inline with no file at all. An enum
+property holding its enumeration's default is printed with that literal and `"isDefault": true`
+(`mps_mcp_get_concept_details` names it in `enumerationDefault`); in a dump taken before that,
+the property is absent or printed as `""` — either way it is the default, not missing data.
+A non-default enum value is the declared literal name, never the persistence encoding (`<id>/<name>`).

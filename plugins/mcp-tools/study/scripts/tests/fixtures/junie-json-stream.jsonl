@@ -1,0 +1,5 @@
+{"type":"session","timestamp":1,"sessionId":"session-test"}
+{"type":"step","timestamp":2,"name":"Opened file","details":"ping.txt\nThe file was opened and contains two lines, with the first line reading \"ping\" and the second line empty."}
+{"type":"mystery","timestamp":3,"payload":"not a tool"}
+{"type":"step","timestamp":4,"name":"TASK RESULT","details":"### Summary\n- Read ping.txt"}
+{"type":"result","timestamp":5,"result":"### Summary\n- Read ping.txt","changes":[],"errorCode":[{"model":"claude-sonnet-5","calls":2,"cost":0.05,"inputTokens":4,"cacheInputTokens":100,"cacheCreateTokens":200,"outputTokens":20}]}

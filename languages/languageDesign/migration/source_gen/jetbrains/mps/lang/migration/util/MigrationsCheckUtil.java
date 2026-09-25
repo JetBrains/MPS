@@ -65,6 +65,9 @@ public class MigrationsCheckUtil {
     return result;
   }
   public static Map<SNode, Collection<String>> checkMigrationsVersions(SModule module) {
+    return checkMigrationsVersions(module, true);
+  }
+  public static Map<SNode, Collection<String>> checkMigrationsVersions(SModule module, boolean includeLanguageVersion) {
     // check whether scripts are really migrations for some language
     if (!(module instanceof Language)) {
       return Collections.emptyMap();
@@ -107,10 +110,10 @@ public class MigrationsCheckUtil {
     final int langVersion = ((Language) module).getLanguageVersion();
 
     // last version+1 == version of a language?
-    if (maxVersion != langVersion - 1) {
+    if (includeLanguageVersion && (maxVersion != langVersion - 1)) {
       Sequence.fromIterable(scriptsWithVersions).where((it) -> (int) IMigrationUnit__BehaviorDescriptor.fromVersion_id4uVwhQyFcnl.invoke(it) == maxVersion).visitAll((it) -> {
         ensureInitialized(result, it);
-        CollectionSequence.fromCollection(MapSequence.fromMap(result).get(it)).addElement("Language version (" + langVersion + ") is not equal to the target version of last migration script (" + (maxVersion + 1) + ")");
+        CollectionSequence.fromCollection(MapSequence.fromMap(result).get(it)).addElement(languageVersionMismatchMessage(langVersion, maxVersion + 1));
       });
     }
 
@@ -129,6 +132,32 @@ public class MigrationsCheckUtil {
     });
 
     return result;
+  }
+  public static int expectedLanguageVersion(SModule module) {
+    // check whether scripts are really migrations for some language
+    if (!(module instanceof Language)) {
+      return -1;
+    }
+    SModel migModel = SModuleOperations.getAspect(module, "migration");
+    if (migModel == null) {
+      return -1;
+    }
+    if (!(migModel.isLoaded())) {
+      return -1;
+    }
+
+    List<SNode> allScripts = SModelOperations.roots(migModel, CONCEPTS.IMigrationUnit$xq);
+    Iterable<SNode> scriptsWithVersions = ListSequence.fromList(allScripts).where((it) -> (boolean) IMigrationUnit__BehaviorDescriptor.isVersionSet_id4uVwhQyFpOe.invoke(it));
+    // no scripts with versions?
+    if (Sequence.fromIterable(scriptsWithVersions).isEmpty()) {
+      return -1;
+    }
+
+    int maxVersion = Sequence.fromIterable(scriptsWithVersions).select((unit) -> (int) IMigrationUnit__BehaviorDescriptor.fromVersion_id4uVwhQyFcnl.invoke(unit)).sort((it) -> it, false).first();
+    return maxVersion + 1;
+  }
+  public static String languageVersionMismatchMessage(int languageVersion, int expectedVersion) {
+    return "Language version (" + languageVersion + ") is not equal to the target version of last migration script (" + expectedVersion + ")";
   }
   private static void ensureInitialized(Map<SNode, Collection<String>> coll, SNode index) {
     if (MapSequence.fromMap(coll).get(index) == null) {

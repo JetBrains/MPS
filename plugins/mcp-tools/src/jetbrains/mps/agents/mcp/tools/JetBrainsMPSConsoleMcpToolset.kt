@@ -1,5 +1,8 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.logging.*
+
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -29,6 +32,11 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
         // BLCommand extends GeneratedCommand which implements the console `Command` interface.
         private const val BL_COMMAND_CONCEPT = "jetbrains.mps.console.base.structure.BLCommand"
         private const val STATEMENT_LIST_CONCEPT = "jetbrains.mps.baseLanguage.structure.StatementList"
+
+        // A response preview lays out the whole Response in a headless editor only to keep 200 chars, so
+        // a response with more printed items than this (e.g. a `forEach` that `#print`s every node) gets
+        // no preview; the full text stays available via mps_mcp_print_node on the response reference.
+        private const val MAX_PREVIEW_RESPONSE_ITEMS = 100
     }
 
     @McpTool
@@ -38,11 +46,15 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_insert_console_command_from_json(
-        @McpDescription("JSON blueprint (max 4KB) OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics.") json: String,
+        @McpDescription("Required. JSON blueprint (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional: if true, only validate the JSON, the console availability, and the command-concept assignability without inserting anything into the console. Default: false.") dryRun: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_insert_console_command_from_json",
+            RequiredParameter("json", json.text, "the JSON blueprint (a console Command, a baseLanguage Statement, or a JSON array of Statements), or an absolute path to a temporary file holding it"),
+        )?.let { return it }
         return withMpsProject("Inserting MPS console command from JSON") { mpsProject ->
-            val actualJson = readNodeJsonOrFile(json, dryRun)
+            val actualJson = readNodeJsonOrFile(json.text, dryRun)
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
 
             val jsonElement = try {
@@ -99,15 +111,12 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 // (including McpUserException) so nothing escapes the command and trips
                 // ActionDispatcher's "Action dispatch failed" log; the message still carries the
                 // specific cause. Cancellation is rethrown so coroutine cancellation is honoured.
-                val warnings = if (dryRun) mutableListOf<String>() else null
+                // Collected on both paths so a node-factory failure is reported for a real insert too.
+                val warnings = mutableListOf<String>()
                 val command = try {
                     instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings)
                 } catch (e: Exception) {
-                    rethrowIfCancellation(e)
-                    return@executeShortCommandOnEdt errJson(
-                        "Failed to instantiate console command from JSON: ${e.message}",
-                        McpErrorCode.INVALID_REQUEST
-                    )
+                    return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate console command from JSON", e, warnings)
                 } ?: return@executeShortCommandOnEdt errJson(
                     "Failed to instantiate console command from JSON",
                     McpErrorCode.INVALID_REQUEST
@@ -129,7 +138,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                     return@executeShortCommandOnEdt okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for console command insertion")
-                    }, warnings = warnings ?: emptyList())
+                    }, warnings = warnings)
                 }
 
                 // DialogConsoleTab.insertCommand adds the command's imports to the console model
@@ -160,7 +169,10 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                         .invoke(console.tab, command)
                 }
 
-                okJson(nodeInfoJsonObject(command, mpsProject), warnings = listOfNotNull(activateWarning, selectWarning))
+                okJson(
+                    nodeInfoJsonObject(command, mpsProject),
+                    warnings = warnings + listOfNotNull(activateWarning, selectWarning)
+                )
             }
         }
     }
@@ -168,11 +180,11 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Lists the MPS Console's command history — the commands previously executed in the Console tool window's current tab — in execution order (oldest first). Each entry is a node-info envelope plus `index`, `kind` (`command`), `reference` (the history `CommandHolder` to recall), `effectiveCommandReference` (the command node that would be recalled, for printing/inspection), and a best-effort one-line `preview`. Feed `reference` to `mps_mcp_recall_console_command` to copy a command back into the input. Feed `effectiveCommandReference` to `mps_mcp_print_node` for the full JSON blueprint or notational (PLAIN TEXT / HTML) printout. Set `includeResponses=true` to also include the printed responses (`kind`:`response`) interleaved in order; pass `limit` to keep only the most recent N entries. Requires the MPS Console plugin. The returned references are only valid until the next console interaction (execute / clear / history navigation), so use them promptly. Returns the list inline, or a temp-file path when large.
+        Lists the MPS Console's command history — the commands previously executed in the Console tool window's current tab — in execution order (oldest first). Each entry is a node-info envelope plus `index`, `kind` (`command`), `reference` (the history `CommandHolder` to recall), `effectiveCommandReference` (the command node that would be recalled, for printing/inspection), and a best-effort one-line `preview`. Feed `reference` to `mps_mcp_recall_console_command` to copy a command back into the input. Feed `effectiveCommandReference` to `mps_mcp_print_node` for the full JSON blueprint or notational (PLAIN TEXT / HTML) printout. Set `includeResponses=true` to also include the printed responses (`kind`:`response`) interleaved in order, each with a `preview` of its printed text (whitespace and line breaks collapsed to single spaces, cut at 200 chars, omitted when empty, unrenderable, or over 100 items, where each printed value and each line break counts). Every `preview` comes with `previewComplete`: when true, the preview is the exact printed text (only the Console's leading and trailing padding removed), so do not print the node again; when false (cut, or collapsed from several lines), print the response's `reference` with `mps_mcp_print_node` (`PLAIN TEXT`) for the exact full text. The printed text is what the Console shows, so a non-empty sequence of nodes, references, models, or modules reads only as a count (e.g. `3 nodes`, `12 models`) and an empty one as `empty sequence`; select a property first (`.select({~it => it.name; })`) to get the values. A command that printed nothing has no response entry. Pass `limit` to keep only the most recent N entries. Requires the MPS Console plugin. The returned references are only valid until the next console interaction (execute / clear / history navigation), so use them promptly. Returns the list inline, or a temp-file path when large.
     """
     )
     suspend fun mps_mcp_get_console_history(
-        @McpDescription("Optional: also include the printed responses (output) interleaved with commands, as `kind`:`response` entries. Default: false (commands only).") includeResponses: Boolean = false,
+        @McpDescription("Optional: also include the printed responses (output) interleaved with commands, as `kind`:`response` entries, each with a one-line `preview` of the printed text when it is short enough to render, and `previewComplete` saying whether that preview is already the exact text. Default: false (commands only).") includeResponses: Boolean = false,
         @McpDescription("Optional: keep only the most recent N entries (after the response filter). Default: all.") limit: Int? = null
     ): String {
         return withMpsProject("Getting MPS console history") { mpsProject ->
@@ -194,10 +206,13 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                         obj.addProperty("kind", "command")
                         effectiveConsoleCommand(item)?.let { cmd ->
                             obj.addProperty("effectiveCommandReference", facade.asString(cmd.reference))
-                            consoleNodePreview(mpsProject.repository, cmd)?.let { obj.addProperty("preview", it) }
+                            consoleNodePreview(mpsProject.repository, cmd)?.addTo(obj)
                         }
                     } else {
                         obj.addProperty("kind", "response")
+                        if (item.children.count() <= MAX_PREVIEW_RESPONSE_ITEMS) {
+                            consoleNodePreview(mpsProject.repository, item)?.addTo(obj)
+                        }
                     }
                     array.add(obj)
                 }
@@ -213,9 +228,13 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_recall_console_command(
-        @McpDescription("Reference of a console history entry to recall, as returned by `mps_mcp_get_console_history` (its node `reference`). Must be a `CommandHolder` in the current console's history.") historyNodeReference: String,
+        @McpDescription("Required. Reference of a console history entry to recall, as returned by `mps_mcp_get_console_history` (its node `reference`). Must be a `CommandHolder` in the current console's history.") historyNodeReference: String = "",
         @McpDescription("Optional: if true, only validate that the reference resolves to a recallable history entry, without changing the console input. Default: false.") dryRun: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_recall_console_command",
+            RequiredParameter("historyNodeReference", historyNodeReference, "the persistent reference of a CommandHolder entry from mps_mcp_get_console_history"),
+        )?.let { return it }
         return withMpsProject("Recalling MPS console command from history") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val console = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
@@ -294,7 +313,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     ): String {
         currentCoroutineContext().reportToolActivity("Running the current MPS console command")
         val project = currentCoroutineContext().project
-        return try {
+        return McpCallOutcomes.record(try {
             var reply: String = errJson(
                 "Running the current MPS console command did not complete",
                 McpErrorCode.INTERNAL_ERROR
@@ -362,22 +381,38 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
             reply
         } catch (e: Exception) {
             toolFailure("Running the current MPS console command", e)
+        })
+    }
+
+    /**
+     * A console node preview. [complete] is true when [text] equals the trimmed `mps_mcp_print_node` PLAIN TEXT,
+     * i.e. nothing was cut and the rendering had no line breaks or whitespace runs to collapse.
+     */
+    private class ConsolePreview(val text: String, val complete: Boolean) {
+        fun addTo(obj: JsonObject) {
+            obj.addProperty("preview", text)
+            obj.addProperty("previewComplete", complete)
         }
     }
 
     /**
-     * Best-effort one-line notational preview of a console command node (truncated to 200 chars), rendered
+     * Best-effort one-line notational preview of a console command or response node (truncated to 200 chars), rendered
      * via the same headless editor projection as `mps_mcp_print_node`'s PLAIN TEXT format. Returns null on
      * any rendering failure — a preview is a convenience and must never fail the listing. Must run on the
      * EDT under a read action.
      */
-    private fun consoleNodePreview(repository: SRepository, node: SNode): String? {
+    private fun consoleNodePreview(repository: SRepository, node: SNode): ConsolePreview? {
         return try {
             val component = HeadlessEditorComponent(repository)
             try {
                 component.editNode(node)
-                val text = component.rootCell.renderText().getText().replace(Regex("\\s+"), " ").trim()
-                if (text.isEmpty()) null else if (text.length > 200) text.take(200) + "…" else text
+                val raw = component.rootCell.renderText().getText().trim()
+                val text = raw.replace(Regex("\\s+"), " ")
+                when {
+                    text.isEmpty() -> null
+                    text.length > 200 -> ConsolePreview(text.take(200) + "…", complete = false)
+                    else -> ConsolePreview(text, complete = text == raw)
+                }
             } finally {
                 component.dispose()
             }

@@ -6,6 +6,10 @@ type: reference
 
 # MPS Migrations Aspect
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 Two complementary languages upgrade user models when language definitions change:
 
 - **`jetbrains.mps.lang.migration`** (`l:90746344-04fd-4286-97d5-b46ae6a81709`) — core migration language with `MigrationScript` (class-based, programmatic) and `PureMigrationScript` (declarative, structural).
@@ -16,7 +20,10 @@ These address the same problem at different abstraction levels: `lang.migration`
 ## Critical Directives
 
 - **Do not confuse the two `MigrationScript` concepts.** One is in `lang.migration` (BL ClassConcept, version-gated). The other (alias "Enhancement Script") is in `lang.script` (instance-level transformer). Always disambiguate by language ref.
-- **`fromVersion` is the version migrated FROM**, not to. Bump the language's `version` integer in the `.mpl` solution manifest whenever you add a migration step.
+- **`fromVersion` is the version migrated FROM**, not to — and **both forms get it from a node factory**. Both `MigrationScript` and `PureMigrationScript` have a node factory: creating either through a factory-running path (`mps_mcp_create_root_node`, `mps_mcp_insert_root_node_from_json`, the IDE's New root, `replace with new initialized`) sets `fromVersion` to the language's *current* version and bumps that version by 1 — do not set `fromVersion` yourself. Paths that skip factories — `dryRun`, copies (`COPY_NODE`, copy/paste, `.copy`), `SNodeBuilder`/quotations/plain `new node<>()`/`add new root`, and `update_root_node_from_json` on an existing root — do not bump, so a copied script duplicates its source's `fromVersion` ("Multiple scripts for version N"); fix the copy's `fromVersion`, then `SYNC_VERSION`. The language version is never set by hand: `SYNC_VERSION` derives it from the scripts, is idempotent, and is safe to repeat. Do **not** hand-edit the `.mpl`: MPS holds the descriptor in memory and would overwrite the edit.
+- **Any "language version" mismatch from the checker or the generator → `SYNC_VERSION`.** The mismatch error also carries a "Set correct language version" quick fix (`FixLanguageVersion`), attached to the script(s) with the highest `fromVersion` in both directions — but it is not auto-applicable, so `check_root_node_problems(autoApplyQuickFixes = true)` will not apply it; apply it explicitly with `mps_mcp_apply_intention` when you want that route instead of `SYNC_VERSION`. Duplicate or missing versions carry no quick fix: `SYNC_VERSION` reports them in `migrationProblems` without fixing them — correct the offending script's `fromVersion`, then sync again.
+- **A version change is not effective for migration execution until the language module is rebuilt.** The checker compares against the descriptor, but the migration executor reads the version off the *generated* `LanguageRuntime`, so a bumped-but-unbuilt language silently never offers the migration. `SYNC_VERSION` reports this as `runtimeStale: true` with a `runtimeRecoveryAction` (the factory's bump needs the same make); clear it with `mps_mcp_alter_nodes` `MAKE` (`rebuild=true`) on the language module.
+- **The language's own version is not the `languageVersions` stamp.** `usedLanguages[].version` / `dependencyVersions` in a module descriptor record which version of *another* language that module was last migrated against. `SYNC_VERSION` deliberately leaves them alone — refreshing them marks pending migrations as already applied.
 - **Model naming is convention-driven and load-bearing.** `lang.migration` scripts live in `<language.fqn>.migration`. `lang.script` Enhancement Scripts live in `<language.fqn>.scripts`. MPS discovers them by these names at startup.
 - **Migration scripts run in dependency order**, determined by `OrderDependency` / `ExecuteAfterDeclaration`. Always declare ordering when the result of one script feeds the next.
 - **Do not hand-edit serialized `.mps` migration files.** Use MPS MCP node tools.
@@ -24,20 +31,22 @@ These address the same problem at different abstraction levels: `lang.migration`
 ## Workflow
 
 1. Decide form: `PureMigrationScript` for structural moves/renames/removals; `MigrationScript` for programmatic transforms; Enhancement Script for instance-level updates. See [references/form-selection.md](references/form-selection.md).
-2. Create or locate the migration model with `mps_mcp_create_model`: `<language.fqn>.migration` for `lang.migration` (aspect ID `migration`); `<language.fqn>.scripts` for Enhancement Scripts (aspect ID `scripts`). Both aspect IDs are case-sensitive and carry no `@` suffix — see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md). Add the used languages required for that form.
-3. Bump the language `version` integer in the `.mpl` and set `fromVersion` on the new script to the previous version.
+2. Create or locate the migration model with `mps_mcp_create_model` (`moduleName: "<language.fqn>"` plus `modelName`): `<language.fqn>.migration` for `lang.migration` (aspect ID `migration`); `<language.fqn>.scripts` for Enhancement Scripts (aspect ID `scripts`). Both aspect IDs are case-sensitive and carry no `@` suffix — see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md). Add the used languages required for that form.
+3. Both forms: creating the script through a factory-running MCP write tool (step 4) sets `fromVersion` and bumps `languageVersion` via the concept's node factory — leave both alone. After the insert, or after editing/deleting/copying a script, or on any version-mismatch error, call `mps_mcp_update_module(moduleName = "<language>", operation = "SYNC_VERSION")`. If `migrationProblems` in its response is not empty, fix the listed scripts' `fromVersion` and sync again.
 4. Build the script body (declarative parts, BL `execute()` method, or `MigrationScriptPart_Instance` updater) using the JSON blueprints in [references/json-blueprints.md](references/json-blueprints.md).
 5. Wire ordering (`OrderDependency` / `ExecuteAfterDeclaration`) and data flow (`putData` / `getData`) if needed.
-6. Validate via `mps_mcp_check_root_node_problems`, then run the migration on a test model.
+6. Validate via `mps_mcp_check_root_node_problems`, then `MAKE` the language module (`rebuild=true`) so the generated `LanguageRuntime` carries the new version, then run the migration on a test model. Skipping the make leaves `runtimeStale: true` and the migration is never offered.
 
 ## Related Skills
 
 - `mps-aspect-typesystem`, `mps-aspect-constraints` — when a migration depends on or alters typesystem rules.
 - `mps-aspect-generator` — when version changes also touch generator templates.
 - `mps-quotations` — for `QuotationConsequence` consequence bodies inside `MigrationScript.execute()`.
-- `mps-model-manipulation` — BL + smodel constructs used inside `MigrationScript.execute()` and Enhancement Script updaters.
+- `mps-model-manipulation` — BL + smodel constructs used inside `MigrationScript.execute()` and Enhancement Script updaters; for the rewrite itself open only `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 
 ## Reference Index
+
+**Start here — most common case**: if the form is not decided yet, read only `references/form-selection.md` — it routes you to the single file for the chosen form (declarative rename/move → `references/pure-migration-parts.md`; programmatic body → `references/migration-script-body.md`; instance sweep → `references/enhancement-scripts.md`), plus `references/json-blueprints.md` when inserting through MCP.
 
 - Form selection guide — open before authoring to pick between `PureMigrationScript`, `MigrationScript`, and Enhancement Script for the change at hand. Covers ordering, data flow, and model setup. See [references/form-selection.md](references/form-selection.md).
 - `lang.migration` concept reference — open when you need exact members, cardinalities, properties, or concept IDs for `MigrationScript`, `PureMigrationScript`, `IMigrationUnit`, ordering and data-exchange concepts, and `RefactoringLog`. See [references/lang-migration-reference.md](references/lang-migration-reference.md).

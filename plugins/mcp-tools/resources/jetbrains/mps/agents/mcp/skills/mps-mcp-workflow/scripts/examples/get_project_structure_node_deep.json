@@ -1,0 +1,235 @@
+{
+  "ok": true,
+  "data": {
+    "name": "Score Reading",
+    "concept": "Course",
+    "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+    "deprecated": "false",
+    "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+    "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048011",
+    "properties": [
+      {
+        "name": "credits",
+        "type": "integer",
+        "doc": "",
+        "deprecated": "false",
+        "value": "2"
+      },
+      {
+        "name": "level",
+        "type": "enum:Level",
+        "doc": "",
+        "deprecated": "false",
+        "value": "INTRO",
+        "isDefault": true
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "doc": "",
+        "deprecated": "false",
+        "value": "Score Reading"
+      }
+    ],
+    "references": [],
+    "children": [
+      {
+        "role": "lessons",
+        "type": "Lesson",
+        "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+        "cardinality": "1..n",
+        "doc": "",
+        "deprecated": "false",
+        "nodes": [
+          {
+            "name": "lesson",
+            "concept": "Lesson",
+            "doc": "A single instruction of a course. minutes is the time the lesson takes; uses lists the resources it consumes.",
+            "deprecated": "false",
+            "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048013",
+            "properties": [
+              {
+                "name": "title",
+                "type": "string",
+                "doc": "",
+                "deprecated": "false",
+                "value": "Play the scale slowly until every interval is clean"
+              },
+              {
+                "name": "minutes",
+                "type": "integer",
+                "doc": "",
+                "deprecated": "false",
+                "value": "4"
+              }
+            ],
+            "references": [],
+            "children": [
+              {
+                "role": "uses",
+                "type": "ResourceRef",
+                "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695:com.example.courses.structure.ResourceRef",
+                "cardinality": "0..n",
+                "doc": "",
+                "deprecated": "false",
+                "nodes": [
+                  {
+                    "name": "ScaleSheets",
+                    "concept": "ResourceRef",
+                    "doc": "Smart reference wrapper that lets a Lesson point at a Resource root node.",
+                    "deprecated": "false",
+                    "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695:com.example.courses.structure.ResourceRef",
+                    "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048014",
+                    "properties": [],
+                    "references": [
+                      {
+                        "role": "resource",
+                        "type": "Resource",
+                        "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+                        "cardinality": "1",
+                        "doc": "",
+                        "deprecated": "false",
+                        "target": "ScaleSheets",
+                        "targetReference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048000"
+                      }
+                    ],
+                    "children": []
+                  },
+                  {
+                    "name": "MetronomeTrack",
+                    "concept": "ResourceRef",
+                    "doc": "Smart reference wrapper that lets a Lesson point at a Resource root node.",
+                    "deprecated": "false",
+                    "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695:com.example.courses.structure.ResourceRef",
+                    "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048015",
+                    "properties": [],
+                    "references": [
+                      {
+                        "role": "resource",
+                        "type": "Resource",
+                        "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+                        "cardinality": "1",
+                        "doc": "",
+                        "deprecated": "false",
+                        "target": "MetronomeTrack",
+                        "targetReference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048001"
+                      }
+                    ],
+                    "children": []
+                  },
+                  {
+                    "name": "ChordChart",
+                    "concept": "ResourceRef",
+                    "doc": "Smart reference wrapper that lets a Lesson point at a Resource root node.",
+                    "deprecated": "false",
+                    "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695:com.example.courses.structure.ResourceRef",
+                    "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048016",
+                    "properties": [],
+                    "references": [
+                      {
+                        "role": "resource",
+                        "type": "Resource",
+                        "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+                        "cardinality": "1",
+                        "doc": "",
+                        "deprecated": "false",
+                        "target": "ChordChart",
+                        "targetReference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048002"
+                      }
+                    ],
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "lesson",
+            "concept": "Lesson",
+            "doc": "A single instruction of a course. minutes is the time the lesson takes; uses lists the resources it consumes.",
+            "deprecated": "false",
+            "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048017",
+            "properties": [
+              {
+                "name": "title",
+                "type": "string",
+                "doc": "",
+                "deprecated": "false",
+                "value": "Sight-read a short line at half the marked tempo"
+              },
+              {
+                "name": "minutes",
+                "type": "integer",
+                "doc": "",
+                "deprecated": "false",
+                "value": "2"
+              }
+            ],
+            "references": [],
+            "children": []
+          },
+          {
+            "name": "lesson",
+            "concept": "Lesson",
+            "doc": "A single instruction of a course. minutes is the time the lesson takes; uses lists the resources it consumes.",
+            "deprecated": "false",
+            "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048018",
+            "properties": [
+              {
+                "name": "title",
+                "type": "string",
+                "doc": "",
+                "deprecated": "false",
+                "value": "Repeat at tempo, then mark the phrasing in the score"
+              },
+              {
+                "name": "minutes",
+                "type": "integer",
+                "doc": "",
+                "deprecated": "false",
+                "value": "3"
+              }
+            ],
+            "references": [],
+            "children": []
+          }
+        ]
+      },
+      {
+        "role": "prerequisites",
+        "type": "CourseRef",
+        "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+        "cardinality": "0..n",
+        "doc": "",
+        "deprecated": "false",
+        "nodes": [
+          {
+            "name": "Sight Reading",
+            "concept": "CourseRef",
+            "doc": "Smart reference wrapper used by Course.prerequisites and Curriculum.courses to point at a Course root node.",
+            "deprecated": "false",
+            "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048030",
+            "properties": [],
+            "references": [
+              {
+                "role": "course",
+                "type": "Course",
+                "typeReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+                "cardinality": "1",
+                "doc": "",
+                "deprecated": "false",
+                "target": "Sight Reading",
+                "targetReference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)/2518891257436048003"
+              }
+            ],
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -137,3 +137,4 @@ teamcity-info.xml
 
 # scripts for mac signing
 /build/tools/mac
+plugins/mcp-tools/study/runs/

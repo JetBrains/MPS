@@ -1,8 +1,11 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 // MPS APIs used for CRUD
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
@@ -49,17 +52,23 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         For DELETE: Both the regular `<dependencies>` list and the per-kind `Extends` collection are probed; any removal counts as success. See `mps-aspect-accessories/references/module-level-deps.md` for the dispatch details.
     """)
     suspend fun mps_mcp_module_dependency(
-        @McpDescription("Source module name or reference")
-        moduleName: String,
-        @McpDescription("Target module name or reference")
-        targetModule: String,
-        @McpDescription("Operation to perform: ADD or DELETE")
-        operation: String,
+        @McpDescription("Required. Source module name or reference")
+        moduleName: String = "",
+        @McpDescription("Required. Target module name or reference")
+        targetModule: String = "",
+        @McpDescription("Required. Operation to perform: ADD or DELETE")
+        operation: String = "",
         @McpDescription("Dependency scope (Default by default)")
         @Nullable scope: String? = null,
         @McpDescription("Whether to reexport the dependency (false by default)")
         reexport: Boolean = false
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_module_dependency",
+            RequiredParameter("moduleName", moduleName, "the source module's name or reference"),
+            RequiredParameter("targetModule", targetModule, "the target module's name or reference"),
+            RequiredParameter("operation", operation, "ADD or DELETE"),
+        )?.let { return it }
         val op = resolveOperationOrNull<DependencyOperation>(operation)
             ?: return unknownOperation<DependencyOperation>(operation)
         return mps_mcp_module_dependency(moduleName, targetModule, op, scope, reexport)
@@ -237,20 +246,28 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
     @McpTool
     @McpDescription("""
-        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`). See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
+        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`) plus `data.models` — `[{name, reference, aspect}]` for every model the module already owns. A new Language comes with its aspect models (`structure`, ...) and a new Generator with its `templates@generator` model, so use those references instead of calling `mps_mcp_create_model` for them again. See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
     """
     )
     suspend fun mps_mcp_create_module(
-        @McpDescription("Module type: solution|language|devkit|generator") type: String,
-        @McpDescription("Module name or namespace. Ignored for type='generator' — the generator's name is derived as '<parentLanguage>.generator'.") name: String,
+        @McpDescription("Required. Module type: solution|language|devkit|generator") type: String = "",
+        @McpDescription("Required. Module name or namespace. Ignored for type='generator' — the generator's name is derived as '<parentLanguage>.generator'.") name: String = "",
         @McpDescription("Absolute directory for the module; created by the tool if missing. Required for solution/language/devkit. Optional for 'generator': omit or leave blank to default to '<parent-language-dir>/generator'; an existing empty directory at the target is reused.") @Nullable directory: String? = null,
         @McpDescription("Optional Project View virtual folder") @Nullable virtualFolder: String? = null,
         @McpDescription("Required only when type='generator'; ignored otherwise") @Nullable parentLanguage: String? = null,
         @McpDescription("For language: also create a generator") withGenerator: Boolean = false,
         @McpDescription("For language: also create a sandbox solution") withSandbox: Boolean = false,
         @McpDescription("For language: also create a runtime solution") withRuntime: Boolean = false,
-        @McpDescription("Optional additional facet type or JSON array of facet types (e.g. `tests` or [\"tests\"] for a test-container Solution). Omit or pass [] for no additional facets. See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: String? = null
-    ): String = mps_mcp_create_module(
+        @McpDescription("Optional additional facet type or JSON array of facet types (e.g. `tests` or [\"tests\"] for a test-container Solution; a real array or the array written as a string). Omit or pass [] for no additional facets. See the tool description for dedup, unknown-type, and module-type-restriction rules.") @Nullable facets: JsonOrText? = null
+    ): String = rejectMissingParameters(
+        "mps_mcp_create_module",
+        *listOfNotNull(
+            RequiredParameter("type", type, "solution, language, devkit, or generator"),
+            // A generator's name is derived from its parent language, so a blank one is meaningful.
+            RequiredParameter("name", name, "the new module's name or namespace")
+                .takeUnless { type.lowercase() == "generator" },
+        ).toTypedArray(),
+    ) ?: mps_mcp_create_module(
         type,
         name,
         directory,
@@ -634,9 +651,43 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         val finalCreated = created
         when {
             finalError != null -> errJson(finalError)
-            finalCreated != null -> okJson(moduleInfoJson(mpsProject, finalCreated))
+            finalCreated != null -> okJson(executeShortReadOnEdt(mpsProject) {
+                moduleInfoJsonObject(mpsProject, finalCreated).apply {
+                    add("models", createdModelsJsonArray(finalCreated))
+                }
+            })
             else -> errJson("Module creation failed for unknown reason")
         }
+    }
+
+    /**
+     * The models the new module already owns, `[{name, reference, aspect}]`. A Language is born with
+     * its aspect models and a Generator with its `templates@generator` model, and agents that could
+     * not see them from the create result tried to create them again, which fails with "No suitable
+     * model root found ... to create model" (study defect D6).
+     *
+     * `aspect` is the model's stereotype when it has one (`generator`, `tests`, ...), otherwise the
+     * part of the name following the module name (`structure`, `editor`, ...), and empty for a model
+     * whose name does not extend the module's.
+     */
+    private fun createdModelsJsonArray(module: SModule): JsonArray {
+        val result = JsonArray()
+        val moduleName = module.moduleName ?: ""
+        for (model in module.models) {
+            val stereotype = model.name.stereotype
+            val longName = model.name.longName
+            val aspect = when {
+                stereotype.isNotEmpty() -> stereotype
+                moduleName.isNotEmpty() && longName.startsWith("$moduleName.") -> longName.substring(moduleName.length + 1)
+                else -> ""
+            }
+            result.add(jsonObject {
+                addProperty("name", model.name.value)
+                addProperty("reference", PersistenceFacade.getInstance().asString(model.reference))
+                addProperty("aspect", aspect)
+            })
+        }
+        return result
     }
 
     @McpTool
@@ -644,15 +695,20 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         Updates or deletes an MPS module based on the `operation` parameter:
         - RENAME (default): renames the module (Solution / Language / DevKit). `newName` must be a valid Java-package qualified name. Generator modules cannot be renamed through this tool; rename the parent Language instead (the rename cascades into owned generators). Returns the module info envelope plus optional `renameWarnings` / `renameCriticalProblems` arrays. See `mps-aspect-accessories/references/module-rename.md` for the cascade behavior, in-project-only reference rewrites, and the warnings semantics.
         - CHANGE_VIRTUAL_FOLDER: changes the Project View virtual folder of the module. `newName` is the new folder path (e.g. "Group/Subgroup").
+        - SYNC_VERSION: derives the **language module's own** version from its migration scripts and writes it — the headless equivalent of MPS's "Correct Language Version" action (Language modules only; every other module kind is rejected). Whenever a versioned script exists, the version becomes `max(fromVersion) + 1` over the `migration` aspect's scripts (`MigrationScript` / `PureMigrationScript` roots that have a `fromVersion`), which is the only value the migration checker and generator accept; it is never set directly, so `newName` must be omitted. Idempotent: repeating it is a no-op (`changed:false`). Both `MigrationScript` and `PureMigrationScript` created through a factory-running MCP write tool already bump the version themselves via their node factory; use this operation after editing, deleting, or copying a script (a copy duplicates its source's `fromVersion`), and whenever the checker or the generator reports a language-version mismatch — that mismatch's "Set correct language version" quick fix (`FixLanguageVersion`) is an explicit, non-auto-applicable alternative via `mps_mcp_apply_intention`. Without a `migration` aspect or without versioned scripts nothing is derived and the version is left alone (`note` says why). Lowering happens when a trailing script was deleted and is reported in `warnings`, naming any module whose recorded used-language version is now ahead of the language. Consumer-side `usedLanguages[].version` stamps are never touched (refreshing them would mark pending migrations as already applied). Returns the module info envelope plus `languageVersion`, `previousLanguageVersion`, `changed`, `maxFromVersion` (absent when no script has a version), `migrationUnitCount`, `migrationProblems` (`[{unit, reference, concept, problem}]` — scripts without a version, several scripts for one version, a missing version in the sequence; SYNC_VERSION does not fix these: correct the script's `fromVersion`, then sync again), and — when the compiled language runtime disagrees with the descriptor — `runtimeLanguageVersion`, `runtimeStale:true` and `runtimeRecoveryAction`: the migration executor reads the version off the *generated* `LanguageRuntime`, so a new version only takes effect for migrations after the language module is rebuilt (`mps_mcp_alter_nodes` MAKE with `rebuild=true`). No make is performed here. See `mps-aspect-migrations/references/form-selection.md`.
         - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk.
     """
     )
     suspend fun mps_mcp_update_module(
-        @McpDescription("Existing module name or reference") moduleName: String,
-        @McpDescription("New name or value for the operation: new qualified name for RENAME, new folder path for CHANGE_VIRTUAL_FOLDER, or ignored for DELETE.") @Nullable newName: String? = null,
-        @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, or DELETE. Default is RENAME.") operation: String = "RENAME",
+        @McpDescription("Required. Existing module name or reference") moduleName: String = "",
+        @McpDescription("New name or value for the operation: new qualified name for RENAME, new folder path for CHANGE_VIRTUAL_FOLDER, or ignored for DELETE. Must be omitted for SYNC_VERSION, which derives the version from the migration scripts.") @Nullable newName: String? = null,
+        @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, SYNC_VERSION, or DELETE. Default is RENAME.") operation: String = "RENAME",
         @McpDescription("For DELETE only: whether to also delete module files from disk.") deleteFiles: Boolean = false,
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_update_module",
+            RequiredParameter("moduleName", moduleName, "the existing module's name or reference"),
+        )?.let { return it }
         val op = resolveOperationOrNull<ModuleOperation>(operation)
             ?: return unknownOperation<ModuleOperation>(operation)
         return mps_mcp_update_module(moduleName, newName, op, deleteFiles)
@@ -760,6 +816,120 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 info.add("warnings", warnings)
             }
             okJson(info)
+        }
+
+        ModuleOperation.SYNC_VERSION -> withMpsProject("Update MPS module") { mpsProject ->
+            newName?.trim()?.takeIf { it.isNotEmpty() }?.let { given ->
+                return@withMpsProject errJson(
+                    "SYNC_VERSION takes no value (got newName='$given'): a language's version is derived " +
+                        "from its migration scripts — max(fromVersion) + 1 — and is never set directly. " +
+                        "To fix a wrong version, correct the offending script's `fromVersion` (or delete " +
+                        "the script) and call SYNC_VERSION again without `newName`.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
+
+            executeShortCommandOnEdt(mpsProject) {
+                val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
+                if (resolved is AbstractModuleResolution.Err) {
+                    return@executeShortCommandOnEdt errJson(resolved.message, resolved.code, resolved.details)
+                }
+                val (abstractModule, descriptor) = (resolved as AbstractModuleResolution.Ok)
+
+                // The version integer lives on LanguageDescriptor only; Solutions, Generators and
+                // DevKits have no such field. Name the actual kind so the caller can correct the
+                // target instead of guessing why the operation was refused.
+                if (abstractModule !is Language || descriptor !is LanguageDescriptor) {
+                    return@executeShortCommandOnEdt errJson(
+                        "SYNC_VERSION applies only to Language modules — '$moduleName' is a " +
+                            "${moduleKindLabel(abstractModule, descriptor)}. The version integer a " +
+                            "migration script's `fromVersion` gates on exists only on a Language.",
+                        McpErrorCode.INVALID_REQUEST,
+                    )
+                }
+
+                val previous = abstractModule.languageVersion
+                val analysis = MigrationUnitVersions.analyze(abstractModule)
+                val target = analysis.maxFromVersion?.let { it + 1 } ?: previous
+                val changed = target != previous
+                if (changed) {
+                    // setLanguageVersion() itself calls fireChanged()/setChanged(); save() flushes
+                    // the descriptor to the .mpl on disk (setChanged alone only marks it dirty).
+                    abstractModule.setLanguageVersion(target)
+                    abstractModule.save()
+                }
+
+                val warnings = mutableListOf<String>()
+                if (changed && target < previous) {
+                    // Not an error: MPS's own CorrectLanguageVersion action lowers the version when a
+                    // trailing migration script was deleted.
+                    val language = MetaAdapterByDeclaration.getLanguage(abstractModule)
+                    val consumersAhead = mpsProject.repository.modules
+                        .mapNotNull { m ->
+                            val stamp = (m as? AbstractModule)?.moduleDescriptor?.languageVersions?.get(language)
+                            if (stamp != null && stamp > target) "${m.moduleName ?: m.moduleReference} (records $stamp)" else null
+                        }
+                        .sorted()
+                    warnings.add(buildString {
+                        append("Language version lowered from $previous to $target because the highest migration ")
+                        append("script now migrates from ${target - 1}. Only expected after a trailing migration ")
+                        append("script was deleted.")
+                        if (consumersAhead.isNotEmpty()) {
+                            append(" These modules record a used-language version above $target and are now ")
+                            append("ahead of their language: ${consumersAhead.joinToString(", ")}.")
+                        }
+                    })
+                }
+                if (analysis.problems.isNotEmpty()) {
+                    warnings.add(
+                        "The migration scripts have ${analysis.problems.size} ordering problem(s) listed in " +
+                            "`migrationProblems`. SYNC_VERSION does not fix them: correct each script's " +
+                            "`fromVersion` (or delete a duplicate), then call SYNC_VERSION again."
+                    )
+                }
+
+                val info = moduleInfoJsonObject(mpsProject, abstractModule)
+                info.addProperty("languageVersion", target)
+                info.addProperty("previousLanguageVersion", previous)
+                info.addProperty("changed", changed)
+                analysis.maxFromVersion?.let { info.addProperty("maxFromVersion", it) }
+                info.addProperty("migrationUnitCount", analysis.unitCount)
+                info.add("migrationProblems", JsonArray().apply {
+                    for (p in analysis.problems) {
+                        add(jsonObject {
+                            addProperty("unit", p.unit)
+                            addProperty("reference", p.reference)
+                            addProperty("concept", p.concept)
+                            addProperty("problem", p.problem)
+                        })
+                    }
+                })
+                analysis.noOpReason?.let { info.addProperty("note", it) }
+
+                // The migration executor (MigrationScriptCollector) reads the version off the
+                // *generated* LanguageRuntime, not off the descriptor we just wrote, so a change only
+                // becomes effective for migrations after the language module is rebuilt. Surface the
+                // disagreement instead of hiding it; deliberately do not make here (expensive, and the
+                // caller usually has further edits to build in the same pass).
+                val runtime = LanguageRegistry.getInstance(mpsProject.repository).getLanguage(abstractModule)
+                val runtimeVersion = runtime?.version
+                if (runtimeVersion != null) {
+                    info.addProperty("runtimeLanguageVersion", runtimeVersion)
+                }
+                val runtimeStale = runtimeVersion == null || runtimeVersion != target
+                info.addProperty("runtimeStale", runtimeStale)
+                if (runtimeStale) {
+                    info.addProperty(
+                        "runtimeRecoveryAction",
+                        "The compiled language runtime still reports " +
+                            (runtimeVersion?.toString() ?: "no deployed version") +
+                            ", so migrations are still gated on that value. Rebuild the language module " +
+                            "(mps_mcp_alter_nodes MAKE with rebuild=true, targeting the language module) " +
+                            "to make version $target effective for migration execution."
+                    )
+                }
+                okJson(info, warnings)
+            }
         }
 
         ModuleOperation.DELETE -> deleteModule(moduleName, deleteFiles)
@@ -908,8 +1078,11 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
     @Suppress("DEPRECATION")
     suspend fun mps_mcp_get_module_facets(
-        @McpDescription("Module name or reference") moduleName: String
-    ): String = withMpsProject("Getting module facets") { mpsProject ->
+        @McpDescription("Required. Module name or reference") moduleName: String = ""
+    ): String = rejectMissingParameters(
+        "mps_mcp_get_module_facets",
+        RequiredParameter("moduleName", moduleName, "the module's name or reference"),
+    ) ?: withMpsProject("Getting module facets") { mpsProject ->
         executeShortReadOnEdt(mpsProject) {
             val module = resolveModulePreferringProject(mpsProject, moduleName)
             if (module == null) {
@@ -972,17 +1145,25 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     @McpDescription("""
         Updates module facets (enable/disable/configure).
 
+        `settingsJson` accepts a flat object of primitive properties, or a structured memento object with optional `properties`, primitive `text`, and `children`. Structured `properties` must be an object; `children` must be an array of objects whose primitive `type` is present. Invalid settings return INVALID_REQUEST without changing the existing facet configuration. When `enabled=false`, settings are ignored and the facet is disabled.
+
         Returns a JSON object with 'ok':true and 'data':{"updated":true, "facetType":"..."} on success, or 'ok':false and 'error':"..." on failure.
     """)
     // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
     @Suppress("DEPRECATION")
     suspend fun mps_mcp_update_module_facet(
-        @McpDescription("Module name or reference") moduleName: String,
-        @McpDescription("Facet type to update") facetType: String,
+        @McpDescription("Required. Module name or reference") moduleName: String = "",
+        @McpDescription("Required. Facet type to update") facetType: String = "",
         @McpDescription("Whether to enable or disable the facet") @Nullable enabled: Boolean? = null,
-        @McpDescription("JSON representation of the facet settings (Memento structure)") @Nullable settingsJson: String? = null
-    ): String = withMpsProject("Updating module facet") { mpsProject ->
-        withModalTimeoutOnEdt {
+        @McpDescription("Facet settings as a flat JSON object of primitive values, or structured JSON with optional 'properties' object, primitive 'text', and 'children' array; sent as real JSON or as its string form. Each child requires a primitive 'type'. Invalid settings leave the existing facet unchanged; ignored when enabled=false.") @Nullable settingsJson: JsonOrText? = null
+    ): String = rejectMissingParameters(
+        "mps_mcp_update_module_facet",
+        RequiredParameter("moduleName", moduleName, "the module's name or reference"),
+        RequiredParameter("facetType", facetType, "the facet type to update"),
+    ) ?: withMpsProject("Updating module facet") { mpsProject ->
+        val settings = settingsJson?.text
+        val validationError = withModalTimeoutOnEdt {
+            var commandError: String? = null
             mpsProject.repository.modelAccess.executeCommand {
                 val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
                 when (resolved) {
@@ -992,21 +1173,20 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
                         if (enabled == false) {
                             descriptor.moduleFacetDescriptors.removeIf { it.type == facetType }
-                        } else if (enabled == true || settingsJson != null) {
-                            val factory = FacetsFacade.getInstance().getFacetFactory(facetType)
-                                ?: throw McpInvalidRequestException("Unknown facet type: $facetType. No factory registered.")
+                        } else if (enabled == true || settings != null) {
+                            if (FacetsFacade.getInstance().getFacetFactory(facetType) == null) {
+                                throw McpInvalidRequestException("Unknown facet type: $facetType. No factory registered.")
+                            }
 
                             val memento = MementoImpl()
-                            if (settingsJson != null) {
-                                val jsonElement = try {
-                                    JsonParser.parseString(settingsJson)
-                                } catch (e: Exception) {
-                                    throw McpInvalidRequestException("Failed to parse settingsJson: ${e.message ?: e.toString()}")
+                            if (settings != null) {
+                                when (val parsed = jsonToMemento(settings, memento)) {
+                                    MementoParsingResult.Ok -> Unit
+                                    is MementoParsingResult.Err -> {
+                                        commandError = parsed.errJson
+                                        return@executeCommand
+                                    }
                                 }
-                                if (!jsonElement.isJsonObject) {
-                                    throw McpInvalidRequestException("settingsJson must be a JSON object")
-                                }
-                                jsonToMemento(jsonElement.asJsonObject, memento)
                             } else if (descriptor.moduleFacetDescriptors.any { it.type == facetType }) {
                                 return@executeCommand
                             }
@@ -1020,8 +1200,12 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                     }
                 }
             }
-            mpsProject.save()
+            if (commandError == null) {
+                mpsProject.save()
+            }
+            commandError
         }
+        if (validationError != null) return@withMpsProject validationError
 
         okJson(jsonObject {
             addProperty("updated", true)
@@ -1189,47 +1373,85 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         return obj
     }
 
-    private fun jsonToMemento(obj: JsonObject, m: Memento) {
-        val hasProps = obj.has("properties") && obj.get("properties").isJsonObject
-        val hasChildren = obj.has("children") && obj.get("children").isJsonArray
-        val hasText = obj.has("text") && obj.get("text").isJsonPrimitive
+    private sealed interface MementoParsingResult {
+        object Ok : MementoParsingResult
+        data class Err(val errJson: String) : MementoParsingResult
+    }
 
-        if (hasProps || hasChildren || hasText) {
-            // Structured format
-            obj.getAsJsonObject("properties")?.let { props ->
-                for (entry in props.entrySet()) {
+    private fun jsonToMemento(settingsJson: String, memento: Memento): MementoParsingResult {
+        val element = try {
+            JsonParser.parseString(settingsJson)
+        }
+        catch (e: JsonParseException) {
+            return mementoError("settingsJson is not valid JSON: ${e.message ?: e.toString()}")
+        }
+        if (!element.isJsonObject) {
+            return mementoError("settingsJson must be a JSON object")
+        }
+        return jsonToMemento(element.asJsonObject, memento, "settingsJson")
+    }
+
+    private fun jsonToMemento(obj: JsonObject, memento: Memento, path: String): MementoParsingResult {
+        val text = obj.get("text")
+        if (text != null && !text.isJsonPrimitive) {
+            return mementoError("$path.text must be a JSON primitive")
+        }
+        val properties = obj.get("properties")
+        val children = obj.get("children")
+        val structured = properties?.isJsonObject == true || children?.isJsonArray == true || text != null
+
+        if (structured) {
+            if (properties != null && !properties.isJsonObject) {
+                return mementoError("$path.properties must be a JSON object")
+            }
+            if (children != null && !children.isJsonArray) {
+                return mementoError("$path.children must be a JSON array")
+            }
+            properties?.asJsonObject?.let { values ->
+                for (entry in values.entrySet()) {
                     if (entry.value.isJsonPrimitive) {
-                        m.put(entry.key, entry.value.asString)
+                        memento.put(entry.key, entry.value.asString)
                     }
                 }
             }
-            obj.getAsJsonPrimitive("text")?.let {
-                m.text = it.asString
-            }
-            obj.getAsJsonArray("children")?.let { children ->
-                for ((idx, childElement) in children.withIndex()) {
+            text?.let { memento.text = it.asString }
+            children?.asJsonArray?.let { values ->
+                for ((index, childElement) in values.withIndex()) {
+                    val childPath = "$path.children[$index]"
                     if (!childElement.isJsonObject) {
-                        throw McpInvalidRequestException("settingsJson child at index $idx must be a JSON object")
+                        return mementoError("$childPath must be a JSON object")
                     }
-                    val childObj = childElement.asJsonObject
-                    val type = childObj.getAsJsonPrimitive("type")?.asString
-                        ?: throw McpInvalidRequestException("settingsJson child at index $idx is missing required 'type' string")
-                    val childMemento = m.createChild(type)
-                    jsonToMemento(childObj, childMemento)
+                    val child = childElement.asJsonObject
+                    val type = child.get("type")
+                    if (type == null) {
+                        return mementoError("$childPath.type is missing")
+                    }
+                    if (!type.isJsonPrimitive) {
+                        return mementoError("$childPath.type must be a JSON primitive")
+                    }
+                    val childMemento = memento.createChild(type.asString)
+                    when (val nested = jsonToMemento(child, childMemento, childPath)) {
+                        MementoParsingResult.Ok -> Unit
+                        is MementoParsingResult.Err -> return nested
+                    }
                 }
             }
-        } else {
-            // Flat format
+        }
+        else {
             for (entry in obj.entrySet()) {
                 if (entry.value.isJsonPrimitive) {
                     val key = entry.key
                     val value = entry.value.asString
-                    if (key == "type" && value == m.type) continue
-                    m.put(key, value)
+                    if (key == "type" && value == memento.type) continue
+                    memento.put(key, value)
                 }
             }
         }
+        return MementoParsingResult.Ok
     }
+
+    private fun mementoError(message: String): MementoParsingResult.Err =
+        MementoParsingResult.Err(errJson(message, McpErrorCode.INVALID_REQUEST))
 
     private fun mementosEqual(m1: Memento, m2: Memento, rootType: String? = null): Boolean {
         if (m1.type != m2.type) return false
@@ -1258,5 +1480,6 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 enum class ModuleOperation {
     RENAME,
     CHANGE_VIRTUAL_FOLDER,
+    SYNC_VERSION,
     DELETE
 }

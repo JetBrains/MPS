@@ -1,5 +1,9 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.java.*
+import jetbrains.mps.agents.mcp.tools.languages.*
+
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -7,6 +11,7 @@ import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.errors.item.NodeReportItem
 import jetbrains.mps.java.core.newparser.*
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.NodeCastException
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
 import jetbrains.mps.project.AbstractModule
@@ -77,7 +82,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             val parsedNodes: List<SNode>
         ) : JavaParsePreparation()
 
-        data class Err(val message: String) : JavaParsePreparation()
+        data class Err(val message: String, val code: McpErrorCode? = null) : JavaParsePreparation()
     }
 
     private suspend fun prepareJavaParseResult(
@@ -95,19 +100,65 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 nr?.resolve(repo) ?: return@executeBackgroundRead JavaParsePreparation.Err("Context node '$contextNodeRefStr' not found")
             } else null
 
+            val effectiveSource = effectiveJavaParseSource(code, featureKind, isExpression)
+            val isConceptBehaviorContext = contextNode != null &&
+                SNodeOperations.isInstanceOf(contextNode, BehaviorLanguageMeta.conceptBehaviorConcept)
+
+            // JavaParser.parse's CLASS_CONTENT case always casts its context to Classifier
+            // (JavaParser.java, case CLASS_CONTENT), so only a Classifier or a ConceptBehavior
+            // (via a detached synthetic Classifier stand-in) is an admissible contextNodeRef here;
+            // anything else would surface as an opaque NodeCastException.
+            val parseContext: SNode? = if (contextNode != null && effectiveSource.featureKind == FeatureKind.CLASS_CONTENT) {
+                when {
+                    SNodeOperations.isInstanceOf(contextNode, BaseLanguageMeta.classifierConcept) -> contextNode
+                    isConceptBehaviorContext -> {
+                        if (featureKind == FeatureKind.FIELD || featureKind == FeatureKind.NESTED_CLASS) {
+                            return@executeBackgroundRead JavaParsePreparation.Err(
+                                "featureKind '$featureKind' is not supported when contextNodeRef is a " +
+                                    "'${contextNode.concept.name}'; ConceptBehavior only supports parsing METHOD/CLASS_CONTENT.",
+                                code = McpErrorCode.INVALID_REQUEST
+                            )
+                        }
+                        ConceptBehaviorJavaParseAdapter.createDetachedClassifierContext()
+                    }
+                    else -> return@executeBackgroundRead JavaParsePreparation.Err(
+                        "'contextNodeRef' must resolve to a Classifier (or a ConceptBehavior for " +
+                            "METHOD/CLASS_CONTENT), but resolved to a '${contextNode.concept.name}'.",
+                        code = McpErrorCode.INVALID_REQUEST
+                    )
+                }
+            } else contextNode
+
             val parseResult = try {
-                val effectiveSource = effectiveJavaParseSource(code, featureKind, isExpression)
-                JavaParser().parse(effectiveSource.code, effectiveSource.featureKind, contextNode, recovery)
+                JavaParser().parse(effectiveSource.code, effectiveSource.featureKind, parseContext, recovery)
             } catch (e: JavaParseException) {
                 return@executeBackgroundRead JavaParsePreparation.Err("Java parsing error: ${e.message}")
+            } catch (e: NodeCastException) {
+                // Not a parse failure: JavaParser's CLASS_CONTENT case always casts its context to
+                // Classifier, so this means contextNodeRef was not an admissible parse context.
+                return@executeBackgroundRead JavaParsePreparation.Err(
+                    "'contextNodeRef' was not an admissible parse context for featureKind '$featureKind'; " +
+                        "it must resolve to a BaseLanguage Classifier, or a ConceptBehavior for METHOD/CLASS_CONTENT.",
+                    code = McpErrorCode.INVALID_REQUEST
+                )
             }
 
-            val parsedNodes = unwrapExpressionNodes(parseResult.nodes, isExpression)
+            var parsedNodes = unwrapExpressionNodes(parseResult.nodes, isExpression)
             if (parsedNodes.isEmpty()) {
-                JavaParsePreparation.Err(parseResult.errorMsg ?: "Parser returned no nodes")
-            } else {
-                JavaParsePreparation.Ok(parseResult, parsedNodes)
+                return@executeBackgroundRead JavaParsePreparation.Err(parseResult.errorMsg ?: "Parser returned no nodes")
             }
+
+            if (isConceptBehaviorContext && effectiveSource.featureKind == FeatureKind.CLASS_CONTENT) {
+                when (
+                    val converted = ConceptBehaviorJavaParseAdapter.convertParsedMembersForConceptBehavior(parsedNodes, contextNode)
+                ) {
+                    is ConceptBehaviorJavaParseAdapter.ConceptBehaviorConversion.Ok -> parsedNodes = converted.nodes
+                    is ConceptBehaviorJavaParseAdapter.ConceptBehaviorConversion.Err ->
+                        return@executeBackgroundRead JavaParsePreparation.Err(converted.message, code = McpErrorCode.INVALID_REQUEST)
+                }
+            }
+
+            JavaParsePreparation.Ok(parseResult, parsedNodes)
         }
     }
 
@@ -161,6 +212,60 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 "'${parent.concept.name}': the role expects '${target.name}' or a subconcept. " +
                 "Check that 'featureKind' matches the target role (for example, EXPRESSION targets an " +
                 "expression-bearing role, not 'member')."
+    }
+
+    // D45: a body-like role (`ConceptFunction.body`, `BaseMethodDeclaration.body`,
+    // `IfStatement.ifTrue`, `BlockStatement.statements`, ...) declares `StatementList` as its target
+    // concept, but the parser's top-level output for statement input is a list of bare `Statement`s.
+    // Without the wrap below, `roleAssignabilityError` rejects that and the caller has to insert a
+    // `StatementList` itself and re-target its `statement` role — a mechanical two-step the tool can
+    // do on its own (`insert.mode:"console"` already does exactly this, see wrapAsConsoleCommand).
+    //
+    // The gate is structural, not `featureKind`-based, consistent with the tool's rule that the kind
+    // is advisory and placement is validated against the target role: an `EXPRESSION` into `body`
+    // still fails, because an `Expression` is not a `Statement`. A parsed node that already is a
+    // `StatementList` is left alone so it lands in the role directly.
+    private fun statementListWrapApplies(parsedNodes: List<SNode>, link: SContainmentLink): Boolean {
+        if (parsedNodes.isEmpty()) return false
+        if (link.targetConcept != STATEMENT_LIST_CONCEPT) return false
+        if (parsedNodes.any { it.concept.isSubConceptOf(STATEMENT_LIST_CONCEPT) }) return false
+        return parsedNodes.all { it.concept.isSubConceptOf(STATEMENT_LIST_STATEMENT_LINK.targetConcept) }
+    }
+
+    // Builds a detached `StatementList` holding [parsedNodes]. Callers must have established
+    // statementListWrapApplies() first; the assignability check is repeated here so a future caller
+    // cannot skip it silently.
+    private fun newStatementListWrapping(parsedNodes: List<SNode>): InsertOutcome {
+        val statementList = SConceptOperations.createNewNode(STATEMENT_LIST_CONCEPT)
+        for (node in parsedNodes) {
+            roleAssignabilityError(node, STATEMENT_LIST_STATEMENT_LINK, statementList)?.let {
+                return InsertOutcome.Err(errJson(it, McpErrorCode.INVALID_REQUEST))
+            }
+        }
+        for (node in parsedNodes) {
+            statementList.addChild(STATEMENT_LIST_STATEMENT_LINK, node)
+        }
+        return InsertOutcome.Ok(listOf(statementList))
+    }
+
+    private fun statementListWrapWarning(count: Int, roleName: String, parentConceptName: String, created: Boolean): String {
+        val statements = if (count == 1) "1 statement" else "$count statements"
+        val where = if (created) {
+            "into a new 'StatementList' created in role '$roleName' of '$parentConceptName'"
+        } else {
+            "into the existing 'StatementList' in role '$roleName' of '$parentConceptName'"
+        }
+        return "Wrapped $statements $where, because that role expects a 'StatementList' rather than " +
+                "bare statements. The reported 'index' of each inserted node — and any 'position' you " +
+                "passed — therefore refers to its place inside that statement list, not to role '$roleName'."
+    }
+
+    private fun statementListReplaceWarning(count: Int, roleName: String, parentConceptName: String): String {
+        val statements = if (count == 1) "1 statement" else "$count statements"
+        return "Wrapped $statements into a new 'StatementList' and replaced the target with it, " +
+                "because role '$roleName' of '$parentConceptName' expects a 'StatementList' rather " +
+                "than bare statements. The replaced statement list and everything in it is gone; use " +
+                "mode 'child' on role '$roleName' to append to a body instead of overwriting it."
     }
 
     // Best-effort: only the inserted nodes are undone. Other in-memory mutations on the failure
@@ -243,14 +348,9 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             ))
         }
 
-        val statementList = SConceptOperations.createNewNode(STATEMENT_LIST_CONCEPT)
-        for (node in parsedNodes) {
-            roleAssignabilityError(node, STATEMENT_LIST_STATEMENT_LINK, statementList)?.let {
-                return InsertOutcome.Err(errJson(it, McpErrorCode.INVALID_REQUEST))
-            }
-        }
-        for (node in parsedNodes) {
-            statementList.addChild(STATEMENT_LIST_STATEMENT_LINK, node)
+        val statementList = when (val wrapped = newStatementListWrapping(parsedNodes)) {
+            is InsertOutcome.Ok -> wrapped.inserted.single()
+            is InsertOutcome.Err -> return wrapped
         }
 
         val command = SConceptOperations.createNewNode(CONSOLE_BL_COMMAND_CONCEPT)
@@ -272,14 +372,24 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             is EditableModelResolution.Err -> return InsertOutcome.Err(r.errJson)
         }
 
+        val pkg = parseResult.getPackage()?.trim().orEmpty()
+        var packageNameWrites = 0
         val inserted = mutableListOf<SNode>()
         for (n in parsedNodes) {
             model.addRootNode(n)
             if (insertTarget.virtualPackage != null) {
                 n.setProperty(SNodeUtil.property_BaseConcept_virtualPackage, insertTarget.virtualPackage)
             }
+            if (pkg.isNotEmpty() && SNodeOperations.isInstanceOf(n, BaseLanguageMeta.classifierConcept)) {
+                n.setProperty(BaseLanguageMeta.packageNameProperty, pkg)
+                packageNameWrites++
+            }
             inserted.add(n)
         }
+
+        val packageWarnings =
+            if (packageNameWrites > 0) listOf(buildPackageNameWarning(pkg, model.name.longName))
+            else emptyList()
 
         finalizeInsertedNodes(
             model,
@@ -294,7 +404,23 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             // detaches a root from its model — the same undo the language-structure toolset relies on.
             safelyRollbackNodes(inserted.asReversed())
         }
-        return InsertOutcome.Ok(inserted)
+        return InsertOutcome.Ok(inserted, packageWarnings)
+    }
+
+    private fun buildPackageNameWarning(pkg: String, modelLongName: String): String {
+        val warning =
+            "Set Classifier.packageName to '$pkg' from the Java package declaration. " +
+                "Classifier.packageName (not the model name and not virtualPackage) controls " +
+                "the generated package statement, the source_gen unit path, and Classifier.getFqName."
+        return if (pkg != modelLongName) {
+            warning +
+                " This package differs from the destination model name '$modelLongName'; " +
+                "generated Java will land outside the model's default directory because " +
+                "the unitPath replaces the model-namespace segment. " +
+                "To undo, call mps_mcp_update_node SET packageName to empty."
+        } else {
+            warning
+        }
     }
 
     private fun insertAsChild(
@@ -307,22 +433,61 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         val insertTarget = request.insert
         val parentRefStr = checkNotNull(insertTarget.parentRef)
         val roleName = checkNotNull(insertTarget.role)
-        val (parent, model, console) = when (
+        val (requestedParent, model, console) = when (
             val r = resolveEditableNodeAllowingConsole(mpsProject, parentRefStr, { "Parent node '$it' not found" })
         ) {
             is ConsoleAwareResolution.Ok -> Triple(r.node, r.model, r.console)
             is ConsoleAwareResolution.Err -> return InsertOutcome.Err(r.errJson)
         }
-        val link = parent.concept.containmentLinks.find { it.name == roleName }
+        val requestedLink = requestedParent.concept.containmentLinks.find { it.name == roleName }
             ?: return InsertOutcome.Err(errJson(
-                "Child role '$roleName' not found in concept '${parent.concept.name}'",
+                "Child role '$roleName' not found in concept '${requestedParent.concept.name}'",
                 McpErrorCode.NOT_FOUND
             ))
+
+        // D45: redirect statements destined for a StatementList-typed role into that list, rather
+        // than rejecting them. Deliberately non-destructive: an existing StatementList occupant is
+        // reused and appended to (a body-like role normally already holds the empty StatementList
+        // MPS itself installs), and one is created only when the role is empty. Overwriting it the
+        // way the single-cardinality branch below overwrites an occupant would silently discard a
+        // method body. Because `statement` is multi-cardinality, `position` then indexes within the
+        // list and the existing clamp/index reporting applies there unchanged — the warning says so.
+        var effectiveParent = requestedParent
+        var effectiveLink = requestedLink
+        var wrapWarning: String? = null
+        var createdStatementList: SNode? = null
+        if (statementListWrapApplies(parsedNodes, requestedLink)) {
+            // statementListWrapApplies() has already established that every parsed node fits
+            // `StatementList.statement`, so creating the list here cannot be followed by a
+            // per-node rejection that would leave a stray empty list behind.
+            val occupant = requestedParent.getChildren(requestedLink).firstOrNull()
+            val list: SNode? = if (occupant != null) {
+                // An occupant that is not a StatementList means an inconsistent model we must not
+                // paper over: leave it, and fall through to the ordinary rejection below.
+                if (occupant.concept.isSubConceptOf(STATEMENT_LIST_CONCEPT)) occupant else null
+            } else {
+                SConceptOperations.createNewNode(STATEMENT_LIST_CONCEPT).also {
+                    requestedParent.addChild(requestedLink, it)
+                    createdStatementList = it
+                }
+            }
+            if (list != null) {
+                wrapWarning = statementListWrapWarning(
+                    parsedNodes.size, requestedLink.name, requestedParent.concept.name,
+                    created = createdStatementList != null
+                )
+                effectiveParent = list
+                effectiveLink = STATEMENT_LIST_STATEMENT_LINK
+            }
+        }
+        val parent = effectiveParent
+        val link = effectiveLink
 
         // Validate concept/role compatibility BEFORE mutating so a mismatch fails
         // cleanly without a partial insert.
         for (n in parsedNodes) {
             roleAssignabilityError(n, link, parent)?.let {
+                createdStatementList?.let { created -> SNodeOperations.deleteNode(created) }
                 return InsertOutcome.Err(errJson(it, McpErrorCode.INVALID_REQUEST))
             }
         }
@@ -409,6 +574,11 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             displaced?.let {
                 if (it.parent == null) parent.addChild(link, it)
             }
+            // D45: the StatementList wrapper is ours only when we created it, and by now it holds
+            // nothing the caller asked for — drop it so a failed insert leaves the role as it was.
+            createdStatementList?.let { created ->
+                if (created.parent != null) SNodeOperations.deleteNode(created)
+            }
         }
         // For a console target the import refresh is gated on importUsedLanguages, exactly like the
         // model-side imports in finalizeInsertedNodes — otherwise it would re-add the used languages
@@ -416,7 +586,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         val importWarning = if (console != null) {
             persistOrRefreshConsole(model, console, refreshImports = request.importUsedLanguages)
         } else null
-        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(importWarning))
+        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(wrapWarning, importWarning))
     }
 
     private fun insertAsReplace(
@@ -434,20 +604,6 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             is ConsoleAwareResolution.Err -> return InsertOutcome.Err(r.errJson)
         }
 
-        // Replace expects exactly one top-level node; multiple parsed nodes
-        // cannot be substituted into a single containment slot, so reject up
-        // front instead of silently dropping the trailing nodes.
-        if (parsedNodes.size > 1) {
-            return InsertOutcome.Err(errJson(
-                "Replace mode requires exactly one top-level parsed node, " +
-                        "but the input parsed into ${parsedNodes.size}. Use 'child' or " +
-                        "'root' mode for multi-node insertions, or supply a single " +
-                        "feature/expression here.",
-                McpErrorCode.INVALID_REQUEST
-            ))
-        }
-
-        val newNode = parsedNodes.first()
         val parent = targetNode.parent
             ?: return InsertOutcome.Err(errJson(
                 "Target node '$targetRefStr' is a root; root replacement not supported via 'replace' mode",
@@ -462,6 +618,36 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 "Target node '$targetRefStr' has no containment link",
                 McpErrorCode.INVALID_REQUEST
             ))
+
+        // D45: replacing a StatementList-typed slot (a method/function `body`, an `ifTrue`, ...)
+        // with parsed statements is the same mechanical two-step as in child mode, so wrap here
+        // too. The wrap must precede the single-node check below: several statements legitimately
+        // collapse into one StatementList, which is exactly one replacement node. Overwriting is
+        // what `replace` means, so — unlike child mode — nothing is reused or preserved.
+        val wrapApplies = statementListWrapApplies(parsedNodes, link)
+        if (!wrapApplies && parsedNodes.size > 1) {
+            // Replace expects exactly one top-level node; multiple parsed nodes
+            // cannot be substituted into a single containment slot, so reject up
+            // front instead of silently dropping the trailing nodes.
+            return InsertOutcome.Err(errJson(
+                "Replace mode requires exactly one top-level parsed node, " +
+                        "but the input parsed into ${parsedNodes.size}. Use 'child' or " +
+                        "'root' mode for multi-node insertions, or supply a single " +
+                        "feature/expression here.",
+                McpErrorCode.INVALID_REQUEST
+            ))
+        }
+
+        var wrapWarning: String? = null
+        val newNode = if (wrapApplies) {
+            wrapWarning = statementListReplaceWarning(parsedNodes.size, link.name, parent.concept.name)
+            when (val wrapped = newStatementListWrapping(parsedNodes)) {
+                is InsertOutcome.Ok -> wrapped.inserted.single()
+                is InsertOutcome.Err -> return wrapped
+            }
+        } else {
+            parsedNodes.first()
+        }
         // Validate concept/role compatibility BEFORE the swap so an incompatible
         // replacement cannot corrupt the AST.
         roleAssignabilityError(newNode, link, parent)?.let {
@@ -500,7 +686,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         val importWarning = if (console != null) {
             persistOrRefreshConsole(model, console, refreshImports = request.importUsedLanguages)
         } else null
-        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(importWarning))
+        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(wrapWarning, importWarning))
     }
 
     private fun insertAsConsoleCommand(
@@ -618,12 +804,30 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Parses Java code with the MPS `JavaParser` and inserts the result as MPS nodes — as project model root(s), as a child in a given role, as a replacement of an existing node, or into the current MPS Console input. `insert.mode:"console"` replaces the current console input command without executing it: `EXPRESSION` is wrapped as a `BLExpression`, and `STATEMENTS` as a `BLCommand` block. For `mode:"child"` or `mode:"replace"`, if the `parentRef`/`targetRef` resolves to a node inside the current MPS Console input command it is edited in place without saving; console history and stale console references are rejected; nodes outside the selected project are rejected. `CLASS_STUB` is rejected; root insertion always appends and rejects a `position` other than `-1`/absent; replace mode requires exactly one top-level parsed node; child insertion into a single-cardinality role overwrites the existing occupant (consistent with `mps_mcp_update_node`); into a multi-cardinality role a `position` past the child count is clamped to an append (not rejected) and each inserted node reports its actual `index`. `featureKind` `FIELD`/`METHOD`/`NESTED_CLASS` are all parsed as class members (the kind is advisory; what a node may be placed where is validated against the target role, not the kind). Unrecognized keys in `parameters` (including `dryRun`, which is not supported) are rejected. Java 8+ constructs the MPS parser recognizes are accepted and mapped to the corresponding BaseLanguage extension — most notably lambda expressions, which become `jetbrains.mps.baseLanguage.closures` closures (the closures language is auto-imported when `postProcess.importUsedLanguages` is on); like any closure, a lambda only type-checks against a matching functional-type target. Every success envelope carries a `problems` array (each entry has `severity`, `message`, node `reference`, `concept`) listing the type-system errors/warnings found within the inserted nodes — empty when the insert type-checks — so a successful insert never silently leaves the model in an ERROR state. See `mps-baselanguage/references/parse-java-tips.md` for the `parameters` JSON schema (`code`, `featureKind`, `insert.mode`, `postProcess`), the `problems` response field, and the per-mode required fields.
+        Parses Java code with the MPS `JavaParser` and inserts the result as MPS nodes — as project model root(s), as a child in a given role, as a replacement of an existing node, or into the current MPS Console input. `insert.mode:"console"` replaces the current console input command without executing it: `EXPRESSION` is wrapped as a `BLExpression`, and `STATEMENTS` as a `BLCommand` block. For `mode:"child"` or `mode:"replace"`, if the `parentRef`/`targetRef` resolves to a node inside the current MPS Console input command it is edited in place without saving; console history and stale console references are rejected; nodes outside the selected project are rejected. `CLASS_STUB` is rejected; root insertion always appends and rejects a `position` other than `-1`/absent; replace mode requires exactly one top-level parsed node; child insertion into a single-cardinality role overwrites the existing occupant (consistent with `mps_mcp_update_node`); into a multi-cardinality role a `position` past the child count is clamped to an append (not rejected) and each inserted node reports its actual `index`. Statements targeting a role that expects a `StatementList` (`body`, `ifTrue`, `statements`, ...) are **auto-wrapped**, so there is no need to insert a `StatementList` first and re-target its `statement` role: in `child` mode an existing `StatementList` in the role is reused and appended to (nothing already in the body is removed, and `position`/the reported `index` then refer to the position inside that list) and one is created only when the role is empty; in `replace` mode on a `StatementList` target the statements are wrapped into a new `StatementList` that replaces the old one (which is the one case where multi-node input is accepted in replace mode, since they collapse into a single node). Each wrap is reported in `warnings`. The wrap is gated on the parsed nodes being statements, not on `featureKind`, so an `EXPRESSION` into `body` is still rejected. `featureKind` `FIELD`/`METHOD`/`NESTED_CLASS` are all parsed as class members (the kind is advisory; what a node may be placed where is validated against the target role, not the kind). For `METHOD`/`CLASS_CONTENT`, `contextNodeRef` may instead be a `ConceptBehavior`: parsed methods convert to `ConceptMethodDeclaration` and belong in the `method` role. Unrecognized keys in `parameters` (including `dryRun`, which is not supported) are rejected. Java 8+ constructs the MPS parser recognizes are accepted and mapped to the corresponding BaseLanguage extension — most notably lambda expressions, which become `jetbrains.mps.baseLanguage.closures` closures (the closures language is auto-imported when `postProcess.importUsedLanguages` is on); like any closure, a lambda only type-checks against a matching functional-type target. Every success envelope carries a `problems` array (each entry has `severity`, `message`, node `reference`, `concept`) listing the type-system errors/warnings found within the inserted nodes — empty when the insert type-checks — so a successful insert never silently leaves the model in an ERROR state. See `mps-baselanguage/references/parse-java-tips.md` for the `parameters` JSON schema (`code`, `featureKind`, `insert.mode`, `postProcess`), the `problems` response field, and the per-mode required fields.
         """
     )
     suspend fun mps_mcp_parse_java_and_insert(
-        @McpDescription("JSON string with parameters, see the description above") parameters: String
-    ): String = withMpsProject("Parsing Java and inserting nodes") { mpsProject ->
+        @McpDescription("Required. Parameters as a JSON object — sent as real JSON or as its string form. See the description above.") parameters: JsonOrText = JsonOrText.EMPTY
+    ): String = rejectMissingParameters(
+        // D43: Kotlin-optional so that `code`/`featureKind`/`insert` sent at the top level, where
+        // the binder drops them, get a rejection saying they belong inside this object.
+        "mps_mcp_parse_java_and_insert",
+        RequiredParameter(
+            "parameters",
+            parameters.text,
+            "a JSON object holding `code`, `featureKind` and `insert` (plus `contextNodeRef` for a class-member " +
+                "featureKind, and optionally `recovery` and `postProcess`), which go inside it rather than at the top level",
+        ),
+    ) ?: mps_mcp_parse_java_and_insert(parameters.text)
+
+    /**
+     * Internal string-typed entry point for [mps_mcp_parse_java_and_insert]; the [JsonOrText]
+     * overload above is the registered `@McpTool`, so a client may send the `parameters` object
+     * either as real JSON or as its string form (see [JsonOrText]). Retained for in-process
+     * callers and tests, which have no wire shape to decode.
+     */
+    suspend fun mps_mcp_parse_java_and_insert(parameters: String): String = withMpsProject("Parsing Java and inserting nodes") { mpsProject ->
         val request = try {
             parseJavaParseInsertRequest(parameters)
         } catch (e: ToolInputJsonException) {
@@ -643,7 +847,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             )
         ) {
             is JavaParsePreparation.Ok -> preparation
-            is JavaParsePreparation.Err -> return@withMpsProject errJson(preparation.message)
+            is JavaParsePreparation.Err -> return@withMpsProject errJson(preparation.message, preparation.code)
         }
 
         // The insert + post-process runs under one write command. Validation failures return a

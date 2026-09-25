@@ -1,5 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
+import jetbrains.mps.agents.mcp.tools.common.*
+
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
@@ -73,15 +75,20 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Lists the intentions and quick-fixes available on an MPS node — the headless equivalent of the editor's Alt+Enter menu, so an agent can discover and then apply a context action without opening an editor. Returns a temp-file path whose JSON is an array of entries; each has `type` ("intention" | "quickFix"), `id` (pass to mps_mcp_apply_intention), `kind` (ERROR | QUICKFIX | MIGRATION | NORMAL), `description` (the row text), `targetNode` (the node the entry applies to — pass THIS as nodeReference to apply), and `declarationNode` (the IntentionDeclaration / QuickFix source node — inspect with mps_mcp_print_node). `parameterized` entries (intention only) need `description` on apply; `enabled: false` marks user-disabled intentions (intention only, omitted when enabled). quickFix entries also carry `problemMessage` and `autoApplicable`. `includeAncestors` (default true) mirrors the editor by also listing ancestor-node actions; `includeDisabled` lists disabled intentions; `includeQuickFixes` (default true) merges checker quick-fixes. Surround-with intentions are not listed. See mps-mcp-workflow/references/analysis-tools.md.
+        Lists the intentions and quick-fixes available on an MPS node — the headless equivalent of the editor's Alt+Enter menu, so an agent can discover and then apply a context action without opening an editor. `data` is a JSON array of entries, inline when the serialized array is <= `maxInlineBytes` (default 20000), otherwise a temp-file path; each entry has `type` ("intention" | "quickFix"), `id` (pass to mps_mcp_apply_intention), `kind` (ERROR | QUICKFIX | MIGRATION | NORMAL), `description` (the row text), `targetNode` (the node the entry applies to — pass THIS as nodeReference to apply), and `declarationNode` (the IntentionDeclaration / QuickFix source node — inspect with mps_mcp_print_node). `parameterized` entries (intention only) need `description` on apply; `enabled: false` marks user-disabled intentions (intention only, omitted when enabled). quickFix entries also carry `problemMessage` and `autoApplicable`. `includeAncestors` (default true) mirrors the editor by also listing ancestor-node actions; `includeDisabled` lists disabled intentions; `includeQuickFixes` (default true) merges checker quick-fixes. Surround-with intentions are not listed. See mps-mcp-workflow/references/analysis-tools.md.
     """
     )
     suspend fun mps_mcp_list_node_intentions(
-        @McpDescription("Persistent form of the SNodeReference to inspect") nodeReference: String,
+        @McpDescription("Required. Persistent form of the SNodeReference to inspect") nodeReference: String = "",
         @McpDescription("Also list intentions/quick-fixes of ancestor nodes, like the editor (default = true)") includeAncestors: Boolean = true,
         @McpDescription("Also list intentions the user has disabled (default = false)") includeDisabled: Boolean = false,
         @McpDescription("Merge checker quick-fixes for problems on this node/ancestors (default = true)") includeQuickFixes: Boolean = true,
+        @McpDescription("Inline the listing in `data` when it is at most this many characters; larger listings are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_list_node_intentions",
+            RequiredParameter("nodeReference", nodeReference, "the persistent reference of the node to inspect"),
+        )?.let { return it }
         return withMpsProject("Listing MPS node intentions") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
                 val repo = mpsProject.repository
@@ -96,7 +103,7 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
                 if (includeQuickFixes) {
                     collectQuickFixEntries(mpsProject, repo, node, root, includeAncestors, entries)
                 }
-                saveToTempFileResult(entries.toString())
+                finalizeResult(entries.toString(), maxInlineBytes)
             }
         }
     }
@@ -194,11 +201,16 @@ class JetBrainsMPSIntentionsMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_apply_intention(
-        @McpDescription("The entry's targetNode (intention/quick-fix listing) or the problem node's reference (check report)") nodeReference: String,
-        @McpDescription("The entry's id — an intention persistentStateKey or a quick-fix runtime-class FQN") intentionId: String,
+        @McpDescription("Required. The entry's targetNode (intention/quick-fix listing) or the problem node's reference (check report)") nodeReference: String = "",
+        @McpDescription("Required. The entry's id — an intention persistentStateKey or a quick-fix runtime-class FQN") intentionId: String = "",
         @McpDescription("Disambiguator; required when several instances share the id") description: String? = null,
         @McpDescription("Quick-fix only: pins the fix to a specific problem message on the node") problemMessage: String? = null,
     ): String {
+        rejectMissingParameters(
+            "mps_mcp_apply_intention",
+            RequiredParameter("nodeReference", nodeReference, "the entry's targetNode or the problem node's reference"),
+            RequiredParameter("intentionId", intentionId, "the entry's id (intention persistentStateKey or quick-fix runtime-class FQN)"),
+        )?.let { return it }
         return withMpsProject("Applying MPS intention/quick fix") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository

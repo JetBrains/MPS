@@ -124,6 +124,8 @@
         <fileset file="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-project-check.jar" />
         <fileset file="${artifacts.IDEA}/plugins/mcpserver/lib/mcpserver.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.serialization.json.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.serialization.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-client.jar" />

@@ -90,6 +90,26 @@ Paste-able JSON blueprints for the constructs that appear most often when author
 }
 ```
 
+## Array with Initializer (`new String[]{"a", "b"}`)
+
+`componentType` is the element type (`StringType`), not an `ArrayType`. Like every creator, `ArrayCreatorWithInitializer` is not an `Expression` and fails assignability unless wrapped.
+
+```json
+{
+  "concept": "jetbrains.mps.baseLanguage.structure.GenericNewExpression",
+  "children": [{ "role": "creator", "nodes": [{
+    "concept": "jetbrains.mps.baseLanguage.structure.ArrayCreatorWithInitializer",
+    "children": [
+      { "role": "componentType", "nodes": [{ "concept": "jetbrains.mps.baseLanguage.structure.StringType" }] },
+      { "role": "initValue", "nodes": [
+        { "concept": "jetbrains.mps.baseLanguage.structure.StringLiteral", "properties": [{ "name": "value", "value": "a" }] },
+        { "concept": "jetbrains.mps.baseLanguage.structure.StringLiteral", "properties": [{ "name": "value", "value": "b" }] }
+      ]}
+    ]
+  }]}]
+}
+```
+
 ## Super Constructor Call (`super("Title")`)
 
 ```json

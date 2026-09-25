@@ -6,6 +6,10 @@ type: reference
 
 # MPS Editor — Technical Reference
 
+## Loading companion skills
+
+Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
+
 The `jetbrains.mps.lang.editor` language defines projectional editors as trees of **cell models** (display elements) with **cell layouts** and **style items**. This skill is the technical lookup: concept names, suffixes, style classes, and the rules that decide which cell model to use where.
 
 ## Critical Directives
@@ -21,7 +25,7 @@ The `jetbrains.mps.lang.editor` language defines projectional editors as trees o
 
 ## Common Workflow
 
-0. **Check whether the editor model already exists — it almost always does.** `editor` is one of a language's default aspects (alongside `structure`, `constraints`, `behavior`, `typesystem`), so any non-trivial language already has it. Confirm with `mps_mcp_get_project_structure` (it lists the module's models) before doing anything else. Only when a brand-new language genuinely has no editor model do you create one — with `mps_mcp_create_model` and `modelName: "<lang>.editor"` (aspect ID `editor`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](../mps-mcp-workflow/references/aspect-model-stereotypes.md)). Action maps, keymaps, transformation/substitute menus live in the **same** `editor` model — there is no separate aspect ID for them.
+0. **Check whether the editor model already exists — it almost always does.** `editor` is one of a language's default aspects (alongside `structure`, `constraints`, `behavior`, `typesystem`), so any non-trivial language already has it. Confirm with `mps_mcp_get_project_structure` (it lists the module's models) before doing anything else. Only when a brand-new language genuinely has no editor model do you create one — with `mps_mcp_create_model` with `moduleName: "<lang>"` and `modelName: "<lang>.editor"` (aspect ID `editor`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Action maps, keymaps, transformation/substitute menus live in the **same** `editor` model — there is no separate aspect ID for them.
 1. **Scaffold first** — `mps_mcp_scaffold_editor` builds a default editor that wires properties/children/references to sensible cell models.
 2. **Componentize** reusable cell groups into an `EditorComponentDeclaration` and embed them with `CellModel_Component` — see `references/editor-components.md` for the manual and `mps_mcp_scaffold_editor` (`type="component"`, `includeComponents`, `detectComponents`) paths.
 3. **Refine cell choice and layout** using the catalog below.
@@ -35,7 +39,7 @@ A `ConceptEditorDeclaration` holds **two** editor sections:
 - **Node cell layout** — the `cellModel` child (cardinality `1`). The main editor, shown inline in the document where the node appears.
 - **Inspected cell layout** — the `inspectedCellModel` child (cardinality `0..1`). A *secondary* definition shown in the **Inspector** tool window when the caret is on this node in the main editor. Typically used for less-important or less-frequently read/modified properties so they stay out of the main layout.
 
-Both roles accept any `EditorCellModel` and are built the same way (collections, property cells, ref cells, …). The inspected section is optional — omit `inspectedCellModel` when everything belongs in the main editor. See the *Concept Editor with an Inspected Cell Layout* pattern in `references/editor-patterns.md`.
+Both roles accept any `EditorCellModel` and are built the same way (collections, property cells, ref cells, …). The inspected section is optional — omit `inspectedCellModel` when everything belongs in the main editor. See `references/editor-patterns/inspected-cell-layout.md`.
 
 ## Related Skills
 
@@ -44,6 +48,8 @@ Both roles accept any `EditorCellModel` and are built the same way (collections,
 - **`mps-language-aspects-overview`** — for the broader authoring order around editors.
 
 ## Reference Index
+
+**Start here — most common case**: laying out cells for one concept → read only `references/cell-models.md`; a known layout shape (child on its own line, indented block, vertical list) → only `references/editor-patterns.md`; a style item's accepted literals → only `references/stylesheet-values.md`.
 
 - Open `references/cell-models.md` for the catalog of cell-model concepts (`ConceptEditorDeclaration`, `EditorComponentDeclaration`, `CellModel_Collection`, `CellModel_Constant`, `CellModel_Property`, `CellModel_ReadOnlyModelAccessor`, `CellModel_RefNode`, `CellModel_RefNodeList`, `CellModel_RefCell`, `CellModel_Component`, `InlineEditorComponent`) with their suffixes and purpose.
 - Open `references/indent-layout-styles.md` for the style-item catalog (`IndentLayoutOnNewLineStyleClassItem`, `IndentLayoutIndentStyleClassItem`, `IndentLayoutNewLineChildrenStyleClassItem`, `SelectableStyleSheetItem`) used inside `CellLayout_Indent`.

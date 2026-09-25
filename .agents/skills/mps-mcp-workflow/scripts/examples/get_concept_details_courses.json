@@ -1,0 +1,650 @@
+{
+  "ok": true,
+  "data": [
+    {
+      "name": "Curriculum",
+      "qualifiedName": "com.example.courses.structure.Curriculum",
+      "conceptAlias": "curriculum",
+      "shortDescription": "A named collection of course references",
+      "doc": "Groups existing Course roots into a titled collection without containing them.",
+      "deprecated": "false",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359703:com.example.courses.structure.Curriculum",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [
+        "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+      ],
+      "superInterfaceDetails": [
+        {
+          "name": "INamedConcept",
+          "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+        }
+      ],
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359703",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": true,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "courses",
+          "targetConcept": "com.example.courses.structure.CourseRef",
+          "cardinality": "0..n",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359703/2518891257435359717",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359717",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "com.example.courses.structure.Curriculum",
+        "properties": [
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          },
+          {
+            "name": "name",
+            "value": "Curriculum"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "courses",
+            "nodes": [
+              "/* Instances of com.example.courses.structure.CourseRef or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Resource",
+      "qualifiedName": "com.example.courses.structure.Resource",
+      "conceptAlias": "resource",
+      "shortDescription": "A single learning resource, delivered in a given format",
+      "doc": "A named resource that course lessons can refer to. The format says how this resource is delivered.",
+      "deprecated": "false",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693:com.example.courses.structure.Resource",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [
+        "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+      ],
+      "superInterfaceDetails": [
+        {
+          "name": "INamedConcept",
+          "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+        }
+      ],
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359693",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": true,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "format",
+          "type": "Format",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359693/2518891257435359705",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359705",
+          "doc": "",
+          "deprecated": "false",
+          "enumerationValues": [
+            "PDF",
+            "AUDIO",
+            "SCORE"
+          ],
+          "enumerationDefault": "PDF"
+        },
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "com.example.courses.structure.Resource",
+        "properties": [
+          {
+            "name": "format",
+            "value": "PDF"
+          },
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          },
+          {
+            "name": "name",
+            "value": "Resource"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "ResourceRef",
+      "qualifiedName": "com.example.courses.structure.ResourceRef",
+      "conceptAlias": "",
+      "shortDescription": "Use of a resource inside a lesson",
+      "doc": "Smart reference wrapper that lets a Lesson point at a Resource root node.",
+      "deprecated": "false",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695:com.example.courses.structure.ResourceRef",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [],
+      "superInterfaceDetails": [],
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359695",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": false,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        }
+      ],
+      "references": [
+        {
+          "name": "resource",
+          "targetConcept": "com.example.courses.structure.Resource",
+          "cardinality": "1",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359695/2518891257435359707",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359707",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "children": [
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "com.example.courses.structure.ResourceRef",
+        "properties": [
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          }
+        ],
+        "references": [
+          {
+            "role": "resource",
+            "target": "/* Reference to com.example.courses.structure.Resource */"
+          }
+        ],
+        "children": [
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Course",
+      "qualifiedName": "com.example.courses.structure.Course",
+      "conceptAlias": "course",
+      "shortDescription": "A course: credits, level and an ordered list of lessons",
+      "doc": "Root concept of the courses language. Has at least one lesson, and may point at related courses via prerequisites.",
+      "deprecated": "false",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701:com.example.courses.structure.Course",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [
+        "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+      ],
+      "superInterfaceDetails": [
+        {
+          "name": "INamedConcept",
+          "reference": "i:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468:jetbrains.mps.lang.core.structure.INamedConcept"
+        }
+      ],
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359701",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": true,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "credits",
+          "type": "integer",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359712",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359712",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "level",
+          "type": "Level",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359713",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359713",
+          "doc": "",
+          "deprecated": "false",
+          "enumerationValues": [
+            "INTRO",
+            "CORE",
+            "ADVANCED"
+          ],
+          "enumerationDefault": "INTRO"
+        },
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1169194658468/1169194664001",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1169194664001",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "lessons",
+          "targetConcept": "com.example.courses.structure.Lesson",
+          "cardinality": "1..n",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359714",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359714",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "prerequisites",
+          "targetConcept": "com.example.courses.structure.CourseRef",
+          "cardinality": "0..n",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359701/2518891257435359715",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359715",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "com.example.courses.structure.Course",
+        "properties": [
+          {
+            "name": "credits",
+            "value": "1"
+          },
+          {
+            "name": "level",
+            "value": "INTRO"
+          },
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          },
+          {
+            "name": "name",
+            "value": "Course"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "lessons",
+            "nodes": [
+              "/* Instances of com.example.courses.structure.Lesson or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "prerequisites",
+            "nodes": [
+              "/* Instances of com.example.courses.structure.CourseRef or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "CourseRef",
+      "qualifiedName": "com.example.courses.structure.CourseRef",
+      "conceptAlias": "",
+      "shortDescription": "Reference to a course",
+      "doc": "Smart reference wrapper used by Course.prerequisites and Curriculum.courses to point at a Course root node.",
+      "deprecated": "false",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699:com.example.courses.structure.CourseRef",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [],
+      "superInterfaceDetails": [],
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359699",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": false,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        }
+      ],
+      "references": [
+        {
+          "name": "course",
+          "targetConcept": "com.example.courses.structure.Course",
+          "cardinality": "1",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359699/2518891257435359711",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359711",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "children": [
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "com.example.courses.structure.CourseRef",
+        "properties": [
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          }
+        ],
+        "references": [
+          {
+            "role": "course",
+            "target": "/* Reference to com.example.courses.structure.Course */"
+          }
+        ],
+        "children": [
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "Lesson",
+      "qualifiedName": "com.example.courses.structure.Lesson",
+      "conceptAlias": "lesson",
+      "shortDescription": "One lesson of a course, with a duration in minutes",
+      "doc": "A single instruction of a course. minutes is the time the lesson takes; uses lists the resources it consumes.",
+      "deprecated": "false",
+      "conceptReference": "c:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697:com.example.courses.structure.Lesson",
+      "languageReference": "l:7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2:com.example.courses",
+      "superConcept": "c:ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626:jetbrains.mps.lang.core.structure.BaseConcept",
+      "superInterfaces": [],
+      "superInterfaceDetails": [],
+      "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359697",
+      "isAbstract": false,
+      "isInterfaceConcept": false,
+      "isRootable": false,
+      "virtualFolder": "",
+      "present": true,
+      "properties": [
+        {
+          "name": "title",
+          "type": "string",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697/2518891257435359708",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359708",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "minutes",
+          "type": "integer",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697/2518891257435359709",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359709",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "shortDescription",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1156234966388",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1156234966388",
+          "doc": "",
+          "deprecated": "true: since 3.5: This property should not be used. Override ISmartReferent#getDescriptionText(context) to customize description text "
+        },
+        {
+          "name": "virtualPackage",
+          "type": "string",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/1193676396447",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1193676396447",
+          "doc": "makes sense only for root nodes",
+          "deprecated": "false"
+        }
+      ],
+      "references": [],
+      "children": [
+        {
+          "name": "uses",
+          "targetConcept": "com.example.courses.structure.ResourceRef",
+          "cardinality": "0..n",
+          "featureId": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2/2518891257435359697/2518891257435359710",
+          "sourceNode": "r:5e1d8a24-7f60-4c93-a0b5-d2874ef61c39(com.example.courses.structure)/2518891257435359710",
+          "doc": "",
+          "deprecated": "false"
+        },
+        {
+          "name": "smodelAttribute",
+          "targetConcept": "jetbrains.mps.lang.core.structure.Attribute",
+          "cardinality": "0..n",
+          "featureId": "ceab5195-25ea-4f22-9b92-103b95ca8c0c/1133920641626/5169995583184591170",
+          "sourceNode": "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/5169995583184591170",
+          "doc": "",
+          "deprecated": "false"
+        }
+      ],
+      "sampleNode": {
+        "concept": "com.example.courses.structure.Lesson",
+        "properties": [
+          {
+            "name": "title",
+            "value": "example"
+          },
+          {
+            "name": "minutes",
+            "value": "1"
+          },
+          {
+            "name": "shortDescription",
+            "value": "example"
+          },
+          {
+            "name": "virtualPackage",
+            "value": "example"
+          }
+        ],
+        "references": [],
+        "children": [
+          {
+            "role": "uses",
+            "nodes": [
+              "/* Instances of com.example.courses.structure.ResourceRef or its sub-concepts are expected here */"
+            ]
+          },
+          {
+            "role": "smodelAttribute",
+            "nodes": [
+              "/* Instances of jetbrains.mps.lang.core.structure.Attribute or its sub-concepts are expected here */"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

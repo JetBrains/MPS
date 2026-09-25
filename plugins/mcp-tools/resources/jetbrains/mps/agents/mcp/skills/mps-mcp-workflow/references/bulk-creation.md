@@ -7,6 +7,21 @@
 - Include the IDs of these nodes in the JSON blueprint wherever they fit the role of target nodes.
 - For nodes that are created as part of the same bulk operation, you can use their **name** as a placeholder in the `target` field. The tool will automatically resolve these "local" references once all nodes are created.
 - If automatic resolution is not possible or desired, leave the target references empty and set them later with `mps_mcp_update_node` (`SET`/`REFERENCE`) once you have discovered the IDs of the newly created nodes.
+- **A `dryRun: true` call cannot see those names.** It does not attach the batch, so it warns "target '<name>' did not resolve" once for every reference to a node of the same batch, and the real insert then resolves them. Those warnings are expected, not errors. For a batch whose references point at each other, skip the dry run and read `fixReferences.stillBroken` after the real insert.
+
+### From a table (CSV or JSON rows)
+
+When the roots come from a table (one root per row, columns for properties, list columns for children or references), do not write your own converter. Load the `mps-node-editing` companion skill from the same origin and run its `scripts/table_to_bulk_insert.py`. It turns the table and a small JSON mapping spec into the top-level array, written to a file under the system temp directory. After the insert, the same script with `--verify <dumpFile>` compares a `mps_mcp_get_project_structure(startingPoint=<model>, includeNodes=true, nodeDepth=1)` dump against the table, row by row. Its usage block in that skill's `SKILL.md` (section "Scripts") is the contract.
+
+From 10 roots up, a bulk insert answers with the summary `{inserted: N, roots: [{name, reference, concept}], fixReferences: {fixed, repointed, stillBroken}}` instead of one full node envelope per root (the full form used to be larger than the blueprint it answered); check `fixReferences.stillBroken` for unresolved references and pass `responseDetail="full"` only when the per-root `conceptDoc`/model/module fields are actually needed.
+
+After a bulk insert, validate with one `mps_mcp_check_root_node_problems` on the **model** reference (optionally `perRoot=true`) instead of one call per inserted root — the model scope checks every root and reports `details.rootsChecked`.
+
+### Array vs. object — the one asymmetry
+
+- `mps_mcp_insert_root_node_from_json` (`json`) accepts **a single object or a top-level array**.
+- `mps_mcp_update_node` (`childJson`, `ADD`/`SET` × `CHILD`) accepts **a single object only**. A top-level array is rejected with `Expected JsonObject but was JsonArray`.
+- To add N children to an existing parent: call `ADD`/`CHILD` N times, or — when the parent is being created anyway — put all N inside the parent blueprint's `children[].nodes` array and insert the parent once.
 
 ## Print-Shallow-Then-Add-Children Workflow
 
@@ -20,3 +35,19 @@ The pattern is:
 4. Repeat the print-shallow step on any newly inserted child to drill further down — every staged call returns its own node ref.
 
 Use this pattern whenever you would otherwise paste a node ref you have not yet seen, when the subtree might exceed the JSON size limit, or when intermediate validation (`mps_mcp_check_root_node_problems`) between layers helps localise errors.
+
+## File inputs must live in the system temp directory
+
+Every parameter that accepts *either* inline JSON *or* a path (`childJson`, `json`, `conceptsJson`, …) resolves the path against the **JVM system temp directory** (`java.io.tmpdir`) and rejects anything outside it:
+
+```
+Input file path '/Users/me/blueprint.json' is not inside the system temp directory.
+```
+
+- macOS/Linux: write under `$TMPDIR` (on macOS a per-user `/var/folders/...` directory). On macOS, `/tmp` and `/private/tmp` are also accepted.
+- Windows: write under `%TEMP%`.
+- A leading `$TMPDIR`, `${TMPDIR}`, or `%TEMP%` in the path is expanded by the server.
+- Shell: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` then pass `$f` (or the unexpanded `$TMPDIR/...` form).
+- Writing the file with an agent file-writing tool (e.g. `Write`) works too — write under `$TMPDIR`, or `/tmp` on macOS.
+- The path must be absolute; files this toolset created itself may be deleted after reading, ordinary input files are never deleted.
+

@@ -1,0 +1,84 @@
+# S5 fixture build log — `recipes-broken.tar.gz` (round 6, 2026-09-21)
+
+Built by the observer from `fixtures-r6/recipes-full.tar.gz` (the round-1 S1-opus-1 project with the
+agent doc surface stripped and the S1 sample roots **kept** — see the note on fixture naming below),
+opened in MPS as `~/MPSProjects/mcp-study/proj-r6/S5-sonnet-1`, edited only through
+`scripts/mcp_call.py` → MPS MCP. Final state: **12 errors + 1 warning over 17 roots**, verified with
+`mps_mcp_check_root_node_problems(nodeReference=<samples model>, perRoot=true)`.
+
+Model: `r:38cfdf05-3b6a-4864-b1ba-70dca7ae70da(mcp.study.kitchen.samples)` (node ids below are
+relative to it unless stated otherwise).
+
+## Step 0 — extra roots
+
+The stock fixture holds only 3 Recipes / 3 Ingredients / 1 Cookbook, too few to carry 12 one-per-node
+injections while keeping a fully valid Recipe, Ingredient and Cookbook as controls. One
+`mps_mcp_insert_root_node_from_json` call (top-level array, 11 roots) added:
+
+| root | id | purpose |
+|---|---|---|
+| Ingredient `Butter` | 7418977324270787552 | dangling-ref target, deleted in step 2 |
+| Ingredient `Salt` | 7418977324270787553 | carrier for P10b |
+| Recipe `Tortilla` | 7418977324270787554 | dangling-ref target, deleted in step 2 |
+| Recipe `Porridge` | 7418977324270787557 | carrier for P5 |
+| Recipe `Risotto` | 7418977324270787560 | carrier for P8 |
+| Recipe `Soup` | 7418977324270787563 | carrier for P7 |
+| Recipe `Toast` | 7418977324270787566 | carrier for P11b |
+| Recipe `Gratin` | 7418977324270787569 | carrier for P4 |
+| Recipe `Salad` | 7418977324270787572 | **clean control** |
+| Cookbook `Weekend Baking` | 7418977324270787575 | **clean control** |
+| Cookbook `Empty Shelf` | 7418977324270787577 | carrier for P6b |
+
+`Flour` / `Milk` / `Egg` (stock) are the clean Ingredient controls. Baseline after step 0:
+0 errors, 0 warnings on all 16 roots.
+
+## Step 1–3 — the twelve injections as built
+
+| # | Family | Injection actually applied | Node | Checker message (verified) |
+|---|---|---|---|---|
+| P1 | dangling ref | `ADD CHILD` Crepes.`seeAlso` += RecipeRef→Tortilla, then Tortilla deleted | Crepes 12157282221949753 | `Unresolved reference: Tortilla` |
+| P2 | dangling ref | `ADD CHILD` Pancakes.steps[0].`uses` += IngredientRef→Butter, then Butter deleted | Step 12157282221949765 | `Unresolved reference: Butter` |
+| P3 | dangling ref | `ADD CHILD` Weeknight Basics.`recipes` += RecipeRef→Tortilla (same deleted target) | Cookbook 12157282221949781 | `Unresolved reference: Tortilla` |
+| P4 | dangling ref | `ADD CHILD` Gratin.`seeAlso` += RecipeRef→**Gratin itself** | Gratin 7418977324270787569 | `The reference  Gratin (recipe) is out of search scope` |
+| P5 | missing child | `SET CHILD` with `childJson` omitted → deleted Porridge's only Step (`steps` is 1..n) | Porridge 7418977324270787557 | `No child in the obligatory role 'steps'` |
+| P6b | missing child | `ADD CHILD` Empty Shelf.`recipes` += RecipeRef with **no** `recipe` target | Empty Shelf 7418977324270787577 | `No reference in the obligatory role 'recipe'` |
+| P7 | bad property | `SET PROPERTY` Soup.`servings` = `0` | Soup 7418977324270787563 | `Property constraint violation for the property "servings"` |
+| P8 | bad property | `SET PROPERTY` Risotto.`servings` = `-3` | Risotto 7418977324270787560 | `Property constraint violation for the property "servings"` |
+| P9 | bad property | `SET PROPERTY` Omelette.steps[0].`minutes` = `0` | Step 12157282221949774 | `Warning: Step takes no time - is the duration missing?` (**warning**, by design) |
+| P10b | bad property | `SET PROPERTY` Salt.`unit` = `TABLESPOON` (not a `Unit` literal) | Salt 7418977324270787553 | `Property constraint violation for the property "unit"` |
+| P11b | bad property | `SET PROPERTY` Toast.`servings` = `many` (not an integer) | Toast 7418977324270787566 | `Property constraint violation for the property "servings"` **and** `Property value is invalid` (2 errors) |
+| P12 | dangling ref | new model `mcp.study.kitchen.extra` + Ingredient `Saffron`; imported into samples; new Recipe `Curry` whose step `uses`→Saffron; import then **removed** | Curry 7418977324270787583 | `The reference  Saffron (ingredient) is out of search scope` |
+
+Totals: 12 errors (Toast contributes 2, Omelette contributes the warning instead of an error),
+1 warning, 17 roots.
+
+## PROBLEMS.md's two open questions — both resolved against the live checker
+
+- **P4 (self-reference).** PROBLEMS.md warned the self-reference rule is a referent *scope* and might
+  produce no error when set through MCP. It **does** error: the scope is enforced as a checker rule,
+  reported as `out of search scope`. No fallback needed.
+- **P7 (`servings = 0`).** PROBLEMS.md warned the `servings >= 1` validator might be silent when the
+  value is set through MCP. It **does** error (`Property constraint violation`). No fallback needed.
+
+## Three designed injections are silent and were replaced
+
+Verified by injecting them, observing `errors=0`, and then reverting:
+
+| designed | outcome | replacement |
+|---|---|---|
+| P6 — Cookbook with no recipes | **silent**: `Cookbook.recipes` is `0..n`, so an empty cookbook is legal (PROBLEMS.md anticipated this) | P6b — RecipeRef with an unset obligatory `recipe` reference |
+| P10 — Ingredient with empty `name` | **silent**: a blank `INamedConcept.name` is not reported by any checker in this language | P10b — invalid `Unit` enum literal |
+| P11 — Recipe with empty `name` | **silent**: same | P11b — non-integer `servings` |
+
+The blank names were **restored** to `Salt` and `Toast` after the replacements landed, so every node
+carries exactly one injected problem (PROBLEMS.md's "do not touch more than one thing per node").
+That a blank name and an empty `0..n` collection produce no checker output is a finding in its own
+right and is recorded in the round-6 report.
+
+## Fixture naming note
+
+The fixture table in `../../fixtures/README.md` says the `recipes` fixture is tarred **with the S1
+sample Recipe and Cookbook roots deleted**. That rule exists for S3 only (its prompt demands
+"exactly 40 Recipe roots plus the Cookbook"). S5 and S6 both need Recipe roots to exist, so round 6
+introduced `recipes-full.tar.gz` — the same passing-S1 project with the samples **kept** — and built
+`recipes-broken.tar.gz` on top of it. See the docs defect logged for the README.

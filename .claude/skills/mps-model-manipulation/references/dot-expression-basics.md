@@ -73,6 +73,8 @@ See "`node as C` vs `node:C`" below for the full `SNodeTypeCastExpression` bluep
 
 For list cardinality (`0..n` or `1..n`), use `jetbrains.mps.lang.smodel.structure.SLinkListAccess` instead — same shape, different concept. This holds whether the role is a reference link or a containment child: `SLinkAccess`/`SLinkListAccess` serve both.
 
+The `<…Declaration-noderef>` target is the feature's `sourceNode` from `mps_mcp_get_concept_details`, never the concept's own ref; inherited features (`name`) live in the declaring concept's model.
+
 ### `node.parent` — direct parent (no concept filtering)
 
 ```json
