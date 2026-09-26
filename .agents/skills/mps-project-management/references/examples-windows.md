@@ -112,6 +112,6 @@ PowerShell:
 
 ```powershell
 (Get-CimInstance Win32_Process -Filter "ProcessId=$pid").CommandLine
-# from sources:  -Didea.paths.selector=MPSSRC2026.1
+# from sources:  -Didea.paths.selector=MPSSRC2026.2
 # standalone:    -Didea.paths.selector=MPS2024.3
 ```

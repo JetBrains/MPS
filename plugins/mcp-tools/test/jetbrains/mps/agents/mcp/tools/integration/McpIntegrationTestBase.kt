@@ -9,6 +9,7 @@ import com.google.gson.JsonParser
 import com.intellij.mcpserver.ClientInfo
 import com.intellij.mcpserver.McpCallAdditionalDataElement
 import com.intellij.mcpserver.McpCallInfo
+import com.intellij.mcpserver.McpProjectPathCustomizer
 import com.intellij.mcpserver.McpToolCategory
 import com.intellij.mcpserver.McpToolDescriptor
 import com.intellij.mcpserver.McpToolFilter
@@ -20,6 +21,7 @@ import com.intellij.mcpserver.impl.util.CallableBridge
 import com.intellij.mcpserver.impl.util.asTools
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.extensions.ExtensionPoint
 import com.intellij.openapi.project.DumbService
 import com.intellij.testFramework.IndexingTestUtil
 import jetbrains.mps.ide.ModuleInProjectTest
@@ -158,9 +160,20 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         return runBlocking(element) { bridge.call(JsonObject(args)).result } as String
     }
 
-    /** The input schema the MCP host publishes for [toolName], as generated from its Kotlin signature. */
-    protected fun publishedInputSchema(toolset: McpToolset, toolName: String): McpToolSchema =
-        toolset.asTools().single { it.descriptor.name == toolName }.descriptor.inputSchema
+    /**
+     * The input schema the MCP host publishes for [toolName], as generated from its Kotlin signature.
+     *
+     * Schema generation reads [McpProjectPathCustomizer.EP], which the mcpServer plugin declares. The
+     * test application does not load that plugin, so the extension point is registered here, empty,
+     * which yields the schema the host publishes when no customizer is installed.
+     */
+    protected fun publishedInputSchema(toolset: McpToolset, toolName: String): McpToolSchema {
+        val area = ApplicationManager.getApplication().extensionArea
+        if (!area.hasExtensionPoint(McpProjectPathCustomizer.EP)) {
+            area.registerExtensionPoint(McpProjectPathCustomizer.EP.name, McpProjectPathCustomizer::class.java.name, ExtensionPoint.Kind.INTERFACE, true)
+        }
+        return toolset.asTools().single { it.descriptor.name == toolName }.descriptor.inputSchema
+    }
 
     protected fun structureRoots(): List<SNode> =
         myProject.modelAccess.computeReadAction<List<SNode>> { structureModel.rootNodes.toList() }

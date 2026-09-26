@@ -56,7 +56,7 @@ See `references/create-empty-project.md` for file templates and instructions.
 
 `scripts/new_project_migration_xml.py` — builds the `.mps/migration.xml` of a new empty project from
 the MPS that will open it (install directory, macOS `.app`, or source checkout), offline: no running
-MPS and no existing project to copy from. Needed for every MPS other than 2026.1, whose file
+MPS and no existing project to copy from. Needed for every MPS other than 2026.2, whose file
 `references/create-empty-project.md` gives verbatim.
 
 ```
@@ -79,4 +79,4 @@ baseline 253 from MPS-253.29346.537 (/Applications/MPS 2025.3.app/Contents/Resou
 - Open `references/open-via-cli.md` for the activation protocol (what to keep, what to strip, success criteria).
 - Open `references/examples-macos.md`, `references/examples-linux.md`, or `references/examples-windows.md` for copy-paste commands.
 - Open `references/create-empty-project.md` for file templates and instructions on creating a new empty MPS project.
-- Open `references/derive-migration-xml.md` when that project will be opened by an MPS other than 2026.1, to generate `.mps/migration.xml` for that release.
+- Open `references/derive-migration-xml.md` when that project will be opened by an MPS other than 2026.2, to generate `.mps/migration.xml` for that release.

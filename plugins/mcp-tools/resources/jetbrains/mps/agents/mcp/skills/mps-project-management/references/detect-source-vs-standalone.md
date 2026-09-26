@@ -19,8 +19,8 @@ From the command line, take `-Didea.paths.selector=...`. Prefer `jcmd <pid> VM.c
 
 | Selector shape | Typical meaning |
 |----------------|-----------------|
-| `MPSSRC<year>.<minor>` e.g. `MPSSRC2026.1` | MPS **from sources** (IDEA run config `MPS`) |
-| `MPSSRC<year>.<minor>.SECOND` e.g. `MPSSRC2026.1.SECOND` | From-sources **second instance** — will **not** activate the first |
+| `MPSSRC<year>.<minor>` e.g. `MPSSRC2026.2` | MPS **from sources** (IDEA run config `MPS`) |
+| `MPSSRC<year>.<minor>.SECOND` e.g. `MPSSRC2026.2.SECOND` | From-sources **second instance** — will **not** activate the first |
 | `MPS<year>.<minor>` e.g. `MPS2024.3` | **Standalone** install (matches `product-info.json` `dataDirectoryName`) |
 
 Also note `-Didea.config.path` / `-Didea.system.path` if present. Activation must reuse them.

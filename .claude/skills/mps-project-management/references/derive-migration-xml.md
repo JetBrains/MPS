@@ -1,6 +1,6 @@
 # Deriving `.mps/migration.xml` for a new project
 
-Read this when the MPS that will open the new project is **not** a 2026.1 build: `references/create-empty-project.md` carries a ready-made file for those, and this is how to produce one for any other release. Nothing here needs a running MPS or an existing project to copy from.
+Read this when the MPS that will open the new project is **not** a 2026.2 build: `references/create-empty-project.md` carries a ready-made file for those, and this is how to produce one for any other release. Nothing here needs a running MPS or an existing project to copy from.
 
 ## Why the file must exist
 

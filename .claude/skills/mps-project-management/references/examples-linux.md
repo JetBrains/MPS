@@ -97,6 +97,6 @@ Optional cold-start flag (not needed for activation):
 
 ```bash
 tr '\0' '\n' < /proc/$PID/cmdline | grep idea.paths.selector
-# from sources:  -Didea.paths.selector=MPSSRC2026.1
+# from sources:  -Didea.paths.selector=MPSSRC2026.2
 # standalone:    -Didea.paths.selector=MPS2024.3
 ```

@@ -105,6 +105,6 @@ Toolbox: use the exact `Contents/MacOS/mps` from the running process. `open -a M
 
 ```bash
 ps -ww -p "$PID" -o args= | tr ' ' '\n' | grep idea.paths.selector
-# from sources:  -Didea.paths.selector=MPSSRC2026.1
+# from sources:  -Didea.paths.selector=MPSSRC2026.2
 # standalone:    -Didea.paths.selector=MPS2024.3
 ```
