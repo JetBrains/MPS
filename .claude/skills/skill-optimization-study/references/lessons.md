@@ -217,3 +217,22 @@
     put it where the step or the call happens: in the numbered step list, the tool description or
     the skill section the agent is already in. A note is not enough, and a far-away reference is
     not enough either.
+
+## From round 17 (2026-09-26, S1+S2+S3 × opus+sonnet, first round on the 262 platform)
+
+39. **The MCP port belongs to the IDE selector, not to the study.** On 262 the from-sources MPS runs
+    under the selector `MPSSRC2026.2`, whose `options/mcpServer.xml` pins `mcpServerPort = 64344`, while
+    `mcp.study.json` and every script default still said 64343. Preflight reported "unreachable" with
+    MPS up. → Read the port off the live launcher (`lsof -nP -iTCP -sTCP:LISTEN -a -p <pid>`) before
+    the first call, and pass `MPS_MCP_URL` to everything. `run_worker.sh` hard-codes
+    `$STUDY/mcp.study.json`, so until A3 is fixed, run from a `STUDY` mirror (symlinked `scripts/`,
+    `scenarios/`, `fixtures/`, `mcp-junie/` plus an edited `mcp.study.json`) instead of editing the
+    tracked file or the IDE setting.
+40. **Two cells on one fixture share its language runtime.** `isolationLevel: per-round` assumed that
+    closing a project unloads everything it deployed. In round 17, S2-sonnet opened a fresh statechart
+    copy and `get_concept_details` answered with the `guard` role S2-opus had added and compiled in the
+    previous cell (defect D80), which cost the worker about 7 turns of investigation, `reload_all` and
+    MAKE. → Treat cells that share a fixture module id as not independent: restart MPS between them
+    (`mps_control.sh restart` + SMOKE) or order the round so a scenario's second model runs after an
+    MPS restart, and check the first `get_concept_details` of such a cell for features the fixture
+    does not have.
