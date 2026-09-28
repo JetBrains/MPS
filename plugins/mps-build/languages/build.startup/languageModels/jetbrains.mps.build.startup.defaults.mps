@@ -1083,9 +1083,6 @@
     <node concept="26EafG" id="1xE$2SyOl71" role="3cRCUr">
       <property role="26EafJ" value="lib/mps-workbench.jar" />
     </node>
-    <node concept="26EafG" id="1xE$2SyOl72" role="3cRCUr">
-      <property role="26EafJ" value="lib/nio-fs.jar" />
-    </node>
     <node concept="26EafG" id="1xE$2SyOl73" role="3cRCUr">
       <property role="26EafJ" value="lib/opentelemetry.jar" />
     </node>

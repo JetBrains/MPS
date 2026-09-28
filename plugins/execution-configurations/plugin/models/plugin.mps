@@ -6381,6 +6381,56 @@
             </node>
           </node>
         </node>
+        <node concept="3cpWs8" id="2BxWkDl8Bk8" role="3cqZAp">
+          <node concept="3cpWsn" id="2BxWkDl8Bk9" role="3cpWs9">
+            <property role="TrG5h" value="nioFsLibPath" />
+            <property role="2Lvdk3" value="nioFsLibPath" />
+            <node concept="17QB3L" id="2BxWkDl8Bka" role="1tU5fm" />
+            <node concept="2OqwBi" id="2BxWkDl8Bkb" role="33vP2m">
+              <node concept="2ShNRf" id="2BxWkDl8Bkc" role="2Oq$k0">
+                <node concept="1pGfFk" id="2BxWkDl8Bkd" role="2ShVmc">
+                  <property role="373rjd" value="true" />
+                  <ref role="37wK5l" to="guwi:~File.&lt;init&gt;(java.lang.String,java.lang.String)" resolve="File" />
+                  <node concept="2YIFZM" id="2BxWkDl8Bke" role="37wK5m">
+                    <ref role="37wK5l" to="bd8o:~PathManager.getLibPath()" resolve="getLibPath" />
+                    <ref role="1Pybhc" to="bd8o:~PathManager" resolve="PathManager" />
+                  </node>
+                  <node concept="Xl_RD" id="2BxWkDl8Bkf" role="37wK5m">
+                    <property role="Xl_RC" value="nio-fs.jar" />
+                  </node>
+                </node>
+              </node>
+              <node concept="liA8E" id="2BxWkDl8Bkg" role="2OqNvi">
+                <ref role="37wK5l" to="guwi:~File.getAbsolutePath()" resolve="getAbsolutePath" />
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="2BxWkDl8Bki" role="3cqZAp">
+          <node concept="37vLTI" id="2BxWkDl8Bkj" role="3clFbG">
+            <node concept="37vLTw" id="2BxWkDl8Bkk" role="37vLTJ">
+              <ref role="3cqZAo" node="75c$k6X2Pup" resolve="virtualMachineParameters" />
+            </node>
+            <node concept="3cpWs3" id="2BxWkDl8Bkl" role="37vLTx">
+              <node concept="3cpWs3" id="2BxWkDl8Bkm" role="3uHU7B">
+                <node concept="3cpWs3" id="2BxWkDl8Bkn" role="3uHU7B">
+                  <node concept="Xl_RD" id="2BxWkDl8Bko" role="3uHU7B">
+                    <property role="Xl_RC" value="-Xbootclasspath/a:\&quot;" />
+                  </node>
+                  <node concept="37vLTw" id="2BxWkDl8Bkp" role="3uHU7w">
+                    <ref role="3cqZAo" node="2BxWkDl8Bk9" resolve="nioFsLibPath" />
+                  </node>
+                </node>
+                <node concept="Xl_RD" id="2BxWkDl8Bkq" role="3uHU7w">
+                  <property role="Xl_RC" value="\&quot; " />
+                </node>
+              </node>
+              <node concept="37vLTw" id="2BxWkDl8Bkr" role="3uHU7w">
+                <ref role="3cqZAo" node="75c$k6X2Pup" resolve="virtualMachineParameters" />
+              </node>
+            </node>
+          </node>
+        </node>
         <node concept="3clFbH" id="6qukSVU4FmA" role="3cqZAp" />
         <node concept="3clFbJ" id="75c$k6X2JKC" role="3cqZAp">
           <node concept="3clFbS" id="75c$k6X2JKE" role="3clFbx">

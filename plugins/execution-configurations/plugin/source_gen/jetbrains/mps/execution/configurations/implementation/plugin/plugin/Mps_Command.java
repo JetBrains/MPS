@@ -93,6 +93,8 @@ public class Mps_Command {
     virtualMachineParameters = String.format("-Dskiko.library.path=\"%s\" %s", skikoLibPath, virtualMachineParameters);
     String pty4jLibPath = new File(PathManager.getLibPath(), "pty4j").getAbsolutePath();
     virtualMachineParameters = String.format("-Dpty4j.preferred.native.folder=\"%s\" %s", pty4jLibPath, virtualMachineParameters);
+    String nioFsLibPath = new File(PathManager.getLibPath(), "nio-fs.jar").getAbsolutePath();
+    virtualMachineParameters = "-Xbootclasspath/a:\"" + nioFsLibPath + "\" " + virtualMachineParameters;
 
     if ((settingsPath != null && settingsPath.length() > 0)) {
       String configPath = new File(settingsPath, "config").getAbsolutePath();
