@@ -29,6 +29,18 @@
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/amazon-ion/ion-java/blob/master/LICENSE"
 }, {
+  "name" : "AndroidX Navigation Event Compose Desktop",
+  "url" : "https://source.android.com/",
+  "version" : "1.1.1",
+  "license" : "Apache 2.0",
+  "licenseUrl" : "https://source.android.com/setup/start/licenses"
+}, {
+  "name" : "AndroidX Navigation Event Desktop",
+  "url" : "https://source.android.com/",
+  "version" : "1.1.1",
+  "license" : "Apache 2.0",
+  "licenseUrl" : "https://source.android.com/setup/start/licenses"
+}, {
   "name" : "Apache Commons CLI",
   "url" : "https://commons.apache.org/proper/commons-cli/",
   "version" : "1.11.0",
@@ -133,25 +145,25 @@
 }, {
   "name" : "Compose Multiplatform",
   "url" : "https://github.com/JetBrains/compose-multiplatform",
-  "version" : "1.11.0",
+  "version" : "1.12.0",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/compose-multiplatform/blob/master/LICENSE.txt"
 }, {
   "name" : "Compose Runtime",
   "url" : "https://source.android.com/",
-  "version" : "1.11.0",
+  "version" : "1.12.0",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:LICENSE.txt"
 }, {
   "name" : "Compose Runtime Retained",
   "url" : "https://source.android.com/",
-  "version" : "1.11.0",
+  "version" : "1.12.0",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:LICENSE.txt"
 }, {
   "name" : "Compose Runtime Saveable Desktop",
   "url" : "https://source.android.com/",
-  "version" : "1.11.0",
+  "version" : "1.12.0",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://cs.android.com/androidx/platform/frameworks/support/+/androidx-main:LICENSE.txt"
 }, {
@@ -457,19 +469,19 @@
 }, {
   "name" : "Kotlin Coroutines for Guava",
   "url" : "https://github.com/Kotlin/kotlinx.coroutines",
-  "version" : "1.10.2-intellij-1",
+  "version" : "1.10.2-intellij-2",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/Kotlin/kotlinx.coroutines/blob/master/LICENSE.txt"
 }, {
   "name" : "Kotlin Coroutines for JDK 8",
   "url" : "https://github.com/Kotlin/kotlinx.coroutines",
-  "version" : "1.10.2-intellij-1",
+  "version" : "1.10.2-intellij-2",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/Kotlin/kotlinx.coroutines/blob/master/LICENSE.txt"
 }, {
   "name" : "Kotlin Coroutines for Slf4j",
   "url" : "https://github.com/Kotlin/kotlinx.coroutines",
-  "version" : "1.10.2-intellij-1",
+  "version" : "1.10.2-intellij-2",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/Kotlin/kotlinx.coroutines/blob/master/LICENSE.txt"
 }, {
@@ -619,13 +631,13 @@
 }, {
   "name" : "Skiko",
   "url" : "https://github.com/JetBrains/skiko/",
-  "version" : "0.144.5",
+  "version" : "0.150.1",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/skiko/blob/master/LICENSE"
 }, {
   "name" : "Skiko Runtime",
   "url" : "https://github.com/JetBrains/skiko/",
-  "version" : "0.144.5",
+  "version" : "0.150.1",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/skiko/blob/master/LICENSE"
 }, {
@@ -871,13 +883,13 @@
 }, {
   "name" : "jediterm-core",
   "url" : "https://github.com/JetBrains/jediterm",
-  "version" : "3.72",
+  "version" : "3.73",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-APACHE-2.0.txt"
 }, {
   "name" : "jediterm-ui",
   "url" : "https://github.com/JetBrains/jediterm",
-  "version" : "3.72",
+  "version" : "3.73",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/jediterm/blob/master/LICENSE-APACHE-2.0.txt"
 }, {
