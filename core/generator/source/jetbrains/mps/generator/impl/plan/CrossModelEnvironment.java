@@ -115,8 +115,9 @@ public class CrossModelEnvironment {
     if (mcp != null) {
       return mcp;
     }
-    // FIXME once accessed, perhaps ModelCheckpoints instance shall be kept in myTransientCheckpoints or myExposedPersisted?
-    return getPersistedCheckpoints(model).getCheckpointsFor((m, cp) -> {
+    // Persisted CPs, once exposed, are recorded in myExposedPersisted to tell them from CP models generated in this session,
+    // see #createBlankCheckpointModel()
+    mcp = getPersistedCheckpoints(model).getCheckpointsFor((m, cp) -> {
       // XXX for now, expose whole ModelCheckpoints at once, although just specific CheckpointState
       //     (accessed later though MC.find) would suffice
       SModel exposed = createBlankCheckpointModel(model.getReference(), null /*FIXME need distinct method to create CP model from existing*/, cp);
@@ -134,6 +135,8 @@ public class CrossModelEnvironment {
       assert cp.equals(persistedCheckpoint) : String.format("CP consistency issue: expected to read CP %s, but model comes with CP value %s", cp, persistedCheckpoint);
       return new CheckpointState(exposed, prevCheckpoint, cp);
     });
+    myExposedPersisted.put(model.getReference(), mcp);
+    return mcp;
   }
 
   @Nullable
@@ -250,7 +253,10 @@ public class CrossModelEnvironment {
       //  - drop all transients as part of rename module action (likely, most safe)
       //  - respect model name when building module id value, above. Leaves duplicated, hard-to-distinguish models among checkpoints.
       //  - detect there's already model with same id and forget it (least destructive, keeps other CP models in place).
-      myModule.forgetModel(existing, true);
+      // However, if existing model is a persisted CP exposed to resolve x-model references, keep CP models generated against it
+      // in this session. They are no worse than CP models persisted by a regular build, and other models of the session may
+      // already reference their nodes (e.g. descriptorClass label of a typesystem aspect CP, MPS-37514).
+      myModule.forgetModel(existing, !isExposedPersisted(existing));
     }
     SModel checkpointModel = myModule.createTransientModel(mr);
     assert checkpointModel instanceof ModelWithAttributes;
@@ -261,6 +267,15 @@ public class CrossModelEnvironment {
       ((ModelWithAttributes) checkpointModel).setAttribute(PREV_CHECKPOINT, previousCheckpoint.getName());
     }
     return checkpointModel;
+  }
+
+  private boolean isExposedPersisted(SModel checkpointModel) {
+    for (ModelCheckpoints mcp : myExposedPersisted.values()) {
+      if (mcp.findStateWith(checkpointModel) != null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public void publishCheckpoint(@NotNull SModelReference originalModel, @NotNull CheckpointState cpState) {
