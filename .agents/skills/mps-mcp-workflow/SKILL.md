@@ -37,6 +37,8 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 - **Validate frequently.** A successful insertion (`"ok": true`) does not mean the AST is semantically valid — always follow with `mps_mcp_check_root_node_problems`.
 
 > **Tool name note**: MPS MCP tools are named with a `mps_mcp_` prefix (e.g. `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_get_concept_details`). Your MCP client wraps these with a server-specific prefix (e.g. `mcp__mps-mcp-server__<env>___`), which varies by environment. Match tools by the stable `mps_mcp_*` suffix.
+>
+> **Load each tool's schema before its first call** (`ToolSearch select:` when the host defers schemas). The keys are not guessable: `nodeReference`, `conceptRefs`/`languageRefs`, `searchTexts`, `parameters.code` / `insert.modelRef`.
 
 > **Which project the tools act on (subdirectory & multi-project checkouts).** The `mps_mcp_*` tools operate on the MPS project currently open in the running MPS instance. That project often lives in a **subdirectory** of your repository (e.g. `<repo>/tools/BigProject`, as in mbeddr or MPS-extensions), and one checkout may even hold **several** MPS projects. Supply that project's `mpsProjectBaseDirectory` — the folder MPS actually opened, i.e. a path *at or inside* it, **not** the repository root — as `projectPath` on every call, per the Critical Directive above. The first-call CWD probe in that directive still applies when the path is unknown, even if CWD is the repository root. This is the opposite of `mps_mcp_initialize_project_for_agents`, whose `targetDirectory` is the *repository / workspace root* (where `.agents/`, `.claude/`, `AGENTS.md`, and `CLAUDE.md` belong), which may be an *ancestor* of the MPS project directory.
 >
