@@ -7,8 +7,13 @@ import com.google.gson.JsonParser
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
 import jetbrains.mps.smodel.SModelInternal
+import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
+import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
+import jetbrains.mps.smodel.adapter.ids.SLanguageId
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.language.LanguageRegistry
 import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.module.SModuleId
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -17,6 +22,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import java.util.UUID
 import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 
 /**
@@ -538,6 +544,82 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_model_used_language(modelRefOf(model), "totally.unknown.lang", "language")
         }
         assertTrue(expectErr(response).contains("Language not found"))
+    }
+
+    @Test
+    fun `add_model_used_language rejects an l reference whose uuid no language owns`() {
+        // A well-formed `l:` string is only a parse. Before the fix it was imported as-is, so an agent
+        // could persist an invented language id under a real-looking name.
+        val invented = UUID.randomUUID()
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.invented${System.nanoTime()}")
+        val response = runTool(toolset) {
+            it.mps_mcp_model_used_language(modelRefOf(model), "l:$invented:jetbrains.mps.lang.editor", "language")
+        }
+        assertTrue(expectErr(response).contains("Language not found"))
+        readOnRepo {
+            val ids = (model as SModelInternal).importedLanguageIds().map { MetaIdHelper.getLanguage(it).idValue }
+            assertFalse("the invented uuid must not be imported: $ids", ids.contains(invented))
+            // The uuid is fresh, so the first adapter cached for it is this probe's, unless the
+            // tool built an SLanguage from the caller's string and cached the caller's name.
+            assertEquals("probe", MetaAdapterFactory.getLanguage(SLanguageId(invented), "probe").qualifiedName)
+        }
+    }
+
+    @Test
+    fun `add_model_used_language rejects a malformed l reference`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.malformed${System.nanoTime()}")
+        for (ref in listOf("l:not-a-uuid:x", "l:${UUID.randomUUID()}", "l:${UUID.randomUUID()}:")) {
+            val response = runTool(toolset) { it.mps_mcp_model_used_language(modelRefOf(model), ref, "language") }
+            assertTrue("'$ref' must be rejected: $response", expectErr(response).contains("Language not found"))
+        }
+        readOnRepo {
+            assertTrue((model as SModelInternal).importedLanguageIds().isEmpty())
+        }
+    }
+
+    @Test
+    fun `add_model_used_language imports a real l reference under the canonical language`() {
+        val (coreRef, coreModuleId) = readOnRepo {
+            val core = LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.lang.core")!!.identity
+            PersistenceFacade.getInstance().asString(core) to core.sourceModuleReference!!.moduleId
+        }
+        // Built from the declaration's id rather than an adapter, so the test adds no cache entry of its
+        // own (fixture setup already caches one; see the wrong-name test below).
+        val unbuiltName = language.moduleName!!
+        val unbuiltRef = "l:${MetaIdByDeclaration.getLanguageId(language).serialize()}:$unbuiltName"
+        assertCanonicalImport(coreRef, "jetbrains.mps.lang.core", coreModuleId)
+        assertCanonicalImport(unbuiltRef, unbuiltName, language.moduleReference.moduleId)
+    }
+
+    @Test
+    fun `add_model_used_language stores the real name for a real id with a wrong name`() {
+        // Locks in the outcome only. A deployed runtime reports its own name whatever the adapter
+        // cache holds, and fixture setup already caches the unbuilt language's adapter under its real
+        // name: with resolveLanguage reverted to `createLanguage(languageRef)` this test still passes.
+        // The invented-uuid test above is the one that catches that regression.
+        val (coreId, coreModuleId) = readOnRepo {
+            val core = LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.lang.core")!!.identity
+            MetaIdHelper.getLanguage(core).serialize() to core.sourceModuleReference!!.moduleId
+        }
+        assertCanonicalImport("l:$coreId:not.the.real.name", "jetbrains.mps.lang.core", coreModuleId)
+        val unbuiltId = MetaIdByDeclaration.getLanguageId(language).serialize()
+        assertCanonicalImport("l:$unbuiltId:not.the.real.name", language.moduleName!!, language.moduleReference.moduleId)
+    }
+
+    /** Adds [languageRef] to a fresh model and asserts the stored language's name and module id. */
+    private fun assertCanonicalImport(languageRef: String, expectedName: String, expectedModuleId: SModuleId) {
+        val solution = createSolution()
+        val model = createModel(solution, "test.usedlang.canonical${System.nanoTime()}")
+        val response = runTool(toolset) { it.mps_mcp_model_used_language(modelRefOf(model), languageRef, "language") }
+        assertTrue("expected added:true for '$languageRef': $response", expectOk(response).get("added").asBoolean)
+        readOnRepo {
+            val stored = (model as SModelInternal).importedLanguageIds()
+                .single { MetaIdHelper.getLanguage(it).serialize() == languageRef.split(':')[1] }
+            assertEquals("stored name for '$languageRef'", expectedName, stored.qualifiedName)
+            assertEquals("stored module id for '$languageRef'", expectedModuleId, stored.sourceModuleReference?.moduleId)
+        }
     }
 
     @Test

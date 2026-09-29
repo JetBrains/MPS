@@ -7,6 +7,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.smodel.SNodeUtil
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.language.LanguageRegistry
 import org.jetbrains.mps.openapi.language.SLanguage
@@ -16,6 +18,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import java.util.UUID
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.valueParameters
@@ -378,44 +381,92 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `get-concept-details serves a hollow runtime descriptor by concept reference and rejects it by FQN`() {
-        // The plan's third D20 candidate: a concept whose language *is* registered but whose
-        // runtime descriptor is hollow. Forged the same way `ScaffoldEditorStalenessTest.
-        // `checkScaffoldingStaleness flags a hollow runtime descriptor …`` does — an unknown
-        // concept id inside the loaded `jetbrains.mps.lang.editor` language makes
-        // `PersistenceFacade.createConcept` hand back a bare facade with null sourceNode and
-        // empty members, which is exactly what `isHollowDescriptor` catches.
-        //
-        // Neither address form throws, which is the point: the hollow descriptor is *not* D20's
-        // trigger. The `c:` form is served with the documented staleness marker; the plain
-        // qualified name cannot resolve at all (no structure root carries it, and
-        // `facade.createConcept` rejects a non-`c:` string), so it comes back as an ordinary
-        // NOT_FOUND envelope.
-        val hollowConceptRef =
+    fun `get-concept-details rejects an invented concept id inside a registered language by either address form`() {
+        // An unknown concept id inside the loaded `jetbrains.mps.lang.editor` language. It used to be
+        // served as a hollow runtime descriptor, but a concept with neither a descriptor nor a
+        // declaration is an invented reference, not a stale build (reject-invented-language-uuids).
+        // The hollow marker still fires for a *declared* concept whose runtime descriptor is missing or
+        // stale: resolveConcept returns it through its declaration. `ScaffoldEditorStalenessTest` covers
+        // isHollowDescriptor itself.
+        val inventedConceptRef =
             "c:18bc6592-03a6-4e29-a83a-7ff23bde13ba/9999999999:jetbrains.mps.lang.editor.structure.BogusConcept"
-
-        val byReference = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(hollowConceptRef))
+        for (ref in listOf(inventedConceptRef, "jetbrains.mps.lang.editor.structure.BogusConcept")) {
+            val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+                it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(ref))
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("'$ref' must not resolve: $response", envelope.get("ok").asBoolean)
+            assertEquals(
+                "the failure must be a classified envelope, never a raw exception",
+                "NOT_FOUND", envelope.get("code").asString,
+            )
         }
-        val hollow = readConceptArrayFromOkPath(byReference).single().asJsonObject
-        assertEquals(
-            "a hollow runtime descriptor must be flagged, not served as a real concept: $hollow",
-            "hollow", hollow.get("descriptorStatus").asString,
-        )
+    }
+
+    @Test
+    fun `get-concept-details flags a declared concept without a runtime descriptor as hollow by concept reference`() {
+        // A declared concept with no runtime descriptor resolves through its declaration, and the
+        // adapter it resolves to reports the hollow shape. The fixture language is never built, so
+        // this is the never-built flavour; a concept added to a built language since its last build
+        // takes the same declaration path to the same adapter, which a test cannot reproduce because
+        // the harness cannot reliably build a language.
+        val conceptName = "HollowProbe${System.nanoTime()}"
+        val conceptRef = conceptReferenceOf(createConceptRoot(conceptName))
+
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(conceptRef))
+        }
+        val concept = readConceptArrayFromOkPath(response).single().asJsonObject
+        assertEquals(conceptName, concept.get("name").asString)
+        assertEquals("a descriptor-less concept must be flagged: $concept", "hollow", concept.get("descriptorStatus")?.asString)
         assertTrue(
-            "the hollow marker must carry the rebuild recovery action: $hollow",
-            hollow.get("descriptorRecoveryAction").asString.contains("rebuild"),
+            "the hollow marker must carry the rebuild recovery action: $concept",
+            concept.get("descriptorRecoveryAction").asString.contains("rebuild"),
         )
+    }
 
-        val byQualifiedName = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText("jetbrains.mps.lang.editor.structure.BogusConcept"))
+    @Test
+    fun `get-concept-details resolves a concept reference whose declared conceptId differs from its node id`() {
+        // The `c:` id is the declaration's `conceptId` property, which survives a copy while the node
+        // id does not. Matching the node id used to miss such a declaration.
+        val conceptName = "KeptIdProbe${System.nanoTime()}"
+        val declarationRef = createConceptRoot(conceptName)
+        val declaration = resolveNodeRef(declarationRef)
+        executeCommand {
+            declaration.setProperty(SNodeUtil.property_AbstractConcept_Id, (declaration.nodeId.toString().toLong() + 1).toString())
         }
-        val envelope = JsonParser.parseString(byQualifiedName).asJsonObject
-        assertFalse("a hollow concept has no FQN route, so this must fail: $byQualifiedName", envelope.get("ok").asBoolean)
-        assertEquals(
-            "the failure must be a classified envelope, never a raw exception",
-            "NOT_FOUND", envelope.get("code").asString,
-        )
+        assertResolvesByConceptReference(conceptReferenceOf(declarationRef), conceptName)
+    }
+
+    @Test
+    fun `get-concept-details resolves a concept reference whose declared languageId differs from its module`() {
+        // A concept moved between languages keeps its old `languageId`, so its `c:` reference names a
+        // language that is not the module holding the declaration. It can be described, but it cannot
+        // be instantiated unless that kept id is a loaded language (see the RootNode toolset test
+        // `insert_root_node_from_json refuses a concept whose kept languageId no loaded language owns`).
+        val conceptName = "MovedProbe${System.nanoTime()}"
+        val declarationRef = createConceptRoot(conceptName)
+        val declaration = resolveNodeRef(declarationRef)
+        executeCommand {
+            declaration.setProperty(SNodeUtil.property_AbstractConcept_LangId, UUID.randomUUID().toString())
+        }
+        assertResolvesByConceptReference(conceptReferenceOf(declarationRef), conceptName)
+    }
+
+    /** The `c:` reference [MetaAdapterByDeclaration] derives from the declaration's id properties. */
+    private fun conceptReferenceOf(declarationRef: String): String = readOnRepo {
+        PersistenceFacade.getInstance().asString(MetaAdapterByDeclaration.getConcept(resolveNodeRefInRead(declarationRef)))
+    }
+
+    private fun resolveNodeRefInRead(ref: String) =
+        PersistenceFacade.getInstance().createNodeReference(ref).resolve(myProject.repository) ?: error("node '$ref' did not resolve")
+
+    private fun assertResolvesByConceptReference(conceptRef: String, expectedName: String) {
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(conceptRef))
+        }
+        val concept = readConceptArrayFromOkPath(response).single().asJsonObject
+        assertEquals("'$conceptRef' must resolve to its declaration: $concept", expectedName, concept.get("name").asString)
     }
 
     @Test

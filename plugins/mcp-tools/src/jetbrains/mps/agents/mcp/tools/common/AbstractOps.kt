@@ -43,6 +43,7 @@ import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.project.ModuleId
 import jetbrains.mps.project.ProjectRepository
 import jetbrains.mps.project.facets.JavaModuleFacet
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
@@ -53,6 +54,7 @@ import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
+import jetbrains.mps.smodel.adapter.ids.SConceptId
 import jetbrains.mps.smodel.adapter.ids.SLanguageId
 import jetbrains.mps.smodel.adapter.ids.SPropertyId
 import jetbrains.mps.smodel.adapter.ids.SReferenceLinkId
@@ -2762,8 +2764,9 @@ abstract class AbstractOps : McpToolset {
                 if (concept.sourceNode != null) {
                     return concept
                 }
-                // Language is registered but sourceNode is missing; save as last-resort fallback.
-                registeredConcept = concept
+                // Language is registered but sourceNode is missing; save as last-resort fallback, but only
+                // when a descriptor exists — a real language id with an invented concept id has none.
+                if (concept.isValid) registeredConcept = concept
             }
         } catch (e: Exception) {
             rethrowIfCancellation(e)
@@ -2775,22 +2778,19 @@ abstract class AbstractOps : McpToolset {
             return MetaAdapterByDeclaration.getConcept(declarationNode)
         }
 
-        // 3. Best-effort fallback: reuse the registered concept (may have null sourceNode) rather than
-        //    calling facade.createConcept a second time, or search by name for unregistered languages.
+        // 3. Best-effort fallback: reuse the registered concept (may have null sourceNode).
         if (registeredConcept != null) return registeredConcept
-        return try {
-            facade.createConcept(conceptRef)
-        } catch (e: Exception) {
-            rethrowIfCancellation(e)
-            // Try searching by name if it's not a reference
-            val allLanguages = LanguageRegistry.getInstance(repository).allLanguages
-            for (lang in allLanguages) {
-                val runtime = LanguageRegistry.getInstance(repository).getLanguage(lang) ?: continue
-                val concept = runtime.concepts.find { it.name == conceptRef || facade.asString(it) == conceptRef }
-                if (concept != null) return concept
-            }
-            null
+
+        // 4. Search registered languages by name. A parseable `c:` string whose language is unknown or
+        //    whose concept id is invalid does not resolve: returning its bare parse would let the caller
+        //    import an invented language.
+        val registry = LanguageRegistry.getInstance(repository)
+        for (lang in registry.allLanguages) {
+            val runtime = registry.getLanguage(lang) ?: continue
+            val concept = runtime.concepts.find { it.name == conceptRef || facade.asString(it) == conceptRef }
+            if (concept != null) return concept
         }
+        return null
     }
 
     protected fun resolveConceptPreferringProject(mpsProject: MPSProject, conceptRef: String): SAbstractConcept? {
@@ -2812,6 +2812,30 @@ abstract class AbstractOps : McpToolset {
     protected fun resolveConceptNodePreferringProject(mpsProject: MPSProject, conceptRef: String): SNode? =
         resolveConceptNode(mpsProject, conceptRef)
             ?: resolveConceptNode(mpsProject.repository, conceptRef)
+
+    /** The [SConceptId] a `c:<langUuid>/<conceptId>` reference names, or null when either part is malformed. */
+    private fun parseConceptId(langId: String, conceptId: String): SConceptId? {
+        val idValue = conceptId.toLongOrNull() ?: return null
+        return try {
+            SConceptId(SLanguageId.deserialize(langId), idValue)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
+
+    /**
+     * The id [declaration] gives its concept, or null when its id properties are unreadable. The id
+     * fallback asserts a regular node id, so an [AssertionError] is a miss here, not a failure.
+     */
+    private fun declaredConceptId(declaration: SNode): SConceptId? =
+        try {
+            MetaIdByDeclaration.getConceptId(declaration)
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            null
+        } catch (e: AssertionError) {
+            null
+        }
 
     private fun resolveConceptNodeInModules(
         repository: SRepository,
@@ -2838,21 +2862,31 @@ abstract class AbstractOps : McpToolset {
                 // Strip ':qualifiedName' suffix from the concept part.
                 val langId = langRef.removePrefix("c:").removePrefix("l:")
                 val conceptId = conceptRefOrName.substringBefore(":")
-                for (module in modules) {
-                    if (module !is Language) continue
+                // A concept's identity is its declared SConceptId: the `conceptId` / `languageId`
+                // properties, which fall back to the node id and the module id only when unset
+                // (MetaIdByDeclaration). Matching the node id instead misses a declaration whose
+                // properties were kept across a copy or a move between languages.
+                val wanted = parseConceptId(langId, conceptId)
+                val structureRoots = { module: Language ->
+                    module.models.asSequence()
+                        .filter { it.name.longName.endsWith(".structure") }
+                        .flatMap { it.rootNodes.asSequence() }
+                        .filter { it.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration) }
+                }
+                val languages = modules.filterIsInstance<Language>()
+                for (module in languages) {
                     val moduleId = module.moduleReference.moduleId.toString().removePrefix("l:")
                     if (moduleId == langId || module.moduleName == langId) {
-                        for (model in module.models) {
-                            if (model.name.longName.endsWith(".structure")) {
-                                for (root in model.rootNodes) {
-                                    if (root.nodeId.toString() == conceptId || root.name == conceptId) {
-                                        if (root.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration)) {
-                                            return root
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        structureRoots(module)
+                            .find { root -> root.name == conceptId || (wanted != null && declaredConceptId(root) == wanted) }
+                            ?.let { return it }
+                    }
+                }
+                // A moved concept keeps its old `languageId`, so its declaration lives in a module
+                // whose id differs from the reference's language part.
+                if (wanted != null) {
+                    for (module in languages) {
+                        structureRoots(module).find { declaredConceptId(it) == wanted }?.let { return it }
                     }
                 }
             }
@@ -3092,17 +3126,37 @@ abstract class AbstractOps : McpToolset {
     }
 
     protected fun resolveLanguage(repository: SRepository, languageRef: String): SLanguage? {
-        val facade = PersistenceFacade.getInstance()
+        // A well-formed `l:` string is only a parse, not proof the language exists: accept it only when
+        // its id is owned by a deployed runtime or a loaded Language module, and return that language.
         if (languageRef.startsWith("l:")) {
-            return try {
-                facade.createLanguage(languageRef)
-            } catch (e: Exception) {
-                rethrowIfCancellation(e)
-                null
-            }
+            return parseLanguageId(languageRef)?.let { languageForId(repository, it) }
         }
         val allLanguages = LanguageRegistry.getInstance(repository).allLanguages
         return allLanguages.find { it.qualifiedName == languageRef }
+    }
+
+    /**
+     * Returns the language that owns [id]: the deployed runtime's identity, or, for a language that was
+     * never built, the adapter of its loaded `Language` module. Null when neither exists.
+     */
+    protected fun languageForId(repository: SRepository, id: SLanguageId): SLanguage? {
+        LanguageRegistry.getInstance(repository).getLanguage(id)?.let { return it.identity }
+        val module = repository.getModule(ModuleId.regular(id.idValue)) as? Language ?: return null
+        return MetaAdapterByDeclaration.getLanguage(module)
+    }
+
+    /**
+     * Reads the uuid out of an `l:<uuid>:<name>` string without deserializing it:
+     * [PersistenceFacade.createLanguage] would cache an adapter under the caller's name.
+     */
+    private fun parseLanguageId(languageRef: String): SLanguageId? {
+        val parts = languageRef.removePrefix("l:").split(':')
+        if (parts.size != 2 || parts[1].isEmpty()) return null
+        return try {
+            SLanguageId.deserialize(parts[0])
+        } catch (e: IllegalArgumentException) {
+            null
+        }
     }
 
     protected fun resolveLanguagePreferringProject(mpsProject: MPSProject, languageRef: String): SLanguage? {

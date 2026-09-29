@@ -9,6 +9,14 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.smodel.SModelInternal
+import jetbrains.mps.smodel.SNodeUtil
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
+import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import jetbrains.mps.smodel.language.LanguageRegistry
+import org.jetbrains.mps.openapi.language.SConcept
+import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -18,6 +26,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import java.util.UUID
 
 /**
  * End-to-end integration tests for [JetBrainsMPSRootNodeMcpToolset].
@@ -66,6 +75,24 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         readOnRepo {
             val match = structureModel.rootNodes.singleOrNull { it.name == "MyConcept" }
             assertNotNull("created root must be registered in the model: $response", match)
+        }
+    }
+
+    @Test
+    fun `create_root_node builds from concept when conceptReference names an invented language`() {
+        // Before the fix the invented reference won and failed as "not a rootable concept".
+        val response = runTool(toolset) {
+            it.mps_mcp_create_root_node(
+                modelReference = structureModelRef,
+                concept = conceptDeclarationFqn,
+                conceptReference = inventedLanguageConceptRef(conceptDeclarationFqn),
+                name = "FromConceptName",
+            )
+        }
+        expectOk(response)
+        readOnRepo {
+            val match = structureModel.rootNodes.singleOrNull { it.name == "FromConceptName" }
+            assertEquals(conceptByName(conceptDeclarationFqn), match?.concept)
         }
     }
 
@@ -407,6 +434,198 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
         assertIncompleteJson(response, json.length, expectedColumn = json.length + 1)
         assertEquals("parse failure must not insert any root", before, structureRoots().size)
+    }
+
+    @Test
+    fun `insert_root_node_from_json builds a child from concept when its conceptReference language is invented`() {
+        val invented = UUID.randomUUID()
+        val badRef = inventedLanguageConceptRef(propertyDeclarationFqn, invented)
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptWithPropertyChild("InventedLangPair", propertyDeclarationFqn, badRef)), dryRun = false)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val warnings = obj.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue("a warning must name the ignored reference: $warnings", warnings.any { it.contains(badRef) })
+        readOnRepo {
+            val root = structureModel.rootNodes.single { it.name == "InventedLangPair" }
+            assertEquals(conceptByName(propertyDeclarationFqn), root.children.single().concept)
+        }
+        assertLanguageNotImported(invented)
+    }
+
+    @Test
+    fun `insert_root_node_from_json rejects a child whose only conceptReference language is invented`() {
+        val invented = UUID.randomUUID()
+        val before = structureRoots().size
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptWithPropertyChild("InventedLangOnly", null, inventedLanguageConceptRef(propertyDeclarationFqn, invented))), dryRun = false)
+        }
+        assertConceptReferenceNotFound(expectErr(response))
+        assertEquals("a failed insert must not add a root", before, structureRoots().size)
+        assertLanguageNotImported(invented)
+    }
+
+    @Test
+    fun `insert_root_node_from_json dryRun reports an invented-language conceptReference as not found`() {
+        val invented = UUID.randomUUID()
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptWithPropertyChild("InventedLangDry", null, inventedLanguageConceptRef(propertyDeclarationFqn, invented))), dryRun = true)
+        }
+        assertConceptReferenceNotFound(expectErr(response))
+        assertLanguageNotImported(invented)
+    }
+
+    @Test
+    fun `insert_root_node_from_json builds a child from concept when its conceptReference concept id is invented`() {
+        // A real language id with an unused concept id: the registered-language path used to keep it
+        // as a last-resort fallback even though it has no descriptor.
+        val badRef = inventedConceptIdRef()
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptWithPropertyChild("InventedIdPair", propertyDeclarationFqn, badRef)), dryRun = false)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val warnings = obj.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue("a warning must name the ignored reference: $warnings", warnings.any { it.contains(badRef) })
+        readOnRepo {
+            val root = structureModel.rootNodes.single { it.name == "InventedIdPair" }
+            assertEquals(conceptByName(propertyDeclarationFqn), root.children.single().concept)
+        }
+    }
+
+    @Test
+    fun `insert_root_node_from_json rejects a child whose only conceptReference concept id is invented`() {
+        val before = structureRoots().size
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptWithPropertyChild("InventedIdOnly", null, inventedConceptIdRef())), dryRun = false)
+        }
+        // Before the fix the descriptor-less concept won and failed the child role check instead.
+        assertConceptReferenceNotFound(expectErr(response))
+        assertEquals("a failed insert must not add a root", before, structureRoots().size)
+    }
+
+    @Test
+    fun `insert_root_node_from_json resolves a child from a real conceptReference alone`() {
+        val realRef = readOnRepo { PersistenceFacade.getInstance().asString(conceptByName(propertyDeclarationFqn)) }
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(conceptWithPropertyChild("RealRefOnly", null, realRef)), dryRun = false)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        assertFalse("a resolving reference must not warn: $response", obj.has("warnings"))
+        readOnRepo {
+            val root = structureModel.rootNodes.single { it.name == "RealRefOnly" }
+            assertEquals(conceptByName(propertyDeclarationFqn), root.children.single().concept)
+        }
+    }
+
+    @Test
+    fun `insert_root_node_from_json resolves a conceptReference declared in an unbuilt language`() {
+        // The concept exists only as a declaration in the never-built fixture language, so it resolves
+        // through the structure model and its language through the Language module, not the registry.
+        val conceptName = "UnbuiltRootable${System.nanoTime()}"
+        val declaration = createRootableConcept(conceptName)
+        val conceptRef = readOnRepo { PersistenceFacade.getInstance().asString(MetaAdapterByDeclaration.getConcept(declaration)) }
+        val solution = createSolution()
+        val target = createModel(solution, "test.unbuiltref${System.nanoTime()}")
+
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText("""{ "conceptReference": "$conceptRef" }"""), dryRun = false)
+        }
+        expectOk(response)
+        readOnRepo {
+            val root = target.rootNodes.single()
+            assertEquals(conceptName, root.concept.name)
+            val imported = (target as SModelInternal).importedLanguageIds()
+                .single { it.sourceModuleReference.moduleId == language.moduleReference.moduleId }
+            assertEquals(language.moduleName, imported.qualifiedName)
+        }
+    }
+
+    @Test
+    fun `insert_root_node_from_json refuses a concept whose kept languageId no loaded language owns`() {
+        // A concept moved between languages keeps its old `languageId`. Its declaration still resolves,
+        // but the concept's language is then an id nobody owns, and importing it would persist an
+        // invented language: the write-site guard in instantiateNode must refuse, on a dry run too.
+        val keptLanguage = UUID.randomUUID()
+        val conceptName = "MovedRootable${System.nanoTime()}"
+        val declaration = createRootableConcept(conceptName)
+        executeCommand { declaration.setProperty(SNodeUtil.property_AbstractConcept_LangId, keptLanguage.toString()) }
+        val conceptRef = readOnRepo { PersistenceFacade.getInstance().asString(MetaAdapterByDeclaration.getConcept(declaration)) }
+        val solution = createSolution()
+        val target = createModel(solution, "test.movedref${System.nanoTime()}")
+
+        for (dryRun in listOf(true, false)) {
+            val response = runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText("""{ "conceptReference": "$conceptRef" }"""), dryRun = dryRun)
+            }
+            val err = expectErr(response)
+            assertTrue("dryRun=$dryRun must name the unloaded language: $err", err.contains("is not a loaded language"))
+        }
+        readOnRepo {
+            assertTrue("a refused insert must not add a root", target.rootNodes.none())
+            val ids = (target as SModelInternal).importedLanguageIds().map { MetaIdHelper.getLanguage(it).idValue }
+            assertFalse("the kept language id must not be imported: $ids", ids.contains(keptLanguage))
+        }
+    }
+
+    /** Creates a rootable `ConceptDeclaration` named [name] in the fixture's structure model and returns it. */
+    private fun createRootableConcept(name: String): SNode {
+        val params = """
+            { "structureModelRef": "$structureModelRef",
+              "conceptsJson": [ { "name": "$name", "rootable": true } ] }
+        """.trimIndent()
+        expectOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params) })
+        return readOnRepo { structureModel.rootNodes.single { it.name == name } }
+    }
+
+    private fun assertConceptReferenceNotFound(err: String) =
+        assertTrue("expected the concept-reference not-found failure: $err", err.contains("Concept reference '") && err.contains("not found"))
+
+    /** A `ConceptDeclaration` root named [rootName] with one `propertyDeclaration` child. */
+    private fun conceptWithPropertyChild(rootName: String, childConcept: String?, childConceptReference: String): String {
+        val child = JsonObject().apply {
+            childConcept?.let { addProperty("concept", it) }
+            addProperty("conceptReference", childConceptReference)
+            add("properties", JsonParser.parseString("""[{"name":"name","value":"p"}]"""))
+        }
+        return """
+            { "concept": "$conceptDeclarationFqn",
+              "properties": [ { "name": "name", "value": "$rootName" } ],
+              "children": [ { "role": "propertyDeclaration", "nodes": [ $child ] } ] }
+        """.trimIndent()
+    }
+
+    /** A `c:` reference to [conceptFqn]'s real concept id under a language id no module owns. */
+    private fun inventedLanguageConceptRef(conceptFqn: String, language: UUID = UUID.randomUUID()): String = readOnRepo {
+        val real = conceptByName(conceptFqn)
+        PersistenceFacade.getInstance().asString(
+            MetaAdapterFactory.getConcept(
+                language.mostSignificantBits, language.leastSignificantBits,
+                MetaIdHelper.getConcept(real).idValue, conceptFqn,
+            )
+        )
+    }
+
+    /** A `c:` reference under the real `jetbrains.mps.lang.structure` language id with an unused concept id. */
+    private fun inventedConceptIdRef(): String = readOnRepo {
+        val structureLanguageId = MetaIdHelper.getLanguage(conceptByName(propertyDeclarationFqn).language).idValue
+        PersistenceFacade.getInstance().asString(
+            MetaAdapterFactory.getConcept(
+                structureLanguageId.mostSignificantBits, structureLanguageId.leastSignificantBits,
+                0x7ffffff0_0000_0001L, "jetbrains.mps.lang.structure.structure.NoSuchConcept${System.nanoTime()}",
+            )
+        )
+    }
+
+    private fun conceptByName(conceptFqn: String): SConcept =
+        LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.lang.structure")!!
+            .concepts.single { "${it.language.qualifiedName}.structure.${it.name}" == conceptFqn } as SConcept
+
+    private fun assertLanguageNotImported(language: UUID) = readOnRepo {
+        val ids = (structureModel as SModelInternal).importedLanguageIds().map { MetaIdHelper.getLanguage(it).idValue }
+        assertFalse("invented language $language must not be imported: $ids", ids.contains(language))
     }
 
     @Test

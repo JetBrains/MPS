@@ -37,6 +37,7 @@ import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.action.NodeFactoryManager
+import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.ids.SConceptId
 import jetbrains.mps.smodel.adapter.ids.SContainmentLinkId
 import jetbrains.mps.smodel.adapter.ids.SPropertyId
@@ -177,12 +178,27 @@ abstract class AbstractNodeOps : AbstractOps() {
                 (if (mpsProject != null) resolveConceptPreferringProject(mpsProject, conceptName) else resolveConcept(model.repository, conceptName)) as? SConcept
             }
             else null
+            if (!conceptRef.isNullOrEmpty() && byRef == null && byName != null) {
+                warnings?.add(
+                    "conceptReference '$conceptRef' at $jsonPath does not resolve to a loaded concrete concept and was ignored; " +
+                        "the node was created from concept '$conceptName'"
+                )
+            }
             byRef ?: byName
-        } ?: throw McpNotFoundException("Concept '$conceptName' with reference '$conceptRef' not found")
+        } ?: throw McpNotFoundException(
+            when {
+                conceptName.isNullOrEmpty() -> "Concept reference '$conceptRef' not found at $jsonPath"
+                conceptRef.isNullOrEmpty() -> "Concept '$conceptName' not found at $jsonPath"
+                else -> "Concept '$conceptName' with reference '$conceptRef' not found at $jsonPath"
+            }
+        )
 
-        // Ensure language is imported
+        // Import the language that owns the concept's id, never the concept's own adapter: a parsed
+        // reference can carry a fabricated language id. Checked before the dry-run guard so a dry run
+        // reports the same failure.
+        val language = languageForId(mpsProject?.repository ?: model.repository, MetaIdHelper.getLanguage(sConcept.language))
+            ?: throw McpNotFoundException("Language of concept '${sConcept.name}' at $jsonPath is not a loaded language: ${sConcept.language}")
         if (!dryRun && model is SModelInternal) {
-            val language = sConcept.language
             if (!model.importedLanguageIds().contains(language)) {
                 model.addLanguage(language)
             }
