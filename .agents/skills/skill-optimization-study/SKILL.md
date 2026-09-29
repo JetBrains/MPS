@@ -134,8 +134,11 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    `study/fixtures/README.md`, not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
    projects; S10 honours this by being sequential — it closes one project before opening the next).
-   One MPS process serves the whole round (`isolationLevel: per-round`, recorded per run beside
-   `mpsPid`; `mps_control.sh restart` is there if a round ever needs a colder loop).
+   Restart MPS before a cell whose fixture language an earlier cell already loaded in the current
+   process — any two of S3/S5/S6/S7/S9 on `recipes*`, S2/S8 on `statechart` (`shutdown` → `start`
+   harness → `wait` → SMOKE; launch with `ISOLATION=per-shared-fixture-restart`, recorded per run
+   beside `mpsPid`; lessons 40, 42). A read-only cell (S9) may precede a language-changing one in the
+   same process; synthesized cells (S1, S10) need no restart.
    Per run: **synthesize** the empty project or copy the fixture tarball (`PROJECT_SYNTHESIZED=1`
    when synthesized) → announce the scratch path (and any path you will close first)
    → close a previous scratch with `mps_mcp_close_project` if one is still open → open the new copy

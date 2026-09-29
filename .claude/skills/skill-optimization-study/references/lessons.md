@@ -236,3 +236,22 @@
     (`mps_control.sh restart` + SMOKE) or order the round so a scenario's second model runs after an
     MPS restart, and check the first `get_concept_details` of such a cell for features the fixture
     does not have.
+
+## From round 18 (2026-09-29, S1–S3 + S5–S10 × opus+sonnet, surface identical to round 16)
+
+41. **The `sonnet` alias moves too, and a model change can push a hotspot the other way.** With
+    `skillsSha256` and `inventorySha256` byte-identical to round 16, `sonnet` resolved to
+    `claude-sonnet-5-5` instead of `claude-sonnet-5`. Sonnet turns halved, and its error envelopes
+    tripled (8 → 28 on S5–S10), because it calls tools without loading their schemas (71 of 249 MCP
+    calls, 32 % of them rejected). → Read `init.model` from the SMOKE transcripts before the matrix
+    starts, and name the same-model cells in the report. Use the model that did not move (opus here,
+    S5–S10 against round 16) as the A/A control: a family that rises only on the moved model is a
+    model finding, not a tool regression. Count calls to unloaded schemas (A7).
+42. **Restarting per shared fixture language is cheap and removes D80.** Round 18 restarted MPS 7
+    times, each `shutdown` → `start` harness → `wait` → SMOKE, at about 30 s plus $0.25. There was no
+    stale-runtime episode (one `reload_all` in 18 cells, a D84 case), against 7 turns in round 17's
+    S2-sonnet. Ordering matters. A read-only cell (S9) can go first in a process and a
+    language-changing one (S6) after it, and each restart can take one `statechart` and one `recipes*`
+    cell, so 16 fixture cells needed 7 restarts. One residual remains untested: two synthesized S1
+    projects and the S3 fixture put three module ids named `mcp.study.recipes` into one process
+    without an incident.

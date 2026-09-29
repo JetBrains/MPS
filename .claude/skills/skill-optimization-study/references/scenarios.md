@@ -29,7 +29,9 @@ S10 rehearsed 2026-09-22 (sonnet, PASS on all five criteria, 29 turns / 116 s / 
 harness defects D40–D42. S1 + S2 + S3 × (opus, sonnet) re-measured in round 15 (2026-09-25,
 all six PASS; the first S2-opus cell), and again in round 17 (2026-09-26, the first round on the
 262 platform, all six PASS). S5–S10 × (opus, sonnet) re-measured in round 16
-(2026-09-25, all twelve PASS; the first opus cells for S5–S8 and S10). Later rounds are listed in
+(2026-09-25, all twelve PASS; the first opus cells for S5–S8 and S10). S1–S3 + S5–S10 × (opus,
+sonnet) in round 18 (2026-09-29, all eighteen PASS; the first `claude-sonnet-5-5` cells and the
+first round under `per-shared-fixture-restart` isolation). Later rounds are listed in
 `study/HOTSPOT_REPORT_round*.md`.
 **S10 runs last in a round** — see its exception and recovery notes below.
 
