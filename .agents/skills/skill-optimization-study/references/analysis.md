@@ -21,6 +21,15 @@ stale_incidents, server_errors, task pass (from the evaluator). Since A2, `retri
 session and per parallel batch: one per tool with an error in a batch that the session calls again
 in one of its next two batches (a batch of five rejected calls is one retry, not five), so it is
 lower than in reports written before A2 (r18 S1-sonnet-1: 8 → 5; r19 S8-sonnet-1: 6 → 2).
+API retries (A5): `api_retries` counts the transcript's `system/api_retry` events, all of them,
+since they carry no session attribution (a subagent's retries count too); `api_retry_delay_s` is
+their declared backoff (`retry_delay_ms` summed); `api_stall_s` is the timestamp gap around each
+retry cluster (an upper bound on the time lost, since it includes the final attempt's own latency),
+and is far larger than the backoff (r18 S1-opus-1: 9 retries, 21 s declared, 520 s stalled).
+`wall_s` includes the stalls, so compare `wall_s - api_stall_s` across rounds before calling a
+wall-clock change a regression; `errors.json` lists the clusters (`api_retry_clusters`, with the
+step they preceded). Junie transcripts have no api_retry events and no per-step timestamps, so all
+three are 0.
 Lifecycle: `welcome_rejections` (pre-dispatch rejections with an empty project listing — the
 Welcome screen, where no `projectPath` could have helped; 0 is the good value everywhere, S10
 included: the first S10 run read the skill and never probed blind. One is the acceptable cost of

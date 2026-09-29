@@ -26,26 +26,33 @@ ROUND13_RUNS = Path(os.environ.get("MCP_STUDY_ROUND13_RUNS",
 STUDY_RUNS = Path(os.environ.get("MCP_STUDY_RUNS_ROOT", Path.home() / "MPSProjects" / "mcp-study"))
 
 
-def assistant(tool_id: str, name: str, *, child: bool = False) -> dict:
+def stamped(event: dict, timestamp: str | None) -> dict:
+    """`event` with an ISO `timestamp`, as stream-json gives `assistant` and `user` events."""
+    if timestamp is not None:
+        event["timestamp"] = timestamp
+    return event
+
+
+def assistant(tool_id: str, name: str, *, child: bool = False, timestamp: str | None = None) -> dict:
     event = {
         "type": "assistant",
         "message": {"content": [{"type": "tool_use", "id": tool_id, "name": name, "input": {}}]},
     }
     if child:
         event["parent_tool_use_id"] = "parent-agent"
-    return event
+    return stamped(event, timestamp)
 
 
-def result(tool_id: str, text: str, *, error: bool = False) -> dict:
-    return {
+def result(tool_id: str, text: str, *, error: bool = False, timestamp: str | None = None) -> dict:
+    return stamped({
         "type": "user",
         "message": {"content": [{"type": "tool_result", "tool_use_id": tool_id,
                                    "content": text, "is_error": error}]},
-    }
+    }, timestamp)
 
 
 def tool(tool_id: str, name: str, inp: dict, *, msg: str | None = None, usage: dict | None = None,
-         session: str | None = None) -> dict:
+         session: str | None = None, timestamp: str | None = None) -> dict:
     """One tool_use block as stream-json emits it: one event per block, `msg` shared by a batch.
     `session` is the subagent's parent tool_use id (None: the main session)."""
     message = {"id": msg or f"msg-{tool_id}", "content": [{"type": "tool_use", "id": tool_id, "name": name,
@@ -55,7 +62,14 @@ def tool(tool_id: str, name: str, inp: dict, *, msg: str | None = None, usage: d
     event = {"type": "assistant", "message": message}
     if session is not None:
         event["parent_tool_use_id"] = session
-    return event
+    return stamped(event, timestamp)
+
+
+def api_retry(delay_ms: int, status: int = 502) -> dict:
+    """A `system/api_retry` event: no timestamp, no session (F1)."""
+    return {"type": "system", "subtype": "api_retry", "attempt": 1, "max_retries": 10,
+            "retry_delay_ms": delay_ms, "error_status": status, "error": "server_error",
+            "session_id": "s", "uuid": f"retry-{delay_ms}"}
 
 
 def call(tool_id: str, name: str, inp: dict, text: str = "x" * 10, **kwargs) -> list[dict]:
@@ -624,6 +638,80 @@ class BatchesTest(unittest.TestCase):
         self.assertEqual(set(), analyzer.temp_paths({"name": "Grep", "input": {"path": "/T/mps-node-1.json"}}))
 
 
+class ApiRetriesTest(unittest.TestCase):
+    """A5: `system/api_retry` counts, delays and the timestamp gap around each retry cluster."""
+
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.runs = Path(self.temp_dir.name)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def analyse(self, events: list[dict]):
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+        metrics, *_, clusters, _ = analyzer.analyse_run("r", self.runs)
+        return {k: metrics[k] for k in ("api_retries", "api_stall_s", "api_retry_delay_s")}, clusters
+
+    def test_a_cluster_stalls_from_the_last_timestamp_before_to_the_first_after(self) -> None:
+        metrics, clusters = self.analyse([
+            tool("a", "x", {}, timestamp="2026-09-26T06:29:00.000Z"),
+            result("a", "ok", timestamp="2026-09-26T06:29:10.000Z"),
+            api_retry(500), {"type": "system", "subtype": "thinking_tokens"}, api_retry(1000, 529),
+            tool("b", "y", {}, timestamp="2026-09-26T06:30:30.000Z"), result("b", "ok")])
+        # 1.5 s of declared backoff rounds to 2 (round half to even); the stall is 80 s.
+        self.assertEqual({"api_retries": 2, "api_stall_s": 80, "api_retry_delay_s": 2}, metrics)
+        self.assertEqual([{"before_step": 2, "retries": 2, "stall_s": 80.0, "statuses": [502, 529]}], clusters)
+
+    def test_a_timestamped_event_between_retries_splits_the_cluster(self) -> None:
+        metrics, clusters = self.analyse([
+            result("0", "ok", timestamp="2026-09-26T06:00:00Z"), api_retry(500),
+            {"type": "assistant", "timestamp": "2026-09-26T06:00:30Z",
+             "message": {"id": "m", "content": [{"type": "text", "text": "thinking"}]}},
+            api_retry(500),
+            tool("a", "x", {}, timestamp="2026-09-26T06:01:00Z"), result("a", "ok")])
+        self.assertEqual({"api_retries": 2, "api_stall_s": 60, "api_retry_delay_s": 1}, metrics)
+        self.assertEqual([(1, 1, 30.0), (1, 1, 30.0)],
+                         [(c["before_step"], c["retries"], c["stall_s"]) for c in clusters])
+
+    def test_without_timestamps_retries_count_and_stalls_are_zero(self) -> None:
+        """Junie: normalize_transcript.py copies a timestamp only where the native event had one."""
+        metrics, clusters = self.analyse([
+            *call("a", "x", {}), api_retry(2500), api_retry(1000), *call("b", "y", {}), api_retry(100)])
+        self.assertEqual({"api_retries": 3, "api_stall_s": 0, "api_retry_delay_s": 4}, metrics)
+        # A tool call separates clusters even without timestamps; the last one precedes no call.
+        self.assertEqual([(2, 2, 0), (None, 1, 0)], [(c["before_step"], c["retries"], c["stall_s"]) for c in clusters])
+
+    def test_a_cluster_with_a_timestamp_on_one_side_only_contributes_nothing(self) -> None:
+        metrics, _ = self.analyse([
+            api_retry(500), tool("a", "x", {}, timestamp="2026-09-26T06:00:00Z"),
+            result("a", "ok", timestamp="2026-09-26T06:00:05Z"), api_retry(500)])
+        self.assertEqual({"api_retries": 2, "api_stall_s": 0, "api_retry_delay_s": 1}, metrics)
+
+    def test_an_untimestamped_turn_between_clusters_counts_no_gap_twice(self) -> None:
+        metrics, clusters = self.analyse([
+            result("0", "ok", timestamp="2026-09-26T06:00:00Z"), api_retry(500),
+            *call("a", "x", {}), api_retry(500),
+            tool("b", "y", {}, timestamp="2026-09-26T06:01:00Z"), result("b", "ok")])
+        self.assertEqual({"api_retries": 2, "api_stall_s": 0, "api_retry_delay_s": 1}, metrics)
+        self.assertEqual([(1, 1, 0), (2, 1, 0)],
+                         [(c["before_step"], c["retries"], c["stall_s"]) for c in clusters])
+
+    def test_the_columns_and_clusters_reach_metrics_csv_and_errors_json(self) -> None:
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in [
+            result("0", "ok", timestamp="2026-09-26T06:00:00Z"), api_retry(700),
+            *call("a", "x", {}, timestamp="2026-09-26T06:00:42Z")]))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        with (out / "metrics.csv").open(newline="") as stream:
+            row = next(csv.DictReader(stream))
+        self.assertEqual(("1", "42", "1"), (row["api_retries"], row["api_stall_s"], row["api_retry_delay_s"]))
+        self.assertEqual([{"before_step": 1, "retries": 1, "stall_s": 42.0, "statuses": [502]}],
+                         json.loads((out / "errors.json").read_text())["r"]["api_retry_clusters"])
+
+
 def study_runs(directory: str, run_id: str) -> Path:
     return STUDY_RUNS / directory / f"{run_id}-worker.jsonl"
 
@@ -643,6 +731,18 @@ class StudyTranscriptsA2Test(unittest.TestCase):
     @unittest.skipUnless(study_runs("runs-r18", "S1-sonnet-1").exists(), "runs-r18 transcripts not found")
     def test_round17_s1_sonnet_retries(self) -> None:
         self.assertEqual(5, analyzer.analyse_run("S1-sonnet-1", STUDY_RUNS / "runs-r18")[0]["retries"])
+
+
+class StudyTranscriptsA5Test(unittest.TestCase):
+    """A5's live figures (docs/a2-a8-study-harness-fixes-plan.md section 5)."""
+
+    @unittest.skipUnless(study_runs("runs-r18", "S1-opus-1").exists(), "runs-r18 transcripts not found")
+    def test_round17_s1_opus_api_retries_and_stalls(self) -> None:
+        metrics, *_, clusters, _ = analyzer.analyse_run("S1-opus-1", STUDY_RUNS / "runs-r18")
+        self.assertEqual((9, 21), (metrics["api_retries"], metrics["api_retry_delay_s"]))
+        self.assertTrue(500 <= metrics["api_stall_s"] <= 540, metrics["api_stall_s"])
+        self.assertEqual([4, 13, 14, 20], [c["before_step"] for c in clusters])
+        self.assertEqual(9, sum(c["retries"] for c in clusters))
 
 
 @unittest.skipUnless((ROUND13_RUNS / "S1-sonnet-1-worker.jsonl").exists(),

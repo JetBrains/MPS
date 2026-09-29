@@ -115,8 +115,14 @@ bytes, error envelopes (`is_error` or `{"ok":false`), error→retry pairs (per s
 batch: one per tool with an error in a batch that is called again in one of the session's next two
 batches; before A2 it was "same tool within 2 calls", which counted a batch of five rejections as five),
 validation loops (≥ 3 `check_root_node_problems` on one root), stale-runtime text hits, server
-calls/ms (slice filtered by the run's project). New audit columns are `pre_dispatch_rejections`,
-`welcome_rejections` (rejections whose listing is empty — the Welcome screen, where no
+calls/ms (slice filtered by the run's project), API retries (A5: `api_retries` = every
+`system/api_retry` event, which carries no timestamp and no session; `api_retry_delay_s` =
+`round(sum(retry_delay_ms) / 1000)`; `api_stall_s` = `round(sum of cluster stalls)`, a cluster
+being consecutive retries with no assistant or user event between them and its stall the first
+timestamp after it minus the last before it, 0 when either side has none, e.g. Junie; `round()` is
+Python's, half to even; `errors.json` lists `api_retry_clusters: [{before_step, retries, stall_s,
+statuses}]`, `before_step` = the step of the first tool call after the cluster). New audit
+columns are `pre_dispatch_rejections`, `welcome_rejections` (rejections whose listing is empty — the Welcome screen, where no
 `projectPath` could have helped; 0 is the good value everywhere, S10 included — a worker that reads
 the skill closes and re-opens without probing blind, as the first S10 run did. One is the
 acceptable cost of discovering the state that way; more than one is waste), `close_project_calls`, `modal_blocked`,

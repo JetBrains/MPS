@@ -15,7 +15,8 @@ Outputs (written into --out, default <runs>/analysis):
                 every skill-touching call
   tools.json    per-tool call counts, error counts, avg input chars, avg result bytes (transcript + server)
   chains.json   bigrams/trigrams of tool+op with counts, `parallel` tallies and avg chars per occurrence
-  errors.json   error->retry pairs, check_root_node_problems repeats per root, stale-runtime incidents
+  errors.json   error->retry pairs, check_root_node_problems repeats per root, stale-runtime incidents,
+                API retry clusters
   hotspots.md   top-N chains (count or parallel >= --min-occurrences) with example run-id:step ranges
 
 Batches (A2): stream-json emits a parallel batch as several assistant events sharing one
@@ -25,6 +26,15 @@ then summed. A chain occurrence counts only when its n items come from n differe
 batch-collapsed sequence; n-grams inside one batch are tallied as `parallel`. A retry is one per
 tool with an error in a batch that is called again in one of the session's next two batches.
 Without message ids every rule reduces to the per-call behaviour of earlier rounds.
+
+API retries (A5): `system/api_retry` events carry no timestamp and no session, so `api_retries`
+counts all of them. A cluster is a run of retries with no assistant or user event between them;
+timestamps are used only for its stall: the timestamp of the first timestamped event after it minus
+that of the last timestamped event before it (0 when either side is missing, e.g. Junie). `api_stall_s` = round(sum of stalls in
+seconds), `api_retry_delay_s` = round(sum(retry_delay_ms) / 1000); Python's round() rounds half to
+even (1.5 -> 2, 2.5 -> 2). `errors.json` lists `api_retry_clusters: [{before_step, retries, stall_s,
+statuses}]`, `before_step` being the step of the first tool call after the cluster (None if none) and
+`stall_s` rounded to 0.1 s. `wall_s` includes the stalls.
 A compact JSON summary is printed to stdout. Stdlib only, Python >= 3.9.
 Exit codes: 0 ok, 2 usage.
 """
@@ -39,6 +49,7 @@ import re
 import shlex
 import sys
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 from pathlib import Path
 
 SKILL_DIR_RE = re.compile(r"(?:\.agents|\.claude)/skills/|\bmps-[a-z0-9-]+/(?:SKILL\.md|references/)")
@@ -648,6 +659,28 @@ def root_ref_of(inp) -> str | None:
     return None
 
 
+def event_time(event: dict) -> float | None:
+    """An event's `timestamp` as epoch seconds: ISO 8601 (`...Z` accepted on Python < 3.11) or a
+    number (epoch seconds, or milliseconds when larger than 1e11). None when absent or unparseable."""
+    value = event.get("timestamp")
+    if isinstance(value, bool) or value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return value / 1000 if value > 1e11 else float(value)
+    if isinstance(value, str):
+        text = value.strip()
+        if text.endswith(("Z", "z")):
+            text = text[:-1] + "+00:00"
+        try:
+            parsed = datetime.fromisoformat(text)
+        except ValueError:
+            return None
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.timestamp()
+    return None
+
+
 def load_jsonl(path: Path):
     if not path.exists():
         return []
@@ -693,8 +726,41 @@ def analyse_run(run_id: str, runs: Path):
     result_total = 0
     stale = 0
     final = {}
+    # A5: API retry clusters. `open_cluster` still takes retries (no assistant or user event since its
+    # last retry); clusters in `awaiting_time` have no timestamped event after them yet, clusters in
+    # `awaiting_step` no following tool call.
+    api_clusters, api_retry_delay_ms, last_time = [], 0, None
+    open_cluster, awaiting_time, awaiting_step = None, [], []
     for ev in events:
         t = ev.get("type")
+        ev_time = event_time(ev)
+        if t in ("assistant", "user"):
+            open_cluster = None
+            if ev_time is None:
+                # an untimestamped turn is a side without a timestamp: the clusters before it and the
+                # next one after it get no stall, so no gap is counted twice
+                awaiting_time, last_time = [], None
+        if ev_time is not None:
+            for cluster in awaiting_time:
+                if cluster["_before"] is not None:
+                    cluster["_stall"] = max(0.0, ev_time - cluster["_before"])
+                    cluster["stall_s"] = round(cluster["_stall"], 1)
+            awaiting_time = []
+            open_cluster = None
+            last_time = ev_time
+        if t == "system" and ev.get("subtype") == "api_retry":
+            delay = ev.get("retry_delay_ms")
+            api_retry_delay_ms += delay if isinstance(delay, (int, float)) and not isinstance(delay, bool) else 0
+            if open_cluster is None:
+                open_cluster = {"before_step": None, "retries": 0, "stall_s": 0, "statuses": [],
+                                "_before": last_time, "_stall": 0.0}
+                api_clusters.append(open_cluster)
+                awaiting_time.append(open_cluster)
+                awaiting_step.append(open_cluster)
+            open_cluster["retries"] += 1
+            status = ev.get("error_status")
+            if status not in open_cluster["statuses"]:
+                open_cluster["statuses"].append(status)
         if t == "system" and ev.get("subtype") == "init" and init_cwd is None:
             init_cwd = ev.get("cwd")
         elif t == "system" and ev.get("subtype") == "compact_boundary" and not is_child_event(ev):
@@ -712,6 +778,9 @@ def analyse_run(run_id: str, runs: Path):
             for block in msg.get("content") or []:
                 if isinstance(block, dict) and block.get("type") == "tool_use":
                     step += 1
+                    for cluster in awaiting_step:
+                        cluster["before_step"] = step
+                    awaiting_step = []
                     name = mcp_name(block.get("name", "?"))
                     inp = block.get("input")
                     call = {"step": step, "name": name, "key": key_of(name, inp), "input": inp,
@@ -761,6 +830,7 @@ def analyse_run(run_id: str, runs: Path):
             if final is None or (ev.get("num_turns") or 0) >= (final.get("num_turns") or 0):
                 final = ev
 
+    api_retry_clusters = [{k: v for k, v in c.items() if not k.startswith("_")} for c in api_clusters]
     navigation = analyse_navigation(calls, compactions, init_cwd or meta.get("project"))
     recovery_calls, unrecovered = assignability_recovery(calls)
     # Without result usage (killed run, Junie) the per-message sum is the closest quantity; it can
@@ -796,7 +866,6 @@ def analyse_run(run_id: str, runs: Path):
     server_ok = sum(1 for s in server if s.get("ok"))
     wall_ms = final.get("duration_ms")
     if wall_ms is None and meta.get("startTs") and meta.get("endTs"):
-        from datetime import datetime
         f = "%Y-%m-%dT%H:%M:%SZ"
         wall_ms = int((datetime.strptime(meta["endTs"], f) - datetime.strptime(meta["startTs"], f)).total_seconds() * 1000)
 
@@ -846,12 +915,15 @@ def analyse_run(run_id: str, runs: Path):
         "temp_file_envelopes": sum(1 for c in calls if c["name"].startswith("mps_mcp_") and c["result_is_temp_file"]),
         "errors": sum(1 for c in calls if c["error"]), "retries": len(retries),
         "validation_loops": len(loops), "stale_incidents": stale,
+        "api_retries": sum(c["retries"] for c in api_retry_clusters),
+        "api_stall_s": round(sum(c["_stall"] for c in api_clusters)),
+        "api_retry_delay_s": round(api_retry_delay_ms / 1000),
         "server_calls": len(server), "server_mps_calls": server_mps_calls,
         "server_call_surplus": server_call_surplus,
         "server_errors": len(server) - server_ok,
         "server_ms": sum(s.get("ms", 0) or 0 for s in server),
     }
-    return metrics, calls, chains, retries, loops, server, navigation
+    return metrics, calls, chains, retries, loops, server, api_retry_clusters, navigation
 
 
 def main(argv=None) -> int:
@@ -873,7 +945,7 @@ def main(argv=None) -> int:
     tool_chars, tool_bytes = defaultdict(int), defaultdict(int)
     navigations = {}
     for rid in run_ids:
-        m, calls, chains, retries, loops, server, navigation = analyse_run(rid, runs)
+        m, calls, chains, retries, loops, server, api_retry_clusters, navigation = analyse_run(rid, runs)
         all_metrics.append(m)
         navigations[rid] = navigation
         for gram, e in chains.items():
@@ -909,7 +981,7 @@ def main(argv=None) -> int:
                            "was off). Check the run's relatedProjects and mpsPid before comparing it.")
             print(f"WARNING: {warning}", file=sys.stderr)
         errors[rid] = {"retries": retries, "validation_loops": loops,
-                       "server_call_surplus_warning": warning}
+                       "server_call_surplus_warning": warning, "api_retry_clusters": api_retry_clusters}
 
     with (out / "metrics.csv").open("w", newline="") as fh:
         if all_metrics:
