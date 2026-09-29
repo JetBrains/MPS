@@ -227,7 +227,11 @@
     the first call, and pass `MPS_MCP_URL` to everything. `run_worker.sh` hard-codes
     `$STUDY/mcp.study.json`, so until A3 is fixed, run from a `STUDY` mirror (symlinked `scripts/`,
     `scenarios/`, `fixtures/`, `mcp-junie/` plus an edited `mcp.study.json`) instead of editing the
-    tracked file or the IDE setting.
+    tracked file or the IDE setting. **Fixed by A3 (2026-09-29):** `mps_mcp_url.py` reads the port
+    off the launcher's listening sockets (confirmed on `serverInfo.name`, else the selector's
+    `mcpServer.xml`), `mps_control.sh` and `run_worker.sh` export it, and the worker config is
+    generated per run into `$RUNS/<id>-mcp/`. Both tracked config files are gone, so the `STUDY`
+    mirror is no longer needed.
 40. **Two cells on one fixture share its language runtime.** `isolationLevel: per-round` assumed that
     closing a project unloads everything it deployed. In round 17, S2-sonnet opened a fresh statechart
     copy and `get_concept_details` answered with the `guard` role S2-opus had added and compiled in the

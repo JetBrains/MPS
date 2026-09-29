@@ -2,8 +2,14 @@
 """Record the MPS MCP server tool inventory (names, parameter names, description sizes).
 
 Performs the Streamable HTTP handshake (initialize -> notifications/initialized -> tools/list)
-against $MPS_MCP_URL (default http://localhost:64343/stream), honouring Mcp-Session-Id.
+against --url, else $MPS_MCP_URL, honouring Mcp-Session-Id. mps_control.sh and run_worker.sh
+detect the URL from the live MPS (mps_mcp_url.py) and export it, so the port the IDE selector
+configured reaches every child script. Only with neither set does it fall back to DEFAULT_URL
+(http://localhost:64343/stream, right for the 261 selector), and then says so on stderr.
 Writes the full tools/list payload to --out and prints a compact JSON summary to stdout.
+
+`McpClient` is shared by mcp_call.py, install_skills.py and mps_mcp_url.py (which probes with a
+short `timeout`).
 
 Exit codes: 0 ok, 2 usage, 3 MCP error envelope, 4 server unreachable.
 Stdlib only (Python >= 3.9).
@@ -20,13 +26,24 @@ import urllib.request
 DEFAULT_URL = "http://localhost:64343/stream"
 
 
+def env_url() -> str:
+    """$MPS_MCP_URL, else DEFAULT_URL with a stderr line: the constant is never used silently
+    (an empty variable counts as unset)."""
+    url = os.environ.get("MPS_MCP_URL")
+    if url:
+        return url
+    print(f"MPS_MCP_URL unset; using {DEFAULT_URL}", file=sys.stderr)
+    return DEFAULT_URL
+
+
 class McpError(Exception):
     pass
 
 
 class McpClient:
-    def __init__(self, url: str):
+    def __init__(self, url: str, timeout: float = 60):
         self.url = url
+        self.timeout = timeout
         self.session_id: str | None = None
         self._id = 0
 
@@ -38,7 +55,7 @@ class McpClient:
         if self.session_id:
             req.add_header("Mcp-Session-Id", self.session_id)
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
+            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 sid = resp.headers.get("Mcp-Session-Id")
                 if sid:
                     self.session_id = sid
@@ -90,12 +107,12 @@ class McpClient:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--url", default=os.environ.get("MPS_MCP_URL", DEFAULT_URL))
+    ap.add_argument("--url", help="MCP endpoint (default: $MPS_MCP_URL, else DEFAULT_URL)")
     ap.add_argument("--out", required=True, help="file for the full tools/list payload (JSON)")
     ap.add_argument("--prefix", default="mps_mcp_", help="only count tools with this prefix in the summary")
     args = ap.parse_args(argv)
 
-    client = McpClient(args.url)
+    client = McpClient(args.url or env_url())
     try:
         init = client.initialize()
         tools = []

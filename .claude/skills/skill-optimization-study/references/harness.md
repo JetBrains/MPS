@@ -16,12 +16,27 @@ unpinned, and an unset `EFFORT` prints a warning on stderr. Unpinned Claude work
 `~/.claude/settings.json`: `modelSettings.<full-id>.effortLevel`, else the top-level `effortLevel`,
 both of which the observer's `/effort` rewrites; a project `.claude/settings*.json` may override them),
 `RELATED_PROJECTS` (colon-separated; auto-set to `<project>-target` for S10),
+`MPS_MCP_URL` (unset — detected from the live MPS by `mps_mcp_url.py` and required to be
+confirmed; a non-empty value is used as given), `MCP_CONFIG` (unset — the worker's MCP config is generated per run; set it to use an
+explicit one: a **file** for Claude, a **directory** holding `mcp.json` for Junie, anything else
+exits 2),
 `WORKER_HARNESS` (`claude`|`junie`; overrides auto-detect). Auto-detect uses observer `JUNIE_TMPDIR` /
 `JUNIE_DATA` vs `CLAUDE_CODE` / `CLAUDE_CODE_ENTRYPOINT`. Default is `claude` when neither env is set,
 so `run_worker.sh SMOKE sonnet N` still works; both env vars without an override exit 2. The run id
 is `<scenario>-<modelSlug>-<run-no>` (`modelSlug` replaces characters other than `[A-Za-z0-9._-]`
 with `-`). Writes `<id>.meta.json` (includes `harness` and `modelSlug`), `<id>-worker.jsonl`,
-`<id>-worker.stderr`, `<id>-server.jsonl` (call-log slice by byte offsets), `<id>-install.json`.
+`<id>-worker.stderr`, `<id>-server.jsonl` (call-log slice by byte offsets), `<id>-install.json`,
+`<id>-mcp/mcp.json` (the worker's MCP config, unless `MCP_CONFIG` is set).
+The MCP URL is resolved once, before anything talks to MPS. A non-empty `MPS_MCP_URL` is used as
+given and must answer the MCP handshake (`tools_inventory.py --out /dev/null`). Otherwise
+`mps_mcp_url.py --json` detects it and the result must be `confirmed: true` (the server answered as
+MPS); an unconfirmed guess — the selector's `mcpServer.xml` or the 64343 default — exits 3 with
+"MPS MCP not confirmed at <url> (source <s>)": run `mps_control.sh wait` first, or set
+`MPS_MCP_URL`. Either failure exits 3 before any run file is written. The URL is exported
+before `install_skills.py`, is forwarded to the worker, and is written by
+`worker_mcp_config.py` into `$RUNS/<id>-mcp/`, so both harnesses leave the config they ran with as
+evidence. No tracked file pins the port any more (defect A3: the port belongs to the IDE selector —
+64343 on the 261 from-sources selector, 64344 on 262).
 A Junie worker also writes `<id>-worker.native.jsonl` (from `--json-output-file`, never stdout —
 Junie prints a non-JSON startup banner) and `<id>-worker.stdout` as a debug sidecar. Before taking
 the call-log offsets it runs `install_skills.py --project
@@ -39,7 +54,11 @@ effect. Missing/empty catalogs, unrelated definitions and unrelated skills pass.
 `.agents/skills` still load without it; user-skill isolation for the first Junie matrix is the
 preflight `~/.junie/skills` check. The meta gains
 `skillsSha256` (catalog fingerprint) and `skillsInstalled`, plus the MPS process under measurement
-(`mpsPid`, `mpsStartTs`), `isolationLevel`, `projectSynthesized` and `relatedProjects`. `mpsPid`
+(`mpsPid`, `mpsStartTs`), `isolationLevel`, `projectSynthesized`, `relatedProjects`, and the MCP
+endpoint: `mpsMcpUrl`, `mpsMcpUrlSource` (`env`, or the detection source: `lsof`, in practice the
+only one that passes the confirmation check), `mcpConfigSource` (`env` for `MCP_CONFIG`, else
+`generated`) and `mcpConfigPath`. `mpsPid` is the launcher whose port was detected (with a
+user-set `MPS_MCP_URL`, pgrep's first match); it
 is what makes "one MPS per round" checkable after the fact instead of argued in prose;
 `relatedProjects` is load-bearing for S10 — the analyser filters the server call log by project,
 so without it a lifecycle run's whole server slice is discarded. Launch detached and poll:
@@ -57,11 +76,13 @@ bound for Junie: Junie 3452.1 has no `--max-turns` (and no `--verbose` / `--perm
 refused (exit 2) — bump the run number instead. Worker prompts use the cwd as `projectPath`.
 The child CLI runs under `env -i HOME PATH USER SHELL LANG TERM TMPDIR` because an agent session
 leaks `ANTHROPIC_BASE_URL` / `CLAUDE_CODE_*` / `JUNIE_TMPDIR` / `JUNIE_DATA` (do not pass observer
-Junie temp dirs). Claude: `--permission-mode bypassPermissions --mcp-config study/mcp.study.json
---strict-mcp-config --output-format stream-json --verbose --max-turns $MAX_TURNS < /dev/null`.
+Junie temp dirs); `MPS_MCP_URL` is forwarded. Claude: `--permission-mode bypassPermissions
+--mcp-config $RUNS/<id>-mcp/mcp.json --strict-mcp-config --output-format stream-json --verbose
+--max-turns $MAX_TURNS < /dev/null`.
 Junie: `junie --task --model -p "$PROJECT" --output-format json-stream --json-output-file
 <id>-worker.native.jsonl --skip-update-check --mcp-default-locations=false --mcp-location
-$STUDY/mcp-junie` (study MCP URL only, analogue of `--strict-mcp-config`). Junie workers may leave
+$RUNS/<id>-mcp` (study MCP URL only, analogue of `--strict-mcp-config`). With `MCP_CONFIG` set, its
+absolute path replaces the generated file or directory. Junie workers may leave
 session files under `~/.junie/sessions`; do not auto-delete them.
 
 ## list_worker_models.py
@@ -164,9 +185,19 @@ migrationEntries, files}`. Compare `migrationEntries` semantically, never the ra
 ends the document with a newline, an MPS-written one does not. Exit: 0 ok, 2 usage, 3 bad MPS home,
 4 target not empty.
 
-## mps_control.sh `capture|calllog|open|shutdown|start|wait|restart [project-dir]`
+## mps_control.sh `capture|calllog|open|shutdown|start|wait|restart [project-dir]` / `url [--json] [--timeout S]`
 MPS process control. Env: `CAPTURE` (default `$TMPDIR/mps-study-cmdline.json`), `SHUTDOWN_WAIT`
-(60 s), `READY_WAIT` (300 s), `MPS_MCP_URL`.
+(60 s), `READY_WAIT` (300 s), `MPS_MCP_URL` (a non-empty value at script start is used as given and
+skips detection; `MPS_MCP_URL= mps_control.sh wait` counts as unset). Otherwise `open`, `shutdown`,
+`wait` and `restart` detect the URL with `mps_mcp_url.py` and **export** it, so the `mcp_call.py`
+and `tools_inventory.py` they call use the selector's port; if no launcher is found they fall back
+to `http://localhost:64343/stream` with one stderr warning per script run — also when detection
+itself ends at that default (`source: default`). With several launchers running they print one
+warning naming them, the pid the URL came from, and pgrep's first match, which `capture` and
+`shutdown` act on. `wait` and `open`
+report `url` and `confirmed` in their JSON.
+- `url` — prints the detected URL (bare, shell-substitutable); `--json` prints the whole detection
+  result (`mps_mcp_url.py`, below). It always detects, whatever `MPS_MCP_URL` says.
 - `capture` — records the live launch command line (java binary + cwd from `ps`/`lsof`, VM options
   and classpath from `jcmd VM.command_line`, spaced tokens rejoined, jdwp and `idea_rt.jar`
   stripped). **Must run while MPS is alive**; `shutdown` refuses without it, because after the exit
@@ -193,10 +224,38 @@ MPS process control. Env: `CAPTURE` (default `$TMPDIR/mps-study-cmdline.json`), 
 - `start` — relaunches **detached** from the capture, optionally opening `[project-dir]`, keeping
   `-Dmps.mcp.calllog=…`. The ~90 s foreground timeout in `mps-project-management` applies to
   *activation*, not to a cold start; applying it here would kill MPS.
-- `wait` — readiness handshake (`tools_inventory.py`, then the project listed), never `ps`.
+- `wait` — readiness handshake (`tools_inventory.py`, then the project listed), never `ps`. It
+  re-detects the URL on every iteration (probe timeout 2 s) until `confirmed` is true — right after
+  a start MCP does not listen yet, and a URL fixed on the first iteration would poll the wrong port
+  for `READY_WAIT` — and it measures `READY_WAIT` as wall time, because a port that accepts and
+  never answers costs a full probe timeout per iteration.
 - `restart` — capture (if absent) → shutdown → start → wait.
 With no capture and MPS down, use the IDEA `MPS` run configuration with the project path as a
 program argument instead of reconstructing a command.
+
+## mps_mcp_url.py `[--json] [--timeout SECONDS] [--pid PID]`
+Detects the MCP URL of the running MPS. Starts from the launcher pids (`pgrep -f
+jetbrains.mps.Launcher`; the first one with a confirmed port wins, since a short-lived activation
+process is a launcher too — with several real MPS processes, set `MPS_MCP_URL` by hand) and their
+own listening TCP ports (`lsof -nP -a -p <pid> -iTCP -sTCP:LISTEN`); each
+`http://localhost:<port>/stream` gets an MCP `initialize` (`--timeout`, default 5 s) and the first
+whose `serverInfo.name` contains `MPS` wins (`source: lsof, confirmed: true`). HTTP 200 proves
+nothing — IDEA's MCP server answers too, as "IntelliJ IDEA MCP Server" — and well-known ports are
+never probed. Without `lsof`, or when nothing answers yet, it reads `mcpServerPort` from the
+selector's `options/mcpServer.xml` (selector and `-Didea.config.path` from the process args; macOS
+`~/Library/Application Support/JetBrains/<selector>`, Linux `~/.config/JetBrains/<selector>`), or
+the platform default 64342 when the option is absent (`source: mcpServer.xml, confirmed: false`).
+A malformed or unreadable `mcpServer.xml` is ignored (stderr line), never read as the default;
+with neither a confirmed port nor a readable file the result is the 64343 constant
+(`source: default`, with a stderr line). With several launchers stderr names them all and the one
+chosen. stdout: the bare URL, or with `--json` `{ok, url, port, source, confirmed, pid, launchers,
+selector, candidates}`. Exit: 0 ok — **also when unconfirmed**, since `wait` runs exactly while MCP is not up —,
+2 usage, 3 no launcher process.
+
+## worker_mcp_config.py `--harness claude|junie --url URL --out-dir DIR`
+Writes `DIR/mcp.json` (compact JSON) and prints what the harness flag takes: the file for Claude
+(`{"mcpServers":{"mps-mcp-server":{"type":"http","url":URL}}}`), the directory for Junie (same
+without `type`). `run_worker.sh` calls it with `--out-dir $RUNS/<id>-mcp`.
 
 ## show_steps.py `<worker.jsonl> <from> <to> [--input-chars N --result-chars N]`
 Compact view of a step range (1-based tool_use ordinals as in `chains.json` examples) with inputs,
@@ -218,7 +277,9 @@ Non-`mps-*` skills are never touched.
 ## mcp_call.py `<tool> '<json-args>' [--url URL] [--raw] [--max-chars N]`
 One MPS MCP tool call from the shell. The observing/evaluating session is normally NOT connected to
 the server (only the workers are, via `--mcp-config`), so this is how the observer and the Opus
-evaluators reach MPS. If this session already has `mps_mcp_*` tools, call them directly instead.
+evaluators reach MPS. It does not detect the URL: `--url`, else `MPS_MCP_URL`, else the 64343
+constant with a stderr line — prefix a direct call with `MPS_MCP_URL=$(mps_control.sh url)` on a
+selector that uses another port. If this session already has `mps_mcp_*` tools, call them directly instead.
 Pass `projectPath` inside the JSON args — the platform requires it on every tool. A temp-file envelope is resolved and inlined automatically, including the duplicate-envelope
 shape (the file holds a whole `{"ok":…,"data":…}`, not the bare payload — defect D25).
 Evaluators stay read-only (the tool list in the scenario's `done_criteria.md`). The observer may
@@ -264,7 +325,9 @@ for approval.
 2. Close every project but one, then `mps_control.sh shutdown` — the exit rides on the close of the
    last open project, and a Welcome-screen MPS cannot be stopped over MCP at all (lesson 28).
 3. `mps_control.sh start <project>`, then `wait`, then one SMOKE run. A live process is not
-   readiness: indexing is still settling when the pid appears.
+   readiness: indexing is still settling when the pid appears. `wait` also re-detects the MCP URL
+   (the port belongs to the IDE selector) and reports it with `confirmed`; the scripts pass it on
+   themselves, so do not export an older value across the restart.
 4. If MPS stays up after the close, read the two states `shutdown` prints before doing anything
    else; only the user dismisses a dialog.
 
@@ -275,7 +338,10 @@ including S10, which closes one project before opening the next rather than hold
 ## tools_inventory.py `--out $RUNS/inventory.json`
 Use exactly this path: `run_worker.sh` stores its sha256 as `inventorySha256` in every meta file.
 Streamable-HTTP `initialize` → `notifications/initialized` → `tools/list`; records names, parameter
-names, description/schema bytes. Its `McpClient` class is the seed of an online client if ever needed.
+names, description/schema bytes. Its `McpClient` class (optional `timeout`, default 60 s) is shared
+by `mcp_call.py`, `install_skills.py` and `mps_mcp_url.py`, and is the seed of an online client if
+ever needed. URL: `--url`, else `MPS_MCP_URL`, else `http://localhost:64343/stream` with a stderr
+line; it does not detect the port itself.
 
 ## Per-run procedure card
 1. **Synthesize** (`python3 $STUDY/scripts/new_study_project.py --dir

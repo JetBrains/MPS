@@ -2,6 +2,7 @@
 # MPS process control for the study observer: capture, shutdown, start, wait, restart.
 #
 # usage: mps_control.sh capture|calllog|open|shutdown|start|wait|restart [project-dir]
+#        mps_control.sh url [--json] [--timeout SECONDS]
 #
 # [project-dir] is optional everywhere and always the SAME project: the one to close on shutdown,
 # to open on start, to require as loaded on wait. Pass it whenever you know it — without it,
@@ -14,6 +15,13 @@
 #   start     relaunch MPS DETACHED from the capture, optionally opening [project-dir]
 #   wait      readiness handshake: MCP tools/list, then list_open_projects
 #   restart   capture (if absent) -> shutdown -> start -> wait
+#   url       print the MCP URL detected from the live MPS (scripts/mps_mcp_url.py)
+#
+# The MCP URL: a non-empty $MPS_MCP_URL at script start is used as given. Otherwise every
+# subcommand that talks to MCP detects it from the running launcher (its listening ports, confirmed
+# on serverInfo.name, else the selector's mcpServer.xml) and EXPORTS it, so mcp_call.py and
+# tools_inventory.py inherit the port the IDE selector configured (study defect A3; the 262
+# selector uses 64344, not 64343). `wait` re-detects on every iteration until the URL is confirmed.
 #
 # The capture lives in $TMPDIR (CAPTURE=$TMPDIR/mps-study-cmdline.json), NOT in $RUNS: wrap-up
 # deletes ~/MPSProjects/mcp-study/, and mps-project-management restricts helper dumps to $TMPDIR.
@@ -32,12 +40,61 @@ set -uo pipefail
 
 STUDY=${STUDY:-"$(cd "$(dirname "$0")/.." && pwd)"}
 CAPTURE=${CAPTURE:-"${TMPDIR:-/tmp}/mps-study-cmdline.json"}
-MPS_MCP_URL=${MPS_MCP_URL:-http://localhost:64343/stream}
+USER_URL=${MPS_MCP_URL:-}                # only this short-circuits detection, never the export
+FALLBACK_URL=http://localhost:64343/stream  # last resort when no launcher answers (right for 261)
+URL_CONFIRMED=false
+URL_WARNED=false
+LAUNCHERS_WARNED=false
 SHUTDOWN_WAIT=${SHUTDOWN_WAIT:-60}     # seconds to wait for the pid to disappear
 READY_WAIT=${READY_WAIT:-300}          # seconds to wait for MCP to answer after a start
 
 die() { echo "$*" >&2; exit 3; }
 mps_pid() { pgrep -f '[j]etbrains\.mps\.Launcher' | head -1; }
+
+# Sets and EXPORTS MPS_MCP_URL, and sets URL_CONFIRMED. Call it in the CURRENT shell, never as
+# $(resolve_url): a subshell would lose both. $1 = probe timeout per port (default 5 s).
+resolve_url() {
+  local timeout="${1:-5}" detected="" launchers=""
+  if [ -n "$USER_URL" ]; then
+    export MPS_MCP_URL="$USER_URL"; URL_CONFIRMED=true; return 0
+  fi
+  detected=$(python3 "$STUDY/scripts/mps_mcp_url.py" --json --timeout "$timeout" 2>/dev/null |
+    python3 -c '
+import json, sys
+try:
+    d = json.load(sys.stdin)
+except ValueError:
+    sys.exit(0)
+if d.get("ok") and d.get("url"):
+    print(d["url"], "true" if d.get("confirmed") else "false", d.get("source") or "unknown",
+          d.get("pid") or "-", ",".join(map(str, d.get("launchers") or [])) or "-")')
+  local source="" pid=""
+  if [ -n "$detected" ]; then
+    read -r MPS_MCP_URL URL_CONFIRMED source pid launchers <<< "$detected"
+    export MPS_MCP_URL
+    # Same once-per-run rule for the several-launchers line mps_mcp_url.py printed to the dropped
+    # stderr. `shutdown` and `capture` act on mps_pid() (pgrep's first match), which may differ.
+    if [ "${launchers//[^,]/}" != "" ] && [ "$LAUNCHERS_WARNED" != true ]; then
+      echo "several MPS launchers running (${launchers//,/, }); MCP URL from pid $pid," \
+        "while capture/shutdown use pgrep's first ($(mps_pid)) — set MPS_MCP_URL to pick one" >&2
+      LAUNCHERS_WARNED=true
+    fi
+  else
+    export MPS_MCP_URL="$FALLBACK_URL"; URL_CONFIRMED=false; source=failed
+  fi
+  # Detection's stderr is dropped (it would repeat every `wait` iteration); announce the constant
+  # here instead, once per script run, whether detection failed or itself fell back to it.
+  if [ "$source" = failed ] || [ "$source" = default ]; then
+    if [ "$URL_WARNED" != true ]; then
+      if [ "$source" = failed ]; then
+        echo "MCP URL detection failed (is MPS running?); using $MPS_MCP_URL" >&2
+      else
+        echo "MCP URL detection found no MPS MCP port; using the default $MPS_MCP_URL" >&2
+      fi
+      URL_WARNED=true
+    fi
+  fi
+}
 
 # --- capture ---------------------------------------------------------------------------------
 # The java binary and working directory are not in the jcmd dump: the binary is the first token of
@@ -144,6 +201,7 @@ do_open() {
   [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — run 'capture' first"
   [ -n "$(mps_pid)" ] || die "MPS is not running — use 'start' (a cold start), not 'open'"
   [ -d "$project" ] || die "no such project directory: $project"
+  resolve_url
 
   CAPTURE="$CAPTURE" PROJECT="$project" python3 - <<'ACTIVATE'
 import json, os, subprocess, time
@@ -170,7 +228,7 @@ ACTIVATE
   local waited=0
   while [ "$waited" -lt 60 ]; do
     if open_projects "$project" | grep -qF "$project"; then
-      echo "{\"ok\":true,\"opened\":\"$project\",\"confirmedAfterSeconds\":$waited}"; return 0
+      echo "{\"ok\":true,\"opened\":\"$project\",\"confirmedAfterSeconds\":$waited,\"url\":\"$MPS_MCP_URL\",\"confirmed\":$URL_CONFIRMED}"; return 0
     fi
     sleep 3; waited=$((waited + 3))
   done
@@ -227,6 +285,7 @@ do_shutdown() {
   [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — run 'capture' while MPS is still alive"
   local pid; pid=$(mps_pid)
   [ -n "$pid" ] || { echo '{"ok":true,"alreadyDown":true}'; return 0; }
+  resolve_url
 
   local projects project count
   projects=$(open_projects "${1:-}") || die "cannot list open projects (is MCP up?)"
@@ -290,33 +349,45 @@ PY
 # indexing settles. With a project directory, readiness means that project is listed. Without one,
 # a pre-dispatch rejection that carries a non-empty project listing is itself proof the server
 # dispatches and the project is loaded.
+# The URL is re-detected on every iteration until it is confirmed: on 262 the first iterations run
+# before MCP listens, and a URL fixed once would poll the wrong port for READY_WAIT seconds.
+# `restart` enters with URL_CONFIRMED=true from the shutdown step, for a process that is gone, so it
+# is reset here. The probe timeout is 2 s, and the wait is wall time (SECONDS), not a sum of sleeps:
+# a port that accepts and never answers costs a full probe timeout per iteration.
 do_wait() {
-  local want="${1:-}" waited=0 listed
+  local want="${1:-}" start=$SECONDS waited=0 listed
+  URL_CONFIRMED=false
   while [ "$waited" -lt "$READY_WAIT" ]; do
+    [ "$URL_CONFIRMED" = true ] || resolve_url 2
     if python3 "$STUDY/scripts/tools_inventory.py" --out "${TMPDIR:-/tmp}/mps-study-ready.json" >/dev/null 2>&1; then
       listed=$(open_projects "$want")
+      waited=$((SECONDS - start))
       if [ -n "$want" ]; then
         if printf '%s\n' "$listed" | grep -qF "$want"; then
-          READY="${TMPDIR:-/tmp}/mps-study-ready.json" WAITED=$waited PROJ="$want" python3 -c '
+          READY="${TMPDIR:-/tmp}/mps-study-ready.json" WAITED=$waited PROJ="$want" \
+            URL="$MPS_MCP_URL" CONFIRMED="$URL_CONFIRMED" python3 -c '
 import json, os
 d = json.load(open(os.environ["READY"]))
 print(json.dumps({"ok": True, "tools": len(d.get("tools", [])),
-                  "project": os.environ["PROJ"], "waitedSeconds": int(os.environ["WAITED"])}))'
+                  "project": os.environ["PROJ"], "waitedSeconds": int(os.environ["WAITED"]),
+                  "url": os.environ["URL"], "confirmed": os.environ["CONFIRMED"] == "true"}))'
           return 0
         fi
       elif [ -n "$(printf '%s\n' "$listed" | grep .)" ]; then
-        READY="${TMPDIR:-/tmp}/mps-study-ready.json" WAITED=$waited LISTED="$listed" python3 -c '
+        READY="${TMPDIR:-/tmp}/mps-study-ready.json" WAITED=$waited LISTED="$listed" \
+          URL="$MPS_MCP_URL" CONFIRMED="$URL_CONFIRMED" python3 -c '
 import json, os
 d = json.load(open(os.environ["READY"]))
 print(json.dumps({"ok": True, "tools": len(d.get("tools", [])),
                   "projects": [p for p in os.environ["LISTED"].splitlines() if p],
-                  "waitedSeconds": int(os.environ["WAITED"])}))'
+                  "waitedSeconds": int(os.environ["WAITED"]),
+                  "url": os.environ["URL"], "confirmed": os.environ["CONFIRMED"] == "true"}))'
         return 0
       fi
     fi
-    sleep 5; waited=$((waited + 5))
+    sleep 5; waited=$((SECONDS - start))
   done
-  die "MPS did not answer MCP with a loaded project within ${READY_WAIT}s"
+  die "MPS did not answer MCP with a loaded project within ${READY_WAIT}s (last URL: ${MPS_MCP_URL:-none}, confirmed: $URL_CONFIRMED)"
 }
 
 case "${1:-}" in
@@ -326,10 +397,12 @@ case "${1:-}" in
   shutdown) do_shutdown "${2:-}" ;;
   start)    do_start "${2:-}" ;;
   wait)     do_wait "${2:-}" ;;
+  url)      shift; exec python3 "$STUDY/scripts/mps_mcp_url.py" "$@" ;;
   restart)
     [ -f "$CAPTURE" ] || do_capture >/dev/null
     do_shutdown "${2:-}" && do_start "${2:-}" && do_wait "${2:-}" ;;
   *) echo "usage: $(basename "$0") capture|calllog|open|shutdown|start|wait|restart [project-dir]
+       $(basename "$0") url [--json] [--timeout SECONDS]
        calllog takes a call-log FILE (or nothing, to clear it), not a project directory" >&2
      exit 2 ;;
 esac

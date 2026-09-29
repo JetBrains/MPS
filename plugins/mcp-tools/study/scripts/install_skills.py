@@ -33,7 +33,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from tools_inventory import DEFAULT_URL, McpClient, McpError  # noqa: E402
+from tools_inventory import McpClient, McpError, env_url  # noqa: E402
 
 TOOL = "mps_mcp_initialize_project_for_agents"
 SKILL_DIRS = (Path(".agents") / "skills", Path(".claude") / "skills")
@@ -104,7 +104,7 @@ def main(argv=None) -> int:
     ap.add_argument("--sha-only", metavar="DIR", help="print the catalog sha256 of DIR/.claude/skills and exit")
     ap.add_argument("--project", help="projectPath: an MPS project open in the running MPS")
     ap.add_argument("--target", help="targetDirectory for the install (default: --project)")
-    ap.add_argument("--url", default=os.environ.get("MPS_MCP_URL", DEFAULT_URL))
+    ap.add_argument("--url", help="MCP endpoint (default: $MPS_MCP_URL, else tools_inventory.DEFAULT_URL)")
     ap.add_argument("--dry-run", action="store_true", help="report what would be removed; call nothing")
     args = ap.parse_args(argv)
 
@@ -130,7 +130,7 @@ def main(argv=None) -> int:
 
     # Handshake BEFORE purging. Purging first and then finding the server down leaves the project
     # with no catalog at all, which is worse than the stale one it had (hit for real, 2026-09-17).
-    client = McpClient(args.url)
+    client = McpClient(args.url or env_url())
     try:
         client.initialize()
     except ConnectionError as e:

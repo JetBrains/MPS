@@ -65,7 +65,13 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
 
 ## Procedure (tick as you go; details in the references)
 
-1. **Preflight** — MPS running with MCP on `http://localhost:64343/stream`. Check the toolchain:
+1. **Preflight** — MPS running with the MCP server enabled. The port belongs to the IDE selector
+   (64343 on the 261 from-sources MPS, 64344 on 262); `mps_control.sh` and `run_worker.sh` detect
+   it from the live launcher themselves (`mps_control.sh url --json` shows what they find). **Do
+   not export `MPS_MCP_URL` during preflight**: MPS may not be up yet, and an exported unconfirmed
+   value pins the whole round to the wrong port. Set it by hand only to override detection (e.g.
+   several MPS processes), or after `mps_control.sh wait` has reported `confirmed: true`. SMOKE
+   targets the harness project, never a developer checkout. Check the toolchain:
    `claude --version` (≥ 2.1; must accept `--output-format stream-json --strict-mcp-config`)
    when the detected harness is Claude, or `junie --version` when it is Junie,
    `python3 -c 'import sys; assert sys.version_info >= (3, 9)'`, `jq --version`.
@@ -90,7 +96,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    must print the option, and the file must grow after a tool call. If it is off and gate question
    1 said call-log, step 2 turns it on; if gate 1 said transcript-only,
    expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
-   Record the tool inventory: `python3 $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json`.
+   Record the tool inventory: `MPS_MCP_URL=$($STUDY/scripts/mps_control.sh url) python3
+   $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json` (it does not detect the port itself).
    Run the harness's own unit tests once (`cd $STUDY/scripts && python3 -m unittest discover -s
    tests -p 'test_*.py'`) — a broken script is cheaper to find here than in the evidence.
    Then run the contamination guard yourself: `python3 $STUDY/scripts/check_user_agents.py`
@@ -124,8 +131,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    then records `skillsSha256` in the meta. Verify every tarball:
    `tar -tzf <f>.tar.gz | grep -E '(^|/)(\.claude|\.agents|AGENTS\.md|CLAUDE\.md)'` must be empty
    (a synthesized project has nothing to verify).
-   Do NOT put `.mcp.json` in the template; the worker gets the server from `study/mcp.study.json`
-   with `--strict-mcp-config`.
+   Do NOT put `.mcp.json` in the template; `run_worker.sh` generates the worker's MCP config per
+   run into `$RUNS/<id>-mcp/` from the detected URL and passes it with `--strict-mcp-config`.
 4. **Smoke** — `SMOKE` is a harness check, not a scenario: a read-only prompt that lists open
    projects and stops, so it runs against the harness project itself (no template copy, no
    evaluation, `pass` stays empty). It is also the **readiness gate after every MPS start or
