@@ -87,9 +87,11 @@ rehearsal run has shown the worker's MCP session surviving the zero-project wind
 normally at 20 on the same session), so its prompt is now **frozen**.
 
 ## Writing done criteria
-Observer-checkable with read-only tools only; list the exact tool per check; accept equivalent
-modelling explicitly (e.g. 0..n references as smart-reference wrapper concepts); say which checker
-messages count as errors vs warnings. Known quirk: enum default literal prints as `""`.
+Observer-checkable with read-only tools only (the one exception: an observer MAKE between two
+evaluator passes, when a check needs a built language — S8 criterion 3, A8); list the exact tool
+per check; accept equivalent modelling explicitly (e.g. 0..n references as smart-reference
+wrapper concepts); say which checker messages count as errors vs warnings. Known quirk: enum
+default literal prints as `""`.
 Where the artefact *is* a file (project descriptors, for instance), an on-disk check is fine — but
 compare generated XML by its parsed content, never byte-wise: `new_project_migration_xml.py` ends
 its document with a newline and an MPS-written file does not. Any reopening a check needs is the

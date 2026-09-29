@@ -132,11 +132,11 @@ reference, a real sample node reference, JSON blueprint examples, gotchas.
 Run to verify: `mps-dsl-memory` (only cell; the prompt names it), `mps-language-analysis` for
 exploration rather than a targeted edit. Also the cell where a wrong `print_node` reading is
 shipped into a skill other agents will trust.
-**Evaluator caveat (A8):** "blueprints parse as JSON" accepts files the server rejects. A ✔ is
-not evidence the shipped blueprints insert.
+Criterion 3 dry-runs every shipped blueprint since A8, after an observer MAKE of the language.
 Hypotheses: H4, H7.
-Isolation: shares statechart with S2. A read-only cell may run before the language-changing one
-in the same process; the other order needs a restart.
+Isolation: shares statechart with S2; restart between them in either order. The evaluation's
+observer MAKE (criterion 3) deploys the statechart runtime, so an S2 cell after S8 in the same
+process starts with a deployed runtime instead of the hollow one it is written for (the D80 hazard).
 
 **S9 — Console, read-only.** Fixture: `recipes` with Recipe and Cookbook roots deleted (3
 Ingredients remain). Must not modify models.
@@ -235,9 +235,9 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
    the changed path is taken; a second model is a variance check, not a requirement.
 3. If several cells share a fixture language, restart MPS between them: S2/S8 on `statechart`,
    and any two of S3/S4/S5/S6/S7/S9 on `recipes*` (S4 is in that set — it loads the same
-   language). A read-only cell (S8, S9) may precede a
-   language-changing one in the same process. S1 and S10 are synthesized and do not need that
-   restart. S10 runs last, and only when it is in the list.
-4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S8/A8, S9 session state).
+   language). A read-only cell (S9) may precede a language-changing one in the same process; S8
+   may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
+   need that restart. S10 runs last, and only when it is in the list.
+4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S9 session state).
 5. The live catalog is what the run measures: `run_worker.sh` installs it and records
    `skillsSha256`. A cell run against a different catalog is not a verification of the change.

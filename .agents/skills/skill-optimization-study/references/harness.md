@@ -283,7 +283,9 @@ selector that uses another port. If this session already has `mps_mcp_*` tools, 
 Pass `projectPath` inside the JSON args — the platform requires it on every tool. A temp-file envelope is resolved and inlined automatically, including the duplicate-envelope
 shape (the file holds a whole `{"ok":…,"data":…}`, not the bare payload — defect D25).
 Evaluators stay read-only (the tool list in the scenario's `done_criteria.md`). The observer may
-mutate with `mps_mcp_close_project` to swap scratch projects. Exit: 0 ok, 2 usage, 3 MCP/tool error, 4 unreachable.
+mutate with `mps_mcp_close_project` to swap scratch projects, and — the one exception — with the
+S8 `mps_mcp_alter_nodes MAKE` between the two evaluator passes (procedure card step 5; A8).
+Exit: 0 ok, 2 usage, 3 MCP/tool error, 4 unreachable.
 
 ## Project and MPS lifecycle (observer)
 
@@ -359,7 +361,15 @@ line; it does not detect the port itself.
    MPS was restarted mid-round and the runs are not directly comparable. 4. For S10 only: record
    the left-behind `list_open_projects` state **the moment the worker exits** (a Welcome-screen
    rejection counts), then open `<proj>-target` for the checks. 5. Evaluate via an Opus subagent
-   (read-only, `projectPath` on every call, temp-file `data` is a path to read).
+   (read-only — `dryRun: true` calls included —, `projectPath` on every call, temp-file `data` is a
+   path to read). **S8 is evaluated
+   in two passes** (its criterion 3 dry-runs blueprints, which the hollow fixture language rejects;
+   A8): the evaluator checks criteria 1, 2 and 4 and returns; the observer runs `mps_mcp_alter_nodes
+   MAKE` on the language module and records the result; then the **same** evaluator is resumed
+   (SendMessage to its id, so it keeps its context) for criterion 3 and the verdict. It first
+   confirms `get_concept_details` no longer says `descriptorStatus: hollow`; still hollow →
+   criterion 3 not evaluable, not a FAIL. If the runtime cannot resume a finished subagent,
+   relaunch the evaluator with its first-pass report in the prompt.
 6. `meta.taskPass/taskEvidence`; save the report as `<id>.eval.md`. 7. Tell the user the path, then
    close with `mps_mcp_close_project` (`force=false`; `MODAL_BLOCKED` → user dismisses the dialog);
    for S10 close and delete `<proj>-target` as well.
