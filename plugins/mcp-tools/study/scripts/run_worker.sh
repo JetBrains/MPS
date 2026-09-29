@@ -31,6 +31,11 @@
 # every run is retro-auditable against the docs it actually read. Set SKIP_SKILL_INSTALL=1 to skip
 # it; the meta then records the sha of whatever was already there and `skillsInstalled: false`.
 #
+# EFFORT (optional) pins the worker's effort level and is passed as `--effort`. Claude accepts
+# low|medium|high|xhigh|max, Junie low|medium|high. It is recorded as `effort` in the meta. Unset
+# prints a warning on stderr and means unpinned: the worker then takes whatever its CLI's saved settings say (for Claude, the
+# `/effort` the observer last chose for that model), which silently varies between rounds.
+#
 # Requires: the observer harness CLI (`claude` or `junie`), python3, MPS running with the MCP
 # server on $MPS_MCP_URL and the call log enabled (-Dmps.mcp.calllog=$CALLLOG). The worker prompt
 # is passed verbatim. WORKER_HARNESS (claude|junie) overrides auto-detect; default is claude when
@@ -44,6 +49,7 @@ CALLLOG=${CALLLOG:-"$RUNS/server-calllog.jsonl"}
 MAX_TURNS=${MAX_TURNS:-400}
 ISOLATION=${ISOLATION:-per-round}
 PROJECT_SYNTHESIZED=${PROJECT_SYNTHESIZED:-0}
+EFFORT=${EFFORT:-}
 PROMPT="$STUDY/scenarios/$SCENARIO/worker_prompt.md"
 # Same character class as the plan: anything other than [A-Za-z0-9._-] becomes '-'.
 MODEL_SLUG=$(printf '%s' "$MODEL" | python3 -c 'import re,sys; print(re.sub(r"[^A-Za-z0-9._-]", "-", sys.stdin.read().rstrip("\n")))')
@@ -96,6 +102,17 @@ else
   command -v claude >/dev/null || { echo "claude CLI not on PATH" >&2; exit 2; }
 fi
 
+if [ -n "$EFFORT" ]; then
+  case "$HARNESS:$EFFORT" in
+    claude:low|claude:medium|claude:high|claude:xhigh|claude:max|junie:low|junie:medium|junie:high) ;;
+    *) echo "EFFORT=$EFFORT is not a $HARNESS effort level" >&2; exit 2 ;;
+  esac
+  EFFORT_ARGS=(--effort "$EFFORT")
+else
+  echo "EFFORT unset: worker $MODEL inherits the effort from its CLI settings (not pinned)" >&2
+  EFFORT_ARGS=()
+fi
+
 mkdir -p "$RUNS"
 
 # Fresh skills BEFORE the call-log offsets are taken, so the install's own MCP calls stay out of
@@ -140,7 +157,7 @@ INVENTORY_SHA=$( [ -f "$RUNS/inventory.json" ] && shasum -a 256 "$RUNS/inventory
 python3 - "$RUNS/$ID.meta.json" <<PY
 import json,sys
 json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","modelSlug":"$MODEL_SLUG",
-  "harness":"$HARNESS","run":$RUN,"project":"$PROJECT",
+  "harness":"$HARNESS","effort":"$EFFORT" or None,"run":$RUN,"project":"$PROJECT",
   "relatedProjects":[p for p in "$RELATED".split(":") if p],
   "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA",
   "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
@@ -159,7 +176,7 @@ WORKER_ENV=(env -i HOME="$HOME" PATH="$PATH" USER="${USER:-$(id -un)}" SHELL="${
   ${MPS_MCP_URL:+MPS_MCP_URL="$MPS_MCP_URL"})
 if [ "$HARNESS" = junie ]; then
   ( cd "$PROJECT" && "${WORKER_ENV[@]}" \
-      junie --task "$(cat "$PROMPT")" --model "$MODEL" \
+      junie --task "$(cat "$PROMPT")" --model "$MODEL" ${EFFORT_ARGS[@]+"${EFFORT_ARGS[@]}"} \
       -p "$PROJECT" \
       --output-format json-stream --json-output-file "$RUNS/$ID-worker.native.jsonl" \
       --skip-update-check \
@@ -167,7 +184,7 @@ if [ "$HARNESS" = junie ]; then
       < /dev/null > "$RUNS/$ID-worker.stdout" 2> "$RUNS/$ID-worker.stderr" )
 else
   ( cd "$PROJECT" && "${WORKER_ENV[@]}" \
-      claude -p "$(cat "$PROMPT")" --model "$MODEL" \
+      claude -p "$(cat "$PROMPT")" --model "$MODEL" ${EFFORT_ARGS[@]+"${EFFORT_ARGS[@]}"} \
       --output-format stream-json --verbose --max-turns "$MAX_TURNS" \
       --permission-mode bypassPermissions \
       --mcp-config "$STUDY/mcp.study.json" --strict-mcp-config \

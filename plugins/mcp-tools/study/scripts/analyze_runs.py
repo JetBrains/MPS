@@ -694,6 +694,8 @@ def analyse_run(run_id: str, runs: Path):
 
     metrics = {
         "run": run_id, "scenario": meta.get("scenario"), "model": meta.get("model"),
+        # Pinned worker effort (run_worker.sh EFFORT); empty = unpinned, the CLI's settings default.
+        "effort": meta.get("effort"),
         "pass": meta.get("taskPass"), "exit": meta.get("exitCode"),
         "turns": final.get("num_turns"), "wall_s": round((wall_ms or 0) / 1000),
         **{column: tokens[key] for column, key in TOKEN_USAGE_KEYS.items()},

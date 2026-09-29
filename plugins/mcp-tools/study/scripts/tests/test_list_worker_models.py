@@ -147,6 +147,25 @@ class ListWorkerModelsTest(unittest.TestCase):
         self.assertEqual(0, completed.returncode, completed)
         self.assertIn("--harness", completed.stdout)
 
+    def test_claude_lists_effort_levels_and_settings_defaults(self) -> None:
+        self.write_json(".claude/settings.json", {
+            "model": "opus[1m]", "effortLevel": "xhigh",
+            "modelSettings": {"claude-opus-5-5": {"effortLevel": "medium"}, "claude-haiku-4-5": {}},
+        })
+        result = lwm.list_models(self.home, {"CLAUDE_CODE": "1"})
+        self.assertEqual(["low", "medium", "high", "xhigh", "max"], result["effortLevels"])
+        self.assertEqual({"default": "xhigh", "perModel": {"claude-opus-5-5": "medium"}},
+                         result["settingsEffort"])
+
+    def test_claude_without_settings_has_no_settings_effort(self) -> None:
+        result = lwm.list_models(self.home, {})
+        self.assertIsNone(result["settingsEffort"])
+
+    def test_junie_lists_its_effort_levels_only(self) -> None:
+        result = lwm.list_models(self.home, {"JUNIE_TMPDIR": "/tmp/junie"})
+        self.assertEqual(["low", "medium", "high"], result["effortLevels"])
+        self.assertIsNone(result["settingsEffort"])
+
 
 if __name__ == "__main__":
     unittest.main()

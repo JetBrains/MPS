@@ -9,6 +9,12 @@ Run them once at preflight: a harness bug is cheaper to find there than in a rou
 Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/server-calllog.jsonl`),
 `MAX_TURNS` (400, Claude only), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0), `ISOLATION` (`per-round`),
 `PROJECT_SYNTHESIZED` (0 — set 1 when the project came from `new_study_project.py`),
+`EFFORT` (unset — the gate-2a level for this model, passed as `--effort`; Claude accepts
+`low|medium|high|xhigh|max`, Junie `low|medium|high`, anything else exits 2 before any side
+effect; recorded as `effort` in the meta and as the `effort` column of `metrics.csv`, empty when
+unpinned, and an unset `EFFORT` prints a warning on stderr. Unpinned Claude workers read
+`~/.claude/settings.json`: `modelSettings.<full-id>.effortLevel`, else the top-level `effortLevel`,
+both of which the observer's `/effort` rewrites; a project `.claude/settings*.json` may override them),
 `RELATED_PROJECTS` (colon-separated; auto-set to `<project>-target` for S10),
 `WORKER_HARNESS` (`claude`|`junie`; overrides auto-detect). Auto-detect uses observer `JUNIE_TMPDIR` /
 `JUNIE_DATA` vs `CLAUDE_CODE` / `CLAUDE_CODE_ENTRYPOINT`. Default is `claude` when neither env is set,
@@ -38,7 +44,7 @@ is what makes "one MPS per round" checkable after the fact instead of argued in 
 `relatedProjects` is load-bearing for S10 — the analyser filters the server call log by project,
 so without it a lifecycle run's whole server slice is discarded. Launch detached and poll:
 ```
-nohup sh -c "RUNS=$RUNS $STUDY/scripts/run_worker.sh S1 \$MODEL 1 $PROJ; echo EXIT_CODE=\$?" \
+nohup sh -c "RUNS=$RUNS EFFORT=<level> $STUDY/scripts/run_worker.sh S1 \$MODEL 1 $PROJ; echo EXIT_CODE=\$?" \
   > $RUNS/S1-$MODEL-1.harness.log 2>&1 &
 WRAPPER=$!            # poll THIS pid: the sh wrapper exits when run_worker.sh (and the worker) exit
 for i in $(seq 1 100); do ps -p $WRAPPER >/dev/null || break; sleep 5; done
@@ -59,7 +65,12 @@ $STUDY/mcp-junie` (study MCP URL only, analogue of `--strict-mcp-config`). Junie
 session files under `~/.junie/sessions`; do not auto-delete them.
 
 ## list_worker_models.py
-Prints JSON `{ok, harness, orchestratorModel, models[]}` for gate question 2. Same harness
+Prints JSON `{ok, harness, orchestratorModel, models[], effortLevels, settingsEffort}` for gate
+questions 2 and 2a. `effortLevels` is what that harness's `--effort` accepts, lowest first.
+`settingsEffort` (Claude only, else null) is `{default, perModel}` from `~/.claude/settings.json`:
+the user-level default an unpinned worker starts from (a project `.claude/settings*.json` in the
+worker's cwd could still override it). `perModel` is keyed by full model id (`claude-opus-5-5`),
+not by the catalog alias, so map the alias yourself. Same harness
 detection as `run_worker.sh` (`--harness` / `WORKER_HARNESS` override). Orchestrator model comes
 from `~/.junie/config.json` `model` or `~/.claude/settings.json` `model` (trailing `[…]` stripped);
 `~/.junie/settings.json` `modelForLaunch` is ignored.
@@ -277,7 +288,7 @@ names, description/schema bytes. Its `McpClient` class is the seed of an online 
    if needed; open the new copy via CLI (`mps-project-management`). `mps_mcp_list_open_projects`
    must show it and NO other project with the same module names — the install in step 3 needs it
    open. 3. Launch
-   detached (`run_worker.sh S1 $MODEL 1 $PROJ`); poll. `run_worker.sh` installs the live skills first and writes `<id>-install.json`;
+   detached (`EFFORT=<gate-2a level> run_worker.sh S1 $MODEL 1 $PROJ`); poll. `run_worker.sh` installs the live skills first and writes `<id>-install.json`;
    confirm `skillsSha256` matches the round's other runs, and `mpsPid` too — a differing pid means
    MPS was restarted mid-round and the runs are not directly comparable. 4. For S10 only: record
    the left-behind `list_open_projects` state **the moment the worker exits** (a Welcome-screen

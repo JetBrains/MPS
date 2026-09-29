@@ -2,7 +2,10 @@
 """Print the harness-aware worker-model picker list for the skill-optimisation study.
 
 Detects whether the observer session is Junie or Claude Code, reads the orchestrator
-model from that CLI's config, and emits the builtin catalog for that harness.
+model from that CLI's config, and emits the builtin catalog for that harness. It also lists the
+effort levels that harness's `--effort` accepts (`effortLevels`) and, for Claude, the levels the
+settings file would apply to an unpinned worker (`settingsEffort`), so the observer can ask for
+one effort level per selected model and pass it to run_worker.sh as EFFORT.
 
 Exit codes: 0 ok, 2 usage / ambiguous harness / unknown harness.
 Stdlib only (Python >= 3.9).
@@ -23,6 +26,12 @@ JUNIE_CATALOG = ("claude-opus-5", "claude-sonnet-5", "gpt-5.4", "gemini-2.5-pro"
 CATALOGS = {
     "claude": CLAUDE_CATALOG,
     "junie": JUNIE_CATALOG,
+}
+
+# Values accepted by each CLI's `--effort` flag, lowest first.
+EFFORT_LEVELS = {
+    "claude": ("low", "medium", "high", "xhigh", "max"),
+    "junie": ("low", "medium", "high"),
 }
 
 JUNIE_ENV_VARS = ("JUNIE_TMPDIR", "JUNIE_DATA")
@@ -83,6 +92,32 @@ def read_orchestrator_model(home: Path, harness: str) -> str | None:
     return model or None
 
 
+def read_settings_effort(home: Path, harness: str) -> dict | None:
+    """Claude's saved effort defaults: top-level `effortLevel` and `modelSettings.<id>.effortLevel`.
+
+    An unpinned worker gets its model's entry when one exists and the top-level value otherwise.
+    Keys are full model ids (`claude-opus-5-5`), not the aliases the catalog lists, so the
+    observer maps them. Junie keeps no such setting, so it gets None.
+    """
+    if harness != "claude":
+        return None
+    path = home / ".claude" / "settings.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    default = payload.get("effortLevel")
+    per_model = {}
+    model_settings = payload.get("modelSettings")
+    if isinstance(model_settings, dict):
+        for model_id, entry in model_settings.items():
+            if isinstance(entry, dict) and isinstance(entry.get("effortLevel"), str):
+                per_model[model_id] = entry["effortLevel"]
+    return {"default": default if isinstance(default, str) else None, "perModel": per_model}
+
+
 def list_models(
     home: Path,
     env: Mapping[str, str],
@@ -105,6 +140,8 @@ def list_models(
         "harness": harness,
         "orchestratorModel": orchestrator,
         "models": models,
+        "effortLevels": list(EFFORT_LEVELS[harness]),
+        "settingsEffort": read_settings_effort(home, harness),
     }
 
 

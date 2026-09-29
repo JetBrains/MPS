@@ -40,13 +40,25 @@ RUNS=$HOME/MPSProjects/mcp-study/runs                            # evidence dir,
 ## Gate questions to ask before starting (use them verbatim)
 
 Before question 2, run `python3 $STUDY/scripts/list_worker_models.py` and present `models` as a
-multi-select. The orchestrator model is first and marked; default-select that model only. Extra
-ids the user types are allowed. Ask question 3 only when the detected harness is Claude; Junie
-non-interactive has no `bypassPermissions` equivalent (`--brave` is interactive-only).
+multi-select. The orchestrator model is first and marked; list it first with "(Recommended)" (the
+picker cannot preselect). Extra ids the user types are allowed. Ask question 2a after question 2, as
+one single-select question per selected model (batch them, at most 4 per AskUserQuestion call). The
+recommended level is the one the user-level settings give that model today: its
+`settingsEffort.perModel` entry for the full model id, else `settingsEffort.default`. List it first
+with "(Recommended)". Fill the other options from `effortLevels`, at most 4 in all: on Claude leave
+`max` to "Other", unless `max` is the recommended level, in which case drop `low` instead. With no
+settings level (or on Junie) there is no recommendation; the CLI's built-in default is unknown, so
+the user picks. Always pin it, because an unpinned worker takes the observer's last `/effort` for
+that model, which changes between rounds without a trace (round 19). Ask question 3 only when the
+detected harness is Claude; Junie non-interactive has no `bypassPermissions` equivalent (`--brave`
+is interactive-only).
 
 1. Instrumentation: server call log first (needs a plugin rebuild; the observer restarts MPS
    itself with `mps_control.sh restart`) or transcript-only?
 2. Worker models (run list_worker_models.py; default: the orchestrator model from that list).
+2a. Effort level for `<model>` (one per selected model; options from `effortLevels`; recommended:
+   the level the user-level settings give that model today, if any). Every run of that model gets
+   `EFFORT=<level>`.
 3. Permission mode for workers (default: `bypassPermissions` on the developer's machine).
 4. Scope of the first pass before gate 1 (default: S1 + S3 on the selected models).
 Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies; A/B yes/no.
@@ -120,7 +132,7 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    restart** — a live process is not readiness. If the harness project is not open, announce its
    path, synthesize it if needed and open it via CLI; do not close it afterwards unless the next
    run needs a different project.
-   `RUNS=$RUNS MAX_TURNS=6 PROJECT_SYNTHESIZED=1 $STUDY/scripts/run_worker.sh SMOKE $MODEL <n>
+   `RUNS=$RUNS EFFORT=<level for $MODEL> MAX_TURNS=6 PROJECT_SYNTHESIZED=1 $STUDY/scripts/run_worker.sh SMOKE $MODEL <n>
    <harness-project>` — bump `<n>` on every re-run (the harness refuses an existing run id);
    drop `PROJECT_SYNTHESIZED=1` if the harness project was not synthesized. The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
@@ -151,8 +163,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
    (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in `<id>.meta.json`
    → announce the path and close with `mps_mcp_close_project` (`force=false`; on `MODAL_BLOCKED`
-   ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Check
-   that every meta's
+   ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Pass the
+   model's gate-2a level as `EFFORT` on every launch. Check that every meta's `effort` is that
+   level and that every meta's
    `skillsSha256` is the same value before comparing runs; a differing one means the catalog moved
    mid-round. Open/close details: `references/harness.md`.
 7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
