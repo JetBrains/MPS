@@ -111,7 +111,9 @@ The server slice is filtered to `meta.project` plus every path in `meta.relatedP
 Per run: tokens (input/output/cache read/write), tool calls, MCP calls, Bash/Read/Write, skill-file
 reads + bytes (Read, Grep, Glob and Bash calls that touch `*/skills/*`), temp-file envelopes (`data` = path),
 Bash reads of those files, Bash blueprint writes, authored tool-input chars (all / MCP), tool-result
-bytes, error envelopes (`is_error` or `{"ok":false`), error→retry pairs (same tool within 2 calls),
+bytes, error envelopes (`is_error` or `{"ok":false`), error→retry pairs (per session and parallel
+batch: one per tool with an error in a batch that is called again in one of the session's next two
+batches; before A2 it was "same tool within 2 calls", which counted a batch of five rejections as five),
 validation loops (≥ 3 `check_root_node_problems` on one root), stale-runtime text hits, server
 calls/ms (slice filtered by the run's project). New audit columns are `pre_dispatch_rejections`,
 `welcome_rejections` (rejections whose listing is empty — the Welcome screen, where no
@@ -133,7 +135,21 @@ transcript shows — an unlisted project path, an MPS restart mid-run, or a call
 part of it — so the evidence is incomplete rather than clean. Missing/empty server evidence leaves
 surplus unavailable and produces no warning, and lifecycle scenarios (`S10*`) are exempt in both
 directions because they legitimately span several projects. `agent_calls` counts parent `Agent` tool-use events, not prose
-or explicitly child-tagged events. Chains = bigrams/trigrams of `tool[:operation/kind]`.
+or explicitly child-tagged events. Chains = bigrams/trigrams of `tool[:operation/kind]`, per session
+over the batch-collapsed sequence.
+
+**Batches (A2).** A parallel batch is several `assistant` events sharing one `message.id`; calls are
+grouped by (session, message id), so a child batch interleaved with parent calls stays one batch, and
+a call without an id (Junie) is its own batch. Chains, retries and temp-file re-reads are computed per
+session (parent and each subagent), then summed. In the collapsed sequence each batch contributes its
+distinct keys in first-occurrence order (`[a,a,a]` → `a`, `[a,b,a]` → `a,b`), with the chars of all its
+raw calls of that key. A chain occurrence counts (`count`, `avg_chars`, `examples` = first and last raw
+step) only when its n items come from n different batches; n-grams inside one batch are tallied as
+`parallel` (`chains.json` field, `hotspots.md` column after `count`). Ranking uses `count`
+(score = count-based chars); a chain is listed when `count` or `parallel` reaches `--min-occurrences`,
+so a parallel-only chain sorts to the bottom instead of vanishing. `count + parallel` is not the
+pre-A2 count (see `analysis.md`). Without message ids
+every rule reduces to the per-call behaviour.
 
 **Skill navigation (D50 M-0).** Bash commands are parsed, and the old `SKILL_DIR_RE` match is OR-ed
 in so `skill_reads` only grows. The persisted cwd of a `cd` carries into later calls until the
@@ -147,7 +163,14 @@ lone `cat`), grep, list, script, or other (e.g. `tee`, `echo`). `.agents/skills/
   root, a glob over skill names, or a catalog-level file such as `MPS_MCP_SKILL_VERSION.txt`;
   skill = a skill tree or a glob in one; file = named files only (one or several).
 - `rereads`: calls that whole-read a file an earlier call of the same session already read whole.
-  `rereads_after_compaction`: the ones with an auto-compaction between the two reads.
+  `rereads_after_compaction`: the ones with an auto-compaction between the two reads. Both count
+  skill files only, as in rounds 10–20.
+- `temp_rereads_after_compaction`: calls that touch, after a compaction, a temp result file
+  (`mps-node-<n>.json`, keyed by basename) that their session first touched before it — a `Read`
+  whose `file_path` names it, or a Bash call naming it anywhere in the raw command text, heredoc
+  bodies and `python3 -c` one-liners included. `temp_reread_bytes_after_compaction`: the sum of those
+  calls' result bytes. `navigation.json` lists them as `temp_rereads: [{step, paths, previous_steps,
+  bytes}]`. (`runs-r17/S8-sonnet-1`: 11 calls, 143,761 bytes, where `rereads_after_compaction` is 0.)
 - `index_hops`: reads of a split directory's index `X.md` followed by a section `X/…` in a later
   call of the same message or of the next skill message. The same-message case (a parallel batch)
   counts, as D50's hand counts did.

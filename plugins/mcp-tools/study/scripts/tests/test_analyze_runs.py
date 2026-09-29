@@ -22,6 +22,8 @@ SKILLS = "/project/.claude/skills"
 # repository; the test that checks D50's hand-measured numbers skips when they are absent.
 ROUND13_RUNS = Path(os.environ.get("MCP_STUDY_ROUND13_RUNS",
                                    Path.home() / "MPSProjects" / "mcp-study" / "runs-r14"))
+# Rounds 16-18 (directories runs-r17..runs-r19), the A2 evidence; those tests skip when absent.
+STUDY_RUNS = Path(os.environ.get("MCP_STUDY_RUNS_ROOT", Path.home() / "MPSProjects" / "mcp-study"))
 
 
 def assistant(tool_id: str, name: str, *, child: bool = False) -> dict:
@@ -42,13 +44,18 @@ def result(tool_id: str, text: str, *, error: bool = False) -> dict:
     }
 
 
-def tool(tool_id: str, name: str, inp: dict, *, msg: str | None = None, usage: dict | None = None) -> dict:
-    """One tool_use block as stream-json emits it: one event per block, `msg` shared by a batch."""
+def tool(tool_id: str, name: str, inp: dict, *, msg: str | None = None, usage: dict | None = None,
+         session: str | None = None) -> dict:
+    """One tool_use block as stream-json emits it: one event per block, `msg` shared by a batch.
+    `session` is the subagent's parent tool_use id (None: the main session)."""
     message = {"id": msg or f"msg-{tool_id}", "content": [{"type": "tool_use", "id": tool_id, "name": name,
                                                            "input": inp}]}
     if usage is not None:
         message["usage"] = usage
-    return {"type": "assistant", "message": message}
+    event = {"type": "assistant", "message": message}
+    if session is not None:
+        event["parent_tool_use_id"] = session
+    return event
 
 
 def call(tool_id: str, name: str, inp: dict, text: str = "x" * 10, **kwargs) -> list[dict]:
@@ -61,6 +68,19 @@ def bash(tool_id: str, command: str, text: str = "x" * 10, **kwargs) -> list[dic
 
 def read(tool_id: str, path: str, text: str = "x" * 10, **kwargs) -> list[dict]:
     return call(tool_id, "Read", {"file_path": path}, text, **kwargs)
+
+
+def batched(*batches: str) -> list[dict]:
+    """One parallel batch per argument, one call per letter, the letter being the tool name:
+    `batched("AAA", "ab")`. An upper-case letter is a failing call of the lower-case tool. Each call
+    has 2 input chars ({}) and a 10-byte result."""
+    events, n = [], 0
+    for index, names in enumerate(batches):
+        for letter in names:
+            n += 1
+            events += [tool(f"t{n}", letter.lower(), {}, msg=f"m{index}"),
+                       result(f"t{n}", "x" * 10, error=letter.isupper())]
+    return events
 
 
 def compaction(pre_tokens: int, duration_ms: int) -> dict:
@@ -496,6 +516,133 @@ class BashAccessesTest(unittest.TestCase):
                          analyzer.bash_accesses(f"python3 - <<< 'print(1 << 2)'; cat {refs}/a.md", "/project"))
         self.assertEqual(([("other", "mps-aspect-constraints/references/a.md", False)], "/project"),
                          analyzer.bash_accesses(f"echo x | tee {refs}/a.md", "/project"))
+
+
+class BatchesTest(unittest.TestCase):
+    """A2: a parallel batch is one turn, for chains, retries and temp-file re-reads."""
+
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.runs = Path(self.temp_dir.name)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def analyse(self, events: list[dict]):
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+        return analyzer.analyse_run("r", self.runs)
+
+    def chains(self, events: list[dict]) -> dict:
+        return {gram: (e["count"], e["parallel"]) for gram, e in self.analyse(events)[2].items()}
+
+    def test_a_repeated_key_across_two_batches_is_one_bigram(self) -> None:
+        _, _, chains, *_ = self.analyse(batched("aaa", "aaa"))
+        self.assertEqual((1, 4, 72, ["r:1-6"]), tuple(chains["a -> a"][k] for k in ("count", "parallel", "chars", "examples")))
+        self.assertEqual((0, 2), (chains["a -> a -> a"]["count"], chains["a -> a -> a"]["parallel"]))
+
+    def test_a_parallel_only_chain_is_reported_not_dropped(self) -> None:
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in batched("aaaa", "b")))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        chains = {c["chain"]: c for c in json.loads((out / "chains.json").read_text())}
+        self.assertEqual((0, 3, None), tuple(chains["a -> a"][k] for k in ("count", "parallel", "avg_chars")))
+        self.assertNotIn("a -> b", chains)          # count 1, parallel 0: below the default minimum 3
+        self.assertIn("| `a -> a` | 0 | 3 |  |", (out / "hotspots.md").read_text())
+
+    def test_a_trigram_needs_three_batches(self) -> None:
+        chains = self.chains(batched("a", "bb", "c"))
+        self.assertEqual((1, 0), chains["a -> b -> c"])
+        self.assertEqual({"a -> b": (1, 0), "b -> c": (1, 0), "b -> b": (0, 1)},
+                         {g: chains[g] for g in ("a -> b", "b -> c", "b -> b")})
+
+    def test_a_mixed_batch_links_its_last_key_to_the_next_batch(self) -> None:
+        chains = self.chains(batched("ab", "c"))
+        self.assertEqual((1, 0), chains["b -> c"])
+        self.assertEqual((0, 1), chains["a -> b"])
+        self.assertEqual((0, 0), chains.get("a -> b -> c", (0, 0)))
+        self.assertNotIn("a -> c", chains)
+        self.assertEqual((1, 0), self.chains(batched("ba", "c"))["a -> c"])
+
+    def test_an_error_batch_is_one_retry_per_tool(self) -> None:
+        metrics, _, _, retries, *_ = self.analyse(batched("AAA", "a"))
+        self.assertEqual([(1, 4, "a")], retries)
+        self.assertEqual(1, metrics["retries"])
+
+    def test_a_retry_in_a_mixed_batch_counts_and_one_three_batches_later_does_not(self) -> None:
+        self.assertEqual([(1, 3, "a")], self.analyse(batched("A", "ba"))[3])
+        self.assertEqual([], self.analyse(batched("A", "b", "c", "a"))[3])
+        self.assertEqual(0, self.analyse(batched("ab", "ab"))[0]["retries"])
+
+    def test_junie_events_without_a_message_id_keep_the_per_call_rules(self) -> None:
+        """normalize_transcript.py gives every Junie tool its own message without an id."""
+        events = [assistant("1", "a"), result("1", "e", error=True),
+                  assistant("2", "a"), result("2", "e", error=True),
+                  assistant("3", "b"), result("3", "ok"),
+                  assistant("4", "a"), result("4", "ok")]
+        metrics, calls, chains, retries, *_ = self.analyse(events)
+        self.assertEqual([(1, 2, "a"), (2, 4, "a")], retries)       # the old within-two-calls rule
+        self.assertEqual([0, 1, 2, 3], [c["batch"] for c in calls])
+        self.assertEqual({"a -> a": (1, 0), "a -> b": (1, 0), "b -> a": (1, 0), "a -> a -> b": (1, 0),
+                          "a -> b -> a": (1, 0)},
+                         {g: (e["count"], e["parallel"]) for g, e in chains.items()})
+
+    def test_a_child_batch_split_by_a_parent_call_is_still_one_batch(self) -> None:
+        """runs/S1-sonnet-1: child steps 76 and 78 share a message id around a parent Read at 77."""
+        events = [tool("1", "x", {}, msg="c1", session="agent"), tool("2", "p", {}, msg="p1"),
+                  tool("3", "x", {}, msg="c1", session="agent"), tool("4", "y", {}, msg="c2", session="agent"),
+                  result("1", "e", error=True), result("2", "ok"), result("3", "e", error=True), result("4", "ok")]
+        _, calls, chains, retries, *_ = self.analyse(events)
+        self.assertEqual(calls[0]["batch"], calls[2]["batch"])
+        self.assertNotEqual(calls[0]["batch"], calls[1]["batch"])
+        self.assertEqual({"x -> x": (0, 1), "x -> y": (1, 0)},
+                         {g: (e["count"], e["parallel"]) for g, e in chains.items()})
+        self.assertEqual([], retries)       # y is another tool; the parent call is another session
+
+    def test_a_temp_file_touched_again_after_a_compaction_is_a_temp_reread(self) -> None:
+        script = "python3 - <<'PY'\nimport json\nprint(json.load(open(\"/T/mps-node-1.json\"))['ok'])\nPY"
+        events = [INIT,
+                  *read("a", "/T/mps-node-1.json", "a" * 30),
+                  *read("b", "/T/mps-node-1.json"),                        # before the compaction: no
+                  compaction(160000, 60000),
+                  *bash("c", script, "c" * 42),                            # heredoc body: counted
+                  *read("d", "/T/mps-node-2.json"),                        # first touched after: no
+                  *bash("e", "cat /T/mps-mcp-result-7.txt")]               # not a keyed temp file
+        metrics, *_, navigation = self.analyse(events)
+        self.assertEqual((1, 42), (metrics["temp_rereads_after_compaction"],
+                                   metrics["temp_reread_bytes_after_compaction"]))
+        self.assertEqual([{"step": 3, "paths": ["mps-node-1.json"], "previous_steps": [1], "bytes": 42}],
+                         navigation["temp_rereads"])
+        self.assertEqual((0, 0), (metrics["rereads"], metrics["rereads_after_compaction"]))   # skill-only
+
+    def test_temp_paths_match_whole_basenames_in_read_and_raw_bash_text(self) -> None:
+        self.assertEqual({"mps-node-12.json"}, analyzer.temp_paths({"name": "Read", "input": {"file_path": "/T/mps-node-12.json"}}))
+        self.assertEqual({"mps-node-1.json", "mps-node-2.json"}, analyzer.temp_paths(
+            {"name": "Bash", "input": {"command": "python3 -c \"import json;json.load(open('/T/mps-node-1.json'))\" "
+                                                  "&& cat /T/mps-node-2.json /T/mps-node-1.json"}}))
+        self.assertEqual(set(), analyzer.temp_paths({"name": "Grep", "input": {"path": "/T/mps-node-1.json"}}))
+
+
+def study_runs(directory: str, run_id: str) -> Path:
+    return STUDY_RUNS / directory / f"{run_id}-worker.jsonl"
+
+
+class StudyTranscriptsA2Test(unittest.TestCase):
+    """A2's live figures (docs/a2-a8-study-harness-fixes-plan.md section 2)."""
+
+    @unittest.skipUnless(study_runs("runs-r17", "S8-sonnet-1").exists(), "runs-r17 transcripts not found")
+    def test_round16_s8_sonnet_temp_rereads_after_the_compaction(self) -> None:
+        metrics = analyzer.analyse_run("S8-sonnet-1", STUDY_RUNS / "runs-r17")[0]
+        self.assertGreaterEqual(metrics["temp_rereads_after_compaction"], 9)
+
+    @unittest.skipUnless(study_runs("runs-r19", "S8-sonnet-1").exists(), "runs-r19 transcripts not found")
+    def test_round18_s8_sonnet_rejected_batch_is_one_retry(self) -> None:
+        self.assertEqual(2, analyzer.analyse_run("S8-sonnet-1", STUDY_RUNS / "runs-r19")[0]["retries"])
+
+    @unittest.skipUnless(study_runs("runs-r18", "S1-sonnet-1").exists(), "runs-r18 transcripts not found")
+    def test_round17_s1_sonnet_retries(self) -> None:
+        self.assertEqual(5, analyzer.analyse_run("S1-sonnet-1", STUDY_RUNS / "runs-r18")[0]["retries"])
 
 
 @unittest.skipUnless((ROUND13_RUNS / "S1-sonnet-1-worker.jsonl").exists(),

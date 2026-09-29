@@ -12,8 +12,15 @@ temp_file_envelopes, bash_temp_result_reads, bash_blueprint_writes. Payload: aut
 mps_authored_chars, tool_result_bytes. Skill navigation: skill_msgs, skill_loads,
 skill_greps_{catalog,skill,file}, rereads, rereads_after_compaction, index_hops, compactions,
 compaction_s, first_compaction_step, plus `phases.csv` per aspect phase (definitions in
-`harness.md`). Reliability: errors, retries, validation_loops,
-stale_incidents, server_errors, task pass (from the evaluator).
+`harness.md`). `rereads*` count skill files only (comparable with rounds 10–20); temp result files
+touched again after a compaction are `temp_rereads_after_compaction` (calls: a `Read` or a Bash
+command, heredoc included, naming an `mps-node-<n>.json` its session first touched before that
+compaction) and `temp_reread_bytes_after_compaction` (their result bytes); `navigation.json`
+lists them as `temp_rereads`. Reliability: errors, retries, validation_loops,
+stale_incidents, server_errors, task pass (from the evaluator). Since A2, `retries` counts per
+session and per parallel batch: one per tool with an error in a batch that the session calls again
+in one of its next two batches (a batch of five rejected calls is one retry, not five), so it is
+lower than in reports written before A2 (r18 S1-sonnet-1: 8 → 5; r19 S8-sonnet-1: 6 → 2).
 Lifecycle: `welcome_rejections` (pre-dispatch rejections with an empty project listing — the
 Welcome screen, where no `projectPath` could have helped; 0 is the good value everywhere, S10
 included: the first S10 run read the skill and never probed blind. One is the acceptable cost of
@@ -29,7 +36,17 @@ evidence gap. Lifecycle scenarios (`S10*`) are exempt both ways: they span sever
 design, and their server slice is kept only because the run meta lists `relatedProjects`.
 
 ## Chains and scoring
-`chains.json` ranks n-grams of `tool[:op]` by total chars. Filter to those containing `mps_mcp`,
+`chains.json` ranks n-grams of `tool[:op]` by total chars. Since A2 they are taken per session over
+the batch-collapsed sequence (a parallel batch contributes each distinct key once, in call order),
+and an occurrence `count`s only when its n items come from n different batches, i.e. n turns.
+N-grams inside one batch are tallied as `parallel` (a column after `count` in `hotspots.md`): six
+parallel `print_node` calls are `print_node -> print_node` count 0, parallel 5. `count + parallel`
+does **not** reproduce the pre-A2 count: a raw n-gram straddling a batch boundary that is not a
+collapsed occurrence (`a->b->c` in `[a,a,b][c]`) is in neither, and a repeated key collapses
+(`a->a->a` in `[a,a,a][a,a,a]`: old 4, now count 0, parallel 2). Chains that were mostly parallel
+drop in rank; that is not a behaviour change. A chain stays listed when either `count` or
+`parallel` reaches `--min-occurrences`, but ranking uses `count` (score = count-based chars), so a
+parallel-only chain sorts to the bottom instead of vanishing. Filter to those containing `mps_mcp`,
 group into families (2026-09: A temp-file follow-up reads; B blueprint file → insert; C per-root
 validation; D skill read → call; B′ ad-hoc Python for result shaping). Reviewer assigns determinism
 per family from 3 instances: 1.0 next args derivable from previous response; 0.5 partly; 0 judgment.

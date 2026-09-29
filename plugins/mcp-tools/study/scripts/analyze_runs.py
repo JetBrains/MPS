@@ -8,13 +8,23 @@ Outputs (written into --out, default <runs>/analysis):
   metrics.csv   one row per run: tokens (in/out/cache), authored tool-input chars, tool-result bytes,
                 skill-file bytes read, tool calls, errors, retries, validation loops, wall-clock, pass,
                 skill navigation (messages, greps by scope, re-reads, index hops), auto-compactions,
+                temp-file (`mps-node-<n>.json`) re-reads after a compaction,
                 concept-assignability rejections (with a hint, and calls until the same tool/kind succeeds)
   phases.csv    one row per run and aspect phase: skill navigation cost of that phase
-  navigation.json per run: compactions, re-reads, index hops, greps, phases, every skill-touching call
+  navigation.json per run: compactions, skill and temp-file re-reads, index hops, greps, phases,
+                every skill-touching call
   tools.json    per-tool call counts, error counts, avg input chars, avg result bytes (transcript + server)
-  chains.json   bigrams/trigrams of tool+op with counts and avg input chars per occurrence
+  chains.json   bigrams/trigrams of tool+op with counts, `parallel` tallies and avg chars per occurrence
   errors.json   error->retry pairs, check_root_node_problems repeats per root, stale-runtime incidents
-  hotspots.md   top-N chains (>= --min-occurrences) with example run-id:step ranges
+  hotspots.md   top-N chains (count or parallel >= --min-occurrences) with example run-id:step ranges
+
+Batches (A2): stream-json emits a parallel batch as several assistant events sharing one
+`message.id`. Calls are grouped by (session, message id); a call without an id (Junie) is its own
+batch. Chains, retries and temp-file re-reads are computed per session (parent and each subagent),
+then summed. A chain occurrence counts only when its n items come from n different batches of the
+batch-collapsed sequence; n-grams inside one batch are tallied as `parallel`. A retry is one per
+tool with an error in a batch that is called again in one of the session's next two batches.
+Without message ids every rule reduces to the per-call behaviour of earlier rounds.
 A compact JSON summary is printed to stdout. Stdlib only, Python >= 3.9.
 Exit codes: 0 ok, 2 usage.
 """
@@ -33,6 +43,9 @@ from pathlib import Path
 
 SKILL_DIR_RE = re.compile(r"(?:\.agents|\.claude)/skills/|\bmps-[a-z0-9-]+/(?:SKILL\.md|references/)")
 TEMP_RESULT_RE = re.compile(r"mps-node-\d+\.json|/T/mps-[a-z-]*\d+|mps-mcp-result")
+# The basename of one temp result file, used to key re-reads. TEMP_RESULT_RE stays the Bash
+# classifier: its bare `mps-mcp-result` alternative would key every such file under one name.
+TEMP_FILE_NAME_RE = re.compile(r"mps-node-\d+\.json")
 BLUEPRINT_WRITE_RE = re.compile(r"cat\s*>|tee\s|open\([^)]*['\"]w['\"]|json\.dump\(|>\s*\S+\.json")
 # Rejected by the platform BEFORE the call is dispatched, so `ToolCallListener` never fires and the
 # call is absent from the server call log. Only project resolution behaves this way.
@@ -318,6 +331,116 @@ def grep_scope(targets: list[str]) -> str:
     return "file" if named_files else "skill"
 
 
+def temp_paths(call: dict) -> set[str]:
+    """Temp result basenames (`mps-node-<n>.json`) a Read or Bash call touches. Bash is matched over
+    the raw command text, heredoc bodies included: a `python3 -c` one-liner or a heredoc script
+    embeds the path in a longer word."""
+    inp = call.get("input") if isinstance(call.get("input"), dict) else {}
+    if call["name"] == "Read":
+        m = TEMP_FILE_NAME_RE.search(str(inp.get("file_path", "")))
+        return {m.group(0)} if m else set()
+    if call["name"] == "Bash":
+        return set(TEMP_FILE_NAME_RE.findall(str(inp.get("command", ""))))
+    return set()
+
+
+def temp_rereads(calls: list[dict], compactions: list[dict]) -> list[dict]:
+    """Calls that touch, after a compaction, a temp result file their session first touched before
+    that compaction, i.e. touched again after the compaction."""
+    compaction_steps = [k["step"] for k in compactions]
+    first_by_session: dict = {}
+    out = []
+    for c in calls:
+        paths = temp_paths(c)
+        if not paths:
+            continue
+        first = first_by_session.setdefault(c.get("session"), {})
+        again = {p: first[p] for p in paths if p in first
+                 and any(first[p] <= k < c["step"] for k in compaction_steps)}
+        if again:
+            c["temp_reread_after_compaction"] = True
+            out.append({"step": c["step"], "paths": sorted(again), "previous_steps": sorted(set(again.values())),
+                        "bytes": c["result_bytes"]})
+        for p in paths:
+            first.setdefault(p, c["step"])
+    return out
+
+
+def batches(calls: list[dict]) -> list[list[dict]]:
+    """Parallel batches: calls grouped by (session, message id), ordered by their first step. A call
+    without a message id (Junie) is its own batch. Sets `call["batch"]` to the batch index."""
+    groups: dict = {}
+    for c in calls:
+        key = (c.get("session"), c["msg"]) if c.get("msg") is not None else ("step", c["step"])
+        groups.setdefault(key, []).append(c)
+    ordered = sorted(groups.values(), key=lambda b: b[0]["step"])
+    for index, batch in enumerate(ordered):
+        for c in batch:
+            c["batch"] = index
+    return ordered
+
+
+def session_batches(calls: list[dict]) -> dict:
+    """session -> that session's batches in order (the parent session is None)."""
+    out: dict = {}
+    for batch in batches(calls):
+        out.setdefault(batch[0].get("session"), []).append(batch)
+    return out
+
+
+def new_chain() -> dict:
+    return {"count": 0, "parallel": 0, "chars": 0, "examples": []}
+
+
+def chain_counts(calls: list[dict], run_id: str) -> dict:
+    """Bigrams/trigrams of tool keys per session over the batch-collapsed sequence: each batch
+    contributes its distinct keys in first-occurrence order, and an occurrence counts only when its
+    n items come from n different batches. n-grams over one batch's raw calls are `parallel`."""
+    chains: dict = defaultdict(new_chain)
+    for session in session_batches(calls).values():
+        items = []          # (key, batch index, chars, first step, last step)
+        for batch in session:
+            collapsed: dict = {}
+            for c in batch:
+                item = collapsed.setdefault(c["key"], {"chars": 0, "first": c["step"], "last": c["step"]})
+                item["chars"] += c["input_chars"] + c["result_bytes"]
+                item["last"] = c["step"]
+            items.extend((key, batch[0]["batch"], v["chars"], v["first"], v["last"]) for key, v in collapsed.items())
+            for n in (2, 3):
+                for i in range(len(batch) - n + 1):
+                    chains[" -> ".join(c["key"] for c in batch[i:i + n])]["parallel"] += 1
+        for n in (2, 3):
+            for i in range(len(items) - n + 1):
+                window = items[i:i + n]
+                if len({item[1] for item in window}) < n:
+                    continue
+                e = chains[" -> ".join(item[0] for item in window)]
+                e["count"] += 1
+                e["chars"] += sum(item[2] for item in window)
+                if len(e["examples"]) < 3:
+                    e["examples"].append(f"{run_id}:{window[0][3]}-{window[-1][4]}")
+    return chains
+
+
+def retry_pairs(calls: list[dict]) -> list[tuple[int, int, str]]:
+    """(error step, retry step, key): per session and error batch, one retry for each tool with an
+    error in the batch that is called again in one of the session's next two batches."""
+    retries = []
+    for session in session_batches(calls).values():
+        for index, batch in enumerate(session):
+            errored: dict = {}
+            for c in batch:
+                if c["error"]:
+                    errored.setdefault(c["name"], c)
+            for name, first_error in errored.items():
+                for later in session[index + 1:index + 3]:
+                    hit = next((c for c in later if c["name"] == name), None)
+                    if hit is not None:
+                        retries.append((first_error["step"], hit["step"], first_error["key"]))
+                        break
+    return sorted(retries)
+
+
 def analyse_navigation(calls: list[dict], compactions: list[dict], init_cwd: str | None) -> dict:
     """Skill navigation per D50: which calls touch the skills catalog, in how many messages, with
     which greps, re-reads and index hops, and in which aspect phase. Runs after all results are in,
@@ -437,6 +560,7 @@ def analyse_navigation(calls: list[dict], compactions: list[dict], init_cwd: str
     return {
         "compactions": compactions,
         "rereads": rereads,
+        "temp_rereads": temp_rereads(calls, compactions),
         "index_hops": hops,
         "greps": greps,
         "phases": phase_rows,
@@ -649,29 +773,13 @@ def analyse_run(run_id: str, runs: Path):
         tokens[key] = (sum(main) if main else sum(u.get(key, 0) or 0 for u in usage_by_message.values())) \
             + sum(u.get(key, 0) or 0 for u in child_usage_by_message.values())
 
-    # error -> retry pairs: same tool key again within the next 2 calls after an error
-    retries = []
-    for i, c in enumerate(calls):
-        if c["error"]:
-            for j in range(i + 1, min(i + 3, len(calls))):
-                if calls[j]["name"] == c["name"]:
-                    retries.append((c["step"], calls[j]["step"], c["key"]))
-                    break
+    # error -> retry pairs, per error batch (see retry_pairs)
+    retries = retry_pairs(calls)
     # validation loops: check_root_node_problems on the same root >= 3 times
     per_root = Counter(c["root"] for c in calls if c["name"] == VALIDATE_TOOL and c["root"])
     loops = {r: n for r, n in per_root.items() if n >= 3}
 
-    # chains
-    keys = [c["key"] for c in calls]
-    chains = defaultdict(lambda: {"count": 0, "chars": 0, "examples": []})
-    for n in (2, 3):
-        for i in range(len(keys) - n + 1):
-            gram = " -> ".join(keys[i:i + n])
-            e = chains[gram]
-            e["count"] += 1
-            e["chars"] += sum(c["input_chars"] + c["result_bytes"] for c in calls[i:i + n])
-            if len(e["examples"]) < 3:
-                e["examples"].append(f"{run_id}:{calls[i]['step']}-{calls[i + n - 1]['step']}")
+    chains = chain_counts(calls, run_id)
 
     tool_calls = Counter(c["name"] for c in calls if c["name"].startswith("mps_mcp_"))
     mps_calls = sum(tool_calls.values())
@@ -727,6 +835,8 @@ def analyse_run(run_id: str, runs: Path):
         "skill_greps_file": sum(1 for g in navigation["greps"] if g["scope"] == "file"),
         "rereads": len(navigation["rereads"]),
         "rereads_after_compaction": sum(1 for r in navigation["rereads"] if r["after_compaction"]),
+        "temp_rereads_after_compaction": len(navigation["temp_rereads"]),
+        "temp_reread_bytes_after_compaction": sum(r["bytes"] for r in navigation["temp_rereads"]),
         "index_hops": len(navigation["index_hops"]),
         "compactions": len(compactions), "compaction_s": sum(k["seconds"] for k in compactions),
         "first_compaction_step": compactions[0]["step"] if compactions else None,
@@ -759,7 +869,7 @@ def main(argv=None) -> int:
     out.mkdir(parents=True, exist_ok=True)
 
     run_ids = sorted(p.name[:-len("-worker.jsonl")] for p in runs.glob("*-worker.jsonl"))
-    all_metrics, all_chains, tools, errors = [], defaultdict(lambda: {"count": 0, "chars": 0, "examples": []}), defaultdict(Counter), {}
+    all_metrics, all_chains, tools, errors = [], defaultdict(new_chain), defaultdict(Counter), {}
     tool_chars, tool_bytes = defaultdict(int), defaultdict(int)
     navigations = {}
     for rid in run_ids:
@@ -768,7 +878,7 @@ def main(argv=None) -> int:
         navigations[rid] = navigation
         for gram, e in chains.items():
             a = all_chains[gram]
-            a["count"] += e["count"]; a["chars"] += e["chars"]
+            a["count"] += e["count"]; a["parallel"] += e["parallel"]; a["chars"] += e["chars"]
             a["examples"] = (a["examples"] + e["examples"])[:6]
         for c in calls:
             tools[c["name"]]["calls"] += 1
@@ -816,14 +926,17 @@ def main(argv=None) -> int:
                          avg_result_bytes=round(tool_bytes[t] / c["calls"]) if c["calls"] else None)
                  for t, c in sorted(tools.items(), key=lambda kv: -kv[1]["calls"])}
     (out / "tools.json").write_text(json.dumps(tools_out, indent=1))
-    ranked = sorted(({"chain": g, "count": e["count"], "avg_chars": round(e["chars"] / e["count"]),
+    ranked = sorted(({"chain": g, "count": e["count"], "parallel": e["parallel"],
+                      "avg_chars": round(e["chars"] / e["count"]) if e["count"] else None,
                       "score_raw": e["chars"], "examples": e["examples"]}
-                     for g, e in all_chains.items() if e["count"] >= args.min_occurrences),
+                     # A parallel-only chain is kept (D1: reported, not dropped); its score_raw is 0.
+                     for g, e in all_chains.items()
+                     if e["count"] >= args.min_occurrences or e["parallel"] >= args.min_occurrences),
                     key=lambda x: -x["score_raw"])
     (out / "chains.json").write_text(json.dumps(ranked, indent=1))
     (out / "errors.json").write_text(json.dumps(errors, indent=1))
     with (out / "hotspots.md").open("w") as fh:
-        fh.write(f"# Hotspot candidates (chains with >= {args.min_occurrences} occurrences, ranked by total chars)\n\n")
+        fh.write(f"# Hotspot candidates (chains with count or parallel >= {args.min_occurrences}, ranked by total chars of counted occurrences)\n\n")
         fh.write("Assign determinism (1.0 / 0.5 / 0) per chain by inspecting the examples, then\n"
                  "score = count x avg_chars x determinism x (1 + retry_rate).\n\n")
         surplus_warnings = [e["server_call_surplus_warning"] for e in errors.values()
@@ -833,9 +946,11 @@ def main(argv=None) -> int:
             for warning in surplus_warnings:
                 fh.write(f"- {warning}\n")
             fh.write("\n")
-        fh.write("| # | chain | count | avg chars | examples |\n|---|---|---|---|---|\n")
+        fh.write("| # | chain | count | parallel | avg chars | examples |\n|---|---|---|---|---|---|\n")
         for i, r in enumerate(ranked[:args.top], 1):
-            fh.write(f"| {i} | `{r['chain']}` | {r['count']} | {r['avg_chars']} | {', '.join(r['examples'][:3])} |\n")
+            avg = "" if r["avg_chars"] is None else r["avg_chars"]
+            fh.write(f"| {i} | `{r['chain']}` | {r['count']} | {r['parallel']} | {avg} | "
+                     f"{', '.join(r['examples'][:3])} |\n")
     print(json.dumps({"ok": True, "out": str(out), "runs": len(run_ids), "chains": len(ranked),
                       "tool_calls": sum(m['tool_calls'] for m in all_metrics),
                       "errors": sum(m['errors'] for m in all_metrics),
