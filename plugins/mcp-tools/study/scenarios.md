@@ -111,10 +111,7 @@ with `PORTIONS` and `steps()`, a make of language and solution, and `Recipe.desc
 `parse_java_and_insert` plus `describe2()` as a JSON AST. Both must check clean.
 Run to verify: `mps-aspect-generator` (only cell), `mps-aspect-behavior` for parsed bodies and
 for a hand-written BaseLanguage AST, `mps-baselanguage`, `mps-model-manipulation`.
-**Evaluator caveat (A6):** `done_criteria.md` names
-`<project>/mcp.study.kitchen/source_gen/...`; the fixture's solution is
-`<project>/solutions/mcp.study.kitchen/`. A strict reading FAILs a correct cell. The prompt
-("under the solution") is the right check. Do not "fix" the frozen prompt.
+Criterion 2 names the fixture's `<project>/solutions/mcp.study.kitchen/source_gen/...` path since A6.
 Hypotheses: H1, H2.
 
 **S7 — tests and a run configuration.** Fixture: `recipes` (a passing S1; the sample roots are
@@ -241,7 +238,6 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
    language). A read-only cell (S8, S9) may precede a
    language-changing one in the same process. S1 and S10 are synthesized and do not need that
    restart. S10 runs last, and only when it is in the list.
-4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S6/A6, S8/A8, S9 session
-   state).
+4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S8/A8, S9 session state).
 5. The live catalog is what the run measures: `run_worker.sh` installs it and records
    `skillsSha256`. A cell run against a different catalog is not a verification of the change.
