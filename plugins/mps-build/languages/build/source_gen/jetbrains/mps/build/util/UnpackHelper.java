@@ -17,7 +17,7 @@ public class UnpackHelper extends DependenciesHelper {
   private final Set<SNode> requiredSet = new HashSet<SNode>();
   private final Set<SNode> requiredWithContent = new HashSet<SNode>();
   private boolean evaluated = false;
-  private PathProvider myPathProvider;
+  private final PathProvider myPathProvider;
 
   /*package*/ UnpackHelper(SNode project, TemplateQueryContext genContext) {
     super(Context.defaultContext(genContext), project);

@@ -87,7 +87,15 @@ public class ArtifactLookup {
     if (myDependencyHelper == null) {
       return null;
     }
-    return SNodeOperations.as(myDependencyHelper.artifacts().get(id), CONCEPTS.BuildLayout_Node$Rb);
+    if (id instanceof SNode) {
+      return myDependencyHelper.getArtifact(as_arca2u_a0a0a0b0m(id, SNode.class));
+    } else if (id instanceof LocalSourcePathArtifact) {
+      return myDependencyHelper.getArtifact(as_arca2u_a0a0a0a1a21(id, LocalSourcePathArtifact.class));
+    } else if (id instanceof String) {
+      return myDependencyHelper.getArtifact(as_arca2u_a0a0a0b1a21(id, String.class));
+    } else {
+      throw new IllegalStateException("Unexpected way to identify artifacts:" + String.valueOf(id));
+    }
   }
 
   protected void cache(Object id, SNode element) {
@@ -104,6 +112,15 @@ public class ArtifactLookup {
       throw new IllegalStateException("Unexpected way to identify artifacts:" + String.valueOf(id));
     }
   }
+  private static <T> T as_arca2u_a0a0a0a1a21(Object o, Class<T> type) {
+    return (type.isInstance(o) ? (T) o : null);
+  }
+  private static <T> T as_arca2u_a0a0a0b1a21(Object o, Class<T> type) {
+    return (type.isInstance(o) ? (T) o : null);
+  }
+  private static <T> T as_arca2u_a0a0a0b0m(Object o, Class<T> type) {
+    return (type.isInstance(o) ? (T) o : null);
+  }
   private static <T> T as_arca2u_a0a0a0b0o(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
@@ -117,6 +134,5 @@ public class ArtifactLookup {
   private static final class CONCEPTS {
     /*package*/ static final SConcept BuildRelativePath$Kc = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x65997a657729f6fbL, "jetbrains.mps.build.structure.BuildRelativePath");
     /*package*/ static final SInterfaceConcept BuildLayout_PathElement$ei = MetaAdapterFactory.getInterfaceConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x62ec2ed0f87da183L, "jetbrains.mps.build.structure.BuildLayout_PathElement");
-    /*package*/ static final SConcept BuildLayout_Node$Rb = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafac4c85L, "jetbrains.mps.build.structure.BuildLayout_Node");
   }
 }

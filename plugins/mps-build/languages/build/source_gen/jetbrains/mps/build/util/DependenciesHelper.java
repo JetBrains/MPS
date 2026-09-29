@@ -20,6 +20,11 @@ import org.jetbrains.mps.openapi.language.SContainmentLink;
 public class DependenciesHelper {
   private final Map<SNode, String> locationMap;
   private final Map<SNode, String> contentLocationMap;
+  /**
+   * FIXME seems that this map + respective getArtifact/putArtifact shall be part of a dedicated ArtifactCache (or part of ArtifactLookup, perhaps?).
+   *      There are 2 major ways to work with this map. First, it's FDP that implicitly populates this cache (through VisibleArtifacts.getResource())
+   *      and then generator macros access these cached values using getArtifact.
+   */
   private final Map<Object, SNode> idToArtifactMap;
   private final MacroHelper macros;
   private final SNode myProject;
@@ -31,9 +36,9 @@ public class DependenciesHelper {
   protected DependenciesHelper(Context buildContext, SNode project) {
     // given the usage pattern of DH, with fill from preprocessing script, and reads from rules (that can be run in parallel), 
     // I feel regular, non-concurrent map is enough;
-    locationMap = new HashMap<SNode, String>(100);
-    contentLocationMap = new HashMap<SNode, String>(100);
-    idToArtifactMap = new HashMap<Object, SNode>(100);
+    locationMap = new HashMap<>(100);
+    contentLocationMap = new HashMap<>(100);
+    idToArtifactMap = new HashMap<>(100);
     this.macros = buildContext.getMacros(project);
     myProject = project;
     final String qualifiedProjectName = SModelOperations.getModelName(SNodeOperations.getModel(project)) + '/' + SPropertyOperations.getString(project, PROPS.name$MnvL);
@@ -120,22 +125,18 @@ public class DependenciesHelper {
     return (String) key.getUserObject(myLayoutRelativeKey);
   }
 
-  /*package*/ Map<Object, SNode> artifacts() {
-    return idToArtifactMap;
-  }
-
   public SNode getArtifact(String id) {
     // it seems that the only use of this method is to access our own 'labeled' jars (those we record in fetchDependencies of mps/mps-testing build plugins).
     // these 'labeled' dependencies are in fact just 'implicit' dependencies that are not present in a build project but are necessary for its parts to function
-    return SNodeOperations.as(idToArtifactMap.get(id), CONCEPTS.BuildLayout_Node$Rb);
+    return idToArtifactMap.get(id);
   }
 
   public SNode getArtifact(SNode id) {
-    return SNodeOperations.as(idToArtifactMap.get(artifactIdKey(id, false)), CONCEPTS.BuildLayout_Node$Rb);
+    return idToArtifactMap.get(artifactIdKey(id, false));
   }
 
   public SNode getArtifact(LocalSourcePathArtifact id) {
-    return SNodeOperations.as(idToArtifactMap.get(id), CONCEPTS.BuildLayout_Node$Rb);
+    return idToArtifactMap.get(id);
   }
 
   /*package*/ void putArtifact(String id, SNode artifact) {
@@ -231,7 +232,6 @@ public class DependenciesHelper {
   }
 
   private static final class CONCEPTS {
-    /*package*/ static final SConcept BuildLayout_Node$Rb = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafac4c85L, "jetbrains.mps.build.structure.BuildLayout_Node");
     /*package*/ static final SConcept BuildProject$ae = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4df58c6f18f84a13L, "jetbrains.mps.build.structure.BuildProject");
     /*package*/ static final SConcept BuildExternalLayoutDependency$oL = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d3d0a4L, "jetbrains.mps.build.structure.BuildExternalLayoutDependency");
     /*package*/ static final SConcept BuildProjectDependency$sN = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd908c220L, "jetbrains.mps.build.structure.BuildProjectDependency");
