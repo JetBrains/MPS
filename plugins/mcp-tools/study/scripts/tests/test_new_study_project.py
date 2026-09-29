@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import json
 import subprocess
 import sys
@@ -26,6 +27,17 @@ GITIGNORE = """# Default ignored files
 """
 
 DOC_SURFACE = (".agents", ".claude", "AGENTS.md", "CLAUDE.md")
+
+
+def load(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+maker = load("new_study_project", MAKER)
+derive = load("new_project_migration_xml", maker.DERIVE)
 
 
 def run(*args: str) -> subprocess.CompletedProcess:
@@ -63,14 +75,24 @@ class NewStudyProjectTest(unittest.TestCase):
             baseline = out["baseline"]
             self.assertRegex(baseline, r"^\d{3}$")
             self.assertEqual(baseline, out["migrationEntries"]["project.baseline.version"])
-            # every other entry is a migration marked as already executed
+            # every other entry is a migration marked as already executed; the set may be empty
+            # (on 262 no project migration has a baseline >= 262), so compare with the derivation
             migrations = {k: v for k, v in out["migrationEntries"].items()
                           if k != "project.baseline.version"}
-            self.assertTrue(migrations, "expected at least one executed project migration")
+            expected = {mid for version, mid in derive.project_migrations(derive.mps_root(CHECKOUT))
+                        if version >= int(baseline)}
+            self.assertEqual(expected, set(migrations))
             for key, value in migrations.items():
                 self.assertTrue(key.startswith("jetbrains.mps.ide.mpsmigration."), key)
                 self.assertEqual("executed", value)
             self.assertIn(baseline, (project / ".mps/migration.xml").read_text())
+
+    def test_migration_without_an_executed_entry_holds_only_the_baseline(self):
+        """The 262 shape: every project migration predates the baseline, so none is executed."""
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "migration.xml"
+            path.write_text(derive.render(262, [(261, "x.Y")]), encoding="utf-8")
+            self.assertEqual({"project.baseline.version": "262"}, maker.parse_migration(path))
 
     def test_never_writes_an_agent_doc_surface(self):
         with tempfile.TemporaryDirectory() as tmp:
