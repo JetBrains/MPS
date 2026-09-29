@@ -1,5 +1,7 @@
 # Documentation defects found during the skill-script automation study
 
+Which scenario exercises which skill, when a fix here needs a re-measure: [`scenarios.md`](scenarios.md).
+
 Kept separately from the hotspot work (study section 8) so fixes are not blocked on scripting.
 Each entry: where, what is wrong, evidence (run id + step, or commit), status.
 

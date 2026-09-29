@@ -1,5 +1,9 @@
 # Scenario set
 
+Which cell verifies which skill is `plugins/mcp-tools/study/scenarios.md` (a brief list, then the
+directory). This file is how to run a cell and how to add one, not that lookup. The gate-4
+default (S1 + S3) is a pilot default; do not use it when the directory names other cells.
+
 Location: `plugins/mcp-tools/study/scenarios/<S>/worker_prompt.md` + `done_criteria.md`.
 Fixtures are NOT kept as tarballs in git — regenerate them per `plugins/mcp-tools/study/fixtures/README.md`
 (empty = **synthesized per run** by `scripts/new_study_project.py`, not a tarball at all;

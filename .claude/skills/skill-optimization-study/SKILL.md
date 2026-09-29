@@ -125,8 +125,11 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    drop `PROJECT_SYNTHESIZED=1` if the harness project was not synthesized. The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
-5. **Scenarios** — `study/scenarios/S1..S10/{worker_prompt.md,done_criteria.md}`; add a scenario for
-   whatever skill/tool changed. **S10 (project lifecycle) runs last in a round**: it is the only
+5. **Scenarios** — `study/scenarios/S1..S10/{worker_prompt.md,done_criteria.md}`. Which cells a
+   changed skill actually forces is `study/scenarios.md` (brief list, then the directory). Look
+   that up before picking the matrix; the gate-4 default (S1 + S3) is a pilot default, not that
+   lookup. Add a scenario for whatever skill/tool the directory does not cover. **S10 (project
+   lifecycle) runs last in a round**: it is the only
    scenario whose worker closes and opens projects, and a mistake in it can leave a modal dialog
    that blocks every later `mps_mcp_*` call. Prompts are developer-voice, fixed names, explicit "done", NO reporting
    requirements. Fixtures: `empty-project` (synthesized per run, not a tarball),
@@ -185,7 +188,7 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
 - `references/harness.md` — run_worker.sh, analyze_runs.py, show_steps.py, tools_inventory.py,
   new_study_project.py, mps_control.sh usage; clean-environment rule; the observer's project and
   MPS lifecycle protocols (create / open / close / shutdown + relaunch); per-run procedure card.
-- `references/scenarios.md` — the scenario set, fixtures, orchestrator project swap, done-criteria
-  style, adding a scenario.
+- `references/scenarios.md` — how to run and add a scenario, fixtures, orchestrator project swap,
+  done-criteria style. Which scenario covers which skill: `plugins/mcp-tools/study/scenarios.md`.
 - `references/analysis.md` — metrics, chain scoring, rubric, report template, thresholds.
 - `references/lessons.md` — what went wrong the first time and the rule that came out of it.
