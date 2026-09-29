@@ -9,11 +9,13 @@ Outputs (written into --out, default <runs>/analysis):
                 skill-file bytes read, tool calls, errors, retries, validation loops, wall-clock, pass,
                 skill navigation (messages, greps by scope, re-reads, index hops), auto-compactions,
                 temp-file (`mps-node-<n>.json`) re-reads after a compaction,
-                concept-assignability rejections (with a hint, and calls until the same tool/kind succeeds)
+                concept-assignability rejections (with a hint, and calls until the same tool/kind succeeds),
+                MPS calls on a never-loaded schema, bytes injected by the `Skill` tool
   phases.csv    one row per run and aspect phase: skill navigation cost of that phase
   navigation.json per run: compactions, skill and temp-file re-reads, index hops, greps, phases,
-                every skill-touching call
-  tools.json    per-tool call counts, error counts, avg input chars, avg result bytes (transcript + server)
+                `Skill`-tool loads with their injected bytes, every skill-touching call
+  tools.json    per-tool call counts, error counts, unloaded-schema calls, avg input chars, avg result
+                bytes (transcript + server)
   chains.json   bigrams/trigrams of tool+op with counts, `parallel` tallies and avg chars per occurrence
   errors.json   error->retry pairs, check_root_node_problems repeats per root, stale-runtime incidents,
                 API retry clusters
@@ -35,6 +37,16 @@ seconds), `api_retry_delay_s` = round(sum(retry_delay_ms) / 1000); Python's roun
 even (1.5 -> 2, 2.5 -> 2). `errors.json` lists `api_retry_clusters: [{before_step, retries, stall_s,
 statuses}]`, `before_step` being the step of the first tool call after the cluster (None if none) and
 `stall_s` rounded to 0.1 s. `wall_s` includes the stalls.
+Unloaded schemas (A7): per session, a schema is loaded by a `ToolSearch` whose result names it in
+a `tool_reference` block, or whose query is `select:a,b,c` naming it (names normalised with
+mcp_name()), from the session's NEXT batch on; a compaction does not unload, and a subagent starts
+empty. `unloaded_schema_calls` counts the `mps_mcp_*` calls on a schema not loaded at their batch,
+`unloaded_schema_errors` those of them that failed; both are empty when the run has no `ToolSearch`
+call (a host that does not defer schemas, or Junie, would otherwise count every call).
+`skill_tool_bytes` is the UTF-8 length of each `Skill` injection: after a `Skill` result, the first
+user event of that session before its next assistant event that carries `isSynthetic: true` and a
+text block starting `Base directory for this skill:` (0 for a load without one).
+`skill_read_bytes` and phases.csv keep counting only Read/Bash skill reads.
 A compact JSON summary is printed to stdout. Stdlib only, Python >= 3.9.
 Exit codes: 0 ok, 2 usage.
 """
@@ -99,6 +111,9 @@ def classify_bash(command: str) -> str:
     return "other"
 STALE_RE = re.compile(r"descriptorStatus\W+hollow|runtime_stale|RUNTIME_STALE", re.I)
 VALIDATE_TOOL = "mps_mcp_check_root_node_problems"
+# A7: the `Skill` tool returns a short "Launching skill: …" result; the skill body arrives as the
+# session's next user event, a synthetic text block with this prefix.
+SKILL_INJECTION_PREFIX = "Base directory for this skill:"
 # metrics.csv token column -> usage field
 TOKEN_USAGE_KEYS = {"input_tokens": "input_tokens", "output_tokens": "output_tokens",
                     "cache_read": "cache_read_input_tokens", "cache_write": "cache_creation_input_tokens"}
@@ -452,6 +467,37 @@ def retry_pairs(calls: list[dict]) -> list[tuple[int, int, str]]:
     return sorted(retries)
 
 
+def loaded_schema_names(call: dict) -> set[str]:
+    """The tool schemas one `ToolSearch` call loads, normalised with mcp_name(): its result's
+    `tool_reference` blocks, and the names of a `select:a,b,c` query (for hosts whose results are
+    empty)."""
+    names = {mcp_name(n) for n in call.get("tool_refs") or []}
+    inp = call.get("input") if isinstance(call.get("input"), dict) else {}
+    query = str(inp.get("query") or "").strip()
+    if query.startswith("select:"):
+        names.update(mcp_name(n.strip()) for n in query[len("select:"):].split(",") if n.strip())
+    return names
+
+
+def mark_unloaded_schema_calls(calls: list[dict]) -> bool:
+    """A7: flag `call["unloaded_schema"]` on each `mps_mcp_*` call whose schema its session had not
+    loaded by that batch. A `ToolSearch` loads its schemas from the session's next batch on, so a
+    call in its own batch was written blind; a compaction does not unload, and a subagent starts
+    empty. False (nothing flagged) when the run has no `ToolSearch` call at all: the host then does
+    not defer schemas, or cannot say so, and every call would count."""
+    if not any(c["name"] == "ToolSearch" for c in calls):
+        return False
+    for session in session_batches(calls).values():
+        loaded: set[str] = set()
+        for batch in session:
+            for c in batch:
+                c["unloaded_schema"] = c["name"].startswith("mps_mcp_") and c["name"] not in loaded
+            for c in batch:
+                if c["name"] == "ToolSearch":
+                    loaded |= loaded_schema_names(c)
+    return True
+
+
 def analyse_navigation(calls: list[dict], compactions: list[dict], init_cwd: str | None) -> dict:
     """Skill navigation per D50: which calls touch the skills catalog, in how many messages, with
     which greps, re-reads and index hops, and in which aspect phase. Runs after all results are in,
@@ -463,7 +509,8 @@ def analyse_navigation(calls: list[dict], compactions: list[dict], init_cwd: str
         session = c.get("session")
         if c["name"] == "Skill":
             skill = str(inp.get("skill") or "").rsplit(":", 1)[-1]
-            loads.append({"step": c["step"], "skill": skill, "session": session})
+            loads.append({"step": c["step"], "skill": skill, "session": session,
+                          "bytes": c.get("skill_tool_bytes", 0)})
             continue
         if c["name"] == "Bash":
             cwd = cwd_by_session.get(session, init_cwd)
@@ -580,6 +627,7 @@ def analyse_navigation(calls: list[dict], compactions: list[dict], init_cwd: str
                   for n in nav],
         "skill_msgs": len({n["msg"] for n in nav}),
         "skill_loads": len(loads),
+        "loads": [{k: load[k] for k in ("step", "skill", "session", "bytes")} for load in loads],
     }
 
 
@@ -600,6 +648,30 @@ def op_of(inp) -> str | None:
 def key_of(name: str, inp) -> str:
     op = op_of(inp)
     return f"{name}:{op}" if op else name
+
+
+def tool_references(content) -> list[str]:
+    """The `tool_name`s of a result's `tool_reference` blocks (a `ToolSearch` result); result_text()
+    ignores these blocks."""
+    if not isinstance(content, list):
+        return []
+    return [str(part.get("tool_name")) for part in content
+            if isinstance(part, dict) and part.get("type") == "tool_reference" and part.get("tool_name")]
+
+
+def skill_injection_bytes(event: dict) -> int | None:
+    """The UTF-8 length of a `Skill` injection: a synthetic user event whose content holds a text
+    block starting `Base directory for this skill:`. None for any other event."""
+    if not event.get("isSynthetic"):
+        return None
+    content = event.get("message", {}).get("content")
+    if not isinstance(content, list):
+        return None
+    for part in content:
+        if (isinstance(part, dict) and part.get("type") == "text"
+                and str(part.get("text", "")).startswith(SKILL_INJECTION_PREFIX)):
+            return len(part["text"].encode())
+    return None
 
 
 def result_text(content) -> str:
@@ -731,6 +803,9 @@ def analyse_run(run_id: str, runs: Path):
     # `awaiting_step` no following tool call.
     api_clusters, api_retry_delay_ms, last_time = [], 0, None
     open_cluster, awaiting_time, awaiting_step = None, [], []
+    # A7: per session, the `Skill` calls whose result arrived and whose injection is still expected
+    # (before the session's next assistant event).
+    pending_skills: dict = {}
     for ev in events:
         t = ev.get("type")
         ev_time = event_time(ev)
@@ -769,6 +844,7 @@ def analyse_run(run_id: str, runs: Path):
                                 "pre_tokens": meta_c.get("pre_tokens"),
                                 "seconds": round((meta_c.get("duration_ms") or 0) / 1000)})
         if t == "assistant":
+            pending_skills.pop(ev.get("parent_tool_use_id") or ev.get("parentToolUseId"), None)
             msg = ev.get("message", {})
             for k, v in (msg.get("usage") or {}).items():
                 if isinstance(v, (int, float)):
@@ -809,6 +885,10 @@ def analyse_run(run_id: str, runs: Path):
                     if STALE_RE.search(text):
                         stale += 1
                     if call:
+                        call["tool_refs"] = tool_references(block.get("content"))
+                        if call["name"] == "Skill":
+                            call["skill_tool_bytes"] = 0
+                            pending_skills.setdefault(call["session"], []).append(call)
                         call["result_is_temp_file"] = bool(re.match(r'\s*\{"ok":true,"data":"/[^"]+"', text))
                         call["result_bytes"] = n
                         call["error"] = is_error_result(block, text)
@@ -822,6 +902,10 @@ def analyse_run(run_id: str, runs: Path):
                                                         and bool(ASSIGNABILITY_HINT_RE.search(text)))
                         reset = CWD_RESET_RE.search(text) if call["name"] == "Bash" else None
                         call["cwd_reset"] = reset.group(1) if reset else None
+            injected = skill_injection_bytes(ev)
+            waiting = pending_skills.get(ev.get("parent_tool_use_id") or ev.get("parentToolUseId"))
+            if injected is not None and waiting:
+                waiting.pop(0)["skill_tool_bytes"] = injected
         elif t == "result":
             if isinstance(ev.get("usage"), dict):
                 result_usages.append(ev["usage"])
@@ -850,6 +934,7 @@ def analyse_run(run_id: str, runs: Path):
     loops = {r: n for r, n in per_root.items() if n >= 3}
 
     chains = chain_counts(calls, run_id)
+    schemas_deferred = mark_unloaded_schema_calls(calls)
 
     tool_calls = Counter(c["name"] for c in calls if c["name"].startswith("mps_mcp_"))
     mps_calls = sum(tool_calls.values())
@@ -897,6 +982,7 @@ def analyse_run(run_id: str, runs: Path):
         "mps_authored_chars": sum(c["input_chars"] for c in calls if c["name"].startswith("mps_mcp_")),
         "tool_result_bytes": result_total,
         "skill_read_bytes": sum(c["result_bytes"] for c in calls if c["skill_read"]),
+        "skill_tool_bytes": sum(load["bytes"] for load in navigation["loads"]),
         "skill_reads": sum(1 for c in calls if c["skill_read"]),
         "skill_msgs": navigation["skill_msgs"], "skill_loads": navigation["skill_loads"],
         "skill_greps_catalog": sum(1 for g in navigation["greps"] if g["scope"] == "catalog"),
@@ -915,6 +1001,9 @@ def analyse_run(run_id: str, runs: Path):
         "temp_file_envelopes": sum(1 for c in calls if c["name"].startswith("mps_mcp_") and c["result_is_temp_file"]),
         "errors": sum(1 for c in calls if c["error"]), "retries": len(retries),
         "validation_loops": len(loops), "stale_incidents": stale,
+        "unloaded_schema_calls": sum(1 for c in calls if c.get("unloaded_schema")) if schemas_deferred else None,
+        "unloaded_schema_errors": (sum(1 for c in calls if c.get("unloaded_schema") and c["error"])
+                                   if schemas_deferred else None),
         "api_retries": sum(c["retries"] for c in api_retry_clusters),
         "api_stall_s": round(sum(c["_stall"] for c in api_clusters)),
         "api_retry_delay_s": round(api_retry_delay_ms / 1000),
@@ -955,6 +1044,7 @@ def main(argv=None) -> int:
         for c in calls:
             tools[c["name"]]["calls"] += 1
             tools[c["name"]]["errors"] += int(c["error"])
+            tools[c["name"]]["unloaded_calls"] += int(bool(c.get("unloaded_schema")))
             tool_chars[c["name"]] += c["input_chars"]; tool_bytes[c["name"]] += c["result_bytes"]
         for s in server:
             tools[s.get("tool") or "?"]["server_calls"] += 1

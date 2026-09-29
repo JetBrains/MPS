@@ -72,6 +72,21 @@ def api_retry(delay_ms: int, status: int = 502) -> dict:
             "session_id": "s", "uuid": f"retry-{delay_ms}"}
 
 
+def tool_reference_result(tool_id: str, names: list[str]) -> dict:
+    """A `ToolSearch` result: list content of `tool_reference` blocks, no text (F1)."""
+    return {"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": tool_id, "content": [
+        {"type": "tool_reference", "tool_name": name} for name in names]}]}}
+
+
+def user_text(text: str, *, synthetic: bool = True, session: str | None = None) -> dict:
+    """A user event whose content is a text block, as the `Skill` tool injects a skill body (F1)."""
+    event = {"type": "user", "message": {"role": "user", "content": [{"type": "text", "text": text}]}}
+    if synthetic:
+        event["isSynthetic"] = True
+    event["parent_tool_use_id"] = session
+    return event
+
+
 def call(tool_id: str, name: str, inp: dict, text: str = "x" * 10, **kwargs) -> list[dict]:
     return [tool(tool_id, name, inp, **kwargs), result(tool_id, text)]
 
@@ -712,6 +727,125 @@ class ApiRetriesTest(unittest.TestCase):
                          json.loads((out / "errors.json").read_text())["r"]["api_retry_clusters"])
 
 
+MPS = "mcp__mps-mcp-server__"
+
+
+class A7Test(unittest.TestCase):
+    """A7: MPS calls on a schema no `ToolSearch` had loaded, and the bytes the `Skill` tool injects."""
+
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.runs = Path(self.temp_dir.name)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def analyse(self, events: list[dict]):
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+        return analyzer.analyse_run("r", self.runs)
+
+    def unloaded(self, events: list[dict]) -> tuple:
+        metrics = self.analyse(events)[0]
+        return metrics["unloaded_schema_calls"], metrics["unloaded_schema_errors"]
+
+    @staticmethod
+    def search(tool_id: str, names: list[str], *, query: str = "select:x", msg: str | None = None,
+               session: str | None = None) -> list[dict]:
+        return [tool(tool_id, "ToolSearch", {"query": query}, msg=msg, session=session),
+                tool_reference_result(tool_id, names)]
+
+    def test_a_call_on_a_schema_never_returned_is_unloaded_and_its_error_counts(self) -> None:
+        events = [*self.search("s", [f"{MPS}mps_mcp_a"], msg="m0"),
+                  *call("1", f"{MPS}mps_mcp_a", {}, msg="m1"),
+                  tool("2", f"{MPS}mps_mcp_b", {}, msg="m2"), result("2", "rejected", error=True),
+                  *call("3", "Read", {"file_path": "/x"}, msg="m3")]
+        self.assertEqual((1, 1), self.unloaded(events))
+
+    def test_a_call_in_the_same_batch_as_its_tool_search_is_unloaded(self) -> None:
+        events = [tool("s", "ToolSearch", {"query": "select:mps_mcp_a"}, msg="m0"),
+                  tool("1", f"{MPS}mps_mcp_a", {}, msg="m0"),
+                  tool_reference_result("s", [f"{MPS}mps_mcp_a"]), result("1", "ok"),
+                  *call("2", f"{MPS}mps_mcp_a", {}, msg="m1")]
+        self.assertEqual((1, 0), self.unloaded(events))
+
+    def test_without_any_tool_search_both_columns_are_empty(self) -> None:
+        events = [*call("1", f"{MPS}mps_mcp_a", {}), tool("2", f"{MPS}mps_mcp_b", {}), result("2", "e", error=True)]
+        self.assertEqual((None, None), self.unloaded(events))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        with (out / "metrics.csv").open(newline="") as stream:
+            row = next(csv.DictReader(stream))
+        self.assertEqual(("", ""), (row["unloaded_schema_calls"], row["unloaded_schema_errors"]))
+
+    def test_a_select_query_loads_its_names_when_the_result_is_empty(self) -> None:
+        """Both spellings of F1: a bare name in the query, a prefixed one in the call."""
+        events = [*self.search("s", [], query=f"select:mps_mcp_c, {MPS}mps_mcp_d", msg="m0"),
+                  *call("1", f"{MPS}mps_mcp_c", {}, msg="m1"),
+                  *call("2", f"{MPS}mps_mcp_d", {}, msg="m2")]
+        self.assertEqual((0, 0), self.unloaded(events))
+
+    def test_a_subagent_starts_with_an_empty_loaded_set_and_a_compaction_unloads_nothing(self) -> None:
+        events = [*self.search("s", [f"{MPS}mps_mcp_a"], msg="m0"),
+                  compaction(160000, 60000),
+                  *call("1", f"{MPS}mps_mcp_a", {}, msg="m1"),
+                  *call("2", f"{MPS}mps_mcp_a", {}, msg="c1", session="agent")]
+        _, calls, *_ = self.analyse(events)
+        self.assertEqual([False, False, True], [c.get("unloaded_schema") for c in calls])
+
+    def test_tools_json_counts_unloaded_calls_per_tool(self) -> None:
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in [
+            *self.search("s", [f"{MPS}mps_mcp_a"], msg="m0"),
+            *call("1", f"{MPS}mps_mcp_a", {}, msg="m1"),
+            *call("2", f"{MPS}mps_mcp_b", {}, msg="m2"),
+            *call("3", f"{MPS}mps_mcp_b", {}, msg="m3")]))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        tools = json.loads((out / "tools.json").read_text())
+        self.assertEqual({"mps_mcp_a": (1, 0), "mps_mcp_b": (2, 2)},
+                         {t: (tools[t]["calls"], tools[t]["unloaded_calls"]) for t in ("mps_mcp_a", "mps_mcp_b")})
+
+    def test_the_skill_injection_after_a_skill_result_is_counted(self) -> None:
+        body = "Base directory for this skill: /p/.claude/skills/mps-mcp-workflow\n\n# "
+        body += "x" * (2000 - len(body))
+        events = [INIT, *call("a", "Skill", {"skill": "mps-mcp-workflow"}, "Launching skill: mps-mcp-workflow"),
+                  user_text(body), *call("b", "Bash", {"command": "true"})]
+        metrics, calls, *_, navigation = self.analyse(events)
+        self.assertEqual(33, calls[0]["result_bytes"])       # "Launching skill: …" only
+        self.assertEqual((2000, 0), (metrics["skill_tool_bytes"], metrics["skill_read_bytes"]))
+        self.assertEqual([{"step": 1, "skill": "mps-mcp-workflow", "session": None, "bytes": 2000}],
+                         navigation["loads"])
+
+    def test_only_a_synthetic_skill_text_before_the_next_assistant_event_counts(self) -> None:
+        body = "Base directory for this skill: /p/skills/s\n\n# s"
+        launched = "Launching skill: s"
+        cases = {
+            "not synthetic": [*call("a", "Skill", {"skill": "s"}, launched), user_text(body, synthetic=False)],
+            "compaction summary": [*call("a", "Skill", {"skill": "s"}, launched),
+                                   user_text("This session is being continued from a previous conversation")],
+            "after the next assistant event": [*call("a", "Skill", {"skill": "s"}, launched),
+                                               *call("b", "Bash", {"command": "true"}), user_text(body)],
+            "another session": [*call("a", "Skill", {"skill": "s"}, launched), user_text(body, session="agent")],
+        }
+        for name, events in cases.items():
+            with self.subTest(name):
+                metrics, *_, navigation = self.analyse(events)
+                self.assertEqual(0, metrics["skill_tool_bytes"])
+                self.assertEqual([0], [load["bytes"] for load in navigation["loads"]])
+
+    def test_two_skill_loads_in_one_batch_each_get_their_injection(self) -> None:
+        one, two = "Base directory for this skill: /s/one", "Base directory for this skill: /s/two!"
+        events = [tool("a", "Skill", {"skill": "one"}, msg="m0"), result("a", "Launching skill: one"),
+                  user_text(one), tool("b", "Skill", {"skill": "two"}, msg="m0"),
+                  result("b", "Launching skill: two"), user_text(two)]
+        metrics, *_, navigation = self.analyse(events)
+        self.assertEqual([len(one), len(two)], [load["bytes"] for load in navigation["loads"]])
+        self.assertEqual(len(one) + len(two), metrics["skill_tool_bytes"])
+
+
 def study_runs(directory: str, run_id: str) -> Path:
     return STUDY_RUNS / directory / f"{run_id}-worker.jsonl"
 
@@ -743,6 +877,27 @@ class StudyTranscriptsA5Test(unittest.TestCase):
         self.assertTrue(500 <= metrics["api_stall_s"] <= 540, metrics["api_stall_s"])
         self.assertEqual([4, 13, 14, 20], [c["before_step"] for c in clusters])
         self.assertEqual(9, sum(c["retries"] for c in clusters))
+
+
+class StudyTranscriptsA7Test(unittest.TestCase):
+    """A7's live figures (docs/a2-a8-study-harness-fixes-plan.md section 7)."""
+
+    @unittest.skipUnless(study_runs("runs-r21", "S1-sonnet-1").exists(), "runs-r21 transcripts not found")
+    def test_round20_s1_cells_make_no_unloaded_schema_calls(self) -> None:
+        for run_id in ("S1-opus-1", "S1-sonnet-1"):
+            with self.subTest(run_id):
+                metrics = analyzer.analyse_run(run_id, STUDY_RUNS / "runs-r21")[0]
+                self.assertEqual(0, metrics["unloaded_schema_calls"])
+
+    @unittest.skipUnless(study_runs("runs-r19", "S8-sonnet-1").exists(), "runs-r19 transcripts not found")
+    def test_round18_s8_sonnet_blind_calls(self) -> None:
+        metrics = analyzer.analyse_run("S8-sonnet-1", STUDY_RUNS / "runs-r19")[0]
+        self.assertEqual(26, metrics["unloaded_schema_calls"])
+
+    @unittest.skipUnless(study_runs("runs-r19", "S5-sonnet-1").exists(), "runs-r19 transcripts not found")
+    def test_round18_s5_sonnet_skill_tool_bytes(self) -> None:
+        metrics = analyzer.analyse_run("S5-sonnet-1", STUDY_RUNS / "runs-r19")[0]
+        self.assertEqual(22092, metrics["skill_tool_bytes"])
 
 
 @unittest.skipUnless((ROUND13_RUNS / "S1-sonnet-1-worker.jsonl").exists(),

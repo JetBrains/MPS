@@ -104,7 +104,7 @@ mapped onto `message.usage`. Claude-shaped input is a no-op. Unknown event types
 stderr and do not drop tool pairs.
 
 ## analyze_runs.py `$RUNS [--out DIR (default $RUNS/analysis)] [--min-occurrences 3] [--top 25]`
-Outputs: `metrics.csv`, `phases.csv`, `navigation.json`, `tools.json` (per-tool calls/errors/avg
+Outputs: `metrics.csv`, `phases.csv`, `navigation.json`, `tools.json` (per-tool calls/errors/`unloaded_calls`/avg
 sizes, transcript + server), `chains.json`, `errors.json`, `hotspots.md`. `pass` comes from `<id>.meta.json.taskPass` (empty until
 the observer evaluates; always empty for SMOKE).
 The server slice is filtered to `meta.project` plus every path in `meta.relatedProjects`.
@@ -157,6 +157,18 @@ so a parallel-only chain sorts to the bottom instead of vanishing. `count + para
 pre-A2 count (see `analysis.md`). Without message ids
 every rule reduces to the per-call behaviour.
 
+**Unloaded schemas (A7).** `unloaded_schema_calls` counts `mps_mcp_*` calls on a tool whose schema
+the session had not loaded at that call's batch; `unloaded_schema_errors` counts those that failed.
+The loaded set is per session: the `tool_name` of every `tool_reference` block in a `ToolSearch`
+result, plus the names of a `select:a,b,c` query (the fallback when a host returns an empty result),
+all normalised to the bare `mps_mcp_x` so the prefixed and bare spellings match. A schema counts as
+loaded from the session's **next** batch on; a call in the same batch as the `ToolSearch` that selects
+it was written before the schema arrived and counts as unloaded. A compaction does not unload, and a
+subagent starts with an empty set. Both columns are **empty** when the run has no `ToolSearch` call
+at all (a heuristic: the transcript does not say whether schemas are deferred, and a host that does
+not defer them, or Junie, would otherwise count every call). `tools.json` carries `unloaded_calls`
+per tool, summed over the runs whose column is non-empty (a run without `ToolSearch` adds 0). (`runs-r19/S8-sonnet-1`: 26 of 26 MPS calls; round 18's sonnet cells sum to 71.)
+
 **Skill navigation (D50 M-0).** Bash commands are parsed, and the old `SKILL_DIR_RE` match is OR-ed
 in so `skill_reads` only grows. The persisted cwd of a `cd` carries into later calls until the
 result says `Shell cwd was reset to …`. `VAR=…` and `for f in …; do … "$VAR/$f"; done` are
@@ -165,6 +177,14 @@ ignored. Every skill access is recorded as one of: read (whole = `Read` without 
 lone `cat`), grep, list, script, or other (e.g. `tee`, `echo`). `.agents/skills/X` and
 `.claude/skills/X` count as the same file. Metrics columns:
 - `skill_msgs`: distinct assistant messages carrying skill calls. `skill_loads`: `Skill` tool calls.
+- `skill_tool_bytes` (A7): the skill bodies the `Skill` tool injected. Its `tool_result` is only
+  "Launching skill: …"; the body is the first user event of the same session before its next
+  assistant event that carries `isSynthetic: true` **and** a text block starting
+  `Base directory for this skill:` (both: `isSynthetic` alone also marks compaction summaries).
+  The column sums the UTF-8 length of that text, 0 for a load without one; `navigation.json` lists
+  `loads: [{step, skill, session, bytes}]`. `skill_read_bytes` and `phases.csv` still count only
+  Read/Bash/Grep/Glob skill reads, so earlier rounds stay comparable; report both.
+  (`runs-r19/S5-sonnet-1`: `skill_read_bytes` 0, `skill_tool_bytes` 22,092.)
 - `skill_greps_{catalog,skill,file}`: one per grep call, at its widest target. catalog = the skills
   root, a glob over skill names, or a catalog-level file such as `MPS_MCP_SKILL_VERSION.txt`;
   skill = a skill tree or a glob in one; file = named files only (one or several).
@@ -197,7 +217,7 @@ an access, so a worker that loads several aspects in one batch gets near-empty e
 S2). A call that touches an aspect skill counts for that aspect; other calls count for the phase
 they fall in; `(pre)` is everything before the first aspect. Columns: span, skill calls, loads, messages, bytes, greps by
 scope, re-reads, index hops, distinct files read. `navigation.json` holds the per-run detail:
-compactions, re-reads, hops, greps, phases, and every skill call with its accesses.
+compactions, re-reads, hops, greps, phases, `Skill` loads with their bytes, and every skill call with its accesses.
 
 `--setting-sources project` remains deferred. Adopting it requires a separate SMOKE proving login,
 the live project catalog, and skills still work; it is not needed for the user-agent guard.

@@ -16,7 +16,11 @@ compaction_s, first_compaction_step, plus `phases.csv` per aspect phase (definit
 touched again after a compaction are `temp_rereads_after_compaction` (calls: a `Read` or a Bash
 command, heredoc included, naming an `mps-node-<n>.json` its session first touched before that
 compaction) and `temp_reread_bytes_after_compaction` (their result bytes); `navigation.json`
-lists them as `temp_rereads`. Reliability: errors, retries, validation_loops,
+lists them as `temp_rereads`. `skill_tool_bytes` (A7) is what the `Skill` tool injected: the
+skill body arrives as a synthetic user text event after the 33-byte "Launching skill: …" result,
+so `skill_read_bytes` (Read/Bash/Grep/Glob only, unchanged, as is `phases.csv`) misses it
+(r19 S5-sonnet-1: 0 read, 22,092 injected). Report both; their sum is the skill text the worker
+received. Reliability: errors, retries, validation_loops,
 stale_incidents, server_errors, task pass (from the evaluator). Since A2, `retries` counts per
 session and per parallel batch: one per tool with an error in a batch that the session calls again
 in one of its next two batches (a batch of five rejected calls is one retry, not five), so it is
@@ -30,6 +34,15 @@ and is far larger than the backoff (r18 S1-opus-1: 9 retries, 21 s declared, 520
 wall-clock change a regression; `errors.json` lists the clusters (`api_retry_clusters`, with the
 step they preceded). Junie transcripts have no api_retry events and no per-step timestamps, so all
 three are 0.
+Unloaded schemas (A7): `unloaded_schema_calls` counts `mps_mcp_*` calls on a tool whose schema no
+`ToolSearch` of that session had returned or `select:`-ed by the previous batch (a compaction does
+not unload; a subagent starts empty), and `unloaded_schema_errors` those of them that failed; per
+tool in `tools.json` as `unloaded_calls`. A blind call is often accepted, so errors are the cost and
+calls the exposure (r19 sonnet: 71 calls, 23 errors; r19 S8-sonnet-1: 26 of 26). Both are **empty**
+when a run has no `ToolSearch` call at all. That is a heuristic: the transcript does not say whether
+the host defers schemas, and one that does not (or Junie) would count every call. An empty cell
+therefore means "not measurable", not 0; a deferring host whose worker never searched would also
+read empty, so check `mps_calls` and the error envelopes of such a run before calling it clean.
 Lifecycle: `welcome_rejections` (pre-dispatch rejections with an empty project listing — the
 Welcome screen, where no `projectPath` could have helped; 0 is the good value everywhere, S10
 included: the first S10 run read the skill and never probed blind. One is the acceptable cost of

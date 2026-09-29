@@ -250,7 +250,8 @@
     calls, 32 % of them rejected). → Read `init.model` from the SMOKE transcripts before the matrix
     starts, and name the same-model cells in the report. Use the model that did not move (opus here,
     S5–S10 against round 16) as the A/A control: a family that rises only on the moved model is a
-    model finding, not a tool regression. Count calls to unloaded schemas (A7).
+    model finding, not a tool regression. Count calls to unloaded schemas with `metrics.csv`'s
+    `unloaded_schema_calls` and `unloaded_schema_errors`.
 42. **Restarting per shared fixture language is cheap and removes D80.** Round 18 restarted MPS 7
     times, each `shutdown` → `start` harness → `wait` → SMOKE, at about 30 s plus $0.25. There was no
     stale-runtime episode (one `reload_all` in 18 cells, a D84 case), against 7 turns in round 17's
