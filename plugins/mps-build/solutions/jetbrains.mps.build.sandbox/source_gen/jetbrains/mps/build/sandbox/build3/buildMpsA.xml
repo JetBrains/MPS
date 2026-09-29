@@ -45,6 +45,9 @@
       </filterchain>
     </copy>
     <tar destfile="${build.layout}/temp/tarfilesettest2.tar.gz" compression="gzip" longfile="gnu">
+      <tarfileset src="${basedir}/jetbrains.mps.build.sandbox/samples/tarSource.tar">
+        <include name="lib/**" />
+      </tarfileset>
       <tarfileset file="${basedir}/jetbrains.mps.build.tests/tests.msd" prefix="prefix1" filemode="600" />
       <tarfileset dir="${artifacts.buildMpsB}/X" prefix="prefix1/prefix2" filemode="640" dirmode="750" />
       <tarfileset file="${basedir}/jetbrains.mps.build.sandbox/sandbox.msd" prefix="prefix1/prefix2/prefix3" filemode="640" />

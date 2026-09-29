@@ -76,6 +76,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_BuildLayout_PathElement;
   private ConceptPresentation props_BuildLayout_PureNode;
   private ConceptPresentation props_BuildLayout_Tar;
+  private ConceptPresentation props_BuildLayout_TarFiles;
   private ConceptPresentation props_BuildLayout_TransparentContainer;
   private ConceptPresentation props_BuildLayout_War;
   private ConceptPresentation props_BuildLayout_Zip;
@@ -614,6 +615,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_BuildLayout_Tar = cpb.create();
         }
         return props_BuildLayout_Tar;
+      case LanguageConceptSwitch.BuildLayout_TarFiles:
+        if (props_BuildLayout_TarFiles == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("entries copied directly from an existing tar archive");
+          cpb.rawPresentation("files from tar");
+          props_BuildLayout_TarFiles = cpb.create();
+        }
+        return props_BuildLayout_TarFiles;
       case LanguageConceptSwitch.BuildLayout_TransparentContainer:
         if (props_BuildLayout_TransparentContainer == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();

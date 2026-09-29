@@ -2230,5 +2230,30 @@
       <ref role="PrY4T" node="7XQqoCTkVIO" resolve="BuildStringContainer" />
     </node>
   </node>
+  <node concept="1TIwiD" id="7ndPoqgM6ZG">
+    <property role="EcuMT" value="8488675646594641900" />
+    <property role="TrG5h" value="BuildLayout_TarFiles" />
+    <property role="34LRSv" value="files from tar" />
+    <property role="R4oN_" value="entries copied directly from an existing tar archive" />
+    <property role="3GE5qa" value="Layout.File" />
+    <ref role="1TJDcQ" node="6qcrfIJF4M5" resolve="BuildLayout_Node" />
+    <node concept="1TJgyj" id="7ndPoqgM6ZH" role="1TKVEi">
+      <property role="IQ2ns" value="8488675646594641901" />
+      <property role="20kJfa" value="archive" />
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" node="6qcrfIJFdKY" resolve="BuildSourcePath" />
+    </node>
+    <node concept="1TJgyj" id="7ndPoqgM6ZI" role="1TKVEi">
+      <property role="IQ2ns" value="8488675646594641902" />
+      <property role="20kJfa" value="selectors" />
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <property role="20lbJX" value="fLJekj5/_0__n" />
+      <ref role="20lvS9" node="4zlO3QT8$mB" resolve="BuildFileSelector" />
+    </node>
+    <node concept="PrWs8" id="7ndPoqgM6ZJ" role="PzmwI">
+      <ref role="PrY4T" node="Y2EImGIi9D" resolve="BuildLayout_FileSet" />
+    </node>
+  </node>
 </model>
 

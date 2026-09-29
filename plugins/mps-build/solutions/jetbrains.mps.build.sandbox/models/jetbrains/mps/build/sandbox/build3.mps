@@ -102,6 +102,10 @@
       <concept id="5610619299014309452" name="jetbrains.mps.build.structure.BuildSource_JavaExternalJarRef" flags="ng" index="3yrxFa">
         <reference id="5610619299014309453" name="jar" index="3yrxFb" />
       </concept>
+      <concept id="8488675646594641900" name="jetbrains.mps.build.structure.BuildLayout_TarFiles" flags="ng" index="3_1rDE">
+        <child id="8488675646594641902" name="selectors" index="3_1rDC" />
+        <child id="8488675646594641901" name="archive" index="3_1rDF" />
+      </concept>
       <concept id="841011766565753074" name="jetbrains.mps.build.structure.BuildLayout_Import" flags="ng" index="3_I8Xc">
         <reference id="841011766565753076" name="target" index="3_I8Xa" />
       </concept>
@@ -374,6 +378,22 @@
                   </node>
                 </node>
               </node>
+            </node>
+          </node>
+          <node concept="3_1rDE" id="7ndPoqgQhaa" role="39821P">
+            <node concept="55IIr" id="7ndPoqgQhab" role="3_1rDF">
+              <node concept="2Ry0Ak" id="7ndPoqgQhac" role="iGT6I">
+                <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
+                <node concept="2Ry0Ak" id="7ndPoqgQhad" role="2Ry0An">
+                  <property role="2Ry0Am" value="samples" />
+                  <node concept="2Ry0Ak" id="7ndPoqgQhae" role="2Ry0An">
+                    <property role="2Ry0Am" value="tarSource.tar" />
+                  </node>
+                </node>
+              </node>
+            </node>
+            <node concept="3LWZYx" id="7ndPoqgQhaf" role="3_1rDC">
+              <property role="3LWZYw" value="lib/**" />
             </node>
           </node>
         </node>
