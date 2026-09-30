@@ -7,6 +7,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import jetbrains.mps.project.modules.LanguageProducer
+import jetbrains.mps.smodel.SNodeUtil
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -1316,6 +1318,226 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
         val data = expectOk(response)
         assertTrue("the printout must validate as a blueprint: $response", data.get("dryRun").asBoolean)
+    }
+
+    // ── print_node_json: stored features the concept does not declare (D89) ─────────────
+
+    /**
+     * A root whose concept belongs to a language that does not exist, as a sandbox of a language
+     * that was never built looks: `name` = G1, an invented `size` = 3, one child in an invented
+     * `parts` role (itself a ghost with `size` = 7), and an invented `buddy` reference to [buddy].
+     */
+    private class GhostFixture(val root: SNode, val child: SNode, val conceptName: String) {
+        val ref: String get() = PersistenceFacade.getInstance().asString(root.reference)
+    }
+
+    private fun createGhostRoot(model: org.jetbrains.mps.openapi.model.SModel, buddy: SNode): GhostFixture {
+        val uuid = java.util.UUID.randomUUID()
+        val (hi, lo) = uuid.mostSignificantBits to uuid.leastSignificantBits
+        val conceptName = "ghost${System.nanoTime()}.structure.Ghost"
+        val concept = MetaAdapterFactory.getConcept(hi, lo, 1L, conceptName)
+        val size = MetaAdapterFactory.getProperty(hi, lo, 1L, 11L, "size")
+        val parts = MetaAdapterFactory.getContainmentLink(hi, lo, 1L, 12L, "parts")
+        val buddyLink = MetaAdapterFactory.getReferenceLink(hi, lo, 1L, 13L, "buddy")
+        lateinit var root: SNode
+        lateinit var child: SNode
+        executeCommand {
+            root = jetbrains.mps.smodel.SNode(concept)
+            root.setProperty(SNodeUtil.property_INamedConcept_name, "G1")
+            root.setProperty(size, "3")
+            child = jetbrains.mps.smodel.SNode(concept)
+            child.setProperty(size, "7")
+            root.addChild(parts, child)
+            root.setReferenceTarget(buddyLink, buddy)
+            model.addRootNode(root)
+        }
+        return GhostFixture(root, child, conceptName)
+    }
+
+    private fun deleteNode(node: SNode) = executeCommand { if (node.model != null) node.delete() }
+
+    private fun byKey(array: com.google.gson.JsonArray, key: String): Map<String, JsonObject> =
+        array.associate { it.asJsonObject.get(key).asString to it.asJsonObject }
+
+    /** Every object key anywhere in [element], for the byte-compatibility guard. */
+    private fun allKeys(element: JsonElement): Set<String> = when {
+        element.isJsonObject -> element.asJsonObject.entrySet().flatMap { (k, v) -> allKeys(v) + k }.toSet()
+        element.isJsonArray -> element.asJsonArray.flatMap { allKeys(it) }.toSet()
+        else -> emptySet()
+    }
+
+    private fun warningsOf(response: String): List<String> =
+        JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString } ?: emptyList()
+
+    @Test
+    fun `print_node_json prints the stored content of a node whose concept is not loaded`() {
+        val buddyRef = createConceptRoot("GhostBuddy")
+        val model = createModel(createSolution(), "ghost.sandbox${System.nanoTime()}")
+        val ghost = createGhostRoot(model, resolveNodeRef(buddyRef))
+        try {
+            val response = runTool(toolset) { it.mps_mcp_print_node(ghost.ref, deep = false) }
+            val printed = payloadObjectFromOkData(response)
+            assertFalse("the record must say its concept is not loaded: $printed", printed.get("conceptLoaded").asBoolean)
+
+            val properties = byKey(printed.getAsJsonArray("properties"), "name")
+            val size = properties["size"]
+            assertNotNull("the stored 'size' must be printed: $printed", size)
+            assertEquals("3", size!!.get("value").asString)
+            assertFalse(size.get("declared").asBoolean)
+            assertFalse("an invalid property has no type: $size", size.has("type"))
+            val name = properties["name"]
+            assertNotNull("the stored name must be printed: $printed", name)
+            assertEquals("the raw read works for a valid feature too", "G1", name!!.get("value").asString)
+            assertFalse(name.get("declared").asBoolean)
+            assertTrue("INamedConcept.name is valid, so it keeps its type: $name", name.has("type"))
+
+            val parts = byKey(printed.getAsJsonArray("children"), "role")["parts"]
+            assertNotNull("the stored child role must be printed: $printed", parts)
+            assertFalse(parts!!.get("declared").asBoolean)
+            assertFalse("an invalid link has no cardinality: $parts", parts.has("cardinality"))
+            assertEquals(1, parts.getAsJsonArray("children").size())
+
+            val buddy = byKey(printed.getAsJsonArray("references"), "role")["buddy"]
+            assertNotNull("the stored reference must be printed: $printed", buddy)
+            assertFalse(buddy!!.get("declared").asBoolean)
+            assertFalse("an invalid link has no type: $buddy", buddy.has("type"))
+            assertEquals(buddyRef, buddy.get("targetReference").asString)
+
+            val warnings = warningsOf(response)
+            assertEquals("exactly one envelope warning: $response", 1, warnings.size)
+            assertTrue("the warning names the persisted concept FQN: $warnings", warnings.single().contains(ghost.conceptName))
+        } finally {
+            deleteNode(ghost.root)
+        }
+    }
+
+    @Test
+    fun `print_node_json deep inlines the children of a node whose concept is not loaded`() {
+        val model = createModel(createSolution(), "ghost.sandbox${System.nanoTime()}")
+        val ghost = createGhostRoot(model, resolveNodeRef(createConceptRoot("GhostBuddyDeep")))
+        try {
+            val response = runTool(toolset) { it.mps_mcp_print_node(ghost.ref, deep = true) }
+            val printed = payloadObjectFromOkData(response)
+            val child = byKey(printed.getAsJsonArray("children"), "role")["parts"]!!.getAsJsonArray("nodes").single().asJsonObject
+            assertFalse(child.get("conceptLoaded").asBoolean)
+            assertEquals("7", byKey(child.getAsJsonArray("properties"), "name")["size"]!!.get("value").asString)
+            assertEquals("root and child share one concept, so one warning: $response", 1, warningsOf(response).size)
+        } finally {
+            deleteNode(ghost.root)
+        }
+    }
+
+    @Test
+    fun `get_project_structure marks and warns about nodes whose concept is not loaded`() {
+        val model = createModel(createSolution(), "ghost.sandbox${System.nanoTime()}")
+        val ghost = createGhostRoot(model, resolveNodeRef(createConceptRoot("GhostBuddyDump")))
+        try {
+            val response = runTool(JetBrainsMPSProjectMcpToolset()) {
+                it.mps_mcp_get_project_structure(includeNodes = true, startingPoint = modelRefOf(model))
+            }
+            val root = payloadObjectFromOkData(response).getAsJsonArray("rootNodes").single().asJsonObject
+            assertFalse("the dump marks the root: $root", root.get("conceptLoaded").asBoolean)
+            assertTrue("the dump prints the stored child: $root", root.toString().contains("\"parts\""))
+            assertTrue("the dump envelope warns: $response", warningsOf(response).single().contains(ghost.conceptName))
+
+            // The names projection: undeclared roles are inlined with includeNodes, and a roots
+            // listing without includeNodes still marks the node and warns.
+            val namesDump = runTool(JetBrainsMPSProjectMcpToolset()) {
+                it.mps_mcp_get_project_structure(includeNodes = true, nodeDetail = "names", startingPoint = modelRefOf(model))
+            }
+            val namesRoot = payloadObjectFromOkData(namesDump).getAsJsonArray("rootNodes").single().asJsonObject
+            val parts = byKey(namesRoot.getAsJsonArray("children"), "role")["parts"]
+            assertNotNull("names+includeNodes inlines the undeclared role: $namesRoot", parts)
+            assertFalse(parts!!.get("declared").asBoolean)
+            val listing = runTool(JetBrainsMPSProjectMcpToolset()) {
+                it.mps_mcp_get_project_structure(includeRootNodes = true, nodeDetail = "names", startingPoint = modelRefOf(model))
+            }
+            val listed = payloadObjectFromOkData(listing).getAsJsonArray("rootNodes").single().asJsonObject
+            assertFalse("a names roots listing marks the node: $listed", listed.get("conceptLoaded").asBoolean)
+            assertTrue("a names roots listing warns: $listing", warningsOf(listing).single().contains(ghost.conceptName))
+        } finally {
+            deleteNode(ghost.root)
+        }
+    }
+
+    /** A fresh concept root holding a value for a property its concept does not declare. */
+    private fun conceptRootWithStaleProperty(name: String): Pair<String, org.jetbrains.mps.openapi.language.SProperty> {
+        val ref = createConceptRoot(name)
+        val node = resolveNodeRef(ref)
+        val stale = readOnRepo { MetaAdapterFactory.getProperty(node.concept, 0x7ffffff0_0000_0011L, "staleProp") }
+        executeCommand { node.setProperty(stale, "kept") }
+        return ref to stale
+    }
+
+    @Test
+    fun `print_node_json marks a stale stored property of a loaded concept`() {
+        val (ref, _) = conceptRootWithStaleProperty("StalePropHost")
+        val response = runTool(toolset) { it.mps_mcp_print_node(ref, deep = false) }
+        val printed = payloadObjectFromOkData(response)
+        val stale = byKey(printed.getAsJsonArray("properties"), "name")["staleProp"]
+        assertNotNull("the stale property must be printed: $printed", stale)
+        assertFalse(stale!!.get("declared").asBoolean)
+        assertFalse("its owner has no descriptor entry, so no type: $stale", stale.has("type"))
+        assertFalse("the concept is loaded: $printed", printed.has("conceptLoaded"))
+        assertTrue("no envelope warning for a loaded concept: $response", warningsOf(response).isEmpty())
+    }
+
+    @Test
+    fun `a printout with a stale property round-trips and keeps the stored value`() {
+        val (ref, stale) = conceptRootWithStaleProperty("StaleRoundTrip")
+        val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = true) })
+        val response = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_update_root_node_from_json(ref, JsonOrText(printed.toString()))
+        }
+        expectOk(response)
+        assertTrue(
+            "the skipped property is reported: $response",
+            warningsOf(response).any { it.contains("staleProp") && it.contains("left as it is") },
+        )
+        assertEquals("kept", readOnRepo { resolveNodeRef(ref).getProperty(stale) })
+    }
+
+    @Test
+    fun `a blueprint with a declared-false child role is rejected and the root is unchanged`() {
+        val ref = createConceptRoot("UndeclaredRoleHost")
+        val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = true) })
+        val before = printed.toString()
+        printed.getAsJsonArray("children").add(JsonParser.parseString(
+            """{"role":"ghostRole","declared":false,"nodes":[{"concept":"jetbrains.mps.lang.structure.structure.PropertyDeclaration","properties":[{"name":"name","value":"x"}]}]}"""
+        ))
+        val error = expectErr(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_update_root_node_from_json(ref, JsonOrText(printed.toString()))
+        })
+        assertTrue("the rejection names the marker and the recovery: $error", error.contains("declared:false") && error.contains("MAKE"))
+        val after = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = true) }).toString()
+        assertEquals("the root must be unchanged", before, after)
+    }
+
+    @Test
+    fun `a printout holding a node whose concept is not loaded is rejected on update`() {
+        val ref = createConceptRoot("GhostChildHost")
+        val host = resolveNodeRef(ref)
+        val uuid = java.util.UUID.randomUUID()
+        val ghostConcept = MetaAdapterFactory.getConcept(uuid.mostSignificantBits, uuid.leastSignificantBits, 1L, "ghostc.structure.Ghost")
+        val link = readOnRepo { host.concept.containmentLinks.single { it.name == "propertyDeclaration" } }
+        executeCommand { host.addChild(link, jetbrains.mps.smodel.SNode(ghostConcept)) }
+        val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ref, deep = true) })
+        val error = expectErr(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_update_root_node_from_json(ref, JsonOrText(printed.toString()))
+        })
+        assertTrue("the rejection names the marker: $error", error.contains("conceptLoaded:false"))
+        assertEquals("the ghost child must still be stored", 1, readOnRepo { host.getChildren(link).count() })
+    }
+
+    @Test
+    fun `a normal printout carries no D89 markers and no warnings`() {
+        val ref = createConceptRoot("PlainPrint")
+        addPropertyChild(ref, "plainKid", "string")
+        val response = runTool(toolset) { it.mps_mcp_print_node(ref, deep = true) }
+        val keys = allKeys(payloadFromOkData(response))
+        assertFalse("no declared key: $response", "declared" in keys)
+        assertFalse("no conceptLoaded key: $response", "conceptLoaded" in keys)
+        assertTrue("no warnings: $response", warningsOf(response).isEmpty())
     }
 
     // ── update_node ADD CHILD: responseDetail ────────────────────────────────────────────

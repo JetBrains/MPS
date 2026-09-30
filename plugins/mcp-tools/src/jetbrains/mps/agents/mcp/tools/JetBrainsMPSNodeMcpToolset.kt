@@ -16,6 +16,7 @@ import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.CopyUtil
 import jetbrains.mps.project.validation.ModelValidator
+import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -952,6 +953,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpDescription(
         """
         Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
+        A stored property, child role or reference that the node's concept does not declare is printed with `declared:false`; a node whose language is not loaded prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
         `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
@@ -984,7 +986,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
                 val node = sNodeRef?.resolve(repo)
                     ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
-                finalizeResult(nodeHierarchyToJson(node, deep, mpsProject), maxInlineBytes)
+                val unloadedConcepts = linkedSetOf<SAbstractConcept>()
+                val json = nodeHierarchyToJson(node, deep, mpsProject, unloadedConcepts = unloadedConcepts)
+                finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
             }
         }
     }

@@ -1189,6 +1189,23 @@ abstract class AbstractOps : McpToolset {
         return okJson(JsonParser.parseString(json), warnings = warnings, details = details)
     }
 
+    /**
+     * The envelope warning for a printout that contains records whose concept is not loaded (the
+     * `unloadedConcepts` sink of [nodeHierarchyJsonObject]); empty when there are none. Without it a
+     * reader took such a printout as the whole node and reported the content as missing (D89).
+     */
+    protected fun unloadedConceptsWarnings(concepts: Collection<SAbstractConcept>): List<String> {
+        if (concepts.isEmpty()) return emptyList()
+        val names = concepts.map { structureQualifiedName(it) }.distinct().sorted()
+        val listed = names.take(5).joinToString(", ") + if (names.size > 5) ", … (+${names.size - 5} more)" else ""
+        return listOf(
+            "Printed nodes use ${names.size} concept(s) whose language is not loaded ($listed): " +
+                "what they store is printed from the stored node, marked declared:false, with types, cardinalities and docs " +
+                "only for features of loaded languages (conceptLoaded:false on each such node). Run mps_mcp_alter_nodes MAKE with rebuild=true on the " +
+                "language module for the full record, or read the editor projection with format \"PLAIN TEXT\"."
+        )
+    }
+
     protected fun saveToTempFileResult(json: String): String {
         return try {
             val tempFile = saveToTempFile(json)
@@ -1480,17 +1497,31 @@ abstract class AbstractOps : McpToolset {
         deep: Boolean,
         currentProject: MPSProject? = null,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): String {
-        return nodeHierarchyJsonObject(node, deep, currentProject, cache, projection).toString()
+        return nodeHierarchyJsonObject(node, deep, currentProject, cache, projection, unloadedConcepts).toString()
     }
 
+    /**
+     * One node record, and with [deep] its inlined subtree.
+     *
+     * The record lists what the node *stores*, not only what its concept declares. A stored
+     * property, child role or reference that the concept does not declare is appended after the
+     * declared ones with `declared:false` — a node whose language is not loaded declares nothing,
+     * and printing only the declared features made its whole content vanish (study defect D89).
+     * Descriptor-only keys (type, cardinality, doc) are written for such a feature only when the
+     * feature itself is valid; an invalid adapter answers `BaseConcept` / `0..n`, which is wrong
+     * rather than unknown. A record whose concept is not loaded carries `conceptLoaded:false`, and
+     * its concept is added to [unloadedConcepts] so the tool can warn once per envelope.
+     */
     protected fun nodeHierarchyJsonObject(
         node: SNode,
         deep: Boolean,
         currentProject: MPSProject? = null,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): JsonObject {
         val repository = node.model?.repository
         val c = cache ?: ProjectMembershipCache(currentProject)
@@ -1502,6 +1533,10 @@ abstract class AbstractOps : McpToolset {
             val declarationNode = node.concept.sourceNode?.resolve(repository)
             addDocAndDeprecated(obj, getDoc(declarationNode), getDeprecationInfo(declarationNode))
             obj.addProperty("conceptReference", PersistenceFacade.getInstance().asString(node.concept))
+        }
+        if (!node.concept.isValid) {
+            obj.addProperty("conceptLoaded", false)
+            unloadedConcepts?.add(node.concept)
         }
         obj.addProperty("reference", PersistenceFacade.getInstance().asString(node.reference))
         addContainingProjectIfForeign(obj, currentProject, node, cache = c)
@@ -1517,7 +1552,7 @@ abstract class AbstractOps : McpToolset {
         if (!names) {
             addNodeFeatures(obj, node, repository, currentProject, c)
         }
-        addNodeChildren(obj, node, deep, repository, currentProject, c, projection)
+        addNodeChildren(obj, node, deep, repository, currentProject, c, projection, unloadedConcepts)
         return obj
     }
 
@@ -1559,12 +1594,37 @@ abstract class AbstractOps : McpToolset {
             if (defaultLiteral != null) propObj.addProperty("isDefault", true)
             properties.add(propObj)
         }
+        // Stored values the concept does not declare (D89). Read raw: there may be no descriptor
+        // whose getter could run, and an enum keeps its persisted `<id>/<name>` form, because its
+        // literal names are unknown without the language. No `isDefault` either, for the same reason.
+        val declaredProperties = node.concept.properties.toSet()
+        for (prop in node.properties) {
+            if (prop in declaredProperties) continue
+            val value = node.getProperty(prop)
+            if (value.isNullOrEmpty()) continue
+            val propObj = JsonObject()
+            propObj.addProperty("name", prop.name)
+            if (prop.isValid) {
+                val propDeclarationNode = prop.sourceNode?.resolve(repository)
+                propObj.addProperty("type", getPropertyType(prop))
+                addDocAndDeprecated(propObj, getDoc(propDeclarationNode), getDeprecationInfo(propDeclarationNode))
+            }
+            propObj.addProperty("value", value)
+            propObj.addProperty("declared", false)
+            properties.add(propObj)
+        }
         obj.add("properties", properties)
 
+        val declaredReferenceLinks = node.concept.referenceLinks.toSet()
         val references = JsonArray()
         for (ref in node.references) {
             val link = ref.link
-            val refObj = referenceLinkJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            val refObj = if (link.isValid) {
+                referenceLinkJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            } else {
+                JsonObject().apply { addProperty("role", link.name) }
+            }
+            if (link !in declaredReferenceLinks) refObj.addProperty("declared", false)
             val targetNode = ref.targetNode
             if (targetNode != null) {
                 refObj.addProperty("target", targetNode.name ?: targetNode.presentation)
@@ -1593,21 +1653,31 @@ abstract class AbstractOps : McpToolset {
         repository: SRepository?,
         currentProject: MPSProject?,
         c: ProjectMembershipCache,
-        projection: NodeProjection
+        projection: NodeProjection,
+        unloadedConcepts: MutableSet<SAbstractConcept>?
     ) {
         val truncated = deep && projection.atDepthLimit()
         val inline = deep && !truncated
         val children = JsonArray()
         val childrenByRole = node.children.groupBy { it.containmentLink }
-        for (link in node.concept.containmentLinks) {
+        val declaredLinks = node.concept.containmentLinks.toList()
+        // Declared roles first, then the roles the node stores children in but its concept does not
+        // declare (D89), in stored order.
+        val undeclaredLinks = childrenByRole.keys.filterNotNull().filter { it !in declaredLinks }
+        for (link in declaredLinks + undeclaredLinks) {
             val childrenInRole = childrenByRole[link] ?: emptyList()
             if (childrenInRole.isEmpty() && link.isOptional) continue
 
-            val childRole = containmentLinkInfoJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            val childRole = if (link.isValid) {
+                containmentLinkInfoJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            } else {
+                JsonObject().apply { addProperty("role", link.name) }
+            }
+            if (link in undeclaredLinks) childRole.addProperty("declared", false)
             if (inline) {
                 val nodes = JsonArray()
                 for (child in childrenInRole) {
-                    nodes.add(nodeHierarchyJsonObject(child, deep, currentProject, c, projection.descend()))
+                    nodes.add(nodeHierarchyJsonObject(child, deep, currentProject, c, projection.descend(), unloadedConcepts))
                 }
                 childRole.add("nodes", nodes)
             }

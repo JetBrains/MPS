@@ -38,6 +38,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
+import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -153,6 +154,8 @@ class JetBrainsMPSProjectMcpToolset(
         val effectiveIncludeModels = includeModels || includeRootNodes || includeNodes
         return withMpsProject("Getting MPS project structure") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
+                // Concepts of printed nodes whose language is not loaded, for one envelope warning (D89).
+                val unloadedConcepts = linkedSetOf<SAbstractConcept>()
                 if (!startingPoint.isNullOrBlank()) {
                     // Try to resolve as node, then model, then module
 
@@ -164,10 +167,8 @@ class JetBrainsMPSProjectMcpToolset(
                     }
                     val node = nodeRef?.resolve(mpsProject.repository)
                     if (node != null) {
-                        return@executeShortReadOnEdt finalizeResult(
-                            nodeHierarchyToJson(node, includeNodes, mpsProject, projection = projection),
-                            maxInlineBytes
-                        )
+                        val json = nodeHierarchyToJson(node, includeNodes, mpsProject, projection = projection, unloadedConcepts = unloadedConcepts)
+                        return@executeShortReadOnEdt finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
                     }
 
                     // 2. Try Model
@@ -177,16 +178,16 @@ class JetBrainsMPSProjectMcpToolset(
                         resolveModel(mpsProject, startingPoint, projectOnly = true)
                     }
                     if (model != null) {
-                        return@executeShortReadOnEdt finalizeResult(
-                            modelToJson(
-                                mpsProject,
-                                model,
-                                effectiveIncludeRootNodes,
-                                includeNodes,
-                                includeDependencies,
-                                projection = projection
-                            ), maxInlineBytes
+                        val json = modelToJson(
+                            mpsProject,
+                            model,
+                            effectiveIncludeRootNodes,
+                            includeNodes,
+                            includeDependencies,
+                            projection = projection,
+                            unloadedConcepts = unloadedConcepts
                         )
+                        return@executeShortReadOnEdt finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
                     }
 
                     // 3. Try Module
@@ -199,10 +200,11 @@ class JetBrainsMPSProjectMcpToolset(
                         // Check if we should filter out non-project modules if they are not included.
                         val isProjectModule = isModuleInSelectedProject(mpsProject, module)
                         if (includeStubModules || isProjectModule) {
-                            return@executeShortReadOnEdt finalizeResult(
-                                moduleToJson(mpsProject, module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies, projection = projection),
-                                maxInlineBytes
+                            val json = moduleToJson(
+                                mpsProject, module, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies,
+                                projection = projection, unloadedConcepts = unloadedConcepts
                             )
+                            return@executeShortReadOnEdt finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
                         }
                         return@executeShortReadOnEdt filteredOutStartingPoint(startingPoint, "module")
                     }
@@ -246,12 +248,13 @@ class JetBrainsMPSProjectMcpToolset(
                                 includeNodes,
                                 includeDependencies,
                                 cache,
-                                projection
+                                projection,
+                                unloadedConcepts
                             )
                         )
                     }
                     json.add("modules", moduleArray)
-                    finalizeResult(json.toString(), maxInlineBytes)
+                    finalizeResult(json.toString(), maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
                 }
             }
         }
@@ -270,9 +273,10 @@ class JetBrainsMPSProjectMcpToolset(
         includeNodes: Boolean,
         includeDependencies: Boolean,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): String {
-        return moduleJsonObject(project, m, includeModels, includeRootNodes, includeNodes, includeDependencies, cache, projection).toString()
+        return moduleJsonObject(project, m, includeModels, includeRootNodes, includeNodes, includeDependencies, cache, projection, unloadedConcepts).toString()
     }
 
     private fun moduleJsonObject(
@@ -283,7 +287,8 @@ class JetBrainsMPSProjectMcpToolset(
         includeNodes: Boolean,
         includeDependencies: Boolean,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): JsonObject {
         val c = cache ?: ProjectMembershipCache(project)
         val vf = try {
@@ -457,7 +462,7 @@ class JetBrainsMPSProjectMcpToolset(
         if (includeModels) {
             val models = JsonArray()
             for (model in m.models) {
-                models.add(modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, c, projection))
+                models.add(modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, c, projection, unloadedConcepts))
             }
             obj.add("models", models)
         } else {
@@ -550,9 +555,10 @@ class JetBrainsMPSProjectMcpToolset(
         includeNodes: Boolean,
         includeDependencies: Boolean,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): String {
-        return modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, cache, projection).toString()
+        return modelJsonObject(project, model, includeRootNodes, includeNodes, includeDependencies, cache, projection, unloadedConcepts).toString()
     }
 
     private fun modelJsonObject(
@@ -562,7 +568,8 @@ class JetBrainsMPSProjectMcpToolset(
         includeNodes: Boolean,
         includeDependencies: Boolean,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): JsonObject {
         val c = cache ?: ProjectMembershipCache(project)
         val obj = JsonObject()
@@ -627,7 +634,7 @@ class JetBrainsMPSProjectMcpToolset(
         if (includeRootNodes) {
             val rootNodes = JsonArray()
             for (root in model.rootNodes) {
-                rootNodes.add(nodeHierarchyJsonObject(root, includeNodes, project, c, projection))
+                rootNodes.add(nodeHierarchyJsonObject(root, includeNodes, project, c, projection, unloadedConcepts))
             }
             obj.add("rootNodes", rootNodes)
         } else {
