@@ -745,7 +745,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     fun `insert_root_node_from_json refuses a concept whose kept languageId no loaded language owns`() {
         // A concept moved between languages keeps its old `languageId`. Its declaration still resolves,
         // but the concept's language is then an id nobody owns, and importing it would persist an
-        // invented language: the write-site guard in instantiateNode must refuse, on a dry run too.
+        // invented language: the write-site guard in AbstractNodeOps.createNode must refuse, on a dry run too.
         val keptLanguage = UUID.randomUUID()
         val conceptName = "MovedRootable${System.nanoTime()}"
         val declaration = createRootableConcept(conceptName)
@@ -989,7 +989,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
     fun `update_root_node_from_json dryRun warns about a reference a real run would make dynamic`() {
         // Top-level references are staged outside applyReferenceUpdate, so they need their own
-        // warning to match the nested children, which go through instantiateNode.
+        // warning to match the staged children's, which go through AbstractNodeOps.createNode.
         val rootRef = createConceptRoot("KeepMeToo")
         val json = """
             { "concept": "$conceptDeclarationFqn",

@@ -373,9 +373,6 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     } catch (e: Exception) {
                         return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate node$indexLabel from JSON", e, batchWarnings)
                     }
-                    if (newNode == null) {
-                        return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON", McpErrorCode.INVALID_REQUEST, warnings = batchWarnings)
-                    }
                     preparedNodes.add(newNode)
                 }
 

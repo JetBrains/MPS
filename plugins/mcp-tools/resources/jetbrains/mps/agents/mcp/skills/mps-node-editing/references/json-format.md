@@ -32,6 +32,15 @@ MPS tools use a single JSON blueprint shape for all insertions and updates:
 * **Default property values are invisible**: MPS stores nothing for a property that holds its default value — most visibly the *first/default literal* of an enumeration. Dumps (`mps_mcp_print_node`, `mps_mcp_get_project_structure includeNodes`) therefore **omit** such a property, while report-style output prints `"value": ""`. Read absent / `""` as **"holds its default"**, not as "missing", and do not copy a `""` enum value into a blueprint — simply omit the property.
 * **`declared:false` and `conceptLoaded:false` entries from a printout are not re-applied**: a `declared:false` property the concept does not declare is skipped with a warning (on update its stored value stays); a `declared:false` child role or reference is rejected, and so is a node record with `conceptLoaded:false`. Build the language, or drop the entry (a full-root update then deletes what it held). See `references/analysis-tools/print-node-output.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 
+## What the node gets besides the blueprint
+
+Every blueprint node gets its behavior constructor and, outside a dry run, its node factories as in the editor (see "Node factories" in `SKILL.md`), then the blueprint's values. Unlike the editor, mandatory child roles the blueprint omits are not auto-filled, and a dry run runs no factories.
+
+* **An omitted property keeps its constructor and factory value.** Leave it out to get what the editor would set.
+* **Blueprint values win over the node's own constructor and factories**, but a nested child's factory runs after its parent's values are applied and may still change the parent.
+* **Factories see the enclosing nodes.** A nested child's factory sees its parent chain, up through the live node that `mps_mcp_update_node` `ADD`/`SET` × `CHILD` or `mps_mcp_update_root_node_from_json` writes into. A root being inserted is not in the model yet, so factories below it see a root without a model — the same as the editor's New Root.
+* **Constraints setters and getters.** `name` and non-enum property values are stored as given, bypassing constraints property setters; enum values go through them. `mps_mcp_print_node` reads properties through constraints getters, so it can show a value that is not stored.
+
 ## Object vs. array, and where the file may live
 
 * `mps_mcp_insert_root_node_from_json` (`json`) accepts a **single object or a top-level array** of blueprints; an array is inserted atomically.

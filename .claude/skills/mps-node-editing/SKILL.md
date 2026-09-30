@@ -125,12 +125,13 @@ Practical consequences:
 - **`dryRun: true` does not run factories at all** — their side effects land on the model and module
   and nothing rolls them back. A dry run therefore validates the blueprint, not the final node.
 - **Factory side effects survive a failed call.** They are applied while the blueprint is being
-  built, before anything is attached, and no tool rolls them back. If a batch insert fails on its
-  third root, the first two roots are not inserted but whatever their factories wrote to the model
-  and module — imports, module dependencies, a language-version bump — stays. Re-read the affected
-  state instead of assuming a failed call changed nothing. A stray language-version bump is undone in
-  one call: `mps_mcp_update_module(operation="SYNC_VERSION")` re-derives the version from the
-  scripts that actually exist.
+  built, and a failed call removes only the nodes it created, never what the factories wrote
+  elsewhere. If a batch insert fails on its third root, the first two roots are not inserted but
+  whatever their factories wrote to the model and module — imports, module dependencies, a
+  language-version bump — stays. Re-read the affected state instead of assuming a failed call
+  changed nothing. A stray language-version bump is undone in one call:
+  `mps_mcp_update_module(operation="SYNC_VERSION")` re-derives the version from the scripts that
+  actually exist.
 - **A factory that *throws* is reported; one that swallows its own exception is not.** A throw
   becomes a `warnings` entry naming the concept, and the node is still created — treat its
   factory-initialized state as absent. But a factory that catches internally reports nothing and
