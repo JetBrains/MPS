@@ -122,8 +122,8 @@ the MCP run-configuration tool. The observer re-runs it: 4 tests, 0 failures.
 Run to verify: `mps-tests` (only cell), `mps-run-configurations` (only cell).
 Known gap, not a docs miss by itself: the tool takes one root, so four roots become four
 configurations (D53). The editor-test caret check compares the annotated node, `cellId` and
-`selectionStart`/`selectionEnd`, never `caretPosition`/`isLastPosition`. The `before` selection must match the caret too
-(D71, docs fixed 2026-09-30, re-measure: no `CellReference` failure, no source hunt).
+`selectionStart`/`selectionEnd`, never `caretPosition`/`isLastPosition`. In `before` the caret alone places it unless the selection is non-empty
+(D71, D93, docs fixed 2026-09-30, re-measure: no `CellReference` failure, no `before`-selection tree diff, no source hunt).
 Hypotheses: H2, H7.
 
 **S8 — onboard and record.** Fixture: `statechart`. Must not modify any MPS model.
