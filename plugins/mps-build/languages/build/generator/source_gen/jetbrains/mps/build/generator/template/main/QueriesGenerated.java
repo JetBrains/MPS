@@ -1409,15 +1409,19 @@ public class QueriesGenerated extends QueryProviderBase {
     return SLinkOperations.getTarget(_context.getNode(), LINKS.path$Wlt3);
   }
   public static Object templateArgumentQuery_0_0(final TemplateArgumentContext _context) {
-    return SLinkOperations.getTarget(_context.getNode(), LINKS.targetFolder$gAO3);
+    MacroHelper macros = Context.defaultContext(_context).getMacros(_context.getNode());
+    return FileSetUtil.getPrefix(_context.getNode(), macros);
   }
   public static Object templateArgumentQuery_0_1(final TemplateArgumentContext _context) {
-    return SPropertyOperations.getString(_context.getNode(), PROPS.suffix$UtG0);
+    return SLinkOperations.getTarget(_context.getNode(), LINKS.targetFolder$gAO3);
   }
   public static Object templateArgumentQuery_0_2(final TemplateArgumentContext _context) {
-    return SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.extJar$Hzyz), LINKS.jar$JLD3);
+    return SPropertyOperations.getString(_context.getNode(), PROPS.suffix$UtG0);
   }
   public static Object templateArgumentQuery_0_3(final TemplateArgumentContext _context) {
+    return SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.extJar$Hzyz), LINKS.jar$JLD3);
+  }
+  public static Object templateArgumentQuery_0_4(final TemplateArgumentContext _context) {
     return SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.extFolder$gew$), LINKS.folder$95wz);
   }
   public static Object templateArgumentQuery_2_0(final TemplateArgumentContext _context) {
@@ -1434,9 +1438,6 @@ public class QueriesGenerated extends QueryProviderBase {
   public static Object templateArgumentQuery_2_3(final TemplateArgumentContext _context) {
     return FileSetUtil.getFilemode(_context.getNode());
   }
-  public static Object templateArgumentQuery_0_4(final TemplateArgumentContext _context) {
-    return _context.getNode();
-  }
   public static Object templateArgumentQuery_0_5(final TemplateArgumentContext _context) {
     return _context.getNode();
   }
@@ -1447,30 +1448,33 @@ public class QueriesGenerated extends QueryProviderBase {
     return _context.getNode();
   }
   public static Object templateArgumentQuery_0_8(final TemplateArgumentContext _context) {
-    return SLinkOperations.getTarget(_context.getNode(), LINKS.library$sob3);
+    return _context.getNode();
   }
   public static Object templateArgumentQuery_0_9(final TemplateArgumentContext _context) {
-    return SLinkOperations.getTarget(_context.getNode(), LINKS.module$LYKq);
+    return SLinkOperations.getTarget(_context.getNode(), LINKS.library$sob3);
   }
   public static Object templateArgumentQuery_0_10(final TemplateArgumentContext _context) {
-    return SLinkOperations.getTarget(_context.getNode(), LINKS.jar$NQBz);
+    return SLinkOperations.getTarget(_context.getNode(), LINKS.module$LYKq);
   }
   public static Object templateArgumentQuery_0_11(final TemplateArgumentContext _context) {
-    return SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.extJar$wAfT), LINKS.jar$JLD3);
+    return SLinkOperations.getTarget(_context.getNode(), LINKS.jar$NQBz);
   }
   public static Object templateArgumentQuery_0_12(final TemplateArgumentContext _context) {
-    return SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.extFolder$AjzZ), LINKS.folder$95wz);
+    return SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.extJar$wAfT), LINKS.jar$JLD3);
   }
   public static Object templateArgumentQuery_0_13(final TemplateArgumentContext _context) {
-    return SPropertyOperations.getString(_context.getNode(), PROPS.suffix$8IfW);
+    return SLinkOperations.getTarget(SLinkOperations.getTarget(_context.getNode(), LINKS.extFolder$AjzZ), LINKS.folder$95wz);
   }
   public static Object templateArgumentQuery_0_14(final TemplateArgumentContext _context) {
-    return ((SNode) _context.getVariable("var:archive"));
+    return SPropertyOperations.getString(_context.getNode(), PROPS.suffix$8IfW);
   }
   public static Object templateArgumentQuery_0_15(final TemplateArgumentContext _context) {
     return ((SNode) _context.getVariable("var:archive"));
   }
   public static Object templateArgumentQuery_0_16(final TemplateArgumentContext _context) {
+    return ((SNode) _context.getVariable("var:archive"));
+  }
+  public static Object templateArgumentQuery_0_17(final TemplateArgumentContext _context) {
     return ((SNode) _context.getVariable("var:archive"));
   }
   public static Iterable<SNode> sourceNodesQuery_0_0(final SourceSubstituteMacroNodesContext _context) {
@@ -1794,7 +1798,7 @@ public class QueriesGenerated extends QueryProviderBase {
   }
   public static Object varMacro_Value_1_3(final TemplateVarContext _context) {
     List<Tuples._2<SNode, String>> dependencies = new ProjectDependency(_context, _context.getNode()).collectDependencies().getDependencies();
-    return ListSequence.fromList(dependencies).select((it) -> createGeneratorInternal_ProjectDependency_x583g4_a0a0a0a1a144(it._1(), it._0())).toList();
+    return ListSequence.fromList(dependencies).select((it) -> createGeneratorInternal_ProjectDependency_x583g4_a0a0a0a1a244(it._1(), it._0())).toList();
   }
   public static Object varMacro_Value_1_4(final TemplateVarContext _context) {
     return Context.defaultContext(_context).getMacros(_context.getNode());
@@ -3434,27 +3438,28 @@ public class QueriesGenerated extends QueryProviderBase {
   }
   private final Map<String, CallArgumentQuery> caqMethods = new HashMap<String, CallArgumentQuery>();
   {
-    caqMethods.put("5680938682773841397", new CAQ(0));
-    caqMethods.put("5680938682773841634", new CAQ(1));
-    caqMethods.put("5610619299014495885", new CAQ(2));
-    caqMethods.put("5610619299014531917", new CAQ(3));
-    caqMethods.put("3392343135645364653", new CAQ(4));
-    caqMethods.put("3392343135645377067", new CAQ(5));
-    caqMethods.put("3392343135645608070", new CAQ(6));
-    caqMethods.put("3392343135645609992", new CAQ(7));
-    caqMethods.put("4797826009838532346", new CAQ(8));
-    caqMethods.put("4797826009839199017", new CAQ(9));
-    caqMethods.put("4797826009839189287", new CAQ(10));
-    caqMethods.put("4797826009839182745", new CAQ(11));
-    caqMethods.put("4821808014881175200", new CAQ(12));
-    caqMethods.put("4821808014881207698", new CAQ(13));
-    caqMethods.put("8169228734285538428", new CAQ(14));
-    caqMethods.put("5610619299014362371", new CAQ(15));
-    caqMethods.put("342830306171239712", new CAQ(16));
-    caqMethods.put("342830306171239922", new CAQ(17));
-    caqMethods.put("3392343135645317303", new CAQ(18));
-    caqMethods.put("3392343135645319555", new CAQ(19));
-    caqMethods.put("3392343135645321507", new CAQ(20));
+    caqMethods.put("9201269590677061724", new CAQ(0));
+    caqMethods.put("5680938682773841397", new CAQ(1));
+    caqMethods.put("5680938682773841634", new CAQ(2));
+    caqMethods.put("5610619299014495885", new CAQ(3));
+    caqMethods.put("5610619299014531917", new CAQ(4));
+    caqMethods.put("3392343135645364653", new CAQ(5));
+    caqMethods.put("3392343135645377067", new CAQ(6));
+    caqMethods.put("3392343135645608070", new CAQ(7));
+    caqMethods.put("3392343135645609992", new CAQ(8));
+    caqMethods.put("4797826009838532346", new CAQ(9));
+    caqMethods.put("4797826009839199017", new CAQ(10));
+    caqMethods.put("4797826009839189287", new CAQ(11));
+    caqMethods.put("4797826009839182745", new CAQ(12));
+    caqMethods.put("4821808014881175200", new CAQ(13));
+    caqMethods.put("4821808014881207698", new CAQ(14));
+    caqMethods.put("8169228734285538428", new CAQ(15));
+    caqMethods.put("5610619299014362371", new CAQ(16));
+    caqMethods.put("342830306171239712", new CAQ(17));
+    caqMethods.put("342830306171239922", new CAQ(18));
+    caqMethods.put("3392343135645317303", new CAQ(19));
+    caqMethods.put("3392343135645319555", new CAQ(20));
+    caqMethods.put("3392343135645321507", new CAQ(21));
   }
   @NotNull
   @Override
@@ -3479,15 +3484,15 @@ public class QueriesGenerated extends QueryProviderBase {
         case 3:
           return QueriesGenerated.templateArgumentQuery_0_3(ctx);
         case 4:
-          return QueriesGenerated.templateArgumentQuery_2_0(ctx);
-        case 5:
-          return QueriesGenerated.templateArgumentQuery_2_1(ctx);
-        case 6:
-          return QueriesGenerated.templateArgumentQuery_2_2(ctx);
-        case 7:
-          return QueriesGenerated.templateArgumentQuery_2_3(ctx);
-        case 8:
           return QueriesGenerated.templateArgumentQuery_0_4(ctx);
+        case 5:
+          return QueriesGenerated.templateArgumentQuery_2_0(ctx);
+        case 6:
+          return QueriesGenerated.templateArgumentQuery_2_1(ctx);
+        case 7:
+          return QueriesGenerated.templateArgumentQuery_2_2(ctx);
+        case 8:
+          return QueriesGenerated.templateArgumentQuery_2_3(ctx);
         case 9:
           return QueriesGenerated.templateArgumentQuery_0_5(ctx);
         case 10:
@@ -3512,12 +3517,14 @@ public class QueriesGenerated extends QueryProviderBase {
           return QueriesGenerated.templateArgumentQuery_0_15(ctx);
         case 20:
           return QueriesGenerated.templateArgumentQuery_0_16(ctx);
+        case 21:
+          return QueriesGenerated.templateArgumentQuery_0_17(ctx);
         default:
           throw new GenerationFailureException(String.format("Inconsistent QueriesGenerated: there's no method for query %s (key: #%d)", ctx.getTemplateReference(), methodKey));
       }
     }
   }
-  private static SNode createGeneratorInternal_ProjectDependency_x583g4_a0a0a0a1a144(String p0, SNode p1) {
+  private static SNode createGeneratorInternal_ProjectDependency_x583g4_a0a0a0a1a244(String p0, SNode p1) {
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.GeneratorInternal_ProjectDependency$bb);
     n0.setProperty(PROPS.path$URGX, p0);
     n0.setReferenceTarget(LINKS.project$ciHu, p1);

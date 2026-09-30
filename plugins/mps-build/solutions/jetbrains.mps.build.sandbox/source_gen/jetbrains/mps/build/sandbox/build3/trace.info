@@ -2,7 +2,7 @@
 <debug-info version="2">
   <root nodeRef="r:22d2df5f-8d49-41a5-894e-4bb67ea2dfab(jetbrains.mps.build.sandbox.build3)/5253498789149585672">
     <file name="buildMpsA.xml">
-      <unit id="5253498789149585672" at="1,0,125,10" name="jetbrains.mps.build.sandbox.build3.buildMpsA" />
+      <unit id="5253498789149585672" at="1,0,130,10" name="jetbrains.mps.build.sandbox.build3.buildMpsA" />
     </file>
   </root>
   <root nodeRef="r:22d2df5f-8d49-41a5-894e-4bb67ea2dfab(jetbrains.mps.build.sandbox.build3)/5610619299014495733">

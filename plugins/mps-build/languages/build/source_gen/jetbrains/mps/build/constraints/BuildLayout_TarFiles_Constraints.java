@@ -16,6 +16,7 @@ import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.smodel.SNodePointer;
 import org.jetbrains.mps.openapi.language.SConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
+import org.jetbrains.mps.openapi.language.SInterfaceConcept;
 
 public class BuildLayout_TarFiles_Constraints extends BaseConstraintsDescriptor {
   /*package*/ BuildLayout_TarFiles_Constraints(ConstraintsDescriptorInitContext initContext) {
@@ -35,12 +36,13 @@ public class BuildLayout_TarFiles_Constraints extends BaseConstraintsDescriptor 
   }
 
   private static boolean staticCanBeAChild(SNode node, SNode parentNode, SAbstractConcept childConcept, SContainmentLink link) {
-    return SNodeOperations.isInstanceOf(parentNode, CONCEPTS.BuildLayout_Tar$hZ);
+    return SNodeOperations.isInstanceOf(SNodeOperations.getNodeAncestor(parentNode, CONCEPTS.BuildLayout_ContainerAcceptingFileSet$KQ, true, false), CONCEPTS.BuildLayout_Tar$hZ);
   }
   private static final SNodePointer canBeChildBreakingPoint = new SNodePointer("r:5076fdb3-19c3-4563-aa26-7ace7591e78d(jetbrains.mps.build.constraints)", "8488675646594664642");
 
   private static final class CONCEPTS {
     /*package*/ static final SConcept BuildLayout_TarFiles$1e = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x75cdd58690c86fecL, "jetbrains.mps.build.structure.BuildLayout_TarFiles");
+    /*package*/ static final SInterfaceConcept BuildLayout_ContainerAcceptingFileSet$KQ = MetaAdapterFactory.getInterfaceConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db927f229L, "jetbrains.mps.build.structure.BuildLayout_ContainerAcceptingFileSet");
     /*package*/ static final SConcept BuildLayout_Tar$hZ = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x7709f0532a526203L, "jetbrains.mps.build.structure.BuildLayout_Tar");
   }
 }

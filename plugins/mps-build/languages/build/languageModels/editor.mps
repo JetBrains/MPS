@@ -11025,20 +11025,20 @@
   <node concept="24kQdi" id="4SVbBfBwQCG">
     <property role="3GE5qa" value="Layout.File.Text" />
     <property role="TrG5h" value="BuildLayout_EchoText_Editor" />
-    <ref role="1XX52x" to="3ior:4SVbBfBw8M7" />
+    <ref role="1XX52x" to="3ior:4SVbBfBw8M7" resolve="BuildLayout_EchoText" />
     <node concept="3EZMnI" id="4SVbBfBwQCH" role="2wV5jI">
       <node concept="3F0ifn" id="4SVbBfBwQCI" role="3EZMnx">
         <property role="3F0ifm" value="text file" />
         <ref role="1k5W1q" node="hwW5xkg" resolve="keyword" />
       </node>
       <node concept="3F1sOY" id="4SVbBfBwQCJ" role="3EZMnx">
-        <ref role="1NtTu8" to="3ior:4SVbBfBw8M8" />
+        <ref role="1NtTu8" to="3ior:4SVbBfBw8M8" resolve="fileName" />
         <node concept="ljvvj" id="4SVbBfBwQCK" role="3F10Kt">
           <property role="VOm3f" value="true" />
         </node>
       </node>
       <node concept="3F2HdR" id="4SVbBfBwQCL" role="3EZMnx">
-        <ref role="1NtTu8" to="3ior:4SVbBfBw8M9" />
+        <ref role="1NtTu8" to="3ior:4SVbBfBw8M9" resolve="lines" />
         <node concept="l2Vlx" id="4SVbBfBwQCM" role="2czzBx" />
         <node concept="lj46D" id="4SVbBfBwQCN" role="3F10Kt">
           <property role="VOm3f" value="true" />
@@ -11055,35 +11055,25 @@
   </node>
   <node concept="24kQdi" id="7ndPoqgMcxx">
     <property role="3GE5qa" value="Layout.File" />
-    <ref role="1XX52x" to="3ior:7ndPoqgM6ZG" />
+    <ref role="1XX52x" to="3ior:7ndPoqgM6ZG" resolve="BuildLayout_TarFiles" />
     <node concept="3EZMnI" id="7ndPoqgMcxz" role="2wV5jI">
       <node concept="l2Vlx" id="7ndPoqgMcx$" role="2iSdaV" />
-      <node concept="3F0ifn" id="7ndPoqgMcx_" role="3EZMnx">
-        <property role="3F0ifm" value="files from tar" />
-      </node>
-      <node concept="3F0ifn" id="7ndPoqgMcxA" role="3EZMnx">
-        <property role="3F0ifm" value="archive:" />
-        <node concept="pVoyu" id="7ndPoqgMcxB" role="3F10Kt">
+      <node concept="PMmxH" id="7YLuv4ULMLQ" role="3EZMnx">
+        <ref role="PMmxG" to="tpco:2wZex4PafBj" resolve="alias" />
+        <node concept="VPxyj" id="7YLuv4ULMLR" role="3F10Kt">
           <property role="VOm3f" value="true" />
+        </node>
+        <node concept="OXEIz" id="7YLuv4UOd9t" role="P5bDN">
+          <node concept="UkePV" id="7YLuv4UOd9u" role="OY2wv">
+            <ref role="Ul1FP" to="3ior:6qcrfIJF4M5" resolve="BuildLayout_Node" />
+          </node>
         </node>
       </node>
       <node concept="3F1sOY" id="7ndPoqgMcxC" role="3EZMnx">
-        <ref role="1NtTu8" to="3ior:7ndPoqgM6ZH" />
-        <node concept="pVoyu" id="7ndPoqgMcxD" role="3F10Kt">
-          <property role="VOm3f" value="true" />
-        </node>
-        <node concept="lj46D" id="7ndPoqgMcxE" role="3F10Kt">
-          <property role="VOm3f" value="true" />
-        </node>
-      </node>
-      <node concept="3F0ifn" id="7ndPoqgMcxF" role="3EZMnx">
-        <property role="3F0ifm" value="selectors:" />
-        <node concept="pVoyu" id="7ndPoqgMcxG" role="3F10Kt">
-          <property role="VOm3f" value="true" />
-        </node>
+        <ref role="1NtTu8" to="3ior:7ndPoqgM6ZH" resolve="archive" />
       </node>
       <node concept="3F2HdR" id="7ndPoqgMcxH" role="3EZMnx">
-        <ref role="1NtTu8" to="3ior:7ndPoqgM6ZI" />
+        <ref role="1NtTu8" to="3ior:7ndPoqgM6ZI" resolve="selectors" />
         <node concept="pVoyu" id="7ndPoqgMcxJ" role="3F10Kt">
           <property role="VOm3f" value="true" />
         </node>
@@ -11094,6 +11084,15 @@
           <property role="VOm3f" value="true" />
         </node>
         <node concept="l2Vlx" id="7ndPoqgMcxM" role="2czzBx" />
+        <node concept="3F0ifn" id="7YLuv4UWCHx" role="2czzBI">
+          <property role="ilYzB" value="&lt;any&gt;" />
+          <node concept="VechU" id="7YLuv4UWCHy" role="3F10Kt">
+            <property role="Vb096" value="fLJRk5_/gray" />
+          </node>
+          <node concept="VPxyj" id="7YLuv4UWCHz" role="3F10Kt">
+            <property role="VOm3f" value="true" />
+          </node>
+        </node>
       </node>
     </node>
   </node>

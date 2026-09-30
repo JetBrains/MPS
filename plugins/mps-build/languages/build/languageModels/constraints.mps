@@ -4,6 +4,8 @@
   <languages>
     <use id="daafa647-f1f7-4b0b-b096-69cd7c8408c0" name="jetbrains.mps.baseLanguage.regexp" version="0" />
     <use id="3f4bc5f5-c6c1-4a28-8b10-c83066ffa4a1" name="jetbrains.mps.lang.constraints" version="6" />
+    <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
+    <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
     <devkit ref="00000000-0000-4000-0000-5604ebd4f22c(jetbrains.mps.devkit.aspect.constraints)" />
   </languages>
   <imports>
@@ -1590,7 +1592,17 @@
       <node concept="3clFbS" id="7ndPoqgMcz3" role="2VODD2">
         <node concept="3clFbF" id="7ndPoqgMcz4" role="3cqZAp">
           <node concept="2OqwBi" id="7ndPoqgMcz5" role="3clFbG">
-            <node concept="nLn13" id="7ndPoqgMcz6" role="2Oq$k0" />
+            <node concept="2OqwBi" id="7YLuv4UQwq0" role="2Oq$k0">
+              <node concept="nLn13" id="7YLuv4UQwq1" role="2Oq$k0" />
+              <node concept="2Xjw5R" id="7YLuv4UQwq2" role="2OqNvi">
+                <node concept="1xMEDy" id="7YLuv4UQwq5" role="1xVPHs">
+                  <node concept="chp4Y" id="7YLuv4UQwq6" role="ri$Ld">
+                    <ref role="cht4Q" to="3ior:4zlO3QT9Z8D" resolve="BuildLayout_ContainerAcceptingFileSet" />
+                  </node>
+                </node>
+                <node concept="1xIGOp" id="7YLuv4UQwq7" role="1xVPHs" />
+              </node>
+            </node>
             <node concept="1mIQ4w" id="7ndPoqgMcz7" role="2OqNvi">
               <node concept="chp4Y" id="7ndPoqgMcz8" role="cj9EA">
                 <ref role="cht4Q" to="3ior:7s9W5cEkA83" />
