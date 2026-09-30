@@ -5,7 +5,13 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.intellij.openapi.util.SystemInfo
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.structure.modules.LanguageDescriptor
@@ -16,6 +22,7 @@ import jetbrains.mps.smodel.SModelStereotype
 import org.jetbrains.mps.openapi.module.SDependencyScope
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.*
+import org.junit.Assume
 import org.junit.Test
 import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 
@@ -429,6 +436,242 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val match = myProject.projectModules.firstOrNull { it.moduleName == solutionName }
             assertEquals("no partial module should be registered with the project", null, match)
         }
+    }
+
+    // ── MPS-40228: near-root directories and failure-atomic creation ─────────────────────
+
+    private fun createModule(
+        type: String,
+        name: String,
+        directory: String,
+        withGenerator: Boolean = false,
+        withSandbox: Boolean = false,
+        withRuntime: Boolean = false,
+    ): JsonObject = JsonParser.parseString(runTool(toolset) {
+        it.mps_mcp_create_module(type, name, directory, null, null, withGenerator, withSandbox, withRuntime)
+    }).asJsonObject
+
+    private fun projectModuleNames(): Set<String> =
+        readOnRepo { myProject.projectModulesWithGenerators.mapNotNull { it.moduleName }.toSet() }
+
+    private fun listing(dir: Path): Set<String> = Files.list(dir).use { s -> s.map { it.fileName.toString() }.toList().toSet() }
+
+    /** Makes a fixture created with java.io visible to the producers, which read the VFS without refreshing it. */
+    private fun refreshVfs(path: Path) {
+        val vf = LocalFileSystem.getInstance().refreshAndFindFileByNioFile(path)
+        assertNotNull("test precondition: VFS must find $path", vf)
+        VfsUtil.markDirtyAndRefresh(false, true, true, vf)
+    }
+
+    private fun deleteQuietly(path: Path) {
+        path.toFile().deleteRecursively()
+        LocalFileSystem.getInstance().refreshNioFiles(listOf(path))
+    }
+
+    @Test
+    fun `solution directly under tmp is rejected before anything is created`() {
+        // A module folder two levels below '/' makes MacrosFactory.ModuleMacros.shrink throw during
+        // the first save, after the producer registered the module. The upfront depth check refuses it.
+        Assume.assumeFalse("near-root shrink failure is Unix-only", SystemInfo.isWindows)
+        Assume.assumeTrue("needs /tmp", Files.isDirectory(Paths.get("/tmp")))
+        val name = "mcp40228.near.root${System.nanoTime()}"
+        val dir = Paths.get("/tmp/$name")
+        val before = projectModuleNames()
+        try {
+            val obj = createModule("solution", name, dir.toString())
+
+            assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("error must name the issue: $obj", obj.get("error").asString.contains("MPS-40228"))
+            assertTrue("error must suggest a deep enough directory: $obj",
+                obj.get("error").asString.contains("e.g. '/tmp/$name/$name'"))
+            assertEquals("no module may be registered", before, projectModuleNames())
+            assertFalse("the directory must not be created: $dir", Files.exists(dir))
+        } finally {
+            deleteQuietly(dir)
+        }
+    }
+
+    @Test
+    fun `a shallow directory whose top-level folder does not exist is rejected too`() {
+        // A folder that does not exist yet cannot be judged through the MPS file system (its
+        // parent chain is sliced from the path string), so the check must go by depth alone.
+        Assume.assumeFalse("near-root shrink failure is Unix-only", SystemInfo.isWindows)
+        val top = Paths.get("/mcp40228-${System.nanoTime()}")
+        Assume.assumeFalse("test precondition: $top must not exist", Files.exists(top))
+        val before = projectModuleNames()
+        try {
+            for ((type, dir) in listOf("solution" to top, "language" to top.resolve("lang"))) {
+                val obj = createModule(type, "test.mcp40228.shallow${System.nanoTime()}", dir.toString())
+                assertFalse("expected error envelope for $dir: $obj", obj.get("ok").asBoolean)
+                assertEquals("INVALID_REQUEST", obj.get("code").asString)
+                assertTrue("error must name the issue: $obj", obj.get("error").asString.contains("MPS-40228"))
+            }
+            assertEquals("no module may be registered", before, projectModuleNames())
+            assertFalse("nothing may be created: $top", Files.exists(top))
+        } finally {
+            deleteQuietly(top)
+        }
+    }
+
+    @Test
+    fun `language withGenerator into a directory that already has generator leaves nothing behind`() {
+        // LanguageProducer registers the language, then throws IAE because 'generator/' exists.
+        val name = "test.mcp40228.gen${System.nanoTime()}"
+        val dir = Paths.get(freshPathInProject(name))
+        try {
+            Files.createDirectories(dir.resolve("generator"))
+            Files.writeString(dir.resolve("keep.txt"), "user data")
+            refreshVfs(dir)
+            val listingBefore = listing(dir)
+            val before = projectModuleNames()
+
+            val obj = createModule("language", name, dir.toString(), withGenerator = true)
+
+            assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("error must report a complete rollback: $obj",
+                obj.get("error").asString.contains("No module or file was left behind."))
+            assertEquals("no module may stay registered", before, projectModuleNames())
+            assertEquals("the reused directory must keep exactly what it had", listingBefore, listing(dir))
+            assertEquals("user data must survive", "user data", Files.readString(dir.resolve("keep.txt")))
+        } finally {
+            deleteQuietly(dir)
+        }
+    }
+
+    @Test
+    fun `language withRuntime into an occupied runtime folder rolls back language and generator`() {
+        // SolutionProducer throws ISE for the runtime companion after the language and its
+        // generator were registered and saved; all of them must go, the occupied folder must not.
+        val name = "test.mcp40228.rt${System.nanoTime()}"
+        val dir = Paths.get(freshPathInProject(name))
+        val runtimeDir = dir.resolveSibling("$name.runtime")
+        try {
+            Files.createDirectories(runtimeDir.resolve("models"))
+            Files.writeString(runtimeDir.resolve("models/x.txt"), "user data")
+            refreshVfs(runtimeDir)
+            val before = projectModuleNames()
+
+            val obj = createModule("language", name, dir.toString(), withGenerator = true, withRuntime = true)
+
+            assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("error must report a complete rollback: $obj",
+                obj.get("error").asString.contains("No module or file was left behind."))
+            assertEquals("language, generator and runtime must all be un-registered", before, projectModuleNames())
+            assertFalse("the language folder this call created must be removed: $dir", Files.exists(dir))
+            assertEquals("the pre-existing runtime folder must keep its content",
+                "user data", Files.readString(runtimeDir.resolve("models/x.txt")))
+            assertEquals(setOf("models"), listing(runtimeDir))
+        } finally {
+            deleteQuietly(dir)
+            deleteQuietly(runtimeDir)
+        }
+    }
+
+    @Test
+    fun `CreatedPaths keeps an ancestor the VFS has not seen and removes what was created`() {
+        val root = Files.createTempDirectory("mcp40228")
+        try {
+            // (a) 'p' exists on disk but the VFS has never been told: it must not count as created.
+            val p = Files.createDirectories(root.resolve("p"))
+            val target = p.resolve("m")
+            // (b) an existing folder with user content and an empty 'models/', which new folders are
+            // added to, both at its top level and inside 'models/'.
+            val reused = Files.createDirectories(root.resolve("reused"))
+            Files.writeString(reused.resolve("keep.txt"), "user data")
+            Files.createDirectories(reused.resolve("models"))
+            val fs: jetbrains.mps.vfs.openapi.FileSystem = myProject.fileSystem
+
+            var leftovers: CreatedPaths.Leftovers? = null
+            executeCommand {
+                val snapshot = CreatedPaths.snapshot(listOf(target, reused))
+                fs.getFile(target.resolve("x").toString().replace('\\', '/')).mkdirs()
+                fs.getFile(reused.resolve("source_gen").toString().replace('\\', '/')).mkdirs()
+                fs.getFile(reused.resolve("models/structure").toString().replace('\\', '/')).mkdirs()
+                assertTrue("test precondition: mkdirs must create the folders",
+                    Files.isDirectory(target.resolve("x")) && Files.isDirectory(reused.resolve("source_gen")) &&
+                        Files.isDirectory(reused.resolve("models/structure")))
+                leftovers = snapshot.rollback(fs)
+            }
+
+            assertEquals("everything recorded must be removable", emptyList<String>(), leftovers!!.notRemoved)
+            assertEquals("both targets must be fully checked", emptyList<String>(), leftovers!!.notFullyChecked)
+            assertTrue("an ancestor that predates the call must survive: $p", Files.isDirectory(p))
+            assertFalse("the folder the call created must be removed: $target", Files.exists(target))
+            assertEquals("a reused folder must keep only what it had", setOf("keep.txt", "models"), listing(reused))
+            assertEquals("a pre-existing subfolder must lose what was added to it", emptySet<String>(),
+                listing(reused.resolve("models")))
+        } finally {
+            deleteQuietly(root)
+        }
+    }
+
+    @Test
+    fun `CreatedPaths walks a symlinked target and past the cap checks only the first level`() {
+        Assume.assumeFalse("symlinks need privileges on Windows", SystemInfo.isWindows)
+        val root = Files.createTempDirectory("mcp40228")
+        try {
+            // A reused folder reached through a symlink: its real content must be walked, and the
+            // link itself must survive.
+            val real = Files.createDirectories(root.resolve("real"))
+            Files.writeString(real.resolve("keep.txt"), "user data")
+            Files.createDirectories(real.resolve(".git/objects"))
+            val link = Files.createSymbolicLink(root.resolve("link"), real)
+            // A folder with more entries than the cap: only its first level is recorded.
+            val big = Files.createDirectories(root.resolve("big"))
+            Files.createDirectories(big.resolve("models"))
+            repeat(3) { Files.writeString(big.resolve("f$it.txt"), "user data") }
+            val fs: jetbrains.mps.vfs.openapi.FileSystem = myProject.fileSystem
+
+            var leftovers: CreatedPaths.Leftovers? = null
+            var linkedModelsInVfs = true
+            executeCommand {
+                val snapshot = CreatedPaths.snapshot(listOf(link, big), maxRecordedEntries = 2)
+                fs.getFile(link.resolve("models").toString()).mkdirs()
+                // Dot-named entries belong to other tools and are left alone.
+                fs.getFile(real.resolve(".git/objects/ab").toString()).mkdirs()
+                fs.getFile(big.resolve("source_gen").toString()).mkdirs()
+                fs.getFile(big.resolve("models/structure").toString()).mkdirs()
+                leftovers = snapshot.rollback(fs)
+                // Created through the link's spelling, so it must be deleted through it too.
+                linkedModelsInVfs = fs.getFile(link.resolve("models").toString()).exists()
+            }
+
+            assertEquals(emptyList<String>(), leftovers!!.notRemoved)
+            assertFalse("the VFS must not keep a stale node under the link's spelling", linkedModelsInVfs)
+            assertTrue("the symlink must survive", Files.isSymbolicLink(link))
+            assertEquals("the linked folder must keep only what it had", setOf("keep.txt", ".git"), listing(real))
+            assertTrue("dot-named subtrees must be left alone", Files.isDirectory(real.resolve(".git/objects/ab")))
+            assertEquals("past the cap, first-level additions are still removed",
+                setOf("models", "f0.txt", "f1.txt", "f2.txt"), listing(big))
+            assertTrue("deeper additions past the cap are not seen", Files.isDirectory(big.resolve("models/structure")))
+            assertEquals("the capped target must be reported as not fully checked",
+                listOf(big.toString()), leftovers!!.notFullyChecked)
+        } finally {
+            deleteQuietly(root)
+        }
+    }
+
+    @Test
+    fun `non-absolute and regular-file directory are rejected upfront`() {
+        val before = projectModuleNames()
+        val relative = createModule("solution", "test.mcp40228.rel${System.nanoTime()}", "rel/dir")
+        assertFalse("expected error envelope: $relative", relative.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", relative.get("code").asString)
+        assertTrue("error must say why: $relative", relative.get("error").asString.contains("absolute"))
+
+        val file = Files.createTempFile("mcp40228", ".txt")
+        try {
+            val onFile = createModule("solution", "test.mcp40228.file${System.nanoTime()}", file.toString())
+            assertFalse("expected error envelope: $onFile", onFile.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", onFile.get("code").asString)
+            assertTrue("error must say why: $onFile", onFile.get("error").asString.contains("existing file"))
+        } finally {
+            Files.deleteIfExists(file)
+        }
+        assertEquals("no module may be registered", before, projectModuleNames())
     }
 
     // ── create_module variants ────────────────────────────────────────────────────────────
