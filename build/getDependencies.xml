@@ -294,7 +294,7 @@
   <!-- Download 3rd party libraries                          -->
   <!-- ===================================================== -->
 
-  <target name="install" depends="update-platform,install-platform,download-3rd-party,embed-module-descriptors" description="Download all platform libs and sources"/>
+  <target name="install" depends="update-platform,install-platform,prepare-platform-overlay-tars,download-3rd-party,embed-module-descriptors" description="Download all platform libs and sources"/>
 
   <!-- ===================================================== -->
   <!-- Download libraries with ivy                           -->
@@ -474,6 +474,20 @@
       <param name="unzip.mapper.from" value="*"/>
       <param name="unzip.wildcard" value="__overlay__/**"/>
     </antcall>
+  </target>
+
+  <target name="prepare-platform-overlay-tars" depends="check-platform" if="${unzip.overlay}" unless="${idea.platform.local.build}">
+    <condition property="overlay.platform.archive" value="${idea.platform.provided.filename}" else="mps-platform.tar.gz">
+      <istrue value="${platform.provided}"/>
+    </condition>
+    <mkdir dir="${resources}/__overlay__"/>
+    <exec executable="${java.home}/bin/java" failonerror="true">
+      <arg value="--class-path"/>
+      <arg file="${basedir}/../lib/ant/lib/ant.jar"/>
+      <arg file="${basedir}/tools/PrepareOverlayTar.java"/>
+      <arg file="${basedir}/../${overlay.platform.archive}"/>
+      <arg file="${resources}/__overlay__"/>
+    </exec>
   </target>
 
   <target name="unzip-platform-overlay-native" if="${use.native.tar}">

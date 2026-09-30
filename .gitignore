@@ -126,6 +126,7 @@ teamcity-info.xml
 /build/resources/mps-linux-aarch64
 /build/resources/mps-win-64.exe
 /build/resources/mps-win-aarch64.exe
+/build/resources/__overlay__/
 
 
 # Path to log files which is overriden in run configuration to allow developers to see log output in run/debug console
