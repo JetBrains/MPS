@@ -10,7 +10,33 @@ result:  <Test case with expected nodes>    // role 25YQFr (testNodeResult)
 code:    <statements that drive the editor> // role LjaKd (code)
 ```
 
-The `before` and `result` are themselves `TestNode`s wrapping a `NodesTestCase`-shaped block with `nodes` + `test methods`. Caret position is marked by an **`AnonymousCellAnnotation`** (`LIFWc`) on the node where the caret should sit; the inspector lets you fine-tune the exact cell (`cellId`, `useLabelSelection`, `selectionStart/End`, `isLastPosition`). The `result` section typically also carries an `AnonymousCellAnnotation` to verify *where the caret ended up* after the action.
+The `before` and `result` are themselves `TestNode`s wrapping a `NodesTestCase`-shaped block with `nodes` + `test methods`. Caret position is marked by an **`AnonymousCellAnnotation`** (`LIFWc`) on the node that owns the cell where the caret should sit. Only the first annotation in each section is used. The `result` section typically also carries one to verify *where the caret ended up* after the action.
+
+### `AnonymousCellAnnotation`: what is set and what is compared
+
+| Property | `before` (sets up the editor) | `result` (checked after `code`) |
+|---|---|---|
+| annotated node | the node whose editor gets the selection | must be the node that **owns the selected cell after the action**, e.g. a child created by a substitution, not the parent it started on |
+| `cellId` | the cell to select | compared with the selected cell's id |
+| `isLastPosition` / `caretPosition` | puts the caret at the end of the text / at offset N | **ignored** |
+| `selectionStart` / `selectionEnd` | set **after** the caret, default 0; typing inserts at `selectionStart`, not at the caret | compared with the label's selection (label cells only) |
+| `nodeRangeSelectionStart` / `End` | if set, pushes a node-range selection | for a range selection, compared with the range, and `cellId` and offsets are ignored; otherwise both must be empty |
+| `isInInspector` | selects the cell in the inspector | asserts the selection is in the inspector (a Java `assert`, so only with `-ea`) |
+| `useLabelSelection` | not read by the test runtime | not read |
+
+**Rule: a caret at offset N is three properties, in both sections.** Set `isLastPosition: true` (or `caretPosition: N`) and `selectionStart: N` and `selectionEnd: N`. The two sections fail independently. In `before`, with only `isLastPosition` and a caret ≠ 0, the label keeps a 0..0 selection, which counts as a text selection: `type "X"` inserts at offset 0 and Backspace/Delete removes the empty selection instead of a character, so the tree diff fails. In `result`, with only `isLastPosition` the check compares the default 0 with the real offset (`CellReference.java:61`). N is the caret offset: in `result`, the offset after the action; for a caret at the end of the text that is the full label length, not the length of the typed text. After typing, the selection collapses onto the caret, so in `result` start and end are equal. A caret at 0 is the only case where the defaults happen to be right. The AddCellAnnotation intention (used in the MPS editor) writes all three from the live caret, and blueprints should match it.
+
+Example: cell `property_name` with text `Pancakes`, code `type "X"`.
+
+```text
+before annotation:  "properties": [{"name": "cellId", "value": "property_name"}, {"name": "isLastPosition", "value": "true"},
+                                   {"name": "selectionStart", "value": "8"}, {"name": "selectionEnd", "value": "8"}]
+result annotation (text is now PancakesX):
+                    "properties": [{"name": "cellId", "value": "property_name"}, {"name": "isLastPosition", "value": "true"},
+                                   {"name": "selectionStart", "value": "9"}, {"name": "selectionEnd", "value": "9"}]
+```
+
+For a non-label cell (e.g. a collection), only the node and `cellId` are compared. Failure messages are mapped to fixes in `common-failures.md`.
 
 ## Cell IDs in auto-generated editors
 
@@ -85,7 +111,7 @@ getProject().getModelAccess().runReadAction(() -> myBaseModel = MergeTemporaryMo
 
 **`ModelExpression`** — The `model` expression resolves to the `SModel` of the node under edit. Use it to query model-level properties or roots. Since `getEditorComponent().getEditorContext().getSelectedNode().getModel()` achieves the same result, `model` is a shorthand for accessing the edited node's model.
 
-After the `code` runs, MPS compares the resulting editor state to the `result` section. Caret/selection must match too.
+After the `code` runs, MPS first compares the node tree with the `result` section, and then the selection with the `result` annotation (see the table above). Without a `result` annotation, the selection is not checked.
 
 ## Example — intention test on quotation
 

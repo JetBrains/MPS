@@ -121,8 +121,9 @@ Forces an `@tests` model with three `NodesTestCase` roots (constraint error, typ
 the MCP run-configuration tool. The observer re-runs it: 4 tests, 0 failures.
 Run to verify: `mps-tests` (only cell), `mps-run-configurations` (only cell).
 Known gap, not a docs miss by itself: the tool takes one root, so four roots become four
-configurations (D53). The editor-test caret comparison is `cellId` + `selectionStart`/`selectionEnd`
-only (D71).
+configurations (D53). The editor-test caret check compares the annotated node, `cellId` and
+`selectionStart`/`selectionEnd`, never `caretPosition`/`isLastPosition`. The `before` selection must match the caret too
+(D71, docs fixed 2026-09-30, re-measure: no `CellReference` failure, no source hunt).
 Hypotheses: H2, H7.
 
 **S8 — onboard and record.** Fixture: `statechart`. Must not modify any MPS model.
