@@ -885,6 +885,23 @@ class McpToolInputSchemasTest {
     }
 
     @Test
+    fun javaInsertRecordsWhetherRecoveryWasPassed() {
+        val omitted = parseJavaParseInsertRequest(
+            """{"code":"int x = 1;","featureKind":"STATEMENTS","insert":{"mode":"root","modelRef":"r:m"}}"""
+        )
+        assertEquals(true, read(omitted, "getRecovery"))
+        assertEquals(false, read(omitted, "getRecoveryExplicit"))
+
+        for (value in listOf(true, false)) {
+            val explicit = parseJavaParseInsertRequest(
+                """{"code":"int x = 1;","featureKind":"STATEMENTS","recovery":$value,"insert":{"mode":"root","modelRef":"r:m"}}"""
+            )
+            assertEquals(value, read(explicit, "getRecovery"))
+            assertEquals(true, read(explicit, "getRecoveryExplicit"))
+        }
+    }
+
+    @Test
     fun javaInsertParsesPositionZeroForChildMode() {
         val request = parseJavaParseInsertRequest(
             """

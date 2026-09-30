@@ -35,6 +35,7 @@ import java.lang.reflect.Field;
 @Suite.SuiteClasses({
     JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest.class,
     JetBrainsMPSJavaMcpToolsetIntegrationTest.class,
+    ConceptFunctionParameterBindingIntegrationTest.class,
     JetBrainsMPSLanguageMcpToolsetIntegrationTest.class,
     JetBrainsMPSModelMcpToolsetIntegrationTest.class,
     JetBrainsMPSModuleMcpToolsetIntegrationTest.class,

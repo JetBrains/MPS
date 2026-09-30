@@ -459,6 +459,9 @@ data class JavaParseInsertRequest(
   val featureKindText: String,
   val isExpression: Boolean,
   val recovery: Boolean,
+  // D68: whether the caller passed `recovery` at all. Only an explicit `true` accepts code that ecj
+  // had to repair; the default (omitted) rejects it.
+  val recoveryExplicit: Boolean,
   val contextNodeRef: String?,
   val insert: JavaInsertTarget,
   val importUsedLanguages: Boolean,
@@ -547,7 +550,8 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
     }
   }
 
-  val recovery = obj.optionalBoolean("recovery", "parameters") ?: true
+  val recoveryParam = obj.optionalBoolean("recovery", "parameters")
+  val recovery = recoveryParam ?: true
   val contextNodeRef = obj.optionalString("contextNodeRef", "parameters")
   if (contextNodeRef.isNullOrEmpty() &&
       (featureKind == FeatureKind.FIELD || featureKind == FeatureKind.METHOD ||
@@ -581,6 +585,7 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
     featureKindText = featureKindText,
     isExpression = isExpression,
     recovery = recovery,
+    recoveryExplicit = recoveryParam != null,
     contextNodeRef = contextNodeRef,
     insert = insertTarget,
     importUsedLanguages = postProcess?.optionalBoolean("importUsedLanguages", "parameters.postProcess") ?: true,
