@@ -250,6 +250,26 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
         val shallow = tree(example("print_node_shallow.json"))
         assertTrue("shallow children say they were not inlined: $shallow",
                    shallow.contains("  lessons: lesson 2518891257436048005 (not inlined)"))
+
+        // nodeDetail="names" keeps only name/concept/reference, so the line takes the record's own name.
+        val fullRoots = JsonParser.parseString(Files.readString(Path.of(example("get_project_structure_model_roots.json")))).asJsonObject
+        val namesOnly = fullRoots.deepCopy()
+        val data = namesOnly.getAsJsonObject("data")
+        val projected = JsonArray()
+        for (root in data.getAsJsonArray("rootNodes")) {
+            projected.add(JsonObject().apply {
+                for (key in listOf("name", "concept", "reference")) add(key, root.asJsonObject.get(key))
+            })
+        }
+        data.add("rootNodes", projected)
+        val namesDump = Files.createTempFile("tree-names", ".json")
+        generatedFiles.add(namesDump)
+        Files.writeString(namesDump, namesOnly.toString())
+        val names = tree(namesDump.toString())
+        assertTrue("a names-only root shows its name: $names",
+                   names.contains("Resource 2518891257436048000 name=ScaleSheets (children not listed)"))
+        assertEquals("every root line carries a name: $names",
+                     projected.size(), names.count { it.contains(" name=") })
     }
 
     /** Installs the bundled catalog into a fresh temp directory and returns its skills root. */

@@ -598,6 +598,9 @@ def _tree_value(value):
 def _tree_line(node, role, args):
     parts = ["%s%s %s" % ("%s: " % role if role else "", node.get("concept"), _node_id(node.get("reference")))]
     detail = props_detail(node)
+    if "properties" not in node and node.get("name"):
+        # nodeDetail="names" drops the properties; the record's own name is all that is left.
+        detail["name"] = (node["name"], "set")
     for name in sorted(detail):
         value, source = detail[name]
         if source != "set":
