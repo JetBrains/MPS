@@ -24,6 +24,7 @@ import jetbrains.mps.smodel.SReference
 import jetbrains.mps.smodel.constraints.ModelConstraints
 import jetbrains.mps.smodel.language.LanguageRegistry
 import jetbrains.mps.typechecking.TypecheckingFacade
+import org.jetbrains.mps.openapi.language.SContainmentLink
 import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SModelReference
@@ -385,15 +386,46 @@ internal class JavaParseResolver {
         }
     }
 
+    // A top-level inserted node can itself be resolved away: YetUnknownResolver and the passes around
+    // it replace an IYetUnresolved node via replaceWithAnother without knowing about `inserted` (e.g.
+    // EXPRESSION `node.toString()`, whose UnknownInstanceMethodCall becomes a DotExpression). Each
+    // entry's position is recorded up front, and a detached entry is re-read from it. Only a 1:1
+    // replacement is re-read: if the role's child count changed, the entry was deleted rather than
+    // replaced, and the node now at its index is a sibling (possibly the user's own node, which the
+    // rollback would then delete).
+    private class Slot(val parent: SNode, val link: SContainmentLink, val index: Int, val count: Int)
+
+    private fun slotsOf(inserted: List<SNode>): List<Slot?> = inserted.map { node ->
+        val parent = node.parent ?: return@map null
+        val link = node.containmentLink ?: return@map null
+        val children = parent.getChildren(link).toList()
+        Slot(parent, link, children.indexOf(node), children.size)
+    }
+
+    private fun resyncDetached(inserted: MutableList<SNode>, slots: List<Slot?>) {
+        for (i in inserted.indices) {
+            if (inserted[i].model != null) continue
+            val slot = slots[i] ?: continue
+            val children = slot.parent.getChildren(slot.link).toList()
+            if (children.size != slot.count) continue
+            val current = children.elementAtOrNull(slot.index) ?: continue
+            if (current !in inserted) inserted[i] = current
+        }
+    }
+
+    /**
+     * [inserted] is updated in place when a top-level node is replaced during resolution, so the
+     * caller's response and rollback see the attached node.
+     */
     internal fun resolveIteratively(
         model: SModel,
         repo: SRepository,
-        inserted: List<SNode>,
+        inserted: MutableList<SNode>,
         featureKind: FeatureKind,
         doImportLang: Boolean,
         doResolveRefs: Boolean,
         parseResult: JavaParser.JavaParseResult
-    ) {
+    ): List<String> {
         // c2: ensureJDKDependency and the initial parser-declared-language imports used to run
         // here, before the resolution loop. That made them load-bearing for resolution (the
         // tryResolveRefs pass needs JDK in scope to resolve java.lang.* references and the
@@ -412,7 +444,7 @@ internal class JavaParseResolver {
 
         if (!doResolveRefs) {
             finalizeResolutionDependencies(model, repo, inserted, doImportLang, parseResult)
-            return
+            return emptyList()
         }
 
         // When the caller suppressed language imports, snapshot the languages already on the model
@@ -421,8 +453,31 @@ internal class JavaParseResolver {
         // YetUnknownResolver.addUsedLanguage add used languages directly, bypassing our
         // importUsedLanguages gate; without this cleanup importUsedLanguages=false would not
         // actually suppress them once resolveReferences=true. Pre-existing imports are preserved.
-        val languagesBeforeResolve =
-            if (!doImportLang) (model as? SModelInternal)?.importedLanguageIds()?.toHashSet() else null
+        val importedBeforeResolve = (model as? SModelInternal)?.importedLanguageIds()?.toHashSet()
+        val languagesBeforeResolve = if (!doImportLang) importedBeforeResolve else null
+
+        // D68 follow-up: a Java call on a node<>/model<> receiver resolves only through a smodel
+        // downcast (SmodelReceiverCalls). Decided once, against the same snapshot the strip below uses:
+        // with importUsedLanguages=false, a smodel import added mid-run would be stripped again,
+        // leaving a downcast from a language the model does not use.
+        val smodelLanguage = SmodelLanguageMeta.smodelLanguage
+        val smodelAvailable = doImportLang ||
+            importedBeforeResolve?.contains(smodelLanguage) == true ||
+            isLanguageProvidedByDevKit(model, repo, smodelLanguage)
+        fun smodelInScope() = (model as? SModelInternal)?.importedLanguageIds()?.contains(smodelLanguage) == true ||
+            isLanguageProvidedByDevKit(model, repo, smodelLanguage)
+
+        val slots = slotsOf(inserted)
+        fun resync() = resyncDetached(inserted, slots)
+
+        var smodelCallsResolved = 0
+        var smodelCallsSkipped = 0
+        fun resolveSmodelReceiverCalls() {
+            val outcome = SmodelReceiverCalls.resolve(model, inserted, smodelAvailable, ::smodelInScope, ::resync)
+            smodelCallsResolved += outcome.resolved
+            // Not +=: every step re-counts the calls it skips, so the last step's count is the total.
+            smodelCallsSkipped = outcome.skipped
+        }
 
         val handler = IMessageHandler { _: IMessage -> }
         val conv = JavaToMpsConverter(model, repo, handler)
@@ -453,6 +508,9 @@ internal class JavaParseResolver {
         // TypecheckingFacade.getFromContext().getTypeOf() calls in codeTransformPass (e.g. for
         // array .length / .clone() resolution) succeed and UnknownInstanceMethodCall nodes get replaced.
         TypecheckingFacade.getFromContext().runIsolated { _ ->
+            // Calls on bound concept-function parameters exist before the first pass.
+            resolveSmodelReceiverCalls()
+
             var iteration = 0
             val maxIterations = 10
             while (iteration < maxIterations) {
@@ -460,14 +518,21 @@ internal class JavaParseResolver {
                 val dynamicBefore = countDynamicRefs(inserted)
 
                 conv.tryResolveRefs(inserted, featureKind, EmptyProgressMonitor())
+                resync()
 
                 // Fix method references and overloads (including AnonymousClass classifier)
                 // This might unblock more unknowns for YetUnknownResolver in this or next iteration.
                 fixMethodReferences(inserted, replaceFromEditor)
+                resync()
 
                 // Manually call YetUnknownResolver just in case JavaToMpsConverter didn't do it or didn't do it enough
                 val yur = YetUnknownResolver(model, inserted)
                 yur.tryResolveUnknowns(EmptyProgressMonitor())
+                resync()
+
+                // Receivers that became smodel-typed in this iteration; before updateModelDependencies,
+                // so the imports and the progress counts below cover the result.
+                resolveSmodelReceiverCalls()
 
                 // Update model dependencies after the standalone resolver pass so that subsequent
                 // iterations have an expanded scope (newly resolved imports become visible).
@@ -494,11 +559,15 @@ internal class JavaParseResolver {
 
             // Final check for any remaining method call problems
             fixMethodReferences(inserted, replaceFromEditor)
+            resync()
             // One last try for unknowns unblocked by overload resolution
             YetUnknownResolver(model, inserted).tryResolveUnknowns(EmptyProgressMonitor())
+            resync()
             // Final dynamic reference cleanup in case last passes unlocked more
             fixDynamicReferences(model, inserted)
         }
+        // Safety net: SmodelReceiverCalls unwraps its misses itself, so this finds nothing.
+        SmodelReceiverCalls.unwrapMisses(inserted)
         removeJavaImports(inserted)
 
         // Strip the languages the platform resolution passes imported when importUsedLanguages=false.
@@ -516,6 +585,24 @@ internal class JavaParseResolver {
         }
 
         finalizeResolutionDependencies(model, repo, inserted, doImportLang, parseResult)
+
+        val warnings = ArrayList<String>()
+        if (smodelCallsResolved > 0) {
+            warnings.add(
+                "Resolved $smodelCallsResolved Java API call(s) on smodel-typed receivers (e.g. node.toString()) " +
+                    "through the semantic downcast 'node/'. A method name that SNode also declares (getPresentation, " +
+                    "getName, getReference, ...) binds to the Java API, not to a behavior method; replace it with a " +
+                    "Node_ConceptMethodCall JSON blueprint where the behavior method is meant."
+            )
+        }
+        if (smodelCallsSkipped > 0) {
+            warnings.add(
+                "Left $smodelCallsSkipped method call(s) on smodel-typed receivers (e.g. node.toString()) unresolved: " +
+                    "resolving them needs the jetbrains.mps.lang.smodel language, which importUsedLanguages:false " +
+                    "does not add. Import that language into the model, or omit importUsedLanguages."
+            )
+        }
+        return warnings
     }
 
 }

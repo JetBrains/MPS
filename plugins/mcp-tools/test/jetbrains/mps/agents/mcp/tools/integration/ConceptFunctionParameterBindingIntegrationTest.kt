@@ -7,7 +7,13 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
+import jetbrains.mps.checkers.ModelPropertiesChecker
+import jetbrains.mps.errors.MessageStatus
+import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.smodel.DynamicReference
+import jetbrains.mps.smodel.ModelImports
+import jetbrains.mps.smodel.SModelInternal
+import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -24,6 +30,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
 
     private val propertyValueParameter = "ConstraintsFunctionParameter_propertyValue"
     private val nodeParameter = "ConstraintsFunctionParameter_node"
+    private val downcast = "SemanticDowncastExpression"
 
     @Test
     fun `bare names and method-call receivers bind to the validator parameters`() {
@@ -101,10 +108,14 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     @Test
     fun `a lambda inside the function binds to the enclosing function`() {
         val validator = createValidators().first()
-        okEnvelope(parseInto(validator, "Runnable r = () -> node.toString(); return true;"))
+        val response = parseInto(validator, "Runnable r = () -> node.toString(); return true;")
+        okEnvelope(response)
         val concepts = bodyDescendantConcepts(validator)
         assertTrue("node inside the lambda must be bound: $concepts", concepts.contains(nodeParameter))
         assertTrue("the lambda stays a closure: $concepts", concepts.contains("ClosureLiteral"))
+        assertTrue("the call inside the lambda resolves through a downcast: $concepts", concepts.contains(downcast))
+        assertFalse("no unresolved call may remain: $concepts", concepts.any { it.startsWith("Unknown") })
+        assertNoErrors(response)
     }
 
     @Test
@@ -150,6 +161,239 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
         okEnvelope(parseInto(validator, "String s = String.valueOf(node.getConcept());"))
         val concepts = bodyDescendantConcepts(validator)
         assertEquals("the node inside the call argument is bound too: $concepts", 2, concepts.count { it == nodeParameter })
+        assertTrue("the call in the argument resolves through a downcast: $concepts", concepts.contains(downcast))
+        assertTrue("... to an instance method call: $concepts", concepts.contains("InstanceMethodCallOperation"))
+        assertFalse("no unresolved call may remain: $concepts", concepts.any { it.startsWith("Unknown") })
+    }
+
+    // --- Java API calls on smodel-typed parameters (node<> is only weakly a subtype of SNode) ------
+
+    @Test
+    fun `a Java API call on the node parameter resolves through a semantic downcast`() {
+        val validator = createValidators().first()
+        val response = parseInto(validator, "return node.toString() != null;")
+        val envelope = okEnvelope(response)
+        assertTrue(
+            "the downcast must be reported: $response",
+            warnings(envelope).any { it.contains("Resolved 1 Java API call(s) on smodel-typed receivers") }
+        )
+        val concepts = bodyDescendantConcepts(validator)
+        assertFalse("no unresolved call may remain: $concepts", concepts.any { it.startsWith("Unknown") })
+        readOnRepo {
+            val cast = descendantsOf(bodyOf(validator), downcast).single()
+            assertEquals("the downcast wraps the parameter", nodeParameter, cast.children.single().concept.name)
+            val dot = cast.parent!!
+            assertEquals("the downcast is the operand of a DotExpression", "DotExpression", dot.concept.name)
+            assertEquals("operand", cast.containmentLink!!.name)
+            assertEquals("toString", resolvedMethodOf(dot).name)
+        }
+        assertNoErrors(response)
+    }
+
+    @Test
+    fun `a downcast call imports smodel into a model that lacks it`() {
+        val validator = createValidators(withoutAspectDevkit = true).first()
+        assertFalse(constraintsModelLanguages().contains("jetbrains.mps.lang.smodel"))
+        val modelErrorsBefore = modelErrors()
+        // getChildren() is declared on SNode itself (toString() would resolve to java.lang.Object).
+        val response = parseInto(validator, "return node.getChildren() != null;")
+        okEnvelope(response)
+        assertTrue("the downcast resolves: ${bodyDescendantConcepts(validator)}", bodyDescendantConcepts(validator).contains(downcast))
+        assertTrue("its language is imported", constraintsModelLanguages().contains("jetbrains.mps.lang.smodel"))
+        assertNoErrors(response)
+        // The resolved method lives in the MPS.OpenAPI java stubs, which the fixture language does not
+        // declare as a dependency: the model import is added, and it must be visible from the module.
+        val imports = readOnRepo { ModelImports(constraintsModel()).importedModels.map { it.name.longName } }
+        assertTrue("the stub model is imported: $imports", imports.contains("org.jetbrains.mps.openapi.model"))
+        assertEquals("the insert must not add model-level errors", modelErrorsBefore, modelErrors())
+    }
+
+    @Test
+    fun `a hit and a miss in one insert keep the smodel import the hit needs`() {
+        val validator = createValidators(withoutAspectDevkit = true).first()
+        okEnvelope(parseInto(validator, "return node.toString() != null && node.bar() != null;"))
+        assertTrue("the hit keeps smodel imported", constraintsModelLanguages().contains("jetbrains.mps.lang.smodel"))
+        assertEquals("one downcast, on toString", 1, bodyDescendantConcepts(validator).count { it == downcast })
+        assertUnresolvedOnPlainParameter(validator, expectedUnknownCalls = 1)
+    }
+
+    @Test
+    fun `importUsedLanguages false resolves the call when the model imports smodel directly`() {
+        val validator = createValidators(withoutAspectDevkit = true).first()
+        expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+            it.mps_mcp_model_used_language(
+                modelRefOf(constraintsModel()), "jetbrains.mps.lang.smodel", "language", DependencyOperation.ADD
+            )
+        })
+        val languagesBefore = constraintsModelLanguages()
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "return node.toString() != null;",
+                  "featureKind": "STATEMENTS",
+                  "insert": { "mode": "child", "parentRef": "$validator", "role": "body" },
+                  "postProcess": { "importUsedLanguages": false }
+                }
+                """.trimIndent()
+            )
+        }
+        okEnvelope(response)
+        val concepts = bodyDescendantConcepts(validator)
+        assertTrue("the downcast resolves: $concepts", concepts.contains(downcast))
+        assertFalse("no unresolved call may remain: $concepts", concepts.any { it.startsWith("Unknown") })
+        assertEquals("the used languages are unchanged", languagesBefore, constraintsModelLanguages())
+    }
+
+    @Test
+    fun `an Object method on the node parameter resolves through the SNode interface`() {
+        val validator = createValidators().first()
+        val response = parseInto(validator, "return node.hashCode() > 0;")
+        okEnvelope(response)
+        readOnRepo {
+            val dot = descendantsOf(bodyOf(validator), downcast).single().parent!!
+            assertEquals("hashCode", resolvedMethodOf(dot).name)
+        }
+        assertNoErrors(response)
+    }
+
+    @Test
+    fun `the argument of a downcast call is bound and resolved too`() {
+        val validator = createValidators().first()
+        val response = parseInto(validator, "return node.equals(propertyValue);")
+        okEnvelope(response)
+        val concepts = bodyDescendantConcepts(validator)
+        assertEquals("node is bound: $concepts", 1, concepts.count { it == nodeParameter })
+        assertEquals("propertyValue is bound: $concepts", 1, concepts.count { it == propertyValueParameter })
+        assertEquals("one downcast: $concepts", 1, concepts.count { it == downcast })
+        assertFalse("no unresolved call may remain: $concepts", concepts.any { it.startsWith("Unknown") })
+        assertNoErrors(response)
+    }
+
+    @Test
+    fun `a call chained on a downcast call resolves`() {
+        val validator = createValidators().first()
+        val response = parseInto(validator, "return node.toString().length() > 0;")
+        okEnvelope(response)
+        val concepts = bodyDescendantConcepts(validator)
+        assertEquals("both calls resolve: $concepts", 2, concepts.count { it == "InstanceMethodCallOperation" })
+        assertFalse("no unresolved call may remain: $concepts", concepts.any { it.startsWith("Unknown") })
+        assertNoErrors(response)
+    }
+
+    @Test
+    fun `a method SNode does not have stays unresolved, without a downcast or a smodel import`() {
+        val validator = createValidators(withoutAspectDevkit = true).first()
+        val languagesBefore = constraintsModelLanguages()
+        val response = parseInto(validator, "return node.bar() != null;")
+        val envelope = okEnvelope(response)
+        assertFalse("nothing was resolved: $response", warnings(envelope).any { it.contains("semantic downcast") })
+        assertUnresolvedOnPlainParameter(validator, expectedUnknownCalls = 1)
+        assertEquals("the used languages are unchanged", languagesBefore, constraintsModelLanguages())
+    }
+
+    @Test
+    fun `an unresolved call copied into a resolved outer call loses its downcast`() {
+        val validator = createValidators().first()
+        // The outer call resolves first and copies its argument, the wrapped inner call included,
+        // so the inner miss is unwrapped structurally, not by the identity of its wrapper.
+        okEnvelope(parseInto(validator, "return node.equals(node.bar());"))
+        readOnRepo {
+            val dot = descendantsOf(bodyOf(validator), downcast).single().parent!!
+            assertEquals("the outer call resolves", "equals", resolvedMethodOf(dot).name)
+        }
+        assertUnresolvedOnPlainParameter(validator, expectedUnknownCalls = 1)
+    }
+
+    @Test
+    fun `an unresolved call in the argument of a static call leaves no downcast or smodel import`() {
+        val validator = createValidators(withoutAspectDevkit = true).first()
+        val languagesBefore = constraintsModelLanguages()
+        okEnvelope(parseInto(validator, "return String.valueOf(node.bar()) != null;"))
+        assertUnresolvedOnPlainParameter(validator, expectedUnknownCalls = 1)
+        assertFalse(bodyDescendantConcepts(validator).contains(downcast))
+        assertEquals("the used languages are unchanged", languagesBefore, constraintsModelLanguages())
+    }
+
+    @Test
+    fun `an overloaded SNode method is chosen by argument count`() {
+        val validator = createValidators().first()
+        // getChildren(SContainmentLink) is declared before getChildren(), so the first method by name
+        // has the wrong arity and the final overload pass has to repoint the call.
+        val response = parseInto(validator, "return node.getChildren() != null;")
+        okEnvelope(response)
+        readOnRepo {
+            val method = resolvedMethodOf(descendantsOf(bodyOf(validator), downcast).single().parent!!)
+            assertEquals("getChildren", method.name)
+            assertEquals("the no-argument overload", 0, method.children.count { it.containmentLink?.name == "parameter" })
+        }
+        assertNoErrors(response)
+    }
+
+    @Test
+    fun `a Java call on the concept parameter resolves without a downcast`() {
+        // concept<> is a strong subtype of SAbstractConcept, so MPS's own resolution finishes the call.
+        val canBeChild = createCanBeChild()
+        val response = parseInto(canBeChild, "return childConcept.getName() != null;")
+        okEnvelope(response)
+        val concepts = bodyDescendantConcepts(canBeChild)
+        assertTrue("childConcept is bound: $concepts", concepts.contains("ConstraintFunctionParameter_childConcept"))
+        assertTrue("the call resolves: $concepts", concepts.contains("InstanceMethodCallOperation"))
+        assertFalse("no downcast is needed: $concepts", concepts.contains(downcast))
+        assertFalse("no unresolved call may remain: $concepts", concepts.any { it.startsWith("Unknown") })
+        assertNoErrors(response)
+    }
+
+    @Test
+    fun `importUsedLanguages false leaves the call unresolved when the model lacks smodel`() {
+        val validator = createValidators(withoutAspectDevkit = true).first()
+        val languagesBefore = constraintsModelLanguages()
+        assertFalse("the fixture does not use smodel", languagesBefore.contains("jetbrains.mps.lang.smodel"))
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "return node.toString() != null;",
+                  "featureKind": "STATEMENTS",
+                  "insert": { "mode": "child", "parentRef": "$validator", "role": "body" },
+                  "postProcess": { "importUsedLanguages": false }
+                }
+                """.trimIndent()
+            )
+        }
+        val envelope = okEnvelope(response)
+        assertTrue(
+            "the skipped call must be reported: $response",
+            warnings(envelope).any { it.contains("Left 1 method call(s)") && it.contains("jetbrains.mps.lang.smodel") }
+        )
+        assertUnresolvedOnPlainParameter(validator, expectedUnknownCalls = 1)
+        assertEquals("the used languages are unchanged", languagesBefore, constraintsModelLanguages())
+    }
+
+    @Test
+    fun `an EXPRESSION that is a downcast call is reported as the attached resolved node`() {
+        val validator = createValidators().first()
+        okEnvelope(parseInto(validator, "return false;"))
+        val returnRef = readOnRepo { refOf(bodyOf(validator).children.single()) }
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "node.toString()",
+                  "featureKind": "EXPRESSION",
+                  "insert": { "mode": "child", "parentRef": "$returnRef", "role": "expression" }
+                }
+                """.trimIndent()
+            )
+        }
+        val inserted = okData(response).getAsJsonArray("inserted").single().asJsonObject
+        assertEquals("the reported node is the resolved call: $response", "DotExpression", inserted.get("concept").asString)
+        readOnRepo {
+            val node = PersistenceFacade.getInstance().createNodeReference(inserted.get("reference").asString)
+                .resolve(myProject.repository)
+            assertTrue("the reported reference must resolve to the attached node", node != null && node.parent != null)
+        }
+        assertFalse(bodyDescendantConcepts(validator).any { it.startsWith("Unknown") })
     }
 
     @Test
@@ -256,7 +500,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
      * A concept with two string properties and a `ConceptConstraints` root holding one legacy
      * property validator per property, each with an empty body. Returns the validators' refs.
      */
-    private fun createValidators(): List<String> {
+    private fun createValidators(withoutAspectDevkit: Boolean = false): List<String> {
         val conceptRef = createConceptRoot(
             "Validated${System.nanoTime()}",
             propertiesJson = """[ { "name": "title", "type": "string" }, { "name": "subtitle", "type": "string" } ]"""
@@ -267,13 +511,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
                 refOf(concept.children.single { it.containmentLink?.name == "propertyDeclaration" && it.name == name })
             }
         }
-        val constraintsModel = readOnRepo { language.models.single { it.name.longName.endsWith(".constraints") } }
-        val constraintsModelRef = modelRefOf(constraintsModel)
-        for (usedLanguage in listOf("jetbrains.mps.lang.constraints", "jetbrains.mps.baseLanguage")) {
-            expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
-                it.mps_mcp_model_used_language(constraintsModelRef, usedLanguage, "language", DependencyOperation.ADD)
-            })
-        }
+        val constraintsModelRef = prepareConstraintsModel(withoutAspectDevkit)
 
         val propertyConstraints = propertyRefs.joinToString(",") { propertyRef ->
             """
@@ -303,6 +541,104 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
                 .filter { it.concept.name == "ConstraintFunction_PropertyValidator" }
                 .map { refOf(it) }
         }
+    }
+
+    /**
+     * A concept and a `ConceptConstraints` root holding a legacy `canBeChild` function with an empty
+     * body (parameters `node`, `parentNode`, `childConcept`, `link`). Returns the function's ref.
+     */
+    private fun createCanBeChild(): String {
+        val conceptRef = createConceptRoot("Placed${System.nanoTime()}")
+        val constraintsModelRef = prepareConstraintsModel()
+        val json = """
+            {
+              "concept": "jetbrains.mps.lang.constraints.structure.ConceptConstraints",
+              "references": [ { "role": "concept", "target": "$conceptRef" } ],
+              "children": [ { "role": "canBeChild", "nodes": [ {
+                "concept": "jetbrains.mps.lang.constraints.structure.ConstraintFunction_CanBeAChild",
+                "children": [ { "role": "body", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.StatementList" } ] } ]
+              } ] } ]
+            }
+        """.trimIndent()
+        val payload = expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(constraintsModelRef, JsonOrText(json), dryRun = false, responseDetail = "summary")
+        })
+        val rootRef = payload.get("roots").asJsonArray.single().asJsonObject.get("reference").asString
+        return readOnRepo {
+            refOf(descendantsOf(resolveNodeRef(rootRef), "ConstraintFunction_CanBeAChild").single())
+        }
+    }
+
+    /**
+     * The language's constraints model, directly using lang.constraints and baseLanguage. The aspect
+     * devkit it is created with provides smodel; [withoutAspectDevkit] removes it, so that smodel is
+     * not available unless the insert imports it (a devkit-provided language is never imported directly,
+     * so a used-language assertion against the devkit fixture proves nothing).
+     */
+    private fun prepareConstraintsModel(withoutAspectDevkit: Boolean = false): String {
+        val constraintsModelRef = modelRefOf(constraintsModel())
+        for (usedLanguage in listOf("jetbrains.mps.lang.constraints", "jetbrains.mps.baseLanguage")) {
+            expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+                it.mps_mcp_model_used_language(constraintsModelRef, usedLanguage, "language", DependencyOperation.ADD)
+            })
+        }
+        if (withoutAspectDevkit) {
+            expectOk(runTool(JetBrainsMPSModelMcpToolset()) {
+                it.mps_mcp_model_used_language(
+                    constraintsModelRef, "jetbrains.mps.devkit.aspect.constraints", "devkit", DependencyOperation.DELETE
+                )
+            })
+            assertTrue(
+                "the fixture must have no devkit left",
+                readOnRepo { (constraintsModel() as SModelInternal).importedDevkits().isEmpty() }
+            )
+        }
+        return constraintsModelRef
+    }
+
+    private fun constraintsModel(): SModel = readOnRepo { language.models.single { it.name.longName.endsWith(".constraints") } }
+
+    private fun constraintsModelLanguages(): Set<String> = readOnRepo {
+        (constraintsModel() as SModelInternal).importedLanguageIds().map { it.qualifiedName }.toSet()
+    }
+
+    private fun descendantsOf(node: SNode, conceptName: String): List<SNode> =
+        SNodeOperations.getNodeDescendants(node, null, false, emptyArray()).filter { it.concept.name == conceptName }
+
+    // The method an InstanceMethodCallOperation under [dot] points to.
+    private fun resolvedMethodOf(dot: SNode): SNode {
+        val call = dot.children.single { it.concept.name == "InstanceMethodCallOperation" }
+        return checkNotNull(call.references.single { it.link.name == "baseMethodDeclaration" }.targetNode) {
+            "the call's method reference must resolve"
+        }
+    }
+
+    // [expectedUnknownCalls] calls stay UnknownInstanceMethodCall on the bare node parameter, and no
+    // downcast is left as the receiver of an unresolved call.
+    private fun assertUnresolvedOnPlainParameter(validatorRef: String, expectedUnknownCalls: Int) = readOnRepo {
+        val unknown = descendantsOf(bodyOf(validatorRef), "UnknownInstanceMethodCall")
+        assertEquals("unresolved calls: ${unknown.map { it.concept.name }}", expectedUnknownCalls, unknown.size)
+        for (call in unknown) {
+            val operand = call.children.single { it.containmentLink?.name == "operand" }
+            assertEquals("the receiver is the bare parameter", nodeParameter, operand.concept.name)
+        }
+    }
+
+    // Model-level errors (imports not visible from the module, missing languages, ...), as messages.
+    private fun modelErrors(): List<String> = readOnRepo {
+        val errors = ArrayList<String>()
+        ModelPropertiesChecker(myProject.platform).check(constraintsModel(), myProject.repository, { item ->
+            if (item.severity == MessageStatus.ERROR) errors.add(item.message)
+        }, EmptyProgressMonitor())
+        errors
+    }
+
+    private fun assertNoErrors(response: String) {
+        val problems = okData(response).getAsJsonArray("problems")
+        assertTrue(
+            "the insert must not leave error-severity problems: $problems",
+            problems.none { it.asJsonObject.get("severity").asString == "error" }
+        )
     }
 
     private fun parseInto(validatorRef: String, code: String): String = runTool(JetBrainsMPSJavaMcpToolset()) {
