@@ -1530,7 +1530,42 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             it.mps_mcp_update_root_node_from_json(ref, JsonOrText(printed.toString()))
         })
         assertTrue("the rejection names the marker: $error", error.contains("conceptLoaded:false"))
+        assertTrue(
+            "a nested node can be left out of the blueprint: $error",
+            error.contains("Node at $.children[") && error.contains(
+                "print the node again, or remove the node from the blueprint (mps_mcp_update_root_node_from_json then deletes the stored node)."
+            ),
+        )
         assertEquals("the ghost child must still be stored", 1, readOnRepo { host.getChildren(link).count() })
+    }
+
+    @Test
+    fun `a printout of a root whose concept is not loaded is rejected on update with a root-level hint`() {
+        val model = createModel(createSolution(), "ghost.sandbox${System.nanoTime()}")
+        val ghost = createGhostRoot(model, resolveNodeRef(createConceptRoot("GhostBuddyUpdate")))
+        try {
+            val printed = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_print_node(ghost.ref, deep = true) })
+            val error = expectErr(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+                it.mps_mcp_update_root_node_from_json(ghost.ref, JsonOrText(printed.toString()))
+            })
+            assertTrue(
+                "the rejection is about the root itself: $error",
+                error.contains("Node at $ is marked conceptLoaded:false: concept '") &&
+                    error.contains("' was not loaded when this node was printed (its language was not loaded or no longer declared it)"),
+            )
+            assertTrue(
+                "a root cannot be removed from its own blueprint, only deleted: $error",
+                error.contains("print the node again, or, if the root is no longer wanted, delete it with " +
+                    "mps_mcp_update_root_node_from_json operation DELETE."),
+            )
+            assertFalse("no remove-from-the-blueprint hint for the root: $error", error.contains("remove the node from the blueprint"))
+            readOnRepo {
+                assertEquals("the root keeps its name", "G1", ghost.root.getProperty(SNodeUtil.property_INamedConcept_name))
+                assertEquals("the root keeps its child", 1, ghost.root.children.count())
+            }
+        } finally {
+            deleteNode(ghost.root)
+        }
     }
 
     @Test

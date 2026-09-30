@@ -1217,7 +1217,8 @@ abstract class AbstractOps : McpToolset {
         val names = concepts.map { structureQualifiedName(it) }.distinct().sorted()
         val listed = names.take(5).joinToString(", ") + if (names.size > 5) ", … (+${names.size - 5} more)" else ""
         return listOf(
-            "Printed nodes use ${names.size} concept(s) whose language is not loaded ($listed): " +
+            "Printed nodes use ${names.size} concept(s) that are not loaded, because their language is not loaded or " +
+                "no longer declares them ($listed): " +
                 "what they store is printed from the stored node, marked declared:false, with types, cardinalities and docs " +
                 "only for features of loaded languages (conceptLoaded:false on each such node). Run mps_mcp_alter_nodes MAKE with rebuild=true on the " +
                 "language module for the full record, or read the editor projection with format \"PLAIN TEXT\"."
@@ -1526,7 +1527,7 @@ abstract class AbstractOps : McpToolset {
      *
      * The record lists what the node *stores*, not only what its concept declares. A stored
      * property, child role or reference that the concept does not declare is appended after the
-     * declared ones with `declared:false` — a node whose language is not loaded declares nothing,
+     * declared ones with `declared:false` — a node whose concept is not loaded declares nothing,
      * and printing only the declared features made its whole content vanish (study defect D89).
      * Descriptor-only keys (type, cardinality, doc) are written for such a feature only when the
      * feature itself is valid; an invalid adapter answers `BaseConcept` / `0..n`, which is wrong

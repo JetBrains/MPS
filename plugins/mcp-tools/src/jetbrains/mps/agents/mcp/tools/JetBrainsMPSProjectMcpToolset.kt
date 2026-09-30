@@ -154,7 +154,7 @@ class JetBrainsMPSProjectMcpToolset(
         val effectiveIncludeModels = includeModels || includeRootNodes || includeNodes
         return withMpsProject("Getting MPS project structure") { mpsProject ->
             executeShortReadOnEdt(mpsProject) {
-                // Concepts of printed nodes whose language is not loaded, for one envelope warning (D89).
+                // Concepts of printed nodes that are not loaded, for one envelope warning (D89).
                 val unloadedConcepts = linkedSetOf<SAbstractConcept>()
                 if (!startingPoint.isNullOrBlank()) {
                     // Try to resolve as node, then model, then module

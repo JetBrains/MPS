@@ -788,16 +788,27 @@ abstract class AbstractNodeOps : AbstractOps() {
     /**
      * A printout record of a node whose concept is not loaded (`conceptLoaded:false`) cannot be
      * recreated: its properties would all be skipped and its roles rejected, so the node would come
-     * back empty (D89).
+     * back empty (D89). The alternative to rebuilding depends on where the record sits: a nested node can
+     * be left out of the blueprint, but the top node of a request is the request itself, and the root
+     * that [rewritesRoot] rewrites cannot be removed from its own blueprint.
      */
-    private fun rejectUnloadedConceptRecord(jsonObject: JsonObject, jsonPath: String, conceptName: String?) {
+    private fun rejectUnloadedConceptRecord(
+        jsonObject: JsonObject,
+        jsonPath: String,
+        conceptName: String?,
+        rewritesRoot: Boolean = false
+    ) {
         val flag = jsonObject.get("conceptLoaded") ?: return
         if (!flag.isJsonPrimitive || !flag.asJsonPrimitive.isBoolean || flag.asBoolean) return
+        val alternative = when {
+            rewritesRoot -> "or, if the root is no longer wanted, delete it with mps_mcp_update_root_node_from_json operation DELETE."
+            jsonPath == "$" -> "or leave this node out of the request."
+            else -> "or remove the node from the blueprint (mps_mcp_update_root_node_from_json then deletes the stored node)."
+        }
         throw McpInvalidRequestException(
-            "Node at $jsonPath is marked conceptLoaded:false: the language of concept '$conceptName' was not loaded when this node was printed, " +
-                "so the node cannot be written from this printout. Run mps_mcp_alter_nodes MAKE with rebuild=true on " +
-                "the language module and print the node again, or remove the node from the blueprint " +
-                "(mps_mcp_update_root_node_from_json then deletes the stored node)."
+            "Node at $jsonPath is marked conceptLoaded:false: concept '$conceptName' was not loaded when this node was printed " +
+                "(its language was not loaded or no longer declared it), so the node cannot be written from this printout. " +
+                "Run mps_mcp_alter_nodes MAKE with rebuild=true on the language module and print the node again, $alternative"
         )
     }
 
@@ -811,7 +822,7 @@ abstract class AbstractNodeOps : AbstractOps() {
     ) {
         val model = node.model ?: throw IllegalArgumentException("Node must be in a model")
         val sConcept = node.concept
-        rejectUnloadedConceptRecord(jsonObject, jsonPath, sConcept.name)
+        rejectUnloadedConceptRecord(jsonObject, jsonPath, sConcept.name, rewritesRoot = true)
 
         // Stage-then-apply: validate everything (instantiate new children, resolve references)
         // BEFORE deleting the existing children/references. If any step throws, the staged
