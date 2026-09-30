@@ -627,7 +627,6 @@
       <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
         <exclude name="build.txt" />
       </tarfileset>
-      <tarfileset src="${artifacts.overlay}/__overlay__/mac.x64.tar" prefix="MPS.app/Contents" />
       <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS.app/Contents/bin" />
@@ -639,6 +638,11 @@
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-macos-x64.dylib" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/jna/darwin-x86-64/libjnidispatch.jnilib" prefix="MPS.app/Contents/lib/jna" />
       <tarfileset file="${basedir}/lib/pty4j/darwin/libpty.dylib" prefix="MPS.app/Contents/lib/pty4j/darwin" />
+      <tarfileset prefix="MPS.app/Contents/plugins">
+        <gzipresource>
+          <file file="${artifacts.overlay}/__overlay__/mac.x64.tar.gz" />
+        </gzipresource>
+      </tarfileset>
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz_f755" filemode="755" prefix="MPS.app/Contents/MacOS" />
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz" />
     </tar>
@@ -710,7 +714,6 @@
       <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
         <exclude name="build.txt" />
       </tarfileset>
-      <tarfileset src="${artifacts.overlay}/__overlay__/mac.aarch64.tar" prefix="MPS.app/Contents" />
       <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS.app/Contents/bin" />
@@ -722,6 +725,11 @@
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-macos-arm64.dylib" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/jna/darwin-aarch64/libjnidispatch.jnilib" prefix="MPS.app/Contents/lib/jna" />
       <tarfileset file="${basedir}/lib/pty4j/darwin/libpty.dylib" prefix="MPS.app/Contents/lib/pty4j/darwin" />
+      <tarfileset prefix="MPS.app/Contents/plugins">
+        <gzipresource>
+          <file file="${artifacts.overlay}/__overlay__/mac.aarch64.tar.gz" />
+        </gzipresource>
+      </tarfileset>
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz_f755" filemode="755" prefix="MPS.app/Contents/MacOS" />
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz" />
     </tar>

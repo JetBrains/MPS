@@ -12,9 +12,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public final class PrepareOverlayTar {
   private static final String OVERLAY_PREFIX = "__overlay__/";
+  private static final String PLUGINS_PREFIX = "plugins/";
   private static final String[] PLATFORMS = {
     "mac.x64", "mac.aarch64", "unix.x64", "unix.aarch64", "win.x64", "win.aarch64"
   };
@@ -29,7 +31,7 @@ public final class PrepareOverlayTar {
     Files.createDirectories(outputDirectory);
     Map<String, Path> temporaryFiles = new LinkedHashMap<>();
     for (String platform : PLATFORMS) {
-      temporaryFiles.put(platform, outputDirectory.resolve(platform + ".tar.tmp"));
+      temporaryFiles.put(platform, outputDirectory.resolve(platform + ".tar.gz.tmp"));
     }
 
     try {
@@ -65,11 +67,15 @@ public final class PrepareOverlayTar {
             throw new IOException("Unknown overlay platform: " + platform);
           }
           String name = sourceName.substring(separator + 1);
-          if (!name.startsWith("plugins/")) {
+          if (!name.startsWith(PLUGINS_PREFIX)) {
             throw new IOException("Unexpected overlay path: " + sourceName);
           }
+          if (name.equals(PLUGINS_PREFIX)) {
+            continue;
+          }
+          name = name.substring(PLUGINS_PREFIX.length());
           if (entry.isLink()) {
-            String linkPrefix = OVERLAY_PREFIX + platform + "/";
+            String linkPrefix = OVERLAY_PREFIX + platform + "/" + PLUGINS_PREFIX;
             if (entry.getLinkName().startsWith(linkPrefix)) {
               entry.setLinkName(entry.getLinkName().substring(linkPrefix.length()));
             }
@@ -86,8 +92,9 @@ public final class PrepareOverlayTar {
       }
 
       for (Map.Entry<String, Path> item : temporaryFiles.entrySet()) {
-        Path destination = outputDirectory.resolve(item.getKey() + ".tar");
+        Path destination = outputDirectory.resolve(item.getKey() + ".tar.gz");
         Files.move(item.getValue(), destination, StandardCopyOption.REPLACE_EXISTING);
+        Files.deleteIfExists(outputDirectory.resolve(item.getKey() + ".tar"));
         System.out.println(item.getKey() + ": " + counts.getOrDefault(item.getKey(), 0) + " entries");
       }
       System.out.println("Overlay symlinks: " + symlinks);
@@ -100,7 +107,7 @@ public final class PrepareOverlayTar {
   }
 
   private static TarOutputStream open(Path path) throws IOException {
-    TarOutputStream output = new TarOutputStream(new BufferedOutputStream(Files.newOutputStream(path)));
+    TarOutputStream output = new TarOutputStream(new GZIPOutputStream(new BufferedOutputStream(Files.newOutputStream(path))));
     output.setLongFileMode(TarOutputStream.LONGFILE_GNU);
     return output;
   }
