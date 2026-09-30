@@ -6,6 +6,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSyntaxException
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.mcpserver.reportToolActivity
@@ -132,12 +133,99 @@ abstract class AbstractNodeOps : AbstractOps() {
     private fun JsonObject.requireArray(field: String, path: String): JsonArray? {
         val element = get(field) ?: return null
         if (!element.isJsonArray) {
-            throw McpInvalidRequestException(
-                "'$field' at $path must be a JSON array, but got ${element.javaClass.simpleName}. " +
-                "Check the JSON blueprint format — see the mps-node-editing skill for reference."
-            )
+            throw McpInvalidRequestException(blueprintArrayShapeMessage(this, field, path))
         }
         return element.asJsonArray
+    }
+
+    /**
+     * The rejection for a blueprint field that is not an array. Workers write `properties` / `references` /
+     * `children` as maps (`{"text": "…"}`, `{"uses": [ … ]}`) or drop the `[ ]` around a single entry, so the
+     * message tells the two apart, shows the caller's own map rewritten into the array form, and reports every
+     * such field of [owner] at once. `nodes` given as an object is a single node that still belongs in an array.
+     */
+    private fun blueprintArrayShapeMessage(owner: JsonObject, field: String, path: String): String {
+        if (field == "nodes") {
+            val element = owner.get(field)
+            return if (element.isJsonObject) {
+                "'nodes' at $path must be a JSON array, but got an object: a single node still goes in an array, \"nodes\":[{…}]."
+            } else {
+                "'nodes' at $path must be a JSON array of node blueprints, but got ${jsonKind(element)}."
+            }
+        }
+        val fields = listOf(field) + BLUEPRINT_LIST_FIELDS.keys.filter { other ->
+            other != field && owner.get(other)?.let { !it.isJsonArray } == true
+        }
+        // Shrink the echo until the message fits; the shape sentence alone is what matters most.
+        for (maxEntries in intArrayOf(5, 3, 1, 0)) {
+            val message = fields.joinToString(" ") { describeNonArrayField(it, owner.get(it), path, maxEntries) } +
+                " " + BLUEPRINT_SHAPE_SENTENCE
+            if (message.length <= SHAPE_MESSAGE_BUDGET || maxEntries == 0) return message
+        }
+        error("unreachable")
+    }
+
+    private fun describeNonArrayField(field: String, element: JsonElement, path: String, maxEntries: Int): String {
+        val entryShape = BLUEPRINT_LIST_FIELDS.getValue(field)
+        if (!element.isJsonObject) {
+            return "'$field' at $path must be an array of $entryShape objects, but got ${jsonKind(element)}."
+        }
+        val obj = element.asJsonObject
+        if (isSingleBlueprintEntry(field, obj)) {
+            return "'$field' at $path must be a JSON array; this object is a single entry with the [ ] missing: " +
+                "write \"$field\":[{…}]."
+        }
+        val entries = obj.entrySet().toList()
+        val rendered = entries.take(maxEntries).map { (key, value) ->
+            val k = echoKey(key)
+            when (field) {
+                "properties" -> "{\"name\":$k,\"value\":${echoValue(value)}}"
+                "references" -> "{\"role\":$k,\"target\":${echoValue(value)}}"
+                else -> "{\"role\":$k,\"nodes\":[…]}"
+            }
+        } + if (entries.size > maxEntries) listOf("…") else emptyList()
+        return "'$field' at $path must be an array of $entryShape objects, not a map. " +
+            "Write it as \"$field\":[${rendered.joinToString(",")}]."
+    }
+
+    /**
+     * True when [obj] has the keys of one [field] entry and no key a real entry cannot carry. The key sets are
+     * what `print_node` emits plus the reader's alternatives (`targetReference`, the `declared:false` marker). A
+     * property entry needs `value` too: a lone `{"name": X}` is a map that sets `name`.
+     */
+    private fun isSingleBlueprintEntry(field: String, obj: JsonObject): Boolean {
+        val keys = obj.keySet()
+        return when (field) {
+            "properties" -> keys.containsAll(listOf("name", "value")) && PROPERTY_ENTRY_KEYS.containsAll(keys)
+            "references" -> "role" in keys && ("target" in keys || "targetReference" in keys) &&
+                REFERENCE_ENTRY_KEYS.containsAll(keys)
+            "children" -> keys.containsAll(listOf("role", "nodes")) && CHILDREN_ENTRY_KEYS.containsAll(keys)
+            else -> false
+        }
+    }
+
+    /**
+     * A primitive in full, as the JSON string the reader accepts (`10` → `"10"`). The message says "Write it as",
+     * so a value is never cut inside its quotes: a pasted truncation would be stored with `ok:true`. A huge
+     * primitive, and any non-primitive value, becomes a bare `…`, which fails to parse if pasted.
+     */
+    private fun echoValue(value: JsonElement): String = when {
+        value.isJsonNull -> "null"
+        value.isJsonPrimitive && value.asString.length <= ECHO_VALUE_FULL_MAX -> JsonPrimitive(value.asString).toString()
+        else -> "…"
+    }
+
+    /** A key cut to a hint; a pasted truncated name fails loudly as an unknown feature. */
+    private fun echoKey(s: String): String =
+        JsonPrimitive(if (s.length > ECHO_KEY_MAX) s.take(ECHO_KEY_MAX) + "…" else s).toString()
+
+    private fun jsonKind(element: JsonElement?): String = when {
+        element == null || element.isJsonNull -> "null"
+        element.isJsonObject -> "an object"
+        element.isJsonPrimitive && element.asJsonPrimitive.isString -> "a string"
+        element.isJsonPrimitive && element.asJsonPrimitive.isNumber -> "a number"
+        element.isJsonPrimitive && element.asJsonPrimitive.isBoolean -> "a boolean"
+        else -> element.javaClass.simpleName
     }
 
     /**
@@ -1895,6 +1983,26 @@ abstract class AbstractNodeOps : AbstractOps() {
             "A dry run does not look up reference targets given by name, so every name is listed above, " +
                 "existing and same-batch nodes included. The write resolves names in each role's scope; " +
                 "check fixReferences.stillBroken in its response (or mps_mcp_check_root_node_problems)."
+
+        /** Blueprint list fields and the entry shape each holds, in the order the rejection reports them (D87). */
+        private val BLUEPRINT_LIST_FIELDS = linkedMapOf(
+            "properties" to "{\"name\",\"value\"}",
+            "references" to "{\"role\",\"target\"}",
+            "children" to "{\"role\",\"nodes\"}",
+        )
+        private const val BLUEPRINT_SHAPE_SENTENCE =
+            "Blueprint fields are arrays, not maps: properties:[{name,value}], references:[{role,target}], " +
+                "children:[{role,nodes:[…]}] (mps-node-editing references/json-format.md)."
+        /** Entry keys `print_node` emits for each list field, plus the reader's alternatives. */
+        private val PROPERTY_ENTRY_KEYS = setOf("name", "value", "type", "isDefault", "declared")
+        private val REFERENCE_ENTRY_KEYS = setOf("role", "target", "targetReference", "declared")
+        private val CHILDREN_ENTRY_KEYS = setOf("role", "nodes", "declared")
+        /** Longest key echoed back in a shape rejection; property and role names are short. */
+        private const val ECHO_KEY_MAX = 40
+        /** Longest primitive value echoed in full; a longer one is echoed as a bare `…`. */
+        private const val ECHO_VALUE_FULL_MAX = 200
+        /** Length a shape rejection is trimmed to by echoing fewer entries; the caller's prefix comes on top. */
+        private const val SHAPE_MESSAGE_BUDGET = 550
 
         /** `SPropertyId` / `SContainmentLinkId` / `SReferenceLinkId.serialize()`: language UUID, concept id, feature id. */
         private val FEATURE_ID_SHAPE = Regex("([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(-?\\d+)/(-?\\d+)")

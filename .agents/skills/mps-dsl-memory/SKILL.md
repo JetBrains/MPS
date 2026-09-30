@@ -23,10 +23,10 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 2. **Choose skill scope**: Prefer one generated skill per language. Use one combined skill only when the project languages are tightly coupled and users normally edit them together.
 3. **Find examples**: For each language or language group, call `mps_mcp_get_project_structure` with the relevant sandbox/example solution as `startingPoint` and `includeRootNodes: true`. Record editable model refs and representative root refs.
 4. **Read concepts**: Call `mps_mcp_get_concept_details` with the relevant `l:<uuid>:<languageName>` refs. Capture rootable concepts, concrete children, properties, child roles, references, and useful `shortDescription` text.
-5. **Sample sparingly**: Use `mps_mcp_print_node` only on representative roots or subtrees needed for reference targets, required roles, or reusable blueprints. Avoid dumping every root.
+5. **Sample sparingly**: Use `mps_mcp_print_node` only on representative roots or subtrees needed for reference targets, required roles, or reusable blueprints, and derive blueprints from that output rather than writing them by hand. Avoid dumping every root.
 6. **Generate DSL skills**: Create or update `.agents/skills/<dsl-name>-dsl/` for each selected scope. Preserve user-added notes unless they are stale or wrong.
 7. **Cross-link related skills**: When generated skills cover languages that extend, depend on, or are commonly used inside each other, add short links and usage notes between them.
-8. **Verify**: Confirm linked reference files exist, blueprint JSON parses, no `.DS_Store` or editor artifacts were added, and one or two recorded node refs still resolve if the sandbox may have changed.
+8. **Verify**: Confirm linked reference files exist, no `.DS_Store` or editor artifacts were added, and one or two recorded node refs still resolve if the sandbox may have changed. Dry-run every blueprint under `references/blueprints/`: `mps_mcp_insert_root_node_from_json` with `dryRun: true` into a sandbox model for a root blueprint, `mps_mcp_update_node` ADD CHILD with `dryRun: true` under a sample parent for a fragment. Parsing as JSON is not enough, because the server rejects blueprints that parse. If every blueprint is rejected with `Unknown property …`, the language descriptor is hollow: MAKE the language and retry. Warnings for references given by name are expected; see "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 
 ### Generated Skill Layout
 ```text
@@ -76,4 +76,4 @@ The `<dsl-name>` slug is derived from the language namespace: use stable lowerca
 * `sandbox.md` under the generated skill's `references/`: sandbox model refs, representative roots, configuration nodes, reference targets, and stable node refs.
 * `workflows.md` under the generated skill's `references/`: creation/editing recipes, including when to use full-root JSON versus skeleton-plus-subtrees.
 * `gotchas.md` under the generated skill's `references/`: reference formats, ordering constraints, required roles, expression precedence issues, extension-language dependencies, and known validation failures.
-* `references/blueprints/`: valid compact JSON skeletons and subtree templates.
+* `references/blueprints/`: valid compact JSON skeletons and subtree templates, in the array form `print_node` emits (`properties:[{name,value}]`, not a map).

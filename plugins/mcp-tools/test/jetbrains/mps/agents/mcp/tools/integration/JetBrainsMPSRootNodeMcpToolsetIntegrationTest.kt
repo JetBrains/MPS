@@ -173,6 +173,124 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    // ── blueprint list fields given as objects (D87) ─────────────────────────────────────
+
+    private val blueprintShapeSentence =
+        "Blueprint fields are arrays, not maps: properties:[{name,value}], references:[{role,target}], " +
+            "children:[{role,nodes:[…]}] (mps-node-editing references/json-format.md)."
+
+    /** Inserts [json] and returns the rejection message, asserting that no root was added. */
+    private fun rejectedInsert(json: String): String {
+        val rootsBefore = readOnRepo { structureModel.rootNodes.count() }
+        val msg = expectErr(runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
+        })
+        assertEquals("a rejected blueprint must not insert a root: $msg", rootsBefore, readOnRepo { structureModel.rootNodes.count() })
+        return msg
+    }
+
+    @Test
+    fun `insert_root_node_from_json rewrites a properties map into the array form`() {
+        val msg = rejectedInsert("""{ "concept": "$conceptDeclarationFqn", "properties": { "name": "MapForm", "conceptId": 10 } }""")
+        assertTrue(msg, msg.startsWith("Failed to instantiate node from JSON: 'properties' at $ must be an array of {\"name\",\"value\"} objects, not a map."))
+        // A number is echoed as the string the reader accepts.
+        assertTrue(msg, msg.contains("""Write it as "properties":[{"name":"name","value":"MapForm"},{"name":"conceptId","value":"10"}]."""))
+        assertTrue(msg, msg.endsWith(blueprintShapeSentence))
+
+        // The array form of the same blueprint is accepted.
+        expectOk(runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(
+                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "MapForm" } ] }"""
+            ), dryRun = false)
+        })
+    }
+
+    @Test
+    fun `insert_root_node_from_json never cuts an echoed value inside its quotes`() {
+        // The message says "Write it as", so a pasted echo must not store a truncated value with ok:true.
+        val medium = "Simmer the oats in milk, stirring until creamy"
+        val huge = "x".repeat(250)
+        val msg = rejectedInsert("""{ "concept": "$conceptDeclarationFqn", "properties": { "shortDescription": "$medium", "notes": "$huge" } }""")
+        assertTrue(msg, msg.contains("""{"name":"shortDescription","value":"$medium"}"""))
+        assertTrue(msg, msg.contains("""{"name":"notes","value":…}"""))
+        assertFalse(msg, msg.contains("xxxxx"))
+    }
+
+    @Test
+    fun `insert_root_node_from_json treats a lone name key as a properties map`() {
+        val msg = rejectedInsert("""{ "concept": "$conceptDeclarationFqn", "properties": { "name": "LoneName" } }""")
+        assertTrue(msg, msg.contains("""not a map. Write it as "properties":[{"name":"name","value":"LoneName"}]."""))
+    }
+
+    @Test
+    fun `insert_root_node_from_json says wrap it for a single properties entry`() {
+        val msg = rejectedInsert("""{ "concept": "$conceptDeclarationFqn", "properties": { "name": "name", "value": "Solo" } }""")
+        assertTrue(msg, msg.contains("""'properties' at $ must be a JSON array; this object is a single entry with the [ ] missing: write "properties":[{…}]."""))
+        assertFalse("a single entry must not be rewritten as a map: $msg", msg.contains("not a map."))
+    }
+
+    @Test
+    fun `insert_root_node_from_json says wrap it for a single references entry given by targetReference`() {
+        val baseConcept = "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1133920641626"
+        val msg = rejectedInsert(
+            """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "RefSolo" } ],
+                 "references": { "role": "extends", "targetReference": "$baseConcept", "declared": true } }"""
+        )
+        assertTrue(msg, msg.contains("""'references' at $ must be a JSON array; this object is a single entry with the [ ] missing: write "references":[{…}]."""))
+    }
+
+    @Test
+    fun `insert_root_node_from_json reports a properties map and a children map in one rejection`() {
+        val msg = rejectedInsert(
+            """{ "concept": "$conceptDeclarationFqn", "properties": { "name": "TwoMaps" },
+                 "children": { "propertyDeclaration": [ { "concept": "$propertyDeclarationFqn" } ] } }"""
+        )
+        assertTrue(msg, msg.contains("'properties' at $ must be an array"))
+        // Child blueprints are not echoed, only the role.
+        assertTrue(msg, msg.contains("""'children' at $ must be an array of {"role","nodes"} objects, not a map. Write it as "children":[{"role":"propertyDeclaration","nodes":[…]}]."""))
+    }
+
+    @Test
+    fun `insert_root_node_from_json says a single node still goes in an array`() {
+        val msg = rejectedInsert(
+            """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "NodesObject" } ],
+                 "children": [ { "role": "propertyDeclaration", "nodes": { "concept": "$propertyDeclarationFqn" } } ] }"""
+        )
+        assertTrue(msg, msg.contains("""'nodes' at $.children[0] must be a JSON array, but got an object: a single node still goes in an array, "nodes":[{…}]."""))
+        assertFalse(msg, msg.contains("not a map"))
+
+        val stringMsg = rejectedInsert(
+            """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "NodesString" } ],
+                 "children": [ { "role": "propertyDeclaration", "nodes": "amount" } ] }"""
+        )
+        assertTrue(stringMsg, stringMsg.contains("'nodes' at $.children[0] must be a JSON array of node blueprints, but got a string."))
+    }
+
+    @Test
+    fun `update_root_node_from_json rejects a properties map and leaves the root unchanged`() {
+        expectOk(runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(
+                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "KeepMe" } ],
+                     "children": [ { "role": "propertyDeclaration", "nodes": [ { "concept": "$propertyDeclarationFqn",
+                       "properties": [ { "name": "name", "value": "kept" } ] } ] } ] }"""
+            ), dryRun = false)
+        })
+        val rootRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(structureModel.rootNodes.single { it.name == "KeepMe" }.reference)
+        }
+        val msg = expectErr(runTool(toolset) {
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(
+                """{ "concept": "$conceptDeclarationFqn", "properties": { "name": "Renamed" } }"""
+            ), dryRun = false)
+        })
+        assertTrue(msg, msg.contains("""'properties' at $ must be an array of {"name","value"} objects, not a map."""))
+        readOnRepo {
+            val root = structureModel.rootNodes.single { PersistenceFacade.getInstance().asString(it.reference) == rootRef }
+            assertEquals("KeepMe", root.name)
+            assertEquals("a rejected rewrite must keep the children", 1, root.children.count { it.containmentLink?.name == "propertyDeclaration" })
+        }
+    }
+
     @Test
     fun `insert_root_node_from_json single object response includes fixReferences info`() {
         // ConceptDeclaration with no references → performFixReferences should report nothing fixed.

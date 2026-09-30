@@ -1223,6 +1223,31 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `add-node-child rewrites a references map into the array form`() {
+        val fooRef = createFooConcept()
+        val childJson = """
+            {
+              "concept": "jetbrains.mps.lang.structure.structure.PropertyDeclaration",
+              "properties": [ { "name": "name", "value": "amount" } ],
+              "references": { "dataType": "integer" }
+            }
+        """.trimIndent()
+
+        val msg = expectErr(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = fooRef, childRole = "propertyDeclaration", childJson = childJson)
+        })
+        assertTrue(msg, msg.startsWith("Failed to instantiate child node from JSON: 'references' at $ must be an array of {\"role\",\"target\"} objects, not a map."))
+        assertTrue(msg, msg.contains("""Write it as "references":[{"role":"dataType","target":"integer"}]."""))
+        assertTrue(msg, msg.contains("Blueprint fields are arrays, not maps:"))
+
+        readOnRepo {
+            val foo = PersistenceFacade.getInstance().createNodeReference(fooRef).resolve(structureModel.repository)
+            assertTrue("a rejected blueprint must not add a child",
+                foo!!.children.none { it.containmentLink?.name == "propertyDeclaration" })
+        }
+    }
+
+    @Test
     fun `add-node-child rejects non-zero position on single-cardinality role`() {
         // helpURL on AbstractConceptDeclaration is a 0..1 child link.
         val fooRef = createFooConcept()
