@@ -65,6 +65,7 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
   private ConceptPresentation props_BuildLayout_Folder;
   private ConceptPresentation props_BuildLayout_Import;
   private ConceptPresentation props_BuildLayout_ImportContent;
+  private ConceptPresentation props_BuildLayout_ImportTarContent;
   private ConceptPresentation props_BuildLayout_InJarNode;
   private ConceptPresentation props_BuildLayout_Jar;
   private ConceptPresentation props_BuildLayout_JarManifest;
@@ -539,6 +540,14 @@ public class ConceptPresentationAspectImpl extends ConceptPresentationAspectBase
           props_BuildLayout_ImportContent = cpb.create();
         }
         return props_BuildLayout_ImportContent;
+      case LanguageConceptSwitch.BuildLayout_ImportTarContent:
+        if (props_BuildLayout_ImportTarContent == null) {
+          ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();
+          cpb.shortDesc("entries copied directly from a tar file declared in a layout");
+          cpb.rawPresentation("import files from tar");
+          props_BuildLayout_ImportTarContent = cpb.create();
+        }
+        return props_BuildLayout_ImportTarContent;
       case LanguageConceptSwitch.BuildLayout_InJarNode:
         if (props_BuildLayout_InJarNode == null) {
           ConceptPresentationBuilder cpb = new ConceptPresentationBuilder();

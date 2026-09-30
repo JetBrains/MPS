@@ -64,6 +64,10 @@
         <reference id="7181125477683417255" name="layout" index="13uUGO" />
         <child id="7181125477683417254" name="artifacts" index="13uUGP" />
       </concept>
+      <concept id="9201269590678307768" name="jetbrains.mps.build.structure.BuildLayout_ImportTarContent" flags="ng" index="15jnD9">
+        <reference id="9201269590678307770" name="target" index="15jnDb" />
+        <child id="9201269590678307769" name="selectors" index="15jnD8" />
+      </concept>
       <concept id="7389400916848050071" name="jetbrains.mps.build.structure.BuildLayout_Zip" flags="ng" index="3981dG" />
       <concept id="7389400916848050060" name="jetbrains.mps.build.structure.BuildLayout_NamedContainer" flags="ng" index="3981dR">
         <child id="4380385936562148502" name="containerName" index="Nbhlr" />
@@ -302,19 +306,6 @@
               <property role="3MwjfP" value="tarfilesettest2.tar.gz" />
             </node>
           </node>
-          <node concept="3_1rDE" id="7YLuv4UWzQt" role="39821P">
-            <node concept="55IIr" id="7YLuv4UWzQu" role="3_1rDF">
-              <node concept="2Ry0Ak" id="7YLuv4UWzQv" role="iGT6I">
-                <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
-                <node concept="2Ry0Ak" id="7YLuv4UWzQw" role="2Ry0An">
-                  <property role="2Ry0Am" value="samples" />
-                  <node concept="2Ry0Ak" id="7YLuv4UWzQx" role="2Ry0An">
-                    <property role="2Ry0Am" value="tarSource.tar" />
-                  </node>
-                </node>
-              </node>
-            </node>
-          </node>
           <node concept="398223" id="$8kyfUD02Z" role="39821P">
             <node concept="3_J27D" id="$8kyfUD030" role="Nbhlr">
               <node concept="3Mxwew" id="$8kyfUD031" role="3MwsjC">
@@ -392,42 +383,7 @@
                       <property role="3co7Am" value="3D3G23Q8WAM/crlf" />
                     </node>
                   </node>
-                  <node concept="3_1rDE" id="7YLuv4UWzQC" role="39821P">
-                    <node concept="55IIr" id="7YLuv4UWzQD" role="3_1rDF">
-                      <node concept="2Ry0Ak" id="7YLuv4UWzQE" role="iGT6I">
-                        <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
-                        <node concept="2Ry0Ak" id="7YLuv4UWzQF" role="2Ry0An">
-                          <property role="2Ry0Am" value="samples" />
-                          <node concept="2Ry0Ak" id="7YLuv4UWzQG" role="2Ry0An">
-                            <property role="2Ry0Am" value="tarSource.tar" />
-                          </node>
-                        </node>
-                      </node>
-                    </node>
-                    <node concept="3LWZYx" id="7YLuv4UWzQH" role="3_1rDC">
-                      <property role="3LWZYw" value="lib/**" />
-                    </node>
-                    <node concept="3LWZYq" id="7YLuv4UWzQO" role="3_1rDC">
-                      <property role="3LWZYl" value="**/*.txt" />
-                    </node>
-                  </node>
                 </node>
-              </node>
-            </node>
-            <node concept="3_1rDE" id="7ndPoqgQhaa" role="39821P">
-              <node concept="55IIr" id="7ndPoqgQhab" role="3_1rDF">
-                <node concept="2Ry0Ak" id="7ndPoqgQhac" role="iGT6I">
-                  <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
-                  <node concept="2Ry0Ak" id="7ndPoqgQhad" role="2Ry0An">
-                    <property role="2Ry0Am" value="samples" />
-                    <node concept="2Ry0Ak" id="7ndPoqgQhae" role="2Ry0An">
-                      <property role="2Ry0Am" value="tarSource.tar" />
-                    </node>
-                  </node>
-                </node>
-              </node>
-              <node concept="3LWZYx" id="7ndPoqgQhaf" role="3_1rDC">
-                <property role="3LWZYw" value="lib/**" />
               </node>
             </node>
           </node>
@@ -706,6 +662,143 @@
       <ref role="1l3spb" node="4RsV8qJHsRP" resolve="buildMpsC" />
     </node>
     <node concept="10PD9b" id="7B9bSSBHjuX" role="10PD9s" />
+  </node>
+  <node concept="13uchq" id="4Ol7luCqbvB">
+    <property role="TrG5h" value="TarsFromT" />
+    <node concept="13uQ2_" id="4Ol7luCqbvI" role="39821P">
+      <node concept="3_J27D" id="4Ol7luCqbvJ" role="13uQ07">
+        <node concept="3Mxwew" id="4Ol7luCqbvK" role="3MwsjC">
+          <property role="3MwjfP" value="tarSource.tar" />
+          <property role="TrG5h" value="tarSource.tar" />
+        </node>
+      </node>
+    </node>
+  </node>
+  <node concept="1l3spW" id="4Ol7luCqbvL">
+    <property role="2DA0ip" value=".." />
+    <property role="TrG5h" value="buildMpsT" />
+    <property role="turDy" value="buildMpsT.xml" />
+    <node concept="13uUGR" id="4Ol7luCqbvZ" role="1l3spa">
+      <ref role="13uUGO" node="4Ol7luCqbvB" />
+      <node concept="55IIr" id="4Ol7luCqbw0" role="13uUGP">
+        <node concept="2Ry0Ak" id="4Ol7luCqbw1" role="iGT6I">
+          <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
+          <node concept="2Ry0Ak" id="4Ol7luCqbw2" role="2Ry0An">
+            <property role="2Ry0Am" value="samples" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="1l3spV" id="4Ol7luCqbw3" role="1l3spN">
+      <node concept="1tmT9g" id="4Ol7luCqbw4" role="39821P">
+        <property role="TrG5h" value="plain-folder.tar" />
+        <node concept="3_J27D" id="4Ol7luCqbw5" role="Nbhlr">
+          <node concept="3Mxwew" id="4Ol7luCqbw6" role="3MwsjC">
+            <property role="3MwjfP" value="plain-folder.tar" />
+            <property role="TrG5h" value="plain-folder.tar" />
+          </node>
+        </node>
+        <node concept="398223" id="4Ol7luCqbw7" role="39821P">
+          <property role="TrG5h" value="repacked" />
+          <node concept="3_J27D" id="4Ol7luCqbw8" role="Nbhlr">
+            <node concept="3Mxwew" id="4Ol7luCqbw9" role="3MwsjC">
+              <property role="3MwjfP" value="repacked" />
+              <property role="TrG5h" value="repacked" />
+            </node>
+          </node>
+          <node concept="15jnD9" id="4Ol7luCqbwa" role="39821P">
+            <ref role="15jnDb" node="4Ol7luCqbvI" />
+            <node concept="3LWZYx" id="4Ol7luCqbwb" role="15jnD8">
+              <property role="3LWZYw" value="lib/**" />
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="1tmT9g" id="4Ol7luCqbww" role="39821P">
+        <property role="TrG5h" value="gzip-folder.tar.gz" />
+        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
+        <node concept="3_J27D" id="4Ol7luCqbwx" role="Nbhlr">
+          <node concept="3Mxwew" id="4Ol7luCqbwy" role="3MwsjC">
+            <property role="3MwjfP" value="gzip-folder.tar.gz" />
+            <property role="TrG5h" value="gzip-folder.tar.gz" />
+          </node>
+        </node>
+        <node concept="398223" id="4Ol7luCqbwz" role="39821P">
+          <property role="TrG5h" value="repacked" />
+          <node concept="3_J27D" id="4Ol7luCqbw$" role="Nbhlr">
+            <node concept="3Mxwew" id="4Ol7luCqbw_" role="3MwsjC">
+              <property role="3MwjfP" value="repacked" />
+              <property role="TrG5h" value="repacked" />
+            </node>
+          </node>
+          <node concept="3_1rDE" id="7YLuv4UWzQC" role="39821P">
+            <node concept="55IIr" id="7YLuv4UWzQD" role="3_1rDF">
+              <node concept="2Ry0Ak" id="7YLuv4UWzQE" role="iGT6I">
+                <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
+                <node concept="2Ry0Ak" id="7YLuv4UWzQF" role="2Ry0An">
+                  <property role="2Ry0Am" value="samples" />
+                  <node concept="2Ry0Ak" id="7YLuv4UWzQG" role="2Ry0An">
+                    <property role="2Ry0Am" value="tarSource.tar" />
+                  </node>
+                </node>
+              </node>
+            </node>
+            <node concept="3LWZYx" id="7YLuv4UWzQH" role="3_1rDC">
+              <property role="3LWZYw" value="lib/**" />
+            </node>
+            <node concept="3LWZYq" id="7YLuv4UWzQO" role="3_1rDC">
+              <property role="3LWZYl" value="**/*.txt" />
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="1tmT9g" id="4Ol7luCqbwo" role="39821P">
+        <property role="TrG5h" value="plain-direct.tar" />
+        <node concept="3_J27D" id="4Ol7luCqbwp" role="Nbhlr">
+          <node concept="3Mxwew" id="4Ol7luCqbwq" role="3MwsjC">
+            <property role="3MwjfP" value="plain-direct.tar" />
+            <property role="TrG5h" value="plain-direct.tar" />
+          </node>
+        </node>
+        <node concept="3_1rDE" id="7YLuv4UWzQt" role="39821P">
+          <node concept="55IIr" id="7YLuv4UWzQu" role="3_1rDF">
+            <node concept="2Ry0Ak" id="7YLuv4UWzQv" role="iGT6I">
+              <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
+              <node concept="2Ry0Ak" id="7YLuv4UWzQw" role="2Ry0An">
+                <property role="2Ry0Am" value="samples" />
+                <node concept="2Ry0Ak" id="7YLuv4UWzQx" role="2Ry0An">
+                  <property role="2Ry0Am" value="tarSource.tar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="1tmT9g" id="4Ol7luCqbwg" role="39821P">
+        <property role="TrG5h" value="gzip-direct.tar.gz" />
+        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
+        <node concept="3_J27D" id="4Ol7luCqbwh" role="Nbhlr">
+          <node concept="3Mxwew" id="4Ol7luCqbwi" role="3MwsjC">
+            <property role="3MwjfP" value="gzip-direct.tar.gz" />
+            <property role="TrG5h" value="gzip-direct.tar.gz" />
+          </node>
+        </node>
+        <node concept="15jnD9" id="4Ol7luCqbwm" role="39821P">
+          <ref role="15jnDb" node="4Ol7luCqbvI" />
+          <node concept="3LWZYx" id="4Ol7luCqbwn" role="15jnD8">
+            <property role="3LWZYw" value="lib/**" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="55IIr" id="4Ol7luCqbwc" role="auvoZ">
+      <node concept="2Ry0Ak" id="4Ol7luCqbwd" role="iGT6I">
+        <property role="2Ry0Am" value="jetbrains.mps.build.sandbox" />
+        <node concept="2Ry0Ak" id="4Ol7luCqbwe" role="2Ry0An">
+          <property role="2Ry0Am" value="samples" />
+        </node>
+      </node>
+    </node>
   </node>
 </model>
 

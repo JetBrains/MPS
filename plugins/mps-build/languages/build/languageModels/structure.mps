@@ -2255,5 +2255,32 @@
       <ref role="PrY4T" node="Y2EImGIi9D" resolve="BuildLayout_FileSet" />
     </node>
   </node>
+  <node concept="1TIwiD" id="7YLuv4UZ0eS">
+    <property role="EcuMT" value="9201269590678307768" />
+    <property role="TrG5h" value="BuildLayout_ImportTarContent" />
+    <property role="34LRSv" value="import files from tar" />
+    <property role="R4oN_" value="entries copied directly from a tar file declared in a layout" />
+    <property role="3GE5qa" value="Layout" />
+    <ref role="1TJDcQ" node="6qcrfIJF4M5" resolve="BuildLayout_Node" />
+    <node concept="1TJgyj" id="7YLuv4UZ0eT" role="1TKVEi">
+      <property role="IQ2ns" value="9201269590678307769" />
+      <property role="20kJfa" value="selectors" />
+      <property role="20lmBu" value="fLJjDmT/aggregation" />
+      <property role="20lbJX" value="fLJekj5/_0__n" />
+      <ref role="20lvS9" node="4zlO3QT8$mB" resolve="BuildFileSelector" />
+    </node>
+    <node concept="1TJgyj" id="7YLuv4UZ0eU" role="1TKVEi">
+      <property role="IQ2ns" value="9201269590678307770" />
+      <property role="20kJfa" value="target" />
+      <property role="20lbJX" value="fLJekj4/_1" />
+      <ref role="20lvS9" node="6eCuTcwOLGQ" resolve="BuildLayout_FileStub" />
+    </node>
+    <node concept="PrWs8" id="7YLuv4UZ0eV" role="PzmwI">
+      <ref role="PrY4T" node="Y2EImGIi9D" resolve="BuildLayout_FileSet" />
+    </node>
+    <node concept="PrWs8" id="7YLuv4UZ0eW" role="PzmwI">
+      <ref role="PrY4T" node="IFRVVI6zqz" resolve="BuildExternalDependency" />
+    </node>
+  </node>
 </model>
 

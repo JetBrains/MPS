@@ -46,52 +46,54 @@ public class ConstraintsAspectDescriptor extends BaseConstraintsAspectDescriptor
       case 11:
         return new BuildLayout_ImportContent_Constraints(context);
       case 12:
-        return new BuildLayout_JarManifest_Constraints(context);
+        return new BuildLayout_ImportTarContent_Constraints(context);
       case 13:
-        return new BuildLayout_JarManifest_Section_Constraints(context);
+        return new BuildLayout_JarManifest_Constraints(context);
       case 14:
-        return new BuildLayout_NamedContainer_Constraints(context);
+        return new BuildLayout_JarManifest_Section_Constraints(context);
       case 15:
-        return new BuildLayout_TarFiles_Constraints(context);
+        return new BuildLayout_NamedContainer_Constraints(context);
       case 16:
-        return new BuildProjectDependency_Constraints(context);
+        return new BuildLayout_TarFiles_Constraints(context);
       case 17:
-        return new BuildSourceMacroRelativePath_Constraints(context);
+        return new BuildProjectDependency_Constraints(context);
       case 18:
-        return new BuildSourcePath_Constraints(context);
+        return new BuildSourceMacroRelativePath_Constraints(context);
       case 19:
-        return new BuildSource_JavaClassFolder_Constraints(context);
+        return new BuildSourcePath_Constraints(context);
       case 20:
-        return new BuildSource_JavaDependencyLibrary_Constraints(context);
+        return new BuildSource_JavaClassFolder_Constraints(context);
       case 21:
-        return new BuildSource_JavaExternalJarFolderRef_Constraints(context);
+        return new BuildSource_JavaDependencyLibrary_Constraints(context);
       case 22:
-        return new BuildSource_JavaExternalJarRef_Constraints(context);
+        return new BuildSource_JavaExternalJarFolderRef_Constraints(context);
       case 23:
-        return new BuildSource_JavaLibrary_Constraints(context);
+        return new BuildSource_JavaExternalJarRef_Constraints(context);
       case 24:
-        return new BuildSource_JavaModule_Constraints(context);
+        return new BuildSource_JavaLibrary_Constraints(context);
       case 25:
-        return new BuildSource_JavaModuleOptions_Constraints(context);
+        return new BuildSource_JavaModule_Constraints(context);
       case 26:
-        return new BuildSource_JavaOptions_Constraints(context);
+        return new BuildSource_JavaModuleOptions_Constraints(context);
       case 27:
-        return new BuildSource_JavaSources_Constraints(context);
+        return new BuildSource_JavaOptions_Constraints(context);
       case 28:
-        return new BuildStringPart_Constraints(context);
+        return new BuildSource_JavaSources_Constraints(context);
       case 29:
-        return new BuildTextStringPart_Constraints(context);
+        return new BuildStringPart_Constraints(context);
       case 30:
-        return new BuildVarRefStringPart_Constraints(context);
+        return new BuildTextStringPart_Constraints(context);
       case 31:
-        return new BuildVariableMacro_Constraints(context);
+        return new BuildVarRefStringPart_Constraints(context);
       case 32:
-        return new BuildVariableMacroInitValue_Constraints(context);
+        return new BuildVariableMacro_Constraints(context);
       case 33:
+        return new BuildVariableMacroInitValue_Constraints(context);
+      case 34:
         return new BuildVariableMacroInitWithDate_Constraints(context);
       default:
     }
     return null;
   }
-  private static final ConceptSwitchIndex conceptIndex = new ConceptSwitchIndexBuilder().put(MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x31292e1a60dd541dL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x779c6e65c01467f1L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d0bfc9L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d3d0a4L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4df58c6f18f84a14L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x23f6fd361bdcfd24L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x7ea63ceef6e8c0edL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d31b36L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x6c4335df4e838e40L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x6b9a2011083f9404L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0xbabdfbeee1350f2L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4ddcec86af9fdb53L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x115d3b22faf20f2eL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x115d3b22faf47d7bL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafac7f8cL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x75cdd58690c86fecL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd908c220L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafae121dL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafacdc3eL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x11779a1dbd021959L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd9079dceL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4ddcec86afb65a3fL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4ddcec86afb2f64cL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x540febaa6144b873L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafacdc38L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x1708d207f2178b52L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0xcdff0e1a96739c2L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db92974fcL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x440d7ea3b68b7cffL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x440d7ea3b68b7d03L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x440d7ea3b68b7d01L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x3449288aa0d560e2L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x263c91972cd1e1aaL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x365f30e12d2c3e4L)).seal();
+  private static final ConceptSwitchIndex conceptIndex = new ConceptSwitchIndexBuilder().put(MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x31292e1a60dd541dL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x779c6e65c01467f1L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d0bfc9L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d3d0a4L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4df58c6f18f84a14L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x23f6fd361bdcfd24L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x7ea63ceef6e8c0edL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d31b36L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x6c4335df4e838e40L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x6b9a2011083f9404L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0xbabdfbeee1350f2L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4ddcec86af9fdb53L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x7fb179f13afc03b8L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x115d3b22faf20f2eL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x115d3b22faf47d7bL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafac7f8cL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x75cdd58690c86fecL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd908c220L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafae121dL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafacdc3eL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x11779a1dbd021959L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x454b730dd9079dceL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4ddcec86afb65a3fL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4ddcec86afb2f64cL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x540febaa6144b873L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafacdc38L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x1708d207f2178b52L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0xcdff0e1a96739c2L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db92974fcL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x440d7ea3b68b7cffL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x440d7ea3b68b7d03L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x440d7ea3b68b7d01L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x3449288aa0d560e2L), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x263c91972cd1e1aaL), MetaIdFactory.conceptId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x365f30e12d2c3e4L)).seal();
 }

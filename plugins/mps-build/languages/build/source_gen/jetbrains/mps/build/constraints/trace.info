@@ -14,7 +14,7 @@
   <concept fqn="c:f3061a53-9226-4cc5-a443-f952ceaf5816/5351203823916750322:jetbrains.mps.baseLanguage.structure.TryUniversalStatement" />
   <root>
     <file name="ConstraintsAspectDescriptor.java">
-      <unit at="15,0,98,0" name="jetbrains.mps.build.constraints.ConstraintsAspectDescriptor" />
+      <unit at="15,0,100,0" name="jetbrains.mps.build.constraints.ConstraintsAspectDescriptor" />
     </file>
   </root>
   <root nodeRef="r:5076fdb3-19c3-4563-aa26-7ace7591e78d(jetbrains.mps.build.constraints)/1258644073389103233">
@@ -1433,6 +1433,48 @@
       <unit id="8563603456896613565" at="42,0,46,0" name="jetbrains.mps.build.constraints.BuildLayout_JarManifest_Section_Constraints$CONCEPTS" />
       <unit id="8563603456896613565" at="23,32,34,5" name="jetbrains.mps.build.constraints.BuildLayout_JarManifest_Section_Constraints$1" />
       <unit id="8563603456896613565" at="20,0,47,0" name="jetbrains.mps.build.constraints.BuildLayout_JarManifest_Section_Constraints" />
+    </file>
+  </root>
+  <root nodeRef="r:5076fdb3-19c3-4563-aa26-7ace7591e78d(jetbrains.mps.build.constraints)/9201269590678327671">
+    <file name="BuildLayout_ImportTarContent_Constraints.java">
+      <node id="9201269590678327671" at="22,102,23,65" concept="10" />
+      <node id="9201269590678327671" at="26,127,27,128" concept="4" />
+      <node id="9201269590678327671" at="27,128,28,0" concept="7" />
+      <node id="9201269590678327671" at="29,55,30,71" concept="1" />
+      <node id="9201269590678327671" at="31,9,32,0" concept="7" />
+      <node id="9201269590678327671" at="32,0,33,22" concept="5" />
+      <node id="9201269590678327674" at="38,128,39,178" concept="5" />
+      <node id="9201269590678327671" at="41,0,42,0" concept="8" trace="canBeChildBreakingPoint" />
+      <node id="9201269590678327671" at="44,0,45,0" concept="8" trace="BuildLayout_ImportTarContent$rv" />
+      <node id="9201269590678327671" at="45,0,46,0" concept="8" trace="BuildLayout_ContainerAcceptingFileSet$KQ" />
+      <node id="9201269590678327671" at="46,0,47,0" concept="8" trace="BuildLayout_Tar$hZ" />
+      <node id="9201269590678327671" at="28,0,31,9" concept="2" />
+      <node id="9201269590678327671" at="38,0,41,0" concept="9" trace="staticCanBeAChild#(Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/model/SNode;Lorg/jetbrains/mps/openapi/language/SAbstractConcept;Lorg/jetbrains/mps/openapi/language/SContainmentLink;)Z" />
+      <node id="9201269590678327671" at="25,0,35,0" concept="3" trace="invoke#(Ljetbrains/mps/smodel/runtime/ConstraintContext_CanBeChild;Ljetbrains/mps/smodel/runtime/CheckingNodeContext;)Ljava/lang/Boolean;" />
+      <node id="9201269590678327671" at="23,65,35,7" concept="1" />
+      <node id="9201269590678327671" at="22,0,37,0" concept="0" trace="BuildLayout_ImportTarContent_Constraints#(Ljetbrains/mps/smodel/runtime/ConstraintsDescriptorInitContext;)V" />
+      <scope id="9201269590678327671" at="29,55,30,71" />
+      <scope id="9201269590678327673" at="38,128,39,178" />
+      <scope id="9201269590678327671" at="38,0,41,0">
+        <var name="childConcept" id="9201269590678327671" />
+        <var name="link" id="9201269590678327671" />
+        <var name="node" id="9201269590678327671" />
+        <var name="parentNode" id="9201269590678327671" />
+      </scope>
+      <scope id="9201269590678327671" at="26,127,33,22">
+        <var name="result" id="9201269590678327671" />
+      </scope>
+      <scope id="9201269590678327671" at="25,0,35,0">
+        <var name="checkingNodeContext" id="9201269590678327671" />
+        <var name="context" id="9201269590678327671" />
+      </scope>
+      <scope id="9201269590678327671" at="22,102,35,7" />
+      <scope id="9201269590678327671" at="22,0,37,0">
+        <var name="initContext" id="9201269590678327671" />
+      </scope>
+      <unit id="9201269590678327671" at="43,0,48,0" name="jetbrains.mps.build.constraints.BuildLayout_ImportTarContent_Constraints$CONCEPTS" />
+      <unit id="9201269590678327671" at="24,32,35,5" name="jetbrains.mps.build.constraints.BuildLayout_ImportTarContent_Constraints$1" />
+      <unit id="9201269590678327671" at="21,0,49,0" name="jetbrains.mps.build.constraints.BuildLayout_ImportTarContent_Constraints" />
     </file>
   </root>
   <root nodeRef="r:5076fdb3-19c3-4563-aa26-7ace7591e78d(jetbrains.mps.build.constraints)/927724900262213628">

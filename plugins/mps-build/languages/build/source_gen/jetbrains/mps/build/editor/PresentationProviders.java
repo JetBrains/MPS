@@ -77,6 +77,20 @@ public class PresentationProviders {
   });
   public static final IReferentPresentationProvider PRESENTATION_bvukwp_a0a1a = ((IReferentPresentationProvider) (sourceNode, targetNode) -> ((isEmptyString(SPropertyOperations.getString(targetNode, PROPS.optionsName$Rr_z)) ? "<default options>" : SPropertyOperations.getString(targetNode, PROPS.optionsName$Rr_z))));
   public static final IReferentPresentationProvider PRESENTATION_1i5f76_a0a1a = ((IReferentPresentationProvider) (sourceNode, targetNode) -> SConceptOperations.conceptAlias(SNodeOperations.getConcept(targetNode)) + " " + SPropertyOperations.getString(targetNode, PROPS.name$MnvL));
+  public static final IReferentPresentationProvider PRESENTATION_1g0ul2_a0a1a = ((IReferentPresentationProvider) (sourceNode, targetNode) -> {
+    SNode contextProject = SNodeOperations.getNodeAncestor(sourceNode, CONCEPTS.BuildProject$ae, true, false);
+    String target = null;
+    if ((contextProject != null)) {
+      Scope importedArtifactsScope = ScopeUtil.getVisibleArtifactsScope(contextProject, true);
+      if (importedArtifactsScope != null && !(importedArtifactsScope instanceof ModelPlusImportedScope)) {
+        target = importedArtifactsScope.getReferenceText(sourceNode, targetNode);
+      }
+    }
+    if (target == null) {
+      target = BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(targetNode);
+    }
+    return (false ? "import " + target : target);
+  });
   private static boolean isEmptyString(String str) {
     return str == null || str.isEmpty();
   }
