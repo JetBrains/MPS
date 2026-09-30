@@ -627,6 +627,11 @@
       <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
         <exclude name="build.txt" />
       </tarfileset>
+      <tarfileset prefix="MPS.app/Contents">
+        <gzipresource>
+          <file file="${artifacts.resources}/openJDK/jbr-osx-x64.tar.gz" />
+        </gzipresource>
+      </tarfileset>
       <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS.app/Contents/bin" />
@@ -713,6 +718,11 @@
     <tar destfile="${build.layout}/${mps.build.number}-macos-aarch64.tar.gz" compression="gzip" longfile="gnu">
       <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
         <exclude name="build.txt" />
+      </tarfileset>
+      <tarfileset prefix="MPS.app/Contents">
+        <gzipresource>
+          <file file="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar.gz" />
+        </gzipresource>
       </tarfileset>
       <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
