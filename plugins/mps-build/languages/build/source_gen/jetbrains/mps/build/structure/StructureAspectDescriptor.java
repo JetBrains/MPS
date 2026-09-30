@@ -1081,7 +1081,7 @@ public class StructureAspectDescriptor extends BaseStructureAspectDescriptor {
     b.parent(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0xbabdfbeee1a36a3L);
     b.origin("r:e9081cad-d8c3-45f2-b4ad-1dabd5ff82af(jetbrains.mps.build.structure)/9201269590678307768");
     b.version(3);
-    b.associate("target", 0x7fb179f13afc03baL).target(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d31b36L).optional(false).origin("9201269590678307770").done();
+    b.associate("target", 0x7fb179f13afc03baL).target(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafac4c85L).optional(false).origin("9201269590678307770").done();
     b.aggregate("selectors", 0x7fb179f13afc03b9L).target(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db92245a7L).optional(true).ordered(true).multiple(true).origin("9201269590678307769").done();
     b.alias("import files from tar");
     return b.create();
@@ -1206,6 +1206,7 @@ public class StructureAspectDescriptor extends BaseStructureAspectDescriptor {
     b.parent(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0xf82aae5acb92269L);
     b.origin("r:e9081cad-d8c3-45f2-b4ad-1dabd5ff82af(jetbrains.mps.build.structure)/8488675646594641900");
     b.version(3);
+    b.property("compressed", 0x4d151d57a87c7ac1L).type(PrimitiveTypeId.BOOLEAN).origin("5554377977757465281").done();
     b.aggregate("archive", 0x75cdd58690c86fedL).target(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafacdc3eL).optional(false).ordered(true).multiple(false).origin("8488675646594641901").done();
     b.aggregate("selectors", 0x75cdd58690c86feeL).target(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db92245a7L).optional(true).ordered(true).multiple(true).origin("8488675646594641902").done();
     b.alias("files from tar");

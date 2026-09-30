@@ -9,18 +9,31 @@ import jetbrains.mps.smodel.runtime.ConstraintContext_CanBeChild;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.smodel.runtime.CheckingNodeContext;
+import jetbrains.mps.smodel.runtime.base.BaseReferenceConstraintsDescriptor;
+import jetbrains.mps.smodel.runtime.ConstraintsDescriptor;
+import jetbrains.mps.smodel.runtime.ReferenceScopeProvider;
+import jetbrains.mps.smodel.runtime.base.BaseScopeProvider;
+import org.jetbrains.mps.openapi.model.SNodeReference;
+import jetbrains.mps.smodel.SNodePointer;
+import jetbrains.mps.scope.Scope;
+import jetbrains.mps.smodel.runtime.ReferenceConstraintsContext;
 import org.jetbrains.mps.openapi.model.SNode;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
+import jetbrains.mps.scope.FilteringScope;
+import jetbrains.mps.build.util.ScopeUtil;
+import jetbrains.mps.lang.core.behavior.BaseConcept__BehaviorDescriptor;
+import jetbrains.mps.scope.ModelPlusImportedScope;
 import org.jetbrains.mps.openapi.language.SAbstractConcept;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
-import jetbrains.mps.smodel.SNodePointer;
 import org.jetbrains.mps.openapi.language.SConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 import org.jetbrains.mps.openapi.language.SInterfaceConcept;
+import org.jetbrains.mps.openapi.language.SReferenceLink;
 
 public class BuildLayout_ImportTarContent_Constraints extends BaseConstraintsDescriptor {
   /*package*/ BuildLayout_ImportTarContent_Constraints(ConstraintsDescriptorInitContext initContext) {
     super(CONCEPTS.BuildLayout_ImportTarContent$rv, initContext);
+    record(new RD1(this));
     setCanBeChildConstraint(new ConstraintFunction<ConstraintContext_CanBeChild, Boolean>() {
       @NotNull
       public Boolean invoke(@NotNull ConstraintContext_CanBeChild context, @Nullable CheckingNodeContext checkingNodeContext) {
@@ -35,6 +48,34 @@ public class BuildLayout_ImportTarContent_Constraints extends BaseConstraintsDes
     });
   }
 
+  /*package*/ static final class RD1 extends BaseReferenceConstraintsDescriptor {
+    /*package*/ RD1(ConstraintsDescriptor container) {
+      super(LINKS.target$aIaT, container, true, false);
+    }
+    @Nullable
+    @Override
+    public ReferenceScopeProvider getScopeProvider() {
+      return new BaseScopeProvider() {
+        @Override
+        public SNodeReference getSearchScopeValidatorNode() {
+          return new SNodePointer("r:5076fdb3-19c3-4563-aa26-7ace7591e78d(jetbrains.mps.build.constraints)", "5554377977758443221");
+        }
+        @Override
+        public Scope createScope(final ReferenceConstraintsContext _context) {
+          SNode contextProject = SNodeOperations.getNodeAncestor(_context.getContextNode(), CONCEPTS.BuildProject$ae, true, false);
+          if ((contextProject != null)) {
+            return new FilteringScope(ScopeUtil.getVisibleArtifactsScope(contextProject, true)) {
+              @Override
+              public boolean isExcluded(SNode node) {
+                return !(SNodeOperations.isInstanceOf(node, CONCEPTS.BuildLayout_Tar$hZ) || SNodeOperations.isInstanceOf(node, CONCEPTS.BuildLayout_FileStub$8k) && (BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar") || BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar.gz")));
+              }
+            };
+          }
+          return new ModelPlusImportedScope(SNodeOperations.getModel(_context.getContextNode()), false, CONCEPTS.BuildLayout_Node$Rb);
+        }
+      };
+    }
+  }
   private static boolean staticCanBeAChild(SNode node, SNode parentNode, SAbstractConcept childConcept, SContainmentLink link) {
     return SNodeOperations.isInstanceOf(SNodeOperations.getNodeAncestor(parentNode, CONCEPTS.BuildLayout_ContainerAcceptingFileSet$KQ, true, false), CONCEPTS.BuildLayout_Tar$hZ);
   }
@@ -42,7 +83,14 @@ public class BuildLayout_ImportTarContent_Constraints extends BaseConstraintsDes
 
   private static final class CONCEPTS {
     /*package*/ static final SConcept BuildLayout_ImportTarContent$rv = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x7fb179f13afc03b8L, "jetbrains.mps.build.structure.BuildLayout_ImportTarContent");
-    /*package*/ static final SInterfaceConcept BuildLayout_ContainerAcceptingFileSet$KQ = MetaAdapterFactory.getInterfaceConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db927f229L, "jetbrains.mps.build.structure.BuildLayout_ContainerAcceptingFileSet");
+    /*package*/ static final SConcept BuildProject$ae = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x4df58c6f18f84a13L, "jetbrains.mps.build.structure.BuildProject");
     /*package*/ static final SConcept BuildLayout_Tar$hZ = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x7709f0532a526203L, "jetbrains.mps.build.structure.BuildLayout_Tar");
+    /*package*/ static final SConcept BuildLayout_FileStub$8k = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x63a87b9320d31b36L, "jetbrains.mps.build.structure.BuildLayout_FileStub");
+    /*package*/ static final SConcept BuildLayout_Node$Rb = MetaAdapterFactory.getConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafac4c85L, "jetbrains.mps.build.structure.BuildLayout_Node");
+    /*package*/ static final SInterfaceConcept BuildLayout_ContainerAcceptingFileSet$KQ = MetaAdapterFactory.getInterfaceConcept(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db927f229L, "jetbrains.mps.build.structure.BuildLayout_ContainerAcceptingFileSet");
+  }
+
+  private static final class LINKS {
+    /*package*/ static final SReferenceLink target$aIaT = MetaAdapterFactory.getReferenceLink(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x7fb179f13afc03b8L, 0x7fb179f13afc03baL, "target");
   }
 }
