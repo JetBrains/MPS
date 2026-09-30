@@ -3,6 +3,10 @@
 Revision 3. Review round 1 is folded in (0 blockers, 4 should-fix, 8 nits), and round 2 found 2 nits and settled it. Out-of-scope nit 11
 (`useLabelSelection` inspector behaviour) was declined.
 
+**Status: implemented** in `81f2af36000a`, plus a review follow-up that covers reversed ranges (T10/T11) and
+splits the result-offset sentence. D93 is now archived in `study/docs-defects-archive.md`. Line numbers below,
+including `docs-defects.md:50`, are pre-fix locations.
+
 Docs-only fix. Tracked as **D93** in `plugins/mcp-tools/study/docs-defects.md:50`. It corrects the
 `before` half of archived D71 (`1921f24ac6d4`).
 
