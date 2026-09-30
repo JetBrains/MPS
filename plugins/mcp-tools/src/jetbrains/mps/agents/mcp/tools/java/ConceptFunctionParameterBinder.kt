@@ -88,7 +88,7 @@ internal object ConceptFunctionParameterBinder {
             val functionName = context.function.concept.name
             if (context.bound.isNotEmpty()) {
                 val count = context.bound.values.sum()
-                val names = context.bound.keys.joinToString(", ")
+                val names = context.bound.entries.joinToString(", ") { (name, n) -> if (n > 1) "$name ×$n" else name }
                 var text = "Bound $count implicit parameter reference(s) of '$functionName' ($names) to their " +
                     "ConceptFunctionParameter concepts."
                 if (context.boundFieldChain) {

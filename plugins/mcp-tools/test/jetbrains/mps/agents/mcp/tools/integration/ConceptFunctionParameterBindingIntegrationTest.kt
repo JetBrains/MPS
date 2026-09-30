@@ -41,6 +41,10 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
             "the binding must be reported: $response",
             warnings(envelope).any { it.contains("Bound 2 implicit parameter reference(s)") && it.contains("propertyValue") }
         )
+        assertTrue(
+            "a name bound twice carries its count: $response",
+            warnings(envelope).any { it.contains("(propertyValue ×2) to their ConceptFunctionParameter concepts.") }
+        )
         assertFalse("valid code must not get a syntax warning: $response", warnings(envelope).any { it.contains("syntax") })
 
         val concepts = bodyDescendantConcepts(validator)
@@ -109,7 +113,10 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     fun `a lambda inside the function binds to the enclosing function`() {
         val validator = createValidators().first()
         val response = parseInto(validator, "Runnable r = () -> node.toString(); return true;")
-        okEnvelope(response)
+        assertTrue(
+            "a name bound once carries no count: $response",
+            warnings(okEnvelope(response)).any { it.contains("Bound 1 implicit parameter reference(s)") && it.contains("(node) to their") }
+        )
         val concepts = bodyDescendantConcepts(validator)
         assertTrue("node inside the lambda must be bound: $concepts", concepts.contains(nodeParameter))
         assertTrue("the lambda stays a closure: $concepts", concepts.contains("ClosureLiteral"))
