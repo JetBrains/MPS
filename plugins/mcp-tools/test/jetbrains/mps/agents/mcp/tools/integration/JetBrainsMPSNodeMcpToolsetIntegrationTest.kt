@@ -2281,13 +2281,78 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "nodeReference",
         )
         assertTrue(error, error.startsWith("nodeReference is required."))
-        assertTrue("must say a model goes under nodeReference: $error", error.contains("model reference") && error.contains("no modelReference parameter"))
+        assertTrue("must say a model goes under nodeReference: $error", error.contains("model reference") && error.contains("no modelReference or moduleReference parameter"))
 
         val retried = callThroughBridge(
             JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
             mapOf("nodeReference" to McpJsonPrimitive(structureModelRef)),
         )
         assertOk(retried)
+    }
+
+    @Test
+    fun `check_root_node_problems names nodeReference when the caller sent moduleReference`() {
+        val moduleRef = PersistenceFacade.getInstance().asString(language.moduleReference)
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+                mapOf("moduleReference" to McpJsonPrimitive(moduleRef)),
+            ),
+            "nodeReference",
+        )
+        assertTrue("must name the dropped spelling: $error", error.contains("'moduleReference'"))
+        assertTrue("must say a module goes under nodeReference: $error", error.contains("module reference or module name"))
+
+        val retried = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(moduleRef)),
+        )
+        assertOk(retried)
+        assertEquals("module", JsonParser.parseString(retried).asJsonObject.getAsJsonObject("details").get("scope").asString)
+    }
+
+    @Test
+    fun `check_root_node_problems names only the near-miss keys that were sent`() {
+        // D63: the rejection used to name modelReference whatever the caller sent.
+        val ghost = "r:00000000-0000-0000-0000-000000000000(ghost)/0"
+        val withModel = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost), "modelReference" to McpJsonPrimitive(structureModelRef)),
+        ))
+        assertTrue(withModel, withModel.contains("This tool has no 'modelReference' parameter; retry with nodeReference set to '$structureModelRef'."))
+        assertFalse(withModel, withModel.contains("'moduleReference'"))
+
+        val withModule = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost), "moduleReference" to McpJsonPrimitive("some.module")),
+        ))
+        assertTrue(withModule, withModule.contains("This tool has no 'moduleReference' parameter; retry with nodeReference set to 'some.module'."))
+        assertFalse(withModule, withModule.contains("'modelReference'"))
+
+        val alone = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost)),
+        ))
+        assertFalse(alone, alone.contains("This tool has no"))
+
+        val withNull = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost), "modelReference" to McpJsonNull),
+        ))
+        assertFalse("a key sent as null has no value to retry with: $withNull", withNull.contains("This tool has no"))
+    }
+
+    @Test
+    fun `check_root_node_problems warns on success when a near-miss key was also sent`() {
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(structureModelRef), "modelReference" to McpJsonPrimitive("other.model")),
+        )
+        assertOk(response)
+        val warnings = JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue("the dropped value must be named: $response", warnings.any {
+            it == "This tool has no 'modelReference' parameter, so its value 'other.model' was ignored; nodeReference '$structureModelRef' was checked."
+        })
     }
 
     @Test

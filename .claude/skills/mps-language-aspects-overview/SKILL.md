@@ -92,7 +92,7 @@ After adding/changing:
 
 ## Validation Flow
 
-1. `mps_mcp_check_root_node_problems` on edited roots / aspect models — catches concept-level problems.
+1. `mps_mcp_check_root_node_problems` on edited roots / aspect models, or on the language module to sweep every aspect (and its generator) in one call — catches concept-level problems.
 2. Build the language module (IDE MCP) — catches compile errors in generated descriptors.
 3. Regenerate a sample model — catches generator/textgen issues.
 4. Inspect sample in MPS UI — catches editor / usability issues.

@@ -3,6 +3,7 @@ package jetbrains.mps.agents.mcp.tools.common
 import jetbrains.mps.agents.mcp.tools.logging.*
 
 import com.google.gson.*
+import com.intellij.mcpserver.McpCallAdditionalDataElement
 import com.intellij.mcpserver.McpToolset
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
@@ -366,6 +367,23 @@ abstract class AbstractOps : McpToolset {
             mapOf("missingParameters" to missing.map { it.name }),
         )
     )
+
+    /**
+     * `key to value` for each near-miss spelling of [parameter] ([RequiredParameterNearMisses]) that
+     * the caller actually sent. The binder drops such a key, but the platform keeps it in the call's
+     * raw arguments, so a tool can name the key only when it was really sent (D63). A string value
+     * is returned as its content, any other value as its JSON text, and a JSON null is skipped; empty
+     * outside an MCP call.
+     */
+    protected suspend fun sentNearMisses(tool: String, parameter: String): List<Pair<String, String>> {
+        val raw = currentCoroutineContext()[McpCallAdditionalDataElement.Key]?.additionalData?.rawArguments
+            ?: return emptyList()
+        return RequiredParameterNearMisses.of(tool, parameter).mapNotNull { key ->
+            // A client echoing an unset optional key as null sent no value worth naming.
+            val value = raw[key]?.takeIf { it !is kotlinx.serialization.json.JsonNull } ?: return@mapNotNull null
+            key to ((value as? kotlinx.serialization.json.JsonPrimitive)?.takeIf { it.isString }?.content ?: value.toString())
+        }
+    }
 
     protected fun invalidJson(message: String?, details: Map<String, Any?> = emptyMap()): String =
         errJson(message, McpErrorCode.INVALID_JSON, details)
