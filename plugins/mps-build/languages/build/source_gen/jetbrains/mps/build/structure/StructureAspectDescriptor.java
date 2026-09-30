@@ -1206,7 +1206,7 @@ public class StructureAspectDescriptor extends BaseStructureAspectDescriptor {
     b.parent(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0xf82aae5acb92269L);
     b.origin("r:e9081cad-d8c3-45f2-b4ad-1dabd5ff82af(jetbrains.mps.build.structure)/8488675646594641900");
     b.version(3);
-    b.property("compressed", 0x4d151d57a87c7ac1L).type(PrimitiveTypeId.BOOLEAN).origin("5554377977757465281").done();
+    b.property("compression", 0x4d151d57a87c7ac1L).type(MetaIdFactory.dataTypeId(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x1b76dbd13de88924L)).origin("5554377977757465281").done();
     b.aggregate("archive", 0x75cdd58690c86fedL).target(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x668c6cfbafacdc3eL).optional(false).ordered(true).multiple(false).origin("8488675646594641901").done();
     b.aggregate("selectors", 0x75cdd58690c86feeL).target(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x48d5d03db92245a7L).optional(true).ordered(true).multiple(true).origin("8488675646594641902").done();
     b.alias("files from tar");

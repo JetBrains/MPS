@@ -11073,7 +11073,7 @@
         <ref role="1NtTu8" to="3ior:7ndPoqgM6ZH" resolve="archive" />
       </node>
       <node concept="3F0ifn" id="4Ol7luCyQsu" role="3EZMnx">
-        <property role="3F0ifm" value="compressed" />
+        <property role="3F0ifm" value="compression" />
         <ref role="1k5W1q" node="hwW5xkg" resolve="keyword" />
       </node>
       <node concept="3F0A7n" id="4Ol7luCyQsA" role="3EZMnx">

@@ -12,6 +12,14 @@
         <include name="lib/**" />
       </tarfileset>
     </tar>
+    <tar destfile="${build.layout}/layout-bzip.tar" longfile="gnu">
+      <tarfileset prefix="repacked">
+        <include name="lib/**" />
+        <bzip2resource>
+          <file file="${artifacts.TarsFromT}/tarbzSource.tar.bz2" />
+        </bzip2resource>
+      </tarfileset>
+    </tar>
     <tar destfile="${build.layout}/gzip-folder.tar.gz" compression="gzip" longfile="gnu">
       <tarfileset src="${basedir}/jetbrains.mps.build.sandbox/samples/tarSource.tar" prefix="repacked">
         <include name="lib/**" />
@@ -28,12 +36,27 @@
         </gzipresource>
       </tarfileset>
     </tar>
+    <tar destfile="${build.layout}/source-bzip.tar" longfile="gnu">
+      <tarfileset>
+        <bzip2resource>
+          <file file="${basedir}/jetbrains.mps.build.sandbox/samples/tarbzSource.tar.bz2" />
+        </bzip2resource>
+      </tarfileset>
+    </tar>
     <tar destfile="${build.layout}/gzip-direct.tar.gz" compression="gzip" longfile="gnu">
       <tarfileset>
         <include name="lib/**" />
         <gzipresource>
           <file file="${artifacts.TarsFromT}/topFolder/targzFileSource.tar.gz" />
         </gzipresource>
+      </tarfileset>
+    </tar>
+    <tar destfile="${build.layout}/file-bzip.tar.gz" compression="gzip" longfile="gnu">
+      <tarfileset>
+        <include name="lib/**" />
+        <bzip2resource>
+          <file file="${artifacts.TarsFromT}/tarbzFileSource.tar.bz2" />
+        </bzip2resource>
       </tarfileset>
     </tar>
     <tar destfile="${build.layout}/zip-nested.tar.gz" compression="gzip" longfile="gnu">

@@ -2256,8 +2256,8 @@
     </node>
     <node concept="1TJgyi" id="4Ol7luCv7F1" role="1TKVEl">
       <property role="IQ2nx" value="5554377977757465281" />
-      <property role="TrG5h" value="compressed" />
-      <ref role="AX2Wp" to="tpck:fKAQMTB" resolve="boolean" />
+      <property role="TrG5h" value="compression" />
+      <ref role="AX2Wp" node="3Ftr4R6BFDY" resolve="BuildLayout_TarCompression" />
     </node>
   </node>
   <node concept="1TIwiD" id="7YLuv4UZ0eS">

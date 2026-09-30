@@ -157,7 +157,7 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
     }
   }
   private EditorCell createConstant_0() {
-    EditorCell_Constant editorCell = new EditorCell_Constant(getEditorContext(), myNode, "compressed");
+    EditorCell_Constant editorCell = new EditorCell_Constant(getEditorContext(), myNode, "compression");
     editorCell.setCellId("Constant_don6i1_c0");
     Style style = new StyleImpl();
     new keywordStyleClass(this).apply(style, editorCell);
@@ -168,11 +168,11 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   private EditorCell createProperty_0() {
     getCellFactory().pushCellContext();
     try {
-      final SProperty property = PROPS.compressed$4G8o;
+      final SProperty property = PROPS.compression$4G8o;
       getCellFactory().setPropertyInfo(new SPropertyInfo(myNode, property));
       EditorCell_Property editorCell = EditorCell_Property.create(getEditorContext(), new SPropertyAccessor(myNode, property, false, false), myNode);
-      editorCell.setDefaultText("<no compressed>");
-      editorCell.setCellId("property_compressed");
+      editorCell.setDefaultText("<no compression>");
+      editorCell.setCellId("property_compression");
       editorCell.setSubstituteInfo(new SPropertySubstituteInfo(editorCell, property));
       setCellContext(editorCell);
       Iterable<SNode> propertyAttributes = SNodeOperations.ofConcept(new IAttributeDescriptor.AllAttributes().list(myNode), CONCEPTS.PropertyAttribute$Gb);
@@ -288,6 +288,6 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
   }
 
   private static final class PROPS {
-    /*package*/ static final SProperty compressed$4G8o = MetaAdapterFactory.getProperty(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x75cdd58690c86fecL, 0x4d151d57a87c7ac1L, "compressed");
+    /*package*/ static final SProperty compression$4G8o = MetaAdapterFactory.getProperty(0x798100da4f0a421aL, 0xb99171f8c50ce5d2L, 0x75cdd58690c86fecL, 0x4d151d57a87c7ac1L, "compression");
   }
 }

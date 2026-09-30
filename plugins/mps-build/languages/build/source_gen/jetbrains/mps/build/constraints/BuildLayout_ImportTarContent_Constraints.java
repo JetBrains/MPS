@@ -67,7 +67,7 @@ public class BuildLayout_ImportTarContent_Constraints extends BaseConstraintsDes
             return new FilteringScope(ScopeUtil.getVisibleArtifactsScope(contextProject, true)) {
               @Override
               public boolean isExcluded(SNode node) {
-                return !(SNodeOperations.isInstanceOf(node, CONCEPTS.BuildLayout_Tar$hZ) || SNodeOperations.isInstanceOf(node, CONCEPTS.BuildLayout_FileStub$8k) && (BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar") || BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar.gz")));
+                return !(SNodeOperations.isInstanceOf(node, CONCEPTS.BuildLayout_Tar$hZ) || SNodeOperations.isInstanceOf(node, CONCEPTS.BuildLayout_FileStub$8k) && (BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar") || BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar.gz") || BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar.bz") || BaseConcept__BehaviorDescriptor.getPresentation_idhEwIMiw.invoke(node).endsWith(".tar.bz2")));
               }
             };
           }
