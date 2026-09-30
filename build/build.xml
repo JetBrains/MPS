@@ -24,7 +24,7 @@
     <ant antfile="getResources.xml" inheritall="true" usenativebasedir="true" target="getOpenjdkLinux" />
   </target>
 
-  <target name="getResourcesAndBuildAll" depends="getOpenjdkWin,getOpenjdkMac,getOpenjdkMacM1">
+  <target name="getResourcesAndBuildAll" depends="getOpenjdkWin,getOpenjdkMac,getOpenjdkMacM1,getOpenjdkLinux">
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="buildDependents"/>
   </target>
 

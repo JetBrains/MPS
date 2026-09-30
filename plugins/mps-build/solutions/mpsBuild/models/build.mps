@@ -40161,10 +40161,7 @@
               </node>
             </node>
             <node concept="3ygNvl" id="6WWoVOy5TV9" role="39821P">
-              <ref role="3ygNvj" node="6WWoVOy5TCV" resolve="plugins" />
-              <node concept="3LWZYx" id="6WWoVOy5TVa" role="1juEy9">
-                <property role="3LWZYw" value="**/*" />
-              </node>
+              <ref role="3ygNvj" node="3v25z8AbNpM" resolve="unix.x64.tar.gz" />
             </node>
           </node>
           <node concept="28jJK3" id="1sQhFOgglTc" role="39821P">
@@ -40257,6 +40254,26 @@
               </node>
             </node>
           </node>
+          <node concept="398223" id="D3r74YkcRw" role="39821P">
+            <node concept="3_I8Xc" id="D3r74YJV6e" role="39821P">
+              <ref role="3_I8Xa" node="3v25z8AbNpG" resolve="mac.x64.tar.gz" />
+            </node>
+            <node concept="3_I8Xc" id="D3r74YJV6h" role="39821P">
+              <ref role="3_I8Xa" node="3v25z8AbNpJ" resolve="mac.aarch64.tar.gz" />
+            </node>
+            <node concept="3_I8Xc" id="D3r74YJV6i" role="39821P">
+              <ref role="3_I8Xa" node="3v25z8AbNpS" resolve="win.x64.tar.gz" />
+            </node>
+            <node concept="3_I8Xc" id="D3r74YJV6j" role="39821P">
+              <ref role="3_I8Xa" node="3v25z8AbNpM" resolve="unix.x64.tar.gz" />
+            </node>
+            <node concept="3_J27D" id="D3r74YkcRx" role="Nbhlr">
+              <node concept="3Mxwew" id="D3r74YkcRy" role="3MwsjC">
+                <property role="3MwjfP" value="platform-plugins" />
+                <property role="TrG5h" value="platform-plugins" />
+              </node>
+            </node>
+          </node>
         </node>
         <node concept="3_J27D" id="3IKDaVZnIk3" role="Nbhlr">
           <node concept="3Mxwey" id="3IKDaVZnIk5" role="3MwsjC">
@@ -40272,6 +40289,9 @@
         <node concept="398223" id="5BQuGro_mE3" role="39821P">
           <node concept="3ygNvl" id="5lvEvl1L$BT" role="39821P">
             <ref role="3ygNvj" node="3IKDaVZmzS8" />
+          </node>
+          <node concept="15jnD9" id="D3r752eOks" role="39821P">
+            <ref role="15jnDb" node="D3r752eOkm" />
           </node>
           <node concept="398223" id="3wRozBgeTul" role="39821P">
             <node concept="398223" id="1gByoHFa9N5" role="39821P">
@@ -40633,39 +40653,12 @@
             </node>
           </node>
           <node concept="398223" id="7cUtD_p0xH$" role="39821P">
+            <node concept="15jnD9" id="D3r750uT0B" role="39821P">
+              <ref role="15jnDb" node="3v25z8AbNpM" resolve="unix.x64.tar.gz" />
+            </node>
             <node concept="3_J27D" id="7cUtD_p0xH_" role="Nbhlr">
               <node concept="3Mxwew" id="7cUtD_p0xHA" role="3MwsjC">
                 <property role="3MwjfP" value="plugins" />
-              </node>
-            </node>
-            <node concept="3ygNvl" id="19525Nxp4QN" role="39821P">
-              <ref role="3ygNvj" node="6WWoVOy5TCV" resolve="plugins" />
-              <node concept="3LWZYx" id="19525Nxp4QO" role="1juEy9">
-                <property role="3LWZYw" value="**/*" />
-              </node>
-              <node concept="3LWZYq" id="19525Nxp4QP" role="1juEy9">
-                <property role="3LWZYl" value="**/jcef/cef_server" />
-              </node>
-              <node concept="3LWZYq" id="19525Nxp50Q" role="1juEy9">
-                <property role="3LWZYl" value="**/jcef/chrome_sandbox" />
-              </node>
-              <node concept="3LWZYq" id="19525Nxp56D" role="1juEy9">
-                <property role="3LWZYl" value="**/jcef/jcef_helper" />
-              </node>
-            </node>
-            <node concept="yKbIv" id="19525Nxp4QQ" role="39821P">
-              <property role="yKbIr" value="755" />
-              <node concept="3ygNvl" id="19525Nxp4QR" role="39821P">
-                <ref role="3ygNvj" node="6WWoVOy5TCV" resolve="plugins" />
-                <node concept="3LWZYx" id="19525Nxp4QS" role="1juEy9">
-                  <property role="3LWZYw" value="**/jcef/cef_server" />
-                </node>
-                <node concept="3LWZYx" id="19525Nxp5eK" role="1juEy9">
-                  <property role="3LWZYw" value="**/jcef/chrome_sandbox" />
-                </node>
-                <node concept="3LWZYx" id="19525Nxp5h5" role="1juEy9">
-                  <property role="3LWZYw" value="**/jcef/jcef_helper" />
-                </node>
               </node>
             </node>
           </node>
@@ -41143,11 +41136,8 @@
             </node>
           </node>
           <node concept="398223" id="7cUtD_p06WO" role="39821P">
-            <node concept="3ygNvl" id="19525Nxp4B$" role="39821P">
-              <ref role="3ygNvj" node="6WWoVOy5TDA" resolve="plugins" />
-              <node concept="3LWZYx" id="19525Nxp4B_" role="1juEy9">
-                <property role="3LWZYw" value="**/*" />
-              </node>
+            <node concept="3ygNvl" id="D3r750a0bA" role="39821P">
+              <ref role="3ygNvj" node="3v25z8AbNpS" resolve="win.x64.tar.gz" />
             </node>
             <node concept="3_J27D" id="7cUtD_p06WP" role="Nbhlr">
               <node concept="3Mxwew" id="7cUtD_p06WQ" role="3MwsjC">
@@ -41639,7 +41629,7 @@
                 </node>
               </node>
               <node concept="3ygNvl" id="19525Nxp4Ja" role="39821P">
-                <ref role="3ygNvj" node="6WWoVOy5TBF" resolve="plugins" />
+                <ref role="3ygNvj" node="3v25z8AbNpG" resolve="mac.x64.tar.gz" />
                 <node concept="3LWZYx" id="19525Nxp4Jb" role="1juEy9">
                   <property role="3LWZYw" value="**/*" />
                 </node>
@@ -41650,7 +41640,7 @@
               <node concept="yKbIv" id="19525Nxp4Jd" role="39821P">
                 <property role="yKbIr" value="755" />
                 <node concept="3ygNvl" id="19525Nxp4Je" role="39821P">
-                  <ref role="3ygNvj" node="6WWoVOy5TBF" resolve="plugins" />
+                  <ref role="3ygNvj" node="3v25z8AbNpG" resolve="mac.x64.tar.gz" />
                   <node concept="3LWZYx" id="19525Nxp4Jf" role="1juEy9">
                     <property role="3LWZYw" value="**/MacOS/*" />
                   </node>
@@ -42155,8 +42145,13 @@
               </node>
             </node>
             <node concept="398223" id="7cUtD_p06Di" role="39821P">
+              <node concept="3_J27D" id="7cUtD_p06Dk" role="Nbhlr">
+                <node concept="3Mxwew" id="7cUtD_p06Dm" role="3MwsjC">
+                  <property role="3MwjfP" value="plugins" />
+                </node>
+              </node>
               <node concept="3ygNvl" id="19525NwO2J9" role="39821P">
-                <ref role="3ygNvj" node="6WWoVOy5T_T" resolve="plugins" />
+                <ref role="3ygNvj" node="3v25z8AbNpJ" resolve="mac.aarch64.tar.gz" />
                 <node concept="3LWZYx" id="19525NwO2Ja" role="1juEy9">
                   <property role="3LWZYw" value="**/*" />
                 </node>
@@ -42167,15 +42162,10 @@
               <node concept="yKbIv" id="19525NwO2$D" role="39821P">
                 <property role="yKbIr" value="755" />
                 <node concept="3ygNvl" id="6WWoVOxNyPN" role="39821P">
-                  <ref role="3ygNvj" node="6WWoVOy5T_T" resolve="plugins" />
+                  <ref role="3ygNvj" node="3v25z8AbNpJ" resolve="mac.aarch64.tar.gz" />
                   <node concept="3LWZYx" id="6WWoVOxNySI" role="1juEy9">
                     <property role="3LWZYw" value="**/MacOS/*" />
                   </node>
-                </node>
-              </node>
-              <node concept="3_J27D" id="7cUtD_p06Dk" role="Nbhlr">
-                <node concept="3Mxwew" id="7cUtD_p06Dm" role="3MwsjC">
-                  <property role="3MwjfP" value="plugins" />
                 </node>
               </node>
             </node>
@@ -42325,7 +42315,7 @@
               </node>
             </node>
             <node concept="15jnD9" id="2Tk_e4rwj70" role="39821P">
-              <ref role="15jnDb" node="31DSnetlgg6" />
+              <ref role="15jnDb" node="31DSnetlgg6" resolve="jbr-osx-x64.tar.gz" />
             </node>
             <node concept="398223" id="6c6sXSd3bbX" role="39821P">
               <node concept="3_J27D" id="6c6sXSd3bbY" role="Nbhlr">
@@ -42840,7 +42830,7 @@
               </node>
             </node>
             <node concept="15jnD9" id="2Tk_e4rwj71" role="39821P">
-              <ref role="15jnDb" node="31DSnetlgjv" />
+              <ref role="15jnDb" node="31DSnetlgjv" resolve="jbr-osx-aarch64.tar.gz" />
             </node>
             <node concept="398223" id="6c6sXSd3beR" role="39821P">
               <node concept="3_J27D" id="6c6sXSd3beS" role="Nbhlr">
@@ -64176,6 +64166,23 @@
         <node concept="398223" id="31DSnetlgh5" role="39821P">
           <node concept="3_J27D" id="31DSnetlgh6" role="Nbhlr">
             <node concept="3Mxwew" id="31DSnetlgh9" role="3MwsjC">
+              <property role="3MwjfP" value="jbr" />
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="1tmT9g" id="D3r752eOkm" role="39821P">
+        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
+        <property role="TrG5h" value="jbr-linux-x64.tar.gz" />
+        <node concept="3_J27D" id="D3r752eOkn" role="Nbhlr">
+          <node concept="3Mxwew" id="D3r752eOko" role="3MwsjC">
+            <property role="3MwjfP" value="jbr-linux-x64.tar.gz" />
+            <property role="TrG5h" value="jbr-linux-x64.tar.gz" />
+          </node>
+        </node>
+        <node concept="398223" id="D3r752eOkp" role="39821P">
+          <node concept="3_J27D" id="D3r752eOkq" role="Nbhlr">
+            <node concept="3Mxwew" id="D3r752eOkr" role="3MwsjC">
               <property role="3MwjfP" value="jbr" />
             </node>
           </node>

@@ -197,9 +197,11 @@
       <zipfileset dir="${basedir}/lib/pty4j/darwin" prefix="MPS ${mpsBootstrapCore.version}/lib/pty4j/x86-64" />
       <zipfileset dir="${basedir}/lib/pty4j/linux/x86-64" prefix="MPS ${mpsBootstrapCore.version}/lib/pty4j/x86-64" />
       <zipfileset dir="${basedir}/lib/pty4j/win/x86-64" prefix="MPS ${mpsBootstrapCore.version}/lib/pty4j/x86-64" />
-      <zipfileset dir="${artifacts.overlay}/__overlay__/unix.x64/plugins" prefix="MPS ${mpsBootstrapCore.version}/plugins">
-        <include name="**/*" />
-      </zipfileset>
+      <zipfileset dir="${build.tmp}/deps/unix.x64.tar.gz1" prefix="MPS ${mpsBootstrapCore.version}/plugins" />
+      <zipfileset file="${artifacts.overlay}/__overlay__/mac.x64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
+      <zipfileset file="${artifacts.overlay}/__overlay__/mac.aarch64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
+      <zipfileset file="${artifacts.overlay}/__overlay__/win.x64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
+      <zipfileset file="${artifacts.overlay}/__overlay__/unix.x64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f755" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7551" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/win" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7552" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/win" />
@@ -274,6 +276,11 @@
     </copy>
     <tar destfile="${build.layout}/${mps.build.number}-linux.tar.gz" compression="gzip" longfile="gnu">
       <tarfileset dir="${artifacts.mps}" prefix="MPS ${mpsBootstrapCore.version}" />
+      <tarfileset prefix="MPS ${mpsBootstrapCore.version}">
+        <gzipresource>
+          <file file="${artifacts.resources}/openJDK/jbr-linux-x64.tar.gz" />
+        </gzipresource>
+      </tarfileset>
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/icudtl.dat" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-linux-x64.so" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/jna/linux-x86-64/libjnidispatch.so" prefix="MPS ${mpsBootstrapCore.version}/lib/jna" />
@@ -281,16 +288,10 @@
       <tarfileset file="${basedir}/bin/linux/amd64/libdbm.so" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <tarfileset file="${basedir}/bin/linux/amd64/fsnotifier" prefix="MPS ${mpsBootstrapCore.version}/bin" filemode="755" />
       <tarfileset file="${basedir}/bin/linux/amd64/restarter" prefix="MPS ${mpsBootstrapCore.version}/bin" filemode="755" />
-      <tarfileset dir="${artifacts.overlay}/__overlay__/unix.x64/plugins" prefix="MPS ${mpsBootstrapCore.version}/plugins">
-        <include name="**/*" />
-        <exclude name="**/jcef/cef_server" />
-        <exclude name="**/jcef/chrome_sandbox" />
-        <exclude name="**/jcef/jcef_helper" />
-      </tarfileset>
-      <tarfileset dir="${artifacts.overlay}/__overlay__/unix.x64/plugins" prefix="MPS ${mpsBootstrapCore.version}/plugins" filemode="755">
-        <include name="**/jcef/cef_server" />
-        <include name="**/jcef/chrome_sandbox" />
-        <include name="**/jcef/jcef_helper" />
+      <tarfileset prefix="MPS ${mpsBootstrapCore.version}/plugins">
+        <gzipresource>
+          <file file="${artifacts.overlay}/__overlay__/unix.x64.tar.gz" />
+        </gzipresource>
       </tarfileset>
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux.tar.gz_f755" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux.tar.gz_f7551" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
@@ -374,9 +375,7 @@
       <zipfileset file="${basedir}/lib/jna/win32-x86-64/jnidispatch.dll" prefix="MPS ${mpsBootstrapCore.version}/lib/jna" />
       <zipfileset dir="${basedir}/lib/pty4j/win/x86-64" prefix="MPS ${mpsBootstrapCore.version}/lib/pty4j/win/x86-64" />
       <zipfileset dir="${build.tmp}/deps/jbr-windows-x64.tar.gz1/jbr" prefix="MPS ${mpsBootstrapCore.version}/jbr" />
-      <zipfileset dir="${artifacts.overlay}/__overlay__/win.x64/plugins" prefix="MPS ${mpsBootstrapCore.version}/plugins">
-        <include name="**/*" />
-      </zipfileset>
+      <zipfileset dir="${build.tmp}/deps/win.x64.tar.gz1" prefix="MPS ${mpsBootstrapCore.version}/plugins" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-windows.zip_f755" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-windows.zip_f7551" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <fileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-windows.zip" />
@@ -460,11 +459,11 @@
       <zipfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-macos-x64.dylib" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
       <zipfileset file="${basedir}/lib/jna/darwin-x86-64/libjnidispatch.jnilib" prefix="MPS.app/Contents/lib/jna" />
       <zipfileset file="${basedir}/lib/pty4j/darwin/libpty.dylib" prefix="MPS.app/Contents/lib/pty4j/darwin" />
-      <zipfileset dir="${artifacts.overlay}/__overlay__/mac.x64/plugins" prefix="MPS.app/Contents/plugins">
+      <zipfileset dir="${build.tmp}/deps/mac.x64.tar.gz1" prefix="MPS.app/Contents/plugins">
         <include name="**/*" />
         <exclude name="**/MacOS/*" />
       </zipfileset>
-      <zipfileset dir="${artifacts.overlay}/__overlay__/mac.x64/plugins" prefix="MPS.app/Contents/plugins" filemode="755">
+      <zipfileset dir="${build.tmp}/deps/mac.x64.tar.gz1" prefix="MPS.app/Contents/plugins" filemode="755">
         <include name="**/MacOS/*" />
       </zipfileset>
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.zip_f755" filemode="755" prefix="MPS.app/Contents/MacOS" />
@@ -549,11 +548,11 @@
       <zipfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-macos-arm64.dylib" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
       <zipfileset file="${basedir}/lib/jna/darwin-aarch64/libjnidispatch.jnilib" prefix="MPS.app/Contents/lib/jna" />
       <zipfileset file="${basedir}/lib/pty4j/darwin/libpty.dylib" prefix="MPS.app/Contents/lib/pty4j/darwin" />
-      <zipfileset dir="${artifacts.overlay}/__overlay__/mac.aarch64/plugins" prefix="MPS.app/Contents/plugins">
+      <zipfileset dir="${build.tmp}/deps/mac.aarch64.tar.gz1" prefix="MPS.app/Contents/plugins">
         <include name="**/*" />
         <exclude name="**/MacOS/*" />
       </zipfileset>
-      <zipfileset dir="${artifacts.overlay}/__overlay__/mac.aarch64/plugins" prefix="MPS.app/Contents/plugins" filemode="755">
+      <zipfileset dir="${build.tmp}/deps/mac.aarch64.tar.gz1" prefix="MPS.app/Contents/plugins" filemode="755">
         <include name="**/MacOS/*" />
       </zipfileset>
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.zip_f755" filemode="755" prefix="MPS.app/Contents/MacOS" />
@@ -783,8 +782,16 @@
   </target>
   
   <target name="fetchDependencies">
+    <mkdir dir="${build.tmp}/deps/unix.x64.tar.gz1" />
+    <untar src="${artifacts.overlay}/__overlay__/unix.x64.tar.gz" dest="${build.tmp}/deps/unix.x64.tar.gz1" compression="gzip" />
     <mkdir dir="${build.tmp}/deps/jbr-windows-x64.tar.gz1" />
     <untar src="${artifacts.resources}/openJDK/jbr-windows-x64.tar.gz" dest="${build.tmp}/deps/jbr-windows-x64.tar.gz1" compression="gzip" />
+    <mkdir dir="${build.tmp}/deps/win.x64.tar.gz1" />
+    <untar src="${artifacts.overlay}/__overlay__/win.x64.tar.gz" dest="${build.tmp}/deps/win.x64.tar.gz1" compression="gzip" />
+    <mkdir dir="${build.tmp}/deps/mac.x64.tar.gz1" />
+    <untar src="${artifacts.overlay}/__overlay__/mac.x64.tar.gz" dest="${build.tmp}/deps/mac.x64.tar.gz1" compression="gzip" />
+    <mkdir dir="${build.tmp}/deps/mac.aarch64.tar.gz1" />
+    <untar src="${artifacts.overlay}/__overlay__/mac.aarch64.tar.gz" dest="${build.tmp}/deps/mac.aarch64.tar.gz1" compression="gzip" />
   </target>
   
   <target name="build" depends="assemble" />
