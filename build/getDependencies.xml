@@ -307,9 +307,6 @@
     <antcall target="unzip-platform">
       <param name="platform.zip.file" value="${idea.platform.provided.filename}"/>
     </antcall>
-    <antcall target="unzip-platform-overlay">
-      <param name="platform.zip.file" value="${idea.platform.provided.filename}"/>
-    </antcall>
   </target>
 
   <target name="check-provided-platform" if="${platform.provided}">
@@ -336,9 +333,6 @@
     <echo message="Platform will be downloaded"/>
     <antcall target="download-ivy"/>
     <antcall target="unzip-platform">
-      <param name="platform.zip.file" value="mps-platform.tar.gz"/>
-    </antcall>
-    <antcall target="unzip-platform-overlay">
       <param name="platform.zip.file" value="mps-platform.tar.gz"/>
     </antcall>
   </target>
@@ -456,27 +450,7 @@
     <chmod file="${basedir}/../bin/win/WinProcessListHelper.exe" perm="755"/>
   </target>
 
-  <target name="unzip-platform-overlay" description="Unpacks mps-platform.zip!/__overlay__" if="${unzip.overlay}">
-    <mkdir dir="${resources}"/>
-    <condition property="use.native.tar" value="true" else="false">
-      <or>
-        <os family="unix"/>
-        <os family="mac"/>
-      </or>
-    </condition>
-    <antcall target="unzip-platform-overlay-native">
-      <param name="unzip.dest" value="${resources}"/>
-      <param name="unzip.transform" value=",,,"/>
-      <param name="unzip.wildcard" value="__overlay__/**"/>
-    </antcall>
-    <antcall target="unzip-platform-overlay-other">
-      <param name="unzip.dest" value="${resources}"/>
-      <param name="unzip.mapper.from" value="*"/>
-      <param name="unzip.wildcard" value="__overlay__/**"/>
-    </antcall>
-  </target>
-
-  <target name="prepare-platform-overlay-tars" depends="check-platform" if="${unzip.overlay}" unless="${idea.platform.local.build}">
+  <target name="prepare-platform-overlay-tars" depends="check-platform" if="${prepare.overlay}" unless="${idea.platform.local.build}">
     <condition property="overlay.platform.archive" value="${idea.platform.provided.filename}" else="mps-platform.tar.gz">
       <istrue value="${platform.provided}"/>
     </condition>

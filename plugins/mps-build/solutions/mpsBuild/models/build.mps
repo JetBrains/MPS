@@ -40291,7 +40291,7 @@
             <ref role="3ygNvj" node="3IKDaVZmzS8" />
           </node>
           <node concept="15jnD9" id="D3r752eOks" role="39821P">
-            <ref role="15jnDb" node="D3r752eOkm" />
+            <ref role="15jnDb" node="D3r752eOkm" resolve="jbr-linux-x64.tar.gz" />
           </node>
           <node concept="398223" id="3wRozBgeTul" role="39821P">
             <node concept="398223" id="1gByoHFa9N5" role="39821P">
@@ -74018,90 +74018,6 @@
       <node concept="3_J27D" id="6WWoVOxxbR6" role="Nbhlr">
         <node concept="3Mxwew" id="6WWoVOxxbRG" role="3MwsjC">
           <property role="3MwjfP" value="__overlay__" />
-        </node>
-      </node>
-      <node concept="398223" id="6WWoVOxxc0X" role="39821P">
-        <node concept="3_J27D" id="6WWoVOxxc0Y" role="Nbhlr">
-          <node concept="3Mxwew" id="6WWoVOxxc1$" role="3MwsjC">
-            <property role="3MwjfP" value="mac.aarch64" />
-          </node>
-        </node>
-        <node concept="398223" id="6WWoVOy5T_T" role="39821P">
-          <node concept="3_J27D" id="6WWoVOy5T_U" role="Nbhlr">
-            <node concept="3Mxwew" id="6WWoVOy5T_V" role="3MwsjC">
-              <property role="3MwjfP" value="plugins" />
-            </node>
-          </node>
-        </node>
-      </node>
-      <node concept="398223" id="6WWoVOxxc2a" role="39821P">
-        <node concept="398223" id="6WWoVOy5TBF" role="39821P">
-          <node concept="3_J27D" id="6WWoVOy5TBG" role="Nbhlr">
-            <node concept="3Mxwew" id="6WWoVOy5TBH" role="3MwsjC">
-              <property role="3MwjfP" value="plugins" />
-            </node>
-          </node>
-        </node>
-        <node concept="3_J27D" id="6WWoVOxxc2b" role="Nbhlr">
-          <node concept="3Mxwew" id="6WWoVOxxc2c" role="3MwsjC">
-            <property role="3MwjfP" value="mac.x64" />
-          </node>
-        </node>
-      </node>
-      <node concept="398223" id="6WWoVOxxc4x" role="39821P">
-        <node concept="398223" id="6WWoVOy5TCj" role="39821P">
-          <node concept="3_J27D" id="6WWoVOy5TCk" role="Nbhlr">
-            <node concept="3Mxwew" id="6WWoVOy5TCl" role="3MwsjC">
-              <property role="3MwjfP" value="plugins" />
-            </node>
-          </node>
-        </node>
-        <node concept="3_J27D" id="6WWoVOxxc4y" role="Nbhlr">
-          <node concept="3Mxwew" id="6WWoVOxxc4z" role="3MwsjC">
-            <property role="3MwjfP" value="unix.aarch64" />
-          </node>
-        </node>
-      </node>
-      <node concept="398223" id="6WWoVOxxc6k" role="39821P">
-        <node concept="398223" id="6WWoVOy5TCV" role="39821P">
-          <node concept="3_J27D" id="6WWoVOy5TCW" role="Nbhlr">
-            <node concept="3Mxwew" id="6WWoVOy5TCX" role="3MwsjC">
-              <property role="3MwjfP" value="plugins" />
-            </node>
-          </node>
-        </node>
-        <node concept="3_J27D" id="6WWoVOxxc6l" role="Nbhlr">
-          <node concept="3Mxwew" id="6WWoVOxxc6m" role="3MwsjC">
-            <property role="3MwjfP" value="unix.x64" />
-          </node>
-        </node>
-      </node>
-      <node concept="398223" id="6WWoVOxxc8G" role="39821P">
-        <node concept="398223" id="6WWoVOy5TCY" role="39821P">
-          <node concept="3_J27D" id="6WWoVOy5TCZ" role="Nbhlr">
-            <node concept="3Mxwew" id="6WWoVOy5TD0" role="3MwsjC">
-              <property role="3MwjfP" value="plugins" />
-            </node>
-          </node>
-        </node>
-        <node concept="3_J27D" id="6WWoVOxxc8H" role="Nbhlr">
-          <node concept="3Mxwew" id="6WWoVOxxc8I" role="3MwsjC">
-            <property role="3MwjfP" value="win.aarch64" />
-          </node>
-        </node>
-      </node>
-      <node concept="398223" id="6WWoVOxxcav" role="39821P">
-        <node concept="398223" id="6WWoVOy5TDA" role="39821P">
-          <node concept="3_J27D" id="6WWoVOy5TDB" role="Nbhlr">
-            <node concept="3Mxwew" id="6WWoVOy5TDC" role="3MwsjC">
-              <property role="3MwjfP" value="plugins" />
-            </node>
-          </node>
-        </node>
-        <node concept="3_J27D" id="6WWoVOxxcaw" role="Nbhlr">
-          <node concept="3Mxwew" id="6WWoVOxxcax" role="3MwsjC">
-            <property role="3MwjfP" value="win.x64" />
-          </node>
         </node>
       </node>
       <node concept="1tmT9g" id="3v25z8AbNpG" role="39821P">
