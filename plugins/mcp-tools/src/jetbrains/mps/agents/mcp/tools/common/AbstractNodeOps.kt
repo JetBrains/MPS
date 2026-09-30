@@ -153,8 +153,8 @@ abstract class AbstractNodeOps : AbstractOps() {
                 "'nodes' at $path must be a JSON array of node blueprints, but got ${jsonKind(element)}."
             }
         }
-        val fields = listOf(field) + BLUEPRINT_LIST_FIELDS.keys.filter { other ->
-            other != field && owner.get(other)?.let { !it.isJsonArray } == true
+        val fields = BLUEPRINT_LIST_FIELDS.keys.filter { other ->
+            other == field || owner.get(other)?.let { !it.isJsonArray } == true
         }
         // Shrink the echo until the message fits; the shape sentence alone is what matters most.
         for (maxEntries in intArrayOf(5, 3, 1, 0)) {

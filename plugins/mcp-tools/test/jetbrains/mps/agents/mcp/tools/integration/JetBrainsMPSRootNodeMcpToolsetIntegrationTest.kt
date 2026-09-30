@@ -292,6 +292,32 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `update_root_node_from_json reports a references map before a children map`() {
+        // The update path checks children before references; the rejection still lists the fields in blueprint order.
+        expectOk(runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(
+                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "OrderedMaps" } ] }"""
+            ), dryRun = false)
+        })
+        val rootRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(structureModel.rootNodes.single { it.name == "OrderedMaps" }.reference)
+        }
+        val baseConcept = "r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)/1133920641626"
+        val msg = expectErr(runTool(toolset) {
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(
+                """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "OrderedMaps" } ],
+                     "references": { "extends": "$baseConcept" },
+                     "children": { "propertyDeclaration": [ { "concept": "$propertyDeclarationFqn" } ] } }"""
+            ), dryRun = false)
+        })
+        val references = msg.indexOf("'references' at $ must be an array")
+        val children = msg.indexOf("'children' at $ must be an array")
+        assertTrue(msg, references >= 0 && children >= 0)
+        assertTrue("references must be reported before children: $msg", references < children)
+        assertFalse(msg, msg.contains("'properties' at $"))
+    }
+
+    @Test
     fun `insert_root_node_from_json single object response includes fixReferences info`() {
         // ConceptDeclaration with no references → performFixReferences should report nothing fixed.
         val json = """
