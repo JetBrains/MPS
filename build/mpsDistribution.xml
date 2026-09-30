@@ -559,6 +559,172 @@
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.zip_f755" filemode="755" prefix="MPS.app/Contents/MacOS" />
       <fileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.zip" />
     </zip>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz/MPS.app" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz/MPS.app/Contents" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz/MPS.app/Contents/Resources" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz/MPS.app/Contents/Resources">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/product-info-macos-amd64.json" />
+      <filterchain>
+        <tokenfilter>
+          <replaceregex pattern="\$version\$" replace="${mpsBootstrapCore.version}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$build\$" replace="${mps.build.number}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="&quot;buildNumber&quot;: &quot;MPS-([0-9\.]+)&quot;" replace="&quot;buildNumber&quot;: &quot;\1&quot;" flags="" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$path\.selector\$" replace="MPS${mpsBootstrapCore.version.major}.${mpsBootstrapCore.version.minor}" flags="g" />
+        </tokenfilter>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+      <globmapper from="*" to="product-info.json" />
+    </copy>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz_f755" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz_f755">
+      <fileset file="${basedir}/build/resources/mps-mac-64" />
+      <globmapper from="*" to="mps" />
+    </copy>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz/MPS.app/Contents/bin" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz/MPS.app/Contents/bin">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/mps64.vmoptions" />
+      <filterchain>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+      <regexpmapper from="mps64.vmoptions" to="mps.vmoptions" />
+    </copy>
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz/MPS.app/Contents">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/Info.plist.xml" />
+      <filterchain>
+        <tokenfilter>
+          <replaceregex pattern="\$version\$" replace="${mpsBootstrapCore.version}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$build\$" replace="${mps.build.number}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.major\$" replace="${mpsBootstrapCore.version.major}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.minor\$" replace="${mpsBootstrapCore.version.minor}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.bugfixNr\$" replace="${mpsBootstrapCore.version.bugfixNr}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.eap\$" replace="${mpsBootstrapCore.version.eap}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$platform\$" replace="x86_64" flags="g" />
+        </tokenfilter>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+      <globmapper from="*" to="Info.plist" />
+    </copy>
+    <tar destfile="${build.layout}/${mps.build.number}-macos.tar.gz" compression="gzip" longfile="gnu">
+      <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
+        <exclude name="build.txt" />
+      </tarfileset>
+      <tarfileset src="${artifacts.overlay}/__overlay__/mac.x64.tar" prefix="MPS.app/Contents" />
+      <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
+      <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
+      <tarfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS.app/Contents/bin" />
+      <tarfileset file="${basedir}/bin/mac/libmacscreenmenu64.dylib" prefix="MPS.app/Contents/bin" />
+      <tarfileset file="${basedir}/bin/mac/amd64/restarter" prefix="MPS.app/Contents/bin" filemode="755" />
+      <tarfileset file="${basedir}/bin/mac/fsnotifier" prefix="MPS.app/Contents/bin" filemode="755" />
+      <tarfileset file="${basedir}/bin/mac/printenv" prefix="MPS.app/Contents/bin" filemode="755" />
+      <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/icudtl.dat" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
+      <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-macos-x64.dylib" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
+      <tarfileset file="${basedir}/lib/jna/darwin-x86-64/libjnidispatch.jnilib" prefix="MPS.app/Contents/lib/jna" />
+      <tarfileset file="${basedir}/lib/pty4j/darwin/libpty.dylib" prefix="MPS.app/Contents/lib/pty4j/darwin" />
+      <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz_f755" filemode="755" prefix="MPS.app/Contents/MacOS" />
+      <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos.tar.gz" />
+    </tar>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz/MPS.app" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz/MPS.app/Contents" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz/MPS.app/Contents/Resources" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz/MPS.app/Contents/Resources">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/product-info-macos-aarch64.json" />
+      <filterchain>
+        <tokenfilter>
+          <replaceregex pattern="\$version\$" replace="${mpsBootstrapCore.version}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$build\$" replace="${mps.build.number}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="&quot;buildNumber&quot;: &quot;MPS-([0-9\.]+)&quot;" replace="&quot;buildNumber&quot;: &quot;\1&quot;" flags="" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$path\.selector\$" replace="MPS${mpsBootstrapCore.version.major}.${mpsBootstrapCore.version.minor}" flags="g" />
+        </tokenfilter>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+      <globmapper from="*" to="product-info.json" />
+    </copy>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz_f755" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz_f755">
+      <fileset file="${basedir}/build/resources/mps-mac-aarch64" />
+      <globmapper from="*" to="mps" />
+    </copy>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz/MPS.app/Contents/bin" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz/MPS.app/Contents/bin">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/mps64.vmoptions" />
+      <filterchain>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+      <regexpmapper from="mps64.vmoptions" to="mps.vmoptions" />
+    </copy>
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz/MPS.app/Contents">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/Info.plist.xml" />
+      <filterchain>
+        <tokenfilter>
+          <replaceregex pattern="\$version\$" replace="${mpsBootstrapCore.version}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$build\$" replace="${mps.build.number}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.major\$" replace="${mpsBootstrapCore.version.major}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.minor\$" replace="${mpsBootstrapCore.version.minor}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.bugfixNr\$" replace="${mpsBootstrapCore.version.bugfixNr}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.eap\$" replace="${mpsBootstrapCore.version.eap}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$platform\$" replace="arm64" flags="g" />
+        </tokenfilter>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+      <globmapper from="*" to="Info.plist" />
+    </copy>
+    <tar destfile="${build.layout}/${mps.build.number}-macos-aarch64.tar.gz" compression="gzip" longfile="gnu">
+      <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
+        <exclude name="build.txt" />
+      </tarfileset>
+      <tarfileset src="${artifacts.overlay}/__overlay__/mac.aarch64.tar" prefix="MPS.app/Contents" />
+      <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
+      <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
+      <tarfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS.app/Contents/bin" />
+      <tarfileset file="${basedir}/bin/mac/libmacscreenmenu64.dylib" prefix="MPS.app/Contents/bin" />
+      <tarfileset file="${basedir}/bin/mac/aarch64/restarter" prefix="MPS.app/Contents/bin" filemode="755" />
+      <tarfileset file="${basedir}/bin/mac/fsnotifier" prefix="MPS.app/Contents/bin" filemode="755" />
+      <tarfileset file="${basedir}/bin/mac/printenv" prefix="MPS.app/Contents/bin" filemode="755" />
+      <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/icudtl.dat" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
+      <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-macos-arm64.dylib" prefix="MPS.app/Contents/lib/skiko-awt-runtime-all" />
+      <tarfileset file="${basedir}/lib/jna/darwin-aarch64/libjnidispatch.jnilib" prefix="MPS.app/Contents/lib/jna" />
+      <tarfileset file="${basedir}/lib/pty4j/darwin/libpty.dylib" prefix="MPS.app/Contents/lib/pty4j/darwin" />
+      <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz_f755" filemode="755" prefix="MPS.app/Contents/MacOS" />
+      <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-macos-aarch64.tar.gz" />
+    </tar>
     <echo file="${build.layout}/build.properties">mps.build.number=${mps.build.number}${line.separator}mps.date=${mps.date}${line.separator}mps.build.vcs.number=${mps.build.vcs.number}${line.separator}mps.teamcity.buildConfName=${mps.teamcity.buildConfName}${line.separator}mps.idea.platform.build.number=${mps.idea.platform.build.number}${line.separator}mps.mps.build.counter=${mps.mps.build.counter}${line.separator}mps.runtimeBuild=${mps.runtimeBuild}${line.separator}mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major}${line.separator}mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor}${line.separator}mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr}${line.separator}mpsBootstrapCore.version.eap=${mpsBootstrapCore.version.eap}${line.separator}mpsBootstrapCore.version=${mpsBootstrapCore.version}</echo>
   </target>
   
