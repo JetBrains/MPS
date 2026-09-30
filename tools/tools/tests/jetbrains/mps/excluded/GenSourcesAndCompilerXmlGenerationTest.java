@@ -174,6 +174,9 @@ public class GenSourcesAndCompilerXmlGenerationTest {
       // this is a test for build language. Needs to be somehow distinguishable as test
       if (isUnder(cp, "/plugins/mps-build/solutions/jetbrains.mps.build.sandbox/samples/")) continue;
 
+      // Ant compiles and runs this file directly in Java source-file mode.
+      if (cp.equals(new File(root, "build/tools/PrepareOverlayTar.java").getCanonicalPath())) continue;
+
       // Models in the plugin project are generated into an excluded source_gen folder
       if (isUnder(cp, "/IdeaPlugin/mps-java/source_gen/")) continue;
       // Test material of IdeaPlugin
