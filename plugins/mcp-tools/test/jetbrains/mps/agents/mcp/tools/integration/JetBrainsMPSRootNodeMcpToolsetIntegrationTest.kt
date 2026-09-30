@@ -48,7 +48,14 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     private val scopeProbe = ScopeProbe()
 
     private val conceptDeclarationFqn = "jetbrains.mps.lang.structure.structure.ConceptDeclaration"
+
     private val propertyDeclarationFqn = "jetbrains.mps.lang.structure.structure.PropertyDeclaration"
+
+    /** The once-per-response rule line a dry run appends after its plain-name warnings (D81). */
+    private val dryRunReferenceRule =
+        "A dry run does not look up reference targets given by name, so every name is listed above, " +
+            "existing and same-batch nodes included. The write resolves names in each role's scope; " +
+            "check fixReferences.stillBroken in its response (or mps_mcp_check_root_node_problems)."
 
     /** A top-level-array blueprint of named `ConceptDeclaration` roots. */
     private fun conceptArrayJson(names: List<String>): String =
@@ -404,10 +411,83 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
         assertEquals(
-            listOf("Dry run at $.references[0]: target 'BaseConcept' did not resolve; " +
-                "production run would create a dynamic reference, but dry-run skips this step."),
+            listOf("Dry run at $.references[0]: target 'BaseConcept' is a name, not looked up.", dryRunReferenceRule),
             obj.getAsJsonArray("warnings")?.map { it.asString },
         )
+    }
+
+    @Test
+    fun `insert_root_node_from_json dryRun explains name targets once however many there are`() {
+        // D81: the per-reference line stays short and the rule is appended once, so a bulk blueprint
+        // with many name targets does not repeat it. A same-batch name is listed like any other.
+        val json = """
+            [
+              { "concept": "$conceptDeclarationFqn",
+                "properties": [ { "name": "name", "value": "RuleOnceA" } ],
+                "references": [ { "role": "extends", "target": "BaseConcept" } ] },
+              { "concept": "$conceptDeclarationFqn",
+                "properties": [ { "name": "name", "value": "RuleOnceB" } ],
+                "references": [ { "role": "extends", "target": "RuleOnceA" } ] }
+            ]
+        """.trimIndent()
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        assertEquals(
+            listOf(
+                "Dry run at $.references[0]: target 'BaseConcept' is a name, not looked up.",
+                "Dry run at $.references[0]: target 'RuleOnceA' is a name, not looked up.",
+                dryRunReferenceRule,
+            ),
+            obj.getAsJsonArray("warnings")?.map { it.asString },
+        )
+    }
+
+    @Test
+    fun `insert_root_node_from_json dryRun flags a dotted target that matches no root as likely broken`() {
+        val json = """
+            { "concept": "$conceptDeclarationFqn",
+              "properties": [ { "name": "name", "value": "DottedNoMatch" } ],
+              "references": [ { "role": "extends", "target": "no.such.Model.NoSuchRoot" } ] }
+        """.trimIndent()
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        assertEquals(
+            listOf("Dry run at $.references[0]: target 'no.such.Model.NoSuchRoot' matches no Model.Root and no root of that name; " +
+                "it will very likely stay broken. Use an r:/i: reference, or Model.Root with the model's long name."),
+            obj.getAsJsonArray("warnings")?.map { it.asString },
+        )
+    }
+
+    @Test
+    fun `insert_root_node_from_json dryRun warns about a stale node id that the real insert leaves broken`() {
+        // D81: a well-formed r: ref that names no node used to pass a dry run silently. Pin both halves:
+        // the dry run warns, and the real insert of the same blueprint reports it stillBroken.
+        val existing = createConceptRoot("StaleIdTarget")
+        val staleRef = existing.substringBeforeLast('/') + "/9187654321098765"
+        val json = """
+            { "concept": "$conceptDeclarationFqn",
+              "properties": [ { "name": "name", "value": "StaleIdOwner" } ],
+              "references": [ { "role": "extends", "target": "$staleRef" } ] }
+        """.trimIndent()
+        val dry = JsonParser.parseString(runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = true)
+        }).asJsonObject
+        assertTrue("expected ok envelope: $dry", dry.get("ok").asBoolean)
+        assertEquals(
+            listOf("Dry run at $.references[0]: target '$staleRef' names no node; the write will leave it broken."),
+            dry.getAsJsonArray("warnings")?.map { it.asString },
+        )
+
+        val data = expectOk(runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
+        })
+        assertEquals("the stale id must be reported broken: $data", 1, data.getAsJsonObject("fixReferences").get("stillBroken").asInt)
     }
 
     @Test
@@ -768,6 +848,27 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `update_root_node_from_json dryRun warns about a stale node id`() {
+        // Top-level references are staged in updateNodeFromBlueprint, not applyReferenceUpdate, so the
+        // stale-pointer branch there needs its own check.
+        val rootRef = createConceptRoot("StaleIdUpdateOwner")
+        val staleRef = rootRef.substringBeforeLast('/') + "/9187654321098766"
+        val json = """
+            { "concept": "$conceptDeclarationFqn",
+              "properties": [ { "name": "name", "value": "StaleIdUpdateOwner" } ],
+              "references": [ { "role": "extends", "target": "$staleRef" } ] }
+        """.trimIndent()
+        val obj = JsonParser.parseString(runTool(toolset) {
+            it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = true)
+        }).asJsonObject
+        assertTrue("expected ok envelope: $obj", obj.get("ok").asBoolean)
+        assertEquals(
+            listOf("Dry run at $.references[0]: target '$staleRef' names no node; the write will leave it broken."),
+            obj.getAsJsonArray("warnings")?.map { it.asString },
+        )
+    }
+
+    @Test
     fun `update_root_node_from_json dryRun warns about a reference a real run would make dynamic`() {
         // Top-level references are staged outside applyReferenceUpdate, so they need their own
         // warning to match the nested children, which go through instantiateNode.
@@ -783,8 +884,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
         assertEquals(
-            listOf("Dry run at $.references[0]: target 'BaseConcept' did not resolve; " +
-                "production run would create a dynamic reference, but dry-run skips this step."),
+            listOf("Dry run at $.references[0]: target 'BaseConcept' is a name, not looked up.", dryRunReferenceRule),
             obj.getAsJsonArray("warnings")?.map { it.asString },
         )
     }

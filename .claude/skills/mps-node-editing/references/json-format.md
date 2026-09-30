@@ -63,8 +63,11 @@ A `"warnings"` array may appear at the top level alongside `data` when the stagi
 {
   "ok": true,
   "data": { "dryRun": true, "message": "..." },
-  "warnings": ["Dry run at $.references[0]: target 'SomeName' did not resolve; production run would create a dynamic reference, but dry-run skips this step."]
+  "warnings": [
+    "Dry run at $.references[0]: target 'SomeName' is a name, not looked up.",
+    "A dry run does not look up reference targets given by name, so every name is listed above, existing and same-batch nodes included. The write resolves names in each role's scope; check fixReferences.stillBroken in its response (or mps_mcp_check_root_node_problems)."
+  ]
 }
 ```
 
-Treat a non-empty `warnings` list as a signal to either fix the reference target before writing, or accept that the write will create a dynamic (potentially broken) reference. See `references/reference-formats.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin for the full envelope shape.
+A name warning is not a defect: a dry run lists every name target, existing ones included. Do not rewrite names because of it. Fix only a "names no node" or "matches no Model.Root" warning, and check `fixReferences.stillBroken` after the real write. The rule and the full envelope shape are under "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.

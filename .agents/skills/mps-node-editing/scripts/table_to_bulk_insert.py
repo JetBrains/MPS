@@ -21,9 +21,10 @@ below 10 roots): it counts the references that stayed unresolved, and --verify (
 them.
 
 A `dryRun=true` call first is optional. It catches a wrong concept, role or property without
-writing, but it cannot resolve a name that only the same batch defines: those roots do not
-exist yet, so it warns "did not resolve" once per such reference, and the real insert
-resolves them. Ignore the warnings that name a row of the table.
+writing, but it never looks up a reference target given by name: it warns "is a name, not
+looked up" once per such reference, whether a row of the table or an existing root defines it,
+and the real insert resolves them. Ignore those warnings; act only on "names no node" or
+"matches no Model.Root".
 
 Mapping spec (JSON). Every section except `concept` is optional; an empty cell is skipped, so
 the property keeps its MPS default instead of being written as an empty value:

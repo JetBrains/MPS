@@ -138,7 +138,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                     return@executeShortCommandOnEdt okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for console command insertion")
-                    }, warnings = warnings)
+                    }, warnings = withDryRunReferenceRule(warnings))
                 }
 
                 // DialogConsoleTab.insertCommand adds the command's imports to the console model

@@ -59,7 +59,7 @@ Where a documented null means something, how you express it depends on where it 
 1. **Identify** the target node (existing) or parent model (new root).
 2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
 3. **Author the JSON** following the unified blueprint format.
-4. **Insert** with `dryRun: true` first if the blueprint is large. Check the response: an empty `warnings` array means staging was clean. A "did not resolve" warning means the target is not in the model yet, and the production write will store a dynamic reference for it. That is expected for a name defined by another root of the same batch, which the real insert resolves, so a dry run adds nothing for a batch whose references point at each other; check `fixReferences.stillBroken` after the real insert instead. Any other listed target will stay broken, so resolve it first.
+4. **Insert.** A `dryRun: true` call checks concepts, roles, properties and assignability, but it never looks up a reference target given by name: it warns "is a name, not looked up" for every one, including names that exist. Do not rewrite names or dry-run again because of those warnings. Fix only the "names no node" and "matches no Model.Root" warnings, and after the real write check `fixReferences.stillBroken`. The full rule is under "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 5. **Validate** with `mps_mcp_check_root_node_problems`. Reported problems may carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.
 6. **Repair** broken refs with `mps_mcp_alter_nodes FIX_REFERENCES` if validation surfaces resolvable-but-unresolved targets.
 
@@ -163,9 +163,9 @@ python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json
 ```
 
 Then `mps_mcp_insert_root_node_from_json(modelReference=…, json="<that path>")` and read
-`fixReferences.stillBroken` in its response. Skip the `dryRun=true` call, or ignore its "did
-not resolve" warnings for names the table itself defines: a dry run cannot see roots of the
-same batch, and the real insert resolves them.
+`fixReferences.stillBroken` in its response. Skip the `dryRun=true` call, or ignore its "is a
+name, not looked up" warnings: a dry run never looks up name targets, whether the table defines
+them or they already exist, and the real insert resolves them.
 
 To check the inserted model against the table, dump it once and run the same script with
 `--verify`. That replaces a hand-written comparison script:

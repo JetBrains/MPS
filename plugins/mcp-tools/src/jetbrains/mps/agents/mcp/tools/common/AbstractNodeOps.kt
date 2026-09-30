@@ -444,20 +444,35 @@ abstract class AbstractNodeOps : AbstractOps() {
             if (!dryRun || assignResolvedReferenceOnDryRun) {
                 ownerNode.setReference(link, targetRef)
             }
+            // A persistent ref that parses but names no node: the write stores a pointer to nothing.
+            if (dryRun) return dryRunReferenceWarning(errorPath, targetRefStr)
         } else if (!dryRun) {
             ownerNode.setReference(link, ResolveInfo.of(targetRefStr))
         } else {
-            return dryRunDynamicReferenceWarning(errorPath, targetRefStr)
+            return dryRunReferenceWarning(errorPath, targetRefStr)
         }
         return null
     }
 
-    // A production run stores an unresolved target as a dynamic reference and leaves it to the
-    // fix-references pass; a dry run does neither, so it says so through the caller's warnings
-    // channel instead of reporting a plain success.
-    private fun dryRunDynamicReferenceWarning(errorPath: String, targetRefStr: String): String =
-        "Dry run at $errorPath: target '$targetRefStr' did not resolve; " +
-            "production run would create a dynamic reference, but dry-run skips this step."
+    // A dry run resolves only persistent targets (see resolveReferenceTarget). A plain name is never
+    // looked up, so it is listed whether or not it exists; the write stores it as a dynamic reference
+    // that the fix-references pass resolves in the role's scope. The per-reference line stays short;
+    // withDryRunReferenceRule adds the explanation once per response (D81).
+    private fun dryRunReferenceWarning(errorPath: String, targetRefStr: String): String = when {
+        targetRefStr.startsWith("r:") || targetRefStr.startsWith("i:") ->
+            "Dry run at $errorPath: target '$targetRefStr' names no node; the write will leave it broken."
+        targetRefStr.contains(".") ->
+            "Dry run at $errorPath: target '$targetRefStr' matches no Model.Root and no root of that name; " +
+                "it will very likely stay broken. Use an r:/i: reference, or Model.Root with the model's long name."
+        else -> "Dry run at $errorPath: target '$targetRefStr'$NAME_NOT_LOOKED_UP"
+    }
+
+    /**
+     * Appends the dry-run reference rule once when [warnings] holds at least one plain-name warning,
+     * so a blueprint with many name targets does not repeat the explanation per reference.
+     */
+    protected fun withDryRunReferenceRule(warnings: List<String>): List<String> =
+        if (warnings.any { it.endsWith(NAME_NOT_LOOKED_UP) }) warnings + DRY_RUN_REFERENCE_RULE else warnings
 
     private fun resolveReferenceTarget(mpsProject: MPSProject?, repository: SRepository, targetRefStr: String, errorPath: String): SNodeReference? {
         failIfFeatureIdIsUsed(targetRefStr, errorPath)
@@ -724,8 +739,8 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val targetNode = targetRef?.resolve(model.repository)
                 if (targetNode != null) {
                     validateReferenceTarget(targetNode, link, sConcept.name, roleName, "$jsonPath.references[$index]")
-                } else if (dryRun && targetRef == null) {
-                    warnings?.add(dryRunDynamicReferenceWarning("$jsonPath.references[$index]", targetRefStr))
+                } else if (dryRun) {
+                    warnings?.add(dryRunReferenceWarning("$jsonPath.references[$index]", targetRefStr))
                 }
 
                 stagedReferences += StagedReference(
@@ -844,7 +859,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node replacement")
-            }, warnings = nodeWarnings)
+            }, warnings = withDryRunReferenceRule(nodeWarnings))
         }
 
         parent.insertChildBefore(role, newChild, childNode)
@@ -971,7 +986,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node addition")
-            }, warnings = nodeWarnings)
+            }, warnings = withDryRunReferenceRule(nodeWarnings))
         }
 
         when (insertIndex) {
@@ -1873,6 +1888,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         private const val CONSOLE_PLUGIN_ID = "jetbrains.mps.console"
         private const val CONSOLE_TOOL_FQN = "jetbrains.mps.console.plugin.ConsoleTool_Tool"
         private const val PROJECT_PLUGIN_MANAGER_FQN = "jetbrains.mps.plugins.projectplugins.ProjectPluginManager"
+
+        /** Suffix of the per-reference dry-run warning for a plain-name target; [DRY_RUN_REFERENCE_RULE] keys on it. */
+        private const val NAME_NOT_LOOKED_UP = " is a name, not looked up."
+        private const val DRY_RUN_REFERENCE_RULE =
+            "A dry run does not look up reference targets given by name, so every name is listed above, " +
+                "existing and same-batch nodes included. The write resolves names in each role's scope; " +
+                "check fixReferences.stillBroken in its response (or mps_mcp_check_root_node_problems)."
 
         /** `SPropertyId` / `SContainmentLinkId` / `SReferenceLinkId.serialize()`: language UUID, concept id, feature id. */
         private val FEATURE_ID_SHAPE = Regex("([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(-?\\d+)/(-?\\d+)")

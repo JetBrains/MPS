@@ -7,7 +7,7 @@
 - Include the IDs of these nodes in the JSON blueprint wherever they fit the role of target nodes.
 - For nodes that are created as part of the same bulk operation, you can use their **name** as a placeholder in the `target` field. The tool will automatically resolve these "local" references once all nodes are created.
 - If automatic resolution is not possible or desired, leave the target references empty and set them later with `mps_mcp_update_node` (`SET`/`REFERENCE`) once you have discovered the IDs of the newly created nodes.
-- **A `dryRun: true` call cannot see those names.** It does not attach the batch, so it warns "target '<name>' did not resolve" once for every reference to a node of the same batch, and the real insert then resolves them. Those warnings are expected, not errors. For a batch whose references point at each other, skip the dry run and read `fixReferences.stillBroken` after the real insert.
+- **A `dryRun: true` call never looks up names.** It warns "target '<name>' is a name, not looked up" once for every name target, whether it belongs to the same batch or already exists, and the real insert then resolves them. Those warnings are expected, not errors. For a batch whose references are given by name, skip the dry run and read `fixReferences.stillBroken` after the real insert (rule: `references/reference-formats/response-envelope.md` ("Dry-run response")).
 
 ### From a table (CSV or JSON rows)
 
