@@ -1,0 +1,59 @@
+{
+  "ok": true,
+  "data": {
+    "modules": [
+      {
+        "name": "com.example.courses",
+        "reference": "7c4a1f36-8b2d-4e51-9f0a-5d6c3e8b17a2(com.example.courses)",
+        "virtualFolder": "",
+        "readOnly": false,
+        "kind": "Language",
+        "languageVersion": 0,
+        "facets": [
+          "java"
+        ],
+        "loadExtensions": "NONE",
+        "generators": [],
+        "models": [
+          {
+            "name": "com.example.courses.structure",
+            "reference": "r:5e1d2c90-3a7b-4f68-8c14-9b2e6d0a7f35(com.example.courses.structure)",
+            "readOnly": false,
+            "rootNodesCount": 7
+          },
+          {
+            "name": "com.example.courses.editor",
+            "reference": "r:a83f6b21-0c5d-4e97-b2a4-1f7c9d3e6b08(com.example.courses.editor)",
+            "readOnly": false,
+            "rootNodesCount": 4
+          },
+          {
+            "name": "com.example.courses.constraints",
+            "reference": "r:d2c4e7a9-6b13-4f05-9e8d-3a1b5c7f0e62(com.example.courses.constraints)",
+            "readOnly": false,
+            "rootNodesCount": 1
+          }
+        ]
+      },
+      {
+        "name": "com.example.catalog",
+        "reference": "3f8b6d14-2e9a-4c57-a1d3-8b0e5f7c2a96(com.example.catalog)",
+        "virtualFolder": "",
+        "readOnly": false,
+        "kind": "Solution",
+        "facets": [
+          "java"
+        ],
+        "loadExtensions": "NONE",
+        "models": [
+          {
+            "name": "com.example.catalog.samples",
+            "reference": "r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)",
+            "readOnly": false,
+            "rootNodesCount": 12
+          }
+        ]
+      }
+    ]
+  }
+}

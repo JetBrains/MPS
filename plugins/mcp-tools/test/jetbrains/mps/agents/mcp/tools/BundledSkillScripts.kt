@@ -42,6 +42,7 @@ internal object BundledSkillScripts {
         "mps-mcp-workflow/scripts/examples/get_concept_details_courses.json",
         "mps-mcp-workflow/scripts/examples/get_project_structure_model_roots.json",
         "mps-mcp-workflow/scripts/examples/get_project_structure_node_deep.json",
+        "mps-mcp-workflow/scripts/examples/get_project_structure_project_models.json",
         "mps-mcp-workflow/scripts/examples/print_node_deep.json",
         "mps-mcp-workflow/scripts/examples/print_node_shallow.json",
         "mps-node-editing/scripts/examples/courses.csv",

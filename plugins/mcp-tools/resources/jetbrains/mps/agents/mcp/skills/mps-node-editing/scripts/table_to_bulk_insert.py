@@ -374,6 +374,10 @@ def verify(rows, spec, dump_path):
     if mps_dump.dump_kind(dump) == "concept-details":
         raise BadInput("%s is a get_concept_details dump; --verify reads a "
                        "get_project_structure dump of the model" % dump_path)
+    if not mps_dump.has_root_listing(dump):
+        raise BadInput("%s was made without includeRootNodes, so it lists no roots to verify; "
+                       "re-call get_project_structure(startingPoint=<model>, includeNodes=true, nodeDepth=1)"
+                       % dump_path)
     dump_roots = mps_dump.roots(dump)
 
     concept = _short(spec["concept"])

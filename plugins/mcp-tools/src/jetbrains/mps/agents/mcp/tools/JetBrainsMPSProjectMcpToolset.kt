@@ -110,7 +110,7 @@ class JetBrainsMPSProjectMcpToolset(
     suspend fun mps_mcp_get_project_structure(
         @McpDescription("Include non-project modules visible in the shared repository: read-only libraries/stubs and modules from other open MPS projects.") includeStubModules: Boolean = false,
         @McpDescription("Include models within modules.") includeModels: Boolean = false,
-        @McpDescription("Include module/model dependencies and used languages.") includeDependencies: Boolean = false,
+        @McpDescription("Include module/model dependencies and used languages. Leave it off for orientation (which modules and models exist): it adds a dependency block to every module and model.") includeDependencies: Boolean = false,
         @McpDescription("Include root nodes of models.") includeRootNodes: Boolean = false,
         @McpDescription("Include all nodes (full AST), inlined under each root's containment roles. Implies includeRootNodes (and includeModels for module/project dumps). Unbounded unless you pass nodeDepth, so prefer scoping with `startingPoint`, `nodeDetail` and `nodeDepth`, or use `mps_mcp_print_node` (deep=true) for a single root. Warning: can be extremely large.") includeNodes: Boolean = false,
         @McpDescription(

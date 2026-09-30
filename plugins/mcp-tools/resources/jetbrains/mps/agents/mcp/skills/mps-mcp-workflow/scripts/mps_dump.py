@@ -20,13 +20,16 @@ Library (import from a sibling script, see concept_shape.py):
   find(dump, concept=None, name=None)  matching nodes at any depth
   shape(concept_details, concept=None) one entry per property / reference / child role
   dump_kind(dump)                      concept-details, node, model, module, project, empty, unknown
+  has_root_listing(dump)               False for a structure dump made without includeRootNodes
 
 CLI:
 
-  mps_dump.py roots <file> [--concept C]            name, concept, reference per root
-  mps_dump.py node  <file> <nameOrRef>              properties, references, children
-  mps_dump.py shape <conceptDetailsFile> [--concept C]
-  mps_dump.py count <file>                          roots per concept
+  mps_dump.py roots  <file> [--concept C]           name, concept, reference per root
+  mps_dump.py models <file>                         module, model, root count per model
+  mps_dump.py node   <file> <nameOrRef>             properties, references, children
+  mps_dump.py tree   <file> [nameOrRef] [--depth N] indented subtree, one line per node
+  mps_dump.py shape  <conceptDetailsFile> [--concept C]
+  mps_dump.py count  <file>                         roots per concept
   mps_dump.py --list-tools                          MPS MCP tools/parameters relied upon
 
 stdout carries the table (capped by --max-lines) followed by a one-line JSON summary; the
@@ -34,7 +37,10 @@ full table is always written to a file under the system temp directory, whose pa
 that summary. Exit codes: 0 ok, 2 usage, 3 bad input. A dump of the wrong kind for the
 subcommand (`shape` on a node or model dump, `roots` / `node` / `count` on a concept-details
 dump) is bad input, and the message names the subcommand that reads it; a dump of the right
-kind with nothing matching still exits 0 with a zero count.
+kind with nothing matching still exits 0 with a zero count. So is a get_project_structure dump
+made without includeRootNodes (it carries `rootNodesCount` / `modelsCount` instead of
+`rootNodes`) for `roots`, `count`, `node` and `tree`: the message points at `models`, or at
+re-calling with includeRootNodes=true, nodeDetail="names".
 
 Enum properties: `mps_mcp_print_node` emits the declared literal name. Older dumps printed a
 set member as `<enumRef>/LITERAL`; this script still reduces that form to `LITERAL`. A
@@ -167,11 +173,78 @@ def dump_kind(dump):
 
 _KIND_LABELS = {
     "concept-details": ("a get_concept_details concept dump", "shape"),
-    "node": ("a print_node / get_project_structure node dump", "node"),
+    "node": ("a print_node / get_project_structure node dump", "tree"),
     "model": ("a get_project_structure model dump", "roots"),
     "module": ("a get_project_structure module dump", "roots"),
     "project": ("a get_project_structure project dump", "roots"),
 }
+
+_KIND_HINTS = {
+    "node": " (or `node` for one node's features)",
+}
+
+_STRUCTURE_KINDS = ("model", "module", "project")
+
+
+def _model_records(dump):
+    """Every model record of a model, module, or project dump."""
+    if not isinstance(dump, dict):
+        return []
+    if "modules" in dump:
+        return [m for mod in dump["modules"] or [] for m in mod.get("models") or []]
+    if "models" in dump:
+        return list(dump["models"] or [])
+    if "rootNodes" in dump or "rootNodesCount" in dump:
+        return [dump]
+    return []
+
+
+def _module_records(dump):
+    if not isinstance(dump, dict):
+        return []
+    if "modules" in dump:
+        return list(dump["modules"] or [])
+    if "models" in dump or "modelsCount" in dump:
+        return [dump]
+    return []
+
+
+def has_root_listing(dump):
+    """False when `dump` is a get_project_structure dump made without includeRootNodes.
+
+    The server writes `rootNodesCount` (models) or `modelsCount` (modules) exactly when the
+    corresponding flag is off, so a dump that carries one of those markers and no `rootNodes`
+    anywhere lists no roots. Empty listings (`{"modules": []}`, `rootNodes: []`) are listings.
+    """
+    if dump_kind(dump) not in _STRUCTURE_KINDS:
+        return True
+    models = _model_records(dump)
+    if any("rootNodes" in m for m in models):
+        return True
+    marked = any("rootNodesCount" in m for m in models) or any(
+        "modelsCount" in mod for mod in _module_records(dump))
+    return not marked
+
+
+def _require_root_listing(dump, command):
+    if has_root_listing(dump):
+        return
+    kind = dump_kind(dump)
+    modules = _module_records(dump)
+    models = _model_records(dump)
+    if models:
+        holds = "lists %d module%s and %d model%s" % (
+            len(modules), "" if len(modules) == 1 else "s", len(models), "" if len(models) == 1 else "s")
+        if kind == "model":
+            holds = "lists one model"
+        flag = "includeRootNodes"
+    else:
+        holds = "lists %d module%s and no models" % (len(modules), "" if len(modules) == 1 else "s")
+        flag = "includeModels / includeRootNodes"
+    raise BadInput(
+        "no root nodes for `%s`: this get_project_structure %s dump %s but was made without %s; "
+        "use `models` to list %s, or re-call get_project_structure with includeRootNodes=true, "
+        "nodeDetail=\"names\"" % (command, kind, holds, flag, "them" if models else "the modules"))
 
 
 def _require_kind(dump, wanted, command):
@@ -184,8 +257,12 @@ def _require_kind(dump, wanted, command):
     if kind in wanted or kind not in _KIND_LABELS:
         return
     label, use = _KIND_LABELS[kind]
-    what = "concept entries" if command == "shape" else "nodes"
-    raise BadInput("no %s for `%s`: this looks like %s; use `%s` instead" % (what, command, label, use))
+    hint = _KIND_HINTS.get(kind, "")
+    if kind in _STRUCTURE_KINDS and not has_root_listing(dump):
+        use, hint = "models", ""
+    what = {"shape": "concept entries", "models": "models"}.get(command, "nodes")
+    raise BadInput("no %s for `%s`: this looks like %s; use `%s` instead%s"
+                   % (what, command, label, use, hint))
 
 
 # ── node projections ──────────────────────────────────────────────────────────────────
@@ -415,6 +492,7 @@ _NODE_KINDS = ("node", "model", "module", "project")
 def _cmd_roots(args):
     dump = load(args.file)
     _require_kind(dump, _NODE_KINDS, "roots")
+    _require_root_listing(dump, "roots")
     selected = [r for r in roots(dump) if args.concept is None
                 or _same_concept(r.get("concept"), args.concept)]
     lines = _table([(r.get("name") or "", r.get("concept") or "", r.get("reference") or "")
@@ -425,6 +503,7 @@ def _cmd_roots(args):
 def _cmd_count(args):
     dump = load(args.file)
     _require_kind(dump, _NODE_KINDS, "count")
+    _require_root_listing(dump, "count")
     counts = {}
     for root in roots(dump):
         counts[root.get("concept")] = counts.get(root.get("concept"), 0) + 1
@@ -435,6 +514,7 @@ def _cmd_count(args):
 def _cmd_node(args):
     dump = load(args.file)
     _require_kind(dump, _NODE_KINDS, "node")
+    _require_root_listing(dump, "node")
     details = load(args.concept_details) if args.concept_details else None
     node = node_by_key(dump, args.node)
     lines = ["%s : %s" % (node.get("name") or "<unnamed>", node.get("concept")),
@@ -458,6 +538,127 @@ def _cmd_node(args):
         "children": len(children(node)),
     }
     return lines, summary
+
+
+def _cmd_models(args):
+    dump = load(args.file)
+    _require_kind(dump, _STRUCTURE_KINDS, "models")
+    rows = []
+    model_count = root_count = 0
+
+    def model_row(kind, module, model):
+        nonlocal model_count, root_count
+        model_count += 1
+        if "rootNodes" in model:
+            count = len(model.get("rootNodes") or [])
+        else:
+            count = model.get("rootNodesCount")
+        if isinstance(count, int):
+            root_count += count
+        rows.append((kind, module, model.get("name") or "", "?" if count is None else count,
+                     model.get("reference") or ""))
+
+    modules = _module_records(dump)
+    not_listed = 0
+    for module in modules:
+        kind, name = module.get("kind") or "", module.get("name") or ""
+        if "models" not in module:
+            count = module.get("modelsCount")
+            if isinstance(count, int):
+                not_listed += count
+            rows.append((kind, name, "-", "%s models (dumped without includeModels)"
+                         % ("?" if count is None else count), module.get("reference") or ""))
+            continue
+        for model in module.get("models") or []:
+            model_row(kind, name, model)
+    if not modules:
+        for model in _model_records(dump):
+            model_row("", "", model)
+        rows = [row[2:] for row in rows]
+    summary = {"modules": len(modules), "models": model_count, "roots": root_count}
+    if not_listed:
+        summary["modelsNotListed"] = not_listed
+    return _table(rows), summary
+
+
+# Hidden by `tree` unless --all: properties that repeat what the line already shows.
+TREE_NOISE_PROPERTIES = ("shortDescription", "virtualPackage")
+
+
+def _node_id(reference):
+    return (reference or "").rsplit("/", 1)[-1]
+
+
+def _tree_value(value):
+    if not value or any(c.isspace() for c in value):
+        return json.dumps(value, ensure_ascii=False)
+    return value
+
+
+def _tree_line(node, role, args):
+    parts = ["%s%s %s" % ("%s: " % role if role else "", node.get("concept"), _node_id(node.get("reference")))]
+    detail = props_detail(node)
+    for name in sorted(detail):
+        value, source = detail[name]
+        if source != "set":
+            continue
+        if not args.all and (name in TREE_NOISE_PROPERTIES
+                             or (name == "resolveInfo" and value == node.get("name"))):
+            continue
+        parts.append("%s=%s" % (name, _tree_value(value)))
+    references = refs(node)
+    if references:
+        parts.append("->")
+        parts.extend("%s=%s" % (r, (t or "<unresolved>") if args.target_refs
+                                else _tree_value(n or t or "<unresolved>"))
+                     for r, t, n in references)
+    return " ".join(parts)
+
+
+def _tree_walk(node, role, level, args, lines, stats):
+    indent = "  " * level
+    if not _is_node(node):
+        lines.append("%s%s%s %s (not inlined)" % (indent, "%s: " % role if role else "",
+                                                 node.get("name") or "<unnamed>", _node_id(node.get("reference"))))
+        return
+    line = indent + _tree_line(node, role, args)
+    stats["nodes"] += 1
+    stats["depth"] = max(stats["depth"], level)
+    if "children" not in node:
+        lines.append(line + " (children not listed)")
+        return
+    kids = [(entry.get("role"), kid) for entry in node.get("children") or []
+            for kid in entry.get("nodes") or entry.get("children") or []]
+    if args.depth is not None and args.depth >= 0 and level >= args.depth:
+        if kids:
+            line += " (+%d children)" % len(kids)
+            stats["depthCut"] = True
+        lines.append(line)
+        return
+    lines.append(line)
+    for kid_role, kid in kids:
+        _tree_walk(kid, kid_role, level + 1, args, lines, stats)
+
+
+def _cmd_tree(args):
+    dump = load(args.file)
+    _require_kind(dump, _NODE_KINDS, "tree")
+    _require_root_listing(dump, "tree")
+    lines = []
+    stats = {"nodes": 0, "depth": 0, "depthCut": False}
+    if args.node is not None:
+        _tree_walk(node_by_key(dump, args.node), "", 0, args, lines, stats)
+    elif dump_kind(dump) in _STRUCTURE_KINDS:
+        for model in _model_records(dump):
+            if not model.get("rootNodes"):
+                continue
+            lines.append("# model %s %s" % (model.get("name") or "", model.get("reference") or ""))
+            for root in model["rootNodes"]:
+                _tree_walk(root, "", 0, args, lines, stats)
+    else:
+        for root in roots(dump):
+            _tree_walk(root, "", 0, args, lines, stats)
+    return lines, {"nodes": stats["nodes"], "depth": stats["depth"], "depthCut": stats["depthCut"]}
 
 
 def _cmd_shape(args):
@@ -512,6 +713,22 @@ def main(argv=None):
     p_roots.add_argument("file")
     p_roots.add_argument("--concept", help="keep only roots of this concept (short or qualified)")
     p_roots.set_defaults(run=_cmd_roots, label="roots")
+
+    p_models = subparsers.add_parser("models", parents=[common],
+                                     help="module, model and root count per model of a get_project_structure dump")
+    p_models.add_argument("file")
+    p_models.set_defaults(run=_cmd_models, label="models")
+
+    p_tree = subparsers.add_parser("tree", parents=[common], help="indented subtree, one line per node")
+    p_tree.add_argument("file")
+    p_tree.add_argument("node", nargs="?", help="start at this node (name or persistent reference)")
+    p_tree.add_argument("--depth", type=int, help="stop N levels below the start (negative: the whole tree, like nodeDepth=-1)")
+    p_tree.add_argument("--target-refs", action="store_true",
+                        help="print each reference's full targetReference instead of the target name")
+    p_tree.add_argument("--all", action="store_true",
+                        help="also print shortDescription/virtualPackage, and resolveInfo equal to name "
+                             "(smodelAttribute children are always shown)")
+    p_tree.set_defaults(run=_cmd_tree, label="tree")
 
     p_node = subparsers.add_parser("node", parents=[common], help="properties, references and children of one node")
     p_node.add_argument("file")
