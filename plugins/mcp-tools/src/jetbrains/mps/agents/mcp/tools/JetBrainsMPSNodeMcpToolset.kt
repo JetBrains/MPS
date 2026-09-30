@@ -1187,7 +1187,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         SET × CHILD — Replace an existing child node with a new node described by a JSON blueprint. Deletes the child if `childJson = null`.
           childNodeRef: persistent ref of the child to replace.
           childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
-          Returns the inserted node's info envelope or the parent's one, if deletion (`childJson = null`).
+          Returns the parent's info envelope for both a replacement and a deletion (`childJson` omitted or null), with `fixReferences` on a replacement. `data.reference` is the parent, not the new child; the replaced child's reference is stale.
 
         SET × PROPERTY — Set or delete properties on a batch of nodes. The value `propertyValue = null` DELETES the property.
           properties: list of triplets [nodeReference, propertyName, propertyValue]. Returns a JSON array with one result per triplet. Encoded ids carried inside a property value (e.g. a `PropertyMacro.propertyId`) are NOT validated when set — a malformed, blank, or non-resolving id is accepted silently and surfaces only via `mps_mcp_check_root_node_problems`.
