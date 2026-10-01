@@ -41,10 +41,12 @@ Use MPS MCP tools for everything model-related:
 - model navigation, node editing, and validation
 - generation and build
 
-File-based tools (Read, Grep, Glob) are acceptable for:
+File-based tools (Read, Grep, Glob, or their shell equivalents such as `cat` and `grep` when your runtime has no such tools) are acceptable for:
 - inspecting generated output to understand runtime behavior or diagnose a problem
 - reading project configuration files that are not driven by MPS models
 - reading plain text documentation
+
+In zsh (the macOS default) an unquoted glob that matches no file is an error. That command does not run and prints only `no matches found: …` (a `for` over such a glob skips the rest of its block), while the rest of a combined command still prints, so the miss is easy to overlook. Quote patterns meant for the command (`grep -rn PATTERN --include='*.md' DIR`, `find DIR -name '*.jar'`), and list files that may not exist with `find`, not with a bare `DIR/*.jar`.
 
 Do not use file-based tools to modify `.mps` model files directly. MPS serializes models as XML, but the format is opaque and fragile — always use MPS MCP tools instead.
 

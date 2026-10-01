@@ -71,7 +71,7 @@ R="$MPS"; [ -d "$MPS/Contents" ] && R="$MPS/Contents"           # macOS .app bun
 B="$R/build.txt"; [ -f "$B" ] || B="$R/Resources/build.txt"
 awk 'NR==1 { sub(/^[^0-9]*/, ""); sub(/[^0-9].*/, ""); print }' "$B"    # platform baseline
 M="$R/plugins/mps-project-migrations"
-{ for j in "$M"/languages/*.jar; do unzip -l "$j" 2>/dev/null; done
+{ find "$M/languages" -name '*.jar' 2>/dev/null | while read -r j; do unzip -l "$j" 2>/dev/null; done
   ls "$M/solution/source_gen/jetbrains/mps/ide/mpsmigration" 2>/dev/null; } |
   grep -o 'v_2[0-9_]*' | sort -u | tail -1                      # newest migration package
 ```
