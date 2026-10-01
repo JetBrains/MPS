@@ -53,7 +53,8 @@ effect. Missing/empty catalogs, unrelated definitions and unrelated skills pass.
 `Explore`/`Task` are outside this pin. Do not pass `--skill-default-locations=false` until a Junie SMOKE proves project
 `.agents/skills` still load without it; user-skill isolation for the first Junie matrix is the
 preflight `~/.junie/skills` check. The meta gains
-`skillsSha256` (catalog fingerprint) and `skillsInstalled`, plus the MPS process under measurement
+`skillsSha256` (catalog fingerprint), `guidesSha256` (fingerprint of the installed `AGENTS.md` +
+`CLAUDE.md`, `absent` when either is missing) and `skillsInstalled`, plus the MPS process under measurement
 (`mpsPid`, `mpsStartTs`), `isolationLevel`, `projectSynthesized`, `relatedProjects`, and the MCP
 endpoint: `mpsMcpUrl`, `mpsMcpUrlSource` (`env`, or the detection source: `lsof`, in practice the
 only one that passes the confirmation check), `mcpConfigSource` (`env` for `MCP_CONFIG`, else
@@ -317,8 +318,11 @@ every `mps-*` folder under `<target>/.agents/skills` and `<target>/.claude/skill
 streamable HTTP (reuses `tools_inventory.McpClient`; unwraps the temp-file `data` form). Verifies
 that both guides were *written* (a guide reported as already present means the purge missed it and
 the worker would read stale guidance) and prints `{ok, installedSkillCount, guideFilesWritten,
-removed, skillsSha256}`. `--sha-only` prints just the fingerprint of an installed tree — `mps-*`
-folders only, paths and contents, so a scenario's own `<dsl>-dsl` skill does not look like drift.
+removed, skillsSha256, guidesSha256}`. `--sha-only` prints just the fingerprint of an installed
+tree — `mps-*` folders only, paths and contents, so a scenario's own `<dsl>-dsl` skill does not
+look like drift.
+`--guides-sha-only DIR` prints just `guidesSha256` (the `SKIP_SKILL_INSTALL=1` branch uses it);
+`skillsSha256` does not cover the guides, so a template change moves only this one.
 Exit: 0 ok, 2 usage, 3 MCP error, 4 unreachable, 5 post-install check failed. `--project` is the
 framework `projectPath` and must be an OPEN project; `--target` defaults to it.
 Non-`mps-*` skills are never touched.
@@ -406,7 +410,7 @@ line; it does not detect the port itself.
    must show it and NO other project with the same module names — the install in step 3 needs it
    open. 3. Launch
    detached (`EFFORT=<gate-2a level> run_worker.sh S1 $MODEL 1 $PROJ`); poll. `run_worker.sh` installs the live skills first and writes `<id>-install.json`;
-   confirm `skillsSha256` matches the round's other runs, and `mpsPid` too — a differing pid means
+   confirm `skillsSha256` and `guidesSha256` match the round's other runs, and `mpsPid` too — a differing pid means
    MPS was restarted mid-round and the runs are not directly comparable. 4. For S10 only: record
    the left-behind `list_open_projects` state **the moment the worker exits** (a Welcome-screen
    rejection counts), then open `<proj>-target` for the checks. 5. Evaluate via an Opus subagent

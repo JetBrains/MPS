@@ -28,9 +28,10 @@
 # project through `mps_mcp_initialize_project_for_agents` (scripts/install_skills.py). Fixtures
 # deliberately ship without them, so a round can never measure a stale point-in-time catalog
 # (study lesson 20 / defect D16). The resulting catalog fingerprint is recorded as `skillsSha256`
-# in the meta, beside `promptSha256` (the scenario) and `inventorySha256` (the tool surface), so
-# every run is retro-auditable against the docs it actually read. Set SKIP_SKILL_INSTALL=1 to skip
-# it; the meta then records the sha of whatever was already there and `skillsInstalled: false`.
+# and the guide files' fingerprint as `guidesSha256` in the meta, beside `promptSha256` (the
+# scenario) and `inventorySha256` (the tool surface), so every run is retro-auditable against the
+# docs it actually read. Set SKIP_SKILL_INSTALL=1 to skip it; the meta then records the shas of
+# whatever was already there and `skillsInstalled: false`.
 #
 # EFFORT (optional) pins the worker's effort level and is passed as `--effort`. Claude accepts
 # low|medium|high|xhigh|max, Junie low|medium|high. It is recorded as `effort` in the meta. Unset
@@ -178,6 +179,7 @@ fi
 if [ "${SKIP_SKILL_INSTALL:-0}" = "1" ]; then
   SKILLS_INSTALLED=false
   SKILLS_SHA=$(python3 "$STUDY/scripts/install_skills.py" --sha-only "$PROJECT")
+  GUIDES_SHA=$(python3 "$STUDY/scripts/install_skills.py" --guides-sha-only "$PROJECT")
   echo '{"ok":true,"skipped":true}' > "$RUNS/$ID-install.json"
 else
   SKILLS_INSTALLED=true
@@ -185,6 +187,7 @@ else
     echo "skill install failed for $ID:" >&2; cat "$RUNS/$ID-install.json" >&2; exit 3
   fi
   SKILLS_SHA=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["skillsSha256"])' "$RUNS/$ID-install.json")
+  GUIDES_SHA=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["guidesSha256"])' "$RUNS/$ID-install.json")
 fi
 
 # The MPS process under measurement. A round is one process (ISOLATION=per-round); recording it
@@ -222,7 +225,7 @@ import json,sys
 json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","modelSlug":"$MODEL_SLUG",
   "harness":"$HARNESS","effort":"$EFFORT" or None,"run":$RUN,"project":"$PROJECT",
   "relatedProjects":[p for p in "$RELATED".split(":") if p],
-  "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA",
+  "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA","guidesSha256":"$GUIDES_SHA",
   "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
   "isolationLevel":"$ISOLATION","projectSynthesized":"$PROJECT_SYNTHESIZED"=="1",
   "mpsPid":int("$MPS_PID") if "$MPS_PID" else None,"mpsStartEpoch":int("$MPS_START") if "$MPS_START" else None,

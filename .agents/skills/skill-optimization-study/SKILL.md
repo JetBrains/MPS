@@ -173,8 +173,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Pass the
    model's gate-2a level as `EFFORT` on every launch. Check that every meta's `effort` is that
    level and that every meta's
-   `skillsSha256` is the same value before comparing runs; a differing one means the catalog moved
-   mid-round. Open/close details: `references/harness.md`.
+   `skillsSha256` and `guidesSha256` are each the same value before comparing runs; a differing one
+   means the catalog or the installed `AGENTS.md` / `CLAUDE.md` moved mid-round. Open/close details: `references/harness.md`.
 7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
    → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
    each run's meta after evaluation. Filter chains containing `mps_mcp`, group into families, have an
