@@ -1180,13 +1180,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         ADD × CHILD — Add a new child node.
           nodeReference: persistent ref of the parent node.
           childRole: containment role name.
-          childJson: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints prefer the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
+          childJson: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing the JSON. Over 4 KB, use the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
           position: Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. A `position` at or beyond the current child count is clamped to an append (not rejected); a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.
           Returns the inserted node's info envelope (`data.parentReference` carries the parent ref, `data.index` the actual landing index — useful when an over-range `position` was clamped). `responseDetail="summary"` answers with `{added, nodes:[{name, reference, concept}], fixReferences}` instead (no conceptDoc, no index); `full` is the default because one call adds one child.
 
         SET × CHILD — Replace an existing child node with a new node described by a JSON blueprint. Deletes the child if `childJson = null`.
           childNodeRef: persistent ref of the child to replace.
-          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
+          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing the JSON. Over 4 KB, use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
           Returns the parent's info envelope for both a replacement and a deletion (`childJson` omitted or null), with `fixReferences` on a replacement. `data.reference` is the parent, not the new child; the replaced child's reference is stale.
 
         SET × PROPERTY — Set or delete properties on a batch of nodes. The value `propertyValue = null` DELETES the property.
@@ -1197,7 +1197,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
         ADD × PROPERTY and ADD × REFERENCE are not valid combinations and return an error.
 
-        The child's concept must be assignable to the role's concept; model dependencies and used languages are updated automatically on child operations. For `childJson` larger than ~4 KB pass an absolute file path instead of an inline string. See `mps-node-editing` for blueprint format, file-path semantics, and staged-construction patterns. See `mps-mcp-workflow/references/reference-formats.md` for reference formats.
+        The child's concept must be assignable to the role's concept; model dependencies and used languages are updated automatically on child operations. For `childJson` larger than ~4 KB pass an absolute path to a file inside the system temp directory instead of an inline string. See `mps-node-editing` for blueprint format, file-path semantics, and staged-construction patterns. See `mps-mcp-workflow/references/reference-formats.md` for reference formats.
 
         On success returns `{"ok":true,"data":{...}}`. On failure returns `{"ok":false,"error":"..."}` with optional `code`, `details`, and `warnings` fields.
     """
@@ -1208,7 +1208,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Parent node ref for ADD CHILD") nodeReference: String? = null,
         @McpDescription("Containment role name for ADD CHILD") childRole: String? = null,
         @McpDescription("0-based insert index for ADD CHILD multi-cardinality roles; null/-1 = append. A value at or beyond the current child count is clamped to an append; a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.") position: Int? = null,
-        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected. Fields are arrays, not maps: `properties:[{name,value}]`, `references:[{role,target}]`, `children:[{role,nodes:[…]}]`.") childJson: JsonOrText? = null,
+        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected. Fields are arrays, not maps: `properties:[{name,value}]`, `references:[{role,target}]`, `children:[{role,nodes:[…]}]`.") childJson: JsonOrText? = null,
         @McpDescription("Ref of the child to replace or delete (SET CHILD)") childNodeRef: String? = null,
         @McpDescription("If true, validate without mutating (ADD CHILD, SET CHILD only). A dry run does not look up reference targets given by name, so its warnings list every one, including names that exist; check `fixReferences.stillBroken` of the real write. Default: false.") dryRun: Boolean = false,
         @McpDescription("Batch triplets [nodeRef, propertyName, value] for SET PROPERTY") properties: List<List<String?>>? = null,
@@ -1263,7 +1263,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         RequiredParameter("childRole", childRole.orEmpty(), "the containment role name"),
                         RequiredParameter(
                             "childJson", childJson.orEmpty(),
-                            "the child's JSON blueprint, or an absolute path to a file holding it",
+                            "the child's JSON blueprint, or an absolute path to a temporary file holding it",
                         ),
                         operation = "ADD CHILD",
                     )?.let { return it }

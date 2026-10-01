@@ -1940,7 +1940,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
         assertEquals(
             "childJson is required for ADD CHILD. Retry with childJson set to the child's JSON blueprint, " +
-                    "or an absolute path to a file holding it. This tool spells it 'childJson'; " +
+                    "or an absolute path to a temporary file holding it. This tool spells it 'childJson'; " +
                     "a value sent as 'json' never reaches it.",
             obj.get("error").asString,
         )

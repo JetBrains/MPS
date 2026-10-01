@@ -134,6 +134,9 @@ Run to verify: `mps-dsl-memory` (only cell; the prompt names it), `mps-language-
 exploration rather than a targeted edit. Also the cell where a wrong `print_node` reading is
 shipped into a skill other agents will trust.
 Criterion 3 dry-runs every shipped blueprint since A8, after an observer MAKE of the language.
+Blueprint files are read only from the system temp directory (D94, docs fixed 2026-10-01,
+re-measure: no temp-directory rejection on the blueprint dry runs, no resolved temp path in the
+shipped skill).
 Hypotheses: H4, H7.
 Isolation: shares statechart with S2; restart between them in either order. The evaluation's
 observer MAKE (criterion 3) deploys the statechart runtime, so an S2 cell after S8 in the same

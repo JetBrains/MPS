@@ -3750,7 +3750,8 @@ abstract class AbstractOps : McpToolset {
             throw McpInvalidRequestException(
                 "Input file path '$jsonOrPath' is not inside the system temp directory. " +
                         "It must be inside the system temp directory $accepted " +
-                        "(\$TMPDIR on macOS/Linux, %TEMP% on Windows)."
+                        "(\$TMPDIR on macOS/Linux, %TEMP% on Windows). " +
+                        "Or send the JSON inline (up to $MAX_INLINE_JSON_CHARS characters)."
             )
         }
         val sizeBytes = file.length()

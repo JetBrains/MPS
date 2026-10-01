@@ -39,7 +39,7 @@ All child, property, and reference operations on existing nodes go through `mps_
 
 For project models, `MOVE_NODE_TO_PARENT` has two intentional forms. Supply a non-null `newParentRef` and `role` to reparent the node. To promote it to a root, omit `newParentRef` and supply `modelReference`. Do not send `"newParentRef": null`: explicit null is rejected so it cannot accidentally select the promotion form.
 
-`childJson` accepts the blueprint as real JSON, as that JSON written as a string (max 4 KB), **or** as an absolute path to a file containing it. Use the file form for large blueprints to avoid MCP-transport truncation.
+`childJson` accepts the blueprint as real JSON, as that JSON written as a string (max 4 KB), **or** as an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Over 4 KB, use the file form to avoid MCP-transport truncation.
 
 Where a documented null means something, how you express it depends on where it sits. For `SET` × `CHILD`, the null is the `childJson` *parameter*: express it by **omitting the parameter** or sending an unquoted JSON null. For `SET` × `PROPERTY`/`REFERENCE` the null is the third *element* of a triplet, so it must be written out as an unquoted JSON null — omitting the `properties`/`references` parameter is rejected as missing, and a two-element row is rejected as a malformed triplet, not read as a delete. In neither case is the 4-character string `"null"` the null form — for `childJson` it is rejected as `Input is the string 'null', not a JSON object/array or a file path`.
 
@@ -76,7 +76,7 @@ Where a documented null means something, how you express it depends on where it 
 
 The tools that accept a node JSON blueprint (`mps_mcp_update_node` for `ADD`/`SET` × `CHILD`, `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_root_node_from_json`) all use the same `childJson` / `json` parameter convention:
 
-- The parameter can be **either** the JSON itself (max 4 KB) — sent as real JSON or as that JSON written as a string, both equivalent — **or** an absolute path to a local file containing it.
+- The parameter can be **either** the JSON itself (max 4 KB) — sent as real JSON or as that JSON written as a string, both equivalent — **or** an absolute path to a TEMPORARY file (inside the system temp directory) containing it; see `references/json-format.md` for the accepted directories.
 - `mps_mcp_insert_root_node_from_json` and `mps_mcp_update_root_node_from_json` additionally accept a **top-level array** for a bulk insert, which `mps_mcp_update_node`'s `childJson` does not — it takes a single object (or a file path).
 - Files may contain either a **raw node blueprint** or the **full MCP response envelope** produced by `mps_mcp_print_node`; in the latter case the `data` field is used.
 - **Ordinary input files are never deleted.** Only temporary JSON files created by this toolset may be cleaned up after reading (and only when `dryRun=false`).
