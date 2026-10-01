@@ -206,6 +206,165 @@ In `JetBrainsMPSModuleMcpToolsetIntegrationTest`:
   `MacrosFactory` unit test.
 - **Effect on Phase 2:** remove the depth rule in `rejectUnusableModuleDirectory` in the same change.
 
+## Revision 4 — live-review follow-up: a rolled-back generator stays in the project's module loader
+
+Status: implemented, not committed.
+- **Review rounds:**
+  - Round 1: 2 SHOULD, 5 NIT.
+  - Round 2: 2 SHOULD. The facet catch now rolls back before any rethrow, and both leak tests
+    assert the log first, so the red run shows that the log check catches the leak on its own.
+- **Red, intermediate and green**, each a scratch suite with only this test class:
+  - **Red** (today's rollback): the three leak tests fail. The log checks capture both the SEVERE
+    "is not found in the project repository" and the WARN "1 listener(s) have not been
+    unregistered", and the facet test also gets no error code.
+  - **Intermediate** (languages first only): the SEVERE is gone, but the listener WARN remains in
+    all three. This shows that the `removeModule(owned generator)` step is what the WARN check
+    covers.
+  - **Green:** the full fix.
+
+### What the live review found
+A reviewer ran `create_module(type=language, withGenerator=true, withRuntime=true)` with
+`<parent>/<name>.runtime/models` already non-empty.
+- **What looked right:** the call returned `INVALID_REQUEST … No module or file was left behind.`,
+  the disk was clean, and `.mps/modules.xml` was unchanged.
+- **What was wrong:** the generator `<name>.generator` stayed in `ProjectBase`'s
+  `ProjectModuleLoader`. From then on, every project-module listing logs
+  `SEVERE … Module <ref>(<name>.generator) is not found in the project repository`
+  (`ProjectBase.getProjectModules`, `ProjectBase.java:256`), until MPS restarts. The running IDE
+  had logged it 200 times.
+- **A leaked file listener:** when the folder was then deleted, `IdeaFile.delete` warned
+  `1 listener(s) have not been unregistered for the path …/lang` (`log/idea.log:29269`).
+- **A second, older hole:** a facet-attachment failure after a successful producer still goes
+  through `rollbackPartialCreation`. That path removes no model or generator folders, so a retry
+  then fails on the leftover `generator/`.
+
+### Findings (checked against the code; confirmed by review)
+1. **How the generator gets its loader entry.** `LanguageProducer.create` calls
+   `myProject.addModule(generator)` (`LanguageProducer.java:90-92`). `ProjectBase.addModule` then
+   attaches a loader entry keyed by the generator's reference, whose descriptor file is the
+   language's `.mpl` (`ProjectBase.java:155`), and fires `moduleLoaded(generator, .mpl)`.
+   - Loader entries are created only by `addModule` and by project loading
+     (`ProjectModuleLoader.loadDiscoveredModules`).
+   - A generator that the generator branch creates through `Language.revalidateGenerators` is only
+     registered with the repository. It has no loader entry.
+2. **Why the generator-first rollback leaks it.**
+   - `rollbackModulesRegisteredSince` sorts generators first. `rollbackSingleModule(Generator)`
+     removes the generator from the parent descriptor and calls `setModuleDescriptor`.
+   - That runs `revalidateGenerators`, which unregisters the generator from the repository only
+     (`Language.java:236-245`).
+   - The `removeModule` safety belt, the one call that would drop the loader entry, is then
+     skipped, because `repository.getModule(...)` already returns null.
+3. **Why removing the language afterwards doesn't catch it.** `removeModule(language)` drops the
+   loader entries of the language's owned generators (`ProjectBase.removeModule0`,
+   `ProjectBase.java:223-229`). "Owned" is `getOwnedGenerators()`, the descriptor's generators
+   that are also attached (`Language.java:305`). Both conditions are now false for that
+   generator, so its loader entry survives.
+4. **`removeModule(generator)` is safe only when its language is removed in the same rollback.**
+   - Its continuation calls `moduleRemoved(<language>.mpl)`.
+   - `StandaloneMPSProject.moduleRemoved` drops every project-descriptor entry with that file
+     (`StandaloneMPSProject.java:244-252`). That is the language's own `modules.xml` entry.
+5. **Rolling the language back first still leaks the file listener.**
+   - `removeModule0` drops owned generators with `dropIfAttached`, which fires no event
+     (`ProjectModuleLoader.java:401-407`).
+   - `ModuleFileChangeListener` releases its listener on the `.mpl` only after a `moduleRemoved`
+     for every module it tracks under that file (`ModuleFileChangeListener.java:154-160`).
+   - The generator never gets that event, so the listener stays. `IdeaFile.delete` then logs the
+     WARN above.
+   - The next `moduleLoaded` for the same path adds no listener
+     (`ModuleFileChangeListener.java:141-151`). A retry at the same path therefore stops
+     noticing external changes to its `.mpl` until restart.
+6. **The facet-failure path has the same leak and no file cleanup.** It calls
+   `rollbackPartialCreation` with the companions in the order runtime, sandbox, generators, so the
+   generators still come before the language. It removes only descriptors. It can be reached
+   whenever `setModuleDescriptor` or `save` throws after the facets have been validated upfront,
+   for example when a facet factory's `create` throws (`AbstractModule.java:536-544` does not
+   catch).
+7. **The existing test misses it.** `rollbackPartialCreation with companions …` exercises finding
+   2 today and passes, because it only checks `repository.getModule(...) == null`. Its later
+   `projectModules` call already logs the SEVERE, through JUL, without failing the test.
+8. **The leftover check can't see a leak that exists only in the loader.**
+   `getProjectModules` drops unresolved entries after logging them (`ProjectBase.java:247-257`).
+   That is why the reviewer's run claimed "No module or file was left behind."
+
+### Proposal
+1. **Rollback order in `rollbackModulesRegisteredSince`.**
+   - First, for each language in the rolled-back set: call `mpsProject.removeModule(g)` for each
+     of its owned generators, then remove the language itself.
+     - Each generator gets its own `moduleRemoved` event, so the file tracker lets go of the
+       `.mpl`.
+     - The `moduleRemoved(.mpl)` side effect only drops the entry of the language that is
+       removed in the same step.
+   - Then solutions and devkits.
+   - Then the remaining generators, i.e. those whose language survives, through today's
+     descriptor edit. In our flows these come from the generator branch and have no loader entry.
+   - Modules that are no longer in the repository are skipped.
+2. **Honest leftover check.** A rolled-back module counts as left over when either holds:
+   - it is still in the repository;
+   - `mpsProject.isProjectModule(it)` is still true, for a non-generator, or for a generator whose
+     language was rolled back too. Otherwise `isProjectModule`'s second clause is true by design
+     while the language survives.
+3. **The facet-failure path uses the same rollback.**
+   - Both sites call `rollbackFailedCreation(mpsProject, modulesBefore, createdPaths)` and append
+     its sentence to the error.
+   - `modulesBefore` is computed before the `when` for every kind. `var createdPaths: CreatedPaths?`
+     is declared there too and set in the `else` branch.
+   - Facets are rejected upfront for devkits and generators, so this path only runs for solutions
+     and languages, and `createdPaths` is always set there.
+   - Error code: an `McpUserException` keeps its own code. Anything else is `INTERNAL_ERROR` and is
+     logged with its stack trace, because this is an unexpected failure, not a collision.
+4. **Delete `rollbackPartialCreation`, which has no production caller left.**
+   - Also delete `rollbackSingleModule`'s `deleteDescriptor` parameter and its descriptor-delete
+     block, which would become dead.
+   - Move the generator strategy and the write-access contract from the old KDoc onto the
+     remaining helpers.
+   - `rollbackModulesRegisteredSince` becomes `internal`.
+5. **Tests** (`JetBrainsMPSModuleMcpToolsetIntegrationTest`).
+   - **Retarget the three `rollbackPartialCreation` tests** to `rollbackModulesRegisteredSince`,
+     each with a snapshot taken before the create:
+     - (a) **Solution:** it is unregistered and `!isProjectModule`; the folder is cleaned in
+       `finally`.
+     - (b) **Generator of the surviving fixture language:** the parent stays registered, its
+       `.mpl` survives, and the generator is unregistered. There is no `isProjectModule` check,
+       because clause 2 stays true there.
+     - (c) **Language with generator, runtime and sandbox:** all are unregistered and
+       `!isProjectModule` for each captured module. The folders are deleted through the MPS file
+       system, and the captured log must hold neither "is not found in the project repository"
+       nor "have not been unregistered for the path".
+   - **End to end, `withRuntime into an occupied runtime folder`:** this is the reviewer's
+     scenario. An `SRepositoryListener` captures the modules registered during the call; a
+     synchronized list filtered by name prefix, removed in `finally`. Assert `!isProjectModule`
+     for each, and the same two log checks around the call and a later project-module listing.
+   - **New end-to-end test, facet attachment fails:**
+     - register a `FacetFactory` whose `create` throws, under a unique type, with
+       `FacetsFacade.addFactory`, and remove it in `finally`;
+     - create a language `withGenerator=true` with `facets=[that type]`;
+     - expect `INTERNAL_ERROR`, the "No module or file was left behind." sentence, no new module,
+       and no folder;
+     - then, without the facet, retry the same name and directory `withGenerator=true`; it must
+       succeed. Clean up with DELETE `deleteFiles=true`.
+6. **Docs.** The tool description and `module-creation.md` (all three catalogs) say that rollback
+   also covers a failed facet attachment.
+7. **Validation.**
+   - **Red, then green:** use a scratch suite that runs only
+     `JetBrainsMPSModuleMcpToolsetIntegrationTest`. For the red run, only make
+     `rollbackModulesRegisteredSince` internal. Test (c), the end-to-end test and the facet test
+     must fail on today's code; then apply the fix and see them pass.
+   - **Full suite:** then the whole `McpToolsIntegrationTestSuite`, and `SkillCatalogReplicationTest`.
+   - **Live, after an MPS restart:** in the reviewer's scenario there must be no "is not found in
+     the project repository" SEVERE and no "have not been unregistered" WARN, and a retry at the
+     same path must succeed.
+
+### Out of scope
+- **`rollbackGeneratorCreation`** (the generator branch) keeps its descriptor-first order, because
+  its generator has no loader entry.
+- **Descriptor overwrites:** `SolutionProducer` overwrites an existing `.msd` without checking. The
+  old path deleted it on rollback; now it stays. A retry works either way.
+- **The finding-4 hazard is live in `update_module DELETE`**, to be reported separately.
+  `deleteModule` calls `mpsProject.removeModule(m)` for a language-owned generator
+  (`JetBrainsMPSModuleMcpToolset.kt:992`). If that generator has a loader entry (project-loaded, or
+  created by LanguageProducer), this drops the language's `modules.xml` entry. Not reproduced;
+  `ModuleDeleteHelper.java:131` has the same pattern.
+
 ## Deferred — "not portable" warning for modules outside the project
 This was planned as Phase 3 and dropped in review round 2. It is not part of MPS-40228.
 - **Wrong condition:** a predicate based only on MPS (`forProjectFile(...).shrinkPath` with no

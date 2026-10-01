@@ -9,6 +9,7 @@ import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import java.io.File
+import java.util.Collections
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -19,7 +20,12 @@ import jetbrains.mps.smodel.Generator
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.SModelStereotype
+import org.jetbrains.mps.openapi.module.FacetsFacade
 import org.jetbrains.mps.openapi.module.SDependencyScope
+import org.jetbrains.mps.openapi.module.SModule
+import org.jetbrains.mps.openapi.module.SModuleFacet
+import org.jetbrains.mps.openapi.module.SModuleReference
+import org.jetbrains.mps.openapi.module.SRepositoryListener
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.*
 import org.junit.Assume
@@ -261,48 +267,54 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("default `java` facet must still be present: $response", facets.contains("java"))
     }
 
-    @Test
-    fun `rollbackPartialCreation un-registers a solution and removes its descriptor file`() {
-        // Regression cover for the "producer succeeded, post-producer step failed" path.
-        // The throwable-from-setModuleDescriptor scenario is hard to drive through the
-        // public surface (pre-validation filters the easy cases and the descriptor mutation
-        // does not surface user-influenced failure modes today), so this test invokes the
-        // helper directly on a real producer-created solution to lock in:
-        //   - the project registration is undone
-        //   - the on-disk .msd is removed so a retry with the same name+directory works
-        val solutionName = "test.rollback.sol${System.nanoTime()}"
-        val directory = freshPathInProject(solutionName)
-        expectOk(runTool(toolset) {
-            it.mps_mcp_create_module("solution", solutionName, directory,
-                null, null, false, false, false)
-        })
+    private fun projectModuleRefs(): Set<SModuleReference> =
+        readOnRepo { myProject.projectModulesWithGenerators.map { it.moduleReference }.toSet() }
 
-        val createdSolution = readOnRepo {
-            myProject.projectModules.single { it.moduleName == solutionName }
+    /**
+     * A module the project still tracks after a rollback shows up in MPS's own log: every project-module listing
+     * reports a loader entry whose module is gone, and deleting the module's folder reports file listeners that
+     * were never released (MPS-40228 live review).
+     */
+    private fun assertNoStaleModuleTracking(messages: List<String>) {
+        val stale = messages.filter {
+            it.contains("is not found in the project repository") || it.contains("have not been unregistered for the path")
         }
-        val descriptorFile = readOnRepo { (createdSolution as AbstractModule).descriptorFile }
-        assertNotNull("test precondition: solution must have a descriptor file", descriptorFile)
-        assertTrue("test precondition: descriptor file must exist on disk before rollback",
-            descriptorFile!!.exists())
-
-        executeCommand { toolset.rollbackPartialCreation(myProject, createdSolution) }
-
-        readOnRepo {
-            val match = myProject.projectModules.firstOrNull { it.moduleName == solutionName }
-            assertNull("solution must be un-registered from the project after rollback", match)
-        }
-        assertFalse("descriptor file must be removed from disk so a retry can succeed: $descriptorFile",
-            descriptorFile.exists())
+        assertEquals("the project must not keep tracking rolled-back modules", emptyList<String>(), stale)
     }
 
     @Test
-    fun `rollbackPartialCreation un-registers a generator from its parent language`() {
-        // The post-producer facet-attachment failure path calls rollbackPartialCreation;
-        // the cast/null-descriptor scenarios that trigger it are hard to reach through the
-        // public tool surface (pre-validation already filters the easy cases). Drive the
-        // helper directly here so the Generator branch — which differs structurally from
-        // the Solution/Language/DevKit branches — is exercised end-to-end.
+    fun `rollbackModulesRegisteredSince un-registers a solution`() {
+        // File removal is CreatedPaths' job, so the helper leaves the descriptor; the folder is cleaned below.
+        val solutionName = "test.rollback.sol${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(solutionName))
+        try {
+            val before = projectModuleRefs()
+            expectOk(runTool(toolset) {
+                it.mps_mcp_create_module("solution", solutionName, directory.toString(),
+                    null, null, false, false, false)
+            })
+            val createdSolution = readOnRepo { myProject.projectModules.single { it.moduleName == solutionName } }
+
+            var leftovers: List<String> = listOf("rollback did not run")
+            executeCommand { leftovers = toolset.rollbackModulesRegisteredSince(myProject, before) }
+
+            assertEquals(emptyList<String>(), leftovers)
+            readOnRepo {
+                assertNull("solution must be un-registered from the project after rollback",
+                    myProject.projectModules.firstOrNull { it.moduleName == solutionName })
+                assertFalse("the project must no longer track the solution", myProject.isProjectModule(createdSolution))
+            }
+        } finally {
+            deleteQuietly(directory)
+        }
+    }
+
+    @Test
+    fun `rollbackModulesRegisteredSince un-registers a generator from its surviving parent language`() {
+        // A generator of a language that is not rolled back takes the descriptor-edit path. It was registered
+        // through Language.revalidateGenerators, not ProjectBase.addModule, so it has no loader entry.
         val parentName = language.moduleName!!
+        val before = projectModuleRefs()
         val createdName = expectOk(runTool(toolset) {
             it.mps_mcp_create_module("generator", "ignored", "", null, parentName, false, false, false)
         }).get("name").asString
@@ -321,8 +333,10 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("test precondition: parent language's .mpl must exist before rollback",
             parentDescriptorFile.exists())
 
-        executeCommand { toolset.rollbackPartialCreation(myProject, toRollback!!) }
+        var leftovers: List<String> = listOf("rollback did not run")
+        executeCommand { leftovers = toolset.rollbackModulesRegisteredSince(myProject, before) }
 
+        assertEquals(emptyList<String>(), leftovers)
         readOnRepo {
             val stillUnderParent = language.generators
                 .firstOrNull { (it as? Generator)?.moduleName == createdName }
@@ -339,42 +353,49 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `rollbackPartialCreation with companions un-registers a language and its generator runtime sandbox`() {
-        // Locks in the create-call's "no partial state is left behind" guarantee for the
-        // Language + withGenerator/withRuntime/withSandbox path. Without companions support
-        // in rollback, a facet-attach failure on the primary Language would leave the
-        // generator and runtime/sandbox solutions registered.
+    fun `rollbackModulesRegisteredSince un-registers a language with its generator runtime and sandbox`() {
+        // LanguageProducer adds the generator to the project with ProjectBase.addModule, so it has its own
+        // module-loader entry (keyed to the language's .mpl) and a file listener. Rolling the generator back on
+        // its own through the language descriptor unregistered it but left both behind (MPS-40228 live review).
         val langName = "test.rollback.lang${System.nanoTime()}"
-        val directory = freshPathInProject(langName)
-        expectOk(runTool(toolset) {
-            it.mps_mcp_create_module("language", langName, directory,
-                null, null, /* withGenerator = */ true, /* withSandbox = */ true,
-                /* withRuntime = */ true)
-        })
-
-        val (lang, companions) = readOnRepo {
-            val l = myProject.projectModules.single { it.moduleName == langName } as Language
-            val cs = mutableListOf<org.jetbrains.mps.openapi.module.SModule>()
-            cs.addAll(l.generators)
-            myProject.projectModules.firstOrNull { it.moduleName == "${langName}.runtime" }?.let { cs.add(it) }
-            myProject.projectModules.firstOrNull { it.moduleName == "${langName}.sandbox" }?.let { cs.add(it) }
-            l to cs
-        }
-        assertTrue("test precondition: language must have at least one generator", companions.any { it is Generator })
-
-        executeCommand { toolset.rollbackPartialCreation(myProject, lang, companions) }
-
-        readOnRepo {
-            assertNull("language must be un-registered",
-                myProject.projectModules.firstOrNull { it.moduleName == langName })
-            assertNull("runtime companion must be un-registered",
-                myProject.projectModules.firstOrNull { it.moduleName == "${langName}.runtime" })
-            assertNull("sandbox companion must be un-registered",
-                myProject.projectModules.firstOrNull { it.moduleName == "${langName}.sandbox" })
-            for (c in companions.filterIsInstance<Generator>()) {
-                assertNull("generator companion must be detached from project repository: ${c.moduleName}",
-                    myProject.repository.getModule(c.moduleReference.moduleId))
+        val directory = Paths.get(freshPathInProject(langName))
+        // listOf, not `companionDirs + directory`: a Path is an Iterable<Path>, so `+` would add its name elements.
+        val moduleDirs = listOf(directory, directory.resolveSibling("$langName.runtime"), directory.resolveSibling("$langName.sandbox"))
+        try {
+            val before = projectModuleRefs()
+            expectOk(runTool(toolset) {
+                it.mps_mcp_create_module("language", langName, directory.toString(),
+                    null, null, /* withGenerator = */ true, /* withSandbox = */ true,
+                    /* withRuntime = */ true)
+            })
+            val created = readOnRepo {
+                myProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
             }
+            assertTrue("test precondition: language, generator, runtime and sandbox: $created", created.size == 4)
+            assertTrue("test precondition: the language must have a generator", created.any { it is Generator })
+
+            val (leftovers, messages) = captureLogMessages {
+                var result: List<String> = listOf("rollback did not run")
+                executeCommand { result = toolset.rollbackModulesRegisteredSince(myProject, before) }
+                // What CreatedPaths does in production: delete the folders through the MPS file system.
+                val fs: jetbrains.mps.vfs.openapi.FileSystem = myProject.fileSystem
+                executeCommand { moduleDirs.forEach { fs.getFile(it.toString()).delete() } }
+                readOnRepo { myProject.projectModules }
+                result
+            }
+
+            // The log check comes first so that on its own it fails for a leaked loader entry or file listener.
+            assertNoStaleModuleTracking(messages)
+            assertEquals(emptyList<String>(), leftovers)
+            readOnRepo {
+                for (module in created) {
+                    assertNull("${module.moduleName} must be unregistered",
+                        myProject.repository.getModule(module.moduleReference.moduleId))
+                    assertFalse("the project must no longer track ${module.moduleName}", myProject.isProjectModule(module))
+                }
+            }
+        } finally {
+            moduleDirs.forEach { deleteQuietly(it) }
         }
     }
 
@@ -464,6 +485,8 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     private fun deleteQuietly(path: Path) {
+        // A relative path would resolve against the working directory, i.e. the MPS checkout.
+        require(path.isAbsolute) { "refusing to delete a relative path: $path" }
         path.toFile().deleteRecursively()
         LocalFileSystem.getInstance().refreshNioFiles(listOf(path))
     }
@@ -544,17 +567,38 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     fun `language withRuntime into an occupied runtime folder rolls back language and generator`() {
         // SolutionProducer throws ISE for the runtime companion after the language and its
         // generator were registered and saved; all of them must go, the occupied folder must not.
+        // This is the live review's scenario: the project must stop tracking the generator too.
         val name = "test.mcp40228.rt${System.nanoTime()}"
         val dir = Paths.get(freshPathInProject(name))
         val runtimeDir = dir.resolveSibling("$name.runtime")
+        val registered = Collections.synchronizedList(mutableListOf<SModule>())
+        val listener = object : SRepositoryListener {
+            override fun moduleAdded(module: SModule) {
+                if (module.moduleName?.startsWith(name) == true) registered.add(module)
+            }
+        }
         try {
             Files.createDirectories(runtimeDir.resolve("models"))
             Files.writeString(runtimeDir.resolve("models/x.txt"), "user data")
             refreshVfs(runtimeDir)
             val before = projectModuleNames()
+            myProject.repository.addRepositoryListener(listener)
 
-            val obj = createModule("language", name, dir.toString(), withGenerator = true, withRuntime = true)
+            val (obj, messages) = captureLogMessages {
+                createModule("language", name, dir.toString(), withGenerator = true, withRuntime = true)
+                    .also { readOnRepo { myProject.projectModules } }
+            }
 
+            // The log check comes first so that on its own it fails for a leaked loader entry or file listener.
+            assertNoStaleModuleTracking(messages)
+            val captured = synchronized(registered) { registered.toList() }
+            assertTrue("test precondition: the language and its generator were registered: $captured",
+                captured.any { it is Language } && captured.any { it is Generator })
+            readOnRepo {
+                for (module in captured) {
+                    assertFalse("the project must no longer track ${module.moduleName}", myProject.isProjectModule(module))
+                }
+            }
             assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
             assertEquals("INVALID_REQUEST", obj.get("code").asString)
             assertTrue("error must report a complete rollback: $obj",
@@ -565,8 +609,54 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 "user data", Files.readString(runtimeDir.resolve("models/x.txt")))
             assertEquals(setOf("models"), listing(runtimeDir))
         } finally {
+            myProject.repository.removeRepositoryListener(listener)
             deleteQuietly(dir)
             deleteQuietly(runtimeDir)
+        }
+    }
+
+    @Test
+    fun `a failed facet attachment rolls back the language with its folders so a retry succeeds`() {
+        // The producer succeeds, then attaching a facet throws: the call must take back the language, its
+        // generator and every folder it created. The old rollback left generator/ behind, which made the
+        // retry fail on "The generator for the language ... already exists".
+        val name = "test.mcp40228.facet${System.nanoTime()}"
+        val dir = Paths.get(freshPathInProject(name))
+        val facetType = "mcp40228.throwing${System.nanoTime()}"
+        val factory = object : FacetsFacade.FacetFactory {
+            override fun create(module: SModule): SModuleFacet =
+                throw IllegalStateException("facet factory failure staged by the MPS-40228 test")
+        }
+        @Suppress("DEPRECATION") val facets = FacetsFacade.getInstance()
+        facets.addFactory(facetType, factory)
+        try {
+            try {
+                val before = projectModuleNames()
+                val (obj, messages) = captureLogMessages {
+                    JsonParser.parseString(runTool(toolset) {
+                        it.mps_mcp_create_module("language", name, dir.toString(), null, null,
+                            /* withGenerator = */ true, false, false, listOf(facetType))
+                    }).asJsonObject.also { readOnRepo { myProject.projectModules } }
+                }
+
+                assertFalse("expected error envelope: $obj", obj.get("ok").asBoolean)
+                assertEquals("INTERNAL_ERROR: $obj", "INTERNAL_ERROR", obj.get("code")?.asString)
+                assertTrue("error must name the facet failure and a complete rollback: $obj",
+                    obj.get("error").asString.contains("Failed to attach facets") &&
+                        obj.get("error").asString.contains("No module or file was left behind."))
+                assertEquals("the language and its generator must be un-registered", before, projectModuleNames())
+                assertFalse("the language folder this call created must be removed: $dir", Files.exists(dir))
+                assertNoStaleModuleTracking(messages)
+            } finally {
+                facets.removeFactory(factory)
+            }
+            try {
+                expectOk(createModule("language", name, dir.toString(), withGenerator = true).toString())
+            } finally {
+                runTool(toolset) { it.mps_mcp_update_module(name, operation = ModuleOperation.DELETE, deleteFiles = true) }
+            }
+        } finally {
+            deleteQuietly(dir)
         }
     }
 

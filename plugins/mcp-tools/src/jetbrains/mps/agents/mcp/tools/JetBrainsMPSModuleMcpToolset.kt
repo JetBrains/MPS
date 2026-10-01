@@ -250,7 +250,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
     @McpTool
     @McpDescription("""
-        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. An explicit `directory` must be absolute and not a file; on Unix-like systems a solution or language folder must also sit at least three levels below `/` (e.g. `/tmp/x` is rejected, `/tmp/work/x` is fine — an MPS core limitation, MPS-40228). When the producer fails (e.g. a language `withGenerator` whose folder already holds `generator/`), the call un-registers every module it registered and removes the files and folders it created; when that rollback is incomplete, the error names what is left over. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`) plus `data.models` — `[{name, reference, aspect}]` for every model the module already owns. A new Language comes with its aspect models (`structure`, ...) and a new Generator with its `templates@generator` model, so use those references instead of calling `mps_mcp_create_model` for them again. See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
+        Creates a new, empty MPS module of the given type at the specified directory (created if missing). Types: `solution` | `language` | `devkit` | `generator`. `directory` is required for `solution`/`language`/`devkit`. `type=generator` requires `parentLanguage`; its `directory` is optional and defaults to `<parent-language-dir>/generator` when omitted or blank — a pre-existing *empty* directory at the target is reused (only a non-empty directory or a non-directory file is rejected). Creating a generator also scaffolds its `templates@generator` model with a `main` `MappingConfiguration`, so the module is immediately ready for mapping/reduction rules. `type=language` accepts the `withGenerator`/`withSandbox`/`withRuntime` companion flags. The optional `facets` value (one type or a JSON array) is allowed only for `solution`/`language` (rejected upfront for `devkit`/`generator`); unknown facet types fail before the module is produced. An explicit `directory` must be absolute and not a file; on Unix-like systems a solution or language folder must also sit at least three levels below `/` (e.g. `/tmp/x` is rejected, `/tmp/work/x` is fine — an MPS core limitation, MPS-40228). When the producer or the facet attachment after it fails (e.g. a language `withGenerator` whose folder already holds `generator/`), the call un-registers every module it registered and removes the files and folders it created; when that rollback is incomplete, the error names what is left over. Returns the new module's info envelope (same shape as `mps_mcp_get_project_structure(startingPoint=<module>)`) plus `data.models` — `[{name, reference, aspect}]` for every model the module already owns. A new Language comes with its aspect models (`structure`, ...) and a new Generator with its `templates@generator` model, so use those references instead of calling `mps_mcp_create_model` for them again. See `mps-aspect-accessories/references/module-creation.md` for the facets policy and `module-info-fields.md` for the return-envelope fields.
     """
     )
     suspend fun mps_mcp_create_module(
@@ -303,12 +303,6 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         // Holds either the created module or an error string. The block sets exactly one.
         var created: SModule? = null
         var error: String? = null
-        // Companion modules registered alongside `created` by the producer (e.g. a
-        // Language's generator/runtime/sandbox sub-modules). Rollback must un-register
-        // these too, otherwise a failure to attach facets on the primary leaves
-        // orphan companions in the project while the caller sees an error envelope.
-        // The Language branch fills this in; other branches leave it empty.
-        var companionsForRollback: List<SModule> = emptyList()
 
         val normalizedType = type.lowercase()
         // Pre-validate `facets` BEFORE entering the write command: an unknown facet type
@@ -380,6 +374,13 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         withModalTimeoutOnEdt {
             mpsProject.repository.modelAccess.executeCommand {
                 val fs: jetbrains.mps.vfs.openapi.FileSystem = mpsProject.fileSystem
+                // Snapshot what exists before `mkdirs()` below and before the producer runs, so a
+                // failed call can take back exactly what it registered and created (MPS-40228).
+                // The producers register a module before they save it, so a throw from them, or
+                // from the facet attachment after them, would otherwise leave modules registered
+                // and folders on disk. The generator branch has its own rollback and uses neither.
+                val modulesBefore = mpsProject.projectModulesWithGenerators.map { it.moduleReference }.toSet()
+                var createdPaths: CreatedPaths? = null
                 when (normalizedType) {
                     "generator" -> {
                         val parentLangName = parentLanguage
@@ -510,12 +511,6 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                         }
                     }
                     else -> {
-                        // Snapshot what exists before `mkdirs()` below and before the producer runs, so a
-                        // failed call can take back exactly what it registered and created (MPS-40228).
-                        // The producers register a module before they save it, so a throw from them
-                        // would otherwise leave a module registered and its folders on disk.
-                        val modulesBefore = mpsProject.projectModulesWithGenerators.map { it.moduleReference }.toSet()
-                        var createdPaths: CreatedPaths? = null
                         try {
                             val moduleDir = Paths.get(fs.getFile(dir).path)
                             createdPaths = CreatedPaths.snapshot(buildList {
@@ -536,12 +531,10 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                             val dirFile = fs.findExistingFile(dir) ?: fs.getFile(dir).also {
                                 if (!it.mkdirs()) throw McpInvalidRequestException("Could not create the directory '$dir'")
                             }
-                            val (module, companions) = produceModule(
+                            created = produceModule(
                                 mpsProject, normalizedType, name, dirFile, virtualFolder,
                                 withGenerator, withSandbox, withRuntime,
                             )
-                            created = module
-                            companionsForRollback = companions
                         } catch (t: Throwable) {
                             // Take back what the producer registered and created before reporting, so a
                             // failed call leaves neither a registered module nor folders behind, and the
@@ -578,25 +571,27 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 // language-specific (e.g. `tests` for `@tests` model containers) is the
                 // caller's responsibility. Facet types were pre-validated above.
                 //
-                // If this fails after the producer has already registered the module, we
-                // must un-register it before returning the error — otherwise the caller
-                // sees a failure envelope while a partial module lingers in the project.
+                // If this fails after the producer has already registered the module, the same
+                // rollback as for a failed producer takes back every module and folder the call
+                // added — otherwise the caller sees a failure envelope while a partial module
+                // lingers in the project, and a retry trips over its leftover folders.
                 val createdModule = created
                 if (createdModule != null && requestedFacets.isNotEmpty()) {
                     val abstractModule = createdModule as? AbstractModule
                     val descriptor = abstractModule?.moduleDescriptor
                     if (abstractModule == null || descriptor == null) {
-                        error = if (abstractModule == null) {
-                            "Cannot attach facets to module '${createdModule.moduleName}': not an AbstractModule"
-                        } else {
-                            "Cannot attach facets to module '${createdModule.moduleName}': descriptor is null"
-                        }
                         // Roll back the producer's registration: the user asked for a module
                         // with these facets and is going to see an error, so leaving the
                         // half-built module behind would be worse than the failure itself.
-                        rollbackPartialCreation(mpsProject, createdModule, companionsForRollback)
-                        created = null
+                        val leftovers = rollbackFailedCreation(mpsProject, modulesBefore, createdPaths)
                         rolledBack = true
+                        created = null
+                        errorCode = McpErrorCode.INTERNAL_ERROR
+                        error = if (abstractModule == null) {
+                            "Cannot attach facets to module '${createdModule.moduleName}': not an AbstractModule. $leftovers"
+                        } else {
+                            "Cannot attach facets to module '${createdModule.moduleName}': descriptor is null. $leftovers"
+                        }
                         return@executeCommand
                     }
                     // Mutate `descriptor.moduleFacetDescriptors` in-place, then call
@@ -639,12 +634,21 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                             abstractModule.save()
                         }
                     } catch (t: Throwable) {
+                        // Roll back before any rethrow, as the producer catch does, so an Error
+                        // (e.g. an AssertionError under -ea) doesn't leak state either.
+                        val leftovers = rollbackFailedCreation(mpsProject, modulesBefore, createdPaths)
+                        rolledBack = true
                         rethrowIfCancellation(t)
                         if (t is Error) throw t
-                        error = "Failed to attach facets to module '${createdModule.moduleName}': ${t.message ?: t.toString()}"
-                        rollbackPartialCreation(mpsProject, createdModule, companionsForRollback)
                         created = null
-                        rolledBack = true
+                        // Not a collision: facet factories, the descriptor reload and save() fail
+                        // only unexpectedly, so anything but an McpUserException is internal.
+                        errorCode = (t as? McpUserException)?.errorCode ?: McpErrorCode.INTERNAL_ERROR
+                        if (t !is McpUserException) {
+                            logger.warn("Failed to attach facets to module '${createdModule.moduleName}'", t)
+                        }
+                        val cause = (t.message ?: t.toString()).trimEnd('.')
+                        error = "Failed to attach facets to module '${createdModule.moduleName}': $cause. $leftovers"
                         return@executeCommand
                     }
                 }
@@ -1223,10 +1227,9 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     }
 
     /**
-     * Runs the producer for a `solution`, `devkit` or `language` and returns the new module plus the
-     * companions it registered alongside (a Language's generator/runtime/sandbox). The producers
-     * register a module before saving it, so a throw from here can leave modules registered; the
-     * caller rolls those back.
+     * Runs the producer for a `solution`, `devkit` or `language` and returns the new module. The
+     * producers register a module (and a Language's generator/runtime/sandbox companions) before
+     * saving it, so a throw from here can leave modules registered; the caller rolls those back.
      */
     private fun produceModule(
         mpsProject: MPSProject,
@@ -1237,16 +1240,16 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         withGenerator: Boolean,
         withSandbox: Boolean,
         withRuntime: Boolean,
-    ): Pair<SModule, List<SModule>> = when (normalizedType) {
+    ): SModule = when (normalizedType) {
         "solution" -> {
             val sol = SolutionProducer(mpsProject).create(name, dirFile)
             applyVirtualFolder(mpsProject, sol, virtualFolder)
-            sol to emptyList()
+            sol
         }
         "devkit" -> {
             val dk = DevkitProducer(mpsProject).create(name, dirFile)
             applyVirtualFolder(mpsProject, dk, virtualFolder)
-            dk to emptyList()
+            dk
         }
         "language" -> {
             val lp = LanguageAndSolutionsProducer(mpsProject)
@@ -1267,23 +1270,16 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
             lp.runtimeSolution.ifPresent { it.save() }
             lp.sandboxSolution.ifPresent { it.save() }
             lang.generators.forEach { it.save() }
-            // Return companions so a later facet-attachment failure can
-            // unregister them alongside the Language. Without this, the
-            // create-call's "no partial state is left behind" guarantee
-            // would not hold for `withGenerator`/`withRuntime`/`withSandbox`.
-            val companions = mutableListOf<SModule>()
-            lp.runtimeSolution.ifPresent { companions.add(it) }
-            lp.sandboxSolution.ifPresent { companions.add(it) }
-            lang.generators.forEach { companions.add(it) }
-            lang to companions
+            lang
         }
         else -> throw IllegalStateException("Unexpected module type '$normalizedType'")
     }
 
     /**
-     * Undoes a failed solution/devkit/language creation: un-registers every module registered since
-     * [modulesBefore] and removes what [createdPaths] recorded as new; the caller saves the project
-     * after the command, so `.mps/modules.xml` no longer lists them. Returns the sentence that ends the error message, which
+     * Undoes a failed solution/devkit/language creation, whether the producer or the facet
+     * attachment after it failed: un-registers every module registered since [modulesBefore] and
+     * removes what [createdPaths] recorded as new; the caller saves the project after the command, so
+     * `.mps/modules.xml` no longer lists them. Returns the sentence that ends the error message, which
      * states what is left over when the best-effort rollback did not get everything.
      */
     private fun rollbackFailedCreation(
@@ -1305,7 +1301,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
             return "No module was left registered; $partialCheck."
         }
         val parts = listOfNotNull(
-            stillRegistered.takeIf { it.isNotEmpty() }?.let { "still registered: ${it.joinToString(", ")}" },
+            stillRegistered.takeIf { it.isNotEmpty() }?.let { "still in the project: ${it.joinToString(", ")}" },
             notRemoved.takeIf { it.isNotEmpty() }?.let { "not removed: ${it.joinToString(", ")}" },
             partialCheck,
         )
@@ -1314,18 +1310,60 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     }
 
     /**
-     * Un-registers every project module that is not in [before], generators first (they reference
-     * their parent Language), without deleting descriptor files: file removal is [CreatedPaths]' job,
-     * which knows whether a descriptor predates the call. Returns the names of modules still
-     * registered afterwards. Needs the command's write access.
+     * Un-registers every project module that is not in [before], without deleting files: file removal
+     * is [CreatedPaths]' job, which knows whether a file predates the call. Returns the names of the
+     * modules the project still tracks afterwards, marking those that only its module list still holds.
+     * Needs the command's write access.
+     *
+     * The order follows how the project tracks a Language's generator. LanguageProducer adds the
+     * generator with `ProjectBase.addModule`, so it has its own module-loader entry and file-listener
+     * registration, both keyed to the language's `.mpl`. Unregistering it through the language
+     * descriptor, as for a generator of a surviving language, leaves both behind: MPS then logs
+     * "is not found in the project repository" on every project-module listing, and the `.mpl`
+     * listener is never released (MPS-40228 live review). So each rolled-back language goes first,
+     * right after the generators it owns, each through `removeModule`. Only generators of a surviving
+     * language take the descriptor path.
      */
-    private fun rollbackModulesRegisteredSince(mpsProject: MPSProject, before: Set<SModuleReference>): List<String> {
-        fun added() = mpsProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
-        for (module in added().sortedBy { if (it is Generator) 0 else 1 }) {
-            // One failing module must not stop the others; the re-diff below reports it.
-            runCatching { rollbackSingleModule(mpsProject, module, deleteDescriptor = false) }
+    internal fun rollbackModulesRegisteredSince(mpsProject: MPSProject, before: Set<SModuleReference>): List<String> {
+        val added = mpsProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
+        fun registered(module: SModule) = mpsProject.repository.getModule(module.moduleReference.moduleId) != null
+        // One failing module must not stop the others; the check below reports it.
+        val languages = added.filterIsInstance<Language>()
+        for (language in languages) {
+            // removeModule(language) would drop its owned generators from the module loader too, but
+            // silently, so the file tracker keeps the .mpl listener. Removing each generator first fires
+            // its own moduleRemoved. Its side effect, dropping the project-descriptor entry for the .mpl,
+            // is safe only because that entry belongs to the language being removed right after.
+            for (generator in language.ownedGenerators) {
+                if (registered(generator)) runCatching { mpsProject.removeModule(generator) }
+            }
+            if (registered(language)) runCatching { rollbackSingleModule(mpsProject, language) }
         }
-        return added().map { it.moduleName ?: it.moduleReference.toString() }
+        for (module in added) {
+            if (module !is Language && module !is Generator && registered(module)) {
+                runCatching { rollbackSingleModule(mpsProject, module) }
+            }
+        }
+        for (generator in added.filterIsInstance<Generator>()) {
+            if (registered(generator)) runCatching { rollbackSingleModule(mpsProject, generator) }
+        }
+        // A module can be gone from the repository and still be tracked by the project's module
+        // loader, which getProjectModules() silently skips; isProjectModule() sees that entry. It is
+        // true by design for a generator of a language the project keeps, so ask it only for a
+        // generator whose language was rolled back too.
+        val rolledBackLanguages = languages.map { it.moduleReference }.toSet()
+        return added.mapNotNull { module ->
+            val moduleName = module.moduleName ?: module.moduleReference.toString()
+            when {
+                registered(module) -> moduleName
+                runCatching {
+                    val languageRolledBack = module !is Generator ||
+                        module.sourceLanguage()?.sourceModuleReference in rolledBackLanguages
+                    languageRolledBack && mpsProject.isProjectModule(module)
+                }.getOrDefault(false) -> "$moduleName (only in the project's module list, which a restart of MPS clears)"
+                else -> null
+            }
+        }
     }
 
     /**
@@ -1379,76 +1417,30 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     }
 
     /**
-     * Best-effort un-registration of a module the producer has just registered with the
-     * project, used when a follow-up step (e.g. facet attachment) fails before the create
-     * call returns. Any throwable during rollback is swallowed: the primary error has
-     * already been recorded and is more useful to the caller than a cleanup failure.
+     * Best-effort un-registration of one module in a rollback. Any throwable except an [Error] is
+     * swallowed: the primary error has already been recorded and is more useful to the caller than
+     * a cleanup failure. Descriptor and other files are left alone; [CreatedPaths] removes them.
      *
-     * Strategy by module kind:
-     * - Generator: registration in the create path happens via
-     *   `parentLang.setModuleDescriptor(...)` → `Language.revalidateGenerators` (the
-     *   create path does NOT call `mpsProject.addModule(...)` separately; see the
-     *   comment in the "generator" branch of `mps_mcp_create_module`). So the symmetric
-     *   rollback is to drop the entry from the parent's `generators` and re-set the
-     *   descriptor, which causes `revalidateGenerators` to unregister the orphan. As a
-     *   safety belt we also call `removeModule` if the generator is somehow still
-     *   attached to the project repository after that.
-     * - Everything else (Solution, DevKit, Language): the producer registered the module
-     *   directly with the project, so `removeModule` is the matching reversal.
+     * - Generator: reached only for a generator whose language survives the rollback (see
+     *   [rollbackModulesRegisteredSince]). The generator branch registers it through
+     *   `parentLang.setModuleDescriptor(...)` → `Language.revalidateGenerators`, so the symmetric
+     *   rollback is to drop the entry from the parent's `generators` and re-set the descriptor,
+     *   which makes `revalidateGenerators` unregister it. As a safety belt `removeModule` follows
+     *   if the generator is somehow still attached. Its descriptor file is the parent's `.mpl`, so
+     *   nothing may ever delete it on the generator's behalf.
+     * - Everything else: the producer registered the module with the project, so `removeModule` is
+     *   the matching reversal.
      *
-     * After un-registration we also best-effort-delete the module's on-disk descriptor
-     * file (`.msd` / `.mpl` / `.devkit`). Otherwise a caller retrying
-     * `mps_mcp_create_module` with the same `name`+`directory` would trip over the
-     * leftover descriptor and either fail to create or re-load stale module state.
-     *
-     * [companions] lets the create call hand in sibling modules the producer registered
-     * alongside [module] (e.g. a Language's generator/runtime/sandbox sub-modules).
-     * Each companion is rolled back via the same single-module logic before the primary,
-     * so dependent companions (generators referencing the language) are dropped first.
-     *
-     * What is NOT cleaned up (intentionally, to keep this conservative):
-     * - Model files / module sub-directories the producer may have laid out next to the
-     *   descriptor. The descriptor is the binding piece for "is this module loadable";
-     *   stale model files alone won't block a retry.
-     *
-     * Threading / write-access contract: this helper MUST be invoked inside
-     * `mpsProject.repository.modelAccess.executeCommand { ... }`. It calls
-     * `mpsProject.removeModule(...)`, `parent.setModuleDescriptor(...)`,
-     * `abstractModule.save()`, and `descriptorFile.delete()`, all of which require an
-     * active write/command context. Production callers in `mps_mcp_create_module` are
-     * already inside `executeCommand`; integration tests wrap each direct invocation in
-     * `executeCommand { ... }` for the same reason. Calling this outside a command will
-     * throw from the model-access layer.
-     *
-     * Visible to integration tests so the Generator branch can be exercised directly.
+     * Must run inside `modelAccess.executeCommand { ... }`: `removeModule`, `setModuleDescriptor`
+     * and `save()` all need write access.
      */
-    internal fun rollbackPartialCreation(
-        mpsProject: MPSProject,
-        module: SModule,
-        companions: List<SModule> = emptyList(),
-    ) {
-        // Roll back companions first. Generators reference their parent Language via
-        // `sourceModuleReference`, so dropping them before the language keeps that lookup
-        // valid during their own rollback. Solutions (runtime/sandbox) are independent
-        // and order is immaterial for them.
-        for (companion in companions) {
-            rollbackSingleModule(mpsProject, companion)
-        }
-        rollbackSingleModule(mpsProject, module)
-    }
-
-    private fun rollbackSingleModule(mpsProject: MPSProject, module: SModule, deleteDescriptor: Boolean = true) {
+    private fun rollbackSingleModule(mpsProject: MPSProject, module: SModule) {
         try {
-            // Capture the descriptor file before un-registration: `removeModule` /
-            // `setModuleDescriptor` may tear down descriptor wiring so `descriptorFile`
-            // returns null afterwards.
-            val descriptorFile: IFile? = (module as? AbstractModule)?.descriptorFile
-
             if (module is Generator) {
                 // `Generator.sourceLanguage()` reads `mySourceLanguage0` directly and can
                 // return null for a partially constructed generator (e.g. a Language whose
                 // `revalidateGenerators` failed mid-flight). NPE-ing here would abort the
-                // rollback walk and strand the remaining companions plus the primary —
+                // rollback walk and strand the remaining modules —
                 // exactly the partial state this helper exists to prevent. Fall through to
                 // the `removeModule` safety belt below when the parent link is missing.
                 val parentRef = runCatching { module.sourceLanguage()?.sourceModuleReference }.getOrNull()
@@ -1468,32 +1460,10 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                     runCatching { mpsProject.removeModule(module) }
                 }
             } else {
-                // Idempotent: a Language whose generator companions were already rolled
-                // back may still be registered; removing a module not in the repo throws
-                // in some MPS revisions, so check first.
+                // Idempotent: removing a module not in the repo throws in some MPS revisions,
+                // so check first.
                 if (mpsProject.repository.getModule(module.moduleReference.moduleId) != null) {
                     mpsProject.removeModule(module)
-                }
-            }
-
-            // Best-effort: remove the descriptor file so a retry with the same
-            // name+directory can succeed. Failure here is swallowed — the file may
-            // be locked, missing, or unreadable, none of which warrant overriding
-            // the primary error the caller is about to see.
-            //
-            // CRITICAL: skip this for Generator modules. `Language.revalidateGenerators`
-            // constructs `Generator` with the parent Language's `.mpl` as its descriptor
-            // file (see `new Generator(..., getDescriptorFile(), ...)`), so
-            // `(generator as AbstractModule).descriptorFile` returns the parent's `.mpl`,
-            // NOT a generator-specific file. Deleting it here would corrupt the parent
-            // Language on disk — exactly the kind of data-loss this helper must not
-            // cause. Generators have no separate descriptor to clean up; the parent's
-            // descriptor was already re-saved above with the generator entry removed.
-            if (deleteDescriptor && module !is Generator) {
-                runCatching {
-                    if (descriptorFile != null && descriptorFile.exists()) {
-                        descriptorFile.delete()
-                    }
                 }
             }
         } catch (e: Throwable) {
