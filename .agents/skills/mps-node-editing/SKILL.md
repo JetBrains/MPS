@@ -29,7 +29,7 @@ All child, property, and reference operations on existing nodes go through `mps_
 | operation × kind        | Required parameters                                           | Notes |
 |-------------------------|---------------------------------------------------------------|-------|
 | `ADD` × `CHILD`         | `nodeReference` (parent), `childRole`, `childJson`            | Optional `position` (0-based; null/-1 = append) and `dryRun`. A `position` ≥ the current child count clamps to an append; a negative value other than -1 is rejected. The response's `data.index` reports the actual landing index. |
-| `SET` × `CHILD`         | `childNodeRef` (+ `childJson` to replace)                     | Replaces an existing child; preserves its position in the role. Optional `dryRun`. **Omit `childJson` to delete the child** — `mps_mcp_update_node` offers no other way to delete one (a whole-root rewrite via `mps_mcp_update_root_node_from_json` can also drop children). |
+| `SET` × `CHILD`         | `childNodeRef` (+ `childJson` to replace)                     | Replaces an existing child; preserves its position in the role. Optional `dryRun`. The success envelope is the parent's (`data.reference`), not the new child's, for both a replacement and a deletion; the replaced child's reference is stale. **Omit `childJson` to delete the child** — `mps_mcp_update_node` offers no other way to delete one (a whole-root rewrite via `mps_mcp_update_root_node_from_json` can also drop children). |
 | `SET` × `PROPERTY`      | `properties` = `[[nodeRef, propertyName, value], …]`          | Batch operation; returns per-row results. A row whose `value` is an explicit `null` deletes that property; a two-element row is rejected, not treated as a delete. |
 | `SET` × `REFERENCE`     | `references` = `[[nodeRef, role, targetRefOrName], …]`        | Batch operation; `targetRefOrName` accepts an `r:...` ref or a plain name. A plain name is resolved within the reference role's search scope; if it cannot be resolved the call fails (`NOT_FOUND`), preserves the previous reference value, and stores no dangling reference. A row whose `targetRefOrName` is an explicit `null` deletes that reference; a two-element row is rejected, not treated as a delete. |
 
@@ -39,7 +39,7 @@ All child, property, and reference operations on existing nodes go through `mps_
 
 For project models, `MOVE_NODE_TO_PARENT` has two intentional forms. Supply a non-null `newParentRef` and `role` to reparent the node. To promote it to a root, omit `newParentRef` and supply `modelReference`. Do not send `"newParentRef": null`: explicit null is rejected so it cannot accidentally select the promotion form.
 
-`childJson` accepts the blueprint as real JSON, as that JSON written as a string (max 4 KB), **or** as an absolute path to a file containing it. Use the file form for large blueprints to avoid MCP-transport truncation.
+`childJson` accepts the blueprint as real JSON, as that JSON written as a string (max 4 KB), **or** as an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Over 4 KB, use the file form to avoid MCP-transport truncation.
 
 Where a documented null means something, how you express it depends on where it sits. For `SET` × `CHILD`, the null is the `childJson` *parameter*: express it by **omitting the parameter** or sending an unquoted JSON null. For `SET` × `PROPERTY`/`REFERENCE` the null is the third *element* of a triplet, so it must be written out as an unquoted JSON null — omitting the `properties`/`references` parameter is rejected as missing, and a two-element row is rejected as a malformed triplet, not read as a delete. In neither case is the 4-character string `"null"` the null form — for `childJson` it is rejected as `Input is the string 'null', not a JSON object/array or a file path`.
 
@@ -59,7 +59,7 @@ Where a documented null means something, how you express it depends on where it 
 1. **Identify** the target node (existing) or parent model (new root).
 2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
 3. **Author the JSON** following the unified blueprint format.
-4. **Insert** with `dryRun: true` first if the blueprint is large. Check the response: an empty `warnings` array means staging was clean. A "did not resolve" warning means the target is not in the model yet, and the production write will store a dynamic reference for it. That is expected for a name defined by another root of the same batch, which the real insert resolves, so a dry run adds nothing for a batch whose references point at each other; check `fixReferences.stillBroken` after the real insert instead. Any other listed target will stay broken, so resolve it first.
+4. **Insert.** A `dryRun: true` call checks concepts, roles, properties and assignability, but it never looks up a reference target given by name: it warns "is a name, not looked up" for every one, including names that exist. Do not rewrite names or dry-run again because of those warnings. Fix only the "names no node" and "matches no Model.Root" warnings, and after the real write check `fixReferences.stillBroken`. The full rule is under "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 5. **Validate** with `mps_mcp_check_root_node_problems`. Reported problems may carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.
 6. **Repair** broken refs with `mps_mcp_alter_nodes FIX_REFERENCES` if validation surfaces resolvable-but-unresolved targets.
 
@@ -76,7 +76,7 @@ Where a documented null means something, how you express it depends on where it 
 
 The tools that accept a node JSON blueprint (`mps_mcp_update_node` for `ADD`/`SET` × `CHILD`, `mps_mcp_insert_root_node_from_json`, `mps_mcp_update_root_node_from_json`) all use the same `childJson` / `json` parameter convention:
 
-- The parameter can be **either** the JSON itself (max 4 KB) — sent as real JSON or as that JSON written as a string, both equivalent — **or** an absolute path to a local file containing it.
+- The parameter can be **either** the JSON itself (max 4 KB) — sent as real JSON or as that JSON written as a string, both equivalent — **or** an absolute path to a TEMPORARY file (inside the system temp directory) containing it; see `references/json-format.md` for the accepted directories.
 - `mps_mcp_insert_root_node_from_json` and `mps_mcp_update_root_node_from_json` additionally accept a **top-level array** for a bulk insert, which `mps_mcp_update_node`'s `childJson` does not — it takes a single object (or a file path).
 - Files may contain either a **raw node blueprint** or the **full MCP response envelope** produced by `mps_mcp_print_node`; in the latter case the `data` field is used.
 - **Ordinary input files are never deleted.** Only temporary JSON files created by this toolset may be cleaned up after reading (and only when `dryRun=false`).
@@ -125,12 +125,13 @@ Practical consequences:
 - **`dryRun: true` does not run factories at all** — their side effects land on the model and module
   and nothing rolls them back. A dry run therefore validates the blueprint, not the final node.
 - **Factory side effects survive a failed call.** They are applied while the blueprint is being
-  built, before anything is attached, and no tool rolls them back. If a batch insert fails on its
-  third root, the first two roots are not inserted but whatever their factories wrote to the model
-  and module — imports, module dependencies, a language-version bump — stays. Re-read the affected
-  state instead of assuming a failed call changed nothing. A stray language-version bump is undone in
-  one call: `mps_mcp_update_module(operation="SYNC_VERSION")` re-derives the version from the
-  scripts that actually exist.
+  built, and a failed call removes only the nodes it created, never what the factories wrote
+  elsewhere. If a batch insert fails on its third root, the first two roots are not inserted but
+  whatever their factories wrote to the model and module — imports, module dependencies, a
+  language-version bump — stays. Re-read the affected state instead of assuming a failed call
+  changed nothing. A stray language-version bump is undone in one call:
+  `mps_mcp_update_module(operation="SYNC_VERSION")` re-derives the version from the scripts that
+  actually exist.
 - **A factory that *throws* is reported; one that swallows its own exception is not.** A throw
   becomes a `warnings` entry naming the concept, and the node is still created — treat its
   factory-initialized state as absent. But a factory that catches internally reports nothing and
@@ -163,9 +164,9 @@ python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json
 ```
 
 Then `mps_mcp_insert_root_node_from_json(modelReference=…, json="<that path>")` and read
-`fixReferences.stillBroken` in its response. Skip the `dryRun=true` call, or ignore its "did
-not resolve" warnings for names the table itself defines: a dry run cannot see roots of the
-same batch, and the real insert resolves them.
+`fixReferences.stillBroken` in its response. Skip the `dryRun=true` call, or ignore its "is a
+name, not looked up" warnings: a dry run never looks up name targets, whether the table defines
+them or they already exist, and the real insert resolves them.
 
 To check the inserted model against the table, dump it once and run the same script with
 `--verify`. That replaces a hand-written comparison script:

@@ -1,6 +1,11 @@
 # Plan: module scope for `check_root_node_problems` (D63)
 
-Status: analysis done (2026-09-25); decisions D1–D6 (§5) await sign-off; nothing implemented.
+Status: analysis done (2026-09-25); re-checked against HEAD `78401019be1f` on 2026-09-30 (line numbers
+refreshed, no design change needed). Review round 1 (Reviewer6, 2026-09-30): D1–D6 agreed; B1, B2 and
+N1–N6 folded in below (§3.1, §3.4–§3.6, §3.8, Phase 0, Phase 2, decision B2). Round 2: LGTM, with
+four notes folded in (test placement, §7, decision naming, Phase 3). **Implemented 2026-09-30
+(MPS-40223)**; implementation review (Reviewer6): LGTM, and its two small code notes (skip a JSON-null
+near-miss value; compare `nanoTime` by difference) were applied. See "Implementation notes" at the end.
 Defect record: D63 in `study/docs-defects.md`, filed from round 15 (`HOTSPOT_REPORT_round15.md` §4
 item 2). Round 15's evidence is in `~/MPSProjects/mcp-study/runs-r16`; round 13's is in `runs-r14`.
 
@@ -45,27 +50,30 @@ The plan:
 
 ### F2. The `modelReference` sentence is unconditional [C]
 
-- `JetBrainsMPSNodeMcpToolset.kt:903-909` emits the sentence whenever the value resolves to neither
+- `JetBrainsMPSNodeMcpToolset.kt:904-911` emits the sentence whenever the value resolves to neither
   a node nor a model.
 - The sentence is only true when the caller also sent `modelReference`. A call that sends *only*
   `modelReference` never gets this far: `nodeReference` is blank, so `rejectMissingParameters`
-  (`:720-728`) answers first.
-- The test at `JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.kt:1512-1525` asserts the sentence
+  (`:721-729`) answers first.
+- The test at `JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.kt:1733-1747` asserts the sentence
   for a ghost reference passed as `nodeReference`. It pins the defect in place and has to flip.
 
 ### F3. The tool body can see which keys were sent [C][M]
 
 - `com.intellij.mcpserver.McpCallInfo.rawArguments` is a kotlinx `JsonObject`. It is reachable
   from the tool coroutine through `currentCoroutineContext().mcpCallInfoOrNull`
-  (`McpCallInfoKt`, read with `javap` from `plugins/mcpserver/lib/mcpserver.jar`).
-- The plugin already reads the same element: `McpCallOutcomes.kt:46` reads the call id, and
+  (`McpCallInfoKt`, read with `javap` from `plugins/mcpserver/lib/mcpserver.jar`), or through
+  `currentCoroutineContext()[McpCallAdditionalDataElement.Key]?.additionalData`, the route the plugin
+  already uses.
+- The plugin already reads the same element: `McpCallOutcomes.kt:45` reads the call id that way, and
   `McpCallLogListener.kt:89-90` reads `rawArguments`. No tool body reads it yet.
 - **Dropped keys stay in it [M].** In round 12 (`runs-r13/S1-sonnet-1`), the worker sent a plural
   `nodeReferences` key, which the binder drops. The call-log line for that call (callId 167) has
   `argsBytes: 283`, which is exactly the compact JSON length of the full input, dropped key
   included.
-- The test stub passes an empty `rawArguments` (`McpIntegrationTestBase.kt:481` onwards).
-  `callThroughBridge` (`:147-158`) has to pass its `args` there before a test can cover the
+- The constructor's fifth argument is `rawArguments` and the sixth is `meta` (`javap`).
+- The test stub passes an empty `rawArguments` (`McpIntegrationTestBase.kt:481-510`).
+  `callThroughBridge` (`:147-159`) has to pass its `args` there before a test can cover the
   conditional sentence.
 
 ### F4. What "the models a module owns" means in MPS [C]
@@ -89,24 +97,27 @@ All in `common/AbstractOps.kt` unless noted:
 
 | need | existing code |
 |---|---|
-| module by reference or name, project first | `resolveModulePreferringProject` (`:3063`) |
-| a language plus its owned generators | `expandModules` (`:3069`) |
-| every checker on one root | `runRootCheckers` (`:2004`) |
-| model-level validation | `ModelValidator(host, model).validate(…)` (node toolset `:852`) |
-| model report object | `modelWithProblemsJsonObject` (`:2391`) |
-| per-root summary row, counts | `rootProblemSummary` (node toolset `:940`), `problemCounts` (`:1939`) |
-| inline or temp-file envelope | `finalizeResult` (`:1179`) |
+| module by reference or name, project first | `resolveModulePreferringProject` (`:3167`) |
+| a language plus its owned generators | `expandModules` (`:3173`) |
+| every checker on one root | `runRootCheckers` (`:2076`) |
+| model-level validation | `ModelValidator(host, model).validate(…)` (node toolset `:853`) |
+| model report object | `modelWithProblemsJsonObject` (`:2463`) |
+| per-root summary row, counts | `rootProblemSummary` (node toolset `:941`), `problemCounts` (`:2011`) |
+| inline or temp-file envelope | `finalizeResult` (`:1181`) |
 | near-miss spellings per parameter | `RequiredParameterNearMisses` (`common/RequiredParameters.kt:61`) |
 
-The model branch (`JetBrainsMPSNodeMcpToolset.kt:849-901`) is one inline block. The module branch
+The model branch (`JetBrainsMPSNodeMcpToolset.kt:845-902`) is one inline block. The module branch
 needs its per-model part, so that part is extracted first (Phase 1).
 
-### F6. A long sweep would be reported as a modal dialog [C][I]
+### F6. A long sweep would be reported as a modal dialog [C]
 
 - The check runs in `executeShortReadOnEdt` under `MODEL_OPERATION_TIMEOUT_MS = 30_000`
-  (`AbstractOps.kt:152`), through `withModalTimeout` (`:2594`), which is `withTimeout`.
-- A blocking read cannot be cancelled while it runs. So a read that overruns finishes, the timeout
-  then surfaces as `McpModalBlockedException`, and the finished result is thrown away [I].
+  (`AbstractOps.kt:154`), through `withModalTimeout` (`:2666`), which is `withTimeout`.
+- A blocking read cannot be cancelled while it runs. So a read that overruns finishes; then the
+  `withContext` resumption throws on the cancelled job, the timeout surfaces as
+  `McpModalBlockedException`, and the finished result is thrown away.
+- The 30 s also covers the wait for the EDT and the read lock (`withModalTimeoutOnEdt`,
+  `AbstractOps.kt:2702-2716`), not just the body.
 - The S1 language module takes about 0.15 s [M] (F1). A module of MPS's own size could take many
   times the 30 s budget [I]. Phase 0 measures it.
 
@@ -138,6 +149,10 @@ Order: node → model → module. Node and model resolution are unchanged. The m
 `<uuid>(name)` and a bare module name, the project's modules first and then the repository.
 Non-project modules are allowed, as they already are for models; the check only reads.
 
+So a non-project (repository) model with a given bare name beats a project module of the same
+name. That is rare, and the §3.8 warning covers it: the module lookup there runs whenever the model
+was found by bare name, wherever it was found.
+
 ### 3.2 What is checked
 
 - **Modules:** `expandModules(listOf(module))`, i.e. the module plus a language's owned generators
@@ -156,7 +171,7 @@ Non-project modules are allowed, as they already are for models; the check only 
 
 - No new parameter. `nodeReference` takes the module forms too, the way it took the model forms
   under D33. That keeps the tool's own rule: everything goes under `nodeReference`.
-- `autoApplyQuickFixes=true` → ignored, with a warning, as the model scope does (`:863-865`).
+- `autoApplyQuickFixes=true` → ignored, with a warning, as the model scope does (`:864-866`).
 - `onlyNodesWithProblems` → chooses `nodes` or `tree` inside each model report.
 - `perRoot` → §3.4.
 
@@ -164,40 +179,61 @@ Non-project modules are allowed, as they already are for models; the check only 
 
 The response mirrors the model scope, one level up.
 
-- **Clean:** `data: "no problems found"`,
-  `details: {scope: "module", modelsChecked: <N>, rootsChecked: <sum>}`.
+- **Details, every answer:** `{scope: "module", modulesChecked: [<module names>], modelsChecked: <N>,
+  rootsChecked: <sum>}`. `modulesChecked` is the module plus a language's generators, so the agent
+  sees that the generators were included.
+- **Module-level problems** (from `validateModule`) are rows `{module, severity, message}`. Every row
+  names its module, so a generator's problem is told apart from the language's.
+- **The clean verdict (decision B2).** The answer is clean when there is no module-level *error*, no model
+  problem and no root problem. Module-level *warnings* do not flip it: `LanguageValidator` warns about
+  routine states of healthy modules (a missing `extends` for `IValidIdentifier` subconcepts, a
+  superfluous extended module, a missing runtime module; its own comment says it would make the first
+  an error if it were not so common). Counting them would keep a normal language from ever answering
+  "no problems found", which is D1's reason for mirroring the model scope. Model- and root-level
+  warnings still count, as today.
+- **Clean:** `data: "no problems found"`, plus `details.moduleProblems: [rows]` when there are
+  module-level warnings.
 - **Problems (`perRoot=false`, the default):** `data` is the module object:
-  `{name, reference, problems: [module-level problems], models: [...]}`.
+  `{name, reference, problems: [module-level rows, warnings included], models: [...]}`.
   - Each `models` entry is exactly the model-scope report: `{name, reference, module, problems,
     roots: [...]}`.
   - Only models with problems are listed, as `roots` lists only roots with problems. `details` is
-    the same as for a clean module.
-  - A module-level problem that comes from an owned generator carries `module: <generator name>`.
+    the same as for a clean module, without `moduleProblems` (they are in `data`).
 - **`perRoot=true`:** `data: [{model, name, rootsChecked, errors, warnings}]` for every model, clean
   ones included. This is D63's shape.
   - `errors` and `warnings` count the model-level problems plus every root's problems. So `0`/`0`
     means the model is clean.
-  - Module-level problems go to `details.moduleProblems`, with a warning to re-run with
-    `perRoot=false`, as the model scope does for `modelProblems` (`:873-879`).
+  - Module-level rows go to `details.moduleProblems` as the full list, not a count, so no second
+    call is needed to read them (the D83 lesson). When one is an error, a warning says so: "The
+    module itself has N error(s); see details.moduleProblems".
 - Every answer goes through `finalizeResult(…, maxInlineBytes, details, warnings)`.
 
 Example for the F1 call, clean, assuming the language owns only the five aspect models the worker
 then checked [I]:
 
 ```
-{"ok":true,"data":"no problems found","details":{"scope":"module","modelsChecked":5,"rootsChecked":18}}
+{"ok":true,"data":"no problems found","details":{"scope":"module","modulesChecked":["mcp.study.recipes"],"modelsChecked":5,"rootsChecked":18}}
 ```
 
 ### 3.5 Time budget (D4)
 
-- `MODULE_CHECK_BUDGET_MS = 20_000`, checked between models, well inside the 30 s timeout.
-- On overrun, stop after the current model:
+- `MODULE_CHECK_BUDGET_MS = 20_000`, well inside the 30 s timeout.
+- **The clock starts at tool entry (N1),** not at body entry. The suspend tool function takes
+  `deadline = System.nanoTime() + budget` before `withMpsProject` and passes it to the body. The 30 s
+  timeout also covers the EDT and read-lock wait (F6), so a body-only budget could still overrun.
+- **The check runs between models.** The first model is always checked, so every call makes
+  progress. Before each later model, stop when `now + slowest model so far` would pass the deadline.
+- On a stop:
   - add `details.truncated: true` and `details.modelsNotChecked: [<model refs>]`;
   - add the warning "Stopped after N of M models (20 s budget); check the rest by model reference".
 - A truncated clean run answers `data: "no problems found in N of M models"`, never the bare
   `"no problems found"`.
-- The budget is a parameter of the private body, defaulted like `withModalTimeoutOnEdt`'s
-  `timeoutMs`, so a test can pass 0.
+- **With `perRoot=true`,** a truncated run has rows only for the checked models. The rest are in
+  `details.modelsNotChecked` (N2).
+- **Test hook (B1):** `internal var moduleCheckBudgetMs: Long = MODULE_CHECK_BUDGET_MS` on
+  `JetBrainsMPSNodeMcpToolset`. The body is private and the tests call the public tool, but the test
+  sources are in the same IDEA module (the class already has `internal` members, `:439`, `:458`).
+  A test sets it to 0.
 - A single model that overruns on its own is outside this fix. The model scope has the same
   exposure today.
 
@@ -207,15 +243,21 @@ then checked [I]:
   node reference (r:<uuid>(model)/<node-id>), a model reference (r:<uuid>(model)) or qualified
   model name, or a module reference (<uuid>(module)) or module name in nodeReference."
 - Then, once for each near-miss key the caller actually sent: "This tool has no '<key>' parameter;
-  retry with nodeReference set to the value you passed as '<key>'."
+  retry with nodeReference set to '<value sent as key>'." The value comes from `rawArguments` (N5);
+  a non-string value is quoted as its JSON text.
+- **On success too (N5).** When the call succeeds but a near-miss key was also sent, add the warning
+  "This tool has no '<key>' parameter, so its value '<v>' was ignored; nodeReference '<v2>' was
+  checked." This is the more harmful silent case: `{nodeReference: <root>, modelReference: <model>}`
+  checks the root and never mentions the model. The warning goes into every branch, including the
+  node branch, whose clean and problem answers take no warnings today.
 - Helper in `AbstractOps`:
   ```kotlin
-  protected suspend fun sentNearMisses(tool: String, parameter: String): List<String>
+  protected suspend fun sentNearMisses(tool: String, parameter: String): List<Pair<String, String>>
   ```
-  It returns `RequiredParameterNearMisses.of(tool, parameter)` filtered to the keys present in
-  `mcpCallInfoOrNull?.rawArguments`. It runs in the suspend tool function, before the EDT read,
+  It returns `key to value` for each key of `RequiredParameterNearMisses.of(tool, parameter)` that is
+  present in `rawArguments`. It runs in the suspend tool function, before the EDT read,
   and the list is passed into the body.
-- Keep the D43 missing-parameter path (`:720-728`) as it is: it is generic across tools on
+- Keep the D43 missing-parameter path (`:721-729`) as it is: it is generic across tools on
   purpose. Extend its `expected` hint to name the module forms.
 
 ### 3.7 Near-miss list (P3)
@@ -227,6 +269,7 @@ guess. `McpToolParameterOptionalityTest` already enforces that no near-miss is a
 ### 3.8 Shadowed module warning (D5)
 
 A value may resolve as a model by bare name, i.e. not as a parseable persistent model reference.
+This includes a model found in the repository outside the project (§3.1).
 If `resolveModulePreferringProject(value)` also finds a module, add this warning: "'<v>' also names
 module <name>; this checked the model. Pass the module reference '<ref>' to check the whole
 module." This costs one extra lookup, and only on the bare-name path.
@@ -235,15 +278,15 @@ module." This costs one extra lookup, and only on the bare-name path.
 
 The tool description is sent with every turn, so keep the additions short:
 
-- **Tool description** (`:709-710`): after the model paragraph, add one sentence. "A module
+- **Tool description** (`:709-711`): after the model paragraph, add one sentence. "A module
   reference (`<uuid>(name)`) or module name checks the module and every model it owns (a
   language's generators included, stub and `@descriptor` models excluded) with
   `details.scope:"module"` and `modelsChecked`. Problems come back as the module object with a
   `models` array of model reports. `perRoot=true` gives `[{model, name, rootsChecked, errors,
   warnings}]` per model."
-- **`nodeReference`** (`:714`): add the module forms. "There is no modelReference or
+- **`nodeReference`** (`:715`): add the module forms. "There is no modelReference or
   moduleReference parameter."
-- **`perRoot`** (`:718`): "Model and module references only: … per root for a model, per model for
+- **`perRoot`** (`:719`): "Model and module references only: … per root for a model, per model for
   a module."
 
 ## 4. Plan
@@ -259,32 +302,41 @@ Wait until no other session's suite is running in this worktree.
    `get_project_structure` on the S1 language). See what `ModelValidator` and `runRootCheckers`
    report on it. That justifies the filter, or shows it is not needed.
 
+3. Run `validateModule` on the S1 language (with its generator) and on its sandbox solution, and
+   record what it reports (B2). The B2 rule makes the verdict independent of the answer, but the
+   record shows how often clean answers will carry `details.moduleProblems`.
+
+MPS is not running in this session (the MPS MCP server refuses connections), so steps 1–3 move to
+the Phase 4 live check. The fixture side of step 3 is asserted by the tests (Phase 2, tests 1 and 6).
+
 F3's open question (do dropped keys stay in `rawArguments`?) is already answered offline [M].
 
 ### Phase 1: code
 
 In `JetBrainsMPSNodeMcpToolset.kt` and `common/`:
 
-1. Extract `checkModel` and the model-report builder out of the model branch (`:849-901`). The model
+1. Extract `checkModel` and the model-report builder out of the model branch (`:845-902`). The model
    branch keeps its exact output; the existing model-scope tests guard it.
 2. Add the module branch after the model branch (§3.1–§3.5). Put the model and module scope code in
    the node toolset next to `rootProblemSummary`, not in `AbstractOps`. Only the checker uses it.
 3. Add `sentNearMisses` to `AbstractOps` and use it in the new `NOT_FOUND` text (§3.6).
 4. Add the shadowed-module warning (§3.8).
 5. Add `moduleReference` and `module` to `RequiredParameters.kt:61`. Update the `expected` hint
-   (`:725-726`).
+   (`:726-727`).
 6. Update the three descriptions (§3.9).
 
 ### Phase 2: tests
 
 In `JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest` (model scope tests live there,
-`:1455-1525`), and in `JetBrainsMPSNodeMcpToolsetIntegrationTest` for the bridge cases:
+`:1620-1747`), and in `JetBrainsMPSNodeMcpToolsetIntegrationTest` for the bridge cases (tests 11,
+12 and 16: `runTool` binds by Kotlin rules and cannot send an undeclared key):
 
-1. **Clean module**, by persistent reference: the fixture language plus one extra model
-   (`createModel`) → `"no problems found"`, `scope: "module"`, `modelsChecked` equals the number of
-   non-stub, non-descriptor models, and `rootsChecked` is their sum.
+1. **Clean module**, by persistent reference: a fresh language plus one extra model
+   (`createModel`) → `"no problems found"`, `scope: "module"`, and a hard-coded `modelsChecked`
+   (N3b; computing it with the production filter would be a tautology). `rootsChecked` is the sum.
+   Record whether `details.moduleProblems` appears and what it holds.
 2. **Same, by bare module name.**
-3. **Broken root** (`createConceptRoot` + `clearConceptId`, as at `:1456-1457`):
+3. **Broken root** (`createConceptRoot` + `clearConceptId`, as in the model-scope test at `:1677`):
    - `data` is the module object;
    - `models` has exactly the structure model;
    - its `roots` entry has `errors ≥ 1` and a `nodes` list.
@@ -292,25 +344,35 @@ In `JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest` (model scope tests live t
    - one row per model;
    - each row's keys are exactly `{model, name, rootsChecked, errors, warnings}`;
    - the broken model has errors, and the other rows are `0`/`0`.
-5. **Exclusions:** no row or report names a `@descriptor` model.
-6. **Language with a generator** (`LanguageProducer(...).withGenerator(true)`): the generator's
-   models are checked and listed.
+5. **Exclusions:** first assert that the fixture language's `models` really holds a `@descriptor`
+   model (N3a; otherwise the test is vacuous), then that no row or report names it.
+6. **Language with a generator** (`LanguageProducer(...).withGenerator(true)`, which creates a
+   template model through `createTemplateModelIfNoneYet`): the generator's models are checked and
+   listed, and `modulesChecked` names the generator.
 7. **Solution module** (`createSolution` + `createModel`) works the same way.
 8. **`autoApplyQuickFixes=true` on a module:** the warning is present and nothing is mutated.
-9. **Budget 0:** stops after the first model; `truncated` and `modelsNotChecked` list the rest;
-   `data` is not the bare `"no problems found"`.
-10. **Ghost reference** (flip `:1512-1525`): the text says "neither a node, a model, nor a module",
+9. **Budget 0** (`toolset.moduleCheckBudgetMs = 0`): stops after the first model; `truncated` and
+   `modelsNotChecked` list the rest; `data` is not the bare `"no problems found"`. The same with
+   `perRoot=true`: one row, and the rest in `modelsNotChecked`.
+10. **Ghost reference** (flip `:1733-1747`): the text says "neither a node, a model, nor a module",
     names module references, and does **not** contain "no modelReference parameter".
 11. **Bridge with sent keys.** First make `callThroughBridge` pass `JsonObject(args)` as
     `rawArguments` (`stubMcpCallInfo` gains that parameter). Then:
     - `{nodeReference: ghost, modelReference: X}` → the sentence names `modelReference`;
     - `{nodeReference: ghost, moduleReference: X}` → it names `moduleReference`.
-12. **Missing key** (update `JetBrainsMPSNodeMcpToolsetIntegrationTest.kt:2248-2265`): only
+12. **Missing key** (update `JetBrainsMPSNodeMcpToolsetIntegrationTest.kt:2272-2291`): only
     `moduleReference` sent → the D43 envelope naming `nodeReference`, with `moduleReference` among
     the spellings that never reach the tool. Then retry with the value under `nodeReference` → ok,
     module scope.
 13. **Shadowing:** a solution `N` with a model `N`, bare `N` → model scope plus the §3.8 warning
     naming the module reference.
+14. **DevKit** (N3c): the module-only warning, `modelsChecked: 0`.
+15. **Module-level error from a generator** (N3c), for example an unresolved dependency added to the
+    generator's descriptor: the row carries `module: <generator name>`, the answer is not clean,
+    and with `perRoot=true` the row is in `details.moduleProblems` with the "module itself has"
+    warning.
+16. **Success with a near-miss key** (N5): `{nodeReference: <model>, modelReference: <other>}` →
+    ok, with the "was ignored" warning.
 
 ### Phase 3: docs
 
@@ -320,6 +382,7 @@ copy each changed skill folder over `.agents/skills/` and `.claude/skills/`.
 | file | change |
 |---|---|
 | `mps-mcp-workflow/references/analysis-tools/check-root-node-problems-output.md:3-7` | accepted forms; a module paragraph with the §3.4 shapes; "a clean module means every model in it is clean — do not follow it with per-model checks" |
+| `mps-mcp-workflow/references/analysis-tools/check-root-node-problems-output.md` (same file) | module-level warnings do not make a module unclean, and a clean answer can still carry `details.moduleProblems`; read them, but they are not failures |
 | `mps-mcp-workflow/references/mcp-tools-index.md:37` | add the module form and its `details` |
 | `mps-mcp-workflow/references/reference-formats/request-conventions.md:20` | the model-reference column note gains "also a module reference or name: every model of the module" |
 | `mps-mcp-workflow/references/node-editing-rules.md:31` | "Validate the model, not every root" gains "…and the module, not every model" |
@@ -342,7 +405,11 @@ re-diff all three catalogs before propagating, and commit only D63's files.
 - **Live, after restarting MPS with the new plugin classes:**
   - the F1 call shape on a real language module (persistent reference, then bare name);
   - a solution;
-  - a ghost reference sent with and without an extra `modelReference`.
+  - a ghost reference sent with and without an extra `modelReference`;
+  - the S1 language **with its generator** answers "no problems found". A fresh generator's template
+    model carries the model-level warning "got no target nor query language … Is it empty?", which
+    counts as it does at model scope. If real S1 generators keep it, every final sweep returns a
+    report, and that is worth a follow-up (not a reason to change the rule now).
 
 ### Phase 5: study records
 
@@ -354,7 +421,7 @@ re-diff all three catalogs before propagating, and commit only D63's files.
   - The report estimates about 5 turns saved per greenfield opus run.
 - Record the `inventorySha256` change that comes from the description edits.
 
-## 5. Decisions (pending)
+## 5. Decisions (D1–D6 agreed in review round 1; B2 added there)
 
 | # | Question | Recommendation | Why |
 |---|----------|----------------|-----|
@@ -363,7 +430,8 @@ re-diff all three catalogs before propagating, and commit only D63's files.
 | D3 | Make the sentence conditional through `rawArguments`, or drop it? | **Conditional**, for every near-miss key actually sent. | It is correct whenever it appears, and it keeps the one case where it helps: a caller that sent both keys, where the binder silently dropped the good value. F3 shows the data is there. Dropping the sentence is the fallback if the helper proves awkward. |
 | D4 | Add the 20 s time budget with truncation? | **Yes.** | Without it, an overrun discards a finished check and blames a modal dialog (F6). The cost is one clock check per model. |
 | D5 | Warn when a bare name also names a module (§3.8)? | **Yes.** | Otherwise the model silently wins. `details.scope:"model"` says so, but an agent that meant the module would not notice. |
-| D6 | Run module-level validation (`validateModule`)? | **Yes.** | Missing dependencies and languages are module problems. A "module is clean" answer that skipped them would be wrong in the same way model scope was before D7. |
+| D6 | Run module-level validation (`validateModule`)? | **Yes.** | Missing dependencies and languages are module problems. A "module is clean" answer that skipped them would be wrong in the same way model scope was before study defect D7. |
+| B2 | Do module-level warnings count toward "clean" (review item B2)? | **No; they are listed, but only module-level errors flip the verdict.** | `LanguageValidator` warns about routine states of healthy modules (§3.4). Model and root warnings still count. |
 
 ## 6. Not in scope
 
@@ -372,7 +440,7 @@ re-diff all three catalogs before propagating, and commit only D63's files.
 - **A project-wide scope.** `alter_nodes MAKE` has `wholeProject`; nothing here asks for a check
   equivalent.
 - **`autoApplyQuickFixes` at model or module scope.** It stays node-only.
-- **A module hint in `print_node`'s rejection** (`unresolvedPrintNode`, `:919-937`). It already
+- **A module hint in `print_node`'s rejection** (`unresolvedPrintNode`, `:920-938`). It already
   names the model case, and no evidence shows a module passed there.
 
 ## 7. Risks and size
@@ -381,6 +449,23 @@ re-diff all three catalogs before propagating, and commit only D63's files.
   about 20 s. Moving the check to `executeBackgroundRead` would be a separate change. Nobody has
   checked that the typesystem checkers are safe off the EDT here.
 - **Behaviour change.** Only the ghost-reference text and the value forms that used to fail
-  change. Node and model answers stay byte-identical, which the existing tests pin.
+  change. Node and model answers stay byte-identical unless a near-miss key was also sent, which the
+  existing tests pin.
 - **Size.** About 120–150 lines of production Kotlin (most of it the module branch and the
   extraction), about 250 lines of tests, and 6 doc files in 3 catalogs.
+
+## 8. Implementation notes (2026-09-30)
+
+- **Fixture facts [M].** A `LanguageProducer` language owns 5 aspect models (structure, editor,
+  constraints, behavior, typesystem) and a `@descriptor` model in the test environment; a
+  `withGenerator(true)` generator owns `…generator.templates@generator` and its own `@descriptor`.
+  The tests hard-code 5/6/7 models.
+- **A fresh generator is not clean [M].** Its template model gets the model-level warning quoted in
+  Phase 4, so the B2 test uses a language with a ghost runtime module instead: a pure module-level
+  WARNING, answered "no problems found" plus `details.moduleProblems`.
+- **Deviations from §3.** Every module-level row carries `module`, not only a generator's. The
+  budget warning names the budget in whole seconds.
+- **Not done here.** The live checks (Phase 0 and Phase 4) need a running MPS, which this session
+  did not have. The `inventorySha256` change from the description edits is recorded by the next
+  study round.
+

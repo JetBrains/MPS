@@ -6,6 +6,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSyntaxException
 import com.intellij.ide.plugins.PluginManagerCore
 import com.intellij.mcpserver.reportToolActivity
@@ -37,6 +38,7 @@ import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.action.NodeFactoryManager
+import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.ids.SConceptId
 import jetbrains.mps.smodel.adapter.ids.SContainmentLinkId
 import jetbrains.mps.smodel.adapter.ids.SPropertyId
@@ -131,23 +133,107 @@ abstract class AbstractNodeOps : AbstractOps() {
     private fun JsonObject.requireArray(field: String, path: String): JsonArray? {
         val element = get(field) ?: return null
         if (!element.isJsonArray) {
-            throw McpInvalidRequestException(
-                "'$field' at $path must be a JSON array, but got ${element.javaClass.simpleName}. " +
-                "Check the JSON blueprint format — see the mps-node-editing skill for reference."
-            )
+            throw McpInvalidRequestException(blueprintArrayShapeMessage(this, field, path))
         }
         return element.asJsonArray
     }
 
     /**
-     * Builds a detached [SNode] tree from a JSON blueprint. The caller attaches the result.
-     *
-     * [enclosingNode] is the node the result will become a child of, when the caller knows it. It is
-     * handed to the concept's node factories, several of which need it — `jetbrains.mps.lang.behavior`'s
-     * `ConceptMethod` factory reads the enclosing `ConceptBehavior` to decide `isAbstract` / `isVirtual`,
-     * and `jetbrains.mps.lang.structure`'s `SetStructureIds` scans the enclosing concept declaration so
-     * a generated `propertyId` / `linkId` / `memberId` cannot collide with a sibling's. Nested blueprint
-     * children get their (not yet attached) parent automatically.
+     * The rejection for a blueprint field that is not an array. Workers write `properties` / `references` /
+     * `children` as maps (`{"text": "…"}`, `{"uses": [ … ]}`) or drop the `[ ]` around a single entry, so the
+     * message tells the two apart, shows the caller's own map rewritten into the array form, and reports every
+     * such field of [owner] at once. `nodes` given as an object is a single node that still belongs in an array.
+     */
+    private fun blueprintArrayShapeMessage(owner: JsonObject, field: String, path: String): String {
+        if (field == "nodes") {
+            val element = owner.get(field)
+            return if (element.isJsonObject) {
+                "'nodes' at $path must be a JSON array, but got an object: a single node still goes in an array, \"nodes\":[{…}]."
+            } else {
+                "'nodes' at $path must be a JSON array of node blueprints, but got ${jsonKind(element)}."
+            }
+        }
+        val fields = BLUEPRINT_LIST_FIELDS.keys.filter { other ->
+            other == field || owner.get(other)?.let { !it.isJsonArray } == true
+        }
+        // Shrink the echo until the message fits; the shape sentence alone is what matters most.
+        for (maxEntries in intArrayOf(5, 3, 1, 0)) {
+            val message = fields.joinToString(" ") { describeNonArrayField(it, owner.get(it), path, maxEntries) } +
+                " " + BLUEPRINT_SHAPE_SENTENCE
+            if (message.length <= SHAPE_MESSAGE_BUDGET || maxEntries == 0) return message
+        }
+        error("unreachable")
+    }
+
+    private fun describeNonArrayField(field: String, element: JsonElement, path: String, maxEntries: Int): String {
+        val entryShape = BLUEPRINT_LIST_FIELDS.getValue(field)
+        if (!element.isJsonObject) {
+            return "'$field' at $path must be an array of $entryShape objects, but got ${jsonKind(element)}."
+        }
+        val obj = element.asJsonObject
+        if (isSingleBlueprintEntry(field, obj)) {
+            return "'$field' at $path must be a JSON array; this object is a single entry with the [ ] missing: " +
+                "write \"$field\":[{…}]."
+        }
+        val entries = obj.entrySet().toList()
+        val rendered = entries.take(maxEntries).map { (key, value) ->
+            val k = echoKey(key)
+            when (field) {
+                "properties" -> "{\"name\":$k,\"value\":${echoValue(value)}}"
+                "references" -> "{\"role\":$k,\"target\":${echoValue(value)}}"
+                else -> "{\"role\":$k,\"nodes\":[…]}"
+            }
+        } + if (entries.size > maxEntries) listOf("…") else emptyList()
+        return "'$field' at $path must be an array of $entryShape objects, not a map. " +
+            "Write it as \"$field\":[${rendered.joinToString(",")}]."
+    }
+
+    /**
+     * True when [obj] has the keys of one [field] entry and no key a real entry cannot carry. The key sets are
+     * what `print_node` emits plus the reader's alternatives (`targetReference`, the `declared:false` marker). A
+     * property entry needs `value` too: a lone `{"name": X}` is a map that sets `name`.
+     */
+    private fun isSingleBlueprintEntry(field: String, obj: JsonObject): Boolean {
+        val keys = obj.keySet()
+        return when (field) {
+            "properties" -> keys.containsAll(listOf("name", "value")) && PROPERTY_ENTRY_KEYS.containsAll(keys)
+            "references" -> "role" in keys && ("target" in keys || "targetReference" in keys) &&
+                REFERENCE_ENTRY_KEYS.containsAll(keys)
+            "children" -> keys.containsAll(listOf("role", "nodes")) && CHILDREN_ENTRY_KEYS.containsAll(keys)
+            else -> false
+        }
+    }
+
+    /**
+     * A primitive in full, as the JSON string the reader accepts (`10` → `"10"`). The message says "Write it as",
+     * so a value is never cut inside its quotes: a pasted truncation would be stored with `ok:true`. A huge
+     * primitive, and any non-primitive value, becomes a bare `…`, which fails to parse if pasted.
+     */
+    private fun echoValue(value: JsonElement): String = when {
+        value.isJsonNull -> "null"
+        value.isJsonPrimitive && value.asString.length <= ECHO_VALUE_FULL_MAX -> JsonPrimitive(value.asString).toString()
+        else -> "…"
+    }
+
+    /** A key cut to a hint; a pasted truncated name fails loudly as an unknown feature. */
+    private fun echoKey(s: String): String =
+        JsonPrimitive(if (s.length > ECHO_KEY_MAX) s.take(ECHO_KEY_MAX) + "…" else s).toString()
+
+    private fun jsonKind(element: JsonElement?): String = when {
+        element == null || element.isJsonNull -> "null"
+        element.isJsonObject -> "an object"
+        element.isJsonPrimitive && element.asJsonPrimitive.isString -> "a string"
+        element.isJsonPrimitive && element.asJsonPrimitive.isNumber -> "a number"
+        element.isJsonPrimitive && element.asJsonPrimitive.isBoolean -> "a boolean"
+        else -> element.javaClass.simpleName
+    }
+
+    /**
+     * Builds a detached [SNode] tree from a JSON blueprint, for a node without a parent: a root or a
+     * console command. The caller attaches the result. The tree is built top-down ([fillChildren]), so a
+     * nested child's factory sees its parent chain up to the result, which is not yet in the model — the
+     * same as the editor's New Root. A caller attaching the result under a live node uses [createNode]
+     * and [fillChildren] instead, so the nested factories also see the live ancestors.
      */
     fun instantiateNode(
         jsonObject: JsonObject,
@@ -155,15 +241,46 @@ abstract class AbstractNodeOps : AbstractOps() {
         dryRun: Boolean = false,
         jsonPath: String = "$",
         warnings: MutableList<String>? = null,
-        mpsProject: MPSProject? = null,
-        enclosingNode: SNode? = null
-    ): SNode? {
+        mpsProject: MPSProject? = null
+    ): SNode {
+        val newNode = createNode(jsonObject, model, dryRun, jsonPath, warnings, mpsProject, enclosingNode = null, link = null, index = -1)
+        fillChildren(newNode, jsonObject, model, dryRun, jsonPath, warnings, mpsProject)
+        return newNode
+    }
+
+    /**
+     * Creates the blueprint's top node — concept, node factory, `name`, properties and references —
+     * without its children, which [fillChildren] adds.
+     *
+     * [enclosingNode] is the node the result will become a child of. It is handed to the concept's node
+     * factories, several of which need it — `jetbrains.mps.lang.behavior`'s `ConceptMethod` factory reads
+     * the enclosing `ConceptBehavior` to decide `isAbstract` / `isVirtual`, and
+     * `jetbrains.mps.lang.structure`'s `SetStructureIds` scans the enclosing concept declaration so a
+     * generated `propertyId` / `linkId` / `memberId` cannot collide with a sibling's.
+     *
+     * [link] and [index] are the role and the position the result takes under [enclosingNode], handed to
+     * the factories as given. Always pass the index explicitly: `setupNode`'s own fallback counts the
+     * role's current children, which is the wrong slot for a replacement or a single-cardinality role.
+     * A node without a parent passes `null` and `-1`, as the editor's New Root does.
+     */
+    private fun createNode(
+        jsonObject: JsonObject,
+        model: SModel,
+        dryRun: Boolean,
+        jsonPath: String,
+        warnings: MutableList<String>?,
+        mpsProject: MPSProject?,
+        enclosingNode: SNode?,
+        link: SContainmentLink?,
+        index: Int
+    ): SNode {
         val conceptName = jsonObject.get("concept")?.asString
         val conceptRef = jsonObject.get("conceptReference")?.asString
         
         if (conceptName.isNullOrEmpty() && conceptRef.isNullOrEmpty()) {
             throw McpInvalidRequestException("Missing 'concept' or 'conceptReference' property in JSON at path '$jsonPath'")
         }
+        rejectUnloadedConceptRecord(jsonObject, jsonPath, conceptName ?: conceptRef)
 
         val sConcept = run {
             // Try conceptReference first (c:... form), fall back to concept name if it fails or is absent.
@@ -177,12 +294,27 @@ abstract class AbstractNodeOps : AbstractOps() {
                 (if (mpsProject != null) resolveConceptPreferringProject(mpsProject, conceptName) else resolveConcept(model.repository, conceptName)) as? SConcept
             }
             else null
+            if (!conceptRef.isNullOrEmpty() && byRef == null && byName != null) {
+                warnings?.add(
+                    "conceptReference '$conceptRef' at $jsonPath does not resolve to a loaded concrete concept and was ignored; " +
+                        "the node was created from concept '$conceptName'"
+                )
+            }
             byRef ?: byName
-        } ?: throw McpNotFoundException("Concept '$conceptName' with reference '$conceptRef' not found")
+        } ?: throw McpNotFoundException(
+            when {
+                conceptName.isNullOrEmpty() -> "Concept reference '$conceptRef' not found at $jsonPath"
+                conceptRef.isNullOrEmpty() -> "Concept '$conceptName' not found at $jsonPath"
+                else -> "Concept '$conceptName' with reference '$conceptRef' not found at $jsonPath"
+            }
+        )
 
-        // Ensure language is imported
+        // Import the language that owns the concept's id, never the concept's own adapter: a parsed
+        // reference can carry a fabricated language id. Checked before the dry-run guard so a dry run
+        // reports the same failure.
+        val language = languageForId(mpsProject?.repository ?: model.repository, MetaIdHelper.getLanguage(sConcept.language))
+            ?: throw McpNotFoundException("Language of concept '${sConcept.name}' at $jsonPath is not a loaded language: ${sConcept.language}")
         if (!dryRun && model is SModelInternal) {
-            val language = sConcept.language
             if (!model.importedLanguageIds().contains(language)) {
                 model.addLanguage(language)
             }
@@ -218,7 +350,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             // exception is still invisible here — notably every `AutoInitDSLClass` initializer, which
             // runs through `DSLDescriptor.initializeInstance`'s own catch and only reaches idea.log.
             try {
-                NodeFactoryManager.setupNode(newNode.concept, newNode, null, enclosingNode, model)
+                NodeFactoryManager.setupNode(newNode.concept, newNode, null, index, enclosingNode, link, model)
             } catch (t: Throwable) {
                 rethrowIfCancellation(t)
                 val detail = t.message ?: t.javaClass.name
@@ -248,21 +380,27 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val propName = propObject.get("name")?.asString ?: return@forEachIndexed
                 val propValue = propObject.get("value")?.asString
                 val sProperty = sConcept.properties.find { it.name == propName }
-                    ?: throw McpInvalidRequestException(
-                        "Unknown property '$propName' at $jsonPath.properties[$propIndex]: " +
-                                "concept '${sConcept.name}' has no such property"
-                    )
+                    ?: run {
+                        if (isMarkedUndeclared(propObject)) {
+                            warnings?.add(undeclaredPropertyWarning("$jsonPath.properties[$propIndex]", propName, sConcept, stored = false))
+                            return@forEachIndexed
+                        }
+                        throw McpInvalidRequestException(
+                            "Unknown property '$propName' at $jsonPath.properties[$propIndex]: " +
+                                    "concept '${sConcept.name}' has no such property"
+                        )
+                    }
                 setProperty(newNode, sProperty, propValue)
             }
         }
 
-        // References BEFORE children, deliberately: a nested child is created by a recursive call
-        // that hands the child's node factory this node as its `enclosingNode`, and some factories
-        // read the enclosing node's references — `jetbrains.mps.lang.behavior`'s ConceptMethod
-        // factory follows `ConceptBehavior.concept` to decide isAbstract/isVirtual. Applying
-        // children first left those references unset, so a one-call blueprint silently produced a
-        // different node than the same content split across two calls: the same class of silent
-        // divergence this method was fixed for.
+        // References BEFORE children, deliberately: [fillChildren] runs after this and hands each
+        // child's node factory this node as its `enclosingNode`, and some factories read the
+        // enclosing node's references — `jetbrains.mps.lang.behavior`'s ConceptMethod factory
+        // follows `ConceptBehavior.concept` to decide isAbstract/isVirtual. Applying children first
+        // left those references unset, so a one-call blueprint silently produced a different node
+        // than the same content split across two calls: the same class of silent divergence this
+        // method was fixed for.
         //
         // The trade-off, accepted: a reference given as a *name* is resolved against the role's
         // scope, and a scope that draws on this node's own children can no longer see them. That
@@ -275,7 +413,9 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val roleName = refObject.get("role")?.asString ?: return@forEachIndexed
                 val targetRefStr = (refObject.get("targetReference") ?: refObject.get("target"))?.asString
                 val link = sConcept.referenceLinks.find { it.name == roleName }
-                    ?: throw McpInvalidRequestException(
+                    ?: throw if (isMarkedUndeclared(refObject)) {
+                        undeclaredRoleRejection("Reference role", roleName, "$jsonPath.references[$index]", sConcept, "stored reference")
+                    } else McpInvalidRequestException(
                         "Unknown reference role '$roleName' at $jsonPath.references[$index]: " +
                                 "concept '${sConcept.name}' has no such reference link"
                     )
@@ -299,46 +439,91 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
         }
 
-        // Children
-        val children = jsonObject.requireArray("children", jsonPath)
-        if (children != null) {
-            // Roles whose factory-produced content has already been dropped, see below.
-            val clearedRoles = mutableSetOf<String>()
-            children.forEachIndexed { roleIndex, childRoleElement ->
-                val childRoleObject = childRoleElement.asJsonObject
-                val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
-                val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
-                val link = sConcept.containmentLinks.find { it.name == roleName }
-                    ?: throw McpInvalidRequestException(
-                        "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
-                                "concept '${sConcept.name}' has no such containment link"
-                    )
-                // The blueprint is authoritative for the roles it names: drop whatever the node factory
-                // put in this role so the two don't accumulate. Roles the blueprint does NOT name keep
-                // their factory content — that is how `MigrationScript` keeps the `superclass` the
-                // migration factory wires to its design-time-only classifier.
-                // Guarded so a blueprint listing the same role twice doesn't wipe the children its own
-                // earlier entry just added.
-                if (clearedRoles.add(roleName)) {
-                    newNode.getChildren(link).toList().forEach { it.delete() }
+        return newNode
+    }
+
+    /**
+     * Adds the blueprint's `children` under [node], top-down: each child is created, attached, and only
+     * then filled, so a factory at any depth sees its parent chain up to [node], and beyond it when the
+     * caller attached [node] first — as in the editor, where a new node's enclosing node is always
+     * attached. `jetbrains.mps.lang.editor`'s CellModel_Property factory, for one, walks up to a
+     * CellModel_RefCell to set `readOnly` (MPS-40226).
+     *
+     * A factory may still change an ancestor after the ancestor's blueprint values were applied: the
+     * blueprint wins over a node's own constructor and factories only.
+     */
+    private fun fillChildren(
+        node: SNode,
+        jsonObject: JsonObject,
+        model: SModel,
+        dryRun: Boolean,
+        jsonPath: String,
+        warnings: MutableList<String>?,
+        mpsProject: MPSProject?
+    ) {
+        val sConcept = node.concept
+        val children = jsonObject.requireArray("children", jsonPath) ?: return
+        // Roles whose factory-produced content has already been dropped, see below.
+        val clearedRoles = mutableSetOf<String>()
+        children.forEachIndexed { roleIndex, childRoleElement ->
+            val childRoleObject = childRoleElement.asJsonObject
+            val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
+            val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
+            val link = sConcept.containmentLinks.find { it.name == roleName }
+                ?: throw if (isMarkedUndeclared(childRoleObject)) {
+                    undeclaredRoleRejection("Child role", roleName, "$jsonPath.children[$roleIndex]", sConcept, "stored children")
+                } else McpInvalidRequestException(
+                    "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
+                            "concept '${sConcept.name}' has no such containment link"
+                )
+            // The blueprint is authoritative for the roles it names: drop whatever the node factory
+            // put in this role so the two don't accumulate. Roles the blueprint does NOT name keep
+            // their factory content — that is how `MigrationScript` keeps the `superclass` the
+            // migration factory wires to its design-time-only classifier.
+            // Guarded so a blueprint listing the same role twice doesn't wipe the children its own
+            // earlier entry just added. Done before the role's first child is created, so the index
+            // handed to that child's factory does not count the children about to be dropped.
+            if (clearedRoles.add(roleName)) {
+                node.getChildren(link).toList().forEach { it.delete() }
+            }
+            childNodes.forEachIndexed { nodeIndex, nodeElement ->
+                val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
+                val childObject = nodeElement.asJsonObject
+                val childNode = createNode(
+                    childObject, model, dryRun, childPath, warnings, mpsProject,
+                    enclosingNode = node, link = link, index = node.getChildren(link).count()
+                )
+                if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
+                    throw childAssignabilityFailure(childPath, childNode.concept, link, sConcept, model)
                 }
-                childNodes.forEachIndexed { nodeIndex, nodeElement ->
-                    val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
-                    val childNode = instantiateNode(
-                        nodeElement.asJsonObject, model, dryRun, childPath, warnings, mpsProject,
-                        enclosingNode = newNode
-                    )
-                    if (childNode != null) {
-                        if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
-                            throw childAssignabilityFailure(childPath, childNode.concept, link, sConcept, model)
-                        }
-                        newNode.addChild(link, childNode)
-                    }
-                }
+                node.addChild(link, childNode)
+                fillChildren(childNode, childObject, model, dryRun, childPath, warnings, mpsProject)
             }
         }
+    }
 
-        return newNode
+    /**
+     * [fillChildren] for the blueprint's top node [newNode], which the caller has attached unless this is
+     * a dry run. A failure deletes [newNode] again, because a command does not roll back, and returns the
+     * error envelope; success returns `null`.
+     */
+    private fun fillChildrenOrDelete(
+        newNode: SNode,
+        jsonObject: JsonObject,
+        model: SModel,
+        dryRun: Boolean,
+        warnings: MutableList<String>,
+        mpsProject: MPSProject,
+        errorPrefix: String
+    ): String? {
+        try {
+            fillChildren(newNode, jsonObject, model, dryRun, "$", warnings, mpsProject)
+            return null
+        } catch (t: Throwable) {
+            if (!dryRun) runCatching { newNode.delete() }.exceptionOrNull()?.let(t::addSuppressed)
+            if (t !is Exception) throw t
+            return instantiationFailed(errorPrefix, t, warnings)
+        }
     }
 
     private fun failIfXMLReferenceIsUsed(targetRefStr: String, jsonPath: String, index: Int) {
@@ -417,20 +602,35 @@ abstract class AbstractNodeOps : AbstractOps() {
             if (!dryRun || assignResolvedReferenceOnDryRun) {
                 ownerNode.setReference(link, targetRef)
             }
+            // A persistent ref that parses but names no node: the write stores a pointer to nothing.
+            if (dryRun) return dryRunReferenceWarning(errorPath, targetRefStr)
         } else if (!dryRun) {
             ownerNode.setReference(link, ResolveInfo.of(targetRefStr))
         } else {
-            return dryRunDynamicReferenceWarning(errorPath, targetRefStr)
+            return dryRunReferenceWarning(errorPath, targetRefStr)
         }
         return null
     }
 
-    // A production run stores an unresolved target as a dynamic reference and leaves it to the
-    // fix-references pass; a dry run does neither, so it says so through the caller's warnings
-    // channel instead of reporting a plain success.
-    private fun dryRunDynamicReferenceWarning(errorPath: String, targetRefStr: String): String =
-        "Dry run at $errorPath: target '$targetRefStr' did not resolve; " +
-            "production run would create a dynamic reference, but dry-run skips this step."
+    // A dry run resolves only persistent targets (see resolveReferenceTarget). A plain name is never
+    // looked up, so it is listed whether or not it exists; the write stores it as a dynamic reference
+    // that the fix-references pass resolves in the role's scope. The per-reference line stays short;
+    // withDryRunReferenceRule adds the explanation once per response (D81).
+    private fun dryRunReferenceWarning(errorPath: String, targetRefStr: String): String = when {
+        targetRefStr.startsWith("r:") || targetRefStr.startsWith("i:") ->
+            "Dry run at $errorPath: target '$targetRefStr' names no node; the write will leave it broken."
+        targetRefStr.contains(".") ->
+            "Dry run at $errorPath: target '$targetRefStr' matches no Model.Root and no root of that name; " +
+                "it will very likely stay broken. Use an r:/i: reference, or Model.Root with the model's long name."
+        else -> "Dry run at $errorPath: target '$targetRefStr'$NAME_NOT_LOOKED_UP"
+    }
+
+    /**
+     * Appends the dry-run reference rule once when [warnings] holds at least one plain-name warning,
+     * so a blueprint with many name targets does not repeat the explanation per reference.
+     */
+    protected fun withDryRunReferenceRule(warnings: List<String>): List<String> =
+        if (warnings.any { it.endsWith(NAME_NOT_LOOKED_UP) }) warnings + DRY_RUN_REFERENCE_RULE else warnings
 
     private fun resolveReferenceTarget(mpsProject: MPSProject?, repository: SRepository, targetRefStr: String, errorPath: String): SNodeReference? {
         failIfFeatureIdIsUsed(targetRefStr, errorPath)
@@ -552,6 +752,66 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
     }
 
+    /**
+     * True when a blueprint entry carries `"declared": false`: `print_node` marks a stored feature
+     * that the node's concept does not declare this way (D89). The readers only consult the flag
+     * when the feature name is not found among the concept's declared features, so an entry whose
+     * role exists again (the language was built since the printout) is applied normally.
+     */
+    private fun isMarkedUndeclared(entry: JsonObject): Boolean {
+        val flag = entry.get("declared")
+        return flag != null && flag.isJsonPrimitive && flag.asJsonPrimitive.isBoolean && !flag.asBoolean
+    }
+
+    /** The warning for a skipped `declared:false` property; [stored] is true on the update path. */
+    private fun undeclaredPropertyWarning(path: String, propName: String, concept: SAbstractConcept, stored: Boolean): String =
+        "$path: property '$propName' is marked declared:false and concept '${concept.name}' does not declare it; " +
+            if (stored) "its stored value was left as it is" else "it was not applied"
+
+    /**
+     * The rejection for a `declared:false` child role or reference. Skipping it would hide that a
+     * full-root update deletes every stored child and reference before re-applying the blueprint.
+     */
+    private fun undeclaredRoleRejection(
+        kind: String,
+        roleName: String,
+        path: String,
+        concept: SAbstractConcept,
+        storedWhat: String
+    ): McpInvalidRequestException = McpInvalidRequestException(
+        "$kind '$roleName' at $path is marked declared:false: concept '${concept.name}' does not declare it " +
+            "(its language runtime lacks the role, or the role was removed). Remove the entry from the blueprint " +
+            "(mps_mcp_update_root_node_from_json then deletes the $storedWhat of that role), or run " +
+            "mps_mcp_alter_nodes MAKE with rebuild=true on the language module and print the node again."
+    )
+
+    /**
+     * A printout record of a node whose concept is not loaded (`conceptLoaded:false`) cannot be
+     * recreated: its properties would all be skipped and its roles rejected, so the node would come
+     * back empty (D89). The alternative to rebuilding depends on where the record sits: a nested node can
+     * be left out of the blueprint, but the top node of a request is the request itself, and the root
+     * that [rewritesRoot] rewrites cannot be removed from its own blueprint.
+     */
+    private fun rejectUnloadedConceptRecord(
+        jsonObject: JsonObject,
+        jsonPath: String,
+        conceptName: String?,
+        rewritesRoot: Boolean = false
+    ) {
+        val flag = jsonObject.get("conceptLoaded") ?: return
+        if (!flag.isJsonPrimitive || !flag.asJsonPrimitive.isBoolean || flag.asBoolean) return
+        val alternative = when {
+            rewritesRoot -> "or, if the root is no longer wanted, delete it with mps_mcp_update_root_node_from_json operation DELETE."
+            jsonPath == "$" -> "or leave this node out of the request."
+            else -> "or remove the node from the blueprint (mps_mcp_update_root_node_from_json then deletes the stored node)."
+        }
+        throw McpInvalidRequestException(
+            "Node at $jsonPath is marked conceptLoaded:false: concept '$conceptName' was not loaded when this node was printed " +
+                "(its language was not loaded or no longer declared it), so the node cannot be written from this printout. " +
+                "Run mps_mcp_alter_nodes MAKE with rebuild=true on the language module and print the node again, $alternative"
+        )
+    }
+
     fun updateNodeFromBlueprint(
         node: SNode,
         jsonObject: JsonObject,
@@ -562,10 +822,12 @@ abstract class AbstractNodeOps : AbstractOps() {
     ) {
         val model = node.model ?: throw IllegalArgumentException("Node must be in a model")
         val sConcept = node.concept
+        rejectUnloadedConceptRecord(jsonObject, jsonPath, sConcept.name, rewritesRoot = true)
 
         // Stage-then-apply: validate everything (instantiate new children, resolve references)
-        // BEFORE deleting the existing children/references. If any step throws, the original
-        // node is left intact instead of being emptied with no rollback.
+        // BEFORE deleting the existing children/references. If any step throws, the staged
+        // children are deleted again and the node keeps its original children instead of being
+        // emptied with no rollback.
 
         // Stage properties (including `name`): this tool is a full-root rewrite, so every
         // property in the blueprint — name included — is applied to match it. The apply phase
@@ -579,109 +841,137 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val propName = propObject.get("name")?.asString ?: return@forEachIndexed
                 val propValue = propObject.get("value")?.asString
                 val sProperty = sConcept.properties.find { it.name == propName }
-                    ?: throw McpInvalidRequestException(
-                        "Unknown property '$propName' at $jsonPath.properties[$propIndex]: " +
-                                "concept '${sConcept.name}' has no such property"
-                    )
+                    ?: run {
+                        if (isMarkedUndeclared(propObject)) {
+                            warnings?.add(undeclaredPropertyWarning("$jsonPath.properties[$propIndex]", propName, sConcept, stored = true))
+                            return@forEachIndexed
+                        }
+                        throw McpInvalidRequestException(
+                            "Unknown property '$propName' at $jsonPath.properties[$propIndex]: " +
+                                    "concept '${sConcept.name}' has no such property"
+                        )
+                    }
                 stagedProperties += sProperty to propValue
             }
         }
 
-        // Stage children: instantiate detached SNodes and run assignability checks. Anything
-        // that throws here (unknown concept, malformed nested blueprint, assignability mismatch)
-        // surfaces before any destructive op.
+        // Stage children top-down and attached (MPS-40226): each staged child is created, appended
+        // to the target, and only then filled, so the factories of its nested children see the live
+        // ancestors. The original children stay attached until step 2 of the apply phase deletes
+        // them, so during staging a factory sees the old siblings plus the staged ones appended after
+        // them, and the index it gets (the child's position in the new list) is not its momentary
+        // position. A dry run never attaches to the live node: it builds each staged child detached,
+        // where no factory runs to notice. Anything that throws here, in the reference staging or in
+        // apply step 1 (unknown concept, malformed nested blueprint, assignability mismatch, a
+        // throwing property setter) deletes every child the staging added, so the target keeps
+        // exactly its original children: a command does not roll back.
+        val originalChildren = node.children.toList()
         val stagedChildren = mutableListOf<Pair<SContainmentLink, SNode>>()
-        val children = jsonObject.requireArray("children", jsonPath)
-        if (children != null) {
-            children.forEachIndexed { roleIndex, childRoleElement ->
-                val childRoleObject = childRoleElement.asJsonObject
-                val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
-                val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
-                val link = sConcept.containmentLinks.find { it.name == roleName }
-                    ?: throw McpInvalidRequestException(
-                        "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
-                                "concept '${sConcept.name}' has no such containment link"
-                    )
-                childNodes.forEachIndexed { nodeIndex, nodeElement ->
-                    val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
-                    val childNode = instantiateNode(
-                        nodeElement.asJsonObject, model, dryRun, childPath, warnings, mpsProject,
-                        enclosingNode = node
-                    ) ?: return@forEachIndexed
-                    if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
-                        throw childAssignabilityFailure(childPath, childNode.concept, link, sConcept, model)
-                    }
-                    stagedChildren += link to childNode
-                }
-            }
-        }
-
-        // Stage references: pre-validate (XML-short-id rejection, target resolution,
-        // assignability) without writing. Application uses applyReferenceUpdate in Phase 2.
         val stagedReferences = mutableListOf<StagedReference>()
-        val references = jsonObject.requireArray("references", jsonPath)
-        if (references != null) {
-            references.forEachIndexed { index, refElement ->
-                val refObject = refElement.asJsonObject
-                val roleName = refObject.get("role")?.asString ?: return@forEachIndexed
-                val targetRefStr = (refObject.get("targetReference") ?: refObject.get("target"))?.asString
-                val link = sConcept.referenceLinks.find { it.name == roleName }
-                    ?: throw McpInvalidRequestException(
-                        "Unknown reference role '$roleName' at $jsonPath.references[$index]: " +
-                                "concept '${sConcept.name}' has no such reference link"
-                    )
-                if (targetRefStr.isNullOrEmpty()) return@forEachIndexed
-
-                failIfXMLReferenceIsUsed(targetRefStr, jsonPath, index)
-                val targetRef = resolveReferenceTarget(mpsProject, model.repository, targetRefStr, "$jsonPath.references[$index]")
-                val targetNode = targetRef?.resolve(model.repository)
-                if (targetNode != null) {
-                    validateReferenceTarget(targetNode, link, sConcept.name, roleName, "$jsonPath.references[$index]")
-                } else if (dryRun && targetRef == null) {
-                    warnings?.add(dryRunDynamicReferenceWarning("$jsonPath.references[$index]", targetRefStr))
+        try {
+            val children = jsonObject.requireArray("children", jsonPath)
+            if (children != null) {
+                children.forEachIndexed { roleIndex, childRoleElement ->
+                    val childRoleObject = childRoleElement.asJsonObject
+                    val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
+                    val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
+                    val link = sConcept.containmentLinks.find { it.name == roleName }
+                        ?: throw if (isMarkedUndeclared(childRoleObject)) {
+                            undeclaredRoleRejection("Child role", roleName, "$jsonPath.children[$roleIndex]", sConcept, "stored children")
+                        } else McpInvalidRequestException(
+                            "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
+                                    "concept '${sConcept.name}' has no such containment link"
+                        )
+                    childNodes.forEachIndexed { nodeIndex, nodeElement ->
+                        val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
+                        val childObject = nodeElement.asJsonObject
+                        val childNode = createNode(
+                            childObject, model, dryRun, childPath, warnings, mpsProject,
+                            enclosingNode = node, link = link, index = stagedChildren.count { it.first == link }
+                        )
+                        if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
+                            throw childAssignabilityFailure(childPath, childNode.concept, link, sConcept, model)
+                        }
+                        if (!dryRun) node.addChild(link, childNode)
+                        stagedChildren += link to childNode
+                        fillChildren(childNode, childObject, model, dryRun, childPath, warnings, mpsProject)
+                    }
                 }
-
-                stagedReferences += StagedReference(
-                    link = link,
-                    targetRefStr = targetRefStr,
-                    errorPath = "$jsonPath.references[$index]",
-                    xmlReferencePath = jsonPath,
-                    xmlReferenceIndex = index
-                )
             }
+
+            // Stage references: pre-validate (XML-short-id rejection, target resolution,
+            // assignability) without writing. Application uses applyReferenceUpdate in Phase 2.
+            val references = jsonObject.requireArray("references", jsonPath)
+            if (references != null) {
+                references.forEachIndexed { index, refElement ->
+                    val refObject = refElement.asJsonObject
+                    val roleName = refObject.get("role")?.asString ?: return@forEachIndexed
+                    val targetRefStr = (refObject.get("targetReference") ?: refObject.get("target"))?.asString
+                    val link = sConcept.referenceLinks.find { it.name == roleName }
+                        ?: throw if (isMarkedUndeclared(refObject)) {
+                            undeclaredRoleRejection("Reference role", roleName, "$jsonPath.references[$index]", sConcept, "stored reference")
+                        } else McpInvalidRequestException(
+                            "Unknown reference role '$roleName' at $jsonPath.references[$index]: " +
+                                    "concept '${sConcept.name}' has no such reference link"
+                        )
+                    if (targetRefStr.isNullOrEmpty()) return@forEachIndexed
+
+                    failIfXMLReferenceIsUsed(targetRefStr, jsonPath, index)
+                    val targetRef = resolveReferenceTarget(mpsProject, model.repository, targetRefStr, "$jsonPath.references[$index]")
+                    val targetNode = targetRef?.resolve(model.repository)
+                    if (targetNode != null) {
+                        validateReferenceTarget(targetNode, link, sConcept.name, roleName, "$jsonPath.references[$index]")
+                    } else if (dryRun) {
+                        warnings?.add(dryRunReferenceWarning("$jsonPath.references[$index]", targetRefStr))
+                    }
+
+                    stagedReferences += StagedReference(
+                        link = link,
+                        targetRefStr = targetRefStr,
+                        errorPath = "$jsonPath.references[$index]",
+                        xmlReferencePath = jsonPath,
+                        xmlReferenceIndex = index
+                    )
+                }
+            }
+
+            if (dryRun) return
+
+            // All staging succeeded; apply destructively.
+            //
+            // NOTE: The apply phase itself is not transactional within itself — the three
+            // steps below (properties, children, references) are sequenced operations on
+            // the live node. A throw in step 1 still removes the staged children (see the
+            // catch below) but keeps its property writes; a throw in a later step leaves
+            // the node in a partially-updated state with no rollback.
+            //
+            // The validate/stage phase above significantly reduces this risk by catching
+            // most semantic errors (concept assignability, reference resolution, role
+            // cardinality, XML schema, etc.) before any mutation begins. Apply-phase
+            // failures are therefore expected only for low-level platform errors
+            // (storage I/O, SModel listener exceptions, concurrent modification, etc.).
+            //
+            // Callers that need stronger guarantees should wrap this in an outer
+            // transactional unit (e.g. a command + manual snapshot/restore).
+
+            // 1. Properties: clear existing values, then re-apply the staged ones (which now include
+            // `name`). `name` is not nulled in the clear step to avoid a transient nameless state;
+            // the staged value (if the blueprint supplied one) overwrites it in the next line.
+            sConcept.properties.forEach {
+                if (it != SNodeUtil.property_INamedConcept_name) {
+                    node.setProperty(it, null)
+                }
+            }
+            stagedProperties.forEach { (property, value) -> setProperty(node, property, value) }
+        } catch (t: Throwable) {
+            if (!dryRun) rollBackStagedChildren(node, originalChildren, t)
+            throw t
         }
 
-        if (dryRun) return
-
-        // All staging succeeded; apply destructively.
-        //
-        // NOTE: The apply phase itself is not transactional within itself — the three
-        // steps below (properties, children, references) are sequenced operations on
-        // the live node. If a step throws after a prior step has mutated the node,
-        // the node is left in a partially-updated state with no rollback.
-        //
-        // The validate/stage phase above significantly reduces this risk by catching
-        // most semantic errors (concept assignability, reference resolution, role
-        // cardinality, XML schema, etc.) before any mutation begins. Apply-phase
-        // failures are therefore expected only for low-level platform errors
-        // (storage I/O, SModel listener exceptions, concurrent modification, etc.).
-        //
-        // Callers that need stronger guarantees should wrap this in an outer
-        // transactional unit (e.g. a command + manual snapshot/restore).
-
-        // 1. Properties: clear existing values, then re-apply the staged ones (which now include
-        // `name`). `name` is not nulled in the clear step to avoid a transient nameless state;
-        // the staged value (if the blueprint supplied one) overwrites it in the next line.
-        sConcept.properties.forEach {
-            if (it != SNodeUtil.property_INamedConcept_name) {
-                node.setProperty(it, null)
-            }
-        }
-        stagedProperties.forEach { (property, value) -> setProperty(node, property, value) }
-
-        // 2. Children: delete originals, attach staged.
-        node.children.toList().forEach { it.delete() }
-        stagedChildren.forEach { (link, childNode) -> node.addChild(link, childNode) }
+        // 2. Children: exactly the staged ones, already attached after the originals. Deleting
+        // everything else also drops a sibling that a staged child's factory appended to the target.
+        val keep = stagedChildren.mapTo(HashSet()) { it.second }
+        node.children.filterNot { it in keep }.forEach { it.delete() }
 
         // 3. References: drop originals, apply staged.
         //
@@ -709,6 +999,18 @@ abstract class AbstractNodeOps : AbstractOps() {
                 validateXmlReference = false,
                 mpsProject = mpsProject
             )
+        }
+    }
+
+    /**
+     * The rollback of a failed [updateNodeFromBlueprint]: deletes every child of [node] that is not one of
+     * [originalChildren], that is the staged children and anything their factories appended. A failing
+     * delete is added to [cause] instead of masking it, and the remaining deletes still run.
+     */
+    private fun rollBackStagedChildren(node: SNode, originalChildren: List<SNode>, cause: Throwable) {
+        val original = originalChildren.toHashSet()
+        node.children.filterNot { it in original }.forEach { child ->
+            runCatching { child.delete() }.exceptionOrNull()?.let(cause::addSuppressed)
         }
     }
 
@@ -742,25 +1044,34 @@ abstract class AbstractNodeOps : AbstractOps() {
             return invalidJson(e.message)
         }
         val nodeWarnings = mutableListOf<String>()
+        val errorPrefix = "Failed to instantiate new child node from JSON"
         val newChild = try {
-            instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject, enclosingNode = parent)
+            // The replaced child's slot, which the editor derives from a sampleNode. The replaced child
+            // is not passed as the sampleNode: setupNode would copy its subtree into the factories, and
+            // the blueprint is authoritative.
+            createNode(
+                jsonObject, model, dryRun, "$", nodeWarnings, mpsProject,
+                enclosingNode = parent, link = role, index = parent.getChildren(role).indexOf(childNode)
+            )
         } catch (e: Exception) {
-            return instantiationFailed("Failed to instantiate new child node from JSON", e, nodeWarnings)
+            return instantiationFailed(errorPrefix, e, nodeWarnings)
         }
-        if (newChild == null) return errJson("Failed to instantiate new child node from JSON", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
 
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
             throw childAssignabilityFailure("$", newChild.concept, role, parent.concept, model)
         }
 
+        // Attach, fill, and only then delete the replaced child, as in addNodeChild.
+        if (!dryRun) parent.insertChildBefore(role, newChild, childNode)
+        fillChildrenOrDelete(newChild, jsonObject, model, dryRun, nodeWarnings, mpsProject, errorPrefix)?.let { return it }
+
         if (dryRun) {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node replacement")
-            }, warnings = nodeWarnings)
+            }, warnings = withDryRunReferenceRule(nodeWarnings))
         }
 
-        parent.insertChildBefore(role, newChild, childNode)
         childNode.delete()
         val fixResult = performFixReferences(mpsProject, newChild)
         val warn = persistOrRefreshConsole(model, console)
@@ -863,39 +1174,56 @@ abstract class AbstractNodeOps : AbstractOps() {
             return invalidJson(e.message)
         }
         val nodeWarnings = mutableListOf<String>()
-        val newChild = try {
-            instantiateNode(jsonObject, model, dryRun, warnings = nodeWarnings, mpsProject = mpsProject, enclosingNode = parent)
-        } catch (e: Exception) {
-            return instantiationFailed("Failed to instantiate child node from JSON", e, nodeWarnings)
+        val errorPrefix = "Failed to instantiate child node from JSON"
+        // The slot the child takes, for its node factory: a single-cardinality role has only slot 0.
+        val index = when {
+            insertIndex is InsertIndex.At -> insertIndex.index
+            role.isMultiple -> existingChildrenInRole.size
+            else -> 0
         }
-        if (newChild == null) return errJson("Failed to instantiate child node from JSON", McpErrorCode.INVALID_REQUEST, warnings = nodeWarnings)
+        val newChild = try {
+            createNode(jsonObject, model, dryRun, "$", nodeWarnings, mpsProject, enclosingNode = parent, link = role, index = index)
+        } catch (e: Exception) {
+            return instantiationFailed(errorPrefix, e, nodeWarnings)
+        }
 
-        // Check before replacing the occupant of a single-cardinality role: MPS commands do not roll
-        // back, so a delete ahead of a failing check would stick.
+        // Check before attaching: MPS commands do not roll back.
         if (!newChild.concept.isSubConceptOf(role.targetConcept)) {
             throw childAssignabilityFailure("$", newChild.concept, role, parent.concept, model)
         }
 
-        if (!role.isMultiple && !dryRun) {
-            parent.getChildren(role).forEach { it.delete() }
+        // Attach, then fill (MPS-40226): the factories of the blueprint's nested children must see the
+        // live ancestors, as in the editor. The cost is that the subtree's writes fire model events;
+        // blueprints are small. A dry run never attaches to a live node: it builds the subtree
+        // detached, where no factory runs to notice.
+        //
+        // A single-cardinality role briefly holds the new child next to its old occupant (SNode does
+        // not enforce cardinality), and the occupant is deleted only after the fill succeeded, so a
+        // failing blueprint leaves it in place. Meanwhile the new child's factory runs with the
+        // occupant still attached, and a nested factory reading the role sees two children; both are
+        // harmless.
+        val replacedOccupants = if (role.isMultiple || dryRun) emptyList() else parent.getChildren(role).toList()
+        if (!dryRun) {
+            when (insertIndex) {
+                is InsertIndex.At -> {
+                    // index is in [0, existingChildrenInRole.size); the snapshot was taken before any mutation.
+                    parent.insertChildBefore(role, newChild, existingChildrenInRole[insertIndex.index])
+                }
+                // Append covers every multi-cardinality append/clamp case and all single-cardinality
+                // inserts (Invalid was already returned above).
+                else -> parent.addChild(role, newChild)
+            }
         }
+        fillChildrenOrDelete(newChild, jsonObject, model, dryRun, nodeWarnings, mpsProject, errorPrefix)?.let { return it }
 
         if (dryRun) {
             return okJson(jsonObject {
                 addProperty("dryRun", true)
                 addProperty("message", "Dry run successful for node addition")
-            }, warnings = nodeWarnings)
+            }, warnings = withDryRunReferenceRule(nodeWarnings))
         }
 
-        when (insertIndex) {
-            is InsertIndex.At -> {
-                // index is in [0, existingChildrenInRole.size); the snapshot was taken before any mutation.
-                parent.insertChildBefore(role, newChild, existingChildrenInRole[insertIndex.index])
-            }
-            // Append covers every multi-cardinality append/clamp case and all single-cardinality
-            // inserts (Invalid was already returned above).
-            else -> parent.addChild(role, newChild)
-        }
+        replacedOccupants.forEach { it.delete() }
         val fixResult = performFixReferences(mpsProject, newChild)
         val warn = persistOrRefreshConsole(model, console)
         if (summarize) {
@@ -1786,6 +2114,33 @@ abstract class AbstractNodeOps : AbstractOps() {
         private const val CONSOLE_PLUGIN_ID = "jetbrains.mps.console"
         private const val CONSOLE_TOOL_FQN = "jetbrains.mps.console.plugin.ConsoleTool_Tool"
         private const val PROJECT_PLUGIN_MANAGER_FQN = "jetbrains.mps.plugins.projectplugins.ProjectPluginManager"
+
+        /** Suffix of the per-reference dry-run warning for a plain-name target; [DRY_RUN_REFERENCE_RULE] keys on it. */
+        private const val NAME_NOT_LOOKED_UP = " is a name, not looked up."
+        private const val DRY_RUN_REFERENCE_RULE =
+            "A dry run does not look up reference targets given by name, so every name is listed above, " +
+                "existing and same-batch nodes included. The write resolves names in each role's scope; " +
+                "check fixReferences.stillBroken in its response (or mps_mcp_check_root_node_problems)."
+
+        /** Blueprint list fields and the entry shape each holds, in the order the rejection reports them (D87). */
+        private val BLUEPRINT_LIST_FIELDS = linkedMapOf(
+            "properties" to "{\"name\",\"value\"}",
+            "references" to "{\"role\",\"target\"}",
+            "children" to "{\"role\",\"nodes\"}",
+        )
+        private const val BLUEPRINT_SHAPE_SENTENCE =
+            "Blueprint fields are arrays, not maps: properties:[{name,value}], references:[{role,target}], " +
+                "children:[{role,nodes:[…]}] (mps-node-editing references/json-format.md)."
+        /** Entry keys `print_node` emits for each list field, plus the reader's alternatives. */
+        private val PROPERTY_ENTRY_KEYS = setOf("name", "value", "type", "isDefault", "declared")
+        private val REFERENCE_ENTRY_KEYS = setOf("role", "target", "targetReference", "declared")
+        private val CHILDREN_ENTRY_KEYS = setOf("role", "nodes", "declared")
+        /** Longest key echoed back in a shape rejection; property and role names are short. */
+        private const val ECHO_KEY_MAX = 40
+        /** Longest primitive value echoed in full; a longer one is echoed as a bare `…`. */
+        private const val ECHO_VALUE_FULL_MAX = 200
+        /** Length a shape rejection is trimmed to by echoing fewer entries; the caller's prefix comes on top. */
+        private const val SHAPE_MESSAGE_BUDGET = 550
 
         /** `SPropertyId` / `SContainmentLinkId` / `SReferenceLinkId.serialize()`: language UUID, concept id, feature id. */
         private val FEATURE_ID_SHAPE = Regex("([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(-?\\d+)/(-?\\d+)")

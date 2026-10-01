@@ -1,5 +1,9 @@
 # Scenario set
 
+Which cell verifies which skill is `plugins/mcp-tools/study/scenarios.md` (a brief list, then the
+directory). This file is how to run a cell and how to add one, not that lookup. The gate-4
+default (S1 + S3) is a pilot default; do not use it when the directory names other cells.
+
 Location: `plugins/mcp-tools/study/scenarios/<S>/worker_prompt.md` + `done_criteria.md`.
 Fixtures are NOT kept as tarballs in git — regenerate them per `plugins/mcp-tools/study/fixtures/README.md`
 (empty = **synthesized per run** by `scripts/new_study_project.py`, not a tarball at all;
@@ -27,8 +31,11 @@ S10 rehearsed 2026-09-22 (sonnet, PASS on all five criteria, 29 turns / 116 s / 
 `welcome_rejections` 0, one self-recovered error — defect D39); S1 + S2 re-measured in round 8
 (2026-09-23, sonnet, both PASS) — the first round on the observer-owned lifecycle, which found
 harness defects D40–D42. S1 + S2 + S3 × (opus, sonnet) re-measured in round 15 (2026-09-25,
-all six PASS; the first S2-opus cell). S5–S10 × (opus, sonnet) re-measured in round 16
-(2026-09-25, all twelve PASS; the first opus cells for S5–S8 and S10). Later rounds are listed in
+all six PASS; the first S2-opus cell), and again in round 17 (2026-09-26, the first round on the
+262 platform, all six PASS). S5–S10 × (opus, sonnet) re-measured in round 16
+(2026-09-25, all twelve PASS; the first opus cells for S5–S8 and S10). S1–S3 + S5–S10 × (opus,
+sonnet) in round 18 (2026-09-29, all eighteen PASS; the first `claude-sonnet-5-5` cells and the
+first round under `per-shared-fixture-restart` isolation). Later rounds are listed in
 `study/HOTSPOT_REPORT_round*.md`.
 **S10 runs last in a round** — see its exception and recovery notes below.
 
@@ -80,9 +87,11 @@ rehearsal run has shown the worker's MCP session surviving the zero-project wind
 normally at 20 on the same session), so its prompt is now **frozen**.
 
 ## Writing done criteria
-Observer-checkable with read-only tools only; list the exact tool per check; accept equivalent
-modelling explicitly (e.g. 0..n references as smart-reference wrapper concepts); say which checker
-messages count as errors vs warnings. Known quirk: enum default literal prints as `""`.
+Observer-checkable with read-only tools only (the one exception: an observer MAKE between two
+evaluator passes, when a check needs a built language — S8 criterion 3, A8); list the exact tool
+per check; accept equivalent modelling explicitly (e.g. 0..n references as smart-reference
+wrapper concepts); say which checker messages count as errors vs warnings. Known quirk: enum
+default literal prints as `""`.
 Where the artefact *is* a file (project descriptors, for instance), an on-disk check is fine — but
 compare generated XML by its parsed content, never byte-wise: `new_project_migration_xml.py` ends
 its document with a newline and an MPS-written file does not. Any reopening a check needs is the

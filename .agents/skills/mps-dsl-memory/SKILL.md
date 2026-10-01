@@ -23,10 +23,10 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 2. **Choose skill scope**: Prefer one generated skill per language. Use one combined skill only when the project languages are tightly coupled and users normally edit them together.
 3. **Find examples**: For each language or language group, call `mps_mcp_get_project_structure` with the relevant sandbox/example solution as `startingPoint` and `includeRootNodes: true`. Record editable model refs and representative root refs.
 4. **Read concepts**: Call `mps_mcp_get_concept_details` with the relevant `l:<uuid>:<languageName>` refs. Capture rootable concepts, concrete children, properties, child roles, references, and useful `shortDescription` text.
-5. **Sample sparingly**: Use `mps_mcp_print_node` only on representative roots or subtrees needed for reference targets, required roles, or reusable blueprints. Avoid dumping every root.
-6. **Generate DSL skills**: Create or update `.agents/skills/<dsl-name>-dsl/` for each selected scope. Preserve user-added notes unless they are stale or wrong.
+5. **Sample sparingly**: Use `mps_mcp_print_node` only on representative roots or subtrees needed for reference targets, required roles, or reusable blueprints, and derive blueprints from that output rather than writing them by hand. Avoid dumping every root.
+6. **Generate DSL skills**: Create or update `.agents/skills/<dsl-name>-dsl/` for each selected scope. Preserve user-added notes unless they are stale or wrong. In every generated file, write the temp directory as `$TMPDIR` (`%TEMP%` on Windows), never as the resolved directory (`/private/var/folders/…/T`, `C:\Users\…\Temp`), which differs per machine.
 7. **Cross-link related skills**: When generated skills cover languages that extend, depend on, or are commonly used inside each other, add short links and usage notes between them.
-8. **Verify**: Confirm linked reference files exist, blueprint JSON parses, no `.DS_Store` or editor artifacts were added, and one or two recorded node refs still resolve if the sandbox may have changed.
+8. **Verify**: Confirm linked reference files exist, no `.DS_Store` or editor artifacts were added, and one or two recorded node refs still resolve if the sandbox may have changed. Dry-run every blueprint under `references/blueprints/`: `mps_mcp_insert_root_node_from_json` with `dryRun: true` into a sandbox model for a root blueprint, `mps_mcp_update_node` ADD CHILD with `dryRun: true` under a sample parent for a fragment. The server reads a `json` / `childJson` file only from the system temp directory, so a path under `.agents/skills/` is rejected with "is not inside the system temp directory"; that rejection is not a blueprint failure. Send each file's exact content inline (up to 4,096 characters), or copy the files first and pass each copy's absolute path: `d="${TMPDIR:-/tmp}/<dsl-name>-blueprints"; mkdir -p "$d"; cp .agents/skills/<dsl-name>-dsl/references/blueprints/*.json "$d/"`. When a dry run fails, fix the shipped file, not only the inline text or the temp copy, and dry-run again from the fixed file. Parsing as JSON is not enough, because the server rejects blueprints that parse. If every blueprint is rejected with `Unknown property …`, the language descriptor is hollow: MAKE the language and retry. Warnings for references given by name are expected; see "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 
 ### Generated Skill Layout
 ```text
@@ -56,7 +56,7 @@ The `<dsl-name>` slug is derived from the language namespace: use stable lowerca
     * Validate changed roots with `mps_mcp_check_root_node_problems`.
 * Quick start:
     * Use the recorded sandbox model for examples or new sample roots.
-    * Start from `references/blueprints/` for known shapes.
+    * Start from `references/blueprints/` for known shapes: send a blueprint's content inline, or copy the file to `${TMPDIR:-/tmp}` (`%TEMP%` on Windows) and pass the copy's absolute path. The server does not read a file under `.agents/skills/`.
     * Dry-run root JSON with `mps_mcp_insert_root_node_from_json`.
     * Insert roots with `mps_mcp_insert_root_node_from_json`.
     * Add child-role subtrees incrementally for large roots.
@@ -76,4 +76,4 @@ The `<dsl-name>` slug is derived from the language namespace: use stable lowerca
 * `sandbox.md` under the generated skill's `references/`: sandbox model refs, representative roots, configuration nodes, reference targets, and stable node refs.
 * `workflows.md` under the generated skill's `references/`: creation/editing recipes, including when to use full-root JSON versus skeleton-plus-subtrees.
 * `gotchas.md` under the generated skill's `references/`: reference formats, ordering constraints, required roles, expression precedence issues, extension-language dependencies, and known validation failures.
-* `references/blueprints/`: valid compact JSON skeletons and subtree templates.
+* `references/blueprints/`: valid compact JSON skeletons and subtree templates, in the array form `print_node` emits (`properties:[{name,value}]`, not a map).

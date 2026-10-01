@@ -217,3 +217,62 @@
     put it where the step or the call happens: in the numbered step list, the tool description or
     the skill section the agent is already in. A note is not enough, and a far-away reference is
     not enough either.
+
+## From round 17 (2026-09-26, S1+S2+S3 × opus+sonnet, first round on the 262 platform)
+
+39. **The MCP port belongs to the IDE selector, not to the study.** On 262 the from-sources MPS runs
+    under the selector `MPSSRC2026.2`, whose `options/mcpServer.xml` pins `mcpServerPort = 64344`, while
+    `mcp.study.json` and every script default still said 64343. Preflight reported "unreachable" with
+    MPS up. → Read the port off the live launcher (`lsof -nP -iTCP -sTCP:LISTEN -a -p <pid>`) before
+    the first call, and pass `MPS_MCP_URL` to everything. `run_worker.sh` hard-codes
+    `$STUDY/mcp.study.json`, so until A3 is fixed, run from a `STUDY` mirror (symlinked `scripts/`,
+    `scenarios/`, `fixtures/`, `mcp-junie/` plus an edited `mcp.study.json`) instead of editing the
+    tracked file or the IDE setting. **Fixed by A3 (2026-09-29):** `mps_mcp_url.py` reads the port
+    off the launcher's listening sockets (confirmed on `serverInfo.name`, else the selector's
+    `mcpServer.xml`), `mps_control.sh` and `run_worker.sh` export it, and the worker config is
+    generated per run into `$RUNS/<id>-mcp/`. Both tracked config files are gone, so the `STUDY`
+    mirror is no longer needed.
+40. **Two cells on one fixture share its language runtime.** `isolationLevel: per-round` assumed that
+    closing a project unloads everything it deployed. In round 17, S2-sonnet opened a fresh statechart
+    copy and `get_concept_details` answered with the `guard` role S2-opus had added and compiled in the
+    previous cell (defect D80), which cost the worker about 7 turns of investigation, `reload_all` and
+    MAKE. → Treat cells that share a fixture module id as not independent: restart MPS between them
+    (`mps_control.sh restart` + SMOKE) or order the round so a scenario's second model runs after an
+    MPS restart, and check the first `get_concept_details` of such a cell for features the fixture
+    does not have.
+
+## From round 18 (2026-09-29, S1–S3 + S5–S10 × opus+sonnet, surface identical to round 16)
+
+41. **The `sonnet` alias moves too, and a model change can push a hotspot the other way.** With
+    `skillsSha256` and `inventorySha256` byte-identical to round 16, `sonnet` resolved to
+    `claude-sonnet-5-5` instead of `claude-sonnet-5`. Sonnet turns halved, and its error envelopes
+    tripled (8 → 28 on S5–S10), because it calls tools without loading their schemas (71 of 249 MCP
+    calls, 32 % of them rejected). → Read `init.model` from the SMOKE transcripts before the matrix
+    starts, and name the same-model cells in the report. Use the model that did not move (opus here,
+    S5–S10 against round 16) as the A/A control: a family that rises only on the moved model is a
+    model finding, not a tool regression. Count calls to unloaded schemas with `metrics.csv`'s
+    `unloaded_schema_calls` and `unloaded_schema_errors`.
+42. **Restarting per shared fixture language is cheap and removes D80.** Round 18 restarted MPS 7
+    times, each `shutdown` → `start` harness → `wait` → SMOKE, at about 30 s plus $0.25. There was no
+    stale-runtime episode (one `reload_all` in 18 cells, a D84 case), against 7 turns in round 17's
+    S2-sonnet. Ordering matters. A read-only cell (S9) can go first in a process and a
+    language-changing one (S6) after it, and each restart can take one `statechart` and one `recipes*`
+    cell, so 16 fixture cells needed 7 restarts. One residual remains untested: two synthesized S1
+    projects and the S3 fixture put three module ids named `mcp.study.recipes` into one process
+    without an incident.
+
+## From round 21 (2026-09-30, S1–S3 + S5–S10 × opus+sonnet, first full matrix with pinned effort)
+
+43. **The worker CLI moves the context floor, and nothing in the evidence says so.** Between rounds 18 and 21 the
+    SMOKE floor rose from 62 K to 82 K tokens. Every request grew by ≈ 6.7 K, while the installed guides, the skill
+    count and frontmatter bytes, and the tool, agent and skill counts in `init` were byte-identical. The only change
+    on that path was Claude Code 2.1.284 → 2.1.286. → Compare each round's SMOKE floor and the first request's
+    `input + cache_read + cache_creation` with the prior round's before quoting token or cost deltas. If they moved
+    with an unchanged surface, attribute the difference to the harness and compare turns and batches instead.
+44. **An unpinned prior round cannot be the effort control, and its transcript still shows its effort.** Round 21
+    pinned sonnet at `xhigh`. Its batches rose 40 % over round 18 while errors fell 35 → 9, and opus on the same
+    catalog was flat per message. No transcript records the effort level, but its signature is measurable: the share
+    of messages with a thinking block and the output tokens per message (S1-sonnet: 55 % / 567 unpinned, 67 % / 641 at
+    `high`, 71 % / 811 at `xhigh`). → Before attributing a per-model delta to the surface, compare that signature with
+    the other model's on the same surface. Keep the effort level fixed across the rounds you intend to compare, and
+    make it the same level the user runs day to day.

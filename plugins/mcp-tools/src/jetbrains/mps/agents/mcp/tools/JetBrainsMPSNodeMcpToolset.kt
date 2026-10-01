@@ -10,16 +10,29 @@ import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
+import jetbrains.mps.errors.MessageStatus
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
 import jetbrains.mps.progress.EmptyProgressMonitor
+import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.project.Solution
 import jetbrains.mps.smodel.CopyUtil
+import jetbrains.mps.smodel.Generator
+import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.project.validation.ModelValidator
+import jetbrains.mps.project.validation.ValidationUtil
+import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.EditableSModel
+import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
+import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import java.util.concurrent.TimeUnit
 
+/** See [JetBrainsMPSNodeMcpToolset.moduleCheckBudgetMs]. */
+private const val MODULE_CHECK_BUDGET_MS: Long = 20_000
 
 enum class MPSQueryOperation {
     GET_PARENT,
@@ -703,36 +716,49 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
     }
 
+    /**
+     * Wall-clock budget for a module-scope check, measured from tool entry and tested between models:
+     * well inside [MODEL_OPERATION_TIMEOUT_MS], so a long sweep answers with what it checked instead
+     * of losing the finished read to MODAL_BLOCKED (D63). A test sets it to 0.
+     */
+    internal var moduleCheckBudgetMs: Long = MODULE_CHECK_BUDGET_MS
+
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants) or an MPS model. Accepts an SNodeReference, an SModelReference, or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts). Pass any of these in `nodeReference` — there is no `modelReference` parameter. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
-        A **model reference is exhaustive and is the preferred scope**: it validates the model itself (imports, used languages, devkits) AND runs the full checker stack on every root, so there is no need to follow up with a per-root check. Both the clean and the problem answer carry `details.scope:"model"` and `details.rootsChecked:<N>` stating the coverage; the problem report is the model object plus a `roots` array, one entry per root with problems (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` per `onlyNodesWithProblems`). Pass `perRoot=true` to get `data` as one line per root instead — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — which replaces N single-root calls with one. `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
+        Validates an MPS node (and its descendants), an MPS model, or an MPS module. Accepts an SNodeReference, an SModelReference or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts), or a module reference (`<uuid>(name)`) or module name. Pass any of these in `nodeReference` — there is no `modelReference` or `moduleReference` parameter. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
+        A **model reference is exhaustive and is the preferred scope**: it validates the model itself (imports, used languages, devkits) AND runs the full checker stack on every root, so there is no need to follow up with a per-root check. Both the clean and the problem answer carry `details.scope:"model"` and `details.rootsChecked:<N>` stating the coverage; the problem report is the model object plus a `roots` array, one entry per root with problems (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` per `onlyNodesWithProblems`). Pass `perRoot=true` to get `data` as one line per root instead — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — which replaces N single-root calls with one.
+        A **module reference or module name** checks the module itself and every model it owns (a language's generators included, stub and `@descriptor` models excluded) in one call, with `details.scope:"module"`, `modulesChecked`, `modelsChecked` and `rootsChecked` — do not follow a clean module with per-model checks. Module-level warnings are listed in `details.moduleProblems` but do not make the module unclean. Problems come back as the module object with a `models` array of model reports; `perRoot=true` gives `[{model, name, rootsChecked, errors, warnings}]` per model. A sweep that would run too long stops early with `details.truncated` and `details.modelsNotChecked`.
+        `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
-        @McpDescription("Required. Persistent form of SNodeReference or SModelReference, or a qualified model name (the same form mps_mcp_get_project_structure startingPoint accepts). Pass any of these here — there is no modelReference parameter.") nodeReference: String = "",
+        @McpDescription("Required. Persistent form of SNodeReference or SModelReference, a qualified model name (the same form mps_mcp_get_project_structure startingPoint accepts), or a module reference (<uuid>(name)) or module name. Pass any of these here — there is no modelReference or moduleReference parameter.") nodeReference: String = "",
         @McpDescription("If true, returns only nodes with problems in a list instead of a full tree (default = true)") onlyNodesWithProblems: Boolean = true,
         @McpDescription("If true, apply every problem carrying exactly one auto-applicable fix within the node's subtree (node/root branch only) before returning the final report (default = false)") autoApplyQuickFixes: Boolean = false,
         @McpDescription("Inline the problem report in `data` when it is at most this many characters; larger reports are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
-        @McpDescription("Model references only: if true, `data` is one compact entry per root — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — instead of the problem tree (default = false). Ignored for a node reference.") perRoot: Boolean = false
+        @McpDescription("Model and module references only: if true, `data` is one compact entry per root of a model — `[{root, name, concept, errors, warnings}]` — or per model of a module — `[{model, name, rootsChecked, errors, warnings}]` — clean ones included, instead of the problem tree (default = false). Ignored for a node reference.") perRoot: Boolean = false
     ): String {
         rejectMissingParameters(
             "mps_mcp_check_root_node_problems",
             RequiredParameter(
                 "nodeReference",
                 nodeReference,
-                "a node reference, a model reference, or a qualified model name — all three go under nodeReference, " +
-                    "since this tool has no modelReference parameter",
+                "a node reference, a model reference or qualified model name, or a module reference or module name — " +
+                    "all of them go under nodeReference, since this tool has no modelReference or moduleReference parameter",
             ),
         )?.let { return it }
+        // Taken before the EDT dispatch: the modal timeout also covers the wait for the EDT and
+        // the read lock, so a budget that started in the body could still overrun it.
+        val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(moduleCheckBudgetMs)
+        val nearMisses = sentNearMisses("mps_mcp_check_root_node_problems", "nodeReference")
         return withMpsProject("Checking MPS problems") { mpsProject ->
             // Auto-apply mutates the model, so it needs a write command; the default (report-only)
             // mode keeps the read wrapper to avoid needless write locks.
             if (autoApplyQuickFixes) {
-                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot) }
+                executeShortCommandOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = true, maxInlineBytes = maxInlineBytes, perRoot = perRoot, nearMisses = nearMisses, deadline = deadline) }
             } else {
-                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot) }
+                executeShortReadOnEdt(mpsProject) { checkRootNodeProblemsBody(mpsProject, nodeReference, onlyNodesWithProblems, applyFixes = false, maxInlineBytes = maxInlineBytes, perRoot = perRoot, nearMisses = nearMisses, deadline = deadline) }
             }
         }
     }
@@ -744,10 +770,15 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         applyFixes: Boolean,
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES,
         perRoot: Boolean = false,
+        nearMisses: List<Pair<String, String>> = emptyList(),
+        deadline: Long,
     ): String {
         val repo = mpsProject.repository
-        val host = mpsProject.platform
-        val monitor = EmptyProgressMonitor()
+        // A near-miss key the binder dropped: say so even on success, or the value sent under it
+        // (say a model next to a root in nodeReference) silently goes unchecked (D63).
+        val nearMissWarnings = nearMisses.map { (key, value) ->
+            "This tool has no '$key' parameter, so its value '$value' was ignored; nodeReference '$nodeReference' was checked."
+        }
 
         // Try resolving as node reference
         val sNodeRef = try {
@@ -830,85 +861,234 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             // "node has a problem" — preventing drift where one says green and the
             // other still finds something to print.
             return if (!hasAnyProblems(reportNode, problems)) {
-                if (details.isEmpty()) okJson("\"no problems found\"")
-                else okJson(JsonPrimitive("no problems found"), details = details)
+                if (details.isEmpty() && nearMissWarnings.isEmpty()) okJson("\"no problems found\"")
+                else okJson(JsonPrimitive("no problems found"), warnings = nearMissWarnings, details = details)
             } else {
                 val json = if (onlyNodesWithProblems) {
                     nodeWithProblemsListToJson(reportNode, problems, mpsProject)
                 } else {
                     nodeWithProblemsToJson(reportNode, problems, currentProject = mpsProject)
                 }
-                finalizeResult(json, maxInlineBytes, details)
-            }
-        } else {
-            // Accept a persistent model reference OR a qualified model name — the same
-            // forms get_project_structure startingPoint accepts (study defect D33).
-            // createModelReference on a bare name succeeds but yields a name-only
-            // SModelReference that does not resolve, so name lookup has to go through
-            // resolveModelPreferringProject rather than PersistenceFacade alone.
-            val model = resolveModelPreferringProject(mpsProject, nodeReference)
-            return if (model != null) {
-                val modelProblems = mutableListOf<ModelReportItem>()
-                ModelValidator(host, model).validate({ modelProblems.add(it) }, monitor)
-
-                // ModelValidator only inspects model-level metadata (imports, used languages, devkits,
-                // aspect/generator sanity) — it never looks at the roots. Sweeping every root through
-                // the same checkers the node branch runs is what makes the model-scope answer
-                // exhaustive, which is what `details.rootsChecked` states and what spares agents the
-                // per-root re-check they were doing out of distrust (study hotspot 2, defect D7).
-                val roots = model.rootNodes.toList()
-                val rootProblems = roots.map { runRootCheckers(mpsProject, it, repo) }
-
-                val warnings = mutableListOf<String>()
-                if (applyFixes) {
-                    warnings.add("autoApplyQuickFixes applies only to node references; ignored for a model reference")
-                }
-                val details = mutableMapOf<String, Any?>("scope" to "model", "rootsChecked" to roots.size)
-
-                if (perRoot) {
-                    val perRootArray = JsonArray()
-                    for ((index, root) in roots.withIndex()) {
-                        perRootArray.add(rootProblemSummary(root, rootProblems[index]))
-                    }
-                    if (modelProblems.isNotEmpty()) {
-                        details["modelProblems"] = modelProblems.size
-                        warnings.add(
-                            "The model itself has ${modelProblems.size} problem(s) (imports / used languages / devkits); " +
-                                "re-run with perRoot=false to see them"
-                        )
-                    }
-                    finalizeResult(perRootArray.toString(), maxInlineBytes, details, warnings)
-                } else {
-                    val problemRoots = JsonArray()
-                    for ((index, root) in roots.withIndex()) {
-                        val problems = rootProblems[index]
-                        if (!hasAnyProblems(root, problems)) continue
-                        problemRoots.add(rootProblemSummary(root, problems).apply {
-                            if (onlyNodesWithProblems) {
-                                add("nodes", nodeWithProblemsListJsonArray(root, problems, mpsProject))
-                            } else {
-                                add("tree", nodeWithProblemsJsonObject(root, problems, true, mpsProject))
-                            }
-                        })
-                    }
-                    if (modelProblems.isEmpty() && problemRoots.isEmpty()) {
-                        okJson(JsonPrimitive("no problems found"), warnings = warnings, details = details)
-                    } else {
-                        val report = modelWithProblemsJsonObject(model, modelProblems, mpsProject)
-                        report.add("roots", problemRoots)
-                        finalizeResult(report.toString(), maxInlineBytes, details, warnings)
-                    }
-                }
-            } else {
-                errJson(
-                    "Reference '$nodeReference' resolved to neither a node nor a model. " +
-                        "Pass a node reference (r:<uuid>(model)/<node-id>), a model reference (r:<uuid>(model)), " +
-                        "or a qualified model name in nodeReference — the same forms mps_mcp_get_project_structure startingPoint accepts. " +
-                        "This tool has no modelReference parameter; retry with nodeReference set to the value you passed as modelReference.",
-                    McpErrorCode.NOT_FOUND,
-                )
+                finalizeResult(json, maxInlineBytes, details, nearMissWarnings)
             }
         }
+
+        // Accept a persistent model reference OR a qualified model name — the same
+        // forms get_project_structure startingPoint accepts (study defect D33).
+        // createModelReference on a bare name succeeds but yields a name-only
+        // SModelReference that does not resolve, so name lookup has to go through
+        // resolveModelPreferringProject rather than PersistenceFacade alone.
+        val model = resolveModelPreferringProject(mpsProject, nodeReference)
+        if (model != null) {
+            val warnings = mutableListOf<String>()
+            if (applyFixes) {
+                warnings.add("autoApplyQuickFixes applies only to node references; ignored for a model reference")
+            }
+            // Node → model → module: a bare name shared by a model and a module (the sandbox
+            // pattern) checks the model, so say which module the caller may have meant (D63).
+            if (model.name.value == nodeReference || model.name.longName == nodeReference) {
+                resolveModulePreferringProject(mpsProject, nodeReference)?.let { module ->
+                    warnings.add(
+                        "'$nodeReference' also names module ${module.moduleName}; this checked the model. " +
+                            "Pass the module reference '${PersistenceFacade.getInstance().asString(module.moduleReference)}' to check the whole module."
+                    )
+                }
+            }
+            warnings.addAll(nearMissWarnings)
+            val check = checkModel(mpsProject, model)
+            val details = mutableMapOf<String, Any?>("scope" to "model", "rootsChecked" to check.roots.size)
+
+            return if (perRoot) {
+                val perRootArray = JsonArray()
+                for ((index, root) in check.roots.withIndex()) {
+                    perRootArray.add(rootProblemSummary(root, check.rootProblems[index]))
+                }
+                if (check.modelProblems.isNotEmpty()) {
+                    details["modelProblems"] = check.modelProblems.size
+                    warnings.add(
+                        "The model itself has ${check.modelProblems.size} problem(s) (imports / used languages / devkits); " +
+                            "re-run with perRoot=false to see them"
+                    )
+                }
+                finalizeResult(perRootArray.toString(), maxInlineBytes, details, warnings)
+            } else if (isClean(check)) {
+                okJson(JsonPrimitive("no problems found"), warnings = warnings, details = details)
+            } else {
+                finalizeResult(modelReport(check, onlyNodesWithProblems, mpsProject).toString(), maxInlineBytes, details, warnings)
+            }
+        }
+
+        val module = resolveModulePreferringProject(mpsProject, nodeReference)
+        if (module != null) {
+            return checkModuleProblems(mpsProject, module, onlyNodesWithProblems, applyFixes, maxInlineBytes, perRoot, nearMissWarnings, deadline)
+        }
+
+        val retryLines = nearMisses.joinToString("") { (key, value) ->
+            " This tool has no '$key' parameter; retry with nodeReference set to '$value'."
+        }
+        return errJson(
+            "Reference '$nodeReference' resolved to neither a node, a model, nor a module. " +
+                "Pass a node reference (r:<uuid>(model)/<node-id>), a model reference (r:<uuid>(model)) or qualified model name, " +
+                "or a module reference (<uuid>(module)) or module name in nodeReference." + retryLines,
+            McpErrorCode.NOT_FOUND,
+        )
+    }
+
+    /** What the model scope checks for one model: the model itself, and every root through the root checkers. */
+    private class ModelCheck(
+        val model: SModel,
+        val modelProblems: List<ModelReportItem>,
+        val roots: List<SNode>,
+        val rootProblems: List<Map<SNode, List<NodeReportItem>>>,
+    )
+
+    private fun checkModel(mpsProject: MPSProject, model: SModel): ModelCheck {
+        val modelProblems = mutableListOf<ModelReportItem>()
+        ModelValidator(mpsProject.platform, model).validate({ modelProblems.add(it) }, EmptyProgressMonitor())
+
+        // ModelValidator only inspects model-level metadata (imports, used languages, devkits,
+        // aspect/generator sanity) — it never looks at the roots. Sweeping every root through
+        // the same checkers the node branch runs is what makes the model-scope answer
+        // exhaustive, which is what `details.rootsChecked` states and what spares agents the
+        // per-root re-check they were doing out of distrust (study hotspot 2, defect D7).
+        val roots = model.rootNodes.toList()
+        return ModelCheck(model, modelProblems, roots, roots.map { runRootCheckers(mpsProject, it, mpsProject.repository) })
+    }
+
+    private fun isClean(check: ModelCheck): Boolean =
+        check.modelProblems.isEmpty() && check.roots.indices.none { hasAnyProblems(check.roots[it], check.rootProblems[it]) }
+
+    /** The model-scope problem report: the model object plus a `roots` entry per root with problems. */
+    private fun modelReport(check: ModelCheck, onlyNodesWithProblems: Boolean, mpsProject: MPSProject): JsonObject {
+        val problemRoots = JsonArray()
+        for ((index, root) in check.roots.withIndex()) {
+            val problems = check.rootProblems[index]
+            if (!hasAnyProblems(root, problems)) continue
+            problemRoots.add(rootProblemSummary(root, problems).apply {
+                if (onlyNodesWithProblems) {
+                    add("nodes", nodeWithProblemsListJsonArray(root, problems, mpsProject))
+                } else {
+                    add("tree", nodeWithProblemsJsonObject(root, problems, true, mpsProject))
+                }
+            })
+        }
+        return modelWithProblemsJsonObject(check.model, check.modelProblems, mpsProject).apply { add("roots", problemRoots) }
+    }
+
+    /**
+     * The module scope (D63): [module] itself, plus a language's owned generators, through
+     * `ValidationUtil.validateModule`, and every model they own through [checkModel] — what MPS's own
+     * module check covers, minus stub models and the `@descriptor` model nobody can edit. Module-level
+     * warnings are listed but do not make the module unclean: `LanguageValidator` warns about routine
+     * states of healthy languages (a missing `extends` for `IValidIdentifier` subconcepts, say), and
+     * counting them would keep a normal module from ever answering "no problems found".
+     */
+    private fun checkModuleProblems(
+        mpsProject: MPSProject,
+        module: SModule,
+        onlyNodesWithProblems: Boolean,
+        applyFixes: Boolean,
+        maxInlineBytes: Int,
+        perRoot: Boolean,
+        nearMissWarnings: List<String>,
+        deadline: Long,
+    ): String {
+        val warnings = mutableListOf<String>()
+        if (applyFixes) {
+            warnings.add("autoApplyQuickFixes applies only to node references; ignored for a module reference")
+        }
+        warnings.addAll(nearMissWarnings)
+        val modules = expandModules(listOf(module)).toList()
+        if (module is DevKit) {
+            warnings.add("A DevKit owns no models; only the module itself was validated")
+        }
+
+        val moduleProblems = JsonArray()
+        var moduleErrors = 0
+        for (m in modules) {
+            // validateModule throws for any other module kind.
+            if (m !is Language && m !is Generator && m !is Solution && m !is DevKit) continue
+            ValidationUtil.validateModule(m) { problem ->
+                if (problem.severity == MessageStatus.ERROR) moduleErrors++
+                moduleProblems.add(jsonObject {
+                    addProperty("module", m.moduleName)
+                    addProperty("severity", problemSeverity(problem.severity))
+                    addProperty("message", problem.message)
+                })
+                true
+            }
+        }
+
+        val models = modules.flatMap { m ->
+            m.models.filter { !SModelStereotype.isStubModel(it) && !SModelStereotype.isDescriptorModel(it) }
+                .sortedBy { it.name.value }
+        }
+        // The first model is always checked, so every call makes progress; after that, stop when
+        // the slowest model so far would no longer fit before the deadline.
+        val checks = mutableListOf<ModelCheck>()
+        var slowest = 0L
+        for (model in models) {
+            val start = System.nanoTime()
+            if (checks.isNotEmpty() && start + slowest - deadline > 0) break
+            checks.add(checkModel(mpsProject, model))
+            slowest = maxOf(slowest, System.nanoTime() - start)
+        }
+        val notChecked = models.drop(checks.size)
+
+        val details = mutableMapOf<String, Any?>(
+            "scope" to "module",
+            "modulesChecked" to modules.map { it.moduleName },
+            "modelsChecked" to checks.size,
+            "rootsChecked" to checks.sumOf { it.roots.size },
+        )
+        if (notChecked.isNotEmpty()) {
+            details["truncated"] = true
+            details["modelsNotChecked"] = notChecked.map { PersistenceFacade.getInstance().asString(it.reference) }
+            warnings.add(
+                "Stopped after ${checks.size} of ${models.size} models (${moduleCheckBudgetMs / 1000} s budget); " +
+                    "check the rest by model reference"
+            )
+        }
+
+        if (perRoot) {
+            val rows = JsonArray()
+            for (check in checks) {
+                var errors = check.modelProblems.count { it.severity == MessageStatus.ERROR }
+                var warningCount = check.modelProblems.count { it.severity == MessageStatus.WARNING }
+                for ((index, root) in check.roots.withIndex()) {
+                    val counts = problemCounts(root, check.rootProblems[index])
+                    errors += counts.errors
+                    warningCount += counts.warnings
+                }
+                rows.add(jsonObject {
+                    addProperty("model", PersistenceFacade.getInstance().asString(check.model.reference))
+                    addProperty("name", check.model.name.value)
+                    addProperty("rootsChecked", check.roots.size)
+                    addProperty("errors", errors)
+                    addProperty("warnings", warningCount)
+                })
+            }
+            if (!moduleProblems.isEmpty) details["moduleProblems"] = moduleProblems
+            if (moduleErrors > 0) {
+                warnings.add("The module itself has $moduleErrors error(s); see details.moduleProblems")
+            }
+            return finalizeResult(rows.toString(), maxInlineBytes, details, warnings)
+        }
+
+        if (moduleErrors == 0 && checks.all { isClean(it) }) {
+            if (!moduleProblems.isEmpty) details["moduleProblems"] = moduleProblems
+            val verdict = if (notChecked.isEmpty()) "no problems found" else "no problems found in ${checks.size} of ${models.size} models"
+            return okJson(JsonPrimitive(verdict), warnings = warnings, details = details)
+        }
+        val report = jsonObject {
+            addProperty("name", module.moduleName)
+            addProperty("reference", PersistenceFacade.getInstance().asString(module.moduleReference))
+            add("problems", moduleProblems)
+            add("models", JsonArray().apply {
+                for (check in checks) if (!isClean(check)) add(modelReport(check, onlyNodesWithProblems, mpsProject))
+            })
+        }
+        return finalizeResult(report.toString(), maxInlineBytes, details, warnings)
     }
 
     /**
@@ -952,6 +1132,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpDescription(
         """
         Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
+        A stored property, child role or reference that the node's concept does not declare is printed with `declared:false`; a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
         `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
         Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
@@ -984,7 +1165,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
                 val node = sNodeRef?.resolve(repo)
                     ?: return@executeShortReadOnEdt unresolvedPrintNode(mpsProject, nodeReference, parsedAsNode = sNodeRef != null)
-                finalizeResult(nodeHierarchyToJson(node, deep, mpsProject), maxInlineBytes)
+                val unloadedConcepts = linkedSetOf<SAbstractConcept>()
+                val json = nodeHierarchyToJson(node, deep, mpsProject, unloadedConcepts = unloadedConcepts)
+                finalizeResult(json, maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts))
             }
         }
     }
@@ -997,14 +1180,14 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         ADD × CHILD — Add a new child node.
           nodeReference: persistent ref of the parent node.
           childRole: containment role name.
-          childJson: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints prefer the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
+          childJson: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing the JSON. Over 4 KB, use the file form to avoid MCP transport truncation. Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. `dryRun=true` validates without mutating.
           position: Multi-cardinality roles append by default; pass `position` (0-based) to insert at a specific index. A `position` at or beyond the current child count is clamped to an append (not rejected); a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.
           Returns the inserted node's info envelope (`data.parentReference` carries the parent ref, `data.index` the actual landing index — useful when an over-range `position` was clamped). `responseDetail="summary"` answers with `{added, nodes:[{name, reference, concept}], fixReferences}` instead (no conceptDoc, no index); `full` is the default because one call adds one child.
 
         SET × CHILD — Replace an existing child node with a new node described by a JSON blueprint. Deletes the child if `childJson = null`.
           childNodeRef: persistent ref of the child to replace.
-          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. For large blueprints use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
-          Returns the inserted node's info envelope or the parent's one, if deletion (`childJson = null`).
+          childJson: `null` deletes the child — express that null by OMITTING the parameter (or sending an unquoted JSON null); the 4-character string `"null"` is rejected. Otherwise a JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing the JSON. Over 4 KB, use the file form. The original child's position in its role is preserved. `dryRun=true` validates without mutating.
+          Returns the parent's info envelope for both a replacement and a deletion (`childJson` omitted or null), with `fixReferences` on a replacement. `data.reference` is the parent, not the new child; the replaced child's reference is stale.
 
         SET × PROPERTY — Set or delete properties on a batch of nodes. The value `propertyValue = null` DELETES the property.
           properties: list of triplets [nodeReference, propertyName, propertyValue]. Returns a JSON array with one result per triplet. Encoded ids carried inside a property value (e.g. a `PropertyMacro.propertyId`) are NOT validated when set — a malformed, blank, or non-resolving id is accepted silently and surfaces only via `mps_mcp_check_root_node_problems`.
@@ -1014,7 +1197,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
         ADD × PROPERTY and ADD × REFERENCE are not valid combinations and return an error.
 
-        The child's concept must be assignable to the role's concept; model dependencies and used languages are updated automatically on child operations. For `childJson` larger than ~4 KB pass an absolute file path instead of an inline string. See `mps-node-editing` for blueprint format, file-path semantics, and staged-construction patterns. See `mps-mcp-workflow/references/reference-formats.md` for reference formats.
+        The child's concept must be assignable to the role's concept; model dependencies and used languages are updated automatically on child operations. For `childJson` larger than ~4 KB pass an absolute path to a file inside the system temp directory instead of an inline string. See `mps-node-editing` for blueprint format, file-path semantics, and staged-construction patterns. See `mps-mcp-workflow/references/reference-formats.md` for reference formats.
 
         On success returns `{"ok":true,"data":{...}}`. On failure returns `{"ok":false,"error":"..."}` with optional `code`, `details`, and `warnings` fields.
     """
@@ -1025,9 +1208,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         @McpDescription("Parent node ref for ADD CHILD") nodeReference: String? = null,
         @McpDescription("Containment role name for ADD CHILD") childRole: String? = null,
         @McpDescription("0-based insert index for ADD CHILD multi-cardinality roles; null/-1 = append. A value at or beyond the current child count is clamped to an append; a negative value other than -1 is rejected. Single-cardinality roles accept only null/-1/0.") position: Int? = null,
-        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a file containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected.") childJson: JsonOrText? = null,
+        @McpDescription("For ADD CHILD or SET CHILD: JSON blueprint (max 4 KB), sent as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing the JSON. Prefer the file form for blueprints larger than ~4 KB to avoid MCP transport truncation. For SET CHILD, a null deletes the child — omit this parameter (or send an unquoted JSON null); the string \"null\" is rejected. Fields are arrays, not maps: `properties:[{name,value}]`, `references:[{role,target}]`, `children:[{role,nodes:[…]}]`.") childJson: JsonOrText? = null,
         @McpDescription("Ref of the child to replace or delete (SET CHILD)") childNodeRef: String? = null,
-        @McpDescription("If true, validate without mutating (ADD CHILD, SET CHILD only). Default: false.") dryRun: Boolean = false,
+        @McpDescription("If true, validate without mutating (ADD CHILD, SET CHILD only). A dry run does not look up reference targets given by name, so its warnings list every one, including names that exist; check `fixReferences.stillBroken` of the real write. Default: false.") dryRun: Boolean = false,
         @McpDescription("Batch triplets [nodeRef, propertyName, value] for SET PROPERTY") properties: List<List<String?>>? = null,
         @McpDescription("Batch triplets [nodeRef, referenceRole, targetNodeRefOrName] for SET REFERENCE") references: List<List<String?>>? = null,
         @McpDescription("ADD CHILD only: `summary` for `{added, nodes:[{name, reference, concept}], fixReferences}`, `full` (the default for a single child) for the complete node-info envelope with `index`.") responseDetail: String? = null,
@@ -1080,7 +1263,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         RequiredParameter("childRole", childRole.orEmpty(), "the containment role name"),
                         RequiredParameter(
                             "childJson", childJson.orEmpty(),
-                            "the child's JSON blueprint, or an absolute path to a file holding it",
+                            "the child's JSON blueprint, or an absolute path to a temporary file holding it",
                         ),
                         operation = "ADD CHILD",
                     )?.let { return it }

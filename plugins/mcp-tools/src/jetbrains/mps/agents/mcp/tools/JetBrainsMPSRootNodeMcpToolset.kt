@@ -314,8 +314,8 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
     """)
     suspend fun mps_mcp_insert_root_node_from_json(
         @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.") modelReference: String = "",
-        @McpDescription("Required. JSON blueprint, single object or top-level array (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
-        @McpDescription("Optional: if true, only validate JSON and concept-role assignability without mutating the model. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false,
+        @McpDescription("Required. JSON blueprint, single object or top-level array (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. See `mps-node-editing` for the format and file-input semantics. Fields are arrays, not maps: `properties:[{name,value}]`, `references:[{role,target}]`, `children:[{role,nodes:[…]}]`.") json: JsonOrText = JsonOrText.EMPTY,
+        @McpDescription("Optional: if true, only validate JSON and concept-role assignability without mutating the model. Warnings are returned in the envelope's 'warnings' slot. A dry run does not look up reference targets given by name, so it lists every one, including names that exist; check `fixReferences.stillBroken` of the real write. Default: false.") dryRun: Boolean = false,
         @McpDescription("Optional: `summary` for `{inserted, roots:[{name, reference, concept}], fixReferences}`, `full` for one complete node-info envelope per inserted root. Defaults to `summary` from 10 roots up and to `full` below that.") responseDetail: String? = null
     ): String {
         rejectMissingParameters(
@@ -373,9 +373,6 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     } catch (e: Exception) {
                         return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate node$indexLabel from JSON", e, batchWarnings)
                     }
-                    if (newNode == null) {
-                        return@executeShortCommandOnEdt errJson("Failed to instantiate node$indexLabel from JSON", McpErrorCode.INVALID_REQUEST, warnings = batchWarnings)
-                    }
                     preparedNodes.add(newNode)
                 }
 
@@ -405,7 +402,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for root node insertion")
-                    }, warnings = batchWarnings)
+                    }, warnings = withDryRunReferenceRule(batchWarnings))
                 } else {
                     saveModelAndModule(model)
                     when {
@@ -489,8 +486,8 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
     """)
     suspend fun mps_mcp_update_root_node_from_json(
         @McpDescription("Required. Persistent form of SNodeReference") nodeReference: String = "",
-        @McpDescription("JSON blueprint of the root (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) file containing it. Ignored for DELETE. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
-        @McpDescription("Optional, ignored for DELETE - if true, only validate JSON and concept-role assignability without mutating the node. Standard validation warnings (such as dynamic-reference creation details) are returned in the envelope's 'warnings' slot. Default: false.") dryRun: Boolean = false,
+        @McpDescription("JSON blueprint of the root (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) file containing it. Ignored for DELETE. See `mps-node-editing` for the format and file-input semantics. Fields are arrays, not maps: `properties:[{name,value}]`, `references:[{role,target}]`, `children:[{role,nodes:[…]}]`.") json: JsonOrText = JsonOrText.EMPTY,
+        @McpDescription("Optional, ignored for DELETE - if true, only validate JSON and concept-role assignability without mutating the node. Warnings are returned in the envelope's 'warnings' slot. A dry run does not look up reference targets given by name, so it lists every one, including names that exist; check `fixReferences.stillBroken` of the real write. Default: false.") dryRun: Boolean = false,
         @McpDescription("Operation to perform: UPDATE or DELETE") operation: String = "UPDATE"
     ): String {
         rejectMissingParameters(
@@ -557,7 +554,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for root node update")
-                    }, warnings = updateWarnings)
+                    }, warnings = withDryRunReferenceRule(updateWarnings))
                 }
             }
         }

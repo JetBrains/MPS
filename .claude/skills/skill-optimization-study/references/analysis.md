@@ -12,8 +12,37 @@ temp_file_envelopes, bash_temp_result_reads, bash_blueprint_writes. Payload: aut
 mps_authored_chars, tool_result_bytes. Skill navigation: skill_msgs, skill_loads,
 skill_greps_{catalog,skill,file}, rereads, rereads_after_compaction, index_hops, compactions,
 compaction_s, first_compaction_step, plus `phases.csv` per aspect phase (definitions in
-`harness.md`). Reliability: errors, retries, validation_loops,
-stale_incidents, server_errors, task pass (from the evaluator).
+`harness.md`). `rereads*` count skill files only (comparable with rounds 10–20); temp result files
+touched again after a compaction are `temp_rereads_after_compaction` (calls: a `Read` or a Bash
+command, heredoc included, naming an `mps-node-<n>.json` its session first touched before that
+compaction) and `temp_reread_bytes_after_compaction` (their result bytes); `navigation.json`
+lists them as `temp_rereads`. `skill_tool_bytes` (A7) is what the `Skill` tool injected: the
+skill body arrives as a synthetic user text event after the 33-byte "Launching skill: …" result,
+so `skill_read_bytes` (Read/Bash/Grep/Glob only, unchanged, as is `phases.csv`) misses it
+(r19 S5-sonnet-1: 0 read, 22,092 injected). Report both; their sum is the skill text the worker
+received. Reliability: errors, retries, validation_loops,
+stale_incidents, server_errors, task pass (from the evaluator). Since A2, `retries` counts per
+session and per parallel batch: one per tool with an error in a batch that the session calls again
+in one of its next two batches (a batch of five rejected calls is one retry, not five), so it is
+lower than in reports written before A2 (r18 S1-sonnet-1: 8 → 5; r19 S8-sonnet-1: 6 → 2).
+API retries (A5): `api_retries` counts the transcript's `system/api_retry` events, all of them,
+since they carry no session attribution (a subagent's retries count too); `api_retry_delay_s` is
+their declared backoff (`retry_delay_ms` summed); `api_stall_s` is the timestamp gap around each
+retry cluster (an upper bound on the time lost, since it includes the final attempt's own latency),
+and is far larger than the backoff (r18 S1-opus-1: 9 retries, 21 s declared, 520 s stalled).
+`wall_s` includes the stalls, so compare `wall_s - api_stall_s` across rounds before calling a
+wall-clock change a regression; `errors.json` lists the clusters (`api_retry_clusters`, with the
+step they preceded). Junie transcripts have no api_retry events and no per-step timestamps, so all
+three are 0.
+Unloaded schemas (A7): `unloaded_schema_calls` counts `mps_mcp_*` calls on a tool whose schema no
+`ToolSearch` of that session had returned or `select:`-ed by the previous batch (a compaction does
+not unload; a subagent starts empty), and `unloaded_schema_errors` those of them that failed; per
+tool in `tools.json` as `unloaded_calls`. A blind call is often accepted, so errors are the cost and
+calls the exposure (r19 sonnet: 71 calls, 23 errors; r19 S8-sonnet-1: 26 of 26). Both are **empty**
+when a run has no `ToolSearch` call at all. That is a heuristic: the transcript does not say whether
+the host defers schemas, and one that does not (or Junie) would count every call. An empty cell
+therefore means "not measurable", not 0; a deferring host whose worker never searched would also
+read empty, so check `mps_calls` and the error envelopes of such a run before calling it clean.
 Lifecycle: `welcome_rejections` (pre-dispatch rejections with an empty project listing — the
 Welcome screen, where no `projectPath` could have helped; 0 is the good value everywhere, S10
 included: the first S10 run read the skill and never probed blind. One is the acceptable cost of
@@ -29,9 +58,25 @@ evidence gap. Lifecycle scenarios (`S10*`) are exempt both ways: they span sever
 design, and their server slice is kept only because the run meta lists `relatedProjects`.
 
 ## Chains and scoring
-`chains.json` ranks n-grams of `tool[:op]` by total chars. Filter to those containing `mps_mcp`,
+`chains.json` ranks n-grams of `tool[:op]` by total chars. Since A2 they are taken per session over
+the batch-collapsed sequence (a parallel batch contributes each distinct key once, in call order),
+and an occurrence `count`s only when its n items come from n different batches, i.e. n turns.
+N-grams inside one batch are tallied as `parallel` (a column after `count` in `hotspots.md`): six
+parallel `print_node` calls are `print_node -> print_node` count 0, parallel 5. `count + parallel`
+does **not** reproduce the pre-A2 count: a raw n-gram straddling a batch boundary that is not a
+collapsed occurrence (`a->b->c` in `[a,a,b][c]`) is in neither, and a repeated key collapses
+(`a->a->a` in `[a,a,a][a,a,a]`: old 4, now count 0, parallel 2). Chains that were mostly parallel
+drop in rank; that is not a behaviour change. A chain stays listed when either `count` or
+`parallel` reaches `--min-occurrences`, but ranking uses `count` (score = count-based chars), so a
+parallel-only chain sorts to the bottom instead of vanishing. Filter to those containing `mps_mcp`,
 group into families (2026-09: A temp-file follow-up reads; B blueprint file → insert; C per-root
-validation; D skill read → call; B′ ad-hoc Python for result shaping). Reviewer assigns determinism
+validation; D skill read → call; B′ ad-hoc Python for result shaping). `scripts/families.py` counts
+them per run into `families.tsv` (every column defined in its docstring); C is its
+`C_root_after_clean_model`: a node-scope `check_root_node_problems` after a container check with
+nothing left to read (0 errors, 0 warnings, no model-/module-level messages), no write in between.
+`C_after_summary` is a node-scope check after a container check whose `perRoot` counts are non-zero,
+no write in between: reading the text, D83, not distrust. Both have a `_batches` column (distinct
+`message.id`s). Reviewer assigns determinism
 per family from 3 instances: 1.0 next args derivable from previous response; 0.5 partly; 0 judgment.
 `score = occurrences × avg tokens × determinism × (1 + retry_rate)`; ALSO rank by avoidable turns
 (each ≈ fixed context tokens) — with lazy tool schemas and CLAUDE.md the fixed context was ≈ 150 K

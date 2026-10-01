@@ -156,7 +156,9 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
             function.name == toolName && function.findAnnotation<McpTool>() != null
         }
         val bridge = CallableBridge(registered, toolset)
-        val element = McpCallAdditionalDataElement(stubMcpCallInfo(project))
+        // The raw arguments carry every key sent, including those the binder drops, as the
+        // platform's do; a tool that names a sent near-miss key reads them (D63).
+        val element = McpCallAdditionalDataElement(stubMcpCallInfo(project, JsonObject(args)))
         return runBlocking(element) { bridge.call(JsonObject(args)).result } as String
     }
 
@@ -491,7 +493,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         error[0]?.let { throw it }
     }
 
-    protected fun stubMcpCallInfo(mpsProject: MPSProject): McpCallInfo {
+    protected fun stubMcpCallInfo(mpsProject: MPSProject, rawArguments: JsonObject = JsonObject(emptyMap())): McpCallInfo {
         val emptySchema = McpToolSchema(
             JsonObject(emptyMap()),
             emptySet(),
@@ -515,7 +517,7 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
             ClientInfo("integration-test", "0"),
             mpsProject.project,
             descriptor,
-            JsonObject(emptyMap()),
+            rawArguments,
             JsonObject(emptyMap()),
             sessionOptions,
             emptyMap(),

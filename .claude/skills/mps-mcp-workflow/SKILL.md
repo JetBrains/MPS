@@ -37,6 +37,8 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 - **Validate frequently.** A successful insertion (`"ok": true`) does not mean the AST is semantically valid — always follow with `mps_mcp_check_root_node_problems`.
 
 > **Tool name note**: MPS MCP tools are named with a `mps_mcp_` prefix (e.g. `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_get_concept_details`). Your MCP client wraps these with a server-specific prefix (e.g. `mcp__mps-mcp-server__<env>___`), which varies by environment. Match tools by the stable `mps_mcp_*` suffix.
+>
+> **Load each tool's schema before its first call** (`ToolSearch select:` when the host defers schemas). The keys are not guessable: `nodeReference`, `conceptRefs`/`languageRefs`, `searchTexts`, `parameters.code` / `insert.modelRef`.
 
 > **Which project the tools act on (subdirectory & multi-project checkouts).** The `mps_mcp_*` tools operate on the MPS project currently open in the running MPS instance. That project often lives in a **subdirectory** of your repository (e.g. `<repo>/tools/BigProject`, as in mbeddr or MPS-extensions), and one checkout may even hold **several** MPS projects. Supply that project's `mpsProjectBaseDirectory` — the folder MPS actually opened, i.e. a path *at or inside* it, **not** the repository root — as `projectPath` on every call, per the Critical Directive above. The first-call CWD probe in that directive still applies when the path is unknown, even if CWD is the repository root. This is the opposite of `mps_mcp_initialize_project_for_agents`, whose `targetDirectory` is the *repository / workspace root* (where `.agents/`, `.claude/`, `AGENTS.md`, and `CLAUDE.md` belong), which may be an *ancestor* of the MPS project directory.
 >
@@ -137,7 +139,7 @@ Open `references/mcp-tools-index.md` for the complete inventory of MPS MCP tools
 
 `scripts/mps_dump.py` — projects an MPS MCP result file (`mps_mcp_get_project_structure`,
 `mps_mcp_print_node`, `mps_mcp_get_concept_details`) down to the lines you need, instead of
-reading the whole 10–40 KB file: `roots`, `node`, `shape`, `count`. It is also the library the
+reading the whole 10–40 KB file: `roots`, `models`, `node`, `tree`, `shape`, `count`. It is also the library the
 other skills' scripts import (`load`, `roots`, `props`, `refs`, `children`, `find`, `shape`);
 `props` marks enum properties that sit at their enumeration's default value (the printer flags
 them with `isDefault`; an older dump that omits them is filled from the concept details'
@@ -147,7 +149,16 @@ them with `isDefault`; an older dump that omits them is filled from the concept 
 python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Course
 python3 scripts/mps_dump.py node /var/folders/.../mps-node-123.json "Score Reading" \
     --concept-details /var/folders/.../mps-node-456.json
+python3 scripts/mps_dump.py models /var/folders/.../mps-node-789.json   # modules, models, root counts
+python3 scripts/mps_dump.py tree /var/folders/.../mps-node-321.json --depth 3   # indented subtree
 ```
+
+`roots`, `count`, `node` and `tree` need a dump made with `includeRootNodes` (or `includeNodes`,
+or a `print_node` result); on a structure-only dump they exit 3 and name `models`. For
+orientation (which modules and models exist, and how many roots each has), call
+`mps_mcp_get_project_structure` with `includeModels=true` only and read it with `models`: leave
+`includeDependencies` off, since it adds every module's and model's dependency and
+used-language lists.
 
 Run `--help` for every subcommand and `--list-tools` for the MPS MCP tools and parameters it
 depends on. Bundled dumps to try it on, and to read when you need a shape reminder, are in

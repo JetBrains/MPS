@@ -117,10 +117,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                     instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings)
                 } catch (e: Exception) {
                     return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate console command from JSON", e, warnings)
-                } ?: return@executeShortCommandOnEdt errJson(
-                    "Failed to instantiate console command from JSON",
-                    McpErrorCode.INVALID_REQUEST
-                )
+                }
 
                 // Defensive: the wrap path always yields a Command (BLCommand), and the direct path
                 // only runs when the concept is already a Command — but guard the insert anyway so a
@@ -138,7 +135,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                     return@executeShortCommandOnEdt okJson(jsonObject {
                         addProperty("dryRun", true)
                         addProperty("message", "Dry run successful for console command insertion")
-                    }, warnings = warnings)
+                    }, warnings = withDryRunReferenceRule(warnings))
                 }
 
                 // DialogConsoleTab.insertCommand adds the command's imports to the console model

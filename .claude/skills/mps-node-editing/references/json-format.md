@@ -30,6 +30,16 @@ MPS tools use a single JSON blueprint shape for all insertions and updates:
 * **Reference resolution**: `target` accepts a persistent node reference (`r:...`) or a node **name** for auto-resolution in scope. Auto-resolution is ideal for local references within the same blueprint.
 * **Best practices**: avoid deprecated concepts, properties, or roles.
 * **Default property values are invisible**: MPS stores nothing for a property that holds its default value — most visibly the *first/default literal* of an enumeration. Dumps (`mps_mcp_print_node`, `mps_mcp_get_project_structure includeNodes`) therefore **omit** such a property, while report-style output prints `"value": ""`. Read absent / `""` as **"holds its default"**, not as "missing", and do not copy a `""` enum value into a blueprint — simply omit the property.
+* **`declared:false` and `conceptLoaded:false` entries from a printout are not re-applied**: a `declared:false` property the concept does not declare is skipped with a warning (on update its stored value stays); a `declared:false` child role or reference is rejected, and so is a node record with `conceptLoaded:false`. Build the language, or drop the entry (a full-root update then deletes what it held); a root record with `conceptLoaded:false` can only be deleted (`mps_mcp_update_root_node_from_json` operation `DELETE`), not rewritten. See `references/analysis-tools/print-node-output.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
+
+## What the node gets besides the blueprint
+
+Every blueprint node gets its behavior constructor and, outside a dry run, its node factories as in the editor (see "Node factories" in `SKILL.md`), then the blueprint's values. Unlike the editor, mandatory child roles the blueprint omits are not auto-filled, and a dry run runs no factories.
+
+* **An omitted property keeps its constructor and factory value.** Leave it out to get what the editor would set.
+* **Blueprint values win over the node's own constructor and factories**, but a nested child's factory runs after its parent's values are applied and may still change the parent.
+* **Factories see the enclosing nodes.** A nested child's factory sees its parent chain, up through the live node that `mps_mcp_update_node` `ADD`/`SET` × `CHILD` or `mps_mcp_update_root_node_from_json` writes into. A root being inserted is not in the model yet, so factories below it see a root without a model — the same as the editor's New Root.
+* **Constraints setters and getters.** `name` and non-enum property values are stored as given, bypassing constraints property setters; enum values go through them. `mps_mcp_print_node` reads properties through constraints getters, so it can show a value that is not stored.
 
 ## Object vs. array, and where the file may live
 
@@ -62,8 +72,11 @@ A `"warnings"` array may appear at the top level alongside `data` when the stagi
 {
   "ok": true,
   "data": { "dryRun": true, "message": "..." },
-  "warnings": ["Dry run at $.references[0]: target 'SomeName' did not resolve; production run would create a dynamic reference, but dry-run skips this step."]
+  "warnings": [
+    "Dry run at $.references[0]: target 'SomeName' is a name, not looked up.",
+    "A dry run does not look up reference targets given by name, so every name is listed above, existing and same-batch nodes included. The write resolves names in each role's scope; check fixReferences.stillBroken in its response (or mps_mcp_check_root_node_problems)."
+  ]
 }
 ```
 
-Treat a non-empty `warnings` list as a signal to either fix the reference target before writing, or accept that the write will create a dynamic (potentially broken) reference. See `references/reference-formats.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin for the full envelope shape.
+A name warning is not a defect: a dry run lists every name target, existing ones included. Do not rewrite names because of it. Fix only a "names no node" or "matches no Model.Root" warning, and check `fixReferences.stillBroken` after the real write. The rule and the full envelope shape are under "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.

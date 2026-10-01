@@ -79,7 +79,8 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
     private sealed class JavaParsePreparation {
         data class Ok(
             val parseResult: JavaParser.JavaParseResult,
-            val parsedNodes: List<SNode>
+            val parsedNodes: List<SNode>,
+            val warnings: List<String> = emptyList()
         ) : JavaParsePreparation()
 
         data class Err(val message: String, val code: McpErrorCode? = null) : JavaParsePreparation()
@@ -91,6 +92,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         featureKind: FeatureKind,
         isExpression: Boolean,
         recovery: Boolean,
+        recoveryExplicit: Boolean,
         contextNodeRefStr: String?
     ): JavaParsePreparation {
         return executeBackgroundRead(mpsProject) {
@@ -143,9 +145,37 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 )
             }
 
+            // D68: errorMsg is non-null when ecj recorded problems, and statement recovery may then
+            // have repaired the input into different code (`a != null && b;` -> `a = (null && b)`).
+            // Only an explicit `recovery: true` accepts that; otherwise the call is rejected.
+            val syntaxWarnings = mutableListOf<String>()
+            var syntaxDetails: String? = null
+            if (parseResult.errorMsg != null) {
+                // null: the reflective re-run failed, so errorMsg is the only signal left.
+                val errors = JavaSyntaxProblems.errors(effectiveSource.code, effectiveSource.featureKind, recovery)
+                if (errors == null || errors.isNotEmpty()) {
+                    syntaxDetails = errors?.let { JavaSyntaxProblems.describe(it, isExpression) }
+                        ?: "The parser reported problems but no details (${parseResult.errorMsg})."
+                    if (recovery && recoveryExplicit) {
+                        syntaxWarnings.add(
+                            "The Java code has syntax errors that the parser repaired because 'recovery' is true, " +
+                                "so the inserted nodes may not match the input: $syntaxDetails " +
+                                "Check the result with mps_mcp_print_node."
+                        )
+                    } else {
+                        return@executeBackgroundRead JavaParsePreparation.Err(
+                            syntaxErrorRejection(syntaxDetails),
+                            code = McpErrorCode.INVALID_REQUEST
+                        )
+                    }
+                }
+            }
+
             var parsedNodes = unwrapExpressionNodes(parseResult.nodes, isExpression)
             if (parsedNodes.isEmpty()) {
-                return@executeBackgroundRead JavaParsePreparation.Err(parseResult.errorMsg ?: "Parser returned no nodes")
+                return@executeBackgroundRead JavaParsePreparation.Err(
+                    listOfNotNull(parseResult.errorMsg ?: "Parser returned no nodes", syntaxDetails).joinToString(": ")
+                )
             }
 
             if (isConceptBehaviorContext && effectiveSource.featureKind == FeatureKind.CLASS_CONTENT) {
@@ -158,9 +188,17 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 }
             }
 
-            JavaParsePreparation.Ok(parseResult, parsedNodes)
+            JavaParsePreparation.Ok(parseResult, parsedNodes, syntaxWarnings)
         }
     }
+
+    private fun syntaxErrorRejection(details: String): String =
+        "The Java code has syntax errors (the parser accepts Java 8 syntax): $details " +
+            "Nothing was inserted: the parser's recovery would have repaired the code into something else — " +
+            "for example, the bare expression `a != null && b;` becomes the assignment `a = (null && b)`. " +
+            "Fix the code: an expression that is not a statement needs `return`, an `if`, or " +
+            "`featureKind: \"EXPRESSION\"`; newer syntax (records, switch expressions, text blocks, `var`) is not " +
+            "supported. To insert the repaired result anyway, pass `recovery: true`."
 
     private fun unwrapExpressionNodes(nodes: List<SNode>, isExpression: Boolean): List<SNode> {
         if (!isExpression) {
@@ -272,19 +310,27 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
     // path — the ModelImports updates from resolveIteratively and the JDK dependency staged below —
     // are not reverted; neither is persisted, since model.save() and the module-side save() run
     // only on success.
+    //
+    // D68: binding the enclosing concept function's implicit parameters is the first step inside the
+    // try, so a throw from it rolls back too. It may replace a top-level node in [inserted] (the list
+    // the caller's rollback lambda and response share). Its warnings are returned together with the
+    // resolver's (Java API calls on smodel-typed receivers resolved or left, see SmodelReceiverCalls).
     private fun finalizeInsertedNodes(
         model: EditableSModel,
         repo: SRepository,
-        inserted: List<SNode>,
+        inserted: MutableList<SNode>,
         featureKind: FeatureKind,
         doImportLang: Boolean,
         doResolveRefs: Boolean,
         parseResult: JavaParser.JavaParseResult,
         persist: Boolean = true,
         rollbackInsertedNodes: () -> Unit
-    ) {
+    ): List<String> {
         try {
-            javaParseResolver.resolveIteratively(model, repo, inserted, featureKind, doImportLang, doResolveRefs, parseResult)
+            // resolveReferences=false means "leave references as parsed"; binding is resolution.
+            val bindWarnings = if (doResolveRefs) ConceptFunctionParameterBinder.bind(inserted) else emptyList()
+            val resolveWarnings =
+                javaParseResolver.resolveIteratively(model, repo, inserted, featureKind, doImportLang, doResolveRefs, parseResult)
             if (persist) {
                 // d1: stage the JDK dependency addition here (after resolveIteratively succeeds).
                 // ensureJDKDependency now only returns the Dependency (or null) without mutating.
@@ -299,6 +345,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 model.save()
                 (model.module as? AbstractModule)?.save()
             }
+            return bindWarnings + resolveWarnings
         } catch (e: Exception) {
             // The rollback is best-effort: its delete arm already swallows per-node failures via
             // safelyRollbackNodes, but the mode-specific restore arm (re-attaching a displaced or
@@ -391,7 +438,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             if (packageNameWrites > 0) listOf(buildPackageNameWarning(pkg, model.name.longName))
             else emptyList()
 
-        finalizeInsertedNodes(
+        val bindWarnings = finalizeInsertedNodes(
             model,
             repo,
             inserted,
@@ -404,7 +451,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             // detaches a root from its model — the same undo the language-structure toolset relies on.
             safelyRollbackNodes(inserted.asReversed())
         }
-        return InsertOutcome.Ok(inserted, packageWarnings)
+        return InsertOutcome.Ok(inserted, packageWarnings + bindWarnings)
     }
 
     private fun buildPackageNameWarning(pkg: String, modelLongName: String): String {
@@ -558,7 +605,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             }
         }
 
-        finalizeInsertedNodes(
+        val bindWarnings = finalizeInsertedNodes(
             model,
             repo,
             inserted,
@@ -586,7 +633,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         val importWarning = if (console != null) {
             persistOrRefreshConsole(model, console, refreshImports = request.importUsedLanguages)
         } else null
-        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(wrapWarning, importWarning))
+        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(wrapWarning, importWarning) + bindWarnings)
     }
 
     private fun insertAsReplace(
@@ -662,7 +709,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         SNodeOperations.replaceWithAnother(targetNode, newNode)
         val inserted = mutableListOf(newNode)
 
-        finalizeInsertedNodes(
+        val bindWarnings = finalizeInsertedNodes(
             model,
             repo,
             inserted,
@@ -686,7 +733,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         val importWarning = if (console != null) {
             persistOrRefreshConsole(model, console, refreshImports = request.importUsedLanguages)
         } else null
-        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(wrapWarning, importWarning))
+        return InsertOutcome.Ok(inserted, warnings = listOfNotNull(wrapWarning, importWarning) + bindWarnings)
     }
 
     private fun insertAsConsoleCommand(
@@ -714,10 +761,11 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             ))
         }
 
-        finalizeInsertedNodes(
+        val insertedCommand = mutableListOf(command)
+        val bindWarnings = finalizeInsertedNodes(
             model,
             mpsProject.repository,
-            listOf(command),
+            insertedCommand,
             request.featureKind,
             request.importUsedLanguages,
             request.resolveReferences,
@@ -743,7 +791,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         val selectWarning = warningMessageOrRethrow {
             console.tab.javaClass.getMethod("selectNode", SNode::class.java).invoke(console.tab, command)
         }
-        return InsertOutcome.Ok(listOf(command), warnings = listOfNotNull(importWarning, activateWarning, selectWarning))
+        return InsertOutcome.Ok(insertedCommand, warnings = listOfNotNull(importWarning, activateWarning, selectWarning) + bindWarnings)
     }
 
     // After a successful insert, re-run the standard node checkers on the affected root(s) and collect
@@ -804,7 +852,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Parses Java code with the MPS `JavaParser` and inserts the result as MPS nodes — as project model root(s), as a child in a given role, as a replacement of an existing node, or into the current MPS Console input. `insert.mode:"console"` replaces the current console input command without executing it: `EXPRESSION` is wrapped as a `BLExpression`, and `STATEMENTS` as a `BLCommand` block. For `mode:"child"` or `mode:"replace"`, if the `parentRef`/`targetRef` resolves to a node inside the current MPS Console input command it is edited in place without saving; console history and stale console references are rejected; nodes outside the selected project are rejected. `CLASS_STUB` is rejected; root insertion always appends and rejects a `position` other than `-1`/absent; replace mode requires exactly one top-level parsed node; child insertion into a single-cardinality role overwrites the existing occupant (consistent with `mps_mcp_update_node`); into a multi-cardinality role a `position` past the child count is clamped to an append (not rejected) and each inserted node reports its actual `index`. Statements targeting a role that expects a `StatementList` (`body`, `ifTrue`, `statements`, ...) are **auto-wrapped**, so there is no need to insert a `StatementList` first and re-target its `statement` role: in `child` mode an existing `StatementList` in the role is reused and appended to (nothing already in the body is removed, and `position`/the reported `index` then refer to the position inside that list) and one is created only when the role is empty; in `replace` mode on a `StatementList` target the statements are wrapped into a new `StatementList` that replaces the old one (which is the one case where multi-node input is accepted in replace mode, since they collapse into a single node). Each wrap is reported in `warnings`. The wrap is gated on the parsed nodes being statements, not on `featureKind`, so an `EXPRESSION` into `body` is still rejected. `featureKind` `FIELD`/`METHOD`/`NESTED_CLASS` are all parsed as class members (the kind is advisory; what a node may be placed where is validated against the target role, not the kind). For `METHOD`/`CLASS_CONTENT`, `contextNodeRef` may instead be a `ConceptBehavior`: parsed methods convert to `ConceptMethodDeclaration` and belong in the `method` role. Unrecognized keys in `parameters` (including `dryRun`, which is not supported) are rejected. Java 8+ constructs the MPS parser recognizes are accepted and mapped to the corresponding BaseLanguage extension — most notably lambda expressions, which become `jetbrains.mps.baseLanguage.closures` closures (the closures language is auto-imported when `postProcess.importUsedLanguages` is on); like any closure, a lambda only type-checks against a matching functional-type target. Every success envelope carries a `problems` array (each entry has `severity`, `message`, node `reference`, `concept`) listing the type-system errors/warnings found within the inserted nodes — empty when the insert type-checks — so a successful insert never silently leaves the model in an ERROR state. See `mps-baselanguage/references/parse-java-tips.md` for the `parameters` JSON schema (`code`, `featureKind`, `insert.mode`, `postProcess`), the `problems` response field, and the per-mode required fields.
+        Parses Java code with the MPS `JavaParser` and inserts the result as MPS nodes — as project model root(s), as a child in a given role, as a replacement of an existing node, or into the current MPS Console input. `insert.mode:"console"` replaces the current console input command without executing it: `EXPRESSION` is wrapped as a `BLExpression`, and `STATEMENTS` as a `BLCommand` block. For `mode:"child"` or `mode:"replace"`, if the `parentRef`/`targetRef` resolves to a node inside the current MPS Console input command it is edited in place without saving; console history and stale console references are rejected; nodes outside the selected project are rejected. `CLASS_STUB` is rejected; root insertion always appends and rejects a `position` other than `-1`/absent; replace mode requires exactly one top-level parsed node; child insertion into a single-cardinality role overwrites the existing occupant (consistent with `mps_mcp_update_node`); into a multi-cardinality role a `position` past the child count is clamped to an append (not rejected) and each inserted node reports its actual `index`. Statements targeting a role that expects a `StatementList` (`body`, `ifTrue`, `statements`, ...) are **auto-wrapped**, so there is no need to insert a `StatementList` first and re-target its `statement` role: in `child` mode an existing `StatementList` in the role is reused and appended to (nothing already in the body is removed, and `position`/the reported `index` then refer to the position inside that list) and one is created only when the role is empty; in `replace` mode on a `StatementList` target the statements are wrapped into a new `StatementList` that replaces the old one (which is the one case where multi-node input is accepted in replace mode, since they collapse into a single node). Each wrap is reported in `warnings`. The wrap is gated on the parsed nodes being statements, not on `featureKind`, so an `EXPRESSION` into `body` is still rejected. `featureKind` `FIELD`/`METHOD`/`NESTED_CLASS` are all parsed as class members (the kind is advisory; what a node may be placed where is validated against the target role, not the kind). For `METHOD`/`CLASS_CONTENT`, `contextNodeRef` may instead be a `ConceptBehavior`: parsed methods convert to `ConceptMethodDeclaration` and belong in the `method` role. Unrecognized keys in `parameters` (including `dryRun`, which is not supported) are rejected. Java 8+ constructs the MPS parser recognizes are accepted and mapped to the corresponding BaseLanguage extension — most notably lambda expressions, which become `jetbrains.mps.baseLanguage.closures` closures (the closures language is auto-imported when `postProcess.importUsedLanguages` is on); like any closure, a lambda only type-checks against a matching functional-type target. In `child`/`replace` mode inside a concept-function body (constraints, editor, intention, generator, … query functions), the function's implicit parameters (`node`, `propertyValue`, `editorContext`, …) are bound by name, also as the receiver of a Java call; the bound names are listed in `warnings`. A Java API call on a `node<>`/`model<>`-typed parameter (`node.toString()`) resolves through the semantic downcast `node/`; smodel access such as `node.name` and behavior-method calls still need JSON. Code with a Java syntax error (the parser accepts Java 8) is rejected with the parser's messages unless `recovery: true` is passed explicitly, because the parser's recovery repairs it into different code (`a != null && b;` becomes `a = (null && b)`). Every success envelope carries a `problems` array (each entry has `severity`, `message`, node `reference`, `concept`) listing the type-system errors/warnings found within the inserted nodes — empty when the insert type-checks — so a successful insert never silently leaves the model in an ERROR state. See `mps-baselanguage/references/parse-java-tips.md` for the `parameters` JSON schema (`code`, `featureKind`, `insert.mode`, `postProcess`), the `problems` response field, and the per-mode required fields.
         """
     )
     suspend fun mps_mcp_parse_java_and_insert(
@@ -843,6 +891,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 request.featureKind,
                 request.isExpression,
                 request.recovery,
+                request.recoveryExplicit,
                 request.contextNodeRef
             )
         ) {
@@ -875,7 +924,9 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             when (outcome) {
                 is InsertOutcome.Ok -> {
                     val problems = collectInsertedProblems(mpsProject, repo, outcome.inserted)
-                    parseInsertSuccessJson(mpsProject, outcome.inserted, parseResult, problems, outcome.warnings)
+                    parseInsertSuccessJson(
+                        mpsProject, outcome.inserted, parseResult, problems, parsedJava.warnings + outcome.warnings
+                    )
                 }
                 is InsertOutcome.Err -> outcome.json
             }

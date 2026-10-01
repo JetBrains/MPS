@@ -14,6 +14,7 @@
 #   <id>-worker.stdout          Junie stdout sidecar (startup banner; not JSON)
 #   <id>-server.jsonl           slice of the server call log covering this run
 #   <id>-install.json           result of the pre-run skill install
+#   <id>-mcp/mcp.json           the worker's MCP config, generated from $MPS_MCP_URL (unless MCP_CONFIG)
 # where <id> = <scenario>-<modelSlug>-<run-no>.
 #
 # The meta also pins the MPS process the run was measured against (`mpsPid`, `mpsStartTs`) and the
@@ -27,12 +28,27 @@
 # project through `mps_mcp_initialize_project_for_agents` (scripts/install_skills.py). Fixtures
 # deliberately ship without them, so a round can never measure a stale point-in-time catalog
 # (study lesson 20 / defect D16). The resulting catalog fingerprint is recorded as `skillsSha256`
-# in the meta, beside `promptSha256` (the scenario) and `inventorySha256` (the tool surface), so
-# every run is retro-auditable against the docs it actually read. Set SKIP_SKILL_INSTALL=1 to skip
-# it; the meta then records the sha of whatever was already there and `skillsInstalled: false`.
+# and the guide files' fingerprint as `guidesSha256` in the meta, beside `promptSha256` (the
+# scenario) and `inventorySha256` (the tool surface), so every run is retro-auditable against the
+# docs it actually read. Set SKIP_SKILL_INSTALL=1 to skip it; the meta then records the shas of
+# whatever was already there and `skillsInstalled: false`.
+#
+# EFFORT (optional) pins the worker's effort level and is passed as `--effort`. Claude accepts
+# low|medium|high|xhigh|max, Junie low|medium|high. It is recorded as `effort` in the meta. Unset
+# prints a warning on stderr and means unpinned: the worker then takes whatever its CLI's saved settings say (for Claude, the
+# `/effort` the observer last chose for that model), which silently varies between rounds.
+#
+# The MCP URL (study defect A3): a non-empty MPS_MCP_URL is used as given and must answer the MCP
+# handshake; otherwise it is detected from the live MPS (scripts/mps_mcp_url.py: the launcher's
+# listening ports, confirmed on serverInfo.name) and must be CONFIRMED — an unconfirmed guess
+# (the selector's mcpServer.xml, or the 64343 default) exits 3. It is exported BEFORE
+# install_skills.py and recorded as `mpsMcpUrl` / `mpsMcpUrlSource`. The worker's config
+# is generated into $RUNS/<id>-mcp/ (scripts/worker_mcp_config.py) — no tracked config pins a port.
+# MCP_CONFIG (optional) replaces it: a FILE for Claude, a DIRECTORY holding mcp.json for Junie; the
+# meta records `mcpConfigSource` (env|generated) and `mcpConfigPath`.
 #
 # Requires: the observer harness CLI (`claude` or `junie`), python3, MPS running with the MCP
-# server on $MPS_MCP_URL and the call log enabled (-Dmps.mcp.calllog=$CALLLOG). The worker prompt
+# server enabled and the call log enabled (-Dmps.mcp.calllog=$CALLLOG). The worker prompt
 # is passed verbatim. WORKER_HARNESS (claude|junie) overrides auto-detect; default is claude when
 # neither observer env is set, so `run_worker.sh SMOKE sonnet N` still works.
 set -euo pipefail
@@ -44,6 +60,8 @@ CALLLOG=${CALLLOG:-"$RUNS/server-calllog.jsonl"}
 MAX_TURNS=${MAX_TURNS:-400}
 ISOLATION=${ISOLATION:-per-round}
 PROJECT_SYNTHESIZED=${PROJECT_SYNTHESIZED:-0}
+EFFORT=${EFFORT:-}
+MCP_CONFIG=${MCP_CONFIG:-}
 PROMPT="$STUDY/scenarios/$SCENARIO/worker_prompt.md"
 # Same character class as the plan: anything other than [A-Za-z0-9._-] becomes '-'.
 MODEL_SLUG=$(printf '%s' "$MODEL" | python3 -c 'import re,sys; print(re.sub(r"[^A-Za-z0-9._-]", "-", sys.stdin.read().rstrip("\n")))')
@@ -96,7 +114,64 @@ else
   command -v claude >/dev/null || { echo "claude CLI not on PATH" >&2; exit 2; }
 fi
 
+if [ -n "$EFFORT" ]; then
+  case "$HARNESS:$EFFORT" in
+    claude:low|claude:medium|claude:high|claude:xhigh|claude:max|junie:low|junie:medium|junie:high) ;;
+    *) echo "EFFORT=$EFFORT is not a $HARNESS effort level" >&2; exit 2 ;;
+  esac
+  EFFORT_ARGS=(--effort "$EFFORT")
+else
+  echo "EFFORT unset: worker $MODEL inherits the effort from its CLI settings (not pinned)" >&2
+  EFFORT_ARGS=()
+fi
+
+if [ -n "$MCP_CONFIG" ]; then
+  if [ "$HARNESS" = junie ]; then
+    [ -d "$MCP_CONFIG" ] || { echo "MCP_CONFIG must be a directory for Junie: $MCP_CONFIG" >&2; exit 2; }
+    MCP_CONFIG=$(cd "$MCP_CONFIG" && pwd)
+  else
+    [ -f "$MCP_CONFIG" ] || { echo "MCP_CONFIG must be a file for Claude: $MCP_CONFIG" >&2; exit 2; }
+    MCP_CONFIG="$(cd "$(dirname "$MCP_CONFIG")" && pwd)/$(basename "$MCP_CONFIG")"
+  fi
+fi   # absolute: the worker runs with the project as its cwd
+
+# One MCP URL for the install, the handshake, the worker config and the meta. Exported before
+# install_skills.py, which otherwise falls back to the constant. A detected URL must be confirmed
+# (the server answered as MPS); a run against a guessed port would measure nothing.
+DETECTED_PID=""
+if [ -n "${MPS_MCP_URL:-}" ]; then
+  MPS_MCP_URL_SOURCE=env
+  if ! python3 "$STUDY/scripts/tools_inventory.py" --url "$MPS_MCP_URL" --out /dev/null >/dev/null; then
+    echo "MPS MCP does not answer the handshake at MPS_MCP_URL=$MPS_MCP_URL — start MPS with the" \
+      "MCP server enabled, or fix MPS_MCP_URL (see: $STUDY/scripts/mps_control.sh url --json)" >&2
+    exit 3
+  fi
+else
+  DETECTED=$(python3 "$STUDY/scripts/mps_mcp_url.py" --json) ||
+    { echo "MPS is not running: no MCP URL to detect" >&2; exit 3; }
+  read -r MPS_MCP_URL MPS_MCP_URL_SOURCE URL_CONFIRMED DETECTED_PID <<< "$(printf '%s' "$DETECTED" | python3 -c '
+import json, sys
+d = json.load(sys.stdin)
+print(d.get("url") or "-", d.get("source") or "unknown", "true" if d.get("confirmed") else "false",
+      d.get("pid") or "")')"
+  if [ "$URL_CONFIRMED" != true ]; then
+    echo "MPS MCP not confirmed at $MPS_MCP_URL (source $MPS_MCP_URL_SOURCE); run" \
+      "$STUDY/scripts/mps_control.sh wait, or set MPS_MCP_URL" >&2
+    exit 3
+  fi
+fi
+export MPS_MCP_URL
+
 mkdir -p "$RUNS"
+
+if [ -n "$MCP_CONFIG" ]; then
+  MCP_CONFIG_SOURCE=env
+  MCP_CONFIG_PATH=$MCP_CONFIG
+else
+  MCP_CONFIG_SOURCE=generated
+  MCP_CONFIG_PATH=$(python3 "$STUDY/scripts/worker_mcp_config.py" --harness "$HARNESS" \
+    --url "$MPS_MCP_URL" --out-dir "$RUNS/$ID-mcp")
+fi
 
 # Fresh skills BEFORE the call-log offsets are taken, so the install's own MCP calls stay out of
 # the run's server slice. A failed install aborts the run: measuring an unknown doc surface is
@@ -104,6 +179,7 @@ mkdir -p "$RUNS"
 if [ "${SKIP_SKILL_INSTALL:-0}" = "1" ]; then
   SKILLS_INSTALLED=false
   SKILLS_SHA=$(python3 "$STUDY/scripts/install_skills.py" --sha-only "$PROJECT")
+  GUIDES_SHA=$(python3 "$STUDY/scripts/install_skills.py" --guides-sha-only "$PROJECT")
   echo '{"ok":true,"skipped":true}' > "$RUNS/$ID-install.json"
 else
   SKILLS_INSTALLED=true
@@ -111,11 +187,18 @@ else
     echo "skill install failed for $ID:" >&2; cat "$RUNS/$ID-install.json" >&2; exit 3
   fi
   SKILLS_SHA=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["skillsSha256"])' "$RUNS/$ID-install.json")
+  GUIDES_SHA=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["guidesSha256"])' "$RUNS/$ID-install.json")
 fi
 
 # The MPS process under measurement. A round is one process (ISOLATION=per-round); recording it
-# per run is what makes that checkable afterwards.
-MPS_PID=$(pgrep -f '[j]etbrains\.mps\.Launcher' | head -1 || true)
+# per run is what makes that checkable afterwards. A detected URL names the launcher that answered
+# (with several launchers, e.g. a lingering activation process, pgrep's first is not necessarily
+# it); a user-set MPS_MCP_URL does not, so that branch keeps the first pgrep match.
+if [ -n "$DETECTED_PID" ]; then
+  MPS_PID=$DETECTED_PID
+else
+  MPS_PID=$(pgrep -f '[j]etbrains\.mps\.Launcher' | head -1 || true)
+fi
 # Epoch, not `ps -o lstart=`: that prints a locale-dependent string ("út 22 zář …") that two runs
 # of the same process cannot be compared on. `etime` ([[dd-]hh:]mm:ss) is locale-free and exists on
 # both macOS and Linux (`etimes` is Linux-only), so derive the start epoch from it.
@@ -140,12 +223,13 @@ INVENTORY_SHA=$( [ -f "$RUNS/inventory.json" ] && shasum -a 256 "$RUNS/inventory
 python3 - "$RUNS/$ID.meta.json" <<PY
 import json,sys
 json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","modelSlug":"$MODEL_SLUG",
-  "harness":"$HARNESS","run":$RUN,"project":"$PROJECT",
+  "harness":"$HARNESS","effort":"$EFFORT" or None,"run":$RUN,"project":"$PROJECT",
   "relatedProjects":[p for p in "$RELATED".split(":") if p],
-  "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA",
+  "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA","guidesSha256":"$GUIDES_SHA",
   "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
   "isolationLevel":"$ISOLATION","projectSynthesized":"$PROJECT_SYNTHESIZED"=="1",
   "mpsPid":int("$MPS_PID") if "$MPS_PID" else None,"mpsStartEpoch":int("$MPS_START") if "$MPS_START" else None,
+  "mpsMcpUrl":"$MPS_MCP_URL","mpsMcpUrlSource":"$MPS_MCP_URL_SOURCE","mcpConfigSource":"$MCP_CONFIG_SOURCE","mcpConfigPath":"$MCP_CONFIG_PATH",
   "startTs":"$START_TS","callLogStartOffset":$START_OFF,"status":"running","pid":$$},
   open(sys.argv[1],"w"),indent=1)
 PY
@@ -156,21 +240,21 @@ set +e
 # into the worker. env -i lists the allowlist; do not pass observer JUNIE_TMPDIR / JUNIE_DATA.
 WORKER_ENV=(env -i HOME="$HOME" PATH="$PATH" USER="${USER:-$(id -un)}" SHELL="${SHELL:-/bin/zsh}" \
   LANG="${LANG:-en_US.UTF-8}" TERM="${TERM:-xterm-256color}" TMPDIR="${TMPDIR:-/tmp}" \
-  ${MPS_MCP_URL:+MPS_MCP_URL="$MPS_MCP_URL"})
+  MPS_MCP_URL="$MPS_MCP_URL")
 if [ "$HARNESS" = junie ]; then
   ( cd "$PROJECT" && "${WORKER_ENV[@]}" \
-      junie --task "$(cat "$PROMPT")" --model "$MODEL" \
+      junie --task "$(cat "$PROMPT")" --model "$MODEL" ${EFFORT_ARGS[@]+"${EFFORT_ARGS[@]}"} \
       -p "$PROJECT" \
       --output-format json-stream --json-output-file "$RUNS/$ID-worker.native.jsonl" \
       --skip-update-check \
-      --mcp-default-locations=false --mcp-location "$STUDY/mcp-junie" \
+      --mcp-default-locations=false --mcp-location "$MCP_CONFIG_PATH" \
       < /dev/null > "$RUNS/$ID-worker.stdout" 2> "$RUNS/$ID-worker.stderr" )
 else
   ( cd "$PROJECT" && "${WORKER_ENV[@]}" \
-      claude -p "$(cat "$PROMPT")" --model "$MODEL" \
+      claude -p "$(cat "$PROMPT")" --model "$MODEL" ${EFFORT_ARGS[@]+"${EFFORT_ARGS[@]}"} \
       --output-format stream-json --verbose --max-turns "$MAX_TURNS" \
       --permission-mode bypassPermissions \
-      --mcp-config "$STUDY/mcp.study.json" --strict-mcp-config \
+      --mcp-config "$MCP_CONFIG_PATH" --strict-mcp-config \
       < /dev/null > "$RUNS/$ID-worker.jsonl" 2> "$RUNS/$ID-worker.stderr" )
 fi
 EXIT=$?

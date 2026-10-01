@@ -15,6 +15,7 @@ skills -- e.g. a project-local `<dsl>-dsl` skill produced by a scenario -- are l
 usage:
   install_skills.py --project <dir> [--target <dir>] [--url URL] [--dry-run]
   install_skills.py --sha-only <dir>          # print the catalog sha256 of an installed tree
+  install_skills.py --guides-sha-only <dir>   # print the sha256 of the installed AGENTS.md + CLAUDE.md
 
 `--project` is the framework `projectPath`: an MPS project that is OPEN in the running MPS, at or
 inside the project's base directory. `--target` is where files are written (default: --project).
@@ -33,7 +34,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from tools_inventory import DEFAULT_URL, McpClient, McpError  # noqa: E402
+from tools_inventory import McpClient, McpError, env_url  # noqa: E402
 
 TOOL = "mps_mcp_initialize_project_for_agents"
 SKILL_DIRS = (Path(".agents") / "skills", Path(".claude") / "skills")
@@ -59,6 +60,24 @@ def catalog_sha256(skills_dir: Path) -> str:
         h.update(b"\0")
         h.update(hashlib.sha256(p.read_bytes()).digest())
     return h.hexdigest() if files else "empty"
+
+
+def guides_sha256(project_dir: Path) -> str:
+    """Fingerprint the installed guide files, `AGENTS.md` then `CLAUDE.md` (`GUIDES` order).
+
+    `skillsSha256` covers only `.claude/skills`, so a change to the bundled agents guide would
+    otherwise leave the round fingerprint unchanged (A9). Returns `"absent"` when either guide
+    is missing, as `catalog_sha256` does for a missing skills directory.
+    """
+    h = hashlib.sha256()
+    for name in GUIDES:
+        f = project_dir / name
+        if not f.is_file():
+            return "absent"
+        h.update(name.encode())
+        h.update(b"\0")
+        h.update(hashlib.sha256(f.read_bytes()).digest())
+    return h.hexdigest()
 
 
 def purge(target: Path, dry_run: bool = False) -> list[str]:
@@ -102,17 +121,22 @@ def unwrap(result: dict) -> dict:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--sha-only", metavar="DIR", help="print the catalog sha256 of DIR/.claude/skills and exit")
+    ap.add_argument("--guides-sha-only", metavar="DIR",
+                    help="print the sha256 of DIR/AGENTS.md + DIR/CLAUDE.md and exit")
     ap.add_argument("--project", help="projectPath: an MPS project open in the running MPS")
     ap.add_argument("--target", help="targetDirectory for the install (default: --project)")
-    ap.add_argument("--url", default=os.environ.get("MPS_MCP_URL", DEFAULT_URL))
+    ap.add_argument("--url", help="MCP endpoint (default: $MPS_MCP_URL, else tools_inventory.DEFAULT_URL)")
     ap.add_argument("--dry-run", action="store_true", help="report what would be removed; call nothing")
     args = ap.parse_args(argv)
 
     if args.sha_only:
         print(catalog_sha256(Path(args.sha_only).resolve() / ".claude" / "skills"))
         return 0
+    if args.guides_sha_only:
+        print(guides_sha256(Path(args.guides_sha_only).resolve()))
+        return 0
     if not args.project:
-        ap.error("--project is required (or use --sha-only)")
+        ap.error("--project is required (or use --sha-only / --guides-sha-only)")
 
     project = Path(args.project).resolve()
     target = Path(args.target).resolve() if args.target else project
@@ -130,7 +154,7 @@ def main(argv=None) -> int:
 
     # Handshake BEFORE purging. Purging first and then finding the server down leaves the project
     # with no catalog at all, which is worse than the stale one it had (hit for real, 2026-09-17).
-    client = McpClient(args.url)
+    client = McpClient(args.url or env_url())
     try:
         client.initialize()
     except ConnectionError as e:
@@ -184,7 +208,7 @@ def main(argv=None) -> int:
     out = {"ok": True, "target": str(target), "removed": removed,
            "installedSkillCount": data.get("installedSkillCount"),
            "guideFilesWritten": written, "guideFilesAlreadyPresent": present,
-           "skillsSha256": sha}
+           "skillsSha256": sha, "guidesSha256": guides_sha256(target)}
 
     # The whole point is a *fresh* tree: a guide reported as already present means purge missed it
     # and the worker would read a stale AGENTS.md.

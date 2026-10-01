@@ -3,6 +3,7 @@ package jetbrains.mps.agents.mcp.tools.common
 import jetbrains.mps.agents.mcp.tools.logging.*
 
 import com.google.gson.*
+import com.intellij.mcpserver.McpCallAdditionalDataElement
 import com.intellij.mcpserver.McpToolset
 import com.intellij.mcpserver.project
 import com.intellij.mcpserver.reportToolActivity
@@ -43,6 +44,7 @@ import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.project.ModuleId
 import jetbrains.mps.project.ProjectRepository
 import jetbrains.mps.project.facets.JavaModuleFacet
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
@@ -53,6 +55,7 @@ import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
+import jetbrains.mps.smodel.adapter.ids.SConceptId
 import jetbrains.mps.smodel.adapter.ids.SLanguageId
 import jetbrains.mps.smodel.adapter.ids.SPropertyId
 import jetbrains.mps.smodel.adapter.ids.SReferenceLinkId
@@ -364,6 +367,23 @@ abstract class AbstractOps : McpToolset {
             mapOf("missingParameters" to missing.map { it.name }),
         )
     )
+
+    /**
+     * `key to value` for each near-miss spelling of [parameter] ([RequiredParameterNearMisses]) that
+     * the caller actually sent. The binder drops such a key, but the platform keeps it in the call's
+     * raw arguments, so a tool can name the key only when it was really sent (D63). A string value
+     * is returned as its content, any other value as its JSON text, and a JSON null is skipped; empty
+     * outside an MCP call.
+     */
+    protected suspend fun sentNearMisses(tool: String, parameter: String): List<Pair<String, String>> {
+        val raw = currentCoroutineContext()[McpCallAdditionalDataElement.Key]?.additionalData?.rawArguments
+            ?: return emptyList()
+        return RequiredParameterNearMisses.of(tool, parameter).mapNotNull { key ->
+            // A client echoing an unset optional key as null sent no value worth naming.
+            val value = raw[key]?.takeIf { it !is kotlinx.serialization.json.JsonNull } ?: return@mapNotNull null
+            key to ((value as? kotlinx.serialization.json.JsonPrimitive)?.takeIf { it.isString }?.content ?: value.toString())
+        }
+    }
 
     protected fun invalidJson(message: String?, details: Map<String, Any?> = emptyMap()): String =
         errJson(message, McpErrorCode.INVALID_JSON, details)
@@ -1187,6 +1207,24 @@ abstract class AbstractOps : McpToolset {
         return okJson(JsonParser.parseString(json), warnings = warnings, details = details)
     }
 
+    /**
+     * The envelope warning for a printout that contains records whose concept is not loaded (the
+     * `unloadedConcepts` sink of [nodeHierarchyJsonObject]); empty when there are none. Without it a
+     * reader took such a printout as the whole node and reported the content as missing (D89).
+     */
+    protected fun unloadedConceptsWarnings(concepts: Collection<SAbstractConcept>): List<String> {
+        if (concepts.isEmpty()) return emptyList()
+        val names = concepts.map { structureQualifiedName(it) }.distinct().sorted()
+        val listed = names.take(5).joinToString(", ") + if (names.size > 5) ", … (+${names.size - 5} more)" else ""
+        return listOf(
+            "Printed nodes use ${names.size} concept(s) that are not loaded, because their language is not loaded or " +
+                "no longer declares them ($listed): " +
+                "what they store is printed from the stored node, marked declared:false, with types, cardinalities and docs " +
+                "only for features of loaded languages (conceptLoaded:false on each such node). Run mps_mcp_alter_nodes MAKE with rebuild=true on the " +
+                "language module for the full record, or read the editor projection with format \"PLAIN TEXT\"."
+        )
+    }
+
     protected fun saveToTempFileResult(json: String): String {
         return try {
             val tempFile = saveToTempFile(json)
@@ -1478,17 +1516,31 @@ abstract class AbstractOps : McpToolset {
         deep: Boolean,
         currentProject: MPSProject? = null,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): String {
-        return nodeHierarchyJsonObject(node, deep, currentProject, cache, projection).toString()
+        return nodeHierarchyJsonObject(node, deep, currentProject, cache, projection, unloadedConcepts).toString()
     }
 
+    /**
+     * One node record, and with [deep] its inlined subtree.
+     *
+     * The record lists what the node *stores*, not only what its concept declares. A stored
+     * property, child role or reference that the concept does not declare is appended after the
+     * declared ones with `declared:false` — a node whose concept is not loaded declares nothing,
+     * and printing only the declared features made its whole content vanish (study defect D89).
+     * Descriptor-only keys (type, cardinality, doc) are written for such a feature only when the
+     * feature itself is valid; an invalid adapter answers `BaseConcept` / `0..n`, which is wrong
+     * rather than unknown. A record whose concept is not loaded carries `conceptLoaded:false`, and
+     * its concept is added to [unloadedConcepts] so the tool can warn once per envelope.
+     */
     protected fun nodeHierarchyJsonObject(
         node: SNode,
         deep: Boolean,
         currentProject: MPSProject? = null,
         cache: ProjectMembershipCache? = null,
-        projection: NodeProjection = NodeProjection.FULL
+        projection: NodeProjection = NodeProjection.FULL,
+        unloadedConcepts: MutableSet<SAbstractConcept>? = null
     ): JsonObject {
         val repository = node.model?.repository
         val c = cache ?: ProjectMembershipCache(currentProject)
@@ -1500,6 +1552,10 @@ abstract class AbstractOps : McpToolset {
             val declarationNode = node.concept.sourceNode?.resolve(repository)
             addDocAndDeprecated(obj, getDoc(declarationNode), getDeprecationInfo(declarationNode))
             obj.addProperty("conceptReference", PersistenceFacade.getInstance().asString(node.concept))
+        }
+        if (!node.concept.isValid) {
+            obj.addProperty("conceptLoaded", false)
+            unloadedConcepts?.add(node.concept)
         }
         obj.addProperty("reference", PersistenceFacade.getInstance().asString(node.reference))
         addContainingProjectIfForeign(obj, currentProject, node, cache = c)
@@ -1515,7 +1571,7 @@ abstract class AbstractOps : McpToolset {
         if (!names) {
             addNodeFeatures(obj, node, repository, currentProject, c)
         }
-        addNodeChildren(obj, node, deep, repository, currentProject, c, projection)
+        addNodeChildren(obj, node, deep, repository, currentProject, c, projection, unloadedConcepts)
         return obj
     }
 
@@ -1557,12 +1613,37 @@ abstract class AbstractOps : McpToolset {
             if (defaultLiteral != null) propObj.addProperty("isDefault", true)
             properties.add(propObj)
         }
+        // Stored values the concept does not declare (D89). Read raw: there may be no descriptor
+        // whose getter could run, and an enum keeps its persisted `<id>/<name>` form, because its
+        // literal names are unknown without the language. No `isDefault` either, for the same reason.
+        val declaredProperties = node.concept.properties.toSet()
+        for (prop in node.properties) {
+            if (prop in declaredProperties) continue
+            val value = node.getProperty(prop)
+            if (value.isNullOrEmpty()) continue
+            val propObj = JsonObject()
+            propObj.addProperty("name", prop.name)
+            if (prop.isValid) {
+                val propDeclarationNode = prop.sourceNode?.resolve(repository)
+                propObj.addProperty("type", getPropertyType(prop))
+                addDocAndDeprecated(propObj, getDoc(propDeclarationNode), getDeprecationInfo(propDeclarationNode))
+            }
+            propObj.addProperty("value", value)
+            propObj.addProperty("declared", false)
+            properties.add(propObj)
+        }
         obj.add("properties", properties)
 
+        val declaredReferenceLinks = node.concept.referenceLinks.toSet()
         val references = JsonArray()
         for (ref in node.references) {
             val link = ref.link
-            val refObj = referenceLinkJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            val refObj = if (link.isValid) {
+                referenceLinkJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            } else {
+                JsonObject().apply { addProperty("role", link.name) }
+            }
+            if (link !in declaredReferenceLinks) refObj.addProperty("declared", false)
             val targetNode = ref.targetNode
             if (targetNode != null) {
                 refObj.addProperty("target", targetNode.name ?: targetNode.presentation)
@@ -1591,21 +1672,31 @@ abstract class AbstractOps : McpToolset {
         repository: SRepository?,
         currentProject: MPSProject?,
         c: ProjectMembershipCache,
-        projection: NodeProjection
+        projection: NodeProjection,
+        unloadedConcepts: MutableSet<SAbstractConcept>?
     ) {
         val truncated = deep && projection.atDepthLimit()
         val inline = deep && !truncated
         val children = JsonArray()
         val childrenByRole = node.children.groupBy { it.containmentLink }
-        for (link in node.concept.containmentLinks) {
+        val declaredLinks = node.concept.containmentLinks.toList()
+        // Declared roles first, then the roles the node stores children in but its concept does not
+        // declare (D89), in stored order.
+        val undeclaredLinks = childrenByRole.keys.filterNotNull().filter { it !in declaredLinks }
+        for (link in declaredLinks + undeclaredLinks) {
             val childrenInRole = childrenByRole[link] ?: emptyList()
             if (childrenInRole.isEmpty() && link.isOptional) continue
 
-            val childRole = containmentLinkInfoJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            val childRole = if (link.isValid) {
+                containmentLinkInfoJsonObject(link, repository, includeDeprecated = true, currentProject = currentProject, cache = c)
+            } else {
+                JsonObject().apply { addProperty("role", link.name) }
+            }
+            if (link in undeclaredLinks) childRole.addProperty("declared", false)
             if (inline) {
                 val nodes = JsonArray()
                 for (child in childrenInRole) {
-                    nodes.add(nodeHierarchyJsonObject(child, deep, currentProject, c, projection.descend()))
+                    nodes.add(nodeHierarchyJsonObject(child, deep, currentProject, c, projection.descend(), unloadedConcepts))
                 }
                 childRole.add("nodes", nodes)
             }
@@ -2762,8 +2853,9 @@ abstract class AbstractOps : McpToolset {
                 if (concept.sourceNode != null) {
                     return concept
                 }
-                // Language is registered but sourceNode is missing; save as last-resort fallback.
-                registeredConcept = concept
+                // Language is registered but sourceNode is missing; save as last-resort fallback, but only
+                // when a descriptor exists — a real language id with an invented concept id has none.
+                if (concept.isValid) registeredConcept = concept
             }
         } catch (e: Exception) {
             rethrowIfCancellation(e)
@@ -2775,22 +2867,19 @@ abstract class AbstractOps : McpToolset {
             return MetaAdapterByDeclaration.getConcept(declarationNode)
         }
 
-        // 3. Best-effort fallback: reuse the registered concept (may have null sourceNode) rather than
-        //    calling facade.createConcept a second time, or search by name for unregistered languages.
+        // 3. Best-effort fallback: reuse the registered concept (may have null sourceNode).
         if (registeredConcept != null) return registeredConcept
-        return try {
-            facade.createConcept(conceptRef)
-        } catch (e: Exception) {
-            rethrowIfCancellation(e)
-            // Try searching by name if it's not a reference
-            val allLanguages = LanguageRegistry.getInstance(repository).allLanguages
-            for (lang in allLanguages) {
-                val runtime = LanguageRegistry.getInstance(repository).getLanguage(lang) ?: continue
-                val concept = runtime.concepts.find { it.name == conceptRef || facade.asString(it) == conceptRef }
-                if (concept != null) return concept
-            }
-            null
+
+        // 4. Search registered languages by name. A parseable `c:` string whose language is unknown or
+        //    whose concept id is invalid does not resolve: returning its bare parse would let the caller
+        //    import an invented language.
+        val registry = LanguageRegistry.getInstance(repository)
+        for (lang in registry.allLanguages) {
+            val runtime = registry.getLanguage(lang) ?: continue
+            val concept = runtime.concepts.find { it.name == conceptRef || facade.asString(it) == conceptRef }
+            if (concept != null) return concept
         }
+        return null
     }
 
     protected fun resolveConceptPreferringProject(mpsProject: MPSProject, conceptRef: String): SAbstractConcept? {
@@ -2812,6 +2901,30 @@ abstract class AbstractOps : McpToolset {
     protected fun resolveConceptNodePreferringProject(mpsProject: MPSProject, conceptRef: String): SNode? =
         resolveConceptNode(mpsProject, conceptRef)
             ?: resolveConceptNode(mpsProject.repository, conceptRef)
+
+    /** The [SConceptId] a `c:<langUuid>/<conceptId>` reference names, or null when either part is malformed. */
+    private fun parseConceptId(langId: String, conceptId: String): SConceptId? {
+        val idValue = conceptId.toLongOrNull() ?: return null
+        return try {
+            SConceptId(SLanguageId.deserialize(langId), idValue)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
+
+    /**
+     * The id [declaration] gives its concept, or null when its id properties are unreadable. The id
+     * fallback asserts a regular node id, so an [AssertionError] is a miss here, not a failure.
+     */
+    private fun declaredConceptId(declaration: SNode): SConceptId? =
+        try {
+            MetaIdByDeclaration.getConceptId(declaration)
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            null
+        } catch (e: AssertionError) {
+            null
+        }
 
     private fun resolveConceptNodeInModules(
         repository: SRepository,
@@ -2838,21 +2951,31 @@ abstract class AbstractOps : McpToolset {
                 // Strip ':qualifiedName' suffix from the concept part.
                 val langId = langRef.removePrefix("c:").removePrefix("l:")
                 val conceptId = conceptRefOrName.substringBefore(":")
-                for (module in modules) {
-                    if (module !is Language) continue
+                // A concept's identity is its declared SConceptId: the `conceptId` / `languageId`
+                // properties, which fall back to the node id and the module id only when unset
+                // (MetaIdByDeclaration). Matching the node id instead misses a declaration whose
+                // properties were kept across a copy or a move between languages.
+                val wanted = parseConceptId(langId, conceptId)
+                val structureRoots = { module: Language ->
+                    module.models.asSequence()
+                        .filter { it.name.longName.endsWith(".structure") }
+                        .flatMap { it.rootNodes.asSequence() }
+                        .filter { it.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration) }
+                }
+                val languages = modules.filterIsInstance<Language>()
+                for (module in languages) {
                     val moduleId = module.moduleReference.moduleId.toString().removePrefix("l:")
                     if (moduleId == langId || module.moduleName == langId) {
-                        for (model in module.models) {
-                            if (model.name.longName.endsWith(".structure")) {
-                                for (root in model.rootNodes) {
-                                    if (root.nodeId.toString() == conceptId || root.name == conceptId) {
-                                        if (root.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration)) {
-                                            return root
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        structureRoots(module)
+                            .find { root -> root.name == conceptId || (wanted != null && declaredConceptId(root) == wanted) }
+                            ?.let { return it }
+                    }
+                }
+                // A moved concept keeps its old `languageId`, so its declaration lives in a module
+                // whose id differs from the reference's language part.
+                if (wanted != null) {
+                    for (module in languages) {
+                        structureRoots(module).find { declaredConceptId(it) == wanted }?.let { return it }
                     }
                 }
             }
@@ -3092,17 +3215,37 @@ abstract class AbstractOps : McpToolset {
     }
 
     protected fun resolveLanguage(repository: SRepository, languageRef: String): SLanguage? {
-        val facade = PersistenceFacade.getInstance()
+        // A well-formed `l:` string is only a parse, not proof the language exists: accept it only when
+        // its id is owned by a deployed runtime or a loaded Language module, and return that language.
         if (languageRef.startsWith("l:")) {
-            return try {
-                facade.createLanguage(languageRef)
-            } catch (e: Exception) {
-                rethrowIfCancellation(e)
-                null
-            }
+            return parseLanguageId(languageRef)?.let { languageForId(repository, it) }
         }
         val allLanguages = LanguageRegistry.getInstance(repository).allLanguages
         return allLanguages.find { it.qualifiedName == languageRef }
+    }
+
+    /**
+     * Returns the language that owns [id]: the deployed runtime's identity, or, for a language that was
+     * never built, the adapter of its loaded `Language` module. Null when neither exists.
+     */
+    protected fun languageForId(repository: SRepository, id: SLanguageId): SLanguage? {
+        LanguageRegistry.getInstance(repository).getLanguage(id)?.let { return it.identity }
+        val module = repository.getModule(ModuleId.regular(id.idValue)) as? Language ?: return null
+        return MetaAdapterByDeclaration.getLanguage(module)
+    }
+
+    /**
+     * Reads the uuid out of an `l:<uuid>:<name>` string without deserializing it:
+     * [PersistenceFacade.createLanguage] would cache an adapter under the caller's name.
+     */
+    private fun parseLanguageId(languageRef: String): SLanguageId? {
+        val parts = languageRef.removePrefix("l:").split(':')
+        if (parts.size != 2 || parts[1].isEmpty()) return null
+        return try {
+            SLanguageId.deserialize(parts[0])
+        } catch (e: IllegalArgumentException) {
+            null
+        }
     }
 
     protected fun resolveLanguagePreferringProject(mpsProject: MPSProject, languageRef: String): SLanguage? {
@@ -3607,7 +3750,8 @@ abstract class AbstractOps : McpToolset {
             throw McpInvalidRequestException(
                 "Input file path '$jsonOrPath' is not inside the system temp directory. " +
                         "It must be inside the system temp directory $accepted " +
-                        "(\$TMPDIR on macOS/Linux, %TEMP% on Windows)."
+                        "(\$TMPDIR on macOS/Linux, %TEMP% on Windows). " +
+                        "Or send the JSON inline (up to $MAX_INLINE_JSON_CHARS characters)."
             )
         }
         val sizeBytes = file.length()

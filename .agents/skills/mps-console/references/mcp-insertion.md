@@ -114,7 +114,7 @@ PY
 
 What to expect, verified against a live MPS:
 
-- **Dry run:** `ok:true` with two warnings of the form `target 'it' did not resolve; production run would create a dynamic reference`, one per closure. They are expected. The real insert binds each `it` to its closure parameter, and `mps_mcp_check_root_node_problems` on the inserted command then reports no problems.
+- **Dry run:** `ok:true` with two warnings of the form `target 'it' is a name, not looked up`, one per closure, plus one line explaining the rule. They are expected. The real insert binds each `it` to its closure parameter, and `mps_mcp_check_root_node_problems` on the inserted command then reports no problems.
 - **The inserted command** prints (`mps_mcp_print_node`, `PLAIN TEXT`) as `#instances(ConceptDeclaration).where({it => it.name.endsWith("Literal"); }).select({it => it.conceptAlias; })`. The editor shows the inferred parameter without its `~`.
 - **The response** is one bracketed list of the selected values, with `null` for a node where the property is unset. Read it as `SKILL.md` "Reading a command's output" describes. A long list gets a cut `preview` with `previewComplete:false`.
 - **Another chained operation** is one more `query = dot(query, n(<operation concept>, …))` line. `mps-model-manipulation` has the operation concepts and their child roles.

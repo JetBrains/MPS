@@ -50,6 +50,14 @@ internal object BaseLanguageMeta {
         baseLanguageId, baseLanguageStructureModelId, 0x101de48bf9eL,
         "jetbrains.mps.baseLanguage.structure.ClassifierType"
     )
+    internal val closureConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x10c63f4f3f3L,
+        "jetbrains.mps.baseLanguage.structure.Closure"
+    )
+    internal val conceptFunctionConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x108bbca0f48L,
+        "jetbrains.mps.baseLanguage.structure.ConceptFunction"
+    )
     internal val constructorDeclarationConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0xf8cc56b204L,
         "jetbrains.mps.baseLanguage.structure.ConstructorDeclaration"
@@ -106,9 +114,25 @@ internal object BaseLanguageMeta {
         baseLanguageId, baseLanguageStructureModelId, 0xfbbebabf0aL,
         "jetbrains.mps.baseLanguage.structure.StaticMethodDeclaration"
     )
+    internal val unknownDotCallConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x245faa02186fc7b5L,
+        "jetbrains.mps.baseLanguage.structure.UnknownDotCall"
+    )
+    internal val unknownInstanceMethodCallConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x15003fd0d0b36dc8L,
+        "jetbrains.mps.baseLanguage.structure.UnknownInstanceMethodCall"
+    )
+    internal val unknownNameRefConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x759937a5973279b7L,
+        "jetbrains.mps.baseLanguage.structure.UnknownNameRef"
+    )
     internal val variableDeclarationConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0xf8c37a7f6eL,
         "jetbrains.mps.baseLanguage.structure.VariableDeclaration"
+    )
+    internal val variableReferenceConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0xf8c77f1e98L,
+        "jetbrains.mps.baseLanguage.structure.VariableReference"
     )
 
     internal val actualArgumentLink = MetaAdapterFactory.getContainmentLink(
@@ -159,6 +183,15 @@ internal object BaseLanguageMeta {
     internal val typeLink = MetaAdapterFactory.getContainmentLink(
         baseLanguageId, baseLanguageStructureModelId, 0x450368d90ce1522fL, 0x450368d90ce15230L, "type"
     )
+    internal val typeArgumentLink = MetaAdapterFactory.getContainmentLink(
+        baseLanguageId, baseLanguageStructureModelId, 0x11857355952L, 0x4500f31eb02a7788L, "typeArgument"
+    )
+    internal val unknownInstanceMethodCallOperandLink = MetaAdapterFactory.getContainmentLink(
+        baseLanguageId, baseLanguageStructureModelId, 0x15003fd0d0b36dc8L, 0x15003fd0d0b37705L, "operand"
+    )
+    internal val variableReferenceVariableDeclarationLink = MetaAdapterFactory.getReferenceLink(
+        baseLanguageId, baseLanguageStructureModelId, 0xf8c77f1e98L, 0xf8cc6bf960L, "variableDeclaration"
+    )
     internal val visibilityLink = MetaAdapterFactory.getContainmentLink(
         baseLanguageId, baseLanguageStructureModelId, 0x112670d273fL, 0x112670d886aL, "visibility"
     )
@@ -177,5 +210,11 @@ internal object BaseLanguageMeta {
     )
     internal val packageNameProperty = MetaAdapterFactory.getProperty(
         baseLanguageId, baseLanguageStructureModelId, 0x101d9d3ca30L, 0x26be0cf68be19d69L, "packageName"
+    )
+    internal val tokensProperty = MetaAdapterFactory.getProperty(
+        baseLanguageId, baseLanguageStructureModelId, 0x5a98df4004080866L, 0x1996ec29712bdd92L, "tokens"
+    )
+    internal val unknownDotCallCalleeProperty = MetaAdapterFactory.getProperty(
+        baseLanguageId, baseLanguageStructureModelId, 0x245faa02186fc7b5L, 0x439f6403036ad2f4L, "callee"
     )
 }

@@ -4,10 +4,13 @@ import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonParser
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
 import jetbrains.mps.smodel.SNodeId
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.action.NodeFactoryManager
 import java.io.File
 import org.jetbrains.mps.openapi.model.SNode
+import org.jetbrains.mps.openapi.model.SNodeAccessUtil
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -61,6 +64,17 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
             )
         }
 
+    private fun setChild(childRef: String, childJson: String, dryRun: Boolean = false): String =
+        runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.SET, NodeUpdateKind.CHILD,
+                childNodeRef = childRef, childJson = childJson, dryRun = dryRun,
+            )
+        }
+
+    private fun updateRoot(rootRef: String, json: String, dryRun: Boolean = false): String =
+        runTool(rootNodeToolset) { it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = dryRun) }
+
     /** Resolves the single child of [node] in [role], or fails. */
     private fun soleChild(node: SNode, role: String): SNode {
         val link = node.concept.containmentLinks.single { it.name == role }
@@ -79,7 +93,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
         // SetStructureIds assigns conceptId = ConceptIdHelper.generateConceptId(model, newNode).
         // It uses the model only to scan for a colliding id; the value itself comes from the node's
         // own id, which a detached SNode already has. So this is not a D47 regression — it is the
-        // convention MPS persistence relies on, pinned so a later change to how instantiateNode
+        // convention MPS persistence relies on, pinned so a later change to how the blueprint path
         // creates nodes cannot quietly break it. The cross-check against `alter_structure` is the
         // point: the two tools must agree.
         val viaAlterStructure = createConceptRoot("ViaAlterStructure")
@@ -109,7 +123,7 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
 
     @Test
     fun `nested blueprint children keep the propertyId equals nodeId convention`() {
-        // Same invariant one level down, so the recursive instantiateNode call is covered too.
+        // Same invariant one level down, so a nested child built by fillChildren is covered too.
         val json = """
             {
               "concept": "$conceptDeclarationFqn",
@@ -248,10 +262,11 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
 
     @Test
     fun `a one-call blueprint gives a nested child's factory the parent's references`() {
-        // instantiateNode applies references before children precisely so this works: the method's
-        // factory follows ConceptBehavior.concept to decide isAbstract/isVirtual, and with children
-        // applied first that reference was still unset when the factory ran. The same content split
-        // across two calls always worked, so this one-call form is the only thing that catches it.
+        // createNode applies references before fillChildren builds the children precisely so this
+        // works: the method's factory follows ConceptBehavior.concept to decide isAbstract/isVirtual,
+        // and with children applied first that reference was still unset when the factory ran. The
+        // same content split across two calls always worked, so this one-call form is the only thing
+        // that catches it.
         val interfaceRef = createInterfaceConcept()
         val behaviorModelRef = behaviorModelWithUsedLanguages()
 
@@ -507,6 +522,413 @@ class NodeFactoryOnBlueprintPathIntegrationTest : McpIntegrationTestBase() {
                 versionBefore, language.languageVersion,
             )
         }
+    }
+
+    // ── a nested child's factory sees its ancestors (editor parity) ──────────────────────
+    //
+    // EDTL_node_factories.NodeFactory_1158947460472, registered for CellModel_Property, walks
+    // `getNodeAncestor(enclosingNode, CellModel_RefCell, inclusive = true)` and sets readOnly when a
+    // RefCell is found: a property cell inside a reference cell's inline editor is read-only. In the
+    // editor the new cell's enclosing node is always attached, so the walk works at any depth.
+    // MPS-40226: the blueprint tools used to attach each child only after the child's own subtree was
+    // built, and the blueprint's top node only after all of it, so a factory two or more levels below
+    // the attached target saw an enclosing node whose parent was still null. The tree is now built
+    // top-down, and ADD CHILD, SET CHILD and update_root attach the top node before filling it.
+
+    private val editorLang = "jetbrains.mps.lang.editor.structure"
+    private val conceptEditorFqn = "$editorLang.ConceptEditorDeclaration"
+    private val refCellFqn = "$editorLang.CellModel_RefCell"
+    private val inlineEditorFqn = "$editorLang.InlineEditorComponent"
+    private val propertyCellFqn = "$editorLang.CellModel_Property"
+
+    private fun nodeRefOf(node: SNode): String = PersistenceFacade.getInstance().asString(node.reference)
+
+    private fun editorModelRef(): String =
+        modelRefOf(readOnRepo { language.models.single { it.name.longName.endsWith(".editor") } })
+
+    /** `{ concept: InlineEditorComponent [, cellModel: CellModel_Property] }` as a blueprint. */
+    private fun inlineEditorJson(withPropertyCell: Boolean): String {
+        val cellModel = if (withPropertyCell) {
+            """, "children": [ { "role": "cellModel", "nodes": [ { "concept": "$propertyCellFqn" } ] } ]"""
+        } else ""
+        return """{ "concept": "$inlineEditorFqn"$cellModel }"""
+    }
+
+    /** An editor root whose cell model is `RefCell -> editorComponent: InlineEditorComponent [-> cellModel: Property]`. */
+    private fun editorRootJson(withPropertyCell: Boolean): String = """
+        {
+          "concept": "$conceptEditorFqn",
+          "children": [
+            {
+              "role": "cellModel",
+              "nodes": [
+                {
+                  "concept": "$refCellFqn",
+                  "children": [ { "role": "editorComponent", "nodes": [ ${inlineEditorJson(withPropertyCell)} ] } ]
+                }
+              ]
+            }
+          ]
+        }
+    """.trimIndent()
+
+    private fun insertEditorRoot(withPropertyCell: Boolean): String {
+        val response = runTool(rootNodeToolset) {
+            it.mps_mcp_insert_root_node_from_json(editorModelRef(), JsonOrText(editorRootJson(withPropertyCell)), dryRun = false)
+        }
+        return expectOk(response).get("reference").asString
+    }
+
+    private fun refCellOf(editorRootRef: String): SNode = readOnRepo { soleChild(resolveNodeRef(editorRootRef), "cellModel") }
+
+    private fun inlineEditorOf(editorRootRef: String): SNode = readOnRepo { soleChild(refCellOf(editorRootRef), "editorComponent") }
+
+    private fun propertyCellReadOnly(editorRootRef: String): String? = readOnRepo {
+        val propertyCell = soleChild(inlineEditorOf(editorRootRef), "cellModel")
+        assertEquals("CellModel_Property", propertyCell.concept.name)
+        propertyCell.getPropertyByName("readOnly")
+    }
+
+    @Test
+    fun `control - ADD CHILD of a bare Property cell into an attached inline editor sets readOnly`() {
+        // Depth 1 below the attached target: the factory's enclosingNode is the attached IEC, so the
+        // RefCell ancestor is reachable. Passes today.
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val iecRef = readOnRepo { nodeRefOf(inlineEditorOf(rootRef)) }
+
+        val response = addChild(iecRef, "cellModel", """{ "concept": "$propertyCellFqn" }""")
+        expectOk(response)
+
+        assertEquals("the Property factory must find the enclosing RefCell: $response", "true", propertyCellReadOnly(rootRef))
+    }
+
+    @Test
+    fun `ADD CHILD of an inline editor blueprint under a RefCell sets the nested Property readOnly`() {
+        // Depth 2 (MPS-40226): only the caller attaching the IEC before filling it lets the Property
+        // factory's walk get above the blueprint's top node.
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val refCellRef = readOnRepo { nodeRefOf(refCellOf(rootRef)) }
+
+        val response = addChild(refCellRef, "editorComponent", inlineEditorJson(withPropertyCell = true))
+        expectOk(response)
+
+        assertEquals(
+            "a Property cell nested in a blueprint IEC under a RefCell must be readOnly, as in the editor: $response",
+            "true", propertyCellReadOnly(rootRef),
+        )
+    }
+
+    @Test
+    fun `SET CHILD of an inline editor blueprint under a RefCell sets the nested Property readOnly`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val oldIecRef = readOnRepo { nodeRefOf(inlineEditorOf(rootRef)) }
+
+        val response = setChild(oldIecRef, inlineEditorJson(withPropertyCell = true))
+        expectOk(response)
+
+        assertEquals(
+            "a Property cell nested in a replacing blueprint IEC under a RefCell must be readOnly, as in the editor: $response",
+            "true", propertyCellReadOnly(rootRef),
+        )
+    }
+
+    @Test
+    fun `insert_root_node_from_json of RefCell to IEC to Property sets the Property readOnly`() {
+        // MPS-40226, fixed by the top-down build inside the blueprint tree alone.
+        val rootRef = insertEditorRoot(withPropertyCell = true)
+
+        assertEquals(
+            "a Property cell under RefCell -> IEC in a one-call root blueprint must be readOnly, as in the editor",
+            "true", propertyCellReadOnly(rootRef),
+        )
+    }
+
+    @Test
+    fun `sanity - the editor's own NodeFactoryManager path sets readOnly for an attached inline editor`() {
+        // What the editor does: createNode with the attached IEC as enclosing node. Proves the
+        // factory is loaded and effective in this test environment, independent of the blueprint path.
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val propertyCellConcept = MetaAdapterFactory.getConcept(
+            0x18bc659203a64e29L, 0xa83a7ff23bde13baUL.toLong(), 0xf9eb02612eL, propertyCellFqn,
+        )
+
+        var created: SNode? = null
+        executeCommand {
+            val iec = inlineEditorOf(rootRef)
+            created = NodeFactoryManager.createNode(propertyCellConcept, null, iec, iec.model)
+        }
+
+        assertEquals("true", readOnRepo { checkNotNull(created).getPropertyByName("readOnly") })
+    }
+
+    @Test
+    fun `update_root_node_from_json of a staged RefCell to IEC to Property sets the Property readOnly`() {
+        // The target of update_root is always a root and a CellModel_RefCell never is, so no RefCell walk
+        // reaches at or above the target: this exercises the top-down build inside the staged child
+        // only. The staging's attach-then-fill is covered by analogy with ADD CHILD.
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+
+        val response = updateRoot(rootRef, editorRootJson(withPropertyCell = true))
+        expectOk(response)
+
+        assertEquals("a staged Property cell under RefCell -> IEC must be readOnly: $response", "true", propertyCellReadOnly(rootRef))
+    }
+
+    @Test
+    fun `an explicit readOnly false on a nested Property wins over its factory`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val refCellRef = readOnRepo { nodeRefOf(refCellOf(rootRef)) }
+        val iec = """
+            { "concept": "$inlineEditorFqn", "children": [ { "role": "cellModel", "nodes": [
+              { "concept": "$propertyCellFqn", "properties": [ { "name": "readOnly", "value": "false" } ] }
+            ] } ] }
+        """.trimIndent()
+
+        val response = addChild(refCellRef, "editorComponent", iec)
+        expectOk(response)
+
+        assertEquals("the blueprint's readOnly must win over the node's own factory: $response", "false", propertyCellReadOnly(rootRef))
+    }
+
+    // ── a dry run never attaches to the live target ──────────────────────────────────────
+
+    /** The ids of all children of [nodeRef], in order: what a dry run or a failed write must leave as it was. */
+    private fun childIdsOf(nodeRef: String): List<String> = readOnRepo { resolveNodeRef(nodeRef).children.map { it.nodeId.toString() } }
+
+    @Test
+    fun `a dry-run ADD CHILD with nested children leaves the target's children alone`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val refCellRef = readOnRepo { nodeRefOf(refCellOf(rootRef)) }
+        val before = childIdsOf(refCellRef)
+
+        val response = addChild(refCellRef, "editorComponent", inlineEditorJson(withPropertyCell = true), dryRun = true)
+
+        assertTrue("expected a dryRun envelope: $response", expectOk(response).get("dryRun").asBoolean)
+        assertEquals("a dry run must not touch the target's children: $response", before, childIdsOf(refCellRef))
+    }
+
+    @Test
+    fun `a dry-run SET CHILD with nested children leaves the target's children alone`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val refCellRef = readOnRepo { nodeRefOf(refCellOf(rootRef)) }
+        val oldIecRef = readOnRepo { nodeRefOf(inlineEditorOf(rootRef)) }
+        val before = childIdsOf(refCellRef)
+
+        val response = setChild(oldIecRef, inlineEditorJson(withPropertyCell = true), dryRun = true)
+
+        assertTrue("expected a dryRun envelope: $response", expectOk(response).get("dryRun").asBoolean)
+        assertEquals("a dry run must not touch the target's children: $response", before, childIdsOf(refCellRef))
+    }
+
+    @Test
+    fun `a dry-run update_root_node_from_json with nested children leaves the root's children alone`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val before = childIdsOf(rootRef)
+
+        val response = updateRoot(rootRef, editorRootJson(withPropertyCell = true), dryRun = true)
+
+        assertTrue("expected a dryRun envelope: $response", expectOk(response).get("dryRun").asBoolean)
+        assertEquals("a dry run must not touch the root's children: $response", before, childIdsOf(rootRef))
+    }
+
+    // ── a failing nested child rolls the attached top node back ───────────────────────────
+    //
+    // The target's children only: createNode still imports the language, and factory side effects
+    // are not rolled back, so the model as a whole may differ.
+
+    private val unknownCellJson = """{ "concept": "$editorLang.NoSuchCellModel" }"""
+    private val unassignableCellJson = """{ "concept": "jetbrains.mps.baseLanguage.structure.IntegerType" }"""
+
+    private fun inlineEditorWith(cellModelJson: String): String =
+        """{ "concept": "$inlineEditorFqn", "children": [ { "role": "cellModel", "nodes": [ $cellModelJson ] } ] }"""
+
+    @Test
+    fun `a failing single-cardinality ADD CHILD keeps the old occupant and adds nothing`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val refCellRef = readOnRepo { nodeRefOf(refCellOf(rootRef)) }
+        val oldIecId = readOnRepo { inlineEditorOf(rootRef).nodeId.toString() }
+        val before = childIdsOf(refCellRef)
+
+        val error = expectErr(addChild(refCellRef, "editorComponent", inlineEditorWith(unknownCellJson)))
+
+        assertTrue(error, error.contains("NoSuchCellModel"))
+        assertEquals("the old occupant must stay and the new child must be gone", before, childIdsOf(refCellRef))
+        assertTrue(childIdsOf(refCellRef).contains(oldIecId))
+    }
+
+    @Test
+    fun `a failing multiple-cardinality ADD CHILD adds nothing`() {
+        val behaviorRef = createConceptBehaviorRoot()
+        val before = childIdsOf(behaviorRef)
+        val method = """
+            { "concept": "$conceptMethodFqn", "properties": [ { "name": "name", "value": "neverAdded" } ],
+              "children": [ { "role": "visibility", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.IntegerType" } ] } ] }
+        """.trimIndent()
+
+        val error = expectErr(addChild(behaviorRef, "method", method))
+
+        assertTrue(error, error.contains("Concept assignability error"))
+        assertEquals("a failed ADD CHILD must leave the target's children as they were", before, childIdsOf(behaviorRef))
+    }
+
+    @Test
+    fun `a failing SET CHILD keeps the replaced child`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val refCellRef = readOnRepo { nodeRefOf(refCellOf(rootRef)) }
+        val oldIecRef = readOnRepo { nodeRefOf(inlineEditorOf(rootRef)) }
+        val before = childIdsOf(refCellRef)
+
+        val error = expectErr(setChild(oldIecRef, inlineEditorWith(unassignableCellJson)))
+
+        assertTrue(error, error.contains("Concept assignability error"))
+        assertEquals("a failed SET CHILD must keep the replaced child and drop the new one", before, childIdsOf(refCellRef))
+    }
+
+    @Test
+    fun `a failing update_root_node_from_json deletes the staged children and keeps the originals`() {
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val before = childIdsOf(rootRef)
+        val json = """
+            {
+              "concept": "$conceptEditorFqn",
+              "children": [ { "role": "cellModel", "nodes": [ {
+                "concept": "$refCellFqn",
+                "children": [ { "role": "editorComponent", "nodes": [ ${inlineEditorWith(unknownCellJson)} ] } ]
+              } ] } ]
+            }
+        """.trimIndent()
+
+        val error = expectErr(updateRoot(rootRef, json))
+
+        assertTrue(error, error.contains("NoSuchCellModel"))
+        assertEquals("a failed rewrite must leave the root's children as they were", before, childIdsOf(rootRef))
+    }
+
+    @Test
+    fun `a failing reference in update_root_node_from_json deletes the children staged before it`() {
+        // References are staged after the children are built and attached, so the rollback must
+        // cover a failure there too.
+        val rootRef = insertEditorRoot(withPropertyCell = false)
+        val before = childIdsOf(rootRef)
+        val json = editorRootJson(withPropertyCell = true).trimEnd().removeSuffix("}") +
+            """, "references": [ { "role": "noSuchRole", "target": "x" } ] }"""
+
+        val error = expectErr(updateRoot(rootRef, json))
+
+        assertTrue(error, error.contains("noSuchRole"))
+        assertEquals("a failed rewrite must leave the root's children as they were", before, childIdsOf(rootRef))
+    }
+
+    // ── an omitted property keeps the node's constructor value on every blueprint path ────
+    //
+    // ResourceVariable's behavior constructor sets isFinal = true. Its ancestor factories run too
+    // (LocalVariableDeclaration's), so these tests pin the observed value, not that no factory
+    // touched it.
+
+    private val bl = "jetbrains.mps.baseLanguage.structure"
+    private val resourceVariableJson = """{ "concept": "$bl.ResourceVariable", "name": "r" }"""
+    private val tryWithResourceJson =
+        """{ "concept": "$bl.TryUniversalStatement", "children": [ { "role": "resource", "nodes": [ $resourceVariableJson ] } ] }"""
+
+    /** `class ResourceProbe { void m() { try (r) {} } }` as a blueprint. */
+    private val resourceProbeJson = """
+        {
+          "concept": "$bl.ClassConcept", "name": "ResourceProbe",
+          "children": [ { "role": "member", "nodes": [ {
+            "concept": "$bl.InstanceMethodDeclaration", "name": "m",
+            "children": [ { "role": "body", "nodes": [ {
+              "concept": "$bl.StatementList",
+              "children": [ { "role": "statement", "nodes": [ $tryWithResourceJson ] } ]
+            } ] } ]
+          } ] } ]
+        }
+    """.trimIndent()
+
+    private fun insertResourceProbe(): String = expectOk(runTool(rootNodeToolset) {
+        it.mps_mcp_insert_root_node_from_json(createLanguageModel("sandbox"), JsonOrText(resourceProbeJson), dryRun = false)
+    }).get("reference").asString
+
+    private fun descendantsOf(rootRef: String, conceptName: String): List<SNode> = readOnRepo {
+        SNodeOperations.getNodeDescendants(resolveNodeRef(rootRef), null, false, emptyArray()).filter { it.concept.name == conceptName }
+    }
+
+    private fun soleDescendantRef(rootRef: String, conceptName: String): String =
+        readOnRepo { nodeRefOf(descendantsOf(rootRef, conceptName).single()) }
+
+    private fun isFinalOfResourceVariables(rootRef: String): List<String?> =
+        readOnRepo { descendantsOf(rootRef, "ResourceVariable").map { it.getPropertyByName("isFinal") } }
+
+    @Test
+    fun `a root insert keeps a nested ResourceVariable's constructor isFinal`() {
+        val rootRef = insertResourceProbe()
+
+        assertEquals(listOf("true"), isFinalOfResourceVariables(rootRef))
+    }
+
+    @Test
+    fun `ADD CHILD of a try statement keeps its nested ResourceVariable's constructor isFinal`() {
+        val rootRef = insertResourceProbe()
+
+        expectOk(addChild(soleDescendantRef(rootRef, "StatementList"), "statement", tryWithResourceJson))
+
+        assertEquals(listOf("true", "true"), isFinalOfResourceVariables(rootRef))
+    }
+
+    @Test
+    fun `ADD CHILD of a ResourceVariable keeps its constructor isFinal`() {
+        val rootRef = insertResourceProbe()
+
+        expectOk(addChild(soleDescendantRef(rootRef, "TryUniversalStatement"), "resource", resourceVariableJson))
+
+        assertEquals(listOf("true", "true"), isFinalOfResourceVariables(rootRef))
+    }
+
+    @Test
+    fun `SET CHILD of a ResourceVariable keeps its constructor isFinal`() {
+        val rootRef = insertResourceProbe()
+        val oldRef = soleDescendantRef(rootRef, "ResourceVariable")
+
+        expectOk(setChild(oldRef, resourceVariableJson))
+
+        assertTrue("the ResourceVariable must have been replaced", soleDescendantRef(rootRef, "ResourceVariable") != oldRef)
+        assertEquals(listOf("true"), isFinalOfResourceVariables(rootRef))
+    }
+
+    @Test
+    fun `update_root_node_from_json keeps a new nested ResourceVariable's constructor isFinal`() {
+        val rootRef = insertResourceProbe()
+        val oldRef = soleDescendantRef(rootRef, "ResourceVariable")
+
+        expectOk(updateRoot(rootRef, resourceProbeJson))
+
+        assertTrue("the ResourceVariable must have been rebuilt", soleDescendantRef(rootRef, "ResourceVariable") != oldRef)
+        assertEquals(listOf("true"), isFinalOfResourceVariables(rootRef))
+    }
+
+    @Test
+    fun `invariant guard - a constructor's false boolean stays unstored`() {
+        // Not a regression: NamedTupleComponentDeclaration's constructor sets final = false, which a
+        // boolean stores as nothing, and the blueprint path leaves it that way today. The guard only
+        // catches a future change that default-fills booleans. print_node omits an unstored false
+        // boolean (the boolean type renders false as null), so it must not show `true` either.
+        val tuples = "jetbrains.mps.baseLanguage.tuples.structure"
+        val json = """
+            { "concept": "$tuples.NamedTupleDeclaration", "name": "TupleProbe",
+              "children": [ { "role": "component", "nodes": [ { "concept": "$tuples.NamedTupleComponentDeclaration", "name": "c" } ] } ] }
+        """.trimIndent()
+        val rootRef = expectOk(runTool(rootNodeToolset) {
+            it.mps_mcp_insert_root_node_from_json(createLanguageModel("sandbox"), JsonOrText(json), dryRun = false)
+        }).get("reference").asString
+        val componentRef = readOnRepo { nodeRefOf(soleChild(resolveNodeRef(rootRef), "component")) }
+
+        readOnRepo {
+            val component = resolveNodeRef(componentRef)
+            val finalProperty = component.concept.properties.single { it.name == "final" }
+            assertFalse("final = false must not be stored", SNodeAccessUtil.hasProperty(component, finalProperty))
+        }
+        val printed = payloadObjectFromOkData(runTool(JetBrainsMPSNodeMcpToolset()) { it.mps_mcp_print_node(componentRef, deep = false) })
+        val printedFinal = printed.getAsJsonArray("properties").map { it.asJsonObject }.singleOrNull { it.get("name").asString == "final" }
+        assertTrue("print_node must show final as false or omit it: $printed", printedFinal == null || printedFinal.get("value").asString == "false")
     }
 
     /** Creates an `InterfaceConceptDeclaration` root and returns its persistent reference. */

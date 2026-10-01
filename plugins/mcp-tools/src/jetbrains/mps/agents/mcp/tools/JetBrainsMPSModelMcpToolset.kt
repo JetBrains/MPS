@@ -210,7 +210,7 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
     suspend fun mps_mcp_model_used_language(
         @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
         modelReference: String = "",
-        @McpDescription("Required. Language or devkit to add/remove. Accepts a persistent reference (`l:<uuid>:<qualifiedName>` for a language, `<uuid>(<name>)` for a devkit) or a plain qualified name. A plain name resolves against languages/devkits loaded in the project; a Language module that was created but never built is also resolved by name via the project repository.")
+        @McpDescription("Required. Language or devkit to add/remove. Accepts a persistent reference (`l:<uuid>:<qualifiedName>` for a language, `<uuid>(<name>)` for a devkit) or a plain qualified name. A plain name resolves against languages/devkits loaded in the project; a Language module that was created but never built is also resolved by name via the project repository. On ADD, a persistent language reference is accepted only when its uuid is a deployed language or a loaded Language module; an unresolved id is rejected with `Language not found` and nothing is stored. The stored name is the language's own qualified name, not the one written in the reference.")
         usedLanguage: String = "",
         @McpDescription("Required. Kind: 'language' or 'devkit'")
         kind: String = "",
@@ -256,6 +256,7 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
                     // Fall back to resolving the Language *module* by name in the project
                     // repository and adapting it to an SLanguage via its module id (no runtime
                     // needed) — this lets an unbuilt language be imported by plain name.
+                    // A rejected `l:` string also reaches this fallback; it matches no module and yields null.
                     ?: (resolveModule(mpsProject, usedLanguage, projectOnly = true) as? jetbrains.mps.smodel.Language)
                         ?.let { jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getLanguage(it) }
                     ?: return@executeShortCommandOnEdt errJson("Language not found: $usedLanguage")

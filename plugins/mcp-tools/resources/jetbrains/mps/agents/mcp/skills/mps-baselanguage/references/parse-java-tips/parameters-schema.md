@@ -10,7 +10,14 @@ The tool takes a single `parameters` argument holding a JSON object — sent eit
                                              //   STATEMENTS, CLASS_CONTENT, EXPRESSION
                                              //   FIELD/METHOD/NESTED_CLASS are parsed as
                                              //   class members; the kind is advisory (see `references/parse-java-tips/parameters-rules.md`)
-  "recovery": boolean,                       // optional, default true
+  "recovery": boolean,                       // optional. Omitted: code with a Java syntax
+                                             //   error (Java 8 level) is rejected with the
+                                             //   parser's messages, because the parser would
+                                             //   repair it into different code (`a != null && b;`
+                                             //   becomes `a = (null && b)`). true: insert the
+                                             //   repaired result, with a warning. false: parse
+                                             //   without statement recovery (no effect for CLASS);
+                                             //   syntax errors are still rejected.
   "contextNodeRef": string,                  // optional SNodeReference (r:...) used as parser
                                              //   context. REQUIRED for FIELD, METHOD,
                                              //   NESTED_CLASS, CLASS_CONTENT. Must resolve to a

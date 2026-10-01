@@ -164,8 +164,10 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
         fun example(name: String) = scriptDir.resolve("examples").resolve(name).toString()
 
         for ((args, use) in listOf(
-            listOf("shape", example("print_node_deep.json")) to "node",
+            listOf("shape", example("print_node_deep.json")) to "tree",
+            listOf("models", example("print_node_deep.json")) to "tree",
             listOf("shape", example("get_project_structure_model_roots.json")) to "roots",
+            listOf("shape", example("get_project_structure_project_models.json")) to "models",
             listOf("roots", example("get_concept_details_courses.json")) to "shape",
             listOf("count", example("get_concept_details_courses.json")) to "shape",
             listOf("node", example("get_concept_details_courses.json"), "Course") to "shape",
@@ -183,6 +185,91 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
         val summary = JsonParser.parseString(noMatch.output.trim()).asJsonObject
         generatedFiles.add(Path.of(summary.get("file").asString))
         assertEquals(0, summary.get("roots").asInt)
+    }
+
+    @Test
+    fun `mps_dump refuses roots on a structure dump without root nodes and lists its models instead`() {
+        Python3.require()
+        val scriptDir = installSkills().resolve("mps-mcp-workflow").resolve("scripts")
+        val script = scriptDir.resolve("mps_dump.py").toString()
+        val projectDump = scriptDir.resolve("examples").resolve("get_project_structure_project_models.json").toString()
+
+        for (args in listOf(
+            listOf("roots", projectDump),
+            listOf("count", projectDump),
+            listOf("tree", projectDump),
+            listOf("node", projectDump, "X"),
+        )) {
+            val result = runPython(script, *args.toTypedArray(), "--quiet")
+            assertEquals("${args.joinToString(" ")} must fail as bad input, output: ${result.output}", 3, result.exitCode)
+            assertTrue(
+                "${args.joinToString(" ")} must say what is missing and name `models`, output: ${result.output}",
+                result.output.contains("without includeRootNodes") && result.output.contains("use `models`"),
+            )
+        }
+
+        val models = runPython(script, "models", projectDump)
+        assertEquals("models must succeed on a project dump, output: ${models.output}", 0, models.exitCode)
+        val lines = models.output.trim().lines()
+        val summary = JsonParser.parseString(lines.last()).asJsonObject
+        generatedFiles.add(Path.of(summary.get("file").asString))
+        assertEquals(2, summary.get("modules").asInt)
+        assertEquals(4, summary.get("models").asInt)
+        assertEquals(24, summary.get("roots").asInt)
+        val samples = lines.single { it.contains("com.example.catalog.samples") }
+        assertTrue("a model row carries kind, root count and reference: $samples",
+                   samples.startsWith("Solution") && samples.contains(" 12 ")
+                   && samples.contains("r:2b9e05c7-4d13-4a86-bf72-91c0e6d4538f(com.example.catalog.samples)"))
+    }
+
+    @Test
+    fun `mps_dump tree prints an indented subtree`() {
+        Python3.require()
+        val scriptDir = installSkills().resolve("mps-mcp-workflow").resolve("scripts")
+        val script = scriptDir.resolve("mps_dump.py").toString()
+        fun example(name: String) = scriptDir.resolve("examples").resolve(name).toString()
+        fun tree(vararg args: String): List<String> {
+            val result = runPython(script, "tree", *args)
+            assertEquals("tree ${args.joinToString(" ")} must succeed, output: ${result.output}", 0, result.exitCode)
+            val lines = result.output.trim().lines()
+            generatedFiles.add(Path.of(JsonParser.parseString(lines.last()).asJsonObject.get("file").asString))
+            return lines.dropLast(1)
+        }
+
+        val deep = tree(example("print_node_deep.json"))
+        assertEquals("Course 2518891257436048003 credits=4 level=CORE name=\"Sight Reading\"", deep.first())
+        assertTrue("children are indented under their role: $deep", deep.contains("    uses: ResourceRef 2518891257436048006 -> resource=ScaleSheets"))
+
+        val withDefault = tree(example("get_project_structure_node_deep.json"))
+        assertTrue("a default-valued enum is omitted: ${withDefault.first()}",
+                   withDefault.first().startsWith("Course ") && !withDefault.first().contains("level="))
+
+        val cut = tree(example("print_node_deep.json"), "--depth", "0")
+        assertEquals(listOf("Course 2518891257436048003 credits=4 level=CORE name=\"Sight Reading\" (+5 children)"), cut)
+
+        val shallow = tree(example("print_node_shallow.json"))
+        assertTrue("shallow children say they were not inlined: $shallow",
+                   shallow.contains("  lessons: lesson 2518891257436048005 (not inlined)"))
+
+        // nodeDetail="names" keeps only name/concept/reference, so the line takes the record's own name.
+        val fullRoots = JsonParser.parseString(Files.readString(Path.of(example("get_project_structure_model_roots.json")))).asJsonObject
+        val namesOnly = fullRoots.deepCopy()
+        val data = namesOnly.getAsJsonObject("data")
+        val projected = JsonArray()
+        for (root in data.getAsJsonArray("rootNodes")) {
+            projected.add(JsonObject().apply {
+                for (key in listOf("name", "concept", "reference")) add(key, root.asJsonObject.get(key))
+            })
+        }
+        data.add("rootNodes", projected)
+        val namesDump = Files.createTempFile("tree-names", ".json")
+        generatedFiles.add(namesDump)
+        Files.writeString(namesDump, namesOnly.toString())
+        val names = tree(namesDump.toString())
+        assertTrue("a names-only root shows its name: $names",
+                   names.contains("Resource 2518891257436048000 name=ScaleSheets (children not listed)"))
+        assertEquals("every root line carries a name: $names",
+                     projected.size(), names.count { it.contains(" name=") })
     }
 
     /** Installs the bundled catalog into a fresh temp directory and returns its skills root. */

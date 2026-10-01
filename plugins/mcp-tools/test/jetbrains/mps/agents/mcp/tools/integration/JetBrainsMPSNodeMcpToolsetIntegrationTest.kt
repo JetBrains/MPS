@@ -1223,6 +1223,31 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `add-node-child rewrites a references map into the array form`() {
+        val fooRef = createFooConcept()
+        val childJson = """
+            {
+              "concept": "jetbrains.mps.lang.structure.structure.PropertyDeclaration",
+              "properties": [ { "name": "name", "value": "amount" } ],
+              "references": { "dataType": "integer" }
+            }
+        """.trimIndent()
+
+        val msg = expectErr(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = fooRef, childRole = "propertyDeclaration", childJson = childJson)
+        })
+        assertTrue(msg, msg.startsWith("Failed to instantiate child node from JSON: 'references' at $ must be an array of {\"role\",\"target\"} objects, not a map."))
+        assertTrue(msg, msg.contains("""Write it as "references":[{"role":"dataType","target":"integer"}]."""))
+        assertTrue(msg, msg.contains("Blueprint fields are arrays, not maps:"))
+
+        readOnRepo {
+            val foo = PersistenceFacade.getInstance().createNodeReference(fooRef).resolve(structureModel.repository)
+            assertTrue("a rejected blueprint must not add a child",
+                foo!!.children.none { it.containmentLink?.name == "propertyDeclaration" })
+        }
+    }
+
+    @Test
     fun `add-node-child rejects non-zero position on single-cardinality role`() {
         // helpURL on AbstractConceptDeclaration is a 0..1 child link.
         val fooRef = createFooConcept()
@@ -1915,7 +1940,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("INVALID_REQUEST", obj.get("code").asString)
         assertEquals(
             "childJson is required for ADD CHILD. Retry with childJson set to the child's JSON blueprint, " +
-                    "or an absolute path to a file holding it. This tool spells it 'childJson'; " +
+                    "or an absolute path to a temporary file holding it. This tool spells it 'childJson'; " +
                     "a value sent as 'json' never reaches it.",
             obj.get("error").asString,
         )
@@ -2256,13 +2281,78 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "nodeReference",
         )
         assertTrue(error, error.startsWith("nodeReference is required."))
-        assertTrue("must say a model goes under nodeReference: $error", error.contains("model reference") && error.contains("no modelReference parameter"))
+        assertTrue("must say a model goes under nodeReference: $error", error.contains("model reference") && error.contains("no modelReference or moduleReference parameter"))
 
         val retried = callThroughBridge(
             JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
             mapOf("nodeReference" to McpJsonPrimitive(structureModelRef)),
         )
         assertOk(retried)
+    }
+
+    @Test
+    fun `check_root_node_problems names nodeReference when the caller sent moduleReference`() {
+        val moduleRef = PersistenceFacade.getInstance().asString(language.moduleReference)
+        val error = assertMissingParameters(
+            callThroughBridge(
+                JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+                mapOf("moduleReference" to McpJsonPrimitive(moduleRef)),
+            ),
+            "nodeReference",
+        )
+        assertTrue("must name the dropped spelling: $error", error.contains("'moduleReference'"))
+        assertTrue("must say a module goes under nodeReference: $error", error.contains("module reference or module name"))
+
+        val retried = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(moduleRef)),
+        )
+        assertOk(retried)
+        assertEquals("module", JsonParser.parseString(retried).asJsonObject.getAsJsonObject("details").get("scope").asString)
+    }
+
+    @Test
+    fun `check_root_node_problems names only the near-miss keys that were sent`() {
+        // D63: the rejection used to name modelReference whatever the caller sent.
+        val ghost = "r:00000000-0000-0000-0000-000000000000(ghost)/0"
+        val withModel = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost), "modelReference" to McpJsonPrimitive(structureModelRef)),
+        ))
+        assertTrue(withModel, withModel.contains("This tool has no 'modelReference' parameter; retry with nodeReference set to '$structureModelRef'."))
+        assertFalse(withModel, withModel.contains("'moduleReference'"))
+
+        val withModule = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost), "moduleReference" to McpJsonPrimitive("some.module")),
+        ))
+        assertTrue(withModule, withModule.contains("This tool has no 'moduleReference' parameter; retry with nodeReference set to 'some.module'."))
+        assertFalse(withModule, withModule.contains("'modelReference'"))
+
+        val alone = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost)),
+        ))
+        assertFalse(alone, alone.contains("This tool has no"))
+
+        val withNull = expectErr(callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(ghost), "modelReference" to McpJsonNull),
+        ))
+        assertFalse("a key sent as null has no value to retry with: $withNull", withNull.contains("This tool has no"))
+    }
+
+    @Test
+    fun `check_root_node_problems warns on success when a near-miss key was also sent`() {
+        val response = callThroughBridge(
+            JetBrainsMPSNodeMcpToolset(), "mps_mcp_check_root_node_problems",
+            mapOf("nodeReference" to McpJsonPrimitive(structureModelRef), "modelReference" to McpJsonPrimitive("other.model")),
+        )
+        assertOk(response)
+        val warnings = JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+        assertTrue("the dropped value must be named: $response", warnings.any {
+            it == "This tool has no 'modelReference' parameter, so its value 'other.model' was ignored; nodeReference '$structureModelRef' was checked."
+        })
     }
 
     @Test

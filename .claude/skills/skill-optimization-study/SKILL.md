@@ -40,20 +40,38 @@ RUNS=$HOME/MPSProjects/mcp-study/runs                            # evidence dir,
 ## Gate questions to ask before starting (use them verbatim)
 
 Before question 2, run `python3 $STUDY/scripts/list_worker_models.py` and present `models` as a
-multi-select. The orchestrator model is first and marked; default-select that model only. Extra
-ids the user types are allowed. Ask question 3 only when the detected harness is Claude; Junie
-non-interactive has no `bypassPermissions` equivalent (`--brave` is interactive-only).
+multi-select. The orchestrator model is first and marked; list it first with "(Recommended)" (the
+picker cannot preselect). Extra ids the user types are allowed. Ask question 2a after question 2, as
+one single-select question per selected model (batch them, at most 4 per AskUserQuestion call). The
+recommended level is the one the user-level settings give that model today: its
+`settingsEffort.perModel` entry for the full model id, else `settingsEffort.default`. List it first
+with "(Recommended)". Fill the other options from `effortLevels`, at most 4 in all: on Claude leave
+`max` to "Other", unless `max` is the recommended level, in which case drop `low` instead. With no
+settings level (or on Junie) there is no recommendation; the CLI's built-in default is unknown, so
+the user picks. Always pin it, because an unpinned worker takes the observer's last `/effort` for
+that model, which changes between rounds without a trace (round 19). Ask question 3 only when the
+detected harness is Claude; Junie non-interactive has no `bypassPermissions` equivalent (`--brave`
+is interactive-only).
 
 1. Instrumentation: server call log first (needs a plugin rebuild; the observer restarts MPS
    itself with `mps_control.sh restart`) or transcript-only?
 2. Worker models (run list_worker_models.py; default: the orchestrator model from that list).
+2a. Effort level for `<model>` (one per selected model; options from `effortLevels`; recommended:
+   the level the user-level settings give that model today, if any). Every run of that model gets
+   `EFFORT=<level>`.
 3. Permission mode for workers (default: `bypassPermissions` on the developer's machine).
 4. Scope of the first pass before gate 1 (default: S1 + S3 on the selected models).
 Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies; A/B yes/no.
 
 ## Procedure (tick as you go; details in the references)
 
-1. **Preflight** — MPS running with MCP on `http://localhost:64343/stream`. Check the toolchain:
+1. **Preflight** — MPS running with the MCP server enabled. The port belongs to the IDE selector
+   (64343 on the 261 from-sources MPS, 64344 on 262); `mps_control.sh` and `run_worker.sh` detect
+   it from the live launcher themselves (`mps_control.sh url --json` shows what they find). **Do
+   not export `MPS_MCP_URL` during preflight**: MPS may not be up yet, and an exported unconfirmed
+   value pins the whole round to the wrong port. Set it by hand only to override detection (e.g.
+   several MPS processes), or after `mps_control.sh wait` has reported `confirmed: true`. SMOKE
+   targets the harness project, never a developer checkout. Check the toolchain:
    `claude --version` (≥ 2.1; must accept `--output-format stream-json --strict-mcp-config`)
    when the detected harness is Claude, or `junie --version` when it is Junie,
    `python3 -c 'import sys; assert sys.version_info >= (3, 9)'`, `jq --version`.
@@ -78,7 +96,8 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    must print the option, and the file must grow after a tool call. If it is off and gate question
    1 said call-log, step 2 turns it on; if gate 1 said transcript-only,
    expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
-   Record the tool inventory: `python3 $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json`.
+   Record the tool inventory: `MPS_MCP_URL=$($STUDY/scripts/mps_control.sh url) python3
+   $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json` (it does not detect the port itself).
    Run the harness's own unit tests once (`cd $STUDY/scripts && python3 -m unittest discover -s
    tests -p 'test_*.py'`) — a broken script is cheaper to find here than in the evidence.
    Then run the contamination guard yourself: `python3 $STUDY/scripts/check_user_agents.py`
@@ -112,21 +131,24 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    then records `skillsSha256` in the meta. Verify every tarball:
    `tar -tzf <f>.tar.gz | grep -E '(^|/)(\.claude|\.agents|AGENTS\.md|CLAUDE\.md)'` must be empty
    (a synthesized project has nothing to verify).
-   Do NOT put `.mcp.json` in the template; the worker gets the server from `study/mcp.study.json`
-   with `--strict-mcp-config`.
+   Do NOT put `.mcp.json` in the template; `run_worker.sh` generates the worker's MCP config per
+   run into `$RUNS/<id>-mcp/` from the detected URL and passes it with `--strict-mcp-config`.
 4. **Smoke** — `SMOKE` is a harness check, not a scenario: a read-only prompt that lists open
    projects and stops, so it runs against the harness project itself (no template copy, no
    evaluation, `pass` stays empty). It is also the **readiness gate after every MPS start or
    restart** — a live process is not readiness. If the harness project is not open, announce its
    path, synthesize it if needed and open it via CLI; do not close it afterwards unless the next
    run needs a different project.
-   `RUNS=$RUNS MAX_TURNS=6 PROJECT_SYNTHESIZED=1 $STUDY/scripts/run_worker.sh SMOKE $MODEL <n>
+   `RUNS=$RUNS EFFORT=<level for $MODEL> MAX_TURNS=6 PROJECT_SYNTHESIZED=1 $STUDY/scripts/run_worker.sh SMOKE $MODEL <n>
    <harness-project>` — bump `<n>` on every re-run (the harness refuses an existing run id);
    drop `PROJECT_SYNTHESIZED=1` if the harness project was not synthesized. The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
-5. **Scenarios** — `study/scenarios/S1..S10/{worker_prompt.md,done_criteria.md}`; add a scenario for
-   whatever skill/tool changed. **S10 (project lifecycle) runs last in a round**: it is the only
+5. **Scenarios** — `study/scenarios/S1..S10/{worker_prompt.md,done_criteria.md}`. Which cells a
+   changed skill actually forces is `study/scenarios.md` (brief list, then the directory). Look
+   that up before picking the matrix; the gate-4 default (S1 + S3) is a pilot default, not that
+   lookup. Add a scenario for whatever skill/tool the directory does not cover. **S10 (project
+   lifecycle) runs last in a round**: it is the only
    scenario whose worker closes and opens projects, and a mistake in it can leave a modal dialog
    that blocks every later `mps_mcp_*` call. Prompts are developer-voice, fixed names, explicit "done", NO reporting
    requirements. Fixtures: `empty-project` (synthesized per run, not a tarball),
@@ -134,8 +156,11 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    `study/fixtures/README.md`, not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
    projects; S10 honours this by being sequential — it closes one project before opening the next).
-   One MPS process serves the whole round (`isolationLevel: per-round`, recorded per run beside
-   `mpsPid`; `mps_control.sh restart` is there if a round ever needs a colder loop).
+   Restart MPS before a cell whose fixture language an earlier cell already loaded in the current
+   process — any two of S3/S5/S6/S7/S9 on `recipes*`, S2/S8 on `statechart` (`shutdown` → `start`
+   harness → `wait` → SMOKE; launch with `ISOLATION=per-shared-fixture-restart`, recorded per run
+   beside `mpsPid`; lessons 40, 42). A read-only cell (S9) may precede a language-changing one in the
+   same process; synthesized cells (S1, S10) need no restart.
    Per run: **synthesize** the empty project or copy the fixture tarball (`PROJECT_SYNTHESIZED=1`
    when synthesized) → announce the scratch path (and any path you will close first)
    → close a previous scratch with `mps_mcp_close_project` if one is still open → open the new copy
@@ -145,13 +170,16 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
    (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in `<id>.meta.json`
    → announce the path and close with `mps_mcp_close_project` (`force=false`; on `MODAL_BLOCKED`
-   ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Check
-   that every meta's
-   `skillsSha256` is the same value before comparing runs; a differing one means the catalog moved
-   mid-round. Open/close details: `references/harness.md`.
+   ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Pass the
+   model's gate-2a level as `EFFORT` on every launch. Check that every meta's `effort` is that
+   level and that every meta's
+   `skillsSha256` and `guidesSha256` are each the same value before comparing runs; a differing one
+   means the catalog or the installed `AGENTS.md` / `CLAUDE.md` moved mid-round. Open/close details: `references/harness.md`.
 7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
    → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
-   each run's meta after evaluation. Filter chains containing `mps_mcp`, group into families, have an
+   each run's meta after evaluation. Then
+   `python3 $STUDY/scripts/families.py <baseline runs> <previous round> $RUNS > $RUNS/analysis/families.tsv`
+   (per-run family counters, `references/analysis.md`). Filter chains containing `mps_mcp`, group into families, have an
    Opus reviewer inspect 3 instances per family with `study/scripts/show_steps.py` and assign
    determinism {1.0, 0.5, 0}. Rank by avoidable turns (fixed context ≈ 150 K cache-read tokens per
    turn dominates) as well as by the study formula.
@@ -182,7 +210,7 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
 - `references/harness.md` — run_worker.sh, analyze_runs.py, show_steps.py, tools_inventory.py,
   new_study_project.py, mps_control.sh usage; clean-environment rule; the observer's project and
   MPS lifecycle protocols (create / open / close / shutdown + relaunch); per-run procedure card.
-- `references/scenarios.md` — the scenario set, fixtures, orchestrator project swap, done-criteria
-  style, adding a scenario.
+- `references/scenarios.md` — how to run and add a scenario, fixtures, orchestrator project swap,
+  done-criteria style. Which scenario covers which skill: `plugins/mcp-tools/study/scenarios.md`.
 - `references/analysis.md` — metrics, chain scoring, rubric, report template, thresholds.
 - `references/lessons.md` — what went wrong the first time and the rule that came out of it.

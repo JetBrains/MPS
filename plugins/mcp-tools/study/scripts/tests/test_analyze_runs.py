@@ -22,33 +22,69 @@ SKILLS = "/project/.claude/skills"
 # repository; the test that checks D50's hand-measured numbers skips when they are absent.
 ROUND13_RUNS = Path(os.environ.get("MCP_STUDY_ROUND13_RUNS",
                                    Path.home() / "MPSProjects" / "mcp-study" / "runs-r14"))
+# Rounds 16-18 (directories runs-r17..runs-r19), the A2 evidence; those tests skip when absent.
+STUDY_RUNS = Path(os.environ.get("MCP_STUDY_RUNS_ROOT", Path.home() / "MPSProjects" / "mcp-study"))
 
 
-def assistant(tool_id: str, name: str, *, child: bool = False) -> dict:
+def stamped(event: dict, timestamp: str | None) -> dict:
+    """`event` with an ISO `timestamp`, as stream-json gives `assistant` and `user` events."""
+    if timestamp is not None:
+        event["timestamp"] = timestamp
+    return event
+
+
+def assistant(tool_id: str, name: str, *, child: bool = False, timestamp: str | None = None) -> dict:
     event = {
         "type": "assistant",
         "message": {"content": [{"type": "tool_use", "id": tool_id, "name": name, "input": {}}]},
     }
     if child:
         event["parent_tool_use_id"] = "parent-agent"
-    return event
+    return stamped(event, timestamp)
 
 
-def result(tool_id: str, text: str, *, error: bool = False) -> dict:
-    return {
+def result(tool_id: str, text: str, *, error: bool = False, timestamp: str | None = None) -> dict:
+    return stamped({
         "type": "user",
         "message": {"content": [{"type": "tool_result", "tool_use_id": tool_id,
                                    "content": text, "is_error": error}]},
-    }
+    }, timestamp)
 
 
-def tool(tool_id: str, name: str, inp: dict, *, msg: str | None = None, usage: dict | None = None) -> dict:
-    """One tool_use block as stream-json emits it: one event per block, `msg` shared by a batch."""
+def tool(tool_id: str, name: str, inp: dict, *, msg: str | None = None, usage: dict | None = None,
+         session: str | None = None, timestamp: str | None = None) -> dict:
+    """One tool_use block as stream-json emits it: one event per block, `msg` shared by a batch.
+    `session` is the subagent's parent tool_use id (None: the main session)."""
     message = {"id": msg or f"msg-{tool_id}", "content": [{"type": "tool_use", "id": tool_id, "name": name,
                                                            "input": inp}]}
     if usage is not None:
         message["usage"] = usage
-    return {"type": "assistant", "message": message}
+    event = {"type": "assistant", "message": message}
+    if session is not None:
+        event["parent_tool_use_id"] = session
+    return stamped(event, timestamp)
+
+
+def api_retry(delay_ms: int, status: int = 502) -> dict:
+    """A `system/api_retry` event: no timestamp, no session (F1)."""
+    return {"type": "system", "subtype": "api_retry", "attempt": 1, "max_retries": 10,
+            "retry_delay_ms": delay_ms, "error_status": status, "error": "server_error",
+            "session_id": "s", "uuid": f"retry-{delay_ms}"}
+
+
+def tool_reference_result(tool_id: str, names: list[str]) -> dict:
+    """A `ToolSearch` result: list content of `tool_reference` blocks, no text (F1)."""
+    return {"type": "user", "message": {"content": [{"type": "tool_result", "tool_use_id": tool_id, "content": [
+        {"type": "tool_reference", "tool_name": name} for name in names]}]}}
+
+
+def user_text(text: str, *, synthetic: bool = True, session: str | None = None) -> dict:
+    """A user event whose content is a text block, as the `Skill` tool injects a skill body (F1)."""
+    event = {"type": "user", "message": {"role": "user", "content": [{"type": "text", "text": text}]}}
+    if synthetic:
+        event["isSynthetic"] = True
+    event["parent_tool_use_id"] = session
+    return event
 
 
 def call(tool_id: str, name: str, inp: dict, text: str = "x" * 10, **kwargs) -> list[dict]:
@@ -61,6 +97,19 @@ def bash(tool_id: str, command: str, text: str = "x" * 10, **kwargs) -> list[dic
 
 def read(tool_id: str, path: str, text: str = "x" * 10, **kwargs) -> list[dict]:
     return call(tool_id, "Read", {"file_path": path}, text, **kwargs)
+
+
+def batched(*batches: str) -> list[dict]:
+    """One parallel batch per argument, one call per letter, the letter being the tool name:
+    `batched("AAA", "ab")`. An upper-case letter is a failing call of the lower-case tool. Each call
+    has 2 input chars ({}) and a 10-byte result."""
+    events, n = [], 0
+    for index, names in enumerate(batches):
+        for letter in names:
+            n += 1
+            events += [tool(f"t{n}", letter.lower(), {}, msg=f"m{index}"),
+                       result(f"t{n}", "x" * 10, error=letter.isupper())]
+    return events
 
 
 def compaction(pre_tokens: int, duration_ms: int) -> dict:
@@ -496,6 +545,359 @@ class BashAccessesTest(unittest.TestCase):
                          analyzer.bash_accesses(f"python3 - <<< 'print(1 << 2)'; cat {refs}/a.md", "/project"))
         self.assertEqual(([("other", "mps-aspect-constraints/references/a.md", False)], "/project"),
                          analyzer.bash_accesses(f"echo x | tee {refs}/a.md", "/project"))
+
+
+class BatchesTest(unittest.TestCase):
+    """A2: a parallel batch is one turn, for chains, retries and temp-file re-reads."""
+
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.runs = Path(self.temp_dir.name)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def analyse(self, events: list[dict]):
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+        return analyzer.analyse_run("r", self.runs)
+
+    def chains(self, events: list[dict]) -> dict:
+        return {gram: (e["count"], e["parallel"]) for gram, e in self.analyse(events)[2].items()}
+
+    def test_a_repeated_key_across_two_batches_is_one_bigram(self) -> None:
+        _, _, chains, *_ = self.analyse(batched("aaa", "aaa"))
+        self.assertEqual((1, 4, 72, ["r:1-6"]), tuple(chains["a -> a"][k] for k in ("count", "parallel", "chars", "examples")))
+        self.assertEqual((0, 2), (chains["a -> a -> a"]["count"], chains["a -> a -> a"]["parallel"]))
+
+    def test_a_parallel_only_chain_is_reported_not_dropped(self) -> None:
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in batched("aaaa", "b")))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        chains = {c["chain"]: c for c in json.loads((out / "chains.json").read_text())}
+        self.assertEqual((0, 3, None), tuple(chains["a -> a"][k] for k in ("count", "parallel", "avg_chars")))
+        self.assertNotIn("a -> b", chains)          # count 1, parallel 0: below the default minimum 3
+        self.assertIn("| `a -> a` | 0 | 3 |  |", (out / "hotspots.md").read_text())
+
+    def test_a_trigram_needs_three_batches(self) -> None:
+        chains = self.chains(batched("a", "bb", "c"))
+        self.assertEqual((1, 0), chains["a -> b -> c"])
+        self.assertEqual({"a -> b": (1, 0), "b -> c": (1, 0), "b -> b": (0, 1)},
+                         {g: chains[g] for g in ("a -> b", "b -> c", "b -> b")})
+
+    def test_a_mixed_batch_links_its_last_key_to_the_next_batch(self) -> None:
+        chains = self.chains(batched("ab", "c"))
+        self.assertEqual((1, 0), chains["b -> c"])
+        self.assertEqual((0, 1), chains["a -> b"])
+        self.assertEqual((0, 0), chains.get("a -> b -> c", (0, 0)))
+        self.assertNotIn("a -> c", chains)
+        self.assertEqual((1, 0), self.chains(batched("ba", "c"))["a -> c"])
+
+    def test_an_error_batch_is_one_retry_per_tool(self) -> None:
+        metrics, _, _, retries, *_ = self.analyse(batched("AAA", "a"))
+        self.assertEqual([(1, 4, "a")], retries)
+        self.assertEqual(1, metrics["retries"])
+
+    def test_a_retry_in_a_mixed_batch_counts_and_one_three_batches_later_does_not(self) -> None:
+        self.assertEqual([(1, 3, "a")], self.analyse(batched("A", "ba"))[3])
+        self.assertEqual([], self.analyse(batched("A", "b", "c", "a"))[3])
+        self.assertEqual(0, self.analyse(batched("ab", "ab"))[0]["retries"])
+
+    def test_junie_events_without_a_message_id_keep_the_per_call_rules(self) -> None:
+        """normalize_transcript.py gives every Junie tool its own message without an id."""
+        events = [assistant("1", "a"), result("1", "e", error=True),
+                  assistant("2", "a"), result("2", "e", error=True),
+                  assistant("3", "b"), result("3", "ok"),
+                  assistant("4", "a"), result("4", "ok")]
+        metrics, calls, chains, retries, *_ = self.analyse(events)
+        self.assertEqual([(1, 2, "a"), (2, 4, "a")], retries)       # the old within-two-calls rule
+        self.assertEqual([0, 1, 2, 3], [c["batch"] for c in calls])
+        self.assertEqual({"a -> a": (1, 0), "a -> b": (1, 0), "b -> a": (1, 0), "a -> a -> b": (1, 0),
+                          "a -> b -> a": (1, 0)},
+                         {g: (e["count"], e["parallel"]) for g, e in chains.items()})
+
+    def test_a_child_batch_split_by_a_parent_call_is_still_one_batch(self) -> None:
+        """runs/S1-sonnet-1: child steps 76 and 78 share a message id around a parent Read at 77."""
+        events = [tool("1", "x", {}, msg="c1", session="agent"), tool("2", "p", {}, msg="p1"),
+                  tool("3", "x", {}, msg="c1", session="agent"), tool("4", "y", {}, msg="c2", session="agent"),
+                  result("1", "e", error=True), result("2", "ok"), result("3", "e", error=True), result("4", "ok")]
+        _, calls, chains, retries, *_ = self.analyse(events)
+        self.assertEqual(calls[0]["batch"], calls[2]["batch"])
+        self.assertNotEqual(calls[0]["batch"], calls[1]["batch"])
+        self.assertEqual({"x -> x": (0, 1), "x -> y": (1, 0)},
+                         {g: (e["count"], e["parallel"]) for g, e in chains.items()})
+        self.assertEqual([], retries)       # y is another tool; the parent call is another session
+
+    def test_a_temp_file_touched_again_after_a_compaction_is_a_temp_reread(self) -> None:
+        script = "python3 - <<'PY'\nimport json\nprint(json.load(open(\"/T/mps-node-1.json\"))['ok'])\nPY"
+        events = [INIT,
+                  *read("a", "/T/mps-node-1.json", "a" * 30),
+                  *read("b", "/T/mps-node-1.json"),                        # before the compaction: no
+                  compaction(160000, 60000),
+                  *bash("c", script, "c" * 42),                            # heredoc body: counted
+                  *read("d", "/T/mps-node-2.json"),                        # first touched after: no
+                  *bash("e", "cat /T/mps-mcp-result-7.txt")]               # not a keyed temp file
+        metrics, *_, navigation = self.analyse(events)
+        self.assertEqual((1, 42), (metrics["temp_rereads_after_compaction"],
+                                   metrics["temp_reread_bytes_after_compaction"]))
+        self.assertEqual([{"step": 3, "paths": ["mps-node-1.json"], "previous_steps": [1], "bytes": 42}],
+                         navigation["temp_rereads"])
+        self.assertEqual((0, 0), (metrics["rereads"], metrics["rereads_after_compaction"]))   # skill-only
+
+    def test_temp_paths_match_whole_basenames_in_read_and_raw_bash_text(self) -> None:
+        self.assertEqual({"mps-node-12.json"}, analyzer.temp_paths({"name": "Read", "input": {"file_path": "/T/mps-node-12.json"}}))
+        self.assertEqual({"mps-node-1.json", "mps-node-2.json"}, analyzer.temp_paths(
+            {"name": "Bash", "input": {"command": "python3 -c \"import json;json.load(open('/T/mps-node-1.json'))\" "
+                                                  "&& cat /T/mps-node-2.json /T/mps-node-1.json"}}))
+        self.assertEqual(set(), analyzer.temp_paths({"name": "Grep", "input": {"path": "/T/mps-node-1.json"}}))
+
+
+class ApiRetriesTest(unittest.TestCase):
+    """A5: `system/api_retry` counts, delays and the timestamp gap around each retry cluster."""
+
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.runs = Path(self.temp_dir.name)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def analyse(self, events: list[dict]):
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+        metrics, *_, clusters, _ = analyzer.analyse_run("r", self.runs)
+        return {k: metrics[k] for k in ("api_retries", "api_stall_s", "api_retry_delay_s")}, clusters
+
+    def test_a_cluster_stalls_from_the_last_timestamp_before_to_the_first_after(self) -> None:
+        metrics, clusters = self.analyse([
+            tool("a", "x", {}, timestamp="2026-09-26T06:29:00.000Z"),
+            result("a", "ok", timestamp="2026-09-26T06:29:10.000Z"),
+            api_retry(500), {"type": "system", "subtype": "thinking_tokens"}, api_retry(1000, 529),
+            tool("b", "y", {}, timestamp="2026-09-26T06:30:30.000Z"), result("b", "ok")])
+        # 1.5 s of declared backoff rounds to 2 (round half to even); the stall is 80 s.
+        self.assertEqual({"api_retries": 2, "api_stall_s": 80, "api_retry_delay_s": 2}, metrics)
+        self.assertEqual([{"before_step": 2, "retries": 2, "stall_s": 80.0, "statuses": [502, 529]}], clusters)
+
+    def test_a_timestamped_event_between_retries_splits_the_cluster(self) -> None:
+        metrics, clusters = self.analyse([
+            result("0", "ok", timestamp="2026-09-26T06:00:00Z"), api_retry(500),
+            {"type": "assistant", "timestamp": "2026-09-26T06:00:30Z",
+             "message": {"id": "m", "content": [{"type": "text", "text": "thinking"}]}},
+            api_retry(500),
+            tool("a", "x", {}, timestamp="2026-09-26T06:01:00Z"), result("a", "ok")])
+        self.assertEqual({"api_retries": 2, "api_stall_s": 60, "api_retry_delay_s": 1}, metrics)
+        self.assertEqual([(1, 1, 30.0), (1, 1, 30.0)],
+                         [(c["before_step"], c["retries"], c["stall_s"]) for c in clusters])
+
+    def test_without_timestamps_retries_count_and_stalls_are_zero(self) -> None:
+        """Junie: normalize_transcript.py copies a timestamp only where the native event had one."""
+        metrics, clusters = self.analyse([
+            *call("a", "x", {}), api_retry(2500), api_retry(1000), *call("b", "y", {}), api_retry(100)])
+        self.assertEqual({"api_retries": 3, "api_stall_s": 0, "api_retry_delay_s": 4}, metrics)
+        # A tool call separates clusters even without timestamps; the last one precedes no call.
+        self.assertEqual([(2, 2, 0), (None, 1, 0)], [(c["before_step"], c["retries"], c["stall_s"]) for c in clusters])
+
+    def test_a_cluster_with_a_timestamp_on_one_side_only_contributes_nothing(self) -> None:
+        metrics, _ = self.analyse([
+            api_retry(500), tool("a", "x", {}, timestamp="2026-09-26T06:00:00Z"),
+            result("a", "ok", timestamp="2026-09-26T06:00:05Z"), api_retry(500)])
+        self.assertEqual({"api_retries": 2, "api_stall_s": 0, "api_retry_delay_s": 1}, metrics)
+
+    def test_an_untimestamped_turn_between_clusters_counts_no_gap_twice(self) -> None:
+        metrics, clusters = self.analyse([
+            result("0", "ok", timestamp="2026-09-26T06:00:00Z"), api_retry(500),
+            *call("a", "x", {}), api_retry(500),
+            tool("b", "y", {}, timestamp="2026-09-26T06:01:00Z"), result("b", "ok")])
+        self.assertEqual({"api_retries": 2, "api_stall_s": 0, "api_retry_delay_s": 1}, metrics)
+        self.assertEqual([(1, 1, 0), (2, 1, 0)],
+                         [(c["before_step"], c["retries"], c["stall_s"]) for c in clusters])
+
+    def test_the_columns_and_clusters_reach_metrics_csv_and_errors_json(self) -> None:
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in [
+            result("0", "ok", timestamp="2026-09-26T06:00:00Z"), api_retry(700),
+            *call("a", "x", {}, timestamp="2026-09-26T06:00:42Z")]))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        with (out / "metrics.csv").open(newline="") as stream:
+            row = next(csv.DictReader(stream))
+        self.assertEqual(("1", "42", "1"), (row["api_retries"], row["api_stall_s"], row["api_retry_delay_s"]))
+        self.assertEqual([{"before_step": 1, "retries": 1, "stall_s": 42.0, "statuses": [502]}],
+                         json.loads((out / "errors.json").read_text())["r"]["api_retry_clusters"])
+
+
+MPS = "mcp__mps-mcp-server__"
+
+
+class A7Test(unittest.TestCase):
+    """A7: MPS calls on a schema no `ToolSearch` had loaded, and the bytes the `Skill` tool injects."""
+
+    def setUp(self) -> None:
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.runs = Path(self.temp_dir.name)
+
+    def tearDown(self) -> None:
+        self.temp_dir.cleanup()
+
+    def analyse(self, events: list[dict]):
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in events))
+        return analyzer.analyse_run("r", self.runs)
+
+    def unloaded(self, events: list[dict]) -> tuple:
+        metrics = self.analyse(events)[0]
+        return metrics["unloaded_schema_calls"], metrics["unloaded_schema_errors"]
+
+    @staticmethod
+    def search(tool_id: str, names: list[str], *, query: str = "select:x", msg: str | None = None,
+               session: str | None = None) -> list[dict]:
+        return [tool(tool_id, "ToolSearch", {"query": query}, msg=msg, session=session),
+                tool_reference_result(tool_id, names)]
+
+    def test_a_call_on_a_schema_never_returned_is_unloaded_and_its_error_counts(self) -> None:
+        events = [*self.search("s", [f"{MPS}mps_mcp_a"], msg="m0"),
+                  *call("1", f"{MPS}mps_mcp_a", {}, msg="m1"),
+                  tool("2", f"{MPS}mps_mcp_b", {}, msg="m2"), result("2", "rejected", error=True),
+                  *call("3", "Read", {"file_path": "/x"}, msg="m3")]
+        self.assertEqual((1, 1), self.unloaded(events))
+
+    def test_a_call_in_the_same_batch_as_its_tool_search_is_unloaded(self) -> None:
+        events = [tool("s", "ToolSearch", {"query": "select:mps_mcp_a"}, msg="m0"),
+                  tool("1", f"{MPS}mps_mcp_a", {}, msg="m0"),
+                  tool_reference_result("s", [f"{MPS}mps_mcp_a"]), result("1", "ok"),
+                  *call("2", f"{MPS}mps_mcp_a", {}, msg="m1")]
+        self.assertEqual((1, 0), self.unloaded(events))
+
+    def test_without_any_tool_search_both_columns_are_empty(self) -> None:
+        events = [*call("1", f"{MPS}mps_mcp_a", {}), tool("2", f"{MPS}mps_mcp_b", {}), result("2", "e", error=True)]
+        self.assertEqual((None, None), self.unloaded(events))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        with (out / "metrics.csv").open(newline="") as stream:
+            row = next(csv.DictReader(stream))
+        self.assertEqual(("", ""), (row["unloaded_schema_calls"], row["unloaded_schema_errors"]))
+
+    def test_a_select_query_loads_its_names_when_the_result_is_empty(self) -> None:
+        """Both spellings of F1: a bare name in the query, a prefixed one in the call."""
+        events = [*self.search("s", [], query=f"select:mps_mcp_c, {MPS}mps_mcp_d", msg="m0"),
+                  *call("1", f"{MPS}mps_mcp_c", {}, msg="m1"),
+                  *call("2", f"{MPS}mps_mcp_d", {}, msg="m2")]
+        self.assertEqual((0, 0), self.unloaded(events))
+
+    def test_a_subagent_starts_with_an_empty_loaded_set_and_a_compaction_unloads_nothing(self) -> None:
+        events = [*self.search("s", [f"{MPS}mps_mcp_a"], msg="m0"),
+                  compaction(160000, 60000),
+                  *call("1", f"{MPS}mps_mcp_a", {}, msg="m1"),
+                  *call("2", f"{MPS}mps_mcp_a", {}, msg="c1", session="agent")]
+        _, calls, *_ = self.analyse(events)
+        self.assertEqual([False, False, True], [c.get("unloaded_schema") for c in calls])
+
+    def test_tools_json_counts_unloaded_calls_per_tool(self) -> None:
+        (self.runs / "r-worker.jsonl").write_text("".join(json.dumps(e) + "\n" for e in [
+            *self.search("s", [f"{MPS}mps_mcp_a"], msg="m0"),
+            *call("1", f"{MPS}mps_mcp_a", {}, msg="m1"),
+            *call("2", f"{MPS}mps_mcp_b", {}, msg="m2"),
+            *call("3", f"{MPS}mps_mcp_b", {}, msg="m3")]))
+        out = self.runs / "out"
+        completed = subprocess.run([sys.executable, str(ANALYZER), str(self.runs), "--out", str(out)],
+                                   text=True, capture_output=True, check=False)
+        self.assertEqual(0, completed.returncode, completed)
+        tools = json.loads((out / "tools.json").read_text())
+        self.assertEqual({"mps_mcp_a": (1, 0), "mps_mcp_b": (2, 2)},
+                         {t: (tools[t]["calls"], tools[t]["unloaded_calls"]) for t in ("mps_mcp_a", "mps_mcp_b")})
+
+    def test_the_skill_injection_after_a_skill_result_is_counted(self) -> None:
+        body = "Base directory for this skill: /p/.claude/skills/mps-mcp-workflow\n\n# "
+        body += "x" * (2000 - len(body))
+        events = [INIT, *call("a", "Skill", {"skill": "mps-mcp-workflow"}, "Launching skill: mps-mcp-workflow"),
+                  user_text(body), *call("b", "Bash", {"command": "true"})]
+        metrics, calls, *_, navigation = self.analyse(events)
+        self.assertEqual(33, calls[0]["result_bytes"])       # "Launching skill: …" only
+        self.assertEqual((2000, 0), (metrics["skill_tool_bytes"], metrics["skill_read_bytes"]))
+        self.assertEqual([{"step": 1, "skill": "mps-mcp-workflow", "session": None, "bytes": 2000}],
+                         navigation["loads"])
+
+    def test_only_a_synthetic_skill_text_before_the_next_assistant_event_counts(self) -> None:
+        body = "Base directory for this skill: /p/skills/s\n\n# s"
+        launched = "Launching skill: s"
+        cases = {
+            "not synthetic": [*call("a", "Skill", {"skill": "s"}, launched), user_text(body, synthetic=False)],
+            "compaction summary": [*call("a", "Skill", {"skill": "s"}, launched),
+                                   user_text("This session is being continued from a previous conversation")],
+            "after the next assistant event": [*call("a", "Skill", {"skill": "s"}, launched),
+                                               *call("b", "Bash", {"command": "true"}), user_text(body)],
+            "another session": [*call("a", "Skill", {"skill": "s"}, launched), user_text(body, session="agent")],
+        }
+        for name, events in cases.items():
+            with self.subTest(name):
+                metrics, *_, navigation = self.analyse(events)
+                self.assertEqual(0, metrics["skill_tool_bytes"])
+                self.assertEqual([0], [load["bytes"] for load in navigation["loads"]])
+
+    def test_two_skill_loads_in_one_batch_each_get_their_injection(self) -> None:
+        one, two = "Base directory for this skill: /s/one", "Base directory for this skill: /s/two!"
+        events = [tool("a", "Skill", {"skill": "one"}, msg="m0"), result("a", "Launching skill: one"),
+                  user_text(one), tool("b", "Skill", {"skill": "two"}, msg="m0"),
+                  result("b", "Launching skill: two"), user_text(two)]
+        metrics, *_, navigation = self.analyse(events)
+        self.assertEqual([len(one), len(two)], [load["bytes"] for load in navigation["loads"]])
+        self.assertEqual(len(one) + len(two), metrics["skill_tool_bytes"])
+
+
+def study_runs(directory: str, run_id: str) -> Path:
+    return STUDY_RUNS / directory / f"{run_id}-worker.jsonl"
+
+
+class StudyTranscriptsA2Test(unittest.TestCase):
+    """A2's live figures (docs/a2-a8-study-harness-fixes-plan.md section 2)."""
+
+    @unittest.skipUnless(study_runs("runs-r17", "S8-sonnet-1").exists(), "runs-r17 transcripts not found")
+    def test_round16_s8_sonnet_temp_rereads_after_the_compaction(self) -> None:
+        metrics = analyzer.analyse_run("S8-sonnet-1", STUDY_RUNS / "runs-r17")[0]
+        self.assertGreaterEqual(metrics["temp_rereads_after_compaction"], 9)
+
+    @unittest.skipUnless(study_runs("runs-r19", "S8-sonnet-1").exists(), "runs-r19 transcripts not found")
+    def test_round18_s8_sonnet_rejected_batch_is_one_retry(self) -> None:
+        self.assertEqual(2, analyzer.analyse_run("S8-sonnet-1", STUDY_RUNS / "runs-r19")[0]["retries"])
+
+    @unittest.skipUnless(study_runs("runs-r18", "S1-sonnet-1").exists(), "runs-r18 transcripts not found")
+    def test_round17_s1_sonnet_retries(self) -> None:
+        self.assertEqual(5, analyzer.analyse_run("S1-sonnet-1", STUDY_RUNS / "runs-r18")[0]["retries"])
+
+
+class StudyTranscriptsA5Test(unittest.TestCase):
+    """A5's live figures (docs/a2-a8-study-harness-fixes-plan.md section 5)."""
+
+    @unittest.skipUnless(study_runs("runs-r18", "S1-opus-1").exists(), "runs-r18 transcripts not found")
+    def test_round17_s1_opus_api_retries_and_stalls(self) -> None:
+        metrics, *_, clusters, _ = analyzer.analyse_run("S1-opus-1", STUDY_RUNS / "runs-r18")
+        self.assertEqual((9, 21), (metrics["api_retries"], metrics["api_retry_delay_s"]))
+        self.assertTrue(500 <= metrics["api_stall_s"] <= 540, metrics["api_stall_s"])
+        self.assertEqual([4, 13, 14, 20], [c["before_step"] for c in clusters])
+        self.assertEqual(9, sum(c["retries"] for c in clusters))
+
+
+class StudyTranscriptsA7Test(unittest.TestCase):
+    """A7's live figures (docs/a2-a8-study-harness-fixes-plan.md section 7)."""
+
+    @unittest.skipUnless(study_runs("runs-r21", "S1-sonnet-1").exists(), "runs-r21 transcripts not found")
+    def test_round20_s1_cells_make_no_unloaded_schema_calls(self) -> None:
+        for run_id in ("S1-opus-1", "S1-sonnet-1"):
+            with self.subTest(run_id):
+                metrics = analyzer.analyse_run(run_id, STUDY_RUNS / "runs-r21")[0]
+                self.assertEqual(0, metrics["unloaded_schema_calls"])
+
+    @unittest.skipUnless(study_runs("runs-r19", "S8-sonnet-1").exists(), "runs-r19 transcripts not found")
+    def test_round18_s8_sonnet_blind_calls(self) -> None:
+        metrics = analyzer.analyse_run("S8-sonnet-1", STUDY_RUNS / "runs-r19")[0]
+        self.assertEqual(26, metrics["unloaded_schema_calls"])
+
+    @unittest.skipUnless(study_runs("runs-r19", "S5-sonnet-1").exists(), "runs-r19 transcripts not found")
+    def test_round18_s5_sonnet_skill_tool_bytes(self) -> None:
+        metrics = analyzer.analyse_run("S5-sonnet-1", STUDY_RUNS / "runs-r19")[0]
+        self.assertEqual(22092, metrics["skill_tool_bytes"])
 
 
 @unittest.skipUnless((ROUND13_RUNS / "S1-sonnet-1-worker.jsonl").exists(),

@@ -21,9 +21,10 @@ below 10 roots): it counts the references that stayed unresolved, and --verify (
 them.
 
 A `dryRun=true` call first is optional. It catches a wrong concept, role or property without
-writing, but it cannot resolve a name that only the same batch defines: those roots do not
-exist yet, so it warns "did not resolve" once per such reference, and the real insert
-resolves them. Ignore the warnings that name a row of the table.
+writing, but it never looks up a reference target given by name: it warns "is a name, not
+looked up" once per such reference, whether a row of the table or an existing root defines it,
+and the real insert resolves them. Ignore those warnings; act only on "names no node" or
+"matches no Model.Root".
 
 Mapping spec (JSON). Every section except `concept` is optional; an empty cell is skipped, so
 the property keeps its MPS default instead of being written as an empty value:
@@ -374,6 +375,10 @@ def verify(rows, spec, dump_path):
     if mps_dump.dump_kind(dump) == "concept-details":
         raise BadInput("%s is a get_concept_details dump; --verify reads a "
                        "get_project_structure dump of the model" % dump_path)
+    if not mps_dump.has_root_listing(dump):
+        raise BadInput("%s was made without includeRootNodes, so it lists no roots to verify; "
+                       "re-call get_project_structure(startingPoint=<model>, includeNodes=true, nodeDepth=1)"
+                       % dump_path)
     dump_roots = mps_dump.roots(dump)
 
     concept = _short(spec["concept"])

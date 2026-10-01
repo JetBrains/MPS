@@ -306,6 +306,8 @@ class AbstractOpsPropertyProblemsTest {
             assertTrue("message must name the accepted directory: $message", message.contains(tempDir.path))
             assertTrue("message must name the shell variables: $message", message.contains("\$TMPDIR") && message.contains("%TEMP%"))
             assertFalse("the Java-API hint must be gone: $message", message.contains("File.createTempFile"))
+            // D94: agents following a generated DSL skill pass project files; the inline route needs no copy.
+            assertTrue("message must offer the inline route: $message", message.contains("send the JSON inline (up to 4096 characters)"))
         }
     }
 

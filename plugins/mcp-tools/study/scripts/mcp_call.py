@@ -25,14 +25,14 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from tools_inventory import DEFAULT_URL, McpClient, McpError  # noqa: E402
+from tools_inventory import McpClient, McpError, env_url  # noqa: E402
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("tool", help="tool name, e.g. mps_mcp_print_node")
     ap.add_argument("args", nargs="?", default="{}", help="JSON object of arguments")
-    ap.add_argument("--url", default=os.environ.get("MPS_MCP_URL", DEFAULT_URL))
+    ap.add_argument("--url", help="MCP endpoint (default: $MPS_MCP_URL, else tools_inventory.DEFAULT_URL)")
     ap.add_argument("--raw", action="store_true", help="do not resolve a temp-file `data` path")
     ap.add_argument("--max-chars", type=int, default=0, help="truncate stdout to N chars (0 = no limit)")
     a = ap.parse_args(argv)
@@ -46,7 +46,7 @@ def main(argv=None) -> int:
         print(json.dumps({"ok": False, "error": "args must be a JSON object"}))
         return 2
 
-    client = McpClient(a.url)
+    client = McpClient(a.url or env_url())
     try:
         client.initialize()
         result = client.call("tools/call", {"name": a.tool, "arguments": arguments})
