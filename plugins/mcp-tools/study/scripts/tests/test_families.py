@@ -91,9 +91,14 @@ class FamiliesTest(unittest.TestCase):
 
     def test_t2_module_check_by_uuid_name_is_container_scope(self) -> None:
         rows = [{"model": MODEL, "name": "kitchen", "rootsChecked": 3, "errors": 0, "warnings": 0}]
-        f = self.count(check("m", MODULE, ok(rows, scope="module"), perRoot=True))
-        self.assertCounts(f, C_model_checks=1, C_root_checks=0, C_root_after_clean_model=0, C_perRoot=1)
+        f = self.count(check("c", MODEL, MODEL_CLEAN) + check("m", MODULE, ok(rows, scope="module"), perRoot=True))
+        self.assertCounts(f, C_model_checks=2, C_root_checks=0, C_root_after_clean_model=0, C_perRoot=1)
         self.assertEqual("module", families.check_scope({"nodeReference": MODULE}, "not json"))
+
+    def test_t2_clean_module_rows_count_a_following_node_check(self) -> None:
+        rows = [{"model": MODEL, "name": "kitchen", "rootsChecked": 3, "errors": 0, "warnings": 0}]
+        f = self.count(check("m", MODULE, ok(rows, scope="module"), perRoot=True) + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, C_model_checks=1, C_root_checks=1, C_root_after_clean_model=1)
 
     def test_t3_bare_name_takes_the_scope_from_details(self) -> None:
         for scope in ("module", "model"):
@@ -164,7 +169,7 @@ class FamiliesTest(unittest.TestCase):
         self.assertEqual("clean", families.check_verdict(json.dumps(ok([], scope="model", rootsChecked=0))))
 
     def test_t15_bare_name_not_found_is_container_and_unknown(self) -> None:
-        answer = json.dumps({"ok": False, "error": {"code": "NOT_FOUND", "message": "no such model or module"}})
+        answer = json.dumps({"ok": False, "error": "No model or module named 'mcp.study.missing'", "code": "NOT_FOUND"})
         self.assertEqual("container", families.check_scope({"nodeReference": "mcp.study.missing"}, answer))
         self.assertEqual("unknown", families.check_verdict(answer))
 
@@ -177,6 +182,29 @@ class FamiliesTest(unittest.TestCase):
     def test_t17_truncated_module_sweep_is_unknown(self) -> None:
         answer = ok("no problems found in 3 of 5 models", scope="module", truncated=True)
         self.assertEqual("unknown", families.check_verdict(json.dumps(answer)))
+
+    def test_t17_truncated_per_root_sweep_with_zero_rows_is_unknown(self) -> None:
+        rows = [{"model": MODEL, "name": "kitchen", "rootsChecked": 3, "errors": 0, "warnings": 0}]
+        answer = ok(rows, scope="module", truncated=True, modelsNotChecked=["mcp.study.other"])
+        self.assertEqual("unknown", families.check_verdict(json.dumps(answer)))
+        f = self.count(check("m", MODULE, answer, perRoot=True) + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, C_root_after_clean_model=0, C_after_summary=0)
+
+    def test_module_itself_warning_makes_zero_rows_a_summary(self) -> None:
+        rows = [{"model": MODEL, "name": "kitchen", "rootsChecked": 3, "errors": 0, "warnings": 0}]
+        answer = {**ok(rows, scope="module"), "warnings": ["The module itself has 1 error(s)"]}
+        self.assertEqual("problem_summary", families.check_verdict(json.dumps(answer)))
+
+    def test_clean_string_with_level_problems_is_a_summary(self) -> None:
+        self.assertEqual("problem_summary", families.check_verdict(json.dumps(
+            ok("no problems found", scope="model", modelProblems=1))))
+        self.assertEqual("problem_summary", families.check_verdict(json.dumps(
+            {**ok("no problems found", scope="module"), "warnings": ["The module itself has 2 error(s)"]})))
+
+    def test_scope_falls_back_to_legacy_reference_and_qualified_model_refs(self) -> None:
+        self.assertEqual("model", families.check_scope({"reference": MODEL}, ""))
+        qualified = "6b0c8e9a-1111-2222-3333-444455556666/" + MODEL
+        self.assertEqual("model", families.check_scope({"nodeReference": qualified}, '{"ok":false}'))
 
     def test_t18_subagent_events_are_ignored(self) -> None:
         f = self.count([tool("s", CHECK, {"nodeReference": NODE}, session="task-1"),

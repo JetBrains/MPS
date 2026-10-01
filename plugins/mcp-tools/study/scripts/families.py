@@ -31,9 +31,10 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   C_after_summary_batches          distinct batches among the C_after_summary calls
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
-input: a `modelReference` or a `r:…(…)` model ref is a model, a ref with `)/` after a `r:…(…)` is a
-node (also module-qualified), `<uuid>(name)` is a module, a bare qualified name is a container (the
-server decides between model and module), anything else is a node.
+input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
+model, a ref with `)/` after a `r:…(…)` is a node (both also module-qualified, `<uuid>/r:…`),
+`<uuid>(name)` is a module, a bare qualified name is a container (the server decides between model
+and module), anything else is a node.
 
 Check verdict, for container checks: `clean` is ok:true with nothing left to read, i.e. `data` is
 exactly "no problems found" or perRoot rows all at errors 0 / warnings 0, and no `modelProblems`,
@@ -41,7 +42,7 @@ exactly "no problems found" or perRoot rows all at errors 0 / warnings 0, and no
 non-zero count, or model-level problems (`modelProblems`, the module-itself warning): counts only,
 so a later node check reads the text (D83). `problems` is a problem report (object or problem-node
 list) or a clean answer with inline `moduleProblems`. `unknown` is anything else: a temp-file path,
-a truncated "no problems found in N of M models", ok:false, unparseable.
+a truncated module sweep (`details.truncated`, with or without perRoot rows), ok:false, unparseable.
 
 State: a container check sets the last verdict. A node check counts as C_root_after_clean_model
 after `clean` and as C_after_summary after `problem_summary`; with autoApplyQuickFixes it writes,
@@ -71,7 +72,7 @@ READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_que
 CLEAN = "no problems found"
 MODULE_ITSELF = "The module itself has"
 UUID_MODULE = re.compile(r"^[0-9a-f-]{36}\([^)]+\)$")
-MODEL_REF = re.compile(r"^r:[^/]+\)$")
+MODEL_REF = re.compile(r"^([0-9a-f-]{36}/)?r:[^/]+\)$")
 NODE_REF = re.compile(r"r:[^()]*\([^)]*\)/")
 BARE_NAME = re.compile(r"^[A-Za-z_][\w.\-]*(@[\w.\-]+)?$")
 
@@ -122,7 +123,7 @@ def check_scope(inp, result):
         return scope
     if inp.get("modelReference"):
         return "model"
-    ref = inp.get("nodeReference") or ""
+    ref = inp.get("nodeReference") or inp.get("reference") or ""
     if not isinstance(ref, str):
         return "node"
     if MODEL_REF.match(ref):
@@ -146,9 +147,11 @@ def check_verdict(result):
     module_problems = bool(details.get("moduleProblems"))
     level_problems = bool(details.get("modelProblems")) or any(
         isinstance(w, str) and MODULE_ITSELF in w for w in warnings)
-    rows = isinstance(data, list) and all(
+    if details.get("truncated"):
+        return "unknown"
+    per_root = isinstance(data, list) and all(
         isinstance(x, dict) and "errors" in x and "warnings" in x for x in data)
-    if rows:
+    if per_root:
         if level_problems or any(x["errors"] or x["warnings"] for x in data):
             return "problem_summary"
         return "problems" if module_problems else "clean"
