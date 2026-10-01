@@ -177,7 +177,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    means the catalog or the installed `AGENTS.md` / `CLAUDE.md` moved mid-round. Open/close details: `references/harness.md`.
 7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
    → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
-   each run's meta after evaluation. Filter chains containing `mps_mcp`, group into families, have an
+   each run's meta after evaluation. Then
+   `python3 $STUDY/scripts/families.py <baseline runs> <previous round> $RUNS > $RUNS/analysis/families.tsv`
+   (per-run family counters, `references/analysis.md`). Filter chains containing `mps_mcp`, group into families, have an
    Opus reviewer inspect 3 instances per family with `study/scripts/show_steps.py` and assign
    determinism {1.0, 0.5, 0}. Rank by avoidable turns (fixed context ≈ 150 K cache-read tokens per
    turn dominates) as well as by the study formula.

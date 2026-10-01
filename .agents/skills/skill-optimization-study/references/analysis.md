@@ -70,7 +70,13 @@ drop in rank; that is not a behaviour change. A chain stays listed when either `
 `parallel` reaches `--min-occurrences`, but ranking uses `count` (score = count-based chars), so a
 parallel-only chain sorts to the bottom instead of vanishing. Filter to those containing `mps_mcp`,
 group into families (2026-09: A temp-file follow-up reads; B blueprint file → insert; C per-root
-validation; D skill read → call; B′ ad-hoc Python for result shaping). Reviewer assigns determinism
+validation; D skill read → call; B′ ad-hoc Python for result shaping). `scripts/families.py` counts
+them per run into `families.tsv` (every column defined in its docstring); C is its
+`C_root_after_clean_model`: a node-scope `check_root_node_problems` after a container check with
+nothing left to read (0 errors, 0 warnings, no model-/module-level messages), no write in between.
+`C_after_summary` is a node-scope check after a container check whose `perRoot` counts are non-zero,
+no write in between: reading the text, D83, not distrust. Both have a `_batches` column (distinct
+`message.id`s). Reviewer assigns determinism
 per family from 3 instances: 1.0 next args derivable from previous response; 0.5 partly; 0 judgment.
 `score = occurrences × avg tokens × determinism × (1 + retry_rate)`; ALSO rank by avoidable turns
 (each ≈ fixed context tokens) — with lazy tool schemas and CLAUDE.md the fixed context was ≈ 150 K
