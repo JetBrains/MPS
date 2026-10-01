@@ -260,3 +260,19 @@
     cell, so 16 fixture cells needed 7 restarts. One residual remains untested: two synthesized S1
     projects and the S3 fixture put three module ids named `mcp.study.recipes` into one process
     without an incident.
+
+## From round 21 (2026-09-30, S1–S3 + S5–S10 × opus+sonnet, first full matrix with pinned effort)
+
+43. **The worker CLI moves the context floor, and nothing in the evidence says so.** Between rounds 18 and 21 the
+    SMOKE floor rose from 62 K to 82 K tokens. Every request grew by ≈ 6.7 K, while the installed guides, the skill
+    count and frontmatter bytes, and the tool, agent and skill counts in `init` were byte-identical. The only change
+    on that path was Claude Code 2.1.284 → 2.1.286. → Compare each round's SMOKE floor and the first request's
+    `input + cache_read + cache_creation` with the prior round's before quoting token or cost deltas. If they moved
+    with an unchanged surface, attribute the difference to the harness and compare turns and batches instead.
+44. **An unpinned prior round cannot be the effort control, and its transcript still shows its effort.** Round 21
+    pinned sonnet at `xhigh`. Its batches rose 40 % over round 18 while errors fell 35 → 9, and opus on the same
+    catalog was flat per message. No transcript records the effort level, but its signature is measurable: the share
+    of messages with a thinking block and the output tokens per message (S1-sonnet: 55 % / 567 unpinned, 67 % / 641 at
+    `high`, 71 % / 811 at `xhigh`). → Before attributing a per-model delta to the surface, compare that signature with
+    the other model's on the same surface. Keep the effort level fixed across the rounds you intend to compare, and
+    make it the same level the user runs day to day.
