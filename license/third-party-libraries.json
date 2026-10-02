@@ -53,6 +53,12 @@
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/apache/commons-codec/blob/master/LICENSE.txt"
 }, {
+  "name" : "Apache Commons Collections",
+  "url" : "https://commons.apache.org/proper/commons-collections/",
+  "version" : "3.2.2",
+  "license" : "Apache 2.0",
+  "licenseUrl" : "https://github.com/apache/commons-collections/blob/master/LICENSE.txt"
+}, {
   "name" : "Apache Commons Compress",
   "url" : "https://commons.apache.org/proper/commons-compress/",
   "version" : "1.28.0",
@@ -859,7 +865,7 @@
 }, {
   "name" : "intellij-markdown",
   "url" : "https://github.com/JetBrains/markdown",
-  "version" : "0.7.16",
+  "version" : "0.7.15",
   "license" : "Apache 2.0",
   "licenseUrl" : "https://github.com/JetBrains/markdown/blob/master/LICENSE"
 }, {
