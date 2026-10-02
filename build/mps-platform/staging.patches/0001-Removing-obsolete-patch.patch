@@ -1,0 +1,24 @@
+From 34ed49b2a5a0549f64613b4bc206f8f35107a144 Mon Sep 17 00:00:00 2001
+From: Maros Sandor <maros.sandor@jetbrains.com>
+Date: Fri, 2 Oct 2026 09:46:53 +0200
+Subject: Removing obsolete patch
+
+---
+ community/mps/build/build/build.xml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/community/mps/build/build/build.xml b/community/mps/build/build/build.xml
+index d0af7be0a169e..49c6f87d916ac 100644
+--- a/community/mps/build/build/build.xml
++++ b/community/mps/build/build/build.xml
+@@ -58,7 +58,6 @@
+   <!-- Code changes required for MPS not yet integrated into the codebase -->
+   <target name="patch" description="Apply MPS patches to IDEA Community sources">
+     <apply.patch file="${basedir}/patches/Custom_project_settings_store_folder_name_and__project_file_extension_for_MPS_.patch"/>
+-    <apply.patch file="${basedir}/patches/DisableCoursesAndTextSearch.patch"/>
+     <apply.patch file="${basedir}/patches/DisableSlowOperationsInEAP.patch"/>
+     <apply.patch file="${basedir}/patches/IJPL-156181.patch"/>
+     <apply.patch file="${basedir}/patches/jps.patch"/>
+-- 
+2.53.0.windows.1
+
