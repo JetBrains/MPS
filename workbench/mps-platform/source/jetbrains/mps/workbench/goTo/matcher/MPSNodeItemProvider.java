@@ -113,7 +113,7 @@ public class MPSNodeItemProvider implements ChooseByNameItemProvider {
       NameUtil.MatchingCaseSensitivity sensitivity) {
     ChooseByNameModel model = chooseByNameViewModel.getModel();
     List<String> namesList = new ArrayList<>();
-    getNamesByPattern(chooseByNameViewModel, new ArrayList<>(allNames), indicator, namesList, namePattern, sensitivity);
+    getNamesByPattern(chooseByNameViewModel, new ArrayList<>(allNames), namesList, namePattern, sensitivity);
     allNames.removeAll(namesList);
     sortNamesList(namePattern, namesList);
 
@@ -249,13 +249,12 @@ public class MPSNodeItemProvider implements ChooseByNameItemProvider {
   @Override
   public List<String> filterNames(@NotNull ChooseByNameViewModel chooseByNameViewModel, @NotNull String[] names, @NotNull String pattern) {
     List<String> res = new ArrayList<>();
-    getNamesByPattern(chooseByNameViewModel, Arrays.asList(names), null, res, pattern, NameUtil.MatchingCaseSensitivity.NONE);
+    getNamesByPattern(chooseByNameViewModel, Arrays.asList(names), res, pattern, NameUtil.MatchingCaseSensitivity.NONE);
     return res;
   }
 
   private static void getNamesByPattern(@NotNull final ChooseByNameViewModel chooseByNameViewModel,
       @NotNull List<String> names,
-      @Nullable ProgressIndicator indicator,
       @NotNull final List<String> list,
       @NotNull String pattern,
       @NotNull NameUtil.MatchingCaseSensitivity caseSensitivity) throws ProcessCanceledException {
@@ -270,7 +269,7 @@ public class MPSNodeItemProvider implements ChooseByNameItemProvider {
     final MinusculeMatcher matcher = buildPatternMatcher(pattern, caseSensitivity);
 
     final String finalPattern = pattern;
-    JobLauncher.getInstance().invokeConcurrentlyUnderProgress(names, indicator, name -> {
+    JobLauncher.getInstance().invokeConcurrentlyUnderContextProgress(names, name -> {
       if (matches(chooseByNameViewModel, finalPattern, matcher, name)) {
         synchronized (list) {
           list.add(name);
