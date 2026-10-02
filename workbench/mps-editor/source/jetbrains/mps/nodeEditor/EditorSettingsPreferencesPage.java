@@ -20,12 +20,12 @@ import com.intellij.openapi.editor.EditorFactory;
 import com.intellij.ui.ContextHelpLabel;
 import com.intellij.ui.IdeBorderFactory;
 import com.intellij.ui.components.JBRadioButton;
+import com.intellij.ui.components.panels.VerticalLayout;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.util.ui.JBInsets;
 import com.intellij.util.ui.JBUI;
 import jetbrains.mps.nodeEditor.resources.EditorSettingsBundle;
-import org.jdesktop.swingx.VerticalLayout;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -114,7 +114,7 @@ class EditorSettingsPreferencesPage implements Disposable {
 
     panel.add(codeFormattingPanel, getConstraint(mainPanelRowCount++, 0));
 
-    JPanel checkboxes = new JPanel(new VerticalLayout());
+    JPanel checkboxes = new JPanel(new VerticalLayout(0));
     myUseBraces = new JCheckBox(EditorSettingsBundle.message("checkbox.use.braces"));
     checkboxes.add(myUseBraces);
 
