@@ -20,6 +20,9 @@
   <description>Settings and tooling to audit MPS models and modules</description>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <depends>com.intellij.modules.mps</depends>
+  <dependencies>
+    <module name="intellij.platform.vcs"/>
+  </dependencies>
 
   <extensions defaultExtensionNs="com.intellij">
     <checkinHandlerFactory

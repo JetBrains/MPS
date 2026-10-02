@@ -20,5 +20,6 @@
     <orderEntry type="module" module-name="mps-platform" />
     <orderEntry type="module" module-name="mps-workbench" />
     <orderEntry type="library" name="Idea-platform" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Idea-vcs" level="project" />
   </component>
 </module>

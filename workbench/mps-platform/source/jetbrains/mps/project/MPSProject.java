@@ -19,7 +19,6 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.project.ex.ProjectManagerEx;
 import com.intellij.openapi.util.InvalidDataException;
-import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import jetbrains.mps.core.platform.Platform;
@@ -43,7 +42,6 @@ import org.jetbrains.mps.openapi.module.ModelAccess;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Represents a project based on the idea platform project
@@ -203,7 +201,7 @@ public abstract class MPSProject extends ProjectBase implements FileBasedProject
     if (files == null) {
       return;
     }
-    // original fix was for MPS-14247, refactored now to use IDEA services and to update VCS explicitly
+    // original fix was for MPS-14247; VCS picks up the resulting VFS events itself (VcsDirtyScopeVfsListener)
     ArrayList<VirtualFile> ideaFiles = new ArrayList<>();
     for (IFile f : files) {
       final VirtualFile vf = myProjectFileSystem.asVirtualFile(f);
@@ -212,20 +210,11 @@ public abstract class MPSProject extends ProjectBase implements FileBasedProject
       }
       ideaFiles.add(vf);
     }
-    // want to schedule VCS update *after* IDEA get a chance to find out about new files, hence invokeLater and synchronous refresh
     // I don't need write nor write intent here (as invokeLater provides),  markDirtyAndRefresh is ok with read, just didn't find invokeReadLater().
     ApplicationManager.getApplication().invokeLater(() -> {
       // VfsUtil.markDirtyAndRefresh relies on LocalFileSystem (eventually delegates to RefreshQueue), while our
       // BaseIdeaFileSystem.refresh uses IDEA's RefreshQueue directly. No idea what's right here.
       VfsUtil.markDirtyAndRefresh(false, true, true, ideaFiles.toArray(new VirtualFile[0]));
-      // we used to rely on ChangeListManager.scheduleUpdate() of uncertain origin (uses of the method trace back to 1ca3d72f),
-      // but according to Aleksey Pivovarov, it's no-op, and we'd rather stick to VcsDirtyScopeManager
-      // VcsDirtyScopeManager doesn't need read/write or a specific thread, but as long as I want it to run
-      // *after* vfs refresh, I keep it here, inside invokeLater(). XXX Perhaps, have to change invokeLater to some
-      //   async job scheduler, just too afraid to do it with 22.2 next door.
-      // FIXME In fact, Aleksey Pivovarov suggests VCS has to pick up VFS changes automatically, perhaps, we could just
-      //       use async markDirtyAndRefresh() then?
-      VcsDirtyScopeManager.getInstance(myProject).filesDirty(Collections.emptyList(), ideaFiles);
     });
   }
 }

@@ -12,6 +12,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Idea-platform" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Idea-vcs" level="project" />
     <orderEntry type="module" module-name="mps-platform" exported="" />
     <orderEntry type="module" module-name="mps-editor" exported="" />
     <orderEntry type="module" module-name="mps-ui" exported="" />
