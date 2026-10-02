@@ -6,8 +6,8 @@ import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.debug.api.programState.ILocation;
 import org.jetbrains.annotations.NotNull;
 import com.sun.jdi.Location;
-import com.sun.jdi.AbsentInformationException;
 import jetbrains.mps.ide.ThreadUtils;
+import com.sun.jdi.AbsentInformationException;
 
 @GeneratedClass(nodeId = "4209988649465089935", model = "r:ac4cce94-c169-4971-be8f-807482637028(jetbrains.mps.debugger.java.api.state.proxy)")
 public class JavaLocation implements ILocation {
@@ -15,9 +15,14 @@ public class JavaLocation implements ILocation {
   private final String myUnitName;
   private final String myRoutineName;
   private final int myLineNumber;
-  public JavaLocation(@NotNull Location location) throws AbsentInformationException {
+  public JavaLocation(@NotNull Location location) {
     assert !(ThreadUtils.isInEDT());
-    myFileName = location.sourceName();
+    String fileName = "";
+    try {
+      fileName = location.sourceName();
+    } catch (AbsentInformationException ignored) {
+    }
+    myFileName = fileName;
     myUnitName = location.declaringType().name();
     myRoutineName = location.method().name();
     myLineNumber = location.lineNumber();

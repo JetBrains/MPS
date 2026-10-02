@@ -9,13 +9,13 @@ import java.util.List;
 import jetbrains.mps.debugger.java.api.state.watchables.JavaLocalVariable;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
-import com.sun.jdi.AbsentInformationException;
 import jetbrains.mps.util.Pair;
 import com.sun.jdi.StackFrame;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.logging.Logger;
 import com.sun.jdi.IncompatibleThreadStateException;
+import com.sun.jdi.AbsentInformationException;
 import com.sun.jdi.LocalVariable;
 import com.sun.jdi.ObjectReference;
 import jetbrains.mps.debugger.java.api.state.watchables.JavaThisObject;
@@ -31,7 +31,7 @@ public class JavaStackFrame extends ProxyForJava implements IStackFrame {
   private IWatchable myContextWatchable;
   private final List<JavaLocalVariable> myVariables = ListSequence.fromList(new ArrayList<JavaLocalVariable>());
   private boolean myInitialized;
-  public JavaStackFrame(JavaThread threadReference, int i) throws AbsentInformationException {
+  public JavaStackFrame(JavaThread threadReference, int i) {
     super(new Pair<JavaThread, Integer>(threadReference, i));
     myIndex = i;
     myThread = threadReference;

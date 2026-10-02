@@ -15,7 +15,6 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.ArrayList;
 import jetbrains.mps.debug.api.AbstractDebugSession;
 import com.sun.jdi.IncompatibleThreadStateException;
-import com.sun.jdi.AbsentInformationException;
 import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.debugger.java.api.ui.Icons;
 
@@ -50,10 +49,6 @@ public class JavaThread extends ProxyForJava implements IThread {
     } catch (IncompatibleThreadStateException ex) {
       if (LOG.isDebugLevel()) {
         LOG.debug("IncompatibleThreadStateException", ex);
-      }
-    } catch (AbsentInformationException e) {
-      if (LOG.isDebugLevel()) {
-        LOG.debug("AbsecntInformationException", e);
       }
     }
   }
