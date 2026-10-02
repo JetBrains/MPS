@@ -22,7 +22,7 @@ import com.intellij.openapi.actionSystem.ActionPlaces;
 import jetbrains.mps.workbench.action.BaseGroup;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.UiDataProvider;
-import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.actionSystem.ExecutionDataKeys;
 import jetbrains.mps.debug.api.AbstractDebugSession;
 import jetbrains.mps.debug.api.DebugSessionManagerComponent;
 import com.intellij.ui.content.Content;
@@ -78,7 +78,7 @@ public class DebuggerToolContentBuilder implements Disposable {
   }
   private MyRunContentDescriptor createDescriptorInternal(RunnerLayoutUi ui, RunProfile profile) {
     final MyRunContentDescriptor descriptor = new MyRunContentDescriptor(profile, myExecutionResult, myReuseProhibited, ui.getComponent(), this);
-    ui.getContentManager().addUiDataProvider((UiDataProvider) (sink) -> sink.set(LangDataKeys.RUN_CONTENT_DESCRIPTOR, descriptor));
+    ui.getContentManager().addUiDataProvider((UiDataProvider) (sink) -> sink.set(ExecutionDataKeys.RUN_CONTENT_DESCRIPTOR, descriptor));
     return descriptor;
   }
   private void buildUi(RunnerLayoutUi ui, ExecutionConsole console) {

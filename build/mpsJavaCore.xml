@@ -235,7 +235,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -282,7 +281,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
