@@ -36,4 +36,9 @@
     <ivy:retrieve file="ivyOpenjdkLinux.xml" pattern="${get.dir}/[artifact].[ext]"/>
   </target>
 
+  <target name="getOpenjdkLinuxArm" depends="install-ivy" description="Retrieve openJDK/jbr-linux-aarch64.tar.gz">
+    <ivy:resolve file="ivyOpenjdkLinuxArm.xml"/>
+    <ivy:retrieve file="ivyOpenjdkLinuxArm.xml" pattern="${get.dir}/[artifact].[ext]"/>
+  </target>
+
 </project>

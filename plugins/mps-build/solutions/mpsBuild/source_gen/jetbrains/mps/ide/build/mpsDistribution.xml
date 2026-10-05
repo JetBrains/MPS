@@ -112,15 +112,20 @@
       <fileset file="${basedir}/build/resources/mps-linux-64" />
       <globmapper from="*" to="mps" />
     </copy>
-    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip/MPS ${mpsBootstrapCore.version}/bin/mac" />
-    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip/MPS ${mpsBootstrapCore.version}/bin/mac/Contents" />
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7554" />
     <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7554">
+      <fileset file="${basedir}/build/resources/mps-linux-aarch64" />
+      <globmapper from="*" to="mps" />
+    </copy>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip/MPS ${mpsBootstrapCore.version}/bin/mac" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip/MPS ${mpsBootstrapCore.version}/bin/mac/Contents" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7555" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7555">
       <fileset file="${basedir}/build/resources/mps-mac-64" />
       <globmapper from="*" to="mps-x64" />
     </copy>
-    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7555" />
-    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7555">
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7556" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7556">
       <fileset file="${basedir}/build/resources/mps-mac-aarch64" />
       <globmapper from="*" to="mps-aarch64" />
     </copy>
@@ -176,6 +181,8 @@
       <zipfileset dir="${basedir}/bin/win/amd64" prefix="MPS ${mpsBootstrapCore.version}/bin/win" />
       <zipfileset file="${basedir}/bin/linux/amd64/fsnotifier" prefix="MPS ${mpsBootstrapCore.version}/bin/linux" filemode="755" />
       <zipfileset file="${basedir}/bin/linux/amd64/restarter" prefix="MPS ${mpsBootstrapCore.version}/bin/linux" filemode="755" />
+      <zipfileset file="${basedir}/bin/linux/aarch64/fsnotifier" prefix="MPS ${mpsBootstrapCore.version}/bin/linux-aarch64" filemode="755" />
+      <zipfileset file="${basedir}/bin/linux/aarch64/restarter" prefix="MPS ${mpsBootstrapCore.version}/bin/linux-aarch64" filemode="755" />
       <zipfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS ${mpsBootstrapCore.version}/bin/mac" />
       <zipfileset file="${basedir}/bin/mac/libmacscreenmenu64.dylib" prefix="MPS ${mpsBootstrapCore.version}/bin/mac" />
       <zipfileset file="${basedir}/bin/mac/fsnotifier" prefix="MPS ${mpsBootstrapCore.version}/bin/mac" filemode="755" />
@@ -201,12 +208,14 @@
       <zipfileset file="${artifacts.overlay}/__overlay__/mac.aarch64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
       <zipfileset file="${artifacts.overlay}/__overlay__/win.x64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
       <zipfileset file="${artifacts.overlay}/__overlay__/unix.x64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
+      <zipfileset file="${artifacts.overlay}/__overlay__/unix.aarch64.tar.gz" prefix="MPS ${mpsBootstrapCore.version}/platform-plugins" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f755" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7551" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/win" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7552" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/win" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7553" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/linux" />
-      <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7554" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/mac/Contents/MacOS" />
+      <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7554" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/linux-aarch64" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7555" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/mac/Contents/MacOS" />
+      <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip_f7556" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin/mac/Contents/MacOS" />
       <fileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip" />
     </zip>
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux.tar.gz" />
@@ -294,6 +303,92 @@
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux.tar.gz_f755" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux.tar.gz_f7551" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux.tar.gz" />
+    </tar>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz/MPS ${mpsBootstrapCore.version}" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz/MPS ${mpsBootstrapCore.version}/bin" />
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz_f755" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz_f755">
+      <fileset file="${basedir}/build/resources/mps-linux-aarch64" />
+      <globmapper from="*" to="mps" />
+    </copy>
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz/MPS ${mpsBootstrapCore.version}/bin">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/mps.vmoptions" />
+      <filterchain>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+    </copy>
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz/MPS ${mpsBootstrapCore.version}/bin">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/mps64.vmoptions" />
+      <filterchain>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+    </copy>
+    <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz_f7551" />
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz_f7551">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/mps.sh" />
+      <filterchain>
+        <tokenfilter>
+          <replaceregex pattern="\$version\$" replace="${mpsBootstrapCore.version}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$build\$" replace="${mps.build.number}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.major\$" replace="${mpsBootstrapCore.version.major}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.minor\$" replace="${mpsBootstrapCore.version.minor}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.bugfixNr\$" replace="${mpsBootstrapCore.version.bugfixNr}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$version\.eap\$" replace="${mpsBootstrapCore.version.eap}" flags="g" />
+        </tokenfilter>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+    </copy>
+    <copy todir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz/MPS ${mpsBootstrapCore.version}">
+      <fileset file="${basedir}/plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/product-info-linux-aarch64.json" />
+      <filterchain>
+        <tokenfilter>
+          <replaceregex pattern="\$version\$" replace="${mpsBootstrapCore.version}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$build\$" replace="${mps.build.number}" flags="g" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="&quot;buildNumber&quot;: &quot;MPS-([0-9\.]+)&quot;" replace="&quot;buildNumber&quot;: &quot;\1&quot;" flags="" />
+        </tokenfilter>
+        <tokenfilter>
+          <replaceregex pattern="\$path\.selector\$" replace="MPS${mpsBootstrapCore.version.major}.${mpsBootstrapCore.version.minor}" flags="g" />
+        </tokenfilter>
+        <fixcrlf eol="lf" eof="remove" />
+      </filterchain>
+      <globmapper from="*" to="product-info.json" />
+    </copy>
+    <tar destfile="${build.layout}/${mps.build.number}-linux-aarch64.tar.gz" compression="gzip" longfile="gnu">
+      <tarfileset dir="${artifacts.mps}" prefix="MPS ${mpsBootstrapCore.version}" />
+      <tarfileset prefix="MPS ${mpsBootstrapCore.version}">
+        <gzipresource>
+          <file file="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar.gz" />
+        </gzipresource>
+      </tarfileset>
+      <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/icudtl.dat" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
+      <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-linux-arm64.so" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
+      <tarfileset file="${basedir}/lib/jna/linux-aarch64/libjnidispatch.so" prefix="MPS ${mpsBootstrapCore.version}/lib/jna" />
+      <tarfileset file="${basedir}/lib/pty4j/linux/aarch64/libpty.so" prefix="MPS ${mpsBootstrapCore.version}/lib/pty4j/linux/aarch64" />
+      <tarfileset file="${basedir}/bin/linux/aarch64/fsnotifier" prefix="MPS ${mpsBootstrapCore.version}/bin" filemode="755" />
+      <tarfileset file="${basedir}/bin/linux/aarch64/restarter" prefix="MPS ${mpsBootstrapCore.version}/bin" filemode="755" />
+      <tarfileset prefix="MPS ${mpsBootstrapCore.version}/plugins">
+        <gzipresource>
+          <file file="${artifacts.overlay}/__overlay__/unix.aarch64.tar.gz" />
+        </gzipresource>
+      </tarfileset>
+      <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz_f755" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
+      <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz_f7551" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
+      <tarfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-linux-aarch64.tar.gz" />
     </tar>
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-windows.zip" />
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-windows.zip/MPS ${mpsBootstrapCore.version}" />
