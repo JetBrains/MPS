@@ -3742,7 +3742,7 @@
   </node>
   <node concept="sE7Ow" id="341WClvYU08">
     <property role="fJN8o" value="true" />
-    <property role="1WHSii" value="Install custom merge driver for Git and custom diff3 for Subversion" />
+    <property role="1WHSii" value="Install custom merge driver for Git" />
     <property role="TrG5h" value="InstalVcsAddons" />
     <property role="72QZ$" value="true" />
     <property role="2uzpH1" value="Install MPS VCS Add-ons..." />

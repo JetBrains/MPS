@@ -2144,27 +2144,22 @@
         <node concept="3cpWs6" id="6BLo1MgrCph" role="3cqZAp">
           <node concept="2OqwBi" id="2btCvgzGq3g" role="3cqZAk">
             <node concept="2OqwBi" id="3l54ejtXnRV" role="2Oq$k0">
-              <node concept="2OqwBi" id="7ZTspgD769p" role="2Oq$k0">
-                <node concept="liA8E" id="7ZTspgD77w6" role="2OqNvi">
-                  <ref role="37wK5l" node="7ZTspgD72Ha" resolve="withSubversionPlugin" />
-                </node>
-                <node concept="2OqwBi" id="5Ks7c$vfHVI" role="2Oq$k0">
-                  <node concept="1rXfSq" id="6BLo1MgrCpi" role="2Oq$k0">
-                    <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
-                    <node concept="Xl_RD" id="6BLo1MgrCpj" role="37wK5m">
-                      <property role="Xl_RC" value="mps-vcs" />
-                    </node>
-                    <node concept="Xl_RD" id="6BLo1MgrCpk" role="37wK5m">
-                      <property role="Xl_RC" value="jetbrains.mps.vcs" />
-                    </node>
-                  </node>
-                  <node concept="liA8E" id="5Ks7c$vfImO" role="2OqNvi">
-                    <ref role="37wK5l" node="6BLo1MgrGos" resolve="withGit4IdeaPlugin" />
-                  </node>
-                </node>
-              </node>
               <node concept="liA8E" id="3l54ejtXqRm" role="2OqNvi">
                 <ref role="37wK5l" node="245jbU$BLCn" resolve="withGit4IdeaStubsPlugin" />
+              </node>
+              <node concept="2OqwBi" id="5Ks7c$vfHVI" role="2Oq$k0">
+                <node concept="1rXfSq" id="6BLo1MgrCpi" role="2Oq$k0">
+                  <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
+                  <node concept="Xl_RD" id="6BLo1MgrCpj" role="37wK5m">
+                    <property role="Xl_RC" value="mps-vcs" />
+                  </node>
+                  <node concept="Xl_RD" id="6BLo1MgrCpk" role="37wK5m">
+                    <property role="Xl_RC" value="jetbrains.mps.vcs" />
+                  </node>
+                </node>
+                <node concept="liA8E" id="5Ks7c$vfImO" role="2OqNvi">
+                  <ref role="37wK5l" node="6BLo1MgrGos" resolve="withGit4IdeaPlugin" />
+                </node>
               </node>
             </node>
             <node concept="liA8E" id="2btCvgzGqU1" role="2OqNvi">

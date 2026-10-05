@@ -17,22 +17,18 @@
       <node id="8871122768175816094" at="14,53,15,38" concept="5" />
       <node id="8871122768175839094" at="17,35,18,29" concept="6" />
       <node id="8871122768175841316" at="20,5,21,17" concept="6" />
-      <node id="6933307669479741747" at="23,46,24,41" concept="6" />
-      <node id="6933307669479741754" at="26,46,27,39" concept="6" />
+      <node id="6933307669479741754" at="23,46,24,39" concept="6" />
       <node id="6933307669479741758" at="12,0,14,0" concept="0" trace="PluginUtil#()V" />
       <node id="8871122768175834960" at="16,63,19,7" concept="3" />
-      <node id="6933307669479741744" at="23,0,26,0" concept="10" trace="isSvnPluginEnabled#()Z" />
-      <node id="6933307669479741751" at="26,0,29,0" concept="10" trace="isGitPluginEnabled#()Z" />
+      <node id="6933307669479741751" at="23,0,26,0" concept="10" trace="isGitPluginEnabled#()Z" />
       <node id="8871122768175834280" at="15,38,20,5" concept="2" />
       <node id="6933307669479741721" at="14,0,23,0" concept="10" trace="isPluginEnabled#(Ljava/lang/String;)Z" />
       <scope id="6933307669479741761" at="12,24,12,24" />
       <scope id="8871122768175834962" at="17,35,18,29" />
-      <scope id="6933307669479741746" at="23,46,24,41" />
-      <scope id="6933307669479741753" at="26,46,27,39" />
+      <scope id="6933307669479741753" at="23,46,24,39" />
       <scope id="6933307669479741758" at="12,0,14,0" />
       <scope id="8871122768175834286" at="16,63,19,7" />
-      <scope id="6933307669479741744" at="23,0,26,0" />
-      <scope id="6933307669479741751" at="26,0,29,0" />
+      <scope id="6933307669479741751" at="23,0,26,0" />
       <scope id="8871122768175834280" at="15,38,20,5">
         <var name="p" id="8871122768175834282" />
       </scope>
@@ -42,7 +38,7 @@
       <scope id="6933307669479741721" at="14,0,23,0">
         <var name="id" id="6933307669479741742" />
       </scope>
-      <unit id="6933307669479741720" at="10,0,30,0" name="jetbrains.mps.vcs.platform.util.PluginUtil" />
+      <unit id="6933307669479741720" at="10,0,27,0" name="jetbrains.mps.vcs.platform.util.PluginUtil" />
     </file>
   </root>
   <root nodeRef="r:e4939376-be00-4167-9510-67715eca6425(jetbrains.mps.vcs.platform.util)/6933307669479741763">

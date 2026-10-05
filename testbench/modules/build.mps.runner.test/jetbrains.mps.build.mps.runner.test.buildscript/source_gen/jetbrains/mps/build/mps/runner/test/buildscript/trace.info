@@ -17,7 +17,7 @@
   </root>
   <root nodeRef="r:1df60b02-4b01-4931-9ed0-efa7ab133a2f(jetbrains.mps.build.mps.runner.test.buildscript)/3307120220351780865">
     <file name="test5.xml">
-      <unit id="3307120220351780865" at="1,0,536,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test5" />
+      <unit id="3307120220351780865" at="1,0,535,10" name="jetbrains.mps.build.mps.runner.test.buildscript.test5" />
     </file>
   </root>
   <root nodeRef="r:1df60b02-4b01-4931-9ed0-efa7ab133a2f(jetbrains.mps.build.mps.runner.test.buildscript)/5712055271175299542">

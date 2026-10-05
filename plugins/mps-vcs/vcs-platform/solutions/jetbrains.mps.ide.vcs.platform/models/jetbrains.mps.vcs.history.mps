@@ -24,7 +24,6 @@
     <import index="bd8o" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.application(MPS.IDEA/)" />
     <import index="ewdr" ref="f57286e3-4e19-4d8d-8045-3900761f6530/java:git4idea.log(jetbrains.mps.git4idea.stubs/)" />
     <import index="k9nz" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.util.text(MPS.IDEA/)" />
-    <import index="oyik" ref="6fd1293f-7f65-4ffd-99dc-4719eca7c171/java:org.jetbrains.idea.svn.history(jetbrains.mps.ide.vcs.platform/)" />
     <import index="2o8p" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.diff.contents(MPS.IDEA/)" />
     <import index="btf5" ref="r:9b4a89e1-ec38-42c4-b1bd-96ab47ffcb3f(jetbrains.mps.vcs.diff.changes)" />
     <import index="zbx9" ref="r:c29f530b-f74d-4627-9da2-61138cfa6722(jetbrains.mps.vcs.platform.actions)" />
@@ -2676,7 +2675,6 @@
           <node concept="3cpWsn" id="YIxS4EmxK1" role="3cpWs9">
             <property role="TrG5h" value="tooltipText" />
             <node concept="17QB3L" id="YIxS4EmxK2" role="1tU5fm" />
-            <node concept="10Nm6u" id="YIxS4EmxK3" role="33vP2m" />
           </node>
         </node>
         <node concept="3clFbJ" id="YIxS4EmxK4" role="3cqZAp">
@@ -2910,16 +2908,8 @@
               <ref role="3cqZAo" node="6wgNI6tBNi$" resolve="myRevision" />
             </node>
           </node>
-          <node concept="3eNFk2" id="YIxS4EmxLr" role="3eNLev">
-            <node concept="2ZW3vV" id="YIxS4EmxLs" role="3eO9$A">
-              <node concept="3uibUv" id="4Zqbdud6ACZ" role="2ZW6by">
-                <ref role="3uigEE" to="oyik:~SvnFileRevision" resolve="SvnFileRevision" />
-              </node>
-              <node concept="37vLTw" id="4Zqbdud65Py" role="2ZW6bz">
-                <ref role="3cqZAo" node="6wgNI6tBNi$" resolve="myRevision" />
-              </node>
-            </node>
-            <node concept="3clFbS" id="YIxS4EmxLv" role="3eOfB_">
+          <node concept="9aQIb" id="7seEU4yRADz" role="9aQIa">
+            <node concept="3clFbS" id="YIxS4EmxLv" role="9aQI4">
               <node concept="3clFbF" id="YIxS4EmxLw" role="3cqZAp">
                 <node concept="37vLTI" id="YIxS4EmxLx" role="3clFbG">
                   <node concept="37vLTw" id="YIxS4EmxLy" role="37vLTJ">

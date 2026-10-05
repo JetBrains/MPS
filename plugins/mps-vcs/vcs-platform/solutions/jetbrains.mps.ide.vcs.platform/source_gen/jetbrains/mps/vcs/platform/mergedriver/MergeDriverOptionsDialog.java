@@ -29,8 +29,6 @@ public class MergeDriverOptionsDialog extends DialogWrapper {
   private InstallerCheckBox<GitGlobalConfigFixesInstaller> myGitFixes;
   private InstallerCheckBox<GitMergeDriverInstaller> myGitDriver;
   private InstallerCheckBox<GitRepositoriesInstaller> myGitRepos;
-  private InstallerCheckBox<SvnInstaller> myCommonSvn;
-  private InstallerCheckBox<SvnInstaller> myIdeSvn;
   public MergeDriverOptionsDialog(Project project) {
     super(project);
     setTitle("MPS VCS Add-ons");
@@ -39,18 +37,11 @@ public class MergeDriverOptionsDialog extends DialogWrapper {
     myGitFixes = new InstallerCheckBox<GitGlobalConfigFixesInstaller>(new GitGlobalConfigFixesInstaller(myProject));
     myGitDriver = new InstallerCheckBox<GitMergeDriverInstaller>(new GitMergeDriverInstaller(myProject));
     myGitRepos = new InstallerCheckBox<GitRepositoriesInstaller>(new GitRepositoriesInstaller(myProject));
-    myCommonSvn = new InstallerCheckBox<SvnInstaller>(new SvnInstaller(myProject, false));
-    myIdeSvn = new InstallerCheckBox<SvnInstaller>(new SvnInstaller(myProject, true));
-    if (myCommonSvn.myInstaller.sameAs(myIdeSvn.myInstaller)) {
-      myIdeSvn = null;
-    }
 
     myGitFixes.addIfNeeded();
     myGitDriver.addItemListener((ItemEvent e) -> myGitRepos.setEnabled(myGitDriver.isSelected()));
     myGitDriver.addIfNeeded();
     myGitRepos.addIfNeeded();
-    if (myIdeSvn != null) {
-    }
     myMainPanel.add(myPanel);
     final Dimension size = DimensionService.getInstance().getSize(getDimensionServiceKey());
     if (size == null) {
@@ -74,8 +65,6 @@ public class MergeDriverOptionsDialog extends DialogWrapper {
     myGitDriver.installIfNeeded();
     if (myGitDriver.myInstaller.getCurrentState() == AbstractInstaller.State.INSTALLED) {
       myGitRepos.installIfNeeded();
-    }
-    if (myIdeSvn != null) {
     }
     close(DialogWrapper.OK_EXIT_CODE);
   }

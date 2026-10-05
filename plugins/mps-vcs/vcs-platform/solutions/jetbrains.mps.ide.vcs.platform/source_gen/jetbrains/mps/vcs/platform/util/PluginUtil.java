@@ -20,9 +20,6 @@ public class PluginUtil {
     }
     return false;
   }
-  public static boolean isSvnPluginEnabled() {
-    return isPluginEnabled("Subversion");
-  }
   public static boolean isGitPluginEnabled() {
     return isPluginEnabled("Git4Idea");
   }

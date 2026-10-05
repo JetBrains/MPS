@@ -2,7 +2,6 @@
   <library name="Idea-vcs">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/vcs-git.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/vcs-svn/lib/vcs-svn.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/git4idea-rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.frontend.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.shared.jar!/" />

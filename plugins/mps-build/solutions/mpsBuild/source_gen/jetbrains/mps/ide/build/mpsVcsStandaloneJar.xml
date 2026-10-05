@@ -186,7 +186,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/vcs-svn/lib" includes="*.jar" />
         <fileset dir="${artifacts.IDEA}/plugins/vcs-git/lib" includes="*.jar" />
         <fileset dir="${artifacts.IDEA}/plugins/vcs-git/lib/modules" includes="*.jar" />
         <fileset dir="${artifacts.IDEA}/lib" includes="*.jar" />

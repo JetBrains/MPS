@@ -48702,9 +48702,6 @@
       <node concept="m$_yC" id="4wxeloV_fCc" role="m$_yJ">
         <ref role="m$_y1" node="4wxeloVufXr" resolve="jetbrains.mps.git4idea.stubs" />
       </node>
-      <node concept="m$_yC" id="iTJcDIxtWQ" role="m$_yJ">
-        <ref role="m$_y1" node="3nGzrDDNo$o" resolve="Subversion" />
-      </node>
     </node>
     <node concept="398rNT" id="1lMM4owFq60" role="1l3spd">
       <property role="TrG5h" value="idea_home" />
@@ -63694,13 +63691,6 @@
     </node>
     <node concept="PiPfp" id="7TqXBxc99Im" role="3989C9">
       <property role="TrG5h" value="idea-vcs" />
-      <node concept="25yagZ" id="7TqXBxc99Iq" role="PiKyV">
-        <node concept="3yqFpY" id="7TqXBxc99Ir" role="25yagT">
-          <node concept="3yqFqT" id="7TqXBxc99Is" role="3yqFpW">
-            <ref role="3yqFr6" node="4tNwrSpam8q" resolve="lib" />
-          </node>
-        </node>
-      </node>
       <node concept="25yagZ" id="29qIO8rWVaT" role="PiKyV">
         <node concept="3yqFpY" id="29qIO8rWVaU" role="25yagT">
           <node concept="3yqFqT" id="29qIO8rWVaV" role="3yqFpW">

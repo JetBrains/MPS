@@ -18,7 +18,7 @@ public class MergeDriverInstaller {
   private MergeDriverInstaller() {
   }
   public static boolean isApplicable(Project project) {
-    return PluginUtil.isGitPluginEnabled() || PluginUtil.isSvnPluginEnabled();
+    return PluginUtil.isGitPluginEnabled();
   }
   public static AbstractInstaller.State getCompositeState(Project project, boolean allVcses) {
     Iterable<AbstractInstaller> installers = Arrays.asList(new GitGlobalConfigFixesInstaller(project), new GitMergeDriverInstaller(project), new GitRepositoriesInstaller(project));

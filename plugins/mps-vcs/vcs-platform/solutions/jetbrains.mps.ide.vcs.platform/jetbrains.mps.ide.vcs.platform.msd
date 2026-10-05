@@ -5,12 +5,6 @@
     <modelRoot contentPath="${module}" type="default">
       <sourceRoot location="models" />
     </modelRoot>
-    <modelRoot contentPath="${mps_home}/plugins/vcs-svn/lib" type="java_classes">
-      <sourceRoot location="vcs-svn.jar" />
-      <PackageScope skip-private="false">
-        <include prefix="org.jetbrains.idea.svn." />
-      </PackageScope>
-    </modelRoot>
   </models>
   <facets>
     <facet type="java" compile="ext" classes="provided" ext="yes">

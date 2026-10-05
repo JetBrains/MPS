@@ -17,7 +17,7 @@ public class InstalVcsAddons_Action extends BaseAction {
   private static final Icon ICON = null;
 
   public InstalVcsAddons_Action() {
-    super("Install MPS VCS Add-ons...", "Install custom merge driver for Git and custom diff3 for Subversion", ICON);
+    super("Install MPS VCS Add-ons...", "Install custom merge driver for Git", ICON);
     this.setIsAlwaysVisible(true);
     this.setExecuteOutsideCommand(true);
     updateInBackground(true);

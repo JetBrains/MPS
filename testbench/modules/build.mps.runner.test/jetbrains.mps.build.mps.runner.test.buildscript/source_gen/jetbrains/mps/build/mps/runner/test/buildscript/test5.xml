@@ -514,7 +514,6 @@
       <plugin path="${artifacts.mps}/plugins/mps-git4idea" id="jetbrains.mps.git4idea.stubs" />
       <plugin path="${artifacts.mps}/plugins/mps-vcs" id="jetbrains.mps.vcs" />
       <plugin path="${artifacts.mps}/plugins/vcs-git" id="Git4Idea" />
-      <plugin path="${artifacts.mps}/plugins/vcs-svn" id="Subversion" />
       <library file="${build.layout}/jetbrains.mps.build.mps.runner.test.test5.jar" />
       <library file="${build.layout}/jetbrains.mps.build.mps.runner.test.test1.jar" />
       <macro name="mps_home" path="${mps_home}" />

@@ -365,21 +365,6 @@
         <node concept="17QB3L" id="60S3DtlPd$J" role="1tU5fm" />
       </node>
     </node>
-    <node concept="2YIFZL" id="60S3DtlPd$K" role="jymVt">
-      <property role="TrG5h" value="isSvnPluginEnabled" />
-      <node concept="10P_77" id="60S3DtlPd$L" role="3clF45" />
-      <node concept="3clFbS" id="60S3DtlPd$M" role="3clF47">
-        <node concept="3clFbF" id="60S3DtlPd$N" role="3cqZAp">
-          <node concept="1rXfSq" id="4hiugqysw3T" role="3clFbG">
-            <ref role="37wK5l" node="60S3DtlPd$p" resolve="isPluginEnabled" />
-            <node concept="Xl_RD" id="60S3DtlPd$P" role="37wK5m">
-              <property role="Xl_RC" value="Subversion" />
-            </node>
-          </node>
-        </node>
-      </node>
-      <node concept="3Tm1VV" id="60S3DtlPd$Q" role="1B3o_S" />
-    </node>
     <node concept="2YIFZL" id="60S3DtlPd$R" role="jymVt">
       <property role="TrG5h" value="isGitPluginEnabled" />
       <node concept="10P_77" id="60S3DtlPd$S" role="3clF45" />

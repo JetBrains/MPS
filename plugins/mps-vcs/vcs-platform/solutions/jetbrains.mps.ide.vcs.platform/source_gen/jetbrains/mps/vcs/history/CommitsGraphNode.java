@@ -43,7 +43,6 @@ import com.intellij.openapi.vcs.annotate.AnnotationTooltipBuilder;
 import git4idea.log.GitCommitTooltipLinkHandler;
 import com.intellij.openapi.vcs.VcsBundle;
 import com.intellij.util.text.DateFormatUtil;
-import org.jetbrains.idea.svn.history.SvnFileRevision;
 
 @GeneratedClass(nodeId = "7498720847979280337", model = "r:2897a5d4-aed7-4a4e-ac07-fbc830f9ed9b(jetbrains.mps.vcs.history)")
 public final class CommitsGraphNode implements Comparable {
@@ -311,7 +310,7 @@ public final class CommitsGraphNode implements Comparable {
       return "Local Changes";
     }
 
-    String tooltipText = null;
+    String tooltipText;
     if (myRevision instanceof GitFileRevision) {
       GitFileRevision gitRevision = (GitFileRevision) myRevision;
       Date date = (Boolean.TRUE.equals(ApplicationManager.getApplication().getService(VcsLogApplicationSettings.class).get(CommonUiProperties.PREFER_COMMIT_DATE)) ? gitRevision.getRevisionDate() : gitRevision.getAuthorDate());
@@ -323,7 +322,7 @@ public final class CommitsGraphNode implements Comparable {
       atb.appendLine(VcsBundle.message("commit.description.tooltip.date", DateFormatUtil.formatDate(date)));
       atb.appendCommitMessageBlock(myRevision.getCommitMessage());
       tooltipText = atb.toString();
-    } else if (myRevision instanceof SvnFileRevision) {
+    } else {
       tooltipText = AnnotationTooltipBuilder.buildSimpleTooltip(project, true, "Revision", String.valueOf(myRevision.getRevisionNumber()), myRevision.getCommitMessage());
     }
     if (tooltipText != null) {

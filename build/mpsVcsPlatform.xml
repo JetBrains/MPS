@@ -39,7 +39,6 @@
   </path>
   
   <path id="path.java.library.idea-vcs">
-    <fileset dir="${artifacts.IDEA}/plugins/vcs-svn/lib" includes="*.jar" />
     <fileset dir="${artifacts.IDEA}/plugins/vcs-git/lib" includes="*.jar" />
     <fileset dir="${artifacts.IDEA}/plugins/vcs-git/lib/modules" includes="*.jar" />
     <fileset dir="${artifacts.IDEA}/lib" includes="*.jar" />
