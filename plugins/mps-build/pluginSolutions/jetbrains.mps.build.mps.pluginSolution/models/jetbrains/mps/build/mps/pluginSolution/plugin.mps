@@ -13439,9 +13439,6 @@
                           </node>
                         </node>
                         <node concept="398223" id="2OJWaFGOVpK" role="39821P">
-                          <node concept="3_I8Xc" id="3nGzrDEksX6" role="39821P">
-                            <ref role="3_I8Xa" to="ffeo:3nGzrDEfcNJ" resolve="vcs-svn" />
-                          </node>
                           <node concept="3_I8Xc" id="73fHb9hpuxm" role="39821P">
                             <ref role="3_I8Xa" to="ffeo:I6XuqH2zYV" resolve="vcs-git" />
                           </node>
