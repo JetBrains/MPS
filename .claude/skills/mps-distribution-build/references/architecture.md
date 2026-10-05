@@ -78,8 +78,8 @@ This script takes `build/artifacts/mps/` and produces every downloadable archive
 | `${build.number}.zip` | "all platforms" zip — MPS skeleton + native libs (jna, pty4j, skiko, `bin/win`, `bin/linux`, `bin/mac`) for every platform. **No JBR.** |
 | `${build.number}-linux.tar.gz` | Linux tarball — MPS skeleton + Linux-only native libs + Linux launchers; JBR is bundled here (added per-platform). |
 | `${build.number}-windows.zip` | Windows zip — MPS skeleton + Windows native libs + `mps64.exe`, `mps.bat` + Windows JBR (`jbr-windows-x64`). |
-| `${build.number}-macos.zip` | macOS `.app` bundle (x86_64) + macOS JBR. |
-| `${build.number}-macos-aarch64.zip` | macOS `.app` bundle (arm64) + macOS arm64 JBR. |
+| `${build.number}-macos.tar.gz` | macOS `.app` bundle (x86_64) gzip tarball + macOS JBR. |
+| `${build.number}-macos-aarch64.tar.gz` | macOS `.app` bundle (arm64) gzip tarball + macOS arm64 JBR. |
 
 For each platform it:
 - copies version-templated launchers (`mps.sh`, `mps.bat`, `mps64.vmoptions`, `Info.plist`, `product-info.json`) from `plugins/mps-build/solutions/mpsBuild/source_gen/jetbrains/mps/ide/build/`;
