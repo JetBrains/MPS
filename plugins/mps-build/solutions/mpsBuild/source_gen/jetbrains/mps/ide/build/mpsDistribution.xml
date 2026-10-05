@@ -174,7 +174,6 @@
         <include name="defender-exclusions*" />
       </zipfileset>
       <zipfileset dir="${basedir}/bin/win/amd64" prefix="MPS ${mpsBootstrapCore.version}/bin/win" />
-      <zipfileset file="${basedir}/bin/linux/amd64/libdbm.so" prefix="MPS ${mpsBootstrapCore.version}/bin/linux" />
       <zipfileset file="${basedir}/bin/linux/amd64/fsnotifier" prefix="MPS ${mpsBootstrapCore.version}/bin/linux" filemode="755" />
       <zipfileset file="${basedir}/bin/linux/amd64/restarter" prefix="MPS ${mpsBootstrapCore.version}/bin/linux" filemode="755" />
       <zipfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS ${mpsBootstrapCore.version}/bin/mac" />
@@ -285,7 +284,6 @@
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-linux-x64.so" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/jna/linux-x86-64/libjnidispatch.so" prefix="MPS ${mpsBootstrapCore.version}/lib/jna" />
       <tarfileset file="${basedir}/lib/pty4j/linux/x86-64/libpty.so" prefix="MPS ${mpsBootstrapCore.version}/lib/pty4j/linux/x86-64" />
-      <tarfileset file="${basedir}/bin/linux/amd64/libdbm.so" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <tarfileset file="${basedir}/bin/linux/amd64/fsnotifier" prefix="MPS ${mpsBootstrapCore.version}/bin" filemode="755" />
       <tarfileset file="${basedir}/bin/linux/amd64/restarter" prefix="MPS ${mpsBootstrapCore.version}/bin" filemode="755" />
       <tarfileset prefix="MPS ${mpsBootstrapCore.version}/plugins">
