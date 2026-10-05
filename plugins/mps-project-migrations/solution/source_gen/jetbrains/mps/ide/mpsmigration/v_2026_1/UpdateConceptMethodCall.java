@@ -10,9 +10,18 @@ import org.jetbrains.mps.openapi.model.SNode;
 import java.util.ArrayList;
 import java.util.Collections;
 import jetbrains.mps.progress.EmptyProgressMonitor;
+import java.util.HashSet;
+import org.jetbrains.mps.openapi.model.SModel;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import jetbrains.mps.smodel.action.SNodeFactoryOperations;
-import org.jetbrains.mps.openapi.language.SConcept;
+import org.jetbrains.mps.openapi.language.SLanguage;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
+import org.jetbrains.mps.openapi.module.SModule;
+import jetbrains.mps.smodel.ModelImports;
+import jetbrains.mps.smodel.SModelInternal;
+import jetbrains.mps.project.AbstractModule;
+import java.util.Map;
+import org.jetbrains.mps.openapi.language.SConcept;
 
 public class UpdateConceptMethodCall extends BaseProjectMigration {
   public UpdateConceptMethodCall() {
@@ -35,8 +44,34 @@ public class UpdateConceptMethodCall extends BaseProjectMigration {
     }
     CollectConsumer<SNode> cc = new CollectConsumer<>(new ArrayList<>(1000));
     fum.findInstances(project.getScope(), Collections.singleton(CONCEPTS.Node_ConceptMethodCall$mz), true, cc, new EmptyProgressMonitor());
+    HashSet<SModel> modelsTouched = new HashSet<>();
     for (SNode n : cc.getResult()) {
+      SModel model = SNodeOperations.getModel(n);
+      modelsTouched.add(model);
       SNodeFactoryOperations.replaceWithNewChild(n, CONCEPTS.Node_ConceptMethodCall$RC);
+    }
+    // occasionally, use of behavior methods doesn't drag j.m.lang.behavior use
+    SLanguage lang_behavior = MetaAdapterFactory.getLanguage(0xaf65afd8f0dd4942L, 0x87d963a55f2a9db1L, "jetbrains.mps.lang.behavior");
+    // don't want to go through LanguageRegistry just to take this version number
+    final int lang_behavior_actual_ver = 2;
+    HashSet<SModule> modules2refresh = new HashSet<>();
+    for (SModel m : modelsTouched) {
+      ModelImports mi = new ModelImports(m);
+      if (mi.getUsedLanguages().contains(lang_behavior)) {
+        continue;
+      }
+      mi.addUsedLanguage(lang_behavior);
+      ((SModelInternal) m).setLanguageImportVersion(lang_behavior, lang_behavior_actual_ver);
+      modules2refresh.add(m.getModule());
+    }
+    for (SModule m : modules2refresh) {
+      if (m instanceof AbstractModule && ((AbstractModule) m).getModuleDescriptor() != null) {
+        Map<SLanguage, Integer> languageVersions = ((AbstractModule) m).getModuleDescriptor().getLanguageVersions();
+        if (!(languageVersions.containsKey(lang_behavior))) {
+          languageVersions.put(lang_behavior, lang_behavior_actual_ver);
+          ((AbstractModule) m).setChanged();
+        }
+      }
     }
     return true;
   }

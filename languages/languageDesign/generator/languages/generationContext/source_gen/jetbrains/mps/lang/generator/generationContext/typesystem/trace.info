@@ -1473,69 +1473,59 @@
       </scope>
     </file>
     <file name="typeof_GenerationContextOp_CopyWithTrace_InferenceRule.java">
-      <node id="6530662532175364819" at="23,7,24,91" concept="5" />
-      <node id="6530662532175364819" at="24,91,25,225" concept="5" />
-      <node id="6530662532175364819" at="25,225,26,330" concept="2" />
-      <node id="6581160798879478291" at="29,5,30,44" concept="5" />
-      <node id="6581160798879478291" at="30,44,31,223" concept="5" />
-      <node id="6581160798879478291" at="31,223,32,304" concept="2" />
-      <node id="6530662532175362101" at="35,50,36,57" concept="6" />
-      <node id="6530662532175362101" at="38,68,39,102" concept="6" />
-      <node id="6530662532175362101" at="41,30,42,17" concept="6" />
-      <node id="6530662532175365178" at="44,67,45,30" concept="5" />
-      <node id="6530662532175365178" at="45,30,46,30" concept="5" />
+      <node id="4631125170647745398" at="21,115,22,228" concept="5" />
+      <node id="6530662532175364819" at="24,7,25,46" concept="5" />
+      <node id="6530662532175364819" at="25,46,26,225" concept="5" />
+      <node id="6530662532175364819" at="26,225,27,155" concept="2" />
+      <node id="6581160798879478291" at="30,5,31,44" concept="5" />
+      <node id="6581160798879478291" at="31,44,32,223" concept="5" />
+      <node id="6581160798879478291" at="32,223,33,273" concept="2" />
+      <node id="6530662532175362101" at="36,50,37,57" concept="6" />
+      <node id="6530662532175362101" at="39,68,40,102" concept="6" />
+      <node id="6530662532175362101" at="42,30,43,17" concept="6" />
+      <node id="6530662532175365178" at="45,67,46,30" concept="5" />
       <node id="6530662532175365178" at="46,30,47,30" concept="5" />
-      <node id="6530662532175365178" at="47,30,48,222" concept="5" />
-      <node id="6530662532175365178" at="48,222,49,34" concept="2" />
-      <node id="6530662532175365178" at="49,34,50,220" concept="5" />
-      <node id="6530662532175365178" at="50,220,51,35" concept="2" />
-      <node id="6530662532175365178" at="51,35,52,165" concept="2" />
-      <node id="6530662532175365178" at="52,165,53,224" concept="5" />
-      <node id="6530662532175365178" at="53,224,54,35" concept="2" />
-      <node id="6530662532175365178" at="54,35,55,165" concept="2" />
-      <node id="6530662532175365178" at="55,165,56,24" concept="6" />
-      <node id="6581160798879478324" at="58,65,59,30" concept="5" />
-      <node id="6581160798879478324" at="59,30,60,223" concept="5" />
-      <node id="6581160798879478324" at="60,223,61,34" concept="2" />
-      <node id="6581160798879478324" at="61,34,62,24" concept="6" />
-      <node id="6530662532175362101" at="66,0,67,0" concept="8" trace="nodes$IBQe" />
-      <node id="6530662532175362101" at="70,0,71,0" concept="8" trace="GenerationContextOp_CopyWithTrace$$w" />
+      <node id="6530662532175365178" at="47,30,48,30" concept="5" />
+      <node id="6530662532175365178" at="48,30,49,222" concept="5" />
+      <node id="6530662532175365178" at="49,222,50,34" concept="2" />
+      <node id="6530662532175365178" at="50,34,51,220" concept="5" />
+      <node id="6530662532175365178" at="51,220,52,35" concept="2" />
+      <node id="6530662532175365178" at="52,35,53,165" concept="2" />
+      <node id="6530662532175365178" at="53,165,54,224" concept="5" />
+      <node id="6530662532175365178" at="54,224,55,35" concept="2" />
+      <node id="6530662532175365178" at="55,35,56,165" concept="2" />
+      <node id="6530662532175365178" at="56,165,57,24" concept="6" />
+      <node id="6530662532175362101" at="61,0,62,0" concept="8" trace="nodes$IBQe" />
+      <node id="6530662532175362101" at="65,0,66,0" concept="8" trace="GenerationContextOp_CopyWithTrace$$w" />
       <node id="6530662532175362101" at="19,0,21,0" concept="1" trace="typeof_GenerationContextOp_CopyWithTrace_InferenceRule#()V" />
-      <node id="6530662532175362101" at="35,0,38,0" concept="4" trace="getApplicableConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
-      <node id="6530662532175362101" at="38,0,41,0" concept="4" trace="isApplicableAndPattern#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;" />
-      <node id="6530662532175362101" at="41,0,44,0" concept="4" trace="overrides#()Z" />
-      <node id="6530662532175364819" at="22,59,27,7" concept="0" />
-      <node id="6581160798879478291" at="28,5,33,5" concept="0" />
-      <node id="6581160798879478324" at="58,0,64,0" concept="9" trace="_quotation_createNode_9ls339_a1a0c0b0b#()Lorg/jetbrains/mps/openapi/model/SNode;" />
-      <node id="6530662532175364819" at="21,115,28,5" concept="3" />
-      <node id="6530662532175362101" at="21,0,35,0" concept="4" trace="applyRule#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/typesystem/inference/TypeCheckingContext;Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;)V" />
-      <node id="6530662532175365178" at="44,0,58,0" concept="9" trace="_quotation_createNode_9ls339_a1a0c0a0a0b#()Lorg/jetbrains/mps/openapi/model/SNode;" />
+      <node id="6530662532175362101" at="36,0,39,0" concept="4" trace="getApplicableConcept#()Lorg/jetbrains/mps/openapi/language/SAbstractConcept;" />
+      <node id="6530662532175362101" at="39,0,42,0" concept="4" trace="isApplicableAndPattern#(Lorg/jetbrains/mps/openapi/model/SNode;)Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;" />
+      <node id="6530662532175362101" at="42,0,45,0" concept="4" trace="overrides#()Z" />
+      <node id="6530662532175364819" at="23,59,28,7" concept="0" />
+      <node id="6581160798879478291" at="29,5,34,5" concept="0" />
+      <node id="6530662532175364819" at="22,228,29,5" concept="3" />
+      <node id="6530662532175365178" at="45,0,59,0" concept="9" trace="_quotation_createNode_9ls339_a1a0c0a0b0b#()Lorg/jetbrains/mps/openapi/model/SNode;" />
+      <node id="6530662532175362101" at="21,0,36,0" concept="4" trace="applyRule#(Lorg/jetbrains/mps/openapi/model/SNode;Ljetbrains/mps/typesystem/inference/TypeCheckingContext;Ljetbrains/mps/lang/typesystem/runtime/IsApplicableStatus;)V" />
       <scope id="6530662532175362101" at="19,67,19,67" />
-      <scope id="6530662532175362101" at="35,50,36,57" />
-      <scope id="6530662532175362101" at="38,68,39,102" />
-      <scope id="6530662532175362101" at="41,30,42,17" />
+      <scope id="6530662532175362101" at="36,50,37,57" />
+      <scope id="6530662532175362101" at="39,68,40,102" />
+      <scope id="6530662532175362101" at="42,30,43,17" />
       <scope id="6530662532175362101" at="19,0,21,0" />
-      <scope id="6530662532175364819" at="23,7,26,330">
+      <scope id="6530662532175364819" at="24,7,27,155">
         <var name="_info_12389875345" id="6530662532175364819" />
         <var name="_nodeToCheck_1029348928467" id="6530662532175364819" />
       </scope>
-      <scope id="6581160798879478291" at="29,5,32,304">
+      <scope id="6581160798879478291" at="30,5,33,273">
         <var name="_info_12389875345" id="6581160798879478291" />
         <var name="_nodeToCheck_1029348928467" id="6581160798879478291" />
       </scope>
-      <scope id="6530662532175362101" at="35,0,38,0" />
-      <scope id="6530662532175362101" at="38,0,41,0">
+      <scope id="6530662532175362101" at="36,0,39,0" />
+      <scope id="6530662532175362101" at="39,0,42,0">
         <var name="argument" id="6530662532175362101" />
       </scope>
-      <scope id="6530662532175362101" at="41,0,44,0" />
-      <scope id="6581160798879478324" at="58,65,62,24">
-        <var name="nb" id="6581160798879478324" />
-        <var name="quotedNode_1" id="6581160798879478324" />
-      </scope>
-      <scope id="6530662532175364819" at="22,59,27,7" />
-      <scope id="6581160798879478324" at="58,0,64,0" />
-      <scope id="6530662532175362102" at="21,115,33,5" />
-      <scope id="6530662532175365178" at="44,67,56,24">
+      <scope id="6530662532175362101" at="42,0,45,0" />
+      <scope id="6530662532175364819" at="23,59,28,7" />
+      <scope id="6530662532175365178" at="45,67,57,24">
         <var name="nb" id="6530662532175365178" />
         <var name="nb1" id="6530662532175365178" />
         <var name="nb2" id="6530662532175365178" />
@@ -1543,15 +1533,18 @@
         <var name="quotedNode_2" id="6530662532175365178" />
         <var name="quotedNode_3" id="6530662532175365178" />
       </scope>
-      <scope id="6530662532175362101" at="21,0,35,0">
+      <scope id="6530662532175362102" at="21,115,34,5">
+        <var name="paramType" id="4631125170647745401" />
+      </scope>
+      <scope id="6530662532175365178" at="45,0,59,0" />
+      <scope id="6530662532175362101" at="21,0,36,0">
         <var name="op" id="6530662532175362101" />
         <var name="status" id="6530662532175362101" />
         <var name="typeCheckingContext" id="6530662532175362101" />
       </scope>
-      <scope id="6530662532175365178" at="44,0,58,0" />
-      <unit id="6530662532175362101" at="65,0,68,0" name="jetbrains.mps.lang.generator.generationContext.typesystem.typeof_GenerationContextOp_CopyWithTrace_InferenceRule$LINKS" />
-      <unit id="6530662532175362101" at="69,0,72,0" name="jetbrains.mps.lang.generator.generationContext.typesystem.typeof_GenerationContextOp_CopyWithTrace_InferenceRule$CONCEPTS" />
-      <unit id="6530662532175362101" at="18,0,73,0" name="jetbrains.mps.lang.generator.generationContext.typesystem.typeof_GenerationContextOp_CopyWithTrace_InferenceRule" />
+      <unit id="6530662532175362101" at="60,0,63,0" name="jetbrains.mps.lang.generator.generationContext.typesystem.typeof_GenerationContextOp_CopyWithTrace_InferenceRule$LINKS" />
+      <unit id="6530662532175362101" at="64,0,67,0" name="jetbrains.mps.lang.generator.generationContext.typesystem.typeof_GenerationContextOp_CopyWithTrace_InferenceRule$CONCEPTS" />
+      <unit id="6530662532175362101" at="18,0,68,0" name="jetbrains.mps.lang.generator.generationContext.typesystem.typeof_GenerationContextOp_CopyWithTrace_InferenceRule" />
     </file>
   </root>
   <root nodeRef="r:00000000-0000-4000-0000-011c895902f1(jetbrains.mps.lang.generator.generationContext.typesystem)/654553635094950296">
