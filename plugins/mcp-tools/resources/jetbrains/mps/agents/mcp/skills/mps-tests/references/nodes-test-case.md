@@ -40,6 +40,8 @@ The most idiomatic way to test typesystem/constraints/scope rules is to annotate
 
 The visual cue in the editor is `<check ... has error IsNotSubtypeOf>` or `<check expression has type int>` wrapping the asserted node.
 
+Before writing a `has type` assertion, run `mps_mcp_query_nodes` `GET_TYPE` on the sandbox node to learn the actual inferred type and its `presentation`; it answers the node's own type, not the context's *expected* type that `has expected type` checks.
+
 Scope tests use the **`ScopesTest`** annotation — see `references/scopes-test.md`.
 
 ### Example — typesystem assertion inside a snippet

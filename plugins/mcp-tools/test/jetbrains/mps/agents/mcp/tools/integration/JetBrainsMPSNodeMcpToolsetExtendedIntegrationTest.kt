@@ -31,7 +31,7 @@ import kotlin.collections.listOf
  *  - reference set/delete
  *  - child replace/delete
  *  - `query_nodes` ops: `GET_PARENT`, `GET_ROOT`, `GET_MODEL_FOR_NODE`,
- *    `NODE_INDEX`, `SIBLINGS`, `GET_CHILD_ROLE`
+ *    `NODE_INDEX`, `SIBLINGS`, `GET_CHILD_ROLE`, `GET_TYPE`
  *  - `alter_nodes` ops: `MOVE_CHILD`, `MOVE_NODE_TO_PARENT`,
  *    `MAKE` (input validation only), `FIX_REFERENCES`,
  *  - `show_node_representation`, `print_node_json` (shallow + deep),
@@ -557,6 +557,43 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val arr = parseDataArray(response)
         val names = arr.map { it.asJsonObject.get("name").asString }.toSet()
         assertEquals(setOf("a", "b"), names)
+    }
+
+    @Test
+    fun `query_nodes GET_TYPE answers the computed type of an expression`() {
+        val host = createTypeHost()
+        val data = getTypeData(host.plusRef)
+        assertEquals("IntegerType", data.get("concept").asString)
+        assertEquals("int", data.get("presentation").asString)
+        assertFalse("a fully inferred type has no hasTypeVariables key: $data", data.has("hasTypeVariables"))
+        val blueprint = data.getAsJsonObject("blueprint")
+        assertEquals("IntegerType", blueprint.get("concept").asString)
+        assertNoReferenceKey(blueprint)
+    }
+
+    @Test
+    fun `query_nodes GET_TYPE answers the declared type of a field`() {
+        val host = createTypeHost()
+        val data = getTypeData(host.fieldRef)
+        assertEquals("IntegerType", data.get("concept").asString)
+        assertNoReferenceKey(data)
+    }
+
+    @Test
+    fun `query_nodes GET_TYPE answers data null for a node without a type`() {
+        val rootRef = createConceptRoot("TypeHostConcept")
+        addPropertyChild(rootRef, "untyped", "string")
+        val childRef = readOnRepo {
+            val child = resolveNode(rootRef).children.single { it.containmentLink?.name == "propertyDeclaration" }
+            PersistenceFacade.getInstance().asString(child.reference)
+        }
+        // The root's type comes back as a bare type variable, the non-root child's as null; both answer null.
+        for (ref in listOf(rootRef, childRef)) {
+            val response = runTool(toolset) {
+                it.mps_mcp_query_nodes(MPSQueryOperation.GET_TYPE, """{ "nodeReference": "$ref" }""")
+            }
+            assertEquals(JsonParser.parseString("""{"ok":true,"data":null}"""), JsonParser.parseString(response))
+        }
     }
 
     @Test
@@ -2122,6 +2159,52 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
         val obj = JsonParser.parseString(resp).asJsonObject
         assertTrue("expected ok envelope when seeding property: $resp", obj.get("ok").asBoolean)
+    }
+
+    private class TypeHost(val fieldRef: String, val plusRef: String)
+
+    /** `class TypeHost { int total = 1 + 2; }`, parsed into a fresh solution's model. */
+    private fun createTypeHost(): TypeHost {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"class TypeHost { int total = 1 + 2; }","featureKind":"CLASS",
+                    "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
+            )
+        }
+        assertTrue("expected ok envelope from parse_java_and_insert: $response",
+            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+        return readOnRepo {
+            val field = model.rootNodes.single { it.name == "TypeHost" }.children.single { it.name == "total" }
+            val plus = field.children.single { it.containmentLink?.name == "initializer" }
+            assertEquals("PlusExpression", plus.concept.name)
+            TypeHost(
+                PersistenceFacade.getInstance().asString(field.reference),
+                PersistenceFacade.getInstance().asString(plus.reference),
+            )
+        }
+    }
+
+    private fun getTypeData(nodeRef: String): JsonObject {
+        val response = runTool(toolset) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_TYPE, """{ "nodeReference": "$nodeRef" }""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        assertTrue("expected a type, got: $response", obj.get("data").isJsonObject)
+        return obj.getAsJsonObject("data")
+    }
+
+    /** GET_TYPE strips every node record's `reference`, so none may appear anywhere in its answer. */
+    private fun assertNoReferenceKey(element: JsonElement) {
+        when {
+            element.isJsonObject -> element.asJsonObject.entrySet().forEach { (key, value) ->
+                assertNotEquals("unexpected node reference in $element", "reference", key)
+                assertNoReferenceKey(value)
+            }
+            element.isJsonArray -> element.asJsonArray.forEach(::assertNoReferenceKey)
+        }
     }
 
     private fun resolveNode(ref: String): SNode =

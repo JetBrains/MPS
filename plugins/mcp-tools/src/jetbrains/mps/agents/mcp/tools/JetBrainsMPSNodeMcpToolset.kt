@@ -4,6 +4,7 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
@@ -13,6 +14,7 @@ import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.MessageStatus
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
+import jetbrains.mps.newTypesystem.TypesUtil
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
@@ -23,6 +25,7 @@ import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.project.validation.ModelValidator
 import jetbrains.mps.project.validation.ValidationUtil
+import jetbrains.mps.typechecking.TypecheckingFacade
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
@@ -41,6 +44,7 @@ enum class MPSQueryOperation {
     NODE_INDEX,
     SIBLINGS,
     GET_CHILD_ROLE,
+    GET_TYPE,
     FIND_USAGES,
     FIND_INSTANCES,
 }
@@ -112,7 +116,8 @@ private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys
     MPSQueryOperation.FIND_INSTANCES -> FIND_INSTANCES_KEYS
     MPSQueryOperation.FIND_USAGES -> FIND_USAGES_KEYS
     MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
-    MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE -> NODE_INFO_KEYS
+    MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
+    MPSQueryOperation.GET_TYPE -> NODE_INFO_KEYS
 }
 
 /**
@@ -150,13 +155,16 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         string or nonempty string array, and every reference must resolve or the whole query returns INVALID_REQUEST. FIND_USAGES: find nodes
         whose references point at the given node — incoming references, not instances (`nodeReference`; optional `scope` as above,
         optional `rootsOnly`:true to match only root source nodes). GET_PARENT, GET_ROOT,
-        GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE take `nodeReference`. Returns `{"ok":true,"data":{...}}`
+        GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE take `nodeReference`. GET_TYPE answers the type
+        the typesystem assigns to the node as `{concept, conceptReference, presentation, hasTypeVariables?, blueprint}`;
+        no reference to the type is offered (it is usually a computed copy), `hasTypeVariables`:true marks a type that is not
+        fully instantiated, and `data` is null when the node has no type or it could not be inferred. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
     """)
     suspend fun mps_mcp_query_nodes(
-        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String = "",
+        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE)") operation: String = "",
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
@@ -200,7 +208,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
             when (operation) {
                 MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
-                MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE ->
+                MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
+                MPSQueryOperation.GET_TYPE ->
                     opNodeInfoRead(mpsProject, operation, params, maxInlineBytes)
 
                 MPSQueryOperation.FIND_USAGES -> opFindUsages(mpsProject, params, maxInlineBytes)
@@ -278,7 +287,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     /**
      * Handles the read-only "node info" cases (GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE,
-     * NODE_INDEX, SIBLINGS, GET_CHILD_ROLE) — they all share the same boilerplate of
+     * NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE) — they all share the same boilerplate of
      * resolving a node from the 'nodeReference' parameter under a read action and then dispatching
      * to a small per-case body.
      */
@@ -309,6 +318,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 MPSQueryOperation.NODE_INDEX -> opNodeIndex(node)
                 MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject, maxInlineBytes)
                 MPSQueryOperation.GET_CHILD_ROLE -> opGetChildRole(node, mpsProject)
+                MPSQueryOperation.GET_TYPE -> opGetType(node, mpsProject)
                 MPSQueryOperation.FIND_USAGES,
                 MPSQueryOperation.FIND_INSTANCES -> errJson("Unsupported operation: $operation")
             }
@@ -334,6 +344,39 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     private fun opGetChildRole(node: SNode, mpsProject: MPSProject): String {
         val link = node.containmentLink ?: return errJson("Node is a root node or not in a containment role")
         return okJson(containmentLinkInfoJsonObject(link, mpsProject.repository, currentProject = mpsProject))
+    }
+
+    /**
+     * The type the typesystem assigns to [node]. A non-root node's type is a free-floating copy
+     * (`Equations.expandNode` copies it) whose `null/<id>` reference would not resolve, while a
+     * root's comes back unexpanded and may be a stored node; so no reference is offered at all and
+     * every node record's `reference` is stripped from the blueprint. A root no rule types answers
+     * a bare type variable; that is reported as no type, like the `null` a non-root node gets.
+     */
+    private fun opGetType(node: SNode, mpsProject: MPSProject): String {
+        val type = TypecheckingFacade.getFromContext().getTypeOf(node)
+        if (type == null || TypesUtil.isVariable(type)) return okJson("null")
+        val result = JsonObject()
+        result.addProperty("concept", type.concept.name)
+        result.addProperty("conceptReference", PersistenceFacade.getInstance().asString(type.concept))
+        result.addProperty("presentation", type.presentation)
+        if (TypesUtil.hasVariablesInside(type)) result.addProperty("hasTypeVariables", true)
+        val blueprint = nodeHierarchyJsonObject(type, deep = true, currentProject = mpsProject)
+        stripNodeReferences(blueprint)
+        result.add("blueprint", blueprint)
+        return okJson(result)
+    }
+
+    /** Reference links keep their `targetReference`; only node records and child summaries write `reference`. */
+    private fun stripNodeReferences(element: JsonElement) {
+        when {
+            element.isJsonObject -> {
+                val obj = element.asJsonObject
+                obj.remove("reference")
+                obj.entrySet().forEach { stripNodeReferences(it.value) }
+            }
+            element.isJsonArray -> element.asJsonArray.forEach(::stripNodeReferences)
+        }
     }
 
     private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
