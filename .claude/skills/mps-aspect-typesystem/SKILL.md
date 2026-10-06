@@ -42,7 +42,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 6. Add `TypesystemQuickFix` roots for any fix you want to attach to reports; wire them via a `helginsIntention`/`TypesystemIntention` child of the `warning`/`error`/`info` statement (see `references/quick-fixes.md`).
 7. Write bodies with BaseLanguage + smodel. Use `when concrete` (`references/when-concrete.md`) when you need resolved types before checking. For helper code, place a `ClassConcept` root directly in the typesystem model and call it from rules.
 8. Validate: `mps_mcp_check_root_node_problems` plus compile the language and test on sample models. A `helginsIntention`-wired quick fix now surfaces in the check report's `quickFixes` array and can be applied with `mps_mcp_apply_intention(nodeReference = <problem node>, intentionId = <fix id>)`; an auto-applicable fix runs under `autoApplyQuickFixes=true`.
-9. Verify an inference rule directly: after the rebuild and `mps_mcp_reload_all`, run `mps_mcp_query_nodes` `GET_TYPE` on a sandbox node and read the type it answers, instead of inferring the result from what `mps_mcp_check_root_node_problems` does or does not report.
+9. Verify an inference rule directly: after the rebuild and `mps_mcp_reload_all`, run `mps_mcp_query_nodes` `GET_TYPE` on a sandbox node and read the type it answers, instead of inferring the result from what `mps_mcp_check_root_node_problems` does or does not report. Verify subtyping, replacement and comparison rules the same way with `mps_mcp_query_types` `IS_SUBTYPE` / `SUPERTYPES` on two types, and an overloaded-operation rule with `OPERATION_TYPE`.
 
 ## Related Skills
 

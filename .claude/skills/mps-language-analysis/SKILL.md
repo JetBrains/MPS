@@ -42,6 +42,10 @@ Use `mps_mcp_query_structure` with `LIST_CONCEPT_ASPECTS` to find associated def
     * **EditorComponentDeclaration**: defines reusable presentation pieces.
     * Check the `editor` model in the response to identify available editors.
 
+## Answering Type Questions
+
+Let the typesystem engine answer instead of reading rule roots: a node's type → `mps_mcp_query_nodes` `GET_TYPE`; does A fit B → `mps_mcp_query_types` `IS_SUBTYPE`; what A widens to → `SUPERTYPES`; what A and B share → `COMMON_SUPERTYPE`; A seen as a given type concept → `COERCE`; the type of `a op b` → `OPERATION_TYPE`. Rule roots cannot tell you what replacement, comparison or overloaded-operation rules decide. Operand forms and outputs: `references/analysis-tools/type-queries.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
+
 ## Related Skills
 
 - **`mps-language-inheritance`** — load when you need extended-language / superconcept / subconcept analysis.

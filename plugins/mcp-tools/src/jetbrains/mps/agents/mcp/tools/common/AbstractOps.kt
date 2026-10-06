@@ -2728,9 +2728,21 @@ abstract class AbstractOps : McpToolset {
 
     protected suspend fun <T> executeShortReadOnEdt(mpsProject: MPSProject, action: () -> T): T {
         return withModalTimeoutOnEdt {
-            mpsProject.modelAccess.computeReadAction {
-                action()
+            // Same capture as executeShortCommandOnEdt: a McpUserException escaping the read action
+            // on the EDT is logged by ActionDispatcher as "Action dispatch failed" before it reaches
+            // the caller's errJson boundary. Rethrow it outside the read action instead.
+            var userException: McpUserException? = null
+            val result = mpsProject.modelAccess.computeReadAction {
+                try {
+                    action()
+                } catch (e: McpUserException) {
+                    userException = e
+                    null
+                }
             }
+            userException?.let { throw it }
+            @Suppress("UNCHECKED_CAST")
+            result as T
         }
     }
 

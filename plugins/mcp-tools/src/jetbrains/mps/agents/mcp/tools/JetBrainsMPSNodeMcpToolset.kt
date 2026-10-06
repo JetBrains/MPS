@@ -4,7 +4,6 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
@@ -158,7 +157,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE take `nodeReference`. GET_TYPE answers the type
         the typesystem assigns to the node as `{concept, conceptReference, presentation, hasTypeVariables?, blueprint}`;
         no reference to the type is offered (it is usually a computed copy), `hasTypeVariables`:true marks a type that is not
-        fully instantiated, and `data` is null when the node has no type or it could not be inferred. Returns `{"ok":true,"data":{...}}`
+        fully instantiated, and `data` is null when the node has no type or it could not be inferred. To compare or widen
+        types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE) use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
@@ -347,36 +347,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     /**
-     * The type the typesystem assigns to [node]. A non-root node's type is a free-floating copy
-     * (`Equations.expandNode` copies it) whose `null/<id>` reference would not resolve, while a
-     * root's comes back unexpanded and may be a stored node; so no reference is offered at all and
-     * every node record's `reference` is stripped from the blueprint. A root no rule types answers
-     * a bare type variable; that is reported as no type, like the `null` a non-root node gets.
+     * The type the typesystem assigns to [node], printed by [typeJsonObject]. A root no rule types
+     * answers a bare type variable; that is reported as no type, like the `null` a non-root node gets.
      */
     private fun opGetType(node: SNode, mpsProject: MPSProject): String {
         val type = TypecheckingFacade.getFromContext().getTypeOf(node)
         if (type == null || TypesUtil.isVariable(type)) return okJson("null")
-        val result = JsonObject()
-        result.addProperty("concept", type.concept.name)
-        result.addProperty("conceptReference", PersistenceFacade.getInstance().asString(type.concept))
-        result.addProperty("presentation", type.presentation)
-        if (TypesUtil.hasVariablesInside(type)) result.addProperty("hasTypeVariables", true)
-        val blueprint = nodeHierarchyJsonObject(type, deep = true, currentProject = mpsProject)
-        stripNodeReferences(blueprint)
-        result.add("blueprint", blueprint)
-        return okJson(result)
-    }
-
-    /** Reference links keep their `targetReference`; only node records and child summaries write `reference`. */
-    private fun stripNodeReferences(element: JsonElement) {
-        when {
-            element.isJsonObject -> {
-                val obj = element.asJsonObject
-                obj.remove("reference")
-                obj.entrySet().forEach { stripNodeReferences(it.value) }
-            }
-            element.isJsonArray -> element.asJsonArray.forEach(::stripNodeReferences)
-        }
+        return okJson(typeJsonObject(type, mpsProject))
     }
 
     private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {

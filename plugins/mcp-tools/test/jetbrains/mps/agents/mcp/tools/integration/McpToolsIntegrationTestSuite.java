@@ -43,6 +43,7 @@ import java.lang.reflect.Field;
     ScaffoldEditorStalenessTest.class,
     JetBrainsMPSNodeMcpToolsetIntegrationTest.class,
     JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.class,
+    JetBrainsMPSTypesMcpToolsetIntegrationTest.class,
     JetBrainsMPSIntentionsMcpToolsetIntegrationTest.class,
     JetBrainsMPSRootNodeMcpToolsetIntegrationTest.class,
     NodeFactoryOnBlueprintPathIntegrationTest.class,
