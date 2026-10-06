@@ -257,3 +257,33 @@ A scratch solution (deleted afterwards) with the H7 class plus `void m(int p) { 
 - With the root open in an editor the answers are unchanged (`Object`, `int`), as documented.
 - Negative: an unknown node → `NOT_FOUND`; `{}` → `INVALID_REQUEST` naming `nodeReference`; an extra key → `INVALID_REQUEST` listing the accepted set; lower-case `get_expected_type` is accepted; `GET_EXPECTED_TYPES` → `INVALID_REQUEST` listing the operations.
 - `log/idea.log` for the window: no `Action dispatch failed` or MCP-tool failure. The only SEVERE/WARN entries are unresolved `classifier` references from parsing into the JDK-less scratch solution and `DynamicReference` warnings from VCS change tracking during the module deletion — neither on GET_EXPECTED_TYPE's path.
+
+## Phase C implementation (2026-10-06) — §C plus its share of §G and §H
+
+Scope taken: `rules: [{rule, ruleReference, statement}]` on every `problemJsonObject(item, repo)` whose item is a `RuleIdFlavouredItem` (typesystem, constraints, scope), order kept, reporting rule first; the `{rule, ruleReference, statement}` builder moved from `JetBrainsMPSTypesMcpToolset` into `AbstractOps.ruleJsonObject(statement, root)`, which OPERATION_TYPE's `ruleConflicts` now uses too. `uncheckedSubtrees` in `JetBrainsMPSNodeMcpToolset`: outermost `IDontApplyTypesystemRules`/`ISkipConstraintsChecking` nodes, attribute children walked, on the node/root branch, per root (root summaries and model `perRoot` rows), per model on module `perRoot` rows, and the envelope warning on every clean verdict (node, model, module, truncated module); the tool description names both. Test H9 in `JetBrainsMPSTypesMcpToolsetIntegrationTest`. Docs: `check-root-node-problems-output.md` (the `rules` field, the unchecked-subtrees paragraph, the shape example), `type-queries.md` (decision-table row, "Which rule reported a problem"), `analysis-tools/overview.md`, `mps-aspect-typesystem` step 9. The index is untouched (17390 B).
+
+Deviations from §C:
+
+1. §C's "Structure and scope checkers still run" is wrong about scope: `RefScopeChecker` and `TargetConceptChecker2` use `SKIP_CONSTRAINTS_CONDITION` too, so only `StructureChecker` checks inside a marked subtree. Code comments, tool description and docs say so.
+2. The node branch counts the requested node's subtree, not the root's, since the report is scoped to that node; a node that itself lies in a marked subtree answers 1. The count goes to `details.uncheckedSubtrees` (the node branch has no root summary).
+3. Model and module scope also carry `details.uncheckedSubtrees`, the total, so a clean answer (which has no root entries) states the number outside the warning text.
+4. `rule` falls back to the root's presentation: constraints and behavior roots store no name (`Foo_Constraints`, `Foo_Behavior` come from a getter). Unresolvable rule ids are dropped, as §C says, and duplicates collapsed — unlike `ruleConflicts`, which keeps an unresolved id with `rule:null`.
+5. H9's class is `public class Bad { int x = "s"; int y = "t"; }`: a package-private class draws `check_UnusedPackageClassifier`'s warning, so the clean verdict never comes. Beyond §H9 the test comments out both fields (count 2, warning at node and model scope, `perRoot` rows at model and module scope) and then a nested comment inside one (still 2).
+
+Not covered by tests: a constraints or scope problem carrying `rules` (the BaseLanguage solution fixture produces none deterministically), and the warning on a clean module verdict (a fresh solution's module validation is not guaranteed clean). `assertRulesResolve` checks every `rules` entry the first report has — the type errors and the unused-class warning of suite run 2.
+
+### Implementation review round 1 (Opus) — nothing blocking
+
+Two SHOULD — `rule` is `null` for constraints and scope roots (name fallback), and the docs and §C misstate which checkers skip what (scope and target-concept checkers skip `ISkipConstraintsChecking` too; structure checks run) — and five NITs: this section, test gaps at module scope and for constraints/scope `rules`, a double resolve, "may carry" in the typesystem skill, the console `History` root carrying both markers. All taken except the constraints/scope fixture (reason above). Suite run 1: 1155 finished, 1 failed — H9 itself, the root still had a problem after commenting out (diagnosed in run 2).
+
+### Implementation review round 2 — settled
+
+All fixes confirmed; three optional NITs (`overview.md` wording, the presentation fallback in the docs, a KDoc) taken. Suite run 2: 1155 finished, 1 failed — H9's clean assertion, broken by the unused-class warning (deviation 5). Suite run 3 (final code but for the round-2 doc and KDoc NITs): 1155 finished, 0 failed, 0 ignored, H9 among them.
+
+### Live verification (2026-10-06, MPS restarted from sources by the user at 15:09, after the 15:05 build)
+
+Scratch solutions (deleted afterwards): `public class Bad { public int x = "s"; public boolean y = 1; public java.util.List<String> list = null; }` in a JDK-less solution, and `public class Clean { }` with a `BaseCommentAttribute` wrapping `int z = "q"` added through `mps_mcp_update_node` (no `linkId`; the checkers key on the concept markers only).
+
+- `rules` on every kind of problem: the two type errors → `typeof_VariableDeclaration` (an `InferenceRule`); the out-of-scope `classifier` reference → `ClassifierType_Constraints` (a `ConceptConstraints` root, so a scope problem carries `rules` too — the case H9 cannot produce); "Dynamic reference" → `check_DynamicReference`; an info → `check_StringTypeClassifierType`. `statement` resolves inside `ruleReference`'s root (GET_ROOT) for the inference and constraints rules.
+- `uncheckedSubtrees`: the `Clean` root → `"no problems found"`, `details.uncheckedSubtrees:1` and the envelope warning, and the broken `z` inside the comment is not reported; a node *inside* the commented subtree → the same answer (deviation 2). Model `perRoot` → only the `Clean` row carries `uncheckedSubtrees:1`, plus `details.uncheckedSubtrees:1`; module `perRoot` → the model row and `details` carry it. After moving `Clean` into its own solution, the clean model **and the clean module** verdicts carry `details.uncheckedSubtrees:1` and the warning (the module case H9 does not cover). A model without marked subtrees has no `uncheckedSubtrees` key.
+- `log/idea.log` for the window: no `Action dispatch failed` or MCP-tool failure; only the unresolved-`classifier` SEVERE from parsing into a JDK-less solution and "Models have not been found" WARNs from creating empty solutions.

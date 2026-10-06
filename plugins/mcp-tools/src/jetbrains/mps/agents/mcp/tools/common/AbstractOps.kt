@@ -29,6 +29,7 @@ import jetbrains.mps.errors.item.NodeReportItemBase
 import jetbrains.mps.errors.item.QuickFixBase
 import jetbrains.mps.errors.item.QuickFixReportItem
 import jetbrains.mps.errors.item.QuickFixRuntimeAdapter
+import jetbrains.mps.errors.item.RuleIdFlavouredItem
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
 import jetbrains.mps.ide.MPSCoreComponents
@@ -1797,6 +1798,10 @@ abstract class AbstractOps : McpToolset {
      * the plain form). The key is omitted when empty, to keep reports compact. Each entry mirrors a
      * listing from `mps_mcp_list_node_intentions` — `id` (quick-fix runtime-class FQN, always present),
      * `description`, `autoApplicable` — and is applied via `mps_mcp_apply_intention`.
+     *
+     * A typesystem, constraints or scope problem also gets `rules`: one [ruleJsonObject] per rule id of
+     * the item that resolves, in the item's order — the reporting rule first, then for a typesystem
+     * inequality the rules it was nested in. Omitted when empty, like `quickFixes`.
      */
     private fun problemJsonObject(item: NodeReportItem, repo: SRepository?): JsonObject {
         val obj = problemJsonObject(item.severity, item.message)
@@ -1805,8 +1810,32 @@ abstract class AbstractOps : McpToolset {
             if (fixes.size() > 0) {
                 obj.add("quickFixes", fixes)
             }
+            if (item is RuleIdFlavouredItem) {
+                val rules = JsonArray()
+                for (statement in item.ruleId.orEmpty().mapNotNull { it.sourceNode }.distinct()) {
+                    val node = statement.resolve(repo) ?: continue
+                    rules.add(ruleJsonObject(statement, node.containingRoot))
+                }
+                if (rules.size() > 0) {
+                    obj.add("rules", rules)
+                }
+            }
         }
         return obj
+    }
+
+    /**
+     * `{rule, ruleReference, statement}` for [statement], a node inside a typesystem, constraints or behavior
+     * root (the reporting statement, not the rule root): `rule` and `ruleReference` are [root]'s name — or
+     * presentation, since constraints and behavior roots store none — and reference, `null` when [root] is
+     * `null`.
+     */
+    protected fun ruleJsonObject(statement: SNodeReference, root: SNode?): JsonObject {
+        val result = JsonObject()
+        result.addProperty("rule", root?.let { it.name ?: it.presentation })
+        result.addProperty("ruleReference", root?.let { PersistenceFacade.getInstance().asString(it.reference) })
+        result.addProperty("statement", PersistenceFacade.getInstance().asString(statement))
+        return result
     }
 
     private fun quickFixesJsonArray(item: NodeReportItem, repo: SRepository): JsonArray {

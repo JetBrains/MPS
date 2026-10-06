@@ -20,6 +20,10 @@ Checking a **module** reference or module name covers the module itself (depende
 
 Every `problems[]` entry may carry a `quickFixes` array (omitted when empty). Each fix has an `id` (a stable class FQN — the quick-fix runtime class, always present), a `description` (may be JSON `null` — quick-fixes without a description block), and `autoApplicable`. Apply one with `mps_mcp_apply_intention(nodeReference = <the containing node's reference>, intentionId = <the fix's id>)`. See `references/analysis-tools/intentions-and-quick-fixes.md`.
 
+A typesystem, constraints or scope problem may also carry `rules` (omitted when empty): `[{rule, ruleReference, statement}]`, where `rule` and `ruleReference` are the name (the presentation for constraints and behavior roots, which store none, e.g. `Foo_Constraints`) and reference of the rule root that reported it and `statement` the reporting node inside that rule (the `error` statement or the inequality). The first entry is the reporting rule; for a type inequality the further entries are the rules it was nested in. Open `ruleReference` with `mps_mcp_print_node` to read the rule instead of searching the typesystem aspect for it.
+
+**Commented-out code is not type- or constraints-checked.** The typesystem checkers skip every subtree marked `IDontApplyTypesystemRules`, and the constraints, reference-scope and target-concept checkers every subtree marked `ISkipConstraintsChecking` — a commented-out node, a `lang.text` node wrapper; a console root's history carries both — so a type, constraint or scope error inside one is not reported. Structure checks still run. Such subtrees are counted: `details.uncheckedSubtrees` (node scope, and the total for a model or module), `uncheckedSubtrees` on each root summary and `perRoot` row, and on each model row of a module `perRoot` answer; a nested comment counts once, with the subtree around it. A `no problems found` verdict over such subtrees adds a `warnings` entry saying they were not type- or constraint-checked. Do not use a commented-out sample to learn whether a type fits: ask `mps_mcp_query_types` (`references/analysis-tools/type-queries.md`).
+
 Besides the standard structure/constraints/typesystem checkers, the check also decodes the encoded feature ids stored on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and reports a malformed, blank, or non-resolving id as a structure-level error on the offending macro. This catches the common mistake of pasting a node reference, a short id, or a bare property name into `propertyId`, which the write path accepts silently and which otherwise only fails at generation time as an opaque "an error occurred". Run a check after attaching or editing any `PropertyMacro`/`ReferenceMacro`.
 
 Each entry has the shape:
@@ -32,7 +36,8 @@ Each entry has the shape:
   "conceptReference": "PersistentConceptReference",
   "problems": [
     { "severity": "error|warning|info", "message": "...",
-      "quickFixes": [ { "id": "…_QuickFix", "description": "…|null", "autoApplicable": false } ] }
+      "quickFixes": [ { "id": "…_QuickFix", "description": "…|null", "autoApplicable": false } ],
+      "rules": [ { "rule": "typeof_…", "ruleReference": "PersistentRootReference", "statement": "PersistentNodeReference" } ] }
   ],
   "properties": [
     { "name": "propertyName", "type": "propertyType", "value": "propertyValue",

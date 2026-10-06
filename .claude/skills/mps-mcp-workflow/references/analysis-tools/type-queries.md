@@ -11,6 +11,7 @@ Ask the typesystem engine instead of reading rule roots and simulating the solve
 | what do A and B have in common | `COMMON_SUPERTYPE` `{types:[A, B]}` |
 | view A as a given type concept (e.g. read a `ClassifierType`'s classifier) | `COERCE` `{type, conceptRef}` |
 | what does `a op b` give | `OPERATION_TYPE` `{operatorNode or operatorConceptRef, left, right}` |
+| which rule reported this type error | the problem's `rules` in `mps_mcp_check_root_node_problems` |
 
 ## Printed types
 
@@ -48,6 +49,10 @@ Error codes: `NOT_FOUND` means a node or concept you named in `nodeReference`, `
 - **`OPERATION_TYPE`** `{operatorNode | operatorConceptRef, left, right}` → `{type: type | null}`: the result type the overloaded-operation rules give `left op right`. `null` means no rule applies — the case where an inference rule typically reports "operator cannot be applied". `operatorNode` is an existing operation node (e.g. a `PlusExpression` in a sandbox) and is exact. `operatorConceptRef` builds a detached instance of the operation's concept, so a rule's `isApplicable` that reads the operation's properties sees default values; the answer then carries a `warnings` entry saying so. Its rules are looked up in the global language scope. When two rules are equally specific, `data.ruleConflicts` lists them as `{rule, ruleReference, statement}` (the rule root's name and reference, and the reference of the node inside it) plus a warning; the first rule that answered was used.
 
 All operations are read-only and run on the UI thread under the usual 30 s timeout; `data` is inline up to `maxInlineBytes` (default 20000), a temp-file path above it.
+
+## Which rule reported a problem
+
+A typesystem, constraints or scope problem of `mps_mcp_check_root_node_problems` carries `rules: [{rule, ruleReference, statement}]`, the reporting rule first; print `ruleReference` to read it. Commented-out code is not type-checked: the check counts it as `uncheckedSubtrees` and warns on a clean verdict, so ask `IS_SUBTYPE` rather than trusting a commented-out sample.
 
 ## After changing typesystem rules
 

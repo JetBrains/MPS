@@ -20,7 +20,6 @@ import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.model.SNodeReference
-import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 
 enum class TypesQueryOperation {
     IS_SUBTYPE,
@@ -317,13 +316,12 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
      * hand-written provider passes may not parse; the statement then keeps them as given.
      */
     private fun ruleJsonObject(ruleModelId: String?, ruleNodeId: String?, mpsProject: MPSProject): JsonObject {
-        val result = JsonObject()
         val pointer: SNodeReference? = runCatching { SNodePointer(ruleModelId, ruleNodeId) }.getOrNull()
-        val root = pointer?.resolve(mpsProject.repository)?.containingRoot
-        result.addProperty("rule", root?.name)
-        result.addProperty("ruleReference", root?.let { PersistenceFacade.getInstance().asString(it.reference) })
-        result.addProperty("statement", pointer?.let { PersistenceFacade.getInstance().asString(it) } ?: "$ruleModelId/$ruleNodeId")
-        return result
+        return pointer?.let { ruleJsonObject(it, it.resolve(mpsProject.repository)?.containingRoot) } ?: JsonObject().apply {
+            addProperty("rule", null as String?)
+            addProperty("ruleReference", null as String?)
+            addProperty("statement", "$ruleModelId/$ruleNodeId")
+        }
     }
 
     /**

@@ -5,6 +5,9 @@ import jetbrains.mps.agents.mcp.tools.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
+import jetbrains.mps.editor.runtime.impl.cellActions.CommentUtil
+import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -231,6 +234,103 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    @Test
+    fun `a type error names the rule that reported it, and a commented-out subtree is counted as unchecked`() {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        parseClass(model, BAD_CODE)
+        val (rootRef, fieldRefs) = readOnRepo {
+            val root = model.rootNodes.single { it.name == "Bad" }
+            val fields = root.children.filter { it.concept.name == "FieldDeclaration" }.associateBy { checkNotNull(it.name) }
+            val facade = PersistenceFacade.getInstance()
+            facade.asString(root.reference) to fields.mapValues { (_, field) -> facade.asString(field.reference) }
+        }
+
+        val problems = payloadArrayFromOkData(check(rootRef)).flatMap { node -> node.asJsonObject.getAsJsonArray("problems").map { it.asJsonObject } }
+        val errors = problems.filter { it.get("severity").asString == "error" }
+        assertEquals("one type error per field: $problems", 2, errors.size)
+        for (problem in errors) {
+            assertTrue("a type error carries the reporting rule: $problem", problem.has("rules"))
+            val rule = problem.getAsJsonArray("rules")[0].asJsonObject
+            val ruleModel = readOnRepo {
+                PersistenceFacade.getInstance().createNodeReference(rule.get("ruleReference").asString).resolve(myProject.repository)?.model?.name?.longName
+            }
+            assertEquals("$rule", "jetbrains.mps.baseLanguage.typesystem", ruleModel)
+        }
+        assertRulesResolve(problems)
+
+        // x stays an error until commented out; the remaining report counts the skipped subtree.
+        val commentedX = commentOut(fieldRefs.getValue("x"))
+        val oneLeft = JsonParser.parseString(check(rootRef)).asJsonObject
+        assertEquals("$oneLeft", 1, oneLeft.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
+        assertFalse("a report with problems has no unchecked warning: $oneLeft", oneLeft.has("warnings"))
+
+        commentOut(fieldRefs.getValue("y"))
+        val clean = JsonParser.parseString(check(rootRef)).asJsonObject
+        assertEquals("$clean", JsonPrimitive("no problems found"), clean.get("data"))
+        assertEquals("$clean", 2, clean.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
+        assertTrue("$clean", clean.getAsJsonArray("warnings").any { it.asString.startsWith("2 subtree(s) marked IDontApplyTypesystemRules") })
+
+        val modelRef = modelRefOf(model)
+        val cleanModel = JsonParser.parseString(check(modelRef)).asJsonObject
+        assertEquals("$cleanModel", JsonPrimitive("no problems found"), cleanModel.get("data"))
+        assertEquals("$cleanModel", 2, cleanModel.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
+        assertTrue("$cleanModel", cleanModel.getAsJsonArray("warnings").any { it.asString.contains("were not type- or constraint-checked") })
+        val row = payloadArrayFromOkData(check(modelRef, perRoot = true)).single().asJsonObject
+        assertEquals("$row", 0, row.get("errors").asInt)
+        assertEquals("$row", 2, row.get("uncheckedSubtrees").asInt)
+        val module = JsonParser.parseString(check(checkNotNull(solution.moduleName), perRoot = true)).asJsonObject
+        assertEquals("$module", 2, module.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
+        val modelRow = payloadArrayFromOkData(module.toString()).map { it.asJsonObject }.single { it.get("model").asString == modelRef }
+        assertEquals("$modelRow", 2, modelRow.get("uncheckedSubtrees").asInt)
+
+        // A comment nested in a commented-out subtree is part of that subtree.
+        commentOut(readOnRepo {
+            val x = checkNotNull(PersistenceFacade.getInstance().createNodeReference(commentedX).resolve(myProject.repository))
+                .children.single { it.concept.name == "FieldDeclaration" }
+            PersistenceFacade.getInstance().asString(x.children.single { it.containmentLink?.name == "initializer" }.reference)
+        })
+        val nested = JsonParser.parseString(check(rootRef)).asJsonObject
+        assertEquals("$nested", 2, nested.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
+    }
+
+    /** Every `rules` entry names a rule root that resolves, with a non-null `rule` and the statement inside it. */
+    private fun assertRulesResolve(problems: List<JsonObject>) {
+        for (rule in problems.flatMap { problem -> problem.getAsJsonArray("rules")?.map { it.asJsonObject }.orEmpty() }) {
+            readOnRepo {
+                val facade = PersistenceFacade.getInstance()
+                val ruleRoot = checkNotNull(facade.createNodeReference(rule.get("ruleReference").asString).resolve(myProject.repository)) { "$rule" }
+                assertTrue("$rule", ruleRoot.parent == null)
+                assertFalse("rule names the root: $rule", rule.get("rule").isJsonNull)
+                val statement = checkNotNull(facade.createNodeReference(rule.get("statement").asString).resolve(myProject.repository)) { "$rule" }
+                assertEquals("the statement lies inside the rule: $rule", ruleRoot, statement.containingRoot)
+            }
+        }
+    }
+
+    private fun check(reference: String, perRoot: Boolean = false): String =
+        runTool(JetBrainsMPSNodeMcpToolset()) { it.mps_mcp_check_root_node_problems(reference, perRoot = perRoot) }
+
+    /** Comments [nodeRef] out and answers the reference of the comment attribute now holding it. */
+    private fun commentOut(nodeRef: String): String {
+        var attribute: String? = null
+        executeCommand {
+            val node = checkNotNull(PersistenceFacade.getInstance().createNodeReference(nodeRef).resolve(myProject.repository))
+            attribute = PersistenceFacade.getInstance().asString(CommentUtil.commentOut(node).reference)
+        }
+        return checkNotNull(attribute)
+    }
+
+    private fun parseClass(model: SModel, code: String) {
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"$code","featureKind":"CLASS","insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
+            )
+        }
+        assertTrue("expected ok envelope from parse_java_and_insert: $response",
+            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+    }
+
     private fun query(operation: TypesQueryOperation, parameters: String): String =
         runTool(toolset) { it.mps_mcp_query_types(operation, parameters) }
 
@@ -274,13 +374,7 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     private fun createTypeHost(): TypeHost {
         val solution = createSolution()
         val model = createModel(solution, "${solution.moduleName}.code")
-        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
-            it.mps_mcp_parse_java_and_insert(
-                """{"code":"$TYPE_HOST_CODE","featureKind":"CLASS","insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
-            )
-        }
-        assertTrue("expected ok envelope from parse_java_and_insert: $response",
-            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+        parseClass(model, TYPE_HOST_CODE)
         return readOnRepo {
             val root = model.rootNodes.single { it.name == "TypeHost" }
             val fields = root.children.filter { it.concept.name == "FieldDeclaration" }.associateBy { checkNotNull(it.name) }
@@ -312,6 +406,7 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     private companion object {
         const val TYPE_HOST_CODE =
             "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; }"
+        const val BAD_CODE = "public class Bad { int x = \\\"s\\\"; int y = \\\"t\\\"; }"
         const val INTEGER_TYPE = "jetbrains.mps.baseLanguage.structure.IntegerType"
         const val LONG_TYPE = "jetbrains.mps.baseLanguage.structure.LongType"
         const val CLASSIFIER_TYPE = "jetbrains.mps.baseLanguage.structure.ClassifierType"
