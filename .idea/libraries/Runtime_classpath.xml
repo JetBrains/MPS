@@ -78,10 +78,6 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jsoup.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jsvg.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit4.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit5.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit5.jupiter.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit5.launcher.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit5.vintage.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlin.reflect.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlinx.collections.immutable.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlinx.coroutines.core.jar!/" />
@@ -123,7 +119,6 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.snakeyaml.engine.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.snakeyaml.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.stream.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.swingx.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.velocity.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.winp.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.xtext.xbase.jar!/" />
@@ -273,7 +268,6 @@
       <root url="jar://$PROJECT_DIR$/lib/maven-resolver-provider.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/mps-resources.zip!/" />
       <root url="jar://$PROJECT_DIR$/lib/platform-loader.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/swingx.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/trove.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/util_rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/util-8.jar!/" />

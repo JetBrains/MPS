@@ -57216,18 +57216,6 @@
     <node concept="26EafG" id="48NujD9KJZe" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.libraries.junit4.jar" />
     </node>
-    <node concept="26EafG" id="48NujD9KJZf" role="26Ea7d">
-      <property role="26EafJ" value="lib/intellij.libraries.junit5.jar" />
-    </node>
-    <node concept="26EafG" id="48NujD9KJZg" role="26Ea7d">
-      <property role="26EafJ" value="lib/intellij.libraries.junit5.jupiter.jar" />
-    </node>
-    <node concept="26EafG" id="48NujD9KJZh" role="26Ea7d">
-      <property role="26EafJ" value="lib/intellij.libraries.junit5.launcher.jar" />
-    </node>
-    <node concept="26EafG" id="48NujD9KJZi" role="26Ea7d">
-      <property role="26EafJ" value="lib/intellij.libraries.junit5.vintage.jar" />
-    </node>
     <node concept="26EafG" id="48NujD9KJZj" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.libraries.kotlin.reflect.jar" />
     </node>
@@ -57350,9 +57338,6 @@
     </node>
     <node concept="26EafG" id="48NujD9KJZV" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.libraries.stream.jar" />
-    </node>
-    <node concept="26EafG" id="48NujD9KJZW" role="26Ea7d">
-      <property role="26EafJ" value="lib/intellij.libraries.swingx.jar" />
     </node>
     <node concept="26EafG" id="48NujD9KJZX" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.libraries.velocity.jar" />
@@ -57801,9 +57786,6 @@
     <node concept="26EafG" id="48NujD9KK2i" role="26Ea7d">
       <property role="26EafJ" value="lib/mps-resources.zip" />
     </node>
-    <node concept="26EafG" id="48NujD9KK2j" role="26Ea7d">
-      <property role="26EafJ" value="lib/swingx.jar" />
-    </node>
     <node concept="26EafG" id="48NujD9KK2k" role="26Ea7d">
       <property role="26EafJ" value="lib/trove.jar" />
     </node>
@@ -57923,15 +57905,6 @@
     </node>
     <node concept="26EafG" id="4nX__hM7r7q" role="3cRCUr">
       <property role="26EafJ" value="lib/mps-workbench.jar" />
-    </node>
-    <node concept="26EafG" id="44nat7ZsPd1" role="3cRCUr">
-      <property role="26EafJ" value="lib/opentelemetry.jar" />
-    </node>
-    <node concept="26EafG" id="4nX__hM7rcN" role="3cRCUr">
-      <property role="26EafJ" value="lib/rd-gen.jar" />
-    </node>
-    <node concept="26EafG" id="4nX__hM7rdV" role="3cRCUr">
-      <property role="26EafJ" value="lib/stats.jar" />
     </node>
     <node concept="26EafG" id="4nX__hM7qUg" role="3cRCUr">
       <property role="26EafJ" value="lib/testFramework.jar" />
