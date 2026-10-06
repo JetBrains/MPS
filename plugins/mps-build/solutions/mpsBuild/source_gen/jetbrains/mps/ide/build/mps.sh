@@ -69,7 +69,7 @@ fi
 
 if [ -z "$JDK" ] && [ "$OS_TYPE" = "Linux" ]; then
   OS_ARCH=$("$UNAME" -m)
-  if [ "$OS_ARCH" = "x86_64" ] && [ -d "$IDE_HOME/jbr" ]; then
+  if [ -f "$IDE_HOME/jbr/release" ] && "$GREP" -q -e "OS_ARCH=\"$OS_ARCH\"" "$IDE_HOME/jbr/release"; then
     JDK="$IDE_HOME/jbr"
   fi
   if [ -z "$JDK" ] && [ -d "$IDE_HOME/jbr-x86" ] && "$IDE_HOME/jbr-x86/bin/java" -version > /dev/null 2>&1 ; then
@@ -139,7 +139,7 @@ if [ -z "$JDK" ] || [ ! -x "$JAVA_BIN" ]; then
   exit 1
 fi
 
-"$GREP" -q -E -e "OS_ARCH=\"(x86_64|amd64)\"" "$JDK/release" 2> /dev/null && BITS="64" || BITS=""
+"$GREP" -q -E -e "OS_ARCH=\"(x86_64|amd64|aarch64|arm64)\"" "$JDK/release" 2> /dev/null && BITS="64" || BITS=""
 
 # ---------------------------------------------------------------------
 # Collect JVM options and IDE properties.
