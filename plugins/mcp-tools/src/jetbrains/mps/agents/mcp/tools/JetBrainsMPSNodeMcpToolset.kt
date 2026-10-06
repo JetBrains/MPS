@@ -176,7 +176,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         in the same shape, the type the node's context requires of it (what `has expected type` checks): the least common
         supertype of the context's upper (`:<=:`) or else comparable bounds; `data` is null when there is none (a root, a slot
         bounded only by `:==:` or `:>=:`). To compare or widen
-        types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE) use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
+        types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE), or to see why a node has its type
+        (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.

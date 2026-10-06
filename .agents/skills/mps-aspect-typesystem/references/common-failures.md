@@ -2,7 +2,7 @@
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Type "undefined" on a node | No inference rule for its concept, or the rule's equation contains an unresolved term | Add/fix rule; inspect with typesystem trace in MPS UI |
+| Type "undefined" on a node | No inference rule for its concept, or the rule's equation contains an unresolved term | Run `mps_mcp_query_types` `EXPLAIN_TYPE` on the node (the typesystem trace, headless; `includeApplyRule:true` also lists the rules applied to it) to see which rules touched it, then add/fix the rule |
 | Cascade of `type undefined is not a subtype of X` | First rule failed, rest consume `undefined` | Fix the earliest failing rule |
 | Subtyping not applied | `SubtypingRule` LHS/RHS pattern doesn't match the concrete types | Check pattern variables; set `isWeak=true` if you need a looser rule |
 | Error message garbled for a type | Used `toString` instead of `<typeExpr>` syntax | Use `<...>` rendering |

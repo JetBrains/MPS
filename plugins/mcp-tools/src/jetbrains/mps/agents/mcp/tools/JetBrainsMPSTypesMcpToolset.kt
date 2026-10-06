@@ -11,15 +11,28 @@ import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations
 import jetbrains.mps.newTypesystem.TypesUtil
+import jetbrains.mps.newTypesystem.context.TracingTypecheckingContext
+import jetbrains.mps.newTypesystem.operation.AbstractOperation
+import jetbrains.mps.newTypesystem.operation.AddErrorOperation
+import jetbrains.mps.newTypesystem.operation.ApplyRuleOperation
+import jetbrains.mps.newTypesystem.operation.AssignTypeOperation
+import jetbrains.mps.newTypesystem.operation.TraceWarningOperation
+import jetbrains.mps.newTypesystem.operation.block.AbstractBlockOperation
+import jetbrains.mps.newTypesystem.operation.block.AddDependencyOperation
+import jetbrains.mps.newTypesystem.operation.block.RemoveDependencyOperation
+import jetbrains.mps.newTypesystem.operation.equation.AddEquationOperation
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.SNodePointer
 import jetbrains.mps.typechecking.TypecheckingFacade
 import jetbrains.mps.typesystem.inference.TypeCheckerHelper
 import jetbrains.mps.typesystem.inference.util.StructuralNodeSet
+import jetbrains.mps.typesystemEngine.util.TypeSystemUtil
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.model.SNodeReference
+import org.jetbrains.mps.openapi.model.SNodeUtil
+import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 
 enum class TypesQueryOperation {
     IS_SUBTYPE,
@@ -27,10 +40,12 @@ enum class TypesQueryOperation {
     COMMON_SUPERTYPE,
     COERCE,
     OPERATION_TYPE,
+    EXPLAIN_TYPE,
 }
 
 private const val DEFAULT_SUPERTYPES_DEPTH = 8
 private const val MAX_SUPERTYPES_DEPTH = 32
+private const val DEFAULT_MAX_ROOT_NODES = 10000
 
 private const val OPERAND_EXPECTED =
     "a type operand: an object with exactly one of nodeReference, typeNodeReference, typeConceptRef or blueprint"
@@ -76,6 +91,11 @@ private val OPERATION_TYPE_KEYS = ParameterKeys.of(
     required("right", "the right operand's type, $OPERAND_EXPECTED"),
 )
 
+private val EXPLAIN_TYPE_KEYS = ParameterKeys.of(
+    required(PARAM_NODE_REFERENCE, "the reference of the node whose type to explain"),
+    "includeApplyRule", "maxRootNodes",
+)
+
 /** The accepted `parameters` keys of each [TypesQueryOperation]. */
 private fun queryTypesParameterKeys(operation: TypesQueryOperation): ParameterKeys = when (operation) {
     TypesQueryOperation.IS_SUBTYPE -> IS_SUBTYPE_KEYS
@@ -83,6 +103,7 @@ private fun queryTypesParameterKeys(operation: TypesQueryOperation): ParameterKe
     TypesQueryOperation.COMMON_SUPERTYPE -> COMMON_SUPERTYPE_KEYS
     TypesQueryOperation.COERCE -> COERCE_KEYS
     TypesQueryOperation.OPERATION_TYPE -> OPERATION_TYPE_KEYS
+    TypesQueryOperation.EXPLAIN_TYPE -> EXPLAIN_TYPE_KEYS
 }
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
@@ -104,14 +125,19 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         {types, result}: the least common supertypes, a list because a lattice can have several. COERCE {type, conceptRef,
         strong (default false)} → {coerced}: the type or its supertype that is an instance of that concept (any
         non-interface concept, e.g. ClassifierType or the abstract PrimitiveType), or null. OPERATION_TYPE {operatorNode or operatorConceptRef, left, right} → {type}: the
-        overloaded-operation result type, null when no rule applies. Every type is printed as {concept, conceptReference,
+        overloaded-operation result type, null when no rule applies. EXPLAIN_TYPE {nodeReference, includeApplyRule (default
+        false), maxRootNodes (default 10000)} → {type, trace:[{kind, presentation, source?,
+        rule?, error?, consequences?}]}: why the node has its type — the devkit's type-system trace for that node, headless:
+        the type assignments, equations and inequalities of its slice, nested as the engine ran them, each with the rule
+        statement that added it as {rule, ruleReference, statement}. It type-checks the node's whole root, so a root of more
+        than maxRootNodes nodes is rejected. Every type is printed as {concept, conceptReference,
         presentation, hasTypeVariables?, blueprint} and carries no node reference. A node's own type and the type its context
         expects of it are `mps_mcp_query_nodes` GET_TYPE and GET_EXPECTED_TYPE. Returns `{"ok":true,"data":{...}}` on
         success or `{"ok":false,"error":"..."}` on failure; `data` is inline up to `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See the `mps-mcp-workflow` skill (`references/analysis-tools/type-queries.md`).
     """)
     suspend fun mps_mcp_query_types(
-        @McpDescription("Required. The operation to perform (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE)") operation: String = "",
+        @McpDescription("Required. The operation to perform (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE, EXPLAIN_TYPE)") operation: String = "",
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
@@ -155,6 +181,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             TypesQueryOperation.COMMON_SUPERTYPE -> opCommonSupertype(mpsProject, params, maxInlineBytes)
             TypesQueryOperation.COERCE -> opCoerce(mpsProject, params, maxInlineBytes)
             TypesQueryOperation.OPERATION_TYPE -> opOperationType(mpsProject, params, maxInlineBytes)
+            TypesQueryOperation.EXPLAIN_TYPE -> opExplainType(mpsProject, params, maxInlineBytes)
         }
     }
 
@@ -312,6 +339,58 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
     }
 
     /**
+     * The devkit's "Type-system Trace" with "trace for selected node", headless: a tracing check of the node's
+     * whole root records every operation, and [TypeTrace] keeps those about the node. The type is the one this
+     * check arrived at, expanded here: the root check's state expands only a target node, and has none.
+     * `type_assigned` presentations show the variables it was solved through.
+     */
+    private suspend fun opExplainType(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
+        val includeApplyRule = params.paramBoolean("includeApplyRule", default = false)
+        val maxRootNodes = params.paramInt("maxRootNodes") ?: DEFAULT_MAX_ROOT_NODES
+        if (maxRootNodes < 1) {
+            return errJson("'parameters.maxRootNodes' must be at least 1, got $maxRootNodes", McpErrorCode.INVALID_REQUEST)
+        }
+        return readWithEngine(mpsProject) { engine ->
+            val node = resolveNodeReferencePreferringProject(mpsProject, nodeReference)?.resolve(mpsProject.repository)
+                ?: throw McpNotFoundException("Node '$nodeReference' at parameters.nodeReference not found")
+            val root = node.containingRoot
+            val rootNodes = SNodeUtil.getDescendants(root).count()
+            if (rootNodes > maxRootNodes) {
+                throw McpInvalidRequestException(
+                    "The root of '$nodeReference' has $rootNodes nodes, more than maxRootNodes ($maxRootNodes): EXPLAIN_TYPE " +
+                        "type-checks the whole root and records every operation, with the UI blocked meanwhile. Raise " +
+                        "maxRootNodes to accept that, or explain a copy of the code in a smaller root"
+                )
+            }
+            val warnings = mutableListOf<String>()
+            if (generateSequence(node) { it.parent }.any { !TypeSystemUtil.shouldApplyTypeSystemRules(it) }) {
+                warnings.add(
+                    "the node lies in a subtree marked IDontApplyTypesystemRules (e.g. commented out), which the typesystem " +
+                        "does not check, so its trace is normally empty and its type null here; GET_TYPE may still answer one, " +
+                        "since its one-node computation starts below the marker"
+                )
+            }
+            val context = TracingTypecheckingContext(root, engine.helper)
+            try {
+                context.checkRootInTraceMode(true)
+                val trace = TypeTrace(node, includeApplyRule) { statement ->
+                    ruleJsonObject(statement, statement.resolve(mpsProject.repository)?.containingRoot)
+                }
+                // Walked first, so nothing the type lookup does can reach the tree being walked.
+                val entries = trace.entries(context.operation)
+                val type = context.getTypeDontCheck(node)?.let { context.state.expandFinal(it) }?.takeUnless(TypesUtil::isVariable)
+                val result = JsonObject()
+                result.add("type", type?.let { typeJsonObject(it, mpsProject) })
+                result.add("trace", entries)
+                finalizeResult(result.toString(), maxInlineBytes, warnings = warnings)
+            } finally {
+                context.dispose()
+            }
+        }
+    }
+
+    /**
      * `{rule, ruleReference, statement}`: the ids name a node inside a rule, the rule is its root. Ids a
      * hand-written provider passes may not parse; the statement then keeps them as given.
      */
@@ -396,4 +475,87 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         }
         return concept
     }
+}
+
+/**
+ * One node's slice of a recorded type check, as the devkit trace (`TypeSystemTraceTree`) computes it: the node, its
+ * descendants, and the type variables equations tie to them. The devkit collects the variables in one chronological
+ * pass; here they are collected to a fixpoint, so an equation on a variable recorded before the variable joined the
+ * slice is kept too. Variables are kept by name, as the engine's equations identify them: expanding a type copies the
+ * variables in it, and a copy stands for the same variable.
+ */
+private class TypeTrace(
+    node: SNode,
+    private val includeApplyRule: Boolean,
+    private val ruleJson: (SNodeReference) -> JsonObject,
+) {
+    private val nodes: Set<SNode> = SNodeUtil.getDescendants(node).toHashSet()
+    private val variables = HashSet<String>()
+
+    /** The trace under [top], the check's top operation, which is not an entry itself. */
+    fun entries(top: AbstractOperation): JsonArray {
+        do {
+            val before = variables.size
+            addSliceVariables(top)
+        } while (variables.size > before)
+        return JsonArray().apply { top.consequences.flatMap(::entriesOf).forEach(::add) }
+    }
+
+    private fun inSlice(node: SNode?): Boolean = when {
+        node == null -> false
+        TypesUtil.isVariable(node) -> node.name in variables
+        else -> node in nodes
+    }
+
+    private fun addVariables(type: SNode?) {
+        TypesUtil.getVariables(type, null).mapNotNullTo(variables) { it.name }
+    }
+
+    private fun addSliceVariables(operation: AbstractOperation) {
+        when (operation) {
+            is AddEquationOperation -> {
+                if (inSlice(operation.child)) addVariables(operation.parent)
+                if (inSlice(operation.parent)) addVariables(operation.child)
+            }
+            is AssignTypeOperation -> if (inSlice(operation.node)) addVariables(operation.type.takeIf(TypesUtil::isVariable))
+        }
+        operation.consequences.forEach(::addSliceVariables)
+    }
+
+    /**
+     * The entries [operation] contributes at its parent's level: its own, or, when it is elided, its kept
+     * consequences hoisted. Dropping an elided operation's subtree instead would empty the trace, since a rule
+     * application is the parent of every equation its rule adds. An operation is kept when it concerns the slice
+     * or one of its consequences is kept.
+     */
+    private fun entriesOf(operation: AbstractOperation): List<JsonObject> {
+        val consequences = operation.consequences.flatMap(::entriesOf)
+        if (isElided(operation)) return consequences
+        if (consequences.isEmpty() && !concernsSlice(operation)) return emptyList()
+        val entry = JsonObject()
+        entry.addProperty("kind", operation.presentationKind)
+        // A presentation renders the rule's terms, which a faulty rule may leave null.
+        entry.addProperty("presentation", runCatching { operation.presentation }.getOrElse { operation.javaClass.simpleName })
+        operation.source?.takeIf { it.model != null }?.let {
+            entry.addProperty("source", PersistenceFacade.getInstance().asString(it.reference))
+        }
+        operation.rule?.let { entry.add("rule", ruleJson(it)) }
+        if (operation is AddErrorOperation || operation is TraceWarningOperation || consequences.any { it.has("error") }) {
+            entry.addProperty("error", true)
+        }
+        if (consequences.isNotEmpty()) entry.add("consequences", JsonArray().apply { consequences.forEach(::add) })
+        return listOf(entry)
+    }
+
+    private fun isElided(operation: AbstractOperation): Boolean = when (operation) {
+        is ApplyRuleOperation -> !includeApplyRule
+        is AddDependencyOperation, is RemoveDependencyOperation -> true
+        else -> false
+    }
+
+    /** The devkit's `showNode`: the operation's source, an equation's side or a block's input is in the slice. */
+    private fun concernsSlice(operation: AbstractOperation): Boolean =
+        inSlice(operation.source) ||
+            (operation is AddEquationOperation && (inSlice(operation.child) || inSlice(operation.parent))) ||
+            (operation is AbstractBlockOperation && operation.block.inputs.any(::inSlice))
 }

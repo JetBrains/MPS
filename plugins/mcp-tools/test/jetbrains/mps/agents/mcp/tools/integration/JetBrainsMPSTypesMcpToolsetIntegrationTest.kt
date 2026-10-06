@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.*
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -155,6 +156,80 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `EXPLAIN_TYPE traces 1 + 2 through the rules that typed it`() {
+        val host = createTypeHost()
+        val explained = data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.plusRef}"}"""))
+        assertEquals("IntegerType", explained.getAsJsonObject("type").get("concept").asString)
+        val entries = traceEntries(explained)
+        assertTrue("a non-empty trace: $explained", entries.isNotEmpty())
+        assertTrue("the plus expression's type assignment is traced: $explained",
+            entries.any { it.get("kind").asString == "type_assigned" && it.get("source")?.asString == host.plusRef })
+        val unrelated = setOf(host.initializerRef("s"), host.fieldRef("o"), host.initializerRef("l"))
+        assertTrue("the other fields lie outside the slice: $explained", entries.none { it.get("source")?.asString in unrelated })
+        val rules = entries.mapNotNull { it.getAsJsonObject("rule") }
+        assertTrue("some entry names a BaseLanguage typesystem rule: $explained", rules.any { rule ->
+            readOnRepo {
+                val facade = PersistenceFacade.getInstance()
+                val ruleRoot = rule.get("ruleReference")?.takeUnless { it.isJsonNull }
+                    ?.let { facade.createNodeReference(it.asString).resolve(myProject.repository) }
+                val statement = facade.createNodeReference(rule.get("statement").asString).resolve(myProject.repository)
+                ruleRoot != null && ruleRoot.parent == null && statement?.containingRoot == ruleRoot &&
+                    ruleRoot.model?.name?.longName == "jetbrains.mps.baseLanguage.typesystem"
+            }
+        })
+        // The type assignment is a consequence of a rule application; eliding that must hoist, not drop, it.
+        assertTrue("rule applications are elided by default: $explained", entries.none { it.get("presentation").asString.contains(APPLIED_TO_NODE) })
+        val withRules = traceEntries(data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.plusRef}","includeApplyRule":true}""")))
+        assertTrue("includeApplyRule keeps them: $withRules", withRules.any { it.get("presentation").asString.contains(APPLIED_TO_NODE) })
+        assertTrue("a rule application carries no rule reference of its own",
+            withRules.filter { it.get("presentation").asString.contains(APPLIED_TO_NODE) }.none { it.has("rule") })
+
+        // The root check expands no type itself; the answer must still be GET_TYPE's fully instantiated List<string>.
+        val explainedGeneric = data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.initializerRef("w")}"}"""))
+        val generic = explainedGeneric.getAsJsonObject("type")
+        assertFalse("$generic", generic.has("hasTypeVariables"))
+        assertEquals(getType(host.initializerRef("w")).get("presentation").asString, generic.get("presentation").asString)
+        // The call's type is solved to a List<v> holding a copy of T's variable; the engine identifies variables by
+        // name, so the trace must also show what bound v itself, not only the List<v> entries.
+        val genericEntries = traceEntries(explainedGeneric).map { it.get("presentation").asString }
+        val variable = genericEntries.firstNotNullOfOrNull { Regex("List<(\\w+)>").find(it)?.groupValues?.get(1) }
+        assertNotNull("the call is solved through a List<variable>: $genericEntries", variable)
+        assertTrue("the equation solving $variable is traced: $genericEntries", genericEntries.any { it.startsWith("$variable = ") })
+
+        val tooLarge = JsonParser.parseString(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.plusRef}","maxRootNodes":1}""")).asJsonObject
+        assertEquals("$tooLarge", "INVALID_REQUEST", tooLarge.get("code").asString)
+        assertTrue(tooLarge.get("error").asString, tooLarge.get("error").asString.contains("maxRootNodes"))
+
+        commentOut(host.fieldRef("l"))
+        val commented = JsonParser.parseString(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.initializerRef("l")}"}""")).asJsonObject
+        assertTrue("a commented-out node is flagged: $commented",
+            commented.getAsJsonArray("warnings")?.any { it.asString.contains("IDontApplyTypesystemRules") } == true)
+        val commentedData = payloadObjectFromOkData(commented.toString())
+        assertTrue("$commented", commentedData.get("type").isJsonNull)
+        assertEquals("$commented", 0, commentedData.getAsJsonArray("trace").size())
+    }
+
+    @Test
+    fun `EXPLAIN_TYPE marks the path to a type error`() {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        parseClass(model, BAD_CODE)
+        val fieldRef = readOnRepo {
+            val field = model.rootNodes.single { it.name == "Bad" }.children.single { it.concept.name == "FieldDeclaration" && it.name == "x" }
+            PersistenceFacade.getInstance().asString(field.reference)
+        }
+        val trace = data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"$fieldRef"}""")).getAsJsonArray("trace")
+        val errors = traceEntries(trace).filter { it.get("kind").asString == "error_added" }
+        assertTrue("the type error of x is traced: $trace", errors.isNotEmpty())
+        assertTrue("$errors", errors.all { it.get("error")?.asBoolean == true && it.has("rule") })
+        assertTrue("$errors", errors.any { it.getAsJsonObject("rule").get("rule").asString == "typeof_VariableDeclaration" })
+        for (entry in traceEntries(trace)) {
+            val below = entry.getAsJsonArray("consequences")?.any { it.asJsonObject.has("error") } == true
+            assertTrue("an entry above an error is marked too: $entry", !below || entry.get("error")?.asBoolean == true)
+        }
+    }
+
+    @Test
     fun `the strong variants and the scalar and shape checks`() {
         val strongSupertypes = data(query(TypesQueryOperation.SUPERTYPES, """{"type":${conceptOperand(INTEGER_TYPE)},"weak":false}"""))
         assertTrue("strong subtyping still widens int to long: $strongSupertypes",
@@ -166,6 +241,7 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             TypesQueryOperation.SUPERTYPES to """{"type":${conceptOperand(INTEGER_TYPE)},"depth":0}""",
             TypesQueryOperation.SUPERTYPES to """{"type":${conceptOperand(INTEGER_TYPE)},"depth":33}""",
             TypesQueryOperation.COMMON_SUPERTYPE to """{"types":[${conceptOperand(INTEGER_TYPE)}]}""",
+            TypesQueryOperation.EXPLAIN_TYPE to """{"nodeReference":"$DUMMY_NODE_REF","maxRootNodes":0}""",
             TypesQueryOperation.OPERATION_TYPE to
                 """{"operatorNode":"$DUMMY_NODE_REF","operatorConceptRef":"$PLUS_EXPRESSION","left":${conceptOperand(INTEGER_TYPE)},"right":${conceptOperand(LONG_TYPE)}}""",
         )
@@ -204,6 +280,7 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             TypesQueryOperation.COERCE to (listOf("type", "conceptRef") to """{"type":$operand,"conceptRef":"$CLASSIFIER_TYPE"}"""),
             TypesQueryOperation.OPERATION_TYPE to (listOf("one of operatorNode/operatorConceptRef", "left", "right") to
                 """{"operatorNode":"$DUMMY_NODE_REF","left":$operand,"right":$operand}"""),
+            TypesQueryOperation.EXPLAIN_TYPE to (listOf("nodeReference") to """{"nodeReference":"$DUMMY_NODE_REF"}"""),
         )
         assertEquals(TypesQueryOperation.entries.toSet(), queries.keys)
         for ((operation, expectation) in queries) {
@@ -308,6 +385,13 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    /** Every entry of an EXPLAIN_TYPE `data`'s trace, consequences included, depth-first. */
+    private fun traceEntries(explained: JsonObject): List<JsonObject> = traceEntries(explained.getAsJsonArray("trace"))
+
+    private fun traceEntries(trace: JsonArray): List<JsonObject> = trace.map { it.asJsonObject }.flatMap { entry ->
+        listOf(entry) + (entry.getAsJsonArray("consequences")?.let(::traceEntries) ?: emptyList())
+    }
+
     private fun check(reference: String, perRoot: Boolean = false): String =
         runTool(JetBrainsMPSNodeMcpToolset()) { it.mps_mcp_check_root_node_problems(reference, perRoot = perRoot) }
 
@@ -405,12 +489,15 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     private companion object {
         const val TYPE_HOST_CODE =
-            "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; }"
+            "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; " +
+                "static <T> java.util.List<T> wrap(T t) { return null; } java.util.List<String> w = wrap(\\\"a\\\"); }"
         const val BAD_CODE = "public class Bad { int x = \\\"s\\\"; int y = \\\"t\\\"; }"
         const val INTEGER_TYPE = "jetbrains.mps.baseLanguage.structure.IntegerType"
         const val LONG_TYPE = "jetbrains.mps.baseLanguage.structure.LongType"
         const val CLASSIFIER_TYPE = "jetbrains.mps.baseLanguage.structure.ClassifierType"
         const val PLUS_EXPRESSION = "jetbrains.mps.baseLanguage.structure.PlusExpression"
         const val DUMMY_NODE_REF = "r:00000000-0000-0000-0000-000000000000(dummy)/1"
+        /** The presentation of a rule application: `<rule> applied to node "<node>"`. */
+        const val APPLIED_TO_NODE = " applied to node \""
     }
 }

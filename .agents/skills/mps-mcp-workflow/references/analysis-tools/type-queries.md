@@ -11,6 +11,7 @@ Ask the typesystem engine instead of reading rule roots and simulating the solve
 | what do A and B have in common | `COMMON_SUPERTYPE` `{types:[A, B]}` |
 | view A as a given type concept (e.g. read a `ClassifierType`'s classifier) | `COERCE` `{type, conceptRef}` |
 | what does `a op b` give | `OPERATION_TYPE` `{operatorNode or operatorConceptRef, left, right}` |
+| why does this node have its type, how did this type error arise | `EXPLAIN_TYPE` `{nodeReference}` |
 | which rule reported this type error | the problem's `rules` in `mps_mcp_check_root_node_problems` |
 
 ## Printed types
@@ -50,9 +51,20 @@ Error codes: `NOT_FOUND` means a node or concept you named in `nodeReference`, `
 
 All operations are read-only and run on the UI thread under the usual 30 s timeout; `data` is inline up to `maxInlineBytes` (default 20000), a temp-file path above it.
 
+## EXPLAIN_TYPE
+
+`EXPLAIN_TYPE` `{nodeReference, includeApplyRule?, maxRootNodes?}` → `{type, trace:[entry]}`: the devkit's Type-system Trace for one node, headless. The engine type-checks the node's whole root afresh, recording every operation, and the trace keeps those about the node's slice — the node, its descendants and the type variables equations tie to them — nested as the engine ran them. `type` is the type this check arrived at (`null` as for GET_TYPE). An entry is `{kind, presentation, source?, rule?, error?, consequences?}`:
+
+- `kind`: `type_assigned`, `equation_added`, `relation_added` (an inequality), `when_concrete_added`, `error_added`, …
+- `presentation`: the operation as the engine prints it, with type variables (`+ : a assigned` for `1 + 2`, later `a = int   added`) — follow a variable through the entries.
+- `source`: the node the operation is about; `rule`: `{rule, ruleReference, statement}`, the statement inside the rule that added it — print `ruleReference` to read the rule.
+- `error:true`: an `error_added` entry, and every entry above one.
+
+Rule applications (`<rule> applied to node "…"`, which carry no `rule`) are left out and their consequences moved up one level, unless `includeApplyRule:true` — which also lists the rules applied to the node. A root of more than `maxRootNodes` nodes (default 10000) is rejected, since the check blocks the UI while it runs (well under a second for a 7400-node BaseLanguage class). A node inside commented-out code gets a warning; its trace is normally empty and `type` null, though GET_TYPE may still type it (its one-node computation starts below the comment).
+
 ## Which rule reported a problem
 
-A typesystem, constraints or scope problem of `mps_mcp_check_root_node_problems` carries `rules: [{rule, ruleReference, statement}]`, the reporting rule first; print `ruleReference` to read it. Commented-out code is not type-checked: the check counts it as `uncheckedSubtrees` and warns on a clean verdict, so ask `IS_SUBTYPE` rather than trusting a commented-out sample.
+A typesystem, constraints or scope problem of `mps_mcp_check_root_node_problems` carries `rules: [{rule, ruleReference, statement}]`, the reporting rule first; print `ruleReference` to read it. `EXPLAIN_TYPE` on the problem's node shows the equations and inequalities that led to it. Commented-out code is not type-checked: the check counts it as `uncheckedSubtrees` and warns on a clean verdict, so ask `IS_SUBTYPE` rather than trusting a commented-out sample.
 
 ## After changing typesystem rules
 
