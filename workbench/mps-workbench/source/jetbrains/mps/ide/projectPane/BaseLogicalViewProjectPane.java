@@ -28,6 +28,7 @@ import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
+import com.intellij.openapi.actionSystem.DataKey;
 import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
@@ -36,7 +37,6 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task.Backgroundable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.ActionCallback;
-import com.intellij.openapi.vcs.VcsDataKeys;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.stripe.ErrorStripe;
@@ -111,6 +111,8 @@ import java.util.function.Consumer;
 public abstract class BaseLogicalViewProjectPane extends BaseProjectViewPaneWithAsyncSupport {
 
   private static final Logger LOG = Logger.getLogger(BaseLogicalViewProjectPane.class);
+  // same interned key as VcsDataKeys.VIRTUAL_FILES, which lives in the VCS plugin since 263
+  private static final DataKey<Iterable<VirtualFile>> VCS_VIRTUAL_FILES = DataKey.create("VCS_VIRTUAL_FILES");
 
   private final MyRepositoryListener myRepositoryListener = new MyRepositoryListener();
   protected boolean myDisposed;
@@ -333,7 +335,7 @@ public abstract class BaseLogicalViewProjectPane extends BaseProjectViewPaneWith
       //     another DataProvider instance that would transformed selected models/modules into VirtualFile?
       return getSelectedFiles(true, true);
     }
-    if (VcsDataKeys.VIRTUAL_FILES.is(dataId)) {
+    if (VCS_VIRTUAL_FILES.is(dataId)) {
       VirtualFile[] selection = getSelectedFiles(false, true);
       return selection != null ? Arrays.asList(selection) : null;
     }

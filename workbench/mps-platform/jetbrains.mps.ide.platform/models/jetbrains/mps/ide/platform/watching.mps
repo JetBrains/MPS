@@ -57,6 +57,7 @@
     <import index="s9o5" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.editor(MPS.IDEA/)" />
     <import index="jlcu" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
     <import index="eoo2" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.nio.file(JDK/)" />
+    <import index="9ti4" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.extensions(MPS.IDEA/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -121,6 +122,7 @@
       <concept id="1145552977093" name="jetbrains.mps.baseLanguage.structure.GenericNewExpression" flags="nn" index="2ShNRf">
         <child id="1145553007750" name="creator" index="2ShVmc" />
       </concept>
+      <concept id="1070462154015" name="jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration" flags="ig" index="Wx3nA" />
       <concept id="1070475354124" name="jetbrains.mps.baseLanguage.structure.ThisExpression" flags="nn" index="Xjq3P">
         <reference id="1182955020723" name="classConcept" index="1HBi2w" />
       </concept>
@@ -8654,43 +8656,39 @@
                       <node concept="3Tm1VV" id="491od_XOB1j" role="1B3o_S" />
                       <node concept="3cqZAl" id="491od_XOB1l" role="3clF45" />
                       <node concept="3clFbS" id="491od_XOB1m" role="3clF47">
-                        <node concept="1DcWWT" id="491od_XOIR_" role="3cqZAp">
-                          <node concept="2OqwBi" id="491od_XOIRA" role="1DdaDG">
-                            <node concept="liA8E" id="491od_XOIRC" role="2OqNvi">
-                              <ref role="37wK5l" to="4nm9:~ProjectManager.getOpenProjects()" resolve="getOpenProjects" />
+                        <node concept="1DcWWT" id="2Yi1Zbuw0e5" role="3cqZAp">
+                          <node concept="2OqwBi" id="2Yi1ZbuweeL" role="1DdaDG">
+                            <node concept="10M0yZ" id="2Yi1ZbuwecH" role="2Oq$k0">
+                              <ref role="1PxDUh" node="2Yi1ZbuvYaL" resolve="ReloadPostponer" />
+                              <ref role="3cqZAo" node="2Yi1ZbuvYaN" resolve="EP_NAME" />
                             </node>
-                            <node concept="2YIFZM" id="2aUbUKfHeOn" role="2Oq$k0">
-                              <ref role="37wK5l" to="4nm9:~ProjectManager.getInstance()" resolve="getInstance" />
-                              <ref role="1Pybhc" to="4nm9:~ProjectManager" resolve="ProjectManager" />
-                            </node>
-                          </node>
-                          <node concept="3cpWsn" id="491od_XOIRD" role="1Duv9x">
-                            <property role="TrG5h" value="project" />
-                            <node concept="3uibUv" id="491od_XOIRE" role="1tU5fm">
-                              <ref role="3uigEE" to="4nm9:~Project" resolve="Project" />
+                            <node concept="liA8E" id="2Yi1ZbuweeM" role="2OqNvi">
+                              <ref role="37wK5l" to="9ti4:~ExtensionPointName.getExtensionList()" resolve="getExtensionList" />
                             </node>
                           </node>
-                          <node concept="3clFbS" id="491od_XOIRF" role="2LFqv$">
-                            <node concept="3clFbJ" id="491od_XOIRG" role="3cqZAp">
-                              <node concept="2OqwBi" id="491od_XOIRH" role="3clFbw">
-                                <node concept="liA8E" id="1Ctxzt5uBGK" role="2OqNvi">
-                                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.isBackgroundVcsOperationRunning()" resolve="isBackgroundVcsOperationRunning" />
+                          <node concept="3cpWsn" id="2Yi1Zbuw0ef" role="1Duv9x">
+                            <property role="TrG5h" value="postponer" />
+                            <node concept="3uibUv" id="2Yi1Zbuw0eh" role="1tU5fm">
+                              <ref role="3uigEE" node="2Yi1ZbuvYaL" resolve="ReloadPostponer" />
+                            </node>
+                          </node>
+                          <node concept="3clFbS" id="2Yi1Zbuw0e7" role="2LFqv$">
+                            <node concept="3clFbJ" id="2Yi1Zbuw0e8" role="3cqZAp">
+                              <node concept="2OqwBi" id="2Yi1ZbuweeW" role="3clFbw">
+                                <node concept="37vLTw" id="2Yi1ZbuwecN" role="2Oq$k0">
+                                  <ref role="3cqZAo" node="2Yi1Zbuw0ef" resolve="postponer" />
                                 </node>
-                                <node concept="2YIFZM" id="1Ctxzt5uVtN" role="2Oq$k0">
-                                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                                  <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
-                                  <node concept="37vLTw" id="1Ctxzt5uVyd" role="37wK5m">
-                                    <ref role="3cqZAo" node="491od_XOIRD" resolve="project" />
-                                  </node>
+                                <node concept="liA8E" id="2Yi1ZbuweeX" role="2OqNvi">
+                                  <ref role="37wK5l" node="2Yi1ZbuvYaT" resolve="shouldPostponeReload" />
                                 </node>
                               </node>
-                              <node concept="3clFbS" id="491od_XOIRN" role="3clFbx">
-                                <node concept="3clFbF" id="491od_XOIRO" role="3cqZAp">
-                                  <node concept="1rXfSq" id="4hiugqyz5HY" role="3clFbG">
+                              <node concept="3clFbS" id="2Yi1Zbuw0eb" role="3clFbx">
+                                <node concept="3clFbF" id="2Yi1Zbuw0ec" role="3cqZAp">
+                                  <node concept="1rXfSq" id="2Yi1Zbuw0ed" role="3clFbG">
                                     <ref role="37wK5l" node="491od_XNfwQ" resolve="queueReloadSession" />
                                   </node>
                                 </node>
-                                <node concept="3cpWs6" id="491od_XOIRQ" role="3cqZAp" />
+                                <node concept="3cpWs6" id="2Yi1Zbuw0ee" role="3cqZAp" />
                               </node>
                             </node>
                           </node>
@@ -11181,6 +11179,100 @@
       <node concept="2AHcQZ" id="7LM00WLJJXk" role="2AJF6D">
         <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
       </node>
+    </node>
+  </node>
+  <node concept="3HP615" id="2Yi1ZbuvYaL">
+    <property role="TrG5h" value="ReloadPostponer" />
+    <node concept="3Tm1VV" id="2Yi1ZbuvYaM" role="1B3o_S" />
+    <node concept="3UR2Jj" id="2Yi1ZbuvYaX" role="lGtFl">
+      <node concept="1PaTwC" id="2Yi1ZbuvYaY" role="1Vez_I">
+        <node concept="3oM_SD" id="2Yi1ZbuvYaZ" role="1PaTwD">
+          <property role="3oM_SC" value="" />
+        </node>
+      </node>
+      <node concept="1PaTwC" id="2Yi1ZbuvYb2" role="1Vez_I">
+        <node concept="3oM_SD" id="2Yi1ZbuvYb3" role="1PaTwD">
+          <property role="3oM_SC" value="Lets" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYb4" role="1PaTwD">
+          <property role="3oM_SC" value="plugins" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYb5" role="1PaTwD">
+          <property role="3oM_SC" value="(e.g." />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYb6" role="1PaTwD">
+          <property role="3oM_SC" value="MPS" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYb7" role="1PaTwD">
+          <property role="3oM_SC" value="VCS" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYb8" role="1PaTwD">
+          <property role="3oM_SC" value="integration)" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYb9" role="1PaTwD">
+          <property role="3oM_SC" value="postpone" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYba" role="1PaTwD">
+          <property role="3oM_SC" value="reload" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbb" role="1PaTwD">
+          <property role="3oM_SC" value="of" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbc" role="1PaTwD">
+          <property role="3oM_SC" value="changed" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbd" role="1PaTwD">
+          <property role="3oM_SC" value="files," />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbe" role="1PaTwD">
+          <property role="3oM_SC" value="e.g." />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbf" role="1PaTwD">
+          <property role="3oM_SC" value="while" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbg" role="1PaTwD">
+          <property role="3oM_SC" value="a" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbh" role="1PaTwD">
+          <property role="3oM_SC" value="background" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbi" role="1PaTwD">
+          <property role="3oM_SC" value="VCS" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbj" role="1PaTwD">
+          <property role="3oM_SC" value="operation" />
+        </node>
+        <node concept="3oM_SD" id="2Yi1ZbuvYbk" role="1PaTwD">
+          <property role="3oM_SC" value="runs." />
+        </node>
+      </node>
+    </node>
+    <node concept="Wx3nA" id="2Yi1ZbuvYaN" role="jymVt">
+      <property role="TrG5h" value="EP_NAME" />
+      <node concept="3uibUv" id="2Yi1ZbuvYaO" role="1tU5fm">
+        <ref role="3uigEE" to="9ti4:~ExtensionPointName" resolve="ExtensionPointName" />
+        <node concept="3uibUv" id="2Yi1ZbuvYaP" role="11_B2D">
+          <ref role="3uigEE" node="2Yi1ZbuvYaL" resolve="ReloadPostponer" />
+        </node>
+      </node>
+      <node concept="2ShNRf" id="2Yi1ZbuvZ$O" role="33vP2m">
+        <node concept="1pGfFk" id="2Yi1ZbuvZ_0" role="2ShVmc">
+          <property role="373rjd" value="true" />
+          <ref role="37wK5l" to="9ti4:~ExtensionPointName.&lt;init&gt;(java.lang.String)" resolve="ExtensionPointName" />
+          <node concept="Xl_RD" id="2Yi1ZbuvZ_1" role="37wK5m">
+            <property role="Xl_RC" value="com.intellij.mps.reloadPostponer" />
+          </node>
+          <node concept="3uibUv" id="2Yi1ZbuvZ_2" role="1pMfVU">
+            <ref role="3uigEE" node="2Yi1ZbuvYaL" resolve="ReloadPostponer" />
+          </node>
+        </node>
+      </node>
+    </node>
+    <node concept="3clFb_" id="2Yi1ZbuvYaT" role="jymVt">
+      <property role="TrG5h" value="shouldPostponeReload" />
+      <node concept="3Tm1VV" id="2Yi1ZbuvYaU" role="1B3o_S" />
+      <node concept="3clFbS" id="2Yi1ZbuvYaV" role="3clF47" />
+      <node concept="10P_77" id="2Yi1ZbuvYaW" role="3clF45" />
     </node>
   </node>
 </model>

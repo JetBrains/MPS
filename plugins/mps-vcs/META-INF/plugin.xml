@@ -21,6 +21,7 @@
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <dependencies>
     <plugin id="jetbrains.mps.core"/>
+    <module name="intellij.platform.vcs"/>
     <module name="intellij.platform.vcs.impl"/>
     <module name="intellij.platform.vcs.log"/>
   </dependencies>
@@ -113,6 +114,7 @@
     <vcs.fileStatusProvider implementation="jetbrains.mps.vcs.changesmanager.NodeFileStatusProvider"/>
     <mps.TabColorProvider implementation="jetbrains.mps.vcs.changesmanager.roots.NodeTabColorProvider"/>
     <mps.treeCreationHandler implementation="jetbrains.mps.vcs.changesmanager.tree.ChangesTreeCreationHandler"/>
+    <mps.reloadPostponer implementation="jetbrains.mps.vcs.integration.VcsReloadPostponer"/>
     <checkoutListener implementation="jetbrains.mps.vcs.integration.ProjectCheckoutListener" id="ProjectFileMPSCheckoutListener"
                       order="after ProjectDirMPSCheckoutListener"/>
     <checkoutListener implementation="jetbrains.mps.vcs.integration.ProjectDirMPSCheckoutListener"

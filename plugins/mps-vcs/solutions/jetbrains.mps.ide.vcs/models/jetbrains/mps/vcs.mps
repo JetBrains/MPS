@@ -4519,11 +4519,11 @@
                           <property role="TrG5h" value="vcsHelper" />
                           <property role="3TUv4t" value="true" />
                           <node concept="3uibUv" id="cgxpp$nuPb" role="1tU5fm">
-                            <ref role="3uigEE" to="jlcu:~AbstractVcsHelper" resolve="AbstractVcsHelper" />
+                            <ref role="3uigEE" to="jlcv:~AbstractVcsHelper" resolve="AbstractVcsHelper" />
                           </node>
                           <node concept="2YIFZM" id="cgxpp$nv09" role="33vP2m">
-                            <ref role="1Pybhc" to="jlcu:~AbstractVcsHelper" resolve="AbstractVcsHelper" />
-                            <ref role="37wK5l" to="jlcu:~AbstractVcsHelper.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                            <ref role="1Pybhc" to="jlcv:~AbstractVcsHelper" resolve="AbstractVcsHelper" />
+                            <ref role="37wK5l" to="jlcv:~AbstractVcsHelper.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                             <node concept="2OqwBi" id="cgxpp$nv0a" role="37wK5m">
                               <node concept="37vLTw" id="cgxpp$nv0b" role="2Oq$k0">
                                 <ref role="3cqZAo" node="cgxpp$k6m4" resolve="myProject" />
@@ -4549,7 +4549,7 @@
                               <ref role="3cqZAo" node="cgxpp$nv08" resolve="vcsHelper" />
                             </node>
                             <node concept="liA8E" id="cgxpp$lxuK" role="2OqNvi">
-                              <ref role="37wK5l" to="jlcu:~AbstractVcsHelper.showMergeDialog(java.util.List)" resolve="showMergeDialog" />
+                              <ref role="37wK5l" to="jlcv:~AbstractVcsHelper.showMergeDialog(java.util.List)" resolve="showMergeDialog" />
                               <node concept="37vLTw" id="cgxpp$lxuL" role="37wK5m">
                                 <ref role="3cqZAo" node="cgxpp$krSL" resolve="conflictingModelFiles" />
                               </node>

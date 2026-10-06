@@ -34,11 +34,6 @@ import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.util.ActionCallback;
 import com.intellij.openapi.vcs.FileStatusListener;
 import com.intellij.openapi.vcs.FileStatusManager;
-import com.intellij.openapi.vcs.ProjectLevelVcsManager;
-import com.intellij.openapi.vcs.VcsMappingListener;
-import com.intellij.openapi.vcs.changes.ChangeListAdapter;
-import com.intellij.openapi.vcs.changes.ChangeListListener;
-import com.intellij.openapi.vcs.changes.ChangeListManager;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileManager;
@@ -98,7 +93,6 @@ public class FileViewProjectPane extends AbstractProjectViewPane implements Data
   public static final String ID = "FileSystem";
   public static final String TITLE = "File System";
 
-  private ChangeListListener myChangeListListener;
   private MessageBusConnection myMessageBusConnection;
   private FileStatusListener myFileStatusListener;
   private VirtualFileManagerListener myVirtualFileManagerListener;
@@ -201,10 +195,8 @@ public class FileViewProjectPane extends AbstractProjectViewPane implements Data
     // TODO: Verify correct Disposable used
     FileStatusManager.getInstance(myProject).addFileStatusListener(myFileStatusListener = new FileStatusChangeListener(), this);
     VirtualFileManager.getInstance().addVirtualFileManagerListener(myVirtualFileManagerListener = new RefreshListener(), this);
-    ChangeListManager.getInstance(myProject).addChangeListListener(myChangeListListener = new ChangeListUpdateListener());
     myMessageBusConnection = myProject.getMessageBus().connect(this);
     myMessageBusConnection.subscribe(VirtualFileManager.VFS_CHANGES, new FileChangesListener());
-    myMessageBusConnection.subscribe(ProjectLevelVcsManager.VCS_CONFIGURATION_CHANGED, (VcsMappingListener) this::rebuildTreeLater);
     myMessageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, new FileEditorManagerListener() {
       @Override
       public void fileOpened(@NotNull FileEditorManager source, @NotNull VirtualFile file) {
@@ -227,7 +219,6 @@ public class FileViewProjectPane extends AbstractProjectViewPane implements Data
 
   private void disposeListeners() {
     VirtualFileManager.getInstance().removeVirtualFileManagerListener(myVirtualFileManagerListener);
-    ChangeListManager.getInstance(myProject).removeChangeListListener(myChangeListListener);
     myMessageBusConnection.disconnect();
   }
 
@@ -472,13 +463,6 @@ public class FileViewProjectPane extends AbstractProjectViewPane implements Data
   private class FileChangesListener implements BulkFileListener {
     @Override
     public void after(@NotNull List<? extends VFileEvent> events) {
-      rebuildTreeLater();
-    }
-  }
-
-  private class ChangeListUpdateListener extends ChangeListAdapter {
-    @Override
-    public void changeListUpdateDone() {
       rebuildTreeLater();
     }
   }

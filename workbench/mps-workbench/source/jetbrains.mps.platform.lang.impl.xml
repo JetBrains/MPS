@@ -1,8 +1,6 @@
 <idea-plugin visibility="public" package="jetbrains.mps.platform.lang.impl">
   <dependencies>
-    <module name="jetbrains.mps.ide.projectPane"/>
     <module name="intellij.platform.lang.impl"/>
-    <module name="intellij.platform.vcs"/>
   </dependencies>
   <extensions defaultExtensionNs="com.intellij">
     <projectService serviceInterface="com.intellij.ide.projectView.ProjectView"

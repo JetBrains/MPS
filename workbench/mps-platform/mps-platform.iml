@@ -12,7 +12,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Idea-platform" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Idea-vcs" level="project" />
     <orderEntry type="library" name="google.gson" level="project" />
     <orderEntry type="module" module-name="kernel" exported="" />
     <orderEntry type="module" module-name="collections-runtime" />

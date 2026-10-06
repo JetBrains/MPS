@@ -13,8 +13,6 @@
     <module name="jetbrains.mps.ide.customization"/> <!-- MPS-40020: ExternalProductResourceUrls override -->
     <module name="jetbrains.mps.platform.ide.impl"/>
     <module name="jetbrains.mps.platform.lang.impl"/>
-    <module name="jetbrains.mps.ide.projectPane"/>
-    <module name="jetbrains.mps.platform.reload.impl"/>
   </content>
   @@MODULE_DESCRIPTORS@@
 
@@ -114,6 +112,9 @@
   <extensions defaultExtensionNs="com.intellij">
     <applicationActivity implementation="com.intellij.internal.statistic.updater.StatisticsJobsScheduler"/>
     <applicationActivity implementation="com.intellij.internal.statistic.updater.StatisticsStateCollectorsScheduler"/>
+
+    <projectViewPane implementation="jetbrains.mps.ide.projectPane.ProjectPane"/>
+    <projectViewPane implementation="jetbrains.mps.ide.projectPane.fileSystem.FileViewProjectPane"/>
 
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
     <analyzeStacktraceFilter implementation="jetbrains.mps.ide.actions.StandaloneMPSStackTraceFilter"/>

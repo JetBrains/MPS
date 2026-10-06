@@ -1226,12 +1226,12 @@
       <property role="TrG5h" value="myVirtualFileManagerListener" />
       <property role="3TUv4t" value="true" />
       <node concept="3uibUv" id="45jbFh0K4Pc" role="1tU5fm">
-        <ref role="3uigEE" node="45jbFh0K4Oz" resolve="PlatformActivityTracker.BanVFMListener" />
+        <ref role="3uigEE" node="45jbFh0K4Oz" resolve="BanVFMListener" />
       </node>
       <node concept="3Tm6S6" id="45jbFh0K4Pd" role="1B3o_S" />
       <node concept="2ShNRf" id="45jbFh0K4Pe" role="33vP2m">
         <node concept="1pGfFk" id="45jbFh0K4Pf" role="2ShVmc">
-          <ref role="37wK5l" node="45jbFh0K4OD" resolve="PlatformActivityTracker.BanVFMListener" />
+          <ref role="37wK5l" node="45jbFh0K4OD" />
         </node>
       </node>
     </node>
@@ -1239,12 +1239,12 @@
       <property role="TrG5h" value="myReloadListener" />
       <property role="3TUv4t" value="true" />
       <node concept="3uibUv" id="45jbFh0K4Ph" role="1tU5fm">
-        <ref role="3uigEE" node="45jbFh0K4OT" resolve="PlatformActivityTracker.BanReloadListener" />
+        <ref role="3uigEE" node="45jbFh0K4OT" resolve="BanReloadListener" />
       </node>
       <node concept="3Tm6S6" id="45jbFh0K4Pi" role="1B3o_S" />
       <node concept="2ShNRf" id="45jbFh0K4Pj" role="33vP2m">
         <node concept="1pGfFk" id="45jbFh0K4Pk" role="2ShVmc">
-          <ref role="37wK5l" node="45jbFh0K4OZ" resolve="PlatformActivityTracker.BanReloadListener" />
+          <ref role="37wK5l" node="45jbFh0K4OZ" />
         </node>
       </node>
     </node>
@@ -1443,14 +1443,14 @@
             <node concept="3clFbJ" id="45jbFh0K4Qv" role="3cqZAp">
               <node concept="2OqwBi" id="45jbFh0K4Qw" role="3clFbw">
                 <node concept="2YIFZM" id="1Ctxzt5uXVb" role="2Oq$k0">
-                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                  <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                  <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                   <node concept="37vLTw" id="1Ctxzt5uXWX" role="37wK5m">
                     <ref role="3cqZAo" node="45jbFh0K4Ql" resolve="p" />
                   </node>
                 </node>
                 <node concept="liA8E" id="45jbFh0K4Qy" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.isBackgroundVcsOperationRunning()" resolve="isBackgroundVcsOperationRunning" />
+                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.isBackgroundVcsOperationRunning()" resolve="isBackgroundVcsOperationRunning" />
                 </node>
               </node>
               <node concept="3clFbS" id="45jbFh0K4Qz" role="3clFbx">
