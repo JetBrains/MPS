@@ -13,6 +13,7 @@ import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.MessageStatus
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
+import jetbrains.mps.lang.typesystem.runtime.HUtil
 import jetbrains.mps.newTypesystem.TypesUtil
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.DevKit
@@ -44,6 +45,7 @@ enum class MPSQueryOperation {
     SIBLINGS,
     GET_CHILD_ROLE,
     GET_TYPE,
+    GET_EXPECTED_TYPE,
     FIND_USAGES,
     FIND_INSTANCES,
 }
@@ -116,7 +118,7 @@ private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys
     MPSQueryOperation.FIND_USAGES -> FIND_USAGES_KEYS
     MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
     MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
-    MPSQueryOperation.GET_TYPE -> NODE_INFO_KEYS
+    MPSQueryOperation.GET_TYPE, MPSQueryOperation.GET_EXPECTED_TYPE -> NODE_INFO_KEYS
 }
 
 /**
@@ -154,17 +156,20 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         string or nonempty string array, and every reference must resolve or the whole query returns INVALID_REQUEST. FIND_USAGES: find nodes
         whose references point at the given node — incoming references, not instances (`nodeReference`; optional `scope` as above,
         optional `rootsOnly`:true to match only root source nodes). GET_PARENT, GET_ROOT,
-        GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE take `nodeReference`. GET_TYPE answers the type
+        GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE, GET_EXPECTED_TYPE take `nodeReference`. GET_TYPE answers the type
         the typesystem assigns to the node as `{concept, conceptReference, presentation, hasTypeVariables?, blueprint}`;
         no reference to the type is offered (it is usually a computed copy), `hasTypeVariables`:true marks a type that is not
-        fully instantiated, and `data` is null when the node has no type or it could not be inferred. To compare or widen
+        fully instantiated, and `data` is null when the node has no type or it could not be inferred. GET_EXPECTED_TYPE answers,
+        in the same shape, the type the node's context requires of it (what `has expected type` checks): the least common
+        supertype of the context's upper (`:<=:`) or else comparable bounds; `data` is null when there is none (a root, a slot
+        bounded only by `:==:` or `:>=:`). To compare or widen
         types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE) use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
     """)
     suspend fun mps_mcp_query_nodes(
-        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE)") operation: String = "",
+        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE, GET_EXPECTED_TYPE)") operation: String = "",
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
@@ -209,7 +214,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             when (operation) {
                 MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
                 MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
-                MPSQueryOperation.GET_TYPE ->
+                MPSQueryOperation.GET_TYPE, MPSQueryOperation.GET_EXPECTED_TYPE ->
                     opNodeInfoRead(mpsProject, operation, params, maxInlineBytes)
 
                 MPSQueryOperation.FIND_USAGES -> opFindUsages(mpsProject, params, maxInlineBytes)
@@ -287,7 +292,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     /**
      * Handles the read-only "node info" cases (GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE,
-     * NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE) — they all share the same boilerplate of
+     * NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE, GET_EXPECTED_TYPE) — they all share the same boilerplate of
      * resolving a node from the 'nodeReference' parameter under a read action and then dispatching
      * to a small per-case body.
      */
@@ -319,6 +324,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject, maxInlineBytes)
                 MPSQueryOperation.GET_CHILD_ROLE -> opGetChildRole(node, mpsProject)
                 MPSQueryOperation.GET_TYPE -> opGetType(node, mpsProject)
+                MPSQueryOperation.GET_EXPECTED_TYPE -> opGetExpectedType(node, mpsProject)
                 MPSQueryOperation.FIND_USAGES,
                 MPSQueryOperation.FIND_INSTANCES -> errJson("Unsupported operation: $operation")
             }
@@ -350,8 +356,23 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      * The type the typesystem assigns to [node], printed by [typeJsonObject]. A root no rule types
      * answers a bare type variable; that is reported as no type, like the `null` a non-root node gets.
      */
-    private fun opGetType(node: SNode, mpsProject: MPSProject): String {
-        val type = TypecheckingFacade.getFromContext().getTypeOf(node)
+    private fun opGetType(node: SNode, mpsProject: MPSProject): String =
+        typeOrNullJson(TypecheckingFacade.getFromContext().getTypeOf(node), mpsProject)
+
+    /**
+     * The type [node]'s context requires of it: a fresh hole check of the parent collects the
+     * inequalities put on the node and answers the least common supertype of their upper bounds
+     * (or of the comparable bounds when there are none). Lower bounds and equations are not
+     * consulted, so a root and a slot bounded only by `:==:` or `:>=:` answer no type; so does the
+     * hole placeholder itself, which the engine's own hole check discards too.
+     */
+    private fun opGetExpectedType(node: SNode, mpsProject: MPSProject): String {
+        val type = TypecheckingFacade.getFromContext().getInferredType(node)
+        return typeOrNullJson(type.takeUnless { HUtil.isRuntimeHoleType(it) }, mpsProject)
+    }
+
+    /** [typeJsonObject] of [type], or `data: null` for no type or a bare type variable. */
+    private fun typeOrNullJson(type: SNode?, mpsProject: MPSProject): String {
         if (type == null || TypesUtil.isVariable(type)) return okJson("null")
         return okJson(typeJsonObject(type, mpsProject))
     }

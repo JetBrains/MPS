@@ -106,7 +106,8 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         strong (default false)} → {coerced}: the type or its supertype that is an instance of that concept (any
         non-interface concept, e.g. ClassifierType or the abstract PrimitiveType), or null. OPERATION_TYPE {operatorNode or operatorConceptRef, left, right} → {type}: the
         overloaded-operation result type, null when no rule applies. Every type is printed as {concept, conceptReference,
-        presentation, hasTypeVariables?, blueprint} and carries no node reference. Returns `{"ok":true,"data":{...}}` on
+        presentation, hasTypeVariables?, blueprint} and carries no node reference. A node's own type and the type its context
+        expects of it are `mps_mcp_query_nodes` GET_TYPE and GET_EXPECTED_TYPE. Returns `{"ok":true,"data":{...}}` on
         success or `{"ok":false,"error":"..."}` on failure; `data` is inline up to `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See the `mps-mcp-workflow` skill (`references/analysis-tools/type-queries.md`).
     """)

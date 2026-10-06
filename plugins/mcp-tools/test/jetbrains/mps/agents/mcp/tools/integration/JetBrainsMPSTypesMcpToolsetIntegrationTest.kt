@@ -9,6 +9,7 @@ import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -134,6 +135,23 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `GET_EXPECTED_TYPE answers the type the context requires`() {
+        val host = createTypeHost()
+        // `long l = 2L`: typeof_VariableDeclaration bounds the initializer by the declared type.
+        assertEquals("long", getExpectedType(host.initializerRef("l"))?.get("presentation")?.asString)
+        // `Object o = s`: the reference is a String, the slot requires an Object.
+        assertEquals("String", getType(host.initializerRef("o")).get("presentation").asString)
+        val expected = checkNotNull(getExpectedType(host.initializerRef("o")))
+        assertEquals("Object", expected.get("presentation").asString)
+        assertNoReferenceKey(expected)
+        // `byte b = 1`: the rule recognises the literal as a valid byte and bounds it by int instead.
+        assertEquals("int", getExpectedType(host.initializerRef("b"))?.get("presentation")?.asString)
+        // A root has no context; no rule of a FieldDeclaration bounds its `type` child.
+        assertNull(getExpectedType(host.rootRef))
+        assertNull(getExpectedType(host.typeChildRef("l")))
+    }
+
+    @Test
     fun `the strong variants and the scalar and shape checks`() {
         val strongSupertypes = data(query(TypesQueryOperation.SUPERTYPES, """{"type":${conceptOperand(INTEGER_TYPE)},"weak":false}"""))
         assertTrue("strong subtyping still widens int to long: $strongSupertypes",
@@ -227,11 +245,29 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         return payloadObjectFromOkData(response)
     }
 
-    /** Per field name, the field's reference and its `type` child's. */
-    private class TypeHost(private val fieldRefs: Map<String, String>, private val typeChildRefs: Map<String, String>, val plusRef: String) {
+    /** `mps_mcp_query_nodes` GET_EXPECTED_TYPE's `data`, or null when it answers `data: null`. */
+    private fun getExpectedType(nodeRef: String): JsonObject? {
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_EXPECTED_TYPE, """{ "nodeReference": "$nodeRef" }""")
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        return if (envelope.get("data").isJsonNull) null else payloadObjectFromOkData(response)
+    }
+
+    /** The root's reference and, per field name, the field's, its `type` child's and its `initializer` child's. */
+    private class TypeHost(
+        val rootRef: String,
+        private val fieldRefs: Map<String, String>,
+        private val typeChildRefs: Map<String, String>,
+        private val initializerRefs: Map<String, String>,
+        val plusRef: String,
+    ) {
         fun fieldRef(name: String): String = fieldRefs.getValue(name)
 
         fun typeChildRef(name: String): String = typeChildRefs.getValue(name)
+
+        fun initializerRef(name: String): String = initializerRefs.getValue(name)
     }
 
     /** [TYPE_HOST_CODE], parsed into a fresh solution's model. */
@@ -246,14 +282,17 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("expected ok envelope from parse_java_and_insert: $response",
             JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
         return readOnRepo {
-            val fields = model.rootNodes.single { it.name == "TypeHost" }.children.filter { it.concept.name == "FieldDeclaration" }
-                .associateBy { checkNotNull(it.name) }
-            val plus = fields.getValue("i").children.single { it.containmentLink?.name == "initializer" }
+            val root = model.rootNodes.single { it.name == "TypeHost" }
+            val fields = root.children.filter { it.concept.name == "FieldDeclaration" }.associateBy { checkNotNull(it.name) }
+            val initializers = fields.mapValues { (_, field) -> field.children.single { it.containmentLink?.name == "initializer" } }
+            val plus = initializers.getValue("i")
             assertEquals("PlusExpression", plus.concept.name)
             val facade = PersistenceFacade.getInstance()
             TypeHost(
+                facade.asString(root.reference),
                 fields.mapValues { (_, field) -> facade.asString(field.reference) },
                 fields.mapValues { (_, field) -> facade.asString(field.children.single { it.containmentLink?.name == "type" }.reference) },
+                initializers.mapValues { (_, initializer) -> facade.asString(initializer.reference) },
                 facade.asString(plus.reference),
             )
         }
@@ -272,7 +311,7 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     private companion object {
         const val TYPE_HOST_CODE =
-            "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; }"
+            "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; }"
         const val INTEGER_TYPE = "jetbrains.mps.baseLanguage.structure.IntegerType"
         const val LONG_TYPE = "jetbrains.mps.baseLanguage.structure.LongType"
         const val CLASSIFIER_TYPE = "jetbrains.mps.baseLanguage.structure.ClassifierType"

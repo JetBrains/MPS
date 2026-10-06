@@ -1,10 +1,11 @@
-# Type queries — `GET_TYPE` and `mps_mcp_query_types`
+# Type queries — `GET_TYPE`, `GET_EXPECTED_TYPE` and `mps_mcp_query_types`
 
 Ask the typesystem engine instead of reading rule roots and simulating the solver by hand. The engine runs every kind of rule — `SubtypingRule`, `InequationReplacementRule`, `ComparisonRule`, `OverloadedOpRulesContainer` with its `isApplicable` closures — which reading cannot evaluate. Read the typesystem aspect only when you are authoring or changing rules.
 
 | question | call |
 |---|---|
 | what is the type of this node | `mps_mcp_query_nodes` `GET_TYPE` `{nodeReference}` |
+| what type must this node have here | `mps_mcp_query_nodes` `GET_EXPECTED_TYPE` `{nodeReference}` |
 | does type A fit where B is required | `mps_mcp_query_types` `IS_SUBTYPE` `{sub, super}` |
 | what can A be widened to | `SUPERTYPES` `{type}` |
 | what do A and B have in common | `COMMON_SUPERTYPE` `{types:[A, B]}` |
@@ -17,7 +18,11 @@ Every type in an answer is `{concept, conceptReference, presentation, hasTypeVar
 
 ## GET_TYPE
 
-`mps_mcp_query_nodes` `GET_TYPE` with `{"nodeReference": ...}` answers the printed type, or `data: null`. `null` has three meanings the tool cannot tell apart: the node has no type (it is not an expression, or its concept has no inference rule), the language's runtime is not loaded, or the type could not be fully inferred without more context (generics, lambdas). Where the answer comes from decides that last case: when the node's root is open in an editor, the editor's incremental type-check session answers, and a partially inferred type comes back flagged `hasTypeVariables:true` instead of `null`; otherwise a one-node computation answers, and the same case is `null` (only a root's type can then carry the flag). A type that is only a bare type variable also answers `null`. It is the node's own type, not the type its context expects (what `has expected type` in a `NodesTestCase` checks).
+`mps_mcp_query_nodes` `GET_TYPE` with `{"nodeReference": ...}` answers the printed type, or `data: null`. `null` has three meanings the tool cannot tell apart: the node has no type (it is not an expression, or its concept has no inference rule), the language's runtime is not loaded, or the type could not be fully inferred without more context (generics, lambdas). Where the answer comes from decides that last case: when the node's root is open in an editor, the editor's incremental type-check session answers, and a partially inferred type comes back flagged `hasTypeVariables:true` instead of `null`; otherwise a one-node computation answers, and the same case is `null` (only a root's type can then carry the flag). A type that is only a bare type variable also answers `null`. It is the node's own type, not the type its context expects — that is GET_EXPECTED_TYPE.
+
+## GET_EXPECTED_TYPE
+
+`mps_mcp_query_nodes` `GET_EXPECTED_TYPE` with `{"nodeReference": ...}` answers, as a printed type or `data: null`, the type the node's context requires of it — what `has expected type` in a `NodesTestCase` checks. For `Object o = s` GET_TYPE on `s` answers `String`, GET_EXPECTED_TYPE `Object`. The engine types the node's parent afresh, collects the inequalities the rules applied on the way put on the node, and answers the least common supertype of its upper bounds (`:<=:` and `:<<=:`), or of its comparable bounds when there are none. So one upper bound answers that type; several answer their common supertype (a meet type when they have several), which a replacement must fit, though fitting it does not guarantee fitting each bound. `null` means no upper or comparable bound is known: a root, a slot bounded only by `:==:` or `:>=:` (equations and lower bounds are not consulted — the left side of an assignment is one), an unconstrained slot, or a bound that depends on the parent's own type, which this computation does not infer. The computation never reads the editor's type-check session, so an open editor does not change the answer. It needs an existing node: for an empty slot, ask about the node you intend to replace — the context's rules may inspect it (`byte b = 1` is bounded by `int`, not `byte`, because the rule checks the literal; so is `return 'c'` in a `long` method, by the method's rule), so the answer for its replacement can differ.
 
 ## Type operands
 
