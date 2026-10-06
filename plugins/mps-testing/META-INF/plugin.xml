@@ -19,9 +19,9 @@
   <name>MPS Testing</name>
   <category>Custom Languages</category>
   <description>Languages unit-testing java code and MPS aspects such as editor and typesystem</description>
-  <version>2026.2</version>
+  <version>2026.3</version>
   <vendor url="http://www.jetbrains.com/mps/" email="support@jetbrains.com">JetBrains</vendor>
-  <idea-version since-build="262.1" until-build="262.*"/>
+  <idea-version since-build="263.1" until-build="263.*"/>
   <dependencies>
     <plugin id="jetbrains.mps.core"/>
   </dependencies>

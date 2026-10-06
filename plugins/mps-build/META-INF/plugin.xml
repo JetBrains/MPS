@@ -19,9 +19,9 @@
   <name>MPS Build Languages</name>
   <description>Provides a set of Declarative Build languages.</description>
   <category>Custom Languages</category>
-  <version>2026.2</version>
+  <version>2026.3</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
-  <idea-version since-build="262.1" until-build="262.*"/>
+  <idea-version since-build="263.1" until-build="263.*"/>
   <depends>jetbrains.mps.core</depends>
   <depends optional="true" config-file="pluginSolutions.xml">jetbrains.mps.execution.configurations</depends>
   <dependencies>

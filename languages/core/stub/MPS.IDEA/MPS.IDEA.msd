@@ -82,10 +82,10 @@
         <sourceRoot location="intellij.libraries.jsoup.jar" />
         <sourceRoot location="intellij.libraries.jsvg.jar" />
         <sourceRoot location="intellij.libraries.junit4.jar" />
-        <sourceRoot location="intellij.libraries.junit5.jar" />
-        <sourceRoot location="intellij.libraries.junit5.jupiter.jar" />
-        <sourceRoot location="intellij.libraries.junit5.launcher.jar" />
-        <sourceRoot location="intellij.libraries.junit5.vintage.jar" />
+        <sourceRoot location="intellij.libraries.junit6.jar" />
+        <sourceRoot location="intellij.libraries.junit6.jupiter.jar" />
+        <sourceRoot location="intellij.libraries.junit6.launcher.jar" />
+        <sourceRoot location="intellij.libraries.junit6.vintage.jar" />
         <sourceRoot location="intellij.libraries.kotlin.reflect.jar" />
         <sourceRoot location="intellij.libraries.kotlinx.collections.immutable.jar" />
         <sourceRoot location="intellij.libraries.kotlinx.coroutines.core.jar" />
@@ -127,7 +127,6 @@
         <sourceRoot location="intellij.libraries.snakeyaml.engine.jar" />
         <sourceRoot location="intellij.libraries.snakeyaml.jar" />
         <sourceRoot location="intellij.libraries.stream.jar" />
-        <sourceRoot location="intellij.libraries.swingx.jar" />
         <sourceRoot location="intellij.libraries.velocity.jar" />
         <sourceRoot location="intellij.libraries.winp.jar" />
         <sourceRoot location="intellij.libraries.xtext.xbase.jar" />
@@ -277,7 +276,6 @@
         <sourceRoot location="jps-model.jar" />
         <sourceRoot location="lib.jar" />
         <sourceRoot location="maven-resolver-provider.jar" />
-        <sourceRoot location="swingx.jar" />
         <sourceRoot location="trove.jar" />
         <sourceRoot location="util_rt.jar" />
       <!-- intentionally no stats.jar as we don't have any direct dependencies -->
@@ -390,10 +388,10 @@
       <library location="${mps_home}/lib/intellij.libraries.jsoup.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jsvg.jar" />
       <library location="${mps_home}/lib/intellij.libraries.junit4.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.jupiter.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.launcher.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.vintage.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
       <library location="${mps_home}/lib/intellij.libraries.kotlin.reflect.jar" />
       <library location="${mps_home}/lib/intellij.libraries.kotlinx.collections.immutable.jar" />
       <library location="${mps_home}/lib/intellij.libraries.kotlinx.coroutines.core.jar" />
@@ -435,7 +433,6 @@
       <library location="${mps_home}/lib/intellij.libraries.snakeyaml.engine.jar" />
       <library location="${mps_home}/lib/intellij.libraries.snakeyaml.jar" />
       <library location="${mps_home}/lib/intellij.libraries.stream.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.swingx.jar" />
       <library location="${mps_home}/lib/intellij.libraries.velocity.jar" />
       <library location="${mps_home}/lib/intellij.libraries.winp.jar" />
       <library location="${mps_home}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -585,7 +582,6 @@
       <library location="${mps_home}/lib/jps-model.jar" />
       <library location="${mps_home}/lib/lib.jar" />
       <library location="${mps_home}/lib/maven-resolver-provider.jar" />
-      <library location="${mps_home}/lib/swingx.jar" />
       <library location="${mps_home}/lib/trove.jar" />
       <library location="${mps_home}/lib/util_rt.jar" />
     </facet>

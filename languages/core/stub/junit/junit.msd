@@ -5,10 +5,10 @@
     <modelRoot contentPath="${mps_home}/lib/" type="java_classes">
       <sourceRoot location="intellij.libraries.junit4.jar" />
       <sourceRoot location="intellij.libraries.hamcrest.jar" />
-      <sourceRoot location="intellij.libraries.junit5.jar" />
-      <sourceRoot location="intellij.libraries.junit5.jupiter.jar" />
-      <sourceRoot location="intellij.libraries.junit5.launcher.jar" />
-      <sourceRoot location="intellij.libraries.junit5.vintage.jar" />
+      <sourceRoot location="intellij.libraries.junit6.jar" />
+      <sourceRoot location="intellij.libraries.junit6.jupiter.jar" />
+      <sourceRoot location="intellij.libraries.junit6.launcher.jar" />
+      <sourceRoot location="intellij.libraries.junit6.vintage.jar" />
       <PackageScope>
         <include prefix="junit."/>
         <include prefix="org.junit."/>
@@ -21,10 +21,10 @@
       <classes generated="true" />
       <library location="${mps_home}/lib/intellij.libraries.junit4.jar" />
       <library location="${mps_home}/lib/intellij.libraries.hamcrest.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.jupiter.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.launcher.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.junit5.vintage.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
     </facet>
   </facets>
   <sourcePath />

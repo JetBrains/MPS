@@ -4,9 +4,9 @@
   <!-- Do not set minor version other than just one digit (minor="2" even for some 2018.2.# version) and eap other then eap="true":
   it is used for AffectedVersionTest#testVersion, which expect only EAP minor version
   TODO: this looks like hack and does not in any way reflects real version set in jetbrains.mps.ide.build.mps-->
-  <version major="2026" minor="2" eap="true"/>
+  <version major="2026" minor="3" eap="true"/>
   <company name="JetBrains s.r.o." url="https://www.jetbrains.com/?fromIDE" copyrightStart="2009"/>
-  <build number="262.SNAPSHOT" date="__BUILD_DATE__"/>
+  <build number="263.6259.SNAPSHOT" date="__BUILD_DATE__"/>
   <logo url="/splash.png"/>
   <icon svg="/mps.svg" svg-small="/mps_16.svg"/>
   <names product="MPS" fullname="JetBrains MPS" script="mps"/>

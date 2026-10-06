@@ -164,7 +164,6 @@
         <sourceRoot location="intellij.libraries.squareup.okio.jvm.jar" />
         <sourceRoot location="intellij.libraries.sshj.jar" />
         <sourceRoot location="intellij.libraries.stream.jar" />
-        <sourceRoot location="intellij.libraries.swingx.jar" />
         <sourceRoot location="intellij.libraries.teamcity.service.messages.jar" />
         <sourceRoot location="intellij.libraries.velocity.jar" />
         <sourceRoot location="intellij.libraries.winp.jar" />
@@ -587,7 +586,6 @@
       <library location="${mps_home}/lib/intellij.libraries.squareup.okio.jvm.jar" />
       <library location="${mps_home}/lib/intellij.libraries.sshj.jar" />
       <library location="${mps_home}/lib/intellij.libraries.stream.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.swingx.jar" />
       <library location="${mps_home}/lib/intellij.libraries.teamcity.service.messages.jar" />
       <library location="${mps_home}/lib/intellij.libraries.velocity.jar" />
       <library location="${mps_home}/lib/intellij.libraries.winp.jar" />
