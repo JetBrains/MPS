@@ -88,7 +88,7 @@ teamcity-info.xml
 /plugins/grazie
 /plugins/space
 /plugins/mcpserver
-/plugins/grid-core-plugin/lib
+/plugins/grid-plugin
 /plugins/java-aetherDependencyResolver-plugin/lib
 /plugins/libraries-misc-plugin/lib
 /plugins/mermaid/lib
@@ -110,6 +110,9 @@ teamcity-info.xml
 /plugins/platform-tasks-plugin
 /plugins/platform-vcs-plugin
 /plugins/xml-plugin
+/plugins/jna-plugin
+/plugins/pty4j-plugin
+/plugins/skiko-plugin
 
 
 # Main libraries folder: dependencies are downloaded before complilation with task 'install' from build/getDependencies.xml
