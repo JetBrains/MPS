@@ -7304,32 +7304,6 @@
             </node>
           </node>
         </node>
-        <node concept="1SiIV0" id="4X0dS6lAIgM" role="3bR37C">
-          <node concept="1BurEX" id="4X0dS6lAIgN" role="1SiIV1">
-            <node concept="398BVA" id="4X0dS6lAIgJ" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="4X0dS6lAIgK" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="4X0dS6lAIgL" role="2Ry0An">
-                  <property role="2Ry0Am" value="jaxb-api.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1SiIV0" id="4X0dS6lAIgR" role="3bR37C">
-          <node concept="1BurEX" id="4X0dS6lAIgS" role="1SiIV1">
-            <node concept="398BVA" id="4X0dS6lAIgO" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="4X0dS6lAIgP" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="4X0dS6lAIgQ" role="2Ry0An">
-                  <property role="2Ry0Am" value="jaxb-runtime.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="1SiIV0" id="4X0dS6lAIgW" role="3bR37C">
           <node concept="1BurEX" id="4X0dS6lAIgX" role="1SiIV1">
             <node concept="398BVA" id="4X0dS6lAIgT" role="1BurEY">
@@ -8235,6 +8209,19 @@
                 <property role="2Ry0Am" value="lib" />
                 <node concept="2Ry0Ak" id="1rdkwBGwf6d" role="2Ry0An">
                   <property role="2Ry0Am" value="intellij.libraries.junit6.vintage.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="7AHsNV0DUzI" role="3bR37C">
+          <node concept="1BurEX" id="7AHsNV0DUzJ" role="1SiIV1">
+            <node concept="398BVA" id="7AHsNV0DUzF" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="7AHsNV0DUzG" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="7AHsNV0DUzH" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.jaxb.jar" />
                 </node>
               </node>
             </node>
@@ -14189,27 +14176,14 @@
             <ref role="3bR37D" node="mXGwHwhVPj" resolve="JDK" />
           </node>
         </node>
-        <node concept="1SiIV0" id="Rwku8tJMUf" role="3bR37C">
-          <node concept="1BurEX" id="Rwku8tJMUg" role="1SiIV1">
-            <node concept="398BVA" id="Rwku8tJMUc" role="1BurEY">
+        <node concept="1SiIV0" id="7AHsNV0DUSo" role="3bR37C">
+          <node concept="1BurEX" id="7AHsNV0DUSp" role="1SiIV1">
+            <node concept="398BVA" id="7AHsNV0DUSl" role="1BurEY">
               <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="Rwku8tJMUd" role="iGT6I">
+              <node concept="2Ry0Ak" id="7AHsNV0DUSm" role="iGT6I">
                 <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="Rwku8tJMUe" role="2Ry0An">
-                  <property role="2Ry0Am" value="jaxb-api.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1SiIV0" id="Rwku8tJMUk" role="3bR37C">
-          <node concept="1BurEX" id="Rwku8tJMUl" role="1SiIV1">
-            <node concept="398BVA" id="Rwku8tJMUh" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="Rwku8tJMUi" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="Rwku8tJMUj" role="2Ry0An">
-                  <property role="2Ry0Am" value="jaxb-runtime.jar" />
+                <node concept="2Ry0Ak" id="7AHsNV0DUSn" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.jaxb.jar" />
                 </node>
               </node>
             </node>
@@ -36591,7 +36565,7 @@
       <node concept="13uQ2_" id="3Ml9xWFbhQ6" role="39821P">
         <node concept="3_J27D" id="3Ml9xWFbhQ8" role="13uQ07">
           <node concept="3Mxwew" id="3Ml9xWFbhRf" role="3MwsjC">
-            <property role="3MwjfP" value="jaxb-api.jar" />
+            <property role="3MwjfP" value="intellij.libraries.jaxb.jar" />
           </node>
         </node>
       </node>
@@ -36613,13 +36587,6 @@
         <node concept="3_J27D" id="FinVtwXmY7" role="13uQ07">
           <node concept="3Mxwew" id="FinVtwXmY8" role="3MwsjC">
             <property role="3MwjfP" value="external-system-rt.jar" />
-          </node>
-        </node>
-      </node>
-      <node concept="13uQ2_" id="3Ml9xWFbhXI" role="39821P">
-        <node concept="3_J27D" id="3Ml9xWFbhXJ" role="13uQ07">
-          <node concept="3Mxwew" id="3Ml9xWFbi3a" role="3MwsjC">
-            <property role="3MwjfP" value="jaxb-runtime.jar" />
           </node>
         </node>
       </node>
@@ -57817,10 +57784,7 @@
       <property role="26EafJ" value="lib/javac2.jar" />
     </node>
     <node concept="26EafG" id="48NujD9KK2c" role="26Ea7d">
-      <property role="26EafJ" value="lib/jaxb-api.jar" />
-    </node>
-    <node concept="26EafG" id="48NujD9KK2d" role="26Ea7d">
-      <property role="26EafJ" value="lib/jaxb-runtime.jar" />
+      <property role="26EafJ" value="lib/intellij.libraries.jaxb.jar" />
     </node>
     <node concept="26EafG" id="48NujD9KK2e" role="26Ea7d">
       <property role="26EafJ" value="lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />

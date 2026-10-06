@@ -66,6 +66,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.java.compatibility.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.javax.annotation.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jaxen.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jaxb.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jbr.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jcip.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jediterm.core.jar!/" />
@@ -266,8 +267,6 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.wsl.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.remoteDev.util.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/javac2.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/jaxb-api.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/jaxb-runtime.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/jps-model.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/lib.jar!/" />

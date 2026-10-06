@@ -850,8 +850,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -914,6 +912,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -1189,8 +1188,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -1253,6 +1250,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -1552,8 +1550,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -1616,6 +1612,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -1914,8 +1911,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -1978,6 +1973,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -2266,8 +2262,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -2330,6 +2324,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />

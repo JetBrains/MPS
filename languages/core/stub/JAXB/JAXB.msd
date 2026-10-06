@@ -3,20 +3,17 @@
   <readOnlyStubs/>
   <models>
     <modelRoot contentPath="${mps_home}/lib/" type="java_classes">
-      <sourceRoot location="jaxb-api.jar" />
-      <sourceRoot location="jaxb-runtime.jar" />
+      <sourceRoot location="intellij.libraries.jaxb.jar" />
       <PackageScope>
-        <!-- javax.activation.jar also included few com.sun.activation classes, do I need these?-->
         <include prefix="javax.activation." />
-        <include prefix="javax.xml.bind." /> <!-- jaxb-api.jar-->
-        <!-- I decided not to expose packages that were in jaxb-runtime.jar, they are impl-specific -->
+        <include prefix="javax.xml.bind." />
+        <!-- com.sun.* packages are impl-specific, not exposed -->
       </PackageScope>
     </modelRoot>
   </models>
   <facets>
     <facet type="java" compile="ext" classes="provided" ext="no">
-      <library location="${mps_home}/lib//jaxb-api.jar" />
-      <library location="${mps_home}/lib//jaxb-runtime.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.jaxb.jar" />
     </facet>
   </facets>
   <sourcePath />

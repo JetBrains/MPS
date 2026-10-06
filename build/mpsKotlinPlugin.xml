@@ -1676,8 +1676,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -1740,6 +1738,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2125,8 +2124,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -2189,6 +2186,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <pathelement path="${build.tmp}/java/out/jetbrains.mps.kotlin" />
       </classpath>
     </javac>
@@ -2461,8 +2459,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -2525,6 +2521,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <pathelement path="${build.tmp}/java.modules.cycle.1" />
         <path refid="path.jdk.classpath" />
       </classpath>
@@ -2801,8 +2798,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -2865,6 +2860,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <pathelement path="${build.tmp}/java.modules.cycle.1" />
         <path refid="path.jdk.classpath" />
       </classpath>
@@ -3256,8 +3252,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -3320,6 +3314,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3723,8 +3718,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${artifacts.IDEA}/lib/javac2.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-api.jar" />
-        <fileset file="${artifacts.IDEA}/lib/jaxb-runtime.jar" />
         <fileset file="${artifacts.IDEA}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${artifacts.IDEA}/lib/maven-resolver-provider.jar" />
         <fileset file="${artifacts.IDEA}/lib/trove.jar" />
@@ -3787,6 +3780,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>

@@ -18512,8 +18512,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -18583,6 +18581,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.java.library.idea-libraries" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.jdk.classpath" />
@@ -18868,8 +18867,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -18939,6 +18936,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java/out/feedback-api" />
         <pathelement path="${build.tmp}/java/out/findUsages-runtime" />
@@ -19317,8 +19315,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -19388,6 +19384,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -19741,8 +19738,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -19812,6 +19807,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -20174,8 +20170,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -20245,6 +20239,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -20607,8 +20602,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -20678,6 +20671,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -21029,8 +21023,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -21100,6 +21092,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -21379,8 +21372,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -21450,6 +21441,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -21802,8 +21794,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -21873,6 +21863,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -22231,8 +22222,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -22302,6 +22291,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -22653,8 +22643,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -22724,6 +22712,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -23002,8 +22991,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -23073,6 +23060,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -23431,8 +23419,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -23502,6 +23488,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -23785,8 +23772,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -23856,6 +23841,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -24214,8 +24200,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -24285,6 +24269,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -24669,8 +24654,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -24740,6 +24723,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -25092,8 +25076,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -25163,6 +25145,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -25517,8 +25500,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -25588,6 +25569,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -25942,8 +25924,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -26013,6 +25993,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -26466,8 +26447,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -26537,6 +26516,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -26897,8 +26877,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -26968,6 +26946,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -27328,8 +27307,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -27399,6 +27376,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -27753,8 +27731,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -27824,6 +27800,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -28181,8 +28158,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -28252,6 +28227,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -28611,8 +28587,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -28682,6 +28656,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -29041,8 +29016,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -29112,6 +29085,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -29474,8 +29448,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -29545,6 +29517,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -29910,8 +29883,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -29981,6 +29952,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -30348,8 +30320,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -30419,6 +30389,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -30776,8 +30747,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -30847,6 +30816,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -31209,8 +31179,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -31280,6 +31248,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -31651,8 +31620,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -31722,6 +31689,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -31967,8 +31935,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -32038,6 +32004,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java/out/findUsages-runtime" />
@@ -32364,8 +32331,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -32435,6 +32400,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.4" />
@@ -32790,8 +32756,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -32861,6 +32825,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.4" />
@@ -33105,8 +33070,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -33176,6 +33139,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java/out/feedback-api" />
         <pathelement path="${build.tmp}/java/out/findUsages-runtime" />
@@ -33564,8 +33528,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -33635,6 +33597,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -33879,8 +33842,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -33950,6 +33911,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java/out/findUsages-runtime" />
         <pathelement path="${build.tmp}/java/out/mps-debuginfo-api" />
@@ -34395,8 +34357,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -34466,6 +34426,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -34814,8 +34775,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -34885,6 +34844,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -35175,8 +35135,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -35246,6 +35204,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -35523,8 +35482,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -35594,6 +35551,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -35882,8 +35840,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -35953,6 +35909,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -36230,8 +36187,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -36301,6 +36256,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -36592,8 +36548,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -36663,6 +36617,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -36943,8 +36898,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -37014,6 +36967,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.4" />
@@ -37380,8 +37334,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -37451,6 +37403,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.4" />
@@ -37737,8 +37690,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -37808,6 +37759,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.5" />
@@ -38098,8 +38050,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -38169,6 +38119,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -38455,8 +38406,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -38526,6 +38475,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -38814,8 +38764,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -38885,6 +38833,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.4" />
@@ -39170,8 +39119,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -39241,6 +39188,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -39518,8 +39466,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -39589,6 +39535,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -39874,8 +39821,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -39945,6 +39890,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.6" />
@@ -40226,8 +40172,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -40297,6 +40241,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -40622,8 +40567,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -40693,6 +40636,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -40986,8 +40930,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -41057,6 +40999,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -41341,8 +41284,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -41412,6 +41353,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -41780,8 +41722,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -41851,6 +41791,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -42141,8 +42082,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -42212,6 +42151,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -42477,8 +42417,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -42548,6 +42486,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <path refid="path.java.library.idea-libraries" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.jdk.classpath" />
@@ -42834,8 +42773,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -42905,6 +42842,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -43193,8 +43131,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -43264,6 +43200,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -43529,8 +43466,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -43600,6 +43535,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -43877,8 +43813,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -43948,6 +43882,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -44231,8 +44166,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -44302,6 +44235,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -44591,8 +44525,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -44662,6 +44594,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -45025,8 +44958,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -45096,6 +45027,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -45448,8 +45380,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -45519,6 +45449,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -45863,8 +45794,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -45934,6 +45863,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java/out/findUsages-runtime" />
@@ -46264,8 +46194,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -46335,6 +46263,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.7" />
@@ -46694,8 +46623,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -46765,6 +46692,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -47045,8 +46973,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -47116,6 +47042,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -47409,8 +47336,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -47480,6 +47405,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.7" />
@@ -47856,8 +47782,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -47927,6 +47851,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -48209,8 +48134,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -48280,6 +48203,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -48674,8 +48598,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -48745,6 +48667,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -49032,8 +48955,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -49103,6 +49024,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -49380,8 +49302,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -49451,6 +49371,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -49805,8 +49726,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -49876,6 +49795,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -50169,8 +50089,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -50240,6 +50158,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -50517,8 +50436,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -50588,6 +50505,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -50877,8 +50795,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -50948,6 +50864,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -51226,8 +51143,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -51297,6 +51212,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -51586,8 +51502,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -51657,6 +51571,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -51932,8 +51847,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -52003,6 +51916,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -52285,8 +52199,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -52356,6 +52268,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -52638,8 +52551,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -52709,6 +52620,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -53062,8 +52974,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -53133,6 +53043,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -53419,8 +53330,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -53490,6 +53399,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -53766,8 +53676,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -53837,6 +53745,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -54115,8 +54024,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -54186,6 +54093,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -54546,8 +54454,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -54617,6 +54523,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -54900,8 +54807,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -54971,6 +54876,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -55293,8 +55199,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -55364,6 +55268,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -55647,8 +55552,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -55718,6 +55621,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -55995,8 +55899,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -56066,6 +55968,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -56419,8 +56322,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -56490,6 +56391,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -56864,8 +56766,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -56935,6 +56835,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -57222,8 +57123,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -57293,6 +57192,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -57571,8 +57471,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -57642,6 +57540,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -57927,8 +57826,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -57998,6 +57895,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -58280,8 +58178,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -58351,6 +58247,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -58628,8 +58525,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -58699,6 +58594,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -58986,8 +58882,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -59057,6 +58951,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -59406,8 +59301,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -59477,6 +59370,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -59770,8 +59664,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -59841,6 +59733,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -60130,8 +60023,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -60201,6 +60092,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -60629,8 +60521,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -60700,6 +60590,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -61102,8 +60993,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -61173,6 +61062,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -61449,8 +61339,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -61520,6 +61408,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -61801,8 +61690,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -61872,6 +61759,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -62154,8 +62042,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -62225,6 +62111,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -62578,8 +62465,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -62649,6 +62534,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.3" />
@@ -62940,8 +62826,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -63011,6 +62895,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -63401,8 +63286,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -63472,6 +63355,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java/out/findUsages-runtime" />
@@ -63803,8 +63687,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -63874,6 +63756,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.8" />
@@ -64117,8 +64000,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -64188,6 +64069,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java/out/feedback-api" />
@@ -64513,8 +64395,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -64584,6 +64464,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.9" />
@@ -64870,8 +64751,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -64941,6 +64820,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.8" />
@@ -65223,8 +65103,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -65294,6 +65172,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <pathelement path="${build.tmp}/java.modules.cycle.9" />
@@ -65582,8 +65461,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -65649,6 +65526,7 @@
         <fileset file="${mps_home}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${mps_home}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${mps_home}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -65928,8 +65806,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -65999,6 +65875,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />
@@ -66276,8 +66153,6 @@
         <fileset file="${mps_home}/lib/intellij.platform.welcomeScreen.impl.jar" />
         <fileset file="${mps_home}/lib/intellij.remoteDev.util.jar" />
         <fileset file="${mps_home}/lib/javac2.jar" />
-        <fileset file="${mps_home}/lib/jaxb-api.jar" />
-        <fileset file="${mps_home}/lib/jaxb-runtime.jar" />
         <fileset file="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <fileset file="${mps_home}/lib/maven-resolver-provider.jar" />
         <fileset file="${mps_home}/lib/trove.jar" />
@@ -66347,6 +66222,7 @@
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${mps_home}/lib/intellij.libraries.junit6.vintage.jar" />
+        <fileset file="${mps_home}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <path refid="path.java.library.idea-libraries" />
         <path refid="path.jdk.classpath" />

@@ -840,10 +840,7 @@
       <property role="26EafJ" value="lib/javac2.jar" />
     </node>
     <node concept="26EafG" id="48NujD9KK2c" role="26Ea7d">
-      <property role="26EafJ" value="lib/jaxb-api.jar" />
-    </node>
-    <node concept="26EafG" id="48NujD9KK2d" role="26Ea7d">
-      <property role="26EafJ" value="lib/jaxb-runtime.jar" />
+      <property role="26EafJ" value="lib/intellij.libraries.jaxb.jar" />
     </node>
     <node concept="26EafG" id="48NujD9KK2e" role="26Ea7d">
       <property role="26EafJ" value="lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />

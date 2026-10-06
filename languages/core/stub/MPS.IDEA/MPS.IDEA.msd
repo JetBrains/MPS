@@ -270,8 +270,7 @@
         <sourceRoot location="intellij.platform.wsl.impl.jar" />
         <sourceRoot location="intellij.remoteDev.util.jar" />
         <sourceRoot location="javac2.jar" />
-        <sourceRoot location="jaxb-api.jar" />
-        <sourceRoot location="jaxb-runtime.jar" />
+        <sourceRoot location="intellij.libraries.jaxb.jar" />
         <sourceRoot location="jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
         <sourceRoot location="jps-model.jar" />
         <sourceRoot location="lib.jar" />
@@ -576,8 +575,7 @@
       <library location="${mps_home}/lib/intellij.platform.wsl.impl.jar" />
       <library location="${mps_home}/lib/intellij.remoteDev.util.jar" />
       <library location="${mps_home}/lib/javac2.jar" />
-      <library location="${mps_home}/lib/jaxb-api.jar" />
-      <library location="${mps_home}/lib/jaxb-runtime.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.jaxb.jar" />
       <library location="${mps_home}/lib/jetbrains.intellij.deps.java.atk.wrapper.linux.jar" />
       <library location="${mps_home}/lib/jps-model.jar" />
       <library location="${mps_home}/lib/lib.jar" />
