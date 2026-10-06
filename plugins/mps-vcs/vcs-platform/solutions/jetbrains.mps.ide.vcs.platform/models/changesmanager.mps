@@ -13,6 +13,9 @@
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
     <use id="f2801650-65d5-424e-bb1b-463a8781b786" name="jetbrains.mps.baseLanguage.javadoc" version="3" />
     <use id="acfc188d-d5d6-4598-b370-6f4a983f05b2" name="jetbrains.mps.baseLanguage.methodReferences" version="0" />
+    <use id="af65afd8-f0dd-4942-87d9-63a55f2a9db1" name="jetbrains.mps.lang.behavior" version="2" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
+    <use id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core" version="2" />
   </languages>
   <imports>
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" />
@@ -59,8 +62,15 @@
     <import index="bd8o" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.application(MPS.IDEA/)" />
     <import index="nvd4" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.repository(MPS.OpenAPI/)" />
     <import index="1038" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" implicit="true" />
-    <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" implicit="true" />
+    <import index="1039" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
+    <import index="j86p" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.impl(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="j86q" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.impl(MPS.IDEA.Modules/)" />
+    <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
+    <import index="ouht" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:kotlin.jvm.functions(MPS.IDEA/)" />
+    <import index="v18h" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:kotlin(MPS.IDEA/)" />
+    <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" />
+    <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -567,7 +577,7 @@
       <node concept="3uibUv" id="4DPIwUs89HV" role="1tU5fm">
         <ref role="3uigEE" to="33ny:~LinkedList" resolve="LinkedList" />
         <node concept="3uibUv" id="4DPIwUs89HW" role="11_B2D">
-          <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
+          <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
         </node>
       </node>
       <node concept="3Tm6S6" id="3eE6dTgTzLl" role="1B3o_S" />
@@ -575,7 +585,7 @@
         <node concept="1pGfFk" id="3eE6dTgTRk1" role="2ShVmc">
           <ref role="37wK5l" to="33ny:~LinkedList.&lt;init&gt;()" resolve="LinkedList" />
           <node concept="3uibUv" id="4DPIwUs8a4l" role="1pMfVU">
-            <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
+            <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
           </node>
         </node>
       </node>
@@ -589,7 +599,7 @@
           <node concept="37vLTI" id="3eE6dTgTGw4" role="3clFbG">
             <node concept="2ShNRf" id="3eE6dTgTGw7" role="37vLTx">
               <node concept="1pGfFk" id="3eE6dTgTGw9" role="2ShVmc">
-                <ref role="37wK5l" node="3eE6dTgTGvL" resolve="SimpleCommandQueue.MyExecutorThread" />
+                <ref role="37wK5l" node="3eE6dTgTGvL" />
                 <node concept="37vLTw" id="2BHiRxgmv5f" role="37wK5m">
                   <ref role="3cqZAo" node="3eE6dTgTGvY" resolve="threadName" />
                 </node>
@@ -763,11 +773,11 @@
               <node concept="3cpWsn" id="4DPIwUs8hwZ" role="3cpWs9">
                 <property role="TrG5h" value="elem" />
                 <node concept="3uibUv" id="4DPIwUs8hx0" role="1tU5fm">
-                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
+                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
                 </node>
                 <node concept="2ShNRf" id="4DPIwUs8hIY" role="33vP2m">
                   <node concept="1pGfFk" id="4DPIwUs8hI0" role="2ShVmc">
-                    <ref role="37wK5l" node="4DPIwUs72V1" resolve="SimpleCommandQueue.QueueElem" />
+                    <ref role="37wK5l" node="4DPIwUs72V1" />
                     <node concept="37vLTw" id="4DPIwUs8hMo" role="37wK5m">
                       <ref role="3cqZAo" node="4DPIwUs8cjO" resolve="task" />
                     </node>
@@ -1191,19 +1201,24 @@
                 <node concept="3cpWsn" id="7znbqLiw1l0" role="3cpWs9">
                   <property role="TrG5h" value="flushingRunnable" />
                   <node concept="3uibUv" id="7znbqLiw1l1" role="1tU5fm">
-                    <ref role="3uigEE" to="wyt6:~Runnable" resolve="Runnable" />
+                    <ref role="3uigEE" to="ouht:~Function0" />
+                    <node concept="3uibUv" id="5AyPW_20XWs" role="11_B2D">
+                      <ref role="3uigEE" to="v18h:~Unit" resolve="Unit" />
+                    </node>
                   </node>
                   <node concept="2ShNRf" id="7znbqLiw27j" role="33vP2m">
                     <node concept="YeOm9" id="7znbqLiwO1g" role="2ShVmc">
                       <node concept="1Y3b0j" id="7znbqLiwO1j" role="YeSDq">
                         <property role="2bfB8j" value="true" />
-                        <ref role="1Y3XeK" to="wyt6:~Runnable" resolve="Runnable" />
+                        <ref role="1Y3XeK" to="ouht:~Function0" />
                         <ref role="37wK5l" to="wyt6:~Object.&lt;init&gt;()" resolve="Object" />
                         <node concept="3Tm1VV" id="7znbqLiwO1k" role="1B3o_S" />
                         <node concept="3clFb_" id="7znbqLiwO1p" role="jymVt">
-                          <property role="TrG5h" value="run" />
+                          <property role="TrG5h" value="invoke" />
                           <node concept="3Tm1VV" id="7znbqLiwO1q" role="1B3o_S" />
-                          <node concept="3cqZAl" id="7znbqLiwO1s" role="3clF45" />
+                          <node concept="3uibUv" id="5AyPW_20XWu" role="3clF45">
+                            <ref role="3uigEE" to="v18h:~Unit" resolve="Unit" />
+                          </node>
                           <node concept="3clFbS" id="7znbqLiwO1t" role="3clF47">
                             <node concept="2Gpval" id="7znbqLixNCc" role="3cqZAp">
                               <node concept="2GrKxI" id="7znbqLixNCd" role="2Gsz3X">
@@ -1308,10 +1323,19 @@
                                 </node>
                               </node>
                             </node>
+                            <node concept="3cpWs6" id="5AyPW_20XWw" role="3cqZAp">
+                              <node concept="10M0yZ" id="5AyPW_20XWC" role="3cqZAk">
+                                <ref role="1PxDUh" to="v18h:~Unit" resolve="Unit" />
+                                <ref role="3cqZAo" to="v18h:~Unit.INSTANCE" resolve="INSTANCE" />
+                              </node>
+                            </node>
                           </node>
                           <node concept="2AHcQZ" id="7znbqLiwO1v" role="2AJF6D">
                             <ref role="2AI5Lk" to="wyt6:~Override" resolve="Override" />
                           </node>
+                        </node>
+                        <node concept="3uibUv" id="5AyPW_20XWt" role="2Ghqu4">
+                          <ref role="3uigEE" to="v18h:~Unit" resolve="Unit" />
                         </node>
                       </node>
                     </node>
@@ -1329,8 +1353,8 @@
                       <ref role="3uigEE" to="1038:~ChangeListManagerImpl" resolve="ChangeListManagerImpl" />
                     </node>
                     <node concept="2YIFZM" id="58EREyZPCuh" role="10QFUP">
-                      <ref role="37wK5l" to="1037:~ChangeListManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                      <ref role="1Pybhc" to="1037:~ChangeListManager" resolve="ChangeListManager" />
+                      <ref role="37wK5l" to="1038:~ChangeListManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                      <ref role="1Pybhc" to="1038:~ChangeListManager" resolve="ChangeListManager" />
                       <node concept="37vLTw" id="58EREyZPKiK" role="37wK5m">
                         <ref role="3cqZAo" node="58EREyZPyGY" resolve="myProject" />
                       </node>
@@ -1344,7 +1368,7 @@
                     <ref role="3cqZAo" node="58EREyZPAic" resolve="clm" />
                   </node>
                   <node concept="liA8E" id="58EREyZPGl3" role="2OqNvi">
-                    <ref role="37wK5l" to="1038:~ChangeListManagerImpl.executeOnUpdaterThread(java.lang.Runnable)" resolve="executeOnUpdaterThread" />
+                    <ref role="37wK5l" to="1038:~ChangeListManagerImpl.executeOnUpdaterThread(kotlin.jvm.functions.Function0)" resolve="executeOnUpdaterThread" />
                     <node concept="37vLTw" id="7znbqLix2yp" role="37wK5m">
                       <ref role="3cqZAo" node="7znbqLiw1l0" resolve="flushingRunnable" />
                     </node>
@@ -1543,7 +1567,7 @@
               </node>
               <node concept="2ZW3vV" id="4DPIwUs7Xjc" role="3uHU7B">
                 <node concept="3uibUv" id="4DPIwUs7Y4c" role="2ZW6by">
-                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
+                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
                 </node>
                 <node concept="37vLTw" id="4DPIwUs7X5A" role="2ZW6bz">
                   <ref role="3cqZAo" node="4DPIwUs73_t" resolve="o" />
@@ -1562,7 +1586,7 @@
                       <node concept="1eOMI4" id="4DPIwUs85iY" role="2Oq$k0">
                         <node concept="10QFUN" id="4DPIwUs85iZ" role="1eOMHV">
                           <node concept="3uibUv" id="4DPIwUs85j0" role="10QFUM">
-                            <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
+                            <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
                           </node>
                           <node concept="37vLTw" id="4DPIwUs85j1" role="10QFUP">
                             <ref role="3cqZAo" node="4DPIwUs73_t" resolve="o" />
@@ -1793,11 +1817,11 @@
           <node concept="3cpWsn" id="7nu2Tk19E$3" role="3cpWs9">
             <property role="TrG5h" value="source" />
             <node concept="3uibUv" id="7nu2Tk19Ezk" role="1tU5fm">
-              <ref role="3uigEE" node="6ww30ZnlvGw" resolve="BaseVersionModelLoader.RedirectingDataSource" />
+              <ref role="3uigEE" node="6ww30ZnlvGw" resolve="RedirectingDataSource" />
             </node>
             <node concept="2ShNRf" id="7nu2Tk19E$4" role="33vP2m">
               <node concept="1pGfFk" id="7nu2Tk19E$5" role="2ShVmc">
-                <ref role="37wK5l" node="7vnZ8Y08YxF" resolve="BaseVersionModelLoader.RedirectingDataSource" />
+                <ref role="37wK5l" node="7vnZ8Y08YxF" />
                 <node concept="10QFUN" id="7nu2Tk19E$6" role="37wK5m">
                   <node concept="3uibUv" id="7nu2Tk19E$7" role="10QFUM">
                     <ref role="3uigEE" to="dush:~MultiStreamDataSource" resolve="MultiStreamDataSource" />
@@ -2381,8 +2405,8 @@
                                                       <ref role="3cqZAo" node="2KujyEVJdYE" resolve="vFile" />
                                                     </node>
                                                     <node concept="2YIFZM" id="3o_pIpUdBnI" role="37wK5m">
-                                                      <ref role="1Pybhc" to="1037:~ChangeListManager" resolve="ChangeListManager" />
-                                                      <ref role="37wK5l" to="1037:~ChangeListManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                                                      <ref role="1Pybhc" to="1038:~ChangeListManager" resolve="ChangeListManager" />
+                                                      <ref role="37wK5l" to="1038:~ChangeListManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                                                       <node concept="37vLTw" id="3o_pIpUdBnJ" role="37wK5m">
                                                         <ref role="3cqZAo" node="Jpw4evId25" resolve="project" />
                                                       </node>
@@ -2443,7 +2467,7 @@
                                                 <node concept="3cpWs6" id="2KujyEVJdZ2" role="3cqZAp">
                                                   <node concept="2ShNRf" id="2KujyEVJdZ3" role="3cqZAk">
                                                     <node concept="1pGfFk" id="2KujyEVJdZ4" role="2ShVmc">
-                                                      <ref role="37wK5l" node="7HnJnLuDwor" resolve="BaseVersionModelLoader.RedirectingDataSource.StreamRelay" />
+                                                      <ref role="37wK5l" node="7HnJnLuDwor" />
                                                       <node concept="2OqwBi" id="FrvtFCewIO" role="37wK5m">
                                                         <node concept="37vLTw" id="FrvtFCew9X" role="2Oq$k0">
                                                           <ref role="3cqZAo" node="2KujyEVJdY8" resolve="dataSource" />
@@ -2764,11 +2788,11 @@
                 <property role="TrG5h" value="clManager" />
                 <property role="3TUv4t" value="true" />
                 <node concept="3uibUv" id="Jpw4evI0O4" role="1tU5fm">
-                  <ref role="3uigEE" to="1037:~ChangeListManager" resolve="ChangeListManager" />
+                  <ref role="3uigEE" to="1038:~ChangeListManager" resolve="ChangeListManager" />
                 </node>
                 <node concept="2YIFZM" id="Jpw4evI2V2" role="33vP2m">
-                  <ref role="37wK5l" to="1037:~ChangeListManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                  <ref role="1Pybhc" to="1037:~ChangeListManager" resolve="ChangeListManager" />
+                  <ref role="37wK5l" to="1038:~ChangeListManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                  <ref role="1Pybhc" to="1038:~ChangeListManager" resolve="ChangeListManager" />
                   <node concept="37vLTw" id="Jpw4evI2V3" role="37wK5m">
                     <ref role="3cqZAo" node="7HnJnLuDv0z" resolve="myProject" />
                   </node>
@@ -2914,7 +2938,7 @@
         <node concept="37vLTG" id="3o_pIpUcRTx" role="3clF46">
           <property role="TrG5h" value="clManager" />
           <node concept="3uibUv" id="3o_pIpUcRTy" role="1tU5fm">
-            <ref role="3uigEE" to="1037:~ChangeListManager" resolve="ChangeListManager" />
+            <ref role="3uigEE" to="1038:~ChangeListManager" resolve="ChangeListManager" />
           </node>
         </node>
         <node concept="3clFbS" id="3o_pIpUcNpA" role="3clF47">
@@ -2929,7 +2953,7 @@
                   <ref role="3cqZAo" node="3o_pIpUcRTx" resolve="clManager" />
                 </node>
                 <node concept="liA8E" id="3o_pIpUd6Fc" role="2OqNvi">
-                  <ref role="37wK5l" to="1037:~ChangeListManager.getChange(com.intellij.openapi.vfs.VirtualFile)" resolve="getChange" />
+                  <ref role="37wK5l" to="1038:~ChangeListManager.getChange(com.intellij.openapi.vfs.VirtualFile)" resolve="getChange" />
                   <node concept="37vLTw" id="3o_pIpUd6Fd" role="37wK5m">
                     <ref role="3cqZAo" node="3o_pIpUcRTu" resolve="file" />
                   </node>
@@ -3056,7 +3080,7 @@
                       <ref role="3cqZAo" node="Jpw4evH_ka" resolve="clManager" />
                     </node>
                     <node concept="liA8E" id="2bNoq9f5JjO" role="2OqNvi">
-                      <ref role="37wK5l" to="1037:~ChangeListManager.getChange(com.intellij.openapi.vfs.VirtualFile)" resolve="getChange" />
+                      <ref role="37wK5l" to="1038:~ChangeListManager.getChange(com.intellij.openapi.vfs.VirtualFile)" resolve="getChange" />
                       <node concept="37vLTw" id="2bNoq9f5JjP" role="37wK5m">
                         <ref role="3cqZAo" node="2F$QDg9Evf9" resolve="file" />
                       </node>
@@ -3252,7 +3276,7 @@
         <node concept="37vLTG" id="Jpw4evH_ka" role="3clF46">
           <property role="TrG5h" value="clManager" />
           <node concept="3uibUv" id="Jpw4evHBoF" role="1tU5fm">
-            <ref role="3uigEE" to="1037:~ChangeListManager" resolve="ChangeListManager" />
+            <ref role="3uigEE" to="1038:~ChangeListManager" resolve="ChangeListManager" />
           </node>
         </node>
         <node concept="10Q1$e" id="6ww30Znl0P1" role="3clF45">

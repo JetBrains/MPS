@@ -29,6 +29,23 @@
       <unit id="3282928695511907695" at="14,0,26,0" name="jetbrains.mps.vcs.integration.NonMPSProjectCheckoutListener" />
     </file>
   </root>
+  <root nodeRef="r:eec25685-8f1e-47c9-a9de-4a7ef6b504ec(jetbrains.mps.vcs.integration)/3427811006079032317">
+    <file name="VcsReloadPostponer.java">
+      <node id="3427811006079032332" at="20,90,21,20" concept="7" />
+      <node id="3427811006079032339" at="23,5,24,17" concept="7" />
+      <node id="3427811006079032326" at="19,76,22,7" concept="4" />
+      <node id="3427811006079032323" at="18,41,23,5" concept="3" />
+      <node id="3427811006079032320" at="17,0,26,0" concept="5" trace="shouldPostponeReload#()Z" />
+      <scope id="3427811006079032331" at="20,90,21,20" />
+      <scope id="3427811006079032325" at="19,76,22,7" />
+      <scope id="3427811006079032323" at="18,41,23,5">
+        <var name="project" id="3427811006079032334" />
+      </scope>
+      <scope id="3427811006079032322" at="18,41,24,17" />
+      <scope id="3427811006079032320" at="17,0,26,0" />
+      <unit id="3427811006079032317" at="15,0,27,0" name="jetbrains.mps.vcs.integration.VcsReloadPostponer" />
+    </file>
+  </root>
   <root nodeRef="r:eec25685-8f1e-47c9-a9de-4a7ef6b504ec(jetbrains.mps.vcs.integration)/3521790172251160903">
     <file name="ProjectCheckoutListener.java">
       <node id="3521790172251160936" at="23,52,24,76" concept="7" />

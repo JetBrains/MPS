@@ -20,6 +20,7 @@
     <import index="de5p" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.actions(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="s4aq" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes.actions(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="de5q" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.actions(MPS.IDEA/)" />
+    <import index="s4ar" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes.actions(MPS.IDEA.Modules/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -236,7 +237,7 @@
       <node concept="37vLTG" id="6FKiTwA0IZX" role="3clF46">
         <property role="TrG5h" value="vcsContext" />
         <node concept="3uibUv" id="6FKiTwA0IZY" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="3clFbS" id="6FKiTwA0IZZ" role="3clF47">
@@ -254,7 +255,7 @@
                       <ref role="3cqZAo" node="6FKiTwA0IZX" resolve="vcsContext" />
                     </node>
                     <node concept="liA8E" id="3FLm4EWtCCp" role="2OqNvi">
-                      <ref role="37wK5l" to="de5q:~VcsContext.getProject()" resolve="getProject" />
+                      <ref role="37wK5l" to="de5p:~VcsContext.getProject()" resolve="getProject" />
                     </node>
                   </node>
                 </node>
@@ -272,7 +273,7 @@
                     <ref role="3cqZAo" node="6FKiTwA0IZX" resolve="vcsContext" />
                   </node>
                   <node concept="liA8E" id="3FLm4EWtCCf" role="2OqNvi">
-                    <ref role="37wK5l" to="de5q:~VcsContext.getProject()" resolve="getProject" />
+                    <ref role="37wK5l" to="de5p:~VcsContext.getProject()" resolve="getProject" />
                   </node>
                 </node>
               </node>
@@ -283,7 +284,7 @@
                   <ref role="3cqZAo" node="6FKiTwA0IZX" resolve="vcsContext" />
                 </node>
                 <node concept="liA8E" id="3FLm4EWtCCj" role="2OqNvi">
-                  <ref role="37wK5l" to="de5q:~VcsContext.getProject()" resolve="getProject" />
+                  <ref role="37wK5l" to="de5p:~VcsContext.getProject()" resolve="getProject" />
                 </node>
               </node>
               <node concept="10Nm6u" id="3FLm4EWtCCk" role="3uHU7w" />
@@ -341,7 +342,7 @@
       <node concept="37vLTG" id="6FKiTwA0J3i" role="3clF46">
         <property role="TrG5h" value="e" />
         <node concept="3uibUv" id="6FKiTwA0J3j" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="3clFbS" id="6FKiTwA0J3k" role="3clF47">
@@ -357,7 +358,7 @@
                 <ref role="3cqZAo" node="6FKiTwA0J3i" resolve="e" />
               </node>
               <node concept="liA8E" id="6FKiTwA0J3q" role="2OqNvi">
-                <ref role="37wK5l" to="de5q:~VcsContext.getProject()" resolve="getProject" />
+                <ref role="37wK5l" to="de5p:~VcsContext.getProject()" resolve="getProject" />
               </node>
             </node>
           </node>
@@ -438,7 +439,7 @@
       <node concept="37vLTG" id="6FKiTwA0J3R" role="3clF46">
         <property role="TrG5h" value="e" />
         <node concept="3uibUv" id="6FKiTwA0J3S" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="3clFbS" id="6FKiTwA0J3T" role="3clF47">
@@ -455,7 +456,7 @@
                 <ref role="3cqZAo" node="6FKiTwA0J3R" resolve="e" />
               </node>
               <node concept="liA8E" id="6FKiTwA0J40" role="2OqNvi">
-                <ref role="37wK5l" to="de5q:~VcsContext.getSelectedFiles()" resolve="getSelectedFiles" />
+                <ref role="37wK5l" to="de5p:~VcsContext.getSelectedFiles()" resolve="getSelectedFiles" />
               </node>
             </node>
           </node>
@@ -544,7 +545,7 @@
       <node concept="37vLTG" id="6FKiTwA0J4$" role="3clF46">
         <property role="TrG5h" value="vcsContext" />
         <node concept="3uibUv" id="6FKiTwA0J4_" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="37vLTG" id="6FKiTwA0J4A" role="3clF46">
@@ -576,7 +577,7 @@
                 <ref role="3cqZAo" node="6FKiTwA0J4$" resolve="vcsContext" />
               </node>
               <node concept="liA8E" id="1$VOgPOK3gk" role="2OqNvi">
-                <ref role="37wK5l" to="de5q:~VcsContext.getProject()" resolve="getProject" />
+                <ref role="37wK5l" to="de5p:~VcsContext.getProject()" resolve="getProject" />
               </node>
             </node>
           </node>
@@ -691,7 +692,7 @@
       <node concept="37vLTG" id="6FKiTwA0J5i" role="3clF46">
         <property role="TrG5h" value="vcsContext" />
         <node concept="3uibUv" id="6FKiTwA0J5j" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="3clFbS" id="6FKiTwA0J5k" role="3clF47" />
@@ -787,7 +788,7 @@
       <node concept="37vLTG" id="6FKiTwA0J6r" role="3clF46">
         <property role="TrG5h" value="vcsContext" />
         <node concept="3uibUv" id="6FKiTwA0J6s" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="3clFbS" id="6FKiTwA0J6t" role="3clF47">
@@ -975,7 +976,7 @@
       <node concept="37vLTG" id="6FKiTwA0J7R" role="3clF46">
         <property role="TrG5h" value="e" />
         <node concept="3uibUv" id="6FKiTwA0J7S" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="3clFbS" id="6FKiTwA0J7T" role="3clF47">
@@ -992,7 +993,7 @@
                 <ref role="3cqZAo" node="6FKiTwA0J7R" resolve="e" />
               </node>
               <node concept="liA8E" id="6FKiTwA0J80" role="2OqNvi">
-                <ref role="37wK5l" to="de5q:~VcsContext.getSelectedFiles()" resolve="getSelectedFiles" />
+                <ref role="37wK5l" to="de5p:~VcsContext.getSelectedFiles()" resolve="getSelectedFiles" />
               </node>
             </node>
           </node>
@@ -1046,7 +1047,7 @@
                 <ref role="3cqZAo" node="7cKnY6JuQ_$" resolve="ctx" />
               </node>
               <node concept="liA8E" id="7cKnY6JuRAf" role="2OqNvi">
-                <ref role="37wK5l" to="de5q:~VcsContext.getProject()" resolve="getProject" />
+                <ref role="37wK5l" to="de5p:~VcsContext.getProject()" resolve="getProject" />
               </node>
             </node>
           </node>
@@ -1110,7 +1111,7 @@
       <node concept="37vLTG" id="7cKnY6JuQ_$" role="3clF46">
         <property role="TrG5h" value="ctx" />
         <node concept="3uibUv" id="7cKnY6JuQ_z" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="2AHcQZ" id="7cKnY6JuQXA" role="2AJF6D">
@@ -1125,7 +1126,7 @@
       <node concept="37vLTG" id="6FKiTwA0J8h" role="3clF46">
         <property role="TrG5h" value="vcsContext" />
         <node concept="3uibUv" id="6FKiTwA0J8i" role="1tU5fm">
-          <ref role="3uigEE" to="de5q:~VcsContext" resolve="VcsContext" />
+          <ref role="3uigEE" to="de5p:~VcsContext" resolve="VcsContext" />
         </node>
       </node>
       <node concept="37vLTG" id="6FKiTwA0J8j" role="3clF46">
@@ -1228,7 +1229,7 @@
     <property role="TrG5h" value="SetExtensionChangesGroupingAction" />
     <node concept="3Tm1VV" id="7pVeK7_8ojR" role="1B3o_S" />
     <node concept="3uibUv" id="2vCsXJ2NKHg" role="1zkMxy">
-      <ref role="3uigEE" to="s4aq:~SetChangesGroupingAction" resolve="SetChangesGroupingAction" />
+      <ref role="3uigEE" to="s4ar:~SetChangesGroupingAction" resolve="SetChangesGroupingAction" />
     </node>
     <node concept="3clFb_" id="7pVeK7_8pgj" role="jymVt">
       <property role="TrG5h" value="getGroupingKey" />
@@ -1266,7 +1267,7 @@
       <node concept="3clFbS" id="7pVeK7_8qyA" role="3clF47">
         <node concept="3clFbF" id="7pVeK7_8qyE" role="3cqZAp">
           <node concept="3nyPlj" id="7pVeK7_8qyD" role="3clFbG">
-            <ref role="37wK5l" to="s4aq:~SetChangesGroupingAction.update(com.intellij.openapi.actionSystem.AnActionEvent)" resolve="update" />
+            <ref role="37wK5l" to="s4ar:~SetChangesGroupingAction.update(com.intellij.openapi.actionSystem.AnActionEvent)" resolve="update" />
             <node concept="37vLTw" id="7pVeK7_8qyC" role="37wK5m">
               <ref role="3cqZAo" node="7pVeK7_8qyz" resolve="e" />
             </node>

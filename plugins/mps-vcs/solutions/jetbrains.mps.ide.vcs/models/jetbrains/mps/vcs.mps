@@ -369,18 +369,18 @@
           <node concept="3cpWsn" id="38_6U8fKv7o" role="3cpWs9">
             <property role="TrG5h" value="vcs" />
             <node concept="3uibUv" id="38_6U8fKv7p" role="1tU5fm">
-              <ref role="3uigEE" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
+              <ref role="3uigEE" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
             </node>
             <node concept="2OqwBi" id="38_6U8fKv7q" role="33vP2m">
               <node concept="liA8E" id="38_6U8fKv7s" role="2OqNvi">
-                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                 <node concept="37vLTw" id="2BHiRxgm8CI" role="37wK5m">
                   <ref role="3cqZAo" node="38_6U8fKv71" resolve="vfile" />
                 </node>
               </node>
               <node concept="2YIFZM" id="3qzU$0EaE59" role="2Oq$k0">
-                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                 <node concept="37vLTw" id="3qzU$0EaGw_" role="37wK5m">
                   <ref role="3cqZAo" node="38_6U8fKv5Y" resolve="myProject" />
                 </node>
@@ -443,14 +443,14 @@
           <node concept="3cpWsn" id="38_6U8fKv7P" role="3cpWs9">
             <property role="TrG5h" value="changeProvider" />
             <node concept="3uibUv" id="38_6U8fKv7Q" role="1tU5fm">
-              <ref role="3uigEE" to="1037:~ChangeProvider" resolve="ChangeProvider" />
+              <ref role="3uigEE" to="1038:~ChangeProvider" resolve="ChangeProvider" />
             </node>
             <node concept="2OqwBi" id="38_6U8fKv7R" role="33vP2m">
               <node concept="37vLTw" id="3GM_nagTwPb" role="2Oq$k0">
                 <ref role="3cqZAo" node="38_6U8fKv7o" resolve="vcs" />
               </node>
               <node concept="liA8E" id="38_6U8fKv7T" role="2OqNvi">
-                <ref role="37wK5l" to="jlcu:~AbstractVcs.getChangeProvider()" resolve="getChangeProvider" />
+                <ref role="37wK5l" to="jlcv:~AbstractVcs.getChangeProvider()" resolve="getChangeProvider" />
               </node>
             </node>
           </node>
@@ -493,7 +493,7 @@
                   <ref role="3cqZAo" node="38_6U8fKv7P" resolve="changeProvider" />
                 </node>
                 <node concept="liA8E" id="38_6U8fKv8l" role="2OqNvi">
-                  <ref role="37wK5l" to="1037:~ChangeProvider.getChanges(com.intellij.openapi.vcs.changes.VcsDirtyScope,com.intellij.openapi.vcs.changes.ChangelistBuilder,com.intellij.openapi.progress.ProgressIndicator,com.intellij.openapi.vcs.changes.ChangeListManagerGate)" resolve="getChanges" />
+                  <ref role="37wK5l" to="1038:~ChangeProvider.getChanges(com.intellij.openapi.vcs.changes.VcsDirtyScope,com.intellij.openapi.vcs.changes.ChangelistBuilder,com.intellij.openapi.progress.ProgressIndicator,com.intellij.openapi.vcs.changes.ChangeListManagerGate)" resolve="getChanges" />
                   <node concept="37vLTw" id="3GM_nagTvgD" role="37wK5m">
                     <ref role="3cqZAo" node="38_6U8fKv7A" resolve="scope" />
                   </node>
@@ -818,14 +818,14 @@
                     <node concept="3clFbF" id="78tlMyQ2R7M" role="3cqZAp">
                       <node concept="2OqwBi" id="78tlMyQ2R7N" role="3clFbG">
                         <node concept="2YIFZM" id="78tlMyQ2R7O" role="2Oq$k0">
-                          <ref role="1Pybhc" to="jlcu:~AbstractVcsHelper" resolve="AbstractVcsHelper" />
-                          <ref role="37wK5l" to="jlcu:~AbstractVcsHelper.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                          <ref role="1Pybhc" to="jlcv:~AbstractVcsHelper" resolve="AbstractVcsHelper" />
+                          <ref role="37wK5l" to="jlcv:~AbstractVcsHelper.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                           <node concept="37vLTw" id="2BHiRxeu_Gy" role="37wK5m">
                             <ref role="3cqZAo" node="38_6U8fKv5Y" resolve="myProject" />
                           </node>
                         </node>
                         <node concept="liA8E" id="78tlMyQ2R7Q" role="2OqNvi">
-                          <ref role="37wK5l" to="jlcu:~AbstractVcsHelper.showMergeDialog(java.util.List)" resolve="showMergeDialog" />
+                          <ref role="37wK5l" to="jlcv:~AbstractVcsHelper.showMergeDialog(java.util.List)" resolve="showMergeDialog" />
                           <node concept="2YIFZM" id="78tlMyQ2R7R" role="37wK5m">
                             <ref role="1Pybhc" to="33ny:~Arrays" resolve="Arrays" />
                             <ref role="37wK5l" to="33ny:~Arrays.asList(java.lang.Object...)" resolve="asList" />
@@ -927,7 +927,7 @@
       <property role="TrG5h" value="StubChangeListManagerGate" />
       <node concept="3Tm1VV" id="38_6U8fKv4i" role="1B3o_S" />
       <node concept="3uibUv" id="38_6U8fKv4j" role="EKbjA">
-        <ref role="3uigEE" to="1037:~ChangeListManagerGate" resolve="ChangeListManagerGate" />
+        <ref role="3uigEE" to="1038:~ChangeListManagerGate" resolve="ChangeListManagerGate" />
       </node>
       <node concept="3clFbW" id="38_6U8fKv4k" role="jymVt">
         <node concept="3Tm1VV" id="38_6U8fKv4l" role="1B3o_S" />
@@ -1148,7 +1148,7 @@
       <property role="TrG5h" value="MyChangelistBuilder" />
       <node concept="3Tm6S6" id="38_6U8fKv5g" role="1B3o_S" />
       <node concept="3uibUv" id="38_6U8fKv5h" role="1zkMxy">
-        <ref role="3uigEE" to="1037:~EmptyChangelistBuilder" resolve="EmptyChangelistBuilder" />
+        <ref role="3uigEE" to="1038:~EmptyChangelistBuilder" resolve="EmptyChangelistBuilder" />
       </node>
       <node concept="312cEg" id="38_6U8fKv5i" role="jymVt">
         <property role="TrG5h" value="myVirtualFile" />
@@ -1603,7 +1603,7 @@
       <node concept="2tJIrI" id="4Io9bth1ouT" role="jymVt" />
       <node concept="3Tm1VV" id="4Io9bth1om7" role="1B3o_S" />
       <node concept="3uibUv" id="4Io9bth1qmr" role="EKbjA">
-        <ref role="3uigEE" to="jlcu:~VcsListener" resolve="VcsListener" />
+        <ref role="3uigEE" to="jlcv:~VcsListener" resolve="VcsListener" />
       </node>
       <node concept="3clFb_" id="4Io9bth1qZU" role="jymVt">
         <property role="TrG5h" value="directoryMappingChanged" />

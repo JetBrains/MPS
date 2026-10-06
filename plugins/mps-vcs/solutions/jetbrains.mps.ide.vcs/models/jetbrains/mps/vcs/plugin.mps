@@ -504,11 +504,11 @@
           <node concept="3cpWsn" id="6ySnuJfjg$m" role="3cpWs9">
             <property role="TrG5h" value="manager" />
             <node concept="3uibUv" id="6ySnuJfjg$n" role="1tU5fm">
-              <ref role="3uigEE" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+              <ref role="3uigEE" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
             </node>
             <node concept="2YIFZM" id="6ySnuJfjg$o" role="33vP2m">
-              <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-              <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+              <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+              <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
               <node concept="2OqwBi" id="6ySnuJfjg$p" role="37wK5m">
                 <node concept="2WthIp" id="6ySnuJfjg$q" role="2Oq$k0" />
                 <node concept="1DTwFV" id="6ySnuJfjg$r" role="2OqNvi">
@@ -533,7 +533,7 @@
                   <ref role="3cqZAo" node="6ySnuJfjg$m" resolve="manager" />
                 </node>
                 <node concept="liA8E" id="6ySnuJfjg$$" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getAllVersionedRoots()" resolve="getAllVersionedRoots" />
+                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getAllVersionedRoots()" resolve="getAllVersionedRoots" />
                 </node>
               </node>
               <node concept="1Rwk04" id="6ySnuJfjg$_" role="2OqNvi" />
@@ -605,7 +605,7 @@
                   <ref role="3cqZAo" node="6ySnuJfjg$m" resolve="manager" />
                 </node>
                 <node concept="liA8E" id="6ySnuJfjg_4" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                   <node concept="37vLTw" id="3GM_nagTApk" role="37wK5m">
                     <ref role="3cqZAo" node="6ySnuJfjg$M" resolve="file" />
                   </node>
@@ -2436,7 +2436,7 @@
     <property role="1rBW0U" value="true" />
     <node concept="1GtWCo" id="6S5fI02CGB8" role="3Uehp1">
       <node concept="10M0yZ" id="2hX4PxwM2MW" role="1GtWoa">
-        <ref role="1PxDUh" to="l7us:~MPSIcons$Actions" resolve="MPSIcons.Actions" />
+        <ref role="1PxDUh" to="l7us:~MPSIcons$Actions" resolve="Actions" />
         <ref role="3cqZAo" to="l7us:~MPSIcons$Actions.AddToVCS" resolve="AddToVCS" />
       </node>
     </node>
@@ -2704,7 +2704,7 @@
         <node concept="3clFbF" id="7HIuVrrXGE7" role="3cqZAp">
           <node concept="2ShNRf" id="7HIuVrrXGE9" role="3clFbG">
             <node concept="1pGfFk" id="7HIuVrrXGEa" role="2ShVmc">
-              <ref role="37wK5l" to="zbx9:78RbNhWi9Rf" resolve="VcsActionsUtil" />
+              <ref role="37wK5l" to="zbx9:78RbNhWi9Rf" />
               <node concept="2OqwBi" id="7HIuVrrXGEb" role="37wK5m">
                 <node concept="2WthIp" id="7HIuVrrXGEc" role="2Oq$k0" />
                 <node concept="1DTwFV" id="7HIuVrrXGEd" role="2OqNvi">
@@ -2915,14 +2915,14 @@
             <node concept="10Nm6u" id="6ySnuJfjmnQ" role="3uHU7w" />
             <node concept="2OqwBi" id="6ySnuJfjmnR" role="3uHU7B">
               <node concept="2YIFZM" id="6ySnuJfjmnS" role="2Oq$k0">
-                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                 <node concept="37vLTw" id="523_aD7YVl5" role="37wK5m">
                   <ref role="3cqZAo" node="523_aD7YVkZ" resolve="ideaProject" />
                 </node>
               </node>
               <node concept="liA8E" id="6ySnuJfjmnW" role="2OqNvi">
-                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                 <node concept="37vLTw" id="523_aD7YSvu" role="37wK5m">
                   <ref role="3cqZAo" node="523_aD7YAjr" resolve="virtualFile" />
                 </node>
@@ -2940,7 +2940,7 @@
     <node concept="1GtWCo" id="6S5fI02CGB9" role="3Uehp1">
       <node concept="10M0yZ" id="6XsdSphTPkx" role="1GtWoa">
         <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Diff" resolve="Diff" />
-        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
+        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
       </node>
     </node>
   </node>

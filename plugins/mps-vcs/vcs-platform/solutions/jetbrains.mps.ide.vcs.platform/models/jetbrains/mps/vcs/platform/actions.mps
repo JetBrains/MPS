@@ -75,8 +75,20 @@
     <import index="fy1h" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.diff(MPS.IDEA/)" />
     <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA/)" />
     <import index="hlwo" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.merge(MPS.IDEA/)" />
-    <import index="idub" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log(jetbrains.mps.vcs.idea.stubs/)" implicit="true" />
-    <import index="7bx7" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.workbench.action(MPS.Platform/)" implicit="true" />
+    <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
+    <import index="yah2" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
+    <import index="1038" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="1039" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
+    <import index="idub" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="iduc" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcs.log(MPS.IDEA.Modules/)" />
+    <import index="fy1i" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.diff(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="7g4f" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcsUtil(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="7g4g" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcsUtil(MPS.IDEA.Modules/)" />
+    <import index="hlwp" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.merge(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="hlwq" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.merge(MPS.IDEA.Modules/)" />
+    <import index="e0hp" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcs.log.impl(MPS.IDEA.Modules/)" />
+    <import index="7bx7" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.workbench.action(MPS.Platform/)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -1398,7 +1410,7 @@
                 <node concept="YeOm9" id="54iJvNQZOjW" role="2ShVmc">
                   <node concept="1Y3b0j" id="54iJvNQZOjX" role="YeSDq">
                     <property role="2bfB8j" value="true" />
-                    <ref role="1Y3XeK" to="xygl:~Task$Backgroundable" resolve="Task.Backgroundable" />
+                    <ref role="1Y3XeK" to="xygl:~Task$Backgroundable" resolve="Backgroundable" />
                     <ref role="37wK5l" to="xygl:~Task$Backgroundable.&lt;init&gt;(com.intellij.openapi.project.Project,java.lang.String,boolean)" resolve="Task.Backgroundable" />
                     <node concept="3clFb_" id="54iJvNQZOjZ" role="jymVt">
                       <property role="1EzhhJ" value="false" />
@@ -1411,21 +1423,21 @@
                                 <property role="TrG5h" value="vcs" />
                                 <node concept="2OqwBi" id="78RbNhWi9Mv" role="33vP2m">
                                   <node concept="liA8E" id="78RbNhWi9My" role="2OqNvi">
-                                    <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                                    <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                                     <node concept="37vLTw" id="55$aReHklbF" role="37wK5m">
                                       <ref role="3cqZAo" node="6ySnuJfjmnd" resolve="vFile" />
                                     </node>
                                   </node>
                                   <node concept="2YIFZM" id="78RbNhWi9Mw" role="2Oq$k0">
-                                    <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
-                                    <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                                    <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                                    <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                                     <node concept="37vLTw" id="523_aD7XWQV" role="37wK5m">
                                       <ref role="3cqZAo" node="523_aD7XWQR" resolve="ideaProject" />
                                     </node>
                                   </node>
                                 </node>
                                 <node concept="3uibUv" id="78RbNhWi9Mu" role="1tU5fm">
-                                  <ref role="3uigEE" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
+                                  <ref role="3uigEE" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
                                 </node>
                               </node>
                             </node>
@@ -1441,11 +1453,11 @@
                               <node concept="3cpWsn" id="6tLsn3mTc6M" role="3cpWs9">
                                 <property role="TrG5h" value="diffProvider" />
                                 <node concept="3uibUv" id="6tLsn3mTc6I" role="1tU5fm">
-                                  <ref role="3uigEE" to="fy1h:~DiffProvider" resolve="DiffProvider" />
+                                  <ref role="3uigEE" to="fy1i:~DiffProvider" resolve="DiffProvider" />
                                 </node>
                                 <node concept="2OqwBi" id="6tLsn3mTc6N" role="33vP2m">
                                   <node concept="liA8E" id="6tLsn3mTc6O" role="2OqNvi">
-                                    <ref role="37wK5l" to="jlcu:~AbstractVcs.getDiffProvider()" resolve="getDiffProvider" />
+                                    <ref role="37wK5l" to="jlcv:~AbstractVcs.getDiffProvider()" resolve="getDiffProvider" />
                                   </node>
                                   <node concept="37vLTw" id="6tLsn3mTc6P" role="2Oq$k0">
                                     <ref role="3cqZAo" node="78RbNhWi9Mt" resolve="vcs" />
@@ -1469,7 +1481,7 @@
                                 </node>
                                 <node concept="2OqwBi" id="78RbNhWi9MB" role="33vP2m">
                                   <node concept="liA8E" id="78RbNhWi9MF" role="2OqNvi">
-                                    <ref role="37wK5l" to="fy1h:~DiffProvider.getCurrentRevision(com.intellij.openapi.vfs.VirtualFile)" resolve="getCurrentRevision" />
+                                    <ref role="37wK5l" to="fy1i:~DiffProvider.getCurrentRevision(com.intellij.openapi.vfs.VirtualFile)" resolve="getCurrentRevision" />
                                     <node concept="37vLTw" id="55$aReHkrU0" role="37wK5m">
                                       <ref role="3cqZAo" node="6ySnuJfjmnd" resolve="vFile" />
                                     </node>
@@ -1958,11 +1970,11 @@
           <node concept="3cpWsn" id="4_JpahyAjX6" role="3cpWs9">
             <property role="TrG5h" value="diffProvider" />
             <node concept="3uibUv" id="4_JpahyAjX7" role="1tU5fm">
-              <ref role="3uigEE" to="fy1h:~DiffProvider" resolve="DiffProvider" />
+              <ref role="3uigEE" to="fy1i:~DiffProvider" resolve="DiffProvider" />
             </node>
             <node concept="2OqwBi" id="4_JpahyAjX8" role="33vP2m">
               <node concept="liA8E" id="4_JpahyAjX9" role="2OqNvi">
-                <ref role="37wK5l" to="jlcu:~AbstractVcs.getDiffProvider()" resolve="getDiffProvider" />
+                <ref role="37wK5l" to="jlcv:~AbstractVcs.getDiffProvider()" resolve="getDiffProvider" />
               </node>
               <node concept="37vLTw" id="4_JpahyAjXa" role="2Oq$k0">
                 <ref role="3cqZAo" node="4_JpahyA5vf" resolve="vcs" />
@@ -1984,7 +1996,7 @@
             <property role="TrG5h" value="revision" />
             <node concept="2OqwBi" id="78RbNhWi9MK" role="33vP2m">
               <node concept="liA8E" id="78RbNhWi9MO" role="2OqNvi">
-                <ref role="37wK5l" to="fy1h:~DiffProvider.createFileContent(com.intellij.openapi.vcs.history.VcsRevisionNumber,com.intellij.openapi.vfs.VirtualFile)" resolve="createFileContent" />
+                <ref role="37wK5l" to="fy1i:~DiffProvider.createFileContent(com.intellij.openapi.vcs.history.VcsRevisionNumber,com.intellij.openapi.vfs.VirtualFile)" resolve="createFileContent" />
                 <node concept="37vLTw" id="3GM_nagTxfk" role="37wK5m">
                   <ref role="3cqZAo" node="4_JpahyA4Q7" resolve="revisionNumber" />
                 </node>
@@ -2099,7 +2111,7 @@
                       <node concept="1eOMI4" id="7P299Jskceo" role="2Oq$k0">
                         <node concept="10QFUN" id="7P299Jskcel" role="1eOMHV">
                           <node concept="3uibUv" id="7P299JskcBO" role="10QFUM">
-                            <ref role="3uigEE" to="1037:~BinaryContentRevision" resolve="BinaryContentRevision" />
+                            <ref role="3uigEE" to="1038:~BinaryContentRevision" resolve="BinaryContentRevision" />
                           </node>
                           <node concept="37vLTw" id="7P299JskpBe" role="10QFUP">
                             <ref role="3cqZAo" node="78RbNhWi9MI" resolve="revision" />
@@ -2107,7 +2119,7 @@
                         </node>
                       </node>
                       <node concept="liA8E" id="7P299JskpbV" role="2OqNvi">
-                        <ref role="37wK5l" to="1037:~BinaryContentRevision.getBinaryContent()" resolve="getBinaryContent" />
+                        <ref role="37wK5l" to="1038:~BinaryContentRevision.getBinaryContent()" resolve="getBinaryContent" />
                       </node>
                     </node>
                     <node concept="2OqwBi" id="7P299JskeEi" role="37wK5m">
@@ -2149,7 +2161,7 @@
                 </node>
                 <node concept="2ZW3vV" id="AvLpigIUlp" role="3K4Cdx">
                   <node concept="3uibUv" id="7P299JsktvV" role="2ZW6by">
-                    <ref role="3uigEE" to="1037:~BinaryContentRevision" resolve="BinaryContentRevision" />
+                    <ref role="3uigEE" to="1038:~BinaryContentRevision" resolve="BinaryContentRevision" />
                   </node>
                   <node concept="37vLTw" id="7P299JsksQU" role="2ZW6bz">
                     <ref role="3cqZAo" node="78RbNhWi9MI" resolve="revision" />
@@ -2212,7 +2224,7 @@
       <node concept="37vLTG" id="4_JpahyA5vf" role="3clF46">
         <property role="TrG5h" value="vcs" />
         <node concept="3uibUv" id="4_JpahyA6b5" role="1tU5fm">
-          <ref role="3uigEE" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
+          <ref role="3uigEE" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
         </node>
       </node>
       <node concept="37vLTG" id="4_JpahyA4Q7" role="3clF46">
@@ -2620,7 +2632,7 @@
       <node concept="37vLTG" id="10YBiB190eM" role="3clF46">
         <property role="TrG5h" value="myRevision" />
         <node concept="3uibUv" id="10YBiB190eN" role="1tU5fm">
-          <ref role="3uigEE" to="yah1:~VcsFileRevision" resolve="VcsFileRevision" />
+          <ref role="3uigEE" to="yah0:~VcsFileRevision" resolve="VcsFileRevision" />
         </node>
       </node>
       <node concept="37vLTG" id="10YBiB190nv" role="3clF46">
@@ -2647,7 +2659,7 @@
                     <ref role="3cqZAo" node="10YBiB190eM" resolve="myRevision" />
                   </node>
                   <node concept="liA8E" id="9ijxdaY5bK" role="2OqNvi">
-                    <ref role="37wK5l" to="yah1:~VcsRevisionDescription.getRevisionNumber()" resolve="getRevisionNumber" />
+                    <ref role="37wK5l" to="yah0:~VcsRevisionDescription.getRevisionNumber()" resolve="getRevisionNumber" />
                   </node>
                 </node>
                 <node concept="liA8E" id="9ijxdaY5bL" role="2OqNvi">
@@ -2808,7 +2820,7 @@
                       <node concept="1Y3b0j" id="9ijxdaXZUa" role="YeSDq">
                         <property role="2bfB8j" value="true" />
                         <ref role="37wK5l" to="xygl:~Task$Backgroundable.&lt;init&gt;(com.intellij.openapi.project.Project,java.lang.String,boolean,com.intellij.openapi.progress.PerformInBackgroundOption)" resolve="Task.Backgroundable" />
-                        <ref role="1Y3XeK" to="xygl:~Task$Backgroundable" resolve="Task.Backgroundable" />
+                        <ref role="1Y3XeK" to="xygl:~Task$Backgroundable" resolve="Backgroundable" />
                         <node concept="37vLTw" id="10YBiB18Fn7" role="37wK5m">
                           <ref role="3cqZAo" node="10YBiB18FnN" resolve="project" />
                         </node>
@@ -2971,8 +2983,8 @@
           <node concept="3clFbS" id="9ijxdaXZVe" role="1zxBo7">
             <node concept="3cpWs6" id="9ijxdaXZVf" role="3cqZAp">
               <node concept="2YIFZM" id="9ijxdaXZVg" role="3cqZAk">
-                <ref role="37wK5l" to="e0ho:~HashImpl.build(java.lang.String)" resolve="build" />
-                <ref role="1Pybhc" to="e0ho:~HashImpl" resolve="HashImpl" />
+                <ref role="37wK5l" to="e0hp:~HashImpl.build(java.lang.String)" resolve="build" />
+                <ref role="1Pybhc" to="e0hp:~HashImpl" resolve="HashImpl" />
                 <node concept="37vLTw" id="6CDIgLlLvVT" role="37wK5m">
                   <ref role="3cqZAo" node="6CDIgLlLumB" resolve="revision" />
                 </node>
@@ -4268,7 +4280,7 @@
           <node concept="3cpWsn" id="7yFo2Ea1dCX" role="3cpWs9">
             <property role="TrG5h" value="provider" />
             <node concept="3uibUv" id="7yFo2Ea1dCY" role="1tU5fm">
-              <ref role="3uigEE" to="hlwo:~MergeProvider" resolve="MergeProvider" />
+              <ref role="3uigEE" to="hlwp:~MergeProvider" resolve="MergeProvider" />
             </node>
             <node concept="2OqwBi" id="7yFo2Ea1ivE" role="33vP2m">
               <node concept="2YIFZM" id="7yFo2Ea1fRB" role="2Oq$k0">
@@ -4357,7 +4369,7 @@
           <node concept="3cpWsn" id="7yFo2Ea1kAk" role="3cpWs9">
             <property role="TrG5h" value="session" />
             <node concept="3uibUv" id="7yFo2Ea1kAl" role="1tU5fm">
-              <ref role="3uigEE" to="hlwo:~MergeSession" resolve="MergeSession" />
+              <ref role="3uigEE" to="hlwp:~MergeSession" resolve="MergeSession" />
             </node>
             <node concept="3K4zz7" id="7yFo2Ea1mpT" role="33vP2m">
               <node concept="10Nm6u" id="7yFo2Ea1rb1" role="3K4GZi" />
@@ -4365,7 +4377,7 @@
                 <node concept="1eOMI4" id="7yFo2Ea1mrF" role="2Oq$k0">
                   <node concept="10QFUN" id="7yFo2Ea1mrC" role="1eOMHV">
                     <node concept="3uibUv" id="7yFo2Ea1mDs" role="10QFUM">
-                      <ref role="3uigEE" to="hlwo:~MergeProvider2" resolve="MergeProvider2" />
+                      <ref role="3uigEE" to="hlwp:~MergeProvider2" resolve="MergeProvider2" />
                     </node>
                     <node concept="37vLTw" id="7yFo2Ea1mEh" role="10QFUP">
                       <ref role="3cqZAo" node="7yFo2Ea1dCX" resolve="provider" />
@@ -4373,7 +4385,7 @@
                   </node>
                 </node>
                 <node concept="liA8E" id="7yFo2Ea1nHR" role="2OqNvi">
-                  <ref role="37wK5l" to="hlwo:~MergeProvider2.createMergeSession(java.util.List)" resolve="createMergeSession" />
+                  <ref role="37wK5l" to="hlwp:~MergeProvider2.createMergeSession(java.util.List)" resolve="createMergeSession" />
                   <node concept="37vLTw" id="7yFo2Ea1nJ2" role="37wK5m">
                     <ref role="3cqZAo" node="27DL58Tyt9t" resolve="conflictedModelFiles" />
                   </node>
@@ -4381,7 +4393,7 @@
               </node>
               <node concept="2ZW3vV" id="7yFo2Ea1lrq" role="3K4Cdx">
                 <node concept="3uibUv" id="7yFo2Ea1lRl" role="2ZW6by">
-                  <ref role="3uigEE" to="hlwo:~MergeProvider2" resolve="MergeProvider2" />
+                  <ref role="3uigEE" to="hlwp:~MergeProvider2" resolve="MergeProvider2" />
                 </node>
                 <node concept="37vLTw" id="7yFo2Ea1lnR" role="2ZW6bz">
                   <ref role="3cqZAo" node="7yFo2Ea1dCX" resolve="provider" />
@@ -5294,7 +5306,7 @@
             <node concept="2OqwBi" id="4zPruQLukD5" role="33vP2m">
               <node concept="2OqwBi" id="4zPruQLukD6" role="2Oq$k0">
                 <node concept="liA8E" id="1QlAFX5V6Z4" role="2OqNvi">
-                  <ref role="37wK5l" to="yah1:~VcsRevisionDescription.getRevisionNumber()" resolve="getRevisionNumber" />
+                  <ref role="37wK5l" to="yah0:~VcsRevisionDescription.getRevisionNumber()" resolve="getRevisionNumber" />
                 </node>
                 <node concept="2OqwBi" id="1QlAFX5V6gz" role="2Oq$k0">
                   <node concept="liA8E" id="1QlAFX5V6zP" role="2OqNvi">
@@ -5406,7 +5418,7 @@
     </node>
     <node concept="1GtWCo" id="6S5fI02CGBh" role="3Uehp1">
       <node concept="10M0yZ" id="3zdyGKLAAk6" role="1GtWoa">
-        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
+        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
         <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Copy" resolve="Copy" />
       </node>
     </node>
@@ -6554,7 +6566,7 @@
       <property role="TrG5h" value="myActiveVcs" />
       <node concept="3Tm6S6" id="P$ZiSemcJ1" role="1B3o_S" />
       <node concept="3uibUv" id="P$ZiSemela" role="1tU5fm">
-        <ref role="3uigEE" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
+        <ref role="3uigEE" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
       </node>
     </node>
     <node concept="2tJIrI" id="38wEix89ehM" role="jymVt" />
@@ -6793,14 +6805,14 @@
               </node>
               <node concept="2OqwBi" id="38wEix89kmT" role="3K4GZi">
                 <node concept="liA8E" id="38wEix89kmU" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
+                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getVcsFor(com.intellij.openapi.vfs.VirtualFile)" resolve="getVcsFor" />
                   <node concept="37vLTw" id="38wEix89kmV" role="37wK5m">
                     <ref role="3cqZAo" node="P$ZiSemaUF" resolve="myIdeaFile" />
                   </node>
                 </node>
                 <node concept="2YIFZM" id="38wEix89kmW" role="2Oq$k0">
-                  <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
-                  <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                  <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                  <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                   <node concept="2OqwBi" id="38wEix89kmX" role="37wK5m">
                     <node concept="37vLTw" id="38wEix89kmY" role="2Oq$k0">
                       <ref role="3cqZAo" node="38wEix89dXr" resolve="myProject" />
@@ -7048,8 +7060,8 @@
               </node>
             </node>
             <node concept="2YIFZM" id="P$ZiSem$hK" role="3uHU7w">
-              <ref role="1Pybhc" to="jlcu:~AbstractVcs" resolve="AbstractVcs" />
-              <ref role="37wK5l" to="jlcu:~AbstractVcs.fileInVcsByFileStatus(com.intellij.openapi.project.Project,com.intellij.openapi.vfs.VirtualFile)" resolve="fileInVcsByFileStatus" />
+              <ref role="1Pybhc" to="jlcv:~AbstractVcs" resolve="AbstractVcs" />
+              <ref role="37wK5l" to="jlcv:~AbstractVcs.fileInVcsByFileStatus(com.intellij.openapi.project.Project,com.intellij.openapi.vfs.VirtualFile)" resolve="fileInVcsByFileStatus" />
               <node concept="2OqwBi" id="P$ZiSem$hL" role="37wK5m">
                 <node concept="37vLTw" id="P$ZiSem$hM" role="2Oq$k0">
                   <ref role="3cqZAo" node="38wEix89dXr" resolve="myProject" />
@@ -7267,8 +7279,8 @@
               <ref role="3cqZAo" node="P$ZiSemeqt" resolve="myActiveVcs" />
             </node>
             <node concept="2YIFZM" id="38wEix8aLmX" role="37wK5m">
-              <ref role="1Pybhc" to="7g4e:~VcsUtil" resolve="VcsUtil" />
-              <ref role="37wK5l" to="7g4e:~VcsUtil.getFilePath(com.intellij.openapi.vfs.VirtualFile)" resolve="getFilePath" />
+              <ref role="1Pybhc" to="7g4f:~VcsUtil" resolve="VcsUtil" />
+              <ref role="37wK5l" to="7g4f:~VcsUtil.getFilePath(com.intellij.openapi.vfs.VirtualFile)" resolve="getFilePath" />
               <node concept="37vLTw" id="38wEix8aLmY" role="37wK5m">
                 <ref role="3cqZAo" node="P$ZiSemaUF" resolve="myIdeaFile" />
               </node>
@@ -7281,7 +7293,7 @@
               <node concept="37vLTG" id="38wEix8aLn1" role="1bW2Oz">
                 <property role="TrG5h" value="vcsSession" />
                 <node concept="3uibUv" id="38wEix8aLn2" role="1tU5fm">
-                  <ref role="3uigEE" to="yah1:~VcsHistorySession" resolve="VcsHistorySession" />
+                  <ref role="3uigEE" to="yah0:~VcsHistorySession" resolve="VcsHistorySession" />
                 </node>
               </node>
               <node concept="3clFbS" id="38wEix8aLn3" role="1bW5cS">
