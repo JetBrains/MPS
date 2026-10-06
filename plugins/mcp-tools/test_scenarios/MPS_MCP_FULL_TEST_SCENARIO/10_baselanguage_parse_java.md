@@ -1,6 +1,6 @@
-# 10 — BaseLanguage via `parse_java_and_insert`
+# 10 — BaseLanguage via `parse_java_and_insert`, and type queries
 
-> **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{JAVA_CLASS_REF}}` (+ intra-part `{{JAVA_METHOD_REF}}`, and the §10.12 context-node refs `{{IMC_REF}}`, `{{SMC_REF}}`, `{{CC_REF}}`, `{{CT_REF}}`).
+> **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{JAVA_CLASS_REF}}` (+ intra-part `{{JAVA_METHOD_REF}}`, the §10.12 context-node refs `{{IMC_REF}}`, `{{SMC_REF}}`, `{{CC_REF}}`, `{{CT_REF}}`, the §10.13–10.22 type-host refs `{{TYPE_HOST_REF}}`, `{{TH_PLUS_REF}}`, `{{TH_L_INIT_REF}}`, `{{TH_O_INIT_REF}}`, `{{TH_B_INIT_REF}}`, `{{TH_S_TYPE_REF}}`, `{{TH_O_TYPE_REF}}`, `{{TH_LIST_FIELD_REF}}`, and the §10.24 refs `{{TYPE_ERROR_REF}}`, `{{TE_BAD_FIELD_REF}}`, `{{TE_COMMENT_REF}}`).
 
 Tool: `mps_mcp_parse_java_and_insert`. Single argument `parameters` (a JSON-encoded string)
 with `code`, `featureKind` (`CLASS`/`METHOD`/`FIELD`/`NESTED_CLASS`/`STATEMENTS`/
@@ -12,6 +12,14 @@ straightforward. Each step shows the decoded `parameters` and the exact escaped 
 
 Target model for class insertion: `mcp.test.sandbox.other`. The owning solution
 `mcp.test.sandbox` has the `java` facet with `compile=mps`, which part 11 needs.
+
+Steps 10.13–10.24 then ask the typesystem about the parsed BaseLanguage code:
+`mps_mcp_query_nodes` `GET_TYPE` / `GET_EXPECTED_TYPE`, every `mps_mcp_query_types` operation
+(`IS_SUBTYPE`, `SUPERTYPES`, `COMMON_SUPERTYPE`, `COERCE`, `OPERATION_TYPE`, `EXPLAIN_TYPE`), and
+the `rules` / `uncheckedSubtrees` fields of a `mps_mcp_check_root_node_problems` report. The
+expected answers follow BaseLanguage's own rules: `int <: long`, `String <: Object`,
+`int + long → long`. Part 11 compiles this solution, so the type error and the comment seeded in
+10.24 are removed again before the part ends.
 
 ---
 
@@ -208,15 +216,15 @@ Send:
 
 ---
 
-### Step 10.11 — Validate the class subtree `[SUCCESS or READ-FILE]`
+### Step 10.11 — Validate the class subtree `[READ-FILE]`
 
 ```json
 { "tool": "mps_mcp_check_root_node_problems",
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{JAVA_CLASS_REF}}" } }
 ```
-- Validation: `ok==true`. Likely `data=="no problems found"`; if a temp-file path is returned,
-  read it and record any problems (e.g. an unused field) as notes — info/warning-level issues
-  are acceptable and not scenario failures.
+- Validation: `ok==true`. Likely `data=="no problems found"`; otherwise `data` is the problem
+  report (inline, or a temp-file path to read) — record any problems (e.g. an unused field) as
+  notes; info/warning-level issues are acceptable and not scenario failures.
 
 ---
 
@@ -311,5 +319,423 @@ Example escaped call (`instanceMethods`; the others differ only in the `paramete
 > `IMethodCall`, or `classifier` on a `ClassifierType`. On a DSL reference role (e.g. the State
 > `target` role exercised in 08.23/08.24) every candidate is a plain node, so `kindFilter` would
 > filter the whole set out.
+
+---
+
+**Type queries (Steps 10.13–10.23).**
+
+`mps_mcp_query_types` takes `operation` plus `parameters`, like `query_nodes`. This part sends
+`parameters` as a JSON-encoded string; Step 10.17d sends it once as a real JSON object, which the
+tool also accepts. Each **type operand** is an object with exactly one of `nodeReference` (the
+type *of* that node), `typeNodeReference` (a stored type node used as the type itself),
+`typeConceptRef` (a fresh instance of a parameterless type concept such as `IntegerType`), or
+`blueprint`. Every type in an answer is printed as
+`{concept, conceptReference, presentation, hasTypeVariables?, blueprint}` and carries **no**
+node `reference` — a computed type is a free-floating copy.
+
+Concept FQNs used below: `jetbrains.mps.baseLanguage.structure.IntegerType` (int),
+`jetbrains.mps.baseLanguage.structure.LongType` (long),
+`jetbrains.mps.baseLanguage.structure.ClassifierType`,
+`jetbrains.mps.baseLanguage.structure.PlusExpression`.
+
+### Step 10.13 — Seed the type-host class `McpTypeHost` `[CAPTURE]`
+
+A second class root whose field initializers are the subjects of the type queries. The class
+and its fields are `public` so that they raise no unused-class or "Field is never used" warning
+(the never-used check applies only to package-private and private fields), and the class is
+valid Java, so part 11's make still compiles the solution.
+
+Decoded `parameters`:
+```json
+{
+  "code": "public class McpTypeHost { public int i = 1 + 2; public long l = 2L; public String s = null; public Object o = s; public java.util.List<String> list = null; public byte b = 1; }",
+  "featureKind": "CLASS",
+  "insert": { "mode": "root", "modelRef": "mcp.test.sandbox.other" },
+  "postProcess": { "importUsedLanguages": true, "resolveReferences": true }
+}
+```
+Send:
+```json
+{
+  "tool": "mps_mcp_parse_java_and_insert",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "parameters": "{\"code\":\"public class McpTypeHost { public int i = 1 + 2; public long l = 2L; public String s = null; public Object o = s; public java.util.List<String> list = null; public byte b = 1; }\",\"featureKind\":\"CLASS\",\"insert\":{\"mode\":\"root\",\"modelRef\":\"mcp.test.sandbox.other\"},\"postProcess\":{\"importUsedLanguages\":true,\"resolveReferences\":true}}"
+  }
+}
+```
+- Validation: `ok==true`; `data.inserted[0].name=="McpTypeHost"`,
+  `data.inserted[0].concept=="ClassConcept"`; `data.problems==[]`.
+- **Capture** `data.inserted[0].reference` as `{{TYPE_HOST_REF}}`.
+
+---
+
+### Step 10.14 — Capture the operand nodes of `McpTypeHost` `[READ-FILE]` `[CAPTURE]`
+
+```json
+{
+  "tool": "mps_mcp_print_node",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{TYPE_HOST_REF}}", "deep": true }
+}
+```
+- Validation: `ok==true`; `data` is the class tree inline, or a temp-file path to read. The
+  class has six `FieldDeclaration` children named `i`, `l`, `s`, `o`, `list`, `b`, each with a
+  `type` child and an `initializer` child. The initializer of `i` is a `PlusExpression`.
+- **Capture**:
+  - the `initializer` of `i` (the `PlusExpression` `1 + 2`) as `{{TH_PLUS_REF}}`;
+  - the `initializer` of `l` (the `2L` literal) as `{{TH_L_INIT_REF}}`;
+  - the `initializer` of `o` (the reference to `s`) as `{{TH_O_INIT_REF}}`;
+  - the `initializer` of `b` (the literal `1`) as `{{TH_B_INIT_REF}}`;
+  - the `type` child of `s` (a `ClassifierType` for `String`) as `{{TH_S_TYPE_REF}}`;
+  - the `type` child of `o` (a `ClassifierType` for `Object`) as `{{TH_O_TYPE_REF}}`;
+  - the `FieldDeclaration` `list` itself as `{{TH_LIST_FIELD_REF}}`.
+
+---
+
+### Step 10.15 — `query_nodes GET_TYPE` `[SUCCESS]`
+
+Three calls, `operation:"GET_TYPE"`, varying only `nodeReference`:
+
+- 10.15a `{"nodeReference":"{{TH_PLUS_REF}}"}` → `data.presentation=="int"`,
+  `data.concept=="IntegerType"`; `data.blueprint` is present; no key named `reference` appears
+  anywhere in `data`.
+- 10.15b `{"nodeReference":"{{TH_O_INIT_REF}}"}` → `data.presentation=="String"` (the reference
+  to `s` has `s`'s declared type, not the `Object` the slot requires — that is 10.16b).
+- 10.15c `{"nodeReference":"{{TH_S_TYPE_REF}}"}` → `ok==true`, `data==null`. A stored type node
+  has no type of its own (BaseLanguage has no inference rule for `Type`); `null` is the
+  documented "no type" answer, not an error.
+
+Example escaped call (10.15a):
+```json
+{ "tool": "mps_mcp_query_nodes",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "GET_TYPE",
+    "parameters": "{\"nodeReference\":\"{{TH_PLUS_REF}}\"}" } }
+```
+
+---
+
+### Step 10.16 — `query_nodes GET_EXPECTED_TYPE` `[SUCCESS]`
+
+The type the node's context requires of it. Four calls, `operation:"GET_EXPECTED_TYPE"`:
+
+- 10.16a `{"nodeReference":"{{TH_L_INIT_REF}}"}` → `data.presentation=="long"`: in
+  `long l = 2L` the declaration bounds its initializer by the declared type.
+- 10.16b `{"nodeReference":"{{TH_O_INIT_REF}}"}` → `data.presentation=="Object"` (compare
+  10.15b: GET_TYPE `String`, GET_EXPECTED_TYPE `Object`); no key named `reference` in `data`.
+- 10.16c `{"nodeReference":"{{TH_B_INIT_REF}}"}` → `data.presentation=="int"`, **not** `byte`:
+  in `byte b = 1` the rule recognises the literal as a valid byte and bounds it by `int`.
+- 10.16d `{"nodeReference":"{{TYPE_HOST_REF}}"}` → `ok==true`, `data==null` (a root has no
+  context).
+
+Example escaped call (10.16a):
+```json
+{ "tool": "mps_mcp_query_nodes",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "GET_EXPECTED_TYPE",
+    "parameters": "{\"nodeReference\":\"{{TH_L_INIT_REF}}\"}" } }
+```
+
+---
+
+### Step 10.17 — `query_types IS_SUBTYPE` `[SUCCESS]` + `[FAILURE]`
+
+`{sub, super}` → `{isSubtype, isStrongSubtype, isComparable, sub, super}`. Decoded `parameters`:
+
+- 10.17a `{"sub":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"},"super":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.LongType"}}`
+  → `data.isSubtype==true`, `data.isComparable==true` (always true when `isSubtype` is),
+  `data.sub.presentation=="int"`, `data.super.presentation=="long"`.
+- 10.17b the same with `sub` and `super` swapped (long vs int) → `data.isSubtype==false`.
+- 10.17c stored type nodes: `{"sub":{"typeNodeReference":"{{TH_S_TYPE_REF}}"},"super":{"typeNodeReference":"{{TH_O_TYPE_REF}}"}}`
+  → `data.isSubtype==true` (`String <: Object`); `data.sub.presentation=="String"`; no key named
+  `reference` anywhere in `data`.
+- 10.17d **real JSON object + lower-case operation**: repeat 10.17a with `operation:"is_subtype"`
+  and `parameters` passed as a JSON **object** rather than a string (see the call below) →
+  same answer as 10.17a (`data.isSubtype==true`).
+- 10.17e `[FAILURE]` `nodeReference` on a type node: `{"sub":{"nodeReference":"{{TH_S_TYPE_REF}}"},"super":{"typeNodeReference":"{{TH_O_TYPE_REF}}"}}`
+  → `ok==false`, `code=="INVALID_REQUEST"`, `error` contains `has no type` (the node has no type —
+  10.15c — so `nodeReference` cannot name one; `typeNodeReference` is the right key).
+
+Example escaped call (10.17a; 10.17b/c/e differ only in the `parameters` string):
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "IS_SUBTYPE",
+    "parameters": "{\"sub\":{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.IntegerType\"},\"super\":{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.LongType\"}}" } }
+```
+10.17d (`parameters` is an object, not a string):
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "is_subtype",
+    "parameters": { "sub": { "typeConceptRef": "jetbrains.mps.baseLanguage.structure.IntegerType" },
+                    "super": { "typeConceptRef": "jetbrains.mps.baseLanguage.structure.LongType" } } } }
+```
+
+---
+
+### Step 10.18 — `query_types SUPERTYPES` (`depth`, `weak`) `[SUCCESS]`
+
+`{type, depth?, weak?}` → `{type, immediate, transitive:[{type, depth}]}`. Decoded `parameters`:
+
+- 10.18a `{"type":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"}}` →
+  some `data.transitive[i].type.presentation=="long"`; `data.immediate` is non-empty; the
+  envelope has **no** `details` key (int's lattice fits the default depth 8). Entries for
+  `PrimitiveTypeDescriptor` nodes may appear too — the primitive rules use them internally; that
+  is expected.
+- 10.18b `{"type":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"},"depth":1}`
+  → `details.truncated==true` (int has supertypes beyond depth 1), and every
+  `data.transitive[i].depth==1`.
+- 10.18c `{"type":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"},"weak":false}`
+  → strong subtyping still widens int to long: some `data.transitive[i].type.presentation=="long"`.
+
+Example escaped call (10.18b):
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "SUPERTYPES",
+    "parameters": "{\"type\":{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.IntegerType\"},\"depth\":1}" } }
+```
+
+---
+
+### Step 10.19 — `query_types COMMON_SUPERTYPE` `[SUCCESS]` + `[FAILURE]`
+
+- 10.19a `{"types":[{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"},{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.LongType"}]}`
+  → the presentations of `data.result` are exactly `["long"]`; `data.types` has 2 entries.
+- 10.19b `[FAILURE]` a single operand: `{"types":[{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"}]}`
+  → `ok==false`, `code=="INVALID_REQUEST"` (at least two operands are required).
+
+Example escaped call (10.19a):
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "COMMON_SUPERTYPE",
+    "parameters": "{\"types\":[{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.IntegerType\"},{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.LongType\"}]}" } }
+```
+
+---
+
+### Step 10.20 — `query_types COERCE` (`strong`) `[SUCCESS]` + `[FAILURE]`
+
+`{type, conceptRef, strong?}` → `{coerced}`: the type, or its supertype that is an instance of
+`conceptRef`.
+
+- 10.20a `{"type":{"nodeReference":"{{TH_LIST_FIELD_REF}}"},"conceptRef":"jetbrains.mps.baseLanguage.structure.ClassifierType"}`
+  → `data.coerced` is non-null; `data.coerced.blueprint.references` has an entry with
+  `role=="classifier"` whose `targetReference` names `java.util.List` (confirm with
+  `mps_mcp_print_node` `deep:false` on that `targetReference` — the stub's printout may be large
+  and come back as a temp-file path — that its `name=="List"`); the blueprint's
+  `children` entry with `role=="parameter"` holds exactly one node (`String`).
+- 10.20b `{"type":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"},"conceptRef":"jetbrains.mps.baseLanguage.structure.LongType","strong":true}`
+  → `data.coerced.presentation=="long"`.
+- 10.20c `[FAILURE]` an interface concept: `{"type":{"nodeReference":"{{TH_LIST_FIELD_REF}}"},"conceptRef":"jetbrains.mps.lang.core.structure.INamedConcept"}`
+  → `ok==false`, `code=="INVALID_REQUEST"`.
+
+Example escaped call (10.20a):
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "COERCE",
+    "parameters": "{\"type\":{\"nodeReference\":\"{{TH_LIST_FIELD_REF}}\"},\"conceptRef\":\"jetbrains.mps.baseLanguage.structure.ClassifierType\"}" } }
+```
+
+---
+
+### Step 10.21 — `query_types OPERATION_TYPE` (`operatorNode` and `operatorConceptRef`) `[SUCCESS]`
+
+`{operatorNode | operatorConceptRef, left, right}` → `{type}`, the overloaded-operation result.
+
+- 10.21a existing operator node: `{"operatorNode":"{{TH_PLUS_REF}}","left":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"},"right":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.LongType"}}`
+  → `data.type.presentation=="long"` (the given operands count, not the node's own `1 + 2`); the
+  envelope has **no** `warnings`.
+- 10.21b operator concept: `{"operatorConceptRef":"jetbrains.mps.baseLanguage.structure.PlusExpression","left":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.IntegerType"},"right":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.LongType"}}`
+  → `data.type.presentation=="long"`; `warnings` has an entry containing `detached instance`
+  (always added for `operatorConceptRef`: a rule reading the operation's properties sees default
+  values).
+
+Example escaped call (10.21a):
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "OPERATION_TYPE",
+    "parameters": "{\"operatorNode\":\"{{TH_PLUS_REF}}\",\"left\":{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.IntegerType\"},\"right\":{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.LongType\"}}" } }
+```
+
+---
+
+### Step 10.22 — `query_types EXPLAIN_TYPE` (`includeApplyRule`, `maxRootNodes`) `[SUCCESS]` + `[FAILURE]`
+
+`{nodeReference, includeApplyRule?, maxRootNodes?}` → `{type, trace:[{kind, presentation,
+source?, rule?, error?, consequences?}]}`. "Anywhere in the trace" below includes the nested
+`consequences` arrays.
+
+- 10.22a `{"nodeReference":"{{TH_PLUS_REF}}"}` → `data.type.concept=="IntegerType"`;
+  `data.trace` is non-empty; anywhere in the trace there is an entry with
+  `kind=="type_assigned"` and `source=="{{TH_PLUS_REF}}"`; no entry's `presentation` contains
+  ` applied to node "` (rule applications are elided by default); some entry carries a
+  `rule: {rule, ruleReference, statement}` — confirm one with `query_nodes GET_MODEL_FOR_NODE`
+  on its `ruleReference`: `data.name=="jetbrains.mps.baseLanguage.typesystem"`. No trace entry
+  has a `source` among the other fields' nodes (e.g. `{{TH_L_INIT_REF}}`, `{{TH_O_INIT_REF}}`) —
+  the trace is the slice for this node only.
+- 10.22b `{"nodeReference":"{{TH_PLUS_REF}}","includeApplyRule":true}` → some entry's
+  `presentation` contains ` applied to node "`, and none of those entries carries `rule`.
+- 10.22c `[FAILURE]` `{"nodeReference":"{{TH_PLUS_REF}}","maxRootNodes":1}` → `ok==false`,
+  `code=="INVALID_REQUEST"`, `error` mentions `maxRootNodes` (the root has more than one node).
+
+Example escaped call (10.22a):
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "EXPLAIN_TYPE",
+    "parameters": "{\"nodeReference\":\"{{TH_PLUS_REF}}\"}" } }
+```
+
+---
+
+### Step 10.23 — Invalid: unknown `query_types` operation `[FAILURE]`
+
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "IS_SUPERTYPE",
+    "parameters": "{\"sub\":{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.IntegerType\"},\"super\":{\"typeConceptRef\":\"jetbrains.mps.baseLanguage.structure.LongType\"}}" } }
+```
+- Validation: `ok==false`; `code=="INVALID_REQUEST"`; `error` lists the valid operations,
+  `IS_SUBTYPE` among them.
+
+---
+
+### Step 10.24 — Problem reports: `rules` and `uncheckedSubtrees` `[SUCCESS]`
+
+A type error carries `rules: [{rule, ruleReference, statement}]` naming the rule that reported
+it. A commented-out subtree (a `BaseCommentAttribute`, marked `IDontApplyTypesystemRules` /
+`ISkipConstraintsChecking`) is not type-checked; the report counts it as `uncheckedSubtrees`.
+This step seeds a separate class with a type error, reads its `rules`, adds a commented-out field
+holding the same kind of error, deletes the live error, and finally deletes the comment too, so
+the class part 11 compiles is a plain empty class again.
+
+#### Step 10.24.s1 — Seed `McpTypeError` with a type error `[CAPTURE]`
+
+Decoded `parameters`:
+```json
+{
+  "code": "public class McpTypeError { public int bad = true; }",
+  "featureKind": "CLASS",
+  "insert": { "mode": "root", "modelRef": "mcp.test.sandbox.other" }
+}
+```
+Send:
+```json
+{
+  "tool": "mps_mcp_parse_java_and_insert",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "parameters": "{\"code\":\"public class McpTypeError { public int bad = true; }\",\"featureKind\":\"CLASS\",\"insert\":{\"mode\":\"root\",\"modelRef\":\"mcp.test.sandbox.other\"}}"
+  }
+}
+```
+- Validation: `ok==true`; `data.inserted[0].name=="McpTypeError"`. `data.problems` may list the
+  type error — that is the point of this class.
+- **Capture** `data.inserted[0].reference` as `{{TYPE_ERROR_REF}}`.
+- **Capture** the field: `query_nodes FIND_INSTANCES` (call below) → exactly one result
+  (`bad`); its `reference` is `{{TE_BAD_FIELD_REF}}`.
+```json
+{ "tool": "mps_mcp_query_nodes",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "FIND_INSTANCES",
+    "parameters": "{\"conceptRef\":\"jetbrains.mps.baseLanguage.structure.FieldDeclaration\",\"scope\":\"roots\",\"roots\":[\"{{TYPE_ERROR_REF}}\"]}" } }
+```
+
+#### Step 10.24.s2 — The type error names its rule (`rules`) `[SUCCESS]`
+
+```json
+{ "tool": "mps_mcp_check_root_node_problems",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{TYPE_ERROR_REF}}" } }
+```
+- Validation: `ok==true`; `data` is the problem report (inline, or a temp-file path to read).
+  Exactly **one** problem has `severity=="error"` (on `bad` or its initializer; the message says
+  `boolean` is not a subtype of `int`). That problem carries `rules`, and:
+  - `rules[0].rule=="typeof_VariableDeclaration"` (the inference rule whose inequality failed);
+  - `query_nodes GET_MODEL_FOR_NODE` on `rules[0].ruleReference` → `data.name=="jetbrains.mps.baseLanguage.typesystem"`;
+  - `query_nodes GET_ROOT` on `rules[0].statement` → `data.reference==rules[0].ruleReference`
+    (the reporting statement lies inside the rule root).
+- No `details.uncheckedSubtrees` yet (nothing is commented out) — typically the envelope has no
+  `details` at all; a missing `details` object is not a failure.
+
+#### Step 10.24.s3 — `EXPLAIN_TYPE` marks the path to the error `[SUCCESS]`
+
+```json
+{ "tool": "mps_mcp_query_types",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "EXPLAIN_TYPE",
+    "parameters": "{\"nodeReference\":\"{{TE_BAD_FIELD_REF}}\"}" } }
+```
+- Validation: `ok==true`; anywhere in `data.trace` there is at least one entry with
+  `kind=="error_added"`; every such entry has `error==true` and a `rule`, and one of them has
+  `rule.rule=="typeof_VariableDeclaration"`. Every entry whose `consequences` contain an entry
+  with `error` also has `error==true`.
+
+#### Step 10.24.s4 — Add a commented-out field; the error count is unchanged (`uncheckedSubtrees`) `[SUCCESS]`
+
+`update_node ADD CHILD` into the class's `smodelAttribute` role: a `BaseCommentAttribute` whose
+`commentedNode` is a field `int commented = true;` — a second type error, but inside a comment.
+`childJson` (decoded):
+```json
+{ "concept": "jetbrains.mps.lang.core.structure.BaseCommentAttribute",
+  "children": [ { "role": "commentedNode", "nodes": [ {
+    "concept": "jetbrains.mps.baseLanguage.structure.FieldDeclaration",
+    "properties": [ { "name": "name", "value": "commented" } ],
+    "children": [
+      { "role": "type", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.IntegerType" } ] },
+      { "role": "initializer", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.BooleanConstant",
+                                            "properties": [ { "name": "value", "value": "true" } ] } ] } ] } ] } ] }
+```
+Send:
+```json
+{
+  "tool": "mps_mcp_update_node",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "operation": "ADD", "kind": "CHILD",
+    "nodeReference": "{{TYPE_ERROR_REF}}", "childRole": "smodelAttribute",
+    "childJson": "{\"concept\":\"jetbrains.mps.lang.core.structure.BaseCommentAttribute\",\"children\":[{\"role\":\"commentedNode\",\"nodes\":[{\"concept\":\"jetbrains.mps.baseLanguage.structure.FieldDeclaration\",\"properties\":[{\"name\":\"name\",\"value\":\"commented\"}],\"children\":[{\"role\":\"type\",\"nodes\":[{\"concept\":\"jetbrains.mps.baseLanguage.structure.IntegerType\"}]},{\"role\":\"initializer\",\"nodes\":[{\"concept\":\"jetbrains.mps.baseLanguage.structure.BooleanConstant\",\"properties\":[{\"name\":\"value\",\"value\":\"true\"}]}]}]}]}]}"
+  }
+}
+```
+- Validation: `ok==true`; `data.reference` is the new comment attribute — **capture** it as
+  `{{TE_COMMENT_REF}}`. Then re-run the check call of 10.24.s2:
+  - still exactly **one** `error` problem — the one from `bad`; the `commented` field's error is
+    **not** reported;
+  - `details.uncheckedSubtrees==1`;
+  - the envelope has **no** `warnings` (the unchecked-subtree warning is added only to a clean
+    verdict).
+
+#### Step 10.24.s5 — Delete the live error; the clean verdict warns about the comment `[SUCCESS]`
+
+```json
+{
+  "tool": "mps_mcp_update_node",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "operation": "SET", "kind": "CHILD",
+    "childNodeRef": "{{TE_BAD_FIELD_REF}}",
+    "childJson": null
+  }
+}
+```
+- Validation: `ok==true`. Then re-run the check call of 10.24.s2:
+  - `data=="no problems found"`;
+  - `details.uncheckedSubtrees==1`;
+  - `warnings` has an entry starting with `1 subtree(s) marked IDontApplyTypesystemRules` (the
+    commented-out field was not type- or constraint-checked).
+
+#### Step 10.24.s6 — Delete the comment; the class is plain and clean `[SUCCESS]`
+
+The comment attribute was built without the `linkId` an editor-made comment records; the
+checkers do not need it, but generation is not exercised on it, so remove it before part 11
+makes the solution.
+```json
+{
+  "tool": "mps_mcp_update_node",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "operation": "SET", "kind": "CHILD",
+    "childNodeRef": "{{TE_COMMENT_REF}}",
+    "childJson": null
+  }
+}
+```
+- Validation: `ok==true`. Then re-run the check call of 10.24.s2: `data=="no problems found"`,
+  no `details.uncheckedSubtrees`, and no `warnings` entry about unchecked subtrees.
+- `McpTypeError` is now an empty, valid class and stays in the model (final-state policy).
 
 Proceed to `11_run_configurations.md`.

@@ -143,11 +143,12 @@ Send the array (as a string) as `json`, same other args as 07.03.
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "deep": true }
 }
 ```
-- Validation: `ok==true`; `data` is a temp-file path; **READ** it. Confirm the tree: a
+- Validation: `ok==true`; `data` is the printout inline (expected here: the root is small)
+  or a temp-file path — **READ** it if so. Confirm the tree: a
   `states` role with `Idle` and `Running`; `Idle` has a `transitions` child whose `target`
   resolves to `Running` and `event` to `tick`. Confirm `Idle.kind` prints as
   `"<memberId>/initial"` (non-default enum values carry the member-id prefix).
-- **Capture** from the file: the `Idle` State node `reference` as `{{OTHER_IDLE_REF}}`, the
+- **Capture** from the printout: the `Idle` State node `reference` as `{{OTHER_IDLE_REF}}`, the
   `Running` State node `reference` as `{{OTHER_RUNNING_REF}}`.
 
 ---
@@ -160,8 +161,8 @@ Send the array (as a string) as `json`, same other args as 07.03.
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "deep": false }
 }
 ```
-- Validation: `ok==true`; temp-file path; the file lists child roles with child references but
-  does **not** inline grandchildren. Exercises `deep:false`.
+- Validation: `ok==true`; read the file if `data` is a path. The printout lists child roles with child references
+  but does **not** inline grandchildren. Exercises `deep:false`.
 
 ---
 
@@ -173,8 +174,9 @@ Send the array (as a string) as `json`, same other args as 07.03.
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "format": "PLAIN TEXT" }
 }
 ```
-- Validation: `ok==true`; temp-file path; file holds the editor-projected plain-text rendering
-  of `OtherStateChart`. Exercises `format:"PLAIN TEXT"`.
+- Validation: `ok==true`; `data` is the editor-projected plain-text rendering of
+  `OtherStateChart` as a string, or a temp-file path whose envelope's `data` holds it.
+  Exercises `format:"PLAIN TEXT"`.
 
 ---
 
@@ -186,8 +188,9 @@ Send the array (as a string) as `json`, same other args as 07.03.
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}", "format": "HTML" }
 }
 ```
-- Validation: `ok==true`; temp-file path; file holds an HTML rendering. Exercises
-  `format:"HTML"`. (`format:"JSON"` was exercised in 07.06/07.07.)
+- Validation: `ok==true`; `data` is an HTML rendering as a string, or a temp-file path whose
+  envelope's `data` holds it. Exercises `format:"HTML"`. (`format:"JSON"` was exercised in
+  07.06/07.07.)
 
 ---
 
@@ -473,8 +476,12 @@ Then check (default `onlyNodesWithProblems:true`):
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "nodeReference": "{{OTHER_ROOT_REF}}" }
 }
 ```
-- Validation: `ok==true`; `data` is a **temp-file path** (problems found). READ it; it
-  contains a `Transition` whose `target` reference has a problem
+- Validation: `ok==true`; `data` is the problem report (problems found), **not**
+  `"no problems found"`. A report of at most `maxInlineBytes` characters (default 20000) comes
+  back inline in `data` — expect that here, the root is small; only a larger one is saved to a
+  temp file, whose path is `data` and whose file holds the complete `{"ok":…,"data":…}`
+  envelope (read the payload from its `data` field). The report contains a `Transition` whose
+  `target` entry in `references[]` has a problem
   `{"severity":"error","message":"No reference in the obligatory role 'target'"}`.
 
 ---
@@ -491,8 +498,10 @@ Then check (default `onlyNodesWithProblems:true`):
   }
 }
 ```
-- Validation: `ok==true`; temp-file path; the file contains the **full subtree** (every node,
-  with `problems` arrays attached — most empty, the broken transition's `target` non-empty).
+- Validation: `ok==true`; `data` is the report — inline, or a temp-file path when it exceeds
+  `maxInlineBytes` (default 20000 characters; read as in 07.29). It contains the **full
+  subtree** (every node, with `problems` arrays attached — most empty, the broken transition's
+  `target` non-empty).
   Exercises `onlyNodesWithProblems:false`.
 
 ---
@@ -634,7 +643,7 @@ Exercises `includeRootNodes` with a `startingPoint` (keeps payload small).
   }
 }
 ```
-- Validation: `ok==true`; read the file; the model's root nodes include `GearboxStateChart`,
+- Validation: `ok==true`; read the file if `data` is a path. The model's root nodes include `GearboxStateChart`,
   `OtherStateChart`, `ChartA`, `ChartB`. It must **not** include `DryRunChart`,
   `NeverPersisted`, or `ScratchChartRenamed` (those were dry-run / deleted).
 
@@ -653,7 +662,7 @@ Exercises `includeNodes` with a `startingPoint` (one model).
   }
 }
 ```
-- Validation: `ok==true`; read the file; it contains the full node trees of the roots
+- Validation: `ok==true`; read the file if `data` is a path. The payload contains the full node trees of the roots
   (states, transitions, events inlined). Exercises `includeNodes`.
 
 Proceed to `08_queries_and_navigation.md`.

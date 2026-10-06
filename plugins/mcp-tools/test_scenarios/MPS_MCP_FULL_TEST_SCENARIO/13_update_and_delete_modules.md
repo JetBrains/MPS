@@ -111,7 +111,7 @@ Exercises `operation:"DELETE"` and `deleteFiles:true`.
   "arguments": { "projectPath": "{{PROJECT_DIR}}", "moduleKind": "Solution", "includeModels": true }
 }
 ```
-- Validation: `ok==true`; read the file; `data.modules` includes `mcp.test.sandbox` but
+- Validation: `ok==true`; read the file if `data` is a path. `data.modules` includes `mcp.test.sandbox` but
   **not** `mcp.test.scratch` or `mcp.test.scratch.renamed`. Confirms 13.04.
 
 Proceed to `14_finalize_report.md`.

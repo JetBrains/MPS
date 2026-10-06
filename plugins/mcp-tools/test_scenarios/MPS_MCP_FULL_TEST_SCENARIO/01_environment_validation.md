@@ -67,9 +67,10 @@ Expected result: **success**, and the project must contain **zero MPS modules**.
 }
 ```
 
-- Response validation: `ok==true`. `data` is either an inline object or a path to a temp
-  `.json` file (this tool typically returns a path).
-- **READ the returned file** (if `data` is a path). Its `data.modules` array must be
+- Response validation: `ok==true`. `data` is either an inline object or, for a dump above
+  `maxInlineBytes` (default 20000 characters), a path to a temp `.json` file (an empty
+  project's dump is small, so expect it inline).
+- **READ the returned file** (if `data` is a path). The payload's `modules` array must be
   **empty** (`[]`).
 - **Project-state check / assumption gate:** if `data.modules` is empty → assumption holds,
   continue. If it contains modules whose names start with `mcp.test.` → a previous run was

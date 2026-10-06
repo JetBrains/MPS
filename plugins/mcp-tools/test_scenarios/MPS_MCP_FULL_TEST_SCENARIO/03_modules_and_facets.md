@@ -193,7 +193,7 @@ Expected result: **success**.
 }
 ```
 
-- Response validation: `ok==true`; read the temp file. `data.modules` includes
+- Response validation: `ok==true`; read the file if `data` is a path. `data.modules` includes
   `mcp.test.sandbox`. (Solution companions of `mcp.test.flags` may also appear.)
 - Project-state check: confirms Steps 03.01 / 03.05 effects. Exercises `moduleKind=Solution`,
   `includeModels`, `includeRootNodes`.
@@ -216,7 +216,7 @@ Expected result: **success**.
 }
 ```
 
-- Response validation: `ok==true`; read the file. `data.modules` includes
+- Response validation: `ok==true`; read the file if `data` is a path. `data.modules` includes
   `mcp.test.statechart` and `mcp.test.flags`. Each language lists its aspect models. Exercises
   `moduleKind=Language`, `includeDependencies`.
 
@@ -256,8 +256,8 @@ Expected result: **success**.
 
 ### Step 03.12 — Project structure including stub (read-only) modules `[READ-FILE]`
 
-Expected result: **success**. Exercises `includeStubModules`. (This payload can be large; it
-is always written to a temp file.)
+Expected result: **success**. Exercises `includeStubModules`. (This payload is large, so it
+normally comes back as a temp-file path rather than inline.)
 
 ```json
 {
@@ -270,7 +270,7 @@ is always written to a temp file.)
 }
 ```
 
-- Response validation: `ok==true`; read the file; `data.modules` now also includes read-only
+- Response validation: `ok==true`; read the file if `data` is a path. `data.modules` now also includes read-only
   library languages (e.g. `jetbrains.mps.*`) in addition to the editable `mcp.test.*` ones.
   Just confirm at least one read-only module appears; do not enumerate.
 

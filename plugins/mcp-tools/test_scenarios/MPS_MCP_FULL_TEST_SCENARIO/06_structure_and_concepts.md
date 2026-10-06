@@ -168,7 +168,8 @@ Send:
   }
 }
 ```
-- Validation: `ok==true`; `data` is a temp-file path. **READ it.** Confirm:
+- Validation: `ok==true`; `data` is the concept details inline, or a temp-file path —
+  **READ it** if so. Confirm:
   - `StateChart` has `isRootable:true`, `conceptAlias:"statechart"`, `superInterfaces`
     includes `INamedConcept`, and `children` include roles `states` (0..n) and `events`
     (0..n).
@@ -346,7 +347,7 @@ Decoded: `{ "modules": ["mcp.test.statechart"], "rebuild": true }`
   }
 }
 ```
-- Validation: `ok==true`; read the temp file; it lists `StateChart`, `State`, `Transition`,
+- Validation: `ok==true`; read the file if `data` is a path. It lists `StateChart`, `State`, `Transition`,
   `Event`. **Project-state check for the structure edits:** the `State` entry's `properties`
   now include **`terminal`** (renamed from `isFinal` in 06.07) and **not** `isFinal`; its
   `children` include **`nestedStates`** (renamed in 06.09); the `Event` entry's `references`
@@ -436,8 +437,38 @@ Decoded: `{ "conceptRef":"mcp.test.statechart.structure.StateChart", "includeInh
   }
 }
 ```
-- Validation: `ok==true`; `data` is an array. Before part 09 (editor scaffolding) it may be
-  empty or minimal; record what is returned. (After part 09 the editor aspect appears here.)
+- Validation: `ok==true`; `data` is an array of `{aspectModel, rootNodes}` entries. Before
+  part 09 (editor scaffolding) the language has no aspect root for `StateChart` yet, so expect
+  `[]`; record what is returned. (After part 09 the editor aspect appears here — Step 09.05.)
+  Every listed root carries `relation`, either `"appliesTo"` (the root is *for* the concept:
+  its editor, constraints, behavior, a rule applicable to it) or `"mentions"` (it only
+  references the concept), and a `targetsConcept` whose `name=="StateChart"`.
+
+### Step 06.20b — `LIST_CONCEPT_ASPECTS` with `includeInherited:true` (`relation`, `targetsConcept`) `[READ-FILE]`
+
+With `includeInherited`, the aspects of every superconcept and interface are listed too.
+`StateChart` extends nothing, so its hierarchy reaches `BaseConcept` (as at runtime), whose
+behavior root lives in `jetbrains.mps.lang.core`.
+
+Decoded: `{ "conceptRef":"mcp.test.statechart.structure.StateChart", "includeInherited":true }`
+```json
+{
+  "tool": "mps_mcp_query_structure",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "operation": "LIST_CONCEPT_ASPECTS",
+    "parameters": "{\"conceptRef\":\"mcp.test.statechart.structure.StateChart\",\"includeInherited\":true}"
+  }
+}
+```
+- Validation: `ok==true`; `data` (inline, or a temp-file path to read) is a non-empty array.
+  - Exactly **one** root across all entries has `concept=="ConceptBehavior"`,
+    `relation=="appliesTo"` and `targetsConcept.name=="BaseConcept"`; its entry's
+    `aspectModel.module.fullyQualifiedName=="jetbrains.mps.lang.core"`.
+  - Every root's `relation` is `"appliesTo"` or `"mentions"`; `pattern`, when present, is `true`.
+  - Every root's `targetsConcept.name` is `StateChart` or one of its supers (`BaseConcept`,
+    `INamedConcept`, or a superconcept/interface of those; `GET_ALL_SUPERCONCEPTS` on
+    `StateChart`, as in Step 06.17, lists them if in doubt).
 
 ---
 

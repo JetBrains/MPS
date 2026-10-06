@@ -39,12 +39,17 @@ Read this file before executing any step. It applies to **every** step in parts 
 ### Semantic-check guidance
 
 - "Response indicates success" = `ok` is `true` (for `mps_mcp_*` tools).
-- For tools that return a temp-file path in `data`, "success" also requires that the file
-  exists and parses as JSON; read it to perform the project-state check.
+- Read tools return their payload **inline** in `data` when it is at most `maxInlineBytes`
+  characters (default 20000) and save it to a temp `.json` file above that, returning the
+  file's absolute path as `data`. Never assume either form: check what `data` is. When it is
+  a path, "success" also requires that the file exists and parses as JSON. The file holds the
+  **complete** `{"ok":…,"data":…}` envelope, so read the payload from its `data` field and run
+  the step's checks on that payload.
 - A non-empty `warnings` array on an `ok:true` response is **not** a failure — record it as a
   note.
-- `mps_mcp_check_root_node_problems` returning `data:"no problems found"` means clean; a
-  temp-file path means problems were found — read the file and inspect the `problems` arrays.
+- `mps_mcp_check_root_node_problems` returning `data:"no problems found"` means clean; any
+  other `data` (the inline problem report, or a temp-file path to it) means problems were
+  found — inspect the `problems` arrays.
 
 ## B. Report-writing rules for the scenario runner
 
@@ -70,8 +75,8 @@ Append one entry per call with these fields:
 - **Tool** — exact tool name used.
 - **Expectation** — `expected: success` or `expected: failure`.
 - **Request** — the full `arguments` object you sent (with placeholders resolved).
-- **Response** — the full response (for temp-file responses, record the path and a short
-  excerpt of the file's relevant part).
+- **Response** — the full response (for temp-file responses, and for long inline payloads,
+  record the path or the size and a short excerpt of the relevant part).
 - **Matched?** — `PASS` if actual matched expected, else `FAIL`.
 - **Response validation** — the minimal response check you performed (e.g. `ok==true`,
   `data.makeStatus=="success"`, `error contains "not found"`).
@@ -119,6 +124,8 @@ Each step is tagged with one of:
 - **`[FAILURE]`** — the call must return `ok:false` for the stated reason.
 - **`[CAPTURE]`** — a `[SUCCESS]` step whose response contains a value you must save for
   later (the step names the placeholder).
-- **`[READ-FILE]`** — a `[SUCCESS]` step returning a temp-file path you must open and check.
+- **`[READ-FILE]`** — a `[SUCCESS]` step whose payload is inspected in detail and may be
+  large: it comes back inline or, above `maxInlineBytes`, as a temp-file path you must open
+  (see "Semantic-check guidance" above).
 
 Proceed to `01_environment_validation.md`.
