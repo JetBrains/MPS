@@ -411,13 +411,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.classifiers.jar" />
@@ -751,13 +749,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.classifiers.jar" />
@@ -1090,13 +1086,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.logging.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.scopes.runtime.jar" />

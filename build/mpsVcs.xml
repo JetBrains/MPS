@@ -408,6 +408,7 @@
           <module ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea(MPS.Core)" kind="cl" />
           <module ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224(MPS.Editor)" kind="cl" />
           <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
+          <module ref="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="cl" />
           <module ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34(MPS.OpenAPI)" kind="cl" />
           <module ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61(MPS.Platform)" kind="cl" />
           <module ref="f57286e3-4e19-4d8d-8045-3900761f6530(jetbrains.mps.git4idea.stubs)" kind="cl" />
@@ -628,6 +629,7 @@
           <module ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea(MPS.Core)" kind="cl" />
           <module ref="215c4c45-ba99-49f5-9ab7-4b6901a63cfd(MPS.Generator)" kind="cl" />
           <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
+          <module ref="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="cl" />
           <module ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34(MPS.OpenAPI)" kind="cl" />
           <module ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61(MPS.Platform)" kind="cl" />
           <module ref="86441d7a-e194-42da-81a5-2161ec62a379(MPS.Workbench)" kind="cl" />
@@ -706,11 +708,11 @@
     <ant antfile="build/mpsCore.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsWorkbench.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsTroveCollections.xml" inheritAll="false" useNativeBasedir="true" />
+    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsPlugins.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsJavaCore.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsMakePlugin.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsBuild.xml" inheritAll="false" useNativeBasedir="true" />
-    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsVcsStandaloneJar.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsTesting.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsDevKit.xml" inheritAll="false" useNativeBasedir="true" />
@@ -785,6 +787,10 @@
       <target name="generate" />
       <target name="assemble" />
     </ant>
+    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true">
+      <target name="generate" />
+      <target name="assemble" />
+    </ant>
     <ant antfile="build/mpsPlugins.xml" inheritAll="false" useNativeBasedir="true">
       <target name="generate" />
       <target name="assemble" />
@@ -798,10 +804,6 @@
       <target name="assemble" />
     </ant>
     <ant antfile="build/mpsBuild.xml" inheritAll="false" useNativeBasedir="true">
-      <target name="generate" />
-      <target name="assemble" />
-    </ant>
-    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true">
       <target name="generate" />
       <target name="assemble" />
     </ant>
@@ -910,13 +912,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.analyzers.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.logging.runtime.jar" />
@@ -1247,13 +1247,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.analyzers.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.classifiers.jar" />
@@ -1610,13 +1608,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.logging.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.scopes.jar" />
@@ -1953,13 +1949,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.scopes.jar" />
         <fileset file="${artifacts.mpsDevKit}/mps-devkit/languages/jetbrains.mps.ide.devkit.editor.jar" />

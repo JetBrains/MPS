@@ -296,6 +296,7 @@
     <ant antfile="build/mpsCore.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsWorkbench.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsTroveCollections.xml" inheritAll="false" useNativeBasedir="true" />
+    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsPlugins.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsJavaCore.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsMakePlugin.xml" inheritAll="false" useNativeBasedir="true" />
@@ -328,6 +329,8 @@
       <settings refid="m2m-defaults" />
       <plugin path="${artifacts.mpsCore}/mps-core" id="jetbrains.mps.core" />
       <plugin path="${artifacts.mpsPlugins}/mps-modelchecker" id="jetbrains.mps.ide.modelchecker" />
+      <plugin path="${artifacts.mpsVcsPlatform}/mps-git4idea" id="jetbrains.mps.git4idea.stubs" />
+      <plugin path="${artifacts.mpsVcsPlatform}/vcs-git" id="Git4Idea" />
       <plugin path="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" id="com.intellij.modules.mps" />
       <chunk>
         <module file="${mps_home}/plugins/mps-project-migrations/solution/jetbrains.mps.ide.mpsmigration.msd" />
@@ -364,6 +367,10 @@
       <target name="assemble" />
     </ant>
     <ant antfile="build/mpsTroveCollections.xml" inheritAll="false" useNativeBasedir="true">
+      <target name="generate" />
+      <target name="assemble" />
+    </ant>
+    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true">
       <target name="generate" />
       <target name="assemble" />
     </ant>
@@ -485,13 +492,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.scopes.jar" />
@@ -818,13 +823,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />

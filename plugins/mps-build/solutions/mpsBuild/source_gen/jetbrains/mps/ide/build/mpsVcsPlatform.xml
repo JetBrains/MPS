@@ -133,6 +133,7 @@
         <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.graph.jar" />
         <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.impl.jar" />
         <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.jar" />
+        <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.jar" />
         <sources jar="." descriptor="jetbrains.mps.vcs.idea.stubs.msd" />
       </module>
     </echoxml>
@@ -336,13 +337,11 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <path refid="path.java.library.idea-vcs" />
         <path refid="path.jdk.classpath" />
       </classpath>

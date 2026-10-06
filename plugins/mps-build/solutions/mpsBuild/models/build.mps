@@ -957,13 +957,6 @@
           </node>
         </node>
       </node>
-      <node concept="25yagZ" id="49iPc2GHgpL" role="PiKyV">
-        <node concept="3yqu4x" id="49iPc2GHgpM" role="25yagT">
-          <node concept="3yrxFa" id="49iPc2GHgpN" role="3yqu4I">
-            <ref role="3yrxFb" node="k06Em_JVTE" />
-          </node>
-        </node>
-      </node>
       <node concept="25yagZ" id="7F4u5z1mO9L" role="PiKyV">
         <node concept="3yqu4x" id="7F4u5z1mO9M" role="25yagT">
           <node concept="3yrxFa" id="7F4u5z1mO9N" role="3yqu4I">
@@ -996,13 +989,6 @@
         <node concept="3yqu4x" id="6o2kRudjTMW" role="25yagT">
           <node concept="3yrxFa" id="6o2kRudjTMX" role="3yqu4I">
             <ref role="3yrxFb" node="6o2kRudjTHm" />
-          </node>
-        </node>
-      </node>
-      <node concept="25yagZ" id="50FcBb6B48_" role="PiKyV">
-        <node concept="3yqFpY" id="50FcBb6B48x" role="25yagT">
-          <node concept="3yqFqT" id="50FcBb6B48z" role="3yqFpW">
-            <ref role="3yqFr6" node="6o2kRudU6ZZ" resolve="modules" />
           </node>
         </node>
       </node>
@@ -8908,19 +8894,6 @@
                 <property role="2Ry0Am" value="lib" />
                 <node concept="2Ry0Ak" id="Rwku8tI_om" role="2Ry0An">
                   <property role="2Ry0Am" value="intellij.platform.vcs.core.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1SiIV0" id="Rwku8tI_os" role="3bR37C">
-          <node concept="1BurEX" id="Rwku8tI_ot" role="1SiIV1">
-            <node concept="398BVA" id="Rwku8tI_op" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="Rwku8tI_oq" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="Rwku8tI_or" role="2Ry0An">
-                  <property role="2Ry0Am" value="intellij.platform.vcs.jar" />
                 </node>
               </node>
             </node>
@@ -38841,13 +38814,6 @@
           </node>
         </node>
       </node>
-      <node concept="13uQ2_" id="k06Em_JVTE" role="39821P">
-        <node concept="3_J27D" id="k06Em_JVTF" role="13uQ07">
-          <node concept="3Mxwew" id="k06Em_JVTG" role="3MwsjC">
-            <property role="3MwjfP" value="intellij.platform.vcs.jar" />
-          </node>
-        </node>
-      </node>
       <node concept="13uQ2_" id="FinVtwXn3j" role="39821P">
         <node concept="3_J27D" id="FinVtwXn3k" role="13uQ07">
           <node concept="3Mxwew" id="FinVtwXn3l" role="3MwsjC">
@@ -39878,6 +39844,41 @@
               <node concept="3_J27D" id="6o2kRudU72W" role="13uQ07">
                 <node concept="3Mxwew" id="6o2kRudU73y" role="3MwsjC">
                   <property role="3MwjfP" value="intellij.platform.vcs.log.jar" />
+                </node>
+              </node>
+            </node>
+            <node concept="13uQ2_" id="4FJkWEovEzP" role="39821P">
+              <node concept="3_J27D" id="4FJkWEovEzQ" role="13uQ07">
+                <node concept="3Mxwew" id="4FJkWEovEzR" role="3MwsjC">
+                  <property role="3MwjfP" value="intellij.platform.vcs.jar" />
+                </node>
+              </node>
+            </node>
+            <node concept="13uQ2_" id="4FJkWEovE$1" role="39821P">
+              <node concept="3_J27D" id="4FJkWEovE$2" role="13uQ07">
+                <node concept="3Mxwew" id="4FJkWEovE$3" role="3MwsjC">
+                  <property role="3MwjfP" value="intellij.platform.vcs.log.graph.impl.jar" />
+                </node>
+              </node>
+            </node>
+            <node concept="13uQ2_" id="4FJkWEovEzY" role="39821P">
+              <node concept="3_J27D" id="4FJkWEovEzZ" role="13uQ07">
+                <node concept="3Mxwew" id="4FJkWEovE$0" role="3MwsjC">
+                  <property role="3MwjfP" value="intellij.platform.vcs.impl.lang.jar" />
+                </node>
+              </node>
+            </node>
+            <node concept="13uQ2_" id="4FJkWEovEzV" role="39821P">
+              <node concept="3_J27D" id="4FJkWEovEzW" role="13uQ07">
+                <node concept="3Mxwew" id="4FJkWEovEzX" role="3MwsjC">
+                  <property role="3MwjfP" value="intellij.platform.vcs.impl.lang.actions.jar" />
+                </node>
+              </node>
+            </node>
+            <node concept="13uQ2_" id="4FJkWEovEzS" role="39821P">
+              <node concept="3_J27D" id="4FJkWEovEzT" role="13uQ07">
+                <node concept="3Mxwew" id="4FJkWEovEzU" role="3MwsjC">
+                  <property role="3MwjfP" value="intellij.platform.vcs.impl.exec.jar" />
                 </node>
               </node>
             </node>
@@ -44739,6 +44740,9 @@
     <node concept="2sgV4H" id="X5qzrO30sf" role="1l3spa">
       <ref role="1l3spb" node="X5qzrNTLMg" resolve="mpsMcpTools" />
     </node>
+    <node concept="2sgV4H" id="1erIAmv8PaM" role="1l3spa">
+      <ref role="1l3spb" node="6ifcnI8$2iR" resolve="mpsVcsPlatform" />
+    </node>
   </node>
   <node concept="1l3spW" id="3IKDaVZoWUr">
     <property role="TrG5h" value="mpsTroveCollections" />
@@ -45259,6 +45263,11 @@
           </node>
         </node>
       </node>
+      <node concept="2GhqfE" id="13JPMMWJskz" role="nCB5Z">
+        <node concept="3yrxFa" id="13JPMMWJsk_" role="3yrxIG">
+          <ref role="3yrxFb" node="4FJkWEovEzP" />
+        </node>
+      </node>
     </node>
     <node concept="1E1JtA" id="4IP11oWmB07" role="3989C9">
       <property role="BnDLt" value="true" />
@@ -45391,6 +45400,11 @@
           </node>
         </node>
       </node>
+      <node concept="1SiIV0" id="4FJkWEobzm0" role="3bR37C">
+        <node concept="3bR9La" id="4FJkWEobzm1" role="1SiIV1">
+          <ref role="3bR37D" node="6IrEpWwbD4R" resolve="jetbrains.mps.vcs.idea.stubs" />
+        </node>
+      </node>
     </node>
     <node concept="1E1JtA" id="1_7hqbu4mXQ" role="3989C9">
       <property role="BnDLt" value="true" />
@@ -45471,20 +45485,23 @@
         </node>
       </node>
       <node concept="1BupzO" id="1_7hqbu4n14" role="3bR31x">
-        <property role="3ZfqAx" value="" />
+        <property role="3ZfqAx" value="models" />
         <property role="1Hdu6h" value="true" />
         <property role="1HemKv" value="true" />
-        <node concept="3LXTmp" id="1_7hqbu4n15" role="1HemKq">
-          <node concept="398BVA" id="1_7hqbu4n0T" role="3LXTmr">
+        <node concept="3LXTmp" id="4FJkWEobzjG" role="1HemKq">
+          <node concept="398BVA" id="4FJkWEobzju" role="3LXTmr">
             <ref role="398BVh" node="5lGJ4TaqfAJ" resolve="plugin_home" />
-            <node concept="2Ry0Ak" id="1_7hqbu4n0U" role="iGT6I">
+            <node concept="2Ry0Ak" id="4FJkWEobzjv" role="iGT6I">
               <property role="2Ry0Am" value="mps-modelchecker" />
-              <node concept="2Ry0Ak" id="1_7hqbu4n0V" role="2Ry0An">
+              <node concept="2Ry0Ak" id="4FJkWEobzjw" role="2Ry0An">
                 <property role="2Ry0Am" value="solution" />
+                <node concept="2Ry0Ak" id="4FJkWEobzjx" role="2Ry0An">
+                  <property role="2Ry0Am" value="models" />
+                </node>
               </node>
             </node>
           </node>
-          <node concept="3qWCbU" id="1_7hqbu4n16" role="3LXTna">
+          <node concept="3qWCbU" id="4FJkWEobzjH" role="3LXTna">
             <property role="3qWCbO" value="**/*.mps, **/*.mpsr, **/.model" />
           </node>
         </node>
@@ -46385,6 +46402,9 @@
       <node concept="m$_yC" id="1cnFdKEyDJ4" role="m$_yJ">
         <ref role="m$_y1" node="4k71ibbLe59" resolve="com.intellij.modules.mps" />
       </node>
+      <node concept="m$_yC" id="4FJkWEobzmE" role="m$_yJ">
+        <ref role="m$_y1" node="4wxeloVufXr" />
+      </node>
     </node>
     <node concept="398b33" id="42kMDMFt6h4" role="3989C9">
       <property role="TrG5h" value="mps-memtool" />
@@ -46793,6 +46813,9 @@
           </node>
         </node>
       </node>
+    </node>
+    <node concept="2sgV4H" id="4FJkWEobzjQ" role="1l3spa">
+      <ref role="1l3spb" node="6ifcnI8$2iR" resolve="mpsVcsPlatform" />
     </node>
   </node>
   <node concept="1l3spW" id="7pdFgzxlDme">
@@ -48999,6 +49022,11 @@
           <ref role="3bR37D" node="6IrEpWwbD4R" resolve="jetbrains.mps.vcs.idea.stubs" />
         </node>
       </node>
+      <node concept="1SiIV0" id="4FJkWEobzfj" role="3bR37C">
+        <node concept="3bR9La" id="4FJkWEobzfk" role="1SiIV1">
+          <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
+        </node>
+      </node>
     </node>
     <node concept="1E1JtD" id="6ifcnI8$2iU" role="3989C9">
       <property role="BnDLt" value="true" />
@@ -49522,6 +49550,11 @@
       <node concept="1SiIV0" id="6IrEpWwdikU" role="3bR37C">
         <node concept="3bR9La" id="6IrEpWwdikV" role="1SiIV1">
           <ref role="3bR37D" node="6IrEpWwbD4R" resolve="jetbrains.mps.vcs.idea.stubs" />
+        </node>
+      </node>
+      <node concept="1SiIV0" id="4FJkWEobzgg" role="3bR37C">
+        <node concept="3bR9La" id="4FJkWEobzgh" role="1SiIV1">
+          <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
         </node>
       </node>
     </node>
@@ -65233,6 +65266,28 @@
           </node>
         </node>
       </node>
+      <node concept="1SiIV0" id="4FJkWEobzd5" role="3bR37C">
+        <node concept="1BurEX" id="4FJkWEobzd6" role="1SiIV1">
+          <node concept="398BVA" id="4FJkWEobzcZ" role="1BurEY">
+            <ref role="398BVh" node="6ifcnI8$2ke" resolve="mps_home" />
+            <node concept="2Ry0Ak" id="4FJkWEobzd0" role="iGT6I">
+              <property role="2Ry0Am" value="plugins" />
+              <node concept="2Ry0Ak" id="4FJkWEobzd1" role="2Ry0An">
+                <property role="2Ry0Am" value="platform-vcs-plugin" />
+                <node concept="2Ry0Ak" id="4FJkWEobzd2" role="2Ry0An">
+                  <property role="2Ry0Am" value="lib" />
+                  <node concept="2Ry0Ak" id="4FJkWEobzd3" role="2Ry0An">
+                    <property role="2Ry0Am" value="modules" />
+                    <node concept="2Ry0Ak" id="4FJkWEobzd4" role="2Ry0An">
+                      <property role="2Ry0Am" value="intellij.platform.vcs.jar" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
     </node>
     <node concept="m$_wf" id="4wxeloVufXr" role="3989C9">
       <property role="m$_wk" value="jetbrains.mps.git4idea.stubs" />
@@ -65435,18 +65490,6 @@
                 </node>
               </node>
             </node>
-            <node concept="3yLZsm" id="7LifPhc7Ap8" role="3yL2VB">
-              <property role="3yLZsk" value="/lib/intellij.platform.vcs.dvcs.impl.shared.jar" />
-              <node concept="398BVA" id="7LifPhc7Ap9" role="3yLZsn">
-                <ref role="398BVh" node="6ifcnI8$2ke" resolve="mps_home" />
-                <node concept="2Ry0Ak" id="7LifPhc7Apa" role="iGT6I">
-                  <property role="2Ry0Am" value="lib" />
-                  <node concept="2Ry0Ak" id="Rwku8tK6nd" role="2Ry0An">
-                    <property role="2Ry0Am" value="intellij.platform.vcs.dvcs.impl.shared.jar" />
-                  </node>
-                </node>
-              </node>
-            </node>
             <node concept="3yLZsm" id="1K96vnVtKFQ" role="3yL2VB">
               <property role="3yLZsk" value="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.dvcs.jar" />
               <node concept="398BVA" id="1K96vnVtKFR" role="3yLZsn">
@@ -65531,18 +65574,6 @@
                 </node>
               </node>
             </node>
-            <node concept="3yLZsm" id="1K96vnVtLcq" role="3yL2VB">
-              <property role="3yLZsk" value="/lib/intellij.platform.vcs.impl.shared.jar" />
-              <node concept="398BVA" id="1K96vnVtLcr" role="3yLZsn">
-                <ref role="398BVh" node="6ifcnI8$2ke" resolve="mps_home" />
-                <node concept="2Ry0Ak" id="1K96vnVtLcs" role="iGT6I">
-                  <property role="2Ry0Am" value="lib" />
-                  <node concept="2Ry0Ak" id="Rwku8tK7gw" role="2Ry0An">
-                    <property role="2Ry0Am" value="intellij.platform.vcs.impl.shared.jar" />
-                  </node>
-                </node>
-              </node>
-            </node>
             <node concept="3yLZsm" id="1K96vnVtLfz" role="3yL2VB">
               <property role="3yLZsk" value="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.graph.impl.jar" />
               <node concept="398BVA" id="1K96vnVtLf$" role="3yLZsn">
@@ -65606,6 +65637,27 @@
                 </node>
               </node>
             </node>
+            <node concept="3yLZsm" id="4FJkWEozLA0" role="3yL2VB">
+              <property role="3yLZsk" value="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.jar" />
+              <node concept="398BVA" id="4FJkWEozLA1" role="3yLZsn">
+                <ref role="398BVh" node="6ifcnI8$2ke" resolve="mps_home" />
+                <node concept="2Ry0Ak" id="4FJkWEozLA2" role="iGT6I">
+                  <property role="2Ry0Am" value="plugins" />
+                  <node concept="2Ry0Ak" id="4FJkWEozLA3" role="2Ry0An">
+                    <property role="2Ry0Am" value="platform-vcs-plugin" />
+                    <node concept="2Ry0Ak" id="4FJkWEozLA4" role="2Ry0An">
+                      <property role="2Ry0Am" value="lib" />
+                      <node concept="2Ry0Ak" id="4FJkWEozLA5" role="2Ry0An">
+                        <property role="2Ry0Am" value="modules" />
+                        <node concept="2Ry0Ak" id="4FJkWEozLA6" role="2Ry0An">
+                          <property role="2Ry0Am" value="intellij.platform.vcs.jar" />
+                        </node>
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
             <node concept="3yLZsm" id="1K96vnVw7CI" role="3yL2VB">
               <property role="3yLZsk" value="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.impl.jar" />
               <node concept="398BVA" id="1K96vnVw7CJ" role="3yLZsn">
@@ -65623,42 +65675,6 @@
                         </node>
                       </node>
                     </node>
-                  </node>
-                </node>
-              </node>
-            </node>
-            <node concept="3yLZsm" id="30W60aKh6s7" role="3yL2VB">
-              <property role="3yLZsk" value="/lib/intellij.platform.vcs.shared.jar" />
-              <node concept="398BVA" id="30W60aKh6s8" role="3yLZsn">
-                <ref role="398BVh" node="6ifcnI8$2ke" resolve="mps_home" />
-                <node concept="2Ry0Ak" id="30W60aKh6s9" role="iGT6I">
-                  <property role="2Ry0Am" value="lib" />
-                  <node concept="2Ry0Ak" id="30W60aKh6t2" role="2Ry0An">
-                    <property role="2Ry0Am" value="intellij.platform.vcs.shared.jar" />
-                  </node>
-                </node>
-              </node>
-            </node>
-            <node concept="3yLZsm" id="7KDqhK9NqiY" role="3yL2VB">
-              <property role="3yLZsk" value="/lib/intellij.platform.vcs.core.jar" />
-              <node concept="398BVA" id="7KDqhK9NqiZ" role="3yLZsn">
-                <ref role="398BVh" node="6ifcnI8$2ke" resolve="mps_home" />
-                <node concept="2Ry0Ak" id="7KDqhK9Nqj0" role="iGT6I">
-                  <property role="2Ry0Am" value="lib" />
-                  <node concept="2Ry0Ak" id="7KDqhK9Nqj1" role="2Ry0An">
-                    <property role="2Ry0Am" value="intellij.platform.vcs.core.jar" />
-                  </node>
-                </node>
-              </node>
-            </node>
-            <node concept="3yLZsm" id="7KDqhK9Nqc_" role="3yL2VB">
-              <property role="3yLZsk" value="/lib/intellij.platform.vcs.jar" />
-              <node concept="398BVA" id="7KDqhK9NqcA" role="3yLZsn">
-                <ref role="398BVh" node="6ifcnI8$2ke" resolve="mps_home" />
-                <node concept="2Ry0Ak" id="7KDqhK9NqcB" role="iGT6I">
-                  <property role="2Ry0Am" value="lib" />
-                  <node concept="2Ry0Ak" id="7KDqhK9NqcC" role="2Ry0An">
-                    <property role="2Ry0Am" value="intellij.platform.vcs.jar" />
                   </node>
                 </node>
               </node>

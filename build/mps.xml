@@ -40,6 +40,7 @@
   <property name="artifacts.mpsCore" location="${build.dir}/artifacts/mpsCore" />
   <property name="artifacts.mpsAntToolsPlugin" location="${build.dir}/artifacts/mpsAntToolsPlugin" />
   <property name="artifacts.mpsMcpTools" location="${build.dir}/artifacts/mpsMcpTools" />
+  <property name="artifacts.mpsVcsPlatform" location="${build.dir}/artifacts/mpsVcsPlatform" />
   <property file="${artifacts.mpsBuild}/build.properties" prefix="import.mpsBuild" />
   <property name="mpsBootstrapCore.version.major" value="${import.mpsBuild.mpsBootstrapCore.version.major}" />
   <property name="mpsBootstrapCore.version.minor" value="${import.mpsBuild.mpsBootstrapCore.version.minor}" />
@@ -180,15 +181,15 @@
     </copy>
     <mkdir dir="${build.layout}/plugins/vcs-git" />
     <copy todir="${build.layout}/plugins/vcs-git">
-      <fileset dir="${artifacts.mpsVcs}/vcs-git" />
+      <fileset dir="${artifacts.mpsVcsPlatform}/vcs-git" />
     </copy>
     <mkdir dir="${build.layout}/plugins/mps-git4idea" />
     <copy todir="${build.layout}/plugins/mps-git4idea">
-      <fileset dir="${artifacts.mpsVcs}/mps-git4idea" />
+      <fileset dir="${artifacts.mpsVcsPlatform}/mps-git4idea" />
     </copy>
     <mkdir dir="${build.layout}/plugins/vcs-svn" />
     <copy todir="${build.layout}/plugins/vcs-svn">
-      <fileset dir="${artifacts.mpsVcs}/vcs-svn" />
+      <fileset dir="${artifacts.mpsVcsPlatform}/vcs-svn" />
     </copy>
     <mkdir dir="${build.layout}/plugins/mps-migration" />
     <copy todir="${build.layout}/plugins/mps-migration">
@@ -286,6 +287,7 @@
     <ant antfile="build/mpsBuild.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsTesting.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsTroveCollections.xml" inheritAll="false" useNativeBasedir="true" />
+    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsPlugins.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsDevKit.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsJavaCore.xml" inheritAll="false" useNativeBasedir="true" />
@@ -298,7 +300,6 @@
     <ant antfile="build/mpsDebuggerPlugin.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsExecutionPlugin.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsBuildUI.xml" inheritAll="false" useNativeBasedir="true" />
-    <ant antfile="build/mpsVcsPlatform.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsVcsStandaloneJar.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsVcs.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsMigrationCore.xml" inheritAll="false" useNativeBasedir="true" />

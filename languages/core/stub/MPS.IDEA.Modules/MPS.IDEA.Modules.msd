@@ -403,7 +403,6 @@
         <sourceRoot location="intellij.platform.util.progress.jar" />
         <sourceRoot location="intellij.platform.util.text.matching.jar" />
         <sourceRoot location="intellij.platform.util.ui.jar" />
-        <sourceRoot location="intellij.platform.vcs.jar" />
         <sourceRoot location="intellij.platform.vcs.core.jar" />
         <sourceRoot location="intellij.platform.vcs.dvcs.impl.shared.jar" />
         <sourceRoot location="intellij.platform.vcs.impl.shared.jar" />
@@ -825,7 +824,6 @@
       <library location="${mps_home}/lib/intellij.platform.util.progress.jar" />
       <library location="${mps_home}/lib/intellij.platform.util.text.matching.jar" />
       <library location="${mps_home}/lib/intellij.platform.util.ui.jar" />
-      <library location="${mps_home}/lib/intellij.platform.vcs.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.core.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.dvcs.impl.shared.jar" />
       <library location="${mps_home}/lib/intellij.platform.vcs.impl.shared.jar" />
