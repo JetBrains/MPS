@@ -779,10 +779,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -916,6 +912,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -1120,10 +1120,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1257,6 +1253,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -1485,10 +1485,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1622,6 +1618,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -1849,10 +1849,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1986,6 +1982,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />
@@ -2203,10 +2203,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -2340,6 +2336,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="base-projectional-1.0.0-jvm6.jar" />
         <fileset dir="${artifacts.jetpad}/jetpad/lib" includes="cell-1.0.0-jvm6.jar" />

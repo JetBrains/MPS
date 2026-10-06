@@ -844,8 +844,8 @@
                             <node concept="liA8E" id="3vYYl$GChaB" role="2OqNvi">
                               <ref role="37wK5l" to="qkt:~DataSink.set(com.intellij.openapi.actionSystem.DataKey,java.lang.Object)" resolve="set" />
                               <node concept="10M0yZ" id="3vYYl$GChaC" role="37wK5m">
-                                <ref role="1PxDUh" to="qkt:~LangDataKeys" resolve="LangDataKeys" />
-                                <ref role="3cqZAo" to="qkt:~LangDataKeys.RUN_CONTENT_DESCRIPTOR" resolve="RUN_CONTENT_DESCRIPTOR" />
+                                <ref role="1PxDUh" to="qkt:~ExecutionDataKeys" />
+                                <ref role="3cqZAo" to="qkt:~ExecutionDataKeys.RUN_CONTENT_DESCRIPTOR" />
                               </node>
                               <node concept="37vLTw" id="3vYYl$GChaD" role="37wK5m">
                                 <ref role="3cqZAo" node="3vYYl$GCjPp" resolve="descriptor" />

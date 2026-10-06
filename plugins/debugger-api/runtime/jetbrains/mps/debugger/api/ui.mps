@@ -280,8 +280,8 @@
               <node concept="liA8E" id="43U_o2NISHp" role="2OqNvi">
                 <ref role="37wK5l" to="qkt:~DataContext.getData(com.intellij.openapi.actionSystem.DataKey)" resolve="getData" />
                 <node concept="10M0yZ" id="43U_o2NISZI" role="37wK5m">
-                  <ref role="3cqZAo" to="qkt:~LangDataKeys.RUN_CONTENT_DESCRIPTOR" resolve="RUN_CONTENT_DESCRIPTOR" />
-                  <ref role="1PxDUh" to="qkt:~LangDataKeys" resolve="LangDataKeys" />
+                  <ref role="3cqZAo" to="qkt:~ExecutionDataKeys.RUN_CONTENT_DESCRIPTOR" />
+                  <ref role="1PxDUh" to="qkt:~ExecutionDataKeys" />
                 </node>
               </node>
             </node>

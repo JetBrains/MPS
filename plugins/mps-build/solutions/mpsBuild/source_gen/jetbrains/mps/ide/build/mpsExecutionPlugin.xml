@@ -1240,7 +1240,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -1287,7 +1286,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -1358,7 +1356,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -1405,7 +1402,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -1508,10 +1504,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1645,6 +1637,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -1712,7 +1708,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -1759,7 +1754,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -1850,10 +1844,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1987,6 +1977,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2058,7 +2052,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -2105,7 +2098,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -2211,10 +2203,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -2348,6 +2336,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2419,7 +2411,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -2466,7 +2457,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -2567,10 +2557,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -2704,6 +2690,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2765,7 +2755,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -2812,7 +2801,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -2898,10 +2886,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -3035,6 +3019,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3105,7 +3093,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -3152,7 +3139,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -3246,10 +3232,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -3383,6 +3365,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3487,7 +3473,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -3534,7 +3519,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -3619,10 +3603,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -3756,6 +3736,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3820,7 +3804,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -3867,7 +3850,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -3957,10 +3939,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -4094,6 +4072,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -4166,7 +4148,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -4213,7 +4194,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -4234,12 +4214,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.scopes.runtime.jar" />
         <fileset file="${artifacts.mpsTesting}/mps-testing/languages/languageDesign/jetbrains.mps.lang.test.junit5.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -4522,7 +4502,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -4569,7 +4548,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -4591,12 +4569,12 @@
         <fileset file="${artifacts.mpsTesting}/mps-testing/languages/languageDesign/jetbrains.mps.lang.test.junit5.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -4870,7 +4848,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.miglayout.swing.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.buffer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.http.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.analysis.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.bootstrap.jar" />
@@ -4917,7 +4894,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/swingx.jar" />
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
@@ -4925,12 +4901,12 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.logging.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.regexp.runtime.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit5.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />

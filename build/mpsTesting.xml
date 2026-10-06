@@ -1332,12 +1332,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.lang.smodel.query.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -1669,12 +1669,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.scopes.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.core.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/jetbrains.mps.baseLanguage.unitTest#1171932017138">
@@ -1792,12 +1792,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.core.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -2173,12 +2173,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.lang.smodel.query.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -2517,12 +2517,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.modelapi.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -2855,12 +2855,12 @@
         <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.core.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.generator.plan.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/jetbrains.mps.lang.test.generator.rt">
@@ -3033,12 +3033,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.typesystem.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -3402,12 +3402,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.typesystem.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -3759,12 +3759,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.typesystem.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -4101,12 +4101,12 @@
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.core.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/languageDesign/jetbrains.mps.lang.traceable.jar" />
         <fileset file="${artifacts.IDEA}/lib/ant/lib/ant.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -4510,10 +4510,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -4647,6 +4643,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/jetbrains.mps.lang.smodelTests">
@@ -4754,12 +4754,12 @@
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset dir="${artifacts.IDEA}/plugins/platform-vcs-plugin/lib/modules" includes="*.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.hamcrest.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.netty.codec.compression.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
@@ -5154,10 +5154,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -5291,6 +5287,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
       </classpath>
     </javac>
     <copy todir="${build.tmp}/java/out/jetbrains.mps.lang.test.launcher">

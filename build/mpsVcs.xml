@@ -1002,10 +1002,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1139,6 +1135,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -1364,10 +1364,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1501,6 +1497,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -1705,10 +1705,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -1842,6 +1838,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2046,10 +2046,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsoup.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jsvg.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit4.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.reflect.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.debug.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.slf4j.jar" />
@@ -2183,6 +2179,10 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
