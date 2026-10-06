@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,10 +135,10 @@ public final class ModuleDeleteHelper {
       unregisterGeneratorFromLanguage(generatorDescriptor);
     }
 
-    // owned generators are now "project modules", add owned generators back to the collection
-    // for further processing. Those part of the project need special treatment to get unregistered.
-    modules.addAll(ownedGenerators);
-    // while those in 'modules'
+    // owned generators go first: removeModule(language) drops their module loader entries silently, so the project would keep
+    // tracking them under the language descriptor file and never unregister its file listener. removeModule(generator) drops that
+    // file from the project descriptor, which is fine only because the language follows.
+    modules.addAll(0, ownedGenerators);
     for (SModule m : modules) {
       if (projectModulesWithNestedGenerators.contains(m)) {
         // FIXME it's odd to have if/else to unregister a module. I'd prefer unconditional facade.unregisterModule() for every module

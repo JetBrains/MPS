@@ -993,6 +993,17 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 // Mark the module as changed BEFORE removing it from the project so any
                 // pending in-memory state is persisted by the subsequent project save.
                 (m as? AbstractModule)?.setChanged()
+                // Same order as rollbackModulesRegisteredSince: removeModule(language) alone drops a generator
+                // LanguageProducer added with addModule without an event, which leaks its .mpl file listener.
+                // removeModule(generator) also drops the .mpl's project-descriptor entry; that is safe only
+                // because the language goes right after.
+                if (m is Language) {
+                    for (generator in m.ownedGenerators) {
+                        if (mpsProject.repository.getModule(generator.moduleReference.moduleId) != null) {
+                            mpsProject.removeModule(generator)
+                        }
+                    }
+                }
                 mpsProject.removeModule(m)
             }
             // o1: save outside the executeCommand block. Project save performs

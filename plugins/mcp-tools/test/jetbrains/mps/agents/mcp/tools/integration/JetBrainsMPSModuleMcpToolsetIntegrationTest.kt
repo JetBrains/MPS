@@ -271,15 +271,15 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         readOnRepo { myProject.projectModulesWithGenerators.map { it.moduleReference }.toSet() }
 
     /**
-     * A module the project still tracks after a rollback shows up in MPS's own log: every project-module listing
-     * reports a loader entry whose module is gone, and deleting the module's folder reports file listeners that
-     * were never released (MPS-40228 live review).
+     * A module the project still tracks after a rollback or delete shows up in MPS's own log: every project-module
+     * listing reports a loader entry whose module is gone, and deleting the module's folder reports file listeners
+     * that were never released (MPS-40228 live review).
      */
     private fun assertNoStaleModuleTracking(messages: List<String>) {
         val stale = messages.filter {
             it.contains("is not found in the project repository") || it.contains("have not been unregistered for the path")
         }
-        assertEquals("the project must not keep tracking rolled-back modules", emptyList<String>(), stale)
+        assertEquals("the project must not keep tracking removed modules", emptyList<String>(), stale)
     }
 
     @Test
@@ -1737,6 +1737,45 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertNull(myProject.projectModules.firstOrNull { it.moduleName == moduleName })
         }
         assertFalse("module directory should be deleted from disk: $moduleDirPath", moduleDir.exists())
+    }
+
+    @Test
+    fun `delete_module with deleteFiles of a language with a generator leaves no stale module tracking`() {
+        // LanguageProducer adds the generator with ProjectBase.addModule, so it has its own module-loader entry and
+        // a file listener on the language's .mpl. removeModule(language) alone dropped the generator without an
+        // event, and deleting the folder then warned "1 listener(s) have not been unregistered for the path".
+        val langName = "test.delete.lang${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(langName))
+        try {
+            val before = projectModuleRefs()
+            expectOk(createModule("language", langName, directory.toString(), withGenerator = true).toString())
+            val created = readOnRepo {
+                myProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
+            }
+            assertTrue("test precondition: a language and its generator: $created",
+                created.size == 2 && created.any { it is Language } && created.any { it is Generator })
+
+            val (response, messages) = captureLogMessages {
+                runTool(toolset) {
+                    it.mps_mcp_update_module(langName, operation = ModuleOperation.DELETE, deleteFiles = true)
+                }.also { readOnRepo { myProject.projectModules } }
+            }
+
+            assertNoStaleModuleTracking(messages)
+            val data = expectOk(response)
+            assertFalse("deleteFiles=true must not report a fileDeletionWarning: $response",
+                data.has("fileDeletionWarning"))
+            assertFalse("the language folder must be deleted: $directory", Files.exists(directory))
+            readOnRepo {
+                for (module in created) {
+                    assertNull("${module.moduleName} must be unregistered",
+                        myProject.repository.getModule(module.moduleReference.moduleId))
+                    assertFalse("the project must no longer track ${module.moduleName}", myProject.isProjectModule(module))
+                }
+            }
+        } finally {
+            deleteQuietly(directory)
+        }
     }
 
     @Test

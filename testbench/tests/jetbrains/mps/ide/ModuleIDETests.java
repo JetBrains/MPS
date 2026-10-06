@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2023 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import jetbrains.mps.refactoring.Renamer;
 import jetbrains.mps.smodel.Generator;
 import jetbrains.mps.smodel.Language;
 import jetbrains.mps.smodel.SModelStereotype;
+import jetbrains.mps.testbench.util.CachingAppender;
 import jetbrains.mps.util.FileUtil;
 import jetbrains.mps.util.Reference;
 import jetbrains.mps.vfs.IFile;
@@ -350,6 +351,42 @@ public abstract class ModuleIDETests extends ModuleInProjectTest {
       Assert.assertFalse(moduleSourceDir.exists());
       Assert.assertFalse(myProject.getProjectModules().contains(lang));
     });
+  }
+
+  @Test
+  public void deleteLanguageWithGeneratorAndFiles() {
+    String moduleName = getNewModuleName();
+    Reference<Language> langRef = new Reference<>();
+    Reference<Generator> generatorRef = new Reference<>();
+    invokeInCommand(() -> {
+      Language lang = new LanguageProducer(myProject).create(moduleName, getNewDirInProject(moduleName));
+      langRef.set(lang);
+      generatorRef.set(lang.getOwnedGenerators().iterator().next());
+    });
+    CachingAppender appender = new CachingAppender(CachingAppender.Level.WARN);
+    appender.attach();
+    try {
+      invokeInCommand(() -> {
+        @NotNull Language lang = langRef.get();
+        @NotNull Generator generator = generatorRef.get();
+        Assert.assertTrue(myProject.isProjectModule(generator));
+        deleteModule(lang, true);
+        CachingFile moduleSourceDir = (CachingFile) lang.getModuleSourceDir();
+        Assert.assertNotNull(moduleSourceDir);
+        moduleSourceDir.refresh(new DefaultCachingContext(true, true));
+        Assert.assertFalse(moduleSourceDir.exists());
+        Assert.assertFalse("The language stayed in the project", myProject.isProjectModule(lang));
+        Assert.assertFalse("The generator stayed in the project", myProject.isProjectModule(generator));
+        Assert.assertEquals(Collections.emptyList(), myProject.getProjectModules());
+      });
+    } finally {
+      appender.detach();
+    }
+    String log = appender.getText();
+    for (String staleTracking : new String[]{"have not been unregistered for the path", "is not found in the project repository",
+                                             "has not been registered in the project"}) {
+      Assert.assertFalse(log, log.contains(staleTracking));
+    }
   }
 
   @Test
