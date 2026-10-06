@@ -42,6 +42,7 @@
 /build/resources/help/
 /build/resources/JDK/
 /build/resources/openJDK
+/build/resources/__overlay__/
 classes
 classes_gen
 testclasses
