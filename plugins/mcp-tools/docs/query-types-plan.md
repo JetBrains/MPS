@@ -375,3 +375,44 @@ Suite run 4 (Phase D code before live verification part 2, plus the outside `ser
 - Cleanup: the probe solution deleted through `mps_mcp_update_module` DELETE (which also removed its `.mps/modules.xml` line), its two files unstaged from the index (MPS's VCS integration had added them), the empty folder removed. No scratch file remains in the worktree.
 
 Suite run 5 (final code): first attempt 1158 finished, 124 failed — every failure from a corrupted shared test index (`~/Library/Caches/JetBrains/MPSCmdLineTest/index/mps.propvalue`, "PersistentEnumerator storage corrupted" at JVM start), left by another session's suite run that stopped mid-test at 17:08; after the user deleted that index, 1158 finished, 0 failed, 0 ignored.
+
+## Phase E implementation (2026-10-06) — §E plus its share of §G and §H
+
+Scope taken: `LIST_CONCEPT_ASPECTS` (`JetBrainsMPSLanguageStructureMcpToolset.mps_mcp_list_concept_aspects`) gains the `appliesTo` pass (`appliesToTargets`: `IConceptAspect.getBaseConceptCollection` through `BHReflection`, the second condition of a two-node rule, `OverloadedOpRulesContainer`'s `operationConcept[].concept`) over the language's aspect models and its generators' template models, ahead of the existing find-usages pass, now `mentions`, on the aspect models only; each root carries `relation` and, for a pattern-only match, `pattern:true`; `includeInherited` seeds the hierarchy with the queried concept. Meta objects: new `TypesystemLanguageMeta`, `IConceptAspect` and the method id in `StructureLanguageMeta`, `ConceptReference.concept` in `SmodelLanguageMeta`. Tests (H10) in `JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest`: an unbuilt language with a generator, concepts A, B, A2 extends A, and the roots `infer_A` (body `conceptNode/B/`), `infer_A_pattern`, `compare_A_B`, `compare_patternA_A`, `replace_B_A` (an `InequationReplacementRule`), `ops_A` (an `OverloadedOpRulesContainer`), `infer_A2`, a `ConceptConstraints` for A and a `rules_A` mapping configuration with a reduction rule for A; `includeInherited` on A2 also requires lang.core's `BaseConcept` behavior as `appliesTo`. Docs: `list-concept-aspects.md` (result shape, `relation`, `pattern`, `targetsConcept`, scope and limits), `mps-language-analysis` "Inspecting Concept Aspects", test scenario 09.05. The index and `type-queries.md` are untouched.
+
+Deviations from §E:
+
+1. **The lookup works off declaration nodes.** The old code took each concept's `sourceNode`, which is `null` for a language that is not built (the runtime descriptor is hollow), and silently answered `[]` — the normal state while an agent authors a language, and the state of every test fixture, so §H10 could never have passed. The start declaration comes from `resolveConceptNodePreferringProject` (falling back to `resolveConcept` + `sourceNode` for a `c:` reference), its language from the declaration's model, and with `includeInherited` the hierarchy is walked with `StructureDeclarations.superConceptDeclarations`, adding `BaseConcept` for a `ConceptDeclaration` that extends nothing, as the runtime does. `GET_ALL_SUPERCONCEPTS` keeps the runtime walk.
+2. `Language.getGenerators()` instead of `getOwnedGenerators()`, which its Javadoc marks provisional.
+3. The second condition of a `ComparisonRule`/`InequationReplacementRule` is read through `IRuleWithTwoNodes.getSecondNodeCondition()` (abstract virtual, overridden by both) instead of the two links by hand.
+4. `pattern:true` only when *every* condition of the rule that resolves to the concept is a `PatternCondition`: a rule with a plain `ConceptReference` on one side and a pattern on the other applies to every instance through the first.
+5. `targetsConcept.fullyQualifiedName` is now `<language>.structure.<Name>`; it was the short name, the same as `name`. No script reads it.
+6. A root that cannot say what it is for — its concept is not valid (its language is not built, so it is no subconcept of anything and no behavior is called), or its behavior call throws (logged with the exception) — is named in an envelope warning; in an aspect model it is still listed as `mentions` where it references the concept, in a generator model not at all. Not tested: no cheap fixture for a not-built aspect language.
+7. H10's body reference is `conceptNode/B/` (`ConceptRefExpression`): `concept/B/` (`RefConcept_Reference`) is not an `Expression` and cannot stand in an `ExpressionStatement`.
+8. The operation runs in `executeBackgroundRead`, not on the EDT: the `appliesTo` pass loads every root of the swept models and calls behavior on each, which with `includeInherited` reaches lang.core. A `coroutineProgressMonitor` ends the sweep and the find-usages pass on cancellation or timeout, as in `opFindUsages`.
+9. A start declaration outside a `Language` module answers `[]` with a warning.
+
+Not taken: §E's limit that a root in the concept's own language is checked only against hierarchy concepts of that language stays (a rule in A's language for `BaseConcept` is not listed); documented.
+
+Scratch suite (the structure test class alone): run 1 failed both new tests on the fixture (deviation 7); run 2: 84 finished, 0 failed.
+
+### Implementation review round 1 (Opus) — nothing blocking
+
+Four SHOULD — the not-built-root warning was unreachable (an invalid concept is no subconcept of `IConceptAspect`, so nothing throws), the warning wrongly promised generator roots as `mentions`, test gaps (mixed pattern/plain rule, `supertypeNode`, `OverloadedOpRulesContainer`), and the sweep on the EDT — and ten NITs (a missing space, `rethrowIfCancellation`, a behavior call inside the catch, a double resolve, an unresolved-language warning, test imports and a name-collapsing map, a BaseConcept assertion that accepted any relation, doc wording, this section). All taken (deviations 6, 8, 9 and the H10 roots) except the cross-language check, which is the documented limit. Scratch run: 84 finished, 0 failed.
+
+Confirmed: method and compressed language ids, every meta id, virtual dispatch through `BHReflection.invoke0` on the interface concepts, declaration identity of `getBaseConceptCollection` results (including the `PatternCondition` path for an unbuilt language), `getGenerators`, hierarchy order and cycle safety, `appliesTo`-before-`mentions` preference, the collector's synchronization, both new tests failing on the old code.
+
+### Implementation review round 2 — settled
+
+`executeBackgroundRead` confirmed safe (no `McpUserException` on the path, `findUsagesWithFallback` already runs off the EDT in `opFindUsages`, nothing EDT-bound). One SHOULD — the background read could not be cancelled — and one NIT — move `relation=="appliesTo"` into the BaseConcept filter — taken.
+
+Suite run 1 (final code, before live verification): 1160 finished, 0 failed, 0 ignored.
+
+### Live verification (2026-10-06, MPS restarted from sources by the user at 18:23, classes from the final build)
+
+- `PlusExpression`: behavior, text gen and two intentions `appliesTo`; `BL_PlusExpression` (an `OverloadedOpRulesContainer`, the hand-written case) `appliesTo`; a third intention and `BaseLanguageEnhancements` (a migration script) `mentions`.
+- `ClassifierType`: 9 typesystem rules `appliesTo` with `pattern:true` — the boxing/unboxing subtyping rules (`int_unboxing`, `java_lang_String_extends_string`, …), which match a quoted `ClassifierType` shape and were absent from the old answer — plus 14 plain `appliesTo` rules; no warnings.
+- `ForEachStatement` (collections): the generator's `foreach` mapping configuration from `…generator.baseLanguage.template.post@generator` is `appliesTo`, as are `NodeFactories` `Default`, the data flow builder and `typeof_ForEachStatement`; `ConvertToSimpleForeach` (a `TypesystemQuickFix`) is `mentions`.
+- `ClassConcept` with `includeInherited`: 364 roots over 29 hierarchy concepts (117 `appliesTo`, 247 `mentions`), BaseConcept included, ~1 s wall clock, 236 KB to a temp file, no warnings.
+- An unbuilt scratch language under `$TMPDIR` (`Probe`, `SubProbe extends Probe`, an inference rule for `Probe` and a checking rule with a `PatternCondition` quoting a `Probe`): `Probe` → both rules `appliesTo`, the checking rule `pattern:true` (the old code answered `[]`); `SubProbe` with `includeInherited` → the same two through `Probe`, then lang.core's BaseConcept aspects. The language was deleted with `mps_mcp_update_module` DELETE (files and `.mps/modules.xml` entry gone).
+- `log/idea.log` for the window (18:24–18:28): no SEVERE, no `Action dispatch failed`, no "Could not read the base concepts" warning. Unrelated: `BehaviorRegistryImpl` "No language scratch.aspects.probe" during the blueprint insert (the quoted `Probe` instance's constructor, not this tool), and "1 listener(s) have not been unregistered" from the DELETE of a language with a generator — the known generator-removal listener leak, here reproduced on the `update_module DELETE` path.

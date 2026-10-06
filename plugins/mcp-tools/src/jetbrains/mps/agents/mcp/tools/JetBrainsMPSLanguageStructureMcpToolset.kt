@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools
 
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.languages.*
 import jetbrains.mps.agents.mcp.tools.references.*
 
 import com.google.gson.Gson
@@ -12,11 +13,14 @@ import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations
-import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.action.SNodeFactoryOperations
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import jetbrains.mps.smodel.behaviour.BHReflection
 import jetbrains.mps.smodel.language.LanguageRegistry
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.language.SConcept
@@ -26,6 +30,7 @@ import org.jetbrains.mps.openapi.language.SProperty
 import org.jetbrains.mps.openapi.language.SReferenceLink
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
+import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import java.util.*
 
@@ -1460,41 +1465,78 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
         docAnnotation.setProperty(PROP_DocumentedNodeAnnotation_Text, text)
     }
 
+    /** How a root found by LIST_CONCEPT_ASPECTS relates to the concept declaration it was found through. */
+    private class AspectMatch(val conceptDecl: SNode, val appliesTo: Boolean, val pattern: Boolean)
+
     private suspend fun mps_mcp_list_concept_aspects(
         conceptRef: String,
         includeInherited: Boolean = false
     ): String = withMpsProject("Listing concept aspects for '$conceptRef'${if (includeInherited) " with inherited" else ""}") { mpsProject ->
-        executeShortReadOnEdt(mpsProject) {
-            val startConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                ?: return@executeShortReadOnEdt errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
-
-            val hierarchy = mutableSetOf<SAbstractConcept>()
-            if (includeInherited) {
-                populateSuperConceptsAndInterfaces(startConcept, hierarchy)
-            } else {
-                hierarchy.add(startConcept)
+        // A background read: the appliesTo pass loads every root of the swept models and asks each
+        // one for its base concepts, too much for the EDT once includeInherited reaches lang.core.
+        // The monitor ends the sweep when the call is cancelled or times out, releasing the read.
+        val monitor = coroutineProgressMonitor()
+        executeBackgroundRead(mpsProject) {
+            val repository = mpsProject.repository
+            // Declaration nodes, not runtime concepts: a language edited but not yet built has a
+            // hollow runtime descriptor with no source node and no supers (StructureLanguageMeta).
+            val startDecl = resolveConceptNodePreferringProject(mpsProject, conceptRef) ?: run {
+                refreshRegistries(repository)
+                val concept = resolveConcept(repository, conceptRef)
+                    ?: return@executeBackgroundRead errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND)
+                concept.sourceNode?.resolve(repository) ?: return@executeBackgroundRead finalizeResult(
+                    "[]",
+                    warnings = listOf("Concept '${structureQualifiedName(concept)}' has no declaration node in the repository, so no aspect can be matched to it."),
+                )
             }
+            val hierarchy = if (includeInherited) conceptDeclarationHierarchy(startDecl, repository) else linkedSetOf(startDecl)
 
-            val resultsByModel = mutableMapOf<SModel, MutableMap<SNode, SAbstractConcept>>()
+            val resultsByModel = linkedMapOf<SModel, LinkedHashMap<SNode, AspectMatch>>()
+            val warnings = mutableListOf<String>()
+            val failedRoots = mutableListOf<String>()
+            val targetsByRoot = HashMap<SNode, Map<SNode, Boolean>>()
+            fun ownLanguage(decl: SNode) = decl.model?.module as? Language
+            // The language's own aspect models; templates quote and reference concepts throughout,
+            // so generator models are swept for appliesTo only.
+            fun aspectModels(language: Language) =
+                language.models.filter { !it.name.hasStereotype() && it.name.simpleName != "structure" }
+            fun generatorModels(language: Language) =
+                language.generators.flatMap { generator -> generator.models.filter { SModelStereotype.isGeneratorModel(it) } }
 
-            for (concept in hierarchy) {
-                val conceptNode = concept.sourceNode?.resolve(mpsProject.repository) ?: continue
-                val language = concept.language
-                val languageModule = language.sourceModuleReference.resolve(mpsProject.repository) ?: continue
-
-                val aspectModels = languageModule.models.filter { !it.name.hasStereotype() && it.name.simpleName != "structure" }
-                val aspectModelRefs = aspectModels.map { it.reference }.toSet()
-                val scope = filteredScope(mpsProject.repository, allowedModels = aspectModelRefs, allowedModules = null)
-
-                findUsagesWithFallback(scope, setOf(conceptNode), EmptyProgressMonitor()) { reference ->
+            if (ownLanguage(startDecl) == null) {
+                warnings.add("Concept '${startDecl.name}' is not declared in a language module, so it has no aspect models to search.")
+            }
+            for (decl in hierarchy) {
+                val language = ownLanguage(decl) ?: continue
+                for (model in aspectModels(language) + generatorModels(language)) {
+                    if (monitor.isCanceled) break
+                    for (root in model.rootNodes) {
+                        val targets = targetsByRoot.getOrPut(root) { appliesToTargets(root, failedRoots) }
+                        val pattern = targets[decl] ?: continue
+                        resultsByModel.getOrPut(model) { linkedMapOf() }.putIfAbsent(root, AspectMatch(decl, appliesTo = true, pattern = pattern))
+                    }
+                }
+            }
+            for (decl in hierarchy) {
+                val language = ownLanguage(decl) ?: continue
+                val aspectModelRefs = aspectModels(language).map { it.reference }.toSet()
+                val scope = filteredScope(repository, allowedModels = aspectModelRefs, allowedModules = null)
+                findUsagesWithFallback(scope, setOf(decl), monitor) { reference ->
                     val root = reference.sourceNode.containingRoot
                     val rootModel = root.model
                     if (rootModel != null && rootModel.reference in aspectModelRefs) {
                         synchronized(resultsByModel) {
-                            resultsByModel.getOrPut(rootModel) { mutableMapOf() }.putIfAbsent(root, concept)
+                            resultsByModel.getOrPut(rootModel) { linkedMapOf() }.putIfAbsent(root, AspectMatch(decl, appliesTo = false, pattern = false))
                         }
                     }
                 }
+            }
+            if (failedRoots.isNotEmpty()) {
+                warnings.add(
+                    "Could not ask ${failedRoots.size} root(s) which concept they are for (${failedRoots.take(5).joinToString()}" +
+                        "${if (failedRoots.size > 5) ", …" else ""}): their language is not built, or its behavior threw (idea.log has the exception). " +
+                        "Such a root in an aspect model is listed only where it references the concept, as 'mentions'; one in a generator model is not listed."
+                )
             }
 
             val dataArray = JsonArray()
@@ -1509,7 +1551,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 aspectModelObj.add("module", moduleObj)
 
                 val rootsArray = JsonArray()
-                for ((root, targetedConcept) in rootsInModel) {
+                for ((root, match) in rootsInModel) {
                     val rootObj = JsonObject()
                     rootObj.addProperty("name", root.name ?: root.presentation)
                     // h: do not fall back to root.presentation for the FQN. presentation is a
@@ -1520,10 +1562,13 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                     root.name?.let { rootObj.addProperty("fullyQualifiedName", "${model.name.longName}.$it") }
                     rootObj.addProperty("reference", PersistenceFacade.getInstance().asString(root.reference))
                     rootObj.addProperty("concept", root.concept.name)
+                    rootObj.addProperty("relation", if (match.appliesTo) "appliesTo" else "mentions")
+                    if (match.pattern) rootObj.addProperty("pattern", true)
 
+                    val targetedConcept = MetaAdapterByDeclaration.getConcept(match.conceptDecl)
                     val targetsObj = JsonObject()
                     targetsObj.addProperty("name", targetedConcept.name)
-                    targetsObj.addProperty("fullyQualifiedName", targetedConcept.name)
+                    targetsObj.addProperty("fullyQualifiedName", structureQualifiedName(targetedConcept))
                     targetsObj.addProperty("reference", PersistenceFacade.getInstance().asString(targetedConcept))
                     rootObj.add("targetsConcept", targetsObj)
 
@@ -1536,8 +1581,92 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 dataArray.add(modelResult)
             }
 
-            finalizeResult(dataArray.toString())
+            finalizeResult(dataArray.toString(), warnings = warnings)
         }
+    }
+
+    /**
+     * The concept declarations [root] is an aspect *for*, each mapped to whether it matches only
+     * through a `PatternCondition` (the rule applies to instances of that shape, not to every
+     * instance). The match is exact, as in MPS's own concept-aspect lookup: no subconcept logic.
+     *
+     * Every concept-aspect root (editor, constraints, behavior, typesystem rules, generator
+     * templates, …) answers `IConceptAspect.getBaseConceptCollection()`, the API the concept
+     * editor's aspect tabs are built on. Added by hand: the second condition of a comparison or
+     * replacement rule, which `getBaseConcept` does not cover, and `OverloadedOpRulesContainer`,
+     * which is no `IConceptAspect`. A root whose language is not built (its concept has no
+     * runtime, so it is no subconcept of anything) or whose behavior call throws answers nothing
+     * and is named in [failedRoots].
+     */
+    private fun appliesToTargets(root: SNode, failedRoots: MutableList<String>): Map<SNode, Boolean> {
+        val concept = root.concept
+        val label = "'${root.name ?: root.nodeId}' (${concept.name})"
+        if (!concept.isValid) {
+            failedRoots.add(label)
+            return emptyMap()
+        }
+        val targets = LinkedHashMap<SNode, Boolean>()
+        try {
+            if (concept.isSubConceptOf(StructureLanguageMeta.iConceptAspectConcept)) {
+                val bases = BHReflection.invoke0(root, StructureLanguageMeta.iConceptAspectConcept, StructureLanguageMeta.getBaseConceptCollectionId) as? List<*>
+                bases.orEmpty().filterIsInstance<SNode>().forEach { targets[it] = false }
+            }
+            if (concept.isSubConceptOf(TypesystemLanguageMeta.abstractRuleConcept)) {
+                val conditions = listOfNotNull(
+                    root.getChildren(TypesystemLanguageMeta.abstractRuleApplicableNodeLink).firstOrNull(),
+                    if (concept.isSubConceptOf(TypesystemLanguageMeta.iRuleWithTwoNodesConcept)) {
+                        BHReflection.invoke0(root, TypesystemLanguageMeta.iRuleWithTwoNodesConcept, TypesystemLanguageMeta.getSecondNodeConditionId) as? SNode
+                    } else null,
+                )
+                val patternOnly = LinkedHashMap<SNode, Boolean>()
+                for (condition in conditions) {
+                    val applicable = BHReflection.invoke0(
+                        condition, TypesystemLanguageMeta.applicableNodeConditionConcept, TypesystemLanguageMeta.getApplicableConceptId
+                    ) as? SNode ?: continue
+                    val isPattern = condition.concept.isSubConceptOf(TypesystemLanguageMeta.patternConditionConcept)
+                    patternOnly[applicable] = (patternOnly[applicable] ?: true) && isPattern
+                }
+                targets.putAll(patternOnly)
+            }
+            if (concept.isSubConceptOf(TypesystemLanguageMeta.overloadedOpRulesContainerConcept)) {
+                for (rule in root.getChildren(TypesystemLanguageMeta.overloadedOpRulesContainerRuleLink)) {
+                    for (operation in rule.getChildren(TypesystemLanguageMeta.abstractOverloadedOpsTypeRuleOperationConceptLink)) {
+                        operation.getReferenceTarget(SmodelLanguageMeta.conceptReferenceConceptLink)?.let { targets.putIfAbsent(it, false) }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            logger.warn("Could not read the base concepts of aspect root $label in ${root.model?.name?.longName}", e)
+            failedRoots.add(label)
+            return emptyMap()
+        }
+        return targets
+    }
+
+    /**
+     * [start] followed by its superconcepts and interfaces, breadth-first, read off the
+     * declaration nodes so it also works for a language that is not built. A concept that extends
+     * nothing gets `BaseConcept`, as at runtime.
+     */
+    private fun conceptDeclarationHierarchy(start: SNode, repository: SRepository): LinkedHashSet<SNode> {
+        val baseConcept = SNodeUtil.concept_BaseConcept.sourceNode?.resolve(repository)
+        val hierarchy = linkedSetOf(start)
+        val queue = ArrayDeque(listOf(start))
+        while (queue.isNotEmpty()) {
+            val decl = queue.removeFirst()
+            val supers = StructureDeclarations.superConceptDeclarations(decl).toMutableList()
+            if (baseConcept != null && decl != baseConcept &&
+                decl.concept.isSubConceptOf(StructureLanguageMeta.conceptDeclarationConcept) &&
+                decl.getReference(StructureLanguageMeta.conceptDeclarationExtendsLink) == null
+            ) {
+                supers.add(0, baseConcept)
+            }
+            for (superDecl in supers) {
+                if (hierarchy.add(superDecl)) queue.add(superDecl)
+            }
+        }
+        return hierarchy
     }
 
     fun populateSuperConceptsAndInterfaces(

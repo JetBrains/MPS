@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.languages
 
 
+import jetbrains.mps.core.aspects.behaviour.SMethodIdV2
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 
 // jetbrains.mps.lang.structure meta objects, used to read a concept's properties and links off its
@@ -21,6 +22,18 @@ internal object StructureLanguageMeta {
         structureLanguageId, structureModelId, 0x1103556dcafL,
         "jetbrains.mps.lang.structure.structure.InterfaceConceptDeclaration"
     )
+
+    internal val iConceptAspectConcept = MetaAdapterFactory.getInterfaceConcept(
+        structureLanguageId, structureModelId, 0x24614259e94f0c84L,
+        "jetbrains.mps.lang.structure.structure.IConceptAspect"
+    )
+
+    /**
+     * `IConceptAspect.getBaseConceptCollection()`: the concept declarations an aspect root is for.
+     * The compressed language id is 0xc72da2b97cce4447 xor 0x8389f407dc1158b7.
+     */
+    internal val getBaseConceptCollectionId =
+        SMethodIdV2.create("getBaseConceptCollection", 5270353093116013036L, 0x44a456bea0df1cf0L)
 
     internal val propertyDeclarationLink = MetaAdapterFactory.getContainmentLink(
         structureLanguageId, structureModelId, 0x1103553c5ffL, 0xf979c3ba6cL, "propertyDeclaration"
