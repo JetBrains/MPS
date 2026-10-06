@@ -8,6 +8,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import jetbrains.mps.editor.runtime.impl.cellActions.CommentUtil
+import jetbrains.mps.project.modules.LanguageProducer
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -371,6 +372,79 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("$nested", 2, nested.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
     }
 
+    @Test
+    fun `a constraints problem names the constraints root that reported it`() {
+        // An array literal may only initialize a variable of array type (ArrayLiteral_Constraints' canBeChild).
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        parseClass(model, CONSTRAINED_CODE)
+        var rootRef: String? = null
+        executeCommand {
+            val root = model.rootNodes.single { it.name == "Constrained" }
+            val fields = root.children.filter { it.concept.name == "FieldDeclaration" }.associateBy { checkNotNull(it.name) }
+            val literal = fields.getValue("a").children.single { it.containmentLink?.name == "initializer" }
+            assertEquals("ArrayLiteral", literal.concept.name)
+            val b = fields.getValue("b")
+            val initializer = b.children.single { it.containmentLink?.name == "initializer" }
+            val link = checkNotNull(initializer.containmentLink)
+            b.removeChild(initializer)
+            literal.parent!!.removeChild(literal)
+            b.addChild(link, literal)
+            rootRef = PersistenceFacade.getInstance().asString(root.reference)
+        }
+
+        assertRuleReported(checkNotNull(rootRef), "jetbrains.mps.baseLanguage.constraints", "ArrayLiteral_Constraints")
+    }
+
+    @Test
+    fun `a scope problem names the constraints root whose search scope rejected the reference`() {
+        // `extends` is pointed at a concept of a second language the test language's structure model does not import.
+        val derivedRef = createConceptRoot("ScopeDerived")
+        val otherLangName = "test.otherlang${System.nanoTime()}"
+        val otherDir = createDirInProject(otherLangName)
+        var otherStructureModel: SModel? = null
+        executeCommand {
+            otherStructureModel = LanguageProducer(myProject).withGenerator(false).create(otherLangName, otherDir)
+                .models.single { it.name.longName.endsWith(".structure") }
+        }
+        val created = runTool(JetBrainsMPSLanguageStructureMcpToolset()) {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{ "structureModelRef": "${modelRefOf(checkNotNull(otherStructureModel))}", "conceptsJson": [ { "name": "OutOfScopeBase" } ] }""",
+            )
+        }
+        assertTrue("setup: $created", JsonParser.parseString(created).asJsonObject.get("ok").asBoolean)
+        executeCommand {
+            val derived = checkNotNull(PersistenceFacade.getInstance().createNodeReference(derivedRef).resolve(myProject.repository))
+            val extends = derived.concept.referenceLinks.single { it.name == "extends" }
+            derived.setReferenceTarget(extends, checkNotNull(otherStructureModel).rootNodes.single { it.name == "OutOfScopeBase" })
+        }
+
+        assertRuleReported(derivedRef, "jetbrains.mps.lang.structure.constraints", "ConceptDeclaration_Constraints")
+    }
+
+    /** Checks [rootRef], expects a problem whose `rules` name the root [rule] of model [ruleModel], and that every `rules` entry resolves. */
+    private fun assertRuleReported(rootRef: String, ruleModel: String, rule: String) {
+        val response = check(rootRef)
+        assertFalse("the root has problems: $response", JsonParser.parseString(response).asJsonObject.get("data") == JsonPrimitive("no problems found"))
+        val problems = allProblems(response)
+        val rules = problems.flatMap { problem -> problem.getAsJsonArray("rules")?.map { it.asJsonObject }.orEmpty() }.filter { entry ->
+            readOnRepo {
+                PersistenceFacade.getInstance().createNodeReference(entry.get("ruleReference").asString).resolve(myProject.repository)
+                    ?.model?.name?.longName == ruleModel
+            }
+        }
+        assertTrue("a problem is reported by a root of $ruleModel: $problems", rules.isNotEmpty())
+        assertTrue("$rules", rules.any { it.get("rule").asString == rule })
+        assertRulesResolve(problems)
+    }
+
+    /** Every problem of a check report: each node's own, and those filed under its `properties[]` and `references[]`. */
+    private fun allProblems(response: String): List<JsonObject> = payloadArrayFromOkData(response).map { it.asJsonObject }.flatMap { node ->
+        val features = listOf("properties", "references").flatMap { key -> node.getAsJsonArray(key)?.map { it.asJsonObject }.orEmpty() }
+        (listOf(node) + features).flatMap { holder -> holder.getAsJsonArray("problems")?.map { it.asJsonObject }.orEmpty() }
+    }
+
     /** Every `rules` entry names a rule root that resolves, with a non-null `rule` and the statement inside it. */
     private fun assertRulesResolve(problems: List<JsonObject>) {
         for (rule in problems.flatMap { problem -> problem.getAsJsonArray("rules")?.map { it.asJsonObject }.orEmpty() }) {
@@ -492,6 +566,7 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; " +
                 "static <T> java.util.List<T> wrap(T t) { return null; } java.util.List<String> w = wrap(\\\"a\\\"); }"
         const val BAD_CODE = "public class Bad { int x = \\\"s\\\"; int y = \\\"t\\\"; }"
+        const val CONSTRAINED_CODE = "public class Constrained { public int[] a = {1}; public int b = 0; }"
         const val INTEGER_TYPE = "jetbrains.mps.baseLanguage.structure.IntegerType"
         const val LONG_TYPE = "jetbrains.mps.baseLanguage.structure.LongType"
         const val CLASSIFIER_TYPE = "jetbrains.mps.baseLanguage.structure.ClassifierType"

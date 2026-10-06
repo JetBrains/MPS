@@ -1,6 +1,6 @@
 # Type queries for agents — `mps_mcp_query_types`, `GET_EXPECTED_TYPE`, rule-aware problem reports
 
-Status: plan, 2026-10-05, settled after two Opus review rounds (recorded at the end). Builds on `query-nodes-get-type-plan.md` (GET_TYPE, implemented, uncommitted).
+Status: plan, 2026-10-05, settled after two Opus review rounds (recorded at the end); phases A–E implemented, and §G/§H closed by a final audit on 2026-10-06 (the last section). Builds on `query-nodes-get-type-plan.md` (GET_TYPE, implemented).
 
 ## Motivation
 
@@ -416,3 +416,34 @@ Suite run 1 (final code, before live verification): 1160 finished, 0 failed, 0 i
 - `ClassConcept` with `includeInherited`: 364 roots over 29 hierarchy concepts (117 `appliesTo`, 247 `mentions`), BaseConcept included, ~1 s wall clock, 236 KB to a temp file, no warnings.
 - An unbuilt scratch language under `$TMPDIR` (`Probe`, `SubProbe extends Probe`, an inference rule for `Probe` and a checking rule with a `PatternCondition` quoting a `Probe`): `Probe` → both rules `appliesTo`, the checking rule `pattern:true` (the old code answered `[]`); `SubProbe` with `includeInherited` → the same two through `Probe`, then lang.core's BaseConcept aspects. The language was deleted with `mps_mcp_update_module` DELETE (files and `.mps/modules.xml` entry gone).
 - `log/idea.log` for the window (18:24–18:28): no SEVERE, no `Action dispatch failed`, no "Could not read the base concepts" warning. Unrelated: `BehaviorRegistryImpl` "No language scratch.aspects.probe" during the blueprint insert (the quoted `Probe` instance's constructor, not this tool), and "1 listener(s) have not been unregistered" from the DELETE of a language with a generator — the known generator-removal listener leak, here reproduced on the `update_module DELETE` path.
+
+## Phase G and H (2026-10-06) — final audit of §G and §H
+
+Phases A–E each did their share of §G and §H, so this phase is an audit against the tree plus the gaps it found. Every §G bullet and §H items 1–11 are in place (§H10 in `JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest`, the rest in `JetBrainsMPSTypesMcpToolsetIntegrationTest`); the three skill catalogs are identical and `validate_skill_catalog.py` passes on the blueprint tree. Byte headroom left: 67 B in `type-queries.md` (12221 of 12288 B), 15 B in `mcp-tools-index.md` (17393 of 17408 B) — a later addition to either needs a trim first.
+
+Changes:
+
+1. Test `a constraints problem names the constraints root that reported it`: `public class Constrained { public int[] a = {1}; public int b = 0; }`, then the `ArrayLiteral` is moved onto `b`, which `ArrayLiteral_Constraints`' canBeChild rejects (an array literal initializes only an array-typed variable); the problem's `rules` name `ArrayLiteral_Constraints` in `jetbrains.mps.baseLanguage.constraints` (the presentation fallback, deviation C4), and every `rules` entry of the root resolves.
+2. Test `a scope problem names the constraints root whose search scope rejected the reference`: a concept's `extends` re-pointed with `setReferenceTarget` at a concept of a second language the structure model does not import (the fixture under which `mps_mcp_update_node` refuses the bare name as out of scope); the out-of-scope problem's `rules` name `ConceptDeclaration_Constraints` in `jetbrains.mps.lang.structure.constraints`. With 1 this closes Phase C's "Not covered by tests" line but for the clean module verdict. The assertion reads every `problems` array of the report: a problem about a reference or property is filed under that `references[]`/`properties[]` entry, not the node's (`nodeWithProblemsJsonObject`). Two earlier attempts went wrong: a parsed `java.util.List` is in scope (the parse tool adds the JDK dependency and the model import, `JavaParseResolver.ensureJDKDependency` / `updateModelDependencies`), and a first version of the helper read only node-level `problems`, so the re-pointed fixtures looked unreported. Phase C's "produces none deterministically" likely had the same cause.
+3. Docs: `analysis-tools/overview.md` names `mps_mcp_query_types` among the tools with type-checked scalar parameters and inline results; `mps-language-analysis` qualifies "the full editor for the `targetsConcept`" with `relation: appliesTo`; `check-root-node-problems-output.md` says a property's or reference's problems sit in its own `problems`; `mps-aspect-constraints` workflow step 6 names the `rules` of a constraints or scope problem and `uncheckedSubtrees` (outside §G, taken from review round 1).
+
+Not taken, as recorded in their phases: the warning on a clean module verdict (C; a fresh module is not guaranteed clean), the slice fixpoint (D1), the not-built aspect language warning (E6). Out of §G: `INVALID_JSON` (Phase A's live check) is still undocumented, and `test_scenarios/MPS_MCP_FULL_TEST_SCENARIO` has no step for `mps_mcp_query_types` or `GET_TYPE`/`GET_EXPECTED_TYPE`.
+
+### Implementation review round 1 (Opus) — nothing blocking
+
+Completeness confirmed item by item against the code (defaults, key sets, tool descriptions, byte caps, catalogs, suite registration), no stale docs found. The reviewer traced the constraints test end to end (the parser's `ArrayLiteral`, the breaking node set on every failure, `CanBeChildFailedReportItem` as a `RuleIdFlavouredItem`, `concept.name + "_Constraints"` as the presentation) and found why the `java.util.List` fixture is in scope (change 2). SHOULD taken: this section. NITs taken: `rule` pinned to `ArrayLiteral_Constraints`, the unexplained environment fact moved from a code comment to this section, a `no problems found` answer asserted against before reading the problems. The reviewer's proposal of the `extends` fixture for scope `rules` first seemed to fail (change 2).
+
+Scratch runs of the types test class alone: the `java.util.List` fixture failed (the only problem was a `check_StringTypeClassifierType` info), the re-pointed classifier failed (no problems — read with the node-level-only helper, change 2), the constraints test passed (16 finished, 0 failed), the `extends` fixture failed (17 finished, 1 failed: it alone).
+
+Suite run 1 (constraints test, before the scope test came back): 1165 finished, 0 failed, 0 ignored.
+
+### Implementation review round 2 — one SHOULD
+
+Round-1 fixes confirmed. SHOULD taken: the scope fixtures were not unreported — `OutOfScopeReferenceReportItem` targets its reference link (`ReferenceReportItem.getConceptFeature`), so the problem sits in `references[extends].problems`, which the helper skipped; the helper now reads node, property and reference `problems` alike (also for `assertRulesResolve`), and the scope test is back (change 2). NITs taken: "may carry" in `mps-aspect-constraints` (no `rules` when the reference has no scope provider), property validators named there, and a clause in `check-root-node-problems-output.md` saying where a property's or reference's problems sit. Confirmed by printing the nodes: `statement` for a canBeChild failure is the `ConstraintFunction_CanBeAChild` node, for a scope problem the `ConstraintFunction_ReferentSearchScope_Scope` node. Scratch run with the scope test: 17 finished, 0 failed.
+
+### Implementation review round 3 — settled
+
+Determinism confirmed (a fresh project per test, `nanoTime`-named languages, no import added by `setReferenceTarget`), the plan section checked against the source, catalogs byte-identical. Two plan NITs taken (change 3 lists the `check-root-node-problems-output.md` sentence; the scratch-run line names the node-level-only helper).
+
+Suite run 2 (final code, both new tests among them): 1166 finished, 0 failed, 0 ignored.
+

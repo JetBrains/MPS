@@ -62,7 +62,7 @@ Each row names the file(s) for one job. Read them — two files in one parallel 
 3. For each concept to constrain, create one `ConceptConstraints` root (`mps_mcp_create_root_node`); set `concept` ref. Minimal blueprint and validated FQN/c-ref in `references/concept-roots.md`.
 4. Add `NodePropertyConstraint` / `NodeReferentConstraint` / `canBe*` children as needed. For inherited scopes, also add a `getScope` method to the owning ancestor's `ConceptBehavior` (see `mps-aspect-behavior`).
 5. Write bodies in BaseLanguage + smodel — follow the `mps-model-manipulation` skill for smodel / collections / closures syntax. Prefer `mps_mcp_parse_java_and_insert` for the BaseLanguage skeleton, then drop in scope / constraint-specific concepts via MCP.
-6. Validate with `mps_mcp_check_root_node_problems` and rebuild the language.
+6. Validate with `mps_mcp_check_root_node_problems` and rebuild the language. On a sandbox node, a constraints or scope problem may carry `rules`: `ruleReference` is the constraints root that reported it (e.g. `Foo_Constraints`), `statement` the failing `canBe*`, property or scope function inside it. A scope or property problem is listed in that reference's or property's own `problems`, not the node's. Commented-out sandbox code is not constraints-checked (`uncheckedSubtrees`).
 
 ## Related Skills
 

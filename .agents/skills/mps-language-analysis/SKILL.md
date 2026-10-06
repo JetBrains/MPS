@@ -38,7 +38,7 @@ Use `mps_mcp_query_structure` with `LIST_CONCEPT_ASPECTS` to find associated def
 * **`relation`**: `appliesTo` marks a root that is *for* the concept (its editor, a rule applicable to it); `mentions` a root that only references it. `pattern: true` marks a rule that matches the concept through a pattern, so only instances of that shape. Details: `references/structure-operation-api/list-concept-aspects.md` in the `mps-aspect-structure-concepts` skill root after loading that companion skill from the same origin.
 * **Inherited Aspects**: set `includeInherited: true` to add the aspects of ancestors (superconcepts/interfaces); `targetsConcept` says which concept each root was found through.
 * **Editor Analysis**:
-    * **ConceptEditorDeclaration**: defines the full editor for the `targetsConcept`.
+    * **ConceptEditorDeclaration**: with `relation: appliesTo`, the full editor for the `targetsConcept`.
     * **EditorComponentDeclaration**: defines reusable presentation pieces.
     * Check the `editor` model in the response to identify available editors.
 
