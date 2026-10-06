@@ -8,6 +8,7 @@ import com.google.gson.JsonParser
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.testFramework.PlatformTestUtil
 import java.io.File
 import java.util.Collections
 import java.nio.file.Files
@@ -1777,6 +1778,89 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             deleteQuietly(directory)
         }
     }
+
+    /** What the IDE writes to `.mps/modules.xml` for the project's current module list. */
+    private fun savedModulesXml(): String {
+        myProject.save()
+        PlatformTestUtil.saveProject(myProject.project)
+        return File(myProject.projectFile, ".mps/modules.xml").readText()
+    }
+
+    /**
+     * A language-owned generator lives in its language's `.mpl`, so its descriptor folder is the language folder.
+     * `ProjectBase.removeModule(generator)` also drops that `.mpl` from `modules.xml` when the generator has a
+     * module-loader entry of its own, which `withGenerator` gives it and `create_module(type=generator)` does not.
+     */
+    private fun assertDeleteOfOwnedGeneratorIsRefused(
+        deleteFiles: Boolean,
+        generatorViaCreateModule: Boolean = false,
+        byReference: Boolean = false,
+    ) {
+        val langName = "test.delete.owned.gen${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(langName))
+        val mpl = directory.resolve("$langName.mpl")
+        try {
+            expectOk(createModule("language", langName, directory.toString(),
+                withGenerator = !generatorViaCreateModule).toString())
+            if (generatorViaCreateModule) {
+                expectOk(runTool(toolset) {
+                    it.mps_mcp_create_module("generator", "ignored", "", null, langName, false, false, false)
+                })
+            }
+            val (language, generator) = readOnRepo {
+                val lang = myProject.projectModules.filterIsInstance<Language>().single { it.moduleName == langName }
+                lang to lang.ownedGenerators.single()
+            }
+            val target = readOnRepo {
+                if (byReference) PersistenceFacade.getInstance().asString(generator.moduleReference) else generator.moduleName!!
+            }
+            assertTrue("test precondition: modules.xml lists $mpl", savedModulesXml().contains("$langName.mpl"))
+            val mplBefore = Files.readAllBytes(mpl)
+            val keptFolders = listOf(directory.resolve("models"), directory.resolve("generator"))
+            keptFolders.forEach { assertTrue("test precondition: $it", Files.isDirectory(it)) }
+
+            val (response, messages) = captureLogMessages {
+                runTool(toolset) {
+                    it.mps_mcp_update_module(target, operation = ModuleOperation.DELETE, deleteFiles = deleteFiles)
+                }.also { readOnRepo { myProject.projectModules } }
+            }
+            val modulesXml = savedModulesXml()
+
+            assertTrue("the language folder must survive: $response", Files.isDirectory(directory))
+            assertTrue("the language descriptor must survive: $response", Files.isRegularFile(mpl))
+            keptFolders.forEach { assertTrue("$it must survive: $response", Files.isDirectory(it)) }
+            assertArrayEquals("the language descriptor must not be rewritten: $response", mplBefore, Files.readAllBytes(mpl))
+            readOnRepo { assertTrue("$langName must stay a project module", language in myProject.projectModules) }
+            assertTrue("modules.xml must still list $mpl: $response\n$modulesXml", modulesXml.contains("$langName.mpl"))
+            assertNoStaleModuleTracking(messages)
+
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertEquals("a language-owned generator cannot be deleted on its own: $response",
+                "INVALID_REQUEST", obj.get("code")?.asString)
+            val error = obj.get("error").asString
+            assertTrue("the error must name the language to delete instead: $error", error.contains("'$langName'"))
+            readOnRepo {
+                assertSame("the refused generator must stay registered", generator,
+                    myProject.repository.getModule(generator.moduleReference.moduleId))
+                assertTrue("the language must still declare the generator",
+                    language.moduleDescriptor!!.generators.any { it.moduleReference == generator.moduleReference })
+            }
+        } finally {
+            deleteQuietly(directory)
+        }
+    }
+
+    @Test
+    fun `delete_module refuses a language-owned generator`() =
+        assertDeleteOfOwnedGeneratorIsRefused(deleteFiles = false)
+
+    @Test
+    fun `delete_module with deleteFiles refuses a language-owned generator`() =
+        assertDeleteOfOwnedGeneratorIsRefused(deleteFiles = true)
+
+    @Test
+    fun `delete_module with deleteFiles refuses a generator added by create_module, addressed by reference`() =
+        assertDeleteOfOwnedGeneratorIsRefused(deleteFiles = true, generatorViaCreateModule = true, byReference = true)
 
     @Test
     fun `delete_module returns NOT_FOUND for unknown module`() {

@@ -2,6 +2,14 @@
 
 Revision 4 (settled: Reviewer1 LGTM in round 3 once 1.5c was fixed; the round-3 non-blocking findings are applied too). Round 1 (Reviewer1): 3 blocking and 9 non-blocking findings, all adopted; the review confirmed the root-cause analysis. Round 2: 1 blocking finding (the round-1 B2 premise was wrong, because `resolveModule` is project-only) and 7 non-blocking findings, all adopted. Round 3: 1 blocking finding (1.5c could pass vacuously) and 5 non-blocking findings, all adopted.
 
+## Interim guard (in place)
+Until Phases 1-2 land, `deleteModule` refuses a non-standalone generator with `INVALID_REQUEST` and changes
+nothing (`refuseOwnedGeneratorDelete`). Phase 2 removes that refusal, replaces the refusal tests
+(`assertDeleteOfOwnedGeneratorIsRefused` in `JetBrainsMPSModuleMcpToolsetIntegrationTest`) with T1-T4, and
+rewrites the DELETE line of the `mps_mcp_update_module` description. While the guard is in place, T1-T4 run before
+Phase 2 are red because of the refusal, not the damage described below; confirm "red today" against the code from
+before the guard.
+
 ## Live reproduction (MPS 261, started from source, `261/vaclav/MCP2` at `bf45a2caddc8`)
 All four items of the report reproduce as described. Scratch languages were created with
 `create_module(type=language, withGenerator=true)` under `/private/tmp/m40232p/` in the

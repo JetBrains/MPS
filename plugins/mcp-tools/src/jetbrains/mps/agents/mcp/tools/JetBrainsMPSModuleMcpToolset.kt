@@ -709,7 +709,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         - RENAME (default): renames the module (Solution / Language / DevKit). `newName` must be a valid Java-package qualified name. Generator modules cannot be renamed through this tool; rename the parent Language instead (the rename cascades into owned generators). Returns the module info envelope plus optional `renameWarnings` / `renameCriticalProblems` arrays. See `mps-aspect-accessories/references/module-rename.md` for the cascade behavior, in-project-only reference rewrites, and the warnings semantics.
         - CHANGE_VIRTUAL_FOLDER: changes the Project View virtual folder of the module. `newName` is the new folder path (e.g. "Group/Subgroup").
         - SYNC_VERSION: derives the **language module's own** version from its migration scripts and writes it — the headless equivalent of MPS's "Correct Language Version" action (Language modules only; every other module kind is rejected). Whenever a versioned script exists, the version becomes `max(fromVersion) + 1` over the `migration` aspect's scripts (`MigrationScript` / `PureMigrationScript` roots that have a `fromVersion`), which is the only value the migration checker and generator accept; it is never set directly, so `newName` must be omitted. Idempotent: repeating it is a no-op (`changed:false`). Both `MigrationScript` and `PureMigrationScript` created through a factory-running MCP write tool already bump the version themselves via their node factory; use this operation after editing, deleting, or copying a script (a copy duplicates its source's `fromVersion`), and whenever the checker or the generator reports a language-version mismatch — that mismatch's "Set correct language version" quick fix (`FixLanguageVersion`) is an explicit, non-auto-applicable alternative via `mps_mcp_apply_intention`. Without a `migration` aspect or without versioned scripts nothing is derived and the version is left alone (`note` says why). Lowering happens when a trailing script was deleted and is reported in `warnings`, naming any module whose recorded used-language version is now ahead of the language. Consumer-side `usedLanguages[].version` stamps are never touched (refreshing them would mark pending migrations as already applied). Returns the module info envelope plus `languageVersion`, `previousLanguageVersion`, `changed`, `maxFromVersion` (absent when no script has a version), `migrationUnitCount`, `migrationProblems` (`[{unit, reference, concept, problem}]` — scripts without a version, several scripts for one version, a missing version in the sequence; SYNC_VERSION does not fix these: correct the script's `fromVersion`, then sync again), and — when the compiled language runtime disagrees with the descriptor — `runtimeLanguageVersion`, `runtimeStale:true` and `runtimeRecoveryAction`: the migration executor reads the version off the *generated* `LanguageRuntime`, so a new version only takes effect for migrations after the language module is rebuilt (`mps_mcp_alter_nodes` MAKE with `rebuild=true`). No make is performed here. See `mps-aspect-migrations/references/form-selection.md`.
-        - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk.
+        - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk. A generator declared in its language's `.mpl` (every generator that is not a standalone module) is refused with INVALID_REQUEST and nothing changes; DELETE its language to remove both.
     """
     )
     suspend fun mps_mcp_update_module(
@@ -978,9 +978,14 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         // Capture the descriptor file's parent BEFORE removing the module: after
         // removeModule() the descriptor wiring may be torn down.
         var moduleDir: IFile? = null
+        var refusal: String? = null
         withModalTimeoutOnEdt {
             mpsProject.repository.modelAccess.executeCommand {
                 val m = resolveModule(mpsProject, moduleName) ?: return@executeCommand
+                if (m is Generator && !m.moduleDescriptor.isStandaloneModule) {
+                    refusal = refuseOwnedGeneratorDelete(m)
+                    return@executeCommand
+                }
                 // Record the target up front; the rest of the block is the actual removal
                 // sequence and shouldn't be interrupted by bookkeeping assignments.
                 removed = m
@@ -1016,6 +1021,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 mpsProject.save()
             }
         }
+        refusal?.let { return@withMpsProject it }
         if (removed == null) {
             return@withMpsProject errJson("Module '$moduleName' not found", McpErrorCode.NOT_FOUND)
         }
@@ -1051,6 +1057,24 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
             }
         }
         okJson(payload)
+    }
+
+    /**
+     * A language-owned generator has no descriptor file of its own: its `descriptorFile` is its language's `.mpl`,
+     * so `descriptorFile.parent` is the language folder. When the generator has its own module-loader entry
+     * (created by LanguageProducer or loaded from disk), `ProjectBase.removeModule(generator)` also drops the `.mpl`
+     * from the project descriptor, so the surviving language leaves the project on the next save. Either way the
+     * `.mpl` still declares the generator, which comes back when the language reloads. Deleting only the generator
+     * needs the core `ProjectBase.removeModule` fix in `plugins/mcp-tools/docs/mps-40232-delete-generator-plan.md`.
+     */
+    private fun refuseOwnedGeneratorDelete(generator: Generator): String {
+        val languageName = generator.moduleDescriptor.sourceLanguage.moduleName
+        return errJson(
+            "'${generator.moduleName}' is a generator of language '$languageName' and is declared in that " +
+                "language's descriptor file, so it cannot be deleted on its own; nothing was changed. " +
+                "To remove the language together with its generators, DELETE the language '$languageName'.",
+            McpErrorCode.INVALID_REQUEST,
+        )
     }
 
     @McpTool
