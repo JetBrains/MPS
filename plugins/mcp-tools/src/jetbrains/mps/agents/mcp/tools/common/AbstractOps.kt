@@ -202,7 +202,8 @@ abstract class AbstractOps : McpToolset {
                 "the language-aspect descriptor classes on disk are still stale until a clean " +
                 "rebuild.)"
         private val GSON = Gson()
-        private val PRETTY_GSON = GsonBuilder().setPrettyPrinting().create()
+        // serializeNulls: the inline form keeps `"type": null`, so the temp-file form must too.
+        private val PRETTY_GSON = GsonBuilder().setPrettyPrinting().serializeNulls().create()
 
         // Shared by all MCP toolset instances: a file created by one toolset may be consumed by another.
         private val createdTempJsonFiles = ConcurrentHashMap.newKeySet<String>()

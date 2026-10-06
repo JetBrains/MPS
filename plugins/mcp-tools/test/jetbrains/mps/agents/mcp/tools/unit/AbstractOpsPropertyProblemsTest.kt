@@ -115,6 +115,8 @@ class AbstractOpsPropertyProblemsTest {
 
         fun saveToTempFileForTest(json: String) = saveToTempFile(json)
 
+        fun finalizeResultForTest(json: String, maxInlineBytes: Int) = finalizeResult(json, maxInlineBytes)
+
         fun errJsonForTest(
             message: String?,
             code: AbstractOps.McpErrorCode? = null,
@@ -583,6 +585,19 @@ class AbstractOpsPropertyProblemsTest {
 
         assertTrue(json.orEmpty().contains("\"ok\""))
         assertFalse(file.exists())
+    }
+
+    @Test
+    fun tempFileResultKeepsTheNullMembersOfTheInlineForm() {
+        val payload = """{"type":null,"trace":[{"rule":null,"statement":"m/1"}],"coerced":{"target":null}}"""
+        val inline = JsonParser.parseString(ops.finalizeResultForTest(payload, maxInlineBytes = payload.length))
+        val spilled = JsonParser.parseString(ops.finalizeResultForTest(payload, maxInlineBytes = payload.length - 1)).asJsonObject
+        assertTrue("the payload must spill to a temp file: $spilled", spilled.get("data").isJsonPrimitive)
+
+        val saved = JsonParser.parseString(ops.readJsonOrFileForTest(spilled.get("data").asString))
+
+        assertTrue("a null member must keep its key: $saved", saved.asJsonObject.getAsJsonObject("data").has("type"))
+        assertEquals(inline, saved)
     }
 
     @Test
