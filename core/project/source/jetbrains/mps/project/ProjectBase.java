@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2024 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,10 +148,8 @@ public abstract class ProjectBase extends Project {
         LOG.warning(String.format("Project %s already tracks module %s under %s; provided %s ignored", this, module.getModuleReference(), existing, descriptorFile));
         return;
       }
-      // FIXME investigate why MP was not recorded for Language-owned Generators.
-      //  Other than notification dispatch in removeModule(), is there any trouble?
-      //  Beware, ProjectModuleFileChangeListener may need attention.
-      //  It seems to work with MP being announced for a Generator (seen live), but thorough check won't hurt.
+      // A Language-owned Generator gets an entry for its language descriptor file, too. removeModule() keeps the file in the project
+      // while the language is there, and removeModule0() detaches the entries of owned generators along with their language.
       myModuleLoader.attachModule(module, descriptorFile, null);
       moduleAdded(descriptorFile, null);
       // project repository listeners may consult project.isProjectModule(moduleAdded), treat module being added as one from the project
@@ -171,11 +169,16 @@ public abstract class ProjectBase extends Project {
    */
   @Override
   public final void removeModule(@NotNull SModule module) {
+    // captured up front, the module may be disposed once removeModule0 dissociates it from the repository
+    final SModuleReference ownerLanguage = module instanceof Generator && !((Generator) module).getModuleDescriptor().isStandaloneModule()
+                                           ? ((Generator) module).getModuleDescriptor().getSourceLanguage() : null;
     removeModule0(module,
                   (file, folder) -> {
-                    // client code can ask us to forget Generator module owned by a Language. We don't keep ModulePath for these
                     myModuleLoader.detachModule(module, file);
-                    moduleRemoved(file);
+                    // A Language-owned Generator shares the descriptor file of its language; the file stays in the project while the language does
+                    if (ownerLanguage == null || !file.equals(getModuleDescriptorFile(ownerLanguage))) {
+                      moduleRemoved(file);
+                    }
                   });
   }
 
@@ -224,7 +227,12 @@ public abstract class ProjectBase extends Project {
       // to unregister Language-owned generators along with the language as I'm too afraid to make the change and to dissociate supplied module only.
       Collection<Generator> ownedGenerators = ((Language) module).getOwnedGenerators();
       for (Generator g : ownedGenerators) {
-        myModuleLoader.dropIfAttached(g.getModuleReference());
+        IFile generatorDescriptorFile = getModuleDescriptorFile(g.getModuleReference());
+        if (generatorDescriptorFile != null) {
+          // fire event with module still attached to a project repo, like ProjectModuleLoader.detachDroppedModules does,
+          // so that listeners tracking the descriptor file forget the generator
+          myModuleLoader.detachModule(g, generatorDescriptorFile);
+        }
         dissociateFromProjectRepo(g, false);
       }
     }
