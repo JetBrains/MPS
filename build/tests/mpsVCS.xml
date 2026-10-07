@@ -109,6 +109,7 @@
       <settings refid="m2m-defaults" />
       <plugin path="${artifacts.mps}/plugins/mps-core" id="jetbrains.mps.core" />
       <plugin path="${artifacts.mps}/plugins/mps-git4idea" id="jetbrains.mps.git4idea.stubs" />
+      <plugin path="${artifacts.mps}/plugins/platform-vcs-plugin" id="com.intellij.platform.vcs" />
       <plugin path="${artifacts.mps}/plugins/vcs-git" id="Git4Idea" />
       <chunk>
         <module file="${plugin_home}/tests/vcs.tests/jetbrains.mps.vcs.tests.msd" />
@@ -458,6 +459,7 @@
     <runMPS solution="ed3e0fd1-3ac2-4543-b6b2-d6d0bea8bf18(jetbrains.mps.vcs.tests)" startClass="jetbrains.mps.vcs.tests.CheckGit4IdeaStubs" startMethod="mpsMain">
       <plugin path="${artifacts.mps}/plugins/mps-core" id="jetbrains.mps.core" />
       <plugin path="${artifacts.mps}/plugins/mps-git4idea" id="jetbrains.mps.git4idea.stubs" />
+      <plugin path="${artifacts.mps}/plugins/platform-vcs-plugin" id="com.intellij.platform.vcs" />
       <plugin path="${artifacts.mps}/plugins/vcs-git" id="Git4Idea" />
       <library file="${build.layout}/modules/jetbrains.mps.vcs.tests.jar" />
       <macro name="mps_home" path="${mps_home}" />

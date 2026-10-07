@@ -96,7 +96,6 @@
         <sourceRoot location="intellij.libraries.jgit.jar" />
         <sourceRoot location="intellij.libraries.jgoodies.common.jar" />
         <sourceRoot location="intellij.libraries.jgoodies.forms.jar" />
-        <sourceRoot location="intellij.libraries.jna.jar" />
         <sourceRoot location="intellij.libraries.jps.javac.extension.jar" />
         <sourceRoot location="intellij.libraries.jsch.agent.proxy.jar" />
         <sourceRoot location="intellij.libraries.jsonpath.jar" />
@@ -150,14 +149,12 @@
         <sourceRoot location="intellij.libraries.protobuf.java.util.jar" />
         <sourceRoot location="intellij.libraries.protobuf.kotlin.jar" />
         <sourceRoot location="intellij.libraries.proxy.vole.jar" />
-        <sourceRoot location="intellij.libraries.pty4j.jar" />
         <sourceRoot location="intellij.libraries.rd.core.jar" />
         <sourceRoot location="intellij.libraries.rd.framework.jar" />
         <sourceRoot location="intellij.libraries.rd.swing.jar" />
         <sourceRoot location="intellij.libraries.rd.text.jar" />
         <sourceRoot location="intellij.libraries.rhino.jar" />
         <sourceRoot location="intellij.libraries.semver.jar" />
-        <sourceRoot location="intellij.libraries.skiko.jar" />
         <sourceRoot location="intellij.libraries.snakeyaml.jar" />
         <sourceRoot location="intellij.libraries.snakeyaml.engine.jar" />
         <sourceRoot location="intellij.libraries.sqlite.jar" />
@@ -283,7 +280,6 @@
         <sourceRoot location="intellij.platform.ide.rpc.jar" />
         <sourceRoot location="intellij.platform.ide.ui.jar" />
         <sourceRoot location="intellij.platform.ide.updateChecker.jar" />
-        <sourceRoot location="intellij.platform.ide.updateChecker.backend.jar" />
         <sourceRoot location="intellij.platform.ide.util.io.impl.jar" />
         <sourceRoot location="intellij.platform.ide.util.io.native.jar" />
         <sourceRoot location="intellij.platform.ide.util.netty.jar" />
@@ -517,7 +513,6 @@
       <library location="${mps_home}/lib/intellij.libraries.jgit.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jgoodies.common.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jgoodies.forms.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.jna.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jps.javac.extension.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jsch.agent.proxy.jar" />
       <library location="${mps_home}/lib/intellij.libraries.jsonpath.jar" />
@@ -571,14 +566,12 @@
       <library location="${mps_home}/lib/intellij.libraries.protobuf.java.util.jar" />
       <library location="${mps_home}/lib/intellij.libraries.protobuf.kotlin.jar" />
       <library location="${mps_home}/lib/intellij.libraries.proxy.vole.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.pty4j.jar" />
       <library location="${mps_home}/lib/intellij.libraries.rd.core.jar" />
       <library location="${mps_home}/lib/intellij.libraries.rd.framework.jar" />
       <library location="${mps_home}/lib/intellij.libraries.rd.swing.jar" />
       <library location="${mps_home}/lib/intellij.libraries.rd.text.jar" />
       <library location="${mps_home}/lib/intellij.libraries.rhino.jar" />
       <library location="${mps_home}/lib/intellij.libraries.semver.jar" />
-      <library location="${mps_home}/lib/intellij.libraries.skiko.jar" />
       <library location="${mps_home}/lib/intellij.libraries.snakeyaml.jar" />
       <library location="${mps_home}/lib/intellij.libraries.snakeyaml.engine.jar" />
       <library location="${mps_home}/lib/intellij.libraries.sqlite.jar" />
@@ -704,7 +697,6 @@
       <library location="${mps_home}/lib/intellij.platform.ide.rpc.jar" />
       <library location="${mps_home}/lib/intellij.platform.ide.ui.jar" />
       <library location="${mps_home}/lib/intellij.platform.ide.updateChecker.jar" />
-      <library location="${mps_home}/lib/intellij.platform.ide.updateChecker.backend.jar" />
       <library location="${mps_home}/lib/intellij.platform.ide.util.io.impl.jar" />
       <library location="${mps_home}/lib/intellij.platform.ide.util.io.native.jar" />
       <library location="${mps_home}/lib/intellij.platform.ide.util.netty.jar" />

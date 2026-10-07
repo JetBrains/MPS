@@ -691,6 +691,10 @@
     <copy todir="${build.layout}/vcs-git">
       <fileset dir="${artifacts.mpsVcsPlatform}/vcs-git" />
     </copy>
+    <mkdir dir="${build.layout}/platform-vcs-plugin" />
+    <copy todir="${build.layout}/platform-vcs-plugin">
+      <fileset dir="${artifacts.mpsVcsPlatform}/platform-vcs-plugin" />
+    </copy>
     <mkdir dir="${build.layout}/mps-git4idea" />
     <copy todir="${build.layout}/mps-git4idea">
       <fileset dir="${artifacts.mpsVcsPlatform}/mps-git4idea" />
@@ -743,6 +747,7 @@
       <settings refid="m2m-defaults" />
       <plugin path="${artifacts.mpsCore}/mps-core" id="jetbrains.mps.core" />
       <plugin path="${artifacts.mpsVcsPlatform}/mps-git4idea" id="jetbrains.mps.git4idea.stubs" />
+      <plugin path="${artifacts.mpsVcsPlatform}/platform-vcs-plugin" id="com.intellij.platform.vcs" />
       <plugin path="${artifacts.mpsVcsPlatform}/vcs-git" id="Git4Idea" />
       <library file="${artifacts.mpsDevKit}/mps-devkit/languages/jetbrains.mps.ide.devkit.editor.jar" />
       <chunk>

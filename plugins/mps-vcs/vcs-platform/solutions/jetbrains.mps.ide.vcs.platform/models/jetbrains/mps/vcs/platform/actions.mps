@@ -72,9 +72,7 @@
     <import index="yah1" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.history(MPS.IDEA/)" />
     <import index="1037" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.changes(MPS.IDEA/)" />
     <import index="idua" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcs.log(MPS.IDEA/)" />
-    <import index="fy1h" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.diff(MPS.IDEA/)" />
     <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA/)" />
-    <import index="hlwo" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.merge(MPS.IDEA/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
     <import index="yah2" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
@@ -82,11 +80,11 @@
     <import index="1039" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
     <import index="idub" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="iduc" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcs.log(MPS.IDEA.Modules/)" />
-    <import index="fy1i" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.diff(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="fy1h" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.diff(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="7g4f" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcsUtil(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="7g4g" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcsUtil(MPS.IDEA.Modules/)" />
-    <import index="hlwp" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.merge(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="hlwq" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.merge(MPS.IDEA.Modules/)" />
+    <import index="hlwo" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.merge(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="hlwp" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.merge(MPS.IDEA.Modules/)" />
     <import index="e0hp" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcs.log.impl(MPS.IDEA.Modules/)" />
     <import index="7bx7" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.workbench.action(MPS.Platform/)" />
   </imports>
@@ -1453,7 +1451,7 @@
                               <node concept="3cpWsn" id="6tLsn3mTc6M" role="3cpWs9">
                                 <property role="TrG5h" value="diffProvider" />
                                 <node concept="3uibUv" id="6tLsn3mTc6I" role="1tU5fm">
-                                  <ref role="3uigEE" to="fy1i:~DiffProvider" resolve="DiffProvider" />
+                                  <ref role="3uigEE" to="fy1h:~DiffProvider" resolve="DiffProvider" />
                                 </node>
                                 <node concept="2OqwBi" id="6tLsn3mTc6N" role="33vP2m">
                                   <node concept="liA8E" id="6tLsn3mTc6O" role="2OqNvi">
@@ -1481,7 +1479,7 @@
                                 </node>
                                 <node concept="2OqwBi" id="78RbNhWi9MB" role="33vP2m">
                                   <node concept="liA8E" id="78RbNhWi9MF" role="2OqNvi">
-                                    <ref role="37wK5l" to="fy1i:~DiffProvider.getCurrentRevision(com.intellij.openapi.vfs.VirtualFile)" resolve="getCurrentRevision" />
+                                    <ref role="37wK5l" to="fy1h:~DiffProvider.getCurrentRevision(com.intellij.openapi.vfs.VirtualFile)" resolve="getCurrentRevision" />
                                     <node concept="37vLTw" id="55$aReHkrU0" role="37wK5m">
                                       <ref role="3cqZAo" node="6ySnuJfjmnd" resolve="vFile" />
                                     </node>
@@ -1970,7 +1968,7 @@
           <node concept="3cpWsn" id="4_JpahyAjX6" role="3cpWs9">
             <property role="TrG5h" value="diffProvider" />
             <node concept="3uibUv" id="4_JpahyAjX7" role="1tU5fm">
-              <ref role="3uigEE" to="fy1i:~DiffProvider" resolve="DiffProvider" />
+              <ref role="3uigEE" to="fy1h:~DiffProvider" resolve="DiffProvider" />
             </node>
             <node concept="2OqwBi" id="4_JpahyAjX8" role="33vP2m">
               <node concept="liA8E" id="4_JpahyAjX9" role="2OqNvi">
@@ -1996,7 +1994,7 @@
             <property role="TrG5h" value="revision" />
             <node concept="2OqwBi" id="78RbNhWi9MK" role="33vP2m">
               <node concept="liA8E" id="78RbNhWi9MO" role="2OqNvi">
-                <ref role="37wK5l" to="fy1i:~DiffProvider.createFileContent(com.intellij.openapi.vcs.history.VcsRevisionNumber,com.intellij.openapi.vfs.VirtualFile)" resolve="createFileContent" />
+                <ref role="37wK5l" to="fy1h:~DiffProvider.createFileContent(com.intellij.openapi.vcs.history.VcsRevisionNumber,com.intellij.openapi.vfs.VirtualFile)" resolve="createFileContent" />
                 <node concept="37vLTw" id="3GM_nagTxfk" role="37wK5m">
                   <ref role="3cqZAo" node="4_JpahyA4Q7" resolve="revisionNumber" />
                 </node>
@@ -4280,7 +4278,7 @@
           <node concept="3cpWsn" id="7yFo2Ea1dCX" role="3cpWs9">
             <property role="TrG5h" value="provider" />
             <node concept="3uibUv" id="7yFo2Ea1dCY" role="1tU5fm">
-              <ref role="3uigEE" to="hlwp:~MergeProvider" resolve="MergeProvider" />
+              <ref role="3uigEE" to="hlwo:~MergeProvider" resolve="MergeProvider" />
             </node>
             <node concept="2OqwBi" id="7yFo2Ea1ivE" role="33vP2m">
               <node concept="2YIFZM" id="7yFo2Ea1fRB" role="2Oq$k0">
@@ -4369,7 +4367,7 @@
           <node concept="3cpWsn" id="7yFo2Ea1kAk" role="3cpWs9">
             <property role="TrG5h" value="session" />
             <node concept="3uibUv" id="7yFo2Ea1kAl" role="1tU5fm">
-              <ref role="3uigEE" to="hlwp:~MergeSession" resolve="MergeSession" />
+              <ref role="3uigEE" to="hlwo:~MergeSession" resolve="MergeSession" />
             </node>
             <node concept="3K4zz7" id="7yFo2Ea1mpT" role="33vP2m">
               <node concept="10Nm6u" id="7yFo2Ea1rb1" role="3K4GZi" />
@@ -4377,7 +4375,7 @@
                 <node concept="1eOMI4" id="7yFo2Ea1mrF" role="2Oq$k0">
                   <node concept="10QFUN" id="7yFo2Ea1mrC" role="1eOMHV">
                     <node concept="3uibUv" id="7yFo2Ea1mDs" role="10QFUM">
-                      <ref role="3uigEE" to="hlwp:~MergeProvider2" resolve="MergeProvider2" />
+                      <ref role="3uigEE" to="hlwo:~MergeProvider2" resolve="MergeProvider2" />
                     </node>
                     <node concept="37vLTw" id="7yFo2Ea1mEh" role="10QFUP">
                       <ref role="3cqZAo" node="7yFo2Ea1dCX" resolve="provider" />
@@ -4385,7 +4383,7 @@
                   </node>
                 </node>
                 <node concept="liA8E" id="7yFo2Ea1nHR" role="2OqNvi">
-                  <ref role="37wK5l" to="hlwp:~MergeProvider2.createMergeSession(java.util.List)" resolve="createMergeSession" />
+                  <ref role="37wK5l" to="hlwo:~MergeProvider2.createMergeSession(java.util.List)" resolve="createMergeSession" />
                   <node concept="37vLTw" id="7yFo2Ea1nJ2" role="37wK5m">
                     <ref role="3cqZAo" node="27DL58Tyt9t" resolve="conflictedModelFiles" />
                   </node>
@@ -4393,7 +4391,7 @@
               </node>
               <node concept="2ZW3vV" id="7yFo2Ea1lrq" role="3K4Cdx">
                 <node concept="3uibUv" id="7yFo2Ea1lRl" role="2ZW6by">
-                  <ref role="3uigEE" to="hlwp:~MergeProvider2" resolve="MergeProvider2" />
+                  <ref role="3uigEE" to="hlwo:~MergeProvider2" resolve="MergeProvider2" />
                 </node>
                 <node concept="37vLTw" id="7yFo2Ea1lnR" role="2ZW6bz">
                   <ref role="3cqZAo" node="7yFo2Ea1dCX" resolve="provider" />

@@ -9406,19 +9406,6 @@
             </node>
           </node>
         </node>
-        <node concept="1SiIV0" id="k06EmA3rKi" role="3bR37C">
-          <node concept="1BurEX" id="k06EmA3rKj" role="1SiIV1">
-            <node concept="398BVA" id="k06EmA3rKf" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="k06EmA3rKg" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="k06EmA3rKh" role="2Ry0An">
-                  <property role="2Ry0Am" value="intellij.libraries.pty4j.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="1SiIV0" id="k06EmA3rKn" role="3bR37C">
           <node concept="1BurEX" id="k06EmA3rKo" role="1SiIV1">
             <node concept="398BVA" id="k06EmA3rKk" role="1BurEY">
@@ -9895,19 +9882,6 @@
                 <property role="2Ry0Am" value="lib" />
                 <node concept="2Ry0Ak" id="3K9kvxmO5MJ" role="2Ry0An">
                   <property role="2Ry0Am" value="intellij.libraries.rd.swing.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1SiIV0" id="3K9kvxmO5MK" role="3bR37C">
-          <node concept="1BurEX" id="3K9kvxmO5ML" role="1SiIV1">
-            <node concept="398BVA" id="3K9kvxmO5MM" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="3K9kvxmO5MN" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="3K9kvxmO5MO" role="2Ry0An">
-                  <property role="2Ry0Am" value="intellij.libraries.skiko.jar" />
                 </node>
               </node>
             </node>
@@ -12422,19 +12396,6 @@
             </node>
           </node>
         </node>
-        <node concept="1SiIV0" id="1phLyFZsEMY" role="3bR37C">
-          <node concept="1BurEX" id="1phLyFZsEMZ" role="1SiIV1">
-            <node concept="398BVA" id="1phLyFZsEMV" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="1phLyFZsEMW" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="1phLyFZsEMX" role="2Ry0An">
-                  <property role="2Ry0Am" value="intellij.libraries.jna.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="1SiIV0" id="1phLyFZsEN3" role="3bR37C">
           <node concept="1BurEX" id="1phLyFZsEN4" role="1SiIV1">
             <node concept="398BVA" id="1phLyFZsEN0" role="1BurEY">
@@ -13067,19 +13028,6 @@
                 <property role="2Ry0Am" value="lib" />
                 <node concept="2Ry0Ak" id="1phLyFZsEXg" role="2Ry0An">
                   <property role="2Ry0Am" value="intellij.platform.ide.updateChecker.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1SiIV0" id="1phLyFZsEXm" role="3bR37C">
-          <node concept="1BurEX" id="1phLyFZsEXn" role="1SiIV1">
-            <node concept="398BVA" id="1phLyFZsEXj" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="1phLyFZsEXk" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="1phLyFZsEXl" role="2Ry0An">
-                  <property role="2Ry0Am" value="intellij.platform.ide.updateChecker.backend.jar" />
                 </node>
               </node>
             </node>
@@ -37556,13 +37504,6 @@
           </node>
         </node>
       </node>
-      <node concept="13uQ2_" id="k06Em_JVUJ" role="39821P">
-        <node concept="3_J27D" id="k06Em_JVUK" role="13uQ07">
-          <node concept="3Mxwew" id="k06Em_JVUL" role="3MwsjC">
-            <property role="3MwjfP" value="intellij.libraries.pty4j.jar" />
-          </node>
-        </node>
-      </node>
       <node concept="13uQ2_" id="2Uq$M2W4H0a" role="39821P">
         <node concept="3_J27D" id="2Uq$M2W4H0c" role="13uQ07">
           <node concept="3Mxwew" id="2Uq$M2W4H0e" role="3MwsjC">
@@ -37609,13 +37550,6 @@
         <node concept="3_J27D" id="k06Em_JVUE" role="13uQ07">
           <node concept="3Mxwew" id="k06Em_JVUF" role="3MwsjC">
             <property role="3MwjfP" value="intellij.libraries.rhino.jar" />
-          </node>
-        </node>
-      </node>
-      <node concept="13uQ2_" id="2Uq$M2W4H0s" role="39821P">
-        <node concept="3_J27D" id="2Uq$M2W4H0u" role="13uQ07">
-          <node concept="3Mxwew" id="2Uq$M2W4H0w" role="3MwsjC">
-            <property role="3MwjfP" value="intellij.libraries.skiko.jar" />
           </node>
         </node>
       </node>
@@ -39250,13 +39184,6 @@
           </node>
         </node>
       </node>
-      <node concept="13uQ2_" id="3VLxcTITmkZ" role="39821P">
-        <node concept="3_J27D" id="3VLxcTITml0" role="13uQ07">
-          <node concept="3Mxwew" id="3VLxcTITml1" role="3MwsjC">
-            <property role="3MwjfP" value="intellij.platform.ide.updateChecker.backend.jar" />
-          </node>
-        </node>
-      </node>
       <node concept="13uQ2_" id="3VLxcTITml2" role="39821P">
         <node concept="3_J27D" id="3VLxcTITml3" role="13uQ07">
           <node concept="3Mxwew" id="3VLxcTITml4" role="3MwsjC">
@@ -39548,13 +39475,6 @@
         <node concept="3_J27D" id="3VLxcTITmmY" role="13uQ07">
           <node concept="3Mxwew" id="3VLxcTITmmZ" role="3MwsjC">
             <property role="3MwjfP" value="intellij.libraries.jps.javac.extension.jar" />
-          </node>
-        </node>
-      </node>
-      <node concept="13uQ2_" id="3VLxcTITmn0" role="39821P">
-        <node concept="3_J27D" id="3VLxcTITmn1" role="13uQ07">
-          <node concept="3Mxwew" id="3VLxcTITmn2" role="3MwsjC">
-            <property role="3MwjfP" value="intellij.libraries.jna.jar" />
           </node>
         </node>
       </node>
@@ -40022,13 +39942,6 @@
             <node concept="3_J27D" id="7dOUAS9eBuC" role="13uQ07">
               <node concept="3Mxwew" id="7dOUAS9eBuD" role="3MwsjC">
                 <property role="3MwjfP" value="intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
-              </node>
-            </node>
-          </node>
-          <node concept="13uQ2_" id="5wJpexft1AM" role="39821P">
-            <node concept="3_J27D" id="5wJpexft1AN" role="13uQ07">
-              <node concept="3Mxwew" id="5wJpexft1AO" role="3MwsjC">
-                <property role="3MwjfP" value="org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
               </node>
             </node>
           </node>
@@ -44459,6 +44372,9 @@
         </node>
         <node concept="3_I8Xc" id="73fHb9hpuxm" role="39821P">
           <ref role="3_I8Xa" node="I6XuqH2zYV" resolve="vcs-git" />
+        </node>
+        <node concept="3_I8Xc" id="7dOUAS9GbIo" role="39821P">
+          <ref role="3_I8Xa" node="7dOUAS9Gb_o" />
         </node>
         <node concept="3_I8Xc" id="1wq$Llytga7" role="39821P">
           <ref role="3_I8Xa" node="4wxeloVufXE" resolve="mps-git4idea" />
@@ -49923,6 +49839,9 @@
       </node>
       <node concept="3_I8Xc" id="6ifcnI8$H4f" role="39821P">
         <ref role="3_I8Xa" node="I6XuqH2zYV" resolve="vcs-git" />
+      </node>
+      <node concept="3_I8Xc" id="7dOUAS9GbIp" role="39821P">
+        <ref role="3_I8Xa" node="7dOUAS9Gb_o" />
       </node>
       <node concept="3_I8Xc" id="1wq$Llytg92" role="39821P">
         <ref role="3_I8Xa" node="4wxeloVufXE" resolve="mps-git4idea" />
@@ -60611,23 +60530,6 @@
           </node>
           <node concept="pUk6x" id="3TAvYl1bUz$" role="pUk7w" />
         </node>
-        <node concept="398223" id="6OVuTPpYd2H" role="39821P">
-          <node concept="3_J27D" id="6OVuTPpYd2J" role="Nbhlr">
-            <node concept="3Mxwew" id="6OVuTPpYd3m" role="3MwsjC">
-              <property role="3MwjfP" value="platform-vcs-plugin" />
-            </node>
-          </node>
-          <node concept="2HvfSZ" id="6OVuTPpYd4x" role="39821P">
-            <node concept="55IIr" id="6OVuTPpYd4y" role="2HvfZ0">
-              <node concept="2Ry0Ak" id="6OVuTPpYd6l" role="iGT6I">
-                <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="6OVuTPpYd6W" role="2Ry0An">
-                  <property role="2Ry0Am" value="platform-vcs-plugin" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="398223" id="6OVuTPpYdqb" role="39821P">
           <node concept="3_J27D" id="6OVuTPpYdqc" role="Nbhlr">
             <node concept="3Mxwew" id="6OVuTPpYdqd" role="3MwsjC">
@@ -64870,6 +64772,28 @@
           <property role="3MwjfP" value="&lt;empty&gt;" />
         </node>
       </node>
+      <node concept="m$_yC" id="7dOUAS9GbHW" role="m$_yJ">
+        <ref role="m$_y1" node="7dOUAS9Gb_h" />
+      </node>
+    </node>
+    <node concept="m$_wf" id="7dOUAS9Gb_h" role="3989C9">
+      <property role="m$_wk" value="com.intellij.platform.vcs" />
+      <property role="1NdglO" value="true" />
+      <node concept="3_J27D" id="7dOUAS9Gb_i" role="m$_yQ">
+        <node concept="3Mxwew" id="7dOUAS9Gb_j" role="3MwsjC">
+          <property role="3MwjfP" value="Version Control" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="7dOUAS9Gb_k" role="m_cZH">
+        <node concept="3Mxwew" id="7dOUAS9Gb_l" role="3MwsjC">
+          <property role="3MwjfP" value="platform-vcs-plugin" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="7dOUAS9Gb_m" role="m$_w8">
+        <node concept="3Mxwew" id="7dOUAS9Gb_n" role="3MwsjC">
+          <property role="3MwjfP" value="&lt;empty&gt;" />
+        </node>
+      </node>
     </node>
     <node concept="1E1JtA" id="4wxeloVufXp" role="3989C9">
       <property role="BnDLt" value="true" />
@@ -65253,6 +65177,9 @@
       <node concept="m$_yC" id="4wxeloV$CRd" role="m$_yJ">
         <ref role="m$_y1" node="I6XuqGYf8K" resolve="Git4Idea" />
       </node>
+      <node concept="m$_yC" id="7dOUAS9GbFp" role="m$_yJ">
+        <ref role="m$_y1" node="7dOUAS9Gb_h" />
+      </node>
       <node concept="3_J27D" id="4wxeloVufXs" role="m$_yQ">
         <node concept="3Mxwew" id="4wxeloVufXt" role="3MwsjC">
           <property role="3MwjfP" value="MPS Git integration - stubs" />
@@ -65334,6 +65261,20 @@
           </node>
           <node concept="3LWZYq" id="1diLdO26H8f" role="2HvfZ1">
             <property role="3LWZYl" value="**/*.zip" />
+          </node>
+        </node>
+      </node>
+      <node concept="m$_wl" id="7dOUAS9Gb_o" role="39821P">
+        <ref role="m_rDy" node="7dOUAS9Gb_h" />
+        <node concept="pUk6x" id="7dOUAS9Gb_p" role="pUk7w" />
+        <node concept="2HvfSZ" id="7dOUAS9Gb_q" role="39821P">
+          <node concept="55IIr" id="7dOUAS9Gb_r" role="2HvfZ0">
+            <node concept="2Ry0Ak" id="7dOUAS9Gb_s" role="iGT6I">
+              <property role="2Ry0Am" value="plugins" />
+              <node concept="2Ry0Ak" id="7dOUAS9Gb_t" role="2Ry0An">
+                <property role="2Ry0Am" value="platform-vcs-plugin" />
+              </node>
+            </node>
           </node>
         </node>
       </node>
@@ -72134,25 +72075,6 @@
           </node>
         </node>
       </node>
-      <node concept="1SiIV0" id="5wJpexft9Q3" role="3bR37C">
-        <node concept="1BurEX" id="5wJpexft9Q4" role="1SiIV1">
-          <node concept="398BVA" id="5wJpexft9PY" role="1BurEY">
-            <ref role="398BVh" node="3SKb_4Jujfy" resolve="mps_home" />
-            <node concept="2Ry0Ak" id="5wJpexft9PZ" role="iGT6I">
-              <property role="2Ry0Am" value="plugins" />
-              <node concept="2Ry0Ak" id="5wJpexft9Q0" role="2Ry0An">
-                <property role="2Ry0Am" value="grazie" />
-                <node concept="2Ry0Ak" id="5wJpexft9Q1" role="2Ry0An">
-                  <property role="2Ry0Am" value="lib" />
-                  <node concept="2Ry0Ak" id="5wJpexft9Q2" role="2Ry0An">
-                    <property role="2Ry0Am" value="org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
-                  </node>
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-      </node>
       <node concept="1SiIV0" id="7dOUAS9eGr3" role="3bR37C">
         <node concept="1BurEX" id="7dOUAS9eGr4" role="1SiIV1">
           <node concept="398BVA" id="7dOUAS9eGqY" role="1BurEY">
@@ -72485,24 +72407,6 @@
                       <property role="2Ry0Am" value="lib" />
                       <node concept="2Ry0Ak" id="7dOUAS9n9Hg" role="2Ry0An">
                         <property role="2Ry0Am" value="intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
-                      </node>
-                    </node>
-                  </node>
-                </node>
-              </node>
-            </node>
-            <node concept="3yLZsm" id="5wJpexfufz_" role="3yL2VB">
-              <property role="3yLZsk" value="/plugins/grazie/lib/org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
-              <node concept="398BVA" id="5wJpexfufzA" role="3yLZsn">
-                <ref role="398BVh" node="3SKb_4Jujfy" resolve="mps_home" />
-                <node concept="2Ry0Ak" id="5wJpexfufzB" role="iGT6I">
-                  <property role="2Ry0Am" value="plugins" />
-                  <node concept="2Ry0Ak" id="5wJpexfufzC" role="2Ry0An">
-                    <property role="2Ry0Am" value="grazie" />
-                    <node concept="2Ry0Ak" id="5wJpexfufzD" role="2Ry0An">
-                      <property role="2Ry0Am" value="lib" />
-                      <node concept="2Ry0Ak" id="5wJpexfufzE" role="2Ry0An">
-                        <property role="2Ry0Am" value="org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
                       </node>
                     </node>
                   </node>

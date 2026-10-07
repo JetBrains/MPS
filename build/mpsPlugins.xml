@@ -755,6 +755,7 @@
       <settings refid="m2m-defaults" />
       <plugin path="${artifacts.mpsCore}/mps-core" id="jetbrains.mps.core" />
       <plugin path="${artifacts.mpsVcsPlatform}/mps-git4idea" id="jetbrains.mps.git4idea.stubs" />
+      <plugin path="${artifacts.mpsVcsPlatform}/platform-vcs-plugin" id="com.intellij.platform.vcs" />
       <plugin path="${artifacts.mpsVcsPlatform}/vcs-git" id="Git4Idea" />
       <chunk>
         <module file="${plugin_home}/mps-ide/modules/bl.lightweightdsl/jetbrains.mps.baseLanguage.lightweightdsl.pluginSolution.msd" />

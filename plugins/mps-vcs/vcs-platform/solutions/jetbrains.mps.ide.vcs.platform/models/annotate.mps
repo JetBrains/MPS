@@ -85,12 +85,11 @@
     <import index="de5p" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.actions(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="e0ho" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.impl(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcu" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs(MPS.IDEA/)" />
-    <import index="8voc" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.annotate(MPS.IDEA/)" />
     <import index="yah1" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.history(MPS.IDEA/)" />
     <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
-    <import index="8vod" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.annotate(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="8voc" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.annotate(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="yah2" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
     <import index="7g4f" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcsUtil(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="7g4g" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcsUtil(MPS.IDEA.Modules/)" />
@@ -7987,8 +7986,8 @@
             <ref role="3cqZAo" node="7OXN7mbz6ae" resolve="editorAnnotation" />
           </node>
           <node concept="10M0yZ" id="7OXN7mbz8ro" role="37wK5m">
-            <ref role="3cqZAo" to="8vod:~LineAnnotationAspect.AUTHOR" resolve="AUTHOR" />
-            <ref role="1PxDUh" to="8vod:~LineAnnotationAspect" resolve="LineAnnotationAspect" />
+            <ref role="3cqZAo" to="8voc:~LineAnnotationAspect.AUTHOR" resolve="AUTHOR" />
+            <ref role="1PxDUh" to="8voc:~LineAnnotationAspect" resolve="LineAnnotationAspect" />
           </node>
         </node>
       </node>
@@ -10180,8 +10179,8 @@
             <ref role="3cqZAo" node="7OXN7mb$5qa" resolve="editorAnnotation" />
           </node>
           <node concept="10M0yZ" id="7IlkgnuUr9i" role="37wK5m">
-            <ref role="3cqZAo" to="8vod:~LineAnnotationAspect.REVISION" resolve="REVISION" />
-            <ref role="1PxDUh" to="8vod:~LineAnnotationAspect" resolve="LineAnnotationAspect" />
+            <ref role="3cqZAo" to="8voc:~LineAnnotationAspect.REVISION" resolve="REVISION" />
+            <ref role="1PxDUh" to="8voc:~LineAnnotationAspect" resolve="LineAnnotationAspect" />
           </node>
         </node>
       </node>
@@ -11618,8 +11617,8 @@
             <ref role="3cqZAo" node="7OXN7mb$8zB" resolve="editorAnnotation" />
           </node>
           <node concept="10M0yZ" id="7OXN7mb$90w" role="37wK5m">
-            <ref role="3cqZAo" to="8vod:~LineAnnotationAspect.DATE" resolve="DATE" />
-            <ref role="1PxDUh" to="8vod:~LineAnnotationAspect" resolve="LineAnnotationAspect" />
+            <ref role="3cqZAo" to="8voc:~LineAnnotationAspect.DATE" resolve="DATE" />
+            <ref role="1PxDUh" to="8voc:~LineAnnotationAspect" resolve="LineAnnotationAspect" />
           </node>
         </node>
       </node>
@@ -20241,8 +20240,8 @@
       <node concept="3clFbS" id="CLCVuHrauS" role="3clF47">
         <node concept="3clFbF" id="2z3_BUP768W" role="3cqZAp">
           <node concept="2YIFZM" id="2z3_BUP769K" role="3clFbG">
-            <ref role="37wK5l" to="8vod:~ShowAllAffectedGenericAction.showSubmittedFiles(com.intellij.openapi.project.Project,com.intellij.openapi.vcs.history.VcsRevisionNumber,com.intellij.openapi.vfs.VirtualFile,com.intellij.openapi.vcs.VcsKey)" resolve="showSubmittedFiles" />
-            <ref role="1Pybhc" to="8vod:~ShowAllAffectedGenericAction" resolve="ShowAllAffectedGenericAction" />
+            <ref role="37wK5l" to="8voc:~ShowAllAffectedGenericAction.showSubmittedFiles(com.intellij.openapi.project.Project,com.intellij.openapi.vcs.history.VcsRevisionNumber,com.intellij.openapi.vfs.VirtualFile,com.intellij.openapi.vcs.VcsKey)" resolve="showSubmittedFiles" />
+            <ref role="1Pybhc" to="8voc:~ShowAllAffectedGenericAction" resolve="ShowAllAffectedGenericAction" />
             <node concept="2OqwBi" id="7GdQgoXBWlO" role="37wK5m">
               <node concept="37vLTw" id="3XXyNm9J9Z8" role="2Oq$k0">
                 <ref role="3cqZAo" node="1jG3ZCaUNa3" resolve="myMpsProject" />

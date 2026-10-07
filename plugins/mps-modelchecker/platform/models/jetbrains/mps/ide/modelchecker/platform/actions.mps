@@ -64,12 +64,10 @@
     <import index="ot7" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.progress.util(MPS.IDEA/)" />
     <import index="6ugx" ref="r:0d283619-f5e4-43a0-8e4e-02f10d404489(jetbrains.mps.ide.modelchecker)" />
     <import index="8rsk" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.actionSystem.ex(MPS.IDEA/)" />
-    <import index="18nx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.checkin(MPS.IDEA/)" />
     <import index="jlcu" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs(MPS.IDEA/)" />
-    <import index="4zvo" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.ui(MPS.IDEA/)" />
     <import index="1037" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.changes(MPS.IDEA/)" />
-    <import index="18ny" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.checkin(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="4zvp" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.ui(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="18nx" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.checkin(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="4zvo" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.ui(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="r791" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.swing.text(JDK/)" implicit="true" />
   </imports>
@@ -3267,7 +3265,7 @@
     <node concept="3clFb_" id="3etVqSRKzB9" role="jymVt">
       <property role="TrG5h" value="getBeforeCheckinConfigurationPanel" />
       <node concept="3uibUv" id="3etVqSRKzBa" role="3clF45">
-        <ref role="3uigEE" to="4zvp:~RefreshableOnComponent" resolve="RefreshableOnComponent" />
+        <ref role="3uigEE" to="4zvo:~RefreshableOnComponent" resolve="RefreshableOnComponent" />
       </node>
       <node concept="2AHcQZ" id="3etVqSRKzBb" role="2AJF6D">
         <ref role="2AI5Lk" to="mhfm:~Nullable" resolve="Nullable" />
@@ -3300,7 +3298,7 @@
               <node concept="1Y3b0j" id="3etVqSRKzBo" role="YeSDq">
                 <property role="2bfB8j" value="true" />
                 <ref role="37wK5l" to="wyt6:~Object.&lt;init&gt;()" resolve="Object" />
-                <ref role="1Y3XeK" to="4zvp:~RefreshableOnComponent" resolve="RefreshableOnComponent" />
+                <ref role="1Y3XeK" to="4zvo:~RefreshableOnComponent" resolve="RefreshableOnComponent" />
                 <node concept="3Tm1VV" id="3etVqSRKzBp" role="1B3o_S" />
                 <node concept="3clFb_" id="3etVqSRKzBq" role="jymVt">
                   <property role="1EzhhJ" value="false" />
@@ -3402,8 +3400,8 @@
           <node concept="3clFbS" id="3etVqSRKzCj" role="3clFbx">
             <node concept="3cpWs6" id="3etVqSRKzCk" role="3cqZAp">
               <node concept="Rm8GO" id="2fqk0uNAeIT" role="3cqZAk">
-                <ref role="Rm8GQ" to="18ny:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-                <ref role="1Px2BO" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
+                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
               </node>
             </node>
           </node>
@@ -3861,7 +3859,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="3etVqSRKzC$" role="3clF45">
-        <ref role="3uigEE" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+        <ref role="3uigEE" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
       </node>
       <node concept="3Tm1VV" id="3etVqSRKzC_" role="1B3o_S" />
       <node concept="2AHcQZ" id="3etVqSRKzCA" role="2AJF6D">
@@ -3994,7 +3992,7 @@
       </node>
       <node concept="3Tm1VV" id="3etVqSRKzDn" role="1B3o_S" />
       <node concept="3uibUv" id="3etVqSRKzDo" role="1zkMxy">
-        <ref role="3uigEE" to="18ny:~CheckinHandlerFactory" resolve="CheckinHandlerFactory" />
+        <ref role="3uigEE" to="18nx:~CheckinHandlerFactory" resolve="CheckinHandlerFactory" />
       </node>
       <node concept="3clFb_" id="3etVqSRKzDp" role="jymVt">
         <property role="TrG5h" value="createHandler" />
@@ -4028,7 +4026,7 @@
           </node>
         </node>
         <node concept="3uibUv" id="3etVqSRKzD_" role="3clF45">
-          <ref role="3uigEE" to="18ny:~CheckinHandler" resolve="CheckinHandler" />
+          <ref role="3uigEE" to="18nx:~CheckinHandler" resolve="CheckinHandler" />
         </node>
         <node concept="3Tm1VV" id="3etVqSRKzDA" role="1B3o_S" />
         <node concept="37vLTG" id="3etVqSRKzDB" role="3clF46">
@@ -4044,7 +4042,7 @@
     </node>
     <node concept="3Tm1VV" id="3etVqSRKzDE" role="1B3o_S" />
     <node concept="3uibUv" id="2fqk0uNA8HI" role="1zkMxy">
-      <ref role="3uigEE" to="18ny:~CheckinHandler" resolve="CheckinHandler" />
+      <ref role="3uigEE" to="18nx:~CheckinHandler" resolve="CheckinHandler" />
     </node>
   </node>
   <node concept="312cEu" id="3etVqSRKzPq">
@@ -6123,15 +6121,15 @@
         </node>
       </node>
       <node concept="3uibUv" id="3etVqSRK$h2" role="3clF45">
-        <ref role="3uigEE" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+        <ref role="3uigEE" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
       </node>
       <node concept="3clFbS" id="3etVqSRK$h3" role="3clF47">
         <node concept="3clFbJ" id="2$eUmpEr_DK" role="3cqZAp">
           <node concept="3clFbS" id="2$eUmpEr_DM" role="3clFbx">
             <node concept="3cpWs6" id="2$eUmpErELr" role="3cqZAp">
               <node concept="Rm8GO" id="2fqk0uNC2sR" role="3cqZAk">
-                <ref role="Rm8GQ" to="18ny:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-                <ref role="1Px2BO" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
+                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
               </node>
             </node>
           </node>
@@ -6194,8 +6192,8 @@
           <node concept="3clFbS" id="2cahkxOqJa_" role="3clFbx">
             <node concept="3cpWs6" id="2cahkxOqL2q" role="3cqZAp">
               <node concept="Rm8GO" id="40nX38jkcIF" role="3cqZAk">
-                <ref role="Rm8GQ" to="18ny:~CheckinHandler$ReturnResult.CANCEL" resolve="CANCEL" />
-                <ref role="1Px2BO" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.CANCEL" resolve="CANCEL" />
+                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
               </node>
             </node>
           </node>
@@ -6359,8 +6357,8 @@
                 </node>
                 <node concept="3cpWs6" id="3etVqSRK$ib" role="3cqZAp">
                   <node concept="Rm8GO" id="2fqk0uNC2sr" role="3cqZAk">
-                    <ref role="Rm8GQ" to="18ny:~CheckinHandler$ReturnResult.CLOSE_WINDOW" resolve="CLOSE_WINDOW" />
-                    <ref role="1Px2BO" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                    <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.CLOSE_WINDOW" resolve="CLOSE_WINDOW" />
+                    <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
                   </node>
                 </node>
               </node>
@@ -6400,8 +6398,8 @@
                   </node>
                   <node concept="3cpWs6" id="3etVqSRK$in" role="3cqZAp">
                     <node concept="Rm8GO" id="3etVqSRK$io" role="3cqZAk">
-                      <ref role="Rm8GQ" to="18ny:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-                      <ref role="1Px2BO" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                      <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
+                      <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
                     </node>
                   </node>
                 </node>
@@ -6435,8 +6433,8 @@
                   </node>
                   <node concept="3cpWs6" id="3etVqSRK$i$" role="3cqZAp">
                     <node concept="Rm8GO" id="3etVqSRK$i_" role="3cqZAk">
-                      <ref role="1Px2BO" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
-                      <ref role="Rm8GQ" to="18ny:~CheckinHandler$ReturnResult.CANCEL" resolve="CANCEL" />
+                      <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                      <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.CANCEL" resolve="CANCEL" />
                     </node>
                   </node>
                 </node>
@@ -6454,8 +6452,8 @@
         </node>
         <node concept="3cpWs6" id="3etVqSRK$iD" role="3cqZAp">
           <node concept="Rm8GO" id="40nX38jkcJ7" role="3cqZAk">
-            <ref role="Rm8GQ" to="18ny:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-            <ref role="1Px2BO" to="18ny:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+            <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
+            <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
           </node>
         </node>
       </node>

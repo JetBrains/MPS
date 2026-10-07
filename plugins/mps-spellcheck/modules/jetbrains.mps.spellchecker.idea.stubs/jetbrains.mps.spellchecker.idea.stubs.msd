@@ -13,7 +13,6 @@
       <sourceRoot location="grazie.jar" />
       <sourceRoot location="intellij.grazie.core.jar" />
       <sourceRoot location="intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
-      <sourceRoot location="org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
     </modelRoot>
   </models>
   <facets>
@@ -23,7 +22,6 @@
       <library location="${mps_home}/plugins/grazie/lib/grazie.jar" />
       <library location="${mps_home}/plugins/grazie/lib/intellij.grazie.core.jar" />
       <library location="${mps_home}/plugins/grazie/lib/intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
-      <library location="${mps_home}/plugins/grazie/lib/org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
     </facet>
   </facets>
   <dependencies>

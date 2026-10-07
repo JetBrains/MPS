@@ -64,16 +64,14 @@
     <import index="j86o" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.impl(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" />
     <import index="wyuk" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.components(MPS.Core/)" />
-    <import index="epdg" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.rollback(MPS.IDEA/)" />
     <import index="1038" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.changes(MPS.IDEA/)" />
-    <import index="qv1u" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.impl.projectlevelman(MPS.IDEA/)" />
     <import index="yt4f" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.diff(MPS.IDEA/)" />
     <import index="2o8p" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.diff.contents(MPS.IDEA/)" />
     <import index="phib" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.diff.requests(MPS.IDEA/)" />
     <import index="wenr" ref="r:351fe3d9-2ce5-4ea0-8afc-9b076259a949(jetbrains.mps.vcs.diff.ui.merge)" />
     <import index="o8e1" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.diff.merge(MPS.IDEA/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="epdh" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.rollback(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="epdg" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.rollback(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" implicit="true" />
     <import index="18nx" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.checkin(MPS.IDEA.Modules/)" implicit="true" />
   </imports>
@@ -2492,7 +2490,7 @@
               <node concept="3cpWsn" id="4g0Mut8AyTx" role="3cpWs9">
                 <property role="TrG5h" value="rollbackEnvironment" />
                 <node concept="3uibUv" id="4g0Mut8AyTu" role="1tU5fm">
-                  <ref role="3uigEE" to="epdh:~RollbackEnvironment" resolve="RollbackEnvironment" />
+                  <ref role="3uigEE" to="epdg:~RollbackEnvironment" resolve="RollbackEnvironment" />
                 </node>
                 <node concept="2OqwBi" id="4g0Mut8AyTy" role="33vP2m">
                   <node concept="37vLTw" id="4g0Mut8AyTz" role="2Oq$k0">
@@ -2519,7 +2517,7 @@
                   <ref role="3cqZAo" node="4g0Mut8AyTx" resolve="rollbackEnvironment" />
                 </node>
                 <node concept="liA8E" id="7HgS$VjMeLk" role="2OqNvi">
-                  <ref role="37wK5l" to="epdh:~RollbackEnvironment.rollbackChanges(java.util.List,java.util.List,com.intellij.openapi.vcs.rollback.RollbackProgressListener)" resolve="rollbackChanges" />
+                  <ref role="37wK5l" to="epdg:~RollbackEnvironment.rollbackChanges(java.util.List,java.util.List,com.intellij.openapi.vcs.rollback.RollbackProgressListener)" resolve="rollbackChanges" />
                   <node concept="2YIFZM" id="2P5gpa0Q5Q0" role="37wK5m">
                     <ref role="37wK5l" to="33ny:~Collections.singletonList(java.lang.Object)" resolve="singletonList" />
                     <ref role="1Pybhc" to="33ny:~Collections" resolve="Collections" />
@@ -2531,8 +2529,8 @@
                     <ref role="3cqZAo" node="7HgS$VjMeL9" resolve="exceptions" />
                   </node>
                   <node concept="10M0yZ" id="7ua3Cx2F8bT" role="37wK5m">
-                    <ref role="3cqZAo" to="epdh:~RollbackProgressListener.EMPTY" resolve="EMPTY" />
-                    <ref role="1PxDUh" to="epdh:~RollbackProgressListener" resolve="RollbackProgressListener" />
+                    <ref role="3cqZAo" to="epdg:~RollbackProgressListener.EMPTY" resolve="EMPTY" />
+                    <ref role="1PxDUh" to="epdg:~RollbackProgressListener" resolve="RollbackProgressListener" />
                   </node>
                 </node>
               </node>

@@ -73,6 +73,10 @@
         <exclude name="**/*.zip" />
       </fileset>
     </copy>
+    <mkdir dir="${build.layout}/platform-vcs-plugin" />
+    <copy todir="${build.layout}/platform-vcs-plugin">
+      <fileset dir="${basedir}/plugins/platform-vcs-plugin" />
+    </copy>
     <mkdir dir="${build.layout}/mps-git4idea" />
     <mkdir dir="${build.layout}/mps-git4idea/lib" />
     <mkdir dir="${build.tmp}/default/mps-git4idea.jar" />
@@ -84,6 +88,7 @@
         <version>${mpsBootstrapCore.version}</version>
         <depends>com.intellij.modules.mps</depends>
         <depends>Git4Idea</depends>
+        <depends>com.intellij.platform.vcs</depends>
         <depends>jetbrains.mps.core</depends>
         
         <extensions defaultExtensionNs="com.intellij">

@@ -183,6 +183,10 @@
     <copy todir="${build.layout}/plugins/vcs-git">
       <fileset dir="${artifacts.mpsVcsPlatform}/vcs-git" />
     </copy>
+    <mkdir dir="${build.layout}/plugins/platform-vcs-plugin" />
+    <copy todir="${build.layout}/plugins/platform-vcs-plugin">
+      <fileset dir="${artifacts.mpsVcsPlatform}/platform-vcs-plugin" />
+    </copy>
     <mkdir dir="${build.layout}/plugins/mps-git4idea" />
     <copy todir="${build.layout}/plugins/mps-git4idea">
       <fileset dir="${artifacts.mpsVcsPlatform}/mps-git4idea" />

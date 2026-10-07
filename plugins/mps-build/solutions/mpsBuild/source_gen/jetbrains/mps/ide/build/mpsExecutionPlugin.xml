@@ -2353,7 +2353,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jspecify.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jvm.native.trusted.roots.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jzlib.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.pty4j.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.sshj.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.debugger.impl.frontend.jar" />
@@ -2371,7 +2370,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.serialization.cbor.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.microba.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.skiko.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.frontend.jar" />
@@ -2470,7 +2468,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jackson3.dataformat.toml.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jettison.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jgit.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jna.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.metadata.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.opencsv.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.protobuf.java.util.jar" />
@@ -2490,7 +2487,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.nonModalWelcomeScreen.terminal.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.osCertificates.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.pluginSignatureVerifier.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.native.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.indexing.impl.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jewel.markdown.extensions.frontMatter.jar" />
@@ -2872,7 +2868,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jspecify.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jvm.native.trusted.roots.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jzlib.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.pty4j.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.sshj.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.debugger.impl.frontend.jar" />
@@ -2890,7 +2885,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.serialization.cbor.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.microba.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.skiko.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.frontend.jar" />
@@ -2989,7 +2983,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jackson3.dataformat.toml.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jettison.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jgit.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jna.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.metadata.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.opencsv.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.protobuf.java.util.jar" />
@@ -3009,7 +3002,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.nonModalWelcomeScreen.terminal.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.osCertificates.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.pluginSignatureVerifier.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.native.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.indexing.impl.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jewel.markdown.extensions.frontMatter.jar" />
@@ -4760,7 +4752,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jspecify.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jvm.native.trusted.roots.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jzlib.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.pty4j.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.sshj.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.debugger.impl.frontend.jar" />
@@ -4778,7 +4769,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.coroutines.guava.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.serialization.cbor.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.microba.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.skiko.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildView.frontend.jar" />
@@ -4877,7 +4867,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jackson3.dataformat.toml.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jettison.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jgit.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jna.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlin.metadata.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.opencsv.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.protobuf.java.util.jar" />
@@ -4897,7 +4886,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.nonModalWelcomeScreen.terminal.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.osCertificates.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.pluginSignatureVerifier.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.native.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.indexing.impl.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jewel.markdown.extensions.frontMatter.jar" />

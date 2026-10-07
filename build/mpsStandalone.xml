@@ -116,10 +116,6 @@
     <copy todir="${build.layout}/plugins/platform-testRunner-plugin">
       <fileset dir="${basedir}/plugins/platform-testRunner-plugin" />
     </copy>
-    <mkdir dir="${build.layout}/plugins/platform-vcs-plugin" />
-    <copy todir="${build.layout}/plugins/platform-vcs-plugin">
-      <fileset dir="${basedir}/plugins/platform-vcs-plugin" />
-    </copy>
     <mkdir dir="${build.layout}/plugins/platform-problemView-plugin" />
     <copy todir="${build.layout}/plugins/platform-problemView-plugin">
       <fileset dir="${basedir}/plugins/platform-problemView-plugin" />

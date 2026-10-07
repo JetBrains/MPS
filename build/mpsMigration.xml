@@ -330,6 +330,7 @@
       <plugin path="${artifacts.mpsCore}/mps-core" id="jetbrains.mps.core" />
       <plugin path="${artifacts.mpsPlugins}/mps-modelchecker" id="jetbrains.mps.ide.modelchecker" />
       <plugin path="${artifacts.mpsVcsPlatform}/mps-git4idea" id="jetbrains.mps.git4idea.stubs" />
+      <plugin path="${artifacts.mpsVcsPlatform}/platform-vcs-plugin" id="com.intellij.platform.vcs" />
       <plugin path="${artifacts.mpsVcsPlatform}/vcs-git" id="Git4Idea" />
       <plugin path="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" id="com.intellij.modules.mps" />
       <chunk>
