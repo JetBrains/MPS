@@ -2,11 +2,10 @@
 
 YouTrack: [MPS-40249](https://youtrack.jetbrains.com/issue/MPS-40249).
 
-Status: analysis done and all decisions made (2026-09-25); nothing implemented. Reviewed against
-the checkout on 2026-10-07. §8 locks the points §3 left for an implementer to guess; where §3 and
-§8 disagree, §8 wins. Phase 0.1 and 0.2 are still live spikes. Phase 0.3 is closed. Phase 0.4's
-mechanism is locked; only whether the fixture's `tryToWrap` sees a JUnit3 class before
-compilation remains a spike, and the docs-note fallback is already decided. D1–D4 follow the
+Status: implemented 2026-10-07 on `261/vaclav/MPS-40249-run-configuration-scope`, and live-checked
+against a running MPS the same day. `McpToolsIntegrationTestSuite` is green (1206 tests, 0 failures). Reviewed against the checkout on 2026-10-07. §8 locks the points
+§3 left for an implementer to guess; where §3 and §8 disagree, §8 wins. Phases 0.1, 0.3 and 0.4 are
+closed (§8.7). Phase 0.2 is still a live spike. D1–D4 follow the
 first draft's recommendations. D5 (several nodes and models, mixed, in one call) and D6 (reject
 legacy/modern mixes) were signed off the same day. §3 and §4 already include both. Defect record: D53 in
 `study/docs-defects.md`, filed from round 11 (`HOTSPOT_REPORT_round11.md` §3.7). Round 11's
@@ -588,8 +587,11 @@ when coding.
   - at least one side was a present empty array, and the other is absent or empty →
     `INVALID_REQUEST`: `nodeReference and modelReference are empty; pass a root, a model, or both.`
 - A blank entry inside a non-empty array is a failure at that index, not a skip.
-- An `ITestMethod` is not a target (N3). Alone, keep today's "not runnable" message. Among
-  several targets, it is the non-test rejection.
+- An `ITestMethod` is not a target (N3). Like any other non-root, alone or among several, it
+  gets today's non-root sentence (§8.3 step 1). The non-test sentence would say "Root" and tell
+  the agent to pass it alone, which then fails again.
+- An entry that fails to resolve still counts toward "several". Otherwise `[bad, main]` reports
+  only `bad`, and the retry fails on `main`.
 
 ### 8.2 What counts as a test
 
@@ -639,7 +641,9 @@ entry is 0-based: `nodeReference[0]: ...`.
 - One failure: that failure's sentence and its own code. A lone unknown model stays `NOT_FOUND`.
   A lone model passed as `nodeReference` stays `INVALID_REQUEST`.
 - Several failures: `NOT_FOUND` only when every failure is `NOT_FOUND`; otherwise
-  `INVALID_REQUEST`. Body: `N entries failed:` and one line per failure.
+  `INVALID_REQUEST`. Body: `N entries failed:` and one line per failure, sorted by parameter
+  (`nodeReference`, `modelReference`, then call-wide checks such as `compileInMPS`) and index.
+- A missing JUnit configuration type does not hide entry failures already found.
 - `crossProjectErr` is already `INVALID_REQUEST`.
 
 Validate everything before `addConfiguration`. `createConfiguration` does not register and is
@@ -669,9 +673,10 @@ remaining spike for D6.
 **In-process.** Call `setInProcessFlag` after `setJUnitRunType`. The flag is stored under the
 current run-type index; the default index is `PROJECT`, so setting it first stores it on the
 wrong key. For an `ITestCase`, use the existing `invokeCanRunInProcess`. For a discovered test
-that is not an `ITestCase` (a JUnit3/4 `ClassConcept`), read
-`TestProperties.CAN_RUN_IN_PROCESS` off the descriptor. If that property is absent, clear the
-flag. Do not let a missing behavior method become `INTERNAL_ERROR`.
+that is not an `ITestCase` (a JUnit3/4 `ClassConcept`), call the public
+`ITestNodeWrapper.canRunInProcess()`, which reads `TestProperties.CAN_RUN_IN_PROCESS` off the
+descriptor. Every JUnit discovery participant sets it (to false), so the key's default of true is
+never reached. Do not read the descriptor's private property map.
 
 **Setters.** `setModelRef(String)` and `setModuleRef(String)`, by reflection, same as
 `setTestCases`. Model ref: `PersistenceRegistry.getInstance().asString(model.reference)`
@@ -703,6 +708,7 @@ Copy these. Docs rows in Phase 3 should use the same sentences.
 | read-only model | `INVALID_REQUEST` | `Model '<name>' is read-only; the IDE does not create a run configuration for a read-only model.` |
 | no tests | `INVALID_REQUEST` | `No tests found in model <model.name.value>.` |
 | non-test among several targets | `INVALID_REQUEST` | `Root '<name>' is not a test; a Java Application config runs one main, so pass it in a call of its own.` |
+| `ITestCase` without a discovered test, among several targets | `INVALID_REQUEST` | `Test case '<name>' has no test methods; add one, or leave it out of a multi-target configuration.` |
 | `compileInMPS=false`, one module | `INVALID_REQUEST` | `Module '<moduleName>' must be compiled by MPS (compileInMPS=false). Can't run tests.` |
 | `compileInMPS=false`, several | `INVALID_REQUEST` | `Modules '<a>' and '<b>' must be compiled by MPS (compileInMPS=false). Can't run tests.` |
 | legacy/modern mix | `INVALID_REQUEST` | `Cannot mix legacy (compatibility-mode) and modern tests in one configuration. Give these legacy tests a configuration of their own: <names>.` |
@@ -720,12 +726,16 @@ row 35 is `:52` and the dispatch checklist is `:123`, not `:46` / `:99`.
 
 ### 8.7 Still a spike
 
-- **Phase 0.1.** Run an IDE-made `MODEL` config and confirm per-test output is readable. If it is
-  not, stop before Phase 1. This is the only stop-the-feature gate.
+- **Phase 0.1. Closed 2026-10-07 [M].** A tool-made `MODEL` config for `structureChecks@tests`,
+  run through `execute_run_configuration`, printed `START_TEST` / `FINISH_TEST` for all 13 test
+  methods with exit code 0. A two-model snapshot and a root-plus-model snapshot printed both test
+  cases (21 tests each).
 - **Phase 0.2.** Force-close persistence. Gates only the `close_project` / project-management
   sentence in Phase 3. The tool work does not wait on it.
-- **Phase 0.4 residual.** `tryToWrap` on the JUnit3 fixture, as in §8.4. Everything else in D6 is
-  decided.
+- **Phase 0.4 residual. Closed 2026-10-07 [M].** `tryToWrap` accepts an uncompiled `ClassConcept`
+  whose superclass points at the `junit.framework.TestCase` stub, and reports it as compatibility
+  mode. Test 13 (`a model mixing a legacy JUnit3 test with a modern one is rejected`) passes, so P9
+  is a rejection, not a docs note.
 
 ### 8.8 Fixture notes
 

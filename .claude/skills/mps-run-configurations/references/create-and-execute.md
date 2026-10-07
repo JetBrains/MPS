@@ -4,13 +4,18 @@
 
 ```
 mps_mcp_create_run_configuration
-  nodeReference: r:<modelId>(<modelName>)/<nodeId> or 'ModelName.RootName')          # the source root node
-  configurationName: "<stable name>"                   # optional; see below
+  nodeReference: a root, or a JSON array of test roots
+  modelReference: a model, or a JSON array of models   # optional; either parameter may be omitted
+  configurationName: "<stable name>"                   # optional; pass it for every snapshot
 ```
+
+Either `nodeReference` or `modelReference` (or both) must be set. A model reference in `nodeReference` is rejected: pass it in `modelReference`. One model and no nodes is the IDE's live model config (`runType: MODEL`, `live: true`); it picks up roots added later. Several roots, several models, or a mix is a `NODE` snapshot of the test roots present at creation (`live: false`). Repeat the call to refresh it. A one-element array is one target, not several.
+
+Configs are permanent and written at the next settings save. They are not session-only.
 
 ### Naming
 
-If `configurationName` is omitted, the tool derives one based on the dispatch path: `Node <name>` for IMainClass, `Class <ClassName>` for ClassConcept (matching the IDE gutter), the test case's own name for ITestCase. The registered IDE uniqueId is `<typeId>.<name>` (e.g. `Java Application.Class Sample`). Calling the tool again with the same effective name **replaces** the previous configuration of the same type rather than creating a duplicate — useful for idempotent setup, dangerous if you intended two parallel configs (give them distinct `configurationName`s).
+If `configurationName` is omitted, the tool derives one based on the dispatch path: `Node <name>` for IMainClass, `Class <ClassName>` for ClassConcept (matching the IDE gutter), the test case's own name for one test root, `Tests in '<short model name>'` for one model, and that same name plus `,...` for a snapshot that includes a model. Several roots and no model use `<first>,...`. The registered IDE uniqueId is `<typeId>.<name>` (e.g. `Java Application.Class Sample`). Calling the tool again with the same effective name **replaces** the previous configuration of the same type rather than creating a duplicate — useful for idempotent setup, dangerous if you intended two parallel configs (give them distinct `configurationName`s). Pass `configurationName` for every snapshot so two lists that start with the same root do not replace each other.
 
 ### Pick a name a human will recognize
 
@@ -18,7 +23,7 @@ For ClassConcept dispatch, the default `Class <ClassName>` already matches what 
 
 ### Return value
 
-`{ name, type, uniqueId }`. Keep the `name` — that is the handle for every subsequent tool call.
+`{ name, type, uniqueId }`. A JUnit config also returns `runType` (`NODE` or `MODEL`), `testCaseCount`, and `live`. Keep the `name` — that is the handle for every subsequent tool call. Live and snapshot configs alike print `START_TEST` / `FINISH_TEST` for every test method in `execute_run_configuration`'s `output`.
 
 ## Executing the configuration
 

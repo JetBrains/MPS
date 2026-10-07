@@ -155,4 +155,14 @@ model, so no separate `model_used_language` step is needed.
   `JUnit Tests.`. This exercises the `ITestCase` dispatch branch and `configureAsTestCase`. Do
   **not** execute this configuration.
 
+### Step 11.08 — One model, several roots, and a mix `[SUCCESS]`
+
+`nodeReference` may be one root or a JSON array of test roots. `modelReference` may be one model or a JSON array of models. Either or both may be set.
+
+- One `@tests` model and no nodes: `data.runType=="MODEL"`, `data.live==true`, `data.name` is `Tests in '<short name>'`. An empty `NodesTestCase` does not count as a test.
+- Several test roots, several models, or a mix: `data.runType=="NODE"`, `data.live==false`. Pass `configurationName`. Repeat the call to refresh a snapshot.
+- A model reference passed as `nodeReference` is `INVALID_REQUEST` and names `modelReference`.
+
+The fixture for these cases, including a model with no tests, `compileInMPS=false`, and a cross-project model, is `JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest`. Do not execute the created JUnit configurations here.
+
 Proceed to `12_console.md`.

@@ -58,4 +58,4 @@
 ## BaseLanguage and Run Configurations
 
 - `mps_mcp_parse_java_and_insert`: parses Java source and inserts the resulting MPS BaseLanguage nodes as roots, children, replacements, or the current Console command. Its JSON `parameters` select the parsed feature and insertion mode; successes include any problems found in the inserted subtree.
-- `mps_mcp_create_run_configuration`: creates or replaces an MPS run configuration for a runnable root node (`IMainClass`, `ClassConcept` with `main`, or `ITestCase`). It creates a Java Application or JUnit Tests configuration that can then be executed through the host's run-configuration tool.
+- `mps_mcp_create_run_configuration`: creates or replaces an MPS run configuration for a root, test roots, a model, or models. One model alone is a live JUnit config; any other set is a snapshot. A lone non-test root is still a Java Application.
