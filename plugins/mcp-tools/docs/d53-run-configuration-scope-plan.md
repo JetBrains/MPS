@@ -8,7 +8,7 @@ against a running MPS the same day. `McpToolsIntegrationTestSuite` is green (120
 closed (§8.7). Phase 0.2 is still a live spike. D1–D4 follow the
 first draft's recommendations. D5 (several nodes and models, mixed, in one call) and D6 (reject
 legacy/modern mixes) were signed off the same day. §3 and §4 already include both. Defect record: D53 in
-`study/docs-defects.md`, filed from round 11 (`HOTSPOT_REPORT_round11.md` §3.7). Round 11's
+`study/docs-defects-archive.md` (archived 2026-10-07, S7 re-measure outstanding), filed from round 11 (`HOTSPOT_REPORT_round11.md` §3.7). Round 11's
 evidence lives in `~/MPSProjects/mcp-study/runs-r12` and `proj-r12` (the report says so at line 18).
 
 Marking: **[M]** = measured or observed live; **[C]** = read from code; **[I]** = inferred, still
