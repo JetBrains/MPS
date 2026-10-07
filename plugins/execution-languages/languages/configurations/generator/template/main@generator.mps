@@ -62,6 +62,7 @@
     <import index="alof" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.project(MPS.Platform/)" />
     <import index="3767" ref="r:7f24d329-a444-4288-af92-f8ef91dfd241(jetbrains.mps.lang.resources.behavior)" />
     <import index="w0gx" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.project.structure.modules(MPS.Core/)" />
+    <import index="9mrl" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.execution.executors(MPS.IDEA.Modules/)" />
   </imports>
   <registry>
     <language id="982eb8df-2c96-4bd7-9963-11712ea622e5" name="jetbrains.mps.lang.resources">
@@ -1924,8 +1925,8 @@
               </node>
             </node>
             <node concept="10M0yZ" id="6LlKjXrMeP6" role="2Oq$k0">
-              <ref role="1PxDUh" to="9mrk:~DefaultDebugExecutor" resolve="DefaultDebugExecutor" />
-              <ref role="3cqZAo" to="9mrk:~DefaultDebugExecutor.EXECUTOR_ID" resolve="EXECUTOR_ID" />
+              <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" />
+              <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" />
             </node>
           </node>
         </node>

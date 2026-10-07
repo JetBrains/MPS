@@ -18,6 +18,7 @@
     <import index="eibu" ref="r:49e72ff8-8ace-42fd-8f9f-5961eed9792e(jetbrains.mps.execution.api.configurations)" />
     <import index="mhfm" ref="3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" />
+    <import index="9mrl" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.execution.executors(MPS.IDEA.Modules/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -184,8 +185,8 @@
                 <node concept="liA8E" id="3WEbiHBEXJL" role="2OqNvi">
                   <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
                   <node concept="10M0yZ" id="3WEbiHBEXJM" role="37wK5m">
-                    <ref role="1PxDUh" to="9mrk:~DefaultDebugExecutor" resolve="DefaultDebugExecutor" />
-                    <ref role="3cqZAo" to="9mrk:~DefaultDebugExecutor.EXECUTOR_ID" resolve="EXECUTOR_ID" />
+                    <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" />
+                    <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" />
                   </node>
                 </node>
                 <node concept="37vLTw" id="3WEbiHBEXJN" role="2Oq$k0">
@@ -207,8 +208,8 @@
               <node concept="liA8E" id="3WEbiHBEXJE" role="2OqNvi">
                 <ref role="37wK5l" to="eibu:3oW7HLfqDgN" resolve="canExecute" />
                 <node concept="10M0yZ" id="3WEbiHBEXJF" role="37wK5m">
-                  <ref role="1PxDUh" to="9mrk:~DefaultDebugExecutor" resolve="DefaultDebugExecutor" />
-                  <ref role="3cqZAo" to="9mrk:~DefaultDebugExecutor.EXECUTOR_ID" resolve="EXECUTOR_ID" />
+                  <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" />
+                  <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" />
                 </node>
               </node>
               <node concept="1eOMI4" id="3WEbiHBEXJG" role="2Oq$k0">

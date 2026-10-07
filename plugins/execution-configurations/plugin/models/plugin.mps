@@ -128,6 +128,7 @@
     <import index="hypd" ref="r:aa31e43e-9240-4f4d-b6db-5c1c9a86c59e(jetbrains.mps.lang.project.structure)" />
     <import index="tprs" ref="r:00000000-0000-4000-0000-011c895904a4(jetbrains.mps.ide.actions)" />
     <import index="uzjr" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang.management(JDK/)" />
+    <import index="9mrl" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.execution.executors(MPS.IDEA.Modules/)" />
     <import index="1ctc" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.stream(JDK/)" implicit="true" />
   </imports>
   <registry>
@@ -3144,8 +3145,8 @@
               <node concept="liA8E" id="a4sarQXWwf" role="2OqNvi">
                 <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
                 <node concept="10M0yZ" id="a4sarQXWwg" role="37wK5m">
-                  <ref role="1PxDUh" to="9mrk:~DefaultDebugExecutor" resolve="DefaultDebugExecutor" />
-                  <ref role="3cqZAo" to="9mrk:~DefaultDebugExecutor.EXECUTOR_ID" resolve="EXECUTOR_ID" />
+                  <ref role="1PxDUh" to="9mrl:~DefaultDebugExecutor" />
+                  <ref role="3cqZAo" to="9mrl:~DefaultDebugExecutor.EXECUTOR_ID" />
                 </node>
               </node>
             </node>
