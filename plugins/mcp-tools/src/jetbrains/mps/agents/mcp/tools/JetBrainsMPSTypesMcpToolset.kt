@@ -45,7 +45,7 @@ enum class TypesQueryOperation {
 
 private const val DEFAULT_SUPERTYPES_DEPTH = 8
 private const val MAX_SUPERTYPES_DEPTH = 32
-private const val DEFAULT_MAX_ROOT_NODES = 10000
+internal const val DEFAULT_MAX_ROOT_NODES = 10000
 
 private const val OPERAND_EXPECTED =
     "a type operand: an object with exactly one of nodeReference, typeNodeReference, typeConceptRef or blueprint"

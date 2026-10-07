@@ -63,7 +63,17 @@ def row(name: str, errors: int = 0, warnings: int = 0) -> dict:
 
 
 NODE_CLEAN = ok("no problems found")
+UNCHECKED = ("no problems found in checked nodes (1 subtree(s) unchecked: one or more typesystem, constraints, "
+             "scope or target-concept checks were skipped)")
+PRINT = "mcp__mps__mps_mcp_print_node"
+
 MODEL_CLEAN = ok("no problems found", scope="model", rootsChecked=3)
+
+
+def printed(tool_id: str, concept: str) -> list[dict]:
+    """A print_node call whose inline JSON printout is a node of `concept`."""
+    return [tool(tool_id, PRINT, {"projectPath": "/p", "nodeReference": NODE}),
+            result(tool_id, ok({"name": "n", "concept": concept, "properties": [], "children": []}))]
 
 
 class FamiliesTest(unittest.TestCase):
@@ -153,7 +163,8 @@ class FamiliesTest(unittest.TestCase):
                          "C_root_after_clean_model\tC_perRoot\tD_skill_reads\tD_skill_bash_fetch\t"
                          "Bp_adhoc_python\tBp_shipped_script\tB_inserts\tB_resp_bytes\tF_gcd_calls\t"
                          "F_gcd_refine\tG_errors\tH_toolsearch\tX_outside_project\t"
-                         "C_root_after_clean_model_batches\tC_after_summary\tC_after_summary_batches", header)
+                         "C_root_after_clean_model_batches\tC_after_summary\tC_after_summary_batches\t"
+                         "T_rule_prints\tT_type_queries", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -211,6 +222,60 @@ class FamiliesTest(unittest.TestCase):
                         result("s", NODE_CLEAN, session="task-1")]
                        + check("m", MODEL, MODEL_CLEAN) + check("a", NODE, NODE_CLEAN))
         self.assertCounts(f, tool_uses=2, C_checks=2, C_root_checks=1, C_root_after_clean_model=1)
+
+    def test_t19_unchecked_subtrees_verdict_is_clean_unchecked(self) -> None:
+        self.assertEqual("clean_unchecked", families.check_verdict(json.dumps(
+            ok(UNCHECKED, scope="model", rootsChecked=3, uncheckedSubtrees=1))))
+        rows = [row("a"), {**row("b"), "uncheckedSubtrees": 1}]
+        self.assertEqual("clean_unchecked", families.check_verdict(json.dumps(
+            ok(rows, scope="model", uncheckedSubtrees=1))))
+        self.assertEqual("problem_summary", families.check_verdict(json.dumps(
+            ok(UNCHECKED, scope="model", modelProblems=1))))
+        self.assertEqual("problems", families.check_verdict(json.dumps(
+            ok(UNCHECKED, scope="module", moduleProblems=["generation target is not set"]))))
+
+    def test_t19_node_check_after_clean_unchecked_model_counts(self) -> None:
+        f = self.count(check("m", MODEL, ok(UNCHECKED, scope="model", rootsChecked=3, uncheckedSubtrees=1))
+                       + check("a", NODE, ok(UNCHECKED, uncheckedSubtrees=1)))
+        self.assertCounts(f, C_model_checks=1, C_root_checks=1, C_root_after_clean_model=1,
+                          C_root_after_clean_model_batches=1, C_after_summary=0)
+
+    def test_t20_rule_root_prints_count_short_and_qualified_concepts(self) -> None:
+        f = self.count(printed("a", "jetbrains.mps.lang.typesystem.structure.InferenceRule")
+                       + printed("b", "SubtypingRule")
+                       + printed("c", "com.example.courses.structure.Curriculum")
+                       + printed("d", "ClassConcept")
+                       + [tool("e", PRINT, {"nodeReference": NODE}), result("e", ok("/tmp/mps-node-1.json"))]
+                       + [tool("g", PRINT, {"nodeReference": NODE, "format": "PLAIN TEXT"}),
+                          result("g", ok("subtyping rule supertypeOf_Int"))])
+        self.assertCounts(f, T_rule_prints=2, tool_uses=6)
+
+    def test_t20_rule_root_prints_without_an_inline_concept_count_by_the_typesystem_model(self) -> None:
+        rule = "r:9e78ab00-457d-4aa2-aec8-f0f0bf086985(jetbrains.mps.samples.Expressions.typesystem)/20735"
+        f = self.count([tool("t", PRINT, {"nodeReference": rule, "format": "PLAIN TEXT"}),
+                        result("t", ok("rule typeof_ArithmeticSimpleMathExpression { … }")),
+                        tool("d", PRINT, {"nodeReference": rule, "deep": True}),
+                        result("d", ok("/tmp/mps-node-2.json")),
+                        tool("s", PRINT, {"nodeReference": rule + "1"}),
+                        result("s", ok({"name": "s", "concept": "TypeOfExpression"}))])
+        self.assertCounts(f, T_rule_prints=2)
+
+    def test_t21_type_queries_count_query_types_and_node_type_operations(self) -> None:
+        events = []
+        for i, (name, operation) in enumerate([
+                ("mcp__mps__mps_mcp_query_types", "IS_SUBTYPE"), ("mcp__mps__mps_mcp_query_types", "EXPLAIN_TYPE"),
+                ("mcp__mps__mps_mcp_query_nodes", "GET_TYPE"), ("mcp__mps__mps_mcp_query_nodes", "GET_EXPECTED_TYPE"),
+                ("mcp__mps__mps_mcp_query_nodes", " get_expected_type "),
+                ("mcp__mps__mps_mcp_query_nodes", "FIND_INSTANCES"), ("mcp__mps__mps_mcp_query_nodes", "GET_PARENT")]):
+            events += [tool(f"q{i}", name, {"operation": operation, "parameters": {"nodeReference": NODE}}),
+                       result(f"q{i}", ok({"isSubtype": True}))]
+        self.assertCounts(self.count(events), T_type_queries=5, T_rule_prints=0)
+
+    def test_t22_type_queries_keep_the_clean_verdict(self) -> None:
+        f = self.count(check("m", MODEL, MODEL_CLEAN)
+                       + [tool("q", "mcp__mps__mps_mcp_query_nodes", {"operation": "GET_TYPE"}), result("q", ok(None))]
+                       + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, C_root_after_clean_model=1, T_type_queries=1)
 
     def test_smoke_runs_are_skipped_and_out_writes_the_tsv(self) -> None:
         self.count(check("m", MODEL, MODEL_CLEAN))
