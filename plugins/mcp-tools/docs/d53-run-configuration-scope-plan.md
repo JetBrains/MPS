@@ -1,6 +1,12 @@
 # Plan: run-configuration scope and persistence (D53)
 
-Status: analysis done and all decisions made (2026-09-25); nothing implemented. D1–D4 follow the
+YouTrack: [MPS-40249](https://youtrack.jetbrains.com/issue/MPS-40249).
+
+Status: analysis done and all decisions made (2026-09-25); nothing implemented. Reviewed against
+the checkout on 2026-10-07. §8 locks the points §3 left for an implementer to guess; where §3 and
+§8 disagree, §8 wins. Phase 0.1 and 0.2 are still live spikes. Phase 0.3 is closed. Phase 0.4's
+mechanism is locked; only whether the fixture's `tryToWrap` sees a JUnit3 class before
+compilation remains a spike, and the docs-note fallback is already decided. D1–D4 follow the
 first draft's recommendations. D5 (several nodes and models, mixed, in one call) and D6 (reject
 legacy/modern mixes) were signed off the same day. §3 and §4 already include both. Defect record: D53 in
 `study/docs-defects.md`, filed from round 11 (`HOTSPOT_REPORT_round11.md` §3.7). Round 11's
@@ -90,7 +96,7 @@ An agent reads that as "wrong reference", not "this tool does not take models".
 - **Where the risk really is:**
   - An MPS crash or kill before the next save.
   - `close_project(force=true)`. It calls the one-argument
-    `ProjectManagerEx.forceCloseProject(project)` (`JetBrainsMPSProjectMcpToolset.kt:800`). The
+    `ProjectManagerEx.forceCloseProject(project)` (`JetBrainsMPSProjectMcpToolset.kt:807`). The
     platform has a separate `saveAndForceCloseProject`, read with `javap` from `lib/app.jar`, so
     the force path does not save. That the unsaved run configs are then lost is [I]; verify in
     Phase 0.
@@ -160,7 +166,7 @@ and list targets in §3.
 | P5 | "One config per root" is not documented | **D** | Superseded by documenting the new targets (Phase 3) |
 | P6 | When a config reaches disk is not documented; `force=true` close risk | **D** | One line each in the run-config docs and the `close_project` description (Phase 3) |
 | P7 | S7 criterion 2 cannot be met literally | scenario | Keep it; it becomes achievable. Re-measure (Phase 5) |
-| P8 | Test paths skip the `compileInMPS` gate | **S** | Gate up front with the Java-path message (Phase 2, per D4) |
+| P8 | Test paths skip the `compileInMPS` gate | **S** | Gate the new paths up front with `isCompileInMps`; message in §8.5, not the Java-path sentence (D4) |
 | P9 | A mix of legacy and modern tests in one config loses one group silently (F7) | **S** | Reject the mix at creation and name the legacy group (Phase 2, per D6) |
 
 ## 3. Design
@@ -170,10 +176,14 @@ and list targets in §3.
 Extend `mps_mcp_create_run_configuration`; do not add a new tool (per-turn schema cost, and one
 place to look).
 
-- `nodeReference: JsonOrText`. One root reference, as today, **or** a JSON array of test root
-  references (a real array or the array written as a string).
+- `nodeReference: JsonOrText = JsonOrText.EMPTY`. One root reference, as today, **or** a JSON
+  array of test root references (a real array or the array written as a string). The default is
+  mandatory: without it, a model-only call dies in `CallableBridge` before the either-of check
+  (D43). Do not declare it without a default.
 - `modelReference: JsonOrText? = null`. **New.** One model, or a JSON array of models. Each entry is
-  a model reference or a model name.
+  a model reference or a model name. `null` and a blank `JsonOrText` are both absent. Do not put
+  `modelReference` itself in the near-miss list: it is a real parameter
+  (`McpToolParameterOptionalityTest`).
 - `JsonOrText` publishes a schema identical to `String`'s (`common/JsonOrText.kt`), so the schema
   does not grow. The `McpJsonOrTextWireShapeTest` guard requires this type for any parameter that
   promises an array.
@@ -195,15 +205,20 @@ place to look).
   - If the string resolves as a model instead, reject with `INVALID_REQUEST`: "'<ref>' is a model;
     pass it in `modelReference` to run all its tests" (D2, P4). Unknown references stay
     `NOT_FOUND`.
-- **A `modelReference` entry** goes through `resolveModel(mpsProject, ref, projectOnly = true)`.
+- **A `modelReference` entry** goes through `resolveModel(mpsProject, ref, projectOnly = true)`,
+  then a repository lookup when that returns null (§8.3). `projectOnly = true` alone cannot tell
+  "missing" from "another project".
   - Another project's model → `crossProjectErr`.
-  - A read-only model → reject (IDE parity).
-  - A model with no `ITestCase` roots → reject, mirroring `MODEL.check()`'s "No tests found in
-    model".
+  - A read-only model → reject (IDE parity). Message in §8.5.
+  - A model discovery finds no tests → reject with `MODEL.check()`'s sentence. The predicate is
+    `tryToWrap`, not `isInstanceOf(ITestCase)` (§8.2).
 - **All entries are checked, and every failure goes into one rejection**, each with its parameter
-  and index. One retry then fixes everything, as with `search_root_node_by_name`'s `models`.
-  No config is created on any failure.
-- An empty array is rejected.
+  and index. One retry then fixes everything. Do **not** copy `search_root_node_by_name`'s
+  `models` path: that returns on the first bad entry. Message shape and code rule: §8.3.
+  No config is registered on any failure. `createConfiguration` does not register;
+  `addConfiguration` does.
+- A present `[]` contributes no entries. Reject only when both sides parse to nothing, and use
+  the D43 envelope only when both keys are omitted or blank (§8.1).
 
 **Choosing the config:**
 
@@ -211,7 +226,7 @@ place to look).
 |---------|--------|
 | one root that is not a test (`IMainClass` / `ClassConcept` with `main`), nothing else | Java Application, unchanged |
 | one test root, nothing else | JUnit `NODE` with one case, unchanged |
-| exactly one model, no nodes | JUnit `MODEL`, **live**: `setModelRef(PersistenceFacade.asString(model.reference))`, `setModuleRef(model.module.moduleReference.toString())` |
+| exactly one model, no nodes | JUnit `MODEL`, **live**: `setModelRef(PersistenceRegistry.getInstance().asString(model.reference))`, `setModuleRef(model.module.moduleReference.toString())`. Not `PersistenceFacade` — that class parses references; the producer calls `jetbrains.mps.persistence.PersistenceRegistry` |
 | anything else (several roots, several models, or roots and models together) | JUnit `NODE`, **snapshot**: `setTestCases(nodesToCloneableList(union))` |
 
 - The **union** is the `nodeReference` roots in input order, then each model's test roots in the
@@ -219,12 +234,14 @@ place to look).
   a listed model counts once.
 - **Any root that is not a test, in a call with more than one target, is rejected**: a Java
   Application config runs one `main`.
-- **The D6 check runs on every JUnit config with more than one test root.** Collect the wrappers
-  with `JUnitSettings_Configuration.getTests(mpsProject)`, and reject when `useCompatibilityMode()`
-  is true for some and false for others.
-  - The message names the legacy tests and says to give them a config of their own.
+- **The D6 check runs on every JUnit config with more than one test root.** Do **not** call
+  `getTests` or `collect`: they open a modal progress task and deadlock inside
+  `executeShortCommandOnEdt`. Wrap each test root with `TestNodeWrapperFactory.tryToWrap` and
+  reject when `useCompatibilityMode()` is true for some and false for others (§8.4).
+  - The message names the legacy tests and says to give them a config of their own (§8.5).
   - For a live `MODEL` config the check covers the roots present at creation.
-  - It depends on Phase 0.4. If the flag can't be read before compilation, it becomes a docs note.
+  - If `tryToWrap` returns null for the JUnit3 fixture before compilation, P9 becomes a docs note.
+    That is the only remaining Phase 0.4 spike.
 - **The D4 `compileInMPS` gate** checks each distinct module of the targets and names every
   offender.
 
@@ -265,9 +282,10 @@ names, so it stays small for large targets.
 
 - All code changes go in `JetBrainsMPSRunConfigurationMcpToolset.kt`, plus one map entry in
   `RequiredParameters.kt`.
-- `AbstractOps.kt` currently has uncommitted D51/D52 edits. Use its existing `resolveModel`,
-  `resolveNodeReference`, `parseStringOrJsonArray(JsonOrText)` and `crossProjectErr` helpers
-  without modifying it.
+- Do not modify `AbstractOps.kt`. The helpers already exist (`resolveModel`,
+  `resolveNodeReference`, `parseStringOrJsonArray(JsonOrText)`, `crossProjectErr`). The September
+  note about uncommitted D51/D52 edits is not a merge hazard to plan around; the constraint is
+  "do not add helpers there". Multi-entry formatting stays in the toolset file.
 - The settings setters are reached by reflection, as today. mcp-tools keeps no compile-time
   dependency on execution-configurations.
 
@@ -287,20 +305,20 @@ DataContext and PSI wrapper for models, and it ties the tool to producer interna
    response before Phase 1.
 2. Confirm F3's force-close inference in a throwaway project: create a config, `close_project(force=true)`,
    reopen, and look for it.
-3. In the integration fixture, check whether a dynamically created test root passes
-   `JUnitRunTypes.X.check()` (via `findTestDescriptor`). If it does, the tool can call `check()`
-   after filling in the settings and return the platform's own launch-time error up front. That
-   answers D4 with code reuse instead of a copy.
-4. For F7 and D6:
-   - Can `JUnitSettings_Configuration.getTests(mpsProject)` (public) return the test wrappers, and
-     can their `useCompatibilityMode()` be read, before the test module is compiled?
-   - With a mixed set, does either skip message reach `execute_run_configuration`'s output?
-   - If the flag cannot be read before compilation, P9 falls back to a docs note.
+3. **Closed 2026-10-07.** Do not call `JUnitRunTypes.check()`. It returns the first failing
+   module only, and it also fails with "Not found node for id" when `findTestDescriptor` is empty
+   — a different error from `compileInMPS`. D4 is `isCompileInMps` on the new targets only (§8.4).
+4. For F7 and D6 the mechanism is locked (§8.4). Do not call `getTests`: `JUnitRunTypes.collect`
+   runs `Task.Modal` and deadlocks inside `executeShortCommandOnEdt`. Read
+   `useCompatibilityMode()` from `tryToWrap`. JUnit3 discovery sets that flag from the node, not
+   from a class file. Residual spike, in the fixture only: if `tryToWrap` returns null for a
+   `ClassConcept` extending `junit.framework.TestCase` before compilation, P9 falls back to a docs
+   note. Whether the skip message reaches `execute_run_configuration` no longer gates the design.
 
 ### Phase 1: P4 and parameter plumbing
 
-1. Change `nodeReference` to `JsonOrText`, add `modelReference: JsonOrText?`, and implement the
-   "at least one of" rejection and the near-miss entry (§3.1).
+1. Change `nodeReference` to `JsonOrText = JsonOrText.EMPTY`, add `modelReference: JsonOrText?`,
+   and implement the "at least one of" rejection and the near-miss entry (§3.1, §8.1).
 2. Add the model-reference detection that replaces `NOT_FOUND` (§3.2).
 3. Update the `@McpDescription`s. Keep them short (per-turn schema cost). Say:
    - `nodeReference`: a root, or an array of test roots.
@@ -316,11 +334,11 @@ DataContext and PSI wrapper for models, and it ties the tool to producer interna
 2. The choice between the live `MODEL` config and the `NODE` snapshot (§3.2), with the names in
    §3.4 and the in-process flag in §3.3.
 3. The response fields (§3.5).
-4. The `compileInMPS` gate (D4), per distinct module. Always for the new targets; for today's
-   single-root path too if Phase 0.3 shows `check()` can be reused. Otherwise reuse
-   `isCompileInMps` and the Java path's message shape.
-5. The mixed legacy/modern rejection for every JUnit config with more than one test root (D6). It
-   depends on Phase 0.4.
+4. The `compileInMPS` gate (D4), per distinct module, on the new targets only. Do not call
+   `check()` (§8.4). Reuse `isCompileInMps`. Message shape in §8.5. Today's single-root path stays
+   ungated.
+5. The mixed legacy/modern rejection for every JUnit config with more than one test root (D6),
+   via `tryToWrap`, not `getTests` (§8.4).
 
 ### Phase 3: docs (P5, P6)
 
@@ -349,12 +367,15 @@ each changed skill folder over both `.claude/skills/` and `.agents/skills/`.
 - `mps-tests/SKILL.md:39` and `mps-tests/references/running-tests.md:13`: run a test model through
   `modelReference`, several test models or a mix in one call, and a single root only when
   iterating on one test. Legacy JUnit3-style tests need a config of their own (D6).
-- `mps-mcp-workflow/references/mcp-tools-index.md:60`: one-line update.
-- `mps_mcp_close_project`'s `force` description, and `mps-project-management/SKILL.md:40`
-  (and the `:23` directive): say that unsaved workspace state, run configs included, is discarded, not only
-  editor changes. Needs Phase 0.2.
+- `mps-mcp-workflow/references/mcp-tools-index.md:61` (the `create_run_configuration` bullet;
+  `:60` is now `parse_java_and_insert`): one-line update.
+- `mps_mcp_close_project`'s `force` description (`JetBrainsMPSProjectMcpToolset.kt:696`, and the
+  prose at `:679`), and `mps-project-management/SKILL.md:40` (and the `:23` directive): say that
+  unsaved workspace state, run configs included, is discarded, not only editor changes. Needs
+  Phase 0.2. The force-close call itself is `:807`, not `:800`.
 - `test_scenarios/MPS_MCP_FULL_TEST_SCENARIO/11_run_configurations.md` and `COVERAGE_MATRIX.md`
-  (`:46`, `:99`): add the one-model, multi-model, multi-root and mixed cases.
+  (row 35 at `:52`, and the dispatch checklist at `:123`; `:46` and `:99` are unrelated rows now):
+  add the one-model, multi-model, multi-root and mixed cases.
 
 ### Phase 4: study records (P1, P2)
 
@@ -376,9 +397,12 @@ each changed skill folder over both `.claude/skills/` and `.agents/skills/`.
 - **IDEA:** `get_file_problems` on the changed Kotlin files, then `build_project`.
 - **Integration tests**, in `JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest`, which is
   already in `McpToolsIntegrationTestSuite`:
-  1. **One model:** a model with 2 `NodesTestCase` roots and 1 plain root → `MODEL` config. Check
-     its name, `getModelRef`, run type, `testCaseCount = 2` and `live = true`. A one-element
-     `modelReference` array gives the same result.
+  1. **One model:** a model with 2 `NodesTestCase` roots and 1 plain root → `MODEL` config. Each
+     `NodesTestCase` needs an uncommented `NodesTestMethod` in `testMethods`; discovery ignores an
+     empty test case, and the call would be rejected as "no tests" (§8.2). Check its name,
+     `getModelRef` against `PersistenceRegistry.getInstance().asString(model.reference)`, run type,
+     `testCaseCount = 2` and `live = true`. A one-element `modelReference` array gives the same
+     result.
   2. **A model with no tests:** → `INVALID_REQUEST`, alone or inside a union, naming that model.
      No config is left behind.
   3. An unknown model → `NOT_FOUND`. A model from another project → the cross-project error.
@@ -430,14 +454,15 @@ each changed skill folder over both `.claude/skills/` and `.agents/skills/`.
 ## 5. Decisions
 
 All decided on 2026-09-25. D1–D4 follow the first draft's recommendations. D5 and D6 came out of
-§6 and were signed off: D5 as "yes, allow mixtures", D6 as "reject mixed configs".
+§6 and were signed off: D5 as "yes, allow mixtures", D6 as "reject mixed configs". §8 (2026-10-07)
+locks implementation details under these decisions; it does not reopen them.
 
 | # | Question | Answer | Why |
 |---|----------|--------|-----|
 | D1 | Default name for several roots: the IDE's `<first>,...`, or something collision-free (for example `<first> +N`)? | **The IDE's `<first>,...`.** The docs tell agents to pass `configurationName` for lists. | The MCP config and one from multi-select → Run replace each other instead of duplicating. The docs rule covers the collision (two lists with the same first root). |
 | D2 | A model reference in `nodeReference`: reject and name the retry, or accept it silently as a model target? | **Reject** with `INVALID_REQUEST`, naming `modelReference` and the exact retry. | Each parameter keeps one meaning. The cost is one retry at most, and it replaces the misleading `NOT_FOUND` (F2). |
 | D3 | Add `moduleReference` (run type `MODULE`) now? | **No; a follow-up.** | Not asked for, and no study evidence. When it is wanted, it is the same mechanism (`setModuleRef`, run type `MODULE`). |
-| D4 | Gate `compileInMPS` up front for JUnit paths (P8), including today's single-root path? | **Yes for the new paths** (model, several roots). The single-root path too if Phase 0.3 shows `check()` can be reused; otherwise leave it as it is. | The launch would fail for the same reason anyway, so failing at creation saves a launch. Without reuse, a hand-copied check on a tested path is not worth the behaviour change. |
+| D4 | Gate `compileInMPS` up front for JUnit paths (P8), including today's single-root path? | **Yes for the new paths** (model, several roots). **Not** for today's single-root path. Do not call `check()` (closed 2026-10-07, §8.4). | `check()` returns only the first module and also fails with "Not found node for id" when discovery is empty, so it cannot name every offender. `isCompileInMps` reads the same property. A hand-copied check on the already-tested single-root path is not worth the behaviour change. |
 | D5 | Accept several nodes **and** several models in one call (§6)? | **Yes, including mixtures** of roots and models: options N1 + M1 (§6.5). Specified in §3.1–§3.5. | One config and one launch for any set of test roots, through one code path. §6.4 has the trade-offs. |
 | D6 | A set mixing legacy (compatibility-mode) and modern tests (F7): reject, warn, or allow? | **Reject**, naming the legacy tests and telling the agent to give them their own config. Fall back to a docs note if Phase 0.4 shows the flag can't be read at creation. Specified in §3.2. | MPS would skip one group, and the agent can't see why. A rejection costs one retry; a warning is easy to ignore. |
 
@@ -512,8 +537,9 @@ The only case that stays special is one model alone, which keeps the live `MODEL
   for every path, not only this one.
 - **Errors.** An array can fail on several entries at once.
   - Validate everything before creating anything.
-  - Report every bad entry, with its index, in one rejection, so one retry fixes all. This follows
-    `search_root_node_by_name`'s rule for `models`.
+  - Report every bad entry, with its index, in one rejection, so one retry fixes all. The message
+    shape is §8.3. `search_root_node_by_name`'s `models` path returns on the first bad entry; do
+    not copy that.
   - No config is left behind on any failure.
 - **Schema cost: none.** `modelReference` becomes `JsonOrText`, which publishes the same schema as
   `String`. No new tool.
@@ -535,3 +561,178 @@ in §4 already include them.
 - A JUnit config named `D53 probe` (target `SpecializedLinkRedeclaration` in `structureChecks@tests`)
   is registered in the running MPS and saved in this checkout's `.mps/workspace.xml`, which git
   ignores. Remove it under Run > Edit Configurations.
+
+## 8. Implementation contract (locked 2026-10-07)
+
+Where this section disagrees with §3 or §6, follow this section. D1–D6 are unchanged. Start here
+when coding.
+
+### 8.1 Parameters and cardinality
+
+- Signature: `nodeReference: JsonOrText = JsonOrText.EMPTY`,
+  `modelReference: JsonOrText? = null`. The default on `nodeReference` is mandatory (D43). A
+  model-only call never reaches the body without it.
+- Cardinality is after parsing and after collapsing duplicates. A one-element array is one
+  target, not "several". A one-element array of a main class, with no models, is still a Java
+  Application. A one-element `modelReference` array, with no nodes, is still the live `MODEL`
+  config.
+- Collapse duplicate models by `model.reference` before the live/snapshot choice, keeping the
+  first occurrence. `[m, m]` with no nodes is one model, so it stays live. Do not report the
+  duplicate as an error.
+- Collapse duplicate roots by node identity, first position wins. A root listed in
+  `nodeReference` and also inside a listed model counts once, at the `nodeReference` position.
+  Two different nodes with the same name are two tests.
+- A present `[]` contributes no entries. `nodeReference: []` plus a real model is the model-only
+  path, not an error. Reject only when both sides parse to nothing:
+  - both omitted or blank → the D43 envelope (neither key supplied);
+  - at least one side was a present empty array, and the other is absent or empty →
+    `INVALID_REQUEST`: `nodeReference and modelReference are empty; pass a root, a model, or both.`
+- A blank entry inside a non-empty array is a failure at that index, not a skip.
+- An `ITestMethod` is not a target (N3). Alone, keep today's "not runnable" message. Among
+  several targets, it is the non-test rejection.
+
+### 8.2 What counts as a test
+
+`ModelTestCollector` wraps each root with `TestNodeWrapperFactory.tryToWrap`, which calls
+`findTestDescriptor`. For `jetbrains.mps.lang.test`, `LanguageTestDiscoveryParticipants` returns
+empty unless the root is an `ITestCase` **and** has at least one uncommented test method. An
+empty `NodesTestCase` is therefore "no tests", even though today's single-root path accepts it
+(that path never discovers).
+
+- Expand a model in `model.rootNodes` order. A test root is one `tryToWrap` accepts. Use that
+  same set for the union, `testCaseCount`, the in-process check, the no-tests check, and D6.
+- Fixture: add a `NodesTestMethod` (`jetbrains.mps.lang.test.structure.NodesTestMethod`) under
+  the `testMethods` child of each `NodesTestCase`. `createRoot` alone is not enough.
+- No tests → `No tests found in model <model.name.value>.` (`model.name.value` includes the
+  stereotype, which is what `SModelReference.getName()` stringifies to). Applies inside a union
+  too.
+- Read-only: `model.isReadOnly`. Message in §8.5.
+- A model with a null module is rejected: `Model '<name>' has no module; cannot create a run
+  configuration for it.`
+
+### 8.3 Resolution, errors, registration
+
+Catch `McpInvalidReferenceException` per entry. One `c:` reference must not escape the call.
+
+**A `nodeReference` entry**, in this order:
+
+1. Resolve the node in the selected project. Found and not a root → today's non-root sentence.
+2. Not in the project, but `resolveNodeReference(repository)` finds it →
+   `crossProjectErr("Node '<ref>'")`. Do not also treat it as a model.
+3. No node anywhere. `resolveModel(mpsProject, ref, projectOnly = true)` finds a model, including
+   by name → `INVALID_REQUEST`: `'<ref>' is a model; pass it in modelReference to run all its tests`.
+4. That returns null, but `resolveModel(repository, ref)` finds a model →
+   `crossProjectErr("Model '<ref>'")`.
+5. Else `NOT_FOUND`: `Node '<ref>' not found`.
+
+**A `modelReference` entry:**
+
+1. `resolveModel(mpsProject, ref, projectOnly = true)`. Found → read-only, null module, then
+   no-tests. `projectOnly = true` returns null for another project's model; it does not say why.
+2. Null, and the repository overload finds it → `crossProjectErr("Model '<ref>'")`.
+3. Else `NOT_FOUND`: `Model '<ref>' not found`.
+
+**One rejection for the whole call.** Order: `nodeReference` entries, then `modelReference`
+entries. A scalar (the parameter was not an array) has no index: `nodeReference: ...`. An array
+entry is 0-based: `nodeReference[0]: ...`.
+
+- One failure: that failure's sentence and its own code. A lone unknown model stays `NOT_FOUND`.
+  A lone model passed as `nodeReference` stays `INVALID_REQUEST`.
+- Several failures: `NOT_FOUND` only when every failure is `NOT_FOUND`; otherwise
+  `INVALID_REQUEST`. Body: `N entries failed:` and one line per failure.
+- `crossProjectErr` is already `INVALID_REQUEST`.
+
+Validate everything before `addConfiguration`. `createConfiguration` does not register and is
+allowed, including to obtain the JUnit configuration's classloader. On any failure, do not call
+`addConfiguration`. Existing tests count registered configurations.
+
+### 8.4 Gates that are no longer forks
+
+**D4.** Do not call `JUnitRunTypes.check()`. It stops at the first module, and it also fails with
+`Not found node for id` when discovery is empty. Walk each distinct module of the new targets
+with the existing `isCompileInMps` (same module-stub `compileInMPS` property `NODE.check` reads;
+a missing stub is false). Name every offender (§8.5). Today's single test-root path stays
+ungated.
+
+**D6.** Do not call `getTests` or `collect`. `JUnitRunTypes.collect` runs `Task.Modal` and
+deadlocks inside `executeShortCommandOnEdt`. Load `TestNodeWrapperFactory` through the
+configuration classloader (no compile dependency on execution-configurations) and pass the
+project's platform (`MPSProject.getPlatform()`). `tryToWrap`, then `useCompatibilityMode()`.
+
+The flag is set on the node by JUnit3 discovery (`ClassConcept` extending
+`junit.framework.TestCase`), not from a class file. `NodesTestCase` is never legacy. Fixture for
+test 13: `parseClassRoot` of a class extending `junit.framework.TestCase` with a `testXxx`
+method, plus a `NodesTestCase` that has a test method. If `tryToWrap` returns null for that
+class in the fixture, P9 is a docs note and test 13 moves to the docs. That is the only
+remaining spike for D6.
+
+**In-process.** Call `setInProcessFlag` after `setJUnitRunType`. The flag is stored under the
+current run-type index; the default index is `PROJECT`, so setting it first stores it on the
+wrong key. For an `ITestCase`, use the existing `invokeCanRunInProcess`. For a discovered test
+that is not an `ITestCase` (a JUnit3/4 `ClassConcept`), read
+`TestProperties.CAN_RUN_IN_PROCESS` off the descriptor. If that property is absent, clear the
+flag. Do not let a missing behavior method become `INTERNAL_ERROR`.
+
+**Setters.** `setModelRef(String)` and `setModuleRef(String)`, by reflection, same as
+`setTestCases`. Model ref: `PersistenceRegistry.getInstance().asString(model.reference)`
+(`jetbrains.mps.persistence.PersistenceRegistry`, already imported by mcp-tools tests). Not
+`PersistenceFacade`. Module ref: `model.module.moduleReference.toString()`. Snapshot list:
+`PointerUtils.nodesToCloneableList(List<SNode>)` — a `List`, not varargs. The existing
+`setTestCases` lookup accepts it.
+
+**Names.** `jetbrains.mps.util.NameUtil.shortNameFromLongName(model.name.value)`. The stereotype
+must survive (`structureChecks@tests`). If `NameUtil` is not on the compile classpath, reflect
+it; do not hand-strip the namespace. Snapshot with a model: first model in input order, after
+duplicate collapse. Several roots, no model: first root's name plus `,...`, falling back to the
+node id when unnamed.
+
+**Replacement.** `uniqueId` is derived from `<type>.<name>` (the existing replacement test). Do
+not copy or set unique ids. The shared IDE name is what makes an MCP config and a right-click
+config replace each other.
+
+### 8.5 Messages
+
+Copy these. Docs rows in Phase 3 should use the same sentences.
+
+| case | code | text |
+|------|------|------|
+| model (or model name) in `nodeReference` | `INVALID_REQUEST` | `'<ref>' is a model; pass it in modelReference to run all its tests` |
+| cross-project node or model | `INVALID_REQUEST` | `crossProjectErr("Node '<ref>'")` or `crossProjectErr("Model '<ref>'")` |
+| unknown node / model | `NOT_FOUND` | `Node '<ref>' not found` / `Model '<ref>' not found` |
+| non-root, single target | `INVALID_REQUEST` | today's sentence, so the existing test still matches |
+| read-only model | `INVALID_REQUEST` | `Model '<name>' is read-only; the IDE does not create a run configuration for a read-only model.` |
+| no tests | `INVALID_REQUEST` | `No tests found in model <model.name.value>.` |
+| non-test among several targets | `INVALID_REQUEST` | `Root '<name>' is not a test; a Java Application config runs one main, so pass it in a call of its own.` |
+| `compileInMPS=false`, one module | `INVALID_REQUEST` | `Module '<moduleName>' must be compiled by MPS (compileInMPS=false). Can't run tests.` |
+| `compileInMPS=false`, several | `INVALID_REQUEST` | `Modules '<a>' and '<b>' must be compiled by MPS (compileInMPS=false). Can't run tests.` |
+| legacy/modern mix | `INVALID_REQUEST` | `Cannot mix legacy (compatibility-mode) and modern tests in one configuration. Give these legacy tests a configuration of their own: <names>.` |
+
+The `compileInMPS` sentences must contain the token `compileInMPS`. Do not reuse the Java-path
+sentence: it names "owner of node", which a model target does not have.
+
+### 8.6 Citations that drifted
+
+Checked 2026-10-07. Still accurate: `mps-run-configurations/SKILL.md:18`,
+`mps-tests/SKILL.md:39`, `running-tests.md:13`, `mps-project-management/SKILL.md:23` and `:40`,
+tool lines `:95`, `:170`, `:179`, `:275`, `:281`. Corrected in §4: index bullet is `:61` not
+`:60`; force-close call is `:807` and the `force` description is `:696`; `COVERAGE_MATRIX.md`
+row 35 is `:52` and the dispatch checklist is `:123`, not `:46` / `:99`.
+
+### 8.7 Still a spike
+
+- **Phase 0.1.** Run an IDE-made `MODEL` config and confirm per-test output is readable. If it is
+  not, stop before Phase 1. This is the only stop-the-feature gate.
+- **Phase 0.2.** Force-close persistence. Gates only the `close_project` / project-management
+  sentence in Phase 3. The tool work does not wait on it.
+- **Phase 0.4 residual.** `tryToWrap` on the JUnit3 fixture, as in §8.4. Everything else in D6 is
+  decided.
+
+### 8.8 Fixture notes
+
+- `compileInMPS=false`: copy the existing Java-path test,
+  `facet.compile = JavaModuleFacet.Compile.None`. The stub is rebuilt on every read.
+- Existing tests assert fields by name, not the whole JSON, so the new JUnit fields do not break
+  them. Do not assert that those fields are absent. Java Application responses stay
+  `{name, type, uniqueId}`.
+- A single test root's response gains `runType`, `testCaseCount` and `live: false`. That is
+  intended.
