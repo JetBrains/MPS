@@ -40018,6 +40018,13 @@
               </node>
             </node>
           </node>
+          <node concept="13uQ2_" id="7dOUAS9eBuB" role="39821P">
+            <node concept="3_J27D" id="7dOUAS9eBuC" role="13uQ07">
+              <node concept="3Mxwew" id="7dOUAS9eBuD" role="3MwsjC">
+                <property role="3MwjfP" value="intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
+              </node>
+            </node>
+          </node>
           <node concept="13uQ2_" id="5wJpexft1AM" role="39821P">
             <node concept="3_J27D" id="5wJpexft1AN" role="13uQ07">
               <node concept="3Mxwew" id="5wJpexft1AO" role="3MwsjC">
@@ -51008,6 +51015,11 @@
             <ref role="3bR37D" node="399mEuGgZy4" resolve="jetbrains.mps.debugger.core" />
           </node>
         </node>
+        <node concept="1SiIV0" id="7dOUAS9j4oD" role="3bR37C">
+          <node concept="3bR9La" id="7dOUAS9j4oE" role="1SiIV1">
+            <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
+          </node>
+        </node>
       </node>
       <node concept="1E1JtD" id="4LDuh$Ud1LG" role="2G$12L">
         <property role="BnDLt" value="true" />
@@ -53031,6 +53043,11 @@
               </node>
             </node>
           </node>
+          <node concept="1SiIV0" id="7dOUAS9j4tb" role="3bR37C">
+            <node concept="3bR9La" id="7dOUAS9j4tc" role="1SiIV1">
+              <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
+            </node>
+          </node>
         </node>
         <node concept="1E0d5M" id="2xzzSkAQySX" role="1E1XAP">
           <ref role="1E0d5P" node="2eDSGe9d1qo" resolve="jetbrains.mps.execution.api" />
@@ -54108,6 +54125,11 @@
         <node concept="1SiIV0" id="2Oogzg3RlY6" role="3bR37C">
           <node concept="3bR9La" id="2Oogzg3RlY7" role="1SiIV1">
             <ref role="3bR37D" node="4MVYzzgl7sL" resolve="jetbrains.mps.lang.test.junit5" />
+          </node>
+        </node>
+        <node concept="1SiIV0" id="7dOUAS9j4uJ" role="3bR37C">
+          <node concept="3bR9La" id="7dOUAS9j4uK" role="1SiIV1">
+            <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
           </node>
         </node>
       </node>
@@ -72131,6 +72153,25 @@
           </node>
         </node>
       </node>
+      <node concept="1SiIV0" id="7dOUAS9eGr3" role="3bR37C">
+        <node concept="1BurEX" id="7dOUAS9eGr4" role="1SiIV1">
+          <node concept="398BVA" id="7dOUAS9eGqY" role="1BurEY">
+            <ref role="398BVh" node="3SKb_4Jujfy" resolve="mps_home" />
+            <node concept="2Ry0Ak" id="7dOUAS9eGqZ" role="iGT6I">
+              <property role="2Ry0Am" value="plugins" />
+              <node concept="2Ry0Ak" id="7dOUAS9eGr0" role="2Ry0An">
+                <property role="2Ry0Am" value="grazie" />
+                <node concept="2Ry0Ak" id="7dOUAS9eGr1" role="2Ry0An">
+                  <property role="2Ry0Am" value="lib" />
+                  <node concept="2Ry0Ak" id="7dOUAS9eGr2" role="2Ry0An">
+                    <property role="2Ry0Am" value="intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
     </node>
     <node concept="1E1JtA" id="3SKb_4JujfJ" role="3989C9">
       <property role="BnDLt" value="true" />
@@ -72426,6 +72467,24 @@
                       <property role="2Ry0Am" value="lib" />
                       <node concept="2Ry0Ak" id="2QHaXWiUPAa" role="2Ry0An">
                         <property role="2Ry0Am" value="intellij.grazie.core.jar" />
+                      </node>
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+            <node concept="3yLZsm" id="7dOUAS9n9Hb" role="3yL2VB">
+              <property role="3yLZsk" value="/plugins/grazie/lib/intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
+              <node concept="398BVA" id="7dOUAS9n9Hc" role="3yLZsn">
+                <ref role="398BVh" node="3SKb_4Jujfy" resolve="mps_home" />
+                <node concept="2Ry0Ak" id="7dOUAS9n9Hd" role="iGT6I">
+                  <property role="2Ry0Am" value="plugins" />
+                  <node concept="2Ry0Ak" id="7dOUAS9n9He" role="2Ry0An">
+                    <property role="2Ry0Am" value="grazie" />
+                    <node concept="2Ry0Ak" id="7dOUAS9n9Hf" role="2Ry0An">
+                      <property role="2Ry0Am" value="lib" />
+                      <node concept="2Ry0Ak" id="7dOUAS9n9Hg" role="2Ry0An">
+                        <property role="2Ry0Am" value="intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
                       </node>
                     </node>
                   </node>

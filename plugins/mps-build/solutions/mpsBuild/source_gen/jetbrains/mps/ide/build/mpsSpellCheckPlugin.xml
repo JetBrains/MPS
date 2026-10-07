@@ -74,6 +74,7 @@
           <language id="l:f2801650-65d5-424e-bb1b-463a8781b786:jetbrains.mps.baseLanguage.javadoc" />
           <language id="l:760a0a8c-eabb-4521-8bfd-65db761a9ba3:jetbrains.mps.baseLanguage.logging" />
           <language id="l:a247e09e-2435-45ba-b8d2-07e93feba96a:jetbrains.mps.baseLanguage.tuples" />
+          <language id="l:ceab5195-25ea-4f22-9b92-103b95ca8c0c:jetbrains.mps.lang.core" />
           <language id="l:28f9e497-3b42-4291-aeba-0a1039153ab1:jetbrains.mps.lang.plugin" />
           <language id="l:ef7bf5ac-d06c-4342-b11d-e42104eb9343:jetbrains.mps.lang.plugin.standalone" />
           <language id="l:3a13115c-633c-4c5c-bbcc-75c4219e9555:jetbrains.mps.lang.quotation" />
@@ -107,6 +108,7 @@
         <library jar="/lib/intellij.spellchecker.xml.jar" />
         <library jar="/plugins/grazie/lib/intellij.grazie.core.jar" />
         <library jar="/plugins/grazie/lib/org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
+        <library jar="/plugins/grazie/lib/intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
         <sources jar="." descriptor="jetbrains.mps.spellchecker.idea.stubs.msd" />
       </module>
     </echoxml>
@@ -232,6 +234,7 @@
         <fileset file="${mps_home}/lib/intellij.spellchecker.xml.jar" />
         <fileset file="${mps_home}/plugins/grazie/lib/intellij.grazie.core.jar" />
         <fileset file="${mps_home}/plugins/grazie/lib/org.jetbrains.intellij.deps.languagetool-languagetool-core.jar" />
+        <fileset file="${mps_home}/plugins/grazie/lib/intellij.libraries.ai.grazie.spell.gec.engine.local.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
         <fileset file="${artifacts.IDEA}/lib/util.jar" />

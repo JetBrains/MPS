@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-aoq5h7hwg7jxjouu421n324u9q5vcly">
+<product version="3" modelHash="-ddl5o3dmx3cw07pz1nu64bvf36wiqq8">
   <files names="AddWordToDictionary_Action.java:CommentSpellChecker.java:GrazieNativeLangExtension.java:ModuleActivator.java:NativeLanguageAnalyzer.java:NativeLanguageUtil.java:SpellCheck_ProjectPluginPart.java:Spellcheck_ApplicationPlugin.java:Spellcheck_ProjectPlugin.java:WordsToDictionary_ActionGroup.java:startup.properties" />
 </product>
 

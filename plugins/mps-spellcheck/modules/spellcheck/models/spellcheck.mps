@@ -9,6 +9,7 @@
     <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
     <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
     <use id="443f4c36-fcf5-4eb6-9500-8d06ed259e3e" name="jetbrains.mps.baseLanguage.classifiers" version="0" />
+    <use id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core" version="2" />
     <devkit ref="fbc25dd2-5da4-483a-8b19-70928e1b62d7(jetbrains.mps.devkit.general-purpose)" />
   </languages>
   <imports>
@@ -47,6 +48,8 @@
     <import index="bd8o" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.application(MPS.IDEA/)" />
     <import index="44q2" ref="9979803b-18d3-440b-8a74-99cec41fc78e/java:com.intellij.grazie(jetbrains.mps.spellchecker.idea.stubs/)" />
     <import index="wsw7" ref="r:ba41e9c6-15ca-4a47-95f2-6a81c2318547(jetbrains.mps.checkers)" />
+    <import index="1ige" ref="9979803b-18d3-440b-8a74-99cec41fc78e/java:ai.grazie.detector(jetbrains.mps.spellchecker.idea.stubs/)" />
+    <import index="neu9" ref="9979803b-18d3-440b-8a74-99cec41fc78e/java:ai.grazie.nlp.langs(jetbrains.mps.spellchecker.idea.stubs/)" />
   </imports>
   <registry>
     <language id="28f9e497-3b42-4291-aeba-0a1039153ab1" name="jetbrains.mps.lang.plugin">
@@ -294,6 +297,7 @@
       </concept>
       <concept id="1073239437375" name="jetbrains.mps.baseLanguage.structure.NotEqualsExpression" flags="nn" index="3y3z36" />
       <concept id="1081855346303" name="jetbrains.mps.baseLanguage.structure.BreakStatement" flags="nn" index="3zACq4" />
+      <concept id="1172058436953" name="jetbrains.mps.baseLanguage.structure.LocalStaticMethodCall" flags="nn" index="3$87h9" />
       <concept id="1184950988562" name="jetbrains.mps.baseLanguage.structure.ArrayCreator" flags="nn" index="3$_iS1">
         <child id="1184951007469" name="componentType" index="3$_nBY" />
         <child id="1184952969026" name="dimensionExpression" index="3$GQph" />
@@ -3517,16 +3521,10 @@
             <node concept="3uibUv" id="5AhI6VMvBrG" role="1tU5fm">
               <ref role="3uigEE" to="8vcu:~Lang" resolve="Lang" />
             </node>
-            <node concept="2OqwBi" id="5AhI6VMvBrH" role="33vP2m">
-              <node concept="10M0yZ" id="4uQXGp6eiGe" role="2Oq$k0">
-                <ref role="3cqZAo" to="m81:~LangDetector.INSTANCE" resolve="INSTANCE" />
-                <ref role="1PxDUh" to="m81:~LangDetector" resolve="LangDetector" />
-              </node>
-              <node concept="liA8E" id="5AhI6VMvBrJ" role="2OqNvi">
-                <ref role="37wK5l" to="m81:~LangDetector.getLang(java.lang.String)" resolve="getLang" />
-                <node concept="37vLTw" id="5AhI6VMvBrK" role="37wK5m">
-                  <ref role="3cqZAo" node="5AhI6VMvBi3" resolve="text" />
-                </node>
+            <node concept="3$87h9" id="7dOUAS9et_x" role="33vP2m">
+              <ref role="37wK5l" node="7dOUAS9ef4X" resolve="detectLang" />
+              <node concept="37vLTw" id="7dOUAS9et_y" role="37wK5m">
+                <ref role="3cqZAo" node="5AhI6VMvBi3" resolve="text" />
               </node>
             </node>
           </node>
@@ -3882,16 +3880,10 @@
             <node concept="3uibUv" id="5AhI6VMq7ct" role="1tU5fm">
               <ref role="3uigEE" to="8vcu:~Lang" resolve="Lang" />
             </node>
-            <node concept="2OqwBi" id="5AhI6VMq7cu" role="33vP2m">
-              <node concept="10M0yZ" id="5AhI6VMq7cv" role="2Oq$k0">
-                <ref role="3cqZAo" to="m81:~LangDetector.INSTANCE" resolve="INSTANCE" />
-                <ref role="1PxDUh" to="m81:~LangDetector" resolve="LangDetector" />
-              </node>
-              <node concept="liA8E" id="5AhI6VMq7cw" role="2OqNvi">
-                <ref role="37wK5l" to="m81:~LangDetector.getLang(java.lang.String)" resolve="getLang" />
-                <node concept="37vLTw" id="5AhI6VMq7cx" role="37wK5m">
-                  <ref role="3cqZAo" node="5AhI6VMq7eD" resolve="text" />
-                </node>
+            <node concept="3$87h9" id="7dOUAS9et_H" role="33vP2m">
+              <ref role="37wK5l" node="7dOUAS9ef4X" resolve="detectLang" />
+              <node concept="37vLTw" id="7dOUAS9et_I" role="37wK5m">
+                <ref role="3cqZAo" node="5AhI6VMq7eD" resolve="text" />
               </node>
             </node>
           </node>
@@ -5095,6 +5087,196 @@
       </node>
     </node>
     <node concept="3Tm1VV" id="7pzI1FvZpLq" role="1B3o_S" />
+    <node concept="2YIFZL" id="7dOUAS9ef4X" role="jymVt">
+      <property role="TrG5h" value="detectLang" />
+      <node concept="37vLTG" id="7dOUAS9ef4Y" role="3clF46">
+        <property role="TrG5h" value="text" />
+        <node concept="3uibUv" id="7dOUAS9ef4Z" role="1tU5fm">
+          <ref role="3uigEE" to="wyt6:~String" resolve="String" />
+        </node>
+      </node>
+      <node concept="3clFbS" id="7dOUAS9ef50" role="3clF47">
+        <node concept="3SKdUt" id="7dOUAS9ef5K" role="3cqZAp">
+          <node concept="1PaTwC" id="7dOUAS9ef5L" role="1aUNEU">
+            <node concept="3oM_SD" id="7dOUAS9ef5N" role="1PaTwD">
+              <property role="3oM_SC" value="Grazie" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5O" role="1PaTwD">
+              <property role="3oM_SC" value="dropped" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5P" role="1PaTwD">
+              <property role="3oM_SC" value="LangDetector.getLang(String);" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5Q" role="1PaTwD">
+              <property role="3oM_SC" value="replicate" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5R" role="1PaTwD">
+              <property role="3oM_SC" value="it" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5S" role="1PaTwD">
+              <property role="3oM_SC" value="on" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5T" role="1PaTwD">
+              <property role="3oM_SC" value="top" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5U" role="1PaTwD">
+              <property role="3oM_SC" value="of" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5V" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5W" role="1PaTwD">
+              <property role="3oM_SC" value="shared" />
+            </node>
+            <node concept="3oM_SD" id="7dOUAS9ef5X" role="1PaTwD">
+              <property role="3oM_SC" value="detector" />
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs8" id="7dOUAS9ef52" role="3cqZAp">
+          <node concept="3cpWsn" id="7dOUAS9ef51" role="3cpWs9">
+            <property role="TrG5h" value="sample" />
+            <node concept="3uibUv" id="7dOUAS9ef53" role="1tU5fm">
+              <ref role="3uigEE" to="wyt6:~String" resolve="String" />
+            </node>
+            <node concept="1eOMI4" id="7dOUAS9ef5c" role="33vP2m">
+              <node concept="3K4zz7" id="7dOUAS9ef5b" role="1eOMHV">
+                <node concept="3eOSWO" id="7dOUAS9ef54" role="3K4Cdx">
+                  <node concept="2OqwBi" id="7dOUAS9egCX" role="3uHU7B">
+                    <node concept="37vLTw" id="7dOUAS9eg1$" role="2Oq$k0">
+                      <ref role="3cqZAo" node="7dOUAS9ef4Y" resolve="text" />
+                    </node>
+                    <node concept="liA8E" id="7dOUAS9egCY" role="2OqNvi">
+                      <ref role="37wK5l" to="wyt6:~String.length()" resolve="length" />
+                    </node>
+                  </node>
+                  <node concept="10M0yZ" id="7dOUAS9egB$" role="3uHU7w">
+                    <ref role="1PxDUh" to="rqnh:~LanguageDetectorHolder" resolve="LanguageDetectorHolder" />
+                    <ref role="3cqZAo" to="rqnh:~LanguageDetectorHolder.LIMIT" resolve="LIMIT" />
+                  </node>
+                </node>
+                <node concept="2OqwBi" id="7dOUAS9egDc" role="3K4E3e">
+                  <node concept="37vLTw" id="7dOUAS9egBH" role="2Oq$k0">
+                    <ref role="3cqZAo" node="7dOUAS9ef4Y" resolve="text" />
+                  </node>
+                  <node concept="liA8E" id="7dOUAS9egDd" role="2OqNvi">
+                    <ref role="37wK5l" to="wyt6:~String.substring(int,int)" resolve="substring" />
+                    <node concept="3cmrfG" id="7dOUAS9egDe" role="37wK5m">
+                      <property role="3cmrfH" value="0" />
+                    </node>
+                    <node concept="10M0yZ" id="7dOUAS9egE7" role="37wK5m">
+                      <ref role="1PxDUh" to="rqnh:~LanguageDetectorHolder" resolve="LanguageDetectorHolder" />
+                      <ref role="3cqZAo" to="rqnh:~LanguageDetectorHolder.LIMIT" resolve="LIMIT" />
+                    </node>
+                  </node>
+                </node>
+                <node concept="37vLTw" id="7dOUAS9ef5a" role="3K4GZi">
+                  <ref role="3cqZAo" node="7dOUAS9ef4Y" resolve="text" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs8" id="7dOUAS9ef5e" role="3cqZAp">
+          <node concept="3cpWsn" id="7dOUAS9ef5d" role="3cpWs9">
+            <property role="TrG5h" value="detected" />
+            <node concept="3uibUv" id="7dOUAS9ef5f" role="1tU5fm">
+              <ref role="3uigEE" to="neu9:~Language" resolve="ai.grazie.nlp.langs.Language" />
+            </node>
+            <node concept="2OqwBi" id="7dOUAS9egOk" role="33vP2m">
+              <node concept="2OqwBi" id="7dOUAS9egFO" role="2Oq$k0">
+                <node concept="2OqwBi" id="7dOUAS9egDE" role="2Oq$k0">
+                  <node concept="10M0yZ" id="7dOUAS9egC9" role="2Oq$k0">
+                    <ref role="1PxDUh" to="rqnh:~LanguageDetectorHolder" resolve="LanguageDetectorHolder" />
+                    <ref role="3cqZAo" to="rqnh:~LanguageDetectorHolder.INSTANCE" resolve="INSTANCE" />
+                  </node>
+                  <node concept="liA8E" id="7dOUAS9egDF" role="2OqNvi">
+                    <ref role="37wK5l" to="rqnh:~LanguageDetectorHolder.get()" resolve="get" />
+                  </node>
+                </node>
+                <node concept="liA8E" id="7dOUAS9egFP" role="2OqNvi">
+                  <ref role="37wK5l" to="1ige:~ChainLanguageDetector.detect(java.lang.Object,boolean)" resolve="detect" />
+                  <node concept="37vLTw" id="7dOUAS9egFQ" role="37wK5m">
+                    <ref role="3cqZAo" node="7dOUAS9ef51" resolve="sample" />
+                  </node>
+                  <node concept="3clFbT" id="7dOUAS9egFR" role="37wK5m" />
+                </node>
+              </node>
+              <node concept="liA8E" id="7dOUAS9egOl" role="2OqNvi">
+                <ref role="37wK5l" to="1ige:~LanguageDetector$DetectionResult.getPreferred()" resolve="getPreferred" />
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbJ" id="7dOUAS9ef5l" role="3cqZAp">
+          <node concept="3clFbC" id="7dOUAS9ef5m" role="3clFbw">
+            <node concept="37vLTw" id="7dOUAS9ef5n" role="3uHU7B">
+              <ref role="3cqZAo" node="7dOUAS9ef5d" resolve="detected" />
+            </node>
+            <node concept="Rm8GO" id="7dOUAS9egCj" role="3uHU7w">
+              <ref role="1Px2BO" to="neu9:~Language" resolve="Language" />
+              <ref role="Rm8GQ" to="neu9:~Language.UNKNOWN" resolve="UNKNOWN" />
+            </node>
+          </node>
+          <node concept="3clFbS" id="7dOUAS9ef5q" role="3clFbx">
+            <node concept="3cpWs6" id="7dOUAS9ef5r" role="3cqZAp">
+              <node concept="10Nm6u" id="7dOUAS9ef5s" role="3cqZAk" />
+            </node>
+          </node>
+        </node>
+        <node concept="1DcWWT" id="7dOUAS9ef5t" role="3cqZAp">
+          <node concept="2OqwBi" id="7dOUAS9ep3o" role="1DdaDG">
+            <node concept="2OqwBi" id="7dOUAS9ep3r" role="2Oq$k0">
+              <node concept="10M0yZ" id="7dOUAS9ep3u" role="2Oq$k0">
+                <ref role="3cqZAo" to="44q2:~GrazieConfig.Companion" resolve="Companion" />
+                <ref role="1PxDUh" to="44q2:~GrazieConfig" resolve="GrazieConfig" />
+              </node>
+              <node concept="liA8E" id="7dOUAS9ep3v" role="2OqNvi">
+                <ref role="37wK5l" to="44q2:~GrazieConfig$Companion.get()" resolve="get" />
+              </node>
+            </node>
+            <node concept="liA8E" id="7dOUAS9ep3w" role="2OqNvi">
+              <ref role="37wK5l" to="44q2:~GrazieConfig$State.getAvailableLanguages()" resolve="getAvailableLanguages" />
+            </node>
+          </node>
+          <node concept="3cpWsn" id="7dOUAS9ef5B" role="1Duv9x">
+            <property role="TrG5h" value="lang" />
+            <node concept="3uibUv" id="7dOUAS9ef5D" role="1tU5fm">
+              <ref role="3uigEE" to="8vcu:~Lang" resolve="Lang" />
+            </node>
+          </node>
+          <node concept="3clFbS" id="7dOUAS9ef5v" role="2LFqv$">
+            <node concept="3clFbJ" id="7dOUAS9ef5w" role="3cqZAp">
+              <node concept="2OqwBi" id="7dOUAS9egDW" role="3clFbw">
+                <node concept="37vLTw" id="7dOUAS9egCH" role="2Oq$k0">
+                  <ref role="3cqZAo" node="7dOUAS9ef5B" resolve="lang" />
+                </node>
+                <node concept="liA8E" id="7dOUAS9egDX" role="2OqNvi">
+                  <ref role="37wK5l" to="8vcu:~Lang.equalsTo(ai.grazie.nlp.langs.Language)" resolve="equalsTo" />
+                  <node concept="37vLTw" id="7dOUAS9egDY" role="37wK5m">
+                    <ref role="3cqZAo" node="7dOUAS9ef5d" resolve="detected" />
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbS" id="7dOUAS9ef5$" role="3clFbx">
+                <node concept="3cpWs6" id="7dOUAS9ef5_" role="3cqZAp">
+                  <node concept="37vLTw" id="7dOUAS9ef5A" role="3cqZAk">
+                    <ref role="3cqZAo" node="7dOUAS9ef5B" resolve="lang" />
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs6" id="7dOUAS9ef5G" role="3cqZAp">
+          <node concept="10Nm6u" id="7dOUAS9ef5H" role="3cqZAk" />
+        </node>
+      </node>
+      <node concept="3Tm6S6" id="7dOUAS9ef5I" role="1B3o_S" />
+      <node concept="3uibUv" id="7dOUAS9ef5J" role="3clF45">
+        <ref role="3uigEE" to="8vcu:~Lang" resolve="Lang" />
+      </node>
+    </node>
   </node>
   <node concept="312cEu" id="1xq1$bo1Kx5">
     <property role="TrG5h" value="NativeLanguageUtil" />
