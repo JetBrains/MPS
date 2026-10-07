@@ -8,20 +8,29 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import com.intellij.openapi.diagnostic.ControlFlowException
+import com.intellij.openapi.progress.ProcessCanceledException
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations
+import jetbrains.mps.lang.typesystem.runtime.SubtypingRule_Runtime
+import jetbrains.mps.languageScope.LanguageScopeExecutor
+import jetbrains.mps.newTypesystem.SubTypingManagerNew
 import jetbrains.mps.newTypesystem.TypesUtil
 import jetbrains.mps.newTypesystem.context.TracingTypecheckingContext
 import jetbrains.mps.newTypesystem.operation.AbstractOperation
 import jetbrains.mps.newTypesystem.operation.AddErrorOperation
 import jetbrains.mps.newTypesystem.operation.ApplyRuleOperation
 import jetbrains.mps.newTypesystem.operation.AssignTypeOperation
+import jetbrains.mps.newTypesystem.operation.CheckSubTypeOperation
+import jetbrains.mps.newTypesystem.operation.ProcessReplacementRuleOperation
 import jetbrains.mps.newTypesystem.operation.TraceWarningOperation
 import jetbrains.mps.newTypesystem.operation.block.AbstractBlockOperation
 import jetbrains.mps.newTypesystem.operation.block.AddDependencyOperation
 import jetbrains.mps.newTypesystem.operation.block.RemoveDependencyOperation
 import jetbrains.mps.newTypesystem.operation.equation.AddEquationOperation
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.ModuleRepositoryFacade
 import jetbrains.mps.smodel.SNodePointer
 import jetbrains.mps.typechecking.TypecheckingFacade
 import jetbrains.mps.typechecking.TypecheckingSession
@@ -33,6 +42,7 @@ import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.model.SNodeReference
 import org.jetbrains.mps.openapi.model.SNodeUtil
+import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 
 enum class TypesQueryOperation {
@@ -231,7 +241,10 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         false), maxRootNodes (default 10000)} → {type, trace:[{kind, presentation, source?,
         rule?, error?, consequences?}]}: why the node has its type — the devkit's type-system trace for that node, headless:
         the type assignments, equations and inequalities of its slice, nested as the engine ran them, each with the rule
-        statement that added it as {rule, ruleReference, statement}. It type-checks the node's whole root, so a root of more
+        statement that added it as {rule, ruleReference, statement}. A subtype check is a `subtype_checked` or
+        `subtype_by_replacement` entry with {holds, weak, sub, super, via:[{from, to, rule}]}: `via` re-derives the
+        subtyping or replacement rules the check went through (`from`/`to` are presentations), empty when it failed or the types
+        match structurally, and empty with a warning when it cannot be rebuilt. It type-checks the node's whole root, so a root of more
         than maxRootNodes nodes is rejected. Every type is printed as {concept, conceptReference,
         presentation, hasTypeVariables?, blueprint} and carries no node reference. `isComparable: true` does not prove a
         `ComparisonRule` fired; `COMMON_SUPERTYPE` may return several types, whose meet the checker may use rather than
@@ -482,11 +495,16 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             val context = TracingTypecheckingContext(root, engine.helper)
             try {
                 context.checkRootInTraceMode(true)
-                val trace = TypeTrace(node, includeApplyRule) { statement ->
-                    ruleJsonObject(statement, statement.resolve(mpsProject.repository)?.containingRoot)
-                }
+                val trace = TypeTrace(
+                    node, includeApplyRule,
+                    ruleJson = { statement -> ruleJsonObject(statement, statement.resolve(mpsProject.repository)?.containingRoot) },
+                    typeJson = { type -> typeJsonObject(type, mpsProject) },
+                    helper = engine.helper,
+                    repository = mpsProject.repository,
+                )
                 // Walked first, so nothing the type lookup does can reach the tree being walked.
                 val entries = trace.entries(context.operation)
+                warnings.addAll(trace.warnings.distinct())
                 val type = context.getTypeDontCheck(node)?.let { context.state.expandFinal(it) }?.takeUnless(TypesUtil::isVariable)
                 val result = JsonObject()
                 result.add("type", type?.let { typeJsonObject(it, mpsProject) })
@@ -615,20 +633,44 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
     }
 }
 
+/** The most types [TypeTrace] visits re-deriving one subtyping path; the engine's own walk has no cap. */
+private const val MAX_SUBTYPING_PATH_TYPES = 10000
+
+/**
+ * [block]'s value, or null when it throws, a rule's `StackOverflowError` or `LinkageError` included; cancellation
+ * and control-flow throwables are rethrown, as `runCatching` would not.
+ */
+private inline fun <T> tryOrNull(block: () -> T): T? = try {
+    block()
+} catch (e: Throwable) {
+    if (e is ProcessCanceledException || e is ControlFlowException || e is java.util.concurrent.CancellationException) throw e
+    null
+}
+
 /**
  * One node's slice of a recorded type check, as the devkit trace (`TypeSystemTraceTree`) computes it: the node, its
  * descendants, and the type variables equations tie to them. The devkit collects the variables in one chronological
  * pass; here they are collected to a fixpoint, so an equation on a variable recorded before the variable joined the
  * slice is kept too. Variables are kept by name, as the engine's equations identify them: expanding a type copies the
  * variables in it, and a copy stands for the same variable.
+ *
+ * A subtype check records neither a source nor the lattice rules it walked, so it is shown wherever its parent is
+ * kept, and the path is re-derived from [helper]'s rules; [warnings] says where that failed.
  */
 private class TypeTrace(
     node: SNode,
     private val includeApplyRule: Boolean,
     private val ruleJson: (SNodeReference) -> JsonObject,
+    private val typeJson: (SNode) -> JsonObject,
+    private val helper: TypeCheckerHelper,
+    private val repository: SRepository,
 ) {
     private val nodes: Set<SNode> = SNodeUtil.getDescendants(node).toHashSet()
     private val variables = HashSet<String>()
+    private val runtimeRules = HashMap<Class<*>, JsonObject>()
+
+    /** What the trace could not tell, for the answer's `warnings`; filled by [entries]. */
+    val warnings = mutableListOf<String>()
 
     /** The trace under [top], the check's top operation, which is not an entry itself. */
     fun entries(top: AbstractOperation): JsonArray {
@@ -636,7 +678,7 @@ private class TypeTrace(
             val before = variables.size
             addSliceVariables(top)
         } while (variables.size > before)
-        return JsonArray().apply { top.consequences.flatMap(::entriesOf).forEach(::add) }
+        return JsonArray().apply { top.consequences.flatMap(::keptOf).filterNot { it.conditional }.forEach { add(render(it)) } }
     }
 
     private fun inSlice(node: SNode?): Boolean = when {
@@ -661,29 +703,192 @@ private class TypeTrace(
     }
 
     /**
-     * The entries [operation] contributes at its parent's level: its own, or, when it is elided, its kept
-     * consequences hoisted. Dropping an elided operation's subtree instead would empty the trace, since a rule
-     * application is the parent of every equation its rule adds. An operation is kept when it concerns the slice
-     * or one of its consequences is kept.
+     * An operation [keptOf] keeps, with its kept consequences. A [conditional] one is a subtype check nothing else
+     * keeps: it is shown only when its parent entry is.
      */
-    private fun entriesOf(operation: AbstractOperation): List<JsonObject> {
-        val consequences = operation.consequences.flatMap(::entriesOf)
+    private class Kept(val operation: AbstractOperation, val consequences: List<Kept>, val conditional: Boolean)
+
+    /**
+     * What [operation] contributes at its parent's level: itself, or, when it is elided, its kept consequences
+     * hoisted. Dropping an elided operation's subtree instead would empty the trace, since a rule application is the
+     * parent of every equation its rule adds. An operation is kept when it concerns the slice or one of its
+     * consequences is kept unconditionally; a subtype check is kept conditionally otherwise, since it has no source
+     * to put it in the slice, and a passing one has no consequence that would.
+     */
+    private fun keptOf(operation: AbstractOperation): List<Kept> {
+        val consequences = operation.consequences.flatMap(::keptOf)
         if (isElided(operation)) return consequences
-        if (consequences.isEmpty() && !concernsSlice(operation)) return emptyList()
+        val kept = consequences.any { !it.conditional } || concernsSlice(operation)
+        if (!kept && !isSubtypeCheck(operation)) return emptyList()
+        return listOf(Kept(operation, consequences, conditional = !kept))
+    }
+
+    private fun render(kept: Kept): JsonObject {
+        val operation = kept.operation
+        val consequences = kept.consequences.map(::render)
         val entry = JsonObject()
-        entry.addProperty("kind", operation.presentationKind)
+        entry.addProperty("kind", when (operation) {
+            is CheckSubTypeOperation -> "subtype_checked"
+            is ProcessReplacementRuleOperation -> "subtype_by_replacement"
+            else -> operation.presentationKind
+        })
         // A presentation renders the rule's terms, which a faulty rule may leave null.
         entry.addProperty("presentation", runCatching { operation.presentation }.getOrElse { operation.javaClass.simpleName })
         operation.source?.takeIf { it.model != null }?.let {
             entry.addProperty("source", PersistenceFacade.getInstance().asString(it.reference))
         }
         operation.rule?.let { entry.add("rule", ruleJson(it)) }
-        if (operation is AddErrorOperation || operation is TraceWarningOperation || consequences.any { it.has("error") }) {
+        val failedCheck = when (operation) {
+            is CheckSubTypeOperation ->
+                !addSubtypeCheck(entry, operation, operation.subType, operation.superType, operation.isWeak, ::subtypingVia)
+            is ProcessReplacementRuleOperation ->
+                !addSubtypeCheck(entry, operation, operation.subType, operation.superType, operation.isWeak) { sub, sup, _ ->
+                    replacementVia(sub, sup)
+                }
+            else -> false
+        }
+        // A failed check is an error even when its error node lies outside the slice and the error entry is not kept.
+        if (operation is AddErrorOperation || operation is TraceWarningOperation || failedCheck || consequences.any { it.has("error") }) {
             entry.addProperty("error", true)
         }
         if (consequences.isNotEmpty()) entry.add("consequences", JsonArray().apply { consequences.forEach(::add) })
-        return listOf(entry)
+        return entry
     }
+
+    /**
+     * `holds`, `weak`, `sub`, `super` and `via` of a subtype check; answers `holds`. [via] re-derives the rules the
+     * check went through, or answers null when it cannot; a check that failed went through none, and a structural
+     * match went through none either.
+     *
+     * The check reports its own error inside its action, and a replacement rule's derived inequalities (an array's
+     * component types, say) are solved under it, so their errors are the check's too. Errors under an equation a
+     * passing match added are not: that equation can make unrelated blocks concrete, which are then solved, and may
+     * fail, nested here.
+     */
+    private fun addSubtypeCheck(
+        entry: JsonObject,
+        operation: AbstractOperation,
+        sub: SNode?,
+        sup: SNode?,
+        weak: Boolean,
+        via: (SNode, SNode, Boolean) -> JsonArray?,
+    ): Boolean {
+        val holds = !hasOwnError(operation)
+        entry.addProperty("holds", holds)
+        entry.addProperty("weak", weak)
+        entry.add("sub", sub?.let(typeJson))
+        entry.add("super", sup?.let(typeJson))
+        val path = if (holds && sub != null && sup != null) tryOrNull { via(sub, sup, weak) } else JsonArray()
+        if (path == null) {
+            warnings.add(
+                "subtyping path for ${sub?.presentation} <: ${sup?.presentation} could not be re-derived from the lattice rules " +
+                    "(a join/meet, a rule reading its context, or an error reported on a detached node)"
+            )
+        }
+        entry.add("via", path ?: JsonArray())
+        return holds
+    }
+
+    /** An error below [operation] that is not under an equation it added (see [addSubtypeCheck]). */
+    private fun hasOwnError(operation: AbstractOperation): Boolean = operation.consequences.any {
+        it is AddErrorOperation || (it !is AddEquationOperation && hasOwnError(it))
+    }
+
+    /**
+     * The rules a passing [CheckSubTypeOperation] went through: a breadth-first walk up the subtyping rules to the
+     * first type that matches [sup], as `SubtypingResolver.searchInSuperTypes` walks. (`InequalityBlock` creates the
+     * check only after no replacement rule applied to the pair, so none is consulted here.) Each rule is asked on
+     * its own, so every step knows its rule. Empty for a structural match, which no rule took part in; null when no
+     * path is found within [MAX_SUBTYPING_PATH_TYPES] types.
+     */
+    private fun subtypingVia(sub: SNode, sup: SNode, weak: Boolean): JsonArray? {
+        if (TypesUtil.match(sub, sup)) return JsonArray()
+        // SubTypingManagerNew collects immediate supertypes in the global scope, as the context is unknown.
+        val path = LanguageScopeExecutor.execWithGlobalScope({ subtypingPath(sub, sup, weak) }, helper.scopeFactory)
+            ?: return null
+        return JsonArray().apply {
+            path.forEach { step -> add(viaStep(step.from, step.to, runtimeRuleJson(step.rule, "_SubtypingRule", "SubtypingRule"))) }
+        }
+    }
+
+    private class Step(val from: SNode, val to: SNode, val rule: SubtypingRule_Runtime)
+
+    private class Link(val type: SNode, val step: Step?, val previous: Link?) {
+        fun steps(): List<Step> = generateSequence(this) { it.previous }.mapNotNull { it.step }.toList().asReversed()
+    }
+
+    private fun subtypingPath(sub: SNode, sup: SNode, weak: Boolean): List<Step>? {
+        val visited = StructuralNodeSet<Any>().apply { add(sub) }
+        val queue = ArrayDeque<Link>().apply { add(Link(sub, null, null)) }
+        while (queue.isNotEmpty()) {
+            val current = queue.removeFirst()
+            // The engine gives up at a variable as well.
+            if (TypesUtil.isVariable(current.type)) return null
+            if (current.step != null && TypesUtil.match(current.type, sup)) return current.steps()
+            for (applicable in helper.rulesManager.getSubtypingRules(current.type, weak)) {
+                val rule = applicable.o1
+                val supertypes = tryOrNull { rule.getSubOrSuperTypes(current.type, null, applicable.o2) } ?: continue
+                for (supertype in supertypes) {
+                    if (supertype == null || !visited.add(supertype)) continue
+                    if (visited.size > MAX_SUBTYPING_PATH_TYPES) return null
+                    queue.add(Link(supertype, Step(current.type, supertype, rule), current))
+                }
+            }
+        }
+        return null
+    }
+
+    /** The first applicable replacement rule for the pair, which is the one `InequalityBlock` runs; null for none. */
+    private fun replacementVia(sub: SNode, sup: SNode): JsonArray? {
+        val rules = LanguageScopeExecutor.execWithMultiLanguageScope(
+            SubTypingManagerNew.collectLanguagesRecursively(sub, sup),
+            { helper.rulesManager.getReplacementRules(sub, sup) },
+            helper.scopeFactory,
+        )
+        val rule = rules.firstOrNull()?.o1 ?: return null
+        return JsonArray().apply {
+            add(viaStep(sub, sup, runtimeRuleJson(rule, "_InequationReplacementRule", "InequationReplacementRule")))
+        }
+    }
+
+    /** One step of `via`; `from` and `to` are presentations, since the full types are the entry's `sub` and `super`. */
+    private fun viaStep(from: SNode, to: SNode, rule: JsonObject): JsonObject = JsonObject().apply {
+        addProperty("from", from.presentation)
+        addProperty("to", to.presentation)
+        add("rule", rule)
+    }
+
+    /**
+     * `{rule, ruleReference}` of the root a generated rule class came from: MPS generates rule `R` of language `L`
+     * as `L.typesystem.R<suffix>`. When that names no root of [conceptName], `{rule: null, ruleReference: null,
+     * ruleClass}` and a warning.
+     */
+    private fun runtimeRuleJson(rule: Any, suffix: String, conceptName: String): JsonObject = runtimeRules.getOrPut(rule.javaClass) {
+        val ruleClass = rule.javaClass
+        val modelName = ruleClass.packageName
+        val root = if (ruleClass.simpleName.endsWith(suffix) && modelName.endsWith(".typesystem")) {
+            val ruleName = ruleClass.simpleName.removeSuffix(suffix)
+            ModuleRepositoryFacade(repository).getModulesByName(modelName.removeSuffix(".typesystem")).asSequence()
+                .filterIsInstance<Language>()
+                .flatMap { it.models.asSequence() }
+                .filter { it.name.longName == modelName }
+                .flatMap { it.rootNodes.asSequence() }
+                .firstOrNull { it.concept.name == conceptName && it.name == ruleName }
+        } else {
+            null
+        }
+        JsonObject().apply {
+            addProperty("rule", root?.name)
+            addProperty("ruleReference", root?.let { PersistenceFacade.getInstance().asString(it.reference) })
+            if (root == null) {
+                addProperty("ruleClass", ruleClass.name)
+                warnings.add("the rule class ${ruleClass.name} names no $conceptName root in the repository, so its rule is given as ruleClass only")
+            }
+        }
+    }.deepCopy()
+
+    private fun isSubtypeCheck(operation: AbstractOperation): Boolean =
+        operation is CheckSubTypeOperation || operation is ProcessReplacementRuleOperation
 
     private fun isElided(operation: AbstractOperation): Boolean = when (operation) {
         is ApplyRuleOperation -> !includeApplyRule

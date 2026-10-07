@@ -319,6 +319,51 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `EXPLAIN_TYPE shows a passing subtype check with the rules it went through`() {
+        val host = createTypeHost()
+        val envelope = JsonParser.parseString(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.fieldRef("m")}"}""")).asJsonObject
+        val explained = payloadObjectFromOkData(envelope.toString())
+        val entries = traceEntries(explained)
+        // int <: long is decided by BaseLanguage's subtyping rules; a passing check has no consequence to keep it.
+        val widening = entries.singleOrNull {
+            it.get("kind").asString == "subtype_checked" && it.presentationOf("sub") == "int" && it.presentationOf("super") == "long"
+        }
+        assertNotNull("the passing int <: long check is traced: $explained", widening)
+        widening!!
+        assertTrue("$widening", widening.get("holds").asBoolean)
+        assertTrue("$widening", widening.get("weak").asBoolean)
+        assertFalse("a passing check is no error: $widening", widening.has("error"))
+        assertTrue("the check is nested under the entry that ran it: $explained",
+            entries.any { parent -> parent.getAsJsonArray("consequences")?.contains(widening) == true })
+        val via = widening.getAsJsonArray("via").map { it.asJsonObject }
+        assertTrue("the subtyping path is re-derived: $widening", via.isNotEmpty())
+        assertEquals("$via", "int", via.first().get("from").asString)
+        assertEquals("$via", "long", via.last().get("to").asString)
+        for (step in via) assertRuleRoot(step.getAsJsonObject("rule"), "SubtypingRule")
+        assertTrue("a rebuilt path warns about nothing: $envelope",
+            envelope.warnings().none { it.contains("could not be re-derived") || it.contains("ruleClass") })
+
+        // String <: Object walks up the classifier hierarchy through subtyping_classifier.
+        val objectTrace = traceEntries(data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.fieldRef("o")}"}""")))
+        val upcast = objectTrace.single {
+            it.get("kind").asString == "subtype_checked" && it.presentationOf("sub") == "String" && it.presentationOf("super") == "Object"
+        }
+        assertTrue("$upcast", upcast.get("holds").asBoolean)
+        val upcastVia = upcast.getAsJsonArray("via").map { it.asJsonObject }
+        assertEquals("$upcastVia", "Object", upcastVia.last().get("to").asString)
+        assertTrue("$upcastVia", upcastVia.all { it.getAsJsonObject("rule").get("rule").asString == "subtyping_classifier" })
+
+        // null <: List<String> is answered by a replacement rule, which InequalityBlock runs instead of a lattice walk.
+        val nullTrace = traceEntries(data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.fieldRef("list")}"}""")))
+        val byRule = nullTrace.single { it.get("kind").asString == "subtype_by_replacement" }
+        assertTrue("$byRule", byRule.get("holds").asBoolean)
+        val replacement = byRule.getAsJsonArray("via").single().asJsonObject
+        assertEquals("$replacement", byRule.presentationOf("sub"), replacement.get("from").asString)
+        assertEquals("$replacement", byRule.presentationOf("super"), replacement.get("to").asString)
+        assertRuleRoot(replacement.getAsJsonObject("rule"), "InequationReplacementRule")
+    }
+
+    @Test
     fun `EXPLAIN_TYPE marks the path to a type error`() {
         val solution = createSolution()
         val model = createModel(solution, "${solution.moduleName}.code")
@@ -336,7 +381,65 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val below = entry.getAsJsonArray("consequences")?.any { it.asJsonObject.has("error") } == true
             assertTrue("an entry above an error is marked too: $entry", !below || entry.get("error")?.asBoolean == true)
         }
+        val failed = traceEntries(trace).filter { it.get("kind").asString == "subtype_checked" && it.presentationOf("super") == "int" }
+        assertTrue("the failing string <: int check is traced: $trace", failed.isNotEmpty())
+        for (check in failed) {
+            assertFalse("$check", check.get("holds").asBoolean)
+            assertEquals("$check", true, check.get("error")?.asBoolean)
+            assertEquals("a failed check went through no rule: $check", 0, check.getAsJsonArray("via").size())
+            assertTrue("the error is the check's consequence: $check",
+                check.getAsJsonArray("consequences")?.any { it.asJsonObject.get("kind").asString == "error_added" } == true)
+        }
+
+        // String[] <: Integer[] is handed to the Arrays replacement rule (non-primitive components only), which
+        // reports no error itself but derives String <: Integer. That derived check fails — in BaseLanguage it is
+        // another replacement, ClassifierType_NOT_subtypeOf_ClassifierType, which reports the error — so the
+        // outer replacement does not hold either.
+        parseClass(model, BAD_ARRAYS_CODE)
+        val arrayFieldRef = readOnRepo {
+            val field = model.rootNodes.single { it.name == "BadArrays" }.children.single { it.concept.name == "FieldDeclaration" && it.name == "a" }
+            PersistenceFacade.getInstance().asString(field.reference)
+        }
+        val arrayTrace = traceEntries(data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"$arrayFieldRef"}""")))
+        val replacements = arrayTrace.filter {
+            it.get("kind").asString == "subtype_by_replacement" && it.presentationOf("sub") == "String[]" && it.presentationOf("super") == "Integer[]"
+        }
+        assertTrue("the String[] <: Integer[] replacement is traced: $arrayTrace", replacements.isNotEmpty())
+        for (byRule in replacements) {
+            assertFalse("a replacement whose derived inequality fails does not hold: $byRule", byRule.get("holds").asBoolean)
+            assertEquals("$byRule", true, byRule.get("error")?.asBoolean)
+            assertEquals("$byRule", 0, byRule.getAsJsonArray("via").size())
+            assertFalse("the outer replacement reports no error of its own: $byRule",
+                byRule.getAsJsonArray("consequences")?.any { it.asJsonObject.get("kind").asString == "error_added" } == true)
+            // Either kind may carry the derived check, depending on whether a replacement rule handles the pair.
+            val components = traceEntries(byRule.getAsJsonArray("consequences") ?: JsonArray()).filter {
+                it.get("kind").asString in setOf("subtype_checked", "subtype_by_replacement") &&
+                    it.presentationOf("sub") == "String" && it.presentationOf("super") == "Integer"
+            }
+            assertTrue("the derived String <: Integer check is nested under the replacement: $byRule", components.isNotEmpty())
+            for (component in components) {
+                assertFalse("$component", component.get("holds").asBoolean)
+                assertTrue("the derived check reports the error itself: $component",
+                    component.getAsJsonArray("consequences")?.any { it.asJsonObject.get("kind").asString == "error_added" } == true)
+            }
+        }
     }
+
+    /** A `via` step's rule: a root of [conceptName] in BaseLanguage's typesystem model, named as the root is. */
+    private fun assertRuleRoot(rule: JsonObject, conceptName: String) {
+        assertFalse("no fallback to the rule class: $rule", rule.has("ruleClass"))
+        readOnRepo {
+            val root = checkNotNull(PersistenceFacade.getInstance().createNodeReference(rule.get("ruleReference").asString)
+                .resolve(myProject.repository)) { "$rule" }
+            assertTrue("$rule", root.parent == null)
+            assertEquals("$rule", conceptName, root.concept.name)
+            assertEquals("$rule", root.name, rule.get("rule").asString)
+            assertEquals("$rule", "jetbrains.mps.baseLanguage.typesystem", root.model?.name?.longName)
+        }
+    }
+
+    private fun JsonObject.presentationOf(key: String): String? =
+        get(key)?.takeIf { it.isJsonObject }?.asJsonObject?.get("presentation")?.asString
 
     @Test
     fun `the strong variants and the scalar and shape checks`() {
@@ -701,12 +804,13 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     private companion object {
         const val TYPE_HOST_CODE =
-            "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; " +
+            "class TypeHost { int i = 1 + 2; long l = 2L; long m = 1; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; " +
                 "static <T> java.util.List<T> wrap(T t) { return null; } java.util.List<String> w = wrap(\\\"a\\\"); }"
         /** `none()` sits in a type inference context (a variable initializer), so the call alone leaves its T open. */
         const val CONTEXT_CODE =
             "class Context { static <T> java.util.List<T> none() { return null; } java.util.List<String> e = none(); }"
         const val BAD_CODE = "public class Bad { int x = \\\"s\\\"; int y = \\\"t\\\"; }"
+        const val BAD_ARRAYS_CODE = "public class BadArrays { Integer[] a = new String[0]; }"
         const val CONSTRAINED_CODE = "public class Constrained { public int[] a = {1}; public int b = 0; }"
         const val INTEGER_TYPE = "jetbrains.mps.baseLanguage.structure.IntegerType"
         const val LONG_TYPE = "jetbrains.mps.baseLanguage.structure.LongType"
