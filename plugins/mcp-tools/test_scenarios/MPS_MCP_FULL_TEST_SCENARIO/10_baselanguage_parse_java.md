@@ -431,6 +431,10 @@ The type the node's context requires of it. Four calls, `operation:"GET_EXPECTED
 - 10.16d `{"nodeReference":"{{TYPE_HOST_REF}}"}` → `ok==true`, `data==null` (a root has no
   context).
 
+Each answer carries `details.scope=="root"` and no `warnings`. 10.16a–c checked the whole root; a root (10.16d) has no
+context, so nothing is checked. With `"maxRootNodes":1`, 10.16b answers `Object` in `details.scope=="node"`, with one
+warning naming `maxRootNodes`: the parent's slice answered.
+
 Example escaped call (10.16a):
 ```json
 { "tool": "mps_mcp_query_nodes",

@@ -154,6 +154,35 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // A root has no context; no rule of a FieldDeclaration bounds its `type` child.
         assertNull(getExpectedType(host.rootRef))
         assertNull(getExpectedType(host.typeChildRef("l")))
+        // The whole root answered, without a warning.
+        val envelope = getExpectedTypeEnvelope(host.initializerRef("o"))
+        assertEquals("$envelope", "root", envelope.scope())
+        assertEquals("$envelope", emptyList<String>(), envelope.warnings())
+    }
+
+    // The case the root check exists for, a bound that another statement widens (`var E = 10; E := 2.6 F; E := 10`
+    // in the Expressions sample), needs a language whose assignments widen a variable; BaseLanguage only checks them,
+    // so no distribution language builds it. These are the scope and its fallbacks.
+    @Test
+    fun `GET_EXPECTED_TYPE falls back to the parent's slice for an oversized root and for commented-out code`() {
+        val host = createTypeHost()
+        val capped = getExpectedTypeEnvelope(host.initializerRef("o"), maxRootNodes = 1)
+        assertEquals("$capped", "node", capped.scope())
+        assertTrue("the size-cap fallback is explained: $capped", capped.warnings().single().contains("maxRootNodes"))
+        assertEquals("an ordinary slot is bounded the same either way", "Object", capped.getAsJsonObject("data").get("presentation").asString)
+
+        // The root's check skips a commented-out subtree; the parent's slice still bounds the node.
+        commentOut(host.fieldRef("l"))
+        val commented = getExpectedTypeEnvelope(host.initializerRef("l"))
+        assertEquals("$commented", "node", commented.scope())
+        assertTrue("$commented", commented.warnings().single().contains("IDontApplyTypesystemRules"))
+        assertEquals("long", commented.getAsJsonObject("data").get("presentation").asString)
+
+        val rejected = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_EXPECTED_TYPE, """{"nodeReference":"$DUMMY_NODE_REF","maxRootNodes":0}""")
+        }).asJsonObject
+        assertEquals("$rejected", "INVALID_REQUEST", rejected.get("code").asString)
+        assertTrue("$rejected", rejected.get("error").asString.contains("maxRootNodes"))
     }
 
     @Test
@@ -607,12 +636,19 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     /** `mps_mcp_query_nodes` GET_EXPECTED_TYPE's `data`, or null when it answers `data: null`. */
     private fun getExpectedType(nodeRef: String): JsonObject? {
+        val envelope = getExpectedTypeEnvelope(nodeRef)
+        return if (envelope.get("data").isJsonNull) null else payloadObjectFromOkData(envelope.toString())
+    }
+
+    /** `mps_mcp_query_nodes` GET_EXPECTED_TYPE's whole ok envelope, so `details.scope` and `warnings` can be read. */
+    private fun getExpectedTypeEnvelope(nodeRef: String, maxRootNodes: Int? = null): JsonObject {
+        val cap = maxRootNodes?.let { ""","maxRootNodes":$it""" } ?: ""
         val response = runTool(JetBrainsMPSNodeMcpToolset()) {
-            it.mps_mcp_query_nodes(MPSQueryOperation.GET_EXPECTED_TYPE, """{ "nodeReference": "$nodeRef" }""")
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_EXPECTED_TYPE, """{"nodeReference":"$nodeRef"$cap}""")
         }
         val envelope = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
-        return if (envelope.get("data").isJsonNull) null else payloadObjectFromOkData(response)
+        return envelope
     }
 
     /** The root's reference and, per field name, the field's, its `type` child's and its `initializer` child's. */

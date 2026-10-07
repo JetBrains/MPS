@@ -14,8 +14,6 @@ import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.MessageStatus
 import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
-import jetbrains.mps.lang.typesystem.runtime.HUtil
-import jetbrains.mps.newTypesystem.TypesUtil
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
@@ -27,7 +25,6 @@ import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.project.validation.ModelValidator
 import jetbrains.mps.project.validation.ValidationUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
-import jetbrains.mps.typechecking.TypecheckingFacade
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
@@ -104,6 +101,9 @@ private val NODE_INFO_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "th
 
 private val GET_TYPE_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to type"), "maxRootNodes")
 
+private val GET_EXPECTED_TYPE_KEYS =
+    ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose slot to ask about"), "maxRootNodes")
+
 private val COPY_NODE_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to copy"))
 
 private val FIX_REFERENCES_KEYS =
@@ -133,9 +133,9 @@ private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys
     MPSQueryOperation.FIND_INSTANCES -> FIND_INSTANCES_KEYS
     MPSQueryOperation.FIND_USAGES -> FIND_USAGES_KEYS
     MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
-    MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
-    MPSQueryOperation.GET_EXPECTED_TYPE -> NODE_INFO_KEYS
+    MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE -> NODE_INFO_KEYS
     MPSQueryOperation.GET_TYPE -> GET_TYPE_KEYS
+    MPSQueryOperation.GET_EXPECTED_TYPE -> GET_EXPECTED_TYPE_KEYS
 }
 
 /**
@@ -180,10 +180,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         commented-out code, a root of more than `maxRootNodes` nodes (default 10000), or a node the root check leaves
         untyped. No reference to the type is offered (it is usually a computed copy), `hasTypeVariables`:true marks a type
         that is not fully instantiated, and `data` is null when the node has no type or it could not be inferred. GET_EXPECTED_TYPE answers,
-        in the same shape, the type the node's context requires of it (what `has expected type` checks): the least common
-        supertype of the context's upper (`:<=:`) or else comparable bounds; `data` is null when there is none (a root, a slot
-        bounded only by `:==:` or `:>=:`). The answer can depend on the node already in the slot; for an empty slot, ask via
-        the node you are about to replace. To compare or widen
+        in the same shape, the type the node's context requires of it: the least common supertype of the upper (`:<=:`) or
+        else comparable bounds a check of the whole root puts on the node's slot, with `details.scope` and the same
+        `maxRootNodes` fallbacks as GET_TYPE; scope "node" is the parent's slice, which `has expected type` checks
+        (`maxRootNodes`:1 gives it). `data` is null when there is no bound (a root, a slot bounded only by `:==:` or `:>=:`).
+        The answer can depend on the node already in the slot, though not on what the node itself adds (a value that widens
+        a variable can be wider than the answer); for an empty slot, ask via the node you are about to replace. To compare or widen
         types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE), or to see why a node has its type
         (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
@@ -326,7 +328,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     ): String {
         val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         // Read before the node is looked up, as EXPLAIN_TYPE does, so a bad value is rejected first.
-        val maxRootNodes = if (operation == MPSQueryOperation.GET_TYPE) params.maxRootNodesParameter() else DEFAULT_MAX_ROOT_NODES
+        val maxRootNodes = when (operation) {
+            MPSQueryOperation.GET_TYPE, MPSQueryOperation.GET_EXPECTED_TYPE -> params.maxRootNodesParameter()
+            else -> DEFAULT_MAX_ROOT_NODES
+        }
         return executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
@@ -348,7 +353,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject, maxInlineBytes)
                 MPSQueryOperation.GET_CHILD_ROLE -> opGetChildRole(node, mpsProject)
                 MPSQueryOperation.GET_TYPE -> opGetType(node, maxRootNodes, mpsProject)
-                MPSQueryOperation.GET_EXPECTED_TYPE -> opGetExpectedType(node, mpsProject)
+                MPSQueryOperation.GET_EXPECTED_TYPE -> opGetExpectedType(node, maxRootNodes, mpsProject)
                 MPSQueryOperation.FIND_USAGES,
                 MPSQueryOperation.FIND_INSTANCES -> errJson("Unsupported operation: $operation")
             }
@@ -386,21 +391,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     /**
-     * The type [node]'s context requires of it: a fresh hole check of the parent collects the
-     * inequalities put on the node and answers the least common supertype of their upper bounds
-     * (or of the comparable bounds when there are none). Lower bounds and equations are not
-     * consulted, so a root and a slot bounded only by `:==:` or `:>=:` answer no type; so does the
-     * hole placeholder itself, which the engine's own hole check discards too.
+     * The type [node]'s context requires of it as [rootScopedExpectedTypeOf] finds it, printed by
+     * [typeJsonObject]; `details.scope` says whether the root check or the parent's slice answered.
      */
-    private fun opGetExpectedType(node: SNode, mpsProject: MPSProject): String {
-        val type = TypecheckingFacade.getFromContext().getInferredType(node)
-        return typeOrNullJson(type.takeUnless { HUtil.isRuntimeHoleType(it) }, mpsProject)
-    }
-
-    /** [typeJsonObject] of [type], or `data: null` for no type or a bare type variable. */
-    private fun typeOrNullJson(type: SNode?, mpsProject: MPSProject): String {
-        if (type == null || TypesUtil.isVariable(type)) return okJson("null")
-        return okJson(typeJsonObject(type, mpsProject))
+    private fun opGetExpectedType(node: SNode, maxRootNodes: Int, mpsProject: MPSProject): String {
+        val type = rootScopedExpectedTypeOf(node, maxRootNodes) { typeJsonObject(it, mpsProject) }
+        return okJson(type.value ?: JsonNull.INSTANCE, warnings = listOfNotNull(type.warning), details = mapOf("scope" to type.scope))
     }
 
     private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {

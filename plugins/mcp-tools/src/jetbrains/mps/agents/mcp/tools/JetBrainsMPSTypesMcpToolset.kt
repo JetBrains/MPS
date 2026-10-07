@@ -50,7 +50,7 @@ internal const val DEFAULT_MAX_ROOT_NODES = 10000
 
 /**
  * `parameters.maxRootNodes`, or [DEFAULT_MAX_ROOT_NODES]: the largest root that EXPLAIN_TYPE and
- * `mps_mcp_query_nodes` GET_TYPE type-check as a whole, since the check blocks the UI while it runs.
+ * `mps_mcp_query_nodes` GET_TYPE and GET_EXPECTED_TYPE type-check as a whole, since the check blocks the UI while it runs.
  */
 internal fun JsonObject.maxRootNodesParameter(): Int {
     val maxRootNodes = paramInt("maxRootNodes") ?: return DEFAULT_MAX_ROOT_NODES

@@ -4,8 +4,8 @@ Context: D100 made `mps_mcp_query_nodes` `GET_TYPE` (and `mps_mcp_query_types` `
 type that a check of the node's whole root decides. Before, it answered a one-node computation that types only the
 node's own slice. It now uses `computeIsolated(Flags.forRoot(root).incremental())`, which falls back to the one-node
 computation with `details.scope: "node"`. While building and reviewing that fix, two neighbouring operations turned out
-to have related problems. **Neither is fixed and neither is scheduled.** Both come from reading the code and are **not
-reproduced** yet.
+to have related problems. Both came from reading the code. **F1 reproduced and is fixed; F2 did not reproduce and is
+closed** (see the status at the top of each section).
 
 Live reference sample: `samples/expressions`, study fixture `~/MPSProjects/mcp-study/fixtures/expressions.tar.gz`,
 sandbox model `r:95889e99-7e33-4e8a-9f36-e33116f08527(jetbrains.mps.samples.Expressions.sandbox)`. Root `Main`:
@@ -22,6 +22,54 @@ The root check types `E` as `Float`: `typeof_SimpleMathVarDeclaration` gives `E 
 ---
 
 ## F1 — `GET_EXPECTED_TYPE` computes bounds from the parent's slice only (same class as D100)
+
+**Reproduced and fixed 2026-10-07, verified live.** Live check against MPS restarted with the build:
+- On a temporary copy of `Main` with `E := D` duplicated, the root check gives `E` = `Float` and reports no type
+  errors. GET_EXPECTED_TYPE on each `D` answers `Float` in scope `root`; with `maxRootNodes:1` (the old slice) it
+  answers `Int`.
+- On the unchanged sample:
+  - Q3 still gives `Float` (scope `root`), and EXPLAIN_TYPE credits `i = Float added` to `typeof_SimpleMathAssignment`;
+  - Q5 still gives `Number`, now in scope `root`;
+  - the single `D` in `E := D` gives `Int`, the documented own-value limit.
+- `idea.log` showed no SEVERE entries and no rule-application errors.
+- The S11 worker round is still outstanding.
+
+Repro, Expressions (root `var E = 10; E := 2.6 F; E := 10`):
+- GET_TYPE on `E` gives `Float`, scope `root`, and the root check reports no problems.
+- GET_EXPECTED_TYPE gives `Int` on the last `10`, where the root decides `E` is `Float`.
+- Cause: the hole check runs `computeTypesSpecial(parent, forceChildrenCheck=false)`
+  (`SimpleTypecheckingComponent.java:282-287`), and `HoleTypecheckingComponent.typeCalculated` stops it as soon as
+  the bound has no type variables in it. It never reaches the other assignment, so it solves `E` from its initializer
+  alone.
+
+BaseLanguage does not diverge. 9 constructs gave the same answer from the slice and from the whole root:
+- generic calls with the type argument fixed by context, with and without an argument;
+- array initializers;
+- a cast;
+- a varVariable `for (var x : …)` with assignments in the body.
+
+BaseLanguage assignments only *check* `rValue :<=: lValue`, so they never widen a variable:
+`x = new Object()` is reported as "Object is not a subtype of String". `wrap(1)` in `List<Number> n = wrap(1)` is not
+a case either: the root check binds `T` from the argument and then reports a type error.
+
+Fix (plugin only), `RootScopedExpectedType.kt`:
+- The `HoleTypecheckingContext` subclasses drain the node's whole root with the node as the hole, do not stop early,
+  and run in the model's language scope, as `checkRoot` does.
+- GET_EXPECTED_TYPE takes `maxRootNodes` and reports `details.scope`.
+- The parent's slice answers instead, with a warning, for:
+  - commented-out code;
+  - a root over the cap;
+  - a slot that the root check leaves without a bound while the slice finds one.
+- `has expected type` and Show Expected Type still use the slice; `maxRootNodes:1` reproduces their answer.
+- Tests: `GET_EXPECTED_TYPE answers the type the context requires` (scope `root`) and `GET_EXPECTED_TYPE falls back to
+  the parent's slice for an oversized root and for commented-out code`. Since no distribution language builds the
+  divergent case, the Expressions repro is verified live.
+
+Known limit, not fixed: the node in the slot is replaced by the hole, so what it adds itself is not counted. In the
+root above, `2.6 F` still answers `Int` (the bound `E` would have without it), although the root check accepts it.
+`type-queries.md` says so, and points to `mps_mcp_check_root_node_problems`.
+
+The original analysis follows.
 
 **Code path**
 - `JetBrainsMPSNodeMcpToolset.kt` `opGetExpectedType` → `TypecheckingFacade.getFromContext().getInferredType(node)`.
@@ -58,7 +106,7 @@ widens.
 - keep the existing rule that `:==:` / `:>=:` bounds are ignored.
 
 **How to verify**
-1. Build the repro above; an MPS `NodesTestCase` with `has expected type` is the authoritative counterpart.
+1. Build the repro above. (`has expected type` in a `NodesTestCase` runs the same parent-slice hole check, so it is not an independent counterpart.)
 2. Add an integration test next to the D100 GET_TYPE tests in
    `plugins/mcp-tools/test/.../integration/JetBrainsMPSTypesMcpToolsetIntegrationTest.kt` (or the Node toolset test).
 3. Re-run study S11: Q5 must stay `Number`.
@@ -66,6 +114,45 @@ widens.
 ---
 
 ## F2 — `EXPLAIN_TYPE` may drop every operation after the first expansion pass (`TargetState` with no target)
+
+**Closed: not reproduced (2026-10-07).** The mechanism is real, but it cuts in after the trace is complete:
+
+- With `initialNode == null`, `SimpleTypecheckingComponent.computeTypes` skips `setTargetNode`
+  (`SimpleTypecheckingComponent.java:116-118`). The first `expandAll` therefore marks the target calculated:
+  `expandTargetNode(null)` → `hasVariablesInside(null)` is false (`TargetState.java:76-81`).
+- Before that point, though, one round of `computeTypesSpecial` (`SimpleTypecheckingComponent.java:264-270`) has
+  already done the work. It drains the queue with `forceChildrenCheck`, which applies the rules to every node of the
+  root. It then solves the inequalities to a fixpoint (`Inequalities.java:132-140`), with `TargetInequalities` still
+  unblocked. `when concrete` blocks fire during the drain or the solve. So every rule application, `when concrete`
+  follow-up and equation of the root's own nodes is recorded.
+- 8 probes compared the `EXPLAIN_TYPE` `type` with `GET_TYPE` (root scope); they agreed in every one:
+
+  | expression | type |
+  |---|---|
+  | Expressions `10 * 2.6 F` | Float |
+  | `E * 2` (its `when concrete` fires inside "Solving inequalities") | Float |
+  | `Z * 2` (`Z` has no initializer) | Number |
+  | BaseLanguage `1 + 2L` | long |
+  | `c ? 1 : 2L` | long |
+  | `c ? 'x' : 2` | int |
+  | `pick(new A(), new B())` (generic) | A |
+  | `pick(1.5, 2.5) * 2` | double |
+
+  Each `when_concrete_added` entry has a matching `when_concrete_removed … executed` entry with its follow-up
+  equations.
+- What is dropped after the flag is set:
+  - the "Types Expansion" step, which is masked because `opExplainType` calls `expandFinal` itself;
+  - the "argument of WHEN CONCRETE block is never concrete" warnings from `State.performActionsAfterChecking`
+    (`State.java:380-409`, an `AddErrorOperation`). None appeared in any probe;
+  - rule application to an off-root node whose type is first asked for inside a `when concrete` that fires during the
+    solve. A scan of the `when concrete` bodies in the generated sources under `languages/`, `plugins/` and `core/`
+    found only `typeof` calls on in-root nodes, so no rule triggers this.
+- The last bullet of "Suspected defect" is wrong. `isSingleTypeComputation()` belongs to the context, and
+  `TracingTypecheckingContext` returns `false` (`TracingTypecheckingContext.java:48-51`), so rules that branch on
+  check-only take the full-check branch.
+
+No fix: the MPS-side change (a plain `State` for whole-root traces) would only restore the never-concrete warnings in
+the trace. The original analysis follows.
 
 **Code path**
 - `JetBrainsMPSTypesMcpToolset.kt` `opExplainType` (≈ line 482) creates `TracingTypecheckingContext(root, engine.helper)`,
