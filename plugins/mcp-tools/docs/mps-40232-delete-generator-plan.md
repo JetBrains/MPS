@@ -48,7 +48,19 @@ Next steps, in order:
      - T7 first asserts that the reference resolves through the shared repository.
    - The module dependency `mcp-tools` → `module` was added to `mcp-tools.iml`. The Ant build already has
      `mps-core.jar`.
-4. Phase 5, including the live check, which needs a restart of MPS from source (the user does that).
+4. Phase 5: done (2026-10-07).
+   - Live check against MPS restarted from source after `ed383b4efd5b`, with scratch languages under
+     `/private/tmp/m40232v/`. All four reproduction steps behave as expected:
+     - DELETE without files keeps the language in `modules.xml` and leaves `generator/` on disk, no longer declared.
+     - A facet update on the language does not resurrect the generator.
+     - DELETE with files removes only `generator/`.
+     - A language DELETE with files logs no listener WARN.
+     - `idea.log` shows no errors and no listener warnings. Its only warnings are the "source root does not exist"
+       lines that module creation logs. The scratch modules were cleaned up.
+   - `McpToolsIntegrationTestSuite`: 1170 tests, 1169 green. The one failure,
+     `SkillReferenceLayoutTest.every reference file fits the byte budget`, comes from another session's uncommitted
+     edit of `mps-mcp-workflow/references/analysis-tools/type-queries.md`: 12650 B in the working tree versus
+     12221 B at HEAD, against a 12288 B budget.
 
 ## Interim guard (in place, `19f8c4997782`)
 Until Phases 1-2 land, `deleteModule` refuses a non-standalone generator with `INVALID_REQUEST` and changes
