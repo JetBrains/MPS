@@ -40,6 +40,11 @@
       <test name="jetbrains.mps.testbench.junit.suites.CheckProjectStructure"/>
       <formatter type="xml"/>
       <classpath>
+        <!-- vendored kotlin-metadata must shadow the platform's shrunk intellij.libraries.kotlin.metadata.jar -->
+        <fileset dir="${mps_build_home}/lib">
+          <include name="kotlin-metadata-jvm-*.jar"/>
+          <include name="kotlinx-metadata-klib-*.jar"/>
+        </fileset>
         <fileset dir="${mps_build_home}/lib">
           <include name="*.jar"/>
         </fileset>
