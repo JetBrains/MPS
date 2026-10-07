@@ -24,6 +24,7 @@ import jetbrains.mps.newTypesystem.operation.equation.AddEquationOperation
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.SNodePointer
 import jetbrains.mps.typechecking.TypecheckingFacade
+import jetbrains.mps.typechecking.TypecheckingSession
 import jetbrains.mps.typesystem.inference.TypeCheckerHelper
 import jetbrains.mps.typesystem.inference.util.StructuralNodeSet
 import jetbrains.mps.typesystemEngine.util.TypeSystemUtil
@@ -46,6 +47,106 @@ enum class TypesQueryOperation {
 private const val DEFAULT_SUPERTYPES_DEPTH = 8
 private const val MAX_SUPERTYPES_DEPTH = 32
 internal const val DEFAULT_MAX_ROOT_NODES = 10000
+
+/**
+ * `parameters.maxRootNodes`, or [DEFAULT_MAX_ROOT_NODES]: the largest root that EXPLAIN_TYPE and
+ * `mps_mcp_query_nodes` GET_TYPE type-check as a whole, since the check blocks the UI while it runs.
+ */
+internal fun JsonObject.maxRootNodesParameter(): Int {
+    val maxRootNodes = paramInt("maxRootNodes") ?: return DEFAULT_MAX_ROOT_NODES
+    if (maxRootNodes < 1) {
+        throw AbstractOps.McpInvalidRequestException("'parameters.maxRootNodes' must be at least 1, got $maxRootNodes")
+    }
+    return maxRootNodes
+}
+
+internal fun rootNodeCount(root: SNode): Int = SNodeUtil.getDescendants(root).count()
+
+/**
+ * Whether [node] lies in a subtree marked IDontApplyTypesystemRules (e.g. commented out). A check of the
+ * node's root does not type that subtree; a one-node computation, which starts below the marker, still does.
+ */
+internal fun isSkippedByRootTypecheck(node: SNode): Boolean =
+    generateSequence(node) { it.parent }.any { !TypeSystemUtil.shouldApplyTypeSystemRules(it) }
+
+/**
+ * A node's type as [rootScopedTypesOf] found it: [value] is what the caller made of the type (null for no
+ * type), [scope] is `root` or `node`, and [warning] explains a fallback to the one-node computation;
+ * [rootTooLarge] says the fallback was the `maxRootNodes` cap, which the caller can lift.
+ */
+internal class RootScopedType<T : Any>(
+    val value: T?,
+    val scope: String,
+    val warning: String? = null,
+    val rootTooLarge: Boolean = false,
+)
+
+private const val UNCHECKED_SUBTREE_FALLBACK =
+    "the node lies in a subtree marked IDontApplyTypesystemRules (e.g. commented out), which the root's type check " +
+        "does not type; this is the node's one-node type, which misses the constraints the rest of the root would put on it"
+
+private const val NO_ROOT_TYPE_FALLBACK =
+    "the root's type check gives the node no type; this is its one-node type, computed from the node's own slice only"
+
+private fun rootTooLargeFallback(rootNodes: Int, maxRootNodes: Int) =
+    "the root has $rootNodes nodes, more than maxRootNodes ($maxRootNodes), so it was not type-checked as a whole; " +
+        "this is the node's one-node type, which misses the constraints other statements put on it. " +
+        "GET_TYPE's maxRootNodes raises the cap, with the UI blocked while the root is checked"
+
+/**
+ * The type the typesystem assigns to each of [nodes] — GET_TYPE's answer, and a `nodeReference` type
+ * operand's: the one a check of the node's whole root decides, the check the editor and
+ * `mps_mcp_check_root_node_problems` run, so the constraints other statements put on the node count. The
+ * nodes are grouped by root and each root is checked once, in one isolated session for all its nodes. A
+ * one-node computation types only a node's own slice; it answers instead (scope `node`, with a warning)
+ * when the root check does not type the node (a commented-out subtree), the root has more than
+ * [maxRootNodes] nodes, or the root check gives a non-root node no type the one-node computation does
+ * find. Both run in isolated sessions, so the answer does not depend on whether an editor has the root
+ * open. [use] maps a type inside its session; the type node stays usable after the session clears its
+ * state on exit. A bare type variable is no type. The map keeps the order of [nodes], without duplicates.
+ */
+internal fun <T : Any> rootScopedTypesOf(nodes: Collection<SNode>, maxRootNodes: Int, use: (SNode) -> T): Map<SNode, RootScopedType<T>> {
+    val facade = TypecheckingFacade.getFromContext()
+    fun typesIn(flags: TypecheckingSession.Flags, typed: Collection<SNode>): Map<SNode, T?> =
+        facade.computeIsolated(flags) { _: TypecheckingSession ->
+            typed.associateWith { facade.getTypeOf(it)?.takeUnless(TypesUtil::isVariable)?.let(use) }
+        }
+    val found = HashMap<SNode, RootScopedType<T>>()
+    // A node the root check does not settle, with the warning its one-node type carries.
+    val fallbacks = LinkedHashMap<SNode, RootScopedType<T>>()
+    for ((root, group) in nodes.distinct().groupBy { it.containingRoot }) {
+        val (skipped, checked) = group.partition(::isSkippedByRootTypecheck)
+        skipped.forEach { fallbacks[it] = RootScopedType(null, "node", UNCHECKED_SUBTREE_FALLBACK) }
+        if (checked.isEmpty()) continue
+        val rootNodes = rootNodeCount(root)
+        if (rootNodes > maxRootNodes) {
+            val warning = rootTooLargeFallback(rootNodes, maxRootNodes)
+            checked.forEach { fallbacks[it] = RootScopedType(null, "node", warning, rootTooLarge = true) }
+            continue
+        }
+        for ((node, type) in typesIn(TypecheckingSession.Flags.forRoot(root).incremental(), checked)) {
+            when {
+                type != null -> found[node] = RootScopedType(type, "root")
+                // The root check applied every rule the root's own computation would.
+                node == root -> found[node] = RootScopedType(null, "root")
+                else -> fallbacks[node] = RootScopedType(null, "node", NO_ROOT_TYPE_FALLBACK)
+            }
+        }
+    }
+    if (fallbacks.isNotEmpty()) {
+        val nodeTypes = typesIn(TypecheckingSession.Flags.basic(), fallbacks.keys)
+        for ((node, fallback) in fallbacks) {
+            val type = nodeTypes[node]
+            found[node] = if (type == null && fallback.warning == NO_ROOT_TYPE_FALLBACK) RootScopedType(null, "root")
+            else RootScopedType(type, "node", fallback.warning, fallback.rootTooLarge)
+        }
+    }
+    return nodes.distinct().associateWith { found.getValue(it) }
+}
+
+/** [rootScopedTypesOf] for one node. */
+internal fun <T : Any> rootScopedTypeOf(node: SNode, maxRootNodes: Int, use: (SNode) -> T): RootScopedType<T> =
+    rootScopedTypesOf(listOf(node), maxRootNodes, use).getValue(node)
 
 private const val OPERAND_EXPECTED =
     "a type operand: an object with exactly one of nodeReference, typeNodeReference, typeConceptRef or blueprint"
@@ -116,7 +217,8 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
     @McpDescription("""
         Read-only typesystem queries: the engine runs the language's subtyping, replacement, comparison and
         overloaded-operation rules, so the answer is what the type checker itself decides. Each type operand is an
-        object with exactly one of `nodeReference` (the type of that node, as `mps_mcp_query_nodes` GET_TYPE computes it),
+        object with exactly one of `nodeReference` (the type of that node, as `mps_mcp_query_nodes` GET_TYPE computes it from
+        the node's root; a one-node fallback adds a `warnings` entry naming the operand),
         `typeNodeReference` (a stored type node used as the type itself, e.g. a field's `type` child), `typeConceptRef`
         (a type concept with no mandatory child or reference, e.g. IntegerType) or `blueprint` (a type's node tree; a
         printed type object is accepted as is). IS_SUBTYPE {sub, super} → {isSubtype, isStrongSubtype, isComparable, sub, super}.
@@ -197,6 +299,9 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
      */
     private class Engine(val facade: TypecheckingFacade) {
         val helper: TypeCheckerHelper = facade.getData(TypeCheckerHelper::class.java)
+
+        /** Why a `nodeReference` operand was typed by the one-node computation; the answer's `warnings`. */
+        val operandWarnings = mutableListOf<String>()
     }
 
     private suspend fun readWithEngine(mpsProject: MPSProject, action: (Engine) -> String): String =
@@ -204,15 +309,14 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
 
     private suspend fun opIsSubtype(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String =
         readWithEngine(mpsProject) { engine ->
-            val sub = typeOperand(params.get("sub"), "parameters.sub", mpsProject, engine)
-            val sup = typeOperand(params.get("super"), "parameters.super", mpsProject, engine)
+            val (sub, sup) = typeOperands(listOf(params.get("sub") to "parameters.sub", params.get("super") to "parameters.super"), mpsProject, engine)
             val result = JsonObject()
             result.addProperty("isSubtype", engine.facade.isSubtype(sub, sup))
             result.addProperty("isStrongSubtype", engine.facade.isStrongSubtype(sub, sup))
             result.addProperty("isComparable", engine.helper.subtypingManager.isComparable(sub, sup, true))
             result.add("sub", typeJsonObject(sub, mpsProject))
             result.add("super", typeJsonObject(sup, mpsProject))
-            finalizeResult(result.toString(), maxInlineBytes)
+            finalizeResult(result.toString(), maxInlineBytes, warnings = engine.operandWarnings)
         }
 
     /**
@@ -226,7 +330,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         }
         val weak = params.paramBoolean("weak", default = true)
         return readWithEngine(mpsProject) { engine ->
-            val type = typeOperand(params.get("type"), "parameters.type", mpsProject, engine)
+            val type = typeOperands(listOf(params.get("type") to "parameters.type"), mpsProject, engine).single()
             val subtyping = engine.helper.subtypingManager
             val visited = StructuralNodeSet<Any>().apply { add(type) }
             val immediate = JsonArray()
@@ -256,7 +360,11 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             result.add("type", typeJsonObject(type, mpsProject))
             result.add("immediate", immediate)
             result.add("transitive", transitive)
-            finalizeResult(result.toString(), maxInlineBytes, details = if (truncated) mapOf("truncated" to true) else emptyMap())
+            finalizeResult(
+                result.toString(), maxInlineBytes,
+                details = if (truncated) mapOf("truncated" to true) else emptyMap(),
+                warnings = engine.operandWarnings,
+            )
         }
     }
 
@@ -270,15 +378,13 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             return errJson("'parameters.types' must be a JSON array of at least two type operands", McpErrorCode.INVALID_REQUEST)
         }
         return readWithEngine(mpsProject) { engine ->
-            val types = operands.mapIndexed { index, element ->
-                typeOperand(element, "parameters.types[$index]", mpsProject, engine)
-            }
+            val types = typeOperands(operands.mapIndexed { index, element -> element to "parameters.types[$index]" }, mpsProject, engine)
             // The engine answers a HashSet; sorted so that several results come back in a stable order.
             val lcs = engine.helper.subtypingManager.leastCommonSupertypes(LinkedHashSet(types), true).sortedBy { it.presentation }
             val result = JsonObject()
             result.add("types", JsonArray().apply { types.forEach { add(typeJsonObject(it, mpsProject)) } })
             result.add("result", JsonArray().apply { lcs.forEach { add(typeJsonObject(it, mpsProject)) } })
-            finalizeResult(result.toString(), maxInlineBytes)
+            finalizeResult(result.toString(), maxInlineBytes, warnings = engine.operandWarnings)
         }
     }
 
@@ -286,7 +392,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         val conceptRef = params.requiredParamString(PARAM_CONCEPT_REF)
         val strong = params.paramBoolean("strong", default = false)
         return readWithEngine(mpsProject) { engine ->
-            val type = typeOperand(params.get("type"), "parameters.type", mpsProject, engine)
+            val type = typeOperands(listOf(params.get("type") to "parameters.type"), mpsProject, engine).single()
             val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
                 ?: throw McpNotFoundException("Concept '$conceptRef' at parameters.conceptRef not found")
             if (concept !is SConcept) {
@@ -297,7 +403,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             val coerced = if (strong) engine.facade.strongCoerceType(type, concept) else engine.facade.coerceType(type, concept)
             val result = JsonObject()
             result.add("coerced", coerced?.let { typeJsonObject(it, mpsProject) })
-            finalizeResult(result.toString(), maxInlineBytes)
+            finalizeResult(result.toString(), maxInlineBytes, warnings = engine.operandWarnings)
         }
     }
 
@@ -325,8 +431,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
                 )
                 SModelOperations.createNewNode(null, null, concept)
             }
-            val left = typeOperand(params.get("left"), "parameters.left", mpsProject, engine)
-            val right = typeOperand(params.get("right"), "parameters.right", mpsProject, engine)
+            val (left, right) = typeOperands(listOf(params.get("left") to "parameters.left", params.get("right") to "parameters.right"), mpsProject, engine)
             val conflicts = linkedSetOf<Pair<String?, String?>>()
             val type = engine.helper.getOperationType(operator, left, right) { ruleModelId, ruleNodeId ->
                 conflicts.add(ruleModelId to ruleNodeId)
@@ -340,7 +445,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
                         "— see data.ruleConflicts"
                 )
             }
-            finalizeResult(result.toString(), maxInlineBytes, warnings = warnings)
+            finalizeResult(result.toString(), maxInlineBytes, warnings = engine.operandWarnings + warnings)
         }
     }
 
@@ -353,15 +458,12 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
     private suspend fun opExplainType(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
         val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
         val includeApplyRule = params.paramBoolean("includeApplyRule", default = false)
-        val maxRootNodes = params.paramInt("maxRootNodes") ?: DEFAULT_MAX_ROOT_NODES
-        if (maxRootNodes < 1) {
-            return errJson("'parameters.maxRootNodes' must be at least 1, got $maxRootNodes", McpErrorCode.INVALID_REQUEST)
-        }
+        val maxRootNodes = params.maxRootNodesParameter()
         return readWithEngine(mpsProject) { engine ->
             val node = resolveNodeReferencePreferringProject(mpsProject, nodeReference)?.resolve(mpsProject.repository)
                 ?: throw McpNotFoundException("Node '$nodeReference' at parameters.nodeReference not found")
             val root = node.containingRoot
-            val rootNodes = SNodeUtil.getDescendants(root).count()
+            val rootNodes = rootNodeCount(root)
             if (rootNodes > maxRootNodes) {
                 throw McpInvalidRequestException(
                     "The root of '$nodeReference' has $rootNodes nodes, more than maxRootNodes ($maxRootNodes): EXPLAIN_TYPE " +
@@ -370,7 +472,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
                 )
             }
             val warnings = mutableListOf<String>()
-            if (generateSequence(node) { it.parent }.any { !TypeSystemUtil.shouldApplyTypeSystemRules(it) }) {
+            if (isSkippedByRootTypecheck(node)) {
                 warnings.add(
                     "the node lies in a subtree marked IDontApplyTypesystemRules (e.g. commented out), which the typesystem " +
                         "does not check, so its trace is normally empty and its type null here; GET_TYPE may still answer one, " +
@@ -409,11 +511,44 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         }
     }
 
+    /** A parsed type operand: the type itself, or a node whose type is still to be computed. */
+    private sealed class Operand {
+        class Type(val type: SNode) : Operand()
+        class OfNode(val node: SNode, val ref: String, val label: String) : Operand()
+    }
+
     /**
-     * Turns one operand object into a type node. A node or concept the caller named that does not exist is
-     * `NOT_FOUND`; an operand that is malformed or cannot be a type is `INVALID_REQUEST` naming [path].
+     * Turns operand objects, each with its JSON path, into type nodes in input order. Every operand is parsed
+     * first; the `nodeReference` ones are then typed together by [rootScopedTypesOf], so operands sharing a
+     * root cost one root check. A one-node fallback adds a warning naming the operand to the answer.
      */
-    private fun typeOperand(element: JsonElement?, path: String, mpsProject: MPSProject, engine: Engine): SNode {
+    private fun typeOperands(operands: List<Pair<JsonElement?, String>>, mpsProject: MPSProject, engine: Engine): List<SNode> {
+        val parsed = operands.map { (element, path) -> parseOperand(element, path, mpsProject) }
+        val nodeTypes = rootScopedTypesOf(parsed.filterIsInstance<Operand.OfNode>().map { it.node }, DEFAULT_MAX_ROOT_NODES) { it }
+        return parsed.map { operand ->
+            when (operand) {
+                is Operand.Type -> operand.type
+                is Operand.OfNode -> {
+                    val type = nodeTypes.getValue(operand.node)
+                    type.warning?.let { engine.operandWarnings.add("${operand.label}: $it") }
+                    type.value ?: throw McpInvalidRequestException(buildString {
+                        append("Node '${operand.ref}' at ${operand.label} has no type (GET_TYPE answers null for it)")
+                        type.warning?.let { append(": $it") }
+                        if (type.rootTooLarge) {
+                            append(". Call mps_mcp_query_nodes GET_TYPE on it with a higher maxRootNodes and pass the printed type back as a blueprint operand")
+                        }
+                        append(". A stored type node is passed as typeNodeReference, a type concept as typeConceptRef")
+                    })
+                }
+            }
+        }
+    }
+
+    /**
+     * Parses one operand object. A node or concept the caller named that does not exist is `NOT_FOUND`; an
+     * operand that is malformed or cannot be a type is `INVALID_REQUEST` naming [path].
+     */
+    private fun parseOperand(element: JsonElement?, path: String, mpsProject: MPSProject): Operand {
         val operand = element?.takeIf { it.isJsonObject }?.asJsonObject
             ?: throw McpInvalidRequestException("'$path' must be $OPERAND_EXPECTED")
         val sent = operand.keySet().filterNot { operand.get(it).isJsonNull }
@@ -439,7 +574,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
                     "'$path.conceptReference' ($printedConcept) disagrees with the concept of '$path.blueprint' (${type.concept.name})"
                 )
             }
-            return type
+            return Operand.Type(type)
         }
         val ref = value.takeIf { it.isJsonPrimitive && it.asJsonPrimitive.isString && it.asString.isNotBlank() }?.asString
             ?: throw McpInvalidRequestException("'$path.$key' must be a nonblank string")
@@ -447,15 +582,12 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             in OPERAND_NODE.spellings -> {
                 val node = resolveNodeReferencePreferringProject(mpsProject, ref)?.resolve(mpsProject.repository)
                     ?: throw McpNotFoundException("Node '$ref' at $path.$key not found")
-                engine.facade.getTypeOf(node)?.takeUnless(TypesUtil::isVariable)
-                    ?: throw McpInvalidRequestException(
-                        "Node '$ref' at $path.$key has no type (GET_TYPE answers null for it). A stored type node is passed " +
-                            "as typeNodeReference, a type concept as typeConceptRef"
-                    )
+                Operand.OfNode(node, ref, "$path.$key")
             }
-            in OPERAND_TYPE_NODE.spellings ->
+            in OPERAND_TYPE_NODE.spellings -> Operand.Type(
                 resolveNodeReferencePreferringProject(mpsProject, ref)?.resolve(mpsProject.repository)
                     ?: throw McpNotFoundException("Node '$ref' at $path.$key not found")
+            )
             else -> {
                 val concept = concreteConcept(ref, "$path.$key", mpsProject)
                 val mandatory = concept.containmentLinks.filterNot { it.isOptional }.map { it.name } +
@@ -466,7 +598,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
                             "so it cannot be built from the concept alone; pass a blueprint, a typeNodeReference or a nodeReference"
                     )
                 }
-                SModelOperations.createNewNode(null, null, concept)
+                Operand.Type(SModelOperations.createNewNode(null, null, concept))
             }
         }
     }

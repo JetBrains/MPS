@@ -394,7 +394,8 @@ Send:
 
 ### Step 10.15 — `query_nodes GET_TYPE` `[SUCCESS]`
 
-Three calls, `operation:"GET_TYPE"`, varying only `nodeReference`:
+Four calls, `operation:"GET_TYPE"`. 10.15a–c send only `nodeReference` and answer
+`details.scope=="root"` with no `warnings` (the root's whole check typed the node):
 
 - 10.15a `{"nodeReference":"{{TH_PLUS_REF}}"}` → `data.presentation=="int"`,
   `data.concept=="IntegerType"`; `data.blueprint` is present; no key named `reference` appears
@@ -404,6 +405,9 @@ Three calls, `operation:"GET_TYPE"`, varying only `nodeReference`:
 - 10.15c `{"nodeReference":"{{TH_S_TYPE_REF}}"}` → `ok==true`, `data==null`. A stored type node
   has no type of its own (BaseLanguage has no inference rule for `Type`); `null` is the
   documented "no type" answer, not an error.
+- 10.15d `{"nodeReference":"{{TH_PLUS_REF}}","maxRootNodes":1}` → `data.presentation=="int"`,
+  `details.scope=="node"`, and one `warnings` entry naming `maxRootNodes`: the root is over the
+  cap, so the one-node computation answered. `maxRootNodes:0` is `INVALID_REQUEST`.
 
 Example escaped call (10.15a):
 ```json

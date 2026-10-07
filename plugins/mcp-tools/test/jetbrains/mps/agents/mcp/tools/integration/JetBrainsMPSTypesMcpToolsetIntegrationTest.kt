@@ -157,6 +157,85 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `GET_TYPE answers the type the root's check decides, where the one-node computation misses the context`() {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        parseClass(model, CONTEXT_CODE)
+        val callRef = readOnRepo {
+            val field = model.rootNodes.single { it.name == "Context" }.children.single { it.concept.name == "FieldDeclaration" }
+            PersistenceFacade.getInstance().asString(field.children.single { it.containmentLink?.name == "initializer" }.reference)
+        }
+        // In an inference context `none()`'s T is left open by the call itself: only the root's check settles it.
+        val fromRoot = getTypeEnvelope(callRef)
+        assertEquals("$fromRoot", "root", fromRoot.scope())
+        assertEquals("$fromRoot", emptyList<String>(), fromRoot.warnings())
+        val rootType = fromRoot.getAsJsonObject("data")
+        assertEquals("$rootType", "ClassifierType", rootType.get("concept").asString)
+        assertFalse("$rootType", rootType.has("hasTypeVariables"))
+        // D100's acceptance criterion: GET_TYPE answers what EXPLAIN_TYPE's whole-root check arrives at.
+        val explained = data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"$callRef"}""")).getAsJsonObject("type")
+        assertEquals("$explained", rootType.get("presentation").asString, explained.get("presentation").asString)
+
+        val fromNode = getTypeEnvelope(callRef, maxRootNodes = 1)
+        assertEquals("$fromNode", "node", fromNode.scope())
+        assertTrue("the size-cap fallback is explained: $fromNode", fromNode.warnings().single().contains("maxRootNodes"))
+        assertTrue("the one-node computation cannot settle T: $fromNode", fromNode.get("data").isJsonNull)
+
+        // A nodeReference operand is typed the same way; typed one-node, it was rejected as having no type. Both
+        // operands share one root, which is checked once for the two of them.
+        val operandResponse = query(TypesQueryOperation.IS_SUBTYPE,
+            """{"sub":{"nodeReference":"$callRef"},"super":{"nodeReference":"$callRef"}}""")
+        val operand = data(operandResponse)
+        assertEquals("$operand", rootType.get("presentation").asString, operand.getAsJsonObject("sub").get("presentation").asString)
+        assertEquals("$operand", operand.getAsJsonObject("sub"), operand.getAsJsonObject("super"))
+        assertTrue("$operand", operand.get("isSubtype").asBoolean)
+        assertNull("no fallback, no warning: $operandResponse", JsonParser.parseString(operandResponse).asJsonObject.get("warnings"))
+
+        val rejected = JsonParser.parseString(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_TYPE, """{"nodeReference":"$DUMMY_NODE_REF","maxRootNodes":0}""")
+        }).asJsonObject
+        assertEquals("$rejected", "INVALID_REQUEST", rejected.get("code").asString)
+        assertTrue("$rejected", rejected.get("error").asString.contains("maxRootNodes"))
+    }
+
+    // The third fallback, a non-root node the root check leaves untyped while its one-node computation types it,
+    // has no known construction: the root check queues every node of the root, attributes included, and applies
+    // the same rules, so it is not covered here.
+    @Test
+    fun `GET_TYPE falls back to the one-node type for an oversized root and for commented-out code`() {
+        val host = createTypeHost()
+        val fromRoot = getTypeEnvelope(host.plusRef)
+        assertEquals("$fromRoot", "root", fromRoot.scope())
+        assertEquals("$fromRoot", emptyList<String>(), fromRoot.warnings())
+        assertEquals("int", fromRoot.getAsJsonObject("data").get("presentation").asString)
+        val capped = getTypeEnvelope(host.plusRef, maxRootNodes = 1)
+        assertEquals("$capped", "node", capped.scope())
+        assertTrue("$capped", capped.warnings().single().contains("maxRootNodes"))
+        assertEquals("an ordinary expression types the same either way", "int", capped.getAsJsonObject("data").get("presentation").asString)
+
+        // The root's check skips a commented-out subtree; the one-node computation starts below the comment.
+        commentOut(host.fieldRef("l"))
+        val commented = getTypeEnvelope(host.initializerRef("l"))
+        assertEquals("$commented", "node", commented.scope())
+        assertTrue("$commented", commented.warnings().single().contains("IDontApplyTypesystemRules"))
+        assertEquals("long", commented.getAsJsonObject("data").get("presentation").asString)
+        // A type operand falls back the same way and says so, naming the operand.
+        val operandResponse = query(TypesQueryOperation.IS_SUBTYPE,
+            """{"sub":{"nodeReference":"${host.initializerRef("l")}"},"super":${conceptOperand(LONG_TYPE)}}""")
+        assertTrue(data(operandResponse).get("isSubtype").asBoolean)
+        val operandWarnings = JsonParser.parseString(operandResponse).asJsonObject.getAsJsonArray("warnings").map { it.asString }
+        assertTrue("$operandWarnings", operandWarnings.single().let {
+            it.startsWith("parameters.sub.nodeReference: ") && it.contains("IDontApplyTypesystemRules")
+        })
+        // Operands of one root are typed together, yet each keeps its own scope: only the commented-out one warns.
+        val sharedRoot = query(TypesQueryOperation.COMMON_SUPERTYPE,
+            """{"types":[{"nodeReference":"${host.initializerRef("l")}"},{"nodeReference":"${host.plusRef}"}]}""")
+        assertEquals("long", data(sharedRoot).getAsJsonArray("result").single().asJsonObject.get("presentation").asString)
+        val sharedWarnings = JsonParser.parseString(sharedRoot).asJsonObject.getAsJsonArray("warnings").map { it.asString }
+        assertTrue("$sharedWarnings", sharedWarnings.single().startsWith("parameters.types[0].nodeReference: "))
+    }
+
+    @Test
     fun `EXPLAIN_TYPE traces 1 + 2 through the rules that typed it`() {
         val host = createTypeHost()
         val explained = data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.plusRef}"}"""))
@@ -511,6 +590,21 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         return payloadObjectFromOkData(response)
     }
 
+    /** `mps_mcp_query_nodes` GET_TYPE's whole ok envelope, so `details.scope` and `warnings` can be read. */
+    private fun getTypeEnvelope(nodeRef: String, maxRootNodes: Int? = null): JsonObject {
+        val cap = maxRootNodes?.let { ""","maxRootNodes":$it""" } ?: ""
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_TYPE, """{"nodeReference":"$nodeRef"$cap}""")
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        return envelope
+    }
+
+    private fun JsonObject.scope(): String = getAsJsonObject("details").get("scope").asString
+
+    private fun JsonObject.warnings(): List<String> = getAsJsonArray("warnings")?.map { it.asString } ?: emptyList()
+
     /** `mps_mcp_query_nodes` GET_EXPECTED_TYPE's `data`, or null when it answers `data: null`. */
     private fun getExpectedType(nodeRef: String): JsonObject? {
         val response = runTool(JetBrainsMPSNodeMcpToolset()) {
@@ -573,6 +667,9 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         const val TYPE_HOST_CODE =
             "class TypeHost { int i = 1 + 2; long l = 2L; String s = \\\"\\\"; Object o = s; java.util.List<String> list = null; byte b = 1; " +
                 "static <T> java.util.List<T> wrap(T t) { return null; } java.util.List<String> w = wrap(\\\"a\\\"); }"
+        /** `none()` sits in a type inference context (a variable initializer), so the call alone leaves its T open. */
+        const val CONTEXT_CODE =
+            "class Context { static <T> java.util.List<T> none() { return null; } java.util.List<String> e = none(); }"
         const val BAD_CODE = "public class Bad { int x = \\\"s\\\"; int y = \\\"t\\\"; }"
         const val CONSTRAINED_CODE = "public class Constrained { public int[] a = {1}; public int b = 0; }"
         const val INTEGER_TYPE = "jetbrains.mps.baseLanguage.structure.IntegerType"

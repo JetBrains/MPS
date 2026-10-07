@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.unit
 
 import jetbrains.mps.agents.mcp.tools.DEFAULT_MAX_ROOT_NODES
+import jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset
 import jetbrains.mps.agents.mcp.tools.JetBrainsMPSTypesMcpToolset
 import jetbrains.mps.agents.mcp.tools.TypesQueryOperation
 
@@ -13,6 +14,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.readText
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 import kotlin.reflect.full.findAnnotation
 
@@ -71,12 +73,10 @@ class SkillTypeQueryRoutingTest {
 
     @Test
     fun `documented maxRootNodes default matches the code`() {
-        val description = JetBrainsMPSTypesMcpToolset::class.declaredFunctions
-            .single { it.name == "mps_mcp_query_types" && it.findAnnotation<McpTool>() != null }
-            .findAnnotation<McpDescription>()!!.description
         val sources = listOf(
             TYPE_QUERIES to read(TYPE_QUERIES),
-            "@McpDescription of mps_mcp_query_types" to description,
+            "@McpDescription of mps_mcp_query_types" to toolDescription(JetBrainsMPSTypesMcpToolset::class, "mps_mcp_query_types"),
+            "@McpDescription of mps_mcp_query_nodes" to toolDescription(JetBrainsMPSNodeMcpToolset::class, "mps_mcp_query_nodes"),
         )
         for ((source, text) in sources) {
             val documented = MAX_ROOT_NODES_DEFAULT.findAll(text).map { it.groupValues[1] }.toList()
@@ -122,6 +122,11 @@ class SkillTypeQueryRoutingTest {
     }
 
     // --- helpers ---------------------------------------------------------
+
+    private fun toolDescription(toolset: KClass<*>, tool: String): String =
+        toolset.declaredFunctions
+            .single { it.name == tool && it.findAnnotation<McpTool>() != null }
+            .findAnnotation<McpDescription>()!!.description
 
     private fun operationNames(): List<String> = TypesQueryOperation.entries.map { it.name }
 

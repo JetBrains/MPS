@@ -587,12 +587,16 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             val child = resolveNode(rootRef).children.single { it.containmentLink?.name == "propertyDeclaration" }
             PersistenceFacade.getInstance().asString(child.reference)
         }
-        // The root's type comes back as a bare type variable, the non-root child's as null; both answer null.
+        // A bare type variable and no type both answer null; the root check and the one-node computation agree, so
+        // the answer is the root's and carries no warning.
         for (ref in listOf(rootRef, childRef)) {
             val response = runTool(toolset) {
                 it.mps_mcp_query_nodes(MPSQueryOperation.GET_TYPE, """{ "nodeReference": "$ref" }""")
             }
-            assertEquals(JsonParser.parseString("""{"ok":true,"data":null}"""), JsonParser.parseString(response))
+            assertEquals(
+                JsonParser.parseString("""{"ok":true,"data":null,"details":{"scope":"root"}}"""),
+                JsonParser.parseString(response),
+            )
         }
     }
 
@@ -2193,6 +2197,8 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val obj = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
         assertTrue("expected a type, got: $response", obj.get("data").isJsonObject)
+        assertEquals("the root check answers: $response", "root", obj.getAsJsonObject("details").get("scope").asString)
+        assertFalse("no fallback warning: $response", obj.has("warnings"))
         return obj.getAsJsonObject("data")
     }
 

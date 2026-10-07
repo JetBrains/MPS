@@ -1,5 +1,7 @@
 # `mps_mcp_query_nodes GET_TYPE` — read a node's type-system type
 
+> **Superseded in part by D100 (MPS-40240, 2026-10-07):** GET_TYPE no longer calls `getTypeOf` through the workbench facade. It type-checks the node's whole root in an isolated incremental session (`computeIsolated(Flags.forRoot(root).incremental())`, the check `TypesystemChecker` runs) and falls back to the one-node computation, in an isolated basic session, for commented-out code, a root over `maxRootNodes` (default 10000) nodes, or a node the root check leaves untyped. The answer carries `details.scope` (`root`/`node`) and a warning on fallback, and no longer depends on an open editor; `mps_mcp_query_types` `nodeReference` operands use the same path. The editor-session / one-node analysis below records the original design.
+
 Status: implemented 2026-10-04 (uncommitted at the time of writing). Implementation by a second session; settled with a separate Opus reviewer over two plan rounds and two implementation rounds (recorded at the end).
 
 ## Motivation
