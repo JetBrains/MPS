@@ -345,13 +345,21 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
         commentOut(fieldRefs.getValue("y"))
         val clean = JsonParser.parseString(check(rootRef)).asJsonObject
-        assertEquals("$clean", JsonPrimitive("no problems found"), clean.get("data"))
+        assertEquals(
+            "$clean",
+            JsonPrimitive("no problems found in checked nodes (2 subtree(s) unchecked: one or more typesystem, constraints, scope or target-concept checks were skipped)"),
+            clean.get("data"),
+        )
         assertEquals("$clean", 2, clean.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
         assertTrue("$clean", clean.getAsJsonArray("warnings").any { it.asString.startsWith("2 subtree(s) marked IDontApplyTypesystemRules") })
 
         val modelRef = modelRefOf(model)
         val cleanModel = JsonParser.parseString(check(modelRef)).asJsonObject
-        assertEquals("$cleanModel", JsonPrimitive("no problems found"), cleanModel.get("data"))
+        assertEquals(
+            "$cleanModel",
+            JsonPrimitive("no problems found in checked nodes (2 subtree(s) unchecked: one or more typesystem, constraints, scope or target-concept checks were skipped)"),
+            cleanModel.get("data"),
+        )
         assertEquals("$cleanModel", 2, cleanModel.getAsJsonObject("details").get("uncheckedSubtrees").asInt)
         assertTrue("$cleanModel", cleanModel.getAsJsonArray("warnings").any { it.asString.contains("were not type- or constraint-checked") })
         val row = payloadArrayFromOkData(check(modelRef, perRoot = true)).single().asJsonObject

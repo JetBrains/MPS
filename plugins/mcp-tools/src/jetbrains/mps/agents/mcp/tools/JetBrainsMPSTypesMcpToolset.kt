@@ -131,7 +131,13 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         the type assignments, equations and inequalities of its slice, nested as the engine ran them, each with the rule
         statement that added it as {rule, ruleReference, statement}. It type-checks the node's whole root, so a root of more
         than maxRootNodes nodes is rejected. Every type is printed as {concept, conceptReference,
-        presentation, hasTypeVariables?, blueprint} and carries no node reference. A node's own type and the type its context
+        presentation, hasTypeVariables?, blueprint} and carries no node reference. `isComparable: true` does not prove a
+        `ComparisonRule` fired; `COMMON_SUPERTYPE` may return several types, whose meet the checker may use rather than
+        choosing one; confirm a surprising `SUPERTYPES` result with `IS_SUBTYPE`, because the walk can include languages
+        that subtyping does not consult. `OPERATION_TYPE` from `operatorConceptRef` sees default operator properties, `null`
+        means no rule applied, and equally specific rules are listed in `ruleConflicts`. There is no runtime query to list
+        inference rules for a concept, structural `TYPES_MATCH`, generation-mode typing, or type flags on `mps_mcp_print_node`;
+        rules in languages extending the concept's language are not included in the aspect sweep. A node's own type and the type its context
         expects of it are `mps_mcp_query_nodes` GET_TYPE and GET_EXPECTED_TYPE. Returns `{"ok":true,"data":{...}}` on
         success or `{"ok":false,"error":"..."}` on failure; `data` is inline up to `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See the `mps-mcp-workflow` skill (`references/analysis-tools/type-queries.md`).

@@ -58,6 +58,7 @@ this file, are symptom indexes for that step — not a reading order.
 - **`foreach` has two concepts**: collections `ForEachStatement` for `sequence`/`list`/`set`, BaseLanguage `ForeachStatement` for Java arrays/iterables. Wrong choice → type error. See `references/foreach-statements.md`.
 - **Used-language imports**: NF_* operations require `jetbrains.mps.lang.actions` in the model's used languages; without it, `add new initialized(...)` etc. fail. See `references/property-and-mutation-ops.md` and `references/openapi-and-dependencies.md`.
 - **Never recommend deprecated operations**: `.role` (use `.containingLink`), `.linkDeclaration` (use `.link`), `.role` on `SReference` (use `.link.name`), `.concept` `Node_GetConceptOperation` (use `node.concept` via typesystem).
+- **Ask the running typesystem, not its rules:** use `mps_mcp_query_types` `OPERATION_TYPE` for expressions such as `int + long` or `String + int`, `IS_SUBTYPE` for assignability, and `COERCE` to `ClassifierType` before reading `classifier.targetReference` for classifier members. See `mps-mcp-workflow/references/analysis-tools/type-queries.md`.
 
 ## Common-path workflow
 

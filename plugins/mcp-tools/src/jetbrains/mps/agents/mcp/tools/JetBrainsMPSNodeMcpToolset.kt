@@ -175,7 +175,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         fully instantiated, and `data` is null when the node has no type or it could not be inferred. GET_EXPECTED_TYPE answers,
         in the same shape, the type the node's context requires of it (what `has expected type` checks): the least common
         supertype of the context's upper (`:<=:`) or else comparable bounds; `data` is null when there is none (a root, a slot
-        bounded only by `:==:` or `:>=:`). To compare or widen
+        bounded only by `:==:` or `:>=:`). The answer can depend on the node already in the slot; for an empty slot, ask via
+        the node you are about to replace. To compare or widen
         types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE), or to see why a node has its type
         (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
@@ -781,7 +782,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants), an MPS model, or an MPS module. Accepts an SNodeReference, an SModelReference or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts), or a module reference (`<uuid>(name)`) or module name. Pass any of these in `nodeReference` — there is no `modelReference` or `moduleReference` parameter. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
+        Validates an MPS node (and its descendants), an MPS model, or an MPS module. Accepts an SNodeReference, an SModelReference or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts), or a module reference (`<uuid>(name)`) or module name. Pass any of these in `nodeReference` — there is no `modelReference` or `moduleReference` parameter. Returns `data:"no problems found"` when all relevant checks ran and no problems were found; if unchecked subtrees exist, `data` instead says `no problems found in checked nodes (N subtree(s) unchecked: one or more typesystem, constraints, scope or target-concept checks were skipped)`. Otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
         A **model reference is exhaustive and is the preferred scope**: it validates the model itself (imports, used languages, devkits) AND runs the full checker stack on every root, so there is no need to follow up with a per-root check. Both the clean and the problem answer carry `details.scope:"model"` and `details.rootsChecked:<N>` stating the coverage; the problem report is the model object plus a `roots` array, one entry per root with problems (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` per `onlyNodesWithProblems`). Pass `perRoot=true` to get `data` as one line per root instead — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — which replaces N single-root calls with one.
         A **module reference or module name** checks the module itself and every model it owns (a language's generators included, stub and `@descriptor` models excluded) in one call, with `details.scope:"module"`, `modulesChecked`, `modelsChecked` and `rootsChecked` — do not follow a clean module with per-model checks. Module-level warnings are listed in `details.moduleProblems` but do not make the module unclean. Problems come back as the module object with a `models` array of model reports; `perRoot=true` gives `[{model, name, rootsChecked, errors, warnings}]` per model. A sweep that would run too long stops early with `details.truncated` and `details.modelsNotChecked`.
         `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. A typesystem, constraints or scope problem may also carry `rules: [{rule, ruleReference, statement}]` — the rule root that reported it (and the reporting node inside it) first, then the rules a type inequality was nested in. Subtrees the typesystem checkers skip (marked `IDontApplyTypesystemRules`) or the constraints, scope and target-concept checkers skip (`ISkipConstraintsChecking`) — e.g. commented-out code — are counted as `uncheckedSubtrees` in `details` and in each root or model summary; a clean verdict then says so in `warnings`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
@@ -920,7 +921,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             return if (!hasAnyProblems(reportNode, problems)) {
                 val warnings = nearMissWarnings + listOfNotNull(uncheckedSubtreesWarning(unchecked))
                 if (details.isEmpty() && warnings.isEmpty()) okJson("\"no problems found\"")
-                else okJson(JsonPrimitive("no problems found"), warnings = warnings, details = details)
+                else okJson(JsonPrimitive(cleanVerdict(unchecked)), warnings = warnings, details = details)
             } else {
                 val json = if (onlyNodesWithProblems) {
                     nodeWithProblemsListToJson(reportNode, problems, mpsProject)
@@ -973,7 +974,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 finalizeResult(perRootArray.toString(), maxInlineBytes, details, warnings)
             } else if (isClean(check)) {
                 uncheckedSubtreesWarning(unchecked)?.let { warnings.add(it) }
-                okJson(JsonPrimitive("no problems found"), warnings = warnings, details = details)
+                okJson(JsonPrimitive(cleanVerdict(unchecked)), warnings = warnings, details = details)
             } else {
                 finalizeResult(modelReport(check, onlyNodesWithProblems, mpsProject).toString(), maxInlineBytes, details, warnings)
             }
@@ -1148,7 +1149,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             if (!moduleProblems.isEmpty) details["moduleProblems"] = moduleProblems
             val verdict = if (notChecked.isEmpty()) "no problems found" else "no problems found in ${checks.size} of ${models.size} models"
             uncheckedSubtreesWarning(unchecked)?.let { warnings.add(it) }
-            return okJson(JsonPrimitive(verdict), warnings = warnings, details = details)
+            return okJson(JsonPrimitive(cleanVerdict(unchecked, verdict)), warnings = warnings, details = details)
         }
         val report = jsonObject {
             addProperty("name", module.moduleName)
@@ -1224,6 +1225,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     private fun uncheckedSubtreesWarning(count: Int): String? = if (count == 0) null else
         "$count subtree(s) marked IDontApplyTypesystemRules/ISkipConstraintsChecking (e.g. commented out) " +
             "were not type- or constraint-checked"
+
+    private fun cleanVerdict(unchecked: Int, checkedVerdict: String = "no problems found"): String {
+        if (unchecked == 0) return checkedVerdict
+        val note = "$unchecked subtree(s) unchecked: one or more typesystem, constraints, scope or target-concept checks were skipped"
+        return if (checkedVerdict == "no problems found") "$checkedVerdict in checked nodes ($note)"
+        else "$checkedVerdict ($note)"
+    }
 
     @McpTool
     @McpDescription(

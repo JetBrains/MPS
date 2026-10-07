@@ -1,6 +1,6 @@
 ---
 name: mps-language-analysis
-description: Analyze an MPS language by name — discover concepts, properties, references, children, aspects (editor/constraints/behavior), and metadata. Use when investigating an unfamiliar language, exploring concept structure, or finding sample nodes to use as templates for JSON blueprints.
+description: Analyze an MPS language by name — discover concepts, properties, references, children, aspects (editor/constraints/behavior), metadata, and answer type questions (is A a subtype of B, common supertype, expected type of a slot, why a node has its type) with `mps_mcp_query_types`. Use when investigating an unfamiliar language, exploring concept structure, or finding sample nodes to use as templates for JSON blueprints.
 type: reference
 ---
 

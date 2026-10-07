@@ -24,6 +24,7 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 - **Prefer primitives**: use `string` (`StringType`) over `String` (`ClassifierType`) where possible; same for `int`, `boolean`, etc.
 - **Compatibility**: BaseLanguage core is Java 7 (including generics). When building AST directly (JSON blueprints), there is no lambda/record syntax — use the `jetbrains.mps.baseLanguage.closures` extension for closures. The Java **parser** (`mps_mcp_parse_java_and_insert`) additionally accepts the Java 8+ syntax MPS recognizes — most notably **lambdas**, which it maps to `closures` `ClosureLiteral`s (auto-imported when `postProcess.importUsedLanguages` is on); a lambda only type-checks against a matching functional-type target. Constructs the parser does not recognize (e.g. records) still fail to parse. See `references/parse-java-tips.md`.
 - **Surgical edits**: when a single child changes prefer `mps_mcp_update_node` over rewriting the whole root — full-root rewrites churn persistent IDs and break incoming refs.
+- **Ask the running typesystem, not its rules:** use `mps_mcp_query_types` `OPERATION_TYPE` for expressions such as `int + long` or `String + int`, `IS_SUBTYPE` for assignability, and `COERCE` to `ClassifierType` before reading `classifier.targetReference` for classifier members. See `mps-mcp-workflow/references/analysis-tools/type-queries.md`.
 
 ## Choose Your Path
 

@@ -1,7 +1,7 @@
 ---
 name: mps-aspect-typesystem
 description: >-
-  Use when authoring or debugging MPS typesystem — inference rules (`typeof :==: / :<=: / :>=:`), `SubtypingRule`, `ComparisonRule`, `InequationReplacementRule`, `SubstituteTypeRule`, `WhenConcreteStatement` blocks, `NonTypesystemRule` checking rules, `TypesystemQuickFix`, error/warning/info reports with `messageTarget` highlighting and quick-fix wiring (`helginsIntention`), and shared BaseLanguage helpers in the typesystem model. Reach for this skill whenever the task involves editing `<lang>/languageModels/typesystem.mps`.
+  Use when authoring or debugging MPS typesystem — inference rules (`typeof :==: / :<=: / :>=:`), `SubtypingRule`, `ComparisonRule`, `InequationReplacementRule`, `SubstituteTypeRule`, `WhenConcreteStatement` blocks, `NonTypesystemRule` checking rules, `TypesystemQuickFix`, error/warning/info reports with `messageTarget` highlighting and quick-fix wiring (`helginsIntention`), and shared BaseLanguage helpers in the typesystem model. For questions to the compiled typesystem (`IS_SUBTYPE`, `EXPLAIN_TYPE`, `GET_EXPECTED_TYPE`), use the query tools when debugging “type stays undefined” or “operator cannot be applied.” Reach for this skill whenever the task involves editing `<lang>/languageModels/typesystem.mps`.
 type: reference
 ---
 
@@ -34,6 +34,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 
 ## Common-Path Workflow
 
+0. **Ask the compiled typesystem before authoring a rule.** Check whether a type relation already holds or what produces a node's current type with `mps_mcp_query_types` (`IS_SUBTYPE`, `SUPERTYPES`, `OPERATION_TYPE`, `EXPLAIN_TYPE`) or `mps_mcp_query_nodes` (`GET_TYPE`, `GET_EXPECTED_TYPE`). Do not simulate the solver by reading rule roots; use those roots only when authoring or changing rules. See `mps-mcp-workflow/references/analysis-tools/type-queries.md` for all operations and caveats.
 1. Create a `typesystem` model (`mps_mcp_create_model` with `moduleName: "<lang>"` and `modelName: "<lang>.typesystem"` — aspect ID `typesystem`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
 2. Add used languages: `jetbrains.mps.lang.typesystem`, and any languages used in bodies (`smodel`, `collections`, `closures`, `baseLanguage`).
 3. Add `InferenceRule` roots for concepts whose types you compute (see `references/inference-rules.md`).
@@ -42,7 +43,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 6. Add `TypesystemQuickFix` roots for any fix you want to attach to reports; wire them via a `helginsIntention`/`TypesystemIntention` child of the `warning`/`error`/`info` statement (see `references/quick-fixes.md`).
 7. Write bodies with BaseLanguage + smodel. Use `when concrete` (`references/when-concrete.md`) when you need resolved types before checking. For helper code, place a `ClassConcept` root directly in the typesystem model and call it from rules.
 8. Validate: `mps_mcp_check_root_node_problems` plus compile the language and test on sample models. A `helginsIntention`-wired quick fix now surfaces in the check report's `quickFixes` array and can be applied with `mps_mcp_apply_intention(nodeReference = <problem node>, intentionId = <fix id>)`; an auto-applicable fix runs under `autoApplyQuickFixes=true`.
-9. Verify an inference rule directly: after the rebuild and `mps_mcp_reload_all`, run `mps_mcp_query_nodes` `GET_TYPE` on a sandbox node and read the type it answers, instead of inferring the result from what `mps_mcp_check_root_node_problems` does or does not report. Verify subtyping, replacement and comparison rules the same way with `mps_mcp_query_types` `IS_SUBTYPE` / `SUPERTYPES` on two types, and an overloaded-operation rule with `OPERATION_TYPE`; the bound a parent's rule puts on a child is `mps_mcp_query_nodes` `GET_EXPECTED_TYPE` on the child. A typesystem problem in the check report may carry `rules[0].ruleReference`, the rule that reported it — print that rule to see why an error fires. `mps_mcp_query_types` `EXPLAIN_TYPE` on a node is the headless typesystem trace: the equations and inequalities that gave it its type or error, each with the rule statement that added it. Commented-out sandbox code is not type-checked (`uncheckedSubtrees`), so a clean check over it proves nothing.
+9. After rebuilding and reloading, verify the rules against a sandbox with the matching engine query; do not infer their behavior from what `mps_mcp_check_root_node_problems` does or does not report. A check problem may carry `rules[0].ruleReference`; open it to inspect the rule that reported the problem. Commented-out sandbox code is not checked (`uncheckedSubtrees`), so a clean verdict over it proves nothing.
 
 ## Related Skills
 

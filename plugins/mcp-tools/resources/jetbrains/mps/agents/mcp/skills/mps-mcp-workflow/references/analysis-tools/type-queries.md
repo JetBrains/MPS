@@ -39,7 +39,7 @@ Each operand of `mps_mcp_query_types` is a JSON object with **exactly one** of:
 
 A blueprint must name the type exactly or it is rejected: every reference needs a persistent `targetReference` that resolves (a plain `target` name, a `target: null` from an unresolved printout, or a `null/<id>` reference into the type itself cannot be rebuilt — pass the node the type came from as `nodeReference` instead), every role and property must exist on the concept, every child role must carry its `nodes` (a depth-limited `print_node` printout with child summaries is rejected), and no mandatory link may be left empty. What the printer adds beyond the stored node is not stored back: the top-level `name` and enum entries marked `isDefault:true`. Type variables do not survive the trip: a type printed with `hasTypeVariables:true` comes back with fresh, unrelated variables, and a bare variable is a subtype of nothing.
 
-Error codes: `NOT_FOUND` means a node or concept you named in `nodeReference`, `typeNodeReference`, `typeConceptRef`, `conceptRef`, `operatorNode` or `operatorConceptRef` does not exist; `INVALID_REQUEST` means the operand is malformed or cannot be a type — including a blueprint whose concept or reference target does not resolve; an MPS XML short id or a `featureId` given as a reference target is `INVALID_REFERENCE`. Each message names the JSON path (`parameters.types[1].blueprint.references[0]`).
+Error codes: `NOT_FOUND` means a node or concept you named in `nodeReference`, `typeNodeReference`, `typeConceptRef`, `conceptRef`, `operatorNode` or `operatorConceptRef` does not exist; `INVALID_REQUEST` means the operand is malformed or cannot be a type — including a blueprint whose concept or reference target does not resolve; `INVALID_JSON` means the `parameters` value is not valid JSON; an MPS XML short id or a `featureId` given as a reference target is `INVALID_REFERENCE`. Each message names the JSON path (`parameters.types[1].blueprint.references[0]`).
 
 ## Operations
 
@@ -50,6 +50,10 @@ Error codes: `NOT_FOUND` means a node or concept you named in `nodeReference`, `
 - **`OPERATION_TYPE`** `{operatorNode | operatorConceptRef, left, right}` → `{type: type | null}`: the result type the overloaded-operation rules give `left op right`. `null` means no rule applies — the case where an inference rule typically reports "operator cannot be applied". `operatorNode` is an existing operation node (e.g. a `PlusExpression` in a sandbox) and is exact. `operatorConceptRef` builds a detached instance of the operation's concept, so a rule's `isApplicable` that reads the operation's properties sees default values; the answer then carries a `warnings` entry saying so. Its rules are looked up in the global language scope. When two rules are equally specific, `data.ruleConflicts` lists them as `{rule, ruleReference, statement}` (the rule root's name and reference, and the reference of the node inside it) plus a warning; the first rule that answered was used.
 
 All operations are read-only and run on the UI thread under the usual 30 s timeout; `data` is inline up to `maxInlineBytes` (default 20000), a temp-file path above it.
+
+## Not available
+
+These queries do not list the runtime inference rules applicable to a concept (`RulesManager` returns classes, not declarations), structurally compare types with `TYPES_MATCH`, type in generation mode, or add type flags to `mps_mcp_print_node`. The aspect sweep also does not list rules declared in a language that extends the concept's language.
 
 ## EXPLAIN_TYPE
 
