@@ -149,7 +149,7 @@
       <not>
         <and>
           <!-- Assumes the presence of javadoc and such if the version is correct -->
-          <available file="${kotlin.core.libs}/kotlin-metadata-jvm-${kotlin.version}.jar"/>
+          <available file="${kotlin.core.libs}/kotlin-metadata-jvm-${kotlin.metadata.version}.jar"/>
           <available file="${kotlin.core.libs}/kotlinx-metadata-klib-${kotlin.metadata.version}.jar"/>
           <available file="${kotlin.core.libs}/kotlin-compiler-client-embeddable-${kotlin.version}.jar"/>
         </and>
@@ -716,6 +716,7 @@
       <fileset dir="${kotlin.core.libs}">
         <!-- Versions not included so it can clear up previous version -->
         <include name="kotlin-metadata-jvm-*.jar" />
+        <include name="kotlinx-metadata-klib-*.jar" />
         <include name="kotlin-compiler-client-embeddable-*.jar" />
       </fileset>
     </delete>

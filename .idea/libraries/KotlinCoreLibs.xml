@@ -1,18 +1,18 @@
 <component name="libraryTable">
   <library name="KotlinCoreLibs">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/kotlinx-metadata-klib-2.3.0-mps.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlinx-metadata-klib-2.4.20-mps.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/kotlin-compiler-client-embeddable-2.3.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/kotlin-metadata-jvm-2.3.0-mps.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-metadata-jvm-2.4.20-mps.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$PROJECT_DIR$/lib/kotlin-compiler-client-embeddable-2.3.0-javadoc.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/kotlin-metadata-jvm-2.3.0-mps-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-metadata-jvm-2.4.20-mps-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
       <root url="jar://$PROJECT_DIR$/lib/kotlin-compiler-client-embeddable-2.3.0-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/kotlin-metadata-jvm-2.3.0-mps-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/kotlinx-metadata-klib-2.3.0-mps-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlin-metadata-jvm-2.4.20-mps-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/kotlinx-metadata-klib-2.4.20-mps-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

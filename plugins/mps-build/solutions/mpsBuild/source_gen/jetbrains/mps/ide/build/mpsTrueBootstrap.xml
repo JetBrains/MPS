@@ -63,11 +63,11 @@
   </path>
   
   <path id="path.java.library.kotlin-metadata">
-    <fileset file="${mps_home}/lib/kotlin-metadata-jvm-2.3.0-mps.jar" />
+    <fileset file="${mps_home}/lib/kotlin-metadata-jvm-2.4.20-mps.jar" />
   </path>
   
   <path id="path.java.library.kotlinx-metadata">
-    <fileset file="${mps_home}/lib/kotlinx-metadata-klib-2.3.0-mps.jar" />
+    <fileset file="${mps_home}/lib/kotlinx-metadata-klib-2.4.20-mps.jar" />
   </path>
   
   <path id="path.java.library.kotlin-compiler-client-embeddable">
@@ -132,10 +132,10 @@
       <fileset file="${mps_home}/lib/kotlin-compiler-client-embeddable-2.3.0.jar" />
     </copy>
     <copy todir="${build.layout}">
-      <fileset file="${mps_home}/lib/kotlin-metadata-jvm-2.3.0-mps.jar" />
+      <fileset file="${mps_home}/lib/kotlin-metadata-jvm-2.4.20-mps.jar" />
     </copy>
     <copy todir="${build.layout}">
-      <fileset file="${mps_home}/lib/kotlinx-metadata-klib-2.3.0-mps.jar" />
+      <fileset file="${mps_home}/lib/kotlinx-metadata-klib-2.4.20-mps.jar" />
     </copy>
     <mkdir dir="${build.layout}/to-be-imported" />
     <jar destfile="${build.layout}/to-be-imported/core-components.jar" duplicate="preserve">

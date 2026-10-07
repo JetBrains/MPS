@@ -6,7 +6,7 @@
       <sourceRoot location="models" />
     </modelRoot>
     <modelRoot contentPath="${mps_home}/lib" type="java_classes">
-      <sourceRoot location="kotlin-metadata-jvm-2.3.0-mps.jar" />
+      <sourceRoot location="kotlin-metadata-jvm-2.4.20-mps.jar" />
       <sourceRoot location="mps-persistence.jar" />
       <PackageScope skip-private="true">
         <include prefix="jetbrains.mps.kotlin.stubs." />
@@ -18,7 +18,7 @@
   <facets>
     <facet type="java" compile="ext" classes="provided" ext="yes">
       <classes generated="true" />
-      <library location="${mps_home}/lib/kotlin-metadata-jvm-2.3.0-mps.jar" />
+      <library location="${mps_home}/lib/kotlin-metadata-jvm-2.4.20-mps.jar" />
     </facet>
   </facets>
   <dependencies>

@@ -27,9 +27,9 @@
       <artifact pattern="https://github.com/JetBrains/kotlin/releases/download/v[revision]/[artifact]-[revision].[ext]" />
     </url>
     <!-- MPS-vendored kotlin-metadata -->
-    <url name="mps-261-distribution-kotlin-metadata">
-      <artifact pattern="https://teamcity.jetbrains.com/guestAuth/repository/download/MPS_20261_Distribution_KotlinMetadata/5882768.tcbuildid/[artifact]-[revision]-[classifier].[ext]"/>
-      <artifact pattern="https://teamcity.jetbrains.com/guestAuth/repository/download/MPS_20261_Distribution_KotlinMetadata/5882768.tcbuildid/[artifact]-[revision].[ext]"/>
+    <url name="mps-262-distribution-kotlin-metadata">
+      <artifact pattern="https://teamcity.jetbrains.com/guestAuth/repository/download/MPS_20262_Distribution_KotlinMetadata/6667677.tcbuildid/[artifact]-[revision]-[classifier].[ext]"/>
+      <artifact pattern="https://teamcity.jetbrains.com/guestAuth/repository/download/MPS_20262_Distribution_KotlinMetadata/6667677.tcbuildid/[artifact]-[revision].[ext]"/>
     </url>
     <!-- MPS-vendored kotlin-ant -->
     <url name="mps-261-distribution-kotlin-ant">
@@ -41,9 +41,9 @@
     <!-- Kotlin compiler is the only artifact from github, it has its own url resolver (not in main chain) -->
     <module organisation="org.jetbrains.kotlin" name="kotlin-compiler-standalone-zip" resolver="kotlin-compiler-releases" />
     <!-- MPS-vendored kotlinx-metadata-klib -->
-    <module organisation="org.jetbrains.kotlinx" name="kotlinx-metadata-klib" resolver="mps-261-distribution-kotlin-metadata"/>
+    <module organisation="org.jetbrains.kotlinx" name="kotlinx-metadata-klib" resolver="mps-262-distribution-kotlin-metadata"/>
     <!-- MPS-vendored kotlin-metadata-jvm -->
-    <module organisation="org.jetbrains.kotlin" name="kotlin-metadata-jvm" resolver="mps-261-distribution-kotlin-metadata"/>
+    <module organisation="org.jetbrains.kotlin" name="kotlin-metadata-jvm" resolver="mps-262-distribution-kotlin-metadata"/>
     <!-- MPS-vendored kotlin-ant -->
     <module organisation="org.jetbrains.kotlin" name="kotlin-ant" resolver="mps-261-distribution-kotlin-ant"/>
   </modules>

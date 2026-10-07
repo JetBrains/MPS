@@ -958,10 +958,10 @@
       <property role="26EafJ" value="lib/kotlin-compiler-client-embeddable-2.3.0.jar" />
     </node>
     <node concept="26EafG" id="1xE$2SyOl6t" role="3cRCUr">
-      <property role="26EafJ" value="lib/kotlin-metadata-jvm-2.3.0-mps.jar" />
+      <property role="26EafJ" value="lib/kotlin-metadata-jvm-2.4.20-mps.jar" />
     </node>
     <node concept="26EafG" id="1xE$2SyOl6u" role="3cRCUr">
-      <property role="26EafJ" value="lib/kotlinx-metadata-klib-2.3.0-mps.jar" />
+      <property role="26EafJ" value="lib/kotlinx-metadata-klib-2.4.20-mps.jar" />
     </node>
     <node concept="26EafG" id="1xE$2SyOl6v" role="3cRCUr">
       <property role="26EafJ" value="lib/mps-annotations.jar" />

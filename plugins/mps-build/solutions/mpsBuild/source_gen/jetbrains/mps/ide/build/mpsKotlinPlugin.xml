@@ -1397,8 +1397,8 @@
         <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/kotlin-metadata-jvm-2.3.0-mps.jar" />
-        <fileset file="${artifacts.mpsBootstrapCore}/lib/kotlinx-metadata-klib-2.3.0-mps.jar" />
+        <fileset file="${artifacts.mpsBootstrapCore}/lib/kotlin-metadata-jvm-2.4.20-mps.jar" />
+        <fileset file="${artifacts.mpsBootstrapCore}/lib/kotlinx-metadata-klib-2.4.20-mps.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
