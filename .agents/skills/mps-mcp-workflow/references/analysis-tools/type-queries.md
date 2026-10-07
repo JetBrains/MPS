@@ -61,14 +61,14 @@ These queries cannot list runtime inference rules applicable to a concept (`Rule
 
 - `kind`: `type_assigned`, `equation_added`, `relation_added` (an inequality), `when_concrete_added`, `error_added`, …
 - `presentation`: the operation as the engine prints it, with type variables (`+ : a assigned` for `1 + 2`, later `a = int   added`) — follow a variable through the entries.
-- `source`: the node the operation is about; `rule`: `{rule, ruleReference, statement}`, the statement inside the rule that added it. For "which rule gives this type", cite the `rule` of the entry that equates the node's type variable with the concrete type (`i = Float   added`), not of its `type_assigned` entry, which only names the rule that introduced the variable. Print `ruleReference` only to change the rule.
+- `source`: the node the operation is about; `rule`: `{rule, ruleReference, statement}`, the statement inside the rule that added it. For "which rule gives this type", cite the `rule` of the entry that equates the node's type variable with the concrete type (`i = Float   added`), not of its `type_assigned` entry, which only names the rule that introduced the variable. That name and the entry's `presentation` (`i = Float   added`, `u <= Number`) are the citation: print neither `ruleReference` nor `statement` to answer or quote a type question, only to change the rule.
 - `error:true`: an `error_added` entry, and every entry above one.
 
 Rule applications (`<rule> applied to node "…"`, which carry no `rule`) are left out and their consequences moved up one level, unless `includeApplyRule:true` — which also lists the rules applied to the node. A root of more than `maxRootNodes` nodes (default 10000) is rejected, since the check blocks the UI while it runs (well under a second for a 7400-node BaseLanguage class). A node inside commented-out code gets a warning; its trace is normally empty and `type` null, though GET_TYPE types it with `details.scope:"node"` (its one-node computation starts below the comment).
 
 ## Which rule reported a problem
 
-A typesystem, constraints or scope problem of `mps_mcp_check_root_node_problems` carries `rules: [{rule, ruleReference, statement}]`, the reporting rule first; its name answers "which rule reported it" — print `ruleReference` only to change the rule. `EXPLAIN_TYPE` on the problem's node shows the equations and inequalities that led to it. Commented-out code is not type-checked: the check counts it as `uncheckedSubtrees` and warns on a clean verdict, so ask `IS_SUBTYPE` rather than trusting a commented-out sample.
+A typesystem, constraints or scope problem of `mps_mcp_check_root_node_problems` carries `rules: [{rule, ruleReference, statement}]`, the reporting rule first; its name answers "which rule reported it" — print neither `ruleReference` nor `statement` to answer it, only to change the rule. `EXPLAIN_TYPE` on the problem's node shows the equations and inequalities that led to it. Commented-out code is not type-checked: the check counts it as `uncheckedSubtrees` and warns on a clean verdict, so ask `IS_SUBTYPE` rather than trusting a commented-out sample.
 
 ## After changing typesystem rules
 
