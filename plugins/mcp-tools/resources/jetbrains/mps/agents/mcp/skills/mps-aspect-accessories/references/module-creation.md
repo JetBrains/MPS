@@ -42,3 +42,14 @@ For `type=language`, three optional flags decide which companion modules are cre
 ## Return value
 
 Returns a JSON object with `ok:true` and `data:{ name, moduleRef, virtualFolder?, readOnly, present:true, kind, facets, loadExtensions? }` on success, or `ok:false` and `error:"..."` on failure. The `data` envelope has the same shape as the module object returned by `mps_mcp_get_project_structure(startingPoint=<module>)`; see `module-info-fields.md` for the meaning of `kind`, `facets`, and `loadExtensions`.
+
+## Deleting a generator
+
+`mps_mcp_update_module` DELETE accepts only modules of the selected project; anything else, including a generator of a language in another open project, is `NOT_FOUND`. A generator created with `withGenerator` or with `type=generator` is declared in its language's `.mpl`, and DELETE of it differs from other modules:
+
+- It also removes the generator from its language's descriptor, so it rewrites the language's `.mpl`, even without `deleteFiles`.
+- Without `deleteFiles`, the generator's folder stays on disk, no longer declared by the language.
+- With `deleteFiles`, it removes only the generator's models, its generated files and its folders once they are empty. It never deletes the language's folder or anything the generator shares with the language, such as an output root pointing at the language folder. What stays is listed in `fileDeletionWarning`.
+- The response adds `parentLanguage`.
+
+To remove a language together with its generators, DELETE the language.

@@ -77,6 +77,52 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         }
     }
 
+    /**
+     * T7 (MPS-40232). DELETE resolves only modules of the selected project, both by name and by module reference,
+     * although the reference resolves the sibling's generator through the shared repository. Should that gate
+     * weaken, ModuleDeleteHelper would edit the sibling project's language.
+     */
+    @Test
+    fun `delete of a sibling project language-owned generator is not found`() {
+        val projectB = openProjectB()
+        val languageName = "mcp.test.siblingGen${System.nanoTime()}"
+        var bLanguage: Language? = null
+        executeCommandIn(projectB) {
+            bLanguage = LanguageProducer(projectB).create(languageName, createDirIn(projectB, uniqueDirName(languageName)))
+        }
+        val language = checkNotNull(bLanguage)
+        val (generator, generatorRef, languageDir) = readIn(projectB) {
+            val g = language.ownedGenerators.single()
+            Triple(g, PersistenceFacade.getInstance().asString(g.moduleReference), File(language.moduleSourceDir.path))
+        }
+        val mpl = File(languageDir, "$languageName.mpl")
+        val mplBefore = mpl.readBytes()
+        assertNotNull("test precondition: the reference resolves through the shared repository",
+            readIn(myProject) { PersistenceFacade.getInstance().createModuleReference(generatorRef).resolve(myProject.repository) })
+        try {
+            for (target in listOf(readIn(projectB) { generator.moduleName!! }, generatorRef)) {
+                val response = runTool(moduleToolset) {
+                    it.mps_mcp_update_module(target, operation = ModuleOperation.DELETE, deleteFiles = true)
+                }
+                assertEquals("a sibling project's generator must not resolve via '$target': $response",
+                    "NOT_FOUND", JsonParser.parseString(response).asJsonObject.get("code")?.asString)
+            }
+            readIn(projectB) {
+                assertTrue("the sibling project must keep the generator", projectB.isProjectModule(generator))
+                assertTrue("the sibling language must still declare the generator",
+                    language.moduleDescriptor.generators.any { it.moduleReference == generator.moduleReference })
+            }
+            assertTrue("the sibling language descriptor must not be rewritten", mplBefore.contentEquals(mpl.readBytes()))
+            assertTrue("the sibling generator folder must survive", File(languageDir, "generator").isDirectory)
+        } finally {
+            // each generator right before its language, so that the .mpl file listener is released (MPS-40228)
+            executeCommandIn(projectB) {
+                projectB.removeModule(generator)
+                projectB.removeModule(language)
+            }
+        }
+    }
+
     @Test
     fun `module dependency resolves same-named target in selected project`() {
         val projectB = openProjectB()

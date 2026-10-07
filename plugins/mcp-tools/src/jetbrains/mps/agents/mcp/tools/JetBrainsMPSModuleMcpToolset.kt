@@ -12,6 +12,7 @@ import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.openapi.application.WriteAction
 import jetbrains.mps.persistence.MementoImpl
+import jetbrains.mps.module.ModuleDeleteHelper
 import jetbrains.mps.module.PersistenceContextImpl
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.MPSProject
@@ -709,7 +710,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         - RENAME (default): renames the module (Solution / Language / DevKit). `newName` must be a valid Java-package qualified name. Generator modules cannot be renamed through this tool; rename the parent Language instead (the rename cascades into owned generators). Returns the module info envelope plus optional `renameWarnings` / `renameCriticalProblems` arrays. See `mps-aspect-accessories/references/module-rename.md` for the cascade behavior, in-project-only reference rewrites, and the warnings semantics.
         - CHANGE_VIRTUAL_FOLDER: changes the Project View virtual folder of the module. `newName` is the new folder path (e.g. "Group/Subgroup").
         - SYNC_VERSION: derives the **language module's own** version from its migration scripts and writes it — the headless equivalent of MPS's "Correct Language Version" action (Language modules only; every other module kind is rejected). Whenever a versioned script exists, the version becomes `max(fromVersion) + 1` over the `migration` aspect's scripts (`MigrationScript` / `PureMigrationScript` roots that have a `fromVersion`), which is the only value the migration checker and generator accept; it is never set directly, so `newName` must be omitted. Idempotent: repeating it is a no-op (`changed:false`). Both `MigrationScript` and `PureMigrationScript` created through a factory-running MCP write tool already bump the version themselves via their node factory; use this operation after editing, deleting, or copying a script (a copy duplicates its source's `fromVersion`), and whenever the checker or the generator reports a language-version mismatch — that mismatch's "Set correct language version" quick fix (`FixLanguageVersion`) is an explicit, non-auto-applicable alternative via `mps_mcp_apply_intention`. Without a `migration` aspect or without versioned scripts nothing is derived and the version is left alone (`note` says why). Lowering happens when a trailing script was deleted and is reported in `warnings`, naming any module whose recorded used-language version is now ahead of the language. Consumer-side `usedLanguages[].version` stamps are never touched (refreshing them would mark pending migrations as already applied). Returns the module info envelope plus `languageVersion`, `previousLanguageVersion`, `changed`, `maxFromVersion` (absent when no script has a version), `migrationUnitCount`, `migrationProblems` (`[{unit, reference, concept, problem}]` — scripts without a version, several scripts for one version, a missing version in the sequence; SYNC_VERSION does not fix these: correct the script's `fromVersion`, then sync again), and — when the compiled language runtime disagrees with the descriptor — `runtimeLanguageVersion`, `runtimeStale:true` and `runtimeRecoveryAction`: the migration executor reads the version off the *generated* `LanguageRuntime`, so a new version only takes effect for migrations after the language module is rebuilt (`mps_mcp_alter_nodes` MAKE with `rebuild=true`). No make is performed here. See `mps-aspect-migrations/references/form-selection.md`.
-        - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk. A generator declared in its language's `.mpl` (every generator that is not a standalone module) is refused with INVALID_REQUEST and nothing changes; DELETE its language to remove both.
+        - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk. Only modules of the selected project are accepted; anything else is NOT_FOUND. A generator declared in its language's `.mpl` (every generator that is not a standalone module) is also removed from that language's descriptor, which rewrites the `.mpl` even without `deleteFiles`. Without `deleteFiles` its folder stays on disk, no longer declared. With `deleteFiles` only its models, its generated files and its folders once they are empty are removed, never the language's folder or anything it shares with the language; what stays is listed in `fileDeletionWarning`. The response adds `parentLanguage`.
     """
     )
     suspend fun mps_mcp_update_module(
@@ -978,53 +979,56 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         // Capture the descriptor file's parent BEFORE removing the module: after
         // removeModule() the descriptor wiring may be torn down.
         var moduleDir: IFile? = null
-        var refusal: String? = null
+        var ownedGenerator: OwnedGeneratorDelete? = null
         withModalTimeoutOnEdt {
-            mpsProject.repository.modelAccess.executeCommand {
-                val m = resolveModule(mpsProject, moduleName) ?: return@executeCommand
-                if (m is Generator && !m.moduleDescriptor.isStandaloneModule) {
-                    refusal = refuseOwnedGeneratorDelete(m)
-                    return@executeCommand
-                }
-                // Record the target up front; the rest of the block is the actual removal
-                // sequence and shouldn't be interrupted by bookkeeping assignments.
-                removed = m
-                // Read the resolved module name under the model lock; after removeModule()
-                // the SModule may be detached and reading state is not guaranteed safe.
-                removedName = m.moduleName
-                if (deleteFiles) {
-                    moduleDir = (m as? AbstractModule)?.descriptorFile?.parent
-                }
-                // Mark the module as changed BEFORE removing it from the project so any
-                // pending in-memory state is persisted by the subsequent project save.
-                (m as? AbstractModule)?.setChanged()
-                // Same order as rollbackModulesRegisteredSince: removeModule(language) alone drops a generator
-                // LanguageProducer added with addModule without an event, which leaks its .mpl file listener.
-                // removeModule(generator) also drops the .mpl's project-descriptor entry; that is safe only
-                // because the language goes right after.
-                if (m is Language) {
-                    for (generator in m.ownedGenerators) {
-                        if (mpsProject.repository.getModule(generator.moduleReference.moduleId) != null) {
-                            mpsProject.removeModule(generator)
+            try {
+                mpsProject.repository.modelAccess.executeCommand {
+                    val m = resolveModule(mpsProject, moduleName) ?: return@executeCommand
+                    // Record the target up front; the rest of the block is the actual removal
+                    // sequence and shouldn't be interrupted by bookkeeping assignments.
+                    removed = m
+                    // Read the resolved module name under the model lock; after removeModule()
+                    // the SModule may be detached and reading state is not guaranteed safe.
+                    removedName = m.moduleName
+                    if (m is Generator && !m.moduleDescriptor.isStandaloneModule) {
+                        ownedGenerator = deleteOwnedGenerator(mpsProject, m, deleteFiles)
+                        return@executeCommand
+                    }
+                    if (deleteFiles) {
+                        moduleDir = (m as? AbstractModule)?.descriptorFile?.parent
+                    }
+                    // Mark the module as changed BEFORE removing it from the project so any
+                    // pending in-memory state is persisted by the subsequent project save.
+                    (m as? AbstractModule)?.setChanged()
+                    // Same order as rollbackModulesRegisteredSince and ModuleDeleteHelper. removeModule(language)
+                    // would detach the owned generators itself; removing them first just avoids depending on that.
+                    if (m is Language) {
+                        for (generator in m.ownedGenerators) {
+                            if (mpsProject.repository.getModule(generator.moduleReference.moduleId) != null) {
+                                mpsProject.removeModule(generator)
+                            }
                         }
                     }
+                    mpsProject.removeModule(m)
                 }
-                mpsProject.removeModule(m)
-            }
-            // o1: save outside the executeCommand block. Project save performs
-            // descriptor file I/O which doesn't need the model-access write lock,
-            // and holding the lock across that I/O would block concurrent model
-            // operations. The in-memory removal inside the command is the part
-            // that must be atomic; the subsequent persistence does not. Matches
-            // the post-rename save pattern in mps_mcp_update_module above.
-            if (removed != null) {
-                mpsProject.save()
+            } finally {
+                // o1: save outside the executeCommand block. Project save performs
+                // descriptor file I/O which doesn't need the model-access write lock,
+                // and holding the lock across that I/O would block concurrent model
+                // operations. The in-memory removal inside the command is the part
+                // that must be atomic; the subsequent persistence does not. Matches
+                // the post-rename save pattern in mps_mcp_update_module above.
+                // The save runs whether or not the command completed or the post-condition below holds,
+                // as a failure may come after the module was removed.
+                if (removed != null) {
+                    mpsProject.save()
+                }
             }
         }
-        refusal?.let { return@withMpsProject it }
         if (removed == null) {
             return@withMpsProject errJson("Module '$moduleName' not found", McpErrorCode.NOT_FOUND)
         }
+        ownedGenerator?.let { return@withMpsProject ownedGeneratorDeleteResult(mpsProject, removedName ?: moduleName, it) }
         var fsWarning: String? = null
         val dir = moduleDir
         if (deleteFiles && dir != null) {
@@ -1060,21 +1064,76 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     }
 
     /**
-     * A language-owned generator has no descriptor file of its own: its `descriptorFile` is its language's `.mpl`,
-     * so `descriptorFile.parent` is the language folder. When the generator has its own module-loader entry
-     * (created by LanguageProducer or loaded from disk), `ProjectBase.removeModule(generator)` also drops the `.mpl`
-     * from the project descriptor, so the surviving language leaves the project on the next save. Either way the
-     * `.mpl` still declares the generator, which comes back when the language reloads. Deleting only the generator
-     * needs the core `ProjectBase.removeModule` fix in `plugins/mcp-tools/docs/mps-40232-delete-generator-plan.md`.
+     * What [deleteModule] reports after [deleteOwnedGenerator]: [language] is the generator's language (null if it
+     * doesn't resolve; then only the repository half of the post-condition applies), [foldersToPrune] and [keptTargets]
+     * are the folders ModuleDeleteHelper prunes once empty and the generated-artifact locations it keeps as they belong
+     * to the language, both captured before the delete.
      */
-    private fun refuseOwnedGeneratorDelete(generator: Generator): String {
-        val languageName = generator.moduleDescriptor.sourceLanguage.moduleName
-        return errJson(
-            "'${generator.moduleName}' is a generator of language '$languageName' and is declared in that " +
-                "language's descriptor file, so it cannot be deleted on its own; nothing was changed. " +
-                "To remove the language together with its generators, DELETE the language '$languageName'.",
-            McpErrorCode.INVALID_REQUEST,
+    private class OwnedGeneratorDelete(
+        val generator: SModuleReference,
+        val languageName: String,
+        val language: Language?,
+        val deleteFiles: Boolean,
+        val foldersToPrune: List<IFile>,
+        val keptTargets: List<IFile>,
+    )
+
+    /**
+     * A generator that is not a standalone module has no descriptor file of its own: its `descriptorFile` is its
+     * language's `.mpl`, so the generic path of [deleteModule], which deletes `descriptorFile.parent`, would delete the
+     * language folder. Delete it the way the IDE's Delete Generator does: ModuleDeleteHelper removes it from the
+     * project, unregisters it from its language's descriptor and saves the language and, with [deleteFiles], deletes
+     * its models and generated artifacts and prunes its folders once they are empty, never touching a location of the
+     * language.
+     *
+     * ModuleDeleteHelper does file I/O inside the command (module saves, data-source deletes), just like the IDE;
+     * a deliberate exception to the o1 note in [deleteModule]. All IFile deletes stay inside the command's write action.
+     * Needs the command's write access.
+     */
+    private fun deleteOwnedGenerator(mpsProject: MPSProject, generator: Generator, deleteFiles: Boolean): OwnedGeneratorDelete {
+        val languageRef = generator.moduleDescriptor.sourceLanguage
+        val result = OwnedGeneratorDelete(
+            generator.moduleReference,
+            languageRef.moduleName ?: languageRef.toString(),
+            languageRef.resolve(mpsProject.repository) as? Language,
+            deleteFiles,
+            // models share output roots, and source roots their parent folders
+            if (deleteFiles) ModuleDeleteHelper.generatorFoldersToPrune(generator).distinctBy { it.path } else emptyList(),
+            if (deleteFiles) ModuleDeleteHelper.protectedForceDeleteTargets(generator).distinctBy { it.path } else emptyList(),
         )
+        ModuleDeleteHelper(mpsProject).deleteModules(listOf(generator), false, deleteFiles)
+        return result
+    }
+
+    /**
+     * Checks that the generator is gone from the repository and from its language's descriptor; ModuleDeleteHelper
+     * skips the descriptor edit for a read-only language. Reports the folders and generated-artifact locations
+     * that stayed on disk.
+     */
+    private fun ownedGeneratorDeleteResult(mpsProject: MPSProject, name: String, delete: OwnedGeneratorDelete): String {
+        val (leftovers, keptFiles) = mpsProject.modelAccess.computeReadAction {
+            val leftovers = listOfNotNull(
+                "still registered".takeIf { mpsProject.repository.getModule(delete.generator.moduleId) != null },
+                "unregistered but still declared in the descriptor of language '${delete.languageName}', so it returns when the language reloads"
+                    .takeIf { delete.language?.moduleDescriptor?.generators?.any { it.moduleReference == delete.generator } == true },
+            )
+            val keptFiles = delete.foldersToPrune.filter { it.exists() }.map { "kept ${it.path}: not empty" } +
+                delete.keptTargets.filter { it.exists() }.map { "kept ${it.path}: shared with the language" }
+            leftovers to keptFiles
+        }
+        if (leftovers.isNotEmpty()) {
+            val filesNote = if (delete.deleteFiles) "; its models and generated files were already deleted" else ""
+            return errJson("Generator '$name' was not fully deleted: ${leftovers.joinToString("; ")}$filesNote", McpErrorCode.INTERNAL_ERROR)
+        }
+        val payload = jsonObject {
+            addProperty("name", name)
+            addProperty("deleted", true)
+            addProperty("parentLanguage", delete.languageName)
+            if (keptFiles.isNotEmpty()) {
+                addProperty("fileDeletionWarning", keptFiles.joinToString("; "))
+            }
+        }
+        return okJson(payload)
     }
 
     @McpTool
@@ -1365,10 +1424,8 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         // One failing module must not stop the others; the check below reports it.
         val languages = added.filterIsInstance<Language>()
         for (language in languages) {
-            // removeModule(language) would drop its owned generators from the module loader too, but
-            // silently, so the file tracker keeps the .mpl listener. Removing each generator first fires
-            // its own moduleRemoved. Its side effect, dropping the project-descriptor entry for the .mpl,
-            // is safe only because that entry belongs to the language being removed right after.
+            // Each generator goes right before its language, like ModuleDeleteHelper does. removeModule(language)
+            // would detach them itself; removing them first just avoids depending on that.
             for (generator in language.ownedGenerators) {
                 if (registered(generator)) runCatching { mpsProject.removeModule(generator) }
             }

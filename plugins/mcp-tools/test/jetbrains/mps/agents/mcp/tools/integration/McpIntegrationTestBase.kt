@@ -45,6 +45,7 @@ import org.junit.Before
 import java.io.File
 import java.util.Collections
 import java.util.logging.Handler
+import java.util.logging.Level
 import java.util.logging.LogRecord
 import java.util.logging.Logger
 import kotlin.reflect.full.declaredFunctions
@@ -216,10 +217,16 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
     }
 
     protected fun <T> captureLogMessages(block: () -> T): Pair<T, List<String>> {
-        val messages = Collections.synchronizedList(mutableListOf<String>())
+        val (result, records) = captureLogRecords(block)
+        return result to records.map { it.message }
+    }
+
+    /** Like [captureLogMessages], but keeps each record's level. */
+    protected fun <T> captureLogRecords(block: () -> T): Pair<T, List<LogRecord>> {
+        val records = Collections.synchronizedList(mutableListOf<LogRecord>())
         val handler = object : Handler() {
             override fun publish(record: LogRecord) {
-                messages.add(record.message)
+                records.add(record)
             }
 
             override fun flush() = Unit
@@ -229,12 +236,21 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         rootLogger.addHandler(handler)
         return try {
             val result = block()
-            val snapshot = synchronized(messages) { messages.toList() }
+            val snapshot = synchronized(records) { records.toList() }
             result to snapshot
         }
         finally {
             rootLogger.removeHandler(handler)
         }
+    }
+
+    /**
+     * Fails on any SEVERE (MPS `LOG.error` maps there, JUL has no ERROR) or WARNING record, for a tool call that is
+     * expected to leave a clean log. Opt-in: other tests tolerate the platform's background warnings.
+     */
+    protected fun assertNoProblemsLogged(records: List<LogRecord>) {
+        val problems = records.filter { it.level.intValue() >= Level.WARNING.intValue() }.map { "${it.level}: ${it.message}" }
+        assertEquals("the call must log no warning or error", emptyList<String>(), problems)
     }
 
     protected fun createDirInProject(subName: String): IFile = createDirIn(myProject, subName)
