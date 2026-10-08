@@ -45,6 +45,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.ide.vcs.test.merge.ChangesRollbackTest.class,
     jetbrains.mps.ide.vcs.test.merge.MergeTest.class,
     jetbrains.mps.ide.vcs.test.merge.AfterMergeChildrenOrderTest.class,
+    jetbrains.mps.vcs.diff.merge.PostMergeSortingScenarioTest.class,
     jetbrains.mps.ide.vcs.test.merge.NotMoveChangeConflictsTest.class,
     jetbrains.mps.ide.vcs.test.merge.MoveChangeConflictsTest.class,
     jetbrains.mps.ide.vcs.test.merge.WrapChangeConflictsTest.class,
