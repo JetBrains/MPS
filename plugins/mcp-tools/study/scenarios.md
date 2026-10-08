@@ -201,7 +201,7 @@ Run to verify: `mps-aspect-typesystem` Common-Path steps 4 and 9 (the sandbox re
 "After changing typesystem rules" half of `references/analysis-tools/type-queries.md`, and "a MAKE
 with `runtimeReady: true` is the reload" (D84).
 Read the process signals together with the `families.py` columns `T_type_queries_before_make`
-(should be ≥ 1), `T_rule_prints` (≤ 2), `M_makes` (1 expected, ≥ 1 required) and `M_reload_all` (0).
+(should be ≥ 1), `T_rule_prints` (≤ 3), `M_makes` (1 expected, ≥ 1 required) and `M_reload_all` (0).
 Making the sandbox or the scratch model fails by design (no generator for `SimpleMathWrapper`); that
 failure says nothing about the language.
 Hypotheses: H2, H5, H7.

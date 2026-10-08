@@ -68,8 +68,8 @@ printout. The server prints the short name (`SubtypingRule`); a qualified one
 A result without that concept — a printout saved to a temp file (`data` is a path), a PLAIN TEXT or
 HTML printout, an error — counts when the `nodeReference` is in a `….typesystem` model, so it may
 also count a helper root of that model. In a cell that authors rules (S1's checking rule) the prints
-are legitimate; the column is the S11 signal, and S12's with up to two prints allowed (the template rule and its
-copy).
+are legitimate; the column is the S11 signal, and S12's with up to three prints allowed (the template rule, its
+copy, and one re-print or second candidate).
 T_type_queries and M_makes compare the operation trimmed and in any case, as the server does.
 T_type_queries_before_make is S12's baseline proxy: a type query asked before the language was
 rebuilt. A MAKE the envelope rejects (is_error, ok:false) closes no window; a build that ran and

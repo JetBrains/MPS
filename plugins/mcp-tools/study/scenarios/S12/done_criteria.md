@@ -92,9 +92,12 @@ Read the `families.py` row of the run plus the transcript.
   exact only when the first MAKE the envelope did not reject (`ok:false` / `is_error`) is that build.
   A build answering `success:false` — the by-design sandbox failure, say — closes the window too;
   after any such earlier MAKE, read the transcript.
-- **P2 copy, not study.** `T_rule_prints` ≤ 2 (the sibling rule copied as a template, and the copy
-  printed to find the reference to change). More means the worker read rules to decide what the
-  engine could answer.
+- **P2 copy, not study.** `T_rule_prints` ≤ 3: the sibling rule copied as a template, the copy
+  printed to find the reference to change, and one more — a re-print of the edited copy or a
+  second template candidate (relaxed from ≤ 2 after round 32, where both runs used exactly that
+  third print and no rule study). More means the worker read rules to decide what the engine could
+  answer; a print of the reporting rule, or of an operator rule after an engine answer, is study
+  whatever the count.
 - **P3 one build is the reload.** `M_makes` is 1 in the routed path: a MAKE of the language
   (`{"modules":["jetbrains.mps.samples.Expressions"],"rebuild":true}`, or its models); `M_reload_all`
   is 0. More MAKEs are a signal (a rebuild loop, MAKE used as a reload, a sandbox make); a

@@ -71,7 +71,7 @@ The evaluators broke the extra calls down:
   ever reworded for another reason, say that extra lines in `Probe` are fine; that would also
   remove the cleanup cost.
 
-## 5. Proposed next remedies (not applied)
+## 5. Proposed next remedies (1 and 3 applied 2026-10-08, after this round)
 
 1. **`mcp-tools-index.md` / node-editing docs:** "delete a root: `mps_mcp_update_root_node_from_json`
    with `operation: DELETE`". Cheap, and it removes opus's 6-call detour.
