@@ -84,5 +84,11 @@ Minor errors, none from S12's subject:
      `COMMON_SUPERTYPE`).
   3. **"Reload after compiled-aspect changes":** rebuild the language with `MAKE`, where
      `runtimeReady:true` is the reload; `reload_all` alone compiles nothing.
+- **Applied 2026-10-08** (the commit after this report): all three, plus the older text the remedy
+  review found contradicting remedy 3 — `mcp-tools-index.md` (`reload_all` entry),
+  `node-editing-rules.md`, `mps-language-aspects-overview` ("after large changes"),
+  `mps-aspect-constraints` (SKILL.md and common-failures), the `mps_mcp_reload_all` tool
+  description — and `mps-aspect-typesystem` step 0, which still carried the "when authoring" licence.
+  The tool description change needs the rebuilt plugin, i.e. an MPS restart before round 31.
 - **Next measurement:** S12 × 2 again after the remedies. Expected: `mps-aspect-typesystem` loaded,
   `T_rule_prints` ≤ 2, `M_reload_all` 0.

@@ -719,8 +719,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         result["success"] = makeResult.success
         result["message"] = makeResult.message
         // Distinguishes "build succeeded but language runtime is still stale" from full success
-        // so chained calls (scaffold_editor, get_concept_details) can decide to call
-        // `mps_mcp_reload_all` or rebuild instead of hitting a hollow descriptor downstream.
+        // so chained calls (scaffold_editor, get_concept_details) can decide to rebuild
+        // (`rebuild=true`) instead of hitting a hollow descriptor downstream.
         result["runtimeReady"] = makeResult.runtimeReady
         if (makeResult.details.isNotEmpty()) {
             result["details"] = makeResult.details

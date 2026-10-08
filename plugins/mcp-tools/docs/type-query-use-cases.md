@@ -46,7 +46,8 @@ Observations that belong in the skills (none are in them today):
 
 - **One `MAKE` with `runtimeReady:true` is the reload.** No `mps_mcp_reload_all` was needed for the engine to run the
   new `SubtypingRule`; the study already knows this as D84 but the typesystem skill still says "after rebuilding and
-  reloading". `mps-mcp-workflow` "Reload after compiled-aspect changes" says `reload_all` *or* `MAKE`; it is right.
+  reloading". `mps-mcp-workflow` said `reload_all` *or* `MAKE` until study round 30 showed a worker doing both; its "Rebuild after
+  compiled-aspect changes" directive now says the same as here.
 - **Copy-then-modify authors a lattice rule in three calls** (`COPY_NODE`, `SET PROPERTY name`, `SET REFERENCE
   concept`) with no JSON blueprint and no printout of any rule other than the one copied. `check_root_node_problems`
   on the copy validates it before the build.

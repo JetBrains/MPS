@@ -647,8 +647,8 @@ class JetBrainsMPSProjectMcpToolset(
     @McpTool
     @McpDescription(
         """
-        Reloads all modules in the MPS project. 
-        This is useful to refresh the runtime concept registry after structural changes in languages.
+        Reloads all module classes from disk; compiles nothing.
+        A mps_mcp_alter_nodes MAKE answering runtimeReady:true already reloaded the languages it built, and stale or hollow descriptors need MAKE with rebuild=true, not this tool.
 
         Returns a JSON object with 'ok':true and 'data':"All modules reloaded successfully" on success, or 'ok':false and 'error':"..." on failure.
     """

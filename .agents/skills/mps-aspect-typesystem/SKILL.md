@@ -34,7 +34,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 
 ## Common-Path Workflow
 
-0. **Ask the compiled typesystem before authoring a rule.** Check whether a type relation already holds or what produces a node's current type with `mps_mcp_query_types` (`IS_SUBTYPE`, `SUPERTYPES`, `OPERATION_TYPE`, `EXPLAIN_TYPE`) or `mps_mcp_query_nodes` (`GET_TYPE`, `GET_EXPECTED_TYPE`). Do not simulate the solver by reading rule roots; use those roots only when authoring or changing rules. See `mps-mcp-workflow/references/analysis-tools/type-queries.md` for all operations and caveats.
+0. **Ask the compiled typesystem before authoring a rule.** Check whether a type relation already holds or what produces a node's current type with `mps_mcp_query_types` (`IS_SUBTYPE`, `SUPERTYPES`, `OPERATION_TYPE`, `EXPLAIN_TYPE`) or `mps_mcp_query_nodes` (`GET_TYPE`, `GET_EXPECTED_TYPE`). Do not simulate the solver by reading rule roots: print a rule root only to change it or to pick a sibling to copy, and ask the engine (`OPERATION_TYPE`, `COMMON_SUPERTYPE`) what a change does to operators and joins. See `mps-mcp-workflow/references/analysis-tools/type-queries.md` for all operations and caveats.
 1. Create a `typesystem` model (`mps_mcp_create_model` with `moduleName: "<lang>"` and `modelName: "<lang>.typesystem"` — aspect ID `typesystem`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
 2. Add used languages: `jetbrains.mps.lang.typesystem`, and any languages used in bodies (`smodel`, `collections`, `closures`, `baseLanguage`).
 3. Add `InferenceRule` roots for concepts whose types you compute (see `references/inference-rules.md`).

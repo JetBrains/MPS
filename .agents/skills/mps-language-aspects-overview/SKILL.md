@@ -88,7 +88,7 @@ After adding/changing:
 - **Behavior method signatures** — all callers (generator, typesystem, constraints, intentions, editor queries) must be re-validated. Rebuild language.
 - **Generator templates** — rebuild generator module (it's separate from the language module).
 - **Runtime solutions** — rebuild the runtime solution; consumers pick up changes on next regeneration or reload.
-- After large changes: `mps_mcp_reload_all` to refresh MPS's runtime concept registry.
+- After large changes: rebuild the language module (`MAKE`, `rebuild:true`); `runtimeReady:true` means the runtime registry is fresh.
 
 ## Validation Flow
 

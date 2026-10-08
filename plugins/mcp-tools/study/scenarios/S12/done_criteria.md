@@ -99,8 +99,9 @@ Read the `families.py` row of the run plus the transcript.
   (`{"modules":["jetbrains.mps.samples.Expressions"],"rebuild":true}`, or its models); `M_reload_all`
   is 0. More MAKEs are a signal (a rebuild loop, MAKE used as a reload, a sandbox make); a
   `reload_all` is a docs miss — `mps-aspect-typesystem` step 9.4 says the MAKE is the reload, but a
-  worker that loads only `mps-mcp-workflow` reads its "Reload after compiled-aspect changes" directive,
-  which offers `reload_all` as an equal option (round 30). Neither fails the cell.
+  worker that loaded only `mps-mcp-workflow` read its "Reload after compiled-aspect changes" directive,
+  which offered `reload_all` as an equal option until the round-30 remedy (now "Rebuild after
+  compiled-aspect changes"). Neither fails the cell.
 - **P4 the after state asked.** `T_type_queries` ≥ 4 in all, with at least one `IS_SUBTYPE` and one
   `OPERATION_TYPE`, `GET_TYPE` or `EXPLAIN_TYPE` after the build.
 - **P5 no clean-over-unchecked reading.** No root the worker calls "well-typed" or "accepted" on a

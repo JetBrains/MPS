@@ -30,7 +30,7 @@ Constraints are enforced at edit time and also consulted by the typesystem/edito
 - `defaultConcreteConcept` on `ConceptConstraints` chooses which concrete subconcept replaces an abstract pick — it is a single reference, not a child block.
 - Surface forms (`come from`, `parent scope`, `kind.isSubConceptOf(...)`, `link/C : role/`, `concept/C/`) are not BaseLanguage. Each is a dedicated `jetbrains.mps.lang.scopes` / `jetbrains.mps.lang.smodel` concept — construct those concepts, not strings (see `references/scope-fqn-reference.md`).
 - `Concept_IsSubConceptOfOperation` matches a concept **and** its sub-concepts; `Concept_IsExactlyOperation` excludes sub-concepts. Use `isExactly` for guards that must not fire on specialisations.
-- Edit constraint models through MPS MCP (`mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`, `mps_mcp_parse_java_and_insert`). Do not hand-edit `.mps` files. Validate with `mps_mcp_check_root_node_problems` and rebuild the language; if the new constraint is invisible at runtime, run `mps_mcp_reload_all`.
+- Edit constraint models through MPS MCP (`mps_mcp_insert_root_node_from_json`, `mps_mcp_update_node`, `mps_mcp_parse_java_and_insert`). Do not hand-edit `.mps` files. Validate with `mps_mcp_check_root_node_problems` and rebuild the language; if the new constraint is still invisible at runtime, check that the MAKE targeted the language module and answered `runtimeReady:true`, and retry with `rebuild:true`.
 
 ## Section index — one row, one read
 
