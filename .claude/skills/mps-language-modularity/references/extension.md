@@ -22,7 +22,7 @@ concept UnlessStatement extends Statement      // legal anywhere a statement is
 concept PlaceholderStatement extends Statement properties: id : string   // reserved generator hook
 ```
 
-`PlaceholderStatement` is also a valid statement, but reserved as a **generator hook** for later composition — the seed of *extensible generators* (see `reuse.md`).
+`PlaceholderStatement` is also a valid statement, but reserved as a **generator hook** for later composition — the seed of *extensible generators* (see `references/reuse.md`).
 
 **Generator — assimilate to the base language.** Extensions are *lowered* into the host; nothing extension-specific survives. Simplest case is a pure reduction; for constructs needing a helper, the classic shape is **weaving rule** creates a method → **mapping label** remembers it → **reduction rule** replaces the construct with a call to that label (how `closures` lowers a capturing `{ => … }`). → `mps-aspect-generator`.
 
@@ -62,4 +62,4 @@ operation MulExpression   operands: <MoneyType>,<int|float>  -> <MoneyType>
 - **New operators instead of overloads** — forces users to choose among near-identical concepts at completion.
 - **Retrofitted reuse** — after-the-fact extension points are limited; plan hook concepts deliberately and early.
 
-**Validation:** see `validation.md` § Extension.
+**Validation:** see `references/validation.md` § Extension.

@@ -8,7 +8,7 @@ Pass the **project directory** (or an `.ipr` / `.mpr` file) as a positional argu
 
 Goal: a **short-lived** second process that talks to the first over `DirectoryLock` and exits.
 
-1. Classify the process (`detect-source-vs-standalone.md`).
+1. Classify the process (`references/detect-source-vs-standalone.md`).
 2. Build a command that reuses that instance's selector (and config/system dirs).
 3. Append the absolute project path.
 4. Run it with a ~90s timeout. Success is **exit 0 in a few seconds**, not a new GUI.

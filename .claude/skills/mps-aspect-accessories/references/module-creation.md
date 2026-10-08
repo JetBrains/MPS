@@ -41,7 +41,7 @@ For `type=language`, three optional flags decide which companion modules are cre
 
 ## Return value
 
-Returns a JSON object with `ok:true` and `data:{ name, moduleRef, virtualFolder?, readOnly, present:true, kind, facets, loadExtensions? }` on success, or `ok:false` and `error:"..."` on failure. The `data` envelope has the same shape as the module object returned by `mps_mcp_get_project_structure(startingPoint=<module>)`; see `module-info-fields.md` for the meaning of `kind`, `facets`, and `loadExtensions`.
+Returns a JSON object with `ok:true` and `data:{ name, moduleRef, virtualFolder?, readOnly, present:true, kind, facets, loadExtensions? }` on success, or `ok:false` and `error:"..."` on failure. The `data` envelope has the same shape as the module object returned by `mps_mcp_get_project_structure(startingPoint=<module>)`; see `references/module-info-fields.md` for the meaning of `kind`, `facets`, and `loadExtensions`.
 
 ## Deleting a generator
 

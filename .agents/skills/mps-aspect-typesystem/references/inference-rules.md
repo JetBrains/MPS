@@ -80,4 +80,4 @@ rule typeof_ForEachStatement {
 
 `var elementType;` declares a free type variable. `join(A | B)` means "either A or B" — the solver picks whichever is consistent. `%(...)%` is an anti-quotation that splices the variable's current type into the quotation.
 
-For body-level JSON AST shapes (equation/inequation/report statements, anti-quotation handling), see `json-blueprints.md`.
+For body-level JSON AST shapes (equation/inequation/report statements, anti-quotation handling), see `references/json-blueprints.md`.

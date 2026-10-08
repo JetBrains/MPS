@@ -22,7 +22,7 @@ Use this workflow when authoring non-trivial BaseLanguage code via JSON blueprin
     * Insert a skeleton (signatures, fields, empty bodies) using `mps_mcp_update_root_node_from_json`.
 4. **Harvest References**:
     * **Own members**: use `mps_mcp_print_node` on the skeleton to get persistent refs for constructors and methods.
-    * **External members**: derive refs from the class ref using URL-encoded signatures (`stub-references.md`).
+    * **External members**: derive refs from the class ref using URL-encoded signatures (`references/stub-references.md`).
     * **Inherited methods**: use the declaring class ref for `baseMethodDeclaration`.
     * **Ambiguity**: use `GET_ASSIGNABLE_REFERENCES` (mode: `completion`) for overloaded/inherited members if name auto-resolution fails.
 5. **Patch & Apply**:

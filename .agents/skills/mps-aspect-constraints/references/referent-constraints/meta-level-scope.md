@@ -26,7 +26,7 @@ Key pieces:
   references and properties. `isSingular()` on `LinkDeclaration` filters cardinality (`0..1`/`1` vs
   `0..n`/`1..n`).
 - `ListScope.forResolvableElements(list)` — names elements via their resolve info, which works for
-  declarations (whose "name" is the role); see `scope-helpers.md`.
+  declarations (whose "name" is the role); see `references/scope-helpers.md`.
 - The model authoring such references must be able to *see* the language under test's structure —
   usually already true because the model imports that language for its regular content.
 

@@ -61,4 +61,4 @@ reduction rule FactRef -> facts.read( $[fact.name] )   // host-specific; guest E
 - **Over-exposed scopes** — embedded expressions seeing every fact in the project, not just the enclosing rule set.
 - **Re-flattening the guest** — re-implementing guest→text in each host instead of reusing one lowering pipeline.
 
-**Validation:** see `validation.md` § Embedding.
+**Validation:** see `references/validation.md` § Embedding.

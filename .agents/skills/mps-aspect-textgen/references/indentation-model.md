@@ -41,7 +41,7 @@ with indent { append ${node.ifTrue} ; }
 append \n {}} ...
 ```
 
-`WithIndentOperation` holds a single `body` child of type `StatementList`. See `json-blueprints.md` for the full AST.
+`WithIndentOperation` holds a single `body` child of type `StatementList`. See `references/json-blueprints.md` for the full AST.
 
 ## Worked example — `increase depth` / `decrease depth` from `BlockStatement_TextGen`
 

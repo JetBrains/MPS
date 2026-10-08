@@ -4,7 +4,7 @@ Returns a JSON array of objects, each having `"value"`, `"presentation"`, and `"
 
 Accepts two mutually-exclusive forms:
 
-- **By enumeration declaration** — pass a non-null `enumerationRef` naming an `EnumerationDeclaration`, either as its node reference (`r:...`) or as its **qualified name** (`<language>.structure.<EnumName>`, `<language>.<EnumName>`, or the bare `<EnumName>`). Use this when you know the enum directly. This is also the route `mps_mcp_get_concept_details` points at for an enumeration, which it can never return itself (see `concept-details.md`) — the qualified name that failed there is accepted here verbatim.
+- **By enumeration declaration** — pass a non-null `enumerationRef` naming an `EnumerationDeclaration`, either as its node reference (`r:...`) or as its **qualified name** (`<language>.structure.<EnumName>`, `<language>.<EnumName>`, or the bare `<EnumName>`). Use this when you know the enum directly. This is also the route `mps_mcp_get_concept_details` points at for an enumeration, which it can never return itself (see `references/concept-details.md` in the `mps-language-analysis` skill root after loading that companion skill from the same origin) — the qualified name that failed there is accepted here verbatim.
 - **By property on a host node** — omit `enumerationRef` or pass it as `null`, then pass `nodeReference` (a node whose concept has an enum-typed property) plus `propertyName`. Use this when you only have an instance.
 
 The two forms are mutually exclusive and their failures are distinguishable: the declaration form's errors name `'enumerationRef'`, the property form's name `'nodeReference'` / `'propertyName'`.

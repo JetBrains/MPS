@@ -14,7 +14,7 @@ Exactly one `BuildLayout` node whose `children` are layout entries. Layout entri
 | `BuildLayout_ImportContent` (`3ygNvl`) | Inlines the contents of another layout node referenced by id |
 | `BuildLayout_CopyOfContainer` (`3_I8Xc`) | Includes the *container itself* (folder/jar) from another location |
 | `BuildMpsLayout_ModuleJar` / `Saw0i` | Compiled Java classes of a declared `BuildMps_AbstractModule` or `BuildSource_JavaModule` |
-| `BuildMpsLayout_Plugin` | A declared `BuildMps_IdeaPlugin`, see `idea-plugins.md` |
+| `BuildMpsLayout_Plugin` | A declared `BuildMps_IdeaPlugin`, see `references/idea-plugins.md` |
 | `BuildLayout_IdeaPlugin` | Standalone IDEA-plugin layout (independent of `BuildMps_IdeaPlugin`) |
 | `BuildLayout_Fileset` (`2HvfSZ`) | Generic file inclusion via a path + selectors |
 | `BuildLayout_Ace`* | Additional content extractors — project-specific |

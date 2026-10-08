@@ -66,7 +66,7 @@ Same body as JSON (the `body` child of `ConstraintFunction_ReferentSearchScope_S
 }
 ```
 
-Key new concepts used above (all from `jetbrains.mps.lang.constraints` and `jetbrains.mps.lang.smodel`; see `scope-fqn-reference.md` for the full FQN table):
+Key new concepts used above (all from `jetbrains.mps.lang.constraints` and `jetbrains.mps.lang.smodel`; see `references/scope-fqn-reference.md` for the full FQN table):
 
 | Construct | FQN | Notes |
 |---|---|---|

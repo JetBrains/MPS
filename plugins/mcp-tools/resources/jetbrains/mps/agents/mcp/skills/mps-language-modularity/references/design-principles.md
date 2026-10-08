@@ -35,4 +35,4 @@ Adjacent to, but **outside**, the four-way taxonomy: MPS **annotations** attach 
 
 ## See also
 
-Per-kind recipes: `referencing.md`, `extension.md`, `reuse.md`, `embedding.md`. Test strategy: `validation.md`.
+Per-kind recipes: `references/referencing.md`, `references/extension.md`, `references/reuse.md`, `references/embedding.md`. Test strategy: `references/validation.md`.

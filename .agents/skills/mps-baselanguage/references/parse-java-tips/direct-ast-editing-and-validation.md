@@ -14,7 +14,7 @@
 * **URL encoding**: `(` → `%28`, `)` → `%29`. Use fully-qualified parameter types (e.g. `java.lang.String`).
 * **Signature**: omit return type suffixes (e.g. `:void`) unless confirmed via `mps_mcp_print_node`.
 * **Ambiguity**: use `GET_ASSIGNABLE_REFERENCES` (mode: `completion`) for ambiguous overloads.
-* For the full stub-ref decision tree, see `stub-references.md`.
+* For the full stub-ref decision tree, see `references/stub-references.md`.
 
 ### Types
 

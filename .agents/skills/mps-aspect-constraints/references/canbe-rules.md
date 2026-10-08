@@ -89,7 +89,7 @@ Verify exact parameter concept FQNs with `mps_mcp_search_concepts(["ConstraintFu
 childConcept.isSubConceptOf(AllowedChildConcept)
 ```
 
-Use `isSubConceptOf` to allow `AllowedChildConcept` and all sub-concepts; use `isExactly` to allow only the exact concept (see `scope-fqn-reference.md`).
+Use `isSubConceptOf` to allow `AllowedChildConcept` and all sub-concepts; use `isExactly` to allow only the exact concept (see `references/scope-fqn-reference.md`).
 
 ## `ConstraintFunction_CanBeAParent`: parameters
 
@@ -108,7 +108,7 @@ The parent block concept is **`ConstraintFunction_CanBeAParent`** (`jetbrains.mp
 node.isInRole(link/ContainerConcept : specificRole/)
 ```
 
-`isInRole` is `jetbrains.mps.lang.smodel.structure.Node_IsInRoleOperation`. It takes a `LinkIdRefExpression` argument (see `scope-fqn-reference.md`).
+`isInRole` is `jetbrains.mps.lang.smodel.structure.Node_IsInRoleOperation`. It takes a `LinkIdRefExpression` argument (see `references/scope-fqn-reference.md`).
 
 ## `ConstraintFunction_CanBeARoot`: the `model` parameter
 

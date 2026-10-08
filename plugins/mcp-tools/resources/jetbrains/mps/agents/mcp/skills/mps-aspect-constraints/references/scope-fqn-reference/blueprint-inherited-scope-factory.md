@@ -1,6 +1,6 @@
 ## JSON blueprint — `InheritedNodeScopeFactory` constraint
 
-(Repeated from `referent-constraints.md` for completeness.)
+(Repeated from `references/referent-constraints/inherited-scope.md` for completeness.)
 
 ```json
 {

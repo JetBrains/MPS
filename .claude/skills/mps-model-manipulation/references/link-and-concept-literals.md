@@ -32,7 +32,7 @@ A typical composite argument list (`(this, link/C : role/)` as passed to `Simple
 ]}
 ```
 
-Do **not** confuse `LinkIdRefExpression` with `OperationParm_LinkQualifier` (used as a *child of an operation* — `Node_GetReferenceOperation`; see `references-and-queries.md`): the latter carries only the `link` ref, not a `conceptDeclaration`.
+Do **not** confuse `LinkIdRefExpression` with `OperationParm_LinkQualifier` (used as a *child of an operation* — `Node_GetReferenceOperation`; see `references/references-and-queries.md`): the latter carries only the `link` ref, not a `conceptDeclaration`.
 
 ## Concept literal `concept/C/` — also standalone, also just two refs
 
@@ -47,4 +47,4 @@ Surface form: `concept/Calculator/`. Produces an `SConcept` handle.
 }
 ```
 
-Use when a method or scope factory takes an `SConcept` argument. (For the older, interface-based argument form `RefConcept_Reference` used by `.ancestor<C>`, `isSubConceptOf(C)`, etc., see `smodel-concepts-catalog.md` — those live inside an operation, not as a top-level expression.)
+Use when a method or scope factory takes an `SConcept` argument. (For the older, interface-based argument form `RefConcept_Reference` used by `.ancestor<C>`, `isSubConceptOf(C)`, etc., see `references/smodel-concepts-catalog.md` — those live inside an operation, not as a top-level expression.)

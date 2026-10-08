@@ -55,9 +55,9 @@ Use the agent's environment (`uname`, `$OS`, `[Environment]::OSVersion`). Do not
 
 Then open the matching example file:
 
-- macOS → `examples-macos.md`
-- Linux → `examples-linux.md`
-- Windows → `examples-windows.md`
+- macOS → `references/examples-macos.md`
+- Linux → `references/examples-linux.md`
+- Windows → `references/examples-windows.md`
 
 ## 5. Same instance vs a second IDE
 

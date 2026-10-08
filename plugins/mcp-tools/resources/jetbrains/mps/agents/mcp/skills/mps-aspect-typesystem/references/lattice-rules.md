@@ -49,7 +49,7 @@ subtyping rule supertypesOf_linkedlist {
 }
 ```
 
-Fill in `body` (a `StatementList`) with `ReturnStatement` → `Quotation` for the supertype — see `json-blueprints.md` for the AST. For `nlist<>` supertypes use BaseLanguage `LocalVariableDeclarationStatement` + `nlist.add(...)` calls, then `return res;`.
+Fill in `body` (a `StatementList`) with `ReturnStatement` → `Quotation` for the supertype — see `references/json-blueprints.md` for the AST. For `nlist<>` supertypes use BaseLanguage `LocalVariableDeclarationStatement` + `nlist.add(...)` calls, then `return res;`.
 
 FQN: `jetbrains.mps.lang.typesystem.structure.SubtypingRule`
 Concept ref: `c:7a5dda62-9140-4668-ab76-d5ed1746f2b2/1175147670730`

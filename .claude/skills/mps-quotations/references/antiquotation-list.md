@@ -16,4 +16,4 @@ The list role must contain at least one placeholder child before you can activat
 
 ## Where to see it in action
 
-See `antiquotations.md` — the closures-intention example combines a child antiquotation with a list antiquotation on the `parameter` role of `CompactInvokeFunctionExpression`. The expression `parent.operation:InvokeFunctionOperation.parameter` returns the list of original parameter nodes, which the runtime substitutes for the placeholder.
+See `references/antiquotations.md` — the closures-intention example combines a child antiquotation with a list antiquotation on the `parameter` role of `CompactInvokeFunctionExpression`. The expression `parent.operation:InvokeFunctionOperation.parameter` returns the list of original parameter nodes, which the runtime substitutes for the placeholder.

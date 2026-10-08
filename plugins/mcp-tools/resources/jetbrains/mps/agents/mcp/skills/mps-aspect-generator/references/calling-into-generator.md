@@ -6,4 +6,4 @@ Read this when: deciding where to put non-trivial code that the generator uses �
 - Use `RulesFunctions_<language>` (a `ClassConcept` in the generator model) for generator-local helpers invoked from multiple templates.
 - When the target is BaseLanguage: follow `mps-model-manipulation` for smodel idioms and `mps-collections-and-closures` for collections / closures idioms inside macro bodies and helper functions.
 
-See also `utility-models.md` for the third option — plain-stereotype utility model inside the generator module — and when to pick it over a runtime solution or a behavior method.
+See also `references/utility-models.md` for the third option — plain-stereotype utility model inside the generator module — and when to pick it over a runtime solution or a behavior method.

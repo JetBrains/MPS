@@ -58,4 +58,4 @@ concept behavior Metric {
 - **Accidental containment** — containing instead of referencing quietly changes the modularity kind.
 - **Unstable exported surface** — referenced concept names, kinds, and behavior signatures are a public API; keep them narrow and stable.
 
-**Validation:** see `validation.md` § Referencing.
+**Validation:** see `references/validation.md` § Referencing.

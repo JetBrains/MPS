@@ -71,4 +71,4 @@ Robust sequence: stabilize the core abstraction → add the adapter → choose s
 - **Fragile priority chains** — make interwoven priorities explicit, not incidental, with generation plans or generator priorities.
 - **Skipping the adapter** — host references in the core "just this once" collapse reuse into referencing.
 
-**Validation:** see `validation.md` § Reuse.
+**Validation:** see `references/validation.md` § Reuse.

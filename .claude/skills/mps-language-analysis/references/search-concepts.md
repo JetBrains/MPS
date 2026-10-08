@@ -1,6 +1,6 @@
 # `mps_mcp_search_concepts` — Matching Algorithm & Tuning
 
-Free-form discovery for concepts and interface concepts. Returns a compact per-concept record by default; `detail: "full"` returns the same records as `mps_mcp_get_concept_details` (see `concept-details.md` for that schema).
+Free-form discovery for concepts and interface concepts. Returns a compact per-concept record by default; `detail: "full"` returns the same records as `mps_mcp_get_concept_details` (see `references/concept-details.md` for that schema).
 
 ## Haystack
 

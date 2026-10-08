@@ -23,7 +23,7 @@ Key roles on `TemplateSwitch`:
 | `extends` (ref) | another `TemplateSwitch` | inherit its cases |
 | `parameter` (role) | `TemplateParameterDeclaration` | switch parameters, matching `$SWITCH$` call arguments |
 
-Cases use the same `Reduction_MappingRule` concept as top-level reductions — full JSON example is in `rule-consequences.md` (`AbandonInput_RuleConsequence`).
+Cases use the same `Reduction_MappingRule` concept as top-level reductions — full JSON example is in `references/rule-consequences.md` (`AbandonInput_RuleConsequence`).
 
 ## JSON blueprint
 

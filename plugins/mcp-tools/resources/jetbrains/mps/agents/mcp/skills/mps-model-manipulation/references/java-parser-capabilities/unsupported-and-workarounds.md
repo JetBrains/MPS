@@ -17,7 +17,7 @@ an MPS `sequence<node<Type>>` or `list<node<Type>>` variable.
 | `sequence<node<Type>>` | `SequenceType(elementType: SNodeType(concept: Type))` |
 | `list<node<Type>>` | `ListType(elementType: SNodeType(concept: Type))` |
 
-See `variable-declarations.md` for the full node blueprints.
+See `references/variable-declarations.md` for the full node blueprints.
 
 **Note**: Local variable types (`List<SNode> x = ...`) and constructor expressions
 (`new ArrayList<SNode>()`) ARE correctly parsed — only method return types are affected.
@@ -34,7 +34,7 @@ The Java parser produces correct MPS types in most positions, but fails for
 | Method parameter type | `node<CatchClause>` | `ClassifierType(SNode)` — Java type | Fine for most purposes; replace if MPS type checking fails |
 
 For local variable types and `new` expressions, don't use the Java parser —
-construct nodes directly using the blueprints in this file and `variable-declarations.md`.
+construct nodes directly using the blueprints in this file and `references/variable-declarations.md`.
 
 **After parsing a method**, check its `returnType` and parameter `type` children.
 If they should be MPS collection or smodel types, replace them using `mps_mcp_update_node`.
