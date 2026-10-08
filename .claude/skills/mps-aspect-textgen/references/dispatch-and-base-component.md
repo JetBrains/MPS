@@ -8,7 +8,7 @@ TextGen dispatch is **concept-exact**, not polymorphic. A rule on `Statement` is
 
 One `LanguageTextGenDeclaration` root per textgen model. Holds language-level, reusable textgen state:
 
-- `UnitContextDeclaration`s — context-object types (see `layout-and-context-objects.md`)
+- `UnitContextDeclaration`s — context-object types (see `references/layout-and-context-objects.md`)
 - `OperationDeclaration`s — named operation helpers callable from per-concept bodies as `Component.operationName(...)`
 - `UtilityMethodDeclaration`s — plain BaseLanguage methods reusable across rules
 

@@ -6,9 +6,9 @@ A language module declares:
 - **`usedLanguages`** — languages whose concepts can be used in this module's own models (structure, editor, constraints…). Each entry is a language module.
 - **`usedDevKits`** — convenience bundles that wrap sets of languages.
 - **`extendedLanguages`** — languages whose concepts this language inherits from and can extend.
-- **`runtimeModules`** — solution modules shipped with the language, visible to consumers at runtime (the generator's *stable part*: engines, helpers, plugin APIs). Lives in the **Runtime** tab — serialized as the `.mpl` `<runtime>` block holding `<dependency>` entries (not a `<runtimeModules>` element). **No dedicated MCP tool** (like `accessoryModels`): `withRuntime=true` on `mps_mcp_create_module(type="language")` creates+links one for a new language; otherwise use the MPS UI or hand-edit + rebuild. Distinct from the `Runtime` *dependency scope* below. See `runtime-solutions.md`.
+- **`runtimeModules`** — solution modules shipped with the language, visible to consumers at runtime (the generator's *stable part*: engines, helpers, plugin APIs). Lives in the **Runtime** tab — serialized as the `.mpl` `<runtime>` block holding `<dependency>` entries (not a `<runtimeModules>` element). **No dedicated MCP tool** (like `accessoryModels`): `withRuntime=true` on `mps_mcp_create_module(type="language")` creates+links one for a new language; otherwise use the MPS UI or hand-edit + rebuild. Distinct from the `Runtime` *dependency scope* below. See `references/runtime-solutions.md`.
 - **`generators`** — nested generator modules declared by the language.
-- **`accessoryModels`** — see `accessory-models.md`.
+- **`accessoryModels`** — see `references/accessory-models.md`.
 - **`languageVersions` / `dependencyVersions`** — version stamps that MPS maintains; don't hand-edit.
 
 Helpful MCP tools:

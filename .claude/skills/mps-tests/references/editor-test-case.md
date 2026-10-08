@@ -38,7 +38,7 @@ result annotation (text is now PancakesX):
                                    {"name": "selectionStart", "value": "9"}, {"name": "selectionEnd", "value": "9"}]
 ```
 
-For a non-label cell (e.g. a collection), only the node and `cellId` are compared. Failure messages are mapped to fixes in `common-failures.md`.
+For a non-label cell (e.g. a collection), only the node and `cellId` are compared. Failure messages are mapped to fixes in `references/common-failures.md`.
 
 ## Cell IDs in auto-generated editors
 

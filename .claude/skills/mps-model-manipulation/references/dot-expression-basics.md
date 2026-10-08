@@ -8,7 +8,7 @@ DotExpression
   operation: <one of the operation concepts>
 ```
 
-This file lists the blueprints you'll reach for most often: cardinality choice, operand casting, navigation (`.parent`, `.children`, `.ancestor<C>`, `.ancestors<C>`, `.descendants<C>` with include-self `+`), the two type-cast forms (`node:C` vs `node as C`), the two downcast bridges (`expr/` smodel→Java and `downcast expr` collections→Java interface), `.isInstanceOf` / `.isNotNull` / `.isNull` / `.behaviorMethod(args)`, and the four common sequence operations (`.where`, `.any`, `.translate`, `list.add`). The reusable closure-literal blueprint is in `closures-catalog.md`.
+This file lists the blueprints you'll reach for most often: cardinality choice, operand casting, navigation (`.parent`, `.children`, `.ancestor<C>`, `.ancestors<C>`, `.descendants<C>` with include-self `+`), the two type-cast forms (`node:C` vs `node as C`), the smodel downcast bridge (`expr/` smodel→Java), and `.isInstanceOf` / `.isNotNull` / `.isNull` / `.behaviorMethod(args)`. The collections-side `downcast expr`, the sequence operations (`.where`, `.any`, `.translate`, `list.add`) and the closure-literal blueprint are in the `mps-collections-and-closures` companion skill.
 
 ## Cardinality cheatsheet — `SLinkAccess` vs `SLinkListAccess`
 
@@ -325,103 +325,11 @@ No properties, no references.
 |---|---|---|---|
 | `SNodeTypeCastExpression` | `node as C` / `node:C` | smodel → smodel | Narrow `node<Base>` to `node<Sub>` to access sub-concept children |
 | `SemanticDowncastExpression` | `expr /` | **smodel → Java API** | Obtain `SNode`/`SModel` to call Java methods not modelled as smodel operations |
+| `DowncastExpression` | `downcast expr` | **MPS collection → Java interface** | Call a Java interface method on a `sequence`/`list`/`set`/`map` value; see the `DowncastExpression` section below |
 
 ## `DowncastExpression` (collections) — MPS collection type → Java interface
 
-Alias: **`downcast`**. Used to expose a **Java interface method** (e.g. `Iterable.iterator()`, `Map.computeIfAbsent()`) on a value whose static type is an **MPS collections type** (`sequence<>`, `list<>`, `set<>`, etc.). These MPS types do not directly expose the full Java interface contract, so the downcast bridges to the specific Java interface needed.
-
-`DowncastExpression` is **always** the `operand` child of an outer `DotExpression` that calls the Java interface method. The target Java type is inferred from that method call — no explicit type annotation exists on the node.
-
-Concept: `jetbrains.mps.baseLanguage.collections.structure.DowncastExpression`, alias `downcast`, ID `1228228912534`.
-Child role: `expression` (cardinality 1) — the MPS collection-typed expression being downcast.
-No properties, no references.
-
-**Blueprint — `(downcast expr).javaMethod()`**:
-
-```json
-{
-  "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
-  "children": [
-    {
-      "role": "operand",
-      "nodes": [{
-        "concept": "jetbrains.mps.baseLanguage.collections.structure.DowncastExpression",
-        "children": [{
-          "role": "expression",
-          "nodes": [{ "...": "<MPS collection-typed expression: sequence<>, list<>, set<>, …>" }]
-        }]
-      }]
-    },
-    { "role": "operation", "nodes": [{ "...": "<InstanceMethodCallOperation — Java interface method>" }] }
-  ]
-}
-```
-
-**Verified example 1 — `(downcast test).iterator()`** (from `jetbrains.mps.closures.test`):
-
-```json
-{
-  "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
-  "children": [
-    {
-      "role": "operand",
-      "nodes": [{
-        "concept": "jetbrains.mps.baseLanguage.collections.structure.DowncastExpression",
-        "children": [{
-          "role": "expression",
-          "nodes": [{
-            "concept": "jetbrains.mps.baseLanguage.structure.VariableReference",
-            "references": [{ "role": "variableDeclaration", "target": "<variable: sequence/list/set typed>" }]
-          }]
-        }]
-      }]
-    },
-    {
-      "role": "operation",
-      "nodes": [{
-        "concept": "jetbrains.mps.baseLanguage.structure.InstanceMethodCallOperation",
-        "references": [{ "role": "baseMethodDeclaration", "target": "6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)/~Iterable.iterator%28%29" }]
-      }]
-    }
-  ]
-}
-```
-
-**Verified example 2 — `(downcast lateInitParameterRefs).computeIfAbsent(index, closure)`** (from `jetbrains.mps.kotlin.stubs.smodel.metadata`):
-
-```json
-{
-  "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
-  "children": [
-    {
-      "role": "operand",
-      "nodes": [{
-        "concept": "jetbrains.mps.baseLanguage.collections.structure.DowncastExpression",
-        "children": [{
-          "role": "expression",
-          "nodes": [{
-            "concept": "jetbrains.mps.baseLanguage.structure.VariableReference",
-            "references": [{ "role": "variableDeclaration", "target": "<Map-typed variable>" }]
-          }]
-        }]
-      }]
-    },
-    {
-      "role": "operation",
-      "nodes": [{
-        "concept": "jetbrains.mps.baseLanguage.structure.InstanceMethodCallOperation",
-        "references": [{ "role": "baseMethodDeclaration", "target": "6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util(JDK/)/~Map.computeIfAbsent%28java.lang.Object,java.util.function.Function%29" }],
-        "children": [
-          { "role": "actualArgument", "nodes": [{ "...": "<key expression>" }] },
-          { "role": "actualArgument", "nodes": [{ "...": "<ClosureLiteral>" }] }
-        ]
-      }]
-    }
-  ]
-}
-```
-
-> Neither downcast concept carries an explicit target type annotation — MPS infers the Java interface from the method call in the outer `DotExpression`'s `operation` role.
+`downcast expr` (`jetbrains.mps.baseLanguage.collections.structure.DowncastExpression`) exposes a Java interface method (`Iterable.iterator()`, `Map.computeIfAbsent()`) on a value typed as an MPS collection. Its blueprints are in `references/downcast-expression.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.
 
 ## `node.isInstanceOf(C)` — runtime concept check
 
@@ -474,13 +382,15 @@ For the negated check use `Node_IsNullOperation` in the `operation` slot. Common
 
 ## `node.behaviorMethod(args)` — behavior method call
 
+Use the `lang.behavior` concept: the same-named smodel one is obsolete ("ConceptMethodCall moved").
+
 ```json
 {
   "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
   "children": [
     { "role": "operand",   "nodes": [{ "...": "<node-expression>" }] },
     { "role": "operation", "nodes": [{
-      "concept": "jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall",
+      "concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
       "references": [{ "role": "baseMethodDeclaration", "target": "<behavior-method-noderef>" }],
       "children": [
         { "role": "actualArgument", "nodes": [{ "...": "<arg-expression>" }] }
@@ -490,115 +400,6 @@ For the negated check use `Node_IsNullOperation` in the `operation` slot. Common
 }
 ```
 
-## `sequence.where { it => condition }` — filter
+## Collection operations on the result
 
-```json
-{
-  "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
-  "children": [
-    { "role": "operand",   "nodes": [{ "...": "<sequence-expression>" }] },
-    { "role": "operation", "nodes": [{
-      "concept": "jetbrains.mps.baseLanguage.collections.structure.WhereOperation",
-      "children": [{
-        "role": "closure",
-        "nodes": [{
-          "concept": "jetbrains.mps.baseLanguage.closures.structure.ClosureLiteral",
-          "children": [
-            {
-              "role": "parameter",
-              "nodes": [{
-                "concept": "jetbrains.mps.baseLanguage.closures.structure.InferredClosureParameterDeclaration",
-                "properties": [{ "name": "name", "value": "it" }, { "name": "resolveInfo", "value": "it" }],
-                "children": [{
-                  "role": "type",
-                  "nodes": [{ "concept": "jetbrains.mps.baseLanguage.structure.UndefinedType" }]
-                }]
-              }]
-            },
-            {
-              "role": "body",
-              "nodes": [{ "concept": "jetbrains.mps.baseLanguage.structure.StatementList",
-                "children": [{ "role": "statement", "nodes": [{ "...": "<condition-expression-statement>" }] }]
-              }]
-            }
-          ]
-        }]
-      }]
-    }]}
-  ]
-}
-```
-
-## `sequence.any { it => predicate }` — existential check
-
-Same structure as `where`, but use `AnyOperation` instead of `WhereOperation`.
-
-## `sequence.translate { it => ...; yield ...; ... }` — generator-style flatMap
-
-`.translate` builds a new `sequence<T>` from a closure that can `yield` zero or more elements per input item. This is the idiomatic way to express tree traversals that produce a flat sequence of nodes (replacement for imperative `collect`-into-list loops).
-
-```json
-{
-  "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
-  "children": [
-    { "role": "operand",   "nodes": [{ "...": "<sequence-expression>" }] },
-    { "role": "operation", "nodes": [{
-      "concept": "jetbrains.mps.baseLanguage.collections.structure.TranslateOperation",
-      "children": [{
-        "role": "closure",
-        "nodes": [{
-          "concept": "jetbrains.mps.baseLanguage.closures.structure.ClosureLiteral",
-          "children": [
-            { "role": "parameter", "nodes": [{
-              "concept": "jetbrains.mps.baseLanguage.closures.structure.InferredClosureParameterDeclaration",
-              "properties": [{ "name": "name", "value": "it" }, { "name": "resolveInfo", "value": "it" }],
-              "children": [{
-                "role": "type",
-                "nodes": [{ "concept": "jetbrains.mps.baseLanguage.structure.UndefinedType" }]
-              }]
-            }]},
-            { "role": "body", "nodes": [{
-              "concept": "jetbrains.mps.baseLanguage.structure.StatementList",
-              "children": [
-                { "role": "statement", "nodes": [{
-                  "concept": "jetbrains.mps.baseLanguage.closures.structure.YieldStatement",
-                  "children": [{ "role": "expression", "nodes": [{ "...": "<emitted-expression>" }] }]
-                }] }
-              ]
-            }]}
-          ]
-        }]
-      }]
-    }]}
-  ]
-}
-```
-
-`YieldStatement` takes a single `expression` child (role `expression`). Multiple `yield` statements inside the same closure each emit one element; the result of `.translate` is the concatenation of all yielded elements across all inputs.
-
-**Typical pattern** — "collect all return statements under `root`" (sketch):
-
-```
-sequence<node<ReturnStatement>> collected =
-    root.children.translate { it =>
-      if (it.isInstanceOf<ReturnStatement>) { yield it:ReturnStatement; }
-      foreach sub in collectReturnStatements(it) { yield sub; }
-    };
-```
-
-## `list.add(element)` — mutation
-
-```json
-{
-  "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
-  "children": [
-    { "role": "operand",   "nodes": [{ "...": "<list-variable-reference>" }] },
-    { "role": "operation", "nodes": [{
-      "concept": "jetbrains.mps.baseLanguage.collections.structure.AddElementOperation",
-      "children": [
-        { "role": "argument", "nodes": [{ "...": "<element-expression>" }] }
-      ]
-    }]}
-  ]
-}
-```
+`.where`, `.any`, `.select`, `.translate`, `list.add` and every other collection operation are `DotExpression`s too, but their concepts and closure arguments belong to the collections and closures languages. Their blueprints are in `references/sequence-operation-blueprints.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.

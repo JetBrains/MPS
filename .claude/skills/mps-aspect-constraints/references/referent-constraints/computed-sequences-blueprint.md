@@ -210,6 +210,6 @@ Full `body` (`StatementList`) blueprint — the scope factory's body. The target
 }
 ```
 
-> The closure-literal shape (correct FQNs, the obligatory `type` → `UndefinedType` child, and referencing the parameter) is documented canonically in `references/closures-catalog.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin, section *“Closure literal blueprint (reusable building block)”* (the JSON object is at lines 94–110; the `InferredClosureParameterDeclaration` shape this fix mirrors is lines 98–104).
+> The closure-literal shape (correct FQNs, the obligatory `type` → `UndefinedType` child, and referencing the parameter) is documented canonically in `references/closures-catalog.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin, section *“Closure literal blueprint (reusable building block)”*.
 
 Use this pattern whenever the imperative scope must **gather nodes from more than one place**. For the "one host, one role" shape, stick with `SimpleRoleScope.forNamedElements(host, link/.../)` — it is cheaper and name-indexed.

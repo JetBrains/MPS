@@ -98,7 +98,8 @@ Project-state confirmation for 09.01.
 }
 ```
 - Validation: `ok==true`; `data` now includes an **editor** aspect entry whose `rootNodes`
-  reference a `ConceptEditorDeclaration` targeting `StateChart` (e.g. `StateChart_Editor`).
+  reference a `ConceptEditorDeclaration` targeting `StateChart` (e.g. `StateChart_Editor`) with
+  `relation=="appliesTo"`.
   Compare with the (empty/minimal) result observed in Step 06.20.
 
 Proceed to `10_baselanguage_parse_java.md`.

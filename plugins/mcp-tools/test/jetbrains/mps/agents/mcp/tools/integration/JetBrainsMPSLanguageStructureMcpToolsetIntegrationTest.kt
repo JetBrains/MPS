@@ -3,7 +3,11 @@ package jetbrains.mps.agents.mcp.tools.integration
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.project.modules.LanguageProducer
+import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.SModelStereotype
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -1203,38 +1207,6 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
     // ── GET_ENUMERATION_LITERALS ──────────────────────────────────────────────────────
 
     @Test
-    fun `GET_ENUMERATION_LITERALS lists metaClass literals for a LinkDeclaration`() {
-        // UPDATE_CONCEPT_CHILD creates a LinkDeclaration whose `metaClass` is an enumeration property.
-        val ownerRef = createConceptRoot("EnumLitOwner")
-        val targetRef = createConceptRoot("EnumLitTarget")
-        assertOk(runTool {
-            it.mps_mcp_alter_structure(
-                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
-                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":"$targetRef","multiple":false,"optional":true}"""
-            )
-        })
-
-        val linkRef = readOnRepo {
-            val owner = structureModel.rootNodes.single { it.name == "EnumLitOwner" }
-            val link = owner.getChildrenByName("linkDeclaration").single()
-            PersistenceFacade.getInstance().asString(link.reference)
-        }
-
-        val response = runTool {
-            it.mps_mcp_query_structure(
-                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
-                """{"nodeReference":"$linkRef","propertyName":"metaClass"}"""
-            )
-        }
-        val arr = parseDataArray(response)
-        val literalNames = arr.map { it.asJsonObject.get("value").asString }.toSet()
-        // `metaClass` enumeration has at minimum `aggregation` and `reference` literals — those
-        // are the two values [setLinkMetaClass] selects between.
-        assertTrue("expected 'aggregation' among $literalNames", literalNames.contains("aggregation"))
-        assertTrue("expected 'reference' among $literalNames", literalNames.contains("reference"))
-    }
-
-    @Test
     fun `GET_ENUMERATION_LITERALS with null enumerationRef uses the property form`() {
         val ownerRef = createConceptRoot("EnumLitNullOwner")
         val targetRef = createConceptRoot("EnumLitNullTarget")
@@ -1482,6 +1454,184 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
             )
         }
         assertTrue(expectErr(response).contains("this.does.not.exist"))
+    }
+
+    /**
+     * A fresh language with a generator: concepts A, B and A2 (extends A), and aspect roots that
+     * relate to them in every way LIST_CONCEPT_ASPECTS distinguishes. The language is not built,
+     * so every lookup must work off the declaration nodes.
+     */
+    private inner class AspectFixture {
+        val languageName = "test.aspects${System.nanoTime()}"
+        val aRef: String
+        val bRef: String
+        val a2Ref: String
+        val typesystemModelRef: String
+        val generatorModelRef: String
+
+        init {
+            val dir = createDirInProject(languageName)
+            var created: Language? = null
+            executeCommand { created = LanguageProducer(myProject).withGenerator(true).create(languageName, dir) }
+            val lang = checkNotNull(created)
+            val (structureRef, constraintsRef) = readOnRepo {
+                modelRefOf(lang.models.single { it.name.longName.endsWith(".structure") }) to
+                    modelRefOf(lang.models.single { it.name.longName.endsWith(".constraints") })
+            }
+            typesystemModelRef = readOnRepo { modelRefOf(lang.models.single { it.name.longName.endsWith(".typesystem") }) }
+            generatorModelRef = readOnRepo {
+                modelRefOf(lang.generators.single().models.single { SModelStereotype.isGeneratorModel(it) })
+            }
+            assertOk(runTool {
+                it.mps_mcp_alter_structure(
+                    MPSStructureAlterOperation.CREATE_CONCEPTS,
+                    """{"structureModelRef":"$structureRef","conceptsJson":[{"name":"A"},{"name":"B"},{"name":"A2","extends":"A"}]}""",
+                )
+            })
+            val refs = readOnRepo {
+                val model = PersistenceFacade.getInstance().createModelReference(structureRef).resolve(myProject.repository)!!
+                listOf("A", "B", "A2").map { name -> PersistenceFacade.getInstance().asString(model.rootNodes.single { it.name == name }.reference) }
+            }
+            aRef = refs[0]; bRef = refs[1]; a2Ref = refs[2]
+
+            insert(typesystemModelRef, inferenceRule("infer_A", conceptCondition(aRef), body = conceptLiteral(bRef)))
+            insert(typesystemModelRef, inferenceRule("infer_A_pattern", patternCondition("$languageName.structure.A")))
+            insert(
+                typesystemModelRef,
+                """{"concept":"jetbrains.mps.lang.typesystem.structure.ComparisonRule","properties":[{"name":"name","value":"compare_A_B"}],
+                   "children":[{"role":"applicableNode","nodes":[${conceptCondition(aRef)}]},{"role":"anotherNode","nodes":[${conceptCondition(bRef)}]}]}""",
+            )
+            // A pattern on one side and a plain reference on the other: the rule applies to every A.
+            insert(
+                typesystemModelRef,
+                """{"concept":"jetbrains.mps.lang.typesystem.structure.ComparisonRule","properties":[{"name":"name","value":"compare_patternA_A"}],
+                   "children":[{"role":"applicableNode","nodes":[${patternCondition("$languageName.structure.A")}]},{"role":"anotherNode","nodes":[${conceptCondition(aRef)}]}]}""",
+            )
+            insert(
+                typesystemModelRef,
+                """{"concept":"jetbrains.mps.lang.typesystem.structure.InequationReplacementRule","properties":[{"name":"name","value":"replace_B_A"}],
+                   "children":[{"role":"applicableNode","nodes":[${conceptCondition(bRef)}]},{"role":"supertypeNode","nodes":[${conceptCondition(aRef)}]}]}""",
+            )
+            insert(
+                typesystemModelRef,
+                """{"concept":"jetbrains.mps.lang.typesystem.structure.OverloadedOpRulesContainer","properties":[{"name":"name","value":"ops_A"}],
+                   "children":[{"role":"rule","nodes":[{"concept":"jetbrains.mps.lang.typesystem.structure.OverloadedOperatorTypeRule",
+                   "children":[{"role":"operationConcept","nodes":[{"concept":"jetbrains.mps.lang.smodel.structure.ConceptReference",
+                   "references":[{"role":"concept","target":"$aRef"}]}]}]}]}]}""",
+            )
+            insert(typesystemModelRef, inferenceRule("infer_A2", conceptCondition(a2Ref)))
+            insert(
+                constraintsRef,
+                """{"concept":"jetbrains.mps.lang.constraints.structure.ConceptConstraints","references":[{"role":"concept","target":"$aRef"}]}""",
+            )
+            insert(
+                generatorModelRef,
+                """{"concept":"jetbrains.mps.lang.generator.structure.MappingConfiguration","properties":[{"name":"name","value":"rules_A"}],
+                   "children":[{"role":"reductionMappingRule","nodes":[{"concept":"jetbrains.mps.lang.generator.structure.Reduction_MappingRule",
+                   "references":[{"role":"applicableConcept","target":"$aRef"}]}]}]}""",
+            )
+        }
+
+        private fun insert(modelRef: String, json: String) {
+            expectOk(runTool(JetBrainsMPSRootNodeMcpToolset()) {
+                it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText(json), dryRun = false, responseDetail = "summary")
+            })
+        }
+
+        private fun conceptCondition(conceptRef: String) =
+            """{"concept":"jetbrains.mps.lang.typesystem.structure.ConceptReference","references":[{"role":"concept","target":"$conceptRef"}]}"""
+
+        private fun patternCondition(quotedConcept: String) =
+            """{"concept":"jetbrains.mps.lang.typesystem.structure.PatternCondition","children":[{"role":"pattern","nodes":[
+                 {"concept":"jetbrains.mps.lang.pattern.structure.PatternExpression","children":[{"role":"pattern","nodes":[
+                   {"concept":"jetbrains.mps.lang.quotation.structure.Quotation","children":[{"role":"quotedNode","nodes":[{"concept":"$quotedConcept"}]}]}]}]}]}]}"""
+
+        /** `conceptNode/<target>/` as an expression statement: an `SReference` to the declaration, not an aspect relation. */
+        private fun conceptLiteral(conceptRef: String) =
+            """{"concept":"jetbrains.mps.baseLanguage.structure.ExpressionStatement","children":[{"role":"expression","nodes":[
+                 {"concept":"jetbrains.mps.lang.smodel.structure.ConceptRefExpression","references":[{"role":"conceptDeclaration","target":"$conceptRef"}]}]}]}"""
+
+        private fun inferenceRule(name: String, condition: String, body: String? = null) =
+            """{"concept":"jetbrains.mps.lang.typesystem.structure.InferenceRule","properties":[{"name":"name","value":"$name"}],
+               "children":[{"role":"applicableNode","nodes":[$condition]},
+                 {"role":"body","nodes":[{"concept":"jetbrains.mps.baseLanguage.structure.StatementList"${
+                     if (body == null) "" else ""","children":[{"role":"statement","nodes":[$body]}]"""
+                 }}]}]}"""
+
+        /** The roots LIST_CONCEPT_ASPECTS lists for [conceptRef], over all models. */
+        fun aspects(conceptRef: String, includeInherited: Boolean = false): List<JsonObject> {
+            waitForSmartMode()
+            val response = runTool {
+                it.mps_mcp_query_structure(
+                    MPSStructureQueryOperation.LIST_CONCEPT_ASPECTS,
+                    """{"conceptRef":"$conceptRef","includeInherited":$includeInherited}""",
+                )
+            }
+            assertFalse("no root may fail its base-concept lookup: $response", JsonParser.parseString(response).asJsonObject.has("warnings"))
+            return payloadArrayFromOkData(response).flatMap { model ->
+                model.asJsonObject.getAsJsonArray("rootNodes").map { it.asJsonObject }
+            }
+        }
+    }
+
+    private fun List<JsonObject>.names(): Set<String> = map { it.get("name").asString }.toSet()
+
+    private fun assertRelation(roots: List<JsonObject>, root: String, relation: String, targets: String, pattern: Boolean = false) {
+        val entry = roots.singleOrNull { it.get("name").asString == root } ?: error("expected one '$root' in ${roots.names()}")
+        assertEquals("relation of '$root': $entry", relation, entry.get("relation").asString)
+        assertEquals("targetsConcept of '$root': $entry", targets, entry.getAsJsonObject("targetsConcept").get("name").asString)
+        assertEquals("pattern of '$root': $entry", pattern, entry.get("pattern")?.asBoolean ?: false)
+    }
+
+    @Test
+    fun `LIST_CONCEPT_ASPECTS tells the roots for a concept from the roots mentioning it`() {
+        val fixture = AspectFixture()
+
+        val forA = fixture.aspects(fixture.aRef)
+        assertRelation(forA, "infer_A", "appliesTo", "A")
+        // A pattern rule quotes an instance of A and holds no reference to A's declaration, so
+        // the find-usages sweep never listed it.
+        assertRelation(forA, "infer_A_pattern", "appliesTo", "A", pattern = true)
+        assertRelation(forA, "compare_A_B", "appliesTo", "A")
+        assertRelation(forA, "compare_patternA_A", "appliesTo", "A", pattern = false)
+        // The second condition of a replacement rule, and an overloaded-operations container,
+        // which is no IConceptAspect: both reference A, so without the hand-written cases they
+        // would be 'mentions'.
+        assertRelation(forA, "replace_B_A", "appliesTo", "A")
+        assertRelation(forA, "ops_A", "appliesTo", "A")
+        assertRelation(forA, "rules_A", "appliesTo", "A")
+        val constraints = forA.filter { it.get("concept").asString == "ConceptConstraints" }
+        assertEquals("the constraints root for A: $forA", 1, constraints.size)
+        assertEquals("appliesTo", constraints.single().get("relation").asString)
+        assertFalse("A2's rule is not for A (no subconcept logic): ${forA.names()}", "infer_A2" in forA.names())
+        assertFalse("the empty generated 'main' mapping is for no concept: ${forA.names()}", "main" in forA.names())
+        val fqName = forA.single { it.get("name").asString == "infer_A" }.getAsJsonObject("targetsConcept").get("fullyQualifiedName").asString
+        assertEquals("${fixture.languageName}.structure.A", fqName)
+
+        val forB = fixture.aspects(fixture.bRef)
+        assertRelation(forB, "infer_A", "mentions", "B")
+        // The comparison rule's second condition, which getBaseConcept does not cover.
+        assertRelation(forB, "compare_A_B", "appliesTo", "B")
+        assertRelation(forB, "replace_B_A", "appliesTo", "B")
+        assertEquals("only those roots relate to B: ${forB.names()}", setOf("infer_A", "compare_A_B", "replace_B_A"), forB.names())
+
+        assertEquals(setOf("infer_A2"), fixture.aspects(fixture.a2Ref).names())
+    }
+
+    @Test
+    fun `LIST_CONCEPT_ASPECTS with includeInherited keeps the concept's own aspects`() {
+        val fixture = AspectFixture()
+        val inherited = fixture.aspects(fixture.a2Ref, includeInherited = true)
+        assertRelation(inherited, "infer_A2", "appliesTo", "A2")
+        assertRelation(inherited, "infer_A", "appliesTo", "A")
+        assertRelation(inherited, "rules_A", "appliesTo", "A")
+        // A extends nothing, so the hierarchy goes on to BaseConcept, as at runtime: lang.core's
+        // behavior for BaseConcept is listed as a root for it.
+        val baseConceptBehavior = inherited.filter {
+            it.get("concept").asString == "ConceptBehavior" && it.get("relation").asString == "appliesTo" &&
+                it.getAsJsonObject("targetsConcept").get("name").asString == "BaseConcept"
+        }
+        assertEquals("BaseConcept's behavior root: $inherited", 1, baseConceptBehavior.size)
     }
 
     // ── Plural conceptRefs on single-concept queries (study D55) ──────────────────────

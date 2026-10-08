@@ -85,6 +85,8 @@ Populate with a `concept/C/` literal (`SConceptTypeLiteral`, id `547244460968453
 
 Use these to correct a type that the Java parser produced incorrectly (usually a method return type).
 
+The pure collection type table (`SequenceType`, `ListType`, `SetType`, their creators and the `sequence` ⊃ `list`/`set` hierarchy) is in `references/collections-catalog/core-concepts-types-null-semantics.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.
+
 ### `sequence<node<Type>>` (read-only iterable return types)
 
 ```json

@@ -21,11 +21,38 @@ import org.jetbrains.mps.openapi.model.SNode;
 public class CheckSubTypeOperation extends AddRemarkOperation {
   private final SNode mySubType;
   private final SNode mySuperType;
+  private final boolean myWeak;
 
+  /**
+   * Kept for compatibility; the engine itself passes the relation's weakness. An operation built this way reports
+   * {@link #isWeak()} as {@code true}.
+   */
   public CheckSubTypeOperation(SNode subType, SNode superType, Runnable runnable) {
+    this(subType, superType, true, runnable);
+  }
+
+  public CheckSubTypeOperation(SNode subType, SNode superType, boolean isWeak, Runnable runnable) {
     super(runnable);
     mySubType = subType;
     mySuperType = superType;
+    myWeak = isWeak;
+  }
+
+  /**
+   * The (already substituted) type checked to be a subtype. Readers of a recorded trace use it to re-derive the
+   * subtyping path, which the check itself does not record.
+   */
+  public SNode getSubType() {
+    return mySubType;
+  }
+
+  public SNode getSuperType() {
+    return mySuperType;
+  }
+
+  /** Whether the check is the weak one ({@code :<=:}) or the strong one ({@code :<<=:}). */
+  public boolean isWeak() {
+    return myWeak;
   }
 
   @Override

@@ -144,7 +144,7 @@ py -3 scripts\new_project_migration_xml.py "C:\Program Files\JetBrains\MPS 2025.
 
 Open the newly created directory in MPS using the CLI activation protocol:
 
-1. Follow `open-via-cli.md` and the appropriate OS guide (`examples-macos.md`, `examples-linux.md`, or `examples-windows.md`).
+1. Follow `references/open-via-cli.md` and the appropriate OS guide (`references/examples-macos.md`, `references/examples-linux.md`, or `references/examples-windows.md`).
 2. Run the activation script passing `PROJECT_DIR`.
 3. *Note on open projects*: If another project is currently open, opening a new project may cause MPS to show the "Open Project: New Window / This Window" prompt. If MPS is already at the Welcome screen (no projects open), it opens immediately without prompting. You can close existing projects beforehand using `mps_mcp_close_project`.
 

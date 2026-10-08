@@ -6,7 +6,7 @@
 - **Snippet relies on missing imports.** A `TestNode` snippet behaves like a tiny model — add the same `<use>` languages and `<import>` model references that the snippet would need standalone, or it will fail to resolve.
 - **Out-of-process vs in-process.** Editor tests typically run in-process; setting "execute in same process = false" for an `EditorTestCase` works but tends to be slower and can mask classloader bugs. Use whatever the existing test module uses.
 - **Migration test `outputNodes` regenerated from broken script.** "Generate Output from Input" *bakes in current behaviour*. If the script is wrong, the test will encode that. Diff before accepting.
-- **Caret and selection in EditorTestCase.** Structure is compared before the selection, so a `CellReference` failure means the tree already matched: fix the `result` annotation, not the `code` block (the `before`-selection row below is a tree diff, not a `CellReference` failure). What each annotation property does is in `editor-test-case.md` ("`AnonymousCellAnnotation`: what is set and what is compared").
+- **Caret and selection in EditorTestCase.** Structure is compared before the selection, so a `CellReference` failure means the tree already matched: fix the `result` annotation, not the `code` block (the `before`-selection row below is a tree diff, not a `CellReference` failure). What each annotation property does is in `references/editor-test-case.md` ("`AnonymousCellAnnotation`: what is set and what is compared").
 
   | Symptom | Cause | Fix |
   |---|---|---|

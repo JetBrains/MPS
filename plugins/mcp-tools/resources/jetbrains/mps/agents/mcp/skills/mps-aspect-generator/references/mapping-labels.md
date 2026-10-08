@@ -86,4 +86,4 @@ Real-world template that combines all three pieces: `samples/generator_demo/lang
 | `get copied output for (<input>)` | node | Find the output of a plain copy (no explicit label) |
 | `get prev input <label>` | node | The input of a prior step (cross-step lookup) |
 
-See `generation-context.md` for the full catalog with exact concept names (all in language `jetbrains.mps.lang.generator.generationContext`).
+See `references/generation-context.md` for the full catalog with exact concept names (all in language `jetbrains.mps.lang.generator.generationContext`).

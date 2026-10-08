@@ -16,6 +16,7 @@
     <orderEntry type="library" name="Idea-platform" level="project" />
     <orderEntry type="module" module-name="kernel" />
     <orderEntry type="module" module-name="model" />
+    <orderEntry type="module" module-name="module" />
     <orderEntry type="module" module-name="mps" />
     <orderEntry type="module" module-name="mps-annotations" />
     <orderEntry type="module" module-name="mps-editor" />

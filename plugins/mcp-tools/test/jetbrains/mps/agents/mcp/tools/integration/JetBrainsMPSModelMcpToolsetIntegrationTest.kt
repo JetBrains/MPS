@@ -633,36 +633,6 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `remove_model_used_language drops the language added earlier`() {
-        val knownLang = "jetbrains.mps.lang.core"
-        val solution = createSolution()
-        val model = createModel(solution, "test.usedlang.remove${System.nanoTime()}")
-        val modelReference = modelRefOf(model)
-
-        // Seed by adding the language; capture the serialized SLanguage form used by the model.
-        val addResp = runTool(toolset) { it.mps_mcp_model_used_language(modelReference, knownLang, "language") }
-        assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
-
-        val langRef = readOnRepo {
-            val match = (model as SModelInternal).importedLanguageIds().single { it.qualifiedName == knownLang }
-            PersistenceFacade.getInstance().asString(match)
-        }
-
-        val removeResp = runTool(toolset) {
-            it.mps_mcp_model_used_language(modelReference, langRef, "language", DependencyOperation.DELETE)
-        }
-        val data = expectOk(removeResp)
-        assertTrue("expected removed=true: $removeResp", data.get("removed").asBoolean)
-
-        readOnRepo {
-            val used = (model as SModelInternal).importedLanguageIds()
-                .map { it.qualifiedName }
-            assertFalse("language must be gone after removal: $used",
-                used.contains(knownLang))
-        }
-    }
-
-    @Test
     fun `remove_model_used_language accepts plain qualified name`() {
         // Symmetric with add_model_used_language: a bare qualified name (no l:UUID:name form)
         // must resolve against the model's existing used-language list. Regression for the
@@ -710,6 +680,10 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
         assertTrue("first remove must report removed=true: $firstRemove",
             expectOk(firstRemove).get("removed").asBoolean)
+        readOnRepo {
+            val used = (model as SModelInternal).importedLanguageIds().map { it.qualifiedName }
+            assertFalse("language must be gone after removal: $used", used.contains(knownLang))
+        }
 
         val secondRemove = runTool(toolset) {
             it.mps_mcp_model_used_language(modelReference, langRef, "language", DependencyOperation.DELETE)

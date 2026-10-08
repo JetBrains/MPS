@@ -26,7 +26,7 @@ Key pieces:
   references and properties. `isSingular()` on `LinkDeclaration` filters cardinality (`0..1`/`1` vs
   `0..n`/`1..n`).
 - `ListScope.forResolvableElements(list)` — names elements via their resolve info, which works for
-  declarations (whose "name" is the role); see `scope-helpers.md`.
+  declarations (whose "name" is the role); see `references/scope-helpers.md`.
 - The model authoring such references must be able to *see* the language under test's structure —
   usually already true because the model imports that language for its regular content.
 
@@ -69,7 +69,7 @@ All targets below are **stable refs** into MPS's own models and can be used as-i
                       { "role": "operation", "nodes": [{ "concept": "jetbrains.mps.lang.smodel.structure.Node_GetConceptOperation" }]}
                     ]}]},
                   { "role": "operation", "nodes": [{
-                    "concept": "jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall",
+                    "concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
                     "references": [{ "role": "baseMethodDeclaration",
                       "target": "r:00000000-0000-4000-0000-011c8959028b(jetbrains.mps.lang.structure.behavior)/1213877394521" }] }]}
                 ]}]},
@@ -95,7 +95,7 @@ All targets below are **stable refs** into MPS's own models and can be used as-i
                                 "concept": "jetbrains.mps.baseLanguage.structure.VariableReference",
                                 "references": [{ "role": "variableDeclaration", "target": "<it-closure-param-node-ref>" }] }]},
                               { "role": "operation", "nodes": [{
-                                "concept": "jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall",
+                                "concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
                                 "references": [{ "role": "baseMethodDeclaration",
                                   "target": "r:00000000-0000-4000-0000-011c8959028b(jetbrains.mps.lang.structure.behavior)/1213877254557" }] }]}
                             ]}]}]
@@ -113,14 +113,14 @@ All targets below are **stable refs** into MPS's own models and can be used as-i
 }
 ```
 
-Key FQNs (verified against the live node):
+Key FQNs (verified against the live node; the method-call concept was updated to `lang.behavior` after MPS marked the smodel one obsolete):
 
 | Surface | Concept / target |
 |---|---|
 | `.conceptNode` | `jetbrains.mps.lang.smodel.structure.Node_GetConceptOperation` (no children) |
-| `.getAggregationLinkDeclarations()` / `.isSingular()` | `jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall` with `baseMethodDeclaration` → the behavior method in `jetbrains.mps.lang.structure.behavior` (stable refs above) |
+| `.getAggregationLinkDeclarations()` / `.isSingular()` | `jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall` (not the obsolete smodel concept of the same name) with `baseMethodDeclaration` → the behavior method in `jetbrains.mps.lang.structure.behavior` (stable refs above) |
 | `ListScope.forResolvableElements` | class `r:...(jetbrains.mps.scope)/5455284157994035575`, method `r:...(jetbrains.mps.scope)/3812912149866273308` |
 | `referenceNode` | `jetbrains.mps.lang.constraints.structure.ConstraintFunctionParameter_referenceNode` |
 
 The closure-literal shape (obligatory `type` → `UndefinedType`, `resolveInfo`) follows
-`references/closures-catalog.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
+`references/closures-catalog.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.

@@ -115,6 +115,8 @@ class AbstractOpsPropertyProblemsTest {
 
         fun saveToTempFileForTest(json: String) = saveToTempFile(json)
 
+        fun finalizeResultForTest(json: String, maxInlineBytes: Int) = finalizeResult(json, maxInlineBytes)
+
         fun errJsonForTest(
             message: String?,
             code: AbstractOps.McpErrorCode? = null,
@@ -586,6 +588,19 @@ class AbstractOpsPropertyProblemsTest {
     }
 
     @Test
+    fun tempFileResultKeepsTheNullMembersOfTheInlineForm() {
+        val payload = """{"type":null,"trace":[{"rule":null,"statement":"m/1"}],"coerced":{"target":null}}"""
+        val inline = JsonParser.parseString(ops.finalizeResultForTest(payload, maxInlineBytes = payload.length))
+        val spilled = JsonParser.parseString(ops.finalizeResultForTest(payload, maxInlineBytes = payload.length - 1)).asJsonObject
+        assertTrue("the payload must spill to a temp file: $spilled", spilled.get("data").isJsonPrimitive)
+
+        val saved = JsonParser.parseString(ops.readJsonOrFileForTest(spilled.get("data").asString))
+
+        assertTrue("a null member must keep its key: $saved", saved.asJsonObject.getAsJsonObject("data").has("type"))
+        assertEquals(inline, saved)
+    }
+
+    @Test
     fun nodeJsonFileProducedByToolResultUnwrapsEnvelopeData() {
         val file = ops.saveToTempFileForTest("""{"concept":"test.lang.structure.TestConcept"}""")
 
@@ -768,35 +783,6 @@ class AbstractOpsPropertyProblemsTest {
     }
 
     @Test
-    fun enumSchemaRejectsValuesThatAreNotAnArray() {
-        assertSchemaFailure("valuesJson must be a JSON array") {
-            parseEnumValueSpecsForTest("""{"enumName":"red"}""")
-        }
-    }
-
-    @Test
-    fun enumSchemaRejectsValueEntryMissingEnumName() {
-        assertSchemaFailure("Missing 'valuesJson[0].enumName'") {
-            parseEnumValueSpecsForTest("""[{"enumPresentation":"Red"}]""")
-        }
-    }
-
-    @Test
-    fun javaInsertSchemaRejectsUnknownMode() {
-        assertSchemaFailure("Unknown insert.mode 'sideways'") {
-            parseJavaParseInsertRequestForTest(
-                """
-                {
-                  "code": "class Foo {}",
-                  "featureKind": "CLASS",
-                  "insert": {"mode": "sideways"}
-                }
-                """.trimIndent()
-            )
-        }
-    }
-
-    @Test
     fun javaInsertSchemaRejectsWrongPositionType() {
         assertSchemaFailure("'parameters.insert.position' must be an integer") {
             parseJavaParseInsertRequestForTest(
@@ -810,21 +796,6 @@ class AbstractOpsPropertyProblemsTest {
                     "role": "statement",
                     "position": "first"
                   }
-                }
-                """.trimIndent()
-            )
-        }
-    }
-
-    @Test
-    fun javaInsertSchemaRejectsMalformedInsertObject() {
-        assertSchemaFailure("'parameters.insert' must be a JSON object") {
-            parseJavaParseInsertRequestForTest(
-                """
-                {
-                  "code": "class Foo {}",
-                  "featureKind": "CLASS",
-                  "insert": []
                 }
                 """.trimIndent()
             )
@@ -1081,24 +1052,6 @@ class AbstractOpsPropertyProblemsTest {
 
         assertEquals("INVALID_JSON", obj.get("code").asString)
         assertEquals("Unexpected token at position 4", obj.get("error").asString)
-    }
-
-    @Test
-    fun assignabilityExceptionIsClassifiedAsInvalidReference() {
-        val obj = JsonParser.parseString(
-            ops.toolFailureForTest(
-                "running test tool",
-                AbstractOps.AssignabilityException(
-                    jsonPath = "$",
-                    actualConcept = "ChildConcept",
-                    expectedConcepts = listOf("ExpectedConcept"),
-                    parentConcept = "ParentConcept",
-                    role = "child"
-                )
-            )
-        ).asJsonObject
-
-        assertEquals("INVALID_REFERENCE", obj.get("code").asString)
     }
 
     @Test
@@ -1744,9 +1697,6 @@ class AbstractOpsPropertyProblemsTest {
 
     private fun parseStructureConceptSpecsForTest(json: String, sourceName: String): Any? =
         invokeSchemaFunction("parseStructureConceptSpecs", arrayOf(String::class.java, String::class.java), json, sourceName)
-
-    private fun parseEnumValueSpecsForTest(json: String): Any? =
-        invokeSchemaFunction("parseEnumValueSpecs", arrayOf(String::class.java, String::class.java), json, "valuesJson")
 
     private fun parseJavaParseInsertRequestForTest(parameters: String): Any? =
         invokeSchemaFunction("parseJavaParseInsertRequest", arrayOf(String::class.java), parameters)

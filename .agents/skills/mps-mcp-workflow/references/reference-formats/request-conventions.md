@@ -52,11 +52,15 @@ sites. So **inside a `parameters` blob both spellings are accepted**:
 
 | Canonical blob key | Also accepted | Read by |
 |---|---|---|
-| `conceptRef` | `conceptReference` | `mps_mcp_query_structure`, `mps_mcp_alter_structure`, `mps_mcp_query_nodes` (`FIND_INSTANCES`) |
+| `conceptRef` | `conceptReference` | `mps_mcp_query_structure`, `mps_mcp_alter_structure`, `mps_mcp_query_nodes` (`FIND_INSTANCES`), `mps_mcp_query_types` (`COERCE`) |
 | `superConceptRef` | `superConceptReference` | `mps_mcp_query_structure` (`IS_SUBCONCEPT_OF`) |
 | `structureModelRef` | `structureModelReference` | `mps_mcp_alter_structure` |
 | `enumerationRef` | `enumerationReference` | `mps_mcp_query_structure` (`GET_ENUMERATION_LITERALS`) |
-| `nodeReference` | `nodeRef` | `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure` |
+| `nodeReference` | `nodeRef` | `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure`, `mps_mcp_query_types` operands and `EXPLAIN_TYPE` |
+| `typeNodeReference` | `typeNodeRef` | `mps_mcp_query_types` operands |
+| `typeConceptRef` | `typeConceptReference` | `mps_mcp_query_types` operands |
+| `operatorNode` | `operatorNodeRef`, `operatorNodeReference` | `mps_mcp_query_types` (`OPERATION_TYPE`) |
+| `operatorConceptRef` | `operatorConceptReference` | `mps_mcp_query_types` (`OPERATION_TYPE`) |
 | `childNodeRef` | `childNodeReference` | `mps_mcp_alter_nodes` (`MOVE_CHILD`) |
 | `newParentRef` | `newParentReference` | `mps_mcp_alter_nodes` (`MOVE_NODE_TO_PARENT`) |
 | `modelReference` | `modelRef` | `mps_mcp_alter_nodes` (`MOVE_NODE_TO_PARENT`) |

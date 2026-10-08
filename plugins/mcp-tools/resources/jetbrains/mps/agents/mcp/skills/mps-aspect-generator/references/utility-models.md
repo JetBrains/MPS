@@ -5,7 +5,7 @@ Read this when: reusing condition predicates across many rules, factoring out na
 ## Template-side reuse
 
 - **Template fragments** (`<TF ... TF>`) let you define one big sample in target language and expose only a sub-tree as the generated output. Multiple fragments are allowed in one template *only if they all sit under the same parent in the same role* — that produces multiple outputs from a single template call.
-- **Template switches** — see `template-switches.md`.
+- **Template switches** — see `references/template-switches.md`.
 - **Template functions / CALL templates** accept parameters (`genContext`, arbitrary `node<>` args) and act like subroutines — useful for shared patterns. Declare `templateParameter` children on the `TemplateDeclaration`, invoke via `TemplateCallMacro` with `templateArgument` children.
 
 ## Utility models inside the generator module

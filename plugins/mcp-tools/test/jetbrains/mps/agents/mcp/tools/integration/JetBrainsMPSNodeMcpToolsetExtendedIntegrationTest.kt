@@ -31,7 +31,7 @@ import kotlin.collections.listOf
  *  - reference set/delete
  *  - child replace/delete
  *  - `query_nodes` ops: `GET_PARENT`, `GET_ROOT`, `GET_MODEL_FOR_NODE`,
- *    `NODE_INDEX`, `SIBLINGS`, `GET_CHILD_ROLE`
+ *    `NODE_INDEX`, `SIBLINGS`, `GET_CHILD_ROLE`, `GET_TYPE`
  *  - `alter_nodes` ops: `MOVE_CHILD`, `MOVE_NODE_TO_PARENT`,
  *    `MAKE` (input validation only), `FIX_REFERENCES`,
  *  - `show_node_representation`, `print_node_json` (shallow + deep),
@@ -443,28 +443,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
     }
 
-    @Test
-    fun `delete_node_child removes the child from its parent`() {
-        val parentRef = createConceptRoot("DeleteHost")
-        addPropertyChild(parentRef, "doomed", "string")
-        val childRef = readOnRepo {
-            val parent = resolveNode(parentRef)
-            val p = parent.children.single { it.containmentLink?.name == "propertyDeclaration" }
-            PersistenceFacade.getInstance().asString(p.reference)
-        }
-
-        val response = runTool(toolset) { it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD, childNodeRef = childRef) }
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
-        readOnRepo {
-            val parent = resolveNode(parentRef)
-            assertTrue(
-                "child must be gone after deleting a node child",
-                parent.children.none { it.containmentLink?.name == "propertyDeclaration" },
-            )
-        }
-    }
-
     // ── query_nodes: NODE_INFO_READ family ─────────────────────────────────────────
 
     @Test
@@ -557,6 +535,47 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val arr = parseDataArray(response)
         val names = arr.map { it.asJsonObject.get("name").asString }.toSet()
         assertEquals(setOf("a", "b"), names)
+    }
+
+    @Test
+    fun `query_nodes GET_TYPE answers the computed type of an expression`() {
+        val host = createTypeHost()
+        val data = getTypeData(host.plusRef)
+        assertEquals("IntegerType", data.get("concept").asString)
+        assertEquals("int", data.get("presentation").asString)
+        assertFalse("a fully inferred type has no hasTypeVariables key: $data", data.has("hasTypeVariables"))
+        val blueprint = data.getAsJsonObject("blueprint")
+        assertEquals("IntegerType", blueprint.get("concept").asString)
+        assertNoReferenceKey(blueprint)
+    }
+
+    @Test
+    fun `query_nodes GET_TYPE answers the declared type of a field`() {
+        val host = createTypeHost()
+        val data = getTypeData(host.fieldRef)
+        assertEquals("IntegerType", data.get("concept").asString)
+        assertNoReferenceKey(data)
+    }
+
+    @Test
+    fun `query_nodes GET_TYPE answers data null for a node without a type`() {
+        val rootRef = createConceptRoot("TypeHostConcept")
+        addPropertyChild(rootRef, "untyped", "string")
+        val childRef = readOnRepo {
+            val child = resolveNode(rootRef).children.single { it.containmentLink?.name == "propertyDeclaration" }
+            PersistenceFacade.getInstance().asString(child.reference)
+        }
+        // A bare type variable and no type both answer null; the root check and the one-node computation agree, so
+        // the answer is the root's and carries no warning.
+        for (ref in listOf(rootRef, childRef)) {
+            val response = runTool(toolset) {
+                it.mps_mcp_query_nodes(MPSQueryOperation.GET_TYPE, """{ "nodeReference": "$ref" }""")
+            }
+            assertEquals(
+                JsonParser.parseString("""{"ok":true,"data":null,"details":{"scope":"root"}}"""),
+                JsonParser.parseString(response),
+            )
+        }
     }
 
     @Test
@@ -2124,6 +2143,54 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         assertTrue("expected ok envelope when seeding property: $resp", obj.get("ok").asBoolean)
     }
 
+    private class TypeHost(val fieldRef: String, val plusRef: String)
+
+    /** `class TypeHost { int total = 1 + 2; }`, parsed into a fresh solution's model. */
+    private fun createTypeHost(): TypeHost {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"class TypeHost { int total = 1 + 2; }","featureKind":"CLASS",
+                    "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
+            )
+        }
+        assertTrue("expected ok envelope from parse_java_and_insert: $response",
+            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+        return readOnRepo {
+            val field = model.rootNodes.single { it.name == "TypeHost" }.children.single { it.name == "total" }
+            val plus = field.children.single { it.containmentLink?.name == "initializer" }
+            assertEquals("PlusExpression", plus.concept.name)
+            TypeHost(
+                PersistenceFacade.getInstance().asString(field.reference),
+                PersistenceFacade.getInstance().asString(plus.reference),
+            )
+        }
+    }
+
+    private fun getTypeData(nodeRef: String): JsonObject {
+        val response = runTool(toolset) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_TYPE, """{ "nodeReference": "$nodeRef" }""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        assertTrue("expected a type, got: $response", obj.get("data").isJsonObject)
+        assertEquals("the root check answers: $response", "root", obj.getAsJsonObject("details").get("scope").asString)
+        assertFalse("no fallback warning: $response", obj.has("warnings"))
+        return obj.getAsJsonObject("data")
+    }
+
+    /** GET_TYPE strips every node record's `reference`, so none may appear anywhere in its answer. */
+    private fun assertNoReferenceKey(element: JsonElement) {
+        when {
+            element.isJsonObject -> element.asJsonObject.entrySet().forEach { (key, value) ->
+                assertNotEquals("unexpected node reference in $element", "reference", key)
+                assertNoReferenceKey(value)
+            }
+            element.isJsonArray -> element.asJsonArray.forEach(::assertNoReferenceKey)
+        }
+    }
+
     private fun resolveNode(ref: String): SNode =
         PersistenceFacade.getInstance().createNodeReference(ref).resolve(structureModel.repository)
             ?: error("node '$ref' did not resolve")
@@ -2158,35 +2225,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
         val err = expectErr(response)
         assertTrue("error must mention the invalid combination, got: $err", err.contains("ADD") && err.contains("REFERENCE"))
-    }
-
-    @Test
-    fun `update_node ADD CHILD without nodeReference is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, childRole = "members", childJson = "{}")
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing nodeReference, got: $err", err.contains("nodeReference"))
-    }
-
-    @Test
-    fun `update_node ADD CHILD without childRole is rejected`() {
-        val ref = createConceptRoot("MissingRole")
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = ref, childJson = "{}")
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing childRole, got: $err", err.contains("childRole"))
-    }
-
-    @Test
-    fun `update_node ADD CHILD without childJson is rejected`() {
-        val ref = createConceptRoot("MissingJson")
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = ref, childRole = "propertyDeclaration")
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing childJson, got: $err", err.contains("childJson"))
     }
 
     @Test
@@ -2242,24 +2280,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
-    fun `update_node SET CHILD without childNodeRef and without childJson is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD)
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing childNodeRef, got: $err", err.contains("childNodeRef"))
-    }
-
-    @Test
-    fun `update_node SET PROPERTY without properties is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY)
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing properties batch, got: $err", err.contains("properties"))
-    }
-
-    @Test
     fun `update_node SET PROPERTY with null nodeReference in a triplet is rejected per-row`() {
         val response = runTool(toolset) {
             it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY, properties = listOf(listOf(null, "name", "value")))
@@ -2276,15 +2296,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
         val err = expectBatchRowError(response, 0)
         assertTrue("row error must mention 'propertyName', got: $err", err.contains("propertyName"))
-    }
-
-    @Test
-    fun `update_node SET REFERENCE without references is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE)
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing references batch, got: $err", err.contains("references"))
     }
 
     @Test

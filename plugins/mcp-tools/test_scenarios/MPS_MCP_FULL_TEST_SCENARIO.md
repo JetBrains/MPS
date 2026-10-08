@@ -43,7 +43,7 @@ known tool-description discrepancies you should expect to re-confirm.
 | 7 | `MPS_MCP_FULL_TEST_SCENARIO/07_root_nodes_and_node_editing.md` | `create_root_node`, `insert_root_node_from_json`, `update_node`, `update_root_node_from_json`, `print_node`, `check_root_node_problems`, `alter_nodes` moves/fix. |
 | 8 | `MPS_MCP_FULL_TEST_SCENARIO/08_queries_and_navigation.md` | `query_nodes` (all ops), `search_root_node_by_name` (all scopes), `open_node`, `get_current_editor_root_node`. |
 | 9 | `MPS_MCP_FULL_TEST_SCENARIO/09_editor_scaffolding.md` | `scaffold_editor` (editor + component). |
-| 10 | `MPS_MCP_FULL_TEST_SCENARIO/10_baselanguage_parse_java.md` | `parse_java_and_insert` (all `featureKind` + `insert.mode` values). |
+| 10 | `MPS_MCP_FULL_TEST_SCENARIO/10_baselanguage_parse_java.md` | `parse_java_and_insert` (all `featureKind` + `insert.mode` values); `query_nodes` GET_TYPE / GET_EXPECTED_TYPE, `query_types` (all operations), problem `rules` / `uncheckedSubtrees`. |
 | 11 | `MPS_MCP_FULL_TEST_SCENARIO/11_run_configurations.md` | `create_run_configuration` + helper IDE tools. |
 | 12 | `MPS_MCP_FULL_TEST_SCENARIO/12_console.md` | `insert_console_command_from_json`, `run_console_command`, `get_console_history`, `recall_console_command`. |
 | 13 | `MPS_MCP_FULL_TEST_SCENARIO/13_update_and_delete_modules.md` | `update_module` (RENAME / CHANGE_VIRTUAL_FOLDER / DELETE). |
@@ -94,11 +94,12 @@ that the "MCP is enabled/available" assumption is unmet.
    resolved in Step 01.01 — substitute the resolved absolute path into **every** call.
 
 2. **`parameters` is a JSON-encoded string.** Tools `mps_mcp_alter_structure`,
-   `mps_mcp_query_structure`, `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, and
-   `mps_mcp_parse_java_and_insert` take an `operation` (where applicable) plus a
-   **`parameters`** argument whose value is a **string containing JSON**. In the call
-   blocks below, the `parameters` value is shown already escaped — pass it verbatim as a
-   string. (It is a string, not a nested object.)
+   `mps_mcp_query_structure`, `mps_mcp_query_nodes`, `mps_mcp_query_types`,
+   `mps_mcp_alter_nodes`, and `mps_mcp_parse_java_and_insert` take an `operation` (where
+   applicable) plus a **`parameters`** argument whose value is a **string containing JSON**.
+   In the call blocks below, the `parameters` value is shown already escaped — pass it
+   verbatim as a string. (It is a string, not a nested object — except in Step 10.17d, which
+   deliberately sends a real JSON object, a form `query_nodes` and `query_types` also accept.)
 
 3. **Large JSON via temp file.** `conceptsJson` / `json` / `childJson` arguments accept
    either inline JSON (≤ 4 KB) **or** an absolute path to a file **inside the system temp
@@ -125,9 +126,11 @@ that the "MCP is enabled/available" assumption is unmet.
 
 6. **Success vs failure envelope.** Every tool returns `{"ok":true,"data":...}` on success
    or `{"ok":false,"error":"...","code":"..."}` on failure (`code` is optional; common
-   values: `NOT_FOUND`, `INVALID_REQUEST`). A handful of large-payload tools return
-   `{"ok":true,"data":"<absolute path to a temp .json file>"}` — read that file to inspect
-   the payload. The IDE helper tools (`get_run_configurations`, `get_repositories`) return
+   values: `NOT_FOUND`, `INVALID_REQUEST`). Read tools return `data` inline when the payload
+   is at most `maxInlineBytes` characters (default 20000) and otherwise
+   `{"ok":true,"data":"<absolute path to a temp .json file>"}`; that file holds the complete
+   `{"ok":…,"data":…}` envelope, so read the payload from its `data` field. Check which form
+   you got; do not assume either. The IDE helper tools (`get_run_configurations`, `get_repositories`) return
    their own shape (no `ok` wrapper) and are noted where used.
 
 7. **Never run two mutating calls against the same root node / same model concurrently.**
@@ -164,6 +167,8 @@ Additional fixed names introduced by this scenario (deterministic, collision-res
 | Aspect model created on the language | `mcp.test.statechart.textGen` (TextGen aspect) |
 | Stereotyped tests model | `mcp.test.sandbox.cases@tests` |
 | BaseLanguage runnable class root | `McpRunnable` (in `mcp.test.sandbox.other`) |
+| BaseLanguage type-query host class root | `McpTypeHost` (in `mcp.test.sandbox.other`) |
+| BaseLanguage problem-report class root | `McpTypeError` (in `mcp.test.sandbox.other`; Step 10.24 seeds a type error and a commented-out field in it, then deletes both, leaving an empty class) |
 
 ## 6. Concept model the scenario builds (for reference)
 

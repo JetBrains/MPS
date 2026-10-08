@@ -37,6 +37,17 @@ PLAIN_CROSS_SKILL_PATH = re.compile(
   r"(?<![A-Za-z0-9_.-])(mps-[a-z0-9-]+/(?:SKILL\.md|references/[A-Za-z0-9_.-]+\.md))"
 )
 LOAD_CONTRACT = "same host-assigned originating server"
+# A backticked bare `<name>.md` is never resolved, so it breaks silently when files move;
+# name supporting files by their skill-root path `references/<subpath>.md` instead.
+BARE_MARKDOWN_NAME = re.compile(r"[A-Za-z0-9_.-]+\.md")
+ALLOWED_BARE_NAMES = frozenset(
+  ("SKILL.md", "AGENTS.md", "CLAUDE.md", "README.md", "MEMORY.md")
+)
+# Files of a skill that the owning skill generates elsewhere: they live in the generated
+# skill's `references/`, not in the owning skill, so no owning-skill path can name them.
+GENERATED_SKILL_FILE_NAMES = {
+  "mps-dsl-memory": frozenset(("concepts.md", "sandbox.md", "workflows.md", "gotchas.md")),
+}
 
 
 def is_within(path: Path, directory: Path) -> bool:
@@ -82,6 +93,13 @@ def validate_catalog(
 
       for match in BACKTICK.finditer(text):
         target = match.group(1)
+        if (
+          BARE_MARKDOWN_NAME.fullmatch(target)
+          and target not in ALLOWED_BARE_NAMES
+          and target not in GENERATED_SKILL_FILE_NAMES.get(skill_root.name, ())
+        ):
+          errors.append(f"{relative_document}: bare reference file name, use references/...: {target}")
+          continue
         if CROSS_SKILL_PATH.search(target):
           continue
         if target.startswith("references/") and target.endswith(".md"):
@@ -192,6 +210,7 @@ def run_self_test() -> None:
       False,
     ),
     ("edited copy", "", "copied reference differs from canonical", True),
+    ("bare reference name", "see `detail.md`", "bare reference file name", False),
   )
   for label, body, expected_error, edit_copy in cases:
     with tempfile.TemporaryDirectory(prefix="skill-catalog-validator-") as temp:
@@ -248,7 +267,8 @@ def run_self_test() -> None:
       "`references/local.md` and `references/detail.md` in the `mps-other` skill root "
       "after loading that companion skill from the same origin. "
       "Load the `mps-other` companion skill from the same origin, then open "
-      "`references/detail2.md` in the `mps-other` skill root.",
+      "`references/detail2.md` in the `mps-other` skill root. "
+      "Entry points `SKILL.md` and `AGENTS.md` may stay bare.",
     )
     other = write_skill(root, "mps-other")
     for skill in (canonical, consumer, other):

@@ -36,7 +36,7 @@ When asked to "write tests" for an MPS language feature:
 3. **Add the test root** with `mps_mcp_create_root_node` using the concept ref from `references/concept-identifiers.md`, then populate `nodes` / `code` / etc. with `mps_mcp_update_node`. Use `mps_mcp_parse_java_and_insert` to drop a Java/BaseLanguage snippet into a `TestNode`.
 4. **Mark assertions** using the appropriate annotation concept (see `references/nodes-test-case.md` and `references/editor-test-case.md`). For prototypes, open the model in MPS and use the Alt+Enter intentions ("Add Node Operations Test Annotation", "Add Test Node Label", "Mark Caret Position") — they create the right annotations without hand-building blueprints.
 5. **Validate** with `mps_mcp_check_root_node_problems` on the new root.
-6. **Run.** Register a `JUnit Tests` config via `mps_mcp_create_run_configuration` (pass the test root's reference) and launch it with `execute_run_configuration`, or ask the user to run it in MPS.
+6. **Run.** Register a `JUnit Tests` config via `mps_mcp_create_run_configuration` — `modelReference` for the `@tests` model, or one test root in `nodeReference` when iterating on a single test — and launch it with `execute_run_configuration`, or ask the user to run it in MPS.
 
 ## Where Test Models Live
 
@@ -49,7 +49,8 @@ If the only goal is plain JUnit on hand-written Java/Kotlin (no MPS-specific ass
 
 ## Related Skills
 
-- `mps-model-manipulation` — the smodel / closures / collections reference for assertion bodies; for an assertion body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
+- `mps-collections-and-closures` — the collections / closures reference for assertion bodies.
+- `mps-model-manipulation` — the smodel reference for assertion bodies; for an assertion body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-node-editing` — MCP recipes for inserting children and harvesting persistent refs (used heavily by the `ScopesTest` staged-construction recipe).
 - `mps-aspect-typesystem` — when the system-under-test is the typesystem; `has error/type` annotations here verify those rules.
 - `mps-aspect-constraints` — when validating `can-be` / scope / validator rules from the constraints aspect.

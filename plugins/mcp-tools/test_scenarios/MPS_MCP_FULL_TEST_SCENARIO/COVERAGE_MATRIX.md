@@ -3,9 +3,15 @@
 Every MPS MCP tool is listed with: purpose, whether valid/invalid calls are tested, the
 parameters and enum values covered, the covering `Step PP.NN` ids, and the validation method.
 "Validation method" abbreviations: **R** = response check (`ok`, fields), **S** = project-state
-check (follow-up query / structure dump / file read), **F** = file read of a temp-file payload.
+check (follow-up query / structure dump / file read), **F** = detailed payload read (inline
+`data`, or the temp file when `data` is a path).
 
-## A. MPS MCP tools (`mps_mcp_*`) — all 36
+## A. MPS MCP tools (`mps_mcp_*`) — all 40
+
+The authoritative list is the `@McpTool` methods of the toolsets registered in
+`plugins/mcp-tools/META-INF/plugin.xml` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/`).
+Rows 37–40 were added after the original 36; rows 38–40 are not exercised by this scenario (see
+the note below the table).
 
 | # | Tool | Purpose | Valid? | Invalid? | Parameters / enum values covered | Steps | Val |
 |--:|------|---------|:------:|:--------:|----------------------------------|-------|-----|
@@ -27,12 +33,12 @@ check (follow-up query / structure dump / file read), **F** = file read of a tem
 | 16 | `get_current_editor_root_node` | Read focused node | ✅ | ✅ | `source`=editor (empty+ok), console (empty+ok) | 01.04, 01.05, 08.21, 12.03 | R |
 | 17 | `create_root_node` | Create root | ✅ | ✅ | `concept`,`name`,`modelReference`; invalid=bad concept | 07.01–07.02 | R |
 | 18 | `update_root_node_from_json` | Full-root rewrite/delete | ✅ | — | `operation`=UPDATE/DELETE; `dryRun` | 07.36–07.38 | R+S |
-| 19 | `query_nodes` | Node queries/navigation | ✅ | ✅ | ops FIND_INSTANCES/FIND_USAGES/GET_PARENT/GET_ROOT/GET_MODEL_FOR_NODE/NODE_INDEX/SIBLINGS/GET_CHILD_ROLE; `scope`=editable/all/models/modules/roots; `sampleOnly`,`propertyFilter`,`exact`; invalid op | 08.01–08.15 | R+S |
+| 19 | `query_nodes` | Node queries/navigation/types | ✅ | ✅ | ops FIND_INSTANCES/FIND_USAGES/GET_PARENT/GET_ROOT/GET_MODEL_FOR_NODE/NODE_INDEX/SIBLINGS/GET_CHILD_ROLE/GET_TYPE/GET_EXPECTED_TYPE; `scope`=editable/all/models/modules/roots; `sampleOnly`,`propertyFilter`,`exact`; GET_TYPE / GET_EXPECTED_TYPE `data:null` answers; GET_TYPE / GET_EXPECTED_TYPE `details.scope` and `maxRootNodes` fallback; invalid op | 08.01–08.15, 10.15–10.16 | R+S |
 | 20 | `alter_nodes` | Structural moves + make + fix | ✅ | — | ops MOVE_CHILD/MOVE_NODE_TO_PARENT/MAKE/FIX_REFERENCES; MAKE forms modules+rebuild/models/wholeProject | 06.13, 06.24, 06.25, 07.32–07.34 | R+S |
-| 21 | `print_node` | Print node | ✅ | — | `format`=JSON/HTML/PLAIN TEXT; `deep`=true/false | 07.06–07.09 | F |
+| 21 | `print_node` | Print node | ✅ | — | `format`=JSON/HTML/PLAIN TEXT; `deep`=true/false | 07.06–07.09, 10.14 | F |
 | 22 | `insert_root_node_from_json` | Bulk root insert | ✅ | — | single + array; `dryRun` | 07.03–07.05 | R+S |
-| 23 | `update_node` | Unified node mutation | ✅ | ✅ | ADD/CHILD, SET/CHILD(+null delete), SET/PROPERTY(+null delete), SET/REFERENCE(+null delete), `dryRun`; invalid ADD/PROPERTY, ADD/REFERENCE, op DELETE | 07.10, 07.17–07.28 | R+S |
-| 24 | `check_root_node_problems` | Validate node/model | ✅ | — | clean + problem; `onlyNodesWithProblems`=true/false | 07.21, 07.29–07.31, 10.11 | R+F |
+| 23 | `update_node` | Unified node mutation | ✅ | ✅ | ADD/CHILD (incl. an attribute into `smodelAttribute`), SET/CHILD(+null delete), SET/PROPERTY(+null delete), SET/REFERENCE(+null delete), `dryRun`; invalid ADD/PROPERTY, ADD/REFERENCE, op DELETE | 07.10, 07.17–07.28, 10.24.s4–s6 | R+S |
+| 24 | `check_root_node_problems` | Validate node/model | ✅ | — | clean + problem; `onlyNodesWithProblems`=true/false; problem `rules` (`typeof_VariableDeclaration`, `ruleReference`/`statement` resolved); `details.uncheckedSubtrees` with problems (no warning) and on a clean verdict (with warning) | 07.21, 07.29–07.31, 10.11, 10.24.s2, 10.24.s4–s6 | R+F |
 | 25 | `search_root_node_by_name` | Find roots by name | ✅ | — | `scope`=editable/all/models/modules | 06.22, 08.16–08.19 | R |
 | 26 | `insert_console_command_from_json` | Put command in console | ✅ | ✅ | `dryRun` + real; invalid=bare expression | 12.01–12.02, 12.09 | R |
 | 27 | `get_console_history` | List console history | ✅ | — | `includeResponses`=true (`limit` not exercised) | 12.06 | R |
@@ -41,15 +47,28 @@ check (follow-up query / structure dump / file read), **F** = file read of a tem
 | 30 | `get_concept_details` | Concept metadata | ✅ | — | `conceptRefs`, `languageRefs` | 06.05, 06.15 | F+S |
 | 31 | `search_concepts` | Find concepts | ✅ | — | `searchTexts`, `modelReference` | 06.14 | R |
 | 32 | `alter_structure` | Language structure writes | ✅ | ✅ | ops CREATE_CONCEPTS/CREATE_ENUM/UPDATE_*×3/RENAME_*×3; `make`=true; invalid op | 06.02, 06.04, 06.06–06.12 | R+S |
-| 33 | `query_structure` | Structure reads | ✅ | (▲) | ops GET_ENUMERATION_LITERALS(both forms)/IS_SUBCONCEPT_OF/GET_SUB_CONCEPTS/GET_ASSIGNABLE_CONCEPTS/GET_ALL_SUPERCONCEPTS/LIST_CONCEPT_ASPECTS/IS_SMART_REFERENCE/GET_ASSIGNABLE_REFERENCES; `mode`,`sortBy`,`scopeMode`,`kindFilter` (see §C) | 06.16–06.22, 08.22–08.24, 09.05, 10.12 | R+F |
+| 33 | `query_structure` | Structure reads | ✅ | (▲) | ops GET_ENUMERATION_LITERALS(both forms)/IS_SUBCONCEPT_OF/GET_SUB_CONCEPTS/GET_ASSIGNABLE_CONCEPTS/GET_ALL_SUPERCONCEPTS/LIST_CONCEPT_ASPECTS/IS_SMART_REFERENCE/GET_ASSIGNABLE_REFERENCES; LIST_CONCEPT_ASPECTS `includeInherited`=false/true + `relation`/`targetsConcept`; `mode`,`sortBy`,`scopeMode`,`kindFilter` (see §C) | 06.16–06.22 (incl. 06.20b), 08.22–08.24, 09.05, 10.12 | R+F |
 | 34 | `scaffold_editor` | Generate editor | ✅ | ✅ | `type`=editor/component; `detectComponents`; include-lists; invalid=bad concept | 09.01–09.04 | R+S |
-| 35 | `create_run_configuration` | Make run config | ✅ | ✅ | default + `configurationName`; ClassConcept-with-`main` + `ITestCase` dispatch; invalid=non-runnable | 11.01–11.03, 11.06–11.07 | R+S |
-| 36 | `parse_java_and_insert` | Parse+insert Java | ✅ | ✅ | `featureKind`=CLASS/METHOD/FIELD/NESTED_CLASS/CLASS_CONTENT/STATEMENTS/EXPRESSION; `insert.mode`=root/child/console/replace; invalid=CLASS_STUB, unknown key | 10.01–10.10 | R+S |
+| 35 | `create_run_configuration` | Make run config | ✅ | ✅ | default + `configurationName`; ClassConcept-with-`main` + `ITestCase` dispatch; one model, multi-root, mixed targets; invalid=non-runnable / no tests / model-as-node | 11.01–11.03, 11.06–11.08 | R+S |
+| 36 | `parse_java_and_insert` | Parse+insert Java | ✅ | ✅ | `featureKind`=CLASS/METHOD/FIELD/NESTED_CLASS/CLASS_CONTENT/STATEMENTS/EXPRESSION; `insert.mode`=root/child/console/replace; invalid=CLASS_STUB, unknown key | 10.01–10.10, 10.12.s1, 10.13, 10.24.s1 | R+S |
+| 37 | `query_types` | Typesystem queries | ✅ | ✅ | ops IS_SUBTYPE/SUPERTYPES/COMMON_SUPERTYPE/COERCE/OPERATION_TYPE/EXPLAIN_TYPE; operands `typeConceptRef`/`typeNodeReference`/`nodeReference`; `depth`,`weak`,`strong`,`operatorNode`/`operatorConceptRef`,`includeApplyRule`,`maxRootNodes`; `parameters` as string and as real JSON object, lower-case op; invalid=`nodeReference` on a type node, one COMMON_SUPERTYPE operand, interface `conceptRef`, `maxRootNodes` too small, unknown op (see §C) | 10.17–10.23, 10.24.s3 | R+S |
+| 38 | `list_node_intentions` | List intentions/quick-fixes on a node | (◆) | (◆) | — | — (see `smoke-test-intentions.md`) | — |
+| 39 | `apply_intention` | Apply an intention or quick-fix | (◆) | (◆) | — | — (see `smoke-test-intentions.md`) | — |
+| 40 | `close_project` | Close the MPS project | (✕) | (✕) | — | — | — |
 
 (–) under "Invalid?" = no invalid case included for that tool because none is meaningful/safe
 beyond what shared dispatch already covers. ▲ for `query_structure`: the unknown-operation
 failure mode is representatively covered by `alter_structure` (06.12) and `query_nodes`
 (08.15), which use the same operation-dispatch layer.
+
+(◆) `list_node_intentions` and `apply_intention` are covered end to end by the separate
+`test_scenarios/smoke-test-intentions.md` (intentions, manual and auto-applied quick-fixes,
+negative cases), not by this scenario. Record them as "not covered here — see the intentions
+smoke test" in the run report.
+
+(✕) `close_project` is deliberately not exercised: closing `{{PROJECT_DIR}}` mid-run would end
+the scenario, and part 14 must still snapshot the project. Opening and closing projects is the
+`mps-project-management` skill's subject.
 
 ## B. IDE helper tools (used as verification helpers, not part of the `mps_mcp_*` API)
 
@@ -77,18 +96,23 @@ failure mode is representatively covered by `alter_structure` (06.12) and `query
 - **`get_current_editor_root_node.source`**: editor ✔(01.04 empty, 08.21 ok), console ✔(01.05 empty, 12.03 ok)
 - **`alter_structure.operation`**: CREATE_CONCEPTS ✔(06.04), CREATE_ENUM ✔(06.02), UPDATE_CONCEPT_PROPERTY ✔(06.06), RENAME_CONCEPT_PROPERTY ✔(06.07), UPDATE_CONCEPT_CHILD ✔(06.08), RENAME_CONCEPT_CHILD ✔(06.09), UPDATE_CONCEPT_REFERENCE ✔(06.10), RENAME_CONCEPT_REFERENCE ✔(06.11)
 - **`alter_structure.make`**: true ✔(06.04)
-- **`query_structure.operation`**: GET_ENUMERATION_LITERALS ✔(06.22 by-ref, 08.22 by-property), IS_SUBCONCEPT_OF ✔(06.16), GET_SUB_CONCEPTS ✔(06.18), GET_ASSIGNABLE_CONCEPTS ✔(06.19), GET_ALL_SUPERCONCEPTS ✔(06.17), LIST_CONCEPT_ASPECTS ✔(06.20/09.05), IS_SMART_REFERENCE ✔(06.21), GET_ASSIGNABLE_REFERENCES ✔(08.23/08.24)
+- **`query_structure.operation`**: GET_ENUMERATION_LITERALS ✔(06.22 by-ref, 08.22 by-property), IS_SUBCONCEPT_OF ✔(06.16), GET_SUB_CONCEPTS ✔(06.18), GET_ASSIGNABLE_CONCEPTS ✔(06.19), GET_ALL_SUPERCONCEPTS ✔(06.17), LIST_CONCEPT_ASPECTS ✔(06.20/06.20b/09.05), IS_SMART_REFERENCE ✔(06.21), GET_ASSIGNABLE_REFERENCES ✔(08.23/08.24)
+- **`LIST_CONCEPT_ASPECTS.includeInherited`**: false ✔(06.20/09.05), true ✔(06.20b); **`relation`**: appliesTo ✔(06.20b, 09.05), mentions — recorded when present (06.20b)
 - **`GET_ASSIGNABLE_REFERENCES.mode`**: exhaustive ✔(08.23), completion ✔(08.24)
 - **`GET_ASSIGNABLE_REFERENCES.sortBy`**: relevance ✔(08.24a), name ✔(08.24b), module ✔(08.24c), distance ✔(08.24d)
 - **`GET_ASSIGNABLE_REFERENCES.scopeMode`**: local ✔(08.24a), model ✔(08.24b), module ✔(08.24c), project ✔(08.24d), imports ✔(08.24e), jdk ✔(08.24f)
 - **`GET_ASSIGNABLE_REFERENCES.kindFilter`**: instanceMethods ✔(10.12.s3a), staticMethods ✔(10.12.s3b), constructors ✔(10.12.s3c), classes ✔(10.12.s3d). Exercised against the BaseLanguage call/type roles seeded in `McpRunnable` (`baseMethodDeclaration` on an `IMethodCall`; `classifier` on a `ClassifierType`); each call asserts a non-empty candidate set whose every `kind` equals the requested value.
-- **`query_nodes.operation`**: FIND_INSTANCES ✔(08.01), FIND_USAGES ✔(08.08), GET_PARENT ✔(08.09), GET_ROOT ✔(08.10), GET_MODEL_FOR_NODE ✔(08.11), NODE_INDEX ✔(08.12), SIBLINGS ✔(08.13), GET_CHILD_ROLE ✔(08.14)
+- **`query_nodes.operation`**: FIND_INSTANCES ✔(08.01), FIND_USAGES ✔(08.08), GET_PARENT ✔(08.09), GET_ROOT ✔(08.10), GET_MODEL_FOR_NODE ✔(08.11), NODE_INDEX ✔(08.12), SIBLINGS ✔(08.13), GET_CHILD_ROLE ✔(08.14), GET_TYPE ✔(10.15a/b; `null` 10.15c; `maxRootNodes` / `details.scope:"node"` 10.15d), GET_EXPECTED_TYPE ✔(10.16a–c; `null` 10.16d; `maxRootNodes` / `details.scope:"node"` 10.16)
+- **`query_types.operation`**: IS_SUBTYPE ✔(10.17a–c), SUPERTYPES ✔(10.18), COMMON_SUPERTYPE ✔(10.19a), COERCE ✔(10.20a–b), OPERATION_TYPE ✔(10.21), EXPLAIN_TYPE ✔(10.22a–b, 10.24.s3); unknown op ✔(10.23)
+- **`query_types` operand forms**: `typeConceptRef` ✔(10.17a), `typeNodeReference` ✔(10.17c), `nodeReference` ✔(10.20a; rejected on a type node 10.17e). *Not exercised:* `blueprint` / a printed type object passed back — it means embedding a whole printed type in the escaped `parameters` string; covered by `JetBrainsMPSTypesMcpToolsetIntegrationTest`.
+- **`query_types` options**: `SUPERTYPES.depth` default ✔(10.18a) / 1 + `details.truncated` ✔(10.18b), `SUPERTYPES.weak`=false ✔(10.18c), `COERCE.strong`=true ✔(10.20b), `OPERATION_TYPE` `operatorNode` ✔(10.21a) / `operatorConceptRef` + `detached instance` warning ✔(10.21b), `EXPLAIN_TYPE.includeApplyRule`=true ✔(10.22b), `EXPLAIN_TYPE.maxRootNodes` too small ✔(10.22c); `parameters` as a real JSON object + lower-case operation ✔(10.17d)
 - **`query_nodes.scope` (FIND_INSTANCES)**: editable ✔(08.01), all ✔(08.02), models ✔(08.03), modules ✔(08.04), roots ✔(08.05)
 - **`alter_nodes.operation`**: MOVE_CHILD ✔(07.32), MOVE_NODE_TO_PARENT ✔(07.33), MAKE ✔(06.13/06.24/06.25), FIX_REFERENCES ✔(07.34)
 - **`alter_nodes MAKE` targets**: modules+rebuild ✔(06.13), models ✔(06.24), wholeProject ✔(06.25)
 - **`update_node.operation × kind`**: ADD/CHILD ✔(07.10), SET/CHILD ✔(07.24), SET/CHILD null-delete ✔(07.25), SET/PROPERTY ✔(07.18), SET/PROPERTY null-delete ✔(07.23), SET/REFERENCE ✔(07.19), SET/REFERENCE null-delete ✔(07.22); invalid ADD/PROPERTY ✔(07.26), ADD/REFERENCE ✔(07.27), op DELETE ✔(07.28)
 - **`print_node.format`**: JSON ✔(07.06), HTML ✔(07.09), PLAIN TEXT ✔(07.08); **`deep`**: true ✔(07.06), false ✔(07.07)
 - **`check_root_node_problems.onlyNodesWithProblems`**: true ✔(07.29), false ✔(07.30)
+- **`check_root_node_problems` report fields**: problem `rules` ✔(10.24.s2), `details.uncheckedSubtrees` with problems ✔(10.24.s4) and on a clean verdict + `warnings` ✔(10.24.s5), clean verdict without unchecked subtrees ✔(10.24.s6)
 - **`search_root_node_by_name.scope`**: editable ✔(08.16), all ✔(08.17), models ✔(08.18), modules ✔(08.19)
 - **`scaffold_editor.type`**: editor ✔(09.01), component ✔(09.02); **`detectComponents`**: true ✔(09.03)
 - **`update_root_node_from_json.operation`**: UPDATE ✔(07.37), DELETE ✔(07.38); **`dryRun`** ✔(07.36)
@@ -96,7 +120,7 @@ failure mode is representatively covered by `alter_structure` (06.12) and `query
 - **`get_concept_details`**: conceptRefs ✔(06.05), languageRefs ✔(06.15)
 - **`parse_java_and_insert.featureKind`**: CLASS ✔(10.01), METHOD ✔(10.02), FIELD ✔(10.03), NESTED_CLASS ✔(10.04), CLASS_CONTENT ✔(10.05), STATEMENTS ✔(10.06), EXPRESSION ✔(10.07)
 - **`parse_java_and_insert.insert.mode`**: root ✔(10.01), child ✔(10.02–10.05), console ✔(10.06–10.07), replace ✔(10.08)
-- **`create_run_configuration` dispatch**: ClassConcept-with-`main`→Java Application ✔(11.01; this is the "Java class with a `public static void main` run via a run configuration" case, executed in optional 11.05); `ITestCase`→JUnit Tests ✔(11.06–11.07, via the stock `jetbrains.mps.lang.test.structure.NodesTestCase`). *Not exercised:* `IMainClass`→Java Application — `IMainClass` (`jetbrains.mps.execution.util`) has no stock BaseLanguage implementer, so reaching it needs a DSL/demo concept (`jetbrains.mps.execution.demo`) a generic MPS project may not have loaded; this branch is covered by the toolset's unit tests instead.
+- **`create_run_configuration` dispatch**: ClassConcept-with-`main`→Java Application ✔(11.01; this is the "Java class with a `public static void main` run via a run configuration" case, executed in optional 11.05); `ITestCase`→JUnit Tests ✔(11.06–11.07, via the stock `jetbrains.mps.lang.test.structure.NodesTestCase`); one model, several roots, and a mix ✔(11.08, and `JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest`). *Not exercised:* `IMainClass`→Java Application — `IMainClass` (`jetbrains.mps.execution.util`) has no stock BaseLanguage implementer, so reaching it needs a DSL/demo concept (`jetbrains.mps.execution.demo`) a generic MPS project may not have loaded; this branch is covered by the toolset's unit tests instead.
 
 ## D. Tools intentionally NOT covered (out of scope)
 

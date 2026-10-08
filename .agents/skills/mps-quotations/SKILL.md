@@ -53,7 +53,7 @@ A **quotation** is a node literal — a concise expression that evaluates to an 
 ## Related Skills
 
 - `mps-aspect-behavior` — behavior bodies frequently use quotations to build sub-trees; remember constructors do not fire when materialising a quotation.
-- `mps-aspect-typesystem` — `<TypeConcept>` literals inside rule bodies are heavy quotations; the typesystem model typically imports `jetbrains.mps.lang.quotation` as a used language. The `:==:`/`:<=:` body shapes are in `mps-aspect-typesystem` `json-blueprints.md`.
+- `mps-aspect-typesystem` — `<TypeConcept>` literals inside rule bodies are heavy quotations; the typesystem model typically imports `jetbrains.mps.lang.quotation` as a used language. The `:==:`/`:<=:` body shapes are in `references/json-blueprints/operator-mapping-and-examples.md` in the `mps-aspect-typesystem` skill root after loading that companion skill from the same origin.
 - `mps-aspect-generator` — template macros are a different mechanism for building target trees; quotations are used in non-template code (filters, mapping scripts, conditions) within the generator model.
 - `mps-aspect-migrations` — `<NewConcept>` plus `^(oldNode.target)^` is the canonical shape inside migration rewrite scripts (`references/antiquotation-reference.md` includes the verbatim example).
 - `mps-aspect-intentions` — the `replace_invokeOperation_with_compactInvoke` example shipping with the closures language uses `<%(...)%>` + `*(...)*` to rebuild an expression tree.

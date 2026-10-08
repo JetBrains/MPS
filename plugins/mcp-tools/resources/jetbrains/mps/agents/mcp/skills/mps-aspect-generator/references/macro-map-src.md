@@ -47,7 +47,7 @@ Effect: the wrapped template is rendered with `node` bound to the filtered attri
 
 ## Example 2 — non-template transformation (mapperFunction)
 
-Use when the output cannot be described by a target-language sample but is easy to build imperatively (e.g. the shape depends on runtime data, or you want to call a utility-model helper — see `utility-models.md`). The `mapperFunction` body returns an `SNode`:
+Use when the output cannot be described by a target-language sample but is easy to build imperatively (e.g. the shape depends on runtime data, or you want to call a utility-model helper — see `references/utility-models.md`). The `mapperFunction` body returns an `SNode`:
 
 ```json
 { "concept": "jetbrains.mps.lang.generator.structure.MapSrcNodeMacro",

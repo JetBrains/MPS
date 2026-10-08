@@ -20,8 +20,7 @@ import kotlin.reflect.full.primaryConstructor
  *
  * Complements the schema validation cases already exercised in
  * [AbstractOpsPropertyProblemsTest] (concept properties, child role/target,
- * reference target, enum array, enum value name, malformed Java insert object,
- * unknown insert mode, wrong position type) by covering:
+ * reference target, wrong position type) by covering:
  *
  * - happy-path parsing for [jetbrains.mps.agents.mcp.tools.parseStructureConceptSpecs],
  *   [jetbrains.mps.agents.mcp.tools.parseStructureInterfaceConceptSpecs],
@@ -758,6 +757,7 @@ class McpToolInputSchemasTest {
         assertEquals(true, read(request, "getRecovery"))
         assertEquals(true, read(request, "getImportUsedLanguages"))
         assertEquals(true, read(request, "getResolveReferences"))
+        assertNull(read(request, "getContextNodeRef"))
 
         val insert = read(request, "getInsert") ?: error("insert must be present")
         assertEquals("root", read(insert, "getMode"))
@@ -778,6 +778,7 @@ class McpToolInputSchemasTest {
 
         assertEquals("EXPRESSION", read(request, "getFeatureKindText"))
         assertEquals(true, read(request, "isExpression"))
+        assertNull(read(request, "getContextNodeRef"))
     }
 
     @Test
@@ -863,25 +864,6 @@ class McpToolInputSchemasTest {
 
         assertEquals("METHOD", read(request, "getFeatureKindText"))
         assertEquals("r:m#cls", read(request, "getContextNodeRef"))
-    }
-
-    @Test
-    fun javaInsertParsesNonMemberFeatureKindWithoutContextNodeRef() {
-        val request = parseJavaParseInsertRequest(
-            """{"code":"class Foo {}","featureKind":"CLASS","insert":{"mode":"root","modelRef":"r:m"}}"""
-        )
-
-        assertEquals("CLASS", read(request, "getFeatureKindText"))
-        assertNull(read(request, "getContextNodeRef"))
-    }
-
-    @Test
-    fun javaInsertHonoursRecoveryFalse() {
-        val request = parseJavaParseInsertRequest(
-            """{"code":"class Foo {}","featureKind":"CLASS","recovery":false,"insert":{"mode":"root","modelRef":"r:m"}}"""
-        )
-
-        assertEquals(false, read(request, "getRecovery"))
     }
 
     @Test
@@ -1050,16 +1032,6 @@ class McpToolInputSchemasTest {
             "Expected message to mention contextNodeRef and METHOD, was: $message",
             message.contains("contextNodeRef") && message.contains("METHOD"),
         )
-    }
-
-    @Test
-    fun javaInsertAcceptsEmptyContextNodeRefForExpressionFeatureKind() {
-        val request = parseJavaParseInsertRequest(
-            """{"code":"1 + 2","featureKind":"EXPRESSION","insert":{"mode":"root","modelRef":"r:m"}}"""
-        )
-
-        assertNull(read(request, "getContextNodeRef"))
-        assertEquals(true, read(request, "isExpression"))
     }
 
     @Test

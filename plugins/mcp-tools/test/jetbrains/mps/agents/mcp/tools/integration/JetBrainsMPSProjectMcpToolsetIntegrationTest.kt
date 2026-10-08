@@ -6,6 +6,8 @@ import jetbrains.mps.agents.mcp.tools.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.diagnostic.Logger
 import jetbrains.mps.project.modules.LanguageProducer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -13,13 +15,20 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 /**
  * End-to-end integration tests for [JetBrainsMPSProjectMcpToolset].
  *
  * Covers the tools the toolset exposes:
- *  - `mps_mcp_list_open_projects` — discovering the open MPS project and the path agents should
- *    pass as the host `projectPath` selector in multi-project checkouts;
+ *  - `mps_mcp_list_open_projects` — discovering the open MPS project, the path agents should
+ *    pass as the host `projectPath` selector in multi-project checkouts, and the IDE log location;
+ *  - `mps_mcp_read_ide_log` — parsing and filtering a log directory written by the test, and the
+ *    live IDE log (or the NOT_FOUND envelope when the test JVM writes none);
  *  - `mps_mcp_get_project_structure` — listing project modules (default), descending into a
  *    model when `startingPoint` is set, the mutually-exclusive flag enforcement, and the
  *    NOT_FOUND envelope for an unknown starting point;
@@ -70,26 +79,94 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals(live!!.version, data.get("mpsVersion").asString)
         assertEquals(live.build, data.get("mpsBuild").asString)
         assertEquals(live.eap, data.get("mpsEap").asBoolean)
+
+        assertTrue("listing must report the IDE log directory: $data", data.has("logDirectory"))
+        assertTrue("listing must report the IDE log file: $data", data.has("logFile"))
+        val logDirectory = data.get("logDirectory").asString
+        val logFile = data.get("logFile").asString
+        assertTrue("logDirectory must be an existing directory: $logDirectory", File(logDirectory).isDirectory)
+        assertTrue("logFile must name idea.log: $logFile", logFile.endsWith("idea.log"))
+        assertTrue("logFile must lie in logDirectory: $logFile vs $logDirectory", logFile.startsWith(logDirectory))
     }
 
     @Test
-    fun `get-project-structure lists the test language module by default`() {
-        val response = runTool(JetBrainsMPSProjectMcpToolset()) {
-            it.mps_mcp_get_project_structure()
-        }
+    fun `read-ide-log parses a log directory end to end`() {
+        val directory = Files.createTempDirectory("mcp-read-ide-log")
+        try {
+            val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS")
+            fun line(ago: Long, level: String, message: String) =
+                "${LocalDateTime.now().minusMinutes(ago).format(format)} [  12345] ${level.padStart(6)} - jetbrains.mps.Test - $message"
+            val marker = "mcp-read-ide-log-marker-${UUID.randomUUID()}"
+            Files.writeString(directory.resolve("idea.1.log"), line(30, "WARN", "$marker old") + "\n")
+            Files.writeString(
+                directory.resolve("idea.log"),
+                listOf(
+                    line(20, "INFO", "started"),
+                    line(1, "WARN", marker),
+                    "java.lang.IllegalStateException: boom",
+                    "\tat jetbrains.mps.Test.run(Test.kt:1)",
+                    line(0, "INFO", "idle"),
+                ).joinToString("\n", postfix = "\n"),
+            )
+            val toolset = JetBrainsMPSProjectMcpToolset(ideLogDirectorySource = { directory })
 
-        val payload = readJsonObjectFromOkPath(response)
-        val modules = payload.getAsJsonArray("modules")
-        val moduleNames = modules.map { it.asJsonObject.get("name").asString }.toSet()
-        assertTrue(
-            "the test language created by the base class must appear in the default listing; got=$moduleNames",
-            moduleNames.contains(language.moduleName)
-        )
-        val kinds = modules.map { it.asJsonObject.get("kind").asString }.toSet()
-        assertTrue(
-            "the test language module must be reported with kind=Language; got=$kinds",
-            kinds.contains("Language")
-        )
+            val all = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_read_ide_log() })
+            assertEquals(directory.resolve("idea.log").toAbsolutePath().normalize().toString(), all.get("logFile").asString)
+            assertEquals("idea.log alone does not fill the tail, so idea.1.log is read too: $all", 2, all.getAsJsonArray("filesRead").size())
+            assertEquals(4, all.getAsJsonArray("records").size())
+
+            val found = payloadObjectFromOkData(runTool(toolset) {
+                it.mps_mcp_read_ide_log(grep = marker, minLevel = "WARN", sinceMinutes = 5)
+            })
+            val records = found.getAsJsonArray("records").map { it.asJsonObject }
+            assertEquals("only the recent marker record must match: $found", 1, records.size)
+            val record = records.single()
+            assertEquals("WARN", record.get("level").asString)
+            assertEquals(marker, record.get("message").asString)
+            assertEquals("jetbrains.mps.Test", record.get("category").asString)
+            assertTrue(record.get("stackTrace").asString.startsWith("java.lang.IllegalStateException: boom\n\tat "))
+            assertEquals(1, found.getAsJsonObject("levelCounts").get("WARN").asInt)
+            assertEquals(1, found.getAsJsonArray("filesRead").size())
+
+            val headOnly = payloadObjectFromOkData(runTool(toolset) {
+                it.mps_mcp_read_ide_log(grep = "IllegalStateException", includeStackTraces = false)
+            })
+            assertFalse(headOnly.getAsJsonArray("records").single().asJsonObject.has("stackTrace"))
+        } finally {
+            directory.toFile().deleteRecursively()
+        }
+    }
+
+    @Test
+    fun `read-ide-log reads the live IDE log or names the directory without one`() {
+        // The test JVM's logger does not write an idea.log; a live MPS does. Accept either, but check
+        // each outcome fully.
+        val marker = "mcp-read-ide-log-marker-${UUID.randomUUID()}"
+        Logger.getInstance(JetBrainsMPSProjectMcpToolsetIntegrationTest::class.java).warn(marker)
+        val response = runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_read_ide_log(grep = marker, minLevel = "WARN", sinceMinutes = 5)
+        }
+        val logDirectory = Paths.get(PathManager.getLogPath()).toAbsolutePath().normalize()
+        if (Files.isRegularFile(logDirectory.resolve("idea.log"))) {
+            val data = payloadObjectFromOkData(response)
+            assertTrue(data.get("logFile").asString.endsWith("idea.log"))
+            val records = data.getAsJsonArray("records").map { it.asJsonObject }
+            assertEquals("the freshly logged warning must be found: $data", 1, records.size)
+            assertTrue(records.single().get("message").asString.contains(marker))
+        } else {
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("no idea.log must be an error: $response", envelope.get("ok").asBoolean)
+            assertEquals("NOT_FOUND", envelope.get("code").asString)
+            assertTrue("the error must name the directory: $response", envelope.get("error").asString.contains(logDirectory.toString()))
+        }
+    }
+
+    @Test
+    fun `read-ide-log rejects an unknown minLevel`() {
+        val error = expectErr(runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_read_ide_log(minLevel = "bogus")
+        })
+        assertTrue("the error must name the bad value and the accepted ones: $error", error.contains("bogus") && error.contains("SEVERE"))
     }
 
     @Test

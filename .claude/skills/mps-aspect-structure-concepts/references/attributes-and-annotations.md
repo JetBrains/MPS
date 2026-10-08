@@ -128,7 +128,7 @@ fully-qualified name (or the persistent ref of its declaration root node) and le
 
 ## Creating one over MCP
 
-The simplified `CREATE_CONCEPTS` schema (see `structure-operation-api.md`) cannot express the
+The simplified `CREATE_CONCEPTS` schema (see `references/structure-operation-api.md`) cannot express the
 `AttributeInfo`, so use a two-step flow:
 
 1. **`mps_mcp_alter_structure CREATE_CONCEPTS`** — create the `ConceptDeclaration` with

@@ -1,7 +1,7 @@
 ---
 name: mps-aspect-typesystem
 description: >-
-  Use when authoring or debugging MPS typesystem — inference rules (`typeof :==: / :<=: / :>=:`), `SubtypingRule`, `ComparisonRule`, `InequationReplacementRule`, `SubstituteTypeRule`, `WhenConcreteStatement` blocks, `NonTypesystemRule` checking rules, `TypesystemQuickFix`, error/warning/info reports with `messageTarget` highlighting and quick-fix wiring (`helginsIntention`), and shared BaseLanguage helpers in the typesystem model. Reach for this skill whenever the task involves editing `<lang>/languageModels/typesystem.mps`.
+  Use when authoring or debugging MPS typesystem — inference rules (`typeof :==: / :<=: / :>=:`), `SubtypingRule`, `ComparisonRule`, `InequationReplacementRule`, `SubstituteTypeRule`, `WhenConcreteStatement` blocks, `NonTypesystemRule` checking rules, `TypesystemQuickFix`, error/warning/info reports with `messageTarget` highlighting and quick-fix wiring (`helginsIntention`), and shared BaseLanguage helpers in the typesystem model. For questions to the compiled typesystem (`IS_SUBTYPE`, `EXPLAIN_TYPE`, `GET_EXPECTED_TYPE`), use the query tools when debugging “type stays undefined” or “operator cannot be applied.” Reach for this skill whenever the task involves editing `<lang>/languageModels/typesystem.mps`.
 type: reference
 ---
 
@@ -34,6 +34,7 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 
 ## Common-Path Workflow
 
+0. **Ask the compiled typesystem before authoring a rule.** Check whether a type relation already holds or what produces a node's current type with `mps_mcp_query_types` (`IS_SUBTYPE`, `SUPERTYPES`, `OPERATION_TYPE`, `EXPLAIN_TYPE`) or `mps_mcp_query_nodes` (`GET_TYPE`, `GET_EXPECTED_TYPE`). Do not simulate the solver by reading rule roots: print a rule root only to change it or to pick a sibling to copy, and ask the engine (`OPERATION_TYPE`, `COMMON_SUPERTYPE`) what a change does to operators and joins. See `mps-mcp-workflow/references/analysis-tools/type-queries.md` for all operations and caveats.
 1. Create a `typesystem` model (`mps_mcp_create_model` with `moduleName: "<lang>"` and `modelName: "<lang>.typesystem"` — aspect ID `typesystem`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)) if absent.
 2. Add used languages: `jetbrains.mps.lang.typesystem`, and any languages used in bodies (`smodel`, `collections`, `closures`, `baseLanguage`).
 3. Add `InferenceRule` roots for concepts whose types you compute (see `references/inference-rules.md`).
@@ -42,13 +43,21 @@ Lives in `<lang>/languageModels/typesystem.mps`, language `jetbrains.mps.lang.ty
 6. Add `TypesystemQuickFix` roots for any fix you want to attach to reports; wire them via a `helginsIntention`/`TypesystemIntention` child of the `warning`/`error`/`info` statement (see `references/quick-fixes.md`).
 7. Write bodies with BaseLanguage + smodel. Use `when concrete` (`references/when-concrete.md`) when you need resolved types before checking. For helper code, place a `ClassConcept` root directly in the typesystem model and call it from rules.
 8. Validate: `mps_mcp_check_root_node_problems` plus compile the language and test on sample models. A `helginsIntention`-wired quick fix now surfaces in the check report's `quickFixes` array and can be applied with `mps_mcp_apply_intention(nodeReference = <problem node>, intentionId = <fix id>)`; an auto-applicable fix runs under `autoApplyQuickFixes=true`.
+9. Verify the rules against a sandbox you own with the matching engine query; do not infer their behavior from what `mps_mcp_check_root_node_problems` does or does not report:
+   1. `mps_mcp_create_model` a scratch model in the language's sandbox solution; `mps_mcp_model_used_language` ADD (`kind: language`) the language under test and whatever the copied root's own concept needs (e.g. `jetbrains.mps.baseLanguage`).
+   2. `mps_mcp_alter_nodes` `COPY_NODE` a sample root (the copy lands in the sample's model), then `MOVE_NODE_TO_PARENT` it with only `modelReference` = the scratch model (node ids survive the move; swap the model part of references you harvested before it); or `mps_mcp_insert_root_node_from_json`. Add the construct whose typing you will change.
+   3. **Before** the change: `mps_mcp_check_root_node_problems` + `EXPLAIN_TYPE` on it, so you have the baseline error and the rule behind it (a problem's `rules[0].rule` names it; print `ruleReference` only to change that rule). Commented-out code is not checked (`uncheckedSubtrees`), so a clean verdict over it proves nothing.
+   4. Author the rule — copy-then-modify a sibling rule (`COPY_NODE`, then `mps_mcp_update_node` the name and references) — then `MAKE` with `parameters` = `{"modules":["<lang>"],"rebuild":true}`. One MAKE answering `runtimeReady:true` is the reload; no `mps_mcp_reload_all`.
+   5. **After**: ask again — `IS_SUBTYPE`, `mps_mcp_query_nodes` `GET_TYPE`, `EXPLAIN_TYPE` (the `subtype_checked` entry's `via` names the rule that made it fit), and `OPERATION_TYPE` / `COMMON_SUPERTYPE` for side effects of a lattice change.
+   6. `mps_mcp_update_model` DELETE the scratch model when you no longer need it (keep it if the task asks for it). MPS's VCS integration may stage files the MAKE writes; an entry `git status` then shows as `AD` (staged, since deleted) needs `git rm --cached`.
 
 ## Related Skills
 
 - `mps-aspect-behavior` — behavior methods called from rule bodies via `node.method()`; common host for `getType` / `isAssignableFrom`-style helpers callable from typesystem.
 - `mps-aspect-constraints` — non-type validation often lives in constraints; consider whether a check belongs there before adding a `NonTypesystemRule`.
 - `mps-aspect-intentions` — distinct from `TypesystemQuickFix` (intentions are user-invoked from caret; quick fixes attach to a report).
-- `mps-model-manipulation` — full BaseLanguage / smodel / collections reference used inside rule bodies (`StatementList`, `DotExpression`, smodel operations, the `List<SNode>` → `sequence<node<X>>` return-type fix); for an inference or checking rule body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
+- `mps-collections-and-closures` — `.where` / `.select` / `.translate`, `foreach` and closure literals inside rule bodies.
+- `mps-model-manipulation` — full BaseLanguage / smodel reference used inside rule bodies (`StatementList`, `DotExpression`, smodel operations, the `List<SNode>` → `sequence<node<X>>` return-type fix); for an inference or checking rule body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - `mps-quotations` — `<type>` literals in rule bodies are heavy quotations; `%(expr)%` splices use the `Antiquotation` family. The typesystem model usually uses `jetbrains.mps.lang.quotation` as a used language.
 - `mps-aspect-structure-concepts` — when introducing the type concept(s) the rules target.
 

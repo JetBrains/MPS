@@ -40,7 +40,7 @@ An MPS language is a collection of **aspects**, each a separate model inside the
 | **IDE plugin** | `plugin` | `models/plugin.mps` | `jetbrains.mps.lang.plugin` | `mps-ide-plugin` |
 | **Feedback** | `feedback` | `models/feedback.mps` | `jetbrains.mps.lang.feedback` | — |
 | **Accessories / Dependencies** | — (no model created) | `.mpl` and per-model | — | `mps-aspect-accessories` |
-| **Code inside bodies** | — | any aspect that holds BL | `baseLanguage`, `smodel`, `collections`, `closures` | `mps-model-manipulation` |
+| **Code inside bodies** | — | any aspect that holds BL | `baseLanguage`, `smodel`, `collections`, `closures` | `mps-model-manipulation` (smodel), `mps-collections-and-closures` (collections, closures) |
 | **Inline node literals** | — | any aspect using quotations | `jetbrains.mps.lang.quotation` | `mps-quotations` |
 
 Aspect IDs are **case-sensitive** and create models named `<langModule>.<aspectId>` with **no `@` suffix**. Stereotypes (`@generator`, `@genplan`, `@tests`, `@descriptor`) are a separate mechanism for non-aspect models. Authoritative table with usage notes and pitfalls: [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md).
@@ -88,13 +88,13 @@ After adding/changing:
 - **Behavior method signatures** — all callers (generator, typesystem, constraints, intentions, editor queries) must be re-validated. Rebuild language.
 - **Generator templates** — rebuild generator module (it's separate from the language module).
 - **Runtime solutions** — rebuild the runtime solution; consumers pick up changes on next regeneration or reload.
-- After large changes: `mps_mcp_reload_all` to refresh MPS's runtime concept registry.
+- After large changes: rebuild the language module (`MAKE`, `rebuild:true`); `runtimeReady:true` means the runtime registry is fresh.
 
 ## Validation Flow
 
 1. `mps_mcp_check_root_node_problems` on edited roots / aspect models, or on the language module to sweep every aspect (and its generator) in one call — catches concept-level problems.
-2. Build the language module (IDE MCP) — catches compile errors in generated descriptors.
+2. Build the language module (`mps_mcp_alter_nodes` `MAKE`, `rebuild:true`; `runtimeReady:true` means MPS has reloaded it) — catches compile errors in generated descriptors.
 3. Regenerate a sample model — catches generator/textgen issues.
-4. Inspect sample in MPS UI — catches editor / usability issues.
+4. Ask the engine on a sandbox root (`mps_mcp_check_root_node_problems`, `mps_mcp_query_nodes` `GET_TYPE`, `mps_mcp_query_types` `IS_SUBTYPE` / `EXPLAIN_TYPE`) instead of inspecting it in the MPS UI — catches typing and checking issues; `mps-aspect-typesystem` Common-Path step 9 has the scratch-model recipe. Editor / usability issues still need a look in MPS.
 
 When something in a consumer is wrong, always re-check the root cause on the language side (structure / generator / typesystem) before patching generated Java.

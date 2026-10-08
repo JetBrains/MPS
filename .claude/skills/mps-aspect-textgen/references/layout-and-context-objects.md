@@ -48,7 +48,7 @@ Verify the exact child role names (`part` vs. `layoutPart`) and the separator pr
 
 A *context object* is a per-generation singleton accessible from every textgen body in the same top-level `ConceptTextGenDeclaration` invocation. Canonical use: an imports set that any nested rule can add to, then emitted as the `IMPORTS` layout area at the end.
 
-- Declaration of the **context type** lives in the **base text gen component** (see `dispatch-and-base-component.md`) as a `UnitContextDeclaration`. Its constructor is either no-arg or takes a single argument — an instance of the concept being serialised.
+- Declaration of the **context type** lives in the **base text gen component** (see `references/dispatch-and-base-component.md`) as a `UnitContextDeclaration`. Its constructor is either no-arg or takes a single argument — an instance of the concept being serialised.
 - **Use** of the context in a per-concept rule: a `UnitContextObject` child on the `ConceptTextGenDeclaration` (role `contextObjects`). Gives the object a local name and a type.
 
 Verbatim from baseLanguage `ClassConcept_TextGen`:

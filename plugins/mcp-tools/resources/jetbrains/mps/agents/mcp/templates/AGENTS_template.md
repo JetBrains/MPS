@@ -73,10 +73,13 @@ Inspection of generated code is allowed when:
 ## Rules for MPS Work
 
 - Load the `mps-mcp-workflow` skill at the start of an MPS session. If MPS MCP tools are unavailable, apply the fallback described in the Tool Selection section above.
+- Before editing a language aspect (typesystem, constraints, behavior, editor, generator, structure), also load its `mps-aspect-*` skill; `mps-mcp-workflow` names each one.
 - Use MPS MCP tools whenever available; do not hand-edit `.mps` files as plain XML.
 - Resolve nodes, concepts, models, and modules precisely before editing.
 - Validate after structural changes using `mps_mcp_check_root_node_problems`.
 - Rebuild or regenerate after significant changes to keep generated artifacts consistent.
+
+Some failures (swallowed factory or initializer exceptions, migration errors, tool-side regressions) reach only the IDE log, not the tool response. When a tool reports success but the effect is missing, call `mps_mcp_read_ide_log` with `sinceMinutes` covering the call window and `minLevel="WARN"`: it reads `idea.log` and its rotated `idea.1.log`, `idea.2.log`, … without a path, also for a standalone MPS. `mps_mcp_list_open_projects` reports the log location as top-level `logDirectory` / `logFile`; `references/ide-log.md` in the `mps-mcp-workflow` skill root covers reading the log on older servers that lack the tool.
 
 Use the `mps-mcp-workflow` skill for complete guidance on MPS workflows, skills, available tools, and best practices.
 

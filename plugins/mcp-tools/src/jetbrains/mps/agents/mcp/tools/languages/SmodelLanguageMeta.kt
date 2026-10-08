@@ -60,4 +60,7 @@ internal object SmodelLanguageMeta {
     internal val sLinkListAccessLinkLink = MetaAdapterFactory.getReferenceLink(
         smodelLanguageId, smodelStructureModelId, 0x108f970c119L, 0x108f974c962L, "link"
     )
+    internal val conceptReferenceConceptLink = MetaAdapterFactory.getReferenceLink(
+        smodelLanguageId, smodelStructureModelId, 0x10cd05c601dL, 0x10cd05d18efL, "concept"
+    )
 }

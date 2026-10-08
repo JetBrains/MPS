@@ -33,7 +33,7 @@ ListScope myStates = new ListScope(this.states) {
 return new HidingByNameScope(concept/State/, concept/State/, myStates, parent scope);
 ```
 
-Use this whenever a concept owns a role (`this.states`) that should locally shadow same-named nodes from the enclosing scope chain. The anonymous class overriding `ListScope.getName` is a standard BaseLanguage `GenericNewExpression` + `AnonymousClassCreator` + `AnonymousClass`; its child `ConceptMethodDeclaration`-like method is a plain BaseLanguage `InstanceMethodDeclaration` whose body's trailing expression is `child:State.name` — i.e. `SNodeTypeCastExpression` (`asCast=false`) on the parameter, followed by an `SPropertyAccess` for `name`. `concept/State/` is a standalone `ConceptIdRefExpression` (see `scope-fqn-reference.md`).
+Use this whenever a concept owns a role (`this.states`) that should locally shadow same-named nodes from the enclosing scope chain. The anonymous class overriding `ListScope.getName` is a standard BaseLanguage `GenericNewExpression` + `AnonymousClassCreator` + `AnonymousClass`; its child `ConceptMethodDeclaration`-like method is a plain BaseLanguage `InstanceMethodDeclaration` whose body's trailing expression is `child:State.name` — i.e. `SNodeTypeCastExpression` (`asCast=false`) on the parameter, followed by an `SPropertyAccess` for `name`. `concept/State/` is a standalone `ConceptIdRefExpression` (see `references/scope-fqn-reference.md`).
 
 ## Scope DSL: caching and invalidation
 

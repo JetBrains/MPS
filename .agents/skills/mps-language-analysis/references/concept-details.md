@@ -59,7 +59,7 @@ Suggestions are computed by subtoken-matching the input (the same camelCase- and
 - Otherwise the search runs project-wide.
 - Candidates owned by **another open MPS project** are never suggested: the module repository is shared between open projects, so an unfiltered list could answer a plain name with a same-named concept or language you cannot edit. Read-only libraries and stubs (owned by no project) remain candidates.
 
-Treat the suggestion list as a **candidate set**, not a ranked answer. For free-form lookup, use `mps_mcp_search_concepts` (see `search-concepts.md` for the matching algorithm).
+Treat the suggestion list as a **candidate set**, not a ranked answer. For free-form lookup, use `mps_mcp_search_concepts` (see `references/search-concepts.md` for the matching algorithm).
 
 ## Detail level and inlining
 

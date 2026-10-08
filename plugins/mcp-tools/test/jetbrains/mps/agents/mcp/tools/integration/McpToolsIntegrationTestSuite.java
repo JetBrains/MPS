@@ -9,8 +9,6 @@
  */
 package jetbrains.mps.agents.mcp.tools.integration;
 
-import jetbrains.mps.agents.mcp.tools.unit.*;
-
 import jetbrains.mps.testbench.junit.runners.PushEnvironmentRunnerBuilder;
 import jetbrains.mps.testbench.junit.suites.BaseMpsSuite;
 import jetbrains.mps.tool.environment.EnvironmentConfig;
@@ -18,6 +16,7 @@ import jetbrains.mps.tool.environment.IdeaEnvironment;
 import jetbrains.mps.util.PathManager;
 import org.junit.AfterClass;
 import org.junit.runner.RunWith;
+import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runners.Suite;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerBuilder;
@@ -30,47 +29,24 @@ import java.lang.reflect.Field;
  * Mirrors the skeleton of {@code jetbrains.mps.testsuites.PlatformTestSuite} but kept inside the
  * {@code mcp-tools} module so that registering new tests does not introduce a testbench →
  * mcp-tools dependency.
+ * <p>
+ * The suite is the union of the five {@code Mcp*TestSuite} sub-suites, one per tool family; a new
+ * test class is registered in exactly one of them ({@code SuiteRegistrationGuardTest} enforces it),
+ * never here. The environment created below reaches every leaf through
+ * {@code PushEnvironmentRunnerBuilder}, which passes itself down to the nested {@link Suite} runners.
+ * <p>
+ * Setting the {@code MCP_TESTS} environment variable runs a subset in the same environment: a
+ * comma-separated list of sub-suite simple names, test class simple names, or
+ * {@code ClassSimpleName#methodName} (see {@link McpTestSelection}). The selection is ignored on
+ * TeamCity ({@code TEAMCITY_VERSION} set), and a selection that matches nothing fails initialization.
  */
 @RunWith(McpToolsIntegrationTestSuite.class)
 @Suite.SuiteClasses({
-    JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest.class,
-    JetBrainsMPSJavaMcpToolsetIntegrationTest.class,
-    ConceptFunctionParameterBindingIntegrationTest.class,
-    JetBrainsMPSLanguageMcpToolsetIntegrationTest.class,
-    JetBrainsMPSModelMcpToolsetIntegrationTest.class,
-    JetBrainsMPSModuleMcpToolsetIntegrationTest.class,
-    JetBrainsMPSEditorMcpToolsetIntegrationTest.class,
-    ScaffoldEditorStalenessTest.class,
-    JetBrainsMPSNodeMcpToolsetIntegrationTest.class,
-    JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.class,
-    JetBrainsMPSIntentionsMcpToolsetIntegrationTest.class,
-    JetBrainsMPSRootNodeMcpToolsetIntegrationTest.class,
-    NodeFactoryOnBlueprintPathIntegrationTest.class,
-    AssignabilityHintIntegrationTest.class,
-    McpJsonOrTextWireShapeTest.class,
-    EditorCaretSelectionSerializerTest.class,
-    SearchRootNodeCrossProjectTest.class,
-    WriteToolCrossProjectTest.class,
-    ProjectResolutionCrossProjectTest.class,
-    JetBrainsMPSProjectMcpToolsetIntegrationTest.class,
-    JetBrainsMPSConsoleMcpToolsetIntegrationTest.class,
-    JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest.class,
-    AbstractOpsMakeTest.class,
-    AbstractOpsPropertyProblemsTest.class,
-    AbstractOpsAutoApplyQuickFixesTest.class,
-    AbstractOpsModalTimeoutTest.class,
-    IntentionsCandidateSelectionTest.class,
-    AssignableReferenceServiceTest.class,
-    JetBrainsMPSInitMcpToolsetTest.class,
-    JetBrainsMPSInitMcpToolsetIntegrationTest.class,
-    McpToolInputSchemasTest.class,
-    McpToolParameterOptionalityTest.class,
-    McpCallLogTest.class,
-    SkillScriptsPackagingTest.class,
-    SkillScriptsDriftTest.class,
-    SkillCatalogReplicationTest.class,
-    SkillReferenceLayoutTest.class,
-    MigrationXmlExampleTest.class,
+    McpLanguageToolsTestSuite.class,
+    McpJavaToolsTestSuite.class,
+    McpWorkspaceToolsTestSuite.class,
+    McpNodeToolsTestSuite.class,
+    McpContractAndSkillsTestSuite.class,
 })
 public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
   private static IdeaEnvironment ourEnvironment;
@@ -149,6 +125,34 @@ public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
 
   public McpToolsIntegrationTestSuite(Class<?> aClass, RunnerBuilder builder) throws InitializationError {
     super(aClass, new PushEnvironmentRunnerBuilder(ourEnvironment, builder));
+    applySelection(aClass);
+  }
+
+  private void applySelection(Class<?> aClass) throws InitializationError {
+    String selection = System.getenv("MCP_TESTS");
+    if (selection == null || selection.isBlank()) {
+      System.out.println("McpToolsIntegrationTestSuite: MCP_TESTS not set, running every sub-suite");
+      return;
+    }
+    if (System.getenv("TEAMCITY_VERSION") != null) {
+      System.out.println(
+          "McpToolsIntegrationTestSuite: MCP_TESTS='" + selection + "' ignored on TeamCity, running every sub-suite");
+      return;
+    }
+    String validSubSuites = String.join(", ", McpTestSelection.subSuiteNames(aClass));
+    McpTestSelection filter;
+    try {
+      filter = McpTestSelection.parse(selection, aClass);
+    } catch (IllegalArgumentException e) {
+      throw new InitializationError(e.getMessage());
+    }
+    System.out.println("McpToolsIntegrationTestSuite: MCP_TESTS selection applied, running only: " + filter.describe());
+    try {
+      filter(filter);
+    } catch (NoTestsRemainException e) {
+      throw new InitializationError(
+          "MCP_TESTS='" + selection + "' selects no test; valid sub-suites: " + validSubSuites);
+    }
   }
 
   @AfterClass

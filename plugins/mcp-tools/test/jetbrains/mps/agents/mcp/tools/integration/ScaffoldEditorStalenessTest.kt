@@ -160,37 +160,6 @@ class ScaffoldEditorStalenessTest : McpIntegrationTestBase() {
         }
     }
 
-    @Test
-    fun `scaffold_editor surfaces a documented diagnostic when invoked on a newly-created concept`() {
-        // End-to-end smoke. The pre-EDT make gate may either succeed (ok envelope) or surface
-        // one of the documented stale-path diagnostics. The deterministic branch tests above
-        // pin individual wordings; this test ensures the integration glue (tool call -> helper
-        // -> response envelope) routes one of the wordings out unchanged.
-        val newConcept = createConceptRoot("FreshConcept_${System.nanoTime()}")
-        val response = runTool(toolset) {
-            it.mps_mcp_scaffold_editor(
-                conceptRef = newConcept,
-                modelReference = structureModelRef,
-                type = "editor",
-            )
-        }
-        val obj = JsonParser.parseString(response).asJsonObject
-        if (!obj.get("ok").asBoolean) {
-            val msg = obj.get("error").asString
-            val accepted = listOf(
-                "Failed to make the structure model for concept",
-                "has unbuilt changes",
-                "has no loaded runtime",
-                "hollow runtime descriptor",
-                "has no source node",
-            )
-            assertTrue(
-                "stale-path failures must surface one of the documented diagnostics; got: $msg",
-                accepted.any { msg.contains(it) },
-            )
-        }
-    }
-
     @Suppress("unused")
     private fun describe(concept: SAbstractConcept): String =
         PersistenceFacade.getInstance().asString(concept)

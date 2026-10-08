@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2022 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,8 @@ import org.jetbrains.mps.openapi.util.ProgressMonitor;
         if (resolved != null) {
           myMpsProject.removeModule0(resolved, null);
         }
-        // removeModule0, above, doesn't fire ProjectModuleLoadingListener.moduleRemoved, tell tracker there's no longer module in the file
+        // removeModule0, above, fires ProjectModuleLoadingListener.moduleRemoved for generators owned by a removed language,
+        // but not for the module itself; tell tracker there's no longer module in the file
         myProjectModulesAndFiles.forget(file, mRef);
       });
       // FIXME shall I add new modules (delta.toLoad()) discovered from existing/tracked files? Previous version didn't care to do that, though that

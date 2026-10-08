@@ -121,7 +121,7 @@ Used inside `InferenceRule`/`NonTypesystemRule`/`InequationReplacementRule` bodi
 }
 ```
 
-Replace `ReportErrorStatement` with `WarningStatement` (slot `warningText` instead of `errorString`) or `InfoStatement` (slot `infoString`) as needed. A statement can additionally carry `helginsIntention` (quick-fix; see `quick-fixes.md`) and `messageTarget` (see `messages-and-helpers.md`) children.
+Replace `ReportErrorStatement` with `WarningStatement` (slot `warningText` instead of `errorString`) or `InfoStatement` (slot `infoString`) as needed. A statement can additionally carry `helginsIntention` (quick-fix; see `references/quick-fixes.md`) and `messageTarget` (see `references/messages-and-helpers.md`) children.
 
 ## (f) Anti-quotation `%(expr)%`
 

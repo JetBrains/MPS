@@ -4,6 +4,7 @@ package jetbrains.mps.editor.contextActionsTool.pluginSolution.plugin;
 
 import jetbrains.mps.plugins.tool.GeneratedTool;
 import javax.swing.Icon;
+import jetbrains.mps.icons.MPSIcons;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 import jetbrains.mps.project.MPSProject;
@@ -14,7 +15,7 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import javax.swing.JComponent;
 
 public class ContextActionsTool_Tool extends GeneratedTool {
-  private static final Icon ICON = null;
+  private static final Icon ICON = MPSIcons.ToolWindows.ContextActions;
   private ToolComponent myComponent;
   private ToolController myController;
   private boolean hasBeenRegistered;

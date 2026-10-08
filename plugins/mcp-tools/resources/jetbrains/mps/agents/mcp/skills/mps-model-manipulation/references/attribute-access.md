@@ -69,13 +69,13 @@ name for in-scope auto-resolution.
 Once you hold the attribute node, its added children/references/properties are plain smodel access.
 `RequirementTrace` adds `mentions : RequirementEntryReference[0..n]`, so the whole chain
 `node.@RequirementTrace.mentions` is a `DotExpression` whose operand is the read blueprint above and
-whose operation is an `SLinkListAccess` on the `mentions` link (see `dot-expression-basics.md` for
+whose operation is an `SLinkListAccess` on the `mentions` link (see `references/dot-expression-basics.md` for
 the link-access blueprints and the singular-vs-list cardinality rule).
 
 ## Attach / replace / remove — `node.@RequirementTrace = …`
 
 `.@` is assignable: wrap the read blueprint as the `lValue` of a BaseLanguage `AssignmentExpression`.
-Assign a `new node<RequirementTrace>()` (see `SNodeCreator` in `smodel-concepts-catalog.md`) to
+Assign a `new node<RequirementTrace>()` (see `SNodeCreator` in `references/smodel-concepts-catalog.md`) to
 attach or replace; assign `null` to remove.
 
 ```json
@@ -159,7 +159,7 @@ for generic traversal:
 - **Parser blind spot** — `.@` (and the qualifiers) cannot be produced by `mps_mcp_parse_java_and_insert`;
   always blueprint it.
 - **Operand typing** — like every feature access, the `operand` must be a typed `node<…>`; cast an
-  untyped operand with `SNodeTypeCastExpression` (see `dot-expression-basics.md`).
+  untyped operand with `SNodeTypeCastExpression` (see `references/dot-expression-basics.md`).
 - **`smodel` is enough** — `AttributeAccess` lives in `jetbrains.mps.lang.smodel`, present in every
   code-bearing model; no extra used-language import is needed for `.@` itself. The model must still
   see the attribute's own language to resolve `attributeConcept`.

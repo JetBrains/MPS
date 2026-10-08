@@ -1,6 +1,6 @@
 # Verified Dataflow Builder JSON Patterns
 
-All examples are taken from real builders in this project. JSON uses short concept names; the qualified names are `jetbrains.mps.lang.dataFlow.structure.<Name>` for dataflow concepts, `jetbrains.mps.baseLanguage.structure.<Name>` for BL, and `jetbrains.mps.lang.smodel.structure.<Name>` for smodel.
+All examples are taken from real builders in this project. JSON uses short concept names; the qualified names are `jetbrains.mps.lang.dataFlow.structure.<Name>` for dataflow concepts, `jetbrains.mps.baseLanguage.structure.<Name>` for BL, and `jetbrains.mps.lang.smodel.structure.<Name>` for smodel. A behavior method call is written fully qualified, `jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall`: smodel declares an obsolete concept of the same name.
 
 One file per section, each self-contained. Read only the files for your job, and when you need more than one, Read them all in one parallel batch.
 

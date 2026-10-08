@@ -4,6 +4,7 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
@@ -23,6 +24,7 @@ import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.project.validation.ModelValidator
 import jetbrains.mps.project.validation.ValidationUtil
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
@@ -34,6 +36,18 @@ import java.util.concurrent.TimeUnit
 /** See [JetBrainsMPSNodeMcpToolset.moduleCheckBudgetMs]. */
 private const val MODULE_CHECK_BUDGET_MS: Long = 20_000
 
+// lang.core markers whose subtrees the typesystem checkers (TypeSystemUtil.shouldApplyTypeSystemRules) and
+// the constraints, reference-scope and target-concept checkers (AbstractNodeCheckerInEditor.SKIP_CONSTRAINTS_CONDITION)
+// skip; the structure checker skips nothing.
+private val I_DONT_APPLY_TYPESYSTEM_RULES = MetaAdapterFactory.getInterfaceConcept(
+    0xceab519525ea4f22uL.toLong(), 0x9b92103b95ca8c0cuL.toLong(), 0x1ec383e5b4bdca56L,
+    "jetbrains.mps.lang.core.structure.IDontApplyTypesystemRules"
+)
+private val I_SKIP_CONSTRAINTS_CHECKING = MetaAdapterFactory.getInterfaceConcept(
+    0xceab519525ea4f22uL.toLong(), 0x9b92103b95ca8c0cuL.toLong(), 0x50ef06e32fec9043L,
+    "jetbrains.mps.lang.core.structure.ISkipConstraintsChecking"
+)
+
 enum class MPSQueryOperation {
     GET_PARENT,
     GET_ROOT,
@@ -41,6 +55,8 @@ enum class MPSQueryOperation {
     NODE_INDEX,
     SIBLINGS,
     GET_CHILD_ROLE,
+    GET_TYPE,
+    GET_EXPECTED_TYPE,
     FIND_USAGES,
     FIND_INSTANCES,
 }
@@ -83,6 +99,11 @@ private val FIND_USAGES_KEYS =
 
 private val NODE_INFO_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to inspect"))
 
+private val GET_TYPE_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to type"), "maxRootNodes")
+
+private val GET_EXPECTED_TYPE_KEYS =
+    ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose slot to ask about"), "maxRootNodes")
+
 private val COPY_NODE_KEYS = ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node to copy"))
 
 private val FIX_REFERENCES_KEYS =
@@ -113,6 +134,8 @@ private fun queryNodesParameterKeys(operation: MPSQueryOperation): ParameterKeys
     MPSQueryOperation.FIND_USAGES -> FIND_USAGES_KEYS
     MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
     MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE -> NODE_INFO_KEYS
+    MPSQueryOperation.GET_TYPE -> GET_TYPE_KEYS
+    MPSQueryOperation.GET_EXPECTED_TYPE -> GET_EXPECTED_TYPE_KEYS
 }
 
 /**
@@ -150,13 +173,27 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         string or nonempty string array, and every reference must resolve or the whole query returns INVALID_REQUEST. FIND_USAGES: find nodes
         whose references point at the given node — incoming references, not instances (`nodeReference`; optional `scope` as above,
         optional `rootsOnly`:true to match only root source nodes). GET_PARENT, GET_ROOT,
-        GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE take `nodeReference`. Returns `{"ok":true,"data":{...}}`
+        GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE, GET_EXPECTED_TYPE take `nodeReference`. GET_TYPE answers the type
+        the typesystem assigns to the node as `{concept, conceptReference, presentation, hasTypeVariables?, blueprint}`:
+        the one a check of the node's whole root decides, so constraints other statements put on it count. `details.scope`
+        is "root", or "node" with a warning when a one-node computation (the node's own slice) answered instead — for
+        commented-out code, a root of more than `maxRootNodes` nodes (default 10000), or a node the root check leaves
+        untyped. No reference to the type is offered (it is usually a computed copy), `hasTypeVariables`:true marks a type
+        that is not fully instantiated, and `data` is null when the node has no type or it could not be inferred. GET_EXPECTED_TYPE answers,
+        in the same shape, the type the node's context requires of it: the least common supertype of the upper (`:<=:`) or
+        else comparable bounds a check of the whole root puts on the node's slot, with `details.scope` and the same
+        `maxRootNodes` fallbacks as GET_TYPE; scope "node" is the parent's slice, which `has expected type` checks
+        (`maxRootNodes`:1 gives it). `data` is null when there is no bound (a root, a slot bounded only by `:==:` or `:>=:`).
+        The answer can depend on the node already in the slot, though not on what the node itself adds (a value that widens
+        a variable can be wider than the answer); for an empty slot, ask via the node you are about to replace. To compare or widen
+        types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE), or to see why a node has its type
+        (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
     """)
     suspend fun mps_mcp_query_nodes(
-        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE)") operation: String = "",
+        @McpDescription("Required. The operation to perform (FIND_INSTANCES, FIND_USAGES, GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE, NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE, GET_EXPECTED_TYPE)") operation: String = "",
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
@@ -200,7 +237,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
             when (operation) {
                 MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
-                MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE ->
+                MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
+                MPSQueryOperation.GET_TYPE, MPSQueryOperation.GET_EXPECTED_TYPE ->
                     opNodeInfoRead(mpsProject, operation, params, maxInlineBytes)
 
                 MPSQueryOperation.FIND_USAGES -> opFindUsages(mpsProject, params, maxInlineBytes)
@@ -278,7 +316,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     /**
      * Handles the read-only "node info" cases (GET_PARENT, GET_ROOT, GET_MODEL_FOR_NODE,
-     * NODE_INDEX, SIBLINGS, GET_CHILD_ROLE) — they all share the same boilerplate of
+     * NODE_INDEX, SIBLINGS, GET_CHILD_ROLE, GET_TYPE, GET_EXPECTED_TYPE) — they all share the same boilerplate of
      * resolving a node from the 'nodeReference' parameter under a read action and then dispatching
      * to a small per-case body.
      */
@@ -289,6 +327,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
         val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
+        // Read before the node is looked up, as EXPLAIN_TYPE does, so a bad value is rejected first.
+        val maxRootNodes = when (operation) {
+            MPSQueryOperation.GET_TYPE, MPSQueryOperation.GET_EXPECTED_TYPE -> params.maxRootNodesParameter()
+            else -> DEFAULT_MAX_ROOT_NODES
+        }
         return executeShortReadOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val sNodeRef = resolveNodeReferencePreferringProject(mpsProject, nodeReference)
@@ -309,6 +352,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 MPSQueryOperation.NODE_INDEX -> opNodeIndex(node)
                 MPSQueryOperation.SIBLINGS -> opSiblings(node, mpsProject, maxInlineBytes)
                 MPSQueryOperation.GET_CHILD_ROLE -> opGetChildRole(node, mpsProject)
+                MPSQueryOperation.GET_TYPE -> opGetType(node, maxRootNodes, mpsProject)
+                MPSQueryOperation.GET_EXPECTED_TYPE -> opGetExpectedType(node, maxRootNodes, mpsProject)
                 MPSQueryOperation.FIND_USAGES,
                 MPSQueryOperation.FIND_INSTANCES -> errJson("Unsupported operation: $operation")
             }
@@ -334,6 +379,24 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     private fun opGetChildRole(node: SNode, mpsProject: MPSProject): String {
         val link = node.containmentLink ?: return errJson("Node is a root node or not in a containment role")
         return okJson(containmentLinkInfoJsonObject(link, mpsProject.repository, currentProject = mpsProject))
+    }
+
+    /**
+     * The type the typesystem assigns to [node] as [rootScopedTypeOf] finds it, printed by [typeJsonObject];
+     * `details.scope` says whether the root check or the one-node computation answered.
+     */
+    private fun opGetType(node: SNode, maxRootNodes: Int, mpsProject: MPSProject): String {
+        val type = rootScopedTypeOf(node, maxRootNodes) { typeJsonObject(it, mpsProject) }
+        return okJson(type.value ?: JsonNull.INSTANCE, warnings = listOfNotNull(type.warning), details = mapOf("scope" to type.scope))
+    }
+
+    /**
+     * The type [node]'s context requires of it as [rootScopedExpectedTypeOf] finds it, printed by
+     * [typeJsonObject]; `details.scope` says whether the root check or the parent's slice answered.
+     */
+    private fun opGetExpectedType(node: SNode, maxRootNodes: Int, mpsProject: MPSProject): String {
+        val type = rootScopedExpectedTypeOf(node, maxRootNodes) { typeJsonObject(it, mpsProject) }
+        return okJson(type.value ?: JsonNull.INSTANCE, warnings = listOfNotNull(type.warning), details = mapOf("scope" to type.scope))
     }
 
     private suspend fun opFindUsages(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
@@ -656,8 +719,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         result["success"] = makeResult.success
         result["message"] = makeResult.message
         // Distinguishes "build succeeded but language runtime is still stale" from full success
-        // so chained calls (scaffold_editor, get_concept_details) can decide to call
-        // `mps_mcp_reload_all` or rebuild instead of hitting a hollow descriptor downstream.
+        // so chained calls (scaffold_editor, get_concept_details) can decide to rebuild
+        // (`rebuild=true`) instead of hitting a hollow descriptor downstream.
         result["runtimeReady"] = makeResult.runtimeReady
         if (makeResult.details.isNotEmpty()) {
             result["details"] = makeResult.details
@@ -726,10 +789,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Validates an MPS node (and its descendants), an MPS model, or an MPS module. Accepts an SNodeReference, an SModelReference or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts), or a module reference (`<uuid>(name)`) or module name. Pass any of these in `nodeReference` — there is no `modelReference` or `moduleReference` parameter. Returns `data:"no problems found"` when clean, otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
+        Validates an MPS node (and its descendants), an MPS model, or an MPS module. Accepts an SNodeReference, an SModelReference or a qualified model name (the same form `mps_mcp_get_project_structure` `startingPoint` accepts), or a module reference (`<uuid>(name)`) or module name. Pass any of these in `nodeReference` — there is no `modelReference` or `moduleReference` parameter. Returns `data:"no problems found"` when all relevant checks ran and no problems were found; if unchecked subtrees exist, `data` instead says `no problems found in checked nodes (N subtree(s) unchecked: one or more typesystem, constraints, scope or target-concept checks were skipped)`. Otherwise the problem tree: `data` is inline when the serialized report is <= `maxInlineBytes` (default 20000), and a temp-file path above that.
         A **model reference is exhaustive and is the preferred scope**: it validates the model itself (imports, used languages, devkits) AND runs the full checker stack on every root, so there is no need to follow up with a per-root check. Both the clean and the problem answer carry `details.scope:"model"` and `details.rootsChecked:<N>` stating the coverage; the problem report is the model object plus a `roots` array, one entry per root with problems (`root`, `name`, `concept`, `errors`, `warnings`, and `nodes`/`tree` per `onlyNodesWithProblems`). Pass `perRoot=true` to get `data` as one line per root instead — `[{root, name, concept, errors, warnings}]` for every root, clean ones included — which replaces N single-root calls with one.
         A **module reference or module name** checks the module itself and every model it owns (a language's generators included, stub and `@descriptor` models excluded) in one call, with `details.scope:"module"`, `modulesChecked`, `modelsChecked` and `rootsChecked` — do not follow a clean module with per-model checks. Module-level warnings are listed in `details.moduleProblems` but do not make the module unclean. Problems come back as the module object with a `models` array of model reports; `perRoot=true` gives `[{model, name, rootsChecked, errors, warnings}]` per model. A sweep that would run too long stops early with `details.truncated` and `details.modelsNotChecked`.
-        `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
+        `onlyNodesWithProblems=true` (default) yields a flat list of nodes with problems; `onlyNodesWithProblems=false` returns the full subtree with `problems` arrays attached to every level. Each problem may carry a `quickFixes` array (`id`, `description`, `autoApplicable`); apply one with `mps_mcp_apply_intention(nodeReference=<the node's reference>, intentionId=<id>)`. A typesystem, constraints or scope problem may also carry `rules: [{rule, ruleReference, statement}]` — the rule root that reported it (and the reporting node inside it) first, then the rules a type inequality was nested in. Subtrees the typesystem checkers skip (marked `IDontApplyTypesystemRules`) or the constraints, scope and target-concept checkers skip (`ISkipConstraintsChecking`) — e.g. commented-out code — are counted as `uncheckedSubtrees` in `details` and in each root or model summary; a clean verdict then says so in `warnings`. Set `autoApplyQuickFixes=true` to run every problem carrying exactly one auto-applicable fix within the given node's subtree (node/root branch only) before returning the final report; applied fixes' descriptions appear in `details.appliedQuickFixes`; fixes that threw during execution appear in `details.failedQuickFixes`. Note: applied fixes may write outside the target model; only the target model is saved automatically. Besides the standard structure/constraints/typesystem checkers, this also decodes the encoded feature ids on attribute nodes — `PropertyAttribute.propertyId` (used by `PropertyMacro`) and `LinkAttribute.linkId` (used by `ReferenceMacro`) — and flags a malformed, blank, or non-resolving id here instead of letting it surface only as an opaque generation-time error. See `mps-mcp-workflow/references/analysis-tools.md` for the output schema.
     """
     )
     suspend fun mps_mcp_check_root_node_problems(
@@ -860,9 +923,12 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             // and nodeWithProblemsListToJson share the exact same definition of
             // "node has a problem" — preventing drift where one says green and the
             // other still finds something to print.
+            val unchecked = uncheckedSubtrees(reportNode)
+            if (unchecked > 0) details["uncheckedSubtrees"] = unchecked
             return if (!hasAnyProblems(reportNode, problems)) {
-                if (details.isEmpty() && nearMissWarnings.isEmpty()) okJson("\"no problems found\"")
-                else okJson(JsonPrimitive("no problems found"), warnings = nearMissWarnings, details = details)
+                val warnings = nearMissWarnings + listOfNotNull(uncheckedSubtreesWarning(unchecked))
+                if (details.isEmpty() && warnings.isEmpty()) okJson("\"no problems found\"")
+                else okJson(JsonPrimitive(cleanVerdict(unchecked)), warnings = warnings, details = details)
             } else {
                 val json = if (onlyNodesWithProblems) {
                     nodeWithProblemsListToJson(reportNode, problems, mpsProject)
@@ -897,11 +963,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             warnings.addAll(nearMissWarnings)
             val check = checkModel(mpsProject, model)
             val details = mutableMapOf<String, Any?>("scope" to "model", "rootsChecked" to check.roots.size)
+            val unchecked = check.uncheckedSubtrees.sum()
+            if (unchecked > 0) details["uncheckedSubtrees"] = unchecked
 
             return if (perRoot) {
                 val perRootArray = JsonArray()
                 for ((index, root) in check.roots.withIndex()) {
-                    perRootArray.add(rootProblemSummary(root, check.rootProblems[index]))
+                    perRootArray.add(rootProblemSummary(root, check.rootProblems[index], check.uncheckedSubtrees[index]))
                 }
                 if (check.modelProblems.isNotEmpty()) {
                     details["modelProblems"] = check.modelProblems.size
@@ -912,7 +980,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 }
                 finalizeResult(perRootArray.toString(), maxInlineBytes, details, warnings)
             } else if (isClean(check)) {
-                okJson(JsonPrimitive("no problems found"), warnings = warnings, details = details)
+                uncheckedSubtreesWarning(unchecked)?.let { warnings.add(it) }
+                okJson(JsonPrimitive(cleanVerdict(unchecked)), warnings = warnings, details = details)
             } else {
                 finalizeResult(modelReport(check, onlyNodesWithProblems, mpsProject).toString(), maxInlineBytes, details, warnings)
             }
@@ -940,6 +1009,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         val modelProblems: List<ModelReportItem>,
         val roots: List<SNode>,
         val rootProblems: List<Map<SNode, List<NodeReportItem>>>,
+        val uncheckedSubtrees: List<Int>,
     )
 
     private fun checkModel(mpsProject: MPSProject, model: SModel): ModelCheck {
@@ -952,7 +1022,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         // exhaustive, which is what `details.rootsChecked` states and what spares agents the
         // per-root re-check they were doing out of distrust (study hotspot 2, defect D7).
         val roots = model.rootNodes.toList()
-        return ModelCheck(model, modelProblems, roots, roots.map { runRootCheckers(mpsProject, it, mpsProject.repository) })
+        return ModelCheck(
+            model, modelProblems, roots,
+            roots.map { runRootCheckers(mpsProject, it, mpsProject.repository) },
+            roots.map { uncheckedSubtrees(it) },
+        )
     }
 
     private fun isClean(check: ModelCheck): Boolean =
@@ -964,7 +1038,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         for ((index, root) in check.roots.withIndex()) {
             val problems = check.rootProblems[index]
             if (!hasAnyProblems(root, problems)) continue
-            problemRoots.add(rootProblemSummary(root, problems).apply {
+            problemRoots.add(rootProblemSummary(root, problems, check.uncheckedSubtrees[index]).apply {
                 if (onlyNodesWithProblems) {
                     add("nodes", nodeWithProblemsListJsonArray(root, problems, mpsProject))
                 } else {
@@ -1041,6 +1115,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             "modelsChecked" to checks.size,
             "rootsChecked" to checks.sumOf { it.roots.size },
         )
+        val unchecked = checks.sumOf { it.uncheckedSubtrees.sum() }
+        if (unchecked > 0) details["uncheckedSubtrees"] = unchecked
         if (notChecked.isNotEmpty()) {
             details["truncated"] = true
             details["modelsNotChecked"] = notChecked.map { PersistenceFacade.getInstance().asString(it.reference) }
@@ -1066,6 +1142,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     addProperty("rootsChecked", check.roots.size)
                     addProperty("errors", errors)
                     addProperty("warnings", warningCount)
+                    check.uncheckedSubtrees.sum().takeIf { it > 0 }?.let { addProperty("uncheckedSubtrees", it) }
                 })
             }
             if (!moduleProblems.isEmpty) details["moduleProblems"] = moduleProblems
@@ -1078,7 +1155,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         if (moduleErrors == 0 && checks.all { isClean(it) }) {
             if (!moduleProblems.isEmpty) details["moduleProblems"] = moduleProblems
             val verdict = if (notChecked.isEmpty()) "no problems found" else "no problems found in ${checks.size} of ${models.size} models"
-            return okJson(JsonPrimitive(verdict), warnings = warnings, details = details)
+            uncheckedSubtreesWarning(unchecked)?.let { warnings.add(it) }
+            return okJson(JsonPrimitive(cleanVerdict(unchecked, verdict)), warnings = warnings, details = details)
         }
         val report = jsonObject {
             addProperty("name", module.moduleName)
@@ -1116,8 +1194,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         }
     }
 
-    /** `{root, name, concept, errors, warnings}` for one root of a model-scope problem check. */
-    private fun rootProblemSummary(root: SNode, problems: Map<SNode, List<NodeReportItem>>): JsonObject {
+    /** `{root, name, concept, errors, warnings, uncheckedSubtrees?}` for one root of a model-scope problem check. */
+    private fun rootProblemSummary(root: SNode, problems: Map<SNode, List<NodeReportItem>>, uncheckedSubtrees: Int): JsonObject {
         val counts = problemCounts(root, problems)
         return jsonObject {
             addProperty("root", PersistenceFacade.getInstance().asString(root.reference))
@@ -1125,7 +1203,41 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             addProperty("concept", root.concept.name)
             addProperty("errors", counts.errors)
             addProperty("warnings", counts.warnings)
+            if (uncheckedSubtrees > 0) addProperty("uncheckedSubtrees", uncheckedSubtrees)
         }
+    }
+
+    /**
+     * The subtrees of [node] the typesystem, constraints, scope and target-concept checkers skip: the outermost nodes whose concept
+     * is marked `IDontApplyTypesystemRules` or `ISkipConstraintsChecking` (a `BaseCommentAttribute`, a
+     * `lang.text` `NodeWrapperElement`, …), attribute children included. A comment nested in a
+     * commented-out subtree is part of that one subtree. When [node] itself lies in such a subtree, the
+     * whole of it is unchecked: one.
+     */
+    private fun uncheckedSubtrees(node: SNode): Int {
+        if (generateSequence(node) { it.parent }.any { isUncheckedMarker(it) }) return 1
+        var count = 0
+        fun visit(n: SNode) {
+            for (child in n.children) {
+                if (isUncheckedMarker(child)) count++ else visit(child)
+            }
+        }
+        visit(node)
+        return count
+    }
+
+    private fun isUncheckedMarker(node: SNode): Boolean =
+        node.concept.isSubConceptOf(I_DONT_APPLY_TYPESYSTEM_RULES) || node.concept.isSubConceptOf(I_SKIP_CONSTRAINTS_CHECKING)
+
+    private fun uncheckedSubtreesWarning(count: Int): String? = if (count == 0) null else
+        "$count subtree(s) marked IDontApplyTypesystemRules/ISkipConstraintsChecking (e.g. commented out) " +
+            "were not type- or constraint-checked"
+
+    private fun cleanVerdict(unchecked: Int, checkedVerdict: String = "no problems found"): String {
+        if (unchecked == 0) return checkedVerdict
+        val note = "$unchecked subtree(s) unchecked: one or more typesystem, constraints, scope or target-concept checks were skipped"
+        return if (checkedVerdict == "no problems found") "$checkedVerdict in checked nodes ($note)"
+        else "$checkedVerdict ($note)"
     }
 
     @McpTool

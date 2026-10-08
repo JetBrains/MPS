@@ -51,6 +51,11 @@ object RequiredParameterNearMisses {
         "name" to listOf("nodeName", "rootName"),
         "names" to listOf("name", "searchTexts", "rootNames"),
         "nodeReference" to listOf("nodeRef", "node", "reference"),
+        // modelReference is a real parameter of this tool, so it must not appear here.
+        "mps_mcp_create_run_configuration.nodeReference" to listOf(
+            "nodeRef", "node", "reference", "nodeReferences",
+            "model", "modelRef", "models", "modelReferences", "testCases",
+        ),
         "operation" to listOf("op", "action"),
         "parameters" to listOf("params", "arguments", "args"),
         "targetModels" to listOf("targetModel", "models", "dependencies"),

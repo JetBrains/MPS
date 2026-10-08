@@ -28,5 +28,5 @@ All in `operation` role of a `DotExpression`.
 | `OfConceptOperation` | `4693937538533521280` | `.ofConcept<C>` — sequence filter by concept |
 | `Node_IsNotNullOperation` | `1172008320231` | `.isNotNull` |
 | `Node_IsNullOperation` | `1171999116870` | `.isNull` |
-| `Node_ConceptMethodCall` | `1179409122411` | `.behaviorMethod(args)` |
+| `Node_ConceptMethodCall` | `1179409122411` | **OBSOLETE** — the check reports "ConceptMethodCall moved from lang.smodel to lang.behavior". Write `.behaviorMethod(args)` as `jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall` (`3235159848334022093`; the model uses `jetbrains.mps.lang.behavior`) |
 | `Node_GetConceptOperation` | `1172323065820` | `.concept` (alias `conceptNode`) — **DEPRECATED since MPS 2018.3**; use `node.concept` via typesystem or `concept/C/` literal |

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2023 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import jetbrains.mps.extapi.persistence.FileBasedModelRoot;
 import jetbrains.mps.module.ModuleDeleteHelper;
 import jetbrains.mps.project.AbstractModule;
 import jetbrains.mps.project.DevKit;
+import jetbrains.mps.project.MPSExtentions;
 import jetbrains.mps.project.ProjectBase;
+import jetbrains.mps.project.ProjectModuleLoadingListener;
 import jetbrains.mps.project.Solution;
 import jetbrains.mps.project.modules.DevkitProducer;
 import jetbrains.mps.project.modules.LanguageAndSolutionsProducer;
@@ -30,6 +32,7 @@ import jetbrains.mps.refactoring.Renamer;
 import jetbrains.mps.smodel.Generator;
 import jetbrains.mps.smodel.Language;
 import jetbrains.mps.smodel.SModelStereotype;
+import jetbrains.mps.testbench.util.CachingAppender;
 import jetbrains.mps.util.FileUtil;
 import jetbrains.mps.util.Reference;
 import jetbrains.mps.vfs.IFile;
@@ -45,6 +48,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -350,6 +357,207 @@ public abstract class ModuleIDETests extends ModuleInProjectTest {
       Assert.assertFalse(moduleSourceDir.exists());
       Assert.assertFalse(myProject.getProjectModules().contains(lang));
     });
+  }
+
+  @Test
+  public void deleteLanguageWithGeneratorAndFiles() {
+    String moduleName = getNewModuleName();
+    Reference<Language> langRef = new Reference<>();
+    Reference<Generator> generatorRef = new Reference<>();
+    invokeInCommand(() -> {
+      Language lang = new LanguageProducer(myProject).create(moduleName, getNewDirInProject(moduleName));
+      langRef.set(lang);
+      generatorRef.set(lang.getOwnedGenerators().iterator().next());
+    });
+    CachingAppender appender = new CachingAppender(CachingAppender.Level.WARN);
+    appender.attach();
+    try {
+      invokeInCommand(() -> {
+        @NotNull Language lang = langRef.get();
+        @NotNull Generator generator = generatorRef.get();
+        Assert.assertTrue(myProject.isProjectModule(generator));
+        deleteModule(lang, true);
+        CachingFile moduleSourceDir = (CachingFile) lang.getModuleSourceDir();
+        Assert.assertNotNull(moduleSourceDir);
+        moduleSourceDir.refresh(new DefaultCachingContext(true, true));
+        Assert.assertFalse(moduleSourceDir.exists());
+        Assert.assertFalse("The language stayed in the project", myProject.isProjectModule(lang));
+        Assert.assertFalse("The generator stayed in the project", myProject.isProjectModule(generator));
+        Assert.assertEquals(Collections.emptyList(), myProject.getProjectModules());
+      });
+    } finally {
+      appender.detach();
+    }
+    String log = appender.getText();
+    for (String staleTracking : new String[]{"have not been unregistered for the path", "is not found in the project repository",
+                                             "has not been registered in the project"}) {
+      Assert.assertFalse(log, log.contains(staleTracking));
+    }
+  }
+
+  @Test
+  public void deleteGeneratorKeepsLanguageInProject() {
+    deleteOwnedGenerator(false);
+  }
+
+  @Test
+  public void deleteGeneratorWithFilesKeepsLanguageFiles() {
+    deleteOwnedGenerator(true);
+  }
+
+  /**
+   * A generator created by LanguageProducer has a module loader entry of its own for the language descriptor file. Removing it from the
+   * project used to drop that file from the project descriptor, so the surviving language disappeared from modules.xml on the next save.
+   */
+  private void deleteOwnedGenerator(boolean deleteFiles) {
+    String moduleName = getNewModuleName();
+    Reference<Language> langRef = new Reference<>();
+    Reference<Generator> generatorRef = new Reference<>();
+    Reference<String> generatorName = new Reference<>();
+    Reference<File> langDir = new Reference<>();
+    invokeInCommand(() -> {
+      Language lang = new LanguageProducer(myProject).create(moduleName, getNewDirInProject(moduleName));
+      langRef.set(lang);
+      langDir.set(new File(lang.getModuleSourceDir().getPath()));
+      Generator generator = lang.getOwnedGenerators().iterator().next();
+      generatorRef.set(generator);
+      generatorName.set(generator.getModuleName());
+    });
+    String descriptorEntry = "/" + moduleName + MPSExtentions.DOT_LANGUAGE + "\"";
+    Assert.assertTrue("test precondition: modules.xml lists the language", savedModulesXml().contains(descriptorEntry));
+    List<String> removedEvents = recordModuleRemovedEvents(() -> invokeInCommand(() -> deleteModule(generatorRef.get(), deleteFiles)));
+
+    Assert.assertTrue("The language left modules.xml", savedModulesXml().contains(descriptorEntry));
+    Assert.assertEquals(Collections.singletonList(generatorName.get() + " @ " + moduleName + MPSExtentions.DOT_LANGUAGE), removedEvents);
+    invokeInCommand(() -> {
+      Language lang = langRef.get();
+      Generator generator = generatorRef.get();
+      Assert.assertNull("The generator stayed in the repo", myProject.getRepository().getModule(generator.getModuleId()));
+      Assert.assertSame("The language left the repo", lang, myProject.getRepository().getModule(lang.getModuleId()));
+      Assert.assertTrue("The language stayed declaring the generator", lang.getModuleDescriptor().getGenerators().stream()
+                                                                           .noneMatch(gd -> gd.getModuleReference().equals(generator.getModuleReference())));
+    });
+    Assert.assertTrue(new File(langDir.get(), moduleName + MPSExtentions.DOT_LANGUAGE).isFile());
+    Assert.assertTrue(new File(langDir.get(), Language.LANGUAGE_MODELS).isDirectory());
+    Assert.assertEquals("generator/ is " + (deleteFiles ? "pruned" : "kept"), !deleteFiles, new File(langDir.get(), "generator").exists());
+  }
+
+  @Test
+  public void removeLanguageReportsOwnedGeneratorRemoval() {
+    String moduleName = getNewModuleName();
+    Reference<Language> langRef = new Reference<>();
+    Reference<String> generatorName = new Reference<>();
+    invokeInCommand(() -> {
+      Language lang = new LanguageProducer(myProject).create(moduleName, getNewDirInProject(moduleName));
+      langRef.set(lang);
+      generatorName.set(lang.getOwnedGenerators().iterator().next().getModuleName());
+    });
+    String descriptorName = moduleName + MPSExtentions.DOT_LANGUAGE;
+    Assert.assertTrue("test precondition: modules.xml lists the language", savedModulesXml().contains("/" + descriptorName + "\""));
+    // not through ModuleDeleteHelper, which removes owned generators ahead of their language
+    List<String> removedEvents = recordModuleRemovedEvents(() -> invokeInCommand(() -> myProject.removeModule(langRef.get())));
+    Assert.assertTrue(removedEvents.toString(), removedEvents.contains(generatorName.get() + " @ " + descriptorName));
+    Assert.assertTrue(removedEvents.toString(), removedEvents.contains(moduleName + " @ " + descriptorName));
+    Assert.assertFalse("The language stayed in modules.xml", savedModulesXml().contains("/" + descriptorName + "\""));
+  }
+
+  private List<String> recordModuleRemovedEvents(Runnable action) {
+    List<String> removedEvents = new ArrayList<>();
+    ProjectModuleLoadingListener listener = new ProjectModuleLoadingListener() {
+      @Override
+      public void moduleRemoved(SModule module, IFile descriptorFile) {
+        removedEvents.add(module.getModuleName() + " @ " + descriptorFile.getName());
+      }
+    };
+    myProject.addListener(listener);
+    try {
+      action.run();
+    } finally {
+      myProject.removeListener(listener);
+    }
+    return removedEvents;
+  }
+
+  @Test
+  public void deleteGeneratorWithOutputInLanguageFolderKeepsLanguage() {
+    String moduleName = getNewModuleName();
+    Reference<Generator> generatorRef = new Reference<>();
+    Reference<File> langDir = new Reference<>();
+    invokeInCommand(() -> {
+      Language lang = new LanguageProducer(myProject).create(moduleName, getNewDirInProject(moduleName));
+      langDir.set(new File(lang.getModuleSourceDir().getPath()));
+      Generator generator = lang.getOwnedGenerators().iterator().next();
+      generator.setOutputPath(lang.getModuleSourceDir());
+      generatorRef.set(generator);
+    });
+    deleteKeepingSharedLocation(generatorRef.get());
+    Assert.assertTrue(new File(langDir.get(), moduleName + MPSExtentions.DOT_LANGUAGE).isFile());
+    Assert.assertTrue(new File(langDir.get(), Language.LANGUAGE_MODELS).isDirectory());
+  }
+
+  @Test
+  public void deleteGeneratorWithOutputInLanguageSourceGenKeepsIt() {
+    String moduleName = getNewModuleName();
+    Reference<Generator> generatorRef = new Reference<>();
+    Reference<File> marker = new Reference<>();
+    invokeInCommand(() -> {
+      Language lang = new LanguageProducer(myProject).create(moduleName, getNewDirInProject(moduleName));
+      IFile languageOutput = lang.getOutputPath();
+      Assert.assertNotNull(languageOutput);
+      marker.set(new File(createMarkerFile(languageOutput).getPath()));
+      Generator generator = lang.getOwnedGenerators().iterator().next();
+      generator.setOutputPath(languageOutput);
+      generatorRef.set(generator);
+    });
+    Assert.assertTrue("test precondition: " + marker.get(), marker.get().isFile());
+    deleteKeepingSharedLocation(generatorRef.get());
+    Assert.assertTrue("The language output root was deleted", marker.get().isFile());
+  }
+
+  @Test
+  public void deleteLanguageWithGeneratorOutputInItsFolderKeepsForeignFiles() {
+    String moduleName = getNewModuleName();
+    Reference<Language> langRef = new Reference<>();
+    Reference<File> marker = new Reference<>();
+    invokeInCommand(() -> {
+      Language lang = new LanguageProducer(myProject).create(moduleName, getNewDirInProject(moduleName));
+      langRef.set(lang);
+      marker.set(new File(createMarkerFile(lang.getModuleSourceDir()).getPath()));
+      lang.getOwnedGenerators().iterator().next().setOutputPath(lang.getModuleSourceDir());
+    });
+    Assert.assertTrue("test precondition: " + marker.get(), marker.get().isFile());
+    deleteKeepingSharedLocation(langRef.get());
+    Assert.assertTrue("A file that is not module content was deleted", marker.get().isFile());
+    Assert.assertFalse(new File(marker.get().getParentFile(), moduleName + MPSExtentions.DOT_LANGUAGE).exists());
+  }
+
+  private void deleteKeepingSharedLocation(AbstractModule module) {
+    CachingAppender appender = new CachingAppender(CachingAppender.Level.WARN);
+    appender.attach();
+    try {
+      invokeInCommand(() -> deleteModule(module, true));
+    } finally {
+      appender.detach();
+    }
+    String log = appender.getText();
+    Assert.assertTrue(log, log.contains("is shared with its language and is not deleted"));
+  }
+
+  // needs write access
+  private static IFile createMarkerFile(IFile folder) {
+    folder.mkdirs();
+    IFile marker = folder.findChild("marker.txt");
+    Assert.assertTrue(marker.createNewFile());
+    return marker;
+  }
+
+  private String savedModulesXml() {
+    saveProjectInTest();
+    try {
+      return Files.readString(new File(myProject.getProjectFile(), ".mps/modules.xml").toPath());
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 
   @Test

@@ -3,7 +3,7 @@
 The `.@` operator reads/sets attributes (annotations) attached to a node's universal `smodelAttribute`
 slot. `AttributeAccess` goes in the `operation` role of a `DotExpression`; its mandatory `qualifier`
 child names the attribute. It implements `ILinkAccess`, so it is an assignable l-value (read, or set
-via `AssignmentExpression`). Full blueprints and the read/set/remove patterns are in `attribute-access.md`.
+via `AssignmentExpression`). Full blueprints and the read/set/remove patterns are in `references/attribute-access.md`.
 
 | Concept | ID | MPS notation |
 |---|---|---|

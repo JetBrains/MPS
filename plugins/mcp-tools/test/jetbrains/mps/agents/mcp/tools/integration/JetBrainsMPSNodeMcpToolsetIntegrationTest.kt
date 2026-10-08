@@ -1974,7 +1974,7 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val queries = listOf(
             MPSQueryOperation.GET_PARENT, MPSQueryOperation.GET_ROOT, MPSQueryOperation.GET_MODEL_FOR_NODE,
             MPSQueryOperation.NODE_INDEX, MPSQueryOperation.SIBLINGS, MPSQueryOperation.GET_CHILD_ROLE,
-            MPSQueryOperation.FIND_USAGES,
+            MPSQueryOperation.GET_TYPE, MPSQueryOperation.GET_EXPECTED_TYPE, MPSQueryOperation.FIND_USAGES,
         ).associateWith { listOf("nodeReference") to """{"nodeReference":"$DUMMY_NODE_REF"}""" } +
             (MPSQueryOperation.FIND_INSTANCES to (listOf("one of conceptRef/conceptRefs") to """{"conceptRef":"$NO_SUCH_CONCEPT"}"""))
         assertEquals(MPSQueryOperation.entries.toSet(), queries.keys)

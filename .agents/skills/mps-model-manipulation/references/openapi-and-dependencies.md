@@ -18,7 +18,7 @@ When hand-written Java/Kotlin needs to talk to MPS models from outside a rule bo
 ### Threading rules
 
 - Every read from an `SNode`/`SModel`/`SRepository` requires either the read or write lock.
-- Every mutation requires the write lock. The JVM API exposes `ModelAccess.runReadAction` and `ModelAccess.executeCommand` for locking. Smodel-language code expresses the same intent with `read action { … }` and `command { … }` (see `concurrent-access.md`).
+- Every mutation requires the write lock. The JVM API exposes `ModelAccess.runReadAction` and `ModelAccess.executeCommand` for locking. Smodel-language code expresses the same intent with `read action { … }` and `command { … }` (see `references/concurrent-access.md`).
 - EDT does not hold any lock by default. Use `runWriteInEDT` or wrap a `command` in `execute command in EDT { … }` if the mutation must happen on the UI thread.
 - Locks are **re-entrant** but not interchangeable: a read lock cannot be upgraded to a write lock inside the same frame. Restructure the code if that pattern appears.
 - Behavior methods and rule bodies already run under the right lock — do not wrap their contents in another `command` / `read action`.

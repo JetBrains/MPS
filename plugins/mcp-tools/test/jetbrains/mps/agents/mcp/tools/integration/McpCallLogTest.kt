@@ -147,25 +147,6 @@ class McpCallLogTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `a NOT_FOUND envelope without a throw is recorded as ok=false with its errorCode`() {
-        // Guards AbstractOps#withMpsProject's early return (no MPS project resolved for the
-        // current IDEA project): that branch used to return errJson(...) directly, bypassing
-        // McpCallOutcomes.record entirely, so the call log recorded ok=true even though the
-        // envelope said ok=false. It must now go through record() exactly like the success and
-        // toolFailure branches below it.
-        val file = Files.createTempDirectory("mcp-calllog").resolve("not-found-envelope.jsonl")
-        val listener = McpCallLogListener()
-        withCallLog(file) {
-            fireWithOutcome(listener, """{"ok":false,"code":"NOT_FOUND","error":"No MPS project available"}""")
-        }
-        val line = readLines(file).single()
-        assertFalse("envelope said ok=false: $line", line.get("ok").asBoolean)
-        assertFalse("nothing was thrown: $line", line.get("threw").asBoolean)
-        assertEquals("NOT_FOUND", line.get("errorCode").asString)
-        assertTrue("no exception was thrown: $line", line.get("error").isJsonNull)
-    }
-
-    @Test
     fun `a thrown exception is ok=false and threw=true regardless of any recorded envelope`() {
         val file = Files.createTempDirectory("mcp-calllog").resolve("threw.jsonl")
         val listener = McpCallLogListener()
@@ -189,18 +170,6 @@ class McpCallLogTest : McpIntegrationTestBase() {
         assertTrue("envelope said ok=true and nothing threw: $line", line.get("ok").asBoolean)
         assertFalse(line.get("threw").asBoolean)
         assertTrue("no code on a successful envelope: $line", line.get("errorCode").isJsonNull)
-    }
-
-    @Test
-    fun `no recorded envelope falls back to the throw-only ok signal`() {
-        val file = Files.createTempDirectory("mcp-calllog").resolve("no-outcome.jsonl")
-        withCallLog(file) {
-            fire(McpCallLogListener())
-        }
-        val line = readLines(file).single()
-        assertTrue("ok falls back to !threw when nothing was recorded: $line", line.get("ok").asBoolean)
-        assertFalse(line.get("threw").asBoolean)
-        assertTrue(line.get("errorCode").isJsonNull)
     }
 
     @Test

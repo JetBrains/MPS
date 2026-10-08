@@ -1,6 +1,6 @@
 ---
 name: mps-mcp-workflow
-description: Complete JetBrains MPS workflow guide for DSL projects — models, languages, generators, node JSON blueprints, validation, MPS MCP tool usage, and the index of companion skills. Use whenever working in an MPS project, when AGENTS.md says to load the MPS workflow skill, or when you need to pick the right MPS aspect-specific skill.
+description: Complete JetBrains MPS workflow guide for DSL projects — models, languages, generators, node JSON blueprints, type queries, validation, MPS MCP tool usage, and the index of companion skills. Use whenever working in an MPS project, when AGENTS.md says to load the MPS workflow skill, or when you need to pick the right MPS aspect-specific skill.
 type: reference
 ---
 
@@ -23,9 +23,10 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 - **Pass `projectPath` on every `mps_mcp_*` call, starting with the first one.** The platform routes every call by resolving `projectPath` to an open project, so a call without it is rejected *before dispatch* (`"Unable to determine the target project…"`) and costs a turn. Pass the open MPS project's **base directory** — a path at or inside it, never an ancestor such as the repository root. If you are not yet aware of that path, pass the session's current working directory (the one you already have — do not spend a turn discovering it); if that is rejected, take the path from the rejection message, which lists the open projects (`Currently open projects: {...}`). `mps_mcp_list_open_projects` reports the same value as `mpsProjectBaseDirectory` when it can run. Reuse that one path for every later call in the session.
 - **Empty `Currently open projects: {"projects":[]}` is the welcome screen, not a bad path.** Retrying `mps_mcp_*` cannot succeed until some project is open. Load the `mps-project-management` companion skill from the same origin and open the project via CLI.
 - **Always prefer MPS MCP tools over hand-editing `.mps` / `.mpl` XML.** Hand-edits silently corrupt model files.
+- **Before editing a language aspect, load its aspect skill.** Changing typesystem rules → `mps-aspect-typesystem` (follow its Common-Path step 9: live-check the rules on a scratch sandbox); constraints → `mps-aspect-constraints`; behavior → `mps-aspect-behavior`; editor → `mps-aspect-editor`; generator → `mps-aspect-generator`; structure → `mps-aspect-structure-concepts`; any other aspect → `mps-language-aspects-overview`. The directives below do not replace the aspect skill.
 - **Preserve node IDs.** Prefer `mps_mcp_update_root_node_from_json` or surgical edits (`mps_mcp_update_node`, …) over delete-and-reinsert. Deleting destroys persistent IDs and breaks incoming references.
 - **Copy-then-modify beats reconstruct-from-JSON.** To create a node that closely resembles an existing one, duplicate it with `mps_mcp_alter_nodes` `COPY_NODE` and adjust the copy with `mps_mcp_update_node`, instead of printing the original and re-authoring it as a JSON blueprint. The copy is guaranteed structurally valid and needs no blueprint authoring at all.
-- **Reload after compiled-aspect changes.** After modifying **typesystem**, **constraints**, **behavior**, **editor**, or any other compiled aspect, call `mps_mcp_reload_all` (or rebuild the language module via `mps_mcp_alter_nodes MAKE`) before validating with `mps_mcp_check_root_node_problems` on a consumer model. Without a reload, cached compiled rules continue to fire — checking will report stale errors or miss new ones.
+- **Rebuild after compiled-aspect changes.** After modifying **typesystem**, **constraints**, **behavior**, **editor**, or any other compiled aspect, rebuild the language module with `mps_mcp_alter_nodes MAKE` before validating with `mps_mcp_check_root_node_problems` on a consumer model. A MAKE answering `runtimeReady: true` is the reload; `mps_mcp_reload_all` compiles nothing (it reloads the classes already on disk) and adds nothing after it. Without a rebuild, cached compiled rules continue to fire — checking will report stale errors or miss new ones.
 - **The Structure-to-Aspect/Scaffold Prerequisite Chain (Ordering & Recovery).** When editing a language's **structure aspect** (e.g., creating concepts/enums or modifying properties, children, or references via `mps_mcp_alter_structure`), you MUST adhere to the following strict sequence of cross-tool steps before invoking dependent tools (such as `mps_mcp_get_concept_details` or `mps_mcp_scaffold_editor`):
     1. **Structure Edit**: Modify the structure aspect (using `mps_mcp_alter_structure`).
     2. **Clean Make/Rebuild**: Run `mps_mcp_alter_nodes` with `MAKE` and `rebuild=true` targeting the **language module** (a model-scoped make can leave a never-before-deployed language's runtime hollow). Note: a plain `mps_mcp_reload_all` alone is **not** sufficient because the generated structure aspect descriptor classes on disk must be regenerated before the ClassLoader reloads them.
@@ -34,7 +35,9 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
     *Failing to follow this ordering results in stale or hollow descriptors where dependent tools silently see empty properties, children, or references.*
     **Shortcut:** `mps_mcp_alter_structure CREATE_CONCEPTS` with `make: true` already does steps 2–3 — it clean-rebuilds, verifies every created descriptor against the runtime, and auto-recovers a never-deployed language (one module-scoped rebuild, `recoveryStage: "module-rebuild"`). Trust its `makeStatus`; run the manual chain only for structure edits made through tools that do not make (`UPDATE_*`/`RENAME_*` operations, `mps_mcp_update_node`).
 - **Surgical edits over full-root rewrites.** When a single child changes, prefer `mps_mcp_update_node` over re-running `mps_mcp_update_root_node_from_json` on the whole root.
-- **Validate frequently.** A successful insertion (`"ok": true`) does not mean the AST is semantically valid — always follow with `mps_mcp_check_root_node_problems`.
+- **Never simulate the typesystem.** To decide whether a type fits, what a slot requires, what an operator returns, or why a node has a type, call `mps_mcp_query_types` (`IS_SUBTYPE`, `SUPERTYPES`, `COMMON_SUPERTYPE`, `COERCE`, `OPERATION_TYPE`, `EXPLAIN_TYPE`) or `mps_mcp_query_nodes` (`GET_TYPE`, `GET_EXPECTED_TYPE`). Print a `SubtypingRule` / `InferenceRule` root only to change it, or to pick the sibling you `COPY_NODE` — not to predict what the engine will answer: even while authoring, ask the engine for the rest, including what your change does to operators and joins (`OPERATION_TYPE`, `COMMON_SUPERTYPE`). If an engine answer surprises you (`null`, `false`), ask `EXPLAIN_TYPE`; do not open the rule. See `references/analysis-tools/type-queries.md` for the operation table and caveats.
+- **Check the IDE log when the envelope and the effect disagree.** When a tool reports success but the effect is missing, or a skill says an error "surfaces only in `idea.log`", call `mps_mcp_read_ide_log` with `sinceMinutes` covering the call window and `minLevel="WARN"` (no path needed, works for standalone MPS); `references/ide-log.md` has the recipe and the fallback for older servers.
+- **Validate frequently.** A successful insertion (`"ok": true`) does not mean the AST is semantically valid — always follow with `mps_mcp_check_root_node_problems`. Read `warnings` and `details.uncheckedSubtrees`, not just the `data` verdict: commented-out code and other `IDontApplyTypesystemRules` / `ISkipConstraintsChecking` subtrees are not checked, so a clean verdict over them proves nothing — ask `IS_SUBTYPE`. A problem may carry `rules: [{rule, ruleReference, statement}]`: `rules[0].rule` names the reporting rule — cite it instead of guessing; print `ruleReference` only to change that rule.
 
 > **Tool name note**: MPS MCP tools are named with a `mps_mcp_` prefix (e.g. `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_get_concept_details`). Your MCP client wraps these with a server-specific prefix (e.g. `mcp__mps-mcp-server__<env>___`), which varies by environment. Match tools by the stable `mps_mcp_*` suffix.
 >
@@ -62,7 +65,8 @@ The MPS catalog contains companion skills for focused task families. Load whiche
 | `mps-language-modularity`           | Design tier for multi-language work — choose between referencing, extension, reuse, and embedding *before* authoring aspects, then route into the aspect skills. Use when one language must see, extend, embed, or adapt another. |
 | `mps-aspect-structure-concepts`            | Define concepts, interface concepts, enumerations, and constrained data types. Includes the full `mps_mcp_alter_structure` / `mps_mcp_query_structure` reference. |
 | `mps-baselanguage`                  | Author and edit `jetbrains.mps.baseLanguage` (Java) nodes — parser vs. JSON AST, concept mapping, reference harvesting, validation. Load when writing any Java/BaseLanguage code in MPS. |
-| `mps-model-manipulation`                    | Write and edit MPS BaseLanguage code that uses smodel, closures, and collections — manipulating nodes, lists, and queries. Use when editing checking rules, behavior methods, typesystem rules, or any model code that manipulates nodes. |
+| `mps-model-manipulation`                    | Write and edit MPS BaseLanguage code that uses smodel — querying, navigating, creating and mutating nodes. Use when editing checking rules, behavior methods, typesystem rules, or any model code that manipulates nodes. |
+| `mps-collections-and-closures`              | Write and edit MPS BaseLanguage code that uses collections and closures — `sequence`/`list`/`set`/`map`, `.where`/`.select`/`.translate`, `foreach`, closure literals, `yield`. Load alongside `mps-model-manipulation` for most model-code bodies. |
 | `mps-aspect-accessories`            | Module/model dependencies, used languages, runtime solutions, accessory models. |
 | `mps-aspect-actions`                | Node factories (the "actions" aspect) — concept-specific setup functions for newly created nodes. |
 | `mps-aspect-behavior`               | ConceptBehavior — per-concept methods, constructors, virtual dispatch, calling behavior from other aspects. |
@@ -74,9 +78,9 @@ The MPS catalog contains companion skills for focused task families. Load whiche
 | `mps-aspect-intentions`             | Intentions — Alt+Enter context actions, parameterized/surround/quick-fix variants. |
 | `mps-aspect-migrations`             | Migration scripts — upgrading user models when language definitions change. |
 | `mps-aspect-textgen`                | TextGen — concept-to-plain-text serialization rules. |
-| `mps-aspect-typesystem`             | Typesystem — inference rules, subtyping, replacement, comparison, non-typesystem checking. |
+| `mps-aspect-typesystem`             | Typesystem — authoring inference, subtyping, replacement, comparison, and checking rules; use `references/analysis-tools/type-queries.md` to ask the compiled typesystem questions. |
 | `mps-aspect-editor`                 | Overall workflow for creating and changing MPS editor definitions — scaffolding, componentizing, cell models, layouts, styles, validation. |
-| `mps-language-analysis`             | Analyze MPS language definitions — discover concepts, metadata, aspects, sample nodes. |
+| `mps-language-analysis`             | Analyze MPS language definitions — discover concepts, metadata, aspects, sample nodes, and type questions via `mps_mcp_query_types`. |
 | `mps-language-inheritance`          | Investigate inheritance between MPS languages and concepts — extends, super, sub, assignable. |
 | `mps-node-editing`                  | Modify MPS nodes using JSON blueprints — the canonical workflow for any node mutation. |
 | `mps-dsl-memory`                    | Explore a live MPS DSL project and create or refresh generated project-local DSL skills under `.agents/skills/<dsl-name>-dsl/`. |
@@ -109,23 +113,25 @@ MPS is a projectional editor and a language workbench. Unlike text-based IDEs, M
 
 1. **Check generated DSL skills** under `.agents/skills/*-dsl/` before starting unfamiliar DSL work. Use the relevant project-local DSL skill when it exists; if it is missing or stale, load `mps-dsl-memory` to create or refresh it.
 2. **Anchor on the user's focus** — call `mps_mcp_get_current_editor_root_node` so you know which root the user is looking at.
-3. **Identify the task family**: defining a language → load `mps-language-aspects-overview`. Editing user code → load `mps-node-editing` and (often) `mps-baselanguage`. Investigating an unfamiliar language → load `mps-language-analysis`.
+3. **Identify the task family**: defining a language → load `mps-language-aspects-overview`. Editing user code → load `mps-node-editing` and (often) `mps-baselanguage`. Investigating an unfamiliar language → load `mps-language-analysis`. Asking a type question (fit, expected type, or why a node has its type) → open `references/analysis-tools/type-queries.md`; no aspect skill is needed. Authoring or changing typesystem rules (inference, subtyping, replacement, checking) → load `mps-aspect-typesystem`; its Common-Path step 9 live-checks the rules on a scratch sandbox model.
 4. **Follow the matching aspect skill** for the specific aspect you're touching.
-5. **Validate frequently** with `mps_mcp_check_root_node_problems`. Rebuild/reload after compiled-aspect changes.
+5. **Validate frequently** with `mps_mcp_check_root_node_problems`. Rebuild (`MAKE`) after compiled-aspect changes.
 
 ## Essential Skills (Detail)
 
 Open `references/finding-things.md` for the protocol on finding models, modules, and languages (including shortened-name resolution like `j.m.l.core` → `jetbrains.mps.lang.core`).
 
-Open `references/node-editing-rules.md` for the full rulebook on adding/updating nodes (concept selection, role types, cardinality, assignability, persistent IDs, surgical edits, reload after compiled-aspect changes).
+Open `references/node-editing-rules.md` for the full rulebook on adding/updating nodes (concept selection, role types, cardinality, assignability, persistent IDs, surgical edits, rebuild after compiled-aspect changes).
 
 Open `references/reference-formats.md` for the reference-format protocol: node refs (`r:`/`i:`), concept refs (`c:`), the critical "never use a concept ref where a node ref is expected" rule, and how to pass a list to a top-level parameter (a real JSON array and the array written as a string are equivalent).
 
 Open `references/bulk-creation.md` for the print-shallow-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
 
-Open `references/analysis-tools.md` for the inventory of analysis operations (`mps_mcp_print_node`, `mps_mcp_check_root_node_problems` with its `quickFixes`/`autoApplyQuickFixes`, `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention`, `mps_mcp_alter_nodes FIX_REFERENCES`, etc.).
+Open `references/analysis-tools.md` for the inventory of analysis operations: `mps_mcp_query_types`, `mps_mcp_query_nodes` `GET_TYPE` / `GET_EXPECTED_TYPE`, `mps_mcp_print_node`, and `mps_mcp_check_root_node_problems` with its `rules`, `uncheckedSubtrees`, `quickFixes` / `autoApplyQuickFixes`, plus `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` and `mps_mcp_alter_nodes FIX_REFERENCES`.
 
 Open `references/editor-workflow.md` for the MPS Concept Editor workflow (scaffold → componentize → refine → validate) and the editor procedural guidelines.
+
+Open `references/ide-log.md` to read the IDE log (`idea.log`): `mps_mcp_read_ide_log` first, `logDirectory` / `logFile` from `mps_mcp_list_open_projects` and fallbacks for older servers, rotation into `idea.N.log`, and the recipe for verifying a write tool call against the log.
 
 Open `references/mcp-tools-index.md` for the complete inventory of MPS MCP tools grouped by Project/Structure, Modules and Models, Root Nodes and Nodes, Console, and Language Definition.
 

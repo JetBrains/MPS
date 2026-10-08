@@ -1,6 +1,6 @@
 ---
 name: mps-language-analysis
-description: Analyze an MPS language by name — discover concepts, properties, references, children, aspects (editor/constraints/behavior), and metadata. Use when investigating an unfamiliar language, exploring concept structure, or finding sample nodes to use as templates for JSON blueprints.
+description: Analyze an MPS language by name — discover concepts, properties, references, children, aspects (editor/constraints/behavior), metadata, and answer type questions (is A a subtype of B, common supertype, expected type of a slot, why a node has its type) with `mps_mcp_query_types`. Use when investigating an unfamiliar language, exploring concept structure, or finding sample nodes to use as templates for JSON blueprints.
 type: reference
 ---
 
@@ -33,14 +33,18 @@ Workflow for inspecting an MPS language from a name (e.g. `jetbrains.mps.lang.co
 
 ## Inspecting Concept Aspects
 
-Use `mps_mcp_query_structure` with `LIST_CONCEPT_ASPECTS` to find associated definitions (Editor, Constraints, Behavior):
+Use `mps_mcp_query_structure` with `LIST_CONCEPT_ASPECTS` to find associated definitions (editor, constraints, behavior, typesystem rules, generator templates):
 
-* **Direct Aspects**: returns roots targeting the specific concept.
-* **Inherited Aspects**: set `includeInherited: true` to include aspects from ancestors (superconcepts/interfaces).
+* **`relation`**: `appliesTo` marks a root that is *for* the concept (its editor, a rule applicable to it); `mentions` a root that only references it. `pattern: true` marks a rule that matches the concept through a pattern, so only instances of that shape. Details: `references/structure-operation-api/list-concept-aspects.md` in the `mps-aspect-structure-concepts` skill root after loading that companion skill from the same origin.
+* **Inherited Aspects**: set `includeInherited: true` to add the aspects of ancestors (superconcepts/interfaces); `targetsConcept` says which concept each root was found through.
 * **Editor Analysis**:
-    * **ConceptEditorDeclaration**: defines the full editor for the `targetsConcept`.
+    * **ConceptEditorDeclaration**: with `relation: appliesTo`, the full editor for the `targetsConcept`.
     * **EditorComponentDeclaration**: defines reusable presentation pieces.
     * Check the `editor` model in the response to identify available editors.
+
+## Answering Type Questions
+
+Let the typesystem engine answer instead of reading rule roots: a node's type → `mps_mcp_query_nodes` `GET_TYPE`; the type its context requires → `GET_EXPECTED_TYPE`; does A fit B → `mps_mcp_query_types` `IS_SUBTYPE`; what A widens to → `SUPERTYPES`; what A and B share → `COMMON_SUPERTYPE`; A seen as a given type concept → `COERCE`; the type of `a op b` → `OPERATION_TYPE`; why a node has its type → `EXPLAIN_TYPE`. Rule roots cannot tell you what replacement, comparison or overloaded-operation rules decide, and a rule's name need not match what it returns. `LIST_CONCEPT_ASPECTS` lists typesystem rules for authoring them; do not open a `SubtypingRule` or `InferenceRule` root to answer a type question. Operand forms and outputs: `references/analysis-tools/type-queries.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 
 ## Related Skills
 

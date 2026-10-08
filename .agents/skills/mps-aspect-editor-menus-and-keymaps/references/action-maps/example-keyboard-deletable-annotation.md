@@ -24,7 +24,7 @@ What makes this pattern work:
 - **An attribute node's `parent` is the host (attributed) node.** Capture it in a local *before* `node.detach`, then select it so the caret lands somewhere sensible instead of vanishing with the deleted cell.
 - **`BACKSPACE` comes for free** — defining `delete_action_id` auto-registers an identical `BACKSPACE` (see `references/action-maps/example-delete-not-expression-and-default.md`), so both keys remove the annotation.
 - **Wire the map from the cell explicitly** (`actionMap` reference on the annotation editor's leading `CellModel_Constant`) — the caret is on the *annotation's* cells, so a map discovered by naming convention on the host concept would never fire here.
-- Two-step deletion is usually skipped for small annotation cells; if you want the highlight-first behaviour, call `node.approveDelete(editorContext)` before mutating (see `selection-and-deletion.md`).
+- Two-step deletion is usually skipped for small annotation cells; if you want the highlight-first behaviour, call `node.approveDelete(editorContext)` before mutating (see `references/selection-and-deletion.md`).
 - Pair this with an intention that *attaches* the annotation (see `references/execute-idioms.md` in the `mps-aspect-intentions` skill root after loading that companion skill from the same origin) so users can both add and remove the mark from the keyboard.
 
 Verbatim JSON of the whole root, extracted from the live `DeleteMatchRelaxationMark` node (insert with `mps_mcp_insert_root_node_from_json`, then set the `variableDeclaration` target of the last statement to the freshly inserted local variable):

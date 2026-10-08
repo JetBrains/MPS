@@ -19,12 +19,13 @@ The core workflow for mutating MPS nodes through MCP tools. JSON blueprints desc
 - **Prefer surgical edits** — `mps_mcp_update_node` (`ADD`/`CHILD` or `SET`/`CHILD`) preserves persistent IDs. `mps_mcp_update_root_node_from_json` rewrites the entire root and is wasteful when only one subtree changed.
 - **Don't delete-and-reinsert** to make a small change — deletion destroys persistent IDs and breaks incoming references.
 - **Cloning an existing node? Use `mps_mcp_alter_nodes` `COPY_NODE`, not a JSON blueprint.** It clones the subtree natively — correct concept, properties, refs, nested structure — as the next sibling (multi-child role) or new root, then tweak with `mps_mcp_update_node`. Reserve JSON blueprints for nodes with no close match to copy from.
-- **Validate frequently** — call `mps_mcp_check_root_node_problems` immediately after inserting or modifying a complex node. `"ok": true` from insert does not mean the AST is semantically valid.
+- **Choosing a replacement or filling a typed slot?** Ask `mps_mcp_query_nodes` `GET_EXPECTED_TYPE` on the node you are about to replace, then confirm a candidate with `mps_mcp_query_types` `IS_SUBTYPE` before inserting. An empty slot has no answer, and the bound can depend on the node already there (`byte b = 1`, `return 'c'`); `null` means no usable upper/comparable bound, not “anything goes.” See `mps-mcp-workflow/references/analysis-tools/type-queries.md` for details.
+- **Validate frequently** — call `mps_mcp_check_root_node_problems` immediately after inserting or modifying a complex node. `"ok": true` from insert does not mean the AST is semantically valid; read `warnings` and `details.uncheckedSubtrees`, and open a problem's `rules[].statement` to see which rule reported it.
 - **A blueprint is not the whole node** — the concept's node factory runs first and may add properties, children, and references your JSON never mentions. Do not re-do its work by hand, and do not assume an inserted node contains exactly what you wrote. See "Node factories" below.
 
 ## `mps_mcp_update_node` — Unified Node-Mutation Tool
 
-All child, property, and reference operations on existing nodes go through `mps_mcp_update_node`. The operation is selected via `operation` (`ADD`/`SET`) × `kind` (`CHILD`/`PROPERTY`/`REFERENCE`). **There is no `DELETE` operation** — deletion is a `SET`: omit `childJson` to delete a child, or pass an explicit `null` as a triplet's value to clear a property or reference. A *shortened* triplet is rejected (`Invalid property triplet: expected at least 3 elements`, and the `reference` equivalent), so the null has to be written out.
+All child, property, and reference operations on existing nodes go through `mps_mcp_update_node`. The operation is selected via `operation` (`ADD`/`SET`) × `kind` (`CHILD`/`PROPERTY`/`REFERENCE`). **There is no `DELETE` operation** — deletion is a `SET`: omit `childJson` to delete a child, or pass an explicit `null` as a triplet's value to clear a property or reference. A *shortened* triplet is rejected (`Invalid property triplet: expected at least 3 elements`, and the `reference` equivalent), so the null has to be written out. To delete a whole **root**, call `mps_mcp_update_root_node_from_json` with `operation: "DELETE"` and the root's `nodeReference` (no blueprint needed).
 
 | operation × kind        | Required parameters                                           | Notes |
 |-------------------------|---------------------------------------------------------------|-------|
@@ -46,6 +47,7 @@ Where a documented null means something, how you express it depends on where it 
 ## Prerequisites
 
 - Load the `mps-language-analysis` skill if you do not yet know what concepts the model uses.
+- For type questions, use `mps-mcp-workflow/references/analysis-tools/type-queries.md`; do not simulate the typesystem by reading rule roots.
 - Resolve the target node (unless creating a brand-new root):
     - `mps_mcp_get_current_editor_root_node` for the user's focus.
     - `mps_mcp_search_root_node_by_name` for a known name.
@@ -60,7 +62,7 @@ Where a documented null means something, how you express it depends on where it 
 2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
 3. **Author the JSON** following the unified blueprint format.
 4. **Insert.** A `dryRun: true` call checks concepts, roles, properties and assignability, but it never looks up a reference target given by name: it warns "is a name, not looked up" for every one, including names that exist. Do not rewrite names or dry-run again because of those warnings. Fix only the "names no node" and "matches no Model.Root" warnings, and after the real write check `fixReferences.stillBroken`. The full rule is under "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
-5. **Validate** with `mps_mcp_check_root_node_problems`. Reported problems may carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.
+5. **Validate** with `mps_mcp_check_root_node_problems`, reading `warnings` and `details.uncheckedSubtrees` as well as `data`: a clean verdict over commented-out or other skipped subtrees proves nothing. Problems may carry `rules: [{rule, ruleReference, statement}]`; open the reporting statement rather than guessing. Problems may also carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.
 6. **Repair** broken refs with `mps_mcp_alter_nodes FIX_REFERENCES` if validation surfaces resolvable-but-unresolved targets.
 
 ## Related Skills
@@ -137,12 +139,16 @@ Practical consequences:
   factory-initialized state as absent. But a factory that catches internally reports nothing and
   the envelope looks clean. That is the norm for `AutoInitDSLClass` concepts (`MigrationScript`
   among them), whose initializer runs behind its own `catch` and surfaces only in `idea.log`. For
-  those, verify the state the factory was supposed to set rather than trusting `ok: true`.
+  those, verify the state the factory was supposed to set rather than trusting `ok: true`. To
+  find and read that log, see `references/ide-log.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 
 To see whether a concept has a factory at all, use
 `mps_mcp_query_structure(operation = "LIST_CONCEPT_ASPECTS", …)` — it reports which aspect models
-declare something for the concept, including `actions`. (`mps_mcp_get_concept_details` does **not**
-list aspects.) The `mps-aspect-actions` skill covers authoring and reading factories.
+declare something for the concept, including `actions`. Read `relation` first: only `appliesTo`
+roots act on the concept; `mentions` roots merely quote it, and `pattern` means the match could not
+be resolved structurally. `targetsConcept` alone includes both applying and mentioning roots.
+(`mps_mcp_get_concept_details` does **not** list aspects.) The `mps-aspect-actions` skill covers
+authoring and reading factories.
 
 ## Reference Index
 

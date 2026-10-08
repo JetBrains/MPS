@@ -16,6 +16,7 @@ import com.intellij.openapi.project.Project
 import jetbrains.mps.findUsages.InstanceLookup
 import jetbrains.mps.findUsages.NodeUsageLookup
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations
+import jetbrains.mps.newTypesystem.TypesUtil
 import jetbrains.mps.nodeEditor.cells.EditorCell_Property
 import jetbrains.mps.nodeEditor.cells.PropertyAccessor
 import jetbrains.mps.nodeEditor.cells.SPropertyAccessor
@@ -811,6 +812,175 @@ abstract class AbstractNodeOps : AbstractOps() {
                 "Run mps_mcp_alter_nodes MAKE with rebuild=true on the language module and print the node again, $alternative"
         )
     }
+
+    /**
+     * A type as the type tools answer it: `{concept, conceptReference, presentation, hasTypeVariables?, blueprint}`.
+     * A computed type is usually a free-floating copy whose `null/<id>` reference would not resolve, and a
+     * root's type or a stored type operand may be a stored node; so no reference is offered at all and every
+     * node record's `reference` is stripped from the blueprint.
+     */
+    protected fun typeJsonObject(type: SNode, mpsProject: MPSProject): JsonObject {
+        val result = JsonObject()
+        result.addProperty("concept", type.concept.name)
+        result.addProperty("conceptReference", PersistenceFacade.getInstance().asString(type.concept))
+        result.addProperty("presentation", type.presentation)
+        if (TypesUtil.hasVariablesInside(type)) result.addProperty("hasTypeVariables", true)
+        val blueprint = nodeHierarchyJsonObject(type, deep = true, currentProject = mpsProject)
+        stripNodeReferences(blueprint)
+        result.add("blueprint", blueprint)
+        return result
+    }
+
+    /** Reference links keep their `targetReference`; only node records and child summaries write `reference`. */
+    private fun stripNodeReferences(element: JsonElement) {
+        when {
+            element.isJsonObject -> {
+                val obj = element.asJsonObject
+                obj.remove("reference")
+                obj.entrySet().forEach { stripNodeReferences(it.value) }
+            }
+            element.isJsonArray -> element.asJsonArray.forEach(::stripNodeReferences)
+        }
+    }
+
+    /**
+     * Builds a free-floating type node from [blueprint] (the `blueprint` of a type the type tools printed), for
+     * use as a type operand. Unlike [instantiateNode] it needs no model and degrades nothing silently: every
+     * reference must be a persistent `targetReference` that resolves, and anything that cannot be rebuilt
+     * exactly is an `INVALID_REQUEST` naming [jsonPath]. What the printer adds beyond the stored node is not
+     * stored back, because the engine matches types on stored values: the top-level `name` (a presentation
+     * fallback; a real name is also in `properties`) and `isDefault:true` enum entries.
+     */
+    protected fun typeOperandNode(blueprint: JsonObject, mpsProject: MPSProject, jsonPath: String): SNode {
+        val conceptName = blueprint.optionalBlueprintString("concept", jsonPath)
+        val conceptRef = blueprint.optionalBlueprintString("conceptReference", jsonPath)
+        if (conceptName.isNullOrEmpty() && conceptRef.isNullOrEmpty()) {
+            throw McpInvalidRequestException("Missing 'concept' or 'conceptReference' at $jsonPath")
+        }
+        if (blueprint.get("conceptLoaded")?.let { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean && !it.asBoolean } == true) {
+            throw McpInvalidRequestException(
+                "Node at $jsonPath is marked conceptLoaded:false: concept '${conceptName ?: conceptRef}' was not loaded when the " +
+                    "type was printed, so the type cannot be rebuilt from this printout. Rebuild the language and read the type again"
+            )
+        }
+        val concept = listOfNotNull(conceptRef, conceptName).firstNotNullOfOrNull {
+            resolveConceptPreferringProject(mpsProject, it) as? SConcept
+        } ?: throw McpInvalidRequestException(
+            "Concept '${conceptName ?: conceptRef}' at $jsonPath is not a loaded concrete concept"
+        )
+        if (concept.isAbstract) {
+            throw McpInvalidRequestException("Concept '${concept.name}' at $jsonPath is abstract; a type operand needs a concrete concept")
+        }
+        val node = SModelOperations.createNewNode(null, null, concept)
+
+        blueprint.requireArray("properties", jsonPath)?.forEachIndexed { index, element ->
+            val path = "$jsonPath.properties[$index]"
+            val entry = element.asBlueprintObject(path)
+            val propName = entry.optionalBlueprintString("name", path)
+                ?: throw McpInvalidRequestException("Missing 'name' at $path")
+            val property = concept.properties.find { it.name == propName }
+                ?: throw if (isMarkedUndeclared(entry)) undeclaredTypeFeature("Property", propName, path, concept)
+                else McpInvalidRequestException("Unknown property '$propName' at $path: concept '${concept.name}' has no such property")
+            if (entry.get("isDefault")?.let { it.isJsonPrimitive && it.asJsonPrimitive.isBoolean && it.asBoolean } == true) {
+                return@forEachIndexed
+            }
+            setProperty(node, property, entry.optionalBlueprintString("value", path))
+        }
+
+        blueprint.requireArray("references", jsonPath)?.forEachIndexed { index, element ->
+            val path = "$jsonPath.references[$index]"
+            val entry = element.asBlueprintObject(path)
+            val roleName = entry.optionalBlueprintString("role", path)
+                ?: throw McpInvalidRequestException("Missing 'role' at $path")
+            val link = concept.referenceLinks.find { it.name == roleName }
+                ?: throw if (isMarkedUndeclared(entry)) undeclaredTypeFeature("Reference role", roleName, path, concept)
+                else McpInvalidRequestException("Unknown reference role '$roleName' at $path: concept '${concept.name}' has no such reference link")
+            if (entry.get("target")?.isJsonNull == true) {
+                throw McpInvalidRequestException(
+                    "Reference '$roleName' at $path has target null: it was unresolved when printed, so the type cannot be rebuilt from it"
+                )
+            }
+            val targetRefStr = entry.optionalBlueprintString("targetReference", path)
+                ?: throw McpInvalidRequestException(
+                    "Reference '$roleName' at $path needs a persistent 'targetReference'; a type operand does not resolve a target by name"
+                )
+            if (targetRefStr.startsWith("null/")) {
+                throw McpInvalidRequestException(
+                    "Reference '$roleName' at $path points into a free-floating node ('$targetRefStr'), usually the type itself; " +
+                        "such a type cannot be rebuilt from its blueprint. Pass the node it was read from as nodeReference instead"
+                )
+            }
+            failIfXMLReferenceIsUsed(targetRefStr, jsonPath, index)
+            val repository = mpsProject.repository
+            val targetRef = resolveReferenceTarget(mpsProject, repository, targetRefStr, path)
+                ?: throw McpInvalidRequestException(
+                    "Reference '$roleName' at $path: '$targetRefStr' is not a persistent node reference (r:… or i:…)"
+                )
+            val target = targetRef.resolve(repository)
+                ?: throw McpInvalidRequestException("Reference '$roleName' at $path: target '$targetRefStr' does not resolve to a node")
+            validateReferenceTarget(target, link, concept.name, roleName, path)
+            node.setReference(link, targetRef)
+        }
+
+        val clearedRoles = mutableSetOf<SContainmentLink>()
+        blueprint.requireArray("children", jsonPath)?.forEachIndexed { roleIndex, element ->
+            val rolePath = "$jsonPath.children[$roleIndex]"
+            val entry = element.asBlueprintObject(rolePath)
+            val roleName = entry.optionalBlueprintString("role", rolePath)
+                ?: throw McpInvalidRequestException("Missing 'role' at $rolePath")
+            val link = concept.containmentLinks.find { it.name == roleName }
+                ?: throw if (isMarkedUndeclared(entry)) undeclaredTypeFeature("Child role", roleName, rolePath, concept)
+                else McpInvalidRequestException("Unknown child role '$roleName' at $rolePath: concept '${concept.name}' has no such containment link")
+            // A role printed as summaries (a depth-limited print_node) does not carry the child trees.
+            if (!entry.has("nodes")) {
+                throw McpInvalidRequestException(
+                    "Child role '$roleName' at $rolePath has no 'nodes' array (it was printed as summaries); pass the type's full blueprint"
+                )
+            }
+            // The blueprint replaces what a behavior constructor put in the role, as fillChildren does.
+            if (clearedRoles.add(link)) node.getChildren(link).toList().forEach { it.delete() }
+            entry.requireArray("nodes", rolePath)?.forEachIndexed { nodeIndex, childElement ->
+                val childPath = "$rolePath.nodes[$nodeIndex]"
+                val child = typeOperandNode(childElement.asBlueprintObject(childPath), mpsProject, childPath)
+                if (!child.concept.isSubConceptOf(link.targetConcept)) {
+                    throw McpInvalidRequestException(
+                        "Child at $childPath is a '${child.concept.name}', which role '$roleName' of '${concept.name}' does not accept " +
+                            "(it takes '${link.targetConcept.name}')"
+                    )
+                }
+                if (!link.isMultiple && node.getChildren(link).iterator().hasNext()) {
+                    throw McpInvalidRequestException("Role '$roleName' of '${concept.name}' at $rolePath holds one child; the blueprint gives more")
+                }
+                node.addChild(link, child)
+            }
+        }
+        // A blueprint that leaves a mandatory link empty (a ClassifierType without `classifier`) would answer
+        // for a different type than the caller meant.
+        val missing = concept.referenceLinks.filter { !it.isOptional && node.getReference(it) == null }.map { it.name } +
+            concept.containmentLinks.filter { !it.isOptional && !node.getChildren(it).iterator().hasNext() }.map { it.name }
+        if (missing.isNotEmpty()) {
+            throw McpInvalidRequestException(
+                "The '${concept.name}' at $jsonPath leaves mandatory ${missing.joinToString(", ") { "'$it'" }} empty; " +
+                    "pass the type's full blueprint as a type tool printed it"
+            )
+        }
+        return node
+    }
+
+    private fun JsonElement.asBlueprintObject(path: String): JsonObject =
+        takeIf { it.isJsonObject }?.asJsonObject ?: throw McpInvalidRequestException("$path must be a JSON object, got ${jsonKind(this)}")
+
+    private fun JsonObject.optionalBlueprintString(field: String, path: String): String? {
+        val element = get(field)?.takeUnless { it.isJsonNull } ?: return null
+        if (!element.isJsonPrimitive) throw McpInvalidRequestException("'$field' at $path must be a string, got ${jsonKind(element)}")
+        return element.asString
+    }
+
+    private fun undeclaredTypeFeature(kind: String, name: String, path: String, concept: SAbstractConcept) =
+        McpInvalidRequestException(
+            "$kind '$name' at $path is marked declared:false: concept '${concept.name}' does not declare it, " +
+                "so the type cannot be rebuilt from this printout. Rebuild the language and read the type again"
+        )
 
     fun updateNodeFromBlueprint(
         node: SNode,

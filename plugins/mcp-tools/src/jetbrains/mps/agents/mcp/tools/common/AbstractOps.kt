@@ -29,6 +29,7 @@ import jetbrains.mps.errors.item.NodeReportItemBase
 import jetbrains.mps.errors.item.QuickFixBase
 import jetbrains.mps.errors.item.QuickFixReportItem
 import jetbrains.mps.errors.item.QuickFixRuntimeAdapter
+import jetbrains.mps.errors.item.RuleIdFlavouredItem
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
 import jetbrains.mps.ide.MPSCoreComponents
@@ -201,7 +202,8 @@ abstract class AbstractOps : McpToolset {
                 "the language-aspect descriptor classes on disk are still stale until a clean " +
                 "rebuild.)"
         private val GSON = Gson()
-        private val PRETTY_GSON = GsonBuilder().setPrettyPrinting().create()
+        // serializeNulls: the inline form keeps `"type": null`, so the temp-file form must too.
+        private val PRETTY_GSON = GsonBuilder().setPrettyPrinting().serializeNulls().create()
 
         // Shared by all MCP toolset instances: a file created by one toolset may be consumed by another.
         private val createdTempJsonFiles = ConcurrentHashMap.newKeySet<String>()
@@ -1797,6 +1799,10 @@ abstract class AbstractOps : McpToolset {
      * the plain form). The key is omitted when empty, to keep reports compact. Each entry mirrors a
      * listing from `mps_mcp_list_node_intentions` — `id` (quick-fix runtime-class FQN, always present),
      * `description`, `autoApplicable` — and is applied via `mps_mcp_apply_intention`.
+     *
+     * A typesystem, constraints or scope problem also gets `rules`: one [ruleJsonObject] per rule id of
+     * the item that resolves, in the item's order — the reporting rule first, then for a typesystem
+     * inequality the rules it was nested in. Omitted when empty, like `quickFixes`.
      */
     private fun problemJsonObject(item: NodeReportItem, repo: SRepository?): JsonObject {
         val obj = problemJsonObject(item.severity, item.message)
@@ -1805,8 +1811,32 @@ abstract class AbstractOps : McpToolset {
             if (fixes.size() > 0) {
                 obj.add("quickFixes", fixes)
             }
+            if (item is RuleIdFlavouredItem) {
+                val rules = JsonArray()
+                for (statement in item.ruleId.orEmpty().mapNotNull { it.sourceNode }.distinct()) {
+                    val node = statement.resolve(repo) ?: continue
+                    rules.add(ruleJsonObject(statement, node.containingRoot))
+                }
+                if (rules.size() > 0) {
+                    obj.add("rules", rules)
+                }
+            }
         }
         return obj
+    }
+
+    /**
+     * `{rule, ruleReference, statement}` for [statement], a node inside a typesystem, constraints or behavior
+     * root (the reporting statement, not the rule root): `rule` and `ruleReference` are [root]'s name — or
+     * presentation, since constraints and behavior roots store none — and reference, `null` when [root] is
+     * `null`.
+     */
+    protected fun ruleJsonObject(statement: SNodeReference, root: SNode?): JsonObject {
+        val result = JsonObject()
+        result.addProperty("rule", root?.let { it.name ?: it.presentation })
+        result.addProperty("ruleReference", root?.let { PersistenceFacade.getInstance().asString(it.reference) })
+        result.addProperty("statement", PersistenceFacade.getInstance().asString(statement))
+        return result
     }
 
     private fun quickFixesJsonArray(item: NodeReportItem, repo: SRepository): JsonArray {
@@ -2728,9 +2758,21 @@ abstract class AbstractOps : McpToolset {
 
     protected suspend fun <T> executeShortReadOnEdt(mpsProject: MPSProject, action: () -> T): T {
         return withModalTimeoutOnEdt {
-            mpsProject.modelAccess.computeReadAction {
-                action()
+            // Same capture as executeShortCommandOnEdt: a McpUserException escaping the read action
+            // on the EDT is logged by ActionDispatcher as "Action dispatch failed" before it reaches
+            // the caller's errJson boundary. Rethrow it outside the read action instead.
+            var userException: McpUserException? = null
+            val result = mpsProject.modelAccess.computeReadAction {
+                try {
+                    action()
+                } catch (e: McpUserException) {
+                    userException = e
+                    null
+                }
             }
+            userException?.let { throw it }
+            @Suppress("UNCHECKED_CAST")
+            result as T
         }
     }
 

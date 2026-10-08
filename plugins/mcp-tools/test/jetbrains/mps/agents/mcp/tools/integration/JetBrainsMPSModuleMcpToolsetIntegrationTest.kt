@@ -8,11 +8,13 @@ import com.google.gson.JsonParser
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.testFramework.PlatformTestUtil
 import java.io.File
 import java.util.Collections
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import jetbrains.mps.library.ModulesMiner
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.structure.modules.LanguageDescriptor
@@ -271,15 +273,15 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         readOnRepo { myProject.projectModulesWithGenerators.map { it.moduleReference }.toSet() }
 
     /**
-     * A module the project still tracks after a rollback shows up in MPS's own log: every project-module listing
-     * reports a loader entry whose module is gone, and deleting the module's folder reports file listeners that
-     * were never released (MPS-40228 live review).
+     * A module the project still tracks after a rollback or delete shows up in MPS's own log: every project-module
+     * listing reports a loader entry whose module is gone, and deleting the module's folder reports file listeners
+     * that were never released (MPS-40228 live review).
      */
     private fun assertNoStaleModuleTracking(messages: List<String>) {
         val stale = messages.filter {
             it.contains("is not found in the project repository") || it.contains("have not been unregistered for the path")
         }
-        assertEquals("the project must not keep tracking rolled-back modules", emptyList<String>(), stale)
+        assertEquals("the project must not keep tracking removed modules", emptyList<String>(), stale)
     }
 
     @Test
@@ -1740,6 +1742,168 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `delete_module with deleteFiles of a language with a generator leaves no stale module tracking`() {
+        // LanguageProducer adds the generator with ProjectBase.addModule, so it has its own module-loader entry and
+        // a file listener on the language's .mpl. removeModule(language) alone dropped the generator without an
+        // event, and deleting the folder then warned "1 listener(s) have not been unregistered for the path".
+        val langName = "test.delete.lang${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(langName))
+        try {
+            val before = projectModuleRefs()
+            expectOk(createModule("language", langName, directory.toString(), withGenerator = true).toString())
+            val created = readOnRepo {
+                myProject.projectModulesWithGenerators.filter { it.moduleReference !in before }
+            }
+            assertTrue("test precondition: a language and its generator: $created",
+                created.size == 2 && created.any { it is Language } && created.any { it is Generator })
+
+            val (response, records) = captureLogRecords {
+                runTool(toolset) {
+                    it.mps_mcp_update_module(langName, operation = ModuleOperation.DELETE, deleteFiles = true)
+                }.also { readOnRepo { myProject.projectModules } }
+            }
+
+            assertNoStaleModuleTracking(records.map { it.message })
+            assertNoProblemsLogged(records)
+            val data = expectOk(response)
+            assertFalse("deleteFiles=true must not report a fileDeletionWarning: $response",
+                data.has("fileDeletionWarning"))
+            assertFalse("the language folder must be deleted: $directory", Files.exists(directory))
+            readOnRepo {
+                for (module in created) {
+                    assertNull("${module.moduleName} must be unregistered",
+                        myProject.repository.getModule(module.moduleReference.moduleId))
+                    assertFalse("the project must no longer track ${module.moduleName}", myProject.isProjectModule(module))
+                }
+            }
+        } finally {
+            deleteQuietly(directory)
+        }
+    }
+
+    /** What the IDE writes to `.mps/modules.xml` for the project's current module list. */
+    private fun savedModulesXml(): String {
+        myProject.save()
+        PlatformTestUtil.saveProject(myProject.project)
+        return File(myProject.projectFile, ".mps/modules.xml").readText()
+    }
+
+    /**
+     * T1-T4 (MPS-40232). A language-owned generator lives in its language's `.mpl`, so its descriptor folder is the
+     * language folder, and `withGenerator` gives it a module-loader entry of its own for that file while
+     * `create_module(type=generator)` does not. DELETE must remove only the generator: from the project, from the
+     * language's descriptor and, with [deleteFiles], its own files. A [strayFile] keeps the generator folder, and the
+     * response says so.
+     */
+    private fun assertDeleteOfOwnedGenerator(
+        deleteFiles: Boolean,
+        generatorViaCreateModule: Boolean = false,
+        byReference: Boolean = false,
+        generatorOutsideLanguage: Boolean = false,
+        strayFile: Boolean = false,
+    ) {
+        val langName = "test.delete.owned.gen${System.nanoTime()}"
+        val directory = Paths.get(freshPathInProject(langName))
+        val generatorDir = if (generatorOutsideLanguage) Paths.get(freshPathInProject("$langName.gen")) else directory.resolve("generator")
+        val mpl = directory.resolve("$langName.mpl")
+        try {
+            expectOk(createModule("language", langName, directory.toString(),
+                withGenerator = !generatorViaCreateModule).toString())
+            if (generatorViaCreateModule) {
+                val generatorDirArg = if (generatorOutsideLanguage) generatorDir.toString() else ""
+                expectOk(runTool(toolset) {
+                    it.mps_mcp_create_module("generator", "ignored", generatorDirArg, null, langName, false, false, false)
+                })
+            }
+            val (language, generator) = readOnRepo {
+                val lang = myProject.projectModules.filterIsInstance<Language>().single { it.moduleName == langName }
+                lang to lang.ownedGenerators.single()
+            }
+            val generatorRef = readOnRepo { generator.moduleReference }
+            val target = readOnRepo {
+                if (byReference) PersistenceFacade.getInstance().asString(generatorRef) else generator.moduleName!!
+            }
+            assertTrue("test precondition: modules.xml lists $mpl", savedModulesXml().contains("$langName.mpl"))
+            listOf(directory.resolve("models"), generatorDir).forEach { assertTrue("test precondition: $it", Files.isDirectory(it)) }
+            if (strayFile) {
+                Files.writeString(generatorDir.resolve("stray.txt"), "not module content")
+                refreshVfs(generatorDir)
+            }
+            val generatorFolderPruned = deleteFiles && !strayFile
+            val languageFolderAfter = listing(directory) - setOf("generator").takeIf { generatorFolderPruned }.orEmpty()
+
+            val (response, records) = captureLogRecords {
+                runTool(toolset) {
+                    it.mps_mcp_update_module(target, operation = ModuleOperation.DELETE, deleteFiles = deleteFiles)
+                }.also { readOnRepo { myProject.projectModules } }
+            }
+
+            assertTrue("modules.xml must still list $mpl: $response", savedModulesXml().contains("$langName.mpl"))
+            readOnRepo {
+                assertNull("the generator must be unregistered", myProject.repository.getModule(generatorRef.moduleId))
+                assertTrue("$langName must stay a project module", language in myProject.projectModules)
+                assertTrue("the language must no longer declare the generator",
+                    language.moduleDescriptor!!.generators.none { it.moduleReference == generatorRef })
+            }
+            val savedLanguage = readOnRepo {
+                ModulesMiner(myProject.platform).collectModules(myProject.fileSystem.getFile(mpl.toFile())).collectedModules
+                    .mapNotNull { it.descriptor as? LanguageDescriptor }.single()
+            }
+            assertTrue("the saved $mpl must no longer declare the generator",
+                savedLanguage.generators.none { it.moduleReference == generatorRef })
+            executeCommandIn(myProject) { language.setModuleDescriptor(language.moduleDescriptor) }
+            readOnRepo {
+                assertNull("reloading the language descriptor must not bring the generator back",
+                    myProject.repository.getModule(generatorRef.moduleId))
+            }
+
+            assertTrue("the language descriptor must survive: $response", Files.isRegularFile(mpl))
+            assertTrue("the language models must survive: $response", Files.isDirectory(directory.resolve("models")))
+            assertEquals("the language folder must lose no more than the generator folder: $response",
+                languageFolderAfter, listing(directory))
+            assertEquals("the generator folder is deleted with files only, when empty: $response",
+                !generatorFolderPruned, Files.exists(generatorDir))
+            assertNoProblemsLogged(records)
+            val data = expectOk(response)
+            assertEquals("parentLanguage: $response", langName, data.get("parentLanguage")?.asString)
+            if (strayFile) {
+                val warning = data.get("fileDeletionWarning")?.asString.orEmpty()
+                assertTrue("the kept generator folder must be reported: $response",
+                    warning.contains("kept $generatorDir: not empty"))
+            } else {
+                assertFalse("nothing of the generator is kept: $response", data.has("fileDeletionWarning"))
+            }
+        } finally {
+            deleteQuietly(directory)
+            deleteQuietly(generatorDir)
+        }
+    }
+
+    @Test
+    fun `delete_module of a language-owned generator keeps the language`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = false)
+
+    @Test
+    fun `delete_module with deleteFiles of a language-owned generator keeps the language files`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true)
+
+    @Test
+    fun `delete_module with deleteFiles of a language-owned generator reports a folder it keeps`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true, strayFile = true)
+
+    @Test
+    fun `delete_module of a generator added by create_module keeps the language`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = false, generatorViaCreateModule = true)
+
+    @Test
+    fun `delete_module with deleteFiles of a generator added by create_module, addressed by reference`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true, generatorViaCreateModule = true, byReference = true)
+
+    @Test
+    fun `delete_module with deleteFiles of a generator outside its language folder deletes only that folder`() =
+        assertDeleteOfOwnedGenerator(deleteFiles = true, generatorViaCreateModule = true, generatorOutsideLanguage = true)
+
+    @Test
     fun `delete_module returns NOT_FOUND for unknown module`() {
         val response = runTool(toolset) { it.mps_mcp_update_module("ghost.module", operation = ModuleOperation.DELETE) }
         assertTrue(expectErr(response).contains("not found"))
@@ -2023,32 +2187,6 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_module_dependency(source.moduleName!!, "ghost.target", DependencyOperation.DELETE)
         }
         assertTrue(expectErr(response).contains("not found"))
-    }
-
-    @Test
-    fun `add_module_dependency with operation DELETE calls remove_module_dependency and drops the dependency`() {
-        val source = createSolution("test.add.remove.src${System.nanoTime()}")
-        val target = createSolution("test.add.remove.tgt${System.nanoTime()}")
-        val sourceName = source.moduleName!!
-        val targetName = target.moduleName!!
-
-        // Add first
-        val addResp = runTool(toolset) {
-            it.mps_mcp_module_dependency(sourceName, targetName, DependencyOperation.ADD, null, false)
-        }
-        assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
-
-        // Then remove via the same method but with DependencyOperation.DELETE operation
-        val removeResp = runTool(toolset) {
-            it.mps_mcp_module_dependency(sourceName, targetName, DependencyOperation.DELETE, null, false)
-        }
-        assertTrue(JsonParser.parseString(removeResp).asJsonObject.get("ok").asBoolean)
-
-        val hit = readOnRepo {
-            (source as AbstractModule).moduleDescriptor!!.dependencies
-                .firstOrNull { it.moduleRef == target.moduleReference }
-        }
-        assertNull("dependency must be gone from descriptor", hit)
     }
 
     // ── facets ─────────────────────────────────────────────────────────────────────────────

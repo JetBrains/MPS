@@ -43,7 +43,7 @@ A `\n` emission is simply `{ "concept": "jetbrains.mps.lang.textGen.structure.Ne
 | `DecreaseDepthOperation` | `decrease depth ;` | `depth--` unconditionally | none |
 | `NodeAppendPart` with `withIndent = true` | `append <part> with indent` | transiently `depth++` while evaluating this part | emits child text with the extra level |
 
-See `indentation-model.md` for the full mental model and worked examples.
+See `references/indentation-model.md` for the full mental model and worked examples.
 
 ## Binary output: `write`
 

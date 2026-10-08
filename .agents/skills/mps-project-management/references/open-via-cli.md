@@ -8,7 +8,7 @@ Pass the **project directory** (or an `.ipr` / `.mpr` file) as a positional argu
 
 Goal: a **short-lived** second process that talks to the first over `DirectoryLock` and exits.
 
-1. Classify the process (`detect-source-vs-standalone.md`).
+1. Classify the process (`references/detect-source-vs-standalone.md`).
 2. Build a command that reuses that instance's selector (and config/system dirs).
 3. Append the absolute project path.
 4. Run it with a ~90s timeout. Success is **exit 0 in a few seconds**, not a new GUI.
@@ -69,7 +69,7 @@ Wait until MCP tools appear, then call `mps_mcp_list_open_projects`.
 | Immediate exit, `PathClassLoader` / empty classpath | Split a path that contained spaces |
 | Immediate exit, `Could not find or load main class jetbrains.mps.Launcher …` | Passed the whole `java_command` field (it included leftover args). Use the first token only |
 | `ACTIVATE_NOT_INITIALIZED` | First instance still bootstrapping — wait and retry |
-| MCP still `"projects":[]` after a clean exit | Project open may still be in progress — wait, retry `list_open_projects`; check `log/idea.log` for `Opening project` / scanning |
+| MCP still `"projects":[]` after a clean exit | Project open may still be in progress — wait, retry `list_open_projects`; check `log/idea.log` for `Opening project` / scanning (for a standalone install, locate the log via `references/ide-log.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin) |
 
 ## What not to do
 

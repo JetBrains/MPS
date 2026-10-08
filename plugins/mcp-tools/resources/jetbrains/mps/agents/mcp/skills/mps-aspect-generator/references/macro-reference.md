@@ -63,7 +63,7 @@ Inside the `referentFunction` body the relevant expression is:
 genContext  →  get output <routines-label-ref> for (node.definition)
 ```
 
-…encoded as a `DotExpression` whose operand is `TemplateFunctionParameter_generationContext` and whose operation is a `GenerationContextOp_GetOutputByLabelAndInput` with a `mappingLabel` ref and an `inputNode` child expression (see `mapping-labels.md`). The placeholder target (`bar`) is irrelevant at runtime — the reference macro overrides it.
+…encoded as a `DotExpression` whose operand is `TemplateFunctionParameter_generationContext` and whose operation is a `GenerationContextOp_GetOutputByLabelAndInput` with a `mappingLabel` ref and an `inputNode` child expression (see `references/mapping-labels.md`). The placeholder target (`bar`) is irrelevant at runtime — the reference macro overrides it.
 
 ## Example 2 — without a mapping label (lambda-calculus name lookup)
 

@@ -40,6 +40,8 @@ The most idiomatic way to test typesystem/constraints/scope rules is to annotate
 
 The visual cue in the editor is `<check ... has error IsNotSubtypeOf>` or `<check expression has type int>` wrapping the asserted node.
 
+Before writing a `has type` assertion, build the construct in a scratch sandbox model (recipe: `mps-aspect-typesystem` Common-Path step 9) and run `mps_mcp_query_nodes` `GET_TYPE` on that node to learn the actual inferred type and its `presentation`; it answers the node's own type, not the context's *expected* type that `has expected type` checks — `GET_EXPECTED_TYPE` with `maxRootNodes:1` answers that one (the check bounds the node from its parent's slice, not the whole root), so run it before writing a `has expected type` assertion.
+
 Scope tests use the **`ScopesTest`** annotation — see `references/scopes-test.md`.
 
 ### Example — typesystem assertion inside a snippet
@@ -70,3 +72,42 @@ test compositeConvertDiffTest() {
 ```
 
 `assertNodesMatch` (`AssertMatch`, `JA50E`) does a structural compare of two nodes, ignoring volatile fields. Apply it via Alt+Enter inside a test method.
+
+### Example — a test method that calls a behavior method on a labelled node
+
+`assert 15 equals node<recipe>.totalMinutes();`, as the `testMethods` child of the `NodesTestCase`. The snippet
+root carries `TestNodeAnnotation` `name=recipe` in its `smodelAttribute` role. A JSON write adds the call's language,
+`jetbrains.mps.lang.behavior`, to the test model by itself. The call is `jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall`. It is
+neither the obsolete smodel concept of the same name nor a Java `InstanceMethodCallOperation`, which fails with
+"not a strong subtype of ?no classifier?".
+The general shape is `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
+
+```json
+{
+  "concept": "jetbrains.mps.lang.test.structure.SimpleNodeTest",
+  "properties": [{ "name": "name", "value": "testTotalMinutes" }],
+  "children": [
+    { "role": "returnType", "nodes": [{ "concept": "jetbrains.mps.baseLanguage.structure.VoidType" }] },
+    { "role": "body", "nodes": [{
+      "concept": "jetbrains.mps.baseLanguage.structure.StatementList",
+      "children": [{ "role": "statement", "nodes": [{
+        "concept": "jetbrains.mps.baseLanguage.unitTest.structure.AssertEquals",
+        "children": [
+          { "role": "expected", "nodes": [{ "concept": "jetbrains.mps.baseLanguage.structure.IntegerConstant",
+                                            "properties": [{ "name": "value", "value": "15" }] }] },
+          { "role": "actual", "nodes": [{
+            "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
+            "children": [
+              { "role": "operand", "nodes": [{ "concept": "jetbrains.mps.lang.test.structure.TestNodeReference",
+                                               "references": [{ "role": "declaration", "target": "recipe" }] }] },
+              { "role": "operation", "nodes": [{
+                "concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
+                "references": [{ "role": "baseMethodDeclaration", "target": "<behavior-method-node-ref>" }] }] }
+            ]
+          }]}
+        ]
+      }]}]
+    }]}
+  ]
+}
+```

@@ -15,7 +15,7 @@ When `execute` adds a child whose concept has a **NodeFactory** defined in the a
 | `new root node initialized<C> in model` | `NF_Model_CreateNewRootNodeOperation` | `Model_CreateNewRootNodeOperation` |
 | `c.new initialized()` (detached) | `NF_Concept_NewInstance` | `Concept_NewInstance` |
 
-`<default>` inside `add new initialized(<default>)` is an empty initializer placeholder: the concept is inferred from the containment role and no extra init block runs beyond the node factory. Use it when the factory already does everything you need. See `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin for the full smodel/NF_* operation table and `references/collections-catalog.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin for the collections-vs-baseLanguage `IsEmptyOperation` disambiguation.
+`<default>` inside `add new initialized(<default>)` is an empty initializer placeholder: the concept is inferred from the containment role and no extra init block runs beyond the node factory. Use it when the factory already does everything you need. See `references/property-and-mutation-ops.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin for the full smodel/NF_* operation table and "`isEmpty` / `isNotEmpty` ambiguity" in `references/collections-catalog/sequence-operations.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.
 
 ## Used-language requirement
 

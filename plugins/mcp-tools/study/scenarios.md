@@ -28,6 +28,8 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S8 | Explore an unknown statechart project and write a project-local `statechart-dsl` skill for later agents. Models must not change. |
 | S9 | Run two read-only Console instance queries, read the history, recall the first command, and print the current command as text and as JSON. Models must not change. |
 | S10 | Create a second empty project that opens without a migration prompt, close this one, open the new one, add a solution with one class, and leave both projects closed. Runs last. |
+| S11 | Answer five type questions about the Expressions sample (a subtype, the supertypes, a variable's type and its rule, a commented-out declaration, an operand's expected type) by asking the type checker. Models must not change. |
+| S12 | Make `Bool` a subtype of `Number` in the Expressions sample and prove it on a scratch sandbox model: the type error before, a new subtyping rule, one rebuild, the error gone and the side effect on `true + 1` after. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -167,6 +169,47 @@ The one BaseLanguage class is not a `mps-baselanguage` eval.
 Record `list_open_projects` the moment the worker exits, before reopening anything.
 Hypotheses: H4, H7.
 
+**S11 — type questions, read-only.** Fixture: `expressions` (the `samples/expressions` project,
+`classes_gen` included). Must not modify models.
+Forces answers from the running typesystem instead of from its rules: `IS_SUBTYPE` (`Int` <:
+`Float`), `SUPERTYPES` (all four supertypes of `Int`), `EXPLAIN_TYPE` for a variable typed by a
+later assignment (`E` in `Main` is `Float` through `typeof_SimpleMathAssignment`), and
+`GET_EXPECTED_TYPE` for an operand slot (`Number`). One question is about a commented-out
+declaration in `TypeError`: its check is `no problems found in checked nodes (1 subtree(s)
+unchecked …)`, and citing that as "well-typed" fails. It replays a recorded failure (two rounds and
+five `SubtypingRule` printouts for `Int <: Float`).
+Run to verify: `mps_mcp_query_types` and `GET_TYPE` / `GET_EXPECTED_TYPE` routing in
+`mps-mcp-workflow` (Critical Directives, `references/analysis-tools/type-queries.md`), the
+`uncheckedSubtrees` reading of `check_root_node_problems`, and the type-question half of
+`mps-language-analysis`.
+Read the process signals in `done_criteria.md` together with the `families.py` columns
+`T_rule_prints` (should be 0) and `T_type_queries`; a pass with rule printouts is the regression.
+Hypotheses: H4, H7.
+Isolation: the fixture copy has the module ids of `samples/expressions`, so it must open in an MPS
+that has not loaded that sample — not one with the MPS checkout's own project open (it holds the
+sample), and not after another cell that loaded the Expressions sample. Restart MPS before S11.
+If `classes_gen` in the fixture is stale against the checkout, the cell measures a stale runtime
+(the D80 hazard): make the sample before tarring it.
+
+**S12 — typesystem authoring with a sandbox.** Fixture: `expressions`, as S11. Prompt frozen
+2026-10-08 after the round-30 rehearsal (opus and sonnet both passed; `HOTSPOT_REPORT_round30.md`). The worker creates a scratch model with a `Probe` root holding
+`Number n = true` and `Int i = 1.3 F`, asks the engine for the baseline error and its rule, adds a
+`SubtypingRule` `Bool <: Number`, rebuilds the language once, and asks again: `IS_SUBTYPE` true,
+the `Bool` error gone, the `Float`/`Int` one kept, `true + 1` now `Number` (the unintended widening a
+lattice change brings). Evidence goes to `EVIDENCE.md`.
+Run to verify: `mps-aspect-typesystem` Common-Path steps 4 and 9 (the sandbox recipe), the
+"After changing typesystem rules" half of `references/analysis-tools/type-queries.md`, and "a MAKE
+with `runtimeReady: true` is the reload" (D84).
+Read the process signals together with the `families.py` columns `T_type_queries_before_make`
+(should be ≥ 1), `T_rule_prints` (≤ 3), `M_makes` (1 expected, ≥ 1 required) and `M_reload_all` (0).
+Making the sandbox or the scratch model fails by design (no generator for `SimpleMathWrapper`); that
+failure says nothing about the language.
+Hypotheses: H2, H5, H7.
+Isolation: as S11 — the fixture has the module ids of `samples/expressions`, so restart MPS before
+S12, also when S11 ran before it in the same process. S12 changes and builds the language, so
+restart again before any later Expressions cell. The worker's MAKE writes generated files into the
+run project; criterion 5 compares `.mps` files only.
+
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
 after a start or restart.
@@ -186,7 +229,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-structure-concepts` | S1 (create concepts, enums, children, refs), S2 (add a child to an existing concept), S4 (rename, cardinality, new concept) | | S3 only consumes the language |
 | `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model) | | menus, keymaps, action maps, substitute menus — no cell |
 | `mps-aspect-constraints` | S1 (property validator + a scope that excludes the referrer), S2 (non-blank property rule) | | S5 repairs instances; it does not author a rule |
-| `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking) | | no inference, subtyping, or replacement cell |
+| `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
 | `mps-aspect-intentions` | S2 | | |
 | `mps-aspect-migrations` | S4 | | apply-half is D48; see S4 above |
@@ -195,17 +238,18 @@ skill whose **Run** column is not S1 or S3.
 | `mps-node-editing/scripts/table_to_bulk_insert.py` | S3 | | the aggregate cookbook root is outside the spec (D82) |
 | `mps-baselanguage` | S6 (parser vs JSON AST), S1 and S2 (function bodies in behavior / constraints) | S7 (test bodies) | S10's one empty class is not a signal |
 | `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print) | | |
-| `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem) | S1, S6, S7 (`get_concept_details` / `shape`) | |
+| `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem), S11 (type questions via `mps_mcp_query_types`) | S1, S6, S7 (`get_concept_details` / `shape`) | |
 | `mps-dsl-memory` | S8 | | |
 | `mps-tests` | S7 | | |
 | `mps-run-configurations` | S7 | | |
 | `mps-console` | S9 | | evaluate before close |
-| `mps-project-management` | S10 | | observer opens for S1–S9 do not measure this skill |
-| `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all ten | | |
-| make / reload / hollow descriptors | S1, S2, S4, S6 | | a MAKE that returns `runtimeReady: true` is the reload (D84) |
+| `mps-project-management` | S10 | | observer opens for S1–S9, S11 and S12 do not measure this skill |
+| `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all twelve | | |
+| make / reload / hollow descriptors | S1, S2, S4, S6, S12 | | a MAKE that returns `runtimeReady: true` is the reload (D84) |
 | bulk insert, `references/bulk-creation.md` | S3 | S1 (a few roots, not bulk) | |
 | reference formats, dry-run name warnings | S3, S1 | S5 | |
 | `check_root_node_problems`, quick fixes | S5 | S1, S3 (end-of-task check only) | |
+| type queries (`mps_mcp_query_types`, `GET_TYPE`, `GET_EXPECTED_TYPE`, `references/analysis-tools/type-queries.md`) and `uncheckedSubtrees` | S11 (read-only), S12 (before and after a rule change) | | |
 | `print_node` / concept-details shape | S8 (a wrong reading is shipped), S5 (repair against a print) | S1, S2, S6 | |
 | `scripts/mps_dump.py` | | S8, S6, S7, S1 (workers use it to orient; the prompt does not require it) | |
 | discovery of an unknown project (H4) | S2, S8 | | |
@@ -239,7 +283,8 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
    the changed path is taken; a second model is a variance check, not a requirement.
 3. If several cells share a fixture language, restart MPS between them: S2/S8 on `statechart`,
    and any two of S3/S4/S5/S6/S7/S9 on `recipes*` (S4 is in that set — it loads the same
-   language). A read-only cell (S9) may precede a language-changing one in the same process; S8
+   language). S11 and S12 each need a restart before them, and an MPS that has not loaded the
+   Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
    need that restart. S10 runs last, and only when it is in the list.
 4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S9 session state).
