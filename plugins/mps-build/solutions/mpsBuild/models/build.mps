@@ -60547,17 +60547,14 @@
             </node>
           </node>
         </node>
-        <node concept="398223" id="6OVuTPpYdca" role="39821P">
-          <node concept="3_J27D" id="6OVuTPpYdcb" role="Nbhlr">
-            <node concept="3Mxwew" id="6OVuTPpYde0" role="3MwsjC">
-              <property role="3MwjfP" value="xml-plugin" />
-            </node>
-          </node>
-          <node concept="2HvfSZ" id="6OVuTPpYdcd" role="39821P">
-            <node concept="55IIr" id="6OVuTPpYdce" role="2HvfZ0">
-              <node concept="2Ry0Ak" id="6OVuTPpYdcf" role="iGT6I">
+        <node concept="m$_wl" id="5whBXIHtNJA" role="39821P">
+          <ref role="m_rDy" node="5whBXIGTrNc" resolve="com.intellij.xml" />
+          <node concept="pUk6x" id="5whBXIHtNJB" role="pUk7w" />
+          <node concept="2HvfSZ" id="5whBXIHtNJC" role="39821P">
+            <node concept="55IIr" id="5whBXIHtNJD" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="5whBXIHtNJE" role="iGT6I">
                 <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="6OVuTPpYdgU" role="2Ry0An">
+                <node concept="2Ry0Ak" id="5whBXIHtNJF" role="2Ry0An">
                   <property role="2Ry0Am" value="xml-plugin" />
                 </node>
               </node>
@@ -60583,6 +60580,25 @@
       </node>
       <node concept="3_J27D" id="5ziJCXbfbGX" role="m$_w8">
         <node concept="3Mxwew" id="5ziJCXbfcMj" role="3MwsjC">
+          <property role="3MwjfP" value="&lt;empty&gt;" />
+        </node>
+      </node>
+    </node>
+    <node concept="m$_wf" id="5whBXIGTrNc" role="3989C9">
+      <property role="1NdglO" value="true" />
+      <property role="m$_wk" value="com.intellij.xml" />
+      <node concept="3_J27D" id="5whBXIGTrNg" role="m$_yQ">
+        <node concept="3Mxwew" id="5whBXIGTrNh" role="3MwsjC">
+          <property role="3MwjfP" value="XML and HTML" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5whBXIGTrNi" role="m_cZH">
+        <node concept="3Mxwew" id="5whBXIGTrNj" role="3MwsjC">
+          <property role="3MwjfP" value="xml-plugin" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5whBXIGTrNk" role="m$_w8">
+        <node concept="3Mxwew" id="5whBXIGTrNl" role="3MwsjC">
           <property role="3MwjfP" value="&lt;empty&gt;" />
         </node>
       </node>

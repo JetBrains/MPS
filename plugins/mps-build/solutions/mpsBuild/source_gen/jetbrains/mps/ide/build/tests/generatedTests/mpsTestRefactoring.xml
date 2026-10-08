@@ -192,6 +192,7 @@
       <plugin path="${artifacts.mps}/plugins/mps-modelchecker" id="jetbrains.mps.ide.modelchecker" />
       <plugin path="${artifacts.mps}/plugins/mps-rcp" id="jetbrains.mps.rcp" />
       <plugin path="${artifacts.mps}/plugins/mps-testing" id="jetbrains.mps.testing" />
+      <plugin path="${artifacts.mps}/plugins/platform-vcs-plugin" id="com.intellij.platform.vcs" />
       <plugin path="${artifacts.mps}/plugins/vcs-git" id="Git4Idea" />
       <chunk>
         <module file="${basedir}/testbench/testsolutions/refactoring.test/refactoring.test.msd" />
@@ -590,7 +591,9 @@
       <plugin id="jetbrains.mps.rcp" path="${artifacts.mps}/plugins/mps-rcp" />
       <plugin id="jetbrains.mps.testing" path="${artifacts.mps}/plugins/mps-testing" />
       <plugin id="intellij.structureView.plugin" path="${artifacts.mps}/plugins/platform-structureView-plugin" />
+      <plugin id="com.intellij.platform.vcs" path="${artifacts.mps}/plugins/platform-vcs-plugin" />
       <plugin id="Git4Idea" path="${artifacts.mps}/plugins/vcs-git" />
+      <plugin id="com.intellij.xml" path="${artifacts.mps}/plugins/xml-plugin" />
       <project path="${basedir}" />
       <testmodules>        
         <path refid="mps.tests.path" />

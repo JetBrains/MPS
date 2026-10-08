@@ -954,6 +954,7 @@
       <plugin id="intellij.structureView.plugin" path="${artifacts.mps}/plugins/platform-structureView-plugin" />
       <plugin id="com.intellij.platform.vcs" path="${artifacts.mps}/plugins/platform-vcs-plugin" />
       <plugin id="Git4Idea" path="${artifacts.mps}/plugins/vcs-git" />
+      <plugin id="com.intellij.xml" path="${artifacts.mps}/plugins/xml-plugin" />
       <project path="${basedir}" />
       <testmodules>        
         <path refid="mps.tests.path" />
