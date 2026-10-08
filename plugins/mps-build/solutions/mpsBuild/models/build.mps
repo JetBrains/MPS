@@ -13825,19 +13825,6 @@
             <ref role="3bR37D" node="mXGwHwhVPj" resolve="JDK" />
           </node>
         </node>
-        <node concept="1SiIV0" id="Rwku8tJK1m" role="3bR37C">
-          <node concept="1BurEX" id="Rwku8tJK1n" role="1SiIV1">
-            <node concept="398BVA" id="Rwku8tJK1j" role="1BurEY">
-              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="Rwku8tJK1k" role="iGT6I">
-                <property role="2Ry0Am" value="lib" />
-                <node concept="2Ry0Ak" id="Rwku8tJK1l" role="2Ry0An">
-                  <property role="2Ry0Am" value="util-8.jar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="398BVA" id="7oVDYnclR8n" role="3LF7KH">
           <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
           <node concept="2Ry0Ak" id="7oVDYnclR8o" role="iGT6I">
@@ -13851,6 +13838,71 @@
                   <node concept="2Ry0Ak" id="7oVDYnclSY3" role="2Ry0An">
                     <property role="2Ry0Am" value="io.netty.msd" />
                   </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6epddVrxZID" role="3bR37C">
+          <node concept="1BurEX" id="6epddVrxZIE" role="1SiIV1">
+            <node concept="398BVA" id="6epddVrxZIA" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6epddVrxZIB" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6epddVrxZIC" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.netty.buffer.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6epddVrxZII" role="3bR37C">
+          <node concept="1BurEX" id="6epddVrxZIJ" role="1SiIV1">
+            <node concept="398BVA" id="6epddVrxZIF" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6epddVrxZIG" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6epddVrxZIH" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.netty.codec.http.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6epddVrxZIN" role="3bR37C">
+          <node concept="1BurEX" id="6epddVrxZIO" role="1SiIV1">
+            <node concept="398BVA" id="6epddVrxZIK" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6epddVrxZIL" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6epddVrxZIM" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.netty.codec.compression.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6epddVrxZIS" role="3bR37C">
+          <node concept="1BurEX" id="6epddVrxZIT" role="1SiIV1">
+            <node concept="398BVA" id="6epddVrxZIP" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6epddVrxZIQ" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6epddVrxZIR" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.netty.handler.proxy.jar" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6epddVrxZIX" role="3bR37C">
+          <node concept="1BurEX" id="6epddVrxZIY" role="1SiIV1">
+            <node concept="398BVA" id="6epddVrxZIU" role="1BurEY">
+              <ref role="398BVh" node="16Vg0jOco3V" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="6epddVrxZIV" role="iGT6I">
+                <property role="2Ry0Am" value="lib" />
+                <node concept="2Ry0Ak" id="6epddVrxZIW" role="2Ry0An">
+                  <property role="2Ry0Am" value="intellij.libraries.netty.codec.protobuf.jar" />
                 </node>
               </node>
             </node>
