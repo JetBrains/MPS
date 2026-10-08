@@ -145,4 +145,4 @@ What to expect, verified against a live MPS:
 3. **Tell the user it is not executed** — they run it with Ctrl+Enter. Offer to insert a different command if they want to iterate.
 4. **Pass `projectPath`** whenever you know it, to avoid ambiguous-project errors. If the console plugin is disabled, ask the user to enable it.
 
-For a query with closures, start from the generator script in "A query with closures" above. Other smodel/collections expressions that go *inside* these blueprints (e.g. a `.forEach(…)` / `.refactor(…)` chain, or statements in a closure body) are the job of `mps-model-manipulation` and `mps-node-editing`.
+For a query with closures, start from the generator script in "A query with closures" above. Other smodel/collections expressions that go *inside* these blueprints (e.g. a `.forEach(…)` / `.refactor(…)` chain, or statements in a closure body) are the job of `mps-model-manipulation`, `mps-collections-and-closures` and `mps-node-editing`.

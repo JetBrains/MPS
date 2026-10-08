@@ -123,4 +123,4 @@ Key FQNs (verified against the live node):
 | `referenceNode` | `jetbrains.mps.lang.constraints.structure.ConstraintFunctionParameter_referenceNode` |
 
 The closure-literal shape (obligatory `type` → `UndefinedType`, `resolveInfo`) follows
-`references/closures-catalog.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
+`references/closures-catalog.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.

@@ -61,7 +61,7 @@ class SkillTypeQueryRoutingTest {
 
     @Test
     fun `code-editing skills route to the typesystem`() {
-        for (skill in listOf("mps-baselanguage/SKILL.md", "mps-model-manipulation/SKILL.md")) {
+        for (skill in listOf("mps-baselanguage/SKILL.md", "mps-model-manipulation/SKILL.md", "mps-collections-and-closures/SKILL.md")) {
             assertNamesAll(skill, read(skill), listOf(QUERY_TYPES_TOOL))
         }
     }

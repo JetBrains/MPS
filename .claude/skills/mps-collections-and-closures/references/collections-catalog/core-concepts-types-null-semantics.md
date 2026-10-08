@@ -12,10 +12,10 @@
 | `TranslateOperation` | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1201792049884` | `.translate { it => yield ...; ... }` — flatMap-style; body is a closure that may `yield` multiple elements |
 | `AddElementOperation` | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1160612413312` | `.add(element)` |
 | `SkipStatement` | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1224446583770` | `continue;` inside a collections `foreach` or `.translate`/`.where`/etc. closure |
-| `ForEachStatement` (collections) | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1153943597977` | `foreach v in sequence { ... }` — see `foreach-statements.md` |
+| `ForEachStatement` (collections) | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1153943597977` | `foreach v in sequence { ... }` — see `references/foreach-statements.md` |
 | `ForEachVariable` | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1153944193378` | Loop variable of the collections `ForEachStatement`. **Not** a `LocalVariableDeclaration`. |
 | `ForEachVariableReference` | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1153944233411` | Reference to a `ForEachVariable` inside the loop body. **Not** a `VariableReference`. |
-| `DowncastExpression` | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1228228912534` | `expr` — downcast a collection-typed value to a specific Java interface (`Map`, `List`, etc.) for calling methods not on the abstract type |
+| `DowncastExpression` | `c:83888646-71ce-4f1c-9c53-c54016f6ad4f/1228228912534` | `downcast expr` — downcast a collection-typed value to a specific Java interface (`Map`, `List`, etc.) for calling methods not on the abstract type. Blueprints in `references/downcast-expression.md` |
 
 ## Type hierarchy
 

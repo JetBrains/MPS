@@ -5,7 +5,7 @@ Read this first when an error message looks weird or you're about to write your 
 ## Golden rules
 
 - **Node Equality**: When comparing nodes for equality, ALWAYS use the `:eq:` and `:ne:` operators (`NPEEqualsExpression` / `NPENotEqualsExpression`). Never use `==` or `equals()`, as they can cause `NullPointerException`s or compare incorrectly in MPS.
-- **Closure parameter needs a `type` child**: every `InferredClosureParameterDeclaration` (the `it` parameter inside `.where { it => … }`, `.translate { … }`, etc.) requires a `type` child, even though the type is intended to be inferred. Use `jetbrains.mps.baseLanguage.structure.UndefinedType` as the placeholder. Omitting it triggers a cascade of misleading errors (`"different parameter numbers"`, `"out of search scope"`, `"operation is not applicable to null"`); see the closure-literal blueprint in `dot-expression-basics.md` and the closure rules in `closures-catalog.md`.
+- **Closure parameter needs a `type` child** (`UndefinedType`): the rule and its error cascade are in `references/golden-rules-and-pitfalls.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin.
 
 ## Background: two worlds in one model
 
@@ -42,4 +42,4 @@ against a matching functional-type target; a mismatch is reported in the insert 
 | Smodel expression (e.g. `:CatchClause` cast) cannot be passed as argument | Java parser has no syntax for smodel casts | Change method signature to accept wider node and compute cast inside the method |
 | `access to link 'X' is not expected here` / `out of search scope` despite correct cardinality | Operand typed as `node<>` rather than `node<X>` (e.g. `ForEachVariable` over `sequence<node<>>`, loosely-typed parameter) | Wrap operand in `SNodeTypeCastExpression` to typed `node<X>` — see "Operand must be a typed `node<X>`" in `dot-expression-basics.md` |
 | Warning: "Prefer explicit node presentation" | `+` string concatenation with an SNode argument | Pre-existing warning in `RulesFunctions_BaseLanguage`; not introduced by your changes |
-| `"different parameter numbers"` on a `ClosureLiteral` + `"out of search scope"` / `"operation is not applicable to null"` inside the closure body | The `InferredClosureParameterDeclaration` was inserted without its required `type` child, so closure-signature inference fails and the parameter's type stays null | Add `{ "role": "type", "nodes": [{ "concept": "jetbrains.mps.baseLanguage.structure.UndefinedType" }] }` to every `InferredClosureParameterDeclaration` |
+| `"different parameter numbers"` on a `ClosureLiteral`, or any other collections / closures error | A collections or closures rule, not an smodel one | Open `references/golden-rules-and-pitfalls.md` in the `mps-collections-and-closures` skill root after loading that companion skill from the same origin |

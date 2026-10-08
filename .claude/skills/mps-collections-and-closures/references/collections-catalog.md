@@ -14,7 +14,6 @@ One file per section, each self-contained. Read only the files for your job, and
 | List mutators | `references/collections-catalog/list-mutators.md` |
 | Set & map operations | `references/collections-catalog/set-and-map-operations.md` |
 | Control flow within closures | `references/collections-catalog/control-flow-in-closures.md` |
-| Iteration: pick the right `foreach` | `references/collections-catalog/iteration-foreach.md` |
 | Sorted collections | `references/collections-catalog/sorted-collections.md` |
 | Iterator and modifying_iterator | `references/collections-catalog/iterators.md` |
 | Concept IDs | `references/collections-catalog/concept-ids.md` |

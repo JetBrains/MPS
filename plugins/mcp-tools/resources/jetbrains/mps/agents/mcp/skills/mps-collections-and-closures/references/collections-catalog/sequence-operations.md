@@ -27,7 +27,7 @@ Operations come as `*Operation` concepts sitting in the `operation` role of a `D
 | `seq.join(",")`                                                            | `JoinOperation` | force | `string` |
 | `seq.forEach{it=>..}` (dot-op form)                                        | `VisitAllOperation` (alias `forEach`) | force | — |
 
-> The dot-op `seq.forEach{..}` (concept `VisitAllOperation`) is distinct from the statement-level `foreach v in seq { .. }` (concept `ForEachStatement`, see `foreach-statements.md`). They look similar in prose but have different AST shapes.
+> The dot-op `seq.forEach{..}` (concept `VisitAllOperation`) is distinct from the statement-level `foreach v in seq { .. }` (concept `ForEachStatement`, see `references/foreach-statements.md`). They look similar in prose but have different AST shapes.
 
 **Lazy vs eager rule of thumb**: filtering/mapping/`ofType`/`take`/`skip`/`distinct`/`concat` are lazy; everything that returns a scalar, `boolean`, `int`, materialized collection, or performs side effects forces iteration.
 

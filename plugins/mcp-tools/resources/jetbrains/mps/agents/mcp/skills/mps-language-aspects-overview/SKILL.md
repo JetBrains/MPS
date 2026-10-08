@@ -40,7 +40,7 @@ An MPS language is a collection of **aspects**, each a separate model inside the
 | **IDE plugin** | `plugin` | `models/plugin.mps` | `jetbrains.mps.lang.plugin` | `mps-ide-plugin` |
 | **Feedback** | `feedback` | `models/feedback.mps` | `jetbrains.mps.lang.feedback` | — |
 | **Accessories / Dependencies** | — (no model created) | `.mpl` and per-model | — | `mps-aspect-accessories` |
-| **Code inside bodies** | — | any aspect that holds BL | `baseLanguage`, `smodel`, `collections`, `closures` | `mps-model-manipulation` |
+| **Code inside bodies** | — | any aspect that holds BL | `baseLanguage`, `smodel`, `collections`, `closures` | `mps-model-manipulation` (smodel), `mps-collections-and-closures` (collections, closures) |
 | **Inline node literals** | — | any aspect using quotations | `jetbrains.mps.lang.quotation` | `mps-quotations` |
 
 Aspect IDs are **case-sensitive** and create models named `<langModule>.<aspectId>` with **no `@` suffix**. Stereotypes (`@generator`, `@genplan`, `@tests`, `@descriptor`) are a separate mechanism for non-aspect models. Authoritative table with usage notes and pitfalls: [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md).

@@ -22,7 +22,7 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 - **Expressions in statement lists**: any `Expression` must be wrapped in `ExpressionStatement` to be valid inside a `StatementList`.
 - **Variable declarations**: in method bodies wrap `LocalVariableDeclaration` in `LocalVariableDeclarationStatement`. In `ForStatement.variable` use `LocalVariableDeclaration` directly, no wrapper.
 - **Prefer primitives**: use `string` (`StringType`) over `String` (`ClassifierType`) where possible; same for `int`, `boolean`, etc.
-- **Compatibility**: BaseLanguage core is Java 7 (including generics). When building AST directly (JSON blueprints), there is no lambda/record syntax — use the `jetbrains.mps.baseLanguage.closures` extension for closures. The Java **parser** (`mps_mcp_parse_java_and_insert`) additionally accepts the Java 8+ syntax MPS recognizes — most notably **lambdas**, which it maps to `closures` `ClosureLiteral`s (auto-imported when `postProcess.importUsedLanguages` is on); a lambda only type-checks against a matching functional-type target. Constructs the parser does not recognize (e.g. records) still fail to parse. See `references/parse-java-tips.md`.
+- **Compatibility**: BaseLanguage core is Java 7 (including generics). When building AST directly (JSON blueprints), there is no lambda/record syntax — use the `jetbrains.mps.baseLanguage.closures` extension for closures (blueprints in the `mps-collections-and-closures` skill). The Java **parser** (`mps_mcp_parse_java_and_insert`) additionally accepts the Java 8+ syntax MPS recognizes — most notably **lambdas**, which it maps to `closures` `ClosureLiteral`s (auto-imported when `postProcess.importUsedLanguages` is on); a lambda only type-checks against a matching functional-type target. Constructs the parser does not recognize (e.g. records) still fail to parse. See `references/parse-java-tips.md`.
 - **Surgical edits**: when a single child changes prefer `mps_mcp_update_node` over rewriting the whole root — full-root rewrites churn persistent IDs and break incoming refs.
 - **Ask the running typesystem, not its rules:** use `mps_mcp_query_types` `OPERATION_TYPE` for expressions such as `int + long` or `String + int`, `IS_SUBTYPE` for assignability, and `COERCE` to `ClassifierType` before reading `classifier.targetReference` for classifier members. See `mps-mcp-workflow/references/analysis-tools/type-queries.md`.
 
@@ -53,7 +53,8 @@ Pick the right authoring tool before you start:
 - **`mps-node-editing`** — general node mutation tools (`mps_mcp_update_node`, etc.). Load first if you have not seen them.
 - **`mps-aspect-structure-concepts`** — defines what concepts exist and what roles they expose. Read when authoring a brand-new language whose concepts extend BaseLanguage.
 - **`mps-quotations`** — light/quoted SNode literals embedded in BaseLanguage code (e.g. inside behavior or generator bodies).
-- **`mps-model-manipulation`** — `smodel` + `collections` + `closures` patterns layered on top of BaseLanguage; load when manipulating MPS nodes from BaseLanguage.
+- **`mps-collections-and-closures`** — `collections` + `closures` patterns layered on top of BaseLanguage (`sequence`/`list`/`map`, `.where`/`.select`, closure literals, SAM conversion); load for any lambda, closure or collection operation, with or without nodes.
+- **`mps-model-manipulation`** — `smodel` patterns layered on top of BaseLanguage; load when manipulating MPS nodes from BaseLanguage.
 - **`mps-aspect-behavior`**, **`mps-aspect-typesystem`**, **`mps-aspect-constraints`** — each owns a language whose function bodies are BaseLanguage; reach for those skills when the surrounding aspect matters.
 
 ## Reference Index

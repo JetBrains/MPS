@@ -9,6 +9,8 @@ MPS has **two distinct** foreach concepts. Pick the right one for the iterable y
 
 The **collections** variant is the idiomatic one for MPS code that works with nodes. Using the BaseLanguage variant over a `sequence<node<X>>` will usually cause a type error.
 
+If you see a typesystem error about iteration protocol, you almost certainly picked the wrong one.
+
 ## Collections `ForEachStatement` (preferred for MPS sequences)
 
 Role layout: `variable` → `ForEachVariable`, `inputSequence` → `Expression`, `body` → `StatementList`. The loop-variable **type is not stored on the `ForEachVariable`** — it is inferred from the `inputSequence`'s element type.

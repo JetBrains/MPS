@@ -2,7 +2,7 @@
 
 UUID `1a8554c4-eb84-43ba-8c34-6f0d90c6e75a`. It exposes the queries the MPS Console uses so they can run in **ordinary model code** — intentions, behavior methods, generator queries, constraints, migration/refactoring scripts, plain BaseLanguage. In the console the query expressions are usable directly; outside the console they must sit inside a `with` statement that fixes the scope.
 
-Add it to the host model's **used languages** before writing queries. The query operations build on `smodel` / `collections` / `closures`, so `.where`, `.select`, `.ofConcept<C>`, etc. compose directly on the results (see `mps-model-manipulation`).
+Add it to the host model's **used languages** before writing queries. The query operations build on `smodel` / `collections` / `closures`, so `.where`, `.select`, `.ofConcept<C>`, etc. compose directly on the results (see `mps-model-manipulation` and `mps-collections-and-closures`).
 
 ## The `with` statement
 
@@ -98,4 +98,4 @@ with (#project) {
 }
 ```
 
-See `mps-model-manipulation` for `.where` / `.select` / `.ofConcept<C>` / `replace with new(C)` / `:eq:` and the closure-literal rules used in these bodies.
+See `mps-model-manipulation` for `.ofConcept<C>` / `replace with new(C)` / `:eq:`, and `mps-collections-and-closures` for `.where` / `.select` and the closure-literal rules used in these bodies.

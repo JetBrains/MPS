@@ -97,7 +97,8 @@ So shape the query for what you need back:
 
 ## Related Skills
 
-- `mps-model-manipulation` — the `smodel` / `collections` / `closures` operations (`.where`, `.select`, `.ofConcept<C>`, `replace with new(C)`, `:eq:`) used in the bodies of console commands, `with` blocks, and `refactor` closures. The smodel query language layers on top of these.
+- `mps-model-manipulation` — the `smodel` operations (`.ofConcept<C>`, `replace with new(C)`, `:eq:`) used in the bodies of console commands, `with` blocks, and `refactor` closures. The smodel query language layers on top of these.
+- `mps-collections-and-closures` — the `collections` / `closures` operations (`.where`, `.select`, `.translate`, closure literals) that filter and transform query results.
 - `mps-node-editing` — the JSON blueprint format that `mps_mcp_insert_console_command_from_json` consumes (shared with `mps_mcp_insert_root_node_from_json`).
 - `mps-aspect-intentions` — a common host for `with (…) { #instances(…)… }` queries.
 - `mps-baselanguage` — host BaseLanguage statements/expressions that fill `BLCommand` / `BLExpression`.

@@ -228,7 +228,7 @@ class SkillReferenceLayoutTest {
 
         // read whole by design: the mps-model-manipulation "Minimum reading set" names this one file per body
         private val OVER_BUDGET = mapOf(
-            "mps-model-manipulation/references/dot-expression-basics.md" to 24_576L,
+            "mps-model-manipulation/references/dot-expression-basics.md" to 17_408L,
             // the tool inventory, read whole
             "mps-mcp-workflow/references/mcp-tools-index.md" to 17_408L,
             // one atomic JSON blueprint fence; cutting it would break copy-paste
