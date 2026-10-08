@@ -73,6 +73,7 @@
         <name>MPS Test Behavior Plugin</name>
         <description>a plugin to test behavior reflective calls</description>
         <version>${mpsBootstrapCore.version}</version>
+        <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
         <depends>com.intellij.modules.mps</depends>
         <depends>jetbrains.mps.core</depends>
         <depends>jetbrains.mps.testing</depends>
