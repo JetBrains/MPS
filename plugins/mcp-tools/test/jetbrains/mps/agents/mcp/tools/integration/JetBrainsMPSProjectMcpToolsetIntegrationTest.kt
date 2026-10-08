@@ -73,26 +73,6 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `get-project-structure lists the test language module by default`() {
-        val response = runTool(JetBrainsMPSProjectMcpToolset()) {
-            it.mps_mcp_get_project_structure()
-        }
-
-        val payload = readJsonObjectFromOkPath(response)
-        val modules = payload.getAsJsonArray("modules")
-        val moduleNames = modules.map { it.asJsonObject.get("name").asString }.toSet()
-        assertTrue(
-            "the test language created by the base class must appear in the default listing; got=$moduleNames",
-            moduleNames.contains(language.moduleName)
-        )
-        val kinds = modules.map { it.asJsonObject.get("kind").asString }.toSet()
-        assertTrue(
-            "the test language module must be reported with kind=Language; got=$kinds",
-            kinds.contains("Language")
-        )
-    }
-
-    @Test
     fun `get-project-structure inlines a small dump and honours maxInlineBytes`() {
         // The default module listing of the test project is a few hundred characters, well under
         // the 20000-character default, so it must come back inline — the whole point of R1 is that

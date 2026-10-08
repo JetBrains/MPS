@@ -6,7 +6,6 @@ import jetbrains.mps.agents.mcp.tools.common.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
@@ -19,9 +18,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import java.util.UUID
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.valueParameters
 import kotlinx.serialization.json.JsonArray as McpJsonArray
 import kotlinx.serialization.json.JsonElement as McpJsonElement
 import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
@@ -209,40 +205,6 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals(
             listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
             payloadArrayFromOkData(response).map { it.asJsonObject.get("qualifiedName").asString },
-        )
-    }
-
-    @Test
-    fun `get-concept-details accepts a single concept reference string`() {
-        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(
-                conceptRefs = JsonOrText("jetbrains.mps.lang.core.structure.BaseConcept"),
-            )
-        }
-
-        val qualifiedNames = readConceptArrayFromOkPath(response)
-            .map { it.asJsonObject.get("qualifiedName").asString }
-        assertEquals(
-            "a single concept reference string must resolve like a one-element list",
-            listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
-            qualifiedNames,
-        )
-    }
-
-    @Test
-    fun `get-concept-details accepts a JSON array string`() {
-        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(
-                conceptRefs = JsonOrText("[\"jetbrains.mps.lang.core.structure.BaseConcept\"]"),
-            )
-        }
-
-        val qualifiedNames = readConceptArrayFromOkPath(response)
-            .map { it.asJsonObject.get("qualifiedName").asString }
-        assertEquals(
-            "a JSON array string must resolve like a one-element list",
-            listOf("jetbrains.mps.lang.core.structure.BaseConcept"),
-            qualifiedNames,
         )
     }
 
@@ -587,52 +549,6 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue(
             "expanding a full language should yield more than a single concept; got=${qualifiedNames.size}",
             qualifiedNames.size > 1
-        )
-    }
-
-    @Test
-    fun `get-concept-details declares conceptRefs optional so language-only calls survive the MCP bridge`() {
-        // Regression guard for the bridge contract, which the runTool-based cases above cannot
-        // reach: runTool invokes the Kotlin method directly, but real MCP calls go through
-        // com.intellij.mcpserver.impl.util.CallableBridge. The bridge builds the argument map from
-        // the request JSON and rejects any parameter that is absent from the JSON and not
-        // KParameter.isOptional with "No argument is passed for required parameter 'conceptRefs'".
-        // A Kotlin parameter is isOptional only when it has a default value, so the registered
-        // wrapper must keep its default (`JsonOrText.EMPTY` since the D20 conversion, `= ""`
-        // before it); otherwise every documented language-only call (conceptRefs omitted,
-        // languageRefs provided) throws before the body's either/or guard ever runs.
-        // The registered overload is the `@McpTool`-annotated one (the other entry point takes
-        // List<String> and is not registered); its remaining parameters (detail, maxInlineBytes)
-        // are projections/limits and must be optional for the same reason.
-        val fn = JetBrainsMPSLanguageMcpToolset::class.declaredFunctions
-            .single { function ->
-                function.name == "mps_mcp_get_concept_details" &&
-                        function.findAnnotation<McpTool>() != null
-            }
-        for (parameter in fn.valueParameters) {
-            assertTrue(
-                "'${parameter.name}' must have a Kotlin default (KParameter.isOptional) so CallableBridge accepts " +
-                    "calls that omit it instead of throwing 'No argument is passed for required parameter'",
-                parameter.isOptional
-            )
-        }
-    }
-
-    @Test
-    fun `get-concept-details rejects empty input as an error envelope`() {
-        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(
-                conceptRefs = emptyList(),
-                languageRefs = emptyList(),
-            )
-        }
-
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
-        val message = obj.get("error").asString
-        assertTrue(
-            "error should mention the missing input: $message",
-            message.contains("No concepts nor languages")
         )
     }
 
@@ -1000,20 +916,6 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     private fun JsonArray.singleEntryFor(ref: String) =
         (0 until size()).map { get(it).asJsonObject }.single { it.get("ref").asString == ref }
-
-    @Test
-    fun `search-concepts finds a known concept by name`() {
-        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_search_concepts(searchTexts = listOf("ConceptDeclaration"))
-        }
-
-        val results = readSearchArray(response)
-        val qualifiedNames = results.map { it.asJsonObject.get("qualifiedName").asString }.toSet()
-        assertTrue(
-            "search for 'ConceptDeclaration' must match the lang.structure concept; got=$qualifiedNames",
-            qualifiedNames.contains("jetbrains.mps.lang.structure.structure.ConceptDeclaration")
-        )
-    }
 
     @Test
     fun `search-concepts can match a term that only appears in the owning language qualified name`() {

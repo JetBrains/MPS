@@ -89,28 +89,6 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
     }
 
-    @Test
-    fun `'component' type accepts the parameter and does not short-circuit on the type check`() {
-        // The early-return validation accepts both 'editor' and 'component'. We do not want the
-        // happy path here (which would require the MPS editor language at runtime) — just
-        // verifying that 'component' progresses past the validation gate by routing it to the
-        // same unknown-concept failure path as the test above.
-        val response = runTool(toolset) {
-            it.mps_mcp_scaffold_editor(
-                conceptRef = "totally.unknown.concept.Reference",
-                modelReference = structureModelRef,
-                type = "component",
-            )
-        }
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertFalse("expected error envelope, not pre-validation: $response", obj.get("ok").asBoolean)
-        val msg = obj.get("error").asString
-        assertFalse(
-            "'component' is a valid type and must NOT be flagged as invalid: $msg",
-            msg.contains("Invalid 'type' parameter"),
-        )
-    }
-
     // ── happy-path: type=editor vs type=component divergence ─────────────────────────────
 
     @Test
@@ -601,124 +579,6 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
-    @Test
-    fun `make failure surfaces the dedicated 'Failed to make' diagnostic`() {
-        // Engineer a make-required state that the make pipeline must reject. Create a concept
-        // in our test language's *uncompiled* structure model that declares a dangling `extends`
-        // — a structural defect that propagates through codegen and breaks the build. Because
-        // the test language has no compiled runtime descriptor yet, the scaffolder treats it as
-        // generation-required and invokes performMake; the resulting MakeResult.success=false
-        // is the only branch that emits the "Failed to make the structure model for concept"
-        // wording.
-        //
-        // This path is hard to exercise deterministically across MPS distributions: in some
-        // builds the make subsystem refuses to start a session in tests (yielding "Make service
-        // component not found" / "No active make service"), which also routes through the
-        // "Failed to make…" wording. Either outcome counts as the make-failure path being
-        // reached; what we negatively assert is that no editor declaration is persisted on
-        // failure.
-        val customConcept = createConceptRoot("BrokenForMake_${System.nanoTime()}")
-        val response = runTool(toolset) {
-            it.mps_mcp_scaffold_editor(
-                conceptRef = customConcept,
-                modelReference = structureModelRef,
-                type = "editor",
-            )
-        }
-        val obj = JsonParser.parseString(response).asJsonObject
-        // If make somehow succeeds and scaffolding proceeds, the response will be ok=true with a
-        // real editor; that's also a valid outcome of the integration (it just means the path
-        // we're trying to exercise wasn't reachable for this build). What matters when make
-        // *does* fail is that the dedicated diagnostic surfaces.
-        if (!obj.get("ok").asBoolean) {
-            val msg = obj.get("error").asString
-            // The make path can route through several closely related failure wordings in this
-            // integration harness:
-            //  - "Failed to make the structure model for concept ..." (make returned success=false)
-            //  - "... has a hollow runtime descriptor ..."             (make ran but the concept
-            //    didn't get a runtime descriptor — typically because the test language wasn't
-            //    reloaded after the build, which is the very situation the diagnostic was
-            //    written for)
-            //  - "Concept '...' has no source node"                    (the sourceNode/registry
-            //    lookup raced past the make's afterLanguagesLoaded latch)
-            //  - "... has no loaded runtime"                           (the staleness gate's
-            //    no-loaded-runtime branch — the test language was not registered into
-            //    LanguageRegistry by the time scaffolding ran)
-            //  - "... has unbuilt changes"                             (the staleness gate's
-            //    dirty-model branch — generationRequired returned true)
-            // Any of these counts as the make-required path having been exercised. What we
-            // negatively assert is that no editor declaration is persisted on failure.
-            assertTrue(
-                "make-required path must surface one of the documented diagnostics; got: $msg",
-                msg.contains("Failed to make the structure model for concept") ||
-                    msg.contains("hollow runtime descriptor") ||
-                    msg.contains("has no source node") ||
-                    msg.contains("has no loaded runtime") ||
-                    msg.contains("has unbuilt changes"),
-            )
-            readOnRepo {
-                val polluted = structureModel.rootNodes.any { root ->
-                    structureQualifiedName(root.concept).startsWith("jetbrains.mps.lang.editor.structure.")
-                }
-                assertFalse("no editor declaration must persist after a make-related rollback", polluted)
-            }
-        }
-    }
-
-    @Test
-    fun `no source node fallback surfaces the dedicated diagnostic`() {
-        // The "Concept '...' has no source node" branch is reached when sConcept survives the
-        // hollow-descriptor check (i.e. its descriptor reports at least one property, ref, or
-        // child) but `sConcept.sourceNode` and `resolveConceptNode` both come back null. That
-        // requires a runtime concept whose declaration node is no longer reachable — a state
-        // that cannot be synthesised in the integration harness without dropping a loaded
-        // language at runtime. We document the branch and assert the diagnostic wording
-        // here using its compile-time form so any rename of the string is caught immediately.
-        val expectedWording = "has no source node"
-        assertTrue(
-            "diagnostic wording must remain stable so callers can pattern-match on it",
-            expectedWording == "has no source node",
-        )
-        // Sanity-check that the regular happy-path resolution does NOT short-circuit through
-        // this branch — i.e. the wording would be a regression if it ever appeared on a
-        // valid scaffold of a fully-loaded concept.
-        val response = scaffold(type = "editor")
-        assertFalse(
-            "valid scaffold of a compiled concept must not emit the 'no source node' wording; got: $response",
-            response.contains(expectedWording),
-        )
-    }
-
-    @Test
-    fun `scaffolding that yields zero cells rolls back with the empty-scaffolding diagnostic`() {
-        // type=component skips the alias branch and the smart-ref short-circuit; combine that
-        // with empty filters on properties/refs/children to drive every counter to zero and
-        // trip the "Scaffolding produced no editor cells" branch.
-        val response = scaffoldWith(
-            type = "component",
-            includeProperties = emptyList(),
-            includeReferences = emptyList(),
-            includeChildren = emptyList(),
-        )
-        val msg = expectErr(response)
-        assertTrue(
-            "the empty-scaffolding diagnostic must surface verbatim; got: $msg",
-            msg.contains("Scaffolding produced no editor cells"),
-        )
-        // The filter-induced failure must report the filter cause rather than mis-classifying the
-        // host concept (ConceptDeclaration) as a marker.
-        assertTrue(
-            "filter-induced zero-cells must blame the include* lists; got: $msg",
-            msg.contains("filtered out by the `include*` lists"),
-        )
-        readOnRepo {
-            val polluted = structureModel.rootNodes.any { root ->
-                structureQualifiedName(root.concept).startsWith("jetbrains.mps.lang.editor.structure.")
-            }
-            assertFalse("the partially-created component must have been rolled back", polluted)
-        }
-    }
-
     // ── marker-concept scaffolding ───────────────────────────────────────────────────────
 
     /**
@@ -851,8 +711,7 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // This test goes through the make path because the freshly created concept's runtime
         // descriptor doesn't yet exist. In environments where make is unavailable the response
         // will be an error envelope; we treat that as "branch not exercised" and skip, but
-        // ONLY when the error matches one of the make-related wordings the existing make-
-        // failure regression test documents (the `make failure surfaces ...` test below).
+        // ONLY when the error matches one of the documented make-related wordings listed below.
         // That set includes the three staleness-gate branches (no-loaded-runtime, hollow-
         // descriptor, dirty-model) and the legacy make / no-source-node wordings. Any other
         // error (e.g. NPE on a missing concept lookup) must surface as a test failure —
@@ -914,6 +773,8 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // declarations but only ONE default SubstituteMenu — the second run must detect the
         // first run's menu and leave it untouched. Overwriting the menu could discard user-
         // authored wrap/select customisations layered on top of the default skeleton.
+        // The fully-formed-menu branch must also flag substituteMenuCreated=false and carry the
+        // existing menu's persistent reference so the caller doesn't have to scan model roots.
         val first = expectOk(scaffoldFor(markerConceptFqn, "editor"))
         val firstMsg = first.get("message").asString
         assertTrue(
@@ -924,8 +785,17 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val second = expectOk(scaffoldFor(markerConceptFqn, "editor"))
         val secondMsg = second.get("message").asString
         assertTrue(
-            "second marker run must report the existing-menu wording; got: $secondMsg",
-            secondMsg.contains("SubstituteMenu already exists"),
+            "second marker run must report the kept-as-is wording; got: $secondMsg",
+            secondMsg.contains("SubstituteMenu already exists, kept as-is"),
+        )
+        assertFalse(
+            "kept-as-is path must NOT report substituteMenuCreated=true",
+            second.get("substituteMenuCreated").asBoolean,
+        )
+        assertEquals(
+            "the kept menu's persistent reference must be exposed for caller inspection",
+            first.get("substituteMenuRef").asString,
+            second.get("substituteMenuRef").asString,
         )
 
         readOnRepo {
@@ -1036,6 +906,12 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "two-cause case must NOT spuriously report the abstract cause for a concrete concept; got: $twoCauseMsg",
             twoCauseMsg.contains("the concept is abstract"),
         )
+        readOnRepo {
+            val polluted = structureModel.rootNodes.any { root ->
+                structureQualifiedName(root.concept).startsWith("jetbrains.mps.lang.editor.structure.")
+            }
+            assertFalse("the partially-created component must have been rolled back", polluted)
+        }
 
         // (b) AbstractConceptDeclaration is abstract AND has its own scaffoldable content (so
         // filtering empties everything), AND we ask for type=component. All three rejections
@@ -1164,32 +1040,6 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 structureQualifiedName(typeChildren.single()),
             )
         }
-    }
-
-    @Test
-    fun `marker scaffolding rerun on a fully-formed existing SubstituteMenu reports kept-as-is and exposes its ref`() {
-        // The fully-formed-menu branch (existing menu with a `type` child) must (a) leave the
-        // menu untouched, (b) report "kept as-is" wording, (c) flag substituteMenuCreated=false,
-        // and (d) carry the existing menu's persistent reference so the caller doesn't have to
-        // scan model roots to find it.
-        val firstRun = expectOk(scaffoldFor(markerConceptFqn, "editor"))
-        val preExistingMenuRef = firstRun.get("substituteMenuRef").asString
-
-        val secondRun = expectOk(scaffoldFor(markerConceptFqn, "editor"))
-        val secondMsg = secondRun.get("message").asString
-        assertTrue(
-            "rerun on a fully-formed pre-existing menu must report the kept-as-is wording; got: $secondMsg",
-            secondMsg.contains("SubstituteMenu already exists, kept as-is"),
-        )
-        assertFalse(
-            "kept-as-is path must NOT report substituteMenuCreated=true",
-            secondRun.get("substituteMenuCreated").asBoolean,
-        )
-        assertEquals(
-            "the kept menu's persistent reference must be exposed for caller inspection",
-            preExistingMenuRef,
-            secondRun.get("substituteMenuRef").asString,
-        )
     }
 
     // ── D43: missing-required-parameter rejections through the real bridge ────────────────

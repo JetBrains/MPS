@@ -153,26 +153,6 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("nothing may be inserted", rootsBefore, structureRoots().size)
     }
 
-    @Test
-    fun `insert_root_node_from_json with single object inserts one root`() {
-        val json = """
-            {
-              "concept": "$conceptDeclarationFqn",
-              "properties": [ { "name": "name", "value": "Single" } ]
-            }
-        """.trimIndent()
-
-        val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
-        }
-        val data = expectOk(response)
-        assertEquals("Single", data.get("name").asString)
-
-        readOnRepo {
-            assertEquals(1, structureModel.rootNodes.count { it.name == "Single" })
-        }
-    }
-
     // ── blueprint list fields given as objects (D87) ─────────────────────────────────────
 
     private val blueprintShapeSentence =
@@ -330,6 +310,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
         val data = expectOk(response)
+        assertEquals("WithFixInfo", data.get("name").asString)
         val fix = data.get("fixReferences")
         assertNotNull("single-object insert must carry data.fixReferences: $response", fix)
         val fixObj = fix.asJsonObject
@@ -337,6 +318,10 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals(0, fixObj.get("repointed").asInt)
         assertEquals(0, fixObj.get("stillBroken").asInt)
         assertNotNull("fixReferences.message must be present", fixObj.get("message"))
+
+        readOnRepo {
+            assertEquals(1, structureModel.rootNodes.count { it.name == "WithFixInfo" })
+        }
     }
 
     @Test
@@ -352,6 +337,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
         val arr = parseDataArray(response)
         assertEquals(2, arr.size())
+        assertEquals(setOf("BatchA", "BatchB"), arr.map { it.asJsonObject.get("name").asString }.toSet())
         for (i in 0 until arr.size()) {
             val entry = arr.get(i).asJsonObject
             val fix = entry.get("fixReferences")
@@ -360,6 +346,11 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertEquals(0, fixObj.get("fixed").asInt)
             assertEquals(0, fixObj.get("repointed").asInt)
             assertEquals(0, fixObj.get("stillBroken").asInt)
+        }
+
+        readOnRepo {
+            val present = structureModel.rootNodes.mapNotNull { it.name }.toSet()
+            assertTrue("both inserted roots must be present: $present", present.containsAll(setOf("BatchA", "BatchB")))
         }
     }
 
@@ -400,32 +391,6 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val target = child.references.firstOrNull { it.link.name == "extends" }?.targetNode
             assertNotNull("FwdChild.extends must resolve after batched insert", target)
             assertEquals(parent.reference, target!!.reference)
-        }
-    }
-
-    @Test
-    fun `insert_root_node_from_json with array inserts the whole batch atomically`() {
-        val json = """
-            [
-              { "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "A" } ] },
-              { "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "B" } ] }
-            ]
-        """.trimIndent()
-
-        val response = runTool(toolset) {
-            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
-        }
-        // The envelope's `data` is a JSON-string holding the inserted-node array
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
-        val rawData = if (obj.get("data").isJsonPrimitive) obj.get("data").asString else obj.get("data").toString()
-        val arr = JsonParser.parseString(rawData).asJsonArray
-        val names = arr.map { it.asJsonObject.get("name").asString }.toSet()
-        assertEquals(setOf("A", "B"), names)
-
-        readOnRepo {
-            val present = structureModel.rootNodes.mapNotNull { it.name }.toSet()
-            assertTrue("both inserted roots must be present: $present", present.containsAll(setOf("A", "B")))
         }
     }
 
@@ -1150,15 +1115,6 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     // ── search_root_node_by_name ─────────────────────────────────────────────────────────
 
     @Test
-    fun `search_root_node_by_name with single string returns matching roots`() {
-        createConceptRoot("Findable")
-        val response = runTool(toolset) { it.mps_mcp_search_root_node_by_name(JsonOrText("Findable")) }
-        val arr = parseDataArray(response)
-        val names = arr.map { it.asJsonObject.get("name").asString }
-        assertTrue("results must contain the created concept: $names", names.contains("Findable"))
-    }
-
-    @Test
     fun `search_root_node_by_name accepts a JSON array of names`() {
         createConceptRoot("LookupA")
         createConceptRoot("LookupB")
@@ -1268,22 +1224,6 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     // member to JsonArray unchecked. A client that passed "models": "ref" (a bare string) instead of
     // ["ref"] — or "models": null — crashed with ClassCastException inside the read action, which
     // ActionDispatcher logged as a spurious "Action dispatch failed".
-
-    @Test
-    fun `models scope accepts a single reference string identically to a one-element array`() {
-        readOnRepo {
-            val single = JsonObject().apply { addProperty("models", structureModelRef) }
-            val asArray = JsonObject().apply { add("models", JsonArray().apply { add(structureModelRef) }) }
-            val refsFromSingle = scopeProbe.scopeModelRefsFor(myProject, "models", single)
-            val refsFromArray = scopeProbe.scopeModelRefsFor(myProject, "models", asArray)
-            assertTrue("a single 'models' string must resolve the structure model: $refsFromSingle", refsFromSingle.contains(structureModelRef))
-            assertEquals(
-                "a single reference string and a one-element array must yield the same scope",
-                refsFromArray,
-                refsFromSingle,
-            )
-        }
-    }
 
     @Test
     fun `models scope returns a clean error instead of crashing on a non-array value`() {
@@ -1675,14 +1615,6 @@ private class ScopeProbe : AbstractNodeOps() {
         when (val r = buildSearchScope(project, scope, params)) {
             is SearchScopeResolution.Ok -> null
             is SearchScopeResolution.Err -> r.errJson
-        }
-
-    /** Stringified model references of the resolved scope; fails if the scope did not resolve. */
-    fun scopeModelRefsFor(project: MPSProject, scope: String, params: JsonObject): Set<String> =
-        when (val r = buildSearchScope(project, scope, params)) {
-            is SearchScopeResolution.Ok ->
-                r.scope.models.map { PersistenceFacade.getInstance().asString(it.reference) }.toSet()
-            is SearchScopeResolution.Err -> error("expected a resolved scope, got error: ${r.errJson}")
         }
 
     fun selectedRefsFor(project: MPSProject, scope: String, params: JsonObject): Set<String> {

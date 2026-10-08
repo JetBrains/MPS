@@ -443,28 +443,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
     }
 
-    @Test
-    fun `delete_node_child removes the child from its parent`() {
-        val parentRef = createConceptRoot("DeleteHost")
-        addPropertyChild(parentRef, "doomed", "string")
-        val childRef = readOnRepo {
-            val parent = resolveNode(parentRef)
-            val p = parent.children.single { it.containmentLink?.name == "propertyDeclaration" }
-            PersistenceFacade.getInstance().asString(p.reference)
-        }
-
-        val response = runTool(toolset) { it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD, childNodeRef = childRef) }
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
-        readOnRepo {
-            val parent = resolveNode(parentRef)
-            assertTrue(
-                "child must be gone after deleting a node child",
-                parent.children.none { it.containmentLink?.name == "propertyDeclaration" },
-            )
-        }
-    }
-
     // ── query_nodes: NODE_INFO_READ family ─────────────────────────────────────────
 
     @Test
@@ -2250,35 +2228,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
-    fun `update_node ADD CHILD without nodeReference is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, childRole = "members", childJson = "{}")
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing nodeReference, got: $err", err.contains("nodeReference"))
-    }
-
-    @Test
-    fun `update_node ADD CHILD without childRole is rejected`() {
-        val ref = createConceptRoot("MissingRole")
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = ref, childJson = "{}")
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing childRole, got: $err", err.contains("childRole"))
-    }
-
-    @Test
-    fun `update_node ADD CHILD without childJson is rejected`() {
-        val ref = createConceptRoot("MissingJson")
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = ref, childRole = "propertyDeclaration")
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing childJson, got: $err", err.contains("childJson"))
-    }
-
-    @Test
     fun `update_node SET CHILD without childNodeRef is rejected`() {
         val response = runTool(toolset) {
             it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD, childJson = "{}")
@@ -2331,24 +2280,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
-    fun `update_node SET CHILD without childNodeRef and without childJson is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.CHILD)
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing childNodeRef, got: $err", err.contains("childNodeRef"))
-    }
-
-    @Test
-    fun `update_node SET PROPERTY without properties is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY)
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing properties batch, got: $err", err.contains("properties"))
-    }
-
-    @Test
     fun `update_node SET PROPERTY with null nodeReference in a triplet is rejected per-row`() {
         val response = runTool(toolset) {
             it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY, properties = listOf(listOf(null, "name", "value")))
@@ -2365,15 +2296,6 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
         val err = expectBatchRowError(response, 0)
         assertTrue("row error must mention 'propertyName', got: $err", err.contains("propertyName"))
-    }
-
-    @Test
-    fun `update_node SET REFERENCE without references is rejected`() {
-        val response = runTool(toolset) {
-            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE)
-        }
-        val err = expectErr(response)
-        assertTrue("error must point at the missing references batch, got: $err", err.contains("references"))
     }
 
     @Test

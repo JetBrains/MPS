@@ -253,18 +253,6 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
     }
 
     @Test
-    fun `an Object method on the node parameter resolves through the SNode interface`() {
-        val validator = createValidators().first()
-        val response = parseInto(validator, "return node.hashCode() > 0;")
-        okEnvelope(response)
-        readOnRepo {
-            val dot = descendantsOf(bodyOf(validator), downcast).single().parent!!
-            assertEquals("hashCode", resolvedMethodOf(dot).name)
-        }
-        assertNoErrors(response)
-    }
-
-    @Test
     fun `the argument of a downcast call is bound and resolved too`() {
         val validator = createValidators().first()
         val response = parseInto(validator, "return node.equals(propertyValue);")

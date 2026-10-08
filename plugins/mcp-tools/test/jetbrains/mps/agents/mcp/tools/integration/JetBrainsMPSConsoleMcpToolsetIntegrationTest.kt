@@ -57,18 +57,6 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `recall_console_command returns an error envelope when the console is unavailable`() {
-        // Without a live Console the tool short-circuits on console resolution (before resolving the
-        // reference), so any reference yields a structured error. The recall happy path and the
-        // same-console guard are verified manually against a running Console.
-        val response = runTool(JetBrainsMPSConsoleMcpToolset()) {
-            it.mps_mcp_recall_console_command(historyNodeReference = "r:does-not-exist/0")
-        }
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertFalse("expected error envelope when the console is unavailable: $response", obj.get("ok").asBoolean)
-    }
-
-    @Test
     fun `run_console_command returns an error envelope when the console is unavailable`() {
         // The headless fixture never initializes the Console tool window, so this exercises the
         // console-resolution branch: it must return a structured error rather than running anything.

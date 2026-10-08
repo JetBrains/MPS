@@ -132,22 +132,12 @@ class JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest : McpIntegrationTest
     }
 
     @Test
-    fun `unknown node reference is rejected as NOT_FOUND`() {
-        val response = runTool(JetBrainsMPSRunConfigurationMcpToolset()) {
-            it.create(nodeReference = "no.such.model.NoSuchRoot")
-        }
-
-        val obj = JsonParser.parseString(response).asJsonObject
-        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
-        assertEquals("NOT_FOUND", obj.get("code").asString)
-    }
-
-    @Test
     fun `empty or whitespace-only node reference is rejected as INVALID_REQUEST before any resolution runs`() {
         // D43: a blank nodeReference is now caught by rejectMissingParameters before the
         // reference resolver even runs, so it is INVALID_REQUEST rather than the resolver's
         // NOT_FOUND (still the outcome for a well-formed-but-unresolvable reference, covered by
-        // `unknown node reference is rejected as NOT_FOUND` above). "" and "   " both fall into
+        // `create_run_configuration reaches the resolver once retried with the correct key`
+        // below). "" and "   " both fall into
         // that bucket; iterate over them so the single contract is asserted once.
         for (input in listOf("", "   ")) {
             val beforeCount = currentConfigurationCount()

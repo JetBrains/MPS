@@ -91,6 +91,7 @@ class ListWorkerModelsTest(unittest.TestCase):
         self.assertIsNone(result["orchestratorModel"])
         self.assertEqual(CLAUDE_CATALOG, self.ids(result))
         self.assertTrue(all(not entry["orchestrator"] and entry["source"] == "catalog" for entry in result["models"]))
+        self.assertIsNone(result["settingsEffort"])
 
     def test_both_env_without_override_exits_2(self) -> None:
         env = {"JUNIE_TMPDIR": "/tmp/junie", "CLAUDE_CODE_ENTRYPOINT": "cli"}
@@ -156,10 +157,6 @@ class ListWorkerModelsTest(unittest.TestCase):
         self.assertEqual(["low", "medium", "high", "xhigh", "max"], result["effortLevels"])
         self.assertEqual({"default": "xhigh", "perModel": {"claude-opus-5-5": "medium"}},
                          result["settingsEffort"])
-
-    def test_claude_without_settings_has_no_settings_effort(self) -> None:
-        result = lwm.list_models(self.home, {})
-        self.assertIsNone(result["settingsEffort"])
 
     def test_junie_lists_its_effort_levels_only(self) -> None:
         result = lwm.list_models(self.home, {"JUNIE_TMPDIR": "/tmp/junie"})

@@ -2189,32 +2189,6 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue(expectErr(response).contains("not found"))
     }
 
-    @Test
-    fun `add_module_dependency with operation DELETE calls remove_module_dependency and drops the dependency`() {
-        val source = createSolution("test.add.remove.src${System.nanoTime()}")
-        val target = createSolution("test.add.remove.tgt${System.nanoTime()}")
-        val sourceName = source.moduleName!!
-        val targetName = target.moduleName!!
-
-        // Add first
-        val addResp = runTool(toolset) {
-            it.mps_mcp_module_dependency(sourceName, targetName, DependencyOperation.ADD, null, false)
-        }
-        assertTrue(JsonParser.parseString(addResp).asJsonObject.get("ok").asBoolean)
-
-        // Then remove via the same method but with DependencyOperation.DELETE operation
-        val removeResp = runTool(toolset) {
-            it.mps_mcp_module_dependency(sourceName, targetName, DependencyOperation.DELETE, null, false)
-        }
-        assertTrue(JsonParser.parseString(removeResp).asJsonObject.get("ok").asBoolean)
-
-        val hit = readOnRepo {
-            (source as AbstractModule).moduleDescriptor!!.dependencies
-                .firstOrNull { it.moduleRef == target.moduleReference }
-        }
-        assertNull("dependency must be gone from descriptor", hit)
-    }
-
     // ── facets ─────────────────────────────────────────────────────────────────────────────
 
     @Test

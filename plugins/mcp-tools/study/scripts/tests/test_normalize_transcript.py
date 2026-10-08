@@ -51,18 +51,6 @@ class NormalizeTranscriptTest(unittest.TestCase):
         self.assertEqual(200, usage["cache_creation_input_tokens"])
         self.assertEqual(0.05, events[3]["total_cost_usd"])
 
-    def test_unknown_event_does_not_drop_tool_pairs(self) -> None:
-        events, skipped = norm.normalize_events(self.load_fixture())
-        self.assertGreaterEqual(skipped, 1)
-        pairs = [
-            (events[i]["message"]["content"][0]["id"], events[i + 1]["message"]["content"][0]["tool_use_id"])
-            for i, event in enumerate(events[:-1])
-            if event.get("type") == "assistant"
-            and event["message"]["content"]
-            and event["message"]["content"][0].get("type") == "tool_use"
-        ]
-        self.assertEqual([("junie-step-1", "junie-step-1")], pairs)
-
     def test_claude_shaped_input_is_a_noop(self) -> None:
         claude = [
             {

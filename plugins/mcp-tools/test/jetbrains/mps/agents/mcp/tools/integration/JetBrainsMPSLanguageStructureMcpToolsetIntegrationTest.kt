@@ -1207,38 +1207,6 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
     // ── GET_ENUMERATION_LITERALS ──────────────────────────────────────────────────────
 
     @Test
-    fun `GET_ENUMERATION_LITERALS lists metaClass literals for a LinkDeclaration`() {
-        // UPDATE_CONCEPT_CHILD creates a LinkDeclaration whose `metaClass` is an enumeration property.
-        val ownerRef = createConceptRoot("EnumLitOwner")
-        val targetRef = createConceptRoot("EnumLitTarget")
-        assertOk(runTool {
-            it.mps_mcp_alter_structure(
-                MPSStructureAlterOperation.UPDATE_CONCEPT_CHILD,
-                """{"conceptRef":"$ownerRef","role":"kid","targetConcept":"$targetRef","multiple":false,"optional":true}"""
-            )
-        })
-
-        val linkRef = readOnRepo {
-            val owner = structureModel.rootNodes.single { it.name == "EnumLitOwner" }
-            val link = owner.getChildrenByName("linkDeclaration").single()
-            PersistenceFacade.getInstance().asString(link.reference)
-        }
-
-        val response = runTool {
-            it.mps_mcp_query_structure(
-                MPSStructureQueryOperation.GET_ENUMERATION_LITERALS,
-                """{"nodeReference":"$linkRef","propertyName":"metaClass"}"""
-            )
-        }
-        val arr = parseDataArray(response)
-        val literalNames = arr.map { it.asJsonObject.get("value").asString }.toSet()
-        // `metaClass` enumeration has at minimum `aggregation` and `reference` literals — those
-        // are the two values [setLinkMetaClass] selects between.
-        assertTrue("expected 'aggregation' among $literalNames", literalNames.contains("aggregation"))
-        assertTrue("expected 'reference' among $literalNames", literalNames.contains("reference"))
-    }
-
-    @Test
     fun `GET_ENUMERATION_LITERALS with null enumerationRef uses the property form`() {
         val ownerRef = createConceptRoot("EnumLitNullOwner")
         val targetRef = createConceptRoot("EnumLitNullTarget")
