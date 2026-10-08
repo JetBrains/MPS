@@ -29,7 +29,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S9 | Run two read-only Console instance queries, read the history, recall the first command, and print the current command as text and as JSON. Models must not change. |
 | S10 | Create a second empty project that opens without a migration prompt, close this one, open the new one, add a solution with one class, and leave both projects closed. Runs last. |
 | S11 | Answer five type questions about the Expressions sample (a subtype, the supertypes, a variable's type and its rule, a commented-out declaration, an operand's expected type) by asking the type checker. Models must not change. |
-| S12 | Make `Bool` a subtype of `Number` in the Expressions sample and prove it on a scratch sandbox model: the type error before, a new subtyping rule, one rebuild, the error gone and the side effect on `true + 1` after. Draft: not rehearsed, prompt not frozen. |
+| S12 | Make `Bool` a subtype of `Number` in the Expressions sample and prove it on a scratch sandbox model: the type error before, a new subtyping rule, one rebuild, the error gone and the side effect on `true + 1` after. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -191,9 +191,8 @@ sample), and not after another cell that loaded the Expressions sample. Restart 
 If `classes_gen` in the fixture is stale against the checkout, the cell measures a stale runtime
 (the D80 hazard): make the sample before tarring it.
 
-**S12 — typesystem authoring with a sandbox.** Fixture: `expressions`, as S11. **Draft**: no
-rehearsal yet, so the prompt is not frozen and the pinned answers in `done_criteria.md` are from the
-2026-10-07 and 2026-10-08 live loops, not from a run. The worker creates a scratch model with a `Probe` root holding
+**S12 — typesystem authoring with a sandbox.** Fixture: `expressions`, as S11. Prompt frozen
+2026-10-08 after the round-30 rehearsal (opus and sonnet both passed; `HOTSPOT_REPORT_round30.md`). The worker creates a scratch model with a `Probe` root holding
 `Number n = true` and `Int i = 1.3 F`, asks the engine for the baseline error and its rule, adds a
 `SubtypingRule` `Bool <: Number`, rebuilds the language once, and asks again: `IS_SUBTYPE` true,
 the `Bool` error gone, the `Float`/`Int` one kept, `true + 1` now `Number` (the unintended widening a
@@ -230,7 +229,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-structure-concepts` | S1 (create concepts, enums, children, refs), S2 (add a child to an existing concept), S4 (rename, cardinality, new concept) | | S3 only consumes the language |
 | `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model) | | menus, keymaps, action maps, substitute menus — no cell |
 | `mps-aspect-constraints` | S1 (property validator + a scope that excludes the referrer), S2 (non-blank property rule) | | S5 repairs instances; it does not author a rule |
-| `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9; draft) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
+| `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
 | `mps-aspect-intentions` | S2 | | |
 | `mps-aspect-migrations` | S4 | | apply-half is D48; see S4 above |

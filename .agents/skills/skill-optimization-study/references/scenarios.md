@@ -25,7 +25,7 @@ expressions = `samples/expressions` with `classes_gen`, for S11 and S12).
 | S9 | Console MCP: two read-only `#instances` queries (one filtered), recall, print current | recipes | H1, H7 |
 | S10 | Project lifecycle: create an empty project, close this one, open the new one, add a solution, close it | empty-project | H4, H7 |
 | S11 | Type questions, read-only: subtype, supertypes, a variable's type and rule, a commented-out declaration, an operand's expected type | expressions | H4, H7 |
-| S12 | Typesystem authoring with a scratch sandbox: baseline error, a `Bool <: Number` subtyping rule, one rebuild, re-ask (draft, not frozen) | expressions | H2, H5, H7 |
+| S12 | Typesystem authoring with a scratch sandbox: baseline error, a `Bool <: Number` subtyping rule, one rebuild, re-ask | expressions | H2, H5, H7 |
 
 | SMOKE | Harness check: list open projects and stop (read-only; no `done_criteria.md`; runs against the harness project; never evaluated) | — | — |
 

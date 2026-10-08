@@ -1,7 +1,8 @@
 # S12 done criteria (observer, read-only, projectPath = run project dir)
 
-**Draft — not frozen.** No rehearsal run yet; re-verify every pinned answer below against the first
-rehearsal's left-behind state before the prompt is frozen.
+**Prompt frozen 2026-10-08** (`promptSha256` `4d7270af8ab3…`) after the round-30 rehearsal: `S12-opus-1`
+and `S12-sonnet-1` both passed, neither misread the prompt, and every pinned answer below matched both
+left-behind states (`study/HOTSPOT_REPORT_round30.md`).
 
 Fixture: `expressions.tar.gz`, as S11 (`../../fixtures/README.md`). In the fixture `Bool <: Number`
 is false. The loop this cell replays was run live on `samples/expressions` on 2026-10-07 (MPS
@@ -48,9 +49,10 @@ the language that included the new rule, read from the transcript.
      `Bool <: Int` or `Bool <: Float` rule also makes the first query true);
    - `OPERATION_TYPE {operatorConceptRef: ArithmeticSimpleMathExpression, left: Bool, right: Int}` → `Number`.
 3. **The scratch sandbox.** `mps_mcp_get_project_structure(startingPoint=
-   jetbrains.mps.samples.Expressions.sandbox, includeRootNodes=true)` (the solution) lists model
-   `jetbrains.mps.samples.Expressions.scratch` with a root `Probe`; one `print_node` of `Probe`
-   shows `Number n = true` and `Int i = 1.3 F` (a `SimpleMathTypedVarDeclaration` each, or what the
+   8be13549-194e-408d-bbda-4afa252a98de(jetbrains.mps.samples.Expressions.sandbox), includeRootNodes=true)`
+   — the solution's module reference; the bare name resolves to the sandbox *model* and hides the
+   scratch model — lists model `jetbrains.mps.samples.Expressions.scratch` with a root `Probe`; one
+   deep JSON `print_node` of `Probe` (PLAIN TEXT misrenders the wrapper's layout) shows `Number n = true` and `Int i = 1.3 F` (a `SimpleMathTypedVarDeclaration` each, or what the
    sandbox roots use), neither under a `BaseCommentAttribute`. Other lines in `Probe` (a copied
    `TypeError` brings a commented-out one along; `var t = true + 1` is a natural probe) are fine.
    `mps_mcp_check_root_node_problems` on the model → no error on `Number n = true`, and exactly one
@@ -72,7 +74,7 @@ the language that included the new rule, read from the transcript.
      `null`, "error" or `Int` fails.
    A "before" claim with no type query, and no check of the scratch model or `Probe`, before the
    build in the transcript (P1) rests on reading the rules and fails this criterion.
-5. **Nothing else changed.** `mps_mcp_get_project_structure(startingPoint=<sandbox>, includeRootNodes=true)`
+5. **Nothing else changed.** `mps_mcp_get_project_structure(startingPoint=<sandbox>, includeRootNodes=true)` (the model reference)
    lists exactly `Main`, `Simple` and `TypeError`; `check_root_node_problems` on the sandbox model is
    as in the fixture (no errors, `uncheckedSubtrees: 1`). The `.mps` files that differ from the
    fixture are `languageModels/typesystem.mps` and the new scratch model only. Module descriptors
@@ -96,8 +98,9 @@ Read the `families.py` row of the run plus the transcript.
 - **P3 one build is the reload.** `M_makes` is 1 in the routed path: a MAKE of the language
   (`{"modules":["jetbrains.mps.samples.Expressions"],"rebuild":true}`, or its models); `M_reload_all`
   is 0. More MAKEs are a signal (a rebuild loop, MAKE used as a reload, a sandbox make); a
-  `reload_all` is a docs miss (`mps-aspect-typesystem` step 9.4 says the MAKE is the reload). Neither
-  fails the cell.
+  `reload_all` is a docs miss — `mps-aspect-typesystem` step 9.4 says the MAKE is the reload, but a
+  worker that loads only `mps-mcp-workflow` reads its "Reload after compiled-aspect changes" directive,
+  which offers `reload_all` as an equal option (round 30). Neither fails the cell.
 - **P4 the after state asked.** `T_type_queries` ≥ 4 in all, with at least one `IS_SUBTYPE` and one
   `OPERATION_TYPE`, `GET_TYPE` or `EXPLAIN_TYPE` after the build.
 - **P5 no clean-over-unchecked reading.** No root the worker calls "well-typed" or "accepted" on a
