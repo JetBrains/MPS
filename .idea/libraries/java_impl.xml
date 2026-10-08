@@ -6,6 +6,22 @@
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.frontback.psi.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.indexing.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.compiler.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/debugger-memory-agent.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.analysis.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.analysis.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.debugger.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.debugger.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.execution.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.execution.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.frontback.psi.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.psi.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.syntax.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.ui.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.jsp.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.platform.uast.ide.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.platform.uast.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/jps-launcher.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/sa-jdwp.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
