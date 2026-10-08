@@ -139,7 +139,12 @@ public class EnvironmentConfig {
   }
 
   public EnvironmentConfig withGit4IdeaPlugin() {
-    return addDistributedPlugin("vcs-git", "Git4Idea");
+    return withPlatformVcsPlugin().addDistributedPlugin("vcs-git", "Git4Idea");
+  }
+
+  public EnvironmentConfig withPlatformVcsPlugin() {
+    // since 263, VCS core (ChangeListManager, also needed by local history) is a separate plugin
+    return addDistributedPlugin("platform-vcs-plugin", "com.intellij.platform.vcs");
   }
 
   public EnvironmentConfig withGit4IdeaStubsPlugin() {

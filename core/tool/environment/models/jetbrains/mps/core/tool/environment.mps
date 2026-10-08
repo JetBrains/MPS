@@ -2382,19 +2382,91 @@
       <property role="2aFKle" value="false" />
       <node concept="3clFbS" id="6BLo1MgrGot" role="3clF47">
         <node concept="3cpWs6" id="6BLo1MgrGou" role="3cqZAp">
-          <node concept="1rXfSq" id="6BLo1MgrOXz" role="3cqZAk">
-            <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
-            <node concept="Xl_RD" id="6BLo1MgrPn1" role="37wK5m">
-              <property role="Xl_RC" value="vcs-git" />
+          <node concept="2OqwBi" id="5whBXIGKpRU" role="3cqZAk">
+            <node concept="1rXfSq" id="5whBXIGKpRm" role="2Oq$k0">
+              <ref role="37wK5l" node="5whBXIGKmsC" resolve="withPlatformVcsPlugin" />
             </node>
-            <node concept="Xl_RD" id="6BLo1MgrSoh" role="37wK5m">
-              <property role="Xl_RC" value="Git4Idea" />
+            <node concept="liA8E" id="5whBXIGKpRV" role="2OqNvi">
+              <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
+              <node concept="Xl_RD" id="5whBXIGKpRW" role="37wK5m">
+                <property role="Xl_RC" value="vcs-git" />
+              </node>
+              <node concept="Xl_RD" id="5whBXIGKpRX" role="37wK5m">
+                <property role="Xl_RC" value="Git4Idea" />
+              </node>
             </node>
           </node>
         </node>
       </node>
       <node concept="3Tm1VV" id="6BLo1MgrGoy" role="1B3o_S" />
       <node concept="3uibUv" id="6BLo1MgrGoz" role="3clF45">
+        <ref role="3uigEE" node="6rx4kZDk5A9" resolve="EnvironmentConfig" />
+      </node>
+    </node>
+    <node concept="2tJIrI" id="5whBXIGK_RA" role="jymVt" />
+    <node concept="3clFb_" id="5whBXIGKmsC" role="jymVt">
+      <property role="TrG5h" value="withPlatformVcsPlugin" />
+      <node concept="3clFbS" id="5whBXIGKmsD" role="3clF47">
+        <node concept="3SKdUt" id="5whBXIGKmsK" role="3cqZAp">
+          <node concept="1PaTwC" id="5whBXIGKmsL" role="1aUNEU">
+            <node concept="3oM_SD" id="5whBXIGKmsN" role="1PaTwD">
+              <property role="3oM_SC" value="since" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsO" role="1PaTwD">
+              <property role="3oM_SC" value="263," />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsP" role="1PaTwD">
+              <property role="3oM_SC" value="VCS" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsQ" role="1PaTwD">
+              <property role="3oM_SC" value="core" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsR" role="1PaTwD">
+              <property role="3oM_SC" value="(ChangeListManager," />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsS" role="1PaTwD">
+              <property role="3oM_SC" value="also" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsT" role="1PaTwD">
+              <property role="3oM_SC" value="needed" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsU" role="1PaTwD">
+              <property role="3oM_SC" value="by" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsV" role="1PaTwD">
+              <property role="3oM_SC" value="local" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsW" role="1PaTwD">
+              <property role="3oM_SC" value="history)" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsX" role="1PaTwD">
+              <property role="3oM_SC" value="is" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsY" role="1PaTwD">
+              <property role="3oM_SC" value="a" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmsZ" role="1PaTwD">
+              <property role="3oM_SC" value="separate" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIGKmt0" role="1PaTwD">
+              <property role="3oM_SC" value="plugin" />
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs6" id="5whBXIGKmsE" role="3cqZAp">
+          <node concept="1rXfSq" id="5whBXIGKmsF" role="3cqZAk">
+            <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
+            <node concept="Xl_RD" id="5whBXIGKmsG" role="37wK5m">
+              <property role="Xl_RC" value="platform-vcs-plugin" />
+            </node>
+            <node concept="Xl_RD" id="5whBXIGKmsH" role="37wK5m">
+              <property role="Xl_RC" value="com.intellij.platform.vcs" />
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3Tm1VV" id="5whBXIGKmsI" role="1B3o_S" />
+      <node concept="3uibUv" id="5whBXIGKmsJ" role="3clF45">
         <ref role="3uigEE" node="6rx4kZDk5A9" resolve="EnvironmentConfig" />
       </node>
     </node>
