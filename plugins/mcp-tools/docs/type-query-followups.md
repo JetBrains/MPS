@@ -211,8 +211,8 @@ of `10 * 2.6 F`?
 
 ## Related open items from the same work (smaller)
 
-- S11 done criteria (`plugins/mcp-tools/study/scenarios/S11/done_criteria.md`): once the D100 server change is
-  committed, update P3 and criterion 3, because `GET_TYPE` alone now returns `Float` for `E`. The rule name still needs
-  `EXPLAIN_TYPE`. Also clarify criterion 2's "adding `Int` itself" (see `study/HOTSPOT_REPORT_round22.md` §6).
+- **Done 2026-10-08.** S11 done criteria (`plugins/mcp-tools/study/scenarios/S11/done_criteria.md`): P3 and
+  criterion 3 now say `GET_TYPE` alone returns `Float` for `E` but names no rule, so P3 requires `EXPLAIN_TYPE`;
+  criterion 2 fails `Int` or `Bool` only as a listed supertype (round 22 §6 wording). `worker_prompt.md` unchanged.
 - Study harness A10: `mps_control.sh shutdown` issued right after `open` reported `alreadyDown` while MPS ran (see
   `study/HOTSPOT_REPORT_round24.md` §0).

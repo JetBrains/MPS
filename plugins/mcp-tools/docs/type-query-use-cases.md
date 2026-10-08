@@ -328,3 +328,7 @@ parent of the `int <: long` entry is the `relation_removed … solved` entry —
 3. **S12** (`scenarios/S12/worker_prompt.md`, `done_criteria.md`, the `scenarios.md` row and "By skill" entries,
    `families.py` columns for P1–P4), rehearsed once per model, then frozen.
 4. **S11 follow-ups** already listed in `type-query-followups.md` (criterion 2 wording, P3), in the same study commit.
+
+**Status 2026-10-08:** steps 1–4 are committed. Step 1b added the two test pins; step 2 is the recipe in
+`mps-aspect-typesystem` step 9 (§3 status); step 3 is `study/scenarios/S12` (draft, not rehearsed, prompt not frozen);
+step 4 edited only S11's `done_criteria.md`. Open: the S12 rehearsal round, one run per model, then freeze.

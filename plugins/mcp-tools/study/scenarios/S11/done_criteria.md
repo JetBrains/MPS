@@ -34,10 +34,13 @@ Type concepts, all in `c:7e282943-fc6b-4900-ada5-34c0024cc4f4/…:jetbrains.mps.
 1. **Q1 — yes.** `IS_SUBTYPE {sub: Int, super: Float}` → `isSubtype: true`.
 2. **Q2 — `Long`, `Number`, `Float`, `Element`**, any order, no others. `SUPERTYPES {type: Int}`
    gives `Element` and `Long` immediately, `Float` at depth 2 and `Number` at depth 3. Listing
-   only the immediate supertypes fails; so does adding `Bool` or `Int` itself.
+   only the immediate supertypes fails; so does listing `Bool` or `Int` itself as a supertype. Noting that
+   subtyping is reflexive (`Int <: Int`) outside the list is fine.
 3. **Q3 — `Float`, made so by `typeof_SimpleMathAssignment`.** `var E = 10` alone only bounds `E`
    from below by `Int` (`typeof_SimpleMathVarDeclaration`); the later `E := D` adds
-   `E :>=: typeof(D)` and `D` is `Float`, so the inequalities resolve to `E = Float`. Naming
+   `E :>=: typeof(D)` and `D` is `Float`, so the inequalities resolve to `E = Float`. `GET_TYPE` on `var E`
+   answers `Float` directly (root scope since D100) but names no rule; the rule comes from `EXPLAIN_TYPE`,
+   whose `i = Float added` entry is credited to `typeof_SimpleMathAssignment`. Naming
    `typeof_SimpleMathVarDeclaration` as well is fine; it must not be the only rule named. `Int`
    (read off the initializer) fails.
 4. **Q4 — no.** `Float` is not a subtype of `Int` (`IS_SUBTYPE {sub: Float, super: Int}` →
@@ -73,9 +76,11 @@ transcript:
   other `….typesystem` model). If it is not 0, check in the transcript whether those calls came
   before the `ANSWERS.md` write; any that did fail P2. A Bash or Read of a printout file is not in
   the column; it follows a counted `print_node`.
-- **P3 the type of `E` asked, not derived.** `EXPLAIN_TYPE` or `GET_TYPE` on `var E`
-  (`<sandbox>/8620208551721818923`) or on a reference to `E` (the left side of `E := D`). Only `EXPLAIN_TYPE` names the rule; a correct rule name after
-  `GET_TYPE` alone came from reading rules (see P2).
+- **P3 the type and its rule asked, not derived.** `EXPLAIN_TYPE` on `var E` (`<sandbox>/8620208551721818923`)
+  or on a reference to `E` (the left side of `E := D`). `GET_TYPE` there answers `Float` and is a correct route to
+  the type, but not to the rule: P3 needs the `EXPLAIN_TYPE` call, and a correct rule name after `GET_TYPE` alone
+  came from reading rules (see P2). (Tightened 2026-10-08 from "`EXPLAIN_TYPE` or `GET_TYPE`";
+  rounds 22–26 all ran `EXPLAIN_TYPE` on `E`, so their P3 verdicts stand.)
 - **P4 the slot asked.** `mps_mcp_query_nodes` `GET_EXPECTED_TYPE` on the operand
   (`<sandbox>/2073504467211042657`).
 - **P5 the unchecked verdict read.** If the worker checked `TypeError`, its result is
