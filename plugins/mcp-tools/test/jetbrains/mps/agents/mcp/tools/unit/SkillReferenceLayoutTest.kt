@@ -230,7 +230,7 @@ class SkillReferenceLayoutTest {
         private val OVER_BUDGET = mapOf(
             "mps-model-manipulation/references/dot-expression-basics.md" to 17_408L,
             // the tool inventory, read whole
-            "mps-mcp-workflow/references/mcp-tools-index.md" to 17_408L,
+            "mps-mcp-workflow/references/mcp-tools-index.md" to 17_920L,
             // one atomic JSON blueprint fence; cutting it would break copy-paste
             "mps-aspect-constraints/references/referent-constraints/computed-sequences-blueprint.md" to 13_312L,
         )

@@ -20,6 +20,7 @@ import com.intellij.openapi.project.ex.ProjectManagerEx
 import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import jetbrains.mps.agents.mcp.tools.common.AbstractOps
+import jetbrains.mps.agents.mcp.tools.common.IdeLogReader
 import jetbrains.mps.agents.mcp.tools.config.AgentConfigRootResolver
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.ide.project.ProjectHelper
@@ -35,16 +36,20 @@ import jetbrains.mps.smodel.Generator
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.workbench.action.ActionUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -55,6 +60,8 @@ import kotlin.coroutines.resumeWithException
 @Suppress("FunctionName", "unused")
 class JetBrainsMPSProjectMcpToolset(
     private val runtimeVersionSource: () -> MpsRuntimeVersion? = { MpsRuntimeVersion.fromApplicationOrNull() },
+    // PathManager honours -Didea.log.path and falls back to the OS default for the paths selector.
+    private val ideLogDirectorySource: () -> Path = { Paths.get(PathManager.getLogPath()) },
 ) : AbstractOps() {
 
     @McpTool
@@ -108,6 +115,117 @@ class JetBrainsMPSProjectMcpToolset(
                 toolFailure("listing open MPS projects", e)
             }
         )
+    }
+
+    @McpTool
+    @McpDescription(
+        """
+        Read-only: returns the tail of this IDE's own log (`idea.log`) as parsed records, filtered by
+        time, level and regex. No path is needed, and it works for a standalone MPS whose log lies
+        outside every project root, where the MCP `read_file` tool refuses the path and no terminal
+        tool exists. Use it when an envelope says ok but the effect is missing, when a skill says an
+        error "surfaces only in idea.log", and to verify a write call: right after the call, pass
+        `sinceMinutes` covering the call window with `minLevel="WARN"` (optionally `grep` for the
+        tool, concept or model you touched) and treat a WARN/SEVERE record naming what you touched
+        as a failure whatever the envelope said; unrelated background noise is common. A record is
+        one timestamped line plus its continuation lines (stack trace), returned as
+        `{ts, level, category, message, stackTrace?}`, in file order (chronological up to a few ms of
+        thread skew). `idea.log` is not truncated on IDE start, so it may also hold the end of the
+        previous session; a `sinceMinutes` bound or an uptime reset separates the sessions. Rotation is handled: the log
+        rolls over at 10 MB into `idea.1.log`, `idea.2.log`, …; with a time bound the read continues
+        into older files until the bound is covered (at most 5 files / 60 MB), without one it reads
+        `idea.log` and, if that does not fill the tail, `idea.1.log`. `data` carries `logFile`,
+        `logDirectory`, `filesRead`, `totalRecordsScanned`, `returnedRecords`, `truncatedByTail`,
+        `firstTimestamp`/`lastTimestamp`, `levelCounts` and `records`; `details` repeats the summary
+        so it stays visible when a large result is saved to a temp file.
+    """
+    )
+    suspend fun mps_mcp_read_ide_log(
+        @McpDescription("How many log records (a record is a timestamped line plus its stack trace), counted from the end, to return after filtering. 1..5000, default 200.") tailLines: Int = 200,
+        @McpDescription("Only records from the last N minutes (IDE clock), N >= 1; omit it for no time bound. Combinable with `since` (the later bound wins) and with tailLines, which applies after the time filter.") sinceMinutes: Int? = null,
+        @McpDescription("Only records at or after this local date-time: ISO-8601 (`2026-10-08T14:05:00`) or the log's own form (`2026-10-08 14:05:00` or `2026-10-08 14:05:00,123`). With `sinceMinutes`, the later bound wins.") since: String? = null,
+        @McpDescription("Lowest level to return, case-insensitive: TRACE, DEBUG or FINE (all), INFO (default), WARN, ERROR or SEVERE (the same rank: logged errors).") minLevel: String = "INFO",
+        @McpDescription("Java regex; a record is kept when it finds a match in the record's first line or in any stack-trace line, so a class name deep in a trace matches.") grep: String? = null,
+        @McpDescription("When false, return only each record's first line, without `stackTrace` (default true).") includeStackTraces: Boolean = true,
+        @McpDescription("Inline the result in `data` when it is at most this many characters; larger results are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
+    ): String {
+        val query = try {
+            require(tailLines in 1..IdeLogReader.MAX_TAIL_RECORDS) {
+                "Invalid tailLines $tailLines: must be between 1 and ${IdeLogReader.MAX_TAIL_RECORDS}"
+            }
+            require(sinceMinutes == null || sinceMinutes >= 1) { "Invalid sinceMinutes $sinceMinutes: must be at least 1; omit it for no time bound" }
+            val bounds = listOfNotNull(
+                sinceMinutes?.let { LocalDateTime.now().minusMinutes(it.toLong()) },
+                since?.takeIf { it.isNotBlank() }?.let { IdeLogReader.parseSince(it) },
+            )
+            IdeLogReader.Query(
+                tailRecords = tailLines,
+                since = bounds.maxOrNull(),
+                minLevel = IdeLogReader.Level.parse(minLevel),
+                grep = grep?.takeIf { it.isNotEmpty() }?.let { IdeLogReader.parseGrep(it) },
+            )
+        } catch (e: IllegalArgumentException) {
+            return McpCallOutcomes.record(errJson(e.message, McpErrorCode.INVALID_REQUEST))
+        }
+        return McpCallOutcomes.record(
+            try {
+                withContext(Dispatchers.IO) { readIdeLog(query, includeStackTraces, maxInlineBytes) }
+            } catch (e: Throwable) {
+                rethrowIfCancellation(e)
+                toolFailure("reading the IDE log", e)
+            }
+        )
+    }
+
+    private fun readIdeLog(query: IdeLogReader.Query, includeStackTraces: Boolean, maxInlineBytes: Int): String {
+        val directory = ideLogDirectoryOrNull()
+            ?: return errJson("The IDE reports no log directory", McpErrorCode.NOT_FOUND)
+        val logFile = directory.resolve(IDE_LOG_FILE_NAME)
+        if (!Files.isRegularFile(logFile)) {
+            return errJson(
+                "No $IDE_LOG_FILE_NAME in the IDE log directory $directory",
+                McpErrorCode.NOT_FOUND,
+                details = mapOf("logDirectory" to directory.toString()),
+            )
+        }
+        val result = IdeLogReader.read(directory, query)
+        val levelCounts = linkedMapOf<String, Int>()
+        val records = JsonArray()
+        for (record in result.records) {
+            levelCounts.merge(record.level, 1, Int::plus)
+            records.add(jsonObject {
+                addProperty("ts", record.timestampText)
+                addProperty("level", record.level)
+                addProperty("category", record.category)
+                addProperty("message", record.message)
+                if (includeStackTraces && record.continuation.isNotEmpty()) {
+                    addProperty("stackTrace", record.continuation.joinToString("\n"))
+                }
+            })
+        }
+        val filesRead = result.filesRead.map { it.toString() }
+        val summary = linkedMapOf<String, Any?>(
+            "filesRead" to filesRead,
+            "totalRecordsScanned" to result.totalRecordsScanned,
+            "returnedRecords" to result.records.size,
+            "truncatedByTail" to result.truncatedByTail,
+            "levelCounts" to levelCounts,
+        )
+        if (result.readLimitReached) summary["readLimitReached"] = true
+        val data = jsonObject {
+            addProperty("logFile", logFile.toString())
+            addProperty("logDirectory", directory.toString())
+            add("filesRead", JsonArray().apply { filesRead.forEach(::add) })
+            addProperty("totalRecordsScanned", result.totalRecordsScanned)
+            addProperty("returnedRecords", result.records.size)
+            addProperty("truncatedByTail", result.truncatedByTail)
+            if (result.readLimitReached) addProperty("readLimitReached", true)
+            result.records.firstOrNull()?.let { addProperty("firstTimestamp", it.timestampText) }
+            result.records.lastOrNull()?.let { addProperty("lastTimestamp", it.timestampText) }
+            add("levelCounts", JsonObject().apply { levelCounts.forEach { (level, count) -> addProperty(level, count) } })
+            add("records", records)
+        }
+        return finalizeResult(data.toString(), maxInlineBytes, details = summary)
     }
 
     @McpTool
@@ -499,9 +617,8 @@ class JetBrainsMPSProjectMcpToolset(
         }
     }
 
-    // PathManager honours -Didea.log.path and falls back to the OS default for the paths selector.
     private fun ideLogDirectoryOrNull(): Path? = runCatching {
-        Paths.get(PathManager.getLogPath()).toAbsolutePath().normalize()
+        ideLogDirectorySource().toAbsolutePath().normalize()
     }.getOrNull()
 
     /**
@@ -839,6 +956,6 @@ class JetBrainsMPSProjectMcpToolset(
         const val NODE_DETAIL_FULL = "full"
         const val NODE_DETAIL_NAMES = "names"
 
-        const val IDE_LOG_FILE_NAME = "idea.log"
+        const val IDE_LOG_FILE_NAME = IdeLogReader.LIVE_FILE_NAME
     }
 }
