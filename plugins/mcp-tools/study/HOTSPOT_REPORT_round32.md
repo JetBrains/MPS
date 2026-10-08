@@ -85,5 +85,5 @@ The evaluators broke the extra calls down:
 
 - Round-30 remedy 1 (routing) is superseded by the round-31 gate, which works.
 - Remedies 2–3 and the round-31 remedies 2–4 hold.
-- Not run since the round-31 edits: `McpToolsIntegrationTestSuite`. They touch only skill and
-  template text; the three skill guard tests pass.
+- `McpToolsIntegrationTestSuite` on `49fa44a9d418` (after the round): 1207/1207 passed, so the
+  round-31 skill and template edits are fully validated.
