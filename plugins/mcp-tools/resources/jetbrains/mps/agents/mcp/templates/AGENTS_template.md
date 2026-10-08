@@ -73,6 +73,7 @@ Inspection of generated code is allowed when:
 ## Rules for MPS Work
 
 - Load the `mps-mcp-workflow` skill at the start of an MPS session. If MPS MCP tools are unavailable, apply the fallback described in the Tool Selection section above.
+- Before editing a language aspect (typesystem, constraints, behavior, editor, generator, structure), also load its `mps-aspect-*` skill; `mps-mcp-workflow` names each one.
 - Use MPS MCP tools whenever available; do not hand-edit `.mps` files as plain XML.
 - Resolve nodes, concepts, models, and modules precisely before editing.
 - Validate after structural changes using `mps_mcp_check_root_node_problems`.
