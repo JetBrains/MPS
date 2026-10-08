@@ -15,6 +15,19 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.shared.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lvcs.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.lang.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.lang.actions.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.frontend.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.exec.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.impl.debugger.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.log.graph.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.platform.sqlite.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/platform-vcs-plugin/lib/modules/intellij.libraries.sqlite.native.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.localHistory.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.coverage.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.terminal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.performanceTesting.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/vcs-svn/lib/intellij.libraries.sqlite.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
