@@ -3,6 +3,7 @@
   <persistence version="9" />
   <languages>
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
   </languages>
   <imports>
     <import index="644x" ref="r:7b2ffdb7-2bfc-4488-8c0c-ee8fe93fe3c1(jetbrains.mps.build.ant)" />
@@ -2116,19 +2117,98 @@
             </node>
           </node>
         </node>
-        <node concept="3clFbF" id="2o55QbnEcBc" role="3cqZAp">
-          <node concept="1rXfSq" id="2o55QbnEcBa" role="3clFbG">
+        <node concept="3SKdUt" id="2XPMm9goP_b" role="3cqZAp">
+          <node concept="1PaTwC" id="2XPMm9goP_c" role="1aUNEU">
+            <node concept="3oM_SD" id="2XPMm9goP_e" role="1PaTwD">
+              <property role="3oM_SC" value="no" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_f" role="1PaTwD">
+              <property role="3oM_SC" value="forced" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_g" role="1PaTwD">
+              <property role="3oM_SC" value="core" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_h" role="1PaTwD">
+              <property role="3oM_SC" value="CL," />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_i" role="1PaTwD">
+              <property role="3oM_SC" value="so" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_j" role="1PaTwD">
+              <property role="3oM_SC" value="optional" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_k" role="1PaTwD">
+              <property role="3oM_SC" value="core" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_l" role="1PaTwD">
+              <property role="3oM_SC" value="content" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_m" role="1PaTwD">
+              <property role="3oM_SC" value="modules" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_n" role="1PaTwD">
+              <property role="3oM_SC" value="get" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_o" role="1PaTwD">
+              <property role="3oM_SC" value="class" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_p" role="1PaTwD">
+              <property role="3oM_SC" value="loaders" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_q" role="1PaTwD">
+              <property role="3oM_SC" value="that" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_r" role="1PaTwD">
+              <property role="3oM_SC" value="see" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_s" role="1PaTwD">
+              <property role="3oM_SC" value="their" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_t" role="1PaTwD">
+              <property role="3oM_SC" value="plugin" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_u" role="1PaTwD">
+              <property role="3oM_SC" value="dependencies" />
+            </node>
+            <node concept="3oM_SD" id="2XPMm9goP_v" role="1PaTwD">
+              <property role="3oM_SC" value="(MPS-40180)" />
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs8" id="2XPMm9goP_6" role="3cqZAp">
+          <node concept="3cpWsn" id="2XPMm9goP_5" role="3cpWs9">
+            <property role="TrG5h" value="a3" />
+            <node concept="3uibUv" id="2XPMm9goP_7" role="1tU5fm">
+              <ref role="3uigEE" to="644x:3ufQioQQsm3" resolve="Arg" />
+            </node>
+            <node concept="2ShNRf" id="2XPMm9goP_w" role="33vP2m">
+              <node concept="1pGfFk" id="2XPMm9goP_P" role="2ShVmc">
+                <ref role="37wK5l" to="644x:1hBlbKBNftw" resolve="Arg" />
+                <node concept="Xl_RD" id="2XPMm9goP_Q" role="37wK5m">
+                  <property role="Xl_RC" value="-Didea.force.use.core.classloader=false" />
+                </node>
+                <node concept="Xl_RD" id="2XPMm9goP_R" role="37wK5m">
+                  <property role="Xl_RC" value="-Didea.force.use.core.classloader" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="3clFbF" id="2XPMm9goPUH" role="3cqZAp">
+          <node concept="1rXfSq" id="2XPMm9goPUI" role="3clFbG">
             <ref role="37wK5l" to="644x:3ufQioQQtns" resolve="addConfiguredJvmArgs" />
-            <node concept="2ShNRf" id="2o55QbnEcGd" role="37wK5m">
-              <node concept="1pGfFk" id="2o55QbnEdO3" role="2ShVmc">
-                <property role="373rjd" value="true" />
+            <node concept="2ShNRf" id="2XPMm9goPV6" role="37wK5m">
+              <node concept="1pGfFk" id="2XPMm9goPVh" role="2ShVmc">
                 <ref role="37wK5l" to="644x:1hBlbKBX2QW" resolve="JvmArgs" />
-                <node concept="3clFbT" id="2o55QbnEdWe" role="37wK5m" />
-                <node concept="37vLTw" id="2o55QbnHAOd" role="37wK5m">
+                <node concept="3clFbT" id="2XPMm9goPVi" role="37wK5m" />
+                <node concept="37vLTw" id="2XPMm9goPVj" role="37wK5m">
                   <ref role="3cqZAo" node="2o55QbnHAO8" resolve="a1" />
                 </node>
-                <node concept="37vLTw" id="2o55QbnIuLA" role="37wK5m">
+                <node concept="37vLTw" id="2XPMm9goPVk" role="37wK5m">
                   <ref role="3cqZAo" node="2o55QbnHB7J" resolve="a2" />
+                </node>
+                <node concept="37vLTw" id="2XPMm9goPVl" role="37wK5m">
+                  <ref role="3cqZAo" node="2XPMm9goP_5" resolve="a3" />
                 </node>
               </node>
             </node>

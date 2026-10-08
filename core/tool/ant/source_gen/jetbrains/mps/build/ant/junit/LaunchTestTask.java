@@ -48,12 +48,14 @@ public class LaunchTestTask extends MpsLoadTask {
 
   public LaunchTestTask() {
     super("jetbrains.mps.lang.test.launcher.LaunchTestWorker");
-    // FIXME I wonder why we didn't specify system CL as we do for runMPS task?
     // According to CoreProgressManager.shouldKeepTasksAsynchronousInHeadlessMode, ignoreHeadless means async operations run in headless mode the same as they run in GUI
     Arg a1 = new Arg("-Dintellij.progress.task.ignoreHeadless=true", "-Dintellij.progress.task.ignoreHeadless");
     // perhaps, need a common method for IDEA env arguments?
     Arg a2 = new Arg("-Dintellij.platform.load.app.info.from.resources=true", "-Dintellij.platform.load.app.info.from.resources");
-    addConfiguredJvmArgs(new JvmArgs(false, a1, a2));
+    // same system CL as runMPS; with it and no forced core CL, optional core content modules get class loaders that see their plugin dependencies (MPS-40180)
+    Arg a3 = new Arg("-Djava.system.class.loader=com.intellij.util.lang.PathClassLoader", "-Djava.system.class.loader");
+    Arg a4 = new Arg("-Didea.force.use.core.classloader=false", "-Didea.force.use.core.classloader");
+    addConfiguredJvmArgs(new JvmArgs(false, a1, a2, a3, a4));
   }
 
   @Override
