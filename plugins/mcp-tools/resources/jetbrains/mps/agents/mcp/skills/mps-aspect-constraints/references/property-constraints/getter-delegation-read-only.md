@@ -19,7 +19,7 @@ property {name}
   set <read-only>
 ```
 
-This keeps name logic centralised in the behavior aspect and reusable from other behavior methods. The body is a single `DotExpression` whose operation is a `ConceptMethodCall` (`jetbrains.mps.lang.behavior.structure.ConceptMethodCall`) referencing the method declaration by stable node ref.
+This keeps name logic centralised in the behavior aspect and reusable from other behavior methods. The body is a single `DotExpression` whose operation is a `Node_ConceptMethodCall` (`jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall`) referencing the method declaration by stable node ref.
 
 **Overriding `shortDescription`** — controls the label shown in completion menus alongside the node's name. Override its getter to provide richer disambiguation when many nodes share the same name:
 

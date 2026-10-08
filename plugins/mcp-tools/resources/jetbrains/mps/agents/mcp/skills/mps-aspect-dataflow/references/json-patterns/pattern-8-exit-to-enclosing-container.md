@@ -22,7 +22,7 @@ Emitted sequence (outline):
           "concept": "DotExpression",
           "children": [
             {"role": "operand", "nodes": [{"concept": "NodeParameter"}]},
-            {"role": "operation", "nodes": [{"concept": "Node_ConceptMethodCall",
+            {"role": "operation", "nodes": [{"concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
               "references": [{"role": "baseMethodDeclaration", "target": "getLoopOrSwitch"}]}]}
           ]
         }]}

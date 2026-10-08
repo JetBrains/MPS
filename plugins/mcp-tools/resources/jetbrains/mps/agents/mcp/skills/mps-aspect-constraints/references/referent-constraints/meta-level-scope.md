@@ -69,7 +69,7 @@ All targets below are **stable refs** into MPS's own models and can be used as-i
                       { "role": "operation", "nodes": [{ "concept": "jetbrains.mps.lang.smodel.structure.Node_GetConceptOperation" }]}
                     ]}]},
                   { "role": "operation", "nodes": [{
-                    "concept": "jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall",
+                    "concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
                     "references": [{ "role": "baseMethodDeclaration",
                       "target": "r:00000000-0000-4000-0000-011c8959028b(jetbrains.mps.lang.structure.behavior)/1213877394521" }] }]}
                 ]}]},
@@ -95,7 +95,7 @@ All targets below are **stable refs** into MPS's own models and can be used as-i
                                 "concept": "jetbrains.mps.baseLanguage.structure.VariableReference",
                                 "references": [{ "role": "variableDeclaration", "target": "<it-closure-param-node-ref>" }] }]},
                               { "role": "operation", "nodes": [{
-                                "concept": "jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall",
+                                "concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
                                 "references": [{ "role": "baseMethodDeclaration",
                                   "target": "r:00000000-0000-4000-0000-011c8959028b(jetbrains.mps.lang.structure.behavior)/1213877254557" }] }]}
                             ]}]}]
@@ -113,12 +113,12 @@ All targets below are **stable refs** into MPS's own models and can be used as-i
 }
 ```
 
-Key FQNs (verified against the live node):
+Key FQNs (verified against the live node; the method-call concept was updated to `lang.behavior` after MPS marked the smodel one obsolete):
 
 | Surface | Concept / target |
 |---|---|
 | `.conceptNode` | `jetbrains.mps.lang.smodel.structure.Node_GetConceptOperation` (no children) |
-| `.getAggregationLinkDeclarations()` / `.isSingular()` | `jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall` with `baseMethodDeclaration` → the behavior method in `jetbrains.mps.lang.structure.behavior` (stable refs above) |
+| `.getAggregationLinkDeclarations()` / `.isSingular()` | `jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall` (not the obsolete smodel concept of the same name) with `baseMethodDeclaration` → the behavior method in `jetbrains.mps.lang.structure.behavior` (stable refs above) |
 | `ListScope.forResolvableElements` | class `r:...(jetbrains.mps.scope)/5455284157994035575`, method `r:...(jetbrains.mps.scope)/3812912149866273308` |
 | `referenceNode` | `jetbrains.mps.lang.constraints.structure.ConstraintFunctionParameter_referenceNode` |
 

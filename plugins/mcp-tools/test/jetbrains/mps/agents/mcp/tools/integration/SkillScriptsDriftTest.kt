@@ -272,6 +272,56 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
                      projected.size(), names.count { it.contains(" name=") })
     }
 
+    @Test
+    fun `mps_dump keeps values that contain a slash and reduces only the legacy enum form`() {
+        Python3.require()
+        val scriptDir = installSkills().resolve("mps-mcp-workflow").resolve("scripts")
+        val script = scriptDir.resolve("mps_dump.py").toString()
+        val dump = JsonParser.parseString(Files.readString(scriptDir.resolve("examples").resolve("print_node_deep.json"))).asJsonObject
+        val properties = dump.getAsJsonObject("data").getAsJsonArray("properties")
+        for (property in properties) {
+            if (property.asJsonObject.get("name").asString == "name") {
+                property.asJsonObject.addProperty("value", "http://www.w3.org/2005/07/scxml")
+            }
+        }
+        // A string-typed `x/y` has the legacy enum shape, so only the dumped type keeps it whole.
+        properties.add(JsonObject().apply { addProperty("name", "code"); addProperty("type", "string"); addProperty("value", "SR/LEVEL") })
+        // Without a type, a value with several slashes cannot be the legacy `<id>/LITERAL` form.
+        properties.add(JsonObject().apply { addProperty("name", "path"); addProperty("value", "src/main/java") })
+        val edited = Files.createTempFile("tree-slash", ".json")
+        generatedFiles.add(edited)
+        Files.writeString(edited, dump.toString())
+
+        val result = runPython(script, "tree", edited.toString(), "--depth", "0")
+        assertEquals("tree must succeed, output: ${result.output}", 0, result.exitCode)
+        val lines = result.output.trim().lines()
+        generatedFiles.add(Path.of(JsonParser.parseString(lines.last()).asJsonObject.get("file").asString))
+        val root = lines.first()
+        assertTrue("a URL value is printed whole: $root", root.contains("name=http://www.w3.org/2005/07/scxml "))
+        assertTrue("a string value of the legacy shape is printed whole: $root", root.contains("code=SR/LEVEL "))
+        assertTrue("an untyped path value is printed whole: $root", root.contains("path=src/main/java "))
+        assertTrue("the legacy `<id>/LITERAL` enum value is still reduced: $root", root.contains("level=CORE"))
+
+        // An untyped value of the legacy shape is kept whole only when the concept details declare
+        // the property as not an enum.
+        for (property in properties) {
+            if (property.asJsonObject.get("name").asString == "name") {
+                property.asJsonObject.remove("type")
+                property.asJsonObject.addProperty("value", "SR/LEVEL")
+            }
+        }
+        Files.writeString(edited, dump.toString())
+        val courseRef = dump.getAsJsonObject("data").get("reference").asString
+        val conceptDetails = scriptDir.resolve("examples").resolve("get_concept_details_courses.json").toString()
+        val declared = runPython(script, "node", edited.toString(), courseRef, "--concept-details", conceptDetails)
+        assertEquals("node must succeed, output: ${declared.output}", 0, declared.exitCode)
+        generatedFiles.add(Path.of(JsonParser.parseString(declared.output.trim().lines().last()).asJsonObject.get("file").asString))
+        assertTrue("a string property declared in the concept details is printed whole: ${declared.output}",
+                   declared.output.lines().any { it.trim() == "prop  name = SR/LEVEL" })
+        assertTrue("the declared enum is still reduced: ${declared.output}",
+                   declared.output.lines().any { it.trim() == "prop  level = CORE" })
+    }
+
     /** Installs the bundled catalog into a fresh temp directory and returns its skills root. */
     private fun installSkills(): Path {
         val root = Files.createTempDirectory("mps-skill-scripts")

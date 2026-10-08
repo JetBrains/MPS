@@ -382,13 +382,15 @@ For the negated check use `Node_IsNullOperation` in the `operation` slot. Common
 
 ## `node.behaviorMethod(args)` — behavior method call
 
+Use the `lang.behavior` concept: the same-named smodel one is obsolete ("ConceptMethodCall moved").
+
 ```json
 {
   "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
   "children": [
     { "role": "operand",   "nodes": [{ "...": "<node-expression>" }] },
     { "role": "operation", "nodes": [{
-      "concept": "jetbrains.mps.lang.smodel.structure.Node_ConceptMethodCall",
+      "concept": "jetbrains.mps.lang.behavior.structure.Node_ConceptMethodCall",
       "references": [{ "role": "baseMethodDeclaration", "target": "<behavior-method-noderef>" }],
       "children": [
         { "role": "actualArgument", "nodes": [{ "...": "<arg-expression>" }] }

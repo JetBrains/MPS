@@ -42,8 +42,9 @@ made without includeRootNodes (it carries `rootNodesCount` / `modelsCount` inste
 `rootNodes`) for `roots`, `count`, `node` and `tree`: the message points at `models`, or at
 re-calling with includeRootNodes=true, nodeDetail="names".
 
-Enum properties: `mps_mcp_print_node` emits the declared literal name. Older dumps printed a
-set member as `<enumRef>/LITERAL`; this script still reduces that form to `LITERAL`. A
+Enum properties: `mps_mcp_print_node` emits the declared literal name. Older dumps, and a
+property the concept no longer declares, print a set member in its persisted form
+`<member id>/LITERAL`; this script reduces that form to `LITERAL`. A
 property left at its enumeration's default stores nothing; `mps_mcp_print_node` reports it
 with the default literal as its value plus `"isDefault": true`, and this script marks it as
 a default rather than as a set value. For an older dump that omits the property entirely, a
@@ -57,6 +58,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import tempfile
 
@@ -270,7 +272,7 @@ def _require_kind(dump, wanted, command):
 def props(node, concept_details=None):
     """Property values of `node` as a dict, with default-valued properties filled in.
 
-    Enum values are the declared literal name; an older dump's `<enumRef>/LITERAL` form is
+    Enum values are the declared literal name; the persisted `<member id>/LITERAL` form is
     reduced to `LITERAL`. A property at its enumeration's default is reported by the printer
     with that literal and an `isDefault` flag; in an older dump it is absent, and is then
     filled from `concept_details` (`enumerationDefault`, else the first literal) or, without
@@ -282,11 +284,16 @@ def props(node, concept_details=None):
 def props_detail(node, concept_details=None):
     """Like `props` but maps each name to `(value, source)`, source in set/default/unset."""
     result = {}
+    declared = _declared_properties(node, concept_details)
     for entry in node.get("properties") or []:
         name = entry.get("name")
         if name is None:
             continue
-        value = _plain_value(entry.get("value"))
+        declared_entry = declared.get(name)
+        dumped_type = entry.get("type")
+        maybe_enum = ((dumped_type is None or str(dumped_type).startswith("enum:"))
+                      and (declared_entry is None or bool(declared_entry.get("enumerationValues"))))
+        value = _plain_value(entry.get("value"), maybe_enum)
         if not value:
             result[name] = (DEFAULT_MARKER, "unset")
         elif entry.get("isDefault"):
@@ -294,7 +301,7 @@ def props_detail(node, concept_details=None):
         else:
             result[name] = (value, "set")
 
-    for name, entry in _declared_properties(node, concept_details).items():
+    for name, entry in declared.items():
         default = _declared_default(entry)
         known = result.get(name)
         if default and (known is None or known[1] != "set"):
@@ -311,13 +318,28 @@ def _declared_default(prop_entry):
     return literals[0] if literals else ""
 
 
-def _plain_value(value):
+# A set enum value in its persisted form: the member id (JavaFriendlyBase64, at most 11 characters),
+# a slash and the literal name, e.g. `7tUWsHqcKpu/CORE`.
+_LEGACY_ENUM_VALUE = re.compile(r"[0-9A-Za-z$_]{1,11}/([A-Za-z_][0-9A-Za-z_]*)")
+
+
+def _plain_value(value, maybe_enum=True):
+    """The property value as text, with the persisted `<member id>/LITERAL` enum form reduced to `LITERAL`.
+
+    `mps_mcp_print_node` emits the declared literal; the persisted form appears in older dumps and,
+    with no `type`, for a property the concept no longer declares. Only a value of exactly that
+    shape is reduced, and never one whose dumped `type` or concept-details declaration says it is
+    not an enum, so a URL, a path or any other text with several slashes is kept whole. An untyped,
+    undeclared value of the same shape (`TCP/IP`) cannot be told apart and is reduced too.
+    """
     if value is None:
         return ""
     value = str(value)
-    # Older dumps printed a set enum as `<enumerationRef>/LITERAL`; current dumps already
-    # emit the declared identifier, so this is a no-op unless a slash is present.
-    return value.rsplit("/", 1)[-1] if "/" in value else value
+    if maybe_enum:
+        legacy = _LEGACY_ENUM_VALUE.fullmatch(value)
+        if legacy:
+            return legacy.group(1)
+    return value
 
 
 def _declared_properties(node, concept_details):
