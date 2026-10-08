@@ -17,6 +17,8 @@ import java.util.regex.Matcher;
 import java.io.FileReader;
 import java.nio.CharBuffer;
 import java.io.InputStreamReader;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.function.BiFunction;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,9 +41,12 @@ import java.net.URLClassLoader;
 
   private final Map<String, Descriptor> myPlugins = new HashMap<String, Descriptor>();
   private final Map<String, ClassLoader> myLoaders = new HashMap<String, ClassLoader>();
+  private final Map<String, String> myAliases = new HashMap<String, String>();
   private final Pattern myPluginIdPattern = Pattern.compile("<id>([a-zA-Z_0-9.]+)</id>");
   private final Pattern myLangLocationPattern = Pattern.compile("<mps\\.LanguageLibrary\\s+dir=\"([^\"]*)\"");
   private final Pattern myDepensPattern = Pattern.compile("<depends(?:\\s+[^>]*)?>([a-zA-Z_0-9.]+)</depends>");
+  private final Pattern myPluginDepPattern = Pattern.compile("<plugin\\s+id=\"([a-zA-Z_0-9.]+)\"");
+  private final Pattern myModuleAliasPattern = Pattern.compile("<module\\s+value=\"([a-zA-Z_0-9.]+)\"");
 
 
   /*package*/ PlatformPlugins(EnvironmentConfig config) {
@@ -108,6 +113,10 @@ import java.net.URLClassLoader;
       List<String> deps = detectDependencies(pluginXmlContent);
       Descriptor d = new Descriptor(pluginId, pluginLocation, cp, langLibs, deps);
       myPlugins.put(pluginId, d);
+      final Matcher aliasMatcher = myModuleAliasPattern.matcher(pluginXmlContent);
+      while (aliasMatcher.find()) {
+        myAliases.put(aliasMatcher.group(1), pluginId);
+      }
       if (LOG.isDebugLevel()) {
         LOG.debug(String.format("Discovered %s; cp=%s, modules=%s", d, cp, langLibs));
       }
@@ -143,25 +152,39 @@ import java.net.URLClassLoader;
     return myPlugins.isEmpty();
   }
 
+  private final ThreadLocal<Set<Descriptor>> myResolving = new ThreadLocal<Set<Descriptor>>() {
+    @Override
+    protected Set<Descriptor> initialValue() {
+      return new HashSet<Descriptor>();
+    }
+  };
   private final BiFunction<Descriptor, String, Class<?>> myDependencyResolver = new BiFunction<>() {
     @Override
     public Class<?> apply(Descriptor d, String className) {
-      for (String dep : d.dependencies) {
-        ClassLoader pcl = pluginClassLoader(dep);
-        // don't treat missing/unknown plugin as error; PlatformPlugins is not a sophisticated plugin handling mechanism, just very simplistic code to get MPS going 
-        if (pcl == null) {
-          continue;
-        }
-        try {
-          Class<?> depClass = pcl.loadClass(className);
-          if (depClass != null) {
-            return depClass;
-          }
-        } catch (ClassNotFoundException e) {
-          // ignore, just move on to the next dependency
-        }
+      // dependencies may be cyclic (or self, via an alias), don't re-enter a plugin being resolved
+      if (!(myResolving.get().add(d))) {
+        return null;
       }
-      return null;
+      try {
+        for (String dep : d.dependencies) {
+          ClassLoader pcl = pluginClassLoader(dep);
+          // don't treat missing/unknown plugin as error; PlatformPlugins is not a sophisticated plugin handling mechanism, just very simplistic code to get MPS going 
+          if (pcl == null) {
+            continue;
+          }
+          try {
+            Class<?> depClass = pcl.loadClass(className);
+            if (depClass != null) {
+              return depClass;
+            }
+          } catch (ClassNotFoundException e) {
+            // ignore, just move on to the next dependency
+          }
+        }
+        return null;
+      } finally {
+        myResolving.get().remove(d);
+      }
     }
   };
 
@@ -179,6 +202,10 @@ import java.net.URLClassLoader;
 
   @Nullable
   /*package*/ ClassLoader pluginClassLoader(String id) {
+    // alias declared with <module value="..."/>, e.g. com.intellij.modules.vcs
+    if (!(myLoaders.containsKey(id)) && myAliases.containsKey(id)) {
+      return myLoaders.get(myAliases.get(id));
+    }
     return myLoaders.get(id);
   }
 
@@ -253,6 +280,11 @@ import java.net.URLClassLoader;
     List<String> rv = new ArrayList<>();
     while (m.find()) {
       rv.add(m.group(1));
+    }
+    // v2 plugin model declares dependencies as <plugin id="..."/>, see MPS-40180
+    Matcher pm = myPluginDepPattern.matcher(pluginXmlContent);
+    while (pm.find()) {
+      rv.add(pm.group(1));
     }
     return rv;
   }
