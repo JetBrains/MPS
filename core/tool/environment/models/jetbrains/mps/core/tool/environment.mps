@@ -2114,22 +2114,27 @@
       <property role="DiZV1" value="false" />
       <node concept="3clFbS" id="5UWB9tiBhf" role="3clF47">
         <node concept="3cpWs6" id="3oGpQhnFvdS" role="3cqZAp">
-          <node concept="2OqwBi" id="2btCvgzGaeQ" role="3cqZAk">
-            <node concept="2OqwBi" id="2btCvgzG7mH" role="2Oq$k0">
-              <node concept="2OqwBi" id="16v2a1850Tv" role="2Oq$k0">
-                <node concept="1rXfSq" id="3oGpQhnFwHD" role="2Oq$k0">
-                  <ref role="37wK5l" node="6BLo1MgrFYe" resolve="withCorePlugin" />
+          <node concept="2OqwBi" id="5whBXIIlmRy" role="3cqZAk">
+            <node concept="2OqwBi" id="5whBXIIlmQQ" role="2Oq$k0">
+              <node concept="2OqwBi" id="5whBXIIlmQa" role="2Oq$k0">
+                <node concept="2OqwBi" id="5whBXIIlmPu" role="2Oq$k0">
+                  <node concept="1rXfSq" id="5whBXIIlmO$" role="2Oq$k0">
+                    <ref role="37wK5l" node="6BLo1MgrFYe" resolve="withCorePlugin" />
+                  </node>
+                  <node concept="liA8E" id="5whBXIIlmPv" role="2OqNvi">
+                    <ref role="37wK5l" node="16v2a184MZE" resolve="withRepositoryPlugin" />
+                  </node>
                 </node>
-                <node concept="liA8E" id="16v2a1852RX" role="2OqNvi">
-                  <ref role="37wK5l" node="16v2a184MZE" resolve="withRepositoryPlugin" />
+                <node concept="liA8E" id="5whBXIIlmQb" role="2OqNvi">
+                  <ref role="37wK5l" node="2btCvgzFoBq" resolve="withTestingPlugin" />
                 </node>
               </node>
-              <node concept="liA8E" id="2btCvgzG8Er" role="2OqNvi">
-                <ref role="37wK5l" node="2btCvgzFoBq" resolve="withTestingPlugin" />
+              <node concept="liA8E" id="5whBXIIlmQR" role="2OqNvi">
+                <ref role="37wK5l" node="2btCvgzFJ_H" resolve="withMakePlugin" />
               </node>
             </node>
-            <node concept="liA8E" id="2btCvgzGbP3" role="2OqNvi">
-              <ref role="37wK5l" node="2btCvgzFJ_H" resolve="withMakePlugin" />
+            <node concept="liA8E" id="5whBXIIlmRz" role="2OqNvi">
+              <ref role="37wK5l" node="5whBXIIleFP" resolve="withPty4jPlugin" />
             </node>
           </node>
         </node>
@@ -2467,6 +2472,78 @@
       </node>
       <node concept="3Tm1VV" id="5whBXIGKmsI" role="1B3o_S" />
       <node concept="3uibUv" id="5whBXIGKmsJ" role="3clF45">
+        <ref role="3uigEE" node="6rx4kZDk5A9" resolve="EnvironmentConfig" />
+      </node>
+    </node>
+    <node concept="2tJIrI" id="5whBXIIliab" role="jymVt" />
+    <node concept="3clFb_" id="5whBXIIleFP" role="jymVt">
+      <property role="TrG5h" value="withPty4jPlugin" />
+      <node concept="3clFbS" id="5whBXIIleFQ" role="3clF47">
+        <node concept="3SKdUt" id="5whBXIIleG0" role="3cqZAp">
+          <node concept="1PaTwC" id="5whBXIIleG1" role="1aUNEU">
+            <node concept="3oM_SD" id="5whBXIIleG3" role="1PaTwD">
+              <property role="3oM_SC" value="since" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleG4" role="1PaTwD">
+              <property role="3oM_SC" value="263," />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleG5" role="1PaTwD">
+              <property role="3oM_SC" value="LocalProcessService" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleG6" role="1PaTwD">
+              <property role="3oM_SC" value="(process" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleG7" role="1PaTwD">
+              <property role="3oM_SC" value="termination)" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleG8" role="1PaTwD">
+              <property role="3oM_SC" value="needs" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleG9" role="1PaTwD">
+              <property role="3oM_SC" value="the" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleGa" role="1PaTwD">
+              <property role="3oM_SC" value="pty4j" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleGb" role="1PaTwD">
+              <property role="3oM_SC" value="plugin," />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleGc" role="1PaTwD">
+              <property role="3oM_SC" value="which" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleGd" role="1PaTwD">
+              <property role="3oM_SC" value="requires" />
+            </node>
+            <node concept="3oM_SD" id="5whBXIIleGe" role="1PaTwD">
+              <property role="3oM_SC" value="jna" />
+            </node>
+          </node>
+        </node>
+        <node concept="3cpWs6" id="5whBXIIleFR" role="3cqZAp">
+          <node concept="2OqwBi" id="5whBXIIleGT" role="3cqZAk">
+            <node concept="1rXfSq" id="5whBXIIleFT" role="2Oq$k0">
+              <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
+              <node concept="Xl_RD" id="5whBXIIleFU" role="37wK5m">
+                <property role="Xl_RC" value="jna-plugin" />
+              </node>
+              <node concept="Xl_RD" id="5whBXIIleFV" role="37wK5m">
+                <property role="Xl_RC" value="com.intellij.modules.jna" />
+              </node>
+            </node>
+            <node concept="liA8E" id="5whBXIIleGU" role="2OqNvi">
+              <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
+              <node concept="Xl_RD" id="5whBXIIleGV" role="37wK5m">
+                <property role="Xl_RC" value="pty4j-plugin" />
+              </node>
+              <node concept="Xl_RD" id="5whBXIIleGW" role="37wK5m">
+                <property role="Xl_RC" value="com.intellij.modules.pty4j" />
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="3Tm1VV" id="5whBXIIleFY" role="1B3o_S" />
+      <node concept="3uibUv" id="5whBXIIleFZ" role="3clF45">
         <ref role="3uigEE" node="6rx4kZDk5A9" resolve="EnvironmentConfig" />
       </node>
     </node>

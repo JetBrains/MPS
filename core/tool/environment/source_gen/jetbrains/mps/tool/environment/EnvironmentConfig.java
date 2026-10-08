@@ -107,7 +107,7 @@ public class EnvironmentConfig {
   }
 
   public EnvironmentConfig withDefaultPlugins() {
-    return withCorePlugin().withRepositoryPlugin().withTestingPlugin().withMakePlugin();
+    return withCorePlugin().withRepositoryPlugin().withTestingPlugin().withMakePlugin().withPty4jPlugin();
   }
 
   public EnvironmentConfig withVcsPlugin() {
@@ -145,6 +145,11 @@ public class EnvironmentConfig {
   public EnvironmentConfig withPlatformVcsPlugin() {
     // since 263, VCS core (ChangeListManager, also needed by local history) is a separate plugin
     return addDistributedPlugin("platform-vcs-plugin", "com.intellij.platform.vcs");
+  }
+
+  public EnvironmentConfig withPty4jPlugin() {
+    // since 263, LocalProcessService (process termination) needs the pty4j plugin, which requires jna
+    return addDistributedPlugin("jna-plugin", "com.intellij.modules.jna").addDistributedPlugin("pty4j-plugin", "com.intellij.modules.pty4j");
   }
 
   public EnvironmentConfig withGit4IdeaStubsPlugin() {
