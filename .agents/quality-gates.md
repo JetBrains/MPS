@@ -17,7 +17,20 @@
 - `execute_run_configuration` has an internal timeout (~60s) that may expire before a long-running suite finishes. A "Timed out" error is **not** a test failure — the JVM process keeps running. Use `waitForExit=false`, monitor the process with `ps aux | grep <suite-class-name>`, and after it exits read the `fullOutputPath` log for `testFailed` entries.
 - Never run multiple test suites concurrently — they share MPS environments, project locks, and state, and will fail with contention errors.
 - Exception: tests based on `jetbrains.mps.ide.ModuleInProjectTest` fail at startup with `myEnv`/`myProject` null when launched this way — they need an MPS `Environment` provided by a different runner. Treat that signature as a launch limitation, not a code defect: report it and have the user run those in a full MPS context.
-- The same `myEnv`/`myProject` null signature appears for individual `*McpToolset*IntegrationTest` classes: their environment is created once by the `McpToolsIntegrationTestSuite` run configuration, so run that whole suite (or `McpToolsIntegrationTestSuite (1)`) to validate mcp-tools changes, then search its log for the test names you care about.
+- The same `myEnv`/`myProject` null signature appears for individual `*McpToolset*IntegrationTest` classes: their environment is created once by the `McpToolsIntegrationTestSuite` run configuration. Never launch an mcp-tools test, class or sub-suite from the editor gutter; the generated configuration lacks the VM parameters and the environment.
+- `McpToolsIntegrationTestSuite` is the union of five `Mcp*TestSuite` sub-suites and stays the full gate (and the only TeamCity entry). Register a new test class in exactly one sub-suite, never in the umbrella; `SuiteRegistrationGuardTest` fails otherwise.
+- Run a subset in the same environment with `execute_run_configuration(configurationName="McpToolsIntegrationTestSuite", envs={"MCP_TESTS": "..."})`. The value is a comma-separated list of sub-suite simple names, test class simple names, or `ClassSimpleName#methodName` (Kotlin backtick name verbatim, spaces allowed). An unknown name or an empty match fails initialization; TeamCity ignores the variable.
+
+  | Changed | Run |
+  |---|---|
+  | one toolset class | its test class (`MCP_TESTS=<TestClass>`), then its sub-suite |
+  | `common/`, `McpIntegrationTestBase`, the umbrella, `testbench` | umbrella (no `MCP_TESTS`) |
+  | a tool name, parameter, or `@McpDescription` | the toolset's sub-suite + `McpContractAndSkillsTestSuite` |
+  | skills catalog, scripts, docs | `McpContractAndSkillsTestSuite` |
+  | types / `query_nodes` GET_TYPE | `McpNodeToolsTestSuite` + `SkillTypeQueryRoutingTest` |
+
+- A filtered run prints `McpToolsIntegrationTestSuite: MCP_TESTS selection applied, running only: ...` and writes its IDEA test-history entry under the umbrella's name with fewer tests; a verdict lookup in those files must check the test count or that line before treating a run as the full gate.
+- A sub-suite run is a suite run: one at a time, machine-wide, gated on no running `JUnitStarter` JVM like the umbrella.
 - For MPS model changes, run `mps_mcp_check_root_node_problems` on every root you touched (it also accepts a model or module reference), then rebuild or regenerate only when the downstream generated code may change (`.agents/conventions.md` covers committing the regenerated sources).
 - If the MPS MCP tools appear to be missing, check the names you were actually given before concluding anything (`.agents/tools.md`). If they are genuinely unavailable, stop and say so; never fall back to editing a serialized model as text.
 - For generator changes, validate both the MPS generator result and the affected generated Java/Kotlin compilation path.

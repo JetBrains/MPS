@@ -45,12 +45,15 @@
     be resumed from its transcript. → Give implementers disjoint file sets so partial work is
     attributable, check `git status` + `build_project` before resuming, and resume with SendMessage
     rather than restarting from scratch.
-15. **Own the shared files yourself.** `McpToolsIntegrationTestSuite.java` and the reference files
-    several implementers want to touch are edited only by the observer, after the implementers
-    report; implementers put the sentences they want added into their report.
+15. **Own the shared files yourself.** The reference files several implementers want to touch,
+    and the `Mcp*TestSuite` sub-suite file of the implementers' family (new tests are registered
+    there; the umbrella `McpToolsIntegrationTestSuite` lists only the sub-suites), are edited only
+    by the observer, after the implementers report; implementers put the sentences they want added
+    into their report.
 16. **One suite run at a time.** The integration suite compiles into one output directory; two
-    concurrent runs corrupt each other. Implementers compile with `build_project`; the observer runs
-    the suite once per batch.
+    concurrent runs corrupt each other, and a sub-suite run is still a suite run. Implementers
+    compile with `build_project`; the observer runs the umbrella once per batch, or a subset with
+    `MCP_TESTS` set (`.agents/quality-gates.md`) when only one family changed.
 17. **Enum defaults are invisible to scripts.** `get_concept_details` did not expose the declared
     default member, so the shipped `mps_dump.py` assumes the first literal. Pair every P-off script
     with the server change that exposes the data it needs (here: a default marker on enum literals).

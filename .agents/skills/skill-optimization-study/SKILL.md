@@ -188,9 +188,10 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    owner/contract/saving/risk. Keep a separate `docs-defects.md` from day one.
 9. **Treat** — parallel Opus implementers with DISJOINT file sets (skill docs / skill scripts +
    packaging + drift test / server batch). Never two agents in the same Kotlin toolset; the observer
-   registers new tests in `McpToolsIntegrationTestSuite` and runs the suite between batches. A
-   server-side change needs the plugin rebuilt and MPS restarted: `mps_control.sh restart` + SMOKE,
-   no human step.
+   registers new tests in the matching `Mcp*TestSuite` sub-suite (the umbrella
+   `McpToolsIntegrationTestSuite` lists only the sub-suites) and runs the umbrella between batches,
+   or a subset with `MCP_TESTS` (`.agents/quality-gates.md`). A server-side change needs the plugin
+   rebuilt and MPS restarted: `mps_control.sh restart` + SMOKE, no human step.
 10. **A/B** (optional) — restart MPS onto the treated plugin (`mps_control.sh restart`, then
     SMOKE), then the same runs against the treated tools; success = ≥ 30 % fewer tool calls and
     ≥ 25 % fewer context tokens on treated scenarios, no drop in pass rate; delete remedies that do
