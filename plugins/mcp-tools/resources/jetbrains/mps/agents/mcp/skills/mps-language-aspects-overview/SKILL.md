@@ -93,8 +93,8 @@ After adding/changing:
 ## Validation Flow
 
 1. `mps_mcp_check_root_node_problems` on edited roots / aspect models, or on the language module to sweep every aspect (and its generator) in one call — catches concept-level problems.
-2. Build the language module (IDE MCP) — catches compile errors in generated descriptors.
+2. Build the language module (`mps_mcp_alter_nodes` `MAKE`, `rebuild:true`; `runtimeReady:true` means MPS has reloaded it) — catches compile errors in generated descriptors.
 3. Regenerate a sample model — catches generator/textgen issues.
-4. Inspect sample in MPS UI — catches editor / usability issues.
+4. Ask the engine on a sandbox root (`mps_mcp_check_root_node_problems`, `mps_mcp_query_nodes` `GET_TYPE`, `mps_mcp_query_types` `IS_SUBTYPE` / `EXPLAIN_TYPE`) instead of inspecting it in the MPS UI — catches typing and checking issues; `mps-aspect-typesystem` Common-Path step 9 has the scratch-model recipe. Editor / usability issues still need a look in MPS.
 
 When something in a consumer is wrong, always re-check the root cause on the language side (structure / generator / typesystem) before patching generated Java.

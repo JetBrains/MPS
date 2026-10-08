@@ -75,4 +75,4 @@ A typesystem, constraints or scope problem of `mps_mcp_check_root_node_problems`
 
 ## After changing typesystem rules
 
-Rebuild the language and reload before trusting any answer — see "Reload after compiled-aspect changes" in `SKILL.md`. The engine runs the compiled rules, not the rule roots you edited.
+Rebuild the language with one `MAKE` (`runtimeReady:true` is the reload) before trusting any answer. The engine runs the compiled rules, not the rule roots you edited.

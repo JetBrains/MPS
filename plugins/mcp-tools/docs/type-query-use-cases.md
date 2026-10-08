@@ -225,6 +225,10 @@ when done) and "one MAKE with `runtimeReady:true` is the reload"; `mps-language-
 step 4 → "ask the engine (`GET_TYPE`, `IS_SUBTYPE`, `check` on a sandbox root) instead of opening the editor".
 (A third item, a "satisfied subtyping steps carry no rule" note in `type-queries.md`, became moot: step 1 below
 removed the limit, and `via` names the rules.)
+**Status 2026-10-08: done** (step 2). The recipe is `mps-aspect-typesystem` Common-Path step 9.1–9.6; the
+Validation Flow and `nodes-test-case.md` point at it, and `type-queries.md` "After changing typesystem rules" says the
+one `MAKE` is the reload. Re-run live end to end through the recipe on `samples/expressions` (same answers as §1.2),
+then reverted.
 
 ## 4. Plan, with the `EXPLAIN_TYPE` subtyping attribution as step 1
 
