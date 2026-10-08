@@ -27,7 +27,6 @@
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.coverage.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.terminal.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/vcs-git/lib/modules/intellij.vcs.git.performanceTesting.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/vcs-svn/lib/intellij.libraries.sqlite.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
