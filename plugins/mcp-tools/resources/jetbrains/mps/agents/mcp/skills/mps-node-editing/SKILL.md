@@ -25,7 +25,7 @@ The core workflow for mutating MPS nodes through MCP tools. JSON blueprints desc
 
 ## `mps_mcp_update_node` — Unified Node-Mutation Tool
 
-All child, property, and reference operations on existing nodes go through `mps_mcp_update_node`. The operation is selected via `operation` (`ADD`/`SET`) × `kind` (`CHILD`/`PROPERTY`/`REFERENCE`). **There is no `DELETE` operation** — deletion is a `SET`: omit `childJson` to delete a child, or pass an explicit `null` as a triplet's value to clear a property or reference. A *shortened* triplet is rejected (`Invalid property triplet: expected at least 3 elements`, and the `reference` equivalent), so the null has to be written out.
+All child, property, and reference operations on existing nodes go through `mps_mcp_update_node`. The operation is selected via `operation` (`ADD`/`SET`) × `kind` (`CHILD`/`PROPERTY`/`REFERENCE`). **There is no `DELETE` operation** — deletion is a `SET`: omit `childJson` to delete a child, or pass an explicit `null` as a triplet's value to clear a property or reference. A *shortened* triplet is rejected (`Invalid property triplet: expected at least 3 elements`, and the `reference` equivalent), so the null has to be written out. To delete a whole **root**, call `mps_mcp_update_root_node_from_json` with `operation: "DELETE"` and the root's `nodeReference` (no blueprint needed).
 
 | operation × kind        | Required parameters                                           | Notes |
 |-------------------------|---------------------------------------------------------------|-------|
