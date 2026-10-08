@@ -23,13 +23,16 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.ArrayList;
-import jetbrains.mps.internal.collections.runtime.IMapping;
 import java.util.Objects;
 import jetbrains.mps.baseLanguage.tuples.runtime.Tuples;
+import java.util.HashMap;
 import jetbrains.mps.baseLanguage.tuples.runtime.MultiTuple;
+import jetbrains.mps.internal.collections.runtime.Sequence;
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
+import jetbrains.mps.smodel.adapter.ids.SContainmentLinkId;
+import org.jetbrains.mps.openapi.language.SProperty;
 
 /**
  * 
@@ -44,6 +47,8 @@ import jetbrains.mps.baseLanguage.tuples.runtime.MultiTuple;
  * (with respect to {@code base} ) is used as the skeleton; the other branch contributes its
  * branch-only nodes via anchor-based insertion. If both branches changed the order, a tie-breaking
  * selects the primary branch (the one with more positional differences vs base).
+ * ChildAttributes also belong to the visible sequence of their commented containment role.
+ * These overlapping sequences follow the resolved result order. Attribute order is preserved unconditionally.
  */
 @GeneratedClass(nodeId = "8980787894205097707", model = "r:e9c4e128-4808-4224-a92b-dbeed02eb860(jetbrains.mps.vcs.diff.merge)")
 public final class PostMergeSorting {
@@ -104,22 +109,28 @@ public final class PostMergeSorting {
     }
 
     Set<SNodeId> resultIds = SetSequence.fromSet(new LinkedHashSet<SNodeId>());
-    Map<SNodeId, SContainmentLink> nodeRoles = MapSequence.fromMap(new HashMap<SNodeId, SContainmentLink>());
     Map<SContainmentLink, List<SNodeId>> resultByRole = MapSequence.fromMap(new LinkedHashMap<SContainmentLink, List<SNodeId>>(16, (float) 0.75, false));
 
+    // Child attributes belong to both the physical smodelAttribute sequence and the visible sequence of the role they annotate.
+    // Both sequences follow the resolved merge result; referenceOrder is only a preference.
     for (SNode child : children) {
       SNodeId id = child.getNodeId();
       SetSequence.fromSet(resultIds).addElement(id);
       SContainmentLink role = SNodeOperations.getContainingLink(child);
-      MapSequence.fromMap(nodeRoles).put(id, role);
-      resultByRole.computeIfAbsent(role, (k) -> new ArrayList<>()).add(id);
+      ListSequence.fromList(resultByRole.computeIfAbsent(role, (k) -> ListSequence.fromList(new ArrayList<SNodeId>()))).addElement(id);
+      SContainmentLink childAttributeRole = getChildAttributeLink(child);
+      // A comment on smodelAttribute (e.g. a commented-out annotation) already belongs to this sequence.
+      // Adding it again would make the node its own predecessor and loop in placeWithPredecessors.
+      if (childAttributeRole != null && !(childAttributeRole.equals(role))) {
+        ListSequence.fromList(resultByRole.computeIfAbsent(childAttributeRole, (k) -> ListSequence.fromList(new ArrayList<SNodeId>()))).addElement(id);
+      }
     }
 
     List<SNodeId> base = getChildOrder(myBaseModel, parent);
     List<SNodeId> mine = getChildOrder(myMineModel, parent);
     List<SNodeId> repo = getChildOrder(myRepositoryModel, parent);
     List<SNodeId> referenceOrder = buildReferenceOrder(base, mine, repo, resultIds);
-    List<SNodeId> finalOrder = buildFinalChildOrder(referenceOrder, nodeRoles, resultByRole);
+    List<SNodeId> finalOrder = buildConstrainedChildOrder(referenceOrder, MapSequence.fromMap(resultByRole).values(), MapSequence.fromMap(resultByRole).values());
 
     if (needsReorder(parent, finalOrder)) {
       applyReorder(parent, finalOrder);
@@ -230,64 +241,6 @@ public final class PostMergeSorting {
     return diff;
   }
 
-  /**
-   * Builds the final child order by combining the reference order with the
-   * within-role order from the merge result. The within-role order is preserved strictly;
-   * the reference order is treated as a soft hint for cross-role positioning.
-   */
-  /*package*/ static List<SNodeId> buildFinalChildOrder(@NotNull List<SNodeId> referenceOrder, @NotNull Map<SNodeId, SContainmentLink> nodeRoles, @NotNull Map<SContainmentLink, List<SNodeId>> resultByRole) {
-    Map<SContainmentLink, Integer> roleIndex = MapSequence.fromMap(new HashMap<SContainmentLink, Integer>());
-    // at the beginning we are at 0 position in children list for each role
-    for (SContainmentLink role : SetSequence.fromSet(MapSequence.fromMap(resultByRole).keySet())) {
-      MapSequence.fromMap(roleIndex).put(role, 0);
-    }
-    List<SNodeId> finalOrder = ListSequence.fromList(new ArrayList<SNodeId>());
-    Set<SNodeId> placed = SetSequence.fromSet(new HashSet<SNodeId>());
-
-    for (SNodeId id : referenceOrder) {
-      // for each node in reference list we want to place it right now if possible
-
-      // if already placed go the next node
-      if (SetSequence.fromSet(placed).contains(id)) {
-        continue;
-      }
-
-      // get the role of the node and list of other children in the same role
-      SContainmentLink role = MapSequence.fromMap(nodeRoles).get(id);
-      if (role == null) {
-        continue;
-      }
-      List<SNodeId> roleList = MapSequence.fromMap(resultByRole).get(role);
-      if (roleList == null) {
-        continue;
-      }
-      int idx = MapSequence.fromMap(roleIndex).get(role);
-      // go through the list of unplaced children of the same role till we'll find our node
-      //  so we do not change the order for same role
-      while (idx < ListSequence.fromList(roleList).count()) {
-        SNodeId nextNodeInRole = ListSequence.fromList(roleList).getElement(idx++);
-        if (!(SetSequence.fromSet(placed).contains(nextNodeInRole))) {
-          // place node into final order list if it was not there
-          ListSequence.fromList(finalOrder).addElement(nextNodeInRole);
-          SetSequence.fromSet(placed).addElement(nextNodeInRole);
-        }
-        // stop placing other nodes of the same role once we reach our node
-        if (nextNodeInRole.equals(id)) {
-          break;
-        }
-      }
-      MapSequence.fromMap(roleIndex).put(role, idx);
-    }
-
-    // Place sll remaining nodes
-    for (IMapping<SContainmentLink, List<SNodeId>> entry : MapSequence.fromMap(resultByRole)) {
-      int idx = MapSequence.fromMap(roleIndex).get(entry.key());
-      List<SNodeId> roleList = entry.value();
-      ListSequence.fromList(finalOrder).addSequence(ListSequence.fromList(roleList).subListSequence(idx, ListSequence.fromList(roleList).count()));
-    }
-
-    return finalOrder;
-  }
   private static boolean needsReorder(@NotNull SNode parent, @NotNull List<SNodeId> finalOrder) {
     return !(Objects.equals(finalOrder, ListSequence.fromList(SNodeOperations.getChildren(parent)).select((it) -> it.getNodeId()).toList()));
   }
@@ -302,5 +255,88 @@ public final class PostMergeSorting {
     for (SNodeId id : ListSequence.fromList(finalOrder)) {
       parent.addChild(MapSequence.fromMap(id2Link_Node).get(id)._0(), MapSequence.fromMap(id2Link_Node).get(id)._1());
     }
+  }
+  /**
+   * Orders the ids of fallbackOrder so that every sequence in constraints keeps its relative order.
+   * The order among different sequences follows referenceOrder where the constraints allow it.
+   * Remaining ids are visited in fallbackOrder order, with required predecessors placed first.
+   * The constraints must not form a cycle, otherwise this method does not terminate.
+   * sort() guarantees that: all its sequences are subsequences of the current child order of one parent.
+   */
+  /*package*/ static List<SNodeId> buildConstrainedChildOrder(List<SNodeId> referenceOrder, Iterable<List<SNodeId>> constraints, Iterable<List<SNodeId>> fallbackOrder) {
+    Map<SNodeId, Set<SNodeId>> predecessors = MapSequence.fromMap(new HashMap<SNodeId, Set<SNodeId>>());
+    for (List<SNodeId> sequence : Sequence.fromIterable(constraints)) {
+      SNodeId previous = null;
+      for (SNodeId id : ListSequence.fromList(sequence)) {
+        if (previous != null) {
+          SetSequence.fromSet(predecessors.computeIfAbsent(id, (k) -> SetSequence.fromSet(new LinkedHashSet<SNodeId>()))).addElement(previous);
+        }
+        previous = id;
+      }
+    }
+    Set<SNodeId> remaining = SetSequence.fromSet(new HashSet<SNodeId>());
+    for (List<SNodeId> sequence : Sequence.fromIterable(fallbackOrder)) {
+      SetSequence.fromSet(remaining).addSequence(ListSequence.fromList(sequence));
+    }
+    List<SNodeId> order = ListSequence.fromList(new ArrayList<SNodeId>());
+    for (SNodeId id : ListSequence.fromList(referenceOrder)) {
+      placeWithPredecessors(id, predecessors, remaining, order);
+    }
+    for (List<SNodeId> sequence : Sequence.fromIterable(fallbackOrder)) {
+      for (SNodeId id : ListSequence.fromList(sequence)) {
+        placeWithPredecessors(id, predecessors, remaining, order);
+      }
+    }
+    return order;
+  }
+  private static void placeWithPredecessors(SNodeId id, Map<SNodeId, Set<SNodeId>> predecessors, Set<SNodeId> remaining, List<SNodeId> order) {
+    if (!(SetSequence.fromSet(remaining).contains(id))) {
+      return;
+    }
+    // Place all required predecessors before the requested id.
+    // Use an explicit stack so long dependency chains do not overflow the call stack.
+    List<SNodeId> stack = ListSequence.fromList(new ArrayList<SNodeId>());
+    ListSequence.fromList(stack).addElement(id);
+    while (!(ListSequence.fromList(stack).isEmpty())) {
+      SNodeId next = ListSequence.fromList(stack).last();
+      boolean ready = true;
+      Set<SNodeId> required = MapSequence.fromMap(predecessors).get(next);
+      if (required != null) {
+        for (SNodeId predecessor : SetSequence.fromSet(required)) {
+          if (SetSequence.fromSet(remaining).contains(predecessor)) {
+            ListSequence.fromList(stack).addElement(predecessor);
+            ready = false;
+            break;
+          }
+        }
+      }
+      if (ready) {
+        ListSequence.fromList(stack).removeLastElement();
+        SetSequence.fromSet(remaining).removeElement(next);
+        ListSequence.fromList(order).addElement(next);
+      }
+    }
+  }
+  private static SContainmentLink getChildAttributeLink(SNode child) {
+    if (!(SNodeOperations.isAttribute(child))) {
+      return null;
+    }
+    // Read persisted properties directly: the standalone merge driver has no language descriptors.
+    // linkId defines role identity; role_DebugInfo supplies only a diagnostic name.
+    String linkId = child.getProperty(PROPS.linkId$eRkA);
+    if (linkId == null) {
+      return null;
+    }
+    String roleName = child.getProperty(PROPS.role_DebugInfo$eLVf);
+    try {
+      return MetaAdapterFactory.getContainmentLink(SContainmentLinkId.deserialize(linkId), (roleName == null ? "" : roleName));
+    } catch (RuntimeException invalidLinkId) {
+      return null;
+    }
+  }
+
+  private static final class PROPS {
+    /*package*/ static final SProperty linkId$eRkA = MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x9d98713f247885aL, 0x9d98713f249b587L, "linkId");
+    /*package*/ static final SProperty role_DebugInfo$eLVf = MetaAdapterFactory.getProperty(0xceab519525ea4f22L, 0x9b92103b95ca8c0cL, 0x9d98713f247885aL, 0x9d98713f249b585L, "role_DebugInfo");
   }
 }

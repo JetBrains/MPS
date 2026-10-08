@@ -3601,7 +3601,7 @@
                                           <ref role="3cqZAo" node="7VTIVrWo9s_" resolve="mergeSession" />
                                         </node>
                                         <node concept="liA8E" id="6DkrMsAbLt4" role="2OqNvi">
-                                          <ref role="37wK5l" to="bmv6:7OAO1yPTxzu" resolve="getSortedResultModel" />
+                                          <ref role="37wK5l" to="bmv6:7OAO1yPTxzu" resolve="getResultModelToSave" />
                                         </node>
                                       </node>
                                     </node>

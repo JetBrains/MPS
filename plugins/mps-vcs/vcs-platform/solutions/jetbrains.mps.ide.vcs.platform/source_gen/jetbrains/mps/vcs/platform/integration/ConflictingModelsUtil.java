@@ -201,7 +201,7 @@ public class ConflictingModelsUtil {
             }
             final byte[] resultContent = ma.computeReadAction(() -> {
               mergeSession.applyChanges(mergeSession.getAllChanges());
-              SModel resultModel = mergeSession.getSortedResultModel();
+              SModel resultModel = mergeSession.getResultModelToSave();
               if (resultModel == null) {
                 return null;
               } else if (mergeSession.hasIdsToRestore()) {

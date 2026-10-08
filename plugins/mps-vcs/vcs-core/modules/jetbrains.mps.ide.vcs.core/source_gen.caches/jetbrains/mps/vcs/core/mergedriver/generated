@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="7onw6i7q3kgvck4ti9344mq32xyhn53">
+<product version="3" modelHash="6sluaa6d5ujzro5wrygv13jfj6u8u5s">
   <files names="AbstractContentMerger.java:CompositeMerger.java:EmptyMerger.java:FileContent.java:FileMerger.java:FileType.java:JavaDependenciesMerger.java:MergeDriverMain.java:ModelMerger.java:SimpleMerger.java:TextMerger.java" />
 </product>
 
