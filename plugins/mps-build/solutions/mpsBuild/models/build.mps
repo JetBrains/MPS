@@ -60561,6 +60561,34 @@
             </node>
           </node>
         </node>
+        <node concept="m$_wl" id="5whBXIIlexx" role="39821P">
+          <ref role="m_rDy" node="5whBXIIlesf" />
+          <node concept="pUk6x" id="5whBXIIlexy" role="pUk7w" />
+          <node concept="2HvfSZ" id="5whBXIIlexz" role="39821P">
+            <node concept="55IIr" id="5whBXIIlex$" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="5whBXIIlex_" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="5whBXIIlexA" role="2Ry0An">
+                  <property role="2Ry0Am" value="pty4j-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="m$_wl" id="5whBXIIlexr" role="39821P">
+          <ref role="m_rDy" node="5whBXIIles8" />
+          <node concept="pUk6x" id="5whBXIIlexs" role="pUk7w" />
+          <node concept="2HvfSZ" id="5whBXIIlext" role="39821P">
+            <node concept="55IIr" id="5whBXIIlexu" role="2HvfZ0">
+              <node concept="2Ry0Ak" id="5whBXIIlexv" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="5whBXIIlexw" role="2Ry0An">
+                  <property role="2Ry0Am" value="jna-plugin" />
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
       </node>
     </node>
     <node concept="10PD9b" id="1diLdO26mQa" role="10PD9s" />
@@ -60599,6 +60627,47 @@
       </node>
       <node concept="3_J27D" id="5whBXIGTrNk" role="m$_w8">
         <node concept="3Mxwew" id="5whBXIGTrNl" role="3MwsjC">
+          <property role="3MwjfP" value="&lt;empty&gt;" />
+        </node>
+      </node>
+    </node>
+    <node concept="m$_wf" id="5whBXIIlesf" role="3989C9">
+      <property role="1NdglO" value="true" />
+      <property role="m$_wk" value="com.intellij.modules.pty4j" />
+      <node concept="3_J27D" id="5whBXIIlesg" role="m$_yQ">
+        <node concept="3Mxwew" id="5whBXIIlesh" role="3MwsjC">
+          <property role="3MwjfP" value="Pseudo Terminal (PTY4J)" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5whBXIIlesi" role="m_cZH">
+        <node concept="3Mxwew" id="5whBXIIlesj" role="3MwsjC">
+          <property role="3MwjfP" value="pty4j-plugin" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5whBXIIlesk" role="m$_w8">
+        <node concept="3Mxwew" id="5whBXIIlesl" role="3MwsjC">
+          <property role="3MwjfP" value="&lt;empty&gt;" />
+        </node>
+      </node>
+      <node concept="m$_yC" id="5whBXIIlexq" role="m$_yJ">
+        <ref role="m$_y1" node="5whBXIIles8" />
+      </node>
+    </node>
+    <node concept="m$_wf" id="5whBXIIles8" role="3989C9">
+      <property role="1NdglO" value="true" />
+      <property role="m$_wk" value="com.intellij.modules.jna" />
+      <node concept="3_J27D" id="5whBXIIles9" role="m$_yQ">
+        <node concept="3Mxwew" id="5whBXIIlesa" role="3MwsjC">
+          <property role="3MwjfP" value="Java Native Access (JNA)" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5whBXIIlesb" role="m_cZH">
+        <node concept="3Mxwew" id="5whBXIIlesc" role="3MwsjC">
+          <property role="3MwjfP" value="jna-plugin" />
+        </node>
+      </node>
+      <node concept="3_J27D" id="5whBXIIlesd" role="m$_w8">
+        <node concept="3Mxwew" id="5whBXIIlese" role="3MwsjC">
           <property role="3MwjfP" value="&lt;empty&gt;" />
         </node>
       </node>

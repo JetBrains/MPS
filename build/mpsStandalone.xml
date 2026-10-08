@@ -124,6 +124,14 @@
     <copy todir="${build.layout}/plugins/xml-plugin">
       <fileset dir="${basedir}/plugins/xml-plugin" />
     </copy>
+    <mkdir dir="${build.layout}/plugins/pty4j-plugin" />
+    <copy todir="${build.layout}/plugins/pty4j-plugin">
+      <fileset dir="${basedir}/plugins/pty4j-plugin" />
+    </copy>
+    <mkdir dir="${build.layout}/plugins/jna-plugin" />
+    <copy todir="${build.layout}/plugins/jna-plugin">
+      <fileset dir="${basedir}/plugins/jna-plugin" />
+    </copy>
     <echo file="${build.layout}/build.properties">mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major}${line.separator}mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor}${line.separator}mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr}${line.separator}mpsBootstrapCore.version.eap=${mpsBootstrapCore.version.eap}${line.separator}mpsBootstrapCore.version=${mpsBootstrapCore.version}</echo>
   </target>
   

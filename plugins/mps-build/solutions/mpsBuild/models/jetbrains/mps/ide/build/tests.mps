@@ -16614,6 +16614,12 @@
         <node concept="24YFd4" id="5whBXIHTx5r" role="24YFd7">
           <ref role="24YFd5" to="ffeo:5whBXIGTrNc" />
         </node>
+        <node concept="24YFd4" id="5whBXIIleBX" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5whBXIIlesf" />
+        </node>
+        <node concept="24YFd4" id="5whBXIIleBW" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5whBXIIles8" />
+        </node>
       </node>
     </node>
     <node concept="398rNT" id="2KA2zfKHPmS" role="1l3spd">
@@ -16763,6 +16769,12 @@
         </node>
         <node concept="24YFd4" id="4ZZ2R77b9l2" role="24YFd7">
           <ref role="24YFd5" to="ffeo:6OJi9XVRc7A" resolve="jetbrains.mps.ide.mpsmigration" />
+        </node>
+        <node concept="24YFd4" id="5whBXIIleC1" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5whBXIIlesf" />
+        </node>
+        <node concept="24YFd4" id="5whBXIIleC0" role="24YFd7">
+          <ref role="24YFd5" to="ffeo:5whBXIIles8" />
         </node>
       </node>
       <node concept="22LTRM" id="4ZZ2R77b8rB" role="22LTRK">

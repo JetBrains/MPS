@@ -513,6 +513,7 @@
       
       
       <plugin id="com.intellij.modules.mps" path="${artifacts.mps}/lib/mps-workbench.jar" />
+      <plugin id="com.intellij.modules.jna" path="${artifacts.mps}/plugins/jna-plugin" />
       <plugin id="jetbrains.mps.core" path="${artifacts.mps}/plugins/mps-core" />
       <plugin id="jetbrains.mps.git4idea.stubs" path="${artifacts.mps}/plugins/mps-git4idea" />
       <plugin id="jetbrains.mps.junit5" path="${artifacts.mps}/plugins/mps-junit5" />
@@ -521,6 +522,7 @@
       <plugin id="jetbrains.mps.ide.mpsmigration" path="${artifacts.mps}/plugins/mps-project-migrations" />
       <plugin id="jetbrains.mps.testing" path="${artifacts.mps}/plugins/mps-testing" />
       <plugin id="com.intellij.platform.vcs" path="${artifacts.mps}/plugins/platform-vcs-plugin" />
+      <plugin id="com.intellij.modules.pty4j" path="${artifacts.mps}/plugins/pty4j-plugin" />
       <plugin id="Git4Idea" path="${artifacts.mps}/plugins/vcs-git" />
       <project path="${basedir}" />
       <testmodules>        

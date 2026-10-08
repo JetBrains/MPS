@@ -579,6 +579,7 @@
       
       <plugin id="com.intellij.modules.mps" path="${artifacts.mps}/lib/mps-workbench.jar" />
       <plugin id="com.intellij.java" path="${artifacts.mps}/plugins/java" />
+      <plugin id="com.intellij.modules.jna" path="${artifacts.mps}/plugins/jna-plugin" />
       <plugin id="jetbrains.mps.build" path="${artifacts.mps}/plugins/mps-build" />
       <plugin id="jetbrains.mps.core" path="${artifacts.mps}/plugins/mps-core" />
       <plugin id="jetbrains.mps.ide.devkit" path="${artifacts.mps}/plugins/mps-devkit" />
@@ -592,6 +593,7 @@
       <plugin id="jetbrains.mps.testing" path="${artifacts.mps}/plugins/mps-testing" />
       <plugin id="intellij.structureView.plugin" path="${artifacts.mps}/plugins/platform-structureView-plugin" />
       <plugin id="com.intellij.platform.vcs" path="${artifacts.mps}/plugins/platform-vcs-plugin" />
+      <plugin id="com.intellij.modules.pty4j" path="${artifacts.mps}/plugins/pty4j-plugin" />
       <plugin id="Git4Idea" path="${artifacts.mps}/plugins/vcs-git" />
       <plugin id="com.intellij.xml" path="${artifacts.mps}/plugins/xml-plugin" />
       <project path="${basedir}" />
