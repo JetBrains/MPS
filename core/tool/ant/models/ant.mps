@@ -10869,6 +10869,88 @@
                 <node concept="10Nm6u" id="3eyCFyRzXWQ" role="37vLTx" />
               </node>
             </node>
+            <node concept="3SKdUt" id="6epddVrP6RG" role="3cqZAp">
+              <node concept="1PaTwC" id="6epddVrP6RH" role="1aUNEU">
+                <node concept="3oM_SD" id="6epddVrP6RJ" role="1PaTwD">
+                  <property role="3oM_SC" value="platform's" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RK" role="1PaTwD">
+                  <property role="3oM_SC" value="shrunk" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RL" role="1PaTwD">
+                  <property role="3oM_SC" value="kotlin.metadata" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RM" role="1PaTwD">
+                  <property role="3oM_SC" value="clashes" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RN" role="1PaTwD">
+                  <property role="3oM_SC" value="with" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RO" role="1PaTwD">
+                  <property role="3oM_SC" value="MPS's" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RP" role="1PaTwD">
+                  <property role="3oM_SC" value="kotlin-metadata-jvm" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RQ" role="1PaTwD">
+                  <property role="3oM_SC" value="on" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RR" role="1PaTwD">
+                  <property role="3oM_SC" value="a" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RS" role="1PaTwD">
+                  <property role="3oM_SC" value="flat" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RT" role="1PaTwD">
+                  <property role="3oM_SC" value="classpath;" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RU" role="1PaTwD">
+                  <property role="3oM_SC" value="the" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RV" role="1PaTwD">
+                  <property role="3oM_SC" value="platform" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RW" role="1PaTwD">
+                  <property role="3oM_SC" value="loads" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RX" role="1PaTwD">
+                  <property role="3oM_SC" value="its" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RY" role="1PaTwD">
+                  <property role="3oM_SC" value="module" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6RZ" role="1PaTwD">
+                  <property role="3oM_SC" value="jar" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6S0" role="1PaTwD">
+                  <property role="3oM_SC" value="itself" />
+                </node>
+                <node concept="3oM_SD" id="6epddVrP6S1" role="1PaTwD">
+                  <property role="3oM_SC" value="(MPS-40180)" />
+                </node>
+              </node>
+            </node>
+            <node concept="3clFbJ" id="6epddVrP6R_" role="3cqZAp">
+              <node concept="2OqwBi" id="6epddVrP6Sg" role="3clFbw">
+                <node concept="Xl_RD" id="6epddVrP6RB" role="2Oq$k0">
+                  <property role="Xl_RC" value="intellij.libraries.kotlin.metadata.jar" />
+                </node>
+                <node concept="liA8E" id="6epddVrP6Sh" role="2OqNvi">
+                  <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
+                  <node concept="2OqwBi" id="6epddVrP6Sw" role="37wK5m">
+                    <node concept="37vLTw" id="6epddVrP6Sl" role="2Oq$k0">
+                      <ref role="3cqZAo" node="3eyCFyRzXWA" resolve="f" />
+                    </node>
+                    <node concept="liA8E" id="6epddVrP6Sx" role="2OqNvi">
+                      <ref role="37wK5l" to="guwi:~File.getName()" resolve="getName" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+              <node concept="3clFbS" id="6epddVrP6RE" role="3clFbx">
+                <node concept="3N13vt" id="6epddVrP6RF" role="3cqZAp" />
+              </node>
+            </node>
             <node concept="3clFbJ" id="3eyCFyRzXWR" role="3cqZAp">
               <node concept="1Wc70l" id="3eyCFyRzXWT" role="3clFbw">
                 <node concept="2OqwBi" id="3eyCFyRzXWU" role="3uHU7B">

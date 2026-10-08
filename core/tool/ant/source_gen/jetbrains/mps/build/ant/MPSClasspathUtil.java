@@ -101,6 +101,10 @@ import java.util.LinkedHashSet;
         continue;
       }
       children[i] = null;
+      // platform's shrunk kotlin.metadata clashes with MPS's kotlin-metadata-jvm on a flat classpath; the platform loads its module jar itself (MPS-40180)
+      if ("intellij.libraries.kotlin.metadata.jar".equals(f.getName())) {
+        continue;
+      }
       if (f.getName().endsWith(".jar") && !(f.getName().contains("ant.jar"))) {
         // XXX I wonder why excluding ant.jar, to avoid warning about duplicated ant.Project? Is it necessary?
         // FWIW, there's IDEA/ant/lib/ant.jar, is it the target of this exclude?

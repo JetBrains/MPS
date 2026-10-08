@@ -108,7 +108,6 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit4.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jvm.native.trusted.roots.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jzlib.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlin.metadata.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlin.reflect.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlinx.collections.immutable.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlinx.coroutines.core.jar!/" />
