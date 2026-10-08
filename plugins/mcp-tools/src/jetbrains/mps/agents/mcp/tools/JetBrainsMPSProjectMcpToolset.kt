@@ -12,6 +12,7 @@ import com.intellij.mcpserver.reportToolActivity
 import com.intellij.openapi.actionSystem.impl.SimpleDataContext
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.PathManager
 import com.intellij.openapi.application.WriteIntentReadAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
@@ -67,7 +68,11 @@ class JetBrainsMPSProjectMcpToolset(
         `mps_mcp_initialize_project_for_agents.targetDirectory` belongs. Top-level `mpsVersion`,
         `mpsBuild`, and `mpsEap` are this IDE's identity, not a property of any listed project;
         all three are omitted when the IDE cannot report them. Read the running version here —
-        do not call the initializer for it.
+        do not call the initializer for it. Top-level `logDirectory` (absolute) and `logFile`
+        (`<logDirectory>/idea.log`, the live IDE log; rotated files are `idea.1.log`, `idea.2.log`, …
+        in the same directory) locate the IDE log, which is IDE-wide and omitted when unavailable;
+        the MCP `read_file` tool reads it only when it lies inside a project/library/SDK root,
+        otherwise a host shell is needed.
     """
     )
     suspend fun mps_mcp_list_open_projects(): String {
@@ -91,6 +96,10 @@ class JetBrainsMPSProjectMcpToolset(
                         addProperty("mpsVersion", identity.version)
                         addProperty("mpsBuild", identity.build)
                         addProperty("mpsEap", identity.eap)
+                    }
+                    ideLogDirectoryOrNull()?.let { logDirectory ->
+                        addProperty("logDirectory", logDirectory.toString())
+                        addProperty("logFile", logDirectory.resolve(IDE_LOG_FILE_NAME).toString())
                     }
                     add("projects", array)
                 })
@@ -490,6 +499,11 @@ class JetBrainsMPSProjectMcpToolset(
         }
     }
 
+    // PathManager honours -Didea.log.path and falls back to the OS default for the paths selector.
+    private fun ideLogDirectoryOrNull(): Path? = runCatching {
+        Paths.get(PathManager.getLogPath()).toAbsolutePath().normalize()
+    }.getOrNull()
+
     /**
      * Builds the descriptor for [ideaProject], degrading to a minimal entry carrying an `error`
      * field if describing it throws — one unreadable project must not blank the whole listing,
@@ -824,5 +838,7 @@ class JetBrainsMPSProjectMcpToolset(
 
         const val NODE_DETAIL_FULL = "full"
         const val NODE_DETAIL_NAMES = "names"
+
+        const val IDE_LOG_FILE_NAME = "idea.log"
     }
 }

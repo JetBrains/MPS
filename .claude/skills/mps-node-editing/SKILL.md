@@ -139,7 +139,8 @@ Practical consequences:
   factory-initialized state as absent. But a factory that catches internally reports nothing and
   the envelope looks clean. That is the norm for `AutoInitDSLClass` concepts (`MigrationScript`
   among them), whose initializer runs behind its own `catch` and surfaces only in `idea.log`. For
-  those, verify the state the factory was supposed to set rather than trusting `ok: true`.
+  those, verify the state the factory was supposed to set rather than trusting `ok: true`. To
+  find and read that log, see `references/ide-log.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 
 To see whether a concept has a factory at all, use
 `mps_mcp_query_structure(operation = "LIST_CONCEPT_ASPECTS", …)` — it reports which aspect models

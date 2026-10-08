@@ -13,6 +13,8 @@ description: Debugging techniques and tools for IntelliJ development. Use when d
 
 ## Searching idea.log
 
+For a running MPS, get the log location via `mps_mcp_list_open_projects` (`logDirectory`) or see `.agents/skills/mps-mcp-workflow/references/ide-log.md`.
+
 When debugging IntelliJ code, search `idea.log` using these patterns:
 
 **Log Levels:**

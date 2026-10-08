@@ -33,6 +33,7 @@
 - A sub-suite run is a suite run: one at a time, machine-wide, gated on no running `JUnitStarter` JVM like the umbrella.
 - For MPS model changes, run `mps_mcp_check_root_node_problems` on every root you touched (it also accepts a model or module reference), then rebuild or regenerate only when the downstream generated code may change (`.agents/conventions.md` covers committing the regenerated sources).
 - If the MPS MCP tools appear to be missing, check the names you were actually given before concluding anything (`.agents/tools.md`). If they are genuinely unavailable, stop and say so; never fall back to editing a serialized model as text.
+- Live MPS verification (a change exercised through a running MPS, e.g. over MCP) must include grepping the IDE log for `WARN` / `ERROR` / `SEVERE` lines in the run window; a clean tool envelope can hide a logged stack trace. `.agents/skills/mps-mcp-workflow/references/ide-log.md` explains how to find the log (`mps_mcp_list_open_projects` `logFile`) and handle rotation.
 - For generator changes, validate both the MPS generator result and the affected generated Java/Kotlin compilation path.
 - For cross-cutting changes, validate both the MPS side and the JVM side.
 - If validation cannot be run because the required IDE, MPS, authentication, or external service is unavailable, say exactly what was skipped and why.

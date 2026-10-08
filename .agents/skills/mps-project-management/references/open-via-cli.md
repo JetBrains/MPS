@@ -69,7 +69,7 @@ Wait until MCP tools appear, then call `mps_mcp_list_open_projects`.
 | Immediate exit, `PathClassLoader` / empty classpath | Split a path that contained spaces |
 | Immediate exit, `Could not find or load main class jetbrains.mps.Launcher …` | Passed the whole `java_command` field (it included leftover args). Use the first token only |
 | `ACTIVATE_NOT_INITIALIZED` | First instance still bootstrapping — wait and retry |
-| MCP still `"projects":[]` after a clean exit | Project open may still be in progress — wait, retry `list_open_projects`; check `log/idea.log` for `Opening project` / scanning |
+| MCP still `"projects":[]` after a clean exit | Project open may still be in progress — wait, retry `list_open_projects`; check `log/idea.log` for `Opening project` / scanning (for a standalone install, locate the log via `references/ide-log.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin) |
 
 ## What not to do
 

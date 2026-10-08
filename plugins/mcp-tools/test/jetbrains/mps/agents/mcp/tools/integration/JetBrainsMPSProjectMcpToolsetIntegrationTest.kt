@@ -18,8 +18,8 @@ import java.io.File
  * End-to-end integration tests for [JetBrainsMPSProjectMcpToolset].
  *
  * Covers the tools the toolset exposes:
- *  - `mps_mcp_list_open_projects` — discovering the open MPS project and the path agents should
- *    pass as the host `projectPath` selector in multi-project checkouts;
+ *  - `mps_mcp_list_open_projects` — discovering the open MPS project, the path agents should
+ *    pass as the host `projectPath` selector in multi-project checkouts, and the IDE log location;
  *  - `mps_mcp_get_project_structure` — listing project modules (default), descending into a
  *    model when `startingPoint` is set, the mutually-exclusive flag enforcement, and the
  *    NOT_FOUND envelope for an unknown starting point;
@@ -70,6 +70,14 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals(live!!.version, data.get("mpsVersion").asString)
         assertEquals(live.build, data.get("mpsBuild").asString)
         assertEquals(live.eap, data.get("mpsEap").asBoolean)
+
+        assertTrue("listing must report the IDE log directory: $data", data.has("logDirectory"))
+        assertTrue("listing must report the IDE log file: $data", data.has("logFile"))
+        val logDirectory = data.get("logDirectory").asString
+        val logFile = data.get("logFile").asString
+        assertTrue("logDirectory must be an existing directory: $logDirectory", File(logDirectory).isDirectory)
+        assertTrue("logFile must name idea.log: $logFile", logFile.endsWith("idea.log"))
+        assertTrue("logFile must lie in logDirectory: $logFile vs $logDirectory", logFile.startsWith(logDirectory))
     }
 
     @Test

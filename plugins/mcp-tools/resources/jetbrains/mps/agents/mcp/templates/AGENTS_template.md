@@ -79,6 +79,8 @@ Inspection of generated code is allowed when:
 - Validate after structural changes using `mps_mcp_check_root_node_problems`.
 - Rebuild or regenerate after significant changes to keep generated artifacts consistent.
 
+Some failures (swallowed factory or initializer exceptions, migration errors, tool-side regressions) reach only the IDE log, not the tool response. `mps_mcp_list_open_projects` reports its location as top-level `logDirectory` / `logFile` (`idea.log`, rotated into `idea.1.log`, `idea.2.log`, …). When a tool reports success but the effect is missing, grep the log for `WARN` / `SEVERE` lines in the call's time window; `references/ide-log.md` in the `mps-mcp-workflow` skill root covers locating the log on older servers and reading it when it lies outside the project roots.
+
 Use the `mps-mcp-workflow` skill for complete guidance on MPS workflows, skills, available tools, and best practices.
 
 ## Project-Local DSL Skills
