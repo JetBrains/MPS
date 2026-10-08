@@ -164,7 +164,7 @@ class FamiliesTest(unittest.TestCase):
                          "Bp_adhoc_python\tBp_shipped_script\tB_inserts\tB_resp_bytes\tF_gcd_calls\t"
                          "F_gcd_refine\tG_errors\tH_toolsearch\tX_outside_project\t"
                          "C_root_after_clean_model_batches\tC_after_summary\tC_after_summary_batches\t"
-                         "T_rule_prints\tT_type_queries", header)
+                         "T_rule_prints\tT_type_queries\tT_type_queries_before_make\tM_makes\tM_reload_all", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -276,6 +276,36 @@ class FamiliesTest(unittest.TestCase):
                        + [tool("q", "mcp__mps__mps_mcp_query_nodes", {"operation": "GET_TYPE"}), result("q", ok(None))]
                        + check("a", NODE, NODE_CLEAN))
         self.assertCounts(f, C_root_after_clean_model=1, T_type_queries=1)
+
+    def test_t23_type_queries_before_the_first_make_and_the_make_and_reload_counts(self) -> None:
+        def call(tool_id: str, name: str, operation: str | None = None) -> list[dict]:
+            inp = {"projectPath": "/p", "parameters": {}}
+            if operation is not None:
+                inp["operation"] = operation
+            return [tool(tool_id, "mcp__mps__" + name, inp), result(tool_id, ok(None))]
+        f = self.count(call("a", "mps_mcp_query_types", "EXPLAIN_TYPE") + call("b", "mps_mcp_query_nodes", "GET_TYPE")
+                       + call("c", "mps_mcp_alter_nodes", "COPY_NODE") + call("d", "mps_mcp_alter_nodes", " make ")
+                       + call("e", "mps_mcp_query_types", "IS_SUBTYPE") + call("f", "mps_mcp_reload_all")
+                       + call("g", "mps_mcp_alter_nodes", "MAKE") + call("h", "mps_mcp_query_nodes", "GET_TYPE"))
+        self.assertCounts(f, T_type_queries=4, T_type_queries_before_make=2, M_makes=2, M_reload_all=1)
+        without_make = self.count(call("a", "mps_mcp_query_types", "IS_SUBTYPE"))
+        self.assertCounts(without_make, T_type_queries=1, T_type_queries_before_make=1, M_makes=0)
+
+    def test_t23_a_failed_make_closes_no_window_and_a_batch_counts_in_order(self) -> None:
+        def call(tool_id: str, name: str, operation: str, payload, msg: str | None = None) -> list[dict]:
+            return [tool(tool_id, "mcp__mps__" + name, {"operation": operation, "parameters": {}}, msg=msg),
+                    result(tool_id, payload)]
+        rejected = {"ok": False, "error": "MAKE_INPUT_INVALID"}
+        f = self.count(call("a", "mps_mcp_alter_nodes", "MAKE", rejected)
+                       + call("b", "mps_mcp_query_types", "IS_SUBTYPE", ok(None))
+                       + call("c", "mps_mcp_query_types", "EXPLAIN_TYPE", ok(None), msg="batch")
+                       + call("d", "mps_mcp_alter_nodes", "MAKE", ok({"success": True}), msg="batch")
+                       + call("e", "mps_mcp_query_types", "IS_SUBTYPE", ok(None), msg="batch"))
+        self.assertCounts(f, T_type_queries=3, T_type_queries_before_make=2, M_makes=2, G_errors=1)
+        # A build that ran and failed (S12's sandbox make) is not rejected by the envelope: it closes the window.
+        built_and_failed = self.count(call("a", "mps_mcp_alter_nodes", "MAKE", ok({"success": False}))
+                                      + call("b", "mps_mcp_query_types", "IS_SUBTYPE", ok(None)))
+        self.assertCounts(built_and_failed, T_type_queries=1, T_type_queries_before_make=0, M_makes=1, G_errors=0)
 
     def test_smoke_runs_are_skipped_and_out_writes_the_tsv(self) -> None:
         self.count(check("m", MODEL, MODEL_CLEAN))

@@ -32,6 +32,10 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   T_rule_prints                    print_node calls on a typesystem rule root (InferenceRule,
                                    SubtypingRule, …): reading rules to simulate the typesystem
   T_type_queries                   query_types calls plus query_nodes GET_TYPE / GET_EXPECTED_TYPE calls
+  T_type_queries_before_make       of them, calls before the first alter_nodes MAKE the envelope did
+                                   not reject (all of them without one)
+  M_makes                          alter_nodes MAKE calls, rejected ones included
+  M_reload_all                     reload_all calls
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -64,8 +68,15 @@ printout. The server prints the short name (`SubtypingRule`); a qualified one
 A result without that concept — a printout saved to a temp file (`data` is a path), a PLAIN TEXT or
 HTML printout, an error — counts when the `nodeReference` is in a `….typesystem` model, so it may
 also count a helper root of that model. In a cell that authors rules (S1's checking rule) the prints
-are legitimate; the column is the S11 signal. T_type_queries compares the operation trimmed and in
-any case, as the server does.
+are legitimate; the column is the S11 signal, and S12's with up to two prints allowed (the template rule and its
+copy).
+T_type_queries and M_makes compare the operation trimmed and in any case, as the server does.
+T_type_queries_before_make is S12's baseline proxy: a type query asked before the language was
+rebuilt. A MAKE the envelope rejects (is_error, ok:false) closes no window; a build that ran and
+answers `success:false` (S12's by-design sandbox failure) does. The proxy is exact only when the
+first MAKE not rejected is the build of the new rule; an earlier language or sandbox MAKE closes the
+window too. "Before" is transcript order, so a query in the same batch as
+that MAKE counts when it is listed first.
 
 Stdlib only, Python >= 3.9.
 """
@@ -84,7 +95,7 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "Bp_adhoc_python", "Bp_shipped_script", "B_inserts", "B_resp_bytes", "F_gcd_calls",
         "F_gcd_refine", "G_errors", "H_toolsearch", "X_outside_project",
         "C_root_after_clean_model_batches", "C_after_summary", "C_after_summary_batches",
-        "T_rule_prints", "T_type_queries"]
+        "T_rule_prints", "T_type_queries", "T_type_queries_before_make", "M_makes", "M_reload_all"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects")
 CLEAN = "no problems found"
@@ -208,12 +219,18 @@ def rule_print(inp, result):
     return isinstance(ref, str) and TYPESYSTEM_MODEL.search(ref) is not None
 
 
+def failed(result, is_error):
+    """Whether a result is an error: is_error, or an ok:false envelope."""
+    return is_error or result.strip().startswith('{"ok":false') or result.strip().startswith('{"ok": false')
+
+
 def fam(path):
     uses, res = load(path)
     f = collections.Counter()
     last = None
     after_clean, after_summary = set(), set()
     gcd = []
+    made = False
     for i, u in enumerate(uses):
         n = u["name"].split("__")[-1]
         inp = u.get("input", {})
@@ -260,12 +277,19 @@ def fam(path):
             f["B_resp_bytes"] += len(r)
         if n == "mps_mcp_print_node" and rule_print(inp, r):
             f["T_rule_prints"] += 1
-        if n == "mps_mcp_query_types" or (
-                n == "mps_mcp_query_nodes" and str(inp.get("operation") or "").strip().upper() in NODE_TYPE_QUERIES):
+        operation = str(inp.get("operation") or "").strip().upper()
+        if n == "mps_mcp_query_types" or (n == "mps_mcp_query_nodes" and operation in NODE_TYPE_QUERIES):
             f["T_type_queries"] += 1
+            if not made:
+                f["T_type_queries_before_make"] += 1
+        if n == "mps_mcp_alter_nodes" and operation == "MAKE":
+            f["M_makes"] += 1
+            made = made or not failed(r, err)
+        if n == "mps_mcp_reload_all":
+            f["M_reload_all"] += 1
         if n == "mps_mcp_get_concept_details":
             gcd.append(i)
-        if err or r.strip().startswith('{"ok":false') or r.strip().startswith('{"ok": false'):
+        if failed(r, err):
             f["G_errors"] += 1
     # discovery refinement: get_concept_details within 2 steps of the previous one
     f["F_gcd_calls"] = len(gcd)
