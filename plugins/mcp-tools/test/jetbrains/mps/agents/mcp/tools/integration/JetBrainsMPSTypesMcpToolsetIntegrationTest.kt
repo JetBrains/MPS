@@ -333,8 +333,9 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("$widening", widening.get("holds").asBoolean)
         assertTrue("$widening", widening.get("weak").asBoolean)
         assertFalse("a passing check is no error: $widening", widening.has("error"))
-        assertTrue("the check is nested under the entry that ran it: $explained",
-            entries.any { parent -> parent.getAsJsonArray("consequences")?.contains(widening) == true })
+        val parent = entries.single { it.getAsJsonArray("consequences")?.contains(widening) == true }
+        assertEquals("the check is nested under the inequality it solved: $parent", "relation_removed", parent.get("kind").asString)
+        assertTrue("$parent", parent.get("presentation").asString.endsWith("solved"))
         val via = widening.getAsJsonArray("via").map { it.asJsonObject }
         assertTrue("the subtyping path is re-derived: $widening", via.isNotEmpty())
         assertEquals("$via", "int", via.first().get("from").asString)
@@ -352,6 +353,13 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val upcastVia = upcast.getAsJsonArray("via").map { it.asJsonObject }
         assertEquals("$upcastVia", "Object", upcastVia.last().get("to").asString)
         assertTrue("$upcastVia", upcastVia.all { it.getAsJsonObject("rule").get("rule").asString == "subtyping_classifier" })
+        // A check has no source, so only its parent entry keeps it in the slice: neither field's check leaks into the other's trace.
+        assertTrue("String <: Object is o's check, not m's: $explained", entries.none {
+            it.get("kind").asString == "subtype_checked" && it.presentationOf("sub") == "String" && it.presentationOf("super") == "Object"
+        })
+        assertTrue("int <: long is m's check, not o's: $objectTrace", objectTrace.none {
+            it.get("kind").asString == "subtype_checked" && it.presentationOf("sub") == "int" && it.presentationOf("super") == "long"
+        })
 
         // null <: List<String> is answered by a replacement rule, which InequalityBlock runs instead of a lattice walk.
         val nullTrace = traceEntries(data(query(TypesQueryOperation.EXPLAIN_TYPE, """{"nodeReference":"${host.fieldRef("list")}"}""")))

@@ -307,9 +307,9 @@ solution: `Float widened = 10` traces `Int <: Float` with `via` Int→Long (`Sim
 Long→Float (`SimpleMathLongType_subtypeOf_Float`); `Number numFromBool = true` is `holds: false` before the new
 `SimpleMathBoolean_subtypeOf_Number` rule and, after one `MAKE`, `holds: true` with `via` naming that rule by its own
 root reference; no SEVERE in `idea.log`; everything reverted.
-Open, not in this commit: two test pins suggested by the final review — a check whose parent entry is dropped must
-stay out of the trace (EXPLAIN_TYPE on `m` has no `String <: Object` check, on `o` no `int <: long`), and the parent
-of a `subtype_checked` entry is the `relation_removed … solved` entry.
+The two test pins the final review suggested landed in a follow-up commit (step 1b): a check whose parent entry is
+dropped stays out of the trace (EXPLAIN_TYPE on `m` has no `String <: Object` check, on `o` no `int <: long`), and the
+parent of the `int <: long` entry is the `relation_removed … solved` entry — both written from a printed trace.
 
 ### 4.3 Order
 
