@@ -3,7 +3,11 @@
   <readOnlyStubs/>
   <models>
     <modelRoot contentPath="${mps_home}/lib/" type="java_classes">
-      <sourceRoot location="util-8.jar" />
+      <sourceRoot location="intellij.libraries.netty.buffer.jar" />
+      <sourceRoot location="intellij.libraries.netty.codec.http.jar" />
+      <sourceRoot location="intellij.libraries.netty.codec.compression.jar" />
+      <sourceRoot location="intellij.libraries.netty.handler.proxy.jar" />
+      <sourceRoot location="intellij.libraries.netty.codec.protobuf.jar" />
       <PackageScope skip-private="true">
         <include prefix="io.netty." />
       </PackageScope>
@@ -11,7 +15,11 @@
   </models>
   <facets>
     <facet type="java" compile="ext" classes="provided" ext="no">
-      <library location="${mps_home}/lib//util-8.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.netty.buffer.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.netty.codec.http.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.netty.codec.compression.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.netty.handler.proxy.jar" />
+      <library location="${mps_home}/lib/intellij.libraries.netty.codec.protobuf.jar" />
     </facet>
   </facets>
   <sourcePath />
