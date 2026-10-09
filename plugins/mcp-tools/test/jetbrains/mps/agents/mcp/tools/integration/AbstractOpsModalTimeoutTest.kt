@@ -4,16 +4,26 @@ import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonParser
+import com.intellij.diagnostic.ThreadDumper
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.impl.LaterInvocator
+import com.intellij.testFramework.IndexingTestUtil
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TestRule
+import org.junit.rules.Timeout
+import org.junit.runner.Description
+import org.junit.runners.model.Statement
+import java.util.Timer
+import kotlin.concurrent.timerTask
 
 /**
  * Covers the modal-dialog timeout mechanism added to [AbstractOps] (`withModalTimeout` /
@@ -32,6 +42,21 @@ import org.junit.Test
 class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
 
     private val probe = ModalTimeoutProbe()
+
+    /** A hang here (e.g. a deadlocked EDT) must fail this test with a thread dump, not stall the whole build. */
+    @get:Rule
+    val dumpThreadsAndFailOnTimeout = DumpThreadsAndFailOnTimeout(TEST_TIMEOUT_MS)
+
+    /**
+     * Opening the fresh test project and creating its modules (in the base-class `@Before`s) starts
+     * scanning/indexing. Since 263, a dumb-mode write action transferred to the EDT while a modal
+     * state entered via [enterModal] is active fails as write-unsafe and can deadlock the test, so the
+     * modal state must only be entered once indexing is over.
+     */
+    @Before
+    fun waitForIndexing() {
+        IndexingTestUtil.waitUntilIndexesAreReady(myProject.project)
+    }
 
     /** Safety net: a failing assertion mid-test must not leak a modal state into later tests. */
     @After
@@ -153,6 +178,42 @@ class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
             return e
         }
         throw AssertionError("expected an McpModalBlockedException to be thrown")
+    }
+
+    private companion object {
+        /** Well above the slowest test (the ~30s end-to-end one). */
+        const val TEST_TIMEOUT_MS = 120_000L
+    }
+}
+
+/**
+ * Prints a full thread dump once a test has run for [timeoutMs], then fails it shortly after.
+ * The dump is taken before the [Timeout] interrupts the test thread, so it shows the hung state.
+ */
+class DumpThreadsAndFailOnTimeout(private val timeoutMs: Long) : TestRule {
+    override fun apply(base: Statement, description: Description): Statement {
+        val withThreadDump = object : Statement() {
+            override fun evaluate() {
+                val watchdog = Timer("thread dump watchdog for ${description.methodName}", true)
+                watchdog.schedule(timerTask {
+                    System.err.println(
+                        "${description.displayName} is still running after ${timeoutMs}ms, thread dump:\n" +
+                            ThreadDumper.dumpThreadsToString()
+                    )
+                }, timeoutMs)
+                try {
+                    base.evaluate()
+                } finally {
+                    watchdog.cancel()
+                }
+            }
+        }
+        return Timeout.millis(timeoutMs + DUMP_GRACE_MS).apply(withThreadDump, description)
+    }
+
+    private companion object {
+        /** Time for the watchdog to print the dump before the hung test thread is interrupted. */
+        const val DUMP_GRACE_MS = 5_000L
     }
 }
 
