@@ -60588,29 +60588,15 @@
               <property role="3MwjfP" value="platform-problemView-plugin" />
             </node>
           </node>
-          <node concept="2HvfSZ" id="6OVuTPpYdqe" role="39821P">
-            <node concept="55IIr" id="6OVuTPpYdqf" role="2HvfZ0">
-              <node concept="2Ry0Ak" id="6OVuTPpYdqg" role="iGT6I">
-                <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="6OVuTPpYduU" role="2Ry0An">
-                  <property role="2Ry0Am" value="platform-problemView-plugin" />
-                </node>
-              </node>
-            </node>
+          <node concept="3ygNvl" id="5VObKVcpDyd" role="39821P">
+            <ref role="3ygNvj" node="6o2kRudjTDG" />
           </node>
         </node>
         <node concept="m$_wl" id="5whBXIHtNJA" role="39821P">
           <ref role="m_rDy" node="5whBXIGTrNc" resolve="com.intellij.xml" />
           <node concept="pUk6x" id="5whBXIHtNJB" role="pUk7w" />
-          <node concept="2HvfSZ" id="5whBXIHtNJC" role="39821P">
-            <node concept="55IIr" id="5whBXIHtNJD" role="2HvfZ0">
-              <node concept="2Ry0Ak" id="5whBXIHtNJE" role="iGT6I">
-                <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="5whBXIHtNJF" role="2Ry0An">
-                  <property role="2Ry0Am" value="xml-plugin" />
-                </node>
-              </node>
-            </node>
+          <node concept="3ygNvl" id="5VObKVcpDyc" role="39821P">
+            <ref role="3ygNvj" node="6o2kRud0O1E" />
           </node>
         </node>
         <node concept="m$_wl" id="5whBXIIlexx" role="39821P">

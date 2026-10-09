@@ -459,8 +459,8 @@
         <fileset file="${artifacts.mps}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.mps}/lib/testFramework.jar" />
-        <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
-        <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.mps}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
+        <fileset file="${artifacts.mps}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.classifiers.jar" />

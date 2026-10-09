@@ -118,11 +118,11 @@
     </copy>
     <mkdir dir="${build.layout}/plugins/platform-problemView-plugin" />
     <copy todir="${build.layout}/plugins/platform-problemView-plugin">
-      <fileset dir="${basedir}/plugins/platform-problemView-plugin" />
+      <fileset dir="${artifacts.IDEA}/plugins/platform-problemView-plugin" />
     </copy>
     <mkdir dir="${build.layout}/plugins/xml-plugin" />
     <copy todir="${build.layout}/plugins/xml-plugin">
-      <fileset dir="${basedir}/plugins/xml-plugin" />
+      <fileset dir="${artifacts.IDEA}/plugins/xml-plugin" />
     </copy>
     <mkdir dir="${build.layout}/plugins/pty4j-plugin" />
     <copy todir="${build.layout}/plugins/pty4j-plugin">
