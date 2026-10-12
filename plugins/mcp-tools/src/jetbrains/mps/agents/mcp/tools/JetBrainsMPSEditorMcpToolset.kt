@@ -74,13 +74,13 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
         mpsProject: MPSProject
     ): SNode {
         val refCell = SNodeFactoryOperations.addNewChild(parent, parentLink, wiring.refCellConcept)
-        relationSource?.let { refCell.setReference(wiring.relationDeclLink, it) }
+        relationSource?.let { setResolvedReference(refCell, wiring.relationDeclLink, it, mpsProject.repository) }
 
         val inlineEditor = SNodeFactoryOperations.setNewChild(refCell, wiring.inlineEditorLink, wiring.inlineEditorConcept)
         val inlinePropCell = SNodeFactoryOperations.setNewChild(inlineEditor, wiring.inlineCellModelLink, wiring.propertyCellConcept)
 
         targetConcept.properties.find { it.name == "name" }?.sourceNode?.let {
-            inlinePropCell.setReference(wiring.relationDeclLink, it)
+            setResolvedReference(inlinePropCell, wiring.relationDeclLink, it, mpsProject.repository)
         }
 
         if (readOnly) {
@@ -332,7 +332,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                             error = "Concept '$conceptRef' has no source node"
                             return@executeShortCommandOnEdt
                         }
-                    editor.setReference(conceptDeclLink, sourceNode)
+                    setResolvedReference(editor, conceptDeclLink, sourceNode, repo)
 
                     // Set virtual folder
                     sourceNode.resolve(repo)?.let { sourceNodeResolved ->
@@ -558,7 +558,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                         if (propSourceNode != null && propSourceNode !in coveredElements) {
                             addConstantCell("Name:", addNewLineStyle = true)
                             val propCell = SNodeFactoryOperations.addNewChild(mainCollection, childCellModelLink, propertyCellConcept)
-                            propCell.setReference(relationDeclLink, propSourceNode)
+                            setResolvedReference(propCell, relationDeclLink, propSourceNode, repo)
                             propertyCount++
                         }
                     }
@@ -572,7 +572,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                         addConstantCell("${prop.name}:", addNewLineStyle = true)
 
                         val propCell = SNodeFactoryOperations.addNewChild(mainCollection, childCellModelLink, propertyCellConcept)
-                        propCell.setReference(relationDeclLink, propSourceNode)
+                        setResolvedReference(propCell, relationDeclLink, propSourceNode, repo)
                         propertyCount++
                     }
 
@@ -611,7 +611,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
 
                         if (link.isMultiple) {
                             val listCell = SNodeFactoryOperations.addNewChild(mainCollection, childCellModelLink, refNodeListConcept)
-                            listCell.setReference(relationDeclLink, linkSourceNode)
+                            setResolvedReference(listCell, relationDeclLink, linkSourceNode, repo)
                             addStyleItem(listCell, onNewLineConcept)
                             addStyleItem(listCell, indentConcept)
                             addStyleItem(listCell, newLineChildrenConcept)
@@ -620,7 +620,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                             SNodeFactoryOperations.setNewChild(listCell, listCellLayoutLink, indentLayoutConcept)
                         } else {
                             val nodeCell = SNodeFactoryOperations.addNewChild(mainCollection, childCellModelLink, refNodeConcept)
-                            nodeCell.setReference(relationDeclLink, linkSourceNode)
+                            setResolvedReference(nodeCell, relationDeclLink, linkSourceNode, repo)
                             addStyleItem(nodeCell, onNewLineConcept)
                             addStyleItem(nodeCell, indentConcept)
                         }
@@ -736,7 +736,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
 
                                 val descriptor = SNodeFactoryOperations.setNewChild(emptyCell, menuDescriptorLink, cellMenuDescriptorConcept)
                                 val replacePart = SNodeFactoryOperations.addNewChild(descriptor, cellMenuPartLink, replaceNodeCustomConcept)
-                                replacePart.setReference(replacementConceptLink, directSuper.sourceNode!!)
+                                setResolvedReference(replacePart, replacementConceptLink, directSuper.sourceNode!!, repo)
                                 ""
                             }
                         }
@@ -801,7 +801,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                                 val (menuTypeLink, menuTypeDefaultConcept) = resolveMenuTypeWiring() ?: return@executeShortCommandOnEdt
                                 val newMenu = SNodeFactoryOperations.createNewRootNode(model, substituteMenuConcept, null)
                                 createdMenu = newMenu
-                                newMenu.setReference(menuConceptDeclLink, sourceNode)
+                                setResolvedReference(newMenu, menuConceptDeclLink, sourceNode, repo)
                                 SNodeFactoryOperations.setNewChild(newMenu, menuTypeLink, menuTypeDefaultConcept)
                                 menuMsg = " with new empty default SubstituteMenu"
                                 menuRefNode = newMenu
@@ -940,6 +940,6 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
 
         val applyStyle = SNodeFactoryOperations.addNewChild(node, styleItemLink, applyStyleConcept)
         val styleClassRef = SNodeFactoryOperations.setNewChild(applyStyle, targetLink, styleClassReferenceConcept)
-        styleClassRef.setReference(styleClassLink, styleNode.reference)
+        setResolvedReference(styleClassRef, styleClassLink, styleNode)
     }
 }

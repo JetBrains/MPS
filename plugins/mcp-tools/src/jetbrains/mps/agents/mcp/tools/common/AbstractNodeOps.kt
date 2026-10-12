@@ -38,6 +38,7 @@ import jetbrains.mps.smodel.ConceptDescendantsCache
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
 import jetbrains.mps.smodel.SNodeUtil
+import jetbrains.mps.smodel.StaticReference
 import jetbrains.mps.smodel.action.NodeFactoryManager
 import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.ids.SConceptId
@@ -88,6 +89,38 @@ abstract class AbstractNodeOps : AbstractOps() {
         val xmlReferencePath: String,
         val xmlReferenceIndex: Int
     )
+
+    /**
+     * Points [link] of [node] at [target] and stores the text Save All would write for it
+     * (`IResolveInfo.resolveInfo`, else `name`, see `ResolveInfoUpdater`); the
+     * `setReference(link, SNodeReference)` overload stores none (MPS-40267).
+     */
+    protected fun setResolvedReference(node: SNode, link: SReferenceLink, target: SNode) {
+        val text = resolveInfoOf(target)
+        // Same-model targets get a local pointer, as the SNodeReference overload gives them.
+        val sameModel = node.model != null && node.model?.reference == target.model?.reference
+        node.setReference(link, if (sameModel) ResolveInfo.of(target.nodeId, text) else ResolveInfo.of(target.reference, text))
+    }
+
+    /** [setResolvedReference] for a pointer; one that does not resolve is stored as is, without text. */
+    protected fun setResolvedReference(node: SNode, link: SReferenceLink, target: SNodeReference, repository: SRepository) {
+        val resolved = target.resolve(repository)
+        if (resolved != null) setResolvedReference(node, link, resolved) else node.setReference(link, target)
+    }
+
+    /** Refreshes the stored text of [reference] when its target resolves; see [setResolvedReference]. */
+    private fun refreshResolveInfo(reference: SReference) {
+        val staticRef = reference as? StaticReference ?: return
+        val target = staticRef.targetNode ?: return
+        staticRef.resolveInfo = resolveInfoOf(target)
+    }
+
+    // What ResolveInfoUpdater stores on save (the deprecated jetbrains.mps.util.SNodeOperations.getResolveInfo).
+    // SNodeAccessUtil applies constraint getters: a LinkDeclaration's resolveInfo is its role.
+    private fun resolveInfoOf(target: SNode): String? {
+        val resolveInfo = if (target.concept.isSubConceptOf(IRESOLVE_INFO_CONCEPT)) SNodeAccessUtil.getPropertyValue(target, IRESOLVE_INFO_PROPERTY) as? String else null
+        return resolveInfo ?: SNodeAccessUtil.getPropertyValue(target, SNodeUtil.property_INamedConcept_name) as? String
+    }
 
     private fun restoreReference(node: SNode, link: SReferenceLink, target: ResolveInfo?) {
         if (target == null) {
@@ -592,7 +625,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         if (targetNode != null) {
             validateReferenceTarget(targetNode, link, parentConceptName, roleName, errorPath)
             if (!dryRun || assignResolvedReferenceOnDryRun) {
-                ownerNode.setReference(link, targetRef)
+                setResolvedReference(ownerNode, link, targetNode)
             }
             if (!dryRun) {
                 ensureReferenceDependencies(model, targetRef, targetNode)
@@ -919,7 +952,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             val target = targetRef.resolve(repository)
                 ?: throw McpInvalidRequestException("Reference '$roleName' at $path: target '$targetRefStr' does not resolve to a node")
             validateReferenceTarget(target, link, concept.name, roleName, path)
-            node.setReference(link, targetRef)
+            setResolvedReference(node, link, target)
         }
 
         val clearedRoles = mutableSetOf<SContainmentLink>()
@@ -1533,14 +1566,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             ?: return FixReferencesResult(fixed = 0, repointed = 0, stillBroken = 0, message = "No reference found")
         val targetBefore = reference.targetNode
 
-        val smodelRef = reference as? SRefImpl
-        val info = smodelRef?.resolveInfo
-        if (info.isNullOrEmpty()) {
-            val name = targetBefore?.name
-            if (name != null) {
-                smodelRef?.resolveInfo = name
-            }
-        }
+        refreshResolveInfo(reference)
 
         val resolver = mpsProject.getComponent(ResolverComponent::class.java)
         resolver?.resolveScopesOnly(reference, mpsProject.repository)
@@ -1646,20 +1672,9 @@ abstract class AbstractNodeOps : AbstractOps() {
             return FixReferencesResult(fixed = 0, repointed = 0, stillBroken = 0, message = "No references found")
         }
 
-        // Ensure every reference has resolveInfo so ScopeResolver can work on it
-        for (ref in allRefs) {
-            val smodelRef = ref as? SRefImpl ?: continue
-            // Read resolveInfo once: the property is a getter and a second read could in
-            // principle return a different value (TOCTOU), making the guard inconsistent with
-            // the subsequent assignment.
-            val info = smodelRef.resolveInfo
-            if (info.isNullOrEmpty()) {
-                val name = ref.targetNode?.name
-                if (name != null) {
-                    smodelRef.resolveInfo = name
-                }
-            }
-        }
+        // ScopeResolver keys off the stored text: a null one cannot resolve and a stale one (the
+        // target was renamed) could repoint the reference to whatever now carries the old name.
+        for (ref in allRefs) refreshResolveInfo(ref)
 
         // Attempt scope-based re-resolution on every reference
         val resolver = mpsProject.getComponent(ResolverComponent::class.java)
@@ -2314,6 +2329,16 @@ abstract class AbstractNodeOps : AbstractOps() {
 
         /** `SPropertyId` / `SContainmentLinkId` / `SReferenceLinkId.serialize()`: language UUID, concept id, feature id. */
         private val FEATURE_ID_SHAPE = Regex("([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})/(-?\\d+)/(-?\\d+)")
+
+        // jetbrains.mps.lang.core.structure.IResolveInfo and its resolveInfo property.
+        private val IRESOLVE_INFO_CONCEPT: SAbstractConcept = MetaAdapterFactory.getInterfaceConcept(
+            0xceab519525ea4f22uL.toLong(), 0x9b92103b95ca8c0cuL.toLong(),
+            0x116b17c6e46L, "jetbrains.mps.lang.core.structure.IResolveInfo"
+        )
+        private val IRESOLVE_INFO_PROPERTY: SProperty = MetaAdapterFactory.getProperty(
+            0xceab519525ea4f22uL.toLong(), 0x9b92103b95ca8c0cuL.toLong(),
+            0x116b17c6e46L, 0x116b17cd415L, "resolveInfo"
+        )
 
         // jetbrains.mps.console.base.structure.CommandHolder.command — the single editable command
         // the console input editor renders; its target concept is the console `Command` interface.

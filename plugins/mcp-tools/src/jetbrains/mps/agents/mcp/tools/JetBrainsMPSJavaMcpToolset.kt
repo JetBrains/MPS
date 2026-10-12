@@ -342,8 +342,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                     module?.moduleDescriptor?.dependencies?.add(jdkDep)
                     module?.setChanged()
                 }
-                model.save()
-                (model.module as? AbstractModule)?.save()
+                saveModelAndModule(model)
             }
             return bindWarnings + resolveWarnings
         } catch (e: Exception) {
