@@ -1161,7 +1161,8 @@ public class ModulePropertiesConfigurable extends MPSPropertiesConfigurable {
       myTable.setModel(myPrioritiesTableModel);
 
       myTable.setDefaultRenderer(RuleType.class, new RuleTypeRenderer());
-      myTable.setDefaultEditor(RuleType.class, new RuleTypeEditor());
+      RuleTypeEditor ruleTypeEditor = new RuleTypeEditor();
+      myTable.setDefaultEditor(RuleType.class, ruleTypeEditor);
 
       myTable.setDefaultRenderer(MappingConfig_AbstractRef.class, new TableCellRenderer() {
         private final Map<MappingConfig_AbstractRef, CheckboxTree> myMappingConf2TreeMap = new HashMap<>();
@@ -1324,9 +1325,16 @@ public class ModulePropertiesConfigurable extends MPSPropertiesConfigurable {
       });
 
       TableColumn column = myTable.getColumnModel().getColumn(1);
-      column.setMaxWidth(50);
-      column.setMinWidth(column.getMaxWidth());
+      int contentWidth = ruleTypeEditor.getComponent().getPreferredSize().width + myTable.getIntercellSpacing().width;
+      Component header = myTable.getTableHeader().getDefaultRenderer()
+          .getTableCellRendererComponent(myTable, column.getHeaderValue(), false, false, -1, 1);
+      int ruleColumnWidth = Math.max(contentWidth, header.getPreferredSize().width);
+      // A wider dialog distributes spare width to every column. The combo is centered and does not
+      // fill that space, so cap the column at the fit width and let the generator columns grow.
       column.setResizable(false);
+      column.setMinWidth(ruleColumnWidth);
+      column.setPreferredWidth(ruleColumnWidth);
+      column.setMaxWidth(ruleColumnWidth);
 
       ToolbarDecorator decorator = ToolbarDecorator.createDecorator(myTable);
       decorator.setAddAction(anActionButton -> {
