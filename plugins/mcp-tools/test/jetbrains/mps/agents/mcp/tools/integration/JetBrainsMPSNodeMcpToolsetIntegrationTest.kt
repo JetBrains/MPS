@@ -7,6 +7,9 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.extapi.persistence.FileDataSource
+import jetbrains.mps.project.MPSProject
+import jetbrains.mps.smodel.StaticReference
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SModelReference
@@ -2373,6 +2376,102 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertTrue("must say a model is not accepted: $error", error.contains("a model is not accepted"))
     }
 
+    // ── MPS-40267: the stored reference text (resolveInfo) ─────────────────────────────────
+
+    @Test
+    fun `SET REFERENCE with a persistent target stores the target name as resolveInfo`() {
+        val (derivedRef, otherRef) = createExtendsFixture()
+
+        assertOk(setExtends(derivedRef, otherRef))
+
+        assertEquals("Other", extendsResolveInfo(derivedRef))
+    }
+
+    @Test
+    fun `SET REFERENCE persists the resolve attribute of the new target`() {
+        val (derivedRef, otherRef) = createExtendsFixture()
+
+        assertOk(setExtends(derivedRef, otherRef))
+
+        val persisted = readOnRepo {
+            (structureModel.source as FileDataSource).file.openInputStream().use { String(it.readAllBytes()) }
+        }
+        assertTrue("the saved model must carry the new reference text", persisted.contains("resolve=\"Other\""))
+    }
+
+    @Test
+    fun `renaming a referenced node refreshes the resolveInfo of a same-model reference`() {
+        val (derivedRef, _) = createExtendsFixture()
+        val baseRef = readOnRepo { PersistenceFacade.getInstance().asString(structureModel.rootNodes.single { it.name == "Base" }.reference) }
+        assertEquals("Base", extendsResolveInfo(derivedRef))
+
+        assertOk(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.PROPERTY, properties = listOf(listOf(baseRef, "name", "BaseRenamed")))
+        })
+
+        assertEquals("BaseRenamed", extendsResolveInfo(derivedRef))
+    }
+
+    @Test
+    fun `FIX_REFERENCES refreshes a stale resolveInfo without counting it as a fix`() {
+        val (derivedRef, _) = createExtendsFixture()
+        // A stale text that names another in-scope node: resolving by it would repoint the reference.
+        executeCommand {
+            (extendsReference(resolveNodeRef(derivedRef)) as StaticReference).resolveInfo = "Other"
+        }
+
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.FIX_REFERENCES, """{ "nodeReference": "$derivedRef" }""")
+        }
+        assertOk(response)
+
+        assertEquals("Base", extendsResolveInfo(derivedRef))
+        readOnRepo { assertEquals("Base", extendsReference(resolveNodeRef(derivedRef)).targetNode?.name) }
+        val counts = payloadObjectFromOkData(response)
+        assertEquals("a text refresh is neither a fix nor a repoint: $response", 0, counts.get("fixed").asInt + counts.get("repointed").asInt)
+    }
+
+    @Test
+    fun `a reference built from a blueprint carries the target name before any save`() {
+        // The tool saves refresh every text, so this unsaved path is the one that pins the write itself.
+        val baseRef = createConceptRoot("Base")
+        val blueprint = JsonParser.parseString(
+            """{ "concept": "$CONCEPT_DECL", "references": [ { "role": "extends", "targetReference": "$baseRef" } ] }"""
+        ).asJsonObject
+
+        val text = readOnRepo {
+            val node = BlueprintProbe().typeOperand(blueprint, myProject)
+            (extendsReference(node) as jetbrains.mps.smodel.SReference).resolveInfo
+        }
+
+        assertEquals("Base", text)
+    }
+
+    /** Concepts `Base`, `Other` and `Derived extends Base`; returns the references of `Derived` and `Other`. */
+    private fun createExtendsFixture(): Pair<String, String> {
+        createConceptRoot("Base")
+        val otherRef = createConceptRoot("Other")
+        val params = """
+            {
+              "structureModelRef": "$structureModelRef",
+              "conceptsJson": [ { "name": "Derived", "extends": "Base" } ]
+            }
+        """.trimIndent()
+        assertOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params) })
+        val derivedRef = readOnRepo { PersistenceFacade.getInstance().asString(structureModel.rootNodes.single { it.name == "Derived" }.reference) }
+        return derivedRef to otherRef
+    }
+
+    private fun setExtends(derivedRef: String, targetRef: String): String = runTool(JetBrainsMPSNodeMcpToolset()) {
+        it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE, references = listOf(listOf(derivedRef, "extends", targetRef)))
+    }
+
+    private fun extendsReference(node: SNode): SReference =
+        node.references.single { it.link.name == "extends" }
+
+    private fun extendsResolveInfo(derivedRef: String): String? =
+        readOnRepo { (extendsReference(resolveNodeRef(derivedRef)) as jetbrains.mps.smodel.SReference).resolveInfo }
+
     /** node-info responses arrive as a JSON-string inside the `data` field; normalise either form. */
     private fun JsonElement.asNodeInfo(): JsonObject {
         return if (isJsonPrimitive) JsonParser.parseString(asString).asJsonObject else asJsonObject
@@ -2396,4 +2495,9 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         private const val DUMMY_NODE_REF = "r:00000000-0000-0000-0000-000000000000(dummy)/1"
         private const val NO_SUCH_CONCEPT = "no.such.language.structure.NoSuchConcept"
     }
+}
+
+/** Exposes the protected [AbstractNodeOps.typeOperandNode], which builds a detached node and saves nothing. */
+private class BlueprintProbe : AbstractNodeOps() {
+    fun typeOperand(blueprint: JsonObject, project: MPSProject): SNode = typeOperandNode(blueprint, project, "$")
 }

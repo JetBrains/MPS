@@ -5,9 +5,11 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonParser
 import org.jetbrains.mps.openapi.model.SNode
+import org.jetbrains.mps.openapi.model.SNodeUtil
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -1084,6 +1086,30 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "totally.unknown.concept.Reference",
             "the rejection is no longer a missing-parameter one; the resolver ran and echoed the unresolved concept ref",
         )
+    }
+
+    @Test
+    fun `scaffolded references carry the text Save All would write`() {
+        // MPS-40267: setReference(link, SNodeReference) stores no text, so the editor's error cell
+        // and VCS diffs showed nothing for these references. A link declaration's text is its role.
+        val editorRef = expectOk(scaffold(type = "editor")).get("editorNodeRef").asString
+        val texts = readOnRepo {
+            val root = resolveStructureNode(editorRef)
+            SNodeUtil.getDescendants(root).flatMap { node ->
+                node.references.filter { it.link.name == "relationDeclaration" || it.link.name == "conceptDeclaration" }
+            }.map { ref ->
+                val target = ref.targetNode
+                assertNotNull("scaffolded references must resolve", target)
+                val expected = target!!.name ?: target.getPropertyByName("role")
+                expected to (ref as jetbrains.mps.smodel.SReference).resolveInfo
+            }
+        }
+        assertTrue("the scaffolded editor must wire relation cells: $texts", texts.size > 1)
+        assertTrue("the text must name the target: $texts", texts.any { it.second == "extends" })
+        texts.forEach { (expected, text) ->
+            assertNotNull("every scaffolded reference needs a text: $texts", text)
+            assertEquals("reference text must be the target's name, or a link declaration's role", expected, text)
+        }
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────────────────

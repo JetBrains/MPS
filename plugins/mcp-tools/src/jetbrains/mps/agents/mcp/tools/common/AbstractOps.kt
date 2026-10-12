@@ -583,11 +583,18 @@ abstract class AbstractOps : McpToolset {
      * Saves [model] and marks the owning module as changed, then flushes the module descriptor.
      * Call this instead of bare [EditableSModel.save] from every node-mutation tool so that the
      * module-level dirty flag and descriptor stay consistent with the saved model content.
+     *
+     * The save also refreshes the text of every resolved reference in the model, as Save All does:
+     * a tool save leaves the model clean, so the IDE would never repair a null or stale `resolve`
+     * attribute the tool wrote (MPS-40267). It is forced because, unlike `save()`, `save(options)`
+     * skips a model that is clean or not fully loaded; the early return is the one `save()` has.
      */
     protected fun saveModelAndModule(model: EditableSModel) {
         val module = model.module as? AbstractModule
         module?.setChanged()
-        model.save()
+        if (model.isChanged || model.isLoaded) {
+            model.save(SaveOptions.FORCE_SAVE_WITH_RESOLVE_INFO)
+        }
         module?.save()
     }
 
