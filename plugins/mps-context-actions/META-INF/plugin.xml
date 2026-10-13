@@ -14,7 +14,8 @@
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
     <mps.LanguageLibrary dir="/" hide="true"/>
     <toolWindow factoryClass="jetbrains.mps.plugins.tool.MpsToolWindowFactory"
-                id="Context Actions" anchor="right" secondary="false" canCloseContents="false"/>
+                id="Context Actions" anchor="right" secondary="false" canCloseContents="false"
+                icon="jetbrains.mps.icons.MPSIcons.ToolWindows.ContextActions"/>
   </extensions>
 
 </idea-plugin>
