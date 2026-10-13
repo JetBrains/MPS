@@ -489,19 +489,19 @@
                 <property role="TrG5h" value="directoryMappings" />
                 <node concept="_YKpA" id="3LKVexu7Xjr" role="1tU5fm">
                   <node concept="3uibUv" id="3LKVexu7Xjs" role="_ZDj9">
-                    <ref role="3uigEE" to="jlcu:~VcsDirectoryMapping" resolve="VcsDirectoryMapping" />
+                    <ref role="3uigEE" to="jlcv:~VcsDirectoryMapping" resolve="VcsDirectoryMapping" />
                   </node>
                 </node>
                 <node concept="2OqwBi" id="3LKVexu7Xjt" role="33vP2m">
                   <node concept="2YIFZM" id="3LKVexu7Xju" role="2Oq$k0">
-                    <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                    <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                    <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                    <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                     <node concept="37vLTw" id="2BHiRxgl6u2" role="37wK5m">
                       <ref role="3cqZAo" node="3LKVexu7XiV" resolve="project" />
                     </node>
                   </node>
                   <node concept="liA8E" id="3LKVexu7Xjw" role="2OqNvi">
-                    <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getDirectoryMappings()" resolve="getDirectoryMappings" />
+                    <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getDirectoryMappings()" resolve="getDirectoryMappings" />
                   </node>
                 </node>
               </node>
@@ -530,7 +530,7 @@
                                           <ref role="3cqZAo" node="5W7E4fV0XSE" resolve="dm" />
                                         </node>
                                         <node concept="liA8E" id="3LKVexu7XjM" role="2OqNvi">
-                                          <ref role="37wK5l" to="jlcu:~VcsDirectoryMapping.getVcs()" resolve="getVcs" />
+                                          <ref role="37wK5l" to="jlcv:~VcsDirectoryMapping.getVcs()" resolve="getVcs" />
                                         </node>
                                       </node>
                                       <node concept="liA8E" id="3LKVexu7XjN" role="2OqNvi">
@@ -803,7 +803,7 @@
             <property role="TrG5h" value="gitRoots" />
             <node concept="A3Dl8" id="6eynC1jZD$C" role="1tU5fm">
               <node concept="3uibUv" id="6eynC1jZD$D" role="A3Ik2">
-                <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+                <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
               </node>
             </node>
             <node concept="1rXfSq" id="4hiugqyzc02" role="33vP2m">
@@ -849,7 +849,7 @@
                                 <ref role="37wK5l" node="5vvH8dSUfbQ" resolve="installForRootInWrite" />
                                 <node concept="2OqwBi" id="1crbmp8O$ne" role="37wK5m">
                                   <node concept="liA8E" id="46_v$3HT$_u" role="2OqNvi">
-                                    <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
+                                    <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
                                   </node>
                                   <node concept="37vLTw" id="2BHiRxglCww" role="2Oq$k0">
                                     <ref role="3cqZAo" node="5W7E4fV0XSO" resolve="r" />
@@ -1003,7 +1003,7 @@
                           <ref role="37wK5l" node="5vvH8dSUfbQ" resolve="installForRootInWrite" />
                           <node concept="2OqwBi" id="1dKJ6hCbyK$" role="37wK5m">
                             <node concept="liA8E" id="46_v$3HTC$M" role="2OqNvi">
-                              <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
+                              <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
                             </node>
                             <node concept="37vLTw" id="2BHiRxglnp8" role="2Oq$k0">
                               <ref role="3cqZAo" node="5W7E4fV0XSU" resolve="r" />
@@ -1069,16 +1069,16 @@
             <property role="TrG5h" value="allRoots" />
             <node concept="10Q1$e" id="1dKJ6hCbyJo" role="1tU5fm">
               <node concept="3uibUv" id="1dKJ6hCbyJp" role="10Q1$1">
-                <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+                <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
               </node>
             </node>
             <node concept="2OqwBi" id="1dKJ6hCbyJq" role="33vP2m">
               <node concept="liA8E" id="1dKJ6hCbyJv" role="2OqNvi">
-                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getAllVcsRoots()" resolve="getAllVcsRoots" />
+                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getAllVcsRoots()" resolve="getAllVcsRoots" />
               </node>
               <node concept="2YIFZM" id="1Ctxzt5vB5y" role="2Oq$k0">
-                <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                 <node concept="37vLTw" id="1Ctxzt5vCnd" role="37wK5m">
                   <ref role="3cqZAo" node="1crbmp8Of6C" resolve="myProject" />
                 </node>
@@ -1106,11 +1106,11 @@
                         <ref role="37wK5l" to="wyt6:~String.equals(java.lang.Object)" resolve="equals" />
                         <node concept="2EnYce" id="5wa1y8txeFY" role="37wK5m">
                           <node concept="liA8E" id="5wa1y8txhDS" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~AbstractVcs.getName()" resolve="getName" />
+                            <ref role="37wK5l" to="jlcv:~AbstractVcs.getName()" resolve="getName" />
                           </node>
                           <node concept="2OqwBi" id="1dKJ6hCbyK8" role="2Oq$k0">
                             <node concept="liA8E" id="46_v$3HTF9T" role="2OqNvi">
-                              <ref role="37wK5l" to="jlcu:~VcsRoot.getVcs()" resolve="getVcs" />
+                              <ref role="37wK5l" to="jlcv:~VcsRoot.getVcs()" resolve="getVcs" />
                             </node>
                             <node concept="37vLTw" id="2BHiRxglway" role="2Oq$k0">
                               <ref role="3cqZAo" node="5W7E4fV0XSY" resolve="root" />
@@ -1133,7 +1133,7 @@
       <node concept="3Tm6S6" id="1dKJ6hCbyJi" role="1B3o_S" />
       <node concept="A3Dl8" id="1dKJ6hCbyJQ" role="3clF45">
         <node concept="3uibUv" id="1dKJ6hCbyJR" role="A3Ik2">
-          <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+          <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
         </node>
       </node>
     </node>
@@ -1144,7 +1144,7 @@
         <property role="TrG5h" value="roots" />
         <node concept="A3Dl8" id="6eynC1jZD$8" role="1tU5fm">
           <node concept="3uibUv" id="6eynC1jZD$9" role="A3Ik2">
-            <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+            <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
           </node>
         </node>
       </node>
@@ -1194,7 +1194,7 @@
                   <ref role="37wK5l" node="5vvH8dSUfbQ" resolve="installForRootInWrite" />
                   <node concept="2OqwBi" id="1crbmp8O$pi" role="37wK5m">
                     <node concept="liA8E" id="46_v$3HTI2e" role="2OqNvi">
-                      <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
+                      <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
                     </node>
                     <node concept="2GrUjf" id="1crbmp8O$pj" role="2Oq$k0">
                       <ref role="2Gs0qQ" node="1crbmp8O$oV" resolve="root" />
@@ -2321,7 +2321,7 @@
             <property role="TrG5h" value="gitRoots" />
             <node concept="_YKpA" id="7Qh4dIZs8qZ" role="1tU5fm">
               <node concept="3uibUv" id="7Qh4dIZs8r1" role="_ZDj9">
-                <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+                <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
               </node>
             </node>
             <node concept="1rXfSq" id="7Qh4dIZtgoX" role="33vP2m">
@@ -2609,7 +2609,7 @@
                             <ref role="3M$S_o" node="686lcMJz$4q" resolve="root" />
                           </node>
                           <node concept="liA8E" id="686lcMJzX3$" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
+                            <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
                           </node>
                         </node>
                         <node concept="Xl_RD" id="6PTc1gp6TGv" role="3uHU7B">
@@ -2788,7 +2788,7 @@
       <node concept="3Tm6S6" id="7Qh4dIZtgoU" role="1B3o_S" />
       <node concept="_YKpA" id="7Qh4dIZtgoV" role="3clF45">
         <node concept="3uibUv" id="7Qh4dIZtgoW" role="_ZDj9">
-          <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+          <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
         </node>
       </node>
       <node concept="3clFbS" id="7Qh4dIZtgoj" role="3clF47">
@@ -2798,11 +2798,11 @@
               <node concept="2OqwBi" id="7Qh4dIZtgos" role="2Oq$k0">
                 <node concept="2OqwBi" id="7Qh4dIZtgot" role="2Oq$k0">
                   <node concept="liA8E" id="7Qh4dIZtgoy" role="2OqNvi">
-                    <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getAllVcsRoots()" resolve="getAllVcsRoots" />
+                    <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getAllVcsRoots()" resolve="getAllVcsRoots" />
                   </node>
                   <node concept="2YIFZM" id="1Ctxzt5vwc$" role="2Oq$k0">
-                    <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                    <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                    <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                    <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                     <node concept="37vLTw" id="1Ctxzt5vxa5" role="37wK5m">
                       <ref role="3cqZAo" node="1crbmp8Of6C" resolve="myProject" />
                     </node>
@@ -2823,7 +2823,7 @@
                             <ref role="3cqZAo" node="5W7E4fV0XTc" resolve="it" />
                           </node>
                           <node concept="liA8E" id="1v1P0T12ft1" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~VcsRoot.getVcs()" resolve="getVcs" />
+                            <ref role="37wK5l" to="jlcv:~VcsRoot.getVcs()" resolve="getVcs" />
                           </node>
                         </node>
                       </node>
@@ -2886,7 +2886,7 @@
         <property role="TrG5h" value="roots" />
         <node concept="_YKpA" id="686lcMJzgyA" role="1tU5fm">
           <node concept="3uibUv" id="686lcMJziV9" role="_ZDj9">
-            <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+            <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
           </node>
         </node>
       </node>
@@ -2916,7 +2916,7 @@
       <node concept="37vLTG" id="7Qh4dIZrNMs" role="3clF46">
         <property role="TrG5h" value="vcsRoot" />
         <node concept="3uibUv" id="7Qh4dIZrQbc" role="1tU5fm">
-          <ref role="3uigEE" to="jlcu:~VcsRoot" resolve="VcsRoot" />
+          <ref role="3uigEE" to="jlcv:~VcsRoot" resolve="VcsRoot" />
         </node>
       </node>
       <node concept="37vLTG" id="7Qh4dIZrMvq" role="3clF46">
@@ -2941,7 +2941,7 @@
                       <ref role="3cqZAo" node="7Qh4dIZrNMs" resolve="vcsRoot" />
                     </node>
                     <node concept="liA8E" id="7Qh4dIZrUab" role="2OqNvi">
-                      <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
+                      <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
                     </node>
                   </node>
                   <node concept="37vLTw" id="7Qh4dIZrRZw" role="37wK5m">
@@ -3133,7 +3133,7 @@
                     <ref role="3cqZAo" node="7Qh4dIZrNMs" resolve="vcsRoot" />
                   </node>
                   <node concept="liA8E" id="7Qh4dIZrVpr" role="2OqNvi">
-                    <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
+                    <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
                   </node>
                 </node>
                 <node concept="37vLTw" id="7Qh4dIZrS0W" role="37wK5m">
@@ -3156,7 +3156,7 @@
                     <ref role="3cqZAo" node="7Qh4dIZrNMs" resolve="vcsRoot" />
                   </node>
                   <node concept="liA8E" id="7Qh4dIZrVvc" role="2OqNvi">
-                    <ref role="37wK5l" to="jlcu:~VcsRoot.getPath()" resolve="getPath" />
+                    <ref role="37wK5l" to="jlcv:~VcsRoot.getPath()" resolve="getPath" />
                   </node>
                 </node>
                 <node concept="37vLTw" id="7Qh4dIZrS15" role="37wK5m">
@@ -4479,19 +4479,19 @@
                       <node concept="10QFUN" id="127cgHIfgPJ" role="1eOMHV">
                         <node concept="2OqwBi" id="127cgHIfgPK" role="10QFUP">
                           <node concept="2YIFZM" id="127cgHIfgPL" role="2Oq$k0">
-                            <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
-                            <ref role="1Pybhc" to="jlcu:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
+                            <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+                            <ref role="1Pybhc" to="jlcv:~ProjectLevelVcsManager" resolve="ProjectLevelVcsManager" />
                             <node concept="37vLTw" id="2BHiRxeuHr1" role="37wK5m">
                               <ref role="3cqZAo" node="63ZcAL21OIS" resolve="myProject" />
                             </node>
                           </node>
                           <node concept="liA8E" id="127cgHIfgPN" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~ProjectLevelVcsManager.getDirectoryMappings()" resolve="getDirectoryMappings" />
+                            <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getDirectoryMappings()" resolve="getDirectoryMappings" />
                           </node>
                         </node>
                         <node concept="_YKpA" id="127cgHIfgPO" role="10QFUM">
                           <node concept="3uibUv" id="127cgHIfgPP" role="_ZDj9">
-                            <ref role="3uigEE" to="jlcu:~VcsDirectoryMapping" resolve="VcsDirectoryMapping" />
+                            <ref role="3uigEE" to="jlcv:~VcsDirectoryMapping" resolve="VcsDirectoryMapping" />
                           </node>
                         </node>
                       </node>
@@ -4505,7 +4505,7 @@
                                 <ref role="3cqZAo" node="5W7E4fV0XTq" resolve="dm" />
                               </node>
                               <node concept="liA8E" id="127cgHIfgPW" role="2OqNvi">
-                                <ref role="37wK5l" to="jlcu:~VcsDirectoryMapping.getVcs()" resolve="getVcs" />
+                                <ref role="37wK5l" to="jlcv:~VcsDirectoryMapping.getVcs()" resolve="getVcs" />
                               </node>
                             </node>
                           </node>
@@ -4563,14 +4563,14 @@
                               </node>
                             </node>
                             <node concept="liA8E" id="127cgHIfgZG" role="2OqNvi">
-                              <ref role="37wK5l" to="qv1u:~AllVcsesI.getByName(java.lang.String)" resolve="getByName" />
+                              <ref role="37wK5l" to="qv1t:~AllVcsesI.getByName(java.lang.String)" resolve="getByName" />
                               <node concept="37vLTw" id="2BHiRxghfnS" role="37wK5m">
                                 <ref role="3cqZAo" node="5W7E4fV0XTu" resolve="vn" />
                               </node>
                             </node>
                           </node>
                           <node concept="liA8E" id="127cgHIfiJ9" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~AbstractVcs.getDisplayName()" resolve="getDisplayName" />
+                            <ref role="37wK5l" to="jlcv:~AbstractVcs.getDisplayName()" resolve="getDisplayName" />
                           </node>
                         </node>
                       </node>
