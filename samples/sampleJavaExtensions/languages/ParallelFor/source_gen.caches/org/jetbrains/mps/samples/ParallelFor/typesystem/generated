@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-6x1p6e2hgrrvbhggt0c938x5z1x0woc" parametersHash="a7y06d854is3tqvgak3b8mgxsuvqmq7">
+<product version="3" modelHash="-6x1p6e2hgrrvbhggt0c938x5z1x0woc">
   <files names="CallsToNonThreadSafeMethod_NonTypesystemRule.java:CheckingRuleHelper.java:DotExpressionForInstanceMethodCallOperation_threadSafe_NonTypesystemRule.java:MakeDeclarationFinal_QuickFix.java:NoAssignmentsToNonFinalVariablesOutsideTheScope_NonTypesystemRule.java:NoBreakInsideParallelFor_NonTypesystemRule.java:NoReturnInsideParallelFor_NonTypesystemRule.java:TurnReturnToContinue_QuickFix.java:TypesystemDescriptor.java:typeof_ParallelFor_InferenceRule.java:typeof_ThreadPool_InferenceRule.java" />
 </product>
 

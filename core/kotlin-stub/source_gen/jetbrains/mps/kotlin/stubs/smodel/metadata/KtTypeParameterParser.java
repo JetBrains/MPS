@@ -34,7 +34,7 @@ public class KtTypeParameterParser {
 
     // This doesn't seem documented, but the flags provided only contains whether the parameter is reified
     // see kotlinx.metadata.impl.readers.kt:typeParameterFlags (in kotlinx.metadata lib)
-    SPropertyOperations.assign(node, PROPS.isReified$AAd, (typeParam.getFlags$kotlin_metadata() & 0x1) == 1);
+    SPropertyOperations.assign(node, PROPS.isReified$AAd, (typeParam.getFlags$org_jetbrains_kotlin_kotlin_metadata() & 0x1) == 1);
 
     final StringJoiner upperBoundIds = new StringJoiner("&");
     final List<SNode> upperBounds = new ArrayList<SNode>();

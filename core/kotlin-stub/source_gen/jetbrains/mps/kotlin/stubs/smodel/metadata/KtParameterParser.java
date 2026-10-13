@@ -23,7 +23,7 @@ public class KtParameterParser {
   public static String parseParameter(KmValueParameter valueParameter, SNode node, KtReadContext context) {
     SPropertyOperations.assign(node, PROPS.name$MnvL, valueParameter.getName());
 
-    if (Flags.DECLARES_DEFAULT_VALUE.get(valueParameter.getFlags$kotlin_metadata())) {
+    if (Flags.DECLARES_DEFAULT_VALUE.get(valueParameter.getFlags$org_jetbrains_kotlin_kotlin_metadata())) {
       SLinkOperations.setNewChild(node, LINKS.defaultValue$1bcs, CONCEPTS.CompiledStubStatement$Af);
     }
 

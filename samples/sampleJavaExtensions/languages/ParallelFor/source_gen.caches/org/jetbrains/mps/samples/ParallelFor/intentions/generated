@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="-9xrkkhtywnnr72oiytjyhhr2fegthcd" parametersHash="a7y06d854is3tqvgak3b8mgxsuvqmq7">
+<product version="3" modelHash="-9xrkkhtywnnr72oiytjyhhr2fegthcd">
   <files names="DetachFromThreadPool_Intention.java:IntentionsDescriptor.java:MarkAsNonThreadSafe_Intention.java:MarkAsThreadSafe_Intention.java:MarkInstanceMethodCallAsThreadSafe_Intention.java:MarkLocalInstanceMethodCallAsThreadSafe_Intention.java:MarkLocalStaticMethodCallAsThreadSafe_Intention.java:MarkStaticMethodCallAsThreadSafe_Intention.java:MarkVariableDeclarationAsThreadSafe_Intention.java:TurnToForEachStatement_Intention.java:TurnToParallelForEachStatement_Intention.java:UnmarkAsNonThreadSafe_Intention.java:UnmarkAsThreadSafe_Intention.java:UnmarkInstanceMethodCallAsThreadSafe_Intention.java:UnmarkLocalInstanceMethodCallAsThreadSafe_Intention.java:UnmarkLocalStaticMethodCallAsThreadSafe_Intention.java:UnmarkStaticMethodCallAsThreadSafe_Intention.java:UnmarkVariableAsThreadSafe_Intention.java" />
 </product>
 

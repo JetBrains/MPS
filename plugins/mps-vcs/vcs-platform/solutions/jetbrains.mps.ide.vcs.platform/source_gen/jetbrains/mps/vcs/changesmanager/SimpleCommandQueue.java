@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.ArrayList;
+import kotlin.jvm.functions.Function0;
+import kotlin.Unit;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import com.intellij.openapi.vcs.changes.ChangeListManagerImpl;
 import com.intellij.openapi.vcs.changes.ChangeListManager;
@@ -107,9 +109,9 @@ public final class SimpleCommandQueue {
           }
         }
         assert !(tasksToExecute.isEmpty());
-        Runnable flushingRunnable = new Runnable() {
+        Function0<Unit> flushingRunnable = new Function0<Unit>() {
           @Override
-          public void run() {
+          public Unit invoke() {
             for (Runnable task : ListSequence.fromList(tasksToExecute)) {
               try {
                 task.run();
@@ -123,6 +125,7 @@ public final class SimpleCommandQueue {
                 myHadExceptions = true;
               }
             }
+            return Unit.INSTANCE;
           }
         };
         ChangeListManagerImpl clm = (ChangeListManagerImpl) ChangeListManager.getInstance(myProject);

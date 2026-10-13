@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="ey8njcomy8swng59dbhwv8kjsbhg7le">
+<product version="3" modelHash="ey8njcomy8swng59dbhwv8kjsbhg7le" parametersHash="a7y06d854is3tqvgak3b8mgxsuvqmq7">
   <files names="EditorAspectDescriptorImpl.java:PresentationProviders.java:PrivateFieldReferenceOperation_SubstituteMenu.java:PrivateInstanceMethodCallOperation_SubstituteMenu.java:PrivateStaticFieldReference_Editor.java:PrivateStaticFieldReference_EditorBuilder_a.java:privateStaticAccess_Contribution.java" />
 </product>
 

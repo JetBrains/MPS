@@ -5,7 +5,6 @@ package jetbrains.mps.editor.spellcheck;
 import jetbrains.mps.logging.Logger;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.grazie.jlanguage.Lang;
-import com.intellij.grazie.detection.LangDetector;
 import com.intellij.grazie.GrazieConfig;
 import org.languagetool.JLanguageTool;
 import com.intellij.grazie.jlanguage.LangTool;
@@ -15,6 +14,8 @@ import org.languagetool.AnalyzedSentence;
 import org.languagetool.AnalyzedTokenReadings;
 import java.io.IOException;
 import org.languagetool.AnalyzedToken;
+import com.intellij.grazie.utils.LanguageDetectorHolder;
+import ai.grazie.nlp.langs.Language;
 
 public class NativeLanguageAnalyzer {
   private static final Logger LOG = Logger.getLogger(NativeLanguageAnalyzer.class);
@@ -29,7 +30,7 @@ public class NativeLanguageAnalyzer {
     if ((text == null || text.length() == 0) || ApplicationManager.getApplication() == null) {
       return "Unknown";
     }
-    Lang nativeLanguage = LangDetector.INSTANCE.getLang(text);
+    Lang nativeLanguage = detectLang(text);
     return (nativeLanguage == null ? "English" : nativeLanguage.getShortDisplayName());
   }
 
@@ -63,7 +64,7 @@ public class NativeLanguageAnalyzer {
     if ((text == null || text.length() == 0) || ApplicationManager.getApplication() == null) {
       return true;
     }
-    Lang nativeLanguage = LangDetector.INSTANCE.getLang(text);
+    Lang nativeLanguage = detectLang(text);
     if (nativeLanguage == null) {
       try {
         nativeLanguage = Lang.valueOf("AMERICAN_ENGLISH");
@@ -175,5 +176,19 @@ public class NativeLanguageAnalyzer {
       }
     }
     return false;
+  }
+  private static Lang detectLang(String text) {
+    // Grazie dropped LangDetector.getLang(String); replicate it on top of the shared detector
+    String sample = ((text.length() > LanguageDetectorHolder.LIMIT ? text.substring(0, LanguageDetectorHolder.LIMIT) : text));
+    Language detected = LanguageDetectorHolder.INSTANCE.get().detect(sample, false).getPreferred();
+    if (detected == Language.UNKNOWN) {
+      return null;
+    }
+    for (Lang lang : GrazieConfig.Companion.get().getAvailableLanguages()) {
+      if (lang.equalsTo(detected)) {
+        return lang;
+      }
+    }
+    return null;
   }
 }
