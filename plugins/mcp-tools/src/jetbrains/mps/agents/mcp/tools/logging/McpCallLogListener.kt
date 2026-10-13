@@ -3,6 +3,7 @@ package jetbrains.mps.agents.mcp.tools.logging
 
 import com.google.gson.JsonObject
 import com.intellij.mcpserver.McpCallInfo
+import com.intellij.mcpserver.McpToolCallResult
 import com.intellij.mcpserver.McpToolDescriptor
 import com.intellij.mcpserver.McpToolSideEffectEvent
 import com.intellij.mcpserver.ToolCallListener
@@ -68,9 +69,9 @@ class McpCallLogListener : ToolCallListener {
         mcpToolDescriptor: McpToolDescriptor,
         events: List<McpToolSideEffectEvent>,
         error: Throwable?,
-        additionalData: McpCallInfo,
+        callInfo: McpCallInfo,
+        result: McpToolCallResult?
     ) {
-        val callInfo = additionalData
         val toolDescriptor = mcpToolDescriptor
         val started = startedNanos.remove(callInfo.callId)
         // Both removals deliberately happen BEFORE the path check, so neither map can retain an
@@ -97,9 +98,7 @@ class McpCallLogListener : ToolCallListener {
                 addProperty("error", error?.let { "${it::class.simpleName}: ${it.message?.take(200) ?: ""}" })
                 addProperty("project", callInfo.project?.basePath)
                 addProperty("client", "${callInfo.clientInfo.name}/${callInfo.clientInfo.version}")
-                addProperty("session", callInfo.headers.entries
-                    .firstOrNull { it.key.equals("mcp-session-id", ignoreCase = true) }
-                    ?.value?.firstOrNull())
+                addProperty("session", callInfo.headers.get("mcp-session-id")?.firstOrNull())
             }
             synchronized(lock) {
                 Files.write(
