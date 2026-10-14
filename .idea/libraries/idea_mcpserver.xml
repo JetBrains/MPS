@@ -1,14 +1,12 @@
 <component name="libraryTable">
   <library name="idea.mcpserver">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/io.github.oshai.kotlin.logging.jvm.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/io.github.smiley4.schema.kenerator.core.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/io.github.smiley4.schema.kenerator.jsonschema.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/io.github.smiley4.schema.kenerator.serialization.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/io.modelcontextprotocol.kotlin.sdk.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/ktor-server-sse-jvm.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/mcpserver.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/mcpserver/lib/toml4j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/mcpserver-plugin/lib/intellij.libraries.kotlin.logging.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/mcpserver-plugin/lib/intellij.libraries.ktor.server.content.negotiation.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/mcpserver-plugin/lib/intellij.libraries.ktor.server.sse.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/mcpserver-plugin/lib/intellij.libraries.mcp.kotlin.sdk.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/mcpserver-plugin/lib/intellij.libraries.schema.kenerator.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/mcpserver-plugin/lib/intellij.mcpserver.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
