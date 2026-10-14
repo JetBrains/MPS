@@ -595,8 +595,8 @@
              url="https://www.jetbrains.com/mps/nextversion"
              feedback="http://youtrack.jetbrains.net/issues/MPS"
              majorVersion="2026" minorVersoin="2">
-      <build number="262.9437.166" version="2026.2 EAP1">
-        <message>JetBrains MPS 2026.2 EAP1 is now available.</message>
+      <build number="262.10968.569" version="2026.2 RC1">
+        <message>JetBrains MPS 2026.2 RC1 is now available.</message>
         <button name="Download" url="https://www.jetbrains.com/mps/nextversion" download="true"/>
       </build>
     </channel>
