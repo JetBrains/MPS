@@ -114,10 +114,6 @@ public class EnvironmentConfig {
     return addDistributedPlugin("mps-vcs", "jetbrains.mps.vcs").withGit4IdeaPlugin().withGit4IdeaStubsPlugin().withCorePlugin();
   }
 
-  public EnvironmentConfig withSubversionPlugin() {
-    return addDistributedPlugin("vcs-svn", "Subversion");
-  }
-
   public EnvironmentConfig withCorePlugin() {
     return addDistributedPlugin("mps-core", "jetbrains.mps.core");
   }

@@ -699,10 +699,6 @@
     <copy todir="${build.layout}/mps-git4idea">
       <fileset dir="${artifacts.mpsVcsPlatform}/mps-git4idea" />
     </copy>
-    <mkdir dir="${build.layout}/vcs-svn" />
-    <copy todir="${build.layout}/vcs-svn">
-      <fileset dir="${artifacts.mpsVcsPlatform}/vcs-svn" />
-    </copy>
     <echo file="${build.layout}/build.properties">mpsBootstrapCore.version.major=${mpsBootstrapCore.version.major}${line.separator}mpsBootstrapCore.version.minor=${mpsBootstrapCore.version.minor}${line.separator}mpsBootstrapCore.version.bugfixNr=${mpsBootstrapCore.version.bugfixNr}${line.separator}mpsBootstrapCore.version.eap=${mpsBootstrapCore.version.eap}${line.separator}mpsBootstrapCore.version=${mpsBootstrapCore.version}</echo>
   </target>
   

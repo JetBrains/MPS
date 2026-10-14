@@ -118,7 +118,7 @@
       <concept id="6057319140845467763" name="jetbrains.mps.build.structure.BuildSource_JavaLibrary" flags="ng" index="PiPfp">
         <child id="6057319140845478673" name="elements" index="PiKyV" />
       </concept>
-      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="nn" index="2Ry0Ak">
+      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="ng" index="2Ry0Ak">
         <property id="8618885170173601779" name="head" index="2Ry0Am" />
         <child id="8618885170173601778" name="tail" index="2Ry0An" />
       </concept>
@@ -491,7 +491,7 @@
         <child id="322010710375956261" name="path" index="3LF7KH" />
       </concept>
       <concept id="3335207478148059730" name="jetbrains.mps.build.mps.structure.BuildMpsLayout_ModuleJarContent" flags="ng" index="3PtdJl" />
-      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="nn" index="1SiIV0">
+      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="ng" index="1SiIV0">
         <child id="7259033139236285167" name="dependency" index="1SiIV1" />
       </concept>
       <concept id="4157435862321765764" name="jetbrains.mps.build.mps.structure.BuildMps_BrandingVersion" flags="ng" index="3ZAF1B">
@@ -43925,9 +43925,6 @@
         <node concept="3_I8Xc" id="1wq$Llytga7" role="39821P">
           <ref role="3_I8Xa" node="4wxeloVufXE" resolve="mps-git4idea" />
         </node>
-        <node concept="3_I8Xc" id="3nGzrDEksX6" role="39821P">
-          <ref role="3_I8Xa" node="3nGzrDEfcNJ" resolve="vcs-svn" />
-        </node>
         <node concept="3_I8Xc" id="1d6huufKTau" role="39821P">
           <ref role="3_I8Xa" node="5lGJ4TajoPh" resolve="mps-migration" />
         </node>
@@ -49396,9 +49393,6 @@
       </node>
       <node concept="3_I8Xc" id="1wq$Llytg92" role="39821P">
         <ref role="3_I8Xa" node="4wxeloVufXE" resolve="mps-git4idea" />
-      </node>
-      <node concept="3_I8Xc" id="3nGzrDDNoMc" role="39821P">
-        <ref role="3_I8Xa" node="3nGzrDEfcNJ" resolve="vcs-svn" />
       </node>
     </node>
     <node concept="10PD9b" id="1lMM4owFq7J" role="10PD9s" />
@@ -62257,10 +62251,10 @@
       <node concept="1E1JtA" id="1ULLXZL0gZG" role="2G$12L">
         <property role="TrG5h" value="org.junit.junit5" />
         <property role="3LESm3" value="63b449db-0918-4a4a-a891-2c430ab133e4" />
-        <property role="BnDLt" value="true" />
         <property role="aoJFB" value="77WRb6jODAF/none" />
         <property role="ZpmtF" value="true" />
         <property role="3vZFNd" value="3kCd1ud3JDD/compile_ext" />
+        <property role="BnDLt" value="true" />
         <node concept="398BVA" id="1ULLXZL0gZH" role="3LF7KH">
           <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
           <node concept="2Ry0Ak" id="1ULLXZL0gZI" role="iGT6I">
@@ -64838,48 +64832,12 @@
         <ref role="m$_yA" node="6IrEpWwbD4R" resolve="jetbrains.mps.vcs.idea.stubs" />
       </node>
     </node>
-    <node concept="m$_wf" id="3nGzrDDNo$o" role="3989C9">
-      <property role="m$_wk" value="Subversion" />
-      <property role="1NdglO" value="true" />
-      <node concept="3_J27D" id="3nGzrDDNo$p" role="m$_yQ">
-        <node concept="3Mxwew" id="3nGzrDDNo$q" role="3MwsjC">
-          <property role="3MwjfP" value="Subversion" />
-        </node>
-      </node>
-      <node concept="3_J27D" id="3nGzrDDNo$r" role="m_cZH">
-        <node concept="3Mxwew" id="29qIO8p9S5Q" role="3MwsjC">
-          <property role="3MwjfP" value="vcs-svn" />
-        </node>
-      </node>
-      <node concept="3_J27D" id="3nGzrDDNo$t" role="m$_w8">
-        <node concept="3Mxwew" id="3nGzrDDNo$u" role="3MwsjC">
-          <property role="3MwjfP" value="&lt;empty&gt;" />
-        </node>
-      </node>
-    </node>
     <node concept="55IIr" id="6ifcnI8$2iS" role="auvoZ">
       <node concept="2Ry0Ak" id="6ifcnI8A4QM" role="iGT6I">
         <property role="2Ry0Am" value="build" />
       </node>
     </node>
     <node concept="1l3spV" id="6ifcnI8$2iT" role="1l3spN">
-      <node concept="m$_wl" id="3nGzrDEfcNJ" role="39821P">
-        <ref role="m_rDy" node="3nGzrDDNo$o" resolve="Subversion" />
-        <node concept="pUk6x" id="5peYeZGo8W4" role="pUk7w" />
-        <node concept="2HvfSZ" id="3nGzrDDNoFk" role="39821P">
-          <node concept="55IIr" id="3nGzrDDNoFl" role="2HvfZ0">
-            <node concept="2Ry0Ak" id="3nGzrDDNoFm" role="iGT6I">
-              <property role="2Ry0Am" value="plugins" />
-              <node concept="2Ry0Ak" id="29qIO8p9Say" role="2Ry0An">
-                <property role="2Ry0Am" value="vcs-svn" />
-              </node>
-            </node>
-          </node>
-          <node concept="3LWZYq" id="3nGzrDDNoFo" role="2HvfZ1">
-            <property role="3LWZYl" value="**/*.zip" />
-          </node>
-        </node>
-      </node>
       <node concept="m$_wl" id="I6XuqH2zYV" role="39821P">
         <ref role="m_rDy" node="I6XuqGYf8K" resolve="Git4Idea" />
         <node concept="pUk6x" id="5peYeZGo8WG" role="pUk7w" />

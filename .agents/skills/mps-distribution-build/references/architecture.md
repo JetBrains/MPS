@@ -54,7 +54,7 @@ This is the "assemble the MPS skeleton" script. Its target structure:
       mps-trove/       (← artifacts.mpsTroveCollections/mps-trove)
       mps-java/        (← artifacts.mpsJava/mps-java)
       mps-devkit/      (← artifacts.mpsDevKit/mps-devkit)
-      mps-vcs/, vcs-git/, mps-git4idea/, vcs-svn/
+      mps-vcs/, vcs-git/, mps-git4idea/
       mps-migration/, mps-project-migrations/
       mps-tooltips/, mps-build-ui/, mps-junit5/, mps-testing/
       mps-kotlin/, mps-ant-make/, mps-http-support/, mps-context-actions/, …

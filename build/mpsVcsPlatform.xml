@@ -61,12 +61,6 @@
   <generator-settings id="m2m-defaults" strictMode="true" parallelThreads="8" inplaceTransform="false" warnWrongChild="true" createStaticRefs="true" skipUnmodifiedModels="${mps.generator.skipUnmodifiedModels}" />
   
   <target name="assemble" depends="declare-mps-tasks, classes">
-    <mkdir dir="${build.layout}/vcs-svn" />
-    <copy todir="${build.layout}/vcs-svn">
-      <fileset dir="${basedir}/plugins/vcs-svn">
-        <exclude name="**/*.zip" />
-      </fileset>
-    </copy>
     <mkdir dir="${build.layout}/vcs-git" />
     <copy todir="${build.layout}/vcs-git">
       <fileset dir="${basedir}/plugins/vcs-git">

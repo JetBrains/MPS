@@ -669,7 +669,7 @@
     <delete dir="${basedir}/../plugins/settings-repository" failonerror="false"/>
     <delete dir="${basedir}/../plugins/tasks" failonerror="false"/>
     <delete dir="${basedir}/../plugins/git4idea" failonerror="false"/>
-    <delete dir="${basedir}/../plugins/svn4idea" failonerror="false"/>
+    <delete dir="${basedir}/../plugins/vcs-svn" failonerror="false"/>
     <delete dir="${basedir}/../plugins/github" failonerror="false"/>
     <delete dir="${basedir}/../plugins/ant" failonerror="false"/>
     <delete dir="${basedir}/../plugins/sh" failonerror="false"/>

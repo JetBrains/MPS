@@ -2185,27 +2185,6 @@
       </node>
     </node>
     <node concept="2tJIrI" id="7ZTspgD70wj" role="jymVt" />
-    <node concept="3clFb_" id="7ZTspgD72Ha" role="jymVt">
-      <property role="TrG5h" value="withSubversionPlugin" />
-      <node concept="3clFbS" id="7ZTspgD72Hb" role="3clF47">
-        <node concept="3cpWs6" id="7ZTspgD72Hc" role="3cqZAp">
-          <node concept="1rXfSq" id="7ZTspgD72Hd" role="3cqZAk">
-            <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
-            <node concept="Xl_RD" id="7ZTspgD72He" role="37wK5m">
-              <property role="Xl_RC" value="vcs-svn" />
-            </node>
-            <node concept="Xl_RD" id="7ZTspgD72Hf" role="37wK5m">
-              <property role="Xl_RC" value="Subversion" />
-            </node>
-          </node>
-        </node>
-      </node>
-      <node concept="3Tm1VV" id="7ZTspgD72Hg" role="1B3o_S" />
-      <node concept="3uibUv" id="7ZTspgD72Hh" role="3clF45">
-        <ref role="3uigEE" node="6rx4kZDk5A9" resolve="EnvironmentConfig" />
-      </node>
-    </node>
-    <node concept="2tJIrI" id="6BLo1MgrCMa" role="jymVt" />
     <node concept="3clFb_" id="6BLo1MgrFYe" role="jymVt">
       <property role="1EzhhJ" value="false" />
       <property role="TrG5h" value="withCorePlugin" />
@@ -11106,7 +11085,7 @@
         <node concept="3uibUv" id="5whBXIGd57I" role="11_B2D">
           <ref role="3uigEE" to="33ny:~Set" resolve="Set" />
           <node concept="3uibUv" id="5whBXIGd57J" role="11_B2D">
-            <ref role="3uigEE" node="1ROuiHVPT6" resolve="Descriptor" />
+            <ref role="3uigEE" node="1ROuiHVPT6" resolve="PlatformPlugins.Descriptor" />
           </node>
         </node>
       </node>
@@ -11137,14 +11116,14 @@
               <node concept="3uibUv" id="5whBXIGd57U" role="3clF45">
                 <ref role="3uigEE" to="33ny:~Set" resolve="Set" />
                 <node concept="3uibUv" id="5whBXIGd57V" role="11_B2D">
-                  <ref role="3uigEE" node="1ROuiHVPT6" resolve="Descriptor" />
+                  <ref role="3uigEE" node="1ROuiHVPT6" resolve="PlatformPlugins.Descriptor" />
                 </node>
               </node>
             </node>
             <node concept="3uibUv" id="5whBXIGd57W" role="2Ghqu4">
               <ref role="3uigEE" to="33ny:~Set" resolve="Set" />
               <node concept="3uibUv" id="5whBXIGd57X" role="11_B2D">
-                <ref role="3uigEE" node="1ROuiHVPT6" resolve="Descriptor" />
+                <ref role="3uigEE" node="1ROuiHVPT6" resolve="PlatformPlugins.Descriptor" />
               </node>
             </node>
           </node>

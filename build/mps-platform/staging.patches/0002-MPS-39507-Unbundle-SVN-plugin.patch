@@ -1,0 +1,24 @@
+From f839474f4a11fd390000400ffa6c309397df3636 Mon Sep 17 00:00:00 2001
+From: Maros Sandor <maros.sandor@jetbrains.com>
+Date: Thu, 15 Oct 2026 16:55:56 +0200
+Subject: MPS-39507 Unbundle SVN plugin
+
+---
+ .../build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt  | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+index d436eb76eebbd..acb36e8565c9b 100644
+--- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
++++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+@@ -83,7 +83,6 @@ class MPSProperties : JetBrainsProductProperties() {
+             "intellij.properties",
+             "intellij.terminal",
+             "intellij.vcs.git",
+-            "intellij.vcs.svn",
+             "intellij.vcs.github",
+             "intellij.vcs.git.commit.modal",
+             //"intellij.ant",
+-- 
+2.53.0.windows.1
+

@@ -80,7 +80,6 @@ teamcity-info.xml
 /plugins/tasks
 /plugins/vcs-git
 /plugins/vcs-git-commit-modal
-/plugins/vcs-svn
 /plugins/vcs-github
 /plugins/yaml
 /plugins/ant
