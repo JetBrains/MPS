@@ -3,7 +3,7 @@
   <property name="build.dir" location="build" />
   <property name="build.tmp" location="${build.dir}/tmp/mpsDistribution" />
   <property name="build.layout" location="${build.dir}/artifacts/mpsDistribution" />
-  <property name="resources" location="" />
+  <property name="resources" location="${basedir}/build/resources" />
   <property name="artifacts.mps" location="${build.dir}/artifacts/mps" />
   <property name="artifacts.resources" location="${resources}" />
   <property name="artifacts.overlay" location="${resources}" />
@@ -21,7 +21,7 @@
   <property name="mpsBootstrapCore.version.eap" value="${import.mps.mpsBootstrapCore.version.eap}" />
   <property name="mpsBootstrapCore.version" value="${import.mps.mpsBootstrapCore.version}" />
   
-  <target name="assemble" depends="fetchDependencies">
+  <target name="assemble" depends="prepareJbrArchives, fetchDependencies">
     <mkdir dir="${build.layout}" />
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip" />
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip/MPS ${mpsBootstrapCore.version}" />
@@ -284,11 +284,7 @@
     </copy>
     <tar destfile="${build.layout}/${mps.build.number}-linux.tar.gz" compression="gzip" longfile="gnu">
       <tarfileset dir="${artifacts.mps}" prefix="MPS ${mpsBootstrapCore.version}" />
-      <tarfileset prefix="MPS ${mpsBootstrapCore.version}">
-        <gzipresource>
-          <file file="${artifacts.resources}/openJDK/jbr-linux-x64.tar.gz" />
-        </gzipresource>
-      </tarfileset>
+      <tarfileset src="${artifacts.resources}/openJDK/jbr-linux-x64.tar" prefix="MPS ${mpsBootstrapCore.version}" />
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/icudtl.dat" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-linux-x64.so" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/jna/linux-x86-64/libjnidispatch.so" prefix="MPS ${mpsBootstrapCore.version}/lib/jna" />
@@ -370,11 +366,7 @@
     </copy>
     <tar destfile="${build.layout}/${mps.build.number}-linux-aarch64.tar.gz" compression="gzip" longfile="gnu">
       <tarfileset dir="${artifacts.mps}" prefix="MPS ${mpsBootstrapCore.version}" />
-      <tarfileset prefix="MPS ${mpsBootstrapCore.version}">
-        <gzipresource>
-          <file file="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar.gz" />
-        </gzipresource>
-      </tarfileset>
+      <tarfileset src="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar" prefix="MPS ${mpsBootstrapCore.version}" />
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/icudtl.dat" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/skiko-awt-runtime-all/libskiko-linux-arm64.so" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <tarfileset file="${basedir}/lib/jna/linux-aarch64/libjnidispatch.so" prefix="MPS ${mpsBootstrapCore.version}/lib/jna" />
@@ -467,7 +459,7 @@
       <zipfileset file="${basedir}/lib/skiko-awt-runtime-all/skiko-windows-x64.dll" prefix="MPS ${mpsBootstrapCore.version}/lib/skiko-awt-runtime-all" />
       <zipfileset file="${basedir}/lib/jna/win32-x86-64/jnidispatch.dll" prefix="MPS ${mpsBootstrapCore.version}/lib/jna" />
       <zipfileset dir="${basedir}/lib/pty4j/win/x86-64" prefix="MPS ${mpsBootstrapCore.version}/lib/pty4j/win/x86-64" />
-      <zipfileset dir="${build.tmp}/deps/jbr-windows-x64.tar.gz1/jbr" prefix="MPS ${mpsBootstrapCore.version}/jbr" />
+      <zipfileset dir="${build.tmp}/deps/jbr-windows-x64.tar1/jbr" prefix="MPS ${mpsBootstrapCore.version}/jbr" />
       <zipfileset dir="${build.tmp}/deps/win.x64.tar.gz1" prefix="MPS ${mpsBootstrapCore.version}/plugins" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-windows.zip_f755" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
       <zipfileset dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_-windows.zip_f7551" filemode="755" prefix="MPS ${mpsBootstrapCore.version}/bin" />
@@ -541,11 +533,7 @@
       <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
         <exclude name="build.txt" />
       </tarfileset>
-      <tarfileset prefix="MPS.app/Contents">
-        <gzipresource>
-          <file file="${artifacts.resources}/openJDK/jbr-osx-x64.tar.gz" />
-        </gzipresource>
-      </tarfileset>
+      <tarfileset src="${artifacts.resources}/openJDK/jbr-osx-x64.tar" prefix="MPS.app/Contents" />
       <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS.app/Contents/bin" />
@@ -633,11 +621,7 @@
       <tarfileset dir="${artifacts.mps}" prefix="MPS.app/Contents">
         <exclude name="build.txt" />
       </tarfileset>
-      <tarfileset prefix="MPS.app/Contents">
-        <gzipresource>
-          <file file="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar.gz" />
-        </gzipresource>
-      </tarfileset>
+      <tarfileset src="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar" prefix="MPS.app/Contents" />
       <tarfileset file="${artifacts.mps}/build.txt" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/build/resources/mps.icns" prefix="MPS.app/Contents/Resources" />
       <tarfileset file="${basedir}/bin/mac/libnst64.dylib" prefix="MPS.app/Contents/bin" />
@@ -699,8 +683,8 @@
   <target name="fetchDependencies">
     <mkdir dir="${build.tmp}/deps/unix.x64.tar.gz1" />
     <untar src="${artifacts.overlay}/__overlay__/unix.x64.tar.gz" dest="${build.tmp}/deps/unix.x64.tar.gz1" compression="gzip" />
-    <mkdir dir="${build.tmp}/deps/jbr-windows-x64.tar.gz1" />
-    <untar src="${artifacts.resources}/openJDK/jbr-windows-x64.tar.gz" dest="${build.tmp}/deps/jbr-windows-x64.tar.gz1" compression="gzip" />
+    <mkdir dir="${build.tmp}/deps/jbr-windows-x64.tar1" />
+    <untar src="${artifacts.resources}/openJDK/jbr-windows-x64.tar" dest="${build.tmp}/deps/jbr-windows-x64.tar1" compression="none" />
     <mkdir dir="${build.tmp}/deps/win.x64.tar.gz1" />
     <untar src="${artifacts.overlay}/__overlay__/win.x64.tar.gz" dest="${build.tmp}/deps/win.x64.tar.gz1" compression="gzip" />
   </target>
@@ -715,5 +699,13 @@
   <target name="publishTCArtifacts">
     <echo message="##teamcity[publishArtifacts '${build.layout}/${build.number}.zip']" />
     <echo message="##teamcity[publishArtifacts '${build.layout}/${build.number}-linux.tar.gz']" />
+  </target>
+  
+  <target name="prepareJbrArchives">
+    <gunzip src="${artifacts.resources}/openJDK/jbr-linux-x64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-linux-x64.tar" />
+    <gunzip src="${artifacts.resources}/openJDK/jbr-windows-x64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-windows-x64.tar" />
+    <gunzip src="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar" />
+    <gunzip src="${artifacts.resources}/openJDK/jbr-osx-x64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-osx-x64.tar" />
+    <gunzip src="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar" />
   </target>
 </project>
