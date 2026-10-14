@@ -12,7 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public final class PrepareOverlayTar {
   private static final String OVERLAY_PREFIX = "__overlay__/";
@@ -31,7 +30,7 @@ public final class PrepareOverlayTar {
     Files.createDirectories(outputDirectory);
     Map<String, Path> temporaryFiles = new LinkedHashMap<>();
     for (String platform : PLATFORMS) {
-      temporaryFiles.put(platform, outputDirectory.resolve(platform + ".tar.gz.tmp"));
+      temporaryFiles.put(platform, outputDirectory.resolve(platform + ".tar.tmp"));
     }
 
     try {
@@ -92,9 +91,9 @@ public final class PrepareOverlayTar {
       }
 
       for (Map.Entry<String, Path> item : temporaryFiles.entrySet()) {
-        Path destination = outputDirectory.resolve(item.getKey() + ".tar.gz");
+        Path destination = outputDirectory.resolve(item.getKey() + ".tar");
         Files.move(item.getValue(), destination, StandardCopyOption.REPLACE_EXISTING);
-        Files.deleteIfExists(outputDirectory.resolve(item.getKey() + ".tar"));
+        Files.deleteIfExists(outputDirectory.resolve(item.getKey() + ".tar.gz"));
         System.out.println(item.getKey() + ": " + counts.getOrDefault(item.getKey(), 0) + " entries");
       }
       System.out.println("Overlay symlinks: " + symlinks);
@@ -107,7 +106,7 @@ public final class PrepareOverlayTar {
   }
 
   private static TarOutputStream open(Path path) throws IOException {
-    TarOutputStream output = new TarOutputStream(new GZIPOutputStream(new BufferedOutputStream(Files.newOutputStream(path))));
+    TarOutputStream output = new TarOutputStream(new BufferedOutputStream(Files.newOutputStream(path)));
     output.setLongFileMode(TarOutputStream.LONGFILE_GNU);
     return output;
   }
