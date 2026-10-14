@@ -18,11 +18,17 @@
     <errorHandler implementation="jetbrains.mps.ide.blame.CharismaReporter"/>
     <programRunner id="defaultRunRunner"
                    implementation="jetbrains.mps.execution.impl.configurations.runners.MPSProgramRunner"/>
+    <projectService serviceImplementation="jetbrains.mps.execution.impl.configurations.RunConfigurationsStateManager" />
   </extensions>
 
   <projectListeners>
-    <listener class="jetbrains.mps.execution.impl.configurations.RunConfigurationsStateManager"
+    <!-- Next 2 listeners need RunConfigurationsStateManager project service, registered above -->
+    <listener class="jetbrains.mps.execution.impl.configurations.RunConfigurationsStateManager$ConnectPluginsMPS"
               topic="jetbrains.mps.plugins.PluginReloadingListener"
+              activeInTestMode="false"
+              activeInHeadlessMode="false"/>
+    <listener class="jetbrains.mps.execution.impl.configurations.RunConfigurationsStateManager$ConnectIdeaRM"
+              topic="com.intellij.execution.RunManagerListener"
               activeInTestMode="false"
               activeInHeadlessMode="false"/>
   </projectListeners>

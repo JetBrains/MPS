@@ -15,6 +15,7 @@
  */
 package jetbrains.mps.ide.tools;
 
+import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.ActivateToolWindowAction;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
@@ -25,6 +26,7 @@ import com.intellij.openapi.project.DumbAware;
 import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import com.intellij.openapi.util.ScalableIcon;
 import com.intellij.openapi.wm.RegisterToolWindowTask;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowAnchor;
@@ -262,6 +264,7 @@ public abstract class BaseTool {
         return;
       }
       ensureToolWindowRegistered();
+      applyIcon();
       reattachContentIfReloaded();
       setAvailable(isInitiallyAvailable());
     };
@@ -323,8 +326,57 @@ public abstract class BaseTool {
       return;
     }
     toolWindowManager.registerToolWindow(new RegisterToolWindowTask(myId, myAnchor, null, mySideTool, myCanCloseContent,
-        true, false, new ToolWindowContentFactory(), myIcon, null));
+        true, false, new ToolWindowContentFactory(), getStripeIcon(), null));
     myFallbackToolWindowRegistered = true;
+  }
+
+  /**
+   * The tool's icon if it can serve as the tool window's stripe icon, {@code null} otherwise. The new UI stripe button
+   * casts the window icon to {@link ScalableIcon} and would fail on any other icon, while a {@code null} icon shows
+   * the platform placeholder. Content tabs are not affected and keep using {@link #getIcon()}.
+   */
+  @Nullable
+  private Icon getStripeIcon() {
+    return myIcon instanceof ScalableIcon ? myIcon : null;
+  }
+
+  /**
+   * Makes the tool's own icon (for generated tools, the {@code toolIcon} of the MPS tool declaration) the stripe icon
+   * of the platform tool window once the tool registers. An EP-declared window takes its icon from the {@code icon}
+   * attribute of the {@code <toolWindow>} entry, which the platform reads before this tool exists and which
+   * hand-written descriptors easily leave out or let drift from the model (MPS-39265). The descriptor's icon remains
+   * the value before registration; since {@code MpsToolWindowFactory} keeps the stripe hidden until
+   * {@link #setAvailable(boolean)}, users only ever see the tool's icon.
+   * <p>
+   * A tool without an icon leaves whatever the descriptor declared untouched. So does a non-scalable icon, see
+   * {@link #getStripeIcon()}.
+   */
+  private void applyIcon() {
+    Icon icon = getStripeIcon();
+    if (icon == null) {
+      return;
+    }
+    ToolWindow toolWindow = getToolWindow();
+    if (toolWindow == null || toolWindow.getIcon() == icon) {
+      // Also covers the fallback window, which ensureToolWindowRegistered() created with this very icon.
+      return;
+    }
+    toolWindow.setIcon(icon);
+  }
+
+  /**
+   * Takes this tool's icon off a platform-owned (EP-declared) window that outlives the tool, e.g. across a plugin
+   * reload. A reloaded tool re-applies its icon in {@link #register()}, but one that no longer has a stripe icon, or
+   * does not come back at all, would leave this icon on the window: loaded through the module's classloader, it
+   * pins that classloader and shows an icon the model no longer declares. The descriptor's icon is not kept around
+   * to put back; {@link ToolWindow#setIcon} rejects {@code null}, so the window gets {@code AllIcons.Toolbar.Unknown}
+   * - what the new UI stripe shows for icon-less windows anyway, and a {@link ScalableIcon} as the stripe requires.
+   * Leaves the icon alone if it is no longer this tool's.
+   */
+  private void resetIcon(@NotNull ToolWindow toolWindow) {
+    if (myIcon != null && toolWindow.getIcon() == myIcon) {
+      toolWindow.setIcon(AllIcons.Toolbar.Unknown);
+    }
   }
 
   /**
@@ -532,6 +584,7 @@ public abstract class BaseTool {
     if (toolWindow == null) {
       return;
     }
+    resetIcon(toolWindow);
     // Non-creating accessor on purpose: a tool window that was never shown has no content to detach, and the
     // creating one would run the platform's lazy content creation - building this tool's entire UI (models,
     // editors, persisted tabs) just to tear it down - and would leave the window in the "content created but
