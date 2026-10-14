@@ -211,7 +211,7 @@ public class RootNodeNameIndex extends SingleEntryFileBasedIndexExtension<ModelR
         // it looks there's no reason to serialize data for empty model
         return data.isEmpty() ? null : data;
       } catch (Exception e) {
-        LOG.error("Cannot index model file " + inputData.getFileName() + "; " + e.getMessage());
+        LOG.error("Cannot index model file " + inputData.getFileName() , e);
       }
       return null;
     }
