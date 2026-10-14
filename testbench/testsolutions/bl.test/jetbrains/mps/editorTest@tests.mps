@@ -58,10 +58,9 @@
     <import index="nlpl" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.editor.runtime.commands(MPS.Editor/)" />
     <import index="k3nr" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.ide.editor(MPS.Editor/)" />
     <import index="kip1" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.nodefs(MPS.Platform/)" />
-    <import index="alof" ref="86441d7a-e194-42da-81a5-2161ec62a379/java:jetbrains.mps.ide.project(MPS.Workbench/)" />
     <import index="z1c3" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.project(MPS.Core/)" />
     <import index="mhbf" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.model(MPS.OpenAPI/)" />
-    <import index="alog" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.project(MPS.Platform/)" />
+    <import index="alof" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.project(MPS.Platform/)" />
     <import index="cttk" ref="r:5ff047e0-2953-4750-806a-bdc16824aa89(jetbrains.mps.smodel)" />
     <import index="z1c4" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.project(MPS.Platform/)" />
     <import index="54q7" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.command.undo(MPS.IDEA/)" />
@@ -91099,8 +91098,8 @@
                                     <ref role="1Pybhc" to="54q7:~UndoManager" resolve="UndoManager" />
                                     <ref role="37wK5l" to="54q7:~UndoManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                                     <node concept="2YIFZM" id="2h7qzqOxQWb" role="37wK5m">
-                                      <ref role="1Pybhc" to="alog:~ProjectHelper" resolve="ProjectHelper" />
-                                      <ref role="37wK5l" to="alog:~ProjectHelper.toIdeaProject(jetbrains.mps.project.Project)" resolve="toIdeaProject" />
+                                      <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
+                                      <ref role="37wK5l" to="alof:~ProjectHelper.toIdeaProject(jetbrains.mps.project.Project)" resolve="toIdeaProject" />
                                       <node concept="1rXfSq" id="2h7qzqOxQWc" role="37wK5m">
                                         <ref role="37wK5l" node="2h7qzqOxuvR" resolve="project" />
                                         <node concept="37vLTw" id="2h7qzqOxQWd" role="37wK5m">
@@ -91638,8 +91637,8 @@
                                   <ref role="1Pybhc" to="54q7:~UndoManager" resolve="UndoManager" />
                                   <ref role="37wK5l" to="54q7:~UndoManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                                   <node concept="2YIFZM" id="2h7qzqOxQX1" role="37wK5m">
-                                    <ref role="1Pybhc" to="alog:~ProjectHelper" resolve="ProjectHelper" />
-                                    <ref role="37wK5l" to="alog:~ProjectHelper.toIdeaProject(jetbrains.mps.project.Project)" resolve="toIdeaProject" />
+                                    <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
+                                    <ref role="37wK5l" to="alof:~ProjectHelper.toIdeaProject(jetbrains.mps.project.Project)" resolve="toIdeaProject" />
                                     <node concept="1rXfSq" id="2h7qzqOxQX2" role="37wK5m">
                                       <ref role="37wK5l" node="2h7qzqOxuvR" resolve="project" />
                                       <node concept="37vLTw" id="2h7qzqOxQX3" role="37wK5m">
@@ -91796,8 +91795,8 @@
                                 <ref role="1Pybhc" to="54q7:~UndoManager" resolve="UndoManager" />
                                 <ref role="37wK5l" to="54q7:~UndoManager.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
                                 <node concept="2YIFZM" id="2h7qzqOxQX8" role="37wK5m">
-                                  <ref role="1Pybhc" to="alog:~ProjectHelper" resolve="ProjectHelper" />
-                                  <ref role="37wK5l" to="alog:~ProjectHelper.toIdeaProject(jetbrains.mps.project.Project)" resolve="toIdeaProject" />
+                                  <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
+                                  <ref role="37wK5l" to="alof:~ProjectHelper.toIdeaProject(jetbrains.mps.project.Project)" resolve="toIdeaProject" />
                                   <node concept="1rXfSq" id="2h7qzqOxQX9" role="37wK5m">
                                     <ref role="37wK5l" node="2h7qzqOxuvR" resolve="project" />
                                     <node concept="37vLTw" id="2h7qzqOxQXa" role="37wK5m">
@@ -92278,8 +92277,8 @@
         <node concept="3cpWs6" id="2h7qzqOxuvV" role="3cqZAp">
           <node concept="10QFUN" id="2h7qzqOxuvW" role="3cqZAk">
             <node concept="2YIFZM" id="2h7qzqOxKL8" role="10QFUP">
-              <ref role="1Pybhc" to="alog:~ProjectHelper" resolve="ProjectHelper" />
-              <ref role="37wK5l" to="alog:~ProjectHelper.getProject(org.jetbrains.mps.openapi.module.SRepository)" resolve="getProject" />
+              <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
+              <ref role="37wK5l" to="alof:~ProjectHelper.getProject(org.jetbrains.mps.openapi.module.SRepository)" resolve="getProject" />
               <node concept="1rXfSq" id="2h7qzqOxKL9" role="37wK5m">
                 <ref role="37wK5l" node="2h7qzqOxuvI" resolve="repository" />
                 <node concept="37vLTw" id="2h7qzqOxKLa" role="37wK5m">
