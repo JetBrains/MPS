@@ -95,21 +95,21 @@ public class Test_Test extends BaseTransformationTest {
       initTestNodes();
       runWithinCommand(() -> {
         // Check statement was moved to node annotation
-        // check '''getAnnotatedNode(string):node<>''' error messages
+        // check '''getAnnotatedNode("hasType")''' error messages
       });
     }
     public void test_hasError() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         // Check statement was moved to node annotation
-        // check '''getAnnotatedNode(string):node<>''' error messages
+        // check '''getAnnotatedNode("hasError")''' error messages
       });
     }
     public void test_hasTypeInSet() throws Exception {
       initTestNodes();
       runWithinCommand(() -> {
         // Check statement was moved to node annotation
-        // check '''getAnnotatedNode(string):node<>''' error messages
+        // check '''getAnnotatedNode("hasTypeInSet")''' error messages
       });
     }
     public void test_ErrorMessagesCheck2501421320959199196() throws Exception {

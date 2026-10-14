@@ -1729,7 +1729,7 @@
       <node concept="39e2AG" id="7E" role="39e3Y0">
         <ref role="39e2AK" to="oc2i:1TfWqDAKmRD" resolve="ChildConcept_ConstraintRules" />
         <node concept="385nmt" id="7G" role="385vvn">
-          <property role="385vuF" value="ChildConcept_ConstraintsFeedback" />
+          <property role="385vuF" value="ChildConcept_Feedback" />
           <node concept="3u3nmq" id="7I" role="385v07">
             <property role="3u3nmv" value="2184230058468666857" />
           </node>
@@ -1741,7 +1741,7 @@
       <node concept="39e2AG" id="7F" role="39e3Y0">
         <ref role="39e2AK" to="oc2i:4lxcYU10etS" resolve="SometimesRootableConcept_ConstraintRules" />
         <node concept="385nmt" id="7J" role="385vvn">
-          <property role="385vuF" value="SometimesRootableConcept_ConstraintsFeedback" />
+          <property role="385vuF" value="SometimesRootableConcept_Feedback" />
           <node concept="3u3nmq" id="7L" role="385v07">
             <property role="3u3nmv" value="4999334160817514360" />
           </node>
