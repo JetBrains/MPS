@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="2asb4w3t2phjotqdptfv6fskstx5lfo">
-  <files names="PostMergeSortingTest.java" />
+<product version="3" modelHash="-6l4izs5ji9ldhd4ikfnis343khcutke">
+  <files names="MergeDriverChildOrderTest.java:PostMergeSortingTest.java:SortingScenarioTest.java" />
+  <files dir="jetbrains/mps/vcs/diff/merge" names="PostMergeSortingDriverScenarioTest.java:PostMergeSortingScenarioTest.java:SortingScenario.java:SortingScenarioRunner.java:SortingScenarios.java" />
 </product>
 

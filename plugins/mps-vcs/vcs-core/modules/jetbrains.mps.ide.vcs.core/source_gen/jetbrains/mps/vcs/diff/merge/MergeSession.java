@@ -46,6 +46,11 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 
 @GeneratedClass(nodeId = "4124845871897265510", model = "r:e9c4e128-4808-4224-a92b-dbeed02eb860(jetbrains.mps.vcs.diff.merge)")
 public final class MergeSession {
+  /**
+   * System property that switches post-merge sorting of the result children off when set to true.
+   * Pass it with {@code -D} to the MPS VM options or to the merge driver command line.
+   */
+  public static final String DISABLE_CHILDREN_SORTING_PROPERTY = "mps.vcs.merge.disable.children.sorting";
   private final ChangeSet myMineChangeSet;
   private final ChangeSet myRepositoryChangeSet;
   private final Map<ModelChange, List<ModelChange>> myConflictingChanges;
@@ -279,7 +284,7 @@ public final class MergeSession {
       for (NodeGroupChange ch : ListSequence.fromList(ngcConflictedChanges)) {
         // add new changes only for insertions, we need ChangeSetImpl to manually add one change there
         // original conflicted changes will be resolved
-        ChangeSetImpl changeSet = as_bow6nj_a0a2a5a3a66(ch.getChangeSet(), ChangeSetImpl.class);
+        ChangeSetImpl changeSet = as_bow6nj_a0a2a5a3a76(ch.getChangeSet(), ChangeSetImpl.class);
         assert changeSet != null;
         NodeGroupChange newChange = new NodeGroupChange(changeSet, ch.getOldParentNodeId(), ch.getNewParentNodeId(), ch.getRoleLink(), anchorIndex, anchorIndex, ch.getResultBegin(), ch.getResultEnd());
         if (isNotEmptyChange(newChange)) {
@@ -327,10 +332,13 @@ public final class MergeSession {
   /**
    * gets the result model but first re-sort children, so order of children in the same role remains unchanged
    * but the overall children order reflects the order for models before merge as much as possible
+   * Sorting is skipped when the DISABLE_CHILDREN_SORTING_PROPERTY system property is true.
    */
-  public SModel getSortedResultModel() {
+  public SModel getResultModelToSave() {
     assert myResultModel.getRepository() == null || myResultModel.getRepository().getModelAccess().canWrite();
-    sortResultChildren();
+    if (!(Boolean.getBoolean(DISABLE_CHILDREN_SORTING_PROPERTY))) {
+      sortResultChildren();
+    }
     return myResultModel;
   }
 
@@ -524,7 +532,7 @@ public final class MergeSession {
     private Set<ModelChange> myResolvedChanges;
     private Map<SNodeId, SNodeId> myIdReplacementCache;
   }
-  private static <T> T as_bow6nj_a0a2a5a3a66(Object o, Class<T> type) {
+  private static <T> T as_bow6nj_a0a2a5a3a76(Object o, Class<T> type) {
     return (type.isInstance(o) ? (T) o : null);
   }
 

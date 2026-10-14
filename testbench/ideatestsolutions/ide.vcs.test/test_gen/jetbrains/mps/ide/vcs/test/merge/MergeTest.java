@@ -8,6 +8,7 @@ import org.junit.Before;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
 import org.junit.BeforeClass;
 import jetbrains.mps.RuntimeFlags;
+import jetbrains.mps.vcs.diff.merge.MergeSession;
 import org.junit.AfterClass;
 import org.junit.Test;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
@@ -28,7 +29,6 @@ import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.AttributeOperations;
 import jetbrains.mps.internal.collections.runtime.Sequence;
-import jetbrains.mps.vcs.diff.merge.MergeSession;
 import org.junit.Assert;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
@@ -45,6 +45,7 @@ import org.jetbrains.mps.openapi.language.SConcept;
 @GeneratedClass(nodeId = "445606167100192267", model = "r:b4fd80fc-7d6c-4c99-be6d-090ae8779bdc(jetbrains.mps.ide.vcs.test.merge@tests)")
 public class MergeTest extends ChangesTestBase {
   private static boolean ourMergeDriverModeWas;
+  private static String ourDisableSortingWas;
 
   public MergeTest() {
   }
@@ -68,11 +69,15 @@ public class MergeTest extends ChangesTestBase {
   @BeforeClass
   public static void setUpClass() {
     MergeTest.ourMergeDriverModeWas = RuntimeFlags.isMergeDriverMode();
+    MergeTest.ourDisableSortingWas = System.clearProperty(MergeSession.DISABLE_CHILDREN_SORTING_PROPERTY);
   }
 
   @AfterClass
   public static void tearDownClass() {
     RuntimeFlags.setMergeDriverMode(MergeTest.ourMergeDriverModeWas);
+    if (MergeTest.ourDisableSortingWas != null) {
+      System.setProperty(MergeSession.DISABLE_CHILDREN_SORTING_PROPERTY, MergeTest.ourDisableSortingWas);
+    }
   }
 
   @Test
@@ -94,7 +99,7 @@ public class MergeTest extends ChangesTestBase {
   @Test
   public void testSymmetricChanges_AddRoot() {
     testMergeNoConflictingChangesAndCheckNoDifferencesWithExpectedModel(() -> {
-      SNode newRoot = createClassConcept_u0wfvp_a0a0a0a0u();
+      SNode newRoot = createClassConcept_u0wfvp_a0a0a0a0v();
       SModelOperations.addRootNode(myTheirsModel, newRoot);
       SModelOperations.addRootNode(myMineModel, CopyUtil.copyAndPreserveId(newRoot));
       return myMineModel;
@@ -113,7 +118,7 @@ public class MergeTest extends ChangesTestBase {
   @Test
   public void testSymmetricChanges_AddChild() {
     testMergeNoConflictingChangesAndCheckNoDifferencesWithExpectedModel(() -> {
-      SNode newChild = createInstanceMethodDeclaration_u0wfvp_a0a0a0a0y();
+      SNode newChild = createInstanceMethodDeclaration_u0wfvp_a0a0a0a0z();
       insertMemberPreservingId(getMineClassRoot(), newChild, -1);
       insertMemberPreservingId(getTheirsClassRoot(), newChild, -1);
       return myMineModel;
@@ -296,7 +301,7 @@ public class MergeTest extends ChangesTestBase {
   public void testAddChildAndSetPropertyDontConflict() {
     testMergeNoConflictingChangesAndCheckNoDifferencesWithExpectedModel(new ModelChanger() {
       public void changeModel(SModel expectedModel) {
-        SNode newChild = createInstanceMethodDeclaration_u0wfvp_a0a0a0a0a0a75();
+        SNode newChild = createInstanceMethodDeclaration_u0wfvp_a0a0a0a0a0a85();
         SPropertyOperations.assign(getMineClassRoot(), PROPS.name$MnvL, "ChangedName");
         insertMemberPreservingId(getTheirsClassRoot(), newChild, -1);
 
@@ -357,7 +362,7 @@ public class MergeTest extends ChangesTestBase {
     Assert.assertTrue(Sequence.fromIterable(session.getAllChanges()).all((c) -> Sequence.fromIterable(session.getConflictedWith(c)).isEmpty()));
 
     session.applyChanges(Sequence.fromIterable(session.getAllChanges()).toList());
-    ModelChangeSet changes = ChangeSetBuilder.buildChangeSet(expectedModel, session.getSortedResultModel());
+    ModelChangeSet changes = ChangeSetBuilder.buildChangeSet(expectedModel, session.getResultModelToSave());
 
     Assert.assertTrue(dumpChangeSet(changes, session), ListSequence.fromList(changes.getModelChanges()).isEmpty());
   }
@@ -395,18 +400,18 @@ public class MergeTest extends ChangesTestBase {
   /*package*/ interface ModelCreator {
     SModel createModel();
   }
-  private static SNode createClassConcept_u0wfvp_a0a0a0a0u() {
+  private static SNode createClassConcept_u0wfvp_a0a0a0a0v() {
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.ClassConcept$bK);
     return n0.getResult();
   }
-  private static SNode createInstanceMethodDeclaration_u0wfvp_a0a0a0a0y() {
+  private static SNode createInstanceMethodDeclaration_u0wfvp_a0a0a0a0z() {
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.InstanceMethodDeclaration$39);
     n0.setProperty(PROPS.name$MnvL, "newMethod");
     n0.forChild(LINKS.body$5xQk).init(CONCEPTS.StatementList$m_);
     n0.forChild(LINKS.returnType$5xoi).init(CONCEPTS.VoidType$BF);
     return n0.getResult();
   }
-  private static SNode createInstanceMethodDeclaration_u0wfvp_a0a0a0a0a0a75() {
+  private static SNode createInstanceMethodDeclaration_u0wfvp_a0a0a0a0a0a85() {
     SNodeBuilder n0 = new SNodeBuilder().init(CONCEPTS.InstanceMethodDeclaration$39);
     n0.setProperty(PROPS.name$MnvL, "newMethod");
     n0.forChild(LINKS.body$5xQk).init(CONCEPTS.StatementList$m_);
