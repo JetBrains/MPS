@@ -167,12 +167,15 @@
     <indexedRootsProvider implementation="jetbrains.mps.ide.findusages.caches.MPSIndexableSetContributor"/>
 
     <syntaxHighlighter key="JAVA" implementationClass="jetbrains.mps.ide.java.JavaFileHighlighter"/>
+<!--
+    MPS-40281: XmlFileHighlighter moved to com.intellij.xml plugin and can't be used from core plugin anymore
     <syntaxHighlighter key="XML" implementationClass="com.intellij.ide.highlighter.XmlFileHighlighter"/>
     <syntaxHighlighter key="Model" implementationClass="com.intellij.ide.highlighter.XmlFileHighlighter"/>
     <syntaxHighlighter key="Solution" implementationClass="com.intellij.ide.highlighter.XmlFileHighlighter"/>
     <syntaxHighlighter key="Language" implementationClass="com.intellij.ide.highlighter.XmlFileHighlighter"/>
     <syntaxHighlighter key="Devkit" implementationClass="com.intellij.ide.highlighter.XmlFileHighlighter"/>
     <syntaxHighlighter key="MPS Project" implementationClass="com.intellij.ide.highlighter.XmlFileHighlighter"/>
+-->
 
     <gotoFileContributor implementation="jetbrains.mps.MPSGoToFileContributor"/>
 
