@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <model ref="r:f7252e75-44f2-46f6-9600-c9b291e7dd5f(jetbrains.mps.vcs.platform.integration)">
   <persistence version="9" />
+  <attribute name="doNotGenerate" value="false" />
   <languages>
     <use id="774bf8a0-62e5-41e1-af63-f4812e60e48b" name="jetbrains.mps.baseLanguage.checkedDots" version="-1" />
     <use id="fd392034-7849-419d-9071-12563d152375" name="jetbrains.mps.baseLanguage.closures" version="-1" />
@@ -3611,7 +3612,7 @@
                                           <ref role="3cqZAo" node="7VTIVrWo9s_" resolve="mergeSession" />
                                         </node>
                                         <node concept="liA8E" id="6DkrMsAbLt4" role="2OqNvi">
-                                          <ref role="37wK5l" to="bmv6:7OAO1yPTxzu" resolve="getSortedResultModel" />
+                                          <ref role="37wK5l" to="bmv6:7OAO1yPTxzu" resolve="getResultModelToSave" />
                                         </node>
                                       </node>
                                     </node>

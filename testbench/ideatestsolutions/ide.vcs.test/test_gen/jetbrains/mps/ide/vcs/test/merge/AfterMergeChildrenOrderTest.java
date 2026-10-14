@@ -6,33 +6,30 @@ import jetbrains.mps.annotations.GeneratedClass;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.junit.Before;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
+import org.jetbrains.mps.openapi.model.SNode;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
+import jetbrains.mps.smodel.CopyUtil;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
 import org.junit.Test;
 import java.util.List;
 import org.jetbrains.mps.openapi.model.SNodeId;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
 import org.junit.Assert;
-import org.jetbrains.mps.openapi.model.SNode;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
-import jetbrains.mps.smodel.CopyUtil;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
-import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
+import jetbrains.mps.vcs.diff.merge.MergeSession;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
+import jetbrains.mps.vcs.diff.ui.merge.MergeModelsPanel;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.diff.contents.DocumentContent;
 import com.intellij.diff.DiffContentFactory;
 import com.intellij.diff.merge.TextMergeRequest;
 import com.intellij.diff.requests.TextMergeRequestImpl;
 import java.util.Arrays;
-import jetbrains.mps.vcs.diff.ui.merge.MergeModelsPanel;
-import jetbrains.mps.vcs.diff.merge.MergeSession;
-import jetbrains.mps.vcs.diff.ModelChangeSet;
-import jetbrains.mps.vcs.diff.ChangeSetBuilder;
-import jetbrains.mps.internal.collections.runtime.IterableUtils;
-import jetbrains.mps.internal.collections.runtime.Sequence;
-import org.jetbrains.mps.openapi.language.SContainmentLink;
 import jetbrains.mps.smodel.builder.SNodeBuilder;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 import org.jetbrains.mps.openapi.model.SNodeAccessUtil;
+import org.jetbrains.mps.openapi.language.SContainmentLink;
 import org.jetbrains.mps.openapi.language.SConcept;
 
 /**
@@ -71,157 +68,17 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
   }
 
   /**
-   * No changes anywhere: post-merge sorting must be a no-op for the order.
-   */
-  @Test
-  public void noChanges_orderIsIdentity() {
-    List<SNodeId> expected = ListSequence.fromList(SNodeOperations.getChildren(getClassRoot(myBaseModel))).select((it) -> it.getNodeId()).toList();
-    SModel result = applyChangesAndGetModel();
-    List<SNodeId> merged = ListSequence.fromList(SNodeOperations.getChildren(getClassRoot(result))).select((it) -> it.getNodeId()).toList();
-
-    Assert.assertEquals("children order must be identical to base", expected, merged);
-  }
-  /**
-   * 
-   * Mine reorders members (reverses them); theirs is untouched.
-   * Within-role order in the result must match mine exactly (the only branch that touched it).
-   */
-  @Test
-  public void onlyMineReordersMembers_withinRoleOrderEqualsMine() {
-    reverseChildrenOfRole(getClassRoot(myMineModel), LINKS.member$L_2d);
-    List<SNodeId> expectedMembers = childIdsOfRole(getClassRoot(myMineModel), LINKS.member$L_2d);
-    SModel result = applyChangesAndGetModel();
-    List<SNodeId> mergedMembers = childIdsOfRole(getClassRoot(result), LINKS.member$L_2d);
-
-    Assert.assertEquals("mine's reorder must be visible in the result", expectedMembers, mergedMembers);
-  }
-  /**
-   * 
-   * Theirs reorders members; mine is untouched.
-   * This is the case that the previous algorithm silently dropped; the new one must respect it.
-   */
-  @Test
-  public void onlyTheirsReordersMembers_withinRoleOrderEqualsTheirs() {
-    reverseChildrenOfRole(getClassRoot(myRepoModel), LINKS.member$L_2d);
-    List<SNodeId> expectedMembers = childIdsOfRole(getClassRoot(myRepoModel), LINKS.member$L_2d);
-    SModel result = applyChangesAndGetModel();
-    List<SNodeId> mergedMembers = childIdsOfRole(getClassRoot(result), LINKS.member$L_2d);
-
-    Assert.assertEquals("theirs' reorder must be preserved by post-merge sorting", expectedMembers, mergedMembers);
-  }
-  /**
-   * 
-   * Mine adds a member at the beginning, theirs adds a smodelAttribute at the beginning.
-   * Within each role the order must be exactly what its branch produced; cross-role order
-   * is what the algorithm chooses, and is asserted via the expected-model diff (see "usefulness" below).
-   */
-  @Test
-  public void crossRoleAdditions_eachRoleKeepsItsBranchOrder() {
-    SNode mineMethod = createInstanceMethod("addedByMine");
-    SNode annotation = _quotation_createNode_3qo9lu_a0b0l();
-    insertChildPreservingId(getClassRoot(myMineModel), mineMethod, 0, LINKS.member$L_2d);
-    insertChildPreservingId(getClassRoot(myRepoModel), annotation, 0, LINKS.annotation$K49I);
-    List<SNodeId> expectedMembers = childIdsOfRole(getClassRoot(myMineModel), LINKS.member$L_2d);
-    List<SNodeId> expectedAnnotations = childIdsOfRole(getClassRoot(myRepoModel), LINKS.annotation$K49I);
-    SModel result = applyChangesAndGetModel();
-    List<SNodeId> mergedMembers = childIdsOfRole(getClassRoot(result), LINKS.member$L_2d);
-    List<SNodeId> mergedAnnotations = childIdsOfRole(getClassRoot(result), LINKS.annotation$K49I);
-
-    Assert.assertEquals("within-role member order must equal mine", expectedMembers, mergedMembers);
-    Assert.assertEquals("within-role smodelAttribute order must equal theirs", expectedAnnotations, mergedAnnotations);
-  }
-  /**
-   * 
-   * Both branches reorder different roles independently: mine reverses members, theirs adds a
-   * smodelAttribute at the front. Each role in the result must follow its own branch.
-   */
-  @Test
-  public void mineReordersMembers_theirsAddsAttribute_eachRoleFollowsItsBranch() {
-    reverseChildrenOfRole(getClassRoot(myMineModel), LINKS.member$L_2d);
-    SNode annotation = _quotation_createNode_3qo9lu_a0b0m();
-    insertChildPreservingId(getClassRoot(myRepoModel), annotation, 0, LINKS.annotation$K49I);
-    List<SNodeId> expectedMembers = childIdsOfRole(getClassRoot(myMineModel), LINKS.member$L_2d);
-    List<SNodeId> expectedAnnotations = childIdsOfRole(getClassRoot(myRepoModel), LINKS.annotation$K49I);
-    SModel result = applyChangesAndGetModel();
-    List<SNodeId> mergedMembers = childIdsOfRole(getClassRoot(result), LINKS.member$L_2d);
-    List<SNodeId> mergedAnnotations = childIdsOfRole(getClassRoot(result), LINKS.annotation$K49I);
-    Assert.assertEquals(expectedMembers, mergedMembers);
-    Assert.assertEquals(expectedAnnotations, mergedAnnotations);
-  }
-  /**
-   * 
-   * Both branches reorder the <i>same</i> role in the same way (symmetric reorder).
-   * The merger handles this in the per-role pass; post-merge sorting must not perturb it.
-   */
-  @Test
-  public void symmetricReorderOfMembers_withinRoleOrderIsTheSymmetricResult() {
-    reverseChildrenOfRole(getClassRoot(myMineModel), LINKS.member$L_2d);
-    reverseChildrenOfRole(getClassRoot(myRepoModel), LINKS.member$L_2d);
-    List<SNodeId> expectedMembers = childIdsOfRole(getClassRoot(myMineModel), LINKS.member$L_2d);
-    SModel result = applyChangesAndGetModel();
-    Assert.assertEquals(expectedMembers, childIdsOfRole(getClassRoot(result), LINKS.member$L_2d));
-  }
-  /**
-   * 
-   * Mine adds a annotation at front; theirs is untouched.
-   * Expected: attribute precedes the members; no order-only diff.
-   */
-  @Test
-  public void mineAddsAnnotationAtFront_noOrderDiffAgainstExpected() {
-    SNode annotation = _quotation_createNode_3qo9lu_a0a0o();
-    insertChildPreservingId(getClassRoot(myMineModel), annotation, 0, LINKS.annotation$K49I);
-    SModel expected = MergeTemporaryModel.writableCloneOf(myBaseModel);
-    insertChildPreservingId(getClassRoot(expected), annotation, 0, LINKS.annotation$K49I);
-    assertMergeMatchesExpectedModel(expected);
-  }
-  /**
-   * 
-   * Mine adds member at position 1, theirs adds smodelAttribute at position 0.
-   * Expected model is assembled the same way; no order-only diff must remain.
-   */
-  @Test
-  public void mineAddsMember_theirsAddsAnnotationAtFront_noOrderDiffAgainstExpected() {
-    SNode placeholder = _quotation_createNode_3qo9lu_a0a0p();
-    SNode annotation = _quotation_createNode_3qo9lu_a0b0p();
-    insertChildPreservingId(getClassRoot(myMineModel), placeholder, 1, LINKS.member$L_2d);
-    insertChildPreservingId(getClassRoot(myRepoModel), annotation, 0, LINKS.annotation$K49I);
-    SModel expected = MergeTemporaryModel.writableCloneOf(myBaseModel);
-    insertChildPreservingId(getClassRoot(expected), placeholder, 1, LINKS.member$L_2d);
-    insertChildPreservingId(getClassRoot(expected), annotation, 0, LINKS.annotation$K49I);
-    assertMergeMatchesExpectedModel(expected);
-  }
-  /**
-   * 
-   * Only theirs reverses the member order. The merge result must equal a hand-built model
-   * with the reversed members and the smodelAttributes left in base order.
-   */
-  @Test
-  public void onlyTheirsReversesMembers_noOrderDiffAgainstExpected() {
-    reverseChildrenOfRole(getClassRoot(myRepoModel), LINKS.member$L_2d);
-    SModel expected = MergeTemporaryModel.writableCloneOf(myBaseModel);
-    reverseChildrenOfRole(getClassRoot(expected), LINKS.member$L_2d);
-    assertMergeMatchesExpectedModel(expected);
-  }
-
-  /**
-   * check that the order is saved (without postsorting it is A X Y B)
-   */
-  @Test
-  public void A_X_Y_B_test() {
-    assertMergeMatchesExpectedModel(buildAXYBFixture());
-  }
-  /**
    * r1 = member, r2 = annotation
    * base: A:r1 X r2, Y:r2
    * mine: A:r1 X r2, Y:r2 - no changes
    * repo: A:r1 B:r1, X r2, Y:r2 - member B added
    */
   private SModel buildAXYBFixture() {
-    SNode root = _quotation_createNode_3qo9lu_a0a0t();
+    SNode root = _quotation_createNode_3qo9lu_a0a0i();
     SNode A = createInstanceMethod("A");
     SNode B = createInstanceMethod("B");
-    SNode X = _quotation_createNode_3qo9lu_a0d0t();
-    SNode Y = _quotation_createNode_3qo9lu_a0e0t();
+    SNode X = _quotation_createNode_3qo9lu_a0d0i();
+    SNode Y = _quotation_createNode_3qo9lu_a0e0i();
 
     ListSequence.fromList(SLinkOperations.getChildren(root, LINKS.member$L_2d)).addElement(A);
     ListSequence.fromList(SLinkOperations.getChildren(root, LINKS.annotation$K49I)).addElement(X);
@@ -250,52 +107,9 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
    */
   @Test
   public void applySavesReorderedResult() {
-    SModel expected = buildAXYBFixture();
-    final Wrappers._T<SModel> savedModel = new Wrappers._T<SModel>(null);
-    final Wrappers._boolean isSaved = new Wrappers._boolean(false);
-    ApplicationManager.getApplication().invokeAndWait(() -> {
-      DocumentContent content = DiffContentFactory.getInstance().create("");
-      TextMergeRequest request = new TextMergeRequestImpl(myIdeaProject, content, "", Arrays.asList(content, content, content), "", Arrays.asList("mine", "base", "theirs"));
-      // there should be NO unresolved conflicts in the merge, otherwise confirmation dialog will stop test execution
-      MergeModelsPanel panel = new MergeModelsPanel(myIdeaProject, myBaseModel, myMineModel, myRepoModel, request, true, false);
-      try {
-        panel.setSaver((parent, result) -> {
-          savedModel.value = result;
-          return true;
-        });
-        panel.mergeNonConflictingRoots();
-        isSaved.value = panel.saveResults();
-      } finally {
-        panel.dispose();
-      }
-    });
-
-    Assert.assertTrue("merge result must be saved", isSaved.value);
-    assertChildOrderMatches(expected, savedModel.value);
+    assertPanelSavesResult(true);
   }
 
-  /**
-   * 
-   * Runs the full merge pipeline and asserts that the result model is structurally identical
-   * to {@code expectedModel} , including the cross-role child order at every parent.
-   * 
-   * <p>We can't rely on {@link ChangeSetBuilder#buildChangeSet}  for this assertion:
-   * {@link jetbrains.mps.vcs.diff.changes.NodeGroupChange}  is built per-role, so a difference in
-   * cross-role child ordering (which is exactly the property {@link jetbrains.mps.vcs.diff.merge.PostMergeSorting}
-   * controls) does NOT produce any model change. We therefore compare child id lists across all roles
-   * at every shared parent.
-   */
-  private void assertMergeMatchesExpectedModel(SModel expectedModel) {
-    final MergeSession session = MergeSession.createMergeSession(myBaseModel, myMineModel, myRepoModel);
-    assertSetupHasNoConflicts(session);
-    session.applyChanges(session.getAllChanges());
-    SModel resultModel = session.getSortedResultModel();
-    // 1. Structural diff via ChangeSetBuilder: catches everything *except* cross-role order.
-    ModelChangeSet diff = ChangeSetBuilder.buildChangeSet(expectedModel, resultModel);
-    Assert.assertTrue("Model changes in expected compare to result:\n" + IterableUtils.join(ListSequence.fromList(diff.getModelChanges()).select((ch) -> ch.getDescription()), "\n\n"), ListSequence.fromList(diff.getModelChanges()).isEmpty());
-    // 2. Cross-role child-order check: compare full child sequences at every parent
-    assertChildOrderMatches(expectedModel, resultModel);
-  }
   /**
    * 
    * For every node id present in both models, asserts that the full ordered list of its child ids
@@ -311,49 +125,6 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
     }
   }
 
-  private SModel applyChangesAndGetModel() {
-    final MergeSession session = MergeSession.createMergeSession(myBaseModel, myMineModel, myRepoModel);
-    assertSetupHasNoConflicts(session);
-    session.applyChanges(session.getAllChanges());
-    return session.getSortedResultModel();
-  }
-  private void assertSetupHasNoConflicts(final MergeSession session) {
-    boolean noConflicts = Sequence.fromIterable(session.getAllChanges()).all((c) -> Sequence.fromIterable(session.getConflictedWith(c)).isEmpty());
-    Assert.assertTrue("test setup must not produce conflicts", noConflicts);
-  }
-
-  /**
-   * 
-   * Reverses the order of children in the given role at the given parent, preserving ids.
-   * Implemented as detach-all + re-attach in reverse order.
-   */
-  private static void reverseChildrenOfRole(SNode parent, SContainmentLink role) {
-    List<SNode> originals = ListSequence.fromList(SNodeOperations.getChildren(parent, role)).toList();
-    if (ListSequence.fromList(originals).count() <= 1) {
-      return;
-    }
-    for (SNode n : ListSequence.fromList(originals)) {
-      parent.removeChild(n);
-    }
-    for (SNode n : ListSequence.fromList(originals).reversedList()) {
-      parent.addChild(role, n);
-    }
-  }
-
-
-  /**
-   * Returns the ordered list of node ids of children of {@code parent}  that belong to {@code role} .
-   */
-  private static List<SNodeId> childIdsOfRole(SNode parent, SContainmentLink role) {
-    return ListSequence.fromList(SNodeOperations.getChildren(parent, role)).select((it) -> it.getNodeId()).toList();
-  }
-  /**
-   * Returns the ordered children list in the rol of the root in the model.
-   */
-  private static List<SNodeId> childIdsOfRole(SModel model, SContainmentLink role) {
-    return childIdsOfRole(getClassRoot(model), role);
-  }
-
   /**
    * 
    * Returns the ordered list of node ids of all children of {@code parent} , across roles.
@@ -361,73 +132,56 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
   private static List<SNodeId> childIds(SNode parent) {
     return ListSequence.fromList(SNodeOperations.getChildren(parent)).select((it) -> it.getNodeId()).toList();
   }
-  private static SNode getClassRoot(SModel model) {
-    return ListSequence.fromList(SModelOperations.roots(model, CONCEPTS.ClassConcept$bK)).first();
-  }
 
   private static SNode createInstanceMethod(final String name) {
-    return _quotation_createNode_3qo9lu_a0a73(name);
+    return _quotation_createNode_3qo9lu_a0a51(name);
   }
-
-  /**
-   * 
-   * Inserts a copy of {@code node}  into the role {@code link}  of {@code parent}  at the given
-   * (signed) position, where -1 means "append at the end".
-   */
-  private static void insertChildPreservingId(SNode parent, SNode node, int position, SContainmentLink link) {
-    List<SNode> existing = SNodeOperations.getChildren(parent, link);
-
-    int existingSize = ListSequence.fromList(existing).count();
-    if (position < -1 || position > existingSize) {
-      throw new IllegalArgumentException("Wrong position to insert: " + position + ". Number of childs: " + existingSize);
+  @Test
+  public void sortingCanBeDisabledWhenSaving() {
+    assertPanelSavesResult(false);
+  }
+  private void assertPanelSavesResult(boolean sortingEnabled) {
+    SModel expectedSorted = buildAXYBFixture();
+    MergeSession session = MergeSession.createMergeSession(myBaseModel, myMineModel, myRepoModel);
+    session.applyChanges(session.getAllChanges());
+    SModel expected = (sortingEnabled ? expectedSorted : MergeTemporaryModel.writableCloneOf(session.getResultModel()));
+    final AtomicReference<SModel> saved = new AtomicReference<>();
+    final AtomicBoolean isSaved = new AtomicBoolean();
+    final AtomicReference<MergeModelsPanel> panel = new AtomicReference<>();
+    String previousDisableSorting = (sortingEnabled ? System.clearProperty(MergeSession.DISABLE_CHILDREN_SORTING_PROPERTY) : System.setProperty(MergeSession.DISABLE_CHILDREN_SORTING_PROPERTY, "true"));
+    try {
+      ApplicationManager.getApplication().invokeAndWait(() -> {
+        {
+          DocumentContent content = DiffContentFactory.getInstance().create("");
+          TextMergeRequest request = new TextMergeRequestImpl(myIdeaProject, content, "", Arrays.asList(content, content, content), "", Arrays.asList("mine", "base", "theirs"));
+          MergeModelsPanel current = new MergeModelsPanel(myIdeaProject, myBaseModel, myMineModel, myRepoModel, request, true, false);
+          panel.set(current);
+          current.setSaver((parent, result) -> {
+            saved.set(result);
+            return true;
+          });
+          current.mergeNonConflictingRoots();
+          current.resetCurrentRoot();
+        }
+      });
+      myWaitHelper.waitForDiffRegistry();
+      ApplicationManager.getApplication().invokeAndWait(() -> isSaved.set(panel.get().saveResults()));
+      Assert.assertTrue("merge result must be saved", isSaved.get());
+      assertChildOrderMatches(expected, saved.get());
+    } finally {
+      ApplicationManager.getApplication().invokeAndWait(() -> {
+        if (panel.get() != null) {
+          panel.get().dispose();
+        }
+      });
+      if (previousDisableSorting == null) {
+        System.clearProperty(MergeSession.DISABLE_CHILDREN_SORTING_PROPERTY);
+      } else {
+        System.setProperty(MergeSession.DISABLE_CHILDREN_SORTING_PROPERTY, previousDisableSorting);
+      }
     }
-
-    SNode anchor;
-    if (position == 0) {
-      anchor = null;
-    } else
-    if (position == -1) {
-      anchor = ListSequence.fromList(existing).last();
-    } else {
-      anchor = ListSequence.fromList(existing).getElement(position - 1);
-    }
-    parent.insertChildAfter(link, CopyUtil.copyAndPreserveId(node), anchor);
   }
-  private static SNode _quotation_createNode_3qo9lu_a0b0l() {
-    SNode quotedNode_1 = null;
-    SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
-    quotedNode_1 = nb.getResult();
-    nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)/~NotNull");
-    return quotedNode_1;
-  }
-  private static SNode _quotation_createNode_3qo9lu_a0b0m() {
-    SNode quotedNode_1 = null;
-    SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
-    quotedNode_1 = nb.getResult();
-    nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)/~NotNull");
-    return quotedNode_1;
-  }
-  private static SNode _quotation_createNode_3qo9lu_a0a0o() {
-    SNode quotedNode_1 = null;
-    SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
-    quotedNode_1 = nb.getResult();
-    nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)/~NotNull");
-    return quotedNode_1;
-  }
-  private static SNode _quotation_createNode_3qo9lu_a0a0p() {
-    SNode quotedNode_1 = null;
-    SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x1458378889e6d166L, "PlaceholderMember"));
-    quotedNode_1 = nb.getResult();
-    return quotedNode_1;
-  }
-  private static SNode _quotation_createNode_3qo9lu_a0b0p() {
-    SNode quotedNode_1 = null;
-    SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
-    quotedNode_1 = nb.getResult();
-    nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)/~NotNull");
-    return quotedNode_1;
-  }
-  private static SNode _quotation_createNode_3qo9lu_a0a0t() {
+  private static SNode _quotation_createNode_3qo9lu_a0a0i() {
     SNode quotedNode_1 = null;
     SNode quotedNode_2 = null;
     SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0xf8c108ca66L, "ClassConcept"));
@@ -438,21 +192,21 @@ public class AfterMergeChildrenOrderTest extends ChangesTestBase {
     quotedNode_1.addChild(MetaAdapterFactory.getContainmentLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x112670d273fL, 0x112670d886aL, "visibility"), quotedNode_2);
     return quotedNode_1;
   }
-  private static SNode _quotation_createNode_3qo9lu_a0d0t() {
+  private static SNode _quotation_createNode_3qo9lu_a0d0i() {
     SNode quotedNode_1 = null;
     SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
     quotedNode_1 = nb.getResult();
     nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)/~Deprecated");
     return quotedNode_1;
   }
-  private static SNode _quotation_createNode_3qo9lu_a0e0t() {
+  private static SNode _quotation_createNode_3qo9lu_a0e0i() {
     SNode quotedNode_1 = null;
     SNodeBuilder nb = new SNodeBuilder(null, null).init(MetaAdapterFactory.getConcept(MetaAdapterFactory.getLanguage(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, "jetbrains.mps.baseLanguage"), 0x114a6b4ccabL, "AnnotationInstance"));
     quotedNode_1 = nb.getResult();
     nb.setReference(MetaAdapterFactory.getReferenceLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6b4ccabL, 0x114a6b85d40L, "annotation"), "49808fad-9d41-4b96-83fa-9231640f6b2b/java:org.junit(JUnit/)/~Ignore");
     return quotedNode_1;
   }
-  private static SNode _quotation_createNode_3qo9lu_a0a73(Object parameter_1) {
+  private static SNode _quotation_createNode_3qo9lu_a0a51(Object parameter_1) {
     SNode quotedNode_2 = null;
     SNode quotedNode_3 = null;
     SNode quotedNode_4 = null;

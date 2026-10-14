@@ -92,7 +92,7 @@ import jetbrains.mps.extapi.model.SModelData;
         }
       } else {
         byte[] resultBytes;
-        SModel resultModel = mergeSession.getSortedResultModel();
+        SModel resultModel = mergeSession.getResultModelToSave();
         if (LOG.isInfoLevel()) {
           LOG.info(String.format("%s: Saving merged model...", myModelName));
         }

@@ -268,7 +268,7 @@ public class MergeModelsPanel extends JPanel {
   private SModel getResultModelWithFixedId() {
     SModel resultModel = new ModelAccessHelper(myProjectRepository).runWriteAction(() -> {
       // copy to avoid problems with de-registration
-      return MergeTemporaryModel.writableCloneOf(myMergeSession.getSortedResultModel());
+      return MergeTemporaryModel.writableCloneOf(myMergeSession.getResultModelToSave());
     });
     DiffModelUtil.restoreModelName(resultModel);
     // fix???

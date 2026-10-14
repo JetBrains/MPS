@@ -17,7 +17,8 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.Map;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 /**
  * 
@@ -31,8 +32,8 @@ public class PostMergeSortingTest {
   /**
    * Roles for tests
    */
-  /*package*/ static final SContainmentLink ROLE_A = MetaAdapterFactory.getContainmentLink(-935030926396207931L, -6610165693999523818L, 1107461130800L, 5375687026011219971L, "member");
-  /*package*/ static final SContainmentLink ROLE_B = MetaAdapterFactory.getContainmentLink(-935030926396207931L, -6610165693999523818L, 1188208481402L, 1188208488637L, "annotation");
+  /*package*/ static final SContainmentLink ROLE_A = MetaAdapterFactory.getContainmentLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x101d9d3ca30L, 0x4a9a46de59132803L, "member");
+  /*package*/ static final SContainmentLink ROLE_B = MetaAdapterFactory.getContainmentLink(0xf3061a5392264cc5L, 0xa443f952ceaf5816L, 0x114a6be947aL, 0x114a6beb0bdL, "annotation");
 
 
   private static SNodeId id(long v) {
@@ -122,7 +123,7 @@ public class PostMergeSortingTest {
   }
   @Test
   public void refOrder_idInResultButNotInMineNorRepo_absentFromReference() {
-    // Such ids are expected to be tail-emitted by buildFinalChildOrder.
+    // Such ids are expected to be tail-emitted by buildConstrainedChildOrder.
     List<SNodeId> result = PostMergeSorting.buildReferenceOrder(idList(1), idList(1), idList(1), idSet(1, 99));
     Assert.assertEquals(idList(1), result);
   }
@@ -195,58 +196,115 @@ public class PostMergeSortingTest {
     }
     return r;
   }
-  private static Map<SContainmentLink, List<SNodeId>> role2idList(Object... pairs) {
-    Map<SContainmentLink, List<SNodeId>> r = MapSequence.fromMap(new LinkedHashMap<SContainmentLink, List<SNodeId>>(16, (float) 0.75, false));
-    for (int i = 0; i < pairs.length; i += 2) {
-      MapSequence.fromMap(r).put((SContainmentLink) pairs[i], (List<SNodeId>) pairs[i + 1]);
-    }
-    return r;
-  }
 
   @Test
   public void finalOrder_singleRole_consistent() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(1, 2, 3), id2Role(id(1), ROLE_A, id(2), ROLE_A, id(3), ROLE_A), role2idList(ROLE_A, idList(1, 2, 3)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1, 2, 3));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(1, 2, 3), physical, physical);
     Assert.assertEquals(idList(1, 2, 3), result);
   }
   @Test
   public void finalOrder_referenceContradictsPerRole_perRoleWins() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(1, 2), id2Role(id(1), ROLE_A, id(2), ROLE_A), role2idList(ROLE_A, idList(2, 1)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(2, 1));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(1, 2), physical, physical);
     Assert.assertEquals(idList(2, 1), result);
   }
   @Test
   public void finalOrder_withinRoleOrderPreserved_evenIfReferenceContradicts() {
     // multiple nodes per role, reference jumbles them - within-role order from resultByRole must win
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(3, 1, 2), id2Role(id(1), ROLE_A, id(2), ROLE_A, id(3), ROLE_A), role2idList(ROLE_A, idList(1, 2, 3)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1, 2, 3));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(3, 1, 2), physical, physical);
     Assert.assertEquals(idList(1, 2, 3), result);
   }
   @Test
   public void finalOrder_perRoleHasExtraNewNode_appendedToItsRole() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(1, 2), id2Role(id(1), ROLE_A, id(2), ROLE_A, id(3), ROLE_A), role2idList(ROLE_A, idList(1, 2, 3)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1, 2, 3));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(1, 2), physical, physical);
     Assert.assertEquals(idList(1, 2, 3), result);
   }
   @Test
   public void finalOrder_pullsPrefixOfRoleListWhenJumpingToLaterMember() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(3), id2Role(id(1), ROLE_A, id(2), ROLE_A, id(3), ROLE_A), role2idList(ROLE_A, idList(1, 2, 3)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1, 2, 3));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(3), physical, physical);
     Assert.assertEquals(idList(1, 2, 3), result);
   }
   @Test
   public void finalOrder_referenceMentionsUnknownIds_ignored() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(99, 1, 100, 2), id2Role(id(1), ROLE_A, id(2), ROLE_A), role2idList(ROLE_A, idList(1, 2)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1, 2));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(99, 1, 100, 2), physical, physical);
     Assert.assertEquals(idList(1, 2), result);
   }
   @Test
   public void finalOrder_interleavedRoles_followsReference() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(1, 10, 2, 20), id2Role(id(1), ROLE_A, id(2), ROLE_A, id(10), ROLE_B, id(20), ROLE_B), role2idList(ROLE_A, idList(1, 2), ROLE_B, idList(10, 20)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1, 2), idList(10, 20));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(1, 10, 2, 20), physical, physical);
     Assert.assertEquals(idList(1, 10, 2, 20), result);
   }
   @Test
   public void finalOrder_roleAbsentInReference_isTailEmitted() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(1), id2Role(id(1), ROLE_A, id(10), ROLE_B, id(20), ROLE_B), role2idList(ROLE_A, idList(1), ROLE_B, idList(10, 20)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1), idList(10, 20));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(1), physical, physical);
     Assert.assertEquals(idList(1, 10, 20), result);
   }
   @Test
   public void finalOrder_emptyReference_emitsAllRolesInRegisteredOrder() {
-    List<SNodeId> result = PostMergeSorting.buildFinalChildOrder(idList(), id2Role(id(1), ROLE_A, id(10), ROLE_B), role2idList(ROLE_A, idList(1), ROLE_B, idList(10)));
+    List<List<SNodeId>> physical = Arrays.asList(idList(1), idList(10));
+    List<SNodeId> result = PostMergeSorting.buildConstrainedChildOrder(idList(), physical, physical);
     Assert.assertEquals(idList(1, 10), result);
+  }
+  @Test
+  public void allInterleavingsPreserveResolvedRoleSequences() {
+    long[][] layouts = {{1L, 2L, 10L, 20L}, {1L, 10L, 2L, 20L}, {1L, 10L, 20L, 2L}, {10L, 1L, 2L, 20L}, {10L, 1L, 20L, 2L}, {10L, 20L, 1L, 2L}};
+    for (long[] layout : layouts) {
+      for (boolean reverseA : new boolean[]{false, true}) {
+        for (boolean reverseB : new boolean[]{false, true}) {
+          List<SNodeId> a = (reverseA ? idList(2, 1) : idList(1, 2));
+          List<SNodeId> b = (reverseB ? idList(20, 10) : idList(10, 20));
+          Map<SNodeId, SContainmentLink> roles = id2Role(id(1), ROLE_A, id(2), ROLE_A, id(10), ROLE_B, id(20), ROLE_B);
+          List<List<SNodeId>> physical = Arrays.asList(a, b);
+          List<SNodeId> actual = PostMergeSorting.buildConstrainedChildOrder(idList(layout), physical, physical);
+          List<SNodeId> actualA = new ArrayList<>();
+          List<SNodeId> actualB = new ArrayList<>();
+          for (SNodeId node : actual) {
+            if (roles.get(node).equals(ROLE_A)) {
+              actualA.add(node);
+            } else
+            actualB.add(node);
+          }
+          Assert.assertEquals(a, actualA);
+          Assert.assertEquals(b, actualB);
+          Assert.assertEquals(idSet(1, 2, 10, 20), new HashSet<>(actual));
+          Assert.assertEquals(4, actual.size());
+          if (!(reverseA) && !(reverseB)) {
+            Assert.assertEquals(idList(layout), actual);
+          }
+          Assert.assertEquals(actual, PostMergeSorting.buildConstrainedChildOrder(actual, physical, physical));
+        }
+      }
+    }
+  }
+  @Test
+  public void overlappingSequencesKeepCommentsWithTheirCollections() {
+    List<List<SNodeId>> physical = Arrays.asList(idList(1, 2), idList(10, 20), idList(4, 3));
+    List<List<SNodeId>> constraints = new ArrayList<>(physical);
+    constraints.add(idList(1, 3, 2));
+    constraints.add(idList(10, 4, 20));
+    List<SNodeId> actual = PostMergeSorting.buildConstrainedChildOrder(idList(1, 2, 10, 20), constraints, physical);
+    Assert.assertEquals(idList(1, 10, 4, 3, 2, 20), actual);
+    Assert.assertEquals(actual, PostMergeSorting.buildConstrainedChildOrder(actual, constraints, physical));
+  }
+  @Test
+  public void resultOnlyNodesAndMissingReferenceIdsAreHandledOnce() {
+    List<List<SNodeId>> physical = Arrays.asList(idList(3, 1, 2), idList(10, 4, 20));
+    Assert.assertEquals(idList(3, 1, 2, 10, 4, 20), PostMergeSorting.buildConstrainedChildOrder(idList(99, 2, 2, 20), physical, physical));
+  }
+  @Test
+  public void longPredecessorChainDoesNotOverflowTheStack() {
+    List<SNodeId> sequence = new ArrayList<>();
+    for (int i = 0; i < 20000; i++) {
+      sequence.add(id(i));
+    }
+    List<List<SNodeId>> constraints = Arrays.asList(sequence);
+    Assert.assertEquals(sequence, PostMergeSorting.buildConstrainedChildOrder(idList(19999), constraints, constraints));
   }
 }
