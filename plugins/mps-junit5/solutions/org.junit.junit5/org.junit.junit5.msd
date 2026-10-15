@@ -5,6 +5,9 @@
     <modelRoot type="java_classes" contentPath="${mps_home}/plugins/mps-junit5/lib">
       <sourceRoot location="." />
     </modelRoot>
+    <modelRoot type="java_classes" contentPath="${mps_home}/lib">
+      <sourceRoot location="./intellij.libraries.junit6.jar" />
+    </modelRoot>
   </models>
   <facets>
     <facet compile="ext" classes="provided" ext="no" type="java" languageLevel="JAVA_10">
