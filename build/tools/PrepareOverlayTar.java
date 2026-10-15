@@ -5,15 +5,21 @@ import org.apache.tools.tar.TarOutputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
 public final class PrepareOverlayTar {
+  private static final int TAR_RECORD_SIZE = 512;
   private static final String OVERLAY_PREFIX = "__overlay__/";
   private static final String PLUGINS_PREFIX = "plugins/";
   private static final String[] PLATFORMS = {
@@ -92,6 +98,7 @@ public final class PrepareOverlayTar {
 
       for (Map.Entry<String, Path> item : temporaryFiles.entrySet()) {
         Path destination = outputDirectory.resolve(item.getKey() + ".tar");
+        reorderBySize(item.getValue());
         Files.move(item.getValue(), destination, StandardCopyOption.REPLACE_EXISTING);
         Files.deleteIfExists(outputDirectory.resolve(item.getKey() + ".tar.gz"));
         System.out.println(item.getKey() + ": " + counts.getOrDefault(item.getKey(), 0) + " entries");
@@ -104,6 +111,44 @@ public final class PrepareOverlayTar {
       }
     }
   }
+
+  // Ant's <tarfileset src> re-reads the archive from the start for every entry, so small entries go first.
+  // Temporary for 2026.2, until the platform build orders overlay entries itself.
+  private static void reorderBySize(Path archive) throws IOException {
+    Path sorted = archive.resolveSibling(archive.getFileName() + ".sorted");
+    try {
+      try (FileChannel source = FileChannel.open(archive);
+           TarOutputStream output = open(sorted)) {
+        // Tar input streams stay open: closing them would close the shared channel.
+        List<EntryPosition> entries = new ArrayList<>();
+        for (long offset = 0; ; ) {
+          source.position(offset);
+          // One-record blocks prevent reading ahead, keeping the data position exact.
+          TarEntry entry = new TarInputStream(Channels.newInputStream(source), TAR_RECORD_SIZE).getNextEntry();
+          if (entry == null) {
+            break;
+          }
+          entries.add(new EntryPosition(offset, entry.getSize(), entry.isLink()));
+          offset = source.position() + Math.ceilDiv(entry.getSize(), TAR_RECORD_SIZE) * TAR_RECORD_SIZE;
+        }
+        // The stable sort keeps directories (size 0) before their content; hard links must follow their targets.
+        entries.sort(Comparator.comparing(EntryPosition::hardLink).thenComparingLong(EntryPosition::size));
+        for (EntryPosition entry : entries) {
+          source.position(entry.offset());
+          TarInputStream input = new TarInputStream(Channels.newInputStream(source));
+          output.putNextEntry(input.getNextEntry());
+          input.transferTo(output);
+          output.closeEntry();
+        }
+      }
+      Files.move(sorted, archive, StandardCopyOption.REPLACE_EXISTING);
+    }
+    finally {
+      Files.deleteIfExists(sorted);
+    }
+  }
+
+  private record EntryPosition(long offset, long size, boolean hardLink) {}
 
   private static TarOutputStream open(Path path) throws IOException {
     TarOutputStream output = new TarOutputStream(new BufferedOutputStream(Files.newOutputStream(path)));
