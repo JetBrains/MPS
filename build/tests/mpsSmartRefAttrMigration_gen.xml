@@ -496,10 +496,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="apiguardian-api-1.1.2.jar" />
-        <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="opentest4j-1.3.0.jar" />
-        <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-platform-reporting-1.13.4.jar" />
-        <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-jupiter-params-5.13.4.jar" />
+        <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
+        <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
