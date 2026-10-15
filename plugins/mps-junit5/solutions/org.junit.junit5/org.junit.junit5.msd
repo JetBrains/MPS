@@ -9,8 +9,6 @@
   <facets>
     <facet compile="ext" classes="provided" ext="no" type="java" languageLevel="JAVA_10">
       <classes generated="true" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
-      <library location="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
       <library location="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
       <library location="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
     </facet>

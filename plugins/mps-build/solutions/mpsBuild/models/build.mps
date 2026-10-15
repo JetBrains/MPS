@@ -62758,10 +62758,10 @@
       <node concept="1E1JtA" id="1ULLXZL0gZG" role="2G$12L">
         <property role="TrG5h" value="org.junit.junit5" />
         <property role="3LESm3" value="63b449db-0918-4a4a-a891-2c430ab133e4" />
-        <property role="BnDLt" value="true" />
         <property role="aoJFB" value="77WRb6jODAF/none" />
         <property role="ZpmtF" value="true" />
         <property role="3vZFNd" value="3kCd1ud3JDD/compile_ext" />
+        <property role="BnDLt" value="true" />
         <node concept="398BVA" id="1ULLXZL0gZH" role="3LF7KH">
           <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
           <node concept="2Ry0Ak" id="1ULLXZL0gZI" role="iGT6I">
@@ -62784,44 +62784,6 @@
           <node concept="3bR9La" id="1ULLXZL0h05" role="1SiIV1">
             <property role="3bR36h" value="true" />
             <ref role="3bR37D" node="mXGwHwhVPj" resolve="JDK" />
-          </node>
-        </node>
-        <node concept="1SiIV0" id="4X0dS6lnzH4" role="3bR37C">
-          <node concept="1BurEX" id="4X0dS6lnzH5" role="1SiIV1">
-            <node concept="398BVA" id="4X0dS6lnzGZ" role="1BurEY">
-              <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="4X0dS6lnzH0" role="iGT6I">
-                <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="4X0dS6lnzH1" role="2Ry0An">
-                  <property role="2Ry0Am" value="mps-junit5" />
-                  <node concept="2Ry0Ak" id="4X0dS6lnzH2" role="2Ry0An">
-                    <property role="2Ry0Am" value="lib" />
-                    <node concept="2Ry0Ak" id="4X0dS6lnzH3" role="2Ry0An">
-                      <property role="2Ry0Am" value="apiguardian-api-1.1.2.jar" />
-                    </node>
-                  </node>
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1SiIV0" id="4X0dS6lnzHb" role="3bR37C">
-          <node concept="1BurEX" id="4X0dS6lnzHc" role="1SiIV1">
-            <node concept="398BVA" id="4X0dS6lnzH6" role="1BurEY">
-              <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="4X0dS6lnzH7" role="iGT6I">
-                <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="4X0dS6lnzH8" role="2Ry0An">
-                  <property role="2Ry0Am" value="mps-junit5" />
-                  <node concept="2Ry0Ak" id="4X0dS6lnzH9" role="2Ry0An">
-                    <property role="2Ry0Am" value="lib" />
-                    <node concept="2Ry0Ak" id="4X0dS6lnzHa" role="2Ry0An">
-                      <property role="2Ry0Am" value="opentest4j-1.3.0.jar" />
-                    </node>
-                  </node>
-                </node>
-              </node>
-            </node>
           </node>
         </node>
         <node concept="1SiIV0" id="2oICgeCspPZ" role="3bR37C">

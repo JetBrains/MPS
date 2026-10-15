@@ -4895,8 +4895,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectView.backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.projectView.frontend.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.spellchecker.vcs.jar" />
-        <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="apiguardian-api-1.1.2.jar" />
-        <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="opentest4j-1.3.0.jar" />
         <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
         <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />
@@ -5249,8 +5247,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-structureView-plugin/lib/modules/intellij.platform.structureView.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-testRunner-plugin/lib/modules/intellij.platform.testRunner.jar" />
-        <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="apiguardian-api-1.1.2.jar" />
-        <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="opentest4j-1.3.0.jar" />
         <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
         <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />
@@ -5576,8 +5572,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="apiguardian-api-1.1.2.jar" />
-        <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="opentest4j-1.3.0.jar" />
         <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
         <fileset dir="${artifacts.mpsTesting}/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />

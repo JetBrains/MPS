@@ -190,8 +190,6 @@
       <not>
         <and>
           <available file="${junit5.lib}/junit-jupiter-params-${junit.jupiter.version}.jar"/>
-          <available file="${junit5.lib}/apiguardian-api-${apiguardian.version}.jar"/>
-          <available file="${junit5.lib}/opentest4j-${opentest4j.version}.jar"/>
           <available file="${junit5.lib}/junit-platform-reporting-${junit.platform.version}.jar"/>
         </and>
       </not>
