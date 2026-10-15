@@ -1122,8 +1122,8 @@
         <uses />
         <library jar="../../lib/apiguardian-api-1.1.2.jar" />
         <library jar="../../lib/opentest4j-1.3.0.jar" />
-        <library jar="../../lib/junit-platform-reporting-1.13.4.jar" />
-        <library jar="../../lib/junit-jupiter-params-5.13.4.jar" />
+        <library jar="../../lib/junit-platform-reporting-6.1.3.jar" />
+        <library jar="../../lib/junit-jupiter-params-6.1.3.jar" />
         <sources jar="." descriptor="org.junit.junit5.msd" />
       </module>
     </echoxml>
@@ -1251,8 +1251,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-messages-for-rules.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
         <fileset file="${artifacts.IDEA}/lib/util.jar" />
@@ -1591,8 +1591,8 @@
         <pathelement path="${build.tmp}/java/out/jetbrains.mps.baseLanguage.unitTest.runtime" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -1712,8 +1712,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-test.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -2082,8 +2082,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-textgen.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -2428,8 +2428,8 @@
         <pathelement path="${build.tmp}/java/out/jetbrains.mps.lang.test.runtime" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -2769,8 +2769,8 @@
         <pathelement path="${build.tmp}/java/out/jetbrains.mps.lang.test.matcher" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -2912,8 +2912,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-scripts-rt.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -3278,8 +3278,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-scripts-rt.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -3647,8 +3647,8 @@
         <pathelement path="${build.tmp}/java/out/jetbrains.mps.lang.test.runtime" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -3999,8 +3999,8 @@
         <pathelement path="${build.tmp}/java/out/jetbrains.mps.lang.test.matcher" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />
@@ -4653,8 +4653,8 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-environment.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/apiguardian-api-1.1.2.jar" />
         <fileset file="${mps_home}/plugins/mps-junit5/lib/opentest4j-1.3.0.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-1.13.4.jar" />
-        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-5.13.4.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-platform-reporting-6.1.3.jar" />
+        <fileset file="${mps_home}/plugins/mps-junit5/lib/junit-jupiter-params-6.1.3.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.IDEA}/lib/app-backend.jar" />
         <fileset file="${artifacts.IDEA}/lib/lib.jar" />

@@ -44426,7 +44426,7 @@
           <ref role="3_I8Xa" node="I6XuqH2zYV" resolve="vcs-git" />
         </node>
         <node concept="3_I8Xc" id="7dOUAS9GbIo" role="39821P">
-          <ref role="3_I8Xa" node="7dOUAS9Gb_o" />
+          <ref role="3_I8Xa" node="7dOUAS9Gb_o" resolve="platform-vcs-plugin" />
         </node>
         <node concept="3_I8Xc" id="1wq$Llytga7" role="39821P">
           <ref role="3_I8Xa" node="4wxeloVufXE" resolve="mps-git4idea" />
@@ -46345,7 +46345,7 @@
         <ref role="m$_y1" node="4k71ibbLe59" resolve="com.intellij.modules.mps" />
       </node>
       <node concept="m$_yC" id="4FJkWEobzmE" role="m$_yJ">
-        <ref role="m$_y1" node="4wxeloVufXr" />
+        <ref role="m$_y1" node="4wxeloVufXr" resolve="jetbrains.mps.git4idea.stubs" />
       </node>
     </node>
     <node concept="398b33" id="42kMDMFt6h4" role="3989C9">
@@ -49893,7 +49893,7 @@
         <ref role="3_I8Xa" node="I6XuqH2zYV" resolve="vcs-git" />
       </node>
       <node concept="3_I8Xc" id="7dOUAS9GbIp" role="39821P">
-        <ref role="3_I8Xa" node="7dOUAS9Gb_o" />
+        <ref role="3_I8Xa" node="7dOUAS9Gb_o" resolve="platform-vcs-plugin" />
       </node>
       <node concept="3_I8Xc" id="1wq$Llytg92" role="39821P">
         <ref role="3_I8Xa" node="4wxeloVufXE" resolve="mps-git4idea" />
@@ -60589,18 +60589,18 @@
             </node>
           </node>
           <node concept="3ygNvl" id="5VObKVcpDyd" role="39821P">
-            <ref role="3ygNvj" node="6o2kRudjTDG" />
+            <ref role="3ygNvj" node="6o2kRudjTDG" resolve="platform-problemView-plugin" />
           </node>
         </node>
         <node concept="m$_wl" id="5whBXIHtNJA" role="39821P">
           <ref role="m_rDy" node="5whBXIGTrNc" resolve="com.intellij.xml" />
           <node concept="pUk6x" id="5whBXIHtNJB" role="pUk7w" />
           <node concept="3ygNvl" id="5VObKVcpDyc" role="39821P">
-            <ref role="3ygNvj" node="6o2kRud0O1E" />
+            <ref role="3ygNvj" node="6o2kRud0O1E" resolve="xml-plugin" />
           </node>
         </node>
         <node concept="m$_wl" id="5whBXIIlexx" role="39821P">
-          <ref role="m_rDy" node="5whBXIIlesf" />
+          <ref role="m_rDy" node="5whBXIIlesf" resolve="com.intellij.modules.pty4j" />
           <node concept="pUk6x" id="5whBXIIlexy" role="pUk7w" />
           <node concept="2HvfSZ" id="5whBXIIlexz" role="39821P">
             <node concept="55IIr" id="5whBXIIlex$" role="2HvfZ0">
@@ -60614,7 +60614,7 @@
           </node>
         </node>
         <node concept="m$_wl" id="5whBXIIlexr" role="39821P">
-          <ref role="m_rDy" node="5whBXIIles8" />
+          <ref role="m_rDy" node="5whBXIIles8" resolve="com.intellij.modules.jna" />
           <node concept="pUk6x" id="5whBXIIlexs" role="pUk7w" />
           <node concept="2HvfSZ" id="5whBXIIlext" role="39821P">
             <node concept="55IIr" id="5whBXIIlexu" role="2HvfZ0">
@@ -60688,7 +60688,7 @@
         </node>
       </node>
       <node concept="m$_yC" id="5whBXIIlexq" role="m$_yJ">
-        <ref role="m$_y1" node="5whBXIIles8" />
+        <ref role="m$_y1" node="5whBXIIles8" resolve="com.intellij.modules.jna" />
       </node>
     </node>
     <node concept="m$_wf" id="5whBXIIles8" role="3989C9">
@@ -62824,48 +62824,48 @@
             </node>
           </node>
         </node>
-        <node concept="1SiIV0" id="4X0dS6lnzHi" role="3bR37C">
-          <node concept="1BurEX" id="4X0dS6lnzHj" role="1SiIV1">
-            <node concept="398BVA" id="4X0dS6lnzHd" role="1BurEY">
-              <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="4X0dS6lnzHe" role="iGT6I">
-                <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="4X0dS6lnzHf" role="2Ry0An">
-                  <property role="2Ry0Am" value="mps-junit5" />
-                  <node concept="2Ry0Ak" id="4X0dS6lnzHg" role="2Ry0An">
-                    <property role="2Ry0Am" value="lib" />
-                    <node concept="2Ry0Ak" id="4X0dS6lnzHh" role="2Ry0An">
-                      <property role="2Ry0Am" value="junit-platform-reporting-1.13.4.jar" />
-                    </node>
-                  </node>
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-        <node concept="1SiIV0" id="7ITB3PTRfz1" role="3bR37C">
-          <node concept="1BurEX" id="7ITB3PTRfz2" role="1SiIV1">
-            <node concept="398BVA" id="7ITB3PTRfyW" role="1BurEY">
-              <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
-              <node concept="2Ry0Ak" id="7ITB3PTRfyX" role="iGT6I">
-                <property role="2Ry0Am" value="plugins" />
-                <node concept="2Ry0Ak" id="7ITB3PTRfyY" role="2Ry0An">
-                  <property role="2Ry0Am" value="mps-junit5" />
-                  <node concept="2Ry0Ak" id="7ITB3PTRfyZ" role="2Ry0An">
-                    <property role="2Ry0Am" value="lib" />
-                    <node concept="2Ry0Ak" id="7ITB3PTRfz0" role="2Ry0An">
-                      <property role="2Ry0Am" value="junit-jupiter-params-5.13.4.jar" />
-                    </node>
-                  </node>
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="1SiIV0" id="2oICgeCspPZ" role="3bR37C">
           <node concept="3bR9La" id="2oICgeCspQ0" role="1SiIV1">
             <property role="3bR36h" value="true" />
             <ref role="3bR37D" node="1xb0AuwN7WS" resolve="JUnit" />
+          </node>
+        </node>
+        <node concept="1SiIV0" id="mptdWfRrn_" role="3bR37C">
+          <node concept="1BurEX" id="mptdWfRrnA" role="1SiIV1">
+            <node concept="398BVA" id="mptdWfRrnw" role="1BurEY">
+              <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="mptdWfRrnx" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="mptdWfRrny" role="2Ry0An">
+                  <property role="2Ry0Am" value="mps-junit5" />
+                  <node concept="2Ry0Ak" id="mptdWfRrnz" role="2Ry0An">
+                    <property role="2Ry0Am" value="lib" />
+                    <node concept="2Ry0Ak" id="mptdWfRrn$" role="2Ry0An">
+                      <property role="2Ry0Am" value="junit-platform-reporting-6.1.3.jar" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="mptdWfRrnG" role="3bR37C">
+          <node concept="1BurEX" id="mptdWfRrnH" role="1SiIV1">
+            <node concept="398BVA" id="mptdWfRrnB" role="1BurEY">
+              <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
+              <node concept="2Ry0Ak" id="mptdWfRrnC" role="iGT6I">
+                <property role="2Ry0Am" value="plugins" />
+                <node concept="2Ry0Ak" id="mptdWfRrnD" role="2Ry0An">
+                  <property role="2Ry0Am" value="mps-junit5" />
+                  <node concept="2Ry0Ak" id="mptdWfRrnE" role="2Ry0An">
+                    <property role="2Ry0Am" value="lib" />
+                    <node concept="2Ry0Ak" id="mptdWfRrnF" role="2Ry0An">
+                      <property role="2Ry0Am" value="junit-jupiter-params-6.1.3.jar" />
+                    </node>
+                  </node>
+                </node>
+              </node>
+            </node>
           </node>
         </node>
       </node>
@@ -64896,7 +64896,7 @@
         </node>
       </node>
       <node concept="m$_yC" id="7dOUAS9GbHW" role="m$_yJ">
-        <ref role="m$_y1" node="7dOUAS9Gb_h" />
+        <ref role="m$_y1" node="7dOUAS9Gb_h" resolve="com.intellij.platform.vcs" />
       </node>
     </node>
     <node concept="m$_wf" id="7dOUAS9Gb_h" role="3989C9">
@@ -65301,7 +65301,7 @@
         <ref role="m$_y1" node="I6XuqGYf8K" resolve="Git4Idea" />
       </node>
       <node concept="m$_yC" id="7dOUAS9GbFp" role="m$_yJ">
-        <ref role="m$_y1" node="7dOUAS9Gb_h" />
+        <ref role="m$_y1" node="7dOUAS9Gb_h" resolve="com.intellij.platform.vcs" />
       </node>
       <node concept="3_J27D" id="4wxeloVufXs" role="m$_yQ">
         <node concept="3Mxwew" id="4wxeloVufXt" role="3MwsjC">
@@ -65388,7 +65388,7 @@
         </node>
       </node>
       <node concept="m$_wl" id="7dOUAS9Gb_o" role="39821P">
-        <ref role="m_rDy" node="7dOUAS9Gb_h" />
+        <ref role="m_rDy" node="7dOUAS9Gb_h" resolve="com.intellij.platform.vcs" />
         <node concept="pUk6x" id="7dOUAS9Gb_p" role="pUk7w" />
         <node concept="2HvfSZ" id="7dOUAS9Gb_q" role="39821P">
           <node concept="55IIr" id="7dOUAS9Gb_r" role="2HvfZ0">
