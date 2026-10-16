@@ -21,7 +21,7 @@
   <property name="mpsBootstrapCore.version.eap" value="${import.mps.mpsBootstrapCore.version.eap}" />
   <property name="mpsBootstrapCore.version" value="${import.mps.mpsBootstrapCore.version}" />
   
-  <target name="assemble" depends="prepareJbrArchives, fetchDependencies">
+  <target name="assemble" depends="fetchDependencies">
     <mkdir dir="${build.layout}" />
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip" />
     <mkdir dir="${build.tmp}/default/_dl__lbrace_build.number_rbrace_.zip/MPS ${mpsBootstrapCore.version}" />
@@ -683,13 +683,5 @@
   <target name="publishTCArtifacts">
     <echo message="##teamcity[publishArtifacts '${build.layout}/${build.number}.zip']" />
     <echo message="##teamcity[publishArtifacts '${build.layout}/${build.number}-linux.tar.gz']" />
-  </target>
-  
-  <target name="prepareJbrArchives">
-    <gunzip src="${artifacts.resources}/openJDK/jbr-linux-x64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-linux-x64.tar" />
-    <gunzip src="${artifacts.resources}/openJDK/jbr-windows-x64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-windows-x64.tar" />
-    <gunzip src="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar" />
-    <gunzip src="${artifacts.resources}/openJDK/jbr-osx-x64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-osx-x64.tar" />
-    <gunzip src="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar.gz" dest="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar" />
   </target>
 </project>

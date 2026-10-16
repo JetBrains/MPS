@@ -32,7 +32,15 @@
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="buildDependents"/>
   </target>
 
-  <target name="assemble">
+  <target name="prepareJbrArchives">
+    <gunzip src="${resources}/openJDK/jbr-linux-x64.tar.gz" dest="${resources}/openJDK/jbr-linux-x64.tar"/>
+    <gunzip src="${resources}/openJDK/jbr-windows-x64.tar.gz" dest="${resources}/openJDK/jbr-windows-x64.tar"/>
+    <gunzip src="${resources}/openJDK/jbr-linux-aarch64.tar.gz" dest="${resources}/openJDK/jbr-linux-aarch64.tar"/>
+    <gunzip src="${resources}/openJDK/jbr-osx-x64.tar.gz" dest="${resources}/openJDK/jbr-osx-x64.tar"/>
+    <gunzip src="${resources}/openJDK/jbr-osx-aarch64.tar.gz" dest="${resources}/openJDK/jbr-osx-aarch64.tar"/>
+  </target>
+
+  <target name="assemble" depends="prepareJbrArchives">
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="publishTCArtifacts"/>
     <ant antfile="mpsMaven.xml" inheritAll="true" useNativeBasedir="true" target="assemble"/>

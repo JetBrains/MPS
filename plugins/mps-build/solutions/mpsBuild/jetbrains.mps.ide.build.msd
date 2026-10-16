@@ -8,9 +8,6 @@
   <facets>
     <facet type="plaintext" folders="true" />
   </facets>
-  <dependencies>
-    <dependency reexport="false">cca2431b-e74f-4066-9344-e40022d0908a(jetbrains.mps.build.workflow.preset)</dependency>
-  </dependencies>
   <languageVersions>
     <language slang="l:798100da-4f0a-421a-b991-71f8c50ce5d2:jetbrains.mps.build" version="0" />
     <language slang="l:0cf935df-4699-4e9c-a132-fa109541cba3:jetbrains.mps.build.mps" version="8" />
@@ -23,7 +20,6 @@
     <language slang="l:9ded098b-ad6a-4657-bfd9-48636cfe8bc3:jetbrains.mps.lang.traceable" version="0" />
   </languageVersions>
   <dependencyVersions>
-    <module reference="cca2431b-e74f-4066-9344-e40022d0908a(jetbrains.mps.build.workflow.preset)" version="0" />
     <module reference="422c2909-59d6-41a9-b318-40e6256b250f(jetbrains.mps.ide.build)" version="0" />
   </dependencyVersions>
 </solution>

@@ -8,14 +8,9 @@
     <use id="698a8d22-a104-47a0-ba8d-10e3ec237f13" name="jetbrains.mps.build.workflow" version="-1" />
     <use id="479c7a8c-02f9-43b5-9139-d910cb22f298" name="jetbrains.mps.core.xml" version="-1" />
   </languages>
-  <imports>
-    <import index="arit" ref="r:0d66e868-9778-4307-b6f9-4795c00f662f(jetbrains.mps.build.workflow.preset.general)" />
-  </imports>
+  <imports />
   <registry>
     <language id="698a8d22-a104-47a0-ba8d-10e3ec237f13" name="jetbrains.mps.build.workflow">
-      <concept id="2769948622284574294" name="jetbrains.mps.build.workflow.structure.BwfTaskDependency" flags="ng" index="2VaxJe">
-        <reference id="2769948622284574295" name="target" index="2VaxJf" />
-      </concept>
       <concept id="2769948622284546675" name="jetbrains.mps.build.workflow.structure.BwfTask" flags="ng" index="2VaFvF">
         <child id="2769948622284546679" name="subTasks" index="2VaFvJ" />
       </concept>
@@ -24,10 +19,6 @@
       </concept>
       <concept id="2769948622284768359" name="jetbrains.mps.build.workflow.structure.BwfAntStatement" flags="ng" index="2Vbh7Z">
         <child id="2769948622284768360" name="element" index="2Vbh7K" />
-      </concept>
-      <concept id="3961775458390032824" name="jetbrains.mps.build.workflow.structure.BwfTaskPart" flags="ng" index="3bMsLL">
-        <reference id="3961775458390032825" name="task" index="3bMsLK" />
-        <child id="3961775458390352322" name="additionalDependencies" index="3bNaKb" />
       </concept>
     </language>
     <language id="479c7a8c-02f9-43b5-9139-d910cb22f298" name="jetbrains.mps.core.xml">
@@ -270,9 +261,6 @@
     <language id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core">
       <concept id="1133920641626" name="jetbrains.mps.lang.core.structure.BaseConcept" flags="ng" index="2VYdi">
         <property id="1193676396447" name="virtualPackage" index="3GE5qa" />
-      </concept>
-      <concept id="1196978630214" name="jetbrains.mps.lang.core.structure.IResolveInfo" flags="ngI" index="2Lv6Xg">
-        <property id="1196978656277" name="resolveInfo" index="2Lvdk3" />
       </concept>
       <concept id="1169194658468" name="jetbrains.mps.lang.core.structure.INamedConcept" flags="ngI" index="TrEIO">
         <property id="1169194664001" name="name" index="TrG5h" />
@@ -42828,104 +42816,6 @@
               </node>
             </node>
           </node>
-        </node>
-      </node>
-      <node concept="2VaFvF" id="6_YjkAIrkVA" role="1y0Vin">
-        <property role="TrG5h" value="prepareJbrArchives" />
-        <node concept="2VaFvH" id="6_YjkAIrkVB" role="2VaFvJ">
-          <property role="TrG5h" value="gunzipJbrArchives" />
-          <property role="2Lvdk3" value="gunzipJbrArchives" />
-          <node concept="2Vbh7Z" id="6_YjkAIrkVC" role="2VaTZU">
-            <node concept="2pNNFK" id="6_YjkAIrkVD" role="2Vbh7K">
-              <property role="2pNNFO" value="gunzip" />
-              <node concept="2pNUuL" id="6_YjkAIrkVE" role="2pNNFR">
-                <property role="2pNUuO" value="src" />
-                <node concept="2pMdtt" id="6_YjkAIrkVF" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-linux-x64.tar.gz" />
-                </node>
-              </node>
-              <node concept="2pNUuL" id="6_YjkAIrkVG" role="2pNNFR">
-                <property role="2pNUuO" value="dest" />
-                <node concept="2pMdtt" id="6_YjkAIrkVH" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-linux-x64.tar" />
-                </node>
-              </node>
-            </node>
-          </node>
-          <node concept="2Vbh7Z" id="6_YjkAIrkVI" role="2VaTZU">
-            <node concept="2pNNFK" id="6_YjkAIrkVJ" role="2Vbh7K">
-              <property role="2pNNFO" value="gunzip" />
-              <node concept="2pNUuL" id="6_YjkAIrkVK" role="2pNNFR">
-                <property role="2pNUuO" value="src" />
-                <node concept="2pMdtt" id="6_YjkAIrkVL" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-windows-x64.tar.gz" />
-                </node>
-              </node>
-              <node concept="2pNUuL" id="6_YjkAIrkVM" role="2pNNFR">
-                <property role="2pNUuO" value="dest" />
-                <node concept="2pMdtt" id="6_YjkAIrkVN" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-windows-x64.tar" />
-                </node>
-              </node>
-            </node>
-          </node>
-          <node concept="2Vbh7Z" id="6_YjkAIrkVO" role="2VaTZU">
-            <node concept="2pNNFK" id="6_YjkAIrkVP" role="2Vbh7K">
-              <property role="2pNNFO" value="gunzip" />
-              <node concept="2pNUuL" id="6_YjkAIrkVQ" role="2pNNFR">
-                <property role="2pNUuO" value="src" />
-                <node concept="2pMdtt" id="6_YjkAIrkVR" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar.gz" />
-                </node>
-              </node>
-              <node concept="2pNUuL" id="6_YjkAIrkVS" role="2pNNFR">
-                <property role="2pNUuO" value="dest" />
-                <node concept="2pMdtt" id="6_YjkAIrkVT" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-linux-aarch64.tar" />
-                </node>
-              </node>
-            </node>
-          </node>
-          <node concept="2Vbh7Z" id="6_YjkAIrkVU" role="2VaTZU">
-            <node concept="2pNNFK" id="6_YjkAIrkVV" role="2Vbh7K">
-              <property role="2pNNFO" value="gunzip" />
-              <node concept="2pNUuL" id="6_YjkAIrkVW" role="2pNNFR">
-                <property role="2pNUuO" value="src" />
-                <node concept="2pMdtt" id="6_YjkAIrkVX" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-osx-x64.tar.gz" />
-                </node>
-              </node>
-              <node concept="2pNUuL" id="6_YjkAIrkVY" role="2pNNFR">
-                <property role="2pNUuO" value="dest" />
-                <node concept="2pMdtt" id="6_YjkAIrkVZ" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-osx-x64.tar" />
-                </node>
-              </node>
-            </node>
-          </node>
-          <node concept="2Vbh7Z" id="6_YjkAIrkW0" role="2VaTZU">
-            <node concept="2pNNFK" id="6_YjkAIrkW1" role="2Vbh7K">
-              <property role="2pNNFO" value="gunzip" />
-              <node concept="2pNUuL" id="6_YjkAIrkW2" role="2pNNFR">
-                <property role="2pNUuO" value="src" />
-                <node concept="2pMdtt" id="6_YjkAIrkW3" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar.gz" />
-                </node>
-              </node>
-              <node concept="2pNUuL" id="6_YjkAIrkW4" role="2pNNFR">
-                <property role="2pNUuO" value="dest" />
-                <node concept="2pMdtt" id="6_YjkAIrkW5" role="2pMdts">
-                  <property role="2pMdty" value="${artifacts.resources}/openJDK/jbr-osx-aarch64.tar" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
-      </node>
-      <node concept="3bMsLL" id="6_YjkAIrlyv" role="1y0Vin">
-        <ref role="3bMsLK" to="arit:450ejGzgRPq" resolve="assemble" />
-        <node concept="2VaxJe" id="6_YjkAIrlyw" role="3bNaKb">
-          <ref role="2VaxJf" node="6_YjkAIrkVA" resolve="prepareJbrArchives" />
         </node>
       </node>
     </node>
