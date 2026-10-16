@@ -118,7 +118,7 @@
       <concept id="6057319140845467763" name="jetbrains.mps.build.structure.BuildSource_JavaLibrary" flags="ng" index="PiPfp">
         <child id="6057319140845478673" name="elements" index="PiKyV" />
       </concept>
-      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="nn" index="2Ry0Ak">
+      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="ng" index="2Ry0Ak">
         <property id="8618885170173601779" name="head" index="2Ry0Am" />
         <child id="8618885170173601778" name="tail" index="2Ry0An" />
       </concept>
@@ -491,7 +491,7 @@
         <child id="322010710375956261" name="path" index="3LF7KH" />
       </concept>
       <concept id="3335207478148059730" name="jetbrains.mps.build.mps.structure.BuildMpsLayout_ModuleJarContent" flags="ng" index="3PtdJl" />
-      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="nn" index="1SiIV0">
+      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="ng" index="1SiIV0">
         <child id="7259033139236285167" name="dependency" index="1SiIV1" />
       </concept>
       <concept id="4157435862321765764" name="jetbrains.mps.build.mps.structure.BuildMps_BrandingVersion" flags="ng" index="3ZAF1B">
@@ -40057,6 +40057,14 @@
     <property role="2DA0ip" value="../../../../" />
     <node concept="398rNT" id="AwiPu7jHxB" role="1l3spd">
       <property role="TrG5h" value="resources" />
+      <node concept="55IIr" id="6_YjkAIrlFo" role="398pKh">
+        <node concept="2Ry0Ak" id="6_YjkAIrlFp" role="iGT6I">
+          <property role="2Ry0Am" value="build" />
+          <node concept="2Ry0Ak" id="6_YjkAIrlFq" role="2Ry0An">
+            <property role="2Ry0Am" value="resources" />
+          </node>
+        </node>
+      </node>
     </node>
     <node concept="55IIr" id="3IKDaVZnIjY" role="auvoZ">
       <node concept="2Ry0Ak" id="3IKDaVZnXlj" role="iGT6I">
@@ -41144,7 +41152,7 @@
               </node>
             </node>
             <node concept="3ygNvl" id="6WWoVOy5TV9" role="39821P">
-              <ref role="3ygNvj" node="3v25z8AbNpM" resolve="unix.x64.tar.gz" />
+              <ref role="3ygNvj" node="3v25z8AbNpM" resolve="unix.x64.tar" />
             </node>
           </node>
           <node concept="28jJK3" id="1sQhFOgglTc" role="39821P">
@@ -41239,19 +41247,19 @@
           </node>
           <node concept="398223" id="D3r74YkcRw" role="39821P">
             <node concept="3_I8Xc" id="D3r74YJV6e" role="39821P">
-              <ref role="3_I8Xa" node="3v25z8AbNpG" resolve="mac.x64.tar.gz" />
+              <ref role="3_I8Xa" node="3v25z8AbNpG" resolve="mac.x64.tar" />
             </node>
             <node concept="3_I8Xc" id="D3r74YJV6h" role="39821P">
-              <ref role="3_I8Xa" node="3v25z8AbNpJ" resolve="mac.aarch64.tar.gz" />
+              <ref role="3_I8Xa" node="3v25z8AbNpJ" resolve="mac.aarch64.tar" />
             </node>
             <node concept="3_I8Xc" id="D3r74YJV6i" role="39821P">
-              <ref role="3_I8Xa" node="3v25z8AbNpS" resolve="win.x64.tar.gz" />
+              <ref role="3_I8Xa" node="3v25z8AbNpS" resolve="win.x64.tar" />
             </node>
             <node concept="3_I8Xc" id="D3r74YJV6j" role="39821P">
-              <ref role="3_I8Xa" node="3v25z8AbNpM" resolve="unix.x64.tar.gz" />
+              <ref role="3_I8Xa" node="3v25z8AbNpM" resolve="unix.x64.tar" />
             </node>
             <node concept="3_I8Xc" id="jNaJppejwt" role="39821P">
-              <ref role="3_I8Xa" node="3v25z8AbNpP" resolve="unix.aarch64.tar.gz" />
+              <ref role="3_I8Xa" node="3v25z8AbNpP" resolve="unix.aarch64.tar" />
             </node>
             <node concept="3_J27D" id="D3r74YkcRx" role="Nbhlr">
               <node concept="3Mxwew" id="D3r74YkcRy" role="3MwsjC">
@@ -41277,7 +41285,7 @@
             <ref role="3ygNvj" node="3IKDaVZmzS8" />
           </node>
           <node concept="15jnD9" id="D3r752eOks" role="39821P">
-            <ref role="15jnDb" node="D3r752eOkm" resolve="jbr-linux-x64.tar.gz" />
+            <ref role="15jnDb" node="6_YjkAJ1zfb" resolve="jbr-linux-x64.tar" />
           </node>
           <node concept="398223" id="3wRozBgeTul" role="39821P">
             <node concept="398223" id="1gByoHFa9N5" role="39821P">
@@ -41624,7 +41632,7 @@
           </node>
           <node concept="398223" id="7cUtD_p0xH$" role="39821P">
             <node concept="15jnD9" id="D3r750uT0B" role="39821P">
-              <ref role="15jnDb" node="3v25z8AbNpM" resolve="unix.x64.tar.gz" />
+              <ref role="15jnDb" node="3v25z8AbNpM" resolve="unix.x64.tar" />
             </node>
             <node concept="3_J27D" id="7cUtD_p0xH_" role="Nbhlr">
               <node concept="3Mxwew" id="7cUtD_p0xHA" role="3MwsjC">
@@ -41739,7 +41747,7 @@
             <ref role="3ygNvj" node="3IKDaVZmzS8" />
           </node>
           <node concept="15jnD9" id="jNaJppejtl" role="39821P">
-            <ref role="15jnDb" node="jNaJppejvS" resolve="jbr-linux-aarch64.tar.gz" />
+            <ref role="15jnDb" node="6_YjkAJ1zo8" resolve="jbr-linux-aarch64.tar" />
           </node>
           <node concept="398223" id="jNaJppejtm" role="39821P">
             <node concept="398223" id="jNaJppejtn" role="39821P">
@@ -42086,7 +42094,7 @@
           </node>
           <node concept="398223" id="jNaJppejvi" role="39821P">
             <node concept="15jnD9" id="jNaJppejvj" role="39821P">
-              <ref role="15jnDb" node="3v25z8AbNpP" resolve="unix.aarch64.tar.gz" />
+              <ref role="15jnDb" node="3v25z8AbNpP" resolve="unix.aarch64.tar" />
             </node>
             <node concept="3_J27D" id="jNaJppejvk" role="Nbhlr">
               <node concept="3Mxwew" id="jNaJppejvl" role="3MwsjC">
@@ -42556,7 +42564,7 @@
               </node>
             </node>
             <node concept="3ygNvl" id="AwiPu7jIu4" role="39821P">
-              <ref role="3ygNvj" node="31DSnetlghA" resolve="jbr" />
+              <ref role="3ygNvj" node="6_YjkAJ1zE3" resolve="jbr" />
             </node>
           </node>
           <node concept="3_J27D" id="AwiPu7jHU6" role="Nbhlr">
@@ -42569,7 +42577,7 @@
           </node>
           <node concept="398223" id="7cUtD_p06WO" role="39821P">
             <node concept="3ygNvl" id="D3r750a0bA" role="39821P">
-              <ref role="3ygNvj" node="3v25z8AbNpS" resolve="win.x64.tar.gz" />
+              <ref role="3ygNvj" node="3v25z8AbNpS" resolve="win.x64.tar" />
             </node>
             <node concept="3_J27D" id="7cUtD_p06WP" role="Nbhlr">
               <node concept="3Mxwew" id="7cUtD_p06WQ" role="3MwsjC">
@@ -42701,7 +42709,7 @@
               </node>
             </node>
             <node concept="15jnD9" id="2Tk_e4rwj70" role="39821P">
-              <ref role="15jnDb" node="31DSnetlgg6" resolve="jbr-osx-x64.tar.gz" />
+              <ref role="15jnDb" node="6_YjkAJ1z6e" resolve="jbr-osx-x64.tar" />
             </node>
             <node concept="398223" id="6xv$4WsFwyK" role="39821P">
               <node concept="3_J27D" id="6xv$4WsFwyL" role="Nbhlr">
@@ -43065,7 +43073,7 @@
                 </node>
               </node>
               <node concept="15jnD9" id="19525Nxp4Ja" role="39821P">
-                <ref role="15jnDb" node="3v25z8AbNpG" resolve="mac.x64.tar.gz" />
+                <ref role="15jnDb" node="3v25z8AbNpG" resolve="mac.x64.tar" />
               </node>
             </node>
             <node concept="28jJK3" id="2lgcjg39YuU" role="39821P">
@@ -43212,7 +43220,7 @@
               </node>
             </node>
             <node concept="15jnD9" id="2Tk_e4rwj71" role="39821P">
-              <ref role="15jnDb" node="31DSnetlgjv" resolve="jbr-osx-aarch64.tar.gz" />
+              <ref role="15jnDb" node="6_YjkAJ1zx5" resolve="jbr-osx-aarch64.tar" />
             </node>
             <node concept="398223" id="1dONgcPskHB" role="39821P">
               <node concept="3_J27D" id="1dONgcPskHC" role="Nbhlr">
@@ -43576,7 +43584,7 @@
                 </node>
               </node>
               <node concept="15jnD9" id="19525NwO2J9" role="39821P">
-                <ref role="15jnDb" node="3v25z8AbNpJ" resolve="mac.aarch64.tar.gz" />
+                <ref role="15jnDb" node="3v25z8AbNpJ" resolve="mac.aarch64.tar" />
               </node>
             </node>
             <node concept="28jJK3" id="1dONgcPskIM" role="39821P">
@@ -48322,6 +48330,11 @@
             <node concept="3qWCbU" id="73GUf$umosr" role="3LXTna">
               <property role="3qWCbO" value="**/*.mps, **/*.mpsr, **/.model" />
             </node>
+          </node>
+        </node>
+        <node concept="1SiIV0" id="6_YjkAIruOf" role="3bR37C">
+          <node concept="3bR9La" id="6_YjkAIruOg" role="1SiIV1">
+            <ref role="3bR37D" node="1WGJoq9Wd0d" resolve="jetbrains.mps.build.workflow.preset" />
           </node>
         </node>
       </node>
@@ -62758,10 +62771,10 @@
       <node concept="1E1JtA" id="1ULLXZL0gZG" role="2G$12L">
         <property role="TrG5h" value="org.junit.junit5" />
         <property role="3LESm3" value="63b449db-0918-4a4a-a891-2c430ab133e4" />
+        <property role="BnDLt" value="true" />
         <property role="aoJFB" value="77WRb6jODAF/none" />
         <property role="ZpmtF" value="true" />
         <property role="3vZFNd" value="3kCd1ud3JDD/compile_ext" />
-        <property role="BnDLt" value="true" />
         <node concept="398BVA" id="1ULLXZL0gZH" role="3LF7KH">
           <ref role="398BVh" node="ymnOULASEN" resolve="mps_home" />
           <node concept="2Ry0Ak" id="1ULLXZL0gZI" role="iGT6I">
@@ -64634,6 +64647,22 @@
           </node>
         </node>
       </node>
+      <node concept="1tmT9g" id="6_YjkAJ1z6e" role="39821P">
+        <property role="TrG5h" value="jbr-osx-x64.tar" />
+        <node concept="3_J27D" id="6_YjkAJ1z6f" role="Nbhlr">
+          <node concept="3Mxwew" id="6_YjkAJ1z6g" role="3MwsjC">
+            <property role="3MwjfP" value="jbr-osx-x64.tar" />
+            <property role="TrG5h" value="jbr-osx-x64.tar" />
+          </node>
+        </node>
+        <node concept="398223" id="6_YjkAJ1z6h" role="39821P">
+          <node concept="3_J27D" id="6_YjkAJ1z6i" role="Nbhlr">
+            <node concept="3Mxwew" id="6_YjkAJ1z6j" role="3MwsjC">
+              <property role="3MwjfP" value="jbr" />
+            </node>
+          </node>
+        </node>
+      </node>
       <node concept="1tmT9g" id="D3r752eOkm" role="39821P">
         <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="jbr-linux-x64.tar.gz" />
@@ -64646,6 +64675,22 @@
         <node concept="398223" id="D3r752eOkp" role="39821P">
           <node concept="3_J27D" id="D3r752eOkq" role="Nbhlr">
             <node concept="3Mxwew" id="D3r752eOkr" role="3MwsjC">
+              <property role="3MwjfP" value="jbr" />
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="1tmT9g" id="6_YjkAJ1zfb" role="39821P">
+        <property role="TrG5h" value="jbr-linux-x64.tar" />
+        <node concept="3_J27D" id="6_YjkAJ1zfc" role="Nbhlr">
+          <node concept="3Mxwew" id="6_YjkAJ1zfd" role="3MwsjC">
+            <property role="3MwjfP" value="jbr-linux-x64.tar" />
+            <property role="TrG5h" value="jbr-linux-x64.tar" />
+          </node>
+        </node>
+        <node concept="398223" id="6_YjkAJ1zfe" role="39821P">
+          <node concept="3_J27D" id="6_YjkAJ1zff" role="Nbhlr">
+            <node concept="3Mxwew" id="6_YjkAJ1zfg" role="3MwsjC">
               <property role="3MwjfP" value="jbr" />
             </node>
           </node>
@@ -64668,6 +64713,22 @@
           </node>
         </node>
       </node>
+      <node concept="1tmT9g" id="6_YjkAJ1zo8" role="39821P">
+        <property role="TrG5h" value="jbr-linux-aarch64.tar" />
+        <node concept="3_J27D" id="6_YjkAJ1zo9" role="Nbhlr">
+          <node concept="3Mxwew" id="6_YjkAJ1zoa" role="3MwsjC">
+            <property role="3MwjfP" value="jbr-linux-aarch64.tar" />
+            <property role="TrG5h" value="jbr-linux-aarch64.tar" />
+          </node>
+        </node>
+        <node concept="398223" id="6_YjkAJ1zob" role="39821P">
+          <node concept="3_J27D" id="6_YjkAJ1zoc" role="Nbhlr">
+            <node concept="3Mxwew" id="6_YjkAJ1zod" role="3MwsjC">
+              <property role="3MwjfP" value="jbr" />
+            </node>
+          </node>
+        </node>
+      </node>
       <node concept="1tmT9g" id="31DSnetlgjv" role="39821P">
         <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <node concept="3_J27D" id="31DSnetlgjw" role="Nbhlr">
@@ -64678,6 +64739,22 @@
         <node concept="398223" id="31DSnetlgjy" role="39821P">
           <node concept="3_J27D" id="31DSnetlgjz" role="Nbhlr">
             <node concept="3Mxwew" id="31DSnetlgj$" role="3MwsjC">
+              <property role="3MwjfP" value="jbr" />
+            </node>
+          </node>
+        </node>
+      </node>
+      <node concept="1tmT9g" id="6_YjkAJ1zx5" role="39821P">
+        <property role="TrG5h" value="jbr-osx-aarch64.tar" />
+        <node concept="3_J27D" id="6_YjkAJ1zx6" role="Nbhlr">
+          <node concept="3Mxwew" id="6_YjkAJ1zx7" role="3MwsjC">
+            <property role="3MwjfP" value="jbr-osx-aarch64.tar" />
+            <property role="TrG5h" value="jbr-osx-aarch64.tar" />
+          </node>
+        </node>
+        <node concept="398223" id="6_YjkAJ1zx8" role="39821P">
+          <node concept="3_J27D" id="6_YjkAJ1zx9" role="Nbhlr">
+            <node concept="3Mxwew" id="6_YjkAJ1zxa" role="3MwsjC">
               <property role="3MwjfP" value="jbr" />
             </node>
           </node>
@@ -64695,6 +64772,22 @@
         <node concept="3_J27D" id="31DSnetlghD" role="Nbhlr">
           <node concept="3Mxwew" id="31DSnetlghE" role="3MwsjC">
             <property role="3MwjfP" value="jbr-windows-x64.tar.gz" />
+          </node>
+        </node>
+      </node>
+      <node concept="1tmT9g" id="6_YjkAJ1zE2" role="39821P">
+        <property role="TrG5h" value="jbr-windows-x64.tar" />
+        <node concept="398223" id="6_YjkAJ1zE3" role="39821P">
+          <node concept="3_J27D" id="6_YjkAJ1zE4" role="Nbhlr">
+            <node concept="3Mxwew" id="6_YjkAJ1zE5" role="3MwsjC">
+              <property role="3MwjfP" value="jbr" />
+            </node>
+          </node>
+        </node>
+        <node concept="3_J27D" id="6_YjkAJ1zE6" role="Nbhlr">
+          <node concept="3Mxwew" id="6_YjkAJ1zE7" role="3MwsjC">
+            <property role="3MwjfP" value="jbr-windows-x64.tar" />
+            <property role="TrG5h" value="jbr-windows-x64.tar" />
           </node>
         </node>
       </node>
@@ -74580,61 +74673,55 @@
         </node>
       </node>
       <node concept="1tmT9g" id="3v25z8AbNpG" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="mac.x64.tar.gz" />
         <node concept="3_J27D" id="3v25z8AbNpH" role="Nbhlr">
           <node concept="3Mxwew" id="3v25z8AbNpI" role="3MwsjC">
-            <property role="3MwjfP" value="mac.x64.tar.gz" />
+            <property role="3MwjfP" value="mac.x64.tar" />
             <property role="TrG5h" value="mac.x64.tar.gz" />
           </node>
         </node>
       </node>
       <node concept="1tmT9g" id="3v25z8AbNpJ" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="mac.aarch64.tar.gz" />
         <node concept="3_J27D" id="3v25z8AbNpK" role="Nbhlr">
           <node concept="3Mxwew" id="3v25z8AbNpL" role="3MwsjC">
-            <property role="3MwjfP" value="mac.aarch64.tar.gz" />
+            <property role="3MwjfP" value="mac.aarch64.tar" />
             <property role="TrG5h" value="mac.aarch64.tar.gz" />
           </node>
         </node>
       </node>
       <node concept="1tmT9g" id="3v25z8AbNpM" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="unix.x64.tar.gz" />
         <node concept="3_J27D" id="3v25z8AbNpN" role="Nbhlr">
           <node concept="3Mxwew" id="3v25z8AbNpO" role="3MwsjC">
-            <property role="3MwjfP" value="unix.x64.tar.gz" />
+            <property role="3MwjfP" value="unix.x64.tar" />
             <property role="TrG5h" value="unix.x64.tar.gz" />
           </node>
         </node>
       </node>
       <node concept="1tmT9g" id="3v25z8AbNpP" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="unix.aarch64.tar.gz" />
         <node concept="3_J27D" id="3v25z8AbNpQ" role="Nbhlr">
           <node concept="3Mxwew" id="3v25z8AbNpR" role="3MwsjC">
-            <property role="3MwjfP" value="unix.aarch64.tar.gz" />
+            <property role="3MwjfP" value="unix.aarch64.tar" />
             <property role="TrG5h" value="unix.aarch64.tar.gz" />
           </node>
         </node>
       </node>
       <node concept="1tmT9g" id="3v25z8AbNpS" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="win.x64.tar.gz" />
         <node concept="3_J27D" id="3v25z8AbNpT" role="Nbhlr">
           <node concept="3Mxwew" id="3v25z8AbNpU" role="3MwsjC">
-            <property role="3MwjfP" value="win.x64.tar.gz" />
+            <property role="3MwjfP" value="win.x64.tar" />
             <property role="TrG5h" value="win.x64.tar.gz" />
           </node>
         </node>
       </node>
       <node concept="1tmT9g" id="3v25z8AbNpV" role="39821P">
-        <property role="AB_bT" value="1HQQX4XU8$A/gzip" />
         <property role="TrG5h" value="win.aarch64.tar.gz" />
         <node concept="3_J27D" id="3v25z8AbNpW" role="Nbhlr">
           <node concept="3Mxwew" id="3v25z8AbNpX" role="3MwsjC">
-            <property role="3MwjfP" value="win.aarch64.tar.gz" />
+            <property role="3MwjfP" value="win.aarch64.tar" />
             <property role="TrG5h" value="win.aarch64.tar.gz" />
           </node>
         </node>

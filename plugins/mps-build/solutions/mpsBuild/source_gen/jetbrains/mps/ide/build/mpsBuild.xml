@@ -1300,7 +1300,9 @@
     <mkdir dir="${build.tmp}/default/jetbrains.mps.ide.build.jar/META-INF" />
     <echoxml file="${build.tmp}/default/jetbrains.mps.ide.build.jar/META-INF/module.xml">
       <module namespace="jetbrains.mps.ide.build" type="solution" uuid="422c2909-59d6-41a9-b318-40e6256b250f">
-        <dependencies />
+        <dependencies>
+          <module ref="cca2431b-e74f-4066-9344-e40022d0908a(jetbrains.mps.build.workflow.preset)" kind="cl" />
+        </dependencies>
         <uses>
           <language id="l:798100da-4f0a-421a-b991-71f8c50ce5d2:jetbrains.mps.build" />
           <language id="l:0cf935df-4699-4e9c-a132-fa109541cba3:jetbrains.mps.build.mps" />
