@@ -12,10 +12,6 @@
     <ant antfile="getResources.xml" inheritall="true" usenativebasedir="true" target="getOpenjdkWin" />
   </target>
 
-  <target name="getOpenjdkMac">
-    <ant antfile="getResources.xml" inheritall="true" usenativebasedir="true" target="getOpenjdkMac" />
-  </target>
-
   <target name="getOpenjdkMacM1">
     <ant antfile="getResources.xml" inheritall="true" usenativebasedir="true" target="getOpenjdkMacM1" />
   </target>
@@ -28,7 +24,7 @@
     <ant antfile="getResources.xml" inheritall="true" usenativebasedir="true" target="getOpenjdkLinuxArm" />
   </target>
 
-  <target name="getResourcesAndBuildAll" depends="getOpenjdkWin,getOpenjdkMac,getOpenjdkMacM1,getOpenjdkLinux,getOpenjdkLinuxArm">
+  <target name="getResourcesAndBuildAll" depends="getOpenjdkWin,getOpenjdkMacM1,getOpenjdkLinux,getOpenjdkLinuxArm">
     <ant antfile="mpsDistribution.xml" inheritAll="true" useNativeBasedir="true" target="buildDependents"/>
   </target>
 
@@ -36,7 +32,6 @@
     <gunzip src="${resources}/openJDK/jbr-linux-x64.tar.gz" dest="${resources}/openJDK/jbr-linux-x64.tar"/>
     <gunzip src="${resources}/openJDK/jbr-windows-x64.tar.gz" dest="${resources}/openJDK/jbr-windows-x64.tar"/>
     <gunzip src="${resources}/openJDK/jbr-linux-aarch64.tar.gz" dest="${resources}/openJDK/jbr-linux-aarch64.tar"/>
-    <gunzip src="${resources}/openJDK/jbr-osx-x64.tar.gz" dest="${resources}/openJDK/jbr-osx-x64.tar"/>
     <gunzip src="${resources}/openJDK/jbr-osx-aarch64.tar.gz" dest="${resources}/openJDK/jbr-osx-aarch64.tar"/>
   </target>
 

@@ -5,7 +5,7 @@
   <property name="get.dir" location="${resources}"/>
   <loadproperties srcfile="version.properties" description="Load versions of dependencies"/>
 
-  <target name="getall" depends="getOpenjdkMac, getOpenjdkWin"/>
+  <target name="getall" depends="getOpenjdkMacM1, getOpenjdkWin"/>
 
   <target name="install-ivy">
     <property name="mps.ivy.home" value="${user.home}" description="Property used to set custom path on TeamCity"/>
@@ -19,11 +19,6 @@
   <target name="getOpenjdkWin" depends="install-ivy" description="--> Retreive openJDK/jbr-windows-x64.tar.gz">
     <ivy:resolve file="ivyOpenjdkWin.xml"/>
     <ivy:retrieve file="ivyOpenjdkWin.xml" pattern="${get.dir}/[artifact].[ext]"/>
-  </target>
-
-  <target name="getOpenjdkMac" depends="install-ivy" description="--> Retreive openJDK/jbr-osx-x64.tar.gz">
-    <ivy:resolve file="ivyOpenjdkMac.xml"/>
-    <ivy:retrieve file="ivyOpenjdkMac.xml" pattern="${get.dir}/[artifact].[ext]"/>
   </target>
 
   <target name="getOpenjdkMacM1" depends="install-ivy" description="--> Retreive openJDK/jbr-osx-aarch64.tar.gz">

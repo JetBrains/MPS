@@ -7,9 +7,7 @@
   <loadproperties srcfile="${build.artifacts}/build.properties"/>
 
   <property name="build.code" value="${mps.build.number}" />
-  <property name="mps-macos.zip" location="${build.artifacts}/${mps.build.number}-macos.zip"/>
   <property name="mps-macos-m1.zip" location="${build.artifacts}/${mps.build.number}-macos-aarch64.zip"/>
-  <property name="jdk.tar.gz" location="${build.artifacts}/jbr-osx-x64.tar.gz"/>
   <property name="jdk-m1.tar.gz" location="${build.artifacts}/jbr-osx-aarch64.tar.gz"/>
 
   <property name="mac.host" value=""/>
@@ -37,18 +35,6 @@
     <exec command="chmod 777 ${build.tmp}/${build.code}-sign.sh ${build.tmp}/${build.code}-dmg.sh ${build.tmp}/${build.code}.py ${build.tmp}/notarize.sh"/>
     <exec command="scp -p ${build.tmp}/${build.code}-sign.sh ${build.tmp}/${build.code}-dmg.sh ${build.tmp}/${build.code}.py ${build.tmp}/entitlements.xml ${build.tmp}/notarize.sh ${mac.user}@${mac.host}:${remote.dir}"/>
 
-    <!-- create -macos.dmg -->
-    <move file="${mps-macos.zip}" tofile="${build.tmp}/${build.code}.zip"/>
-    <exec command="scp -p ${build.tmp}/${build.code}.zip ${mac.user}@${mac.host}:${remote.dir}"/>
-
-    <move file="${jdk.tar.gz}" tofile="${build.tmp}/${build.code}-jdk.tar.gz"/>
-    <exec command="scp -p ${build.tmp}/${build.code}-jdk.tar.gz ${mac.user}@${mac.host}:${remote.dir}"/>
-
-    <exec command="ssh ${mac.user}@${mac.host} 'bash -l ${remote.dir}/${build.code}-sign.sh ${build.code} ${mac.keychain} ${mac.password} ${remote.dir} ${mac.codesign.string}'"/>
-    <exec command="ssh ${mac.user}@${mac.host} 'bash -l ${remote.dir}/${build.code}-dmg.sh ${build.code} ${remote.dir}'"/>
-
-    <exec command="scp -p ${mac.user}@${mac.host}:${remote.dir}/${build.code}.dmg ${build.layout}/${build.code}-macos.dmg" />
-
     <!-- create -macos-aarch64.dmg -->
     <move file="${mps-macos-m1.zip}" tofile="${build.tmp}/${build.code}.zip"/>
     <exec command="scp -p ${build.tmp}/${build.code}.zip ${mac.user}@${mac.host}:${remote.dir}"/>
@@ -70,7 +56,6 @@
       <condition>
         <not>
           <and>
-            <available file="${build.layout}/${build.code}-macos.dmg"/>
             <available file="${build.layout}/${build.code}-macos-aarch64.dmg"/>
           </and>
         </not>

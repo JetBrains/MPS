@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
@@ -23,8 +24,9 @@ public final class PrepareOverlayTar {
   private static final String OVERLAY_PREFIX = "__overlay__/";
   private static final String PLUGINS_PREFIX = "plugins/";
   private static final String[] PLATFORMS = {
-    "mac.x64", "mac.aarch64", "unix.x64", "unix.aarch64", "win.x64", "win.aarch64"
+    "mac.aarch64", "unix.x64", "unix.aarch64", "win.x64"
   };
+  private static final Set<String> EXCLUDED_PLATFORMS = Set.of("mac.x64", "win.aarch64");
 
   public static void main(String[] args) throws IOException {
     if (args.length != 2) {
@@ -42,18 +44,16 @@ public final class PrepareOverlayTar {
     try {
       TreeSet<String> symlinks = new TreeSet<>();
       Map<String, Integer> counts = new LinkedHashMap<>();
-      try (TarOutputStream macX64 = open(temporaryFiles.get("mac.x64"));
-           TarOutputStream macAarch64 = open(temporaryFiles.get("mac.aarch64"));
+      try (TarOutputStream macAarch64 = open(temporaryFiles.get("mac.aarch64"));
            TarOutputStream unixX64 = open(temporaryFiles.get("unix.x64"));
            TarOutputStream unixAarch64 = open(temporaryFiles.get("unix.aarch64"));
            TarOutputStream winX64 = open(temporaryFiles.get("win.x64"));
-           TarOutputStream winAarch64 = open(temporaryFiles.get("win.aarch64"));
            TarInputStream input = new TarInputStream(
              new GZIPInputStream(new BufferedInputStream(Files.newInputStream(source))))) {
         Map<String, TarOutputStream> outputs = Map.of(
-          "mac.x64", macX64, "mac.aarch64", macAarch64,
+          "mac.aarch64", macAarch64,
           "unix.x64", unixX64, "unix.aarch64", unixAarch64,
-          "win.x64", winX64, "win.aarch64", winAarch64
+          "win.x64", winX64
         );
 
         TarEntry entry;
@@ -67,6 +67,9 @@ public final class PrepareOverlayTar {
             continue;
           }
           String platform = sourceName.substring(OVERLAY_PREFIX.length(), separator);
+          if (EXCLUDED_PLATFORMS.contains(platform)) {
+            continue;
+          }
           TarOutputStream output = outputs.get(platform);
           if (output == null) {
             throw new IOException("Unknown overlay platform: " + platform);
