@@ -13,8 +13,10 @@ import com.intellij.mcpserver.reportToolActivity
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.wm.ToolWindowManager
 import jetbrains.mps.findUsages.InstanceLookup
 import jetbrains.mps.findUsages.NodeUsageLookup
+import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations
 import jetbrains.mps.newTypesystem.TypesUtil
 import jetbrains.mps.nodeEditor.cells.EditorCell_Property
@@ -2298,6 +2300,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         private const val MAX_CELL_MESSAGES = 5
         private const val CONSOLE_PLUGIN_ID = "jetbrains.mps.console"
         private const val CONSOLE_TOOL_FQN = "jetbrains.mps.console.plugin.ConsoleTool_Tool"
+        /** Tool window id of `ConsoleTool_Tool` (the id it passes to its `BaseTool` super constructor). */
+        private const val CONSOLE_TOOL_WINDOW_ID = "Console"
         private const val PROJECT_PLUGIN_MANAGER_FQN = "jetbrains.mps.plugins.projectplugins.ProjectPluginManager"
 
         /** Suffix of the per-reference dry-run warning for a plain-name target; [DRY_RUN_REFERENCE_RULE] keys on it. */
@@ -2407,6 +2411,13 @@ abstract class AbstractNodeOps : AbstractOps() {
      *
      * Returns a pre-formatted [ConsoleResolution.Err] envelope when the plugin is disabled, the tool
      * is not registered, or no editable tab exists. Must run on the EDT (reads Swing tab state).
+     *
+     * The Console tool window creates its content (and with it the console tabs and their models)
+     * lazily, on the first content-manager access. That creation takes a write action of its own, so
+     * it fails, permanently for the session, when it runs under a model lock (MPS-40309). Under a lock
+     * this method therefore never triggers it: if the content does not exist yet it returns an
+     * [ConsoleResolution.Err] instead. A caller that holds a lock while resolving must first call
+     * [ensureConsoleContentCreated] outside the lock.
      */
     protected fun resolveConsoleEditableTab(ideaProject: Project): ConsoleResolution {
         val consoleClassLoader = PluginManagerCore.getPlugin(PluginId.getId(CONSOLE_PLUGIN_ID))?.pluginClassLoader
@@ -2432,6 +2443,19 @@ abstract class AbstractNodeOps : AbstractOps() {
                         McpErrorCode.NOT_FOUND
                     )
                 )
+            // A missing tool window falls through: getCurrentEditableTab then creates nothing and yields no tab.
+            val toolWindow = ToolWindowManager.getInstance(ideaProject).getToolWindow(CONSOLE_TOOL_WINDOW_ID)
+            if (toolWindow != null && toolWindow.contentManagerIfCreated == null &&
+                ProjectHelper.fromIdeaProject(ideaProject)?.modelAccess?.canRead() == true
+            ) {
+                return ConsoleResolution.Err(
+                    errJson(
+                        "The MPS Console tool window is not initialized yet and cannot be initialized under a model lock. " +
+                            "Retry the same tool, open the Console tool window, or call mps_mcp_run_console_command(dryRun=true) first.",
+                        McpErrorCode.INTERNAL_ERROR
+                    )
+                )
+            }
             val tab = consoleToolClass.getMethod("getCurrentEditableTab").invoke(tool)
                 ?: return ConsoleResolution.Err(
                     errJson("No editable tab is available in the MPS Console tool window.", McpErrorCode.NOT_FOUND)
@@ -2443,10 +2467,21 @@ abstract class AbstractNodeOps : AbstractOps() {
             ConsoleResolution.Ok(tab, consoleModel)
         } catch (e: ReflectiveOperationException) {
             ConsoleResolution.Err(
-                errJson("Failed to access the MPS Console tool: ${e.message}", McpErrorCode.INTERNAL_ERROR)
+                errJson("Failed to access the MPS Console tool: ${reflectionFailureDetail(e)}", McpErrorCode.INTERNAL_ERROR)
             )
         }
     }
+
+    /**
+     * Creates the Console tool window's lazy content, if it does not exist yet, so a later
+     * [resolveConsoleEditableTab] under a model lock finds the editable tab. Dispatches to the EDT
+     * itself and must be called outside any model lock, i.e. before `executeShortCommandOnEdt` /
+     * `executeShortReadOnEdt`. Returns the resolution's error envelope, or null when the Console has
+     * an editable tab. Return the error directly: it carries the creation failure's cause, which the
+     * later resolve would only see as a missing tab.
+     */
+    protected suspend fun ensureConsoleContentCreated(ideaProject: Project): String? =
+        withModalTimeoutOnEdt { (resolveConsoleEditableTab(ideaProject) as? ConsoleResolution.Err)?.errJson }
 
     /** The console model's single `ConsoleRoot`, or null if the model has none. */
     private fun consoleRoot(consoleModel: SModel): SNode? =
@@ -2476,8 +2511,10 @@ abstract class AbstractNodeOps : AbstractOps() {
      * Resolves [nodeReference] for an editable write. Normal project nodes go through the standard
      * project guard. A node that the project guard rejects is admitted ONLY when it lives inside the
      * current console input command of [mpsProject]'s console (never history, never another project).
-     * Must be called on the EDT (the console fallback reads Swing tab state) — i.e. inside
-     * executeShortCommandOnEdt, like the existing resolves.
+     * Must be called on the EDT (the console fallback reads Swing tab state), typically inside
+     * executeShortCommandOnEdt. Under that lock the fallback never creates the Console's lazy content
+     * (see [resolveConsoleEditableTab]); that is fine, since without content no console node exists,
+     * and the node gets the ordinary cross-project refusal.
      */
     protected fun resolveEditableNodeAllowingConsole(
         mpsProject: MPSProject,

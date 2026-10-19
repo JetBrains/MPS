@@ -873,7 +873,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 }
                 // Detect the console case before the cross-project guard: the console temp model
                 // belongs to no project, so isModelInSelectedProject would yield a misleading
-                // "belongs to a different project" error.
+                // "belongs to a different project" error. Under this command the resolve never creates
+                // the Console's lazy content (MPS-40309): without content there is no console model,
+                // so the node cannot be console content.
                 val isConsole = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
                     is ConsoleResolution.Ok -> r.consoleModel.reference == model.reference
                     is ConsoleResolution.Err -> false
