@@ -26953,6 +26953,27 @@
                     </node>
                   </node>
                   <node concept="3clFbS" id="4CGE8md9YDb" role="3clF47">
+                    <node concept="3cpWs8" id="2LZ2H_o2fvl" role="3cqZAp">
+                      <node concept="3cpWsn" id="2LZ2H_o2fvm" role="3cpWs9">
+                        <property role="TrG5h" value="layers" />
+                        <node concept="_YKpA" id="2LZ2H_o2fvn" role="1tU5fm">
+                          <node concept="3uibUv" id="2LZ2H_o2fvo" role="_ZDj9">
+                            <ref role="3uigEE" node="1zZcg$u8xF0" resolve="DiffEditorChangeLayer" />
+                          </node>
+                        </node>
+                        <node concept="2OqwBi" id="2LZ2H_o2fvp" role="33vP2m">
+                          <node concept="37vLTw" id="2LZ2H_o2fvq" role="2Oq$k0">
+                            <ref role="3cqZAo" node="4CGE8mda3Sv" resolve="diffEditor" />
+                          </node>
+                          <node concept="liA8E" id="2LZ2H_o2fvr" role="2OqNvi">
+                            <ref role="37wK5l" node="7poVolq8k9f" resolve="getLayers" />
+                            <node concept="37vLTw" id="2LZ2H_o2fvs" role="37wK5m">
+                              <ref role="3cqZAo" node="5R_XY2zm4fK" resolve="myIsInspector" />
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
                     <node concept="3clFbF" id="4CGE8md9YDc" role="3cqZAp">
                       <node concept="2OqwBi" id="4CGE8md9YDd" role="3clFbG">
                         <node concept="2es0OD" id="4CGE8md9YDf" role="2OqNvi">
@@ -26994,16 +27015,8 @@
                             </node>
                           </node>
                         </node>
-                        <node concept="2OqwBi" id="4CGE8mdafbb" role="2Oq$k0">
-                          <node concept="liA8E" id="4CGE8mdafCJ" role="2OqNvi">
-                            <ref role="37wK5l" node="7poVolq8k9f" resolve="getLayers" />
-                            <node concept="37vLTw" id="7poVolqyMwK" role="37wK5m">
-                              <ref role="3cqZAo" node="5R_XY2zm4fK" resolve="myIsInspector" />
-                            </node>
-                          </node>
-                          <node concept="37vLTw" id="7poVolqhruJ" role="2Oq$k0">
-                            <ref role="3cqZAo" node="4CGE8mda3Sv" resolve="diffEditor" />
-                          </node>
+                        <node concept="37vLTw" id="2LZ2H_o2$2s" role="2Oq$k0">
+                          <ref role="3cqZAo" node="2LZ2H_o2fvm" resolve="layers" />
                         </node>
                       </node>
                     </node>
@@ -27030,16 +27043,8 @@
                               </node>
                             </node>
                           </node>
-                          <node concept="2OqwBi" id="4CGE8mdagc6" role="2Oq$k0">
-                            <node concept="liA8E" id="4CGE8mdagjG" role="2OqNvi">
-                              <ref role="37wK5l" node="7poVolq8k9f" resolve="getLayers" />
-                              <node concept="37vLTw" id="7poVolqyRdp" role="37wK5m">
-                                <ref role="3cqZAo" node="5R_XY2zm4fK" resolve="myIsInspector" />
-                              </node>
-                            </node>
-                            <node concept="37vLTw" id="7poVolqhvns" role="2Oq$k0">
-                              <ref role="3cqZAo" node="4CGE8mda3Sv" resolve="diffEditor" />
-                            </node>
+                          <node concept="37vLTw" id="2LZ2H_o2JeJ" role="2Oq$k0">
+                            <ref role="3cqZAo" node="2LZ2H_o2fvm" resolve="layers" />
                           </node>
                         </node>
                         <node concept="2es0OD" id="4CGE8md9YDG" role="2OqNvi">
@@ -27405,6 +27410,27 @@
                         </node>
                       </node>
                     </node>
+                    <node concept="3cpWs8" id="2LZ2H_o2Uui" role="3cqZAp">
+                      <node concept="3cpWsn" id="2LZ2H_o2Uuj" role="3cpWs9">
+                        <property role="TrG5h" value="layers" />
+                        <node concept="_YKpA" id="2LZ2H_o2Uuk" role="1tU5fm">
+                          <node concept="3uibUv" id="2LZ2H_o2Uul" role="_ZDj9">
+                            <ref role="3uigEE" node="1zZcg$u8xF0" resolve="DiffEditorChangeLayer" />
+                          </node>
+                        </node>
+                        <node concept="2OqwBi" id="2LZ2H_o2Uum" role="33vP2m">
+                          <node concept="37vLTw" id="2LZ2H_o2Uun" role="2Oq$k0">
+                            <ref role="3cqZAo" node="5eAF82hl8u$" resolve="diffEditor" />
+                          </node>
+                          <node concept="liA8E" id="2LZ2H_o2Uuo" role="2OqNvi">
+                            <ref role="37wK5l" node="7poVolq8k9f" resolve="getLayers" />
+                            <node concept="37vLTw" id="2LZ2H_o2Uup" role="37wK5m">
+                              <ref role="3cqZAo" node="5R_XY2zm4fK" resolve="myIsInspector" />
+                            </node>
+                          </node>
+                        </node>
+                      </node>
+                    </node>
                     <node concept="3clFbF" id="5eAF82hkZ$u" role="3cqZAp">
                       <node concept="2OqwBi" id="5eAF82hkZ$v" role="3clFbG">
                         <node concept="2es0OD" id="5eAF82hkZ$w" role="2OqNvi">
@@ -27456,16 +27482,8 @@
                             </node>
                           </node>
                         </node>
-                        <node concept="2OqwBi" id="5eAF82hllY_" role="2Oq$k0">
-                          <node concept="37vLTw" id="7poVolqfjFi" role="2Oq$k0">
-                            <ref role="3cqZAo" node="5eAF82hl8u$" resolve="diffEditor" />
-                          </node>
-                          <node concept="liA8E" id="5eAF82hlmaH" role="2OqNvi">
-                            <ref role="37wK5l" node="7poVolq8k9f" resolve="getLayers" />
-                            <node concept="37vLTw" id="7poVolqzcgi" role="37wK5m">
-                              <ref role="3cqZAo" node="5R_XY2zm4fK" resolve="myIsInspector" />
-                            </node>
-                          </node>
+                        <node concept="37vLTw" id="2LZ2H_o3eMx" role="2Oq$k0">
+                          <ref role="3cqZAo" node="2LZ2H_o2Uuj" resolve="layers" />
                         </node>
                       </node>
                     </node>
@@ -27492,16 +27510,8 @@
                               </node>
                             </node>
                           </node>
-                          <node concept="2OqwBi" id="5eAF82hlmD9" role="2Oq$k0">
-                            <node concept="37vLTw" id="7poVolqfnyu" role="2Oq$k0">
-                              <ref role="3cqZAo" node="5eAF82hl8u$" resolve="diffEditor" />
-                            </node>
-                            <node concept="liA8E" id="5eAF82hlmLE" role="2OqNvi">
-                              <ref role="37wK5l" node="7poVolq8k9f" resolve="getLayers" />
-                              <node concept="37vLTw" id="7poVolqzis8" role="37wK5m">
-                                <ref role="3cqZAo" node="5R_XY2zm4fK" resolve="myIsInspector" />
-                              </node>
-                            </node>
+                          <node concept="37vLTw" id="2LZ2H_o3ubk" role="2Oq$k0">
+                            <ref role="3cqZAo" node="2LZ2H_o2Uuj" resolve="layers" />
                           </node>
                         </node>
                         <node concept="2es0OD" id="5eAF82hkZ$Z" role="2OqNvi">

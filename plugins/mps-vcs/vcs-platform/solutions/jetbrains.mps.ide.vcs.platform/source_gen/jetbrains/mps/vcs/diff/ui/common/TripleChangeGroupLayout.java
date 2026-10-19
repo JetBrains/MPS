@@ -21,6 +21,7 @@ import javax.swing.event.ChangeEvent;
 import org.jetbrains.annotations.NotNull;
 import java.awt.Graphics;
 import jetbrains.mps.nodeEditor.AdditionalPainter;
+import java.util.List;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
 import jetbrains.mps.internal.collections.runtime.Sequence;
@@ -29,7 +30,6 @@ import java.awt.event.MouseWheelEvent;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.util.ui.update.Update;
 import com.intellij.openapi.util.Disposer;
-import java.util.List;
 import java.util.ArrayList;
 import com.intellij.openapi.util.Pair;
 import jetbrains.mps.baseLanguage.closures.runtime.YieldingIterator;
@@ -182,8 +182,9 @@ public final class TripleChangeGroupLayout {
 
       @Override
       public void paint(final Graphics g, final EditorComponent editor) {
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).visitAll((layer) -> layer.paintRectangleBorders(g, editor.getWidth(), editor.getBackground()));
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).where((layer) -> layer.isSelected()).visitAll((it) -> it.paintSelectedRectangle(g, editor.getWidth(), editor.getBackground()));
+        List<DiffEditorChangeLayer> layers = diffEditor.getLayers(myIsInspector);
+        ListSequence.fromList(layers).visitAll((layer) -> layer.paintRectangleBorders(g, editor.getWidth(), editor.getBackground()));
+        ListSequence.fromList(layers).where((layer) -> layer.isSelected()).visitAll((it) -> it.paintSelectedRectangle(g, editor.getWidth(), editor.getBackground()));
       }
 
       @Override
@@ -240,8 +241,9 @@ public final class TripleChangeGroupLayout {
         final int foldingLineWidth = getLeftHighlighter().getFoldingLineWidth();
         final Color editorColor = getEditorComponent().getBackground();
         final Color lineColor = getDottedLineFgLineColor();
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).visitAll((layer) -> layer.paintHighlighter(g, x, width, foldingLineX, foldingLineWidth, editorColor, lineColor, diffEditor.isRightToLeft()));
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).where((layer) -> layer.isSelected()).visitAll((layer) -> layer.paintHighlighterBorders(g, x, width, foldingLineX, foldingLineWidth, lineColor, diffEditor.isRightToLeft()));
+        List<DiffEditorChangeLayer> layers = diffEditor.getLayers(myIsInspector);
+        ListSequence.fromList(layers).visitAll((layer) -> layer.paintHighlighter(g, x, width, foldingLineX, foldingLineWidth, editorColor, lineColor, diffEditor.isRightToLeft()));
+        ListSequence.fromList(layers).where((layer) -> layer.isSelected()).visitAll((layer) -> layer.paintHighlighterBorders(g, x, width, foldingLineX, foldingLineWidth, lineColor, diffEditor.isRightToLeft()));
       }
     };
   }
