@@ -82,6 +82,8 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
             }
 
             val ideaProject = mpsProject.project
+            // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+            ensureConsoleContentCreated(ideaProject)?.let { return@withMpsProject it }
             executeShortCommandOnEdt(mpsProject) {
                 val console = when (val r = resolveConsoleEditableTab(ideaProject)) {
                     is ConsoleResolution.Ok -> r
@@ -185,6 +187,8 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
         @McpDescription("Optional: keep only the most recent N entries (after the response filter). Default: all.") limit: Int? = null
     ): String {
         return withMpsProject("Getting MPS console history") { mpsProject ->
+            // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+            ensureConsoleContentCreated(mpsProject.project)?.let { return@withMpsProject it }
             executeShortReadOnEdt(mpsProject) {
                 val console = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
                     is ConsoleResolution.Ok -> r
@@ -233,6 +237,8 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
             RequiredParameter("historyNodeReference", historyNodeReference, "the persistent reference of a CommandHolder entry from mps_mcp_get_console_history"),
         )?.let { return it }
         return withMpsProject("Recalling MPS console command from history") { mpsProject ->
+            // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+            ensureConsoleContentCreated(mpsProject.project)?.let { return@withMpsProject it }
             executeShortCommandOnEdt(mpsProject) {
                 val console = when (val r = resolveConsoleEditableTab(mpsProject.project)) {
                     is ConsoleResolution.Ok -> r

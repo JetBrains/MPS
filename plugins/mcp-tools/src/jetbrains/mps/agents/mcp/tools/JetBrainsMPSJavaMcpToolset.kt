@@ -903,6 +903,10 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         // propagate to withMpsProject's toolFailure boundary, which logs them as INTERNAL_ERROR.
         // finalizeInsertedNodes rolls back the inserted nodes on any throw before the model is
         // persisted.
+        if (request.insert.mode == "console") {
+            // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+            ensureConsoleContentCreated(mpsProject.project)?.let { return@withMpsProject it }
+        }
         executeShortCommandOnEdt(mpsProject) {
             val repo = mpsProject.repository
             val parseResult = parsedJava.parseResult
