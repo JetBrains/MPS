@@ -289,7 +289,7 @@ public final class TripleChangeGroupLayout {
     Disposer.dispose(myUpdateQueue);
   }
 
-  private synchronized void updateChangeLayers() {
+  private void updateChangeLayers() {
     final List<DiffEditorChangeLayer> leftLayers = ListSequence.fromList(new ArrayList<DiffEditorChangeLayer>());
     final List<DiffEditorChangeLayer> centerLayers = ListSequence.fromList(new ArrayList<DiffEditorChangeLayer>());
     final List<DiffEditorChangeLayer> rightLayers = ListSequence.fromList(new ArrayList<DiffEditorChangeLayer>());
@@ -353,14 +353,16 @@ __switch__:
     ListSequence.fromList(layers).visitAll((it) -> buildLayersHierarchy(it));
     ListSequence.fromList(layers).visitAll((it) -> sortLayers(it));
     ListSequence.fromList(layers).visitAll((it) -> calculateLayersCoordinates(it));
-    if (leftEditor != null) {
-      leftEditor.setLayers(leftLayers, myIsInspector);
-    }
-    if (centerEditor != null) {
-      centerEditor.setLayers(centerLayers, myIsInspector);
-    }
-    if (rightEditor != null) {
-      rightEditor.setLayers(rightLayers, myIsInspector);
+    synchronized (this) {
+      if (leftEditor != null) {
+        leftEditor.setLayers(leftLayers, myIsInspector);
+      }
+      if (centerEditor != null) {
+        centerEditor.setLayers(centerLayers, myIsInspector);
+      }
+      if (rightEditor != null) {
+        rightEditor.setLayers(rightLayers, myIsInspector);
+      }
     }
   }
 

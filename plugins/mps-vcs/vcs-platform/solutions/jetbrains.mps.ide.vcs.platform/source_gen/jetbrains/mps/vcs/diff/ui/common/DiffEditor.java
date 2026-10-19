@@ -330,7 +330,7 @@ public class DiffEditor implements EditorMessageOwner {
   public final class MyInspectorEditorComponent extends InspectorEditorComponent implements LayersHolder {
 
     @Nullable
-    private List<DiffEditorChangeLayer> myLayers;
+    private volatile List<DiffEditorChangeLayer> myLayers;
 
     public MyInspectorEditorComponent(@NotNull SRepository repository, boolean rightToLeft, boolean readOnly) {
       super(repository, new EditorConfigurationBuilder().rightToLeft(rightToLeft).showSelectionLine(false).readOnly(readOnly).showLightBulb(false).build());
@@ -370,7 +370,7 @@ public class DiffEditor implements EditorMessageOwner {
     private DiffFileEditor myDiffFileEditor;
     private CommandContextWithVF myCommandContext;
     @Nullable
-    private List<DiffEditorChangeLayer> myLayers;
+    private volatile List<DiffEditorChangeLayer> myLayers;
 
     public MainEditorComponent(SRepository repository, boolean rightToLeft, boolean readOnly) {
       super(repository, new EditorConfigurationBuilder().showErrorsGutter(true).showSelectionLine(false).rightToLeft(rightToLeft).readOnly(readOnly).showLightBulb(false).build());
