@@ -2,7 +2,7 @@
   <info organisation="org.jetbrains.mps" module="openJDK/jbr-linux-x64.tar.gz"/>
   <dependencies>
     <dependency org="org" name="MPS_20263_Distribution_Platform" rev="${mps.platform.build}">
-      <include name="openJDK/jbr-linux-x64" ext="tar.gz"/>
+      <artifact name="openJDK/jbr-linux-x64" type="tar.gz" ext="tar.gz"/>
     </dependency>
   </dependencies>
 </ivy-module>
