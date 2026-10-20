@@ -5,8 +5,7 @@ package jetbrains.mps.vcs.diff.ui.common;
 import jetbrains.mps.annotations.GeneratedClass;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
-import jetbrains.mps.internal.collections.runtime.ListSequence;
-import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.nodeEditor.EditorComponent;
@@ -15,9 +14,11 @@ import jetbrains.mps.vcs.diff.ChangeSet;
 import java.util.Map;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
+import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.Set;
 import jetbrains.mps.util.DisjointSets;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
+import java.util.ArrayList;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.nodeEditor.cells.EditorCell;
 
@@ -27,7 +28,7 @@ public abstract class ChangeGroupLayout {
   protected boolean myInspector = false;
   private boolean myMergeAdjacent;
   private final AtomicReference<List<ChangeGroup>> myChangeGroups = new AtomicReference<>();
-  private List<ChangeGroupInvalidateListener> myInvalidateListeners = ListSequence.fromList(new ArrayList<ChangeGroupInvalidateListener>());
+  private final List<ChangeGroupInvalidateListener> myInvalidateListeners = new CopyOnWriteArrayList<ChangeGroupInvalidateListener>();
   private boolean myIsMerge;
 
 
