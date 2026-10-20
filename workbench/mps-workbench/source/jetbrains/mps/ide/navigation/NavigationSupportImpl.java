@@ -18,23 +18,34 @@ package jetbrains.mps.ide.navigation;
 import jetbrains.mps.ide.editor.MPSEditorOpener;
 import jetbrains.mps.ide.projectPane.ProjectPane;
 import jetbrains.mps.openapi.editor.Editor;
+import jetbrains.mps.openapi.navigation.EditorOpenRequest;
 import jetbrains.mps.openapi.navigation.NavigationSupport;
 import jetbrains.mps.project.MPSProject;
 import jetbrains.mps.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNode;
+import org.jetbrains.mps.openapi.model.SNodeReference;
 import org.jetbrains.mps.openapi.module.SModule;
+
+import java.util.concurrent.CompletionStage;
 
 /**
  * Idea-aware navigation implementation
  */
 public class NavigationSupportImpl extends NavigationSupport {
 
+  @SuppressWarnings("removal")
+  @Deprecated(since = "2026.2", forRemoval = true)
   @Override
   public Editor openNode(@NotNull Project project, @NotNull SNode node, boolean focus, boolean select) {
     // cast to MPSProject is ok as we are inside IDEA-aware ApplicationComponent
     return new MPSEditorOpener((MPSProject) project).openNode(node, focus, select);
+  }
+
+  @Override
+  public CompletionStage<Editor> openEditor(@NotNull Project project, @NotNull SNodeReference node, @NotNull EditorOpenRequest request) {
+    return new MPSEditorOpener((MPSProject) project).open(node, request);
   }
 
   @Override

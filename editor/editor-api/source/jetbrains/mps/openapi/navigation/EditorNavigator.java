@@ -20,9 +20,10 @@ import jetbrains.mps.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeReference;
-import org.jetbrains.mps.util.Condition;
 
+import java.util.concurrent.CompletionStage;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 /**
  * Handy facility to replace code like:
@@ -51,9 +52,8 @@ import java.util.function.BiConsumer;
  */
 public final class EditorNavigator {
   private final Project myProject;
-  private boolean myFocus = false;
-  private boolean mySelect = false;
-  private Condition<SNode> mySelectCondition;
+  private Predicate<SNode> myFocus = node -> false;
+  private Predicate<SNode> mySelect = node -> false;
   private BiConsumer<SNode, Editor> myHandler;
 
   public EditorNavigator(@NotNull Project mpsProject) {
@@ -64,20 +64,35 @@ public final class EditorNavigator {
    * Default: no focus, <code>false</code>
    */
   public EditorNavigator shallFocus(boolean shallFocus) {
-    myFocus = shallFocus;
-    return this;
+    return shallFocus(node -> shallFocus);
   }
 
   /**
    * Default: no selection, <code>false</code>
    */
   public EditorNavigator shallSelect(boolean shallSelect) {
-    mySelect = shallSelect;
-    return this;
+    return shallSelect(node -> shallSelect);
   }
 
   public EditorNavigator selectIfChild() {
-    mySelectCondition = node -> node.getParent() != null;
+    return shallSelect(node -> node.getParent() != null);
+  }
+
+  /**
+   * @param condition tells whether to move focus to the editor (or inspector) for the node being opened
+   * @since 2026.2
+   */
+  public EditorNavigator shallFocus(@NotNull Predicate<SNode> condition) {
+    myFocus = condition;
+    return this;
+  }
+
+  /**
+   * @param condition tells whether to select the node being opened (or its parent) in the editor and inspector
+   * @since 2026.2
+   */
+  public EditorNavigator shallSelect(@NotNull Predicate<SNode> condition) {
+    mySelect = condition;
     return this;
   }
 
@@ -91,25 +106,18 @@ public final class EditorNavigator {
   }
 
   public void open(@NotNull final SNodeReference node) {
-    myProject.getModelAccess().runReadInEDT(() -> {
-      SNode target = node.resolve(myProject.getRepository());
-      if (target != null) {
-        final Editor editor = NavigationSupport.getInstance(myProject).openNode(myProject, target, needFocus(target), needSelection(target));
-        if (myHandler != null && editor != null) {
-          myHandler.accept(target, editor);
-        }
-      }
-    });
+    navigate(node);
   }
 
-  /*package*/ boolean needSelection(SNode target) {
-    if (mySelectCondition != null) {
-      return mySelectCondition.met(target);
-    }
-    return mySelect;
-  }
-
-  /*package*/ boolean needFocus(SNode target) {
-    return myFocus;
+  /**
+   * Opens the node in an editor, always asynchronously, even if invoked from EDT. Could be invoked from any thread.
+   * Navigator settings are captured at the time of the call, subsequent changes do not affect pending navigation.
+   *
+   * @return completes with the editor once open, or with {@code null} if there's no editor opened (e.g. node is gone).
+   *         Completion comes with no model access, use {@link #onceEditorReady(BiConsumer)} if you need one.
+   * @since 2026.2
+   */
+  public CompletionStage<Editor> navigate(@NotNull SNodeReference node) {
+    return NavigationSupport.getInstance(myProject).openEditor(myProject, node, EditorOpenRequest.of(myFocus, mySelect, myHandler));
   }
 }

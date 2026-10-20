@@ -18,6 +18,7 @@ package jetbrains.mps.ide.editor;
 import com.intellij.ide.DataManager;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.application.ModalityState;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
@@ -28,6 +29,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import jetbrains.mps.editor.runtime.cells.ReadOnlyUtil;
 import jetbrains.mps.ide.ThreadUtils;
 import jetbrains.mps.ide.actions.MPSCommonDataKeys;
+import jetbrains.mps.logging.Logger;
 import jetbrains.mps.nodeEditor.InspectorTool;
 import jetbrains.mps.nodeEditor.NodeEditorComponent;
 import jetbrains.mps.nodefs.MPSNodeVirtualFile;
@@ -35,7 +37,9 @@ import jetbrains.mps.nodefs.NodeVirtualFileSystem;
 import jetbrains.mps.openapi.editor.Editor;
 import jetbrains.mps.openapi.editor.cells.EditorCell;
 import jetbrains.mps.openapi.editor.cells.EditorCell_Collection;
+import jetbrains.mps.openapi.navigation.EditorOpenRequest;
 import jetbrains.mps.project.MPSProject;
+import jetbrains.mps.smodel.ModelAccessHelper;
 import jetbrains.mps.smodel.SNodePointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.mps.openapi.model.SNode;
@@ -45,11 +49,14 @@ import org.jetbrains.mps.openapi.module.SRepository;
 
 import java.awt.Component;
 import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Front-end both to create Editor for node and to open an editor based on node's file (which eventually ends up with creation of node's Editor)
  */
 public class MPSEditorOpener {
+  private static final Logger LOG = Logger.getLogger(MPSEditorOpener.class);
   private final MPSProject myProject;
 
   public MPSEditorOpener(@NotNull MPSProject mpsProject) {
@@ -71,7 +78,10 @@ public class MPSEditorOpener {
 
   /**
    * Requires: model read, EDT.
+   * @deprecated this method may cause a deadlock,
+   *             use {@link #open(SNodeReference, EditorOpenRequest)} instead
    */
+  @Deprecated(since = "2026.2", forRemoval = true)
   public Editor openNode(@NotNull final SNode node, final boolean focus, final boolean select) {
     ThreadUtils.assertEDT();
     myProject.getModelAccess().checkReadAccess();
@@ -81,6 +91,78 @@ public class MPSEditorOpener {
     return doOpenNode(node, focus, select);
   }
 
+  /**
+   * Opens an editor for the requested node, asynchronously. Could be invoked from any thread, with or without model access.
+   * Unlike {@link #openNode(SNode, boolean, boolean)}, does not hold model lock while the platform opens the editor,
+   * as the platform may need a write action meanwhile (MPS-38858).
+   *
+   * @return completes with the editor once open, or with {@code null} if there's no editor opened
+   */
+  public CompletionStage<Editor> open(@NotNull SNodeReference nodeRef, @NotNull EditorOpenRequest request) {
+    final CompletableFuture<Editor> rv = new CompletableFuture<>();
+    final ModalityState modality = ModalityState.defaultModalityState();
+    // runReadInEDT rather than invokeLater to keep the order with other model tasks scheduled for EDT, e.g. a command that creates the node
+    myProject.getModelAccess().runReadInEDT(failOnException(rv, () -> {
+      final SNode node = myProject.isDisposed() ? null : request.resolve(myProject.getRepository(), nodeRef);
+      if (node == null || !SNodeUtil.isAccessible(node, myProject.getRepository())) {
+        LOG.debug("No editor opened, node is not accessible: " + nodeRef);
+        rv.complete(null);
+        return;
+      }
+      final boolean focus = request.focus(node);
+      final MPSNodeVirtualFile file = findFile(node.getContainingRoot());
+      ApplicationManager.getApplication().invokeLater(failOnException(rv, () -> rv.complete(openWithoutModelLock(nodeRef, request, file, focus))), modality);
+    }));
+    // rv may complete from within model read (see above), and its dependents would run there synchronously; dispatch them outside of the lock.
+    // No expiration condition, so that the stage completes even if the project is gone.
+    return rv.whenCompleteAsync((editor, ex) -> {}, r -> ApplicationManager.getApplication().invokeLater(r, modality));
+  }
+
+  private Editor openWithoutModelLock(SNodeReference nodeRef, EditorOpenRequest request, MPSNodeVirtualFile file, boolean focus) {
+    if (myProject.isDisposed() || !file.isValid()) {
+      LOG.debug("No editor opened, project is disposed or file is invalid: " + nodeRef);
+      return null;
+    }
+    /*
+    FIXME this is no-op, legacy code, remove
+    - IdeDocumentHistoryImpl.includeCurrentCommandAsNavigation() only sets currentCommandIsNavigation = true.
+    - onCommandStarted resets that flag, and only onCommandFinished acts on it (and only if the command also had moves). So the flag matters only inside a running platform command.
+    - FileEditorManagerImpl doesn't open files inside a command of its own (no executeCommand).
+    - Neither of our phases runs inside a command. Phase 1 is an EDTExecutor read task, and phases 2–3 are a plain invokeLater.
+     */
+    myProject.getProject().getService(IdeDocumentHistory.class).includeCurrentCommandAsNavigation();
+    final Editor nodeEditor = openFile(file, focus);
+    if (nodeEditor == null) {
+      LOG.debug("No editor opened for " + nodeRef);
+      return null;
+    }
+    return new ModelAccessHelper(myProject.getModelAccess()).runReadAction(() -> {
+      final SNode node = request.resolve(myProject.getRepository(), nodeRef);
+      if (node == null) {
+        LOG.debug("Node is gone once its editor is open: " + nodeRef);
+        return null;
+      }
+      if (nodeEditor.isTabbed()) {
+        nodeEditor.showNode(node.getContainingRoot(), false);
+      }
+      final boolean select = request.select(node);
+      revealNode(nodeEditor, node, focus, select);
+      request.onReady(node, nodeEditor);
+      return nodeEditor;
+    });
+  }
+
+  private static Runnable failOnException(CompletableFuture<?> future, Runnable r) {
+    return () -> {
+      try {
+        r.run();
+      } catch (RuntimeException | Error ex) {
+        future.completeExceptionally(ex);
+        throw ex;
+      }
+    };
+  }
+
   private Editor doOpenNode(final SNode node, final boolean focus, boolean select) {
     assert node.getModel() != null : "You can't edit unregistered node";
 
@@ -88,7 +170,11 @@ public class MPSEditorOpener {
       return null;
     }
     final Editor nodeEditor = openEditor(node.getContainingRoot(), focus);
+    revealNode(nodeEditor, node, focus, select);
+    return nodeEditor;
+  }
 
+  private void revealNode(Editor nodeEditor, SNode node, boolean focus, boolean select) {
     if ((nodeEditor.getCurrentEditorComponent() instanceof NodeEditorComponent)) {
       NodeEditorComponent nec = (NodeEditorComponent) nodeEditor.getCurrentEditorComponent();
       final SNode lastInspectedNode = nec.getLastInspectedNode();
@@ -113,8 +199,6 @@ public class MPSEditorOpener {
     if (focus) {
       focus(nodeEditor, focusNeededInInspector(node, inspector));
     }
-
-    return nodeEditor;
   }
 
   private boolean focusNeededInInspector(SNode node, jetbrains.mps.openapi.editor.EditorComponent inspector) {
@@ -123,6 +207,14 @@ public class MPSEditorOpener {
   }
 
   private Editor openEditor(final SNode root, boolean focus) {
+    final Editor nodeEditor = openFile(findFile(root), focus);
+    if (nodeEditor != null && nodeEditor.isTabbed()) {
+      nodeEditor.showNode(root, false);
+    }
+    return nodeEditor;
+  }
+
+  private MPSNodeVirtualFile findFile(final SNode root) {
     SNode baseNode = null;
 
     for (NodeEditorFactory handler : NodeEditorFactory.EXT_POINT.getExtensions(myProject.getProject())) {
@@ -150,23 +242,20 @@ public class MPSEditorOpener {
     }
     checkVirtualFileBaseNode(baseNode, file); // assertion for MPS-9753
 
-    FileEditorManager editorManager = FileEditorManager.getInstance(myProject.getProject());
     // XXX look up KEY usages, seems this is the right way to access MPSFileNodeEditorProvider, although
     //     not sure if there's still any need for this code, commit 4d8d546d didn't specify which tests depend on it
     if (ApplicationManager.getApplication().isUnitTestMode()) {
       FileEditorProvider fep = FileEditorProviderManager.getInstance().getProvider("MPSFileEditor"); // == MPSFileNodeEditorProvider.getEditorTypeId
       file.putUserData(FileEditorProvider.KEY, fep);
     }
+    return file;
+  }
 
+  private Editor openFile(MPSNodeVirtualFile file, boolean focus) {
+    FileEditorManager editorManager = FileEditorManager.getInstance(myProject.getProject());
     FileEditor fileEditor = editorManager.openFile(file, focus, true)[0];
     MPSFileNodeEditor fileNodeEditor = (MPSFileNodeEditor) fileEditor;
-    Editor nodeEditor = fileNodeEditor.getNodeEditor();
-//    nodeEditor = new MPSFileNodeEditor(myProject, file).getNodeEditor();
-
-    if (nodeEditor != null && nodeEditor.isTabbed()) {
-      nodeEditor.showNode(root, false);
-    }
-    return nodeEditor;
+    return fileNodeEditor.getNodeEditor();
   }
 
   private void checkVirtualFileBaseNode(SNode baseNode, MPSNodeVirtualFile file) {
