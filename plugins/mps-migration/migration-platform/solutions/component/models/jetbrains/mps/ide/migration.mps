@@ -67,7 +67,6 @@
     <import index="qujm" ref="r:5b264c00-4c6c-4ea3-adbc-463b994145ba(jetbrains.mps.migration.component)" />
     <import index="cmfw" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.event(MPS.OpenAPI/)" />
     <import index="ze1i" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel.runtime(MPS.Core/)" />
-    <import index="dush" ref="8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:org.jetbrains.mps.openapi.persistence(MPS.OpenAPI/)" />
     <import index="qq03" ref="742f6602-5a2f-4313-aa6e-ae1cd4ffdc61/java:jetbrains.mps.ide.actions(MPS.Platform/)" />
     <import index="tpcu" ref="r:00000000-0000-4000-0000-011c89590282(jetbrains.mps.lang.core.behavior)" implicit="true" />
   </imports>
@@ -661,7 +660,7 @@
       </node>
     </node>
     <node concept="312cEg" id="7lByCvUxXzX" role="jymVt">
-      <property role="34CwA1" value="false" />
+      <property role="34CwA1" value="true" />
       <property role="eg7rD" value="false" />
       <property role="TrG5h" value="myListenersAdded" />
       <property role="3TUv4t" value="false" />
@@ -673,6 +672,7 @@
     </node>
     <node concept="312cEg" id="2ao1LjMwlGr" role="jymVt">
       <property role="TrG5h" value="myExecutorDiscarded" />
+      <property role="34CwA1" value="true" />
       <node concept="3Tm6S6" id="2ao1LjMwdU4" role="1B3o_S" />
       <node concept="10P_77" id="2ao1LjMwkCM" role="1tU5fm" />
       <node concept="3clFbT" id="2ao1LjMwrRm" role="33vP2m" />

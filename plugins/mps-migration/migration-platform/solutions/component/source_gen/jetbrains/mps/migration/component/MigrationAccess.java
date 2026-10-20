@@ -10,11 +10,13 @@ import jetbrains.mps.project.MPSProject;
 import jetbrains.mps.ide.migration.IStartupMigrationExecutor;
 import java.util.HashMap;
 import jetbrains.mps.project.ProjectManagerListener;
+import java.util.List;
+import jetbrains.mps.ide.migration.MigrationTrigger;
 import java.util.ArrayList;
 import com.intellij.openapi.application.ApplicationManager;
 import jetbrains.mps.RuntimeFlags;
 import jetbrains.mps.ide.migration.HeadlessMigrationExecutor;
-import jetbrains.mps.ide.migration.MigrationTrigger;
+import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.project.Project;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,13 +33,22 @@ public class MigrationAccess implements CoreComponent {
 
   @Override
   public void dispose() {
-    if (myProjectListener != null) {
+    final List<MigrationTrigger> known = new ArrayList<>();
+    synchronized (this) {
+      if (myProjectListener == null) {
+        return;
+      }
       myProjectManager.removeProjectListener(myProjectListener);
       myProjectListener = null;
-      synchronized (this) {
-        new ArrayList<>(myInstanceMap.keySet()).forEach(this::forget);
+      for (MPSProject p : new ArrayList<>(myInstanceMap.keySet())) {
+        IStartupMigrationExecutor ee = forget(p);
+        if (ee instanceof MigrationTrigger) {
+          known.add((MigrationTrigger) ee);
+        }
       }
     }
+    // events outside of synchronized!
+    known.forEach(MigrationTrigger::projectClosed);
   }
 
   public IStartupMigrationExecutor get(MPSProject mpsProject) {
@@ -59,14 +70,15 @@ public class MigrationAccess implements CoreComponent {
         myProjectListener = new PL();
         myProjectManager.addProjectListener(myProjectListener);
       }
-      if (rv instanceof MigrationTrigger) {
-        ((MigrationTrigger) rv).projectOpened();
-      }
+    }
+    if (rv instanceof MigrationTrigger) {
+      ((MigrationTrigger) rv).projectOpened();
     }
     return rv;
   }
 
-  /*package*/ void forget(Project mpsProject) {
+  @Nullable
+  /*package*/ IStartupMigrationExecutor forget(Project mpsProject) {
     IStartupMigrationExecutor ee;
     synchronized (this) {
       ee = myInstanceMap.remove(mpsProject);
@@ -75,15 +87,17 @@ public class MigrationAccess implements CoreComponent {
         myProjectListener = null;
       }
     }
-    if (ee instanceof MigrationTrigger) {
-      ((MigrationTrigger) ee).projectClosed();
-    }
+    return ee;
   }
 
   /*package*/ final class PL implements ProjectManagerListener {
     @Override
     public void projectClosed(@NotNull Project p) {
-      forget(p);
+      IStartupMigrationExecutor ee = forget(p);
+      // events outside of synchronized!
+      if (ee instanceof MigrationTrigger) {
+        ((MigrationTrigger) ee).projectClosed();
+      }
     }
   }
 }
