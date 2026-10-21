@@ -48,11 +48,15 @@ public class VisibleArtifacts {
       collectInExternalLayout(layoutDependency, target);
     }
 
+    // first, visit immediate dependencies, and only then recurse deeper
     for (SNode projectDependency : SNodeOperations.ofConcept(SLinkOperations.getChildren(projectToVisit, LINKS.dependencies$redY), CONCEPTS.BuildProjectDependency$sN)) {
       SNode target = SLinkOperations.getTarget(projectDependency, LINKS.script$6Ehy);
       collectInProject(projectDependency, target);
+    }
 
-      // Recurse into transitive dependencies
+    // Recurse into transitive dependencies
+    for (SNode projectDependency : SNodeOperations.ofConcept(SLinkOperations.getChildren(projectToVisit, LINKS.dependencies$redY), CONCEPTS.BuildProjectDependency$sN)) {
+      SNode target = SLinkOperations.getTarget(projectDependency, LINKS.script$6Ehy);
       collectInProjectDependencies(target, visited);
     }
   }
