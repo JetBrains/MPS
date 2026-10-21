@@ -7,12 +7,12 @@ import javax.swing.Icon;
 import jetbrains.mps.workbench.action.ActionAccess;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import java.util.Map;
-import jetbrains.mps.ide.actions.MPSCommonDataKeys;
-import jetbrains.mps.smodel.Language;
-import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import org.jetbrains.mps.openapi.module.SModule;
+import jetbrains.mps.ide.actions.MPSCommonDataKeys;
+import jetbrains.mps.smodel.Language;
+import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.workbench.languagesFs.MPSLanguageVirtualFile;
 import jetbrains.mps.workbench.languagesFs.MPSLanguagesVirtualFileSystem;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -24,20 +24,12 @@ public class LanguageHierarchy_Action extends BaseAction {
   public LanguageHierarchy_Action() {
     super("Language Diagram", "", ICON);
     this.setIsAlwaysVisible(false);
-    this.setActionAccess(ActionAccess.READ_PROJECT);
+    this.setActionAccess(ActionAccess.NONE);
     updateInBackground(true);
   }
   @Override
   public boolean isDumbAware() {
     return false;
-  }
-  @Override
-  public boolean isApplicable(AnActionEvent event, final Map<String, Object> _params) {
-    return event.getData(MPSCommonDataKeys.MODULE) instanceof Language;
-  }
-  @Override
-  public void doUpdate(@NotNull AnActionEvent event, final Map<String, Object> _params) {
-    this.setEnabledState(event.getPresentation(), this.isApplicable(event, _params));
   }
   @Override
   protected boolean collectActionData(AnActionEvent event, final Map<String, Object> _params) {
@@ -55,13 +47,15 @@ public class LanguageHierarchy_Action extends BaseAction {
       if (p == null) {
         return false;
       }
+      if (p != null && !(p instanceof Language)) {
+        return false;
+      }
     }
     return true;
   }
   @Override
   public void doExecute(@NotNull final AnActionEvent event, final Map<String, Object> _params) {
-    Language language = (Language) event.getData(MPSCommonDataKeys.MODULE);
-    MPSLanguageVirtualFile file = MPSLanguagesVirtualFileSystem.getInstance().getFileFor(language);
+    MPSLanguageVirtualFile file = MPSLanguagesVirtualFileSystem.getInstance().getFileFor(((Language) event.getData(MPSCommonDataKeys.MODULE)).getModuleReference());
     FileEditorManager editorManager = FileEditorManager.getInstance(event.getData(CommonDataKeys.PROJECT));
     FileEditor[] res = editorManager.openFile(file, true, true);
     // no idea why explicit requestFocus when openFile() already asked for one.

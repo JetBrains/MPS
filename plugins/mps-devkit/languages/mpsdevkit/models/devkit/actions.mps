@@ -4906,28 +4906,9 @@
     <property role="3GE5qa" value="Properties" />
     <property role="2uzpH1" value="Language Diagram" />
     <property role="1rBW0U" value="true" />
-    <property role="2YLI8m" value="6u2MFnph2yg/read" />
+    <property role="2YLI8m" value="6u2MFnph2wS/none" />
     <node concept="tnohg" id="1Fww89lnTk1" role="tncku">
       <node concept="3clFbS" id="1Fww89lnTk2" role="2VODD2">
-        <node concept="3cpWs8" id="1Fww89lnTk3" role="3cqZAp">
-          <node concept="3cpWsn" id="1Fww89lnTk4" role="3cpWs9">
-            <property role="TrG5h" value="language" />
-            <node concept="3uibUv" id="1Fww89lnTk5" role="1tU5fm">
-              <ref role="3uigEE" to="w1kc:~Language" resolve="Language" />
-            </node>
-            <node concept="10QFUN" id="1Fww89lnTk6" role="33vP2m">
-              <node concept="3uibUv" id="1Fww89lnTk7" role="10QFUM">
-                <ref role="3uigEE" to="w1kc:~Language" resolve="Language" />
-              </node>
-              <node concept="2OqwBi" id="1Fww89lnTk8" role="10QFUP">
-                <node concept="2WthIp" id="1Fww89lnTk9" role="2Oq$k0" />
-                <node concept="1DTwFV" id="1Fww89lnTka" role="2OqNvi">
-                  <ref role="2WH_rO" node="1Fww89lnTkT" resolve="module" />
-                </node>
-              </node>
-            </node>
-          </node>
-        </node>
         <node concept="3cpWs8" id="1Fww89lnTkb" role="3cqZAp">
           <node concept="3cpWsn" id="1Fww89lnTkc" role="3cpWs9">
             <property role="TrG5h" value="file" />
@@ -4940,9 +4921,17 @@
                 <ref role="37wK5l" to="mf7n:~MPSLanguagesVirtualFileSystem.getInstance()" resolve="getInstance" />
               </node>
               <node concept="liA8E" id="1Fww89lnTkg" role="2OqNvi">
-                <ref role="37wK5l" to="mf7n:~MPSLanguagesVirtualFileSystem.getFileFor(jetbrains.mps.smodel.Language)" resolve="getFileFor" />
-                <node concept="37vLTw" id="3GM_nagTA5f" role="37wK5m">
-                  <ref role="3cqZAo" node="1Fww89lnTk4" resolve="language" />
+                <ref role="37wK5l" to="mf7n:~MPSLanguagesVirtualFileSystem.getFileFor(org.jetbrains.mps.openapi.module.SModuleReference)" resolve="getFileFor" />
+                <node concept="2OqwBi" id="47yPZGUA7m1" role="37wK5m">
+                  <node concept="2OqwBi" id="1Fww89lnTk8" role="2Oq$k0">
+                    <node concept="2WthIp" id="1Fww89lnTk9" role="2Oq$k0" />
+                    <node concept="1DTwFV" id="1Fww89lnTka" role="2OqNvi">
+                      <ref role="2WH_rO" node="1Fww89lnTkT" resolve="module" />
+                    </node>
+                  </node>
+                  <node concept="liA8E" id="47yPZGUA7PI" role="2OqNvi">
+                    <ref role="37wK5l" to="z1c3:~AbstractModule.getModuleReference()" resolve="getModuleReference" />
+                  </node>
                 </node>
               </node>
             </node>
@@ -5052,23 +5041,6 @@
         </node>
       </node>
     </node>
-    <node concept="2ScWuX" id="1Fww89lnTkK" role="tmbBb">
-      <node concept="3clFbS" id="1Fww89lnTkL" role="2VODD2">
-        <node concept="3cpWs6" id="1Fww89lnTkM" role="3cqZAp">
-          <node concept="2ZW3vV" id="1Fww89lnTkN" role="3cqZAk">
-            <node concept="3uibUv" id="1Fww89lnTkO" role="2ZW6by">
-              <ref role="3uigEE" to="w1kc:~Language" resolve="Language" />
-            </node>
-            <node concept="2OqwBi" id="1Fww89lnTkP" role="2ZW6bz">
-              <node concept="2WthIp" id="1Fww89lnTkQ" role="2Oq$k0" />
-              <node concept="1DTwFV" id="1Fww89lnTkR" role="2OqNvi">
-                <ref role="2WH_rO" node="1Fww89lnTkT" resolve="module" />
-              </node>
-            </node>
-          </node>
-        </node>
-      </node>
-    </node>
     <node concept="1DS2jV" id="1Fww89lnTkS" role="1NuT2Z">
       <property role="TrG5h" value="project" />
       <ref role="1DUlNI" to="qkt:~CommonDataKeys.PROJECT" resolve="PROJECT" />
@@ -5078,6 +5050,9 @@
       <property role="TrG5h" value="module" />
       <ref role="1DUlNI" to="qq03:~MPSCommonDataKeys.MODULE" resolve="MODULE" />
       <node concept="1oajcY" id="7HZe2EwZDnz" role="1oa70y" />
+      <node concept="1c5O4g" id="47yPZGUA0JN" role="1oa70y">
+        <ref role="1c5NyD" to="w1kc:~Language" resolve="Language" />
+      </node>
     </node>
   </node>
   <node concept="tC5Ba" id="1Fww89lo1uP">
