@@ -20,6 +20,8 @@ import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.command.CommandProcessor;
 import com.intellij.openapi.command.UndoConfirmationPolicy;
 import com.intellij.openapi.util.Disposer;
+import com.intellij.util.ui.EDT;
+import jetbrains.mps.logging.Logger;
 import jetbrains.mps.project.MPSProject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -94,6 +96,7 @@ public final class WorkbenchModelAccess extends ModelAccess implements Disposabl
         // see jetbrains.mps.smodel.WorkbenchModelAccess.runWriteAction
         // since we're in application read action and OUR write action is suspended, it is safe
         // to assume we have read access
+        reportSuspendedWriteBypass();
         SharedReadModelAccess rma = shareReadNoCheck();
         rma.execute(prepareLocked(r, new NoLock(), myReadActionDispatcher));
         rma.release();
@@ -102,6 +105,19 @@ public final class WorkbenchModelAccess extends ModelAccess implements Disposabl
       }
     }));
     myCancellableReads.removeIfCanCancel(r);
+  }
+
+  // MPS-38709: make the lock bypass visible, to find code that triggers it (e.g. editor opened from within a command)
+  private static void reportSuspendedWriteBypass() {
+    StringBuilder sb = new StringBuilder("Model read without lock: MPS write in EDT is suspended by the platform (MPS-38709).");
+    Thread edt = EDT.getEventDispatchThreadOrNull();
+    if (edt != null) {
+      sb.append(" Suspended write in EDT:");
+      for (StackTraceElement ste : edt.getStackTrace()) {
+        sb.append("\n\tat ").append(ste);
+      }
+    }
+    Logger.getLogger(WorkbenchModelAccess.class).warning(sb.toString(), new Throwable());
   }
 
   @Override

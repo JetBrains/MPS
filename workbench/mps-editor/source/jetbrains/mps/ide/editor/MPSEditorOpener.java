@@ -241,6 +241,9 @@ public class MPSEditorOpener {
   }
 
   private Editor openFile(MPSNodeVirtualFile file, boolean focus) {
+    if (myProject.getModelAccess().canRead()) {
+      LOG.warning("Opening editor under model lock may deadlock or freeze UI (MPS-38858, MPS-38709); use EditorNavigator", new Throwable());
+    }
     FileEditorManager editorManager = FileEditorManager.getInstance(myProject.getProject());
     FileEditor fileEditor = editorManager.openFile(file, focus, true)[0];
     MPSFileNodeEditor fileNodeEditor = (MPSFileNodeEditor) fileEditor;
