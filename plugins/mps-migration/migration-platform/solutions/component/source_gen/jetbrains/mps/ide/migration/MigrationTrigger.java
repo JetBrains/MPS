@@ -81,8 +81,8 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
   private final SilentModuleVersionUpdater myVersionUpdater;
   private final MyPropertiesListener myPropertiesListener = new MyPropertiesListener();
   private final LanguageRegistryListener myLanguageDeployListener = new MyLangDeployListener();
-  private boolean myListenersAdded = false;
-  private boolean myExecutorDiscarded = false;
+  private volatile boolean myListenersAdded = false;
+  private volatile boolean myExecutorDiscarded = false;
 
   private final MigrationBlock myMigrationBlock = new MigrationBlock(this);
   private final AtomicReference<PostponedState> myPostponedState = new AtomicReference<PostponedState>();

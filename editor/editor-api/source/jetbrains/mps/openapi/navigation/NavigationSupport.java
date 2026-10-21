@@ -25,6 +25,9 @@ import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeReference;
 import org.jetbrains.mps.openapi.module.SModule;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 /**
  * Facility to reveal different aspects of an mps project, either in a project tree or in an editor.
  * This is low-level, implementation API and shall not be used unless there's justification to do so (e.g. you've got an SNode
@@ -68,15 +71,35 @@ public abstract class NavigationSupport implements CoreComponent {
 
   /**
    * Opens node in the editor. Requires: model read, EDT.
-   *
-   * Unless you care about return value or do some extra stuff with the node, use {@link EditorNavigator#open(SNodeReference)} instead
+   * <p>
+   * Beware, the editor gets opened with model read held, which may lead to a deadlock (MPS-38858) if the platform needs a write action
+   * meanwhile. Use {@link EditorNavigator#navigate(SNodeReference)} instead, it gives access to the editor as well.
    *
    * @param mpsProject project where node is looked up and where editor is opened
    * @param node alive node from model repository
    * @param focus move focus if needed - to editor or to inspector
    * @param select select node (or its parent) in editor and inspector (if exist)
+   * @deprecated use {@link EditorNavigator#navigate(SNodeReference)}
    */
-  public abstract Editor openNode(@NotNull Project mpsProject, @NotNull SNode node, boolean focus, boolean select);
+  @Deprecated(since = "2026.2", forRemoval = true)
+  public Editor openNode(@NotNull Project mpsProject, @NotNull SNode node, boolean focus, boolean select) {
+    Logger.getLogger(NavigationSupport.class).warnDeprecatedUse("Replace with #openEditor(project, node, request) call");
+    return null;
+  }
+
+  /**
+   * Opens node in the editor, asynchronously. Could be invoked from any thread, with or without model access.
+   * Clients shall use {@link EditorNavigator}.
+   * <p>
+   * Default implementation opens nothing, subclasses are expected to override.
+   *
+   * @return completes with the editor once open, or with {@code null} if there's no editor opened. Completion comes with no model access.
+   * @since 2026.2
+   */
+  public CompletionStage<Editor> openEditor(@NotNull Project mpsProject, @NotNull SNodeReference node, @NotNull EditorOpenRequest request) {
+    Logger.getLogger(NavigationSupport.class).warning("No editor support, override #openEditor(project, node, request)");
+    return CompletableFuture.completedFuture(null);
+  }
 
   /**
    * Opens project tree tool and selects the node. Requires: model read, EDT.
