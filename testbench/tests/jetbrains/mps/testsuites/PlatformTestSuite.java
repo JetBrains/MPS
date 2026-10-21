@@ -41,6 +41,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.classloading.DeploymentConcurrencyTest.class,
     jetbrains.mps.vfs.tracking.DiskMemoryConflictTest.class,
     jetbrains.mps.vcs.test.LegacyJavaStubModelRefTest.class,
+    jetbrains.mps.vcs.diff.ui.common.TripleChangeGroupLayoutTest.Painting.class,
     jetbrains.mps.ide.vcs.test.merge.ChangesCalculationTest.class,
     jetbrains.mps.ide.vcs.test.merge.StructuredChangesCalculationTest.class,
     jetbrains.mps.ide.vcs.test.merge.RootStatusTest.class,

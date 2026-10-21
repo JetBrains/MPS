@@ -14,6 +14,9 @@ import java.awt.event.MouseAdapter;
 import javax.swing.event.ChangeListener;
 import java.util.concurrent.atomic.AtomicInteger;
 import jetbrains.mps.openapi.editor.update.UpdaterListener;
+import java.util.List;
+import java.util.Collections;
+import com.intellij.openapi.application.ApplicationManager;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.nodeEditor.EditorComponent;
 import jetbrains.mps.openapi.editor.update.UpdaterListenerAdapter;
@@ -24,12 +27,10 @@ import jetbrains.mps.nodeEditor.AdditionalPainter;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
 import jetbrains.mps.internal.collections.runtime.Sequence;
-import java.util.Collections;
 import java.awt.event.MouseWheelEvent;
 import com.intellij.openapi.editor.ex.util.EditorUtil;
 import com.intellij.util.ui.update.Update;
 import com.intellij.openapi.util.Disposer;
-import java.util.List;
 import java.util.ArrayList;
 import com.intellij.openapi.util.Pair;
 import jetbrains.mps.baseLanguage.closures.runtime.YieldingIterator;
@@ -42,6 +43,16 @@ import com.intellij.diff.util.DiffDrawUtil;
 import com.intellij.openapi.ui.GraphicsConfig;
 import com.intellij.util.ui.GraphicsUtil;
 import jetbrains.mps.baseLanguage.closures.runtime.Wrappers;
+import java.awt.Point;
+import jetbrains.mps.internal.collections.runtime.IterableUtils;
+import jetbrains.mps.nodeEditor.EditorMessage;
+import jetbrains.mps.openapi.editor.message.FormattingOptions;
+import jetbrains.mps.nodeEditor.EditorTooltipProvider;
+import com.intellij.codeInsight.hint.TooltipGroup;
+import com.intellij.codeInsight.hint.TooltipRenderer;
+import com.intellij.codeInsight.hint.TooltipController;
+import com.intellij.codeInsight.hint.LineTooltipRenderer;
+import com.intellij.openapi.ui.popup.Balloon;
 import javax.swing.JScrollPane;
 
 @GeneratedClass(nodeId = "1801212291202741470", model = "r:07568eb8-30c0-4bb3-9dcb-50ee4b8de59a(jetbrains.mps.vcs.diff.ui.common)")
@@ -52,6 +63,7 @@ public final class TripleChangeGroupLayout {
   @Nullable
   private final DiffChangeGroupLayout myRightLayout;
   private final MergingUpdateQueue myUpdateQueue;
+  private final MergingUpdateQueue myPublicationQueue;
   private final Object myUpdateIdentity = new Object();
   private final boolean myIsInspector;
   private final ChangeGroupInvalidateListener myGroupInvalidateListener;
@@ -62,17 +74,21 @@ public final class TripleChangeGroupLayout {
   private final Map<DiffEditor, ChangeListener> myViewportListeners = MapSequence.fromMap(new HashMap<DiffEditor, ChangeListener>());
   private final Map<DiffEditor, AtomicInteger> myOffsets = MapSequence.fromMap(new HashMap<DiffEditor, AtomicInteger>());
   private final UpdaterListener myUpdaterListener;
+  private Map<DiffEditor, List<DiffEditorChangeLayer>> myLayers = Collections.emptyMap();
+  private boolean myDisposed;
 
 
   public TripleChangeGroupLayout(@Nullable DiffChangeGroupLayout leftLayout, @Nullable DiffChangeGroupLayout rightLayout, boolean isInspector) {
+    ApplicationManager.getApplication().assertIsDispatchThread();
     myLeftLayout = leftLayout;
     myRightLayout = rightLayout;
     myIsInspector = isInspector;
     myUpdateQueue = new MergingUpdateQueue("TripleChangeGroupLayout", 100, true, null, null, null, false);
+    myPublicationQueue = new MergingUpdateQueue("TripleChangeGroupLayout publication", 0, true, MergingUpdateQueue.ANY_COMPONENT, myUpdateQueue, null, true);
     myGroupInvalidateListener = createLayoutInvalidateListener();
     myUpdaterListener = createUpdaterListener();
-    check_fgmqy5_a6a61(myLeftLayout, myGroupInvalidateListener);
-    check_fgmqy5_a7a61(myRightLayout, myGroupInvalidateListener);
+    check_fgmqy5_a8a91(myLeftLayout, myGroupInvalidateListener);
+    check_fgmqy5_a9a91(myRightLayout, myGroupInvalidateListener);
     ListSequence.fromList(getEditors()).visitAll((it) -> initEditor(it));
   }
 
@@ -91,19 +107,20 @@ public final class TripleChangeGroupLayout {
     MapSequence.fromMap(myMouseListeners).put(diffEditor, mouseListener);
     editorComponent.addMouseListener(mouseListener);
     editorComponent.addMouseMotionListener(mouseListener);
-    check_fgmqy5_a41a81(diffEditor.getScrollPane(myIsInspector), mouseListener);
+    check_fgmqy5_a41a12(diffEditor.getScrollPane(myIsInspector), mouseListener);
     ChangeListener viewportListener = createViewportListener(diffEditor);
     MapSequence.fromMap(myViewportListeners).put(diffEditor, viewportListener);
     editorComponent.getViewport().addChangeListener(viewportListener);
     editorComponent.getUpdater().addListener(myUpdaterListener);
+    editorComponent.setTooltipProvider(new MyTooltipProvider(diffEditor));
   }
 
   private UpdaterListener createUpdaterListener() {
     return new UpdaterListenerAdapter() {
       @Override
       public void editorUpdated(jetbrains.mps.openapi.editor.EditorComponent editorComponent) {
-        check_fgmqy5_a0a0a0a0a02(myLeftLayout);
-        check_fgmqy5_a1a0a0a0a02(myRightLayout);
+        check_fgmqy5_a0a0a0a0a32(myLeftLayout);
+        check_fgmqy5_a1a0a0a0a32(myRightLayout);
       }
     };
   }
@@ -116,9 +133,10 @@ public final class TripleChangeGroupLayout {
     MouseAdapter mouseListener = MapSequence.fromMap(myMouseListeners).get(diffEditor);
     editorComponent.removeMouseListener(mouseListener);
     editorComponent.removeMouseMotionListener(mouseListener);
-    check_fgmqy5_a7a22(diffEditor.getScrollPane(myIsInspector), mouseListener);
+    check_fgmqy5_a7a52(diffEditor.getScrollPane(myIsInspector), mouseListener);
     editorComponent.getViewport().removeChangeListener(MapSequence.fromMap(myViewportListeners).get(diffEditor));
     editorComponent.getUpdater().removeListener(myUpdaterListener);
+    editorComponent.setTooltipProvider(null);
   }
 
   private ChangeListener createViewportListener(final DiffEditor diffEditor) {
@@ -162,7 +180,7 @@ public final class TripleChangeGroupLayout {
 
       @Override
       public void paintBackground(final Graphics g, final EditorComponent editor) {
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).visitAll((layer) -> layer.paintRectangle(g, editor.getWidth(), editor.getBackground()));
+        ListSequence.fromList(getLayers(diffEditor)).visitAll((layer) -> layer.paintRectangle(g, editor.getWidth(), editor.getBackground()));
       }
 
       @Override
@@ -182,8 +200,9 @@ public final class TripleChangeGroupLayout {
 
       @Override
       public void paint(final Graphics g, final EditorComponent editor) {
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).visitAll((layer) -> layer.paintRectangleBorders(g, editor.getWidth(), editor.getBackground()));
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).where((layer) -> layer.isSelected()).visitAll((it) -> it.paintSelectedRectangle(g, editor.getWidth(), editor.getBackground()));
+        List<DiffEditorChangeLayer> layers = getLayers(diffEditor);
+        ListSequence.fromList(layers).visitAll((layer) -> layer.paintRectangleBorders(g, editor.getWidth(), editor.getBackground()));
+        ListSequence.fromList(layers).where((layer) -> layer.isSelected()).visitAll((it) -> it.paintSelectedRectangle(g, editor.getWidth(), editor.getBackground()));
       }
 
       @Override
@@ -223,13 +242,13 @@ public final class TripleChangeGroupLayout {
 
       @Override
       public void mouseMoved(MouseEvent e) {
-        selectLayers(diffEditor.getLayersUnderMouse(e, myIsInspector));
+        selectLayers(getLayersUnderMouse(e, diffEditor));
         repaintEditorMessagesAndSplitters();
       }
 
       @Override
       public String getToolTipText() {
-        return diffEditor.getToolTipTextFromSelectedLayers(myIsInspector);
+        return getToolTipTextFromSelectedLayers(diffEditor);
       }
 
       @Override
@@ -240,8 +259,9 @@ public final class TripleChangeGroupLayout {
         final int foldingLineWidth = getLeftHighlighter().getFoldingLineWidth();
         final Color editorColor = getEditorComponent().getBackground();
         final Color lineColor = getDottedLineFgLineColor();
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).visitAll((layer) -> layer.paintHighlighter(g, x, width, foldingLineX, foldingLineWidth, editorColor, lineColor, diffEditor.isRightToLeft()));
-        ListSequence.fromList(diffEditor.getLayers(myIsInspector)).where((layer) -> layer.isSelected()).visitAll((layer) -> layer.paintHighlighterBorders(g, x, width, foldingLineX, foldingLineWidth, lineColor, diffEditor.isRightToLeft()));
+        List<DiffEditorChangeLayer> layers = getLayers(diffEditor);
+        ListSequence.fromList(layers).visitAll((layer) -> layer.paintHighlighter(g, x, width, foldingLineX, foldingLineWidth, editorColor, lineColor, diffEditor.isRightToLeft()));
+        ListSequence.fromList(layers).where((layer) -> layer.isSelected()).visitAll((layer) -> layer.paintHighlighterBorders(g, x, width, foldingLineX, foldingLineWidth, lineColor, diffEditor.isRightToLeft()));
       }
     };
   }
@@ -251,7 +271,7 @@ public final class TripleChangeGroupLayout {
     return new MouseAdapter() {
       @Override
       public void mouseMoved(MouseEvent e) {
-        selectLayers(diffEditor.getLayersUnderMouse(e, myIsInspector));
+        selectLayers(getLayersUnderMouse(e, diffEditor));
         repaintEditorMessagesAndSplitters();
       }
       @Override
@@ -274,22 +294,24 @@ public final class TripleChangeGroupLayout {
       myUpdateQueue.queue(new Update(myUpdateIdentity) {
         public void run() {
           updateChangeLayers();
-          repaintEditorMessagesAndSplitters();
         }
       });
     };
   }
 
   public void dispose() {
+    ApplicationManager.getApplication().assertIsDispatchThread();
+    myDisposed = true;
+    myLayers = Collections.emptyMap();
     ListSequence.fromList(getEditors()).visitAll((it) -> disposeEditor(it));
-    check_fgmqy5_a1a63(myLeftLayout, myGroupInvalidateListener);
-    check_fgmqy5_a2a63(myRightLayout, myGroupInvalidateListener);
+    check_fgmqy5_a4a93(myLeftLayout, myGroupInvalidateListener);
+    check_fgmqy5_a5a93(myRightLayout, myGroupInvalidateListener);
     // we should always use Disposer#dispose for Disposable objects instead of direct call
     // of dispose method.
     Disposer.dispose(myUpdateQueue);
   }
 
-  private synchronized void updateChangeLayers() {
+  private void updateChangeLayers() {
     final List<DiffEditorChangeLayer> leftLayers = ListSequence.fromList(new ArrayList<DiffEditorChangeLayer>());
     final List<DiffEditorChangeLayer> centerLayers = ListSequence.fromList(new ArrayList<DiffEditorChangeLayer>());
     final List<DiffEditorChangeLayer> rightLayers = ListSequence.fromList(new ArrayList<DiffEditorChangeLayer>());
@@ -353,15 +375,23 @@ __switch__:
     ListSequence.fromList(layers).visitAll((it) -> buildLayersHierarchy(it));
     ListSequence.fromList(layers).visitAll((it) -> sortLayers(it));
     ListSequence.fromList(layers).visitAll((it) -> calculateLayersCoordinates(it));
+    final Map<DiffEditor, List<DiffEditorChangeLayer>> updatedLayers = MapSequence.fromMap(new HashMap<DiffEditor, List<DiffEditorChangeLayer>>());
     if (leftEditor != null) {
-      leftEditor.setLayers(leftLayers, myIsInspector);
+      MapSequence.fromMap(updatedLayers).put(leftEditor, Collections.unmodifiableList(leftLayers));
     }
     if (centerEditor != null) {
-      centerEditor.setLayers(centerLayers, myIsInspector);
+      MapSequence.fromMap(updatedLayers).put(centerEditor, Collections.unmodifiableList(centerLayers));
     }
     if (rightEditor != null) {
-      rightEditor.setLayers(rightLayers, myIsInspector);
+      MapSequence.fromMap(updatedLayers).put(rightEditor, Collections.unmodifiableList(rightLayers));
     }
+    myPublicationQueue.queue(Update.create(myUpdateIdentity, () -> {
+      if (myDisposed) {
+        return;
+      }
+      myLayers = Collections.unmodifiableMap(updatedLayers);
+      repaintEditorMessagesAndSplitters();
+    }));
   }
 
   private static void buildLayersHierarchy(List<DiffEditorChangeLayer> layers) {
@@ -432,7 +462,8 @@ __switch__:
     return new Pair(leftLayers, rightLayers);
   }
 
-  public synchronized void paintPolygons(@NotNull Graphics g, @NotNull JComponent divider, DiffEditor leftEditor, DiffEditor rightEditor) {
+  public void paintPolygons(@NotNull Graphics g, @NotNull JComponent divider, DiffEditor leftEditor, DiffEditor rightEditor) {
+    ApplicationManager.getApplication().assertIsDispatchThread();
     if (!(divider.isShowing())) {
       return;
     }
@@ -453,13 +484,13 @@ __switch__:
 
   private void paintPolygons(final Graphics2D gg, final int dividerWidth, DiffEditor leftEditor, DiffEditor rightEditor) {
     GraphicsConfig config = GraphicsUtil.setupAAPainting(gg);
-    final Wrappers._int leftOffset = new Wrappers._int(check_fgmqy5_a0b0ec(MapSequence.fromMap(myOffsets).get(leftEditor)));
+    final Wrappers._int leftOffset = new Wrappers._int(check_fgmqy5_a0b0hc(MapSequence.fromMap(myOffsets).get(leftEditor)));
     leftOffset.value += leftEditor.getScrollPanelOffset(myIsInspector);
-    final Wrappers._int rightOffset = new Wrappers._int(check_fgmqy5_a0d0ec(MapSequence.fromMap(myOffsets).get(rightEditor)));
+    final Wrappers._int rightOffset = new Wrappers._int(check_fgmqy5_a0d0hc(MapSequence.fromMap(myOffsets).get(rightEditor)));
     rightOffset.value += rightEditor.getScrollPanelOffset(myIsInspector);
 
-    List<DiffEditorChangeLayer> leftLayers = leftEditor.getLayers(myIsInspector);
-    final List<DiffEditorChangeLayer> rightLayers = rightEditor.getLayers(myIsInspector);
+    List<DiffEditorChangeLayer> leftLayers = getLayers(leftEditor);
+    final List<DiffEditorChangeLayer> rightLayers = getLayers(rightEditor);
 
     List<LayerPolygonsPainter> painters = ListSequence.fromList(leftLayers).where((leftLayer) -> ListSequence.fromList(rightLayers).contains(leftLayer.getOppositeLayer())).select((leftLayer) -> new LayerPolygonsPainter(leftLayer, leftLayer.getOppositeLayer(), leftOffset.value, rightOffset.value)).toList();
 
@@ -517,8 +548,9 @@ __switch__:
     }
   }
 
-  /*package*/ synchronized void selectLayers(Iterable<DiffEditorChangeLayer> layers) {
-    ListSequence.fromList(getEditors()).visitAll((it) -> ListSequence.fromList(it.getLayers(myIsInspector)).visitAll((layer) -> layer.setSelected(false)));
+  /*package*/ void selectLayers(Iterable<DiffEditorChangeLayer> layers) {
+    ApplicationManager.getApplication().assertIsDispatchThread();
+    ListSequence.fromList(getEditors()).visitAll((it) -> ListSequence.fromList(getLayers(it)).visitAll((layer) -> layer.setSelected(false)));
     if (Sequence.fromIterable(layers).isEmpty()) {
       return;
     }
@@ -531,76 +563,142 @@ __switch__:
 
   /*package*/ void repaintEditorMessagesAndSplitters() {
     ListSequence.fromList(getEditors()).visitAll((it) -> it.repaintAndRebuildEditorMessages());
-    check_fgmqy5_a1a26(myLeftLayout);
-    check_fgmqy5_a2a26(myRightLayout);
+    check_fgmqy5_a1a56(myLeftLayout);
+    check_fgmqy5_a2a56(myRightLayout);
   }
-  private static void check_fgmqy5_a6a61(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
+
+  @NotNull
+  /*package*/ List<DiffEditorChangeLayer> getLayers(DiffEditor diffEditor) {
+    ApplicationManager.getApplication().assertIsDispatchThread();
+    List<DiffEditorChangeLayer> layers = MapSequence.fromMap(myLayers).get(diffEditor);
+    return (layers == null ? Collections.<DiffEditorChangeLayer>emptyList() : layers);
+  }
+
+  @NotNull
+  /*package*/ List<DiffEditorChangeLayer> getLayersUnderMouse(MouseEvent e, DiffEditor diffEditor) {
+    final Point p = e.getPoint();
+    return ListSequence.fromList(ListSequence.fromList(getLayers(diffEditor)).where((layer) -> p.y >= layer.getY() && p.y <= layer.getY() + layer.getHeight()).toList()).reversedList();
+  }
+
+  /*package*/ String getToolTipTextFromSelectedLayers(DiffEditor diffEditor) {
+    String text = IterableUtils.join(ListSequence.fromList(getLayers(diffEditor)).where((it) -> it.isSelected()).select((it) -> it.getDescription(DiffSettingsUtil.getUseShortDescriptionsOption())), "\n\n");
+    return EditorMessage.formatMessage(text, FormattingOptions.PLAIN_TEXT);
+  }
+
+  private class MyTooltipProvider implements EditorTooltipProvider {
+
+    private final DiffEditor myDiffEditor;
+    private final TooltipGroup myTooltipGroup;
+    private List<DiffEditorChangeLayer> mySelectedLayers;
+
+    private MyTooltipProvider(DiffEditor diffEditor) {
+      myDiffEditor = diffEditor;
+      myTooltipGroup = new TooltipGroup((myIsInspector ? "INSPECTOR_TOOLTIP_GROUP" : "MAIN_TOOLTIP_GROUP"), 0);
+    }
+
+    @Override
+    public TooltipRenderer getTooltipRenderer(MouseEvent e) {
+
+      List<DiffEditorChangeLayer> selectedLayers = ListSequence.fromList(getLayers(myDiffEditor)).where((it) -> it.isSelected()).toList();
+      if (!(Objects.equals(selectedLayers, mySelectedLayers))) {
+        TooltipController.getInstance().cancelTooltip(myTooltipGroup, e, true);
+        mySelectedLayers = selectedLayers;
+      }
+      if (ListSequence.fromList(selectedLayers).isEmpty()) {
+        TooltipController.getInstance().cancelTooltip(myTooltipGroup, e, false);
+        return null;
+      }
+      LineTooltipRenderer bigRenderer = null;
+
+      for (DiffEditorChangeLayer layer : selectedLayers) {
+        String text = layer.getDescription(DiffSettingsUtil.getUseShortDescriptionsOption());
+        text = EditorMessage.formatMessage(text, FormattingOptions.PLAIN_TEXT);
+        if (bigRenderer == null) {
+          bigRenderer = new LineTooltipRenderer(text, new Object[]{text});
+        } else {
+          bigRenderer.addBelow(text);
+        }
+      }
+      return bigRenderer;
+    }
+
+    @Override
+    public Balloon.Position getPreferredPosition() {
+      return Balloon.Position.atRight;
+    }
+
+    @Override
+    public TooltipGroup getTooltipGroup() {
+      return myTooltipGroup;
+    }
+  }
+  private static void check_fgmqy5_a8a91(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
     if (null != checkedDotOperand) {
       checkedDotOperand.addInvalidateListener(myGroupInvalidateListener);
     }
 
   }
-  private static void check_fgmqy5_a7a61(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
+  private static void check_fgmqy5_a9a91(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
     if (null != checkedDotOperand) {
       checkedDotOperand.addInvalidateListener(myGroupInvalidateListener);
     }
 
   }
-  private static void check_fgmqy5_a41a81(JScrollPane checkedDotOperand, MouseAdapter mouseListener) {
+  private static void check_fgmqy5_a41a12(JScrollPane checkedDotOperand, MouseAdapter mouseListener) {
     if (null != checkedDotOperand) {
       checkedDotOperand.addMouseWheelListener(mouseListener);
     }
 
   }
-  private static void check_fgmqy5_a0a0a0a0a02(DiffChangeGroupLayout checkedDotOperand) {
+  private static void check_fgmqy5_a0a0a0a0a32(DiffChangeGroupLayout checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.invalidate();
     }
 
   }
-  private static void check_fgmqy5_a1a0a0a0a02(DiffChangeGroupLayout checkedDotOperand) {
+  private static void check_fgmqy5_a1a0a0a0a32(DiffChangeGroupLayout checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.invalidate();
     }
 
   }
-  private static void check_fgmqy5_a7a22(JScrollPane checkedDotOperand, MouseAdapter mouseListener) {
+  private static void check_fgmqy5_a7a52(JScrollPane checkedDotOperand, MouseAdapter mouseListener) {
     if (null != checkedDotOperand) {
       checkedDotOperand.removeMouseWheelListener(mouseListener);
     }
 
   }
-  private static void check_fgmqy5_a1a63(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
+  private static void check_fgmqy5_a4a93(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
     if (null != checkedDotOperand) {
       checkedDotOperand.removeInvalidateListener(myGroupInvalidateListener);
     }
 
   }
-  private static void check_fgmqy5_a2a63(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
+  private static void check_fgmqy5_a5a93(DiffChangeGroupLayout checkedDotOperand, ChangeGroupInvalidateListener myGroupInvalidateListener) {
     if (null != checkedDotOperand) {
       checkedDotOperand.removeInvalidateListener(myGroupInvalidateListener);
     }
 
   }
-  private static int check_fgmqy5_a0b0ec(AtomicInteger checkedDotOperand) {
+  private static int check_fgmqy5_a0b0hc(AtomicInteger checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.get();
     }
     return 0;
   }
-  private static int check_fgmqy5_a0d0ec(AtomicInteger checkedDotOperand) {
+  private static int check_fgmqy5_a0d0hc(AtomicInteger checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.get();
     }
     return 0;
   }
-  private static void check_fgmqy5_a1a26(DiffChangeGroupLayout checkedDotOperand) {
+  private static void check_fgmqy5_a1a56(DiffChangeGroupLayout checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.repaintSplitter();
     }
 
   }
-  private static void check_fgmqy5_a2a26(DiffChangeGroupLayout checkedDotOperand) {
+  private static void check_fgmqy5_a2a56(DiffChangeGroupLayout checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.repaintSplitter();
     }
