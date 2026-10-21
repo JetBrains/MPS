@@ -23,7 +23,6 @@ import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorProvider;
 import com.intellij.openapi.fileEditor.ex.FileEditorProviderManager;
-import com.intellij.openapi.fileEditor.ex.IdeDocumentHistory;
 import com.intellij.openapi.wm.IdeFocusManager;
 import com.intellij.openapi.wm.ToolWindowManager;
 import jetbrains.mps.editor.runtime.cells.ReadOnlyUtil;
@@ -48,7 +47,6 @@ import org.jetbrains.mps.openapi.model.SNodeUtil;
 import org.jetbrains.mps.openapi.module.SRepository;
 
 import java.awt.Component;
-import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -86,7 +84,6 @@ public class MPSEditorOpener {
     ThreadUtils.assertEDT();
     myProject.getModelAccess().checkReadAccess();
 
-    myProject.getProject().getService(IdeDocumentHistory.class).includeCurrentCommandAsNavigation();
     /* TODO use SNodeReference instead of SNode */
     return doOpenNode(node, focus, select);
   }
@@ -123,14 +120,6 @@ public class MPSEditorOpener {
       LOG.debug("No editor opened, project is disposed or file is invalid: " + nodeRef);
       return null;
     }
-    /*
-    FIXME this is no-op, legacy code, remove
-    - IdeDocumentHistoryImpl.includeCurrentCommandAsNavigation() only sets currentCommandIsNavigation = true.
-    - onCommandStarted resets that flag, and only onCommandFinished acts on it (and only if the command also had moves). So the flag matters only inside a running platform command.
-    - FileEditorManagerImpl doesn't open files inside a command of its own (no executeCommand).
-    - Neither of our phases runs inside a command. Phase 1 is an EDTExecutor read task, and phases 2–3 are a plain invokeLater.
-     */
-    myProject.getProject().getService(IdeDocumentHistory.class).includeCurrentCommandAsNavigation();
     final Editor nodeEditor = openFile(file, focus);
     if (nodeEditor == null) {
       LOG.debug("No editor opened for " + nodeRef);
