@@ -91,7 +91,9 @@ ARG_VALIDATION_ERROR_RE = re.compile(
 # A rejection whose listing is empty means the Welcome screen: no project is open at all, so no
 # projectPath could have helped. Lifecycle scenarios pass through this state deliberately.
 WELCOME_REJECTION_RE = re.compile(r'Currently open projects:\s*\{\s*"projects"\s*:\s*\[\s*\]')
-MODAL_BLOCKED_RE = re.compile(r"MODAL_BLOCKED")
+# Only the error envelope's code counts: skill docs and tool descriptions mention MODAL_BLOCKED, so
+# a bare-string match flagged an ordinary doc read as a blocked call (round 38, S4-opus-1:15).
+MODAL_BLOCKED_RE = re.compile(r'"code"\s*:\s*"MODAL_BLOCKED"')
 # D51/D52: a concept-assignability rejection, and whether it carried a next-step hint.
 ASSIGNABILITY_ERROR_RE = re.compile(r"Concept assignability error")
 ASSIGNABILITY_HINT_RE = re.compile(r'"(?:wrapperCandidates|targetCandidates)"\s*:')
@@ -896,7 +898,7 @@ def analyse_run(run_id: str, runs: Path):
                         call["arg_validation_error"] = is_arg_validation_error(call["error"], text)
                         call["welcome_rejection"] = (call["pre_dispatch_rejection"]
                                                      and bool(WELCOME_REJECTION_RE.search(text)))
-                        call["modal_blocked"] = bool(MODAL_BLOCKED_RE.search(text))
+                        call["modal_blocked"] = call["error"] and bool(MODAL_BLOCKED_RE.search(text))
                         call["assignability_error"] = call["error"] and bool(ASSIGNABILITY_ERROR_RE.search(text))
                         call["assignability_hinted"] = (call["assignability_error"]
                                                         and bool(ASSIGNABILITY_HINT_RE.search(text)))

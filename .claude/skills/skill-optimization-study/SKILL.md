@@ -168,7 +168,9 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    detached (`run_worker.sh` first rejects MPS-related user agents, then installs the live skills;
    either guard failure aborts with exit 3) →
    poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
-   (read-only `mps_mcp_*`, always with `projectPath`) → record pass/evidence in `<id>.meta.json`
+   (read-only `mps_mcp_*`, always with `projectPath`) → set `taskPass` (true/false) and
+   `taskEvidence` (the `<id>.eval.md` name) in `<id>.meta.json` — `analyze_runs.py` reads only
+   `taskPass` into the `pass` column
    → announce the path and close with `mps_mcp_close_project` (`force=false`; on `MODAL_BLOCKED`
    ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Pass the
    model's gate-2a level as `EFFORT` on every launch. Check that every meta's `effort` is that

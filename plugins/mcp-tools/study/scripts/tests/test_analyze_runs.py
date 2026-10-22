@@ -293,6 +293,23 @@ class AnalyzeRunsTest(unittest.TestCase):
         self.assertEqual("2", row["close_project_calls"])
         self.assertEqual("1", row["modal_blocked"])
 
+    def test_modal_blocked_counts_only_the_error_envelope_not_a_doc_that_names_the_code(self) -> None:
+        doc = ("If the wizard was already open before that, APPLY answers `MODAL_BLOCKED` without writing "
+               'anything. Example: {"ok":false,"code":"MODAL_BLOCKED"}')
+        blocked = '{"ok":false,"error":"a modal dialog is open","code":"MODAL_BLOCKED","details":{"timeoutMs":20000}}'
+        events = [
+            assistant("a", "Bash"), result("a", doc),
+            assistant("b", "mcp__server__mps_mcp_print_node"), result("b", json.dumps({"ok": True, "data": doc})),
+            # an error without the envelope's code field does not count either
+            assistant("c", "mcp__server__mps_mcp_print_node"),
+            result("c", "MCP error: a modal dialog is open (MODAL_BLOCKED)", error=True),
+            assistant("d", "mcp__server__mps_mcp_run_migrations"), result("d", blocked),
+        ]
+        self.write_run("S4-opus-1", events, None, meta={"scenario": "S4"})
+
+        self.assertEqual(0, self.run_analyzer().returncode)
+        self.assertEqual("1", self.metrics()["modal_blocked"])
+
     def test_assignability_columns_count_hints_and_calls_until_the_same_tool_kind_succeeds(self) -> None:
         """D51/D52: a recovery window ends at the next ok call of the same tool and operation/kind, a
         rejection inside it is not counted again, and one fixed through another operation is unrecovered."""
