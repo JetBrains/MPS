@@ -18,7 +18,7 @@ expressions = `samples/expressions` with `classes_gen`, for S11 and S12).
 | S2 | Extend StateChart with `Guard` + intention | statechart | H4 discovery, H7 skills |
 | S3 | 40 recipes from `recipes.csv` (bulk, cross-refs, cookbook) | recipes (+ csv) | H3 bulk, H6 refs, H1 |
 | S4 | Rename property, change cardinality, migration | recipes | H2, H5 validation, H8 |
-| S5 | Fix 12 injected problems (`fixtures/PROBLEMS.md`) | recipes-broken | H5 |
+| S5 | Fix 12 injected problems (`fixtures/PROBLEMS.md`) + 2 identity-preserving moves (prompt item 4, revised 2026-10-22) | recipes-broken | H5 |
 | S6 | Generator → Java per Recipe; behavior via parser and via JSON AST | recipes-full | H1, H2 |
 | S7 | `@tests` model, 3 NodesTestCases + 1 EditorTestCase, run config | recipes | H2, H7 |
 | S8 | Onboard unknown project → `statechart-dsl` skill via `mps-dsl-memory` | statechart | H4, H7 |

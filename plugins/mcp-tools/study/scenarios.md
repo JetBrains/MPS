@@ -9,7 +9,8 @@ How to run a cell is the `skill-optimization-study` skill (`references/harness.m
 `references/scenarios.md`). Prompts live in [`scenarios/`](scenarios/) and are frozen — do not edit
 `worker_prompt.md` to make a cell cover a new topic; add a scenario. Open defects that change how
 to read a result are in [`docs-defects.md`](docs-defects.md). Fixtures are regenerated per
-[`fixtures/README.md`](fixtures/README.md), not stored in git.
+[`fixtures/README.md`](fixtures/README.md), not stored in git. Exception: S5 was revised on
+2026-10-22 (round 39) at the user's request to add identity-preserving moves; see S5.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -22,7 +23,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S2 | Extend an existing statechart language with a `Guard` child, an editor that shows it, a non-blank constraint, and an "Add guard" intention, then put a guard on one sandbox transition. |
 | S3 | Load 40 recipes from a CSV, wire `seeAlso` by name, and add one cookbook that references all of them. |
 | S4 | Rename a property, relax a cardinality, add a required child, and write a migration that fills that child on existing recipes, then apply it with `mps_mcp_run_migrations`. |
-| S5 | Find and repair twelve injected problems (dangling references, missing children, invalid property values) without deleting recoverable roots. |
+| S5 | Find and repair twelve injected problems (dangling references, missing children, invalid property values) without deleting recoverable roots, and make two identity-preserving moves (reorder a cookbook entry, move a step to another recipe). |
 | S6 | Add a generator that emits one Java class per recipe, and add the same behavior method twice: once through the Java parser, once as a JSON AST. |
 | S7 | Add three node tests and one editor test, create a run configuration, and run the tests. |
 | S8 | Explore an unknown statechart project and write a project-local `statechart-dsl` skill for later agents. Models must not change. |
@@ -101,10 +102,17 @@ in `scenarios/S5/PROBLEMS.md`). Mutates samples only; root count must stay the s
 transcript says a root was unrecoverable.
 Forces finding problems (`check_root_node_problems`) and the smallest repair: repoint or remove
 a dangling reference, add a missing child, correct a bad property. One injected item is a
-typesystem warning, not an error, and does not count against the 0-error criterion.
+typesystem warning, not an error, and does not count against the 0-error criterion. Also forces
+two moves the checker cannot see (prompt item 4, criterion 4, ids in `PROBLEMS.md`): the Omelette
+entry to the front of `Weeknight Basics`, and the Crepes rest step into `Pancakes` at index 1,
+both keeping their node ids.
 Run to verify: the analysis-tool half of `mps-mcp-workflow` (problem check, quick fixes,
-`print_node` while repairing), surgical `mps-node-editing`. Not a cell for authoring constraints
-or typesystem — the rules are already in the fixture.
+`print_node` while repairing), surgical `mps-node-editing`, `mps_mcp_alter_nodes`
+MOVE_NODE_TO_PARENT (only cell; MOVE_CHILD is seen, not forced). Not a cell for authoring constraints or typesystem —
+the rules are already in the fixture.
+Prompt revised 2026-10-22 (round 39) to add item 4 and criterion 4. S5 passes before round 39 are
+3-criterion passes and not comparable; neither are their turn, token and call totals. Each run's
+meta records `promptSha256`, so split by it. The S5 baseline chains are re-captured from round 39.
 Hypotheses: H5.
 
 **S6 — generator and two ways to write behavior.** Fixture: `recipes-full` (samples kept). Mutates
@@ -235,7 +243,9 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-intentions` | S2 | | |
 | `mps-aspect-migrations` | S4 | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
 | `mps-aspect-generator` | S6 | | |
-| `mps-node-editing` | S1 and S6 (hand-written blueprints), S3 (bulk + aggregate root), S5 (surgical repair), S2 and S4 and S7 (writes) | | S8 and S9 must not write |
+| `mps-node-editing` | S1 and S6 (hand-written blueprints), S3 (bulk + aggregate root), S5 (surgical repair, identity-preserving moves), S2 and S4 and S7 (writes) | | S8 and S9 must not write |
+| `mps_mcp_alter_nodes` MOVE_NODE_TO_PARENT | S5 (forced: same-model reparent into a middle index) | | cross-model moves, promotion to root, console-node moves (no cell) |
+| `mps_mcp_alter_nodes` MOVE_CHILD | | S5 (the reorder; a same-parent MOVE_NODE_TO_PARENT also passes) | cross-model moves, promotion to root, console-node moves (no cell) |
 | `mps-node-editing/scripts/table_to_bulk_insert.py` | S3 | | the aggregate cookbook root is outside the spec (D82) |
 | `mps-baselanguage` | S6 (parser vs JSON AST), S1 and S2 (function bodies in behavior / constraints) | S7 (test bodies) | S10's one empty class is not a signal |
 | `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print) | | |
