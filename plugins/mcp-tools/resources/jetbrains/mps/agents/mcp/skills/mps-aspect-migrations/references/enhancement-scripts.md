@@ -1,6 +1,6 @@
 # jetbrains.mps.lang.script — Enhancement Scripts
 
-Open this file when iterating over concept instances to update properties/children/references, or when wiring `ExtractInterfaceMigration`, `FactoryMigrationScriptPart`, or `CommentMigrationScriptPart`.
+Open this file when iterating over concept instances on demand (not version-gated) to update properties/children/references, or when wiring `ExtractInterfaceMigration`, `FactoryMigrationScriptPart`, or `CommentMigrationScriptPart`.
 
 ## Language
 
