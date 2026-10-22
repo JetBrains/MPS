@@ -12,6 +12,7 @@
   <property name="artifacts.mpsWorkbench" location="${build.dir}/artifacts/mpsWorkbench" />
   <property name="artifacts.mpsJavaCore" location="${build.dir}/artifacts/mpsJavaCore" />
   <property name="artifacts.mpsTrueBootstrap" location="${build.dir}/artifacts/mpsTrueBootstrap" />
+  <property name="artifacts.mpsMigrationCore" location="${build.dir}/artifacts/mpsMigrationCore" />
   <property name="artifacts.IDEA" location="${idea_home}" />
   <property file="${artifacts.mpsBootstrapCore}/build.properties" prefix="import.mpsBootstrapCore" />
   <property name="mpsBootstrapCore.version.major" value="${import.mpsBootstrapCore.mpsBootstrapCore.version.major}" />
@@ -62,6 +63,7 @@
     <ant antfile="build/mpsTroveCollections.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsWorkbench.xml" inheritAll="false" useNativeBasedir="true" />
     <ant antfile="build/mpsJavaCore.xml" inheritAll="false" useNativeBasedir="true" />
+    <ant antfile="build/mpsMigrationCore.xml" inheritAll="false" useNativeBasedir="true" />
   </target>
   
   <target name="fetchDependencies" />
@@ -123,6 +125,7 @@
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-icons.jar" />
         <fileset file="${artifacts.mpsWorkbench}/lib/mps-workbench.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/lib/mps-project-check.jar" />
+        <fileset file="${artifacts.mpsMigrationCore}/migration-platform/lib/migration-platform.jar" />
         <fileset file="${artifacts.IDEA}/plugins/mcpserver/lib/mcpserver.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.serialization.json.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.kotlinx.serialization.core.jar" />

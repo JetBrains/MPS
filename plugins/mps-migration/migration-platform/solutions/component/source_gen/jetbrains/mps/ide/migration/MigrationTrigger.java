@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import jetbrains.mps.make.IMakeService;
 import jetbrains.mps.make.IMakeNotificationListener;
 import jetbrains.mps.make.MakeNotification;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicBoolean;
 import jetbrains.mps.ide.project.ProjectHelper;
 import jetbrains.mps.ide.MPSCoreComponents;
 import jetbrains.mps.make.MakeServiceComponent;
@@ -44,6 +46,7 @@ import jetbrains.mps.ide.migration.wizard.MigrationError;
 import jetbrains.mps.errors.item.IssueKindReportItem;
 import java.util.function.BinaryOperator;
 import com.intellij.openapi.application.ModalityState;
+import java.util.concurrent.TimeUnit;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import org.jetbrains.mps.openapi.module.SRepository;
 import java.util.ArrayList;
@@ -86,6 +89,7 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
 
   private final MigrationBlock myMigrationBlock = new MigrationBlock(this);
   private final AtomicReference<PostponedState> myPostponedState = new AtomicReference<PostponedState>();
+  private final AtomicReference<PostponedState> myAssistantPostponedState = new AtomicReference<PostponedState>();
 
   private final IMakeService myMake;
   private final IMakeNotificationListener myMakeListener = new IMakeNotificationListener() {
@@ -105,6 +109,14 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
   private MigrationProblemHandler myIssueReporter = new HeadlessMigrationProblemHandler();
 
   private volatile boolean myMigrationRunning = false;
+
+  private static final String AUTO_ASSISTANT_PROPERTY = "mps.migration.assistant.auto";
+  /**
+   * System.nanoTime() deadline. Starts already lapsed; nanoTime may be negative, so every comparison is a difference, never an absolute test.
+   */
+  private static final AtomicLong ourAutoAssistantSuppressedUntil = new AtomicLong(System.nanoTime());
+  private final AtomicBoolean myHeadlessRunning = new AtomicBoolean(false);
+  private final Object myPostponeLock = new Object();
 
   public MigrationTrigger(Project ideaProject) {
     myProject = ideaProject;
@@ -273,6 +285,11 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
       return;
     }
 
+    if (!(force) && isAutoAssistantSuppressed()) {
+      postponeWithoutAssistant();
+      return;
+    }
+
     final MigrationBlock.BlockCause scheduledBlockCause = new MigrationBlock.BlockCause("migration is already scheduled");
     myMigrationBlock.blockMigrationsCheck(scheduledBlockCause);
 
@@ -281,6 +298,11 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
       // as we use ui, postpone to EDT
       ApplicationManager.getApplication().invokeLater(() -> {
         try {
+          // a check queued before the suppression started (the project-open check) must not show the modal progress and the wizard
+          if (!(force) && isAutoAssistantSuppressed()) {
+            postponeWithoutAssistant();
+            return;
+          }
           ProgressManager.getInstance().run(new Task.Modal(myProject, "Synchronizing Files...", false) {
             public void run(@NotNull ProgressIndicator pi) {
               pi.setIndeterminate(true);
@@ -339,6 +361,102 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
   }
 
   /**
+   * Until millis from now, a check that finds pending migrations posts the "Migration required"
+   * balloon instead of opening the wizard, in every open project. Explicit runs (force) are
+   * unaffected. Later calls only extend the deadline, never shorten it.
+   */
+  public static void suppressAutoAssistantFor(long millis) {
+    final long until = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(millis);
+    ourAutoAssistantSuppressedUntil.accumulateAndGet(until, (cur, next) -> (((next - cur) > 0) ? next : cur));
+  }
+
+  public static boolean isAutoAssistantSuppressed() {
+    return ((System.nanoTime() - ourAutoAssistantSuppressedUntil.get()) < 0) || "false".equalsIgnoreCase(System.getProperty(AUTO_ASSISTANT_PROPERTY));
+  }
+
+  /**
+   * Test hook: forget the deadline.
+   */
+  public static void clearAutoAssistantSuppression() {
+    ourAutoAssistantSuppressedUntil.set(System.nanoTime());
+  }
+
+  /**
+   * Runs migration (the caller drives MigrationTask) off the EDT, with checks blocked.
+   */
+  public void runHeadlessMigration(@NotNull Runnable migration) {
+    if (!(myHeadlessRunning.compareAndSet(false, true))) {
+      throw new IllegalStateException("A headless migration is already running in this project");
+    }
+    MigrationBlock.BlockCause cause = new MigrationBlock.BlockCause("migration is running headlessly");
+    myMigrationBlock.blockMigrationsCheck(cause);
+    myMigrationRunning = true;
+    try {
+      // before the run: a human clicking the balloon's Migrate meanwhile would get the modal
+      // "Migration can't start", which stalls every invokeAndWait of the run until it is dismissed
+      // under the lock: a postponeWithoutAssistant() that read myHeadlessRunning before it was set has posted its balloon by now
+      synchronized (myPostponeLock) {
+        myNotifications.expireRequired();
+      }
+      syncRefresh();
+      migration.run();
+    } finally {
+      try {
+        // also after a failed run: partly migrated models must be re-read
+        cleanup();
+      } finally {
+        myPostponedState.set(null);
+        // a check queued before the run may have posted a balloon from the half-migrated state
+        synchronized (myPostponeLock) {
+          myAssistantPostponedState.set(null);
+          myNotifications.expireRequired();
+        }
+        myMigrationRunning = false;
+        myHeadlessRunning.set(false);
+        // sets myShouldCheckAfterUnblock, so the unblock below re-checks once and re-announces what
+        // the run left pending (a balloon while suppressed); no second, racing check
+        myMigrationBlock.isMigrationForbidden();
+        myMigrationBlock.unblockMigrationsCheck(cause);
+      }
+    }
+  }
+
+  private void postponeWithoutAssistant() {
+    final MigrationBlock.BlockCause cause = new MigrationBlock.BlockCause("migration is already scheduled");
+    myMigrationBlock.blockMigrationsCheck(cause);
+    ApplicationManager.getApplication().executeOnPooledThread(() -> {
+      try {
+        if (myProject.isDisposed()) {
+          return;
+        }
+        // the scan runs outside myPostponeLock; the lock only orders the balloon against the
+        // expireRequired() calls of runHeadlessMigration. Once scheduleMigration decided to postpone,
+        // the balloon is posted even if the suppression window lapsed meanwhile: a balloon is never wrong.
+        MigrationSetup setup = myMpsProject.getModelAccess().computeReadAction(() -> new MigrationSetup(myMpsProject));
+        PostponedState newState = PostponedState.current(setup);
+        synchronized (myPostponeLock) {
+          // no balloon from a half-migrated state: a headless run, or the wizard a human started meanwhile
+          if (myMigrationRunning || myHeadlessRunning.get()) {
+            return;
+          }
+          PostponedState saved = myAssistantPostponedState.get();
+          PostponedState added = ((saved == null) ? newState : newState.substract(saved));
+          PostponedState humanPostponed = myPostponedState.get();
+          if (humanPostponed != null) {
+            added = added.substract(humanPostponed);
+          }
+          if (added.hasSomethingToApply()) {
+            myAssistantPostponedState.set(newState);
+            myNotifications.showRequired(setup);
+          }
+        }
+      } finally {
+        myMigrationBlock.unblockMigrationsCheck(cause);
+      }
+    });
+  }
+
+  /**
    * No idea what does 'Pre-Update Check' mean; assume it's a way to check if project has everything ready prior
    * to updating to a new MPS version.
    */
@@ -381,6 +499,7 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
   }
 
   private Tuples._2<MigrationResult, MigrationError> runMigration(MigrationSetup migrationSetup) {
+    myAssistantPostponedState.set(null);
     myMigrationRunning = true;
     try {
       MigrationSessionImpl session = new MigrationSessionImpl(myMpsProject, migrationSetup);

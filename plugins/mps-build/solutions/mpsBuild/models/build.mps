@@ -118,7 +118,7 @@
       <concept id="6057319140845467763" name="jetbrains.mps.build.structure.BuildSource_JavaLibrary" flags="ng" index="PiPfp">
         <child id="6057319140845478673" name="elements" index="PiKyV" />
       </concept>
-      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="ng" index="2Ry0Ak">
+      <concept id="8618885170173601777" name="jetbrains.mps.build.structure.BuildCompositePath" flags="nn" index="2Ry0Ak">
         <property id="8618885170173601779" name="head" index="2Ry0Am" />
         <child id="8618885170173601778" name="tail" index="2Ry0An" />
       </concept>
@@ -486,7 +486,7 @@
         <child id="322010710375956261" name="path" index="3LF7KH" />
       </concept>
       <concept id="3335207478148059730" name="jetbrains.mps.build.mps.structure.BuildMpsLayout_ModuleJarContent" flags="ng" index="3PtdJl" />
-      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="ng" index="1SiIV0">
+      <concept id="7259033139236285166" name="jetbrains.mps.build.mps.structure.BuildMps_ExtractedModuleDependency" flags="nn" index="1SiIV0">
         <child id="7259033139236285167" name="dependency" index="1SiIV1" />
       </concept>
       <concept id="4157435862321765764" name="jetbrains.mps.build.mps.structure.BuildMps_BrandingVersion" flags="ng" index="3ZAF1B">
@@ -66825,6 +66825,9 @@
       <node concept="nCB5N" id="X5qzrOgtl1" role="nCB5Z">
         <ref role="nCB5Y" node="6zSiHRgtmKh" resolve="kernel-resources" />
       </node>
+      <node concept="nCB5N" id="1f$9YSelJb8" role="nCB5Z">
+        <ref role="nCB5Y" node="1nJh0raUWjx" resolve="migration-platform" />
+      </node>
       <node concept="2GhqfE" id="X5qzrOsk7w" role="nCB5Z">
         <node concept="3yrxFa" id="X5qzrOsk7y" role="3yrxIG">
           <ref role="3yrxFb" node="X5qzrOsk0G" />
@@ -66864,6 +66867,9 @@
     </node>
     <node concept="2sgV4H" id="X5qzrOj7dh" role="1l3spa">
       <ref role="1l3spb" node="6IJvZDkyfZ_" resolve="mpsTrueBootstrap" />
+    </node>
+    <node concept="2sgV4H" id="1f$9YSelJb7" role="1l3spa">
+      <ref role="1l3spb" node="77ZqjhZbLRc" resolve="mpsMigrationCore" />
     </node>
   </node>
 </model>

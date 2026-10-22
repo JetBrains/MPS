@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.common
 
 import jetbrains.mps.agents.mcp.tools.logging.*
+import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
 
 import com.google.gson.*
 import com.intellij.mcpserver.McpCallAdditionalDataElement
@@ -3955,12 +3956,18 @@ abstract class AbstractOps : McpToolset {
      * Exception: the "Nothing to make" path returns `success=true, runtimeReady=true` — nothing
      * changed, so the runtime is unchanged-therefore-ready. Callers distinguishing no-op from
      * successful build should also inspect [message].
+     *
+     * `migrationsPending` is the number of pending module and project migrations of the project
+     * (descriptor version updates are not counted), set only after a successful make that built a
+     * language and reloaded its runtime (a rebuilt language is what makes a new migration script
+     * visible). Null otherwise, or when the count could not be computed.
      */
     data class MakeResult(
         val success: Boolean,
         val message: String,
         val details: List<MakeMessage> = emptyList(),
         val runtimeReady: Boolean = true,
+        val migrationsPending: Int? = null,
     )
 
     /**
@@ -4208,7 +4215,9 @@ abstract class AbstractOps : McpToolset {
             }
 
             if (result.isSucessful) { // isSucessful: MPS IResult API typo
-                MakeResult(true, "Make successful", messages, runtimeReady = runtimeReady)
+                // Only a reloaded runtime offers the new scripts, so a stale one would undercount.
+                val migrationsPending = if (targetLanguageModuleRefs.isEmpty() || !runtimeReady) null else pendingMigrationCount(mpsProject)
+                MakeResult(true, "Make successful", messages, runtimeReady = runtimeReady, migrationsPending = migrationsPending)
             } else {
                 MakeResult(false, "Make failed: ${result.message()}", messages, runtimeReady = false)
             }
@@ -4220,4 +4229,18 @@ abstract class AbstractOps : McpToolset {
             MakeResult(false, "Make error: ${e.message?.takeIf { it.isNotBlank() } ?: e.toString()}", runtimeReady = false)
         }
     }
+
+    /**
+     * [MakeResult.migrationsPending] after a language make: one read action over the project's
+     * `MigrationSetup`. A failure only drops the hint, it must never fail the make.
+     */
+    private suspend fun pendingMigrationCount(mpsProject: MPSProject): Int? =
+        try {
+            executeBackgroundRead(mpsProject) { HeadlessMigrations.pendingCount(mpsProject) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.warn("Could not count the pending migrations after a language make", e)
+            null
+        }
 }

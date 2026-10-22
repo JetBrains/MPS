@@ -78,6 +78,11 @@ public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
     cfg.addPlugin(new File(pluginsDir, "execution-api").getAbsolutePath(), "jetbrains.mps.execution.api");
     cfg.addPlugin(new File(pluginsDir, "execution-languages").getAbsolutePath(), "jetbrains.mps.execution.languages");
     cfg.addPlugin(new File(pluginsDir, "execution-configurations").getAbsolutePath(), "jetbrains.mps.execution.configurations");
+    // mps_mcp_run_migrations needs the migration engine and its project service (MigrationProperties);
+    // the migration plugin depends on the model checker. Not withMigrationPlugin(): that also adds
+    // mps-project-migrations, whose project migrations would make every fixture "pending".
+    cfg.addPlugin(new File(pluginsDir, "mps-modelchecker").getAbsolutePath(), "jetbrains.mps.ide.modelchecker");
+    cfg.addPlugin(new File(pluginsDir, "mps-migration").getAbsolutePath(), "jetbrains.mps.ide.migration.workbench");
     ourEnvironment = new IdeaEnvironment(cfg);
     ourEnvironment.init();
   }

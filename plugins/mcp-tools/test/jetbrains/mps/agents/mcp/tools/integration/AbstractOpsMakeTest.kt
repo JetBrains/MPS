@@ -7,6 +7,7 @@ import jetbrains.mps.project.MPSProject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -24,6 +25,7 @@ class AbstractOpsMakeTest : McpIntegrationTestBase() {
         assertEquals("Nothing to make (no inputs resolved)", result.message)
         assertTrue(result.runtimeReady)
         assertFalse("A no-op make must not leave the migration blocker session active", makeService.isSessionActive)
+        assertNull("Only a make that built a language counts pending migrations", result.migrationsPending)
     }
 
     private class MakeOps : AbstractOps() {

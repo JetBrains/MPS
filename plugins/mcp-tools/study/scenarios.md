@@ -21,7 +21,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S1 | From an empty project, build a recipes language (concepts, enums, editors, a property constraint, a no-self-reference scope, a typesystem warning, a behavior method) and three sample recipes in a solution. |
 | S2 | Extend an existing statechart language with a `Guard` child, an editor that shows it, a non-blank constraint, and an "Add guard" intention, then put a guard on one sandbox transition. |
 | S3 | Load 40 recipes from a CSV, wire `seeAlso` by name, and add one cookbook that references all of them. |
-| S4 | Rename a property, relax a cardinality, add a required child, and write a migration that fills that child on existing recipes. Applying the migration headlessly is still blocked (see the directory). |
+| S4 | Rename a property, relax a cardinality, add a required child, and write a migration that fills that child on existing recipes, then apply it with `mps_mcp_run_migrations`. |
 | S5 | Find and repair twelve injected problems (dangling references, missing children, invalid property values) without deleting recoverable roots. |
 | S6 | Add a generator that emits one Java class per recipe, and add the same behavior method twice: once through the Java parser, once as a JSON AST. |
 | S7 | Add three node tests and one editor test, create a run configuration, and run the tests. |
@@ -85,11 +85,12 @@ script, and a language-version bump. The prompt also asks that the editors still
 recipes; the done criteria do not check the editor.
 Run to verify: `mps-aspect-migrations` (only cell), `mps-aspect-structure-concepts` for rename /
 cardinality / new child.
-**Do not treat a failed "migration applied" as a docs regression.** There is still no MCP tool
-that runs a pending migration headlessly (D48). `reload_all` on the version-bumped project can
-open the Migration Assistant and block every later `mps_mcp_*` call for the rest of the round.
-The measurable half is: script exists, version bumped, structure matches. The apply half fails
-for a tool gap.
+The apply half runs over `mps_mcp_run_migrations` (CHECK, then APPLY; D48). It needs the
+`MigrationTrigger` change of the D48 plan in the MPS build under test: without it the Migration
+Assistant can still open after the language `MAKE` and block every later `mps_mcp_*` call, and a
+failed "migration applied" is then the tool gap, not a docs regression. `mps_control.sh start`
+passes `-Dmps.migration.assistant.auto=false`, so the wizard cannot open before the worker's first
+call either.
 Hypotheses: H2, H5, H8.
 Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, and S9. Restart before this
 cell if any of those already loaded the language in this process (D80 includes S4; the skill's
@@ -232,7 +233,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
 | `mps-aspect-intentions` | S2 | | |
-| `mps-aspect-migrations` | S4 | | apply-half is D48; see S4 above |
+| `mps-aspect-migrations` | S4 | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
 | `mps-aspect-generator` | S6 | | |
 | `mps-node-editing` | S1 and S6 (hand-written blueprints), S3 (bulk + aggregate root), S5 (surgical repair), S2 and S4 and S7 (writes) | | S8 and S9 must not write |
 | `mps-node-editing/scripts/table_to_bulk_insert.py` | S3 | | the aggregate cookbook root is outside the spec (D82) |

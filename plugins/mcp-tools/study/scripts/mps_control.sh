@@ -12,7 +12,8 @@
 #   calllog   set/clear -Dmps.mcp.calllog=<file> IN THE CAPTURE, for the next `start`
 #   open      activate the RUNNING MPS with [project-dir] (short-lived second process)
 #   shutdown  close the single open project WITH shutdownWithLastProject=true, then poll the pid
-#   start     relaunch MPS DETACHED from the capture, optionally opening [project-dir]
+#   start     relaunch MPS DETACHED from the capture, optionally opening [project-dir]; adds
+#             -Dmps.migration.assistant.auto=false unless the capture already sets it (D48)
 #   wait      readiness handshake: MCP tools/list, then list_open_projects
 #   restart   capture (if absent) -> shutdown -> start -> wait
 #   url       print the MCP URL detected from the live MPS (scripts/mps_mcp_url.py)
@@ -321,15 +322,23 @@ first so the close of the last one carries the shutdown."
 # --- start -----------------------------------------------------------------------------------
 # Detached: a cold start IS the IDE and must outlive this shell. The ~90s foreground timeout in
 # mps-project-management applies to ACTIVATION (a short-lived second process), not to this.
+# The Migration Assistant wizard is switched off for the whole session (D48): the agent's first
+# mps_mcp_* call would suppress it anyway, but a language reload before that call could already
+# open it and block every later call. MPS then posts a "Migration required" balloon instead, and
+# workers apply migrations with mps_mcp_run_migrations. MIGRATION_ASSISTANT_AUTO=true keeps the
+# wizard only until the first mps_mcp_* call, which suppresses it regardless. The option is only
+# appended when the capture does not set it already.
 do_start() {
   [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — use the IDEA \`MPS\` run configuration instead"
   [ -z "$(mps_pid)" ] || die "MPS is already running (pid $(mps_pid)) — use 'restart' or activate it"
   local project="${1:-}" log="${TMPDIR:-/tmp}/mps-study-start.log"
 
-  CAPTURE="$CAPTURE" PROJECT="$project" LOGFILE="$log" python3 - <<'PY'
+  CAPTURE="$CAPTURE" PROJECT="$project" LOGFILE="$log" ASSISTANT_AUTO="${MIGRATION_ASSISTANT_AUTO:-false}" python3 - <<'PY'
 import json, os, subprocess
 cap = json.load(open(os.environ["CAPTURE"]))
 cmd = [cap["javaBin"], *cap["vmOptions"]]
+if not any(o.startswith("-Dmps.migration.assistant.auto=") for o in cap["vmOptions"]):
+    cmd.append("-Dmps.migration.assistant.auto=" + os.environ["ASSISTANT_AUTO"])
 if cap.get("classpath"):
     cmd += ["-classpath", cap["classpath"]]
 cmd.append(cap["mainClass"])

@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
- * Workspace tools: project, module and model tools, cross-project resolution, run configurations,
+ * Workspace tools: project, module, migration and model tools, cross-project resolution, run configurations,
  * console.
  * <p>
  * Nested in {@link McpToolsIntegrationTestSuite}, which provides the environment; run it alone with
@@ -24,6 +24,8 @@ import org.junit.runners.Suite;
 @Suite.SuiteClasses({
     JetBrainsMPSModelMcpToolsetIntegrationTest.class,
     JetBrainsMPSModuleMcpToolsetIntegrationTest.class,
+    JetBrainsMPSMigrationMcpToolsetIntegrationTest.class,
+    MigrationAssistantGuardTest.class,
     SearchRootNodeCrossProjectTest.class,
     WriteToolCrossProjectTest.class,
     ProjectResolutionCrossProjectTest.class,
