@@ -570,7 +570,9 @@ Decoded `parameters`: `{ "nodeReference":"{{GBX_MOBILE_REF}}", "newParentRef":"{
 }
 ```
 - Validation: `ok==true`; `data.parentReference=={{OTHER_ROOT_REF}}` (Mobile now under
-  OtherStateChart). Note required keys: `newParentRef` (not `parentReference`) and `role`
+  OtherStateChart); `details.movedNode=={{GBX_MOBILE_REF}}`,
+  `details.previousParentReference=={{GEARBOX_REF}}`, `details.parentReference=={{OTHER_ROOT_REF}}`,
+  `details.role=="states"`. Note required keys: `newParentRef` (not `parentReference`) and `role`
   (not `childRole`).
 
 ---

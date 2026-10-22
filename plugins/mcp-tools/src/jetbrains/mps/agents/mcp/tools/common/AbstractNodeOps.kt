@@ -726,7 +726,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
     }
 
-    private fun childAssignabilityFailure(
+    protected fun childAssignabilityFailure(
         jsonPath: String,
         actual: SAbstractConcept,
         link: SContainmentLink,
@@ -1337,6 +1337,15 @@ abstract class AbstractNodeOps : AbstractOps() {
         else -> InsertIndex.At(requested)
     }
 
+    /**
+     * The rejection of [position] for the single-cardinality role [roleName], or null when it is one of
+     * the two sentinels such a role accepts: -1 (or null) and 0. Shared by `mps_mcp_update_node` ADD
+     * CHILD ([addNodeChild]) and MOVE_NODE_TO_PARENT.
+     */
+    protected fun singleRolePositionError(roleName: String, position: Int?): String? =
+        if (position == null || position == -1 || position == 0) null
+        else "position $position not applicable to single-cardinality role '$roleName' (only -1 or 0 are allowed)"
+
     private fun addNodeChild(mpsProject: MPSProject, nodeReference: String, childRole: String, childJson: String, position: Int?, dryRun: Boolean, responseDetail: String? = null): String {
         val summarize = when (val r = resolveResponseDetail(responseDetail, 1)) {
             is ResponseDetailResolution.Ok -> r.summary
@@ -1362,12 +1371,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 else -> ix
             }
         } else {
-            if (position != null && position != -1 && position != 0) {
-                return errJson(
-                    "position $position not applicable to single-cardinality role '$childRole' (only -1 or 0 are allowed)",
-                    McpErrorCode.INVALID_REQUEST
-                )
-            }
+            singleRolePositionError(childRole, position)?.let { return errJson(it, McpErrorCode.INVALID_REQUEST) }
             InsertIndex.Append
         }
 
@@ -2486,7 +2490,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         nonEditableMessage: String = "Model containing the node is not editable",
     ): ConsoleAwareResolution {
         val repository = mpsProject.repository
-        val node = (resolveNodeReference(mpsProject, nodeReference) ?: resolveNodeReference(repository, nodeReference))?.resolve(repository)
+        val node = resolveNodeReferencePreferringProject(mpsProject, nodeReference)?.resolve(repository)
             ?: return ConsoleAwareResolution.Err(errJson(missingMessageBuilder(nodeReference), McpErrorCode.NOT_FOUND))
         val model = node.model
         if (model !is EditableSModel) {

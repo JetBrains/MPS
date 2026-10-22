@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools.java
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.languages.*
+import jetbrains.mps.agents.mcp.tools.common.UsedLanguages
 
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.mps.classloading.ClassLoaderManager
@@ -13,7 +14,6 @@ import jetbrains.mps.messages.IMessage
 import jetbrains.mps.messages.IMessageHandler
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.AbstractModule
-import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.structure.modules.Dependency
 import jetbrains.mps.smodel.DynamicReference
 import jetbrains.mps.smodel.ModelDependencyResolver
@@ -25,7 +25,6 @@ import jetbrains.mps.smodel.constraints.ModelConstraints
 import jetbrains.mps.smodel.language.LanguageRegistry
 import jetbrains.mps.typechecking.TypecheckingFacade
 import org.jetbrains.mps.openapi.language.SContainmentLink
-import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SModelReference
 import org.jetbrains.mps.openapi.model.SNode
@@ -287,23 +286,6 @@ internal class JavaParseResolver {
         }
     }
 
-    // Imports each candidate language as a used-language of [model], skipping any the model already
-    // uses or that a DevKit already provides. Shared by finalizeResolutionDependencies (parser-
-    // declared languages) and updateModelDependencies (languages found by scanning inserted nodes).
-    private fun addMissingUsedLanguages(
-        model: SModel,
-        repo: SRepository,
-        imports: ModelImports,
-        candidates: Iterable<SLanguage>
-    ) {
-        val alreadyUsed = ModelDependencyResolver(LanguageRegistry.getInstance(repo), repo).usedLanguages(model)
-        for (lang in candidates) {
-            if (!alreadyUsed.contains(lang) && !isLanguageProvidedByDevKit(model, repo, lang)) {
-                imports.addUsedLanguage(lang)
-            }
-        }
-    }
-
     // c2: Deferred used-language finalization. Runs after the resolution loop on the success path,
     // and also on the early-return path when doResolveRefs is false. The parser-declared language
     // imports used to run BEFORE the loop, but moving them after means a mid-loop exception leaves
@@ -328,7 +310,7 @@ internal class JavaParseResolver {
             val scanner = ModelDependencyScanner()
             scanner.usedLanguages(true).walk(inserted)
             val candidates = (parseResult.languages ?: emptySet()) + scanner.usedLanguages
-            addMissingUsedLanguages(model, repo, ModelImports(model), candidates)
+            UsedLanguages.addMissing(model, repo, ModelImports(model), candidates)
         }
     }
 
@@ -355,15 +337,6 @@ internal class JavaParseResolver {
         (model.module as? AbstractModule)?.removeDependency(dependency)
     }
 
-    private fun isLanguageProvidedByDevKit(model: SModel, repo: SRepository, lang: SLanguage): Boolean {
-        if (model !is SModelInternal) return false
-        for (dkRef in model.importedDevkits()) {
-            val dk = dkRef.resolve(repo) as? DevKit ?: continue
-            if (dk.allExportedLanguageIds.any { it == lang }) return true
-        }
-        return false
-    }
-
     // `importUsedLanguages` gates language imports only. Cross-model reference imports are always
     // applied because resolution would otherwise be left broken (the inserted nodes point at
     // models that must be imported for the references to resolve). Previously the used-language
@@ -378,7 +351,7 @@ internal class JavaParseResolver {
         scanner.usedLanguages(true).crossModelReferences(true).walk(inserted)
 
         if (importUsedLanguages) {
-            addMissingUsedLanguages(model, repo, imports, scanner.usedLanguages)
+            UsedLanguages.addMissing(model, repo, imports, scanner.usedLanguages)
         }
 
         val effectiveImportedModels = mutableSetOf<SModelReference>()
@@ -454,9 +427,9 @@ internal class JavaParseResolver {
         val smodelLanguage = SmodelLanguageMeta.smodelLanguage
         val smodelAvailable = doImportLang ||
             importedBeforeResolve?.contains(smodelLanguage) == true ||
-            isLanguageProvidedByDevKit(model, repo, smodelLanguage)
+            UsedLanguages.isProvidedByDevKit(model, repo, smodelLanguage)
         fun smodelInScope() = (model as? SModelInternal)?.importedLanguageIds()?.contains(smodelLanguage) == true ||
-            isLanguageProvidedByDevKit(model, repo, smodelLanguage)
+            UsedLanguages.isProvidedByDevKit(model, repo, smodelLanguage)
 
         val slots = slotsOf(inserted)
         fun resync() = resyncDetached(inserted, slots)

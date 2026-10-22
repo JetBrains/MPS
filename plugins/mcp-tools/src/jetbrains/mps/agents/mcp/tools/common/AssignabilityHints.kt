@@ -100,11 +100,17 @@ internal object AssignabilityHints {
     private fun nonAttributeLinks(concept: SConcept): List<SContainmentLink> =
         concept.containmentLinks.filter { it.owner != SNodeUtil.concept_BaseConcept }
 
+    /**
+     * The child roles of [concept] that structurally accept a node of concept [actual]. Attribute links
+     * and BaseConcept-typed links are left out: every node fits them, so they say nothing.
+     */
+    fun acceptingLinks(concept: SConcept, actual: SAbstractConcept): List<SContainmentLink> =
+        nonAttributeLinks(concept).filter { !isGenericLink(it) && actual.isSubConceptOf(it.targetConcept) }
+
     private fun wrapperFor(concept: SConcept, actual: SAbstractConcept): Wrapper? {
         val links = nonAttributeLinks(concept)
         val mandatoryReferences = concept.referenceLinks.filter { !it.isOptional }
-        return links
-            .filter { !isGenericLink(it) && actual.isSubConceptOf(it.targetConcept) }
+        return acceptingLinks(concept, actual)
             .map { link -> Wrapper(concept, link, links.filter { it != link && !it.isOptional }, mandatoryReferences) }
             .minByOrNull { it.missingChildren.size + it.missingReferences.size }
     }
