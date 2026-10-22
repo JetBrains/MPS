@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools
 
 import jetbrains.mps.agents.mcp.tools.common.*
 import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
+import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -113,29 +114,35 @@ class JetBrainsMPSMigrationMcpToolset : AbstractOps() {
                 warnings,
             )
         }
-        val (outcome, modelsUnloaded) = try {
-            requireResponsiveEdt()
-            // The run cannot be cancelled once it writes (see HeadlessMigrations.StepMonitor);
-            // a cancellation that arrived before this point still stops it.
-            currentCoroutineContext().ensureActive()
-            runEngine(mpsProject, scope, haltOnPrecheckFailure, haltOnDependencyError)
-        } finally {
-            applyRunning.set(false)
-        }
-
-        // Everything is written by now. A failure to recount must not turn the answer into an error,
-        // or the caller would believe nothing was migrated. No timeout: after the trigger unloads
-        // every model, the recount reloads them, which takes long on a large project.
         val responseWarnings = warnings.toMutableList()
-        val remaining = try {
-            withContext(Dispatchers.Default) {
-                mpsProject.modelAccess.computeReadAction { HeadlessMigrations.plan(mpsProject, scope) }
+        // The trigger re-checks for pending migrations at the end of the headless run, while the
+        // recount below is still running; the heartbeat keeps the Migration Assistant suppressed
+        // for a run longer than the suppression window (D48).
+        val (outcome, modelsUnloaded, remaining) = MigrationAssistantGuard.holdingSuppression {
+            val (outcome, modelsUnloaded) = try {
+                requireResponsiveEdt()
+                // The run cannot be cancelled once it writes (see HeadlessMigrations.StepMonitor);
+                // a cancellation that arrived before this point still stops it.
+                currentCoroutineContext().ensureActive()
+                runEngine(mpsProject, scope, haltOnPrecheckFailure, haltOnDependencyError)
+            } finally {
+                applyRunning.set(false)
             }
-        } catch (e: Exception) {
-            rethrowIfCancellation(e)
-            logger.warn("Could not recount the pending migrations after APPLY", e)
-            responseWarnings.add("The migrations ran, but recounting what is still pending failed (${e.message ?: e}); CHECK again.")
-            null
+
+            // Everything is written by now. A failure to recount must not turn the answer into an error,
+            // or the caller would believe nothing was migrated. No timeout: after the trigger unloads
+            // every model, the recount reloads them, which takes long on a large project.
+            val remaining = try {
+                withContext(Dispatchers.Default) {
+                    mpsProject.modelAccess.computeReadAction { HeadlessMigrations.plan(mpsProject, scope) }
+                }
+            } catch (e: Exception) {
+                rethrowIfCancellation(e)
+                logger.warn("Could not recount the pending migrations after APPLY", e)
+                responseWarnings.add("The migrations ran, but recounting what is still pending failed (${e.message ?: e}); CHECK again.")
+                null
+            }
+            Triple(outcome, modelsUnloaded, remaining)
         }
 
         return okJson(jsonObject {
@@ -235,7 +242,8 @@ class JetBrainsMPSMigrationMcpToolset : AbstractOps() {
 
     /**
      * The migration hops to the EDT with `invokeAndWait` for every step, so behind a modal dialog
-     * (typically the Migration Assistant wizard itself, opened before this session suppressed it)
+     * (typically the Migration Assistant wizard itself, opened before the first `mps_mcp_*` call or
+     * after the IDE sat idle longer than the suppression window)
      * the run would wait without a timeout. Probe the EDT once before anything is written.
      */
     private suspend fun requireResponsiveEdt() {

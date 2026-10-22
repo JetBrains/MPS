@@ -2,25 +2,41 @@ package jetbrains.mps.agents.mcp.tools.integration
 
 import com.intellij.mcpserver.McpCallInfo
 import com.intellij.mcpserver.McpToolDescriptor
-import com.intellij.openapi.components.service
 import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard
-import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantSuppression
 import jetbrains.mps.ide.migration.MigrationTrigger
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
+import org.junit.Before
 import org.junit.Test
 
+/**
+ * The deadline half of D48: a static `System.nanoTime()` deadline on `MigrationTrigger`, bumped by
+ * the guard. `MigrationAccess` builds no `MigrationTrigger` in test mode, so what the trigger does
+ * with the deadline (balloon instead of wizard) is verified live only; these tests cover the guard
+ * and the static API.
+ */
 class MigrationAssistantGuardTest : McpIntegrationTestBase() {
 
+    @Before
+    fun clearDeadline() {
+        reset()
+    }
+
     @After
-    fun resetSuppression() {
-        val suppression = myProject.project.service<MigrationAssistantSuppression>()
-        suppression.expireLeaseNow()
-        suppression.triggerOverride = null
-        System.clearProperty(MigrationAssistantSuppression.LEASE_MS_PROPERTY)
-        System.clearProperty(MigrationAssistantSuppression.LEASE_SECONDS_PROPERTY)
+    fun resetDeadline() {
+        reset()
+    }
+
+    private fun reset() {
+        System.clearProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY)
+        // a test JVM inheriting -Dmps.migration.assistant.auto=false would make every "unsuppressed" assertion fail
+        System.clearProperty("mps.migration.assistant.auto")
+        MigrationTrigger.clearAutoAssistantSuppression()
     }
 
     private fun callInfo(toolName: String): McpCallInfo {
@@ -45,165 +61,100 @@ class MigrationAssistantGuardTest : McpIntegrationTestBase() {
         )
     }
 
-    @Test
-    fun `mps tool call activates suppression on MigrationTrigger and keeps lease active`() {
-        val trigger = MigrationTrigger(myProject.project)
-        assertFalse("auto-assistant must not be suppressed initially", trigger.isAutoAssistantSuppressed)
-
-        val suppression = myProject.project.service<MigrationAssistantSuppression>()
-        suppression.triggerOverride = trigger
-        val guard = MigrationAssistantGuard()
-        val info = stubMcpCallInfo(myProject)
-
-        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
-        assertTrue("trigger must be suppressed while tool call is active", trigger.isAutoAssistantSuppressed)
-        assertTrue("lease must be active while tool call is active", suppression.isLeaseActive())
-        assertEquals(1, suppression.activeCallsCount())
-
-        guard.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
-        assertEquals(0, suppression.activeCallsCount())
-        assertTrue("lease must remain active under sliding lease after tool call finishes", suppression.isLeaseActive())
-        assertTrue("trigger must remain suppressed during sliding lease inactivity window", trigger.isAutoAssistantSuppressed)
-
-        suppression.expireLeaseNow()
-        assertFalse("lease must be inactive after expiry", suppression.isLeaseActive())
-        assertFalse("auto-assistant must be unsuppressed once lease expires", trigger.isAutoAssistantSuppressed)
-    }
-
-    @Test
-    fun `non-mps tool calls are ignored`() {
-        val trigger = MigrationTrigger(myProject.project)
-        val suppression = myProject.project.service<MigrationAssistantSuppression>()
-        suppression.triggerOverride = trigger
-        val guard = MigrationAssistantGuard()
-        val nonMpsInfo = callInfo("idea_read_file")
-
-        guard.beforeMcpToolCall(nonMpsInfo.mcpToolDescriptor, nonMpsInfo)
-        assertFalse(trigger.isAutoAssistantSuppressed)
-        assertFalse(suppression.isLeaseActive())
-        assertEquals(0, suppression.activeCallsCount())
-
-        guard.afterMcpToolCall(nonMpsInfo.mcpToolDescriptor, emptyList(), null, nonMpsInfo)
-        assertFalse(trigger.isAutoAssistantSuppressed)
-        assertFalse(suppression.isLeaseActive())
-    }
-
-    @Test
-    fun `concurrent and consecutive tool calls manage active count and reset sliding lease`() {
-        val trigger = MigrationTrigger(myProject.project)
-        val suppression = myProject.project.service<MigrationAssistantSuppression>()
-        suppression.triggerOverride = trigger
-        val guard = MigrationAssistantGuard()
-        val info = stubMcpCallInfo(myProject)
-
-        // First tool starts
-        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
-        assertEquals(1, suppression.activeCallsCount())
-        assertTrue(suppression.isLeaseActive())
-
-        // Second tool starts concurrently
-        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
-        assertEquals(2, suppression.activeCallsCount())
-        assertTrue(suppression.isLeaseActive())
-
-        // First tool finishes
-        guard.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
-        assertEquals(1, suppression.activeCallsCount())
-        assertTrue(suppression.isLeaseActive())
-
-        // Second tool finishes
-        guard.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
-        assertEquals(0, suppression.activeCallsCount())
-        assertTrue(suppression.isLeaseActive())
-        assertTrue(trigger.isAutoAssistantSuppressed)
-
-        // Third tool starts before lease expires, resetting lease
-        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
-        assertEquals(1, suppression.activeCallsCount())
-        assertTrue(suppression.isLeaseActive())
-        assertTrue(trigger.isAutoAssistantSuppressed)
-
-        guard.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
-        assertEquals(0, suppression.activeCallsCount())
-        assertTrue(suppression.isLeaseActive())
-
-        suppression.expireLeaseNow()
-        assertFalse(suppression.isLeaseActive())
-        assertFalse(trigger.isAutoAssistantSuppressed)
-    }
-
-    @Test
-    fun `callback from a canceled expiration cannot expire a renewed lease`() {
-        val trigger = MigrationTrigger(myProject.project)
-        val suppression = myProject.project.service<MigrationAssistantSuppression>()
-        suppression.triggerOverride = trigger
-        suppression.ensureSuppressed()
-        val staleExpiration = suppression.expirationCallbackForTest()
-
-        // A running callback may still acquire the service lock after cancellation and renewal.
-        suppression.ensureSuppressed()
-        staleExpiration()
-        assertTrue(suppression.isLeaseActive())
-        assertTrue(trigger.isAutoAssistantSuppressed)
-
-        suppression.expirationCallbackForTest()()
-        assertFalse(suppression.isLeaseActive())
-        assertFalse(trigger.isAutoAssistantSuppressed)
-    }
-
-    @Test
-    fun `sliding lease expires automatically after configured timeout`() {
-        System.setProperty(MigrationAssistantSuppression.LEASE_MS_PROPERTY, "50")
-        val trigger = MigrationTrigger(myProject.project)
-        val suppression = myProject.project.service<MigrationAssistantSuppression>()
-        suppression.triggerOverride = trigger
-        val guard = MigrationAssistantGuard()
-        val info = stubMcpCallInfo(myProject)
-
-        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
-        guard.afterMcpToolCall(info.mcpToolDescriptor, emptyList(), null, info)
-        assertTrue("trigger must be suppressed right after tool finishes", trigger.isAutoAssistantSuppressed)
-
-        val deadline = System.currentTimeMillis() + 2000
-        while (trigger.isAutoAssistantSuppressed && System.currentTimeMillis() < deadline) {
+    private fun awaitUnsuppressed(timeoutMs: Long): Boolean {
+        val deadline = System.currentTimeMillis() + timeoutMs
+        while (MigrationTrigger.isAutoAssistantSuppressed() && System.currentTimeMillis() < deadline) {
             Thread.sleep(20)
         }
-        assertFalse("trigger must unsuppress once sliding lease timeout elapses", trigger.isAutoAssistantSuppressed)
-        assertFalse("lease must be inactive after timer expiration", suppression.isLeaseActive())
+        return !MigrationTrigger.isAutoAssistantSuppressed()
     }
 
     @Test
-    fun `lease duration property parsing and defaults`() {
-        System.clearProperty(MigrationAssistantSuppression.LEASE_MS_PROPERTY)
-        System.clearProperty(MigrationAssistantSuppression.LEASE_SECONDS_PROPERTY)
-        assertEquals(120_000L, MigrationAssistantSuppression.getLeaseDurationMs())
+    fun `an mps tool call suppresses the assistant and another tool does not`() {
+        assertFalse("nothing is suppressed before any call", MigrationTrigger.isAutoAssistantSuppressed())
+        val guard = MigrationAssistantGuard()
 
-        System.setProperty(MigrationAssistantSuppression.LEASE_SECONDS_PROPERTY, "30")
-        assertEquals(30_000L, MigrationAssistantSuppression.getLeaseDurationMs())
+        val other = callInfo("idea_read_file")
+        guard.beforeMcpToolCall(other.mcpToolDescriptor, other)
+        assertFalse("a non-mps_mcp_ tool must not touch the deadline", MigrationTrigger.isAutoAssistantSuppressed())
 
-        System.setProperty(MigrationAssistantSuppression.LEASE_MS_PROPERTY, "250")
-        assertEquals(250L, MigrationAssistantSuppression.getLeaseDurationMs())
-
-        System.setProperty(MigrationAssistantSuppression.LEASE_MS_PROPERTY, "invalid")
-        assertEquals(30_000L, MigrationAssistantSuppression.getLeaseDurationMs())
-
-        System.setProperty(MigrationAssistantSuppression.LEASE_SECONDS_PROPERTY, "-5")
-        assertEquals(120_000L, MigrationAssistantSuppression.getLeaseDurationMs())
+        val mps = callInfo("mps_mcp_print_node")
+        guard.beforeMcpToolCall(mps.mcpToolDescriptor, mps)
+        assertTrue("an mps_mcp_ call must suppress the assistant", MigrationTrigger.isAutoAssistantSuppressed())
     }
 
     @Test
-    fun `ensureSuppressed backwards compatibility arms sliding lease`() {
-        val trigger = MigrationTrigger(myProject.project)
-        val suppression = myProject.project.service<MigrationAssistantSuppression>()
-        suppression.triggerOverride = trigger
+    fun `the window lapses on its own and a zero window suppresses nothing`() {
+        val guard = MigrationAssistantGuard()
+        val info = callInfo("mps_mcp_print_node")
 
-        suppression.ensureSuppressed()
-        assertTrue("ensureSuppressed must activate auto-assistant suppression", trigger.isAutoAssistantSuppressed)
-        assertTrue("ensureSuppressed must arm the sliding lease", suppression.isLeaseActive())
-        assertEquals(0, suppression.activeCallsCount())
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "0")
+        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
+        assertFalse("a zero window must leave the assistant alone", MigrationTrigger.isAutoAssistantSuppressed())
 
-        suppression.expireLeaseNow()
-        assertFalse(trigger.isAutoAssistantSuppressed)
-        assertFalse(suppression.isLeaseActive())
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "1")
+        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
+        assertTrue("suppressed right after the call", MigrationTrigger.isAutoAssistantSuppressed())
+        assertTrue("the window must lapse without anyone releasing it", awaitUnsuppressed(3_000))
+    }
+
+    @Test
+    fun `a later bump with a shorter window never shortens the deadline`() {
+        MigrationTrigger.suppressAutoAssistantFor(10_000)
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "1")
+        val guard = MigrationAssistantGuard()
+        val info = callInfo("mps_mcp_print_node")
+        guard.beforeMcpToolCall(info.mcpToolDescriptor, info)
+
+        Thread.sleep(1_500)
+        assertTrue("the 10 s deadline must survive a 1 s bump", MigrationTrigger.isAutoAssistantSuppressed())
+    }
+
+    @Test
+    fun `holdingSuppression keeps the deadline ahead for longer than the window`() {
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "1")
+        val result = runBlocking {
+            MigrationAssistantGuard.holdingSuppression {
+                delay(2_600)
+                assertTrue("still suppressed 2.6 s into a 1 s window", MigrationTrigger.isAutoAssistantSuppressed())
+                "done"
+            }
+        }
+        assertEquals("done", result)
+        assertTrue("suppressed right after the block ends", MigrationTrigger.isAutoAssistantSuppressed())
+    }
+
+    @Test
+    fun `holdingSuppression stops its heartbeat when the block throws`() {
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "1")
+        try {
+            runBlocking {
+                MigrationAssistantGuard.holdingSuppression<Unit> {
+                    delay(300)
+                    throw IllegalStateException("body failed")
+                }
+            }
+            fail("the block's exception must propagate")
+        } catch (e: IllegalStateException) {
+            assertEquals("body failed", e.message)
+        }
+        assertTrue("the heartbeat must have stopped: the 1 s window lapses", awaitUnsuppressed(2_500))
+        Thread.sleep(1_500)
+        assertFalse("a leaked heartbeat would have re-armed the deadline by now", MigrationTrigger.isAutoAssistantSuppressed())
+    }
+
+    @Test
+    fun `window property parsing and default`() {
+        System.clearProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY)
+        assertEquals(120_000L, MigrationAssistantGuard.windowMillis())
+
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "30")
+        assertEquals(30_000L, MigrationAssistantGuard.windowMillis())
+
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "invalid")
+        assertEquals(120_000L, MigrationAssistantGuard.windowMillis())
+
+        System.setProperty(MigrationAssistantGuard.WINDOW_SECONDS_PROPERTY, "-5")
+        assertEquals(120_000L, MigrationAssistantGuard.windowMillis())
     }
 }

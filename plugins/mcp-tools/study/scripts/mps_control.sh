@@ -322,12 +322,15 @@ first so the close of the last one carries the shutdown."
 # --- start -----------------------------------------------------------------------------------
 # Detached: a cold start IS the IDE and must outlive this shell. The ~90s foreground timeout in
 # mps-project-management applies to ACTIVATION (a short-lived second process), not to this.
-# The Migration Assistant wizard is switched off for the whole session (D48): the agent's first
-# mps_mcp_* call would suppress it anyway, but a language reload before that call could already
-# open it and block every later call. MPS then posts a "Migration required" balloon instead, and
-# workers apply migrations with mps_mcp_run_migrations. MIGRATION_ASSISTANT_AUTO=true keeps the
-# wizard only until the first mps_mcp_* call, which suppresses it regardless. The option is only
-# appended when the capture does not set it already.
+# The Migration Assistant wizard is switched off for the whole session (D48): every mps_mcp_* call
+# suppresses it for a two-minute window anyway (-Dmps.mcp.migrationAssistantWindowSeconds), but a
+# language reload before the first call, or after an idle gap longer than the window, could open
+# it and block every later call. MPS then posts a "Migration required" balloon instead, and
+# workers apply migrations with mps_mcp_run_migrations. MIGRATION_ASSISTANT_AUTO=true lets the
+# wizard open before the first mps_mcp_* call and again once the window has passed since the
+# last one. The option is only appended when the capture does not set it already, so a capture
+# re-taken from an MPS that this script started silently keeps =false (check with
+# ps -ww -p <pid> -o args=).
 do_start() {
   [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — use the IDEA \`MPS\` run configuration instead"
   [ -z "$(mps_pid)" ] || die "MPS is already running (pid $(mps_pid)) — use 'restart' or activate it"

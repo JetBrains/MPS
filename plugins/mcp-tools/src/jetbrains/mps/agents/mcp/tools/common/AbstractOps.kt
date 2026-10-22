@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools.common
 
 import jetbrains.mps.agents.mcp.tools.logging.*
 import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
+import jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard
 
 import com.google.gson.*
 import com.intellij.mcpserver.McpCallAdditionalDataElement
@@ -4091,135 +4092,140 @@ abstract class AbstractOps : McpToolset {
                 return MakeResult(false, "Opening the make session failed", runtimeReady = false)
             }
 
-            // Register the listener BEFORE starting the make so no afterLanguagesLoaded
-            // notification is missed even if the language is reloaded during the build.
-            val languageReloadLatch = CountDownLatch(1)
-            val reloadListener = object : LanguageRegistryListener {
-                override fun afterLanguagesLoaded(languages: Iterable<LanguageRuntime>) {
-                    // Only count down when a language we're actually building is reloaded.
-                    // Ignoring unrelated background reloads prevents premature latch release
-                    // that would let concept-detail tools read a stale StructureAspectDescriptor.
-                    // When targetLanguageIds is empty (e.g. solution modules with no language
-                    // runtime) we fall back to accepting any reload to avoid an unnecessary wait.
-                    val noTargets = targetLanguageIds.isEmpty() && targetLanguageNamespaces.isEmpty()
-                    if (noTargets || languages.any { lr ->
-                            // Be tolerant to ID shape changes and classloader nuances.
-                            val idMatch = try {
-                                val id = lr.id
-                                (id is SLanguageId) && targetLanguageIds.contains(id)
-                            } catch (e: Throwable) {
-                                rethrowIfCancellation(e)
-                                false
-                            }
-                            val nsMatch = try {
-                                targetLanguageNamespaces.contains(lr.namespace)
-                            } catch (e: Throwable) {
-                                rethrowIfCancellation(e)
-                                false
-                            }
-                            idMatch || nsMatch
-                        }) {
-                        languageReloadLatch.countDown()
+            // The trigger checks for pending migrations inside this call (make sessionClosed,
+            // afterLanguagesLoaded); the heartbeat keeps the Migration Assistant suppressed for a
+            // make longer than the suppression window (D48).
+            MigrationAssistantGuard.holdingSuppression {
+                // Register the listener BEFORE starting the make so no afterLanguagesLoaded
+                // notification is missed even if the language is reloaded during the build.
+                val languageReloadLatch = CountDownLatch(1)
+                val reloadListener = object : LanguageRegistryListener {
+                    override fun afterLanguagesLoaded(languages: Iterable<LanguageRuntime>) {
+                        // Only count down when a language we're actually building is reloaded.
+                        // Ignoring unrelated background reloads prevents premature latch release
+                        // that would let concept-detail tools read a stale StructureAspectDescriptor.
+                        // When targetLanguageIds is empty (e.g. solution modules with no language
+                        // runtime) we fall back to accepting any reload to avoid an unnecessary wait.
+                        val noTargets = targetLanguageIds.isEmpty() && targetLanguageNamespaces.isEmpty()
+                        if (noTargets || languages.any { lr ->
+                                // Be tolerant to ID shape changes and classloader nuances.
+                                val idMatch = try {
+                                    val id = lr.id
+                                    (id is SLanguageId) && targetLanguageIds.contains(id)
+                                } catch (e: Throwable) {
+                                    rethrowIfCancellation(e)
+                                    false
+                                }
+                                val nsMatch = try {
+                                    targetLanguageNamespaces.contains(lr.namespace)
+                                } catch (e: Throwable) {
+                                    rethrowIfCancellation(e)
+                                    false
+                                }
+                                idMatch || nsMatch
+                            }) {
+                            languageReloadLatch.countDown()
+                        }
                     }
                 }
-            }
-            val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
-            languageRegistry.addRegistryListener(reloadListener)
+                val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
+                languageRegistry.addRegistryListener(reloadListener)
 
-            // Captured inside the `withContext` block below and read after the make finishes.
-            // Starts true so the "no language modules to track" path (targetLanguageIds empty)
-            // returns the N/A default; flipped to false only when the build succeeded but the
-            // 10 s reload-latch timed out for a language we were actually building.
-            var runtimeReady = true
-            val result = try {
-                val future = makeService.make(session, resourcesList, null, null, makeMonitor)
-                val r = try {
-                    // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
-                    // structured-cancel actually unblocks future.get() instead of waiting for the
-                    // build to finish.
-                    runInterruptible(Dispatchers.IO) {
-                        future.get()
+                // Captured inside the `withContext` block below and read after the make finishes.
+                // Starts true so the "no language modules to track" path (targetLanguageIds empty)
+                // returns the N/A default; flipped to false only when the build succeeded but the
+                // 10 s reload-latch timed out for a language we were actually building.
+                var runtimeReady = true
+                val result = try {
+                    val future = makeService.make(session, resourcesList, null, null, makeMonitor)
+                    val r = try {
+                        // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
+                        // structured-cancel actually unblocks future.get() instead of waiting for the
+                        // build to finish.
+                        runInterruptible(Dispatchers.IO) {
+                            future.get()
+                        }
+                    } catch (e: CancellationException) {
+                        makeMonitor.cancel()
+                        future.cancel(true)
+                        throw e
                     }
-                } catch (e: CancellationException) {
-                    makeMonitor.cancel()
-                    future.cancel(true)
-                    throw e
-                }
-                withContext(Dispatchers.IO) {
-                    // isSucessful is a typo in the MPS IResult API (jetbrains.mps.make.script.IResult).
-                    if (r.isSucessful) {
-                        // The make pipeline only refreshes the language runtime indirectly:
-                        // Project.reconcileProjectFiles -> markDirtyAndRefresh -> module
-                        // events -> ClassLoaderManager.processModuleChanges -> notifyLoad
-                        // -> afterLanguagesLoaded. That chain is asynchronous (invokeLater)
-                        // and races EDT scheduling; under contention, or when the make
-                        // produced no class-file deltas, the latch can miss its window and
-                        // callers end up reading a stale StructureAspectDescriptor (empty
-                        // properties / references / children, null sourceNode).
-                        //
-                        // Drive the reload synchronously instead, mirroring what
-                        // DefaultMakeTask does after a regular UI make. CLM.reload is
-                        // idempotent and acquires its own write action, so calling it here
-                        // is safe even when a natural reload already happened earlier.
-                        // afterLanguagesLoaded fires synchronously inside CLM.reload, so
-                        // by the time it returns the latch is down for the target
-                        // languages.
-                        if (targetLanguageModuleRefs.isNotEmpty()) {
-                            try {
-                                val classLoaderManager = mpsProject.getComponent(ClassLoaderManager::class.java)
-                                classLoaderManager?.reload(targetLanguageModuleRefs, EmptyProgressMonitor())
-                                languageReloadLatch.countDown() // Treat explicit reload completion as definitive
-                            } catch (e: CancellationException) {
-                                throw e
-                            } catch (e: ProcessCanceledException) {
-                                throw e
-                            } catch (e: Exception) {
+                    withContext(Dispatchers.IO) {
+                        // isSucessful is a typo in the MPS IResult API (jetbrains.mps.make.script.IResult).
+                        if (r.isSucessful) {
+                            // The make pipeline only refreshes the language runtime indirectly:
+                            // Project.reconcileProjectFiles -> markDirtyAndRefresh -> module
+                            // events -> ClassLoaderManager.processModuleChanges -> notifyLoad
+                            // -> afterLanguagesLoaded. That chain is asynchronous (invokeLater)
+                            // and races EDT scheduling; under contention, or when the make
+                            // produced no class-file deltas, the latch can miss its window and
+                            // callers end up reading a stale StructureAspectDescriptor (empty
+                            // properties / references / children, null sourceNode).
+                            //
+                            // Drive the reload synchronously instead, mirroring what
+                            // DefaultMakeTask does after a regular UI make. CLM.reload is
+                            // idempotent and acquires its own write action, so calling it here
+                            // is safe even when a natural reload already happened earlier.
+                            // afterLanguagesLoaded fires synchronously inside CLM.reload, so
+                            // by the time it returns the latch is down for the target
+                            // languages.
+                            if (targetLanguageModuleRefs.isNotEmpty()) {
+                                try {
+                                    val classLoaderManager = mpsProject.getComponent(ClassLoaderManager::class.java)
+                                    classLoaderManager?.reload(targetLanguageModuleRefs, EmptyProgressMonitor())
+                                    languageReloadLatch.countDown() // Treat explicit reload completion as definitive
+                                } catch (e: CancellationException) {
+                                    throw e
+                                } catch (e: ProcessCanceledException) {
+                                    throw e
+                                } catch (e: Exception) {
+                                    messages.add(
+                                        MakeMessage(
+                                            "WARNING",
+                                            "Explicit ClassLoaderManager.reload failed: ${e.message}. " +
+                                                    "Concept descriptors may be stale; retry the build with " +
+                                                    "`rebuild = true` (mps_mcp_reload_all alone reloads from " +
+                                                    "disk and cannot fix stale aspect descriptor classes)."
+                                        )
+                                    )
+                                }
+                            }
+                            // Short safety-net await: the listener should already have fired
+                            // synchronously inside CLM.reload above. We still wait briefly to
+                            // cover natural reloads (e.g. languages outside targetLanguageModuleRefs)
+                            // and to absorb any tail latency of LanguageRegistry notifications.
+                            // runInterruptible makes the blocking await honor coroutine cancellation.
+                            val latchFired = runInterruptible {
+                                languageReloadLatch.await(LANGUAGE_RELOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                            }
+                            if (!latchFired && targetLanguageIds.isNotEmpty()) {
+                                runtimeReady = false
                                 messages.add(
                                     MakeMessage(
                                         "WARNING",
-                                        "Explicit ClassLoaderManager.reload failed: ${e.message}. " +
-                                                "Concept descriptors may be stale; retry the build with " +
-                                                "`rebuild = true` (mps_mcp_reload_all alone reloads from " +
-                                                "disk and cannot fix stale aspect descriptor classes)."
+                                        "Language runtime did not reload within $LANGUAGE_RELOAD_TIMEOUT_SECONDS s after the build " +
+                                                "(languages: ${targetLanguageIds.joinToString()}). " +
+                                                "Concept descriptors (properties, references, children) may " +
+                                                "be stale. Retry the build with `rebuild = true` " +
+                                                "(`mps_mcp_reload_all` alone reloads from disk and cannot fix " +
+                                                "stale aspect descriptor classes); restart MPS as a last resort."
                                     )
                                 )
                             }
                         }
-                        // Short safety-net await: the listener should already have fired
-                        // synchronously inside CLM.reload above. We still wait briefly to
-                        // cover natural reloads (e.g. languages outside targetLanguageModuleRefs)
-                        // and to absorb any tail latency of LanguageRegistry notifications.
-                        // runInterruptible makes the blocking await honor coroutine cancellation.
-                        val latchFired = runInterruptible {
-                            languageReloadLatch.await(LANGUAGE_RELOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                        }
-                        if (!latchFired && targetLanguageIds.isNotEmpty()) {
-                            runtimeReady = false
-                            messages.add(
-                                MakeMessage(
-                                    "WARNING",
-                                    "Language runtime did not reload within $LANGUAGE_RELOAD_TIMEOUT_SECONDS s after the build " +
-                                            "(languages: ${targetLanguageIds.joinToString()}). " +
-                                            "Concept descriptors (properties, references, children) may " +
-                                            "be stale. Retry the build with `rebuild = true` " +
-                                            "(`mps_mcp_reload_all` alone reloads from disk and cannot fix " +
-                                            "stale aspect descriptor classes); restart MPS as a last resort."
-                                )
-                            )
-                        }
+                        r
                     }
-                    r
+                } finally {
+                    languageRegistry.removeRegistryListener(reloadListener)
                 }
-            } finally {
-                languageRegistry.removeRegistryListener(reloadListener)
-            }
 
-            if (result.isSucessful) { // isSucessful: MPS IResult API typo
-                // Only a reloaded runtime offers the new scripts, so a stale one would undercount.
-                val migrationsPending = if (targetLanguageModuleRefs.isEmpty() || !runtimeReady) null else pendingMigrationCount(mpsProject)
-                MakeResult(true, "Make successful", messages, runtimeReady = runtimeReady, migrationsPending = migrationsPending)
-            } else {
-                MakeResult(false, "Make failed: ${result.message()}", messages, runtimeReady = false)
+                if (result.isSucessful) { // isSucessful: MPS IResult API typo
+                    // Only a reloaded runtime offers the new scripts, so a stale one would undercount.
+                    val migrationsPending = if (targetLanguageModuleRefs.isEmpty() || !runtimeReady) null else pendingMigrationCount(mpsProject)
+                    MakeResult(true, "Make successful", messages, runtimeReady = runtimeReady, migrationsPending = migrationsPending)
+                } else {
+                    MakeResult(false, "Make failed: ${result.message()}", messages, runtimeReady = false)
+                }
             }
         } catch (e: CancellationException) {
             throw e

@@ -5,7 +5,7 @@
 ## Before the run
 
 - The language must be rebuilt and reloaded: a new script is offered only once the *generated* `LanguageRuntime` carries the new version. `mps_mcp_alter_nodes` `MAKE` (`rebuild=true`) on the language module answering `runtimeReady:true` does that, and its answer then carries `migrationsPending` (pending scripts plus project migrations, not version updates; with a `migrationsHint` when it is above 0).
-- The Migration Assistant wizard does not open on its own once an agent has called an `mps_mcp_*` tool for the project; MPS posts a sticky "Migration required" balloon instead. If the wizard was already open before that, APPLY answers `MODAL_BLOCKED` without writing anything: ask the user to close it (Cancel postpones, it applies nothing), then call again.
+- The Migration Assistant wizard does not open on its own in any open project while `mps_mcp_*` calls are being made and for two minutes after the last one (`-Dmps.mcp.migrationAssistantWindowSeconds`); MPS posts a sticky "Migration required" balloon instead. If the wizard opened before the first call or after the IDE sat idle longer than the window, APPLY answers `MODAL_BLOCKED` without writing anything: ask the user to close it (Cancel postpones, it applies nothing), then call again.
 
 ## CHECK
 

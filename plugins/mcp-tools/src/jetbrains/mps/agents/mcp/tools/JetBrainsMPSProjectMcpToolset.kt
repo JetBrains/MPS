@@ -789,8 +789,12 @@ class JetBrainsMPSProjectMcpToolset(
             ?: return@withMpsProject errJson("ClassLoaderManager not found", McpErrorCode.NOT_FOUND)
 
         try {
-            executeShortCommandOnEdt(mpsProject) {
-                clm.reloadAll(jetbrains.mps.progress.EmptyProgressMonitor())
+            // The trigger's reload check reads the Migration Assistant deadline after the reload,
+            // which the EDT timeout cannot interrupt; the heartbeat keeps it suppressed (D48).
+            jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard.holdingSuppression {
+                executeShortCommandOnEdt(mpsProject) {
+                    clm.reloadAll(jetbrains.mps.progress.EmptyProgressMonitor())
+                }
             }
             okJsonString("All modules reloaded successfully")
         } catch (e: Exception) {

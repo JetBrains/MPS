@@ -508,3 +508,13 @@ regenerate `build/mpsMcpTools.xml` (`mps-distribution-build` skill).
 Nothing from the original list: Part A is in the model, the `TODO(D48 part A)` stubs are restored,
 `build.mps` and `build/mpsMcpTools.xml` carry the dependency, the suites are green and live
 verification is done (D48 row in `study/docs-defects.md`). The open items are in `d48-handoff.md`.
+
+## 8. Superseded: the suppression lease (2026-10-22)
+
+B1 and deviation 2 above describe a per-project suppression lease (a counted `Disposable` token
+with a scheduled expiry). It was replaced by a single application-wide deadline on
+`MigrationTrigger`, bumped by every `mps_mcp_*` call and kept ahead by a per-call heartbeat in
+`performMake`, `APPLY` and `reload_all`. The design, the review findings it closes and the
+behaviour table are in `d48-deadline-suppression-plan.md`; the trigger's public API is now
+`suppressAutoAssistantFor(long)`, `isAutoAssistantSuppressed()` and
+`clearAutoAssistantSuppression()`, all static.
