@@ -537,6 +537,22 @@ Decoded `parameters`: `{ "nodeReference":"{{GEARBOX_REF}}", "childRole":"states"
 }
 ```
 - Validation: `ok==true`; `data.index==0` (Driving moved to the front of `states`).
+- Then repeat the call with the lone-child form, decoded `parameters`
+  `{ "childNodeRef":"{{GBX_DRIVING_REF}}", "position":0 }` (parent and role inferred from the child;
+  Driving is already at index 0, so nothing moves):
+```json
+{
+  "tool": "mps_mcp_alter_nodes",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "operation": "MOVE_CHILD",
+    "parameters": "{\"childNodeRef\":\"{{GBX_DRIVING_REF}}\",\"position\":0}"
+  }
+}
+```
+- Validation: `ok==true`; `data.index==0`; `details.parentReference=={{GEARBOX_REF}}`,
+  `details.childRole=="states"`, `details.inferredParameters==["parent","childRole"]`; no `warnings`
+  (a lone `nodeReference` instead of `childNodeRef` would add one saying how it was read).
 
 ---
 

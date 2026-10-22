@@ -649,6 +649,197 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `alter_nodes MOVE_CHILD infers parent and childRole when omitted`() {
+        // D99: agents call MOVE_CHILD with {"nodeReference": "<child>", "position": N} or
+        // {"childNodeRef": "<child>", "position": N}, omitting the parent and/or containment role.
+        val parentRef = createConceptRoot("MoveHostInferred")
+        val otherParentRef = createConceptRoot("MoveHostOther")
+        addPropertyChild(parentRef, "x", "string")
+        addPropertyChild(parentRef, "y", "string")
+        addPropertyChild(parentRef, "z", "string")
+
+        val (xRef, yRef, zRef) = readOnRepo {
+            val kids = resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+            val byName = kids.associate { it.name to PersistenceFacade.getInstance().asString(it.reference) }
+            Triple(byName.getValue("x"), byName.getValue("y"), byName.getValue("z"))
+        }
+
+        fun propertyOrder(): List<String> = readOnRepo {
+            resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+                .mapNotNull { it.name }
+        }
+
+        fun envelope(parameters: String) = JsonParser.parseString(runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, parameters)
+        }).asJsonObject
+
+        fun warnings(obj: JsonObject): List<String> =
+            obj.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+
+        fun inferred(obj: JsonObject): List<String> =
+            obj.getAsJsonObject("details")?.getAsJsonArray("inferredParameters")?.map { it.asString }.orEmpty()
+
+        // 1. Lone nodeReference + position (Call 1 shape in S2-opus-1, S4-opus-3, S4-opus-4): move 'z' to 0 -> [z, x, y]
+        val viaNodeRef = envelope("""{"nodeReference":"$zRef","position":0}""")
+        assertEquals(0, expectOk(viaNodeRef.toString()).get("index").asInt)
+        assertEquals(listOf("z", "x", "y"), propertyOrder())
+        // The caller is told that nodeReference was read as the child, not the parent.
+        val nodeRefWarnings = warnings(viaNodeRef)
+        assertEquals("one interpretation warning expected: $viaNodeRef", 1, nodeRefWarnings.size)
+        assertTrue(nodeRefWarnings.single(), nodeRefWarnings.single().contains("was read as the node to move"))
+        assertTrue(nodeRefWarnings.single(), nodeRefWarnings.single().contains(parentRef))
+        val nodeRefDetails = viaNodeRef.getAsJsonObject("details")
+        assertEquals(zRef, nodeRefDetails.get("movedNode").asString)
+        assertEquals(parentRef, nodeRefDetails.get("parentReference").asString)
+        assertEquals("propertyDeclaration", nodeRefDetails.get("childRole").asString)
+        assertEquals(listOf("parent", "childRole"), inferred(viaNodeRef))
+
+        // The no-op answer (already at the target index) carries the same interpretation.
+        val noOp = envelope("""{"nodeReference":"$zRef","position":0}""")
+        assertTrue("no-op must be ok: $noOp", noOp.get("ok").asBoolean)
+        assertEquals(1, warnings(noOp).size)
+        assertEquals(listOf("parent", "childRole"), inferred(noOp))
+
+        // 2. Lone childNodeRef + position (Call 1 shape in S2-sonnet-1): move 'z' to end (-1) -> [x, y, z]
+        val viaChildRef = envelope("""{"childNodeRef":"$zRef","position":-1}""")
+        assertEquals(2, expectOk(viaChildRef.toString()).get("index").asInt)
+        assertEquals(listOf("x", "y", "z"), propertyOrder())
+        // childNodeRef is unambiguous: no warning, but the inferred parent and role are reported.
+        assertEquals("childNodeRef needs no warning: $viaChildRef", emptyList<String>(), warnings(viaChildRef))
+        assertEquals(listOf("parent", "childRole"), inferred(viaChildRef))
+
+        // 3. childNodeRef + childRole + position (Call 2 shape in S4-opus-3, S4-opus-4): move 'y' to 0 -> [y, x, z]
+        val moveWithRole = expectOk(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"childNodeRef":"$yRef","childRole":"propertyDeclaration","position":0}""",
+            )
+        })
+        assertEquals(0, moveWithRole.get("index").asInt)
+        assertEquals(listOf("y", "x", "z"), propertyOrder())
+
+        // The full form infers nothing, so it reports neither details nor warnings: move 'y' to end -> [x, z, y]
+        val fullForm = envelope(
+            """{"nodeReference":"$parentRef","childRole":"propertyDeclaration","childNodeRef":"$yRef","position":-1}""",
+        )
+        assertTrue("full form must be ok: $fullForm", fullForm.get("ok").asBoolean)
+        assertEquals(listOf("x", "z", "y"), propertyOrder())
+        assertFalse("full form must carry no details: $fullForm", fullForm.has("details"))
+        assertFalse("full form must carry no warnings: $fullForm", fullForm.has("warnings"))
+
+        // 4. nodeReference (parent) + childNodeRef + position (childRole omitted): move 'x' to end -> [z, y, x]
+        val moveWithParent = expectOk(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$parentRef","childNodeRef":"$xRef","position":-1}""",
+            )
+        })
+        assertEquals(2, moveWithParent.get("index").asInt)
+        assertEquals(listOf("z", "y", "x"), propertyOrder())
+
+        // 5. Supplied parent/role are still validated
+        val wrongParentErr = expectErr(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$otherParentRef","childNodeRef":"$xRef","position":0}""",
+            )
+        })
+        assertTrue("wrong parent must be rejected: $wrongParentErr", wrongParentErr.contains("is not a child of"))
+
+        // PropertyDeclaration itself declares no 'linkDeclaration' role; a role the child's own concept
+        // declares would hit the ambiguity rejection instead (see the test below).
+        val wrongRoleErr = expectErr(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$xRef","childRole":"linkDeclaration","position":0}""",
+            )
+        })
+        assertTrue("wrong role must be rejected: $wrongRoleErr", wrongRoleErr.contains("is not in role 'linkDeclaration'"))
+
+        // An unknown role on an inferred parent names where that parent came from.
+        val unknownRole = envelope("""{"childNodeRef":"$xRef","childRole":"noSuchRole","position":0}""")
+        assertFalse("unknown role must be rejected: $unknownRole", unknownRole.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", unknownRole.get("code").asString)
+        val unknownRoleErr = unknownRole.get("error").asString
+        assertTrue(unknownRoleErr, unknownRoleErr.contains("(the parent inferred from '$xRef')"))
+    }
+
+    @Test
+    fun `alter_nodes MOVE_CHILD rejects a root node passed as a lone reference`() {
+        val rootRef = createConceptRoot("MoveRootError")
+        for (key in listOf("nodeReference", "childNodeRef")) {
+            val response = runTool(toolset) {
+                it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, """{"$key":"$rootRef","position":0}""")
+            }
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("root node under '$key' must be rejected: $response", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            val error = obj.get("error").asString
+            assertEquals(
+                "Node '$rootRef' is a root node and cannot be reordered with MOVE_CHILD; to move one of its " +
+                    "children, pass nodeReference='$rootRef' and childNodeRef=<child>",
+                error,
+            )
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_CHILD rejects a lone nodeReference whose concept has the given childRole`() {
+        // D99 follow-up: {nodeReference:<parent>, childRole, position} with childNodeRef forgotten
+        // reads nodeReference as the node to move. When that node's own concept declares childRole,
+        // the caller most likely meant it as the parent, and in a self-nesting structure the call
+        // would otherwise move the parent itself and answer ok.
+        val parentRef = createConceptRoot("MoveAmbiguous")
+        addPropertyChild(parentRef, "x", "string")
+        addPropertyChild(parentRef, "y", "string")
+        fun propertyOrder(): List<String> = readOnRepo {
+            resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+                .mapNotNull { it.name }
+        }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$parentRef","childRole":"propertyDeclaration","position":0}""",
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("ambiguous request must be rejected: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue(error, error.startsWith("Ambiguous MOVE_CHILD request"))
+        assertTrue(error, error.contains("childNodeRef=<child>"))
+        assertEquals("a rejected request must not move anything", listOf("x", "y"), propertyOrder())
+    }
+
+    @Test
+    fun `MOVE_CHILD console guard admits only parents inside the current command`() {
+        // The headless fixture has no live MPS Console, so the guard the lone-reference form runs
+        // for a console node is exercised directly: a project root stands in for the command.
+        val rootRef = createConceptRoot("MoveConsoleGuard")
+        addPropertyChild(rootRef, "x", "string")
+        readOnRepo {
+            val root = resolveNode(rootRef)
+            val x = root.children.single { it.containmentLink?.name == "propertyDeclaration" }
+            // A child of the command: its parent is the command itself, so the move is allowed.
+            assertNull(toolset.moveChildConsoleError("x", root, currentCommand = root))
+            // The command node itself: its parent lies outside the command, so it is refused.
+            assertEquals(
+                "Node 'x' is the top-level MPS Console input command and has no parent inside the command.",
+                toolset.moveChildConsoleError("x", root, currentCommand = x),
+            )
+            // An empty console input admits nothing.
+            assertEquals(
+                "The MPS Console has no current input command, so 'x' cannot be moved.",
+                toolset.moveChildConsoleError("x", root, currentCommand = null),
+            )
+        }
+    }
+
+    @Test
     fun `alter_nodes MOVE_CHILD clamps an over-range position to the last index`() {
         val parentRef = createConceptRoot("MoveHostClamp")
         addPropertyChild(parentRef, "x", "string")
