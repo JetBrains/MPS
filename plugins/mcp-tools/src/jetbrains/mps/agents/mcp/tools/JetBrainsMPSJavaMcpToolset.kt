@@ -14,8 +14,8 @@ import jetbrains.mps.java.core.newparser.*
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.NodeCastException
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
-import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.project.structure.modules.Dependency
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import org.jetbrains.mps.openapi.language.SContainmentLink
@@ -306,10 +306,9 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 "mode 'child' on role '$roleName' to append to a body instead of overwriting it."
     }
 
-    // Best-effort: only the inserted nodes are undone. Other in-memory mutations on the failure
-    // path — the ModelImports updates from resolveIteratively and the JDK dependency staged below —
-    // are not reverted; neither is persisted, since model.save() and the module-side save() run
-    // only on success.
+    // Best-effort: only the inserted nodes are undone. ModelImports updates from resolveIteratively
+    // are not reverted, but are not persisted because model.save() runs only on success. The staged
+    // JDK dependency is removed explicitly on failure.
     //
     // D68: binding the enclosing concept function's implicit parameters is the first step inside the
     // try, so a throw from it rolls back too. It may replace a top-level node in [inserted] (the list
@@ -326,38 +325,44 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         persist: Boolean = true,
         rollbackInsertedNodes: () -> Unit
     ): List<String> {
+        var jdkDependency: Dependency? = null
+        var keepJdkDependency = false
+        var primaryFailure: Throwable? = null
         try {
+            jdkDependency = javaParseResolver.addJDKDependency(model)
             // resolveReferences=false means "leave references as parsed"; binding is resolution.
             val bindWarnings = if (doResolveRefs) ConceptFunctionParameterBinder.bind(inserted) else emptyList()
             val resolveWarnings =
                 javaParseResolver.resolveIteratively(model, repo, inserted, featureKind, doImportLang, doResolveRefs, parseResult)
             if (persist) {
-                // d1: stage the JDK dependency addition here (after resolveIteratively succeeds).
-                // ensureJDKDependency now only returns the Dependency (or null) without mutating.
-                // Both add and setChanged() happen exclusively on the success path, immediately
-                // before the saves. On any failure the descriptor remains untouched.
-                val jdkDep = javaParseResolver.ensureJDKDependency(model)
-                if (jdkDep != null) {
-                    val module = model.module as? AbstractModule
-                    module?.moduleDescriptor?.dependencies?.add(jdkDep)
-                    module?.setChanged()
-                }
                 saveModelAndModule(model)
+                keepJdkDependency = true
             }
             return bindWarnings + resolveWarnings
-        } catch (e: Exception) {
-            // The rollback is best-effort: its delete arm already swallows per-node failures via
-            // safelyRollbackNodes, but the mode-specific restore arm (re-attaching a displaced or
-            // replaced node) is bespoke and could still throw. Guard the whole call so a failing
-            // rollback can never replace the original failure `e` that the caller needs to surface.
-            try {
-                rollbackInsertedNodes()
-            } catch (rollbackEx: Throwable) {
-                rethrowIfCancellation(rollbackEx)
-                if (rollbackEx is Error) throw rollbackEx
-                logger.warn("Rollback after a failed insert threw; preserving the original failure", rollbackEx)
+        } catch (failure: Throwable) {
+            primaryFailure = failure
+            if (failure is Exception) {
+                // The rollback is best-effort: its delete arm already swallows per-node failures via
+                // safelyRollbackNodes, but the mode-specific restore arm (re-attaching a displaced or
+                // replaced node) is bespoke and could still throw. Guard the whole call so a failing
+                // rollback can never replace the original failure that the caller needs to surface.
+                try {
+                    rollbackInsertedNodes()
+                } catch (rollbackEx: Throwable) {
+                    rethrowIfCancellation(rollbackEx)
+                    if (rollbackEx is Error) throw rollbackEx
+                    logger.warn("Rollback after a failed insert threw; preserving the original failure", rollbackEx)
+                }
             }
-            throw e
+            throw failure
+        } finally {
+            if (!keepJdkDependency && jdkDependency != null) {
+                try {
+                    javaParseResolver.removeJDKDependency(model, jdkDependency)
+                } catch (cleanupFailure: Throwable) {
+                    primaryFailure?.addSuppressed(cleanupFailure) ?: throw cleanupFailure
+                }
+            }
         }
     }
 
