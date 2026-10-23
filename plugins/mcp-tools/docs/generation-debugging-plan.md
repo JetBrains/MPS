@@ -2,7 +2,7 @@
 
 YouTrack: [MPS-40316](https://youtrack.jetbrains.com/issue/MPS-40316). All work under this plan is done on behalf of MPS-40316; commits that implement it carry the ID in their subject (`mcp-tools - MPS-40316 <summary>`).
 
-Status: exploration + plan, draft 3 (2026-10-23). Phases 0, 1 and 2 are implemented; sections 3.1 (MAKE), 3.2 and 3.3 describe the design as drafted, and the implementation notes at the end of section 4 record where the code deviates. Draft 3 folds in an Opus review (approve with changes, 16 findings; log at the end). Owner decisions taken on 2026-10-23: (1) one new tool `mps_mcp_generation`, not operations on `query_nodes`/`alter_nodes`; (2) toggling the global save-transient setting around the make is acceptable, including the status-bar widget briefly showing it. All paths are relative to the repository root. Line numbers were read from this checkout (branch `261/vaclav/MPS-40315-java-import-resolution`).
+Status: exploration + plan, draft 3 (2026-10-23). Phases 0–4 are implemented (phase 5, skills and docs, is open); sections 3.1–3.5 describe the design as drafted, and the implementation notes at the end of section 4 record where the code deviates. Draft 3 folds in an Opus review (approve with changes, 16 findings; log at the end). Owner decisions taken on 2026-10-23: (1) one new tool `mps_mcp_generation`, not operations on `query_nodes`/`alter_nodes`; (2) toggling the global save-transient setting around the make is acceptable, including the status-bar widget briefly showing it. All paths are relative to the repository root. Line numbers were read from this checkout (branch `261/vaclav/MPS-40315-java-import-resolution`).
 
 ## Goal
 
@@ -222,7 +222,7 @@ The visitor is a Kotlin port of `TraceBuilderUI`'s visitor core (the full class 
 
 Phases 1 and 2 are independent after phase 0; 3 and 4 depend on 1 (they need a make that kept transients to test against).
 
-### Implementation notes (phases 1 and 2, 2026-10-23)
+### Implementation notes (phases 1–4, 2026-10-23)
 
 Phase 1 — commit `1340dd42c9b9`, independent Opus review (round 1 approve with nits, round 2 approve):
 - The toggle lives in `common/SaveTransientModelsToggle.kt` (`withSaveTransientModels`); `performMake(..., saveTransientModels: Boolean? = null)` uses it as 3.2 prescribes.
@@ -240,6 +240,24 @@ Phase 2 — commit `1a77b48b7ed6`, independent Opus review (two rounds, approve 
 - Live check in a running MPS: `PLAN` on `jetbrains.mps.baseLanguage.scopes` returned a DEFAULT plan of 18 TRANSFORM steps and 14 generators (coverage `IN_PLAN` 10, `NO_GENERATORS` 3), with no WARN/SEVERE from the tool in `idea.log`. Explicit plans are verified by the integration test only (module-facet plan with CHECKPOINT and FORK).
 
 Gate for both phases: the umbrella `McpToolsIntegrationTestSuite` passed except three `JetBrainsMPSJavaMcpToolsetIntegrationTest` "…directly imported model" tests, caused by a stale `languages/baseLanguage/baseLanguage.scopes/classes_gen` that predated the MPS-40315 `source_gen` (`build_project` does not compile MPS-compiled solutions). After an MPS make of that module the class passed 49/49.
+
+Phase 3 — commit `6c05766e5679`, independent Opus review (round 1 approve with nits, 10 findings, two rebutted and accepted; round 2 approve). Logic in `common/TransientModelsOps.kt`, which also holds the shared helpers (`provider`, `isMakeSessionActive`, `refuseWhileMakeActive`, `isTransient`, `originalsOf`). Deviations from 3.4:
+- `planStep` is replaced by `stereotypePrefix` + `minor`; the prefix is absolute (it matches `PLAN`'s `transientStereotypePrefix`), not branch-relative, and a branch's lowest-minor model is its input copy.
+- Model records add `stereotype`, `originalModule`, `originalModelCandidates` / `originalResolved:false`, and `loaded:false` (with no `roots`) for swapped-out models; checkpoint records add `attributesAvailable:false` when the attributes were lost on unload.
+- `parameters` stays required for every operation; pass `{}`.
+- Transient models are addressable by reference only: every bare-name lookup skips transient modules, including full stereotyped names such as `foo@1_0`. `get_project_structure` reports kind `transient` (lowercase).
+- `NOT_EDITABLE` also covers `COPY_NODE` from a transient source (the copy lands in the source's model) and the check tool's auto-applied quick fixes. The phase 1 MAKE warning no longer mentions bare names binding to transient copies.
+- Live (MPS restarted from this worktree): TRANSIENT_MODELS, `get_project_structure`, `print_node` on transient content, NOT_EDITABLE refusals, bare-name binding and DROP verified, no WARN+ in `idea.log`; the review fixes landed after that restart.
+
+Phase 4 — commit `1edef9a6c990`, independent Opus review (round 1 approve with nits, 12 findings; round 2 approve with nits, all applied). Logic in `common/GenerationTraceOps.kt`. Deviations from 1.4 / 3.5:
+- There is no `IncludeMacro` concept. `TEMPLATE_CALL` covers `TemplateCallMacro`, `WeaveMacro`, `InsertCallSiteMacro` and `TemplateDeclarationReference`; `RULE` is matched by the ancestors `BaseMappingRule`, `ReductionRule`, `CreateRootRule`, `DropRootRule`, `DropAttributeRule` (the last is never traced by the engine).
+- Steps add `inputReference` / `outputReference`; `templateRoot` is always present. The result adds `options`, `changesTotal`, `changesReturned`, `truncated` (counts are per entry); `maxChanges` defaults to 200. Defaults for the grouping options come from the IDE's current `GenTraceSettings`; `groupByStep` is not ported; templates are de-duplicated per change. `compactTemplates` can hide the enclosing rule, as in the UI, and the description says so.
+- `originalInputNode` was absent in the live run (the UI does not use it either); tests assert it only when present.
+- Fixture: roots are copied, never reduced, so the test concept extends `Statement` inside a method body. The interpreted path is covered; compiled-mode generators (no `$LOOP$` / fragment records) are not covered by a test.
+- Live: MAKE `jetbrains.mps.lang.text.structure` with `saveTransientModels:true`, then TRACE FORWARD (DropRootRule→RULE, LoopMacro→LOOP, Reduction_MappingRule→RULE plus a fragment parent→TEMPLATE), BACKWARD with NODE grouping and `compactTemplates`, BACKWARD on an original node (empty steps + note), and NOT_FOUND with the recovery line; no WARN+ in `idea.log`.
+- Follow-up: phase 4 now uses `TransientModelsOps.refuseWhileMakeActive`; no duplicate helper remains.
+
+Restarting MPS for live checks: `mps_control.sh restart` relaunches from a capture in `$TMPDIR` that may belong to another worktree's MPS, and a fresh launch stops at a modal "Trust project" dialog. Restart by `mps_control.sh shutdown <project>` plus this worktree's IDEA `MPS` run configuration, and have the user confirm the dialog.
 
 ## 5. Tests
 
