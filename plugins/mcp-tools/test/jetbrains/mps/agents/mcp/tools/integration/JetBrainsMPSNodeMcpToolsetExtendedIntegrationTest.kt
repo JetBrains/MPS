@@ -33,7 +33,7 @@ import kotlin.collections.listOf
  *  - `query_nodes` ops: `GET_PARENT`, `GET_ROOT`, `GET_MODEL_FOR_NODE`,
  *    `NODE_INDEX`, `SIBLINGS`, `GET_CHILD_ROLE`, `GET_TYPE`
  *  - `alter_nodes` ops: `MOVE_CHILD`, `MOVE_NODE_TO_PARENT`,
- *    `MAKE` (input validation only), `FIX_REFERENCES`,
+ *    `MAKE` (input validation, `saveTransientModels` and the `transientModels` block), `FIX_REFERENCES`,
  *  - `show_node_representation`, `print_node_json` (shallow + deep),
  *  - `check_root_node_problems` (clean root reports "no problems").
  */
@@ -1621,6 +1621,93 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
                     joined.contains("ClassLoaderManager.reload failed"),
             )
         }
+    }
+
+    // ── alter_nodes: MAKE saveTransientModels ──────────────────────────────────────
+
+    private fun generationSettings(): jetbrains.mps.generator.IModifiableGenerationSettings =
+        checkNotNull(myProject.getComponent(jetbrains.mps.generator.GenerationSettingsProvider::class.java)?.generationSettings) {
+            "The integration environment must provide generation settings"
+        }
+
+    private fun makeStructureModel(extra: String): JsonObject {
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{ "models": ["$structureModelRef"]$extra }""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val data = parseDataObject(obj.get("data"))
+        assertTrue("the make must succeed: $data", data.get("success").asBoolean)
+        return data
+    }
+
+    @Test
+    fun `alter_nodes MAKE saveTransientModels keeps the transient models for this make only`() {
+        val settings = generationSettings()
+        val original = settings.isSaveTransientModels
+        try {
+            settings.isSaveTransientModels = false
+            val kept = makeStructureModel(""", "saveTransientModels": true""")
+            assertFalse("the global setting is restored after the make", settings.isSaveTransientModels)
+            val transients = kept.getAsJsonObject("transientModels")
+            assertNotNull("a make that ran reports transientModels: $kept", transients)
+            assertTrue("saved: $transients", transients.get("saved").asBoolean)
+            val modules = transients.getAsJsonArray("modules").map { it.asJsonObject }
+            assertTrue("the kept make lists its transient module: $transients", modules.isNotEmpty())
+            assertTrue("the transient module has models: $transients", modules.all { it.get("models").asInt > 0 })
+            val structureModelName = readOnRepo { structureModel.name.value }
+            assertTrue(
+                "the structure model has a trace: $transients",
+                transients.getAsJsonArray("traceAvailableFor").any { it.asString == structureModelName },
+            )
+            assertTrue("kept transients carry the warning: $kept", warningsOf(kept).any { it.startsWith("Transient models were kept") })
+            val transientModelRef = readOnRepo {
+                val module = PersistenceFacade.getInstance().createModuleReference(modules.first().get("reference").asString)
+                    .resolve(myProject.repository)
+                assertNotNull("the reported transient module resolves", module)
+                module!!.models.first().reference
+            }
+
+            settings.isSaveTransientModels = true
+            val dropped = makeStructureModel(""", "saveTransientModels": false""")
+            assertTrue("the global setting is restored to true after the make", settings.isSaveTransientModels)
+            val droppedTransients = dropped.getAsJsonObject("transientModels")
+            assertFalse("saved: $droppedTransients", droppedTransients.get("saved").asBoolean)
+            assertTrue("the earlier transient models are reported dropped: $droppedTransients", droppedTransients.get("droppedPrevious").asBoolean)
+            assertEquals("nothing is kept: $droppedTransients", 0, droppedTransients.getAsJsonArray("modules").size())
+            assertEquals("no trace without kept transients: $droppedTransients", 0, droppedTransients.getAsJsonArray("traceAvailableFor").size())
+            assertTrue("no kept-transients warning: $dropped", warningsOf(dropped).none { it.startsWith("Transient models were kept") })
+            readOnRepo {
+                assertNull("the earlier transient model no longer resolves", transientModelRef.resolve(myProject.repository))
+            }
+        } finally {
+            settings.isSaveTransientModels = original
+        }
+    }
+
+    @Test
+    fun `alter_nodes MAKE without saveTransientModels follows the IDE setting`() {
+        val settings = generationSettings()
+        val original = settings.isSaveTransientModels
+        try {
+            settings.isSaveTransientModels = false
+            val data = makeStructureModel("")
+            val transients = data.getAsJsonObject("transientModels")
+            assertFalse("saved follows the setting: $transients", transients.get("saved").asBoolean)
+            assertFalse("the setting is untouched", settings.isSaveTransientModels)
+            assertFalse("the first make of a fresh test project drops nothing: $transients", transients.get("droppedPrevious").asBoolean)
+        } finally {
+            settings.isSaveTransientModels = original
+        }
+    }
+
+    @Test
+    fun `alter_nodes MAKE rejects a non-boolean saveTransientModels`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{ "models": ["$structureModelRef"], "saveTransientModels": "yes" }""")
+        }
+        val err = expectErr(response)
+        assertTrue("the error names the parameter: $err", err.contains("saveTransientModels"))
     }
 
     // ── alter_nodes: COPY_NODE ─────────────────────────────────────────────────────

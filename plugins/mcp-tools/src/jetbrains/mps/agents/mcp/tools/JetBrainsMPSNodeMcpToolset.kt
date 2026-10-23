@@ -93,9 +93,15 @@ private val MAKE_PARAMETER_SCHEMA: Map<String, String> = linkedMapOf(
     "modules" to "Optional: array of persistent module references",
     "rebuild" to "Optional: boolean, default false",
     "wholeProject" to "Optional: boolean, default false. If true, 'models' and 'modules' must be absent.",
+    "saveTransientModels" to "Optional: boolean. Keep the transient models and generation trace of this make; omitted = the IDE's current setting.",
 )
 
 private val MAKE_PARAMETER_KEYS: Set<String> = MAKE_PARAMETER_SCHEMA.keys
+
+private const val TRANSIENT_MODELS_KEPT_WARNING =
+    "Transient models were kept. The next make, from any tool, the console, a run configuration or the user, " +
+        "discards them and their trace. While they exist, a model, root node or concept addressed by bare name " +
+        "may resolve to a transient copy: address persistent nodes by their full reference."
 
 private val FIND_USAGES_KEYS =
     ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose usages to find")) + SEARCH_SCOPE_KEYS
@@ -256,7 +262,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription("""        
         Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_CHILD, supply `childNodeRef` (or `nodeReference`) for the child to move and `position`; `nodeReference` (the parent, when `childNodeRef` is also passed) and `childRole` are inferred from the child when omitted and validated when supplied; whatever was inferred is reported in `details` (`movedNode`, `parentReference`, `childRole`, `inferredParameters`), a lone `nodeReference` read as the child adds a `warnings` entry, and a lone `nodeReference` plus a `childRole` that the node's own concept also declares is rejected as ambiguous. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root (its concept must be rootable; `role`/`position` are then ignored with a warning). Explicit `newParentRef:null`, and `newParentRef` together with `modelReference`, are rejected. Every MOVE_NODE_TO_PARENT check runs before the model changes: a new parent that is the node or its descendant, a concept the role does not accept, and a single-valued role that already holds another node are rejected (unlike update_node ADD CHILD, a move never replaces an occupant); an unknown `role` lists the roles that fit in `details.candidateRoles`. The response's `details` reports `movedNode`, `previousParentReference` (or `previousModelReference`), and `parentReference` plus `role`, or `modelReference`. A move to another model keeps the references within and out of the moved subtree resolvable (`data.fixReferences`), adding the model imports, module dependencies and used languages the subtree needs (languages added are listed in `details.addedUsedLanguages`), but does not update incoming references from elsewhere: a `warnings` entry says any such references stop resolving; use MPS's Move refactoring for a full move. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
-         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool; node references are not accepted — resolve the node's module or model first. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting). Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
@@ -683,6 +689,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         val modulesArray = modulesElem?.asJsonArray
         val rebuild = params.paramBoolean("rebuild", default = false)
         val wholeProject = params.paramBoolean("wholeProject", default = false)
+        val saveTransientModels = params.get("saveTransientModels")?.takeUnless { it.isJsonNull }
+            ?.let { params.paramBoolean("saveTransientModels", default = false) }
 
         if (wholeProject && (modelsArray != null || modulesArray != null)) {
             return errJson("Parameters 'models' and 'modules' must not be provided when 'wholeProject' is true")
@@ -727,6 +735,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             resolvedTargets.modelsToMake.toList(),
             resolvedTargets.modulesToMake.toList(),
             rebuild,
+            saveTransientModels,
         )
         val result = mutableMapOf<String, Any>()
         result["success"] = makeResult.success
@@ -747,7 +756,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         if (makeResult.details.isNotEmpty()) {
             result["details"] = makeResult.details
         }
-        val warnings = resolvedTargets.warnings()
+        makeResult.transientModels?.let { result["transientModels"] = it }
+        val warnings = resolvedTargets.warnings() + listOfNotNull(TRANSIENT_MODELS_KEPT_WARNING.takeIf { makeResult.transientModels?.saved == true })
         if (warnings.isNotEmpty()) {
             result["warnings"] = warnings
         }

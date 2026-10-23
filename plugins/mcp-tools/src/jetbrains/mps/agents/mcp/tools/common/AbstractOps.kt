@@ -34,7 +34,9 @@ import jetbrains.mps.errors.item.QuickFixRuntimeAdapter
 import jetbrains.mps.errors.item.RuleIdFlavouredItem
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
+import jetbrains.mps.generator.GenerationSettingsProvider
 import jetbrains.mps.generator.ModelGenerationStatusManager
+import jetbrains.mps.generator.TransientModelsProvider
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.IAttributeDescriptor
@@ -3934,7 +3936,22 @@ abstract class AbstractOps : McpToolset {
         val details: List<MakeMessage> = emptyList(),
         val runtimeReady: Boolean = true,
         val migrationsPending: Int? = null,
+        val transientModels: TransientModelsReport? = null,
     )
+
+    /**
+     * Transient models around a make that ran. `droppedPrevious` is sampled before the make (the
+     * `checkpoints` module, which a make keeps, is not counted), so a make failing before the facet's
+     * `configure` step may overstate it.
+     */
+    data class TransientModelsReport(
+        val saved: Boolean,
+        val droppedPrevious: Boolean,
+        val modules: List<TransientModuleInfo>,
+        val traceAvailableFor: List<String>,
+    )
+
+    data class TransientModuleInfo(val module: String, val reference: String, val models: Int)
 
     /**
      * Snapshot of state collected inside the model read action and consumed by [performMake] after
@@ -3947,13 +3964,21 @@ abstract class AbstractOps : McpToolset {
         val targetLanguageIds: Set<SLanguageId>,
         val targetLanguageModuleRefs: Set<SModuleReference>,
         val targetLanguageNamespaces: Set<String>,
+        val inputModels: List<SModelReference>,
+        val transientsPresent: Boolean,
     )
 
     /**
      * Performs a make operation on the given models.
      * This is a shared utility used by multiple MCP tools.
      */
-    protected suspend fun performMake(mpsProject: MPSProject, models: List<SModel>, modules: List<SModule> = emptyList(), rebuild: Boolean): MakeResult {
+    protected suspend fun performMake(
+        mpsProject: MPSProject,
+        models: List<SModel>,
+        modules: List<SModule> = emptyList(),
+        rebuild: Boolean,
+        saveTransientModels: Boolean? = null,
+    ): MakeResult {
         return try {
             // Every `success = false` branch reports `runtimeReady = false`; see MakeResult KDoc.
             val makeServiceComponent = mpsProject.getComponent(MakeServiceComponent::class.java)
@@ -4032,7 +4057,9 @@ abstract class AbstractOps : McpToolset {
                 }
 
                 val s = MakeSession(mpsProject, handler, rebuild)
-                MakePreparation(list, s, ids, refs, namespaces)
+                val inputModels = (models.asSequence() + expandedModules.asSequence().flatMap { it.models.asSequence() })
+                    .map { it.reference }.distinct().toList()
+                MakePreparation(list, s, ids, refs, namespaces, inputModels, nonCheckpointTransientModules(mpsProject).isNotEmpty())
             }
             val resourcesList = preparation.resourcesList
             val session = preparation.session
@@ -4056,6 +4083,8 @@ abstract class AbstractOps : McpToolset {
             if (!openNewSessionFlag) {
                 return MakeResult(false, "Opening the make session failed", runtimeReady = false)
             }
+            val generationSettings = mpsProject.getComponent(GenerationSettingsProvider::class.java).generationSettings
+            val savedTransients = saveTransientModels ?: generationSettings.isSaveTransientModels
 
             // The trigger checks for pending migrations inside this call (make sessionClosed,
             // afterLanguagesLoaded); the heartbeat keeps the Migration Assistant suppressed for a
@@ -4102,18 +4131,23 @@ abstract class AbstractOps : McpToolset {
                 // 10 s reload-latch timed out for a language we were actually building.
                 var runtimeReady = true
                 val result = try {
-                    val future = makeService.make(session, resourcesList, null, null, makeMonitor)
-                    val r = try {
-                        // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
-                        // structured-cancel actually unblocks future.get() instead of waiting for the
-                        // build to finish.
-                        runInterruptible(Dispatchers.IO) {
-                            future.get()
+                    // The facet reads the setting on the make's background task, after make()
+                    // returned, so the flip spans future.get(); our session ownership keeps other
+                    // makes from reading it. Restored before the class reload below.
+                    val r = withSaveTransientModels(generationSettings, saveTransientModels) {
+                        val future = makeService.make(session, resourcesList, null, null, makeMonitor)
+                        try {
+                            // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
+                            // structured-cancel actually unblocks future.get() instead of waiting for the
+                            // build to finish.
+                            runInterruptible(Dispatchers.IO) {
+                                future.get()
+                            }
+                        } catch (e: CancellationException) {
+                            makeMonitor.cancel()
+                            future.cancel(true)
+                            throw e
                         }
-                    } catch (e: CancellationException) {
-                        makeMonitor.cancel()
-                        future.cancel(true)
-                        throw e
                     }
                     withContext(Dispatchers.IO) {
                         // isSucessful is a typo in the MPS IResult API (jetbrains.mps.make.script.IResult).
@@ -4184,12 +4218,18 @@ abstract class AbstractOps : McpToolset {
                     languageRegistry.removeRegistryListener(reloadListener)
                 }
 
+                val transientModels = transientModelsReport(
+                    mpsProject,
+                    saved = savedTransients,
+                    droppedPrevious = preparation.transientsPresent,
+                    inputModels = preparation.inputModels,
+                )
                 if (result.isSucessful) { // isSucessful: MPS IResult API typo
                     // Only a reloaded runtime offers the new scripts, so a stale one would undercount.
                     val migrationsPending = if (targetLanguageModuleRefs.isEmpty() || !runtimeReady) null else pendingMigrationCount(mpsProject)
-                    MakeResult(true, "Make successful", messages, runtimeReady = runtimeReady, migrationsPending = migrationsPending)
+                    MakeResult(true, "Make successful", messages, runtimeReady = runtimeReady, migrationsPending = migrationsPending, transientModels = transientModels)
                 } else {
-                    MakeResult(false, "Make failed: ${result.message()}", messages, runtimeReady = false)
+                    MakeResult(false, "Make failed: ${result.message()}", messages, runtimeReady = false, transientModels = transientModels)
                 }
             }
         } catch (e: CancellationException) {
@@ -4200,6 +4240,43 @@ abstract class AbstractOps : McpToolset {
             MakeResult(false, "Make error: ${e.message?.takeIf { it.isNotBlank() } ?: e.toString()}", runtimeReady = false)
         }
     }
+
+    /**
+     * The project's transient modules with published models, except the shared `checkpoints`
+     * module, which a make keeps. Needs a read action.
+     */
+    private fun nonCheckpointTransientModules(mpsProject: MPSProject): List<jetbrains.mps.generator.TransientModelsModule> {
+        val provider = mpsProject.getComponent(TransientModelsProvider::class.java) ?: return emptyList()
+        val checkpoints = provider.checkpointsModule
+        return provider.modules.filter { it !== checkpoints }
+    }
+
+    /** [MakeResult.transientModels] after a make. A failure only drops the details, never the make. */
+    private suspend fun transientModelsReport(
+        mpsProject: MPSProject,
+        saved: Boolean,
+        droppedPrevious: Boolean,
+        inputModels: List<SModelReference>,
+    ): TransientModelsReport =
+        try {
+            executeBackgroundRead(mpsProject) {
+                val provider = mpsProject.getComponent(TransientModelsProvider::class.java)
+                val modules = nonCheckpointTransientModules(mpsProject).map { m ->
+                    TransientModuleInfo(
+                        module = m.moduleName!!,
+                        reference = PersistenceFacade.getInstance().asString(m.moduleReference),
+                        models = m.models.count(),
+                    )
+                }
+                val traced = if (provider == null) emptyList() else inputModels.filter { provider.getTrace(it) != null }.map { it.name.value }
+                TransientModelsReport(saved, droppedPrevious, modules, traced)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            logger.warn("Could not list the transient models after a make", e)
+            TransientModelsReport(saved, droppedPrevious, emptyList(), emptyList())
+        }
 
     /**
      * [MakeResult.migrationsPending] after a language make: one read action over the project's

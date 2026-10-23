@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools
 
 import jetbrains.mps.agents.mcp.tools.common.*
 
+import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.generator.ModelGenerationStatusManager
@@ -220,11 +221,19 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
             if (c != null && c.isValid && c.sourceNode != null && !generationRequired) null
             else model
         }
-        if (structureModelForMake != null) {
+        val droppedPreviousTransients: Boolean? = if (structureModelForMake != null) {
             val makeResult = performMake(mpsProject, listOf(structureModelForMake), emptyList(), true)
+            val dropped = makeResult.transientModels?.droppedPrevious
             if (!makeResult.success) {
-                return errJson("Failed to make the structure model for concept '$conceptRef': ${makeResult.message}")
+                return errJson(
+                    "Failed to make the structure model for concept '$conceptRef': ${makeResult.message}",
+                    details = dropped?.let { mapOf("transientModels" to mapOf("droppedPrevious" to it)) }.orEmpty(),
+                )
             }
+            dropped
+        } else null
+        fun JsonObject.addTransientModelsDropped() {
+            droppedPreviousTransients?.let { add("transientModels", jsonObject { addProperty("droppedPrevious", it) }) }
         }
 
         var result: String? = null
@@ -392,6 +401,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                         result = jsonObject {
                             addProperty("editorNodeRef", refStr)
                             addProperty("message", "Scaffolded smart reference editor.")
+                            addTransientModelsDropped()
                         }.toString()
                         // Mark success BEFORE the early return: the finally block keys rollback
                         // off `!succeeded`, so an early return on the happy path that forgets
@@ -828,6 +838,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                             addProperty("substituteMenuRef", menuRefStr)
                             addProperty("substituteMenuCreated", menuCreated)
                             addProperty("message", "Scaffolded marker editor: editable empty cell$menuMsg$menuDescriptorNote.")
+                            addTransientModelsDropped()
                         }.toString()
                         succeeded = true
                         return@executeShortCommandOnEdt
@@ -841,6 +852,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                     result = jsonObject {
                         addProperty("editorNodeRef", refStr)
                         addProperty("message", msg)
+                        addTransientModelsDropped()
                     }.toString()
                     succeeded = true
                 } catch (e: Throwable) {

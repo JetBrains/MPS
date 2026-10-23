@@ -778,6 +778,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                     // for `make = true` specifically to consume the freshly built concepts; an
                     // incremental make here defeats that purpose.
                     var makeResult = performMake(mpsProject, listOf(model), emptyList(), true)
+                    var droppedPreviousTransients = makeResult.transientModels?.droppedPrevious
 
                     // Ground-truth readiness check. performMake's reload latch only proves that
                     // *a* reload fired; for a brand-new, never-before-deployed language it is
@@ -811,6 +812,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                         recoveryStage = "module-rebuild"
                         val module = executeBackgroundRead(mpsProject) { model.module }
                         makeResult = performMake(mpsProject, emptyList(), listOf(module), true)
+                        makeResult.transientModels?.droppedPrevious?.let { droppedPreviousTransients = (droppedPreviousTransients ?: false) || it }
                         hollow = if (makeResult.success) {
                             executeBackgroundRead(mpsProject) {
                                 hollowRuntimeConcepts(mpsProject.repository, createdReferences.values)
@@ -832,6 +834,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                         else -> "success"
                     }
                     result["makeMessage"] = makeResult.message
+                    droppedPreviousTransients?.let { result["transientModels"] = mapOf("droppedPrevious" to it) }
                     if (recoveryStage != null) {
                         // Present only when the first make left descriptors hollow and an extra
                         // module-scoped rebuild was performed. Exposed for observability.
