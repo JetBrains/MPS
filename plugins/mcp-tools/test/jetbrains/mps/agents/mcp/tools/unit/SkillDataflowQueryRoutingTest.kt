@@ -3,18 +3,17 @@ package jetbrains.mps.agents.mcp.tools.unit
 import jetbrains.mps.agents.mcp.tools.DEFAULT_MAX_INSTRUCTIONS
 import jetbrains.mps.agents.mcp.tools.DataflowQueryOperation
 import jetbrains.mps.agents.mcp.tools.JetBrainsMPSDataflowMcpToolset
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.assertNamesAll
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.criticalDirectives
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.read
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.toolDescription
 
-import com.intellij.mcpserver.annotations.McpDescription
-import com.intellij.mcpserver.annotations.McpTool
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
-import java.nio.file.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.readText
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.findAnnotation
 
 /**
  * Doc-drift gate for the dataflow-query routing in the blueprint skill catalog (MPS-40318).
@@ -54,7 +53,7 @@ class SkillDataflowQueryRoutingTest {
     fun `documented maxInstructions default matches the code`() {
         val sources = listOf(
             DATAFLOW_QUERIES to read(DATAFLOW_QUERIES),
-            "@McpDescription of mps_mcp_query_dataflow" to toolDescription(),
+            "@McpDescription of mps_mcp_query_dataflow" to toolDescription(JetBrainsMPSDataflowMcpToolset::class, QUERY_DATAFLOW_TOOL),
         )
         for ((source, text) in sources) {
             val documented = MAX_INSTRUCTIONS_DEFAULT.findAll(text).map { it.groupValues[1] }.toList()
@@ -86,32 +85,7 @@ class SkillDataflowQueryRoutingTest {
 
     // --- helpers ---------------------------------------------------------
 
-    private fun toolDescription(): String =
-        JetBrainsMPSDataflowMcpToolset::class.declaredFunctions
-            .single { it.name == QUERY_DATAFLOW_TOOL && it.findAnnotation<McpTool>() != null }
-            .findAnnotation<McpDescription>()!!.description
-
     private fun operationNames(): List<String> = DataflowQueryOperation.entries.map { it.name }
-
-    private fun read(relative: String): String {
-        val file: Path = SkillCatalogCheckout.blueprint().resolve(relative)
-        assertTrue("$relative is missing from the blueprint catalog", file.isRegularFile())
-        return file.readText()
-    }
-
-    /** The `## Critical Directives` section of a `SKILL.md`: from its heading to the next `## ` heading. */
-    private fun criticalDirectives(relative: String): String {
-        val lines = read(relative).lines()
-        val start = lines.indexOfFirst { it.trimEnd() == CRITICAL_DIRECTIVES }
-        assertTrue("$relative has no `$CRITICAL_DIRECTIVES` section", start >= 0)
-        val end = (start + 1 until lines.size).firstOrNull { lines[it].startsWith("## ") } ?: lines.size
-        return lines.subList(start, end).joinToString("\n")
-    }
-
-    private fun assertNamesAll(source: String, text: String, tokens: List<String>) {
-        val missing = tokens.filterNot { text.contains(it) }
-        assertTrue("$source no longer names: ${missing.joinToString(", ")}", missing.isEmpty())
-    }
 
     private companion object {
         private const val WORKFLOW_SKILL = "mps-mcp-workflow/SKILL.md"
@@ -120,7 +94,6 @@ class SkillDataflowQueryRoutingTest {
         private const val TOOLS_INDEX = "mps-mcp-workflow/references/mcp-tools-index.md"
         private const val ANALYSIS_TOOLS = "mps-mcp-workflow/references/analysis-tools.md"
         private const val OVERVIEW = "mps-mcp-workflow/references/analysis-tools/overview.md"
-        private const val CRITICAL_DIRECTIVES = "## Critical Directives"
         private const val QUERY_DATAFLOW_TOOL = "mps_mcp_query_dataflow"
 
         /** `maxInstructions` … `(default 400)`. */

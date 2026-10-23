@@ -13,8 +13,6 @@ import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.agents.mcp.tools.languages.BaseLanguageMeta
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.project.MPSProject
-import jetbrains.mps.smodel.Language
-import jetbrains.mps.smodel.ModuleRepositoryFacade
 import jetbrains.mps.smodel.behaviour.BHReflection
 import jetbrains.mps.smodel.language.LanguageRegistry
 import org.jetbrains.mps.openapi.model.SNode
@@ -177,7 +175,7 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
                                 return@answer Answer.Thrown(e)
                             } ?: return@answer Answer.NotFound("Node '$programRootReference' at parameters.programRoot not found")
                         }
-                        if (generateSequence(node) { it.parent }.none { it == programRoot }) {
+                        if (!node.isInSubtreeOf(programRoot)) {
                             return@answer Answer.Invalid(
                                 "Node '$nodeReference' does not lie in the subtree of parameters.programRoot '$programRootReference'"
                             )
@@ -282,7 +280,7 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
             val wanted = program.instructions.filter { if (writes) it.isRead else it.isWrite }
             val own = wanted.filter { it.source == node }
             val subtree = wanted.filter { instruction ->
-                (instruction.source as? SNode)?.let { source -> generateSequence(source) { it.parent }.any { it == node } } == true
+                (instruction.source as? SNode)?.isInSubtreeOf(node) == true
             }
             val chosen = own.ifEmpty { subtree }
             if (chosen.isEmpty()) {
@@ -372,15 +370,8 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
         }
 
         /** `{rule, ruleReference, statement}` of an emit statement's `<modelRef>/<nodeId>`; kept as given when it does not parse. */
-        private fun ruleJson(reference: String): JsonObject {
-            val statement = runCatching { PersistenceFacade.getInstance().createNodeReference(reference) }.getOrNull()
-                ?: return JsonObject().apply {
-                    addProperty("rule", null as String?)
-                    addProperty("ruleReference", null as String?)
-                    addProperty("statement", reference)
-                }
-            return ruleJsonObject(statement, statement.resolve(repository)?.containingRoot)
-        }
+        private fun ruleJson(reference: String): JsonObject =
+            ruleJsonObject(runCatching { PersistenceFacade.getInstance().createNodeReference(reference) }.getOrNull(), reference, repository)
 
         /**
          * Variables declared outside [root]'s subtree that the program does not write on entry, i.e. from a source
@@ -388,7 +379,7 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
          * are written by BaseLanguage's body builder from the parameter declarations, so they are not among these.
          */
         private fun outsideVariables(program: DataflowRuntime.Program, root: SNode): Set<Any> {
-            fun outsideRoot(node: Any?) = node is SNode && generateSequence(node) { it.parent }.none { it == root }
+            fun outsideRoot(node: Any?) = node is SNode && !node.isInSubtreeOf(root)
             val enteredWritten = program.instructions.filter { it.isWrite && outsideRoot(it.source) }.mapTo(HashSet()) { it.variable }
             return program.instructions.mapNotNullTo(LinkedHashSet()) { instruction ->
                 instruction.variable?.takeIf { outsideRoot(it) && it !in enteredWritten }
@@ -421,13 +412,8 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
 
         /** The builder root a generated `<language>.dataFlow.<Name>_DataFlow` class came from, or null. */
         private fun builderRoot(className: String): SNode? {
-            val modelName = className.substringBeforeLast('.')
             val name = className.substringAfterLast('.')
-            return ModuleRepositoryFacade(repository).getModulesByName(modelName.removeSuffix(".dataFlow")).asSequence()
-                .filterIsInstance<Language>()
-                .flatMap { it.models.asSequence() }
-                .filter { it.name.longName == modelName }
-                .flatMap { it.rootNodes.asSequence() }
+            return aspectModelRoots(repository, className.substringBeforeLast('.'), "dataFlow")
                 // A builder's name is computed from its concept (and modes), so only its presentation carries it.
                 .firstOrNull { it.presentation == name }
         }
@@ -458,7 +444,7 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
                     ancestor.getChildren(BaseLanguageMeta.instanceInitializerStatementListLink).firstOrNull()
                 else -> continue
             }
-            return body?.takeIf { generateSequence(node) { it.parent }.any { it == body } } ?: ancestor
+            return body?.takeIf { node.isInSubtreeOf(it) } ?: ancestor
         }
         return node.containingRoot
     }

@@ -1866,6 +1866,17 @@ abstract class AbstractOps : McpToolset {
         return result
     }
 
+    /**
+     * [ruleJsonObject] for [statement], whose root is resolved in [repository]; when the rule's ids did not parse
+     * into a [statement], `{rule: null, ruleReference: null, statement: unparsed}` keeps them as given.
+     */
+    protected fun ruleJsonObject(statement: SNodeReference?, unparsed: String, repository: SRepository): JsonObject =
+        statement?.let { ruleJsonObject(it, it.resolve(repository)?.containingRoot) } ?: JsonObject().apply {
+            addProperty("rule", null as String?)
+            addProperty("ruleReference", null as String?)
+            addProperty("statement", unparsed)
+        }
+
     private fun quickFixesJsonArray(item: NodeReportItem, repo: SRepository): JsonArray {
         val arr = JsonArray()
         for (qf in quickFixInfos(item, repo)) {
