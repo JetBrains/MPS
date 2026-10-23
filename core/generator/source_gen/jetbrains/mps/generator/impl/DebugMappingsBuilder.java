@@ -4,24 +4,26 @@ package jetbrains.mps.generator.impl;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.generator.IGeneratorLogger;
-import org.jetbrains.mps.openapi.module.SRepository;
+import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.function.BiFunction;
+import java.util.stream.Stream;
 import org.jetbrains.mps.openapi.model.SNodeReference;
 import jetbrains.mps.textgen.trace.TracingUtil;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
+import java.util.Set;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import jetbrains.mps.extapi.model.TransientSModel;
 import jetbrains.mps.generator.impl.plan.CrossModelEnvironment;
 import org.jetbrains.annotations.Nullable;
-import java.util.stream.Stream;
 import org.jetbrains.mps.openapi.language.SConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
@@ -32,64 +34,84 @@ import org.jetbrains.mps.openapi.language.SProperty;
 public class DebugMappingsBuilder {
   private final TransitionTrace myOriginTrace;
   private final IGeneratorLogger myLogger;
+  private SModel myFactoryModel;
+  private SNode rv;
 
-  public DebugMappingsBuilder(SRepository repo, TransitionTrace originTrace, IGeneratorLogger logger) {
-    this(originTrace, logger);
+  public DebugMappingsBuilder(@NotNull SModel factoryModel, TransitionTrace originTrace, IGeneratorLogger logger) {
+    myFactoryModel = factoryModel;
+    myOriginTrace = originTrace;
+    myLogger = logger;
+    rv = SModelOperations.createNewNode(factoryModel, null, CONCEPTS.GeneratorDebug_Mappings$42);
   }
 
   public DebugMappingsBuilder(TransitionTrace originTrace, IGeneratorLogger logger) {
+    myFactoryModel = null;
     myOriginTrace = originTrace;
     myLogger = logger;
   }
 
-  public SNode build(@NotNull final SModel checkpointModel, GeneratorMappings mappings) {
-    SNode rv = SModelOperations.createNewNode(checkpointModel, null, CONCEPTS.GeneratorDebug_Mappings$42);
-    ArrayList<String> availableLabels = new ArrayList<String>(mappings.getAvailableLabels());
-    Collections.sort(availableLabels);
+  public DebugMappingsBuilder withInput(List<String> availableLabels, Function<String, List<SNode>> keys, BiFunction<String, SNode, Stream<SNode>> outputNodes) {
+    // labels:list doesn't mean we tolerate duplicates, just lazy to refactor
     for (String label : availableLabels) {
-      LabelEntryBuilder b = new LabelEntryBuilder(checkpointModel, label);
-      List<SNode> keys = mappings.getSortedMappingKeys(label);
-      for (SNode keyInputNode : keys) {
+      LabelEntryBuilder b = new LabelEntryBuilder(label);
+      for (SNode keyInputNode : keys.apply(label)) {
         assert keyInputNode != null;
-        SNode in = gdInputNode(keyInputNode, checkpointModel);
+        SNode in = gdInputNode(keyInputNode);
         SNodeReference origin = TracingUtil.getInput(keyInputNode);
-        NodeMapRecord outRec = mappings.getMappingsForLabel(label).get(keyInputNode);
-        b.newKeyed(in, origin, outRec.valueStream());
+        b.newKeyed(in, origin, outputNodes.apply(label, keyInputNode));
       }
       ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
     }
+    return this;
+  }
 
-    for (String label : mappings.getConditionalRootLabels()) {
-      LabelEntryBuilder b = new LabelEntryBuilder(checkpointModel, label);
-      for (SNode cr : mappings.getConditionalRoots(label)) {
-        b.newRoot(cr);
-      }
+  public DebugMappingsBuilder withoutInput(Set<String> labels, Function<String, List<SNode>> outputNodes) {
+    for (String label : labels) {
+      LabelEntryBuilder b = new LabelEntryBuilder(label);
+      outputNodes.apply(label).forEach(b::newRoot);
       ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
     }
+    return this;
+  }
 
-    for (final LabelRecord lr : ListSequence.fromList(mappings.getOrderedRecords())) {
+  public DebugMappingsBuilder withComposite(List<LabelRecord> orderedRecords) {
+    for (final LabelRecord lr : ListSequence.fromList(orderedRecords)) {
       final SNode rn = SLinkOperations.addNewChild(rv, LINKS.records$1M3v, null);
       SPropertyOperations.assign(rn, PROPS.label$dc7G, lr.label);
       if (lr.key1 != null) {
-        SNode n = SModelOperations.createNewNode(checkpointModel, null, CONCEPTS.CP_InputNode$p_);
-        fill(lr.key1, n);
-        SLinkOperations.setTarget(rn, LINKS.input1$dqcC, n);
+        SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(lr.key1));
       }
       if (lr.key2 != null) {
-        SNode n = SModelOperations.createNewNode(checkpointModel, null, CONCEPTS.CP_InputNode$p_);
-        fill(lr.key2, n);
-        SLinkOperations.setTarget(rn, LINKS.input2$dvP0, n);
+        SLinkOperations.setTarget(rn, LINKS.input2$dvP0, cpInputNode(lr.key2));
       }
       lr.values.forEach((SNode o) -> {
-        SNode r = SModelOperations.createNewNode(checkpointModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
-        SLinkOperations.setTarget(r, LINKS.node$JBUG, substituteOutputNode(checkpointModel, o, lr.label));
+        SNode r = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
+        SLinkOperations.setTarget(r, LINKS.node$JBUG, substituteOutputNode(o, lr.label));
         ListSequence.fromList(SLinkOperations.getChildren(rn, LINKS.output$dhZ5)).addElement(r);
       });
     }
+
+    return this;
+  }
+
+  public SNode done() {
     return rv;
   }
 
-  private void fill(SNode input, SNode presentation) {
+  public SNode build(@NotNull SModel checkpointModel, final GeneratorMappings mappings) {
+    myFactoryModel = checkpointModel;
+    rv = SModelOperations.createNewNode(checkpointModel, null, CONCEPTS.GeneratorDebug_Mappings$42);
+    ArrayList<String> availableLabels = new ArrayList<String>(mappings.getAvailableLabels());
+    Collections.sort(availableLabels);
+
+    withInput(availableLabels, mappings::getSortedMappingKeys, (l, keyNode) -> mappings.getMappingsForLabel(l).get(keyNode).valueStream());
+    withoutInput(mappings.getConditionalRootLabels(), mappings::getConditionalRoots);
+    return withComposite(mappings.getOrderedRecords()).done();
+  }
+
+  private SNode cpInputNode(SNode input) {
+    SNode presentation = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.CP_InputNode$p_);
+
     // XXX copied from similar code for GeneratorDebug_InputNode, see gdInputNode()
     SNodeId inputNodeId = (myOriginTrace.hasOrigin(input) ? myOriginTrace.getOrigin(input) : input.getNodeId());
     SPropertyOperations.assign(presentation, PROPS.nodeId$wvdy, inputNodeId.toString());
@@ -105,11 +127,12 @@ public class DebugMappingsBuilder {
     if (origin != null) {
       SLinkOperations.setPointer(presentation, LINKS.inputOrigin$dhK4, origin);
     }
+    return presentation;
   }
 
-  private SNode gdInputNode(SNode keyInputNode, SModel factoryModel) {
-    SNode in = SModelOperations.createNewNode(factoryModel, null, CONCEPTS.GeneratorDebug_InputNode$7f);
-    SNode inputNodeIdentity = SModelOperations.createNewNode(factoryModel, null, CONCEPTS.ElementaryNodeId$Yd);
+  private SNode gdInputNode(SNode keyInputNode) {
+    SNode in = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_InputNode$7f);
+    SNode inputNodeIdentity = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.ElementaryNodeId$Yd);
     /*
       keyInputNode comes from one of transient models, and we need to replace it with a 'stable' version, exposed in a CP (or initial) model
       XXX what if keyInputNode IS from CP model, wouldn't that give us wrong origin (the one from previous trace)?
@@ -145,9 +168,9 @@ public class DebugMappingsBuilder {
    * Note, as MPSSPRT-335 suggests, when a generator that records labeled mappings is part of group of generators that may further transform
    * output node, we may face errors here.
    */
-  private SNode substituteOutputNode(SModel checkpointModel, SNode n, String lm) {
+  private SNode substituteOutputNode(SNode n, String lm) {
     // Generator
-    SNode tn = checkpointModel.getNode(n.getNodeId());
+    SNode tn = myFactoryModel.getNode(n.getNodeId());
     if (tn == null) {
       String s = String.format("Didn't find labeled output node in a checkpoint model, original value left. Instance of %s, label %s", n.getConcept().getName(), lm);
       myLogger.error(n.getReference(), s);
@@ -162,13 +185,11 @@ public class DebugMappingsBuilder {
     return CrossModelEnvironment.isCheckpointModel(m);
   }
 
-  /*package*/ class LabelEntryBuilder {
-    private final SModel myFactoryModel;
+  private final class LabelEntryBuilder {
     private final String myLabel;
     private final List<SNode> myEntries = ListSequence.fromList(new ArrayList<>());
 
-    /*package*/ LabelEntryBuilder(SModel factoryModel, String label) {
-      myFactoryModel = factoryModel;
+    /*package*/ LabelEntryBuilder(String label) {
       myLabel = label;
     }
 
@@ -177,7 +198,7 @@ public class DebugMappingsBuilder {
       SPropertyOperations.assign(entry, PROPS.isNewRoot$pwOY, true);
       ListSequence.fromList(myEntries).addElement(entry);
       SNode r = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
-      SLinkOperations.setTarget(r, LINKS.node$JBUG, substituteOutputNode(myFactoryModel, newRoot, myLabel));
+      SLinkOperations.setTarget(r, LINKS.node$JBUG, substituteOutputNode(newRoot, myLabel));
       ListSequence.fromList(SLinkOperations.getChildren(entry, LINKS.outputNode$JC9e)).addElement(r);
     }
 
@@ -190,7 +211,7 @@ public class DebugMappingsBuilder {
       }
       outputNodes.forEach((SNode n) -> {
         SNode r = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
-        SLinkOperations.setTarget(r, LINKS.node$JBUG, substituteOutputNode(myFactoryModel, n, myLabel));
+        SLinkOperations.setTarget(r, LINKS.node$JBUG, substituteOutputNode(n, myLabel));
         ListSequence.fromList(SLinkOperations.getChildren(entry, LINKS.outputNode$JC9e)).addElement(r);
       });
     }
@@ -206,8 +227,8 @@ public class DebugMappingsBuilder {
 
   private static final class CONCEPTS {
     /*package*/ static final SConcept GeneratorDebug_Mappings$42 = MetaAdapterFactory.getConcept(0xb401a68083254110L, 0x8fd384331ff25befL, 0x35a02f6bfc97f1c1L, "jetbrains.mps.lang.generator.structure.GeneratorDebug_Mappings");
-    /*package*/ static final SConcept CP_InputNode$p_ = MetaAdapterFactory.getConcept(0xb401a68083254110L, 0x8fd384331ff25befL, 0x224e3a1db5ba5ffcL, "jetbrains.mps.lang.generator.structure.CP_InputNode");
     /*package*/ static final SConcept GeneratorDebug_NodeRef$2a = MetaAdapterFactory.getConcept(0xb401a68083254110L, 0x8fd384331ff25befL, 0x35a02f6bfc9806d2L, "jetbrains.mps.lang.generator.structure.GeneratorDebug_NodeRef");
+    /*package*/ static final SConcept CP_InputNode$p_ = MetaAdapterFactory.getConcept(0xb401a68083254110L, 0x8fd384331ff25befL, 0x224e3a1db5ba5ffcL, "jetbrains.mps.lang.generator.structure.CP_InputNode");
     /*package*/ static final SConcept GeneratorDebug_InputNode$7f = MetaAdapterFactory.getConcept(0xb401a68083254110L, 0x8fd384331ff25befL, 0x509c00a998897534L, "jetbrains.mps.lang.generator.structure.GeneratorDebug_InputNode");
     /*package*/ static final SConcept ElementaryNodeId$Yd = MetaAdapterFactory.getConcept(0xb401a68083254110L, 0x8fd384331ff25befL, 0x3279d292ec74a708L, "jetbrains.mps.lang.generator.structure.ElementaryNodeId");
     /*package*/ static final SConcept GeneratorDebug_NodeMapEntry$ME = MetaAdapterFactory.getConcept(0xb401a68083254110L, 0x8fd384331ff25befL, 0x35a02f6bfc9806c7L, "jetbrains.mps.lang.generator.structure.GeneratorDebug_NodeMapEntry");

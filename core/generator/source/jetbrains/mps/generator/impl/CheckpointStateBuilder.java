@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2022 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,9 @@ import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeId;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Translate information about mapping labels known at checkpoint step to read-only, persisted (even though memory-only now) {@link CheckpointState state}
@@ -111,7 +113,7 @@ class CheckpointStateBuilder {
    *  @param originalInputModel non-null
    * @param stepLabels non-null
    */
-  /*package*/ void addMappings(SModel originalInputModel, GeneratorMappings stepLabels) {
+  /*package*/ void addMappings(SModel originalInputModel, final GeneratorMappings stepLabels) {
     // FIXME likely, GeneratorMappings shall care about MappingMemento only (pass TransitionTrace there as well).
     //
     // FIXME stepLabels.export is commented out as we restore MappingsMemento for the CPState through persisted state and MappingLabelExtractor, to get
@@ -122,8 +124,14 @@ class CheckpointStateBuilder {
     // reference targets from transient model to that in CP model (see DMB.substitute)
     cloneTransientToCheckpoint();
     new ModelImports(myCheckpointModel).addModelImport(originalInputModel.getReference());
-    DebugMappingsBuilder dmb = new DebugMappingsBuilder(originalInputModel.getRepository(), myTransitionTrace.getActiveTransition(), myLogger);
-    myDebugMappingNode = dmb.build(myCheckpointModel, stepLabels);
+    DebugMappingsBuilder dmb = new DebugMappingsBuilder(myCheckpointModel, myTransitionTrace.getActiveTransition(), myLogger);
+    ArrayList<String> availableLabels = new ArrayList<String>(stepLabels.getAvailableLabels());
+    Collections.sort(availableLabels);
+    myDebugMappingNode = dmb
+        .withInput(availableLabels, stepLabels::getSortedMappingKeys, (l, k) -> stepLabels.getMappingsForLabel(l).get(k).valueStream())
+        .withoutInput(stepLabels.getConditionalRootLabels(), stepLabels::getConditionalRoots)
+        .withComposite(stepLabels.getOrderedRecords())
+        .done();
     // see MPSSPRT-455
     OriginalModelTag.installTo(myDebugMappingNode, originalInputModel.getReference());
   }
