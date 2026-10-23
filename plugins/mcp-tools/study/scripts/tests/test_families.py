@@ -206,7 +206,7 @@ class FamiliesTest(unittest.TestCase):
                          "T_rule_prints\tT_type_queries\tT_type_queries_before_make\tM_makes\tM_reload_all\t"
                          "M_makes_save_transient\tGN_plan\tGN_transient_models\tGN_trace\tGN_trace_backward\t"
                          "GN_drop\tGN_trace_before_fix\tGN_transient_reads\tGN_template_prints\t"
-                         "GN_template_prints_before_trace", header)
+                         "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -449,6 +449,23 @@ class FamiliesTest(unittest.TestCase):
         f = self.count(check("m", MODEL, MODEL_CLEAN) + gen("t", "TRACE", BACKWARD)
                        + gen("d", "DROP_TRANSIENT_MODELS", {}) + check("a", NODE, NODE_CLEAN))
         self.assertCounts(f, C_root_after_clean_model=1, GN_trace=1, GN_drop=1)
+
+    def test_t24_builder_prints_count_by_concept_else_by_the_dataflow_model(self) -> None:
+        builder = "r:5784598d-868b-437e-9c58-15fb07e7f373(jetbrains.mps.samples.Kaja.dataFlow)/6630310702469676828"
+        f = self.count(printed("a", "DataFlowBuilderDeclaration")
+                       + printed("b", "jetbrains.mps.lang.dataFlow.structure.DataFlowBuilderDeclaration")
+                       + printed("c", "SubtypingRule")
+                       + [tool("t", PRINT, {"nodeReference": builder, "format": "PLAIN TEXT"}),
+                          result("t", ok("data flow builder for IfStatement { … }")),
+                          tool("s", PRINT, {"nodeReference": builder + "1"}),
+                          result("s", ok({"name": "s", "concept": "EmitJumpStatement"}))])
+        self.assertCounts(f, DF_builder_prints=3, T_rule_prints=1, tool_uses=5)
+
+    def test_t25_console_runs_count_and_reset_the_clean_verdict(self) -> None:
+        f = self.count(check("m", MODEL, MODEL_CLEAN)
+                       + [tool("r", "mcp__mps__mps_mcp_run_console_command", {}), result("r", ok({"executed": True}))]
+                       + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, DF_console_runs=1, C_root_after_clean_model=0)
 
     def test_smoke_runs_are_skipped_and_out_writes_the_tsv(self) -> None:
         self.count(check("m", MODEL, MODEL_CLEAN))

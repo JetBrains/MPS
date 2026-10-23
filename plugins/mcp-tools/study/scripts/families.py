@@ -50,6 +50,9 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   GN_template_prints               print_node calls on a node of a `@generator` model
   GN_template_prints_before_trace  of them, calls before the first TRACE that found a step (all of
                                    them without one)
+  DF_builder_prints                print_node calls on a dataflow builder root (DataFlowBuilderDeclaration):
+                                   reading builders to simulate the dataflow engine
+  DF_console_runs                  run_console_command calls (a hand-written engine probe, among others)
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -91,6 +94,10 @@ answers `success:false` (S12's by-design sandbox failure) does. The proxy is exa
 first MAKE not rejected is the build of the new rule; an earlier language or sandbox MAKE closes the
 window too. "Before" is transcript order, so a query in the same batch as
 that MAKE counts when it is listed first.
+DF_builder_prints works like T_rule_prints: the printed concept when the result has one, else a
+`nodeReference` in a `….dataFlow` model. It is the S13 signal (the builder is the artefact being
+fixed, so some prints are legitimate); DF_console_runs is the S13/S14 signal for a worker that
+reaches the engine through the MPS Console because no tool exposes it.
 
 The M_makes_save_transient and GN_* columns are S15's signals (debug a misgeneration with the
 generation trace). `parameters` is read as the server reads it: a JSON object, or its string form.
@@ -136,7 +143,7 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "T_rule_prints", "T_type_queries", "T_type_queries_before_make", "M_makes", "M_reload_all",
         "M_makes_save_transient", "GN_plan", "GN_transient_models", "GN_trace", "GN_trace_backward",
         "GN_drop", "GN_trace_before_fix", "GN_transient_reads", "GN_template_prints",
-        "GN_template_prints_before_trace"]
+        "GN_template_prints_before_trace", "DF_builder_prints", "DF_console_runs"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation")
 CLEAN = "no problems found"
@@ -146,6 +153,8 @@ TYPESYSTEM_RULE_CONCEPTS = {"InferenceRule", "SubtypingRule", "ComparisonRule", 
                             "NonTypesystemRule", "OverloadedOpRulesContainer"}
 NODE_TYPE_QUERIES = ("GET_TYPE", "GET_EXPECTED_TYPE")
 TYPESYSTEM_MODEL = re.compile(r"\.typesystem\)/")
+DATAFLOW_BUILDER_CONCEPTS = {"DataFlowBuilderDeclaration"}
+DATAFLOW_MODEL = re.compile(r"\.dataFlow\)/")
 MODULE_ITSELF = "The module itself has"
 UUID_MODULE = re.compile(r"^[0-9a-f-]{36}\([^)]+\)$")
 MODEL_REF = re.compile(r"^([0-9a-f-]{36}/)?r:[^/]+\)$")
@@ -301,13 +310,23 @@ def printed_concept(result):
     return concept.rsplit(".", 1)[-1] if isinstance(concept, str) else None
 
 
-def rule_print(inp, result):
-    """Whether a print_node call printed a typesystem rule root: by the printed concept, else by the model."""
+def aspect_print(inp, result, concepts, model):
+    """Whether a print_node call printed a root of `concepts`: by the printed concept, else by the `model` regex."""
     concept = printed_concept(result)
     if concept is not None:
-        return concept in TYPESYSTEM_RULE_CONCEPTS
+        return concept in concepts
     ref = inp.get("nodeReference")
-    return isinstance(ref, str) and TYPESYSTEM_MODEL.search(ref) is not None
+    return isinstance(ref, str) and model.search(ref) is not None
+
+
+def rule_print(inp, result):
+    """Whether a print_node call printed a typesystem rule root."""
+    return aspect_print(inp, result, TYPESYSTEM_RULE_CONCEPTS, TYPESYSTEM_MODEL)
+
+
+def builder_print(inp, result):
+    """Whether a print_node call printed a dataflow builder root."""
+    return aspect_print(inp, result, DATAFLOW_BUILDER_CONCEPTS, DATAFLOW_MODEL)
 
 
 def failed(result, is_error):
@@ -369,6 +388,10 @@ def fam(path):
             f["B_resp_bytes"] += len(r)
         if n == "mps_mcp_print_node" and rule_print(inp, r):
             f["T_rule_prints"] += 1
+        if n == "mps_mcp_print_node" and builder_print(inp, r):
+            f["DF_builder_prints"] += 1
+        if n == "mps_mcp_run_console_command":
+            f["DF_console_runs"] += 1
         operation = str(inp.get("operation") or "").strip().upper()
         if n == "mps_mcp_query_types" or (n == "mps_mcp_query_nodes" and operation in NODE_TYPE_QUERIES):
             f["T_type_queries"] += 1

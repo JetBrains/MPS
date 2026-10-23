@@ -31,6 +31,8 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S10 | Create a second empty project that opens without a migration prompt, close this one, open the new one, add a solution with one class, and leave both projects closed. Runs last. |
 | S11 | Answer five type questions about the Expressions sample (a subtype, the supertypes, a variable's type and its rule, a commented-out declaration, an operand's expected type) by asking the type checker. Models must not change. |
 | S12 | Make `Bool` a subtype of `Number` in the Expressions sample and prove it on a scratch sandbox model: the type error before, a new subtyping rule, one rebuild, the error gone and the side effect on `true + 1` after. |
+| S13 | Fix two injected bugs in the Kaja robot language's dataflow builders (a false "Unreachable command" on every `else` branch, a missing one on a `repeat 0 times` body), rebuild once, and leave the sandbox unchanged. |
+| S14 | Answer five def-use questions about one BaseLanguage method with a loop, branches and try-finally (which assignments reach which reads). Models must not change. |
 | S15 | Find why the generated Java has the wrong `PORTIONS` from the generation plan and trace (keep transient models, read the step model, trace the node back to its rule), fix the generator, rebuild, re-make, and free the transient models. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
@@ -220,6 +222,36 @@ S12, also when S11 ran before it in the same process. S12 changes and builds the
 restart again before any later Expressions cell. The worker's MAKE writes generated files into the
 run project; criterion 5 compares `.mps` files only.
 
+**S13 — dataflow builder debugging.** Fixture: `kaja-dataflow` (`samples/robot_Kaja` with two
+injected builder bugs and a `Reachability` probe script). Mutates the language's `dataFlow` model
+only. The worker reads the false and missing "Unreachable command" errors, finds the guilty
+`IfStatement_DataFlow` (misplaced `label elseBranch`) and `Repeat_DataFlow` (`count < 0` guard),
+fixes both, rebuilds the language once, and leaves the sandbox and the `check_KajaDataflow` rule
+alone. Prompt frozen 2026-10-23 after the round-40 baseline (opus PASS, 2 MAKEs, 9 builder
+prints, no console probe).
+Run to verify: `mps-aspect-dataflow` (only cell): builder statements, labels and positions, the
+"validates but analyses wrongly" route, and the rebuild-then-check loop. Also the baseline for a
+future `mps_mcp_query_dataflow` `PRINT_PROGRAM` (`dataflow-exposure-assessment.md`).
+Read the process signals together with the `families.py` columns `DF_builder_prints`, `M_makes`
+(each extra MAKE is one trial-and-error cycle) and `DF_console_runs` (a hand-made engine probe).
+Hypotheses: H2, H5, H7.
+Isolation: the fixture copy has the module ids of `samples/robot_Kaja`, and S13 builds the
+language, so restart MPS before every S13 run, as before S11 and S12. It must not open next to the
+MPS checkout's own project. No other cell uses Kaja.
+
+**S14 — def-use questions, read-only.** Fixture: `flow-java` (a synthesized empty project plus
+solution `flow.study` with one class, `Ledger`). Must not modify any model. Five questions about
+which assignments reach which reads in `Ledger.settle`, a method with a `foreach`, nested `if`s, an
+early `return`, `continue` and a `try`/`finally`. The model checks clean, so no warning gives an
+answer away. The answers were read from the engine (`ReachingDefinitionsAnalyzer` /
+`ReachingReadsAnalyzer`) through a console probe kept next to the criteria. Prompt frozen
+2026-10-23 after the round-40 baseline (opus PASS with its own typed console probe of the engine).
+Run to verify: nothing in today's catalog. This is the tool-free baseline for a future
+`mps_mcp_query_dataflow` `REACHING_WRITES` / `REACHING_READS` and its skill page.
+Read the process signals together with `DF_console_runs` (did the worker ask the engine at all?).
+Hypotheses: H4, H7.
+Isolation: `flow.study` is unique to this fixture; no restart is needed before or after S14.
+
 **S15 — debug a misgeneration with the generation trace.** Fixture: `recipes-misgen` (`recipes-full`
 plus an observer-authored, interpreted generator `map Recipe` → `RecipeClass` and the injected
 defect D1, `PORTIONS` from `node.steps.size`; `scenarios/S15/DEFECT.md`). Mutates the generator's
@@ -248,7 +280,7 @@ path, every P1–P7 signal on target (`GN_trace_before_fix` 1, `GN_template_prin
 Hypotheses: H2, H5, H7.
 Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7 and S9, so restart MPS before
 S15 when one of those ran in the process; the worker rebuilds the language, so restart again before
-any later recipes cell. S13 and S14 are reserved for another study and untouched by this cell.
+any later recipes cell. S13 and S14 (the dataflow cells) do not use `recipes*` and need no restart for it.
 
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
@@ -270,6 +302,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model) | | menus, keymaps, action maps, substitute menus — no cell |
 | `mps-aspect-constraints` | S1 (property validator + a scope that excludes the referrer), S2 (non-blank property rule) | | S5 repairs instances; it does not author a rule |
 | `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
+| `mps-aspect-dataflow` | S13 (fixing two builders: a label position and a guard) | | no cell authors a builder for a new concept, a custom analyzer, or a builder mode |
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
 | `mps-aspect-intentions` | S2 | | |
 | `mps-aspect-migrations` | S4 | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
@@ -286,7 +319,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-tests` | S7 | | |
 | `mps-run-configurations` | S7 | | |
 | `mps-console` | S9 | | evaluate before close |
-| `mps-project-management` | S10 | | observer opens for S1–S9, S11, S12 and S15 do not measure this skill |
+| `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S15 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
 | make / reload / hollow descriptors | S1, S2, S4, S6, S12 | S15 | a MAKE that returns `runtimeReady: true` is the reload (D84) |
 | `mps_mcp_alter_nodes` MAKE `saveTransientModels`, the `transientModels` block | S15 | | |
@@ -295,6 +328,7 @@ skill whose **Run** column is not S1 or S3.
 | reference formats, dry-run name warnings | S3, S1 | S5 | |
 | `check_root_node_problems`, quick fixes | S5 | S1, S3 (end-of-task check only) | |
 | type queries (`mps_mcp_query_types`, `GET_TYPE`, `GET_EXPECTED_TYPE`, `references/analysis-tools/type-queries.md`) and `uncheckedSubtrees` | S11 (read-only), S12 (before and after a rule change) | | |
+| dataflow analysis results (reachability, reaching definitions / reads) | S13 (reachability through the checker), S14 (def-use questions; no tool answers them yet) | | |
 | `print_node` / concept-details shape | S8 (a wrong reading is shipped), S5 (repair against a print) | S1, S2, S6 | |
 | `scripts/mps_dump.py` | | S8, S6, S7, S1 (workers use it to orient; the prompt does not require it) | |
 | discovery of an unknown project (H4) | S2, S8 | | |
@@ -307,7 +341,6 @@ Do not run S1 as a stand-in. Say that the catalog has no cell, and add one if th
 an eval (skill `references/scenarios.md`, "Adding a scenario").
 
 - `mps-aspect-actions`
-- `mps-aspect-dataflow`
 - `mps-aspect-editor-menus-and-keymaps`
 - `mps-aspect-textgen`
 - `mps-aspect-accessories` (S1 wires a solution to a language; that is not accessory models or a runtime solution)
@@ -330,7 +363,8 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
    language; S15's worker rebuilds it). S11 and S12 each need a restart before them, and an MPS
    that has not loaded the Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
-   need that restart. S10 runs last, and only when it is in the list.
+   need that restart. S13 needs a restart before every run (it builds the Kaja sample). S14 needs
+   no restart. S10 runs last, and only when it is in the list.
 4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S9 session state).
 5. The live catalog is what the run measures: `run_worker.sh` installs it and records
    `skillsSha256`. A cell run against a different catalog is not a verification of the change.
