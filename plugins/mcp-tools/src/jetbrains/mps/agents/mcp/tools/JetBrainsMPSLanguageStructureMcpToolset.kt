@@ -946,7 +946,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             val modelPart = type.substring(0, lastDot)
             val nodePart = type.substring(lastDot + 1)
 
-            for (module in mpsProject.repository.modules) {
+            for (module in nameLookupModules(mpsProject.repository)) {
                 for (m in module.models) {
                     if (m.name.longName == modelPart || m.name.longName == "$modelPart.structure") {
                         val node = m.rootNodes.find { it.getProperty(PROP_Name) == nodePart }
@@ -957,7 +957,7 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
                 }
             }
         } else {
-            for (module in mpsProject.repository.modules) {
+            for (module in nameLookupModules(mpsProject.repository)) {
                 for (m in module.models) {
                     if (m.name.longName.endsWith(".structure")) {
                         val node = m.rootNodes.find { it.getProperty(PROP_Name) == type }

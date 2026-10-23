@@ -22,6 +22,7 @@ import jetbrains.mps.agents.mcp.tools.unit.SkillReferenceLayoutTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillScriptsPackagingTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillTypeQueryRoutingTest;
 import jetbrains.mps.agents.mcp.tools.unit.SuiteRegistrationGuardTest;
+import jetbrains.mps.agents.mcp.tools.unit.TransientStereotypeParserTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -53,6 +54,7 @@ import org.junit.runners.Suite;
     MpsRuntimeVersionTest.class,
     IdeLogReaderTest.class,
     GenerationOpsStepsTest.class,
+    TransientStereotypeParserTest.class,
     McpTestSelectionTest.class,
     SuiteRegistrationGuardTest.class,
 })

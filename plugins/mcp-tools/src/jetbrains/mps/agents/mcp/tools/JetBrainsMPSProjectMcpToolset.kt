@@ -21,8 +21,10 @@ import com.intellij.openapi.wm.WindowManager
 import com.intellij.openapi.wm.impl.welcomeScreen.WelcomeFrame
 import jetbrains.mps.agents.mcp.tools.common.AbstractOps
 import jetbrains.mps.agents.mcp.tools.common.IdeLogReader
+import jetbrains.mps.agents.mcp.tools.common.TransientModelsOps
 import jetbrains.mps.agents.mcp.tools.config.AgentConfigRootResolver
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
+import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
@@ -44,7 +46,9 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
+import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import java.nio.file.Files
 import java.nio.file.Path
@@ -231,7 +235,7 @@ class JetBrainsMPSProjectMcpToolset(
     @McpTool
     @McpDescription(
         """
-        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. Two projection knobs cut the payload without changing the envelope: `nodeDetail="names"` reduces every node record to name/concept/reference (the cheap way to list a model's roots and their ids), and `nodeDepth` bounds how far `includeNodes` inlines the AST. Every Language module carries a `languageVersion` field (emitted without `includeDependencies`): the language's OWN version integer, the one a migration script's `fromVersion` gates on and the one `mps_mcp_update_module` SYNC_VERSION derives from the migration scripts. Do not confuse it with the consumer-side `usedLanguages[].version` stamps below, which say which version of some *other* language a module was last migrated against. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
+        Primary tool for project discovery, name-based searching, dependency analysis, and shortened-name expansion (e.g. `j.m.l.core` → `jetbrains.mps.lang.core`). `data` is inline when the serialized dump is <= `maxInlineBytes` (default 20000), otherwise a temp-file path (which keeps large dumps below the MCP response-size limit). Use `startingPoint` (a module/model/node reference) to scope the dump; use the `include...` flags to control depth. Keep `include...` flags false for fast project-wide discovery. Two projection knobs cut the payload without changing the envelope: `nodeDetail="names"` reduces every node record to name/concept/reference (the cheap way to list a model's roots and their ids), and `nodeDepth` bounds how far `includeNodes` inlines the AST. Every Language module carries a `languageVersion` field (emitted without `includeDependencies`): the language's OWN version integer, the one a migration script's `fromVersion` gates on and the one `mps_mcp_update_module` SYNC_VERSION derives from the migration scripts. Do not confuse it with the consumer-side `usedLanguages[].version` stamps below, which say which version of some *other* language a module was last migrated against. With `includeDependencies`, each model's `usedLanguages` lists directly-used languages plus used devkits; every devkit entry (`kind: devkit`) carries a `providedLanguages` array enumerating the languages it brings into scope transitively (including via extended devkits), so a language already supplied by a devkit need not be imported again. A model's reported `name` is its full name including any stereotype (e.g. `foo.bar@tests`, `foo.bar@generator`); pass that exact name (stereotype included) when addressing the model. Transient models a make kept (`mps_mcp_generation` TRANSIENT_MODELS) are addressed by reference only: a `startingPoint` that references a transient module, model or node is dumped without `includeStubModules`, their records carry `transient: true`, and `includeStubModules=true` lists transient modules under kind `transient`. See `mps-mcp-workflow/references/finding-things.md` for the name-resolution protocol.
     """
     )
     suspend fun mps_mcp_get_project_structure(
@@ -247,7 +251,7 @@ class JetBrainsMPSProjectMcpToolset(
                     "(<uuid>(<name>)) or use the 'moduleKind' filter (with startingPoint null). Scope heavy 'include...' " +
                     "flags by passing a startingPoint."
         ) startingPoint: String? = null,
-        @McpDescription("Optional filter by module kind (Solution, Language, DevKit, Generator). Only used if startingPoint is null.") moduleKind: String? = null,
+        @McpDescription("Optional filter by module kind (Solution, Language, DevKit, Generator, or transient with includeStubModules). Only used if startingPoint is null.") moduleKind: String? = null,
         @McpDescription("Projection of every node record: \"full\" (default) for the complete records, or \"names\" for name/concept/reference only — no docs (so no concept deprecation), no properties, references or child roles. Use \"names\" with includeRootNodes to list a model's roots and their ids cheaply.") nodeDetail: String = NODE_DETAIL_FULL,
         @McpDescription("With includeNodes, how many levels to inline below each root: -1 (default) for the whole tree, 0 for the root record alone, n for n levels. At the cut-off a role lists its children as {name, reference} and is marked childrenTruncated.") nodeDepth: Int = -1,
         @McpDescription("Inline the dump in `data` when it is at most this many characters; larger dumps are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
@@ -284,6 +288,26 @@ class JetBrainsMPSProjectMcpToolset(
                 // Concepts of printed nodes that are not loaded, for one envelope warning (D89).
                 val unloadedConcepts = linkedSetOf<SAbstractConcept>()
                 if (!startingPoint.isNullOrBlank()) {
+                    // A transient module, model or node a make kept belongs to no project, so the project-first
+                    // lookups below never return it; it is addressed by reference only.
+                    when (val transient = transientStartingPoint(mpsProject.repository, startingPoint)) {
+                        is SNode -> return@executeShortReadOnEdt finalizeResult(
+                            nodeHierarchyToJson(transient, includeNodes, mpsProject, projection = projection, unloadedConcepts = unloadedConcepts),
+                            maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts),
+                        )
+                        is SModel -> return@executeShortReadOnEdt finalizeResult(
+                            modelToJson(mpsProject, transient, effectiveIncludeRootNodes, includeNodes, includeDependencies, projection = projection, unloadedConcepts = unloadedConcepts),
+                            maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts),
+                        )
+                        is SModule -> return@executeShortReadOnEdt finalizeResult(
+                            moduleToJson(
+                                mpsProject, transient, effectiveIncludeModels, effectiveIncludeRootNodes, includeNodes, includeDependencies,
+                                projection = projection, unloadedConcepts = unloadedConcepts,
+                            ),
+                            maxInlineBytes, warnings = unloadedConceptsWarnings(unloadedConcepts),
+                        )
+                    }
+
                     // Try to resolve as node, then model, then module
 
                     // 1. Try Node
@@ -387,6 +411,24 @@ class JetBrainsMPSProjectMcpToolset(
         }
     }
 
+    /** The transient node, model or module [startingPoint] references persistently, or null for anything else. */
+    private fun transientStartingPoint(repository: SRepository, startingPoint: String): Any? {
+        val facade = PersistenceFacade.getInstance()
+        fun <T> attempt(resolve: () -> T?): T? = try {
+            resolve()
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            null
+        }
+        attempt { facade.createNodeReference(startingPoint).resolve(repository) }
+            ?.takeIf { node -> node.model?.let(TransientModelsOps::isTransient) == true }
+            ?.let { return it }
+        attempt { facade.createModelReference(startingPoint).resolve(repository) }
+            ?.takeIf(TransientModelsOps::isTransient)
+            ?.let { return it }
+        return attempt { facade.createModuleReference(startingPoint).resolve(repository) }?.takeIf { it is TransientSModule }
+    }
+
     private fun filteredOutStartingPoint(startingPoint: String, kind: String): String = errJson(
         "Starting point '$startingPoint' resolved to a non-project $kind and was filtered out. Set 'includeStubModules' to true to include read-only libraries/stubs and modules from other open MPS projects.",
         McpErrorCode.NOT_FOUND
@@ -433,6 +475,7 @@ class JetBrainsMPSProjectMcpToolset(
         }
         obj.addProperty("readOnly", m.isReadOnly)
         obj.addProperty("kind", getModuleKind(m))
+        if (m is TransientSModule) obj.addProperty("transient", true)
         // Language-only, and emitted unconditionally (not gated on includeDependencies): this is
         // the language's OWN version integer, the one a MigrationScript's `fromVersion` gates on.
         // It is deliberately not behind the expensive dependency flag — discovery is exactly where
@@ -604,6 +647,7 @@ class JetBrainsMPSProjectMcpToolset(
             is Language -> "Language"
             is DevKit -> "DevKit"
             is Generator -> "Generator"
+            is TransientSModule -> TRANSIENT_MODULE_KIND
             else -> m.javaClass.simpleName
         }
     }
@@ -711,6 +755,7 @@ class JetBrainsMPSProjectMcpToolset(
         obj.addProperty("name", model.name.value)
         obj.addProperty("reference", PersistenceFacade.getInstance().asString(model.reference))
         obj.addProperty("readOnly", model.isReadOnly)
+        if (TransientModelsOps.isTransient(model)) obj.addProperty("transient", true)
         addContainingProjectIfForeign(obj, project, model, cache = c)
 
         if (includeDependencies) {
@@ -959,6 +1004,8 @@ class JetBrainsMPSProjectMcpToolset(
 
         const val NODE_DETAIL_FULL = "full"
         const val NODE_DETAIL_NAMES = "names"
+
+        const val TRANSIENT_MODULE_KIND = "transient"
 
         const val IDE_LOG_FILE_NAME = IdeLogReader.LIVE_FILE_NAME
     }

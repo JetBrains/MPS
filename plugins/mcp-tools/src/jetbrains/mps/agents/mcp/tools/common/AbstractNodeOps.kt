@@ -2499,6 +2499,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         val node = resolveNodeReferencePreferringProject(mpsProject, nodeReference)?.resolve(repository)
             ?: return ConsoleAwareResolution.Err(errJson(missingMessageBuilder(nodeReference), McpErrorCode.NOT_FOUND))
         val model = node.model
+        model?.let { transientModelRefusal(repository, it, "Node '$nodeReference'") }?.let { return ConsoleAwareResolution.Err(it) }
         if (model !is EditableSModel) {
             return ConsoleAwareResolution.Err(errJson(nonEditableMessage, McpErrorCode.NOT_EDITABLE))
         }

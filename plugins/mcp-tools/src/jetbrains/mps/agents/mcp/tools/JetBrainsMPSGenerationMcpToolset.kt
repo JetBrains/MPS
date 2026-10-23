@@ -12,6 +12,8 @@ import jetbrains.mps.project.MPSProject
 /** The operations of `mps_mcp_generation`; each one has its own `parameters` keys in [generationParameterKeys]. */
 enum class GenerationOperation {
     PLAN,
+    TRANSIENT_MODELS,
+    DROP_TRANSIENT_MODELS,
 }
 
 private val PARAM_MODEL = BlobKey("model", "modelReference", "modelRef")
@@ -21,9 +23,15 @@ private val PLAN_KEYS = ParameterKeys.of(
     "ignoreExternalPlan",
 )
 
+private val TRANSIENT_MODELS_KEYS = ParameterKeys.of(PARAM_MODEL)
+
+private val DROP_TRANSIENT_MODELS_KEYS = ParameterKeys.of("includeCheckpoints")
+
 /** The accepted `parameters` keys of each [GenerationOperation]. */
 private fun generationParameterKeys(operation: GenerationOperation): ParameterKeys = when (operation) {
     GenerationOperation.PLAN -> PLAN_KEYS
+    GenerationOperation.TRANSIENT_MODELS -> TRANSIENT_MODELS_KEYS
+    GenerationOperation.DROP_TRANSIENT_MODELS -> DROP_TRANSIENT_MODELS_KEYS
 }
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
@@ -34,7 +42,7 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
 
     @McpTool
     @McpDescription("""
-        Read-only generation debugging. PLAN {model (reference or full name), ignoreExternalPlan (default false)} → the
+        Generation debugging, read-only except DROP_TRANSIENT_MODELS. PLAN {model (reference or full name), ignoreExternalPlan (default false)} → the
         generation plan make would use for the model, what the IDE's "Show Generation Plan" prints:
         {model, modelReference, generatable, planComputed, planSource EXPLICIT|DEFAULT, explicitPlanOrigin FACET|DEVKIT (when
         the model has an external plan from a `generator` module facet or an imported devkit's @genplan), externalPlanIgnored,
@@ -49,12 +57,28 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         `conflicts` and `ignoredPriorityRules` (mapping priority problems) come with a DEFAULT plan only. The plan is computed
         now; mapping-configuration and fork conditions are evaluated at generation time, so the static plan lists every
         candidate. `warnings` reports an undeployed language, a model make does not generate, and plan lookup errors.
+        TRANSIENT_MODELS {model? (an original model by reference or name, or a transient model by reference; omitted = all)}
+        → the transient models the project's last make kept (MAKE with saveTransientModels:true), what the Project view's
+        Transient models folder shows: {saveTransientModelsSetting, originals:[{model, originalModelReference (or
+        originalModelCandidates, or originalResolved:false), originalModule, transientModule, transientModuleReference,
+        traceAvailable, models:[{name, reference, stereotype, kind INITIAL_CLONE|STEP|FORK_BRANCH|OTHER, stereotypePrefix?,
+        minor?, branch, roots (or loaded:false for a swapped-out model)}]}], checkpoints:[{name, reference, stereotype, kind
+        CHECKPOINT, checkpoint?, generationPlan? (or attributesAvailable:false), roots}], notes}. `stereotypePrefix` matches
+        PLAN's `transientStereotypePrefix`, and for a branch's input copy (its lowest minor) the FORK's
+        `branchInputStereotypePrefix`; `branch` is 0 on the main branch, so a fork branch's models, which reuse later
+        main-branch prefixes, are told apart by reference and branch, never by name. Read a listed
+        model with mps_mcp_print_node, mps_mcp_query_nodes or mps_mcp_get_project_structure (startingPoint = its reference);
+        write tools refuse it (NOT_EDITABLE). The next make, from any tool or the user, discards them all.
+        DROP_TRANSIENT_MODELS {includeCheckpoints (default true)} → frees the transient models, as the IDE's "Remove Transient
+        Models" does: {droppedModules, droppedModels, includeCheckpoints, droppedCheckpointModels}; the checkpoints module is
+        shared by every open project. TRANSIENT_MODELS and DROP_TRANSIENT_MODELS take `parameters` `{}` when nothing is passed
+        and are refused while a make runs.
         Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure; `data` is inline up to
         `maxInlineBytes` (default 20000), otherwise a temp-file path. See the `mps-aspect-generation-plan` and
         `mps-aspect-generator` skills.
     """)
     suspend fun mps_mcp_generation(
-        @McpDescription("Required. The operation to perform (PLAN)") operation: String = "",
+        @McpDescription("Required. The operation to perform (PLAN, TRANSIENT_MODELS, DROP_TRANSIENT_MODELS)") operation: String = "",
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
@@ -94,6 +118,8 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
 
         when (operation) {
             GenerationOperation.PLAN -> opPlan(mpsProject, params, maxInlineBytes)
+            GenerationOperation.TRANSIENT_MODELS -> opTransientModels(mpsProject, params, maxInlineBytes)
+            GenerationOperation.DROP_TRANSIENT_MODELS -> opDropTransientModels(mpsProject, params)
         }
     }
 
@@ -105,5 +131,26 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
             resolveModelPreferringProject(mpsProject, modelReference)?.let { GenerationOps.planJson(it, mpsProject.repository, ignoreExternalPlan) }
         } ?: throw McpNotFoundException("Model '$modelReference' at parameters.model not found")
         return finalizeResult(rendered.json.toString(), maxInlineBytes, warnings = rendered.warnings)
+    }
+
+    private suspend fun opTransientModels(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
+        val modelReference = params.paramString(PARAM_MODEL)
+        // Refused and reported outside the read action, where ActionDispatcher would log the user error as SEVERE.
+        TransientModelsOps.refuseWhileMakeActive(mpsProject, "TRANSIENT_MODELS")
+        TransientModelsOps.provider(mpsProject)
+        val json = executeBackgroundRead(mpsProject) {
+            if (modelReference == null) return@executeBackgroundRead TransientModelsOps.transientModelsJson(mpsProject, null)
+            resolveModelPreferringProject(mpsProject, modelReference)?.let { TransientModelsOps.transientModelsJson(mpsProject, it) }
+        } ?: throw McpNotFoundException(
+            "Model '$modelReference' at parameters.model not found. A transient model reference stops resolving when the next make starts."
+        )
+        return finalizeResult(json.toString(), maxInlineBytes)
+    }
+
+    private suspend fun opDropTransientModels(mpsProject: MPSProject, params: JsonObject): String {
+        val includeCheckpoints = params.paramBoolean("includeCheckpoints", default = true)
+        // On the EDT outside any read action: the provider takes its own write action.
+        val dropped = withModalTimeoutOnEdt { TransientModelsOps.dropTransientModels(mpsProject, includeCheckpoints) }
+        return finalizeResult(dropped.json.toString(), warnings = dropped.warnings)
     }
 }

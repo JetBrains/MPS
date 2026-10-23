@@ -100,8 +100,8 @@ private val MAKE_PARAMETER_KEYS: Set<String> = MAKE_PARAMETER_SCHEMA.keys
 
 private const val TRANSIENT_MODELS_KEPT_WARNING =
     "Transient models were kept. The next make, from any tool, the console, a run configuration or the user, " +
-        "discards them and their trace. While they exist, a model, root node or concept addressed by bare name " +
-        "may resolve to a transient copy: address persistent nodes by their full reference."
+        "discards them and their trace. List them with mps_mcp_generation TRANSIENT_MODELS; they are read-only and " +
+        "addressed by reference: bare-name lookups skip transient copies."
 
 private val FIND_USAGES_KEYS =
     ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose usages to find")) + SEARCH_SCOPE_KEYS
@@ -199,7 +199,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         The answer can depend on the node already in the slot, though not on what the node itself adds (a value that widens
         a variable can be wider than the answer); for an empty slot, ask via the node you are about to replace. To compare or widen
         types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE), or to see why a node has its type
-        (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
+        (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Node references of transient models a make kept
+        (`mps_mcp_generation` TRANSIENT_MODELS) are accepted as `nodeReference`; `mps_mcp_generation`
+        TRACE tells which input node and rule produced such a node. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
@@ -485,6 +487,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
                 // Refuse console nodes: the console model is throwaway, copying doesn't make sense.
                 val sourceModel = node.model
+                // The copy lands in the source's own model, so a transient source is a write to a read-only model.
+                sourceModel?.let { transientModelRefusal(repo, it, "Node '$nodeReference'") }?.let { return@executeShortCommandOnEdt it }
                 if (sourceModel != null && sourceModel !is EditableSModel) {
                     val module = sourceModel.module
                     val isConsole = module != null && !isModuleInProject(repo, sourceModel)
@@ -897,6 +901,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 // Auto-apply writes the model, so guard editability + project membership like the
                 // other write tools before mutating anything.
                 val model = root.model
+                model?.let { transientModelRefusal(repo, it, "Cannot auto-apply quick fixes: node '$nodeReference'") }?.let { return it }
                 if (model !is EditableSModel) {
                     return errJson(
                         "Cannot auto-apply quick fixes: the model containing '$nodeReference' is not editable",
@@ -1278,6 +1283,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
         A stored property, child role or reference that the node's concept does not declare is printed with `declared:false`; a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
         `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
+        A node of a transient model a make kept (references from `mps_mcp_generation` TRANSIENT_MODELS, `i:` model ids) prints like any other; `mps_mcp_generation` TRACE tells which input node and rule produced it.
         Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """

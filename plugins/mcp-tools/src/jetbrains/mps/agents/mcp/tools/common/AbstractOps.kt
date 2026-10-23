@@ -34,6 +34,7 @@ import jetbrains.mps.errors.item.QuickFixRuntimeAdapter
 import jetbrains.mps.errors.item.RuleIdFlavouredItem
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
+import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.generator.GenerationSettingsProvider
 import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.generator.TransientModelsProvider
@@ -695,6 +696,7 @@ abstract class AbstractOps : McpToolset {
     protected fun resolveEditableModel(repository: SRepository, modelReference: String): EditableModelResolution {
         val model = resolveModel(repository, modelReference)
             ?: return EditableModelResolution.Err(errJson("Model '$modelReference' not found", McpErrorCode.NOT_FOUND))
+        transientModelRefusal(repository, model, "Model '$modelReference'")?.let { return EditableModelResolution.Err(it) }
         if (model !is EditableSModel) {
             return EditableModelResolution.Err(errJson("Model '$modelReference' is not editable", McpErrorCode.NOT_EDITABLE))
         }
@@ -715,6 +717,7 @@ abstract class AbstractOps : McpToolset {
 
         val model = resolveModel(mpsProject.repository, modelReference)
             ?: return EditableModelResolution.Err(errJson("Model '$modelReference' not found", McpErrorCode.NOT_FOUND))
+        transientModelRefusal(mpsProject.repository, model, "Model '$modelReference'")?.let { return EditableModelResolution.Err(it) }
         if (model !is EditableSModel) {
             return EditableModelResolution.Err(errJson("Model '$modelReference' is not editable", McpErrorCode.NOT_EDITABLE))
         }
@@ -752,6 +755,7 @@ abstract class AbstractOps : McpToolset {
         val node = sNodeRef?.resolve(repository)
             ?: return EditableNodeResolution.Err(errJson(missingMessageBuilder(nodeReference), McpErrorCode.NOT_FOUND))
         val model = node.model
+        model?.let { transientModelRefusal(repository, it, "Node '$nodeReference'") }?.let { return EditableNodeResolution.Err(it) }
         if (model !is EditableSModel) {
             return EditableNodeResolution.Err(errJson(nonEditableMessage, McpErrorCode.NOT_EDITABLE))
         }
@@ -781,6 +785,7 @@ abstract class AbstractOps : McpToolset {
         val node = sNodeRef?.resolve(repository)
             ?: return EditableNodeResolution.Err(errJson(missingMessageBuilder(nodeReference), McpErrorCode.NOT_FOUND))
         val model = node.model
+        model?.let { transientModelRefusal(repository, it, "Node '$nodeReference'") }?.let { return EditableNodeResolution.Err(it) }
         if (model !is EditableSModel) {
             return EditableNodeResolution.Err(errJson(nonEditableMessage, McpErrorCode.NOT_EDITABLE))
         }
@@ -803,6 +808,7 @@ abstract class AbstractOps : McpToolset {
         val node = resolveConceptNode(mpsProject.repository, conceptRef)
             ?: return EditableNodeResolution.Err(errJson("Concept '$conceptRef' not found", McpErrorCode.NOT_FOUND))
         val model = node.model
+        model?.let { transientModelRefusal(mpsProject.repository, it, "Concept '$conceptRef'") }?.let { return EditableNodeResolution.Err(it) }
         if (model !is EditableSModel) {
             return EditableNodeResolution.Err(errJson("Model containing concept '$conceptRef' is not editable", McpErrorCode.NOT_EDITABLE))
         }
@@ -811,6 +817,15 @@ abstract class AbstractOps : McpToolset {
         }
         return EditableNodeResolution.Ok(node, model)
     }
+
+    /**
+     * NOT_EDITABLE for a write aimed at a transient model a make kept, naming its original model, or null for any other
+     * model. Checked ahead of the project-membership check, which would answer a misleading cross-project error: a
+     * transient model is an [EditableSModel] that belongs to no project.
+     */
+    protected fun transientModelRefusal(repository: SRepository, model: SModel, subject: String): String? =
+        if (TransientModelsOps.isTransient(model)) errJson(TransientModelsOps.notEditableMessage(subject, model, repository), McpErrorCode.NOT_EDITABLE)
+        else null
 
     /**
      * True if [model]'s owning module is part of the project that owns [repository]. A single MPS
@@ -2945,7 +2960,7 @@ abstract class AbstractOps : McpToolset {
     }
 
     protected fun resolveConceptNode(repository: SRepository, conceptRef: String): SNode? =
-        resolveConceptNodeInModules(repository, conceptRef, repository.modules) { true }
+        resolveConceptNodeInModules(repository, conceptRef, nameLookupModules(repository)) { true }
 
     protected fun resolveConceptNode(mpsProject: MPSProject, conceptRef: String): SNode? =
         resolveConceptNodeInModules(mpsProject.repository, conceptRef, mpsProject.projectModulesWithGenerators) {
@@ -3097,7 +3112,7 @@ abstract class AbstractOps : McpToolset {
     ): SNode? =
         findStructureDeclarationInModules(ref, mpsProject.projectModulesWithGenerators) { root ->
             accept(root) && root.model?.let { isModelInSelectedProject(mpsProject, it) } == true
-        } ?: findStructureDeclarationInModules(ref, mpsProject.repository.modules, accept)
+        } ?: findStructureDeclarationInModules(ref, nameLookupModules(mpsProject.repository), accept)
 
     private fun findStructureDeclarationInModules(
         ref: String,
@@ -3132,6 +3147,14 @@ abstract class AbstractOps : McpToolset {
     protected fun isConceptDeclaration(node: SNode): Boolean =
         node.concept.isSubConceptOf(SNodeUtil.concept_AbstractConceptDeclaration)
 
+    /**
+     * [repository]'s modules for a lookup by name. Transient modules are skipped: a make that kept its transient models
+     * publishes copies under the original long names (`foo.structure@1_0`), and a bare name must never bind to a copy the
+     * next make discards. Transient models are addressed by reference only.
+     */
+    protected fun nameLookupModules(repository: SRepository): List<SModule> =
+        repository.modules.filterNot { it is TransientSModule }
+
     protected fun resolveModel(repository: SRepository, modelReference: String): SModel? {
         // 1. Try as a model reference
         try {
@@ -3146,7 +3169,7 @@ abstract class AbstractOps : McpToolset {
         // not applied to stereotyped models: a deployed language ships a generated `<lang>@descriptor`
         // model whose longName equals the language name, which would otherwise shadow the same-named
         // Language module whenever a name is resolved (e.g. get_project_structure startingPoint).
-        for (module in repository.modules) {
+        for (module in nameLookupModules(repository)) {
             for (model in module.models) {
                 if (modelNameMatches(model, modelReference)) {
                     return model
@@ -3180,7 +3203,7 @@ abstract class AbstractOps : McpToolset {
         // 2. Try searching by name, project first by default. See modelNameMatches: a stereotyped
         // model (e.g. a deployed language's `<lang>@descriptor`) is only matched by its full value,
         // so a bare language name falls through to the same-named Language module instead.
-        val modulesToSearch = if (projectOnly) mpsProject.projectModulesWithGenerators else mpsProject.repository.modules
+        val modulesToSearch = if (projectOnly) mpsProject.projectModulesWithGenerators else nameLookupModules(mpsProject.repository)
         for (module in modulesToSearch) {
             for (model in module.models) {
                 if (modelNameMatches(model, modelReference)) {
@@ -3205,7 +3228,7 @@ abstract class AbstractOps : McpToolset {
         }
 
         // 2. Try searching by name
-        for (module in repository.modules) {
+        for (module in nameLookupModules(repository)) {
             if (module.moduleName == moduleRef) {
                 return module
             }
@@ -3228,7 +3251,7 @@ abstract class AbstractOps : McpToolset {
         }
 
         // 2. Try searching by name
-        val modulesToSearch = if (projectOnly) mpsProject.projectModulesWithGenerators else mpsProject.repository.modules
+        val modulesToSearch = if (projectOnly) mpsProject.projectModulesWithGenerators else nameLookupModules(mpsProject.repository)
         for (module in modulesToSearch) {
             if (module.moduleName == moduleRef) {
                 return module
@@ -3327,7 +3350,7 @@ abstract class AbstractOps : McpToolset {
                 val lastDot = nodeRefStr.lastIndexOf(".")
                 val modelName = nodeRefStr.substring(0, lastDot)
                 val rootName = nodeRefStr.substring(lastDot + 1)
-                for (module in repository.modules) {
+                for (module in nameLookupModules(repository)) {
                     for (model in module.models) {
                         if (model.name.longName == modelName || model.name.value == modelName) {
                             for (root in model.rootNodes) {
@@ -3338,7 +3361,7 @@ abstract class AbstractOps : McpToolset {
                 }
             }
 
-            for (module in repository.modules) {
+            for (module in nameLookupModules(repository)) {
                 for (model in module.models) {
                     for (root in model.rootNodes) {
                         if (root.name == nodeRefStr) {
