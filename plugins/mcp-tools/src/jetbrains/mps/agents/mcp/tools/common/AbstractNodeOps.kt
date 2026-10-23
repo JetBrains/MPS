@@ -28,6 +28,7 @@ import jetbrains.mps.openapi.editor.message.SimpleEditorMessage
 import jetbrains.mps.openapi.editor.selection.Selection
 import jetbrains.mps.openapi.editor.selection.SingularSelection
 import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.EditableFilteringScope
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.resolve.ResolverComponent
@@ -35,6 +36,7 @@ import jetbrains.mps.scope.ErrorScope
 import jetbrains.mps.scope.VisibleDepsSearchScope
 import jetbrains.mps.smodel.BaseScope
 import jetbrains.mps.smodel.ConceptDescendantsCache
+import jetbrains.mps.smodel.ModuleRepositoryFacade
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
 import jetbrains.mps.smodel.SNodeUtil
@@ -2303,6 +2305,10 @@ abstract class AbstractNodeOps : AbstractOps() {
         private const val CONSOLE_PLUGIN_ID = "jetbrains.mps.console"
         private const val CONSOLE_TOOL_FQN = "jetbrains.mps.console.plugin.ConsoleTool_Tool"
         private const val PROJECT_PLUGIN_MANAGER_FQN = "jetbrains.mps.plugins.projectplugins.ProjectPluginManager"
+        /** The `modelReference` that names the current editable console tab's model (see [resolveEditableModelAllowingConsole]). */
+        private const val CONSOLE_MODEL_ALIAS = "console"
+        /** `jetbrains.mps.console.devkit`, the devkit `BaseConsoleTab.addBuiltInImports` starts from. */
+        private const val CONSOLE_DEVKIT_ID = "70d3d6da-af63-483d-a75f-9c8acf8de332"
 
         /** Suffix of the per-reference dry-run warning for a plain-name target; [DRY_RUN_REFERENCE_RULE] keys on it. */
         private const val NAME_NOT_LOOKED_UP = " is a name, not looked up."
@@ -2518,6 +2524,90 @@ abstract class AbstractNodeOps : AbstractOps() {
             ))
         }
         return ConsoleAwareResolution.Ok(node, model, ConsoleTarget(console.tab, console.consoleModel))
+    }
+
+    /** Result of [resolveEditableModelAllowingConsole]. [console] is non-null iff the model is the
+     *  current console model, whose imports live in memory only and must NOT be persisted. */
+    protected sealed class ConsoleAwareModelResolution {
+        data class Ok(val model: EditableSModel, val console: ConsoleTarget?) : ConsoleAwareModelResolution()
+        data class Err(val errJson: String) : ConsoleAwareModelResolution()
+    }
+
+    /**
+     * Resolves [modelReference] for a write to the model itself (imports, used languages), mirroring
+     * [resolveEditableNodeAllowingConsole]. The alias `"console"` names the model of [mpsProject]'s
+     * current editable console tab; it is checked before any name lookup, so a project model named
+     * `console` is reachable only by its persistent reference. Project models go through
+     * [resolveEditableModel] unchanged. A model that gate refuses as outside the project is admitted
+     * only when it is the current console model; every other model (another project's console, an
+     * output tab's model, any other temporary model) keeps the gate's error. Must be called on the
+     * EDT (the console lookup reads Swing tab state).
+     */
+    protected fun resolveEditableModelAllowingConsole(
+        mpsProject: MPSProject,
+        modelReference: String,
+    ): ConsoleAwareModelResolution =
+        resolveEditableModelAllowingConsole(mpsProject, modelReference) { resolveConsoleEditableTab(mpsProject.project) }
+
+    private fun resolveEditableModelAllowingConsole(
+        mpsProject: MPSProject,
+        modelReference: String,
+        lookupConsole: () -> ConsoleResolution,
+    ): ConsoleAwareModelResolution {
+        if (modelReference == CONSOLE_MODEL_ALIAS) {
+            val console = when (val r = lookupConsole()) {
+                is ConsoleResolution.Ok -> r
+                is ConsoleResolution.Err -> return ConsoleAwareModelResolution.Err(r.errJson)
+            }
+            val model = console.consoleModel as? EditableSModel
+                ?: return ConsoleAwareModelResolution.Err(
+                    errJson("The MPS Console model is not editable", McpErrorCode.NOT_EDITABLE)
+                )
+            return ConsoleAwareModelResolution.Ok(model, ConsoleTarget(console.tab, console.consoleModel))
+        }
+        val refusal = when (val r = resolveEditableModel(mpsProject, modelReference)) {
+            is EditableModelResolution.Ok -> return ConsoleAwareModelResolution.Ok(r.model, console = null)
+            is EditableModelResolution.Err -> ConsoleAwareModelResolution.Err(r.errJson)
+        }
+        // Only the cross-project refusal can be lifted: a missing or read-only model stays refused.
+        val candidate = resolveModel(mpsProject.repository, modelReference) as? EditableSModel ?: return refusal
+        val console = lookupConsole() as? ConsoleResolution.Ok ?: return refusal
+        if (candidate.reference != console.consoleModel.reference) return refusal
+        return ConsoleAwareModelResolution.Ok(candidate, ConsoleTarget(console.tab, console.consoleModel))
+    }
+
+    /** What [resolveConsoleModelForTest] reports: the admitted model and whether as the console, or the error envelope. */
+    internal data class ConsoleModelAdmission(val model: EditableSModel?, val console: Boolean, val errJson: String?)
+
+    /**
+     * Test seam: [resolveEditableModelAllowingConsole] with [consoleModel] standing in for the
+     * console tab's model, or with no console when it is null. The headless test fixture has no
+     * Console tool window, so this is the only way it reaches the alias and admission rules.
+     */
+    internal fun resolveConsoleModelForTest(
+        mpsProject: MPSProject,
+        modelReference: String,
+        consoleModel: SModel?,
+    ): ConsoleModelAdmission {
+        val lookup = {
+            consoleModel?.let { ConsoleResolution.Ok(tab = Unit, consoleModel = it) }
+                ?: ConsoleResolution.Err(errJson("No MPS Console in this test.", McpErrorCode.NOT_FOUND))
+        }
+        return when (val r = resolveEditableModelAllowingConsole(mpsProject, modelReference, lookup)) {
+            is ConsoleAwareModelResolution.Ok -> ConsoleModelAdmission(r.model, r.console != null, errJson = null)
+            is ConsoleAwareModelResolution.Err -> ConsoleModelAdmission(model = null, console = false, errJson = r.errJson)
+        }
+    }
+
+    /**
+     * The devkits `BaseConsoleTab.addBuiltInImports` gives every console model on creation and on
+     * Clear: the console devkit and each devkit extending it.
+     */
+    protected fun consoleBuiltInDevkits(repository: SRepository): Set<SModuleReference> {
+        val consoleDevkitId = PersistenceFacade.getInstance().createModuleId(CONSOLE_DEVKIT_ID)
+        return ModuleRepositoryFacade(repository).getAllModules(DevKit::class.java)
+            .filter { devkit -> devkit.allExtendedDevkits.any { it.moduleReference.moduleId == consoleDevkitId } }
+            .mapTo(HashSet()) { it.moduleReference }
     }
 
     /**

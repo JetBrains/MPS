@@ -1814,6 +1814,27 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         )
     }
 
+    @Test
+    fun `hasUnresolvedJavaNames flags an unbound type and passes resolved code`() {
+        // The console-mode imports hint keys on this check; the console itself is not available
+        // headlessly, so the check runs on root-mode inserts.
+        val toolset = JetBrainsMPSJavaMcpToolset()
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+        for (code in listOf("class Resolved { String value; }", "class Unresolved { no.such.Type value; }")) {
+            assertOkData(runTool(toolset) {
+                it.mps_mcp_parse_java_and_insert(
+                    """{"code":"$code","featureKind":"CLASS","insert":{"mode":"root","modelRef":"$javaModelRef"}}"""
+                )
+            })
+        }
+        readOnRepo {
+            val roots = javaModel.rootNodes.associateBy { it.name }
+            assertFalse(toolset.hasUnresolvedJavaNames(listOf(roots.getValue("Resolved"))))
+            assertTrue(toolset.hasUnresolvedJavaNames(listOf(roots.getValue("Unresolved"))))
+        }
+    }
+
     /** Seeds an empty class root via root-mode insertion and returns its SNodeReference string. */
     private fun seedClassRoot(toolset: JetBrainsMPSJavaMcpToolset, modelRef: String, name: String): String {
         val seed = runTool(toolset) {

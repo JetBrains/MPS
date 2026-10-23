@@ -30,7 +30,7 @@ Companion names in this skill are lazy dependencies: load only those relevant to
 
 Pick the right authoring tool before you start:
 
-- **`mps_mcp_parse_java_and_insert`** — use for plain Java skeletons or bodies (classes, methods, statements, expressions), including the current MPS Console input (`insert.mode: "console"` to replace the console command, or `mode: "child"/"replace"` with a `parentRef`/`targetRef` inside the current console command for nested edits). Fastest path when no BaseLanguage extension is required.
+- **`mps_mcp_parse_java_and_insert`** — use for plain Java skeletons or bodies (classes, methods, statements, expressions), including the current MPS Console input (`insert.mode: "console"` to replace the console command, or `mode: "child"/"replace"` with a `parentRef`/`targetRef` inside the current console command for nested edits; console code resolves an MPS class only once the console imports its model, which `mps_mcp_model_dependency(modelReference: "console", ...)` adds, see `references/console-imports.md` in the `mps-console` skill root after loading that companion skill from the same origin). Fastest path when no BaseLanguage extension is required.
 - **JSON AST blueprints** — use when the parser is unavailable, when the code uses BaseLanguage extensions (smodel, closures, collections), or when stable persistent references to members are required for downstream consumers.
 - **Mixed** — use the parser for the skeleton with placeholders (e.g. `IntegerConstant`, `StringLiteral`, `IntegerType`, `StringType`), then JSON-edit the placeholders to swap in extension-specific subtrees.
 

@@ -4,6 +4,8 @@ import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonParser
+import jetbrains.mps.agents.mcp.tools.languages.BaseLanguageMeta
+import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
 import jetbrains.mps.smodel.SModelInternal
@@ -12,7 +14,11 @@ import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.ids.SLanguageId
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.language.LanguageRegistry
+import jetbrains.mps.smodel.tempmodel.TempModuleOptions
+import jetbrains.mps.smodel.tempmodel.TemporaryModels
+import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.module.SModuleReference
 import org.jetbrains.mps.openapi.module.SModuleId
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -34,6 +40,10 @@ import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
  *    unknown source).
  *  - Used languages: `mps_mcp_model_used_language`
  *    including the invalid-kind branch.
+ *  - Console model targets: the alias and admission rules with a temporary model standing in for
+ *    the console model, the tools' refusals without a console, and the import logic run directly on
+ *    a temporary model. The headless fixture has no Console tool window, so the live console lookup
+ *    is verified manually (`test_scenarios/mcp-verification-scenario-console-imports.md`).
  */
 class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
@@ -802,5 +812,237 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val providedNames = devkitEntry.getAsJsonArray("providedLanguages").map { it.asJsonObject.get("name").asString }
         assertTrue("providedLanguages must list the exported language $providedLang: $providedNames",
             providedNames.contains(providedLang))
+    }
+
+    // ── console model targets ─────────────────────────────────────────────────────────────
+
+    /**
+     * Runs [block] on a fresh editable temporary model in its own `TempModule` — the shape of the
+     * console model — and disposes it afterwards, so it never leaks into other tests' name lookups.
+     */
+    private fun <R> withTempModel(block: (EditableSModel) -> R): R {
+        var temp: SModel? = null
+        executeCommand {
+            temp = TemporaryModels.getInstance().createEditable(false, TempModuleOptions.forNewModule(myProject.repository))
+        }
+        val model = checkNotNull(temp) as EditableSModel
+        try {
+            return block(model)
+        } finally {
+            executeCommand { TemporaryModels.getInstance().dispose(model) }
+        }
+    }
+
+    /** Runs [block] under a write command and returns its result; the internal import overloads need one. */
+    private fun <R> inCommand(block: () -> R): R {
+        var result: R? = null
+        executeCommand { result = block() }
+        @Suppress("UNCHECKED_CAST")
+        return result as R
+    }
+
+    private fun warningsOf(response: String): List<String> =
+        JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings")?.map { it.asString } ?: emptyList()
+
+    @Test
+    fun `the console alias and the console model reference resolve to the console model`() {
+        withTempModel { console ->
+            readOnRepo {
+                val byAlias = toolset.resolveConsoleModelForTest(myProject, "console", console)
+                assertTrue("alias: $byAlias", byAlias.console && byAlias.model == console)
+                val byReference = toolset.resolveConsoleModelForTest(myProject, modelRefOf(console), console)
+                assertTrue("persistent reference: $byReference", byReference.console && byReference.model == console)
+                assertNotNull("no console, no alias", toolset.resolveConsoleModelForTest(myProject, "console", null).errJson)
+            }
+        }
+    }
+
+    @Test
+    fun `only the current console model is admitted outside the project`() {
+        val projectModel = createModel(createSolution(), "test.console.admit${System.nanoTime()}")
+        withTempModel { console ->
+            withTempModel { other ->
+                readOnRepo {
+                    val refused = toolset.resolveConsoleModelForTest(myProject, modelRefOf(other), console)
+                    assertTrue("another temp model keeps the cross-project refusal: $refused",
+                        refused.errJson!!.contains("not part of the project selected by projectPath"))
+                    val noConsole = toolset.resolveConsoleModelForTest(myProject, modelRefOf(console), null)
+                    assertNotNull("without a console the temp model is refused: $noConsole", noConsole.errJson)
+
+                    val project = toolset.resolveConsoleModelForTest(myProject, modelRefOf(projectModel), console)
+                    assertTrue("a project model is not a console target: $project", project.model == projectModel && !project.console)
+                    val missing = toolset.resolveConsoleModelForTest(myProject, "no.such.model", console)
+                    assertTrue("NOT_FOUND stands: $missing", missing.errJson!!.contains("not found"))
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `the console alias shadows a project model named console`() {
+        val consoleNamed = createModel(createSolution(), "console")
+        withTempModel { console ->
+            readOnRepo {
+                assertEquals(console, toolset.resolveConsoleModelForTest(myProject, "console", console).model)
+                val byReference = toolset.resolveConsoleModelForTest(myProject, modelRefOf(consoleNamed), console)
+                assertTrue("reachable by reference: $byReference", byReference.model == consoleNamed && !byReference.console)
+            }
+        }
+    }
+
+    @Test
+    fun `model tools refuse a temporary model that is not the console model`() {
+        val target = createModel(createSolution(), "test.console.refuse.tgt${System.nanoTime()}")
+        withTempModel { temp ->
+            val tempRef = modelRefOf(temp)
+            val responses = listOf(
+                runTool(toolset) { it.mps_mcp_model_dependency(tempRef, JsonOrText(modelRefOf(target))) },
+                runTool(toolset) { it.mps_mcp_model_used_language(tempRef, "jetbrains.mps.lang.core", "language") },
+                runTool(toolset) {
+                    it.mps_mcp_model_used_language(tempRef, "jetbrains.mps.lang.core", "language", DependencyOperation.DELETE)
+                },
+            )
+            for (response in responses) {
+                assertTrue("expected the cross-project refusal: $response",
+                    expectErr(response).contains("not part of the project selected by projectPath"))
+            }
+            val deleteItem = JsonParser.parseString(
+                runTool(toolset) { it.mps_mcp_model_dependency(tempRef, modelRefOf(target), DependencyOperation.DELETE) }
+            ).asJsonObject.getAsJsonArray("data")[0].asJsonObject
+            assertTrue("expected the cross-project refusal: $deleteItem",
+                deleteItem.get("error").asString.contains("not part of the project selected by projectPath"))
+            readOnRepo {
+                assertTrue("a refused write must not touch the model", (temp as SModelInternal).modelImports.isEmpty())
+            }
+        }
+    }
+
+    @Test
+    fun `console alias fails cleanly when no console is available`() {
+        // Like the console toolset's tests: resolveConsoleEditableTab may answer NOT_FOUND or
+        // INTERNAL_ERROR in the headless fixture, so only the error envelope is asserted.
+        val target = createModel(createSolution(), "test.console.alias.tgt${System.nanoTime()}")
+        expectErr(runTool(toolset) { it.mps_mcp_model_dependency("console", JsonOrText(modelRefOf(target))) })
+        expectErr(runTool(toolset) { it.mps_mcp_model_used_language("console", "jetbrains.mps.lang.core", "language") })
+    }
+
+    @Test
+    fun `a project model named console is shadowed by the alias and reachable by reference`() {
+        val solution = createSolution()
+        val consoleNamed = createModel(solution, "console")
+        val target = createModel(createSolution(), "test.console.named.tgt${System.nanoTime()}")
+        val targetRef = modelRefOf(target)
+
+        expectErr(runTool(toolset) { it.mps_mcp_model_dependency("console", JsonOrText(targetRef)) })
+        readOnRepo {
+            assertTrue("the alias must not fall back to the model named console",
+                (consoleNamed as SModelInternal).modelImports.isEmpty())
+        }
+
+        val response = runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(consoleNamed), JsonOrText(targetRef)) }
+        assertEquals(1, expectOk(response).get("added").asInt)
+        assertFalse("a project model write is not a console write: $response", expectOk(response).has("console"))
+    }
+
+    @Test
+    fun `remove_model_dependency removes an import named by its model name`() {
+        val sourceModel = createModel(createSolution(), "test.dep.byname.src${System.nanoTime()}")
+        val targetName = "test.dep.byname.tgt${System.nanoTime()}"
+        val targetModel = createModel(createSolution(), targetName)
+        expectOk(runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(sourceModel), JsonOrText(modelRefOf(targetModel))) })
+
+        val response = runTool(toolset) { it.mps_mcp_model_dependency(modelRefOf(sourceModel), targetName, DependencyOperation.DELETE) }
+        val item = JsonParser.parseString(response).asJsonObject.getAsJsonArray("data")[0].asJsonObject
+        assertTrue("a bare model name must match the stored import: $response", item.getAsJsonObject("data").get("removed").asBoolean)
+        readOnRepo {
+            assertFalse((sourceModel as SModelInternal).modelImports.contains(targetModel.reference))
+        }
+    }
+
+    @Test
+    fun `console import logic adds module dependencies, warns, and removes by name`() {
+        val targetSolution = createSolution()
+        val targetName = "test.console.imports.tgt${System.nanoTime()}"
+        val targetModel = createModel(targetSolution, targetName)
+        withTempModel { temp ->
+            val added = inCommand { toolset.addModelImports(myProject, temp, listOf(modelRefOf(targetModel)), console = true) }
+            val addedData = expectOk(added)
+            assertEquals(1, addedData.get("added").asInt)
+            assertTrue("a console write is marked: $added", addedData.get("console").asBoolean)
+            assertTrue("the lifetime warning is reported: $added", warningsOf(added).single().contains("Console > Clear"))
+            readOnRepo {
+                assertTrue((temp as SModelInternal).modelImports.contains(targetModel.reference))
+                val dependencies = (temp.module as AbstractModule).moduleDescriptor!!.dependencies
+                assertTrue("the temp module must depend on the target module",
+                    dependencies.any { it.moduleRef.moduleId == targetSolution.moduleReference.moduleId })
+            }
+
+            val removed = inCommand { toolset.removeModelImport(myProject, temp, targetName, console = true) }
+            assertTrue("removed by bare name: $removed", expectOk(removed).get("removed").asBoolean)
+            assertEquals("nothing references the model, so only the lifetime warning: $removed", 1, warningsOf(removed).size)
+            readOnRepo {
+                assertFalse((temp as SModelInternal).modelImports.contains(targetModel.reference))
+                assertTrue("DELETE leaves the module dependency, as Clear does",
+                    (temp.module as AbstractModule).moduleDescriptor!!.dependencies
+                        .any { it.moduleRef.moduleId == targetSolution.moduleReference.moduleId })
+            }
+        }
+    }
+
+    @Test
+    fun `console DELETE warns when the console still references the import or uses the language`() {
+        val targetModel = createModel(createSolution(), "test.console.rederive.tgt${System.nanoTime()}")
+        val seeded = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"class Target {}","featureKind":"CLASS","insert":{"mode":"root","modelRef":"${modelRefOf(targetModel)}"}}"""
+            )
+        }
+        assertTrue(seeded, JsonParser.parseString(seeded).asJsonObject.get("ok").asBoolean)
+        withTempModel { temp ->
+            executeCommand {
+                val type = jetbrains.mps.smodel.SNode(BaseLanguageMeta.classifierTypeConcept)
+                type.setReferenceTarget(BaseLanguageMeta.classifierTypeClassifierLink, targetModel.rootNodes.single())
+                temp.addRootNode(type)
+            }
+            expectOk(inCommand { toolset.addModelImports(myProject, temp, listOf(modelRefOf(targetModel)), console = true) })
+            expectOk(inCommand { toolset.addUsedLanguage(myProject, temp, "jetbrains.mps.baseLanguage", "language", console = true) })
+
+            val removedImport = inCommand { toolset.removeModelImport(myProject, temp, modelRefOf(targetModel), console = true) }
+            assertTrue(expectOk(removedImport).get("removed").asBoolean)
+            assertTrue("expected the re-derivation note: $removedImport",
+                warningsOf(removedImport).any { it.contains("may add the import back") })
+
+            val removedLanguage = inCommand {
+                toolset.removeUsedLanguage(myProject, temp, "jetbrains.mps.baseLanguage", "language", console = true)
+            }
+            assertTrue(expectOk(removedLanguage).get("removed").asBoolean)
+            assertTrue("expected the re-derivation note: $removedLanguage",
+                warningsOf(removedLanguage).any { it.contains("may add it back") })
+        }
+    }
+
+    @Test
+    fun `console DELETE refuses a built-in console devkit`() {
+        val devkitName = "test.dk.console${System.nanoTime()}"
+        val devkitResp = runTool(JetBrainsMPSModuleMcpToolset()) {
+            it.mps_mcp_create_module("devkit", devkitName, freshPathInProject(devkitName), null, null, false, false, false)
+        }
+        assertTrue(devkitResp, JsonParser.parseString(devkitResp).asJsonObject.get("ok").asBoolean)
+        val devkitRef: SModuleReference = readOnRepo {
+            myProject.projectModules.filterIsInstance<DevKit>().single { it.moduleName == devkitName }.moduleReference
+        }
+        withTempModel { temp ->
+            expectOk(inCommand { toolset.addUsedLanguage(myProject, temp, devkitName, "devkit", console = true) })
+
+            val refused = inCommand {
+                toolset.removeUsedLanguage(myProject, temp, devkitName, "devkit", console = true, protectedDevkits = setOf(devkitRef))
+            }
+            assertEquals("INVALID_REQUEST", JsonParser.parseString(refused).asJsonObject.get("code").asString)
+            assertTrue(expectErr(refused).contains("built-in MPS Console devkit"))
+            readOnRepo { assertTrue((temp as SModelInternal).importedDevkits().contains(devkitRef)) }
+
+            val removed = inCommand { toolset.removeUsedLanguage(myProject, temp, devkitName, "devkit", console = true) }
+            assertTrue("an unprotected devkit is removed: $removed", expectOk(removed).get("removed").asBoolean)
+        }
     }
 }

@@ -32,7 +32,9 @@ The tool takes a single `parameters` argument holding a JSON object — sent eit
                                              //   Console input command. For child/replace, if the
                                              //   parentRef/targetRef resolves to a node inside the
                                              //   current console command, it is edited in place
-                                             //   without saving.
+                                             //   without saving. Console code sees JDK classes and
+                                             //   what the console already imports; add others with
+                                             //   mps_mcp_model_dependency(modelReference: "console").
     "modelRef": string,                      // required when mode=="root" (SModelReference)
     "parentRef": string,                     // required when mode=="child" (SNodeReference)
     "targetRef": string,                     // required when mode=="replace" (SNodeReference)

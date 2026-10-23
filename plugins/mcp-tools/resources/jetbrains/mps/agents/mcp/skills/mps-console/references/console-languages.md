@@ -74,7 +74,7 @@ Extra scopes contributed here: `global` (`GlobalScope`, all modules in the repos
 For reusable, multi-command scripts and bulk refactoring:
 
 - **`ConsoleScript`** (root, child `command: Command[0..n]`) — a saved script: create a model, import `jetbrains.mps.console.scripts`, add a `ConsoleScript` root and write console commands in it.
-- **`#exec`** (`Execute`) — run a script: import the script's model into the console, then `#exec <scriptName>`.
+- **`#exec`** (`Execute`) — run a script: import the script's model into the console (Ctrl+M, or `mps_mcp_model_dependency(modelReference: "console", targetModels: "<script model>")` from an agent), then `#exec <scriptName>`.
 - **`forEach`** (`VisitAllOperation`, alias `forEach`, child `closure: Expression[1]`) — apply a closure to every node in a sequence **immediately**, inside the console's own write command, with no dialog. This is the operation for unattended / MCP-driven bulk mutation.
 - **`refactor`** (`RefactorOperation`, child `closure: Expression[1]`) — like `forEach`, but it first pops a **modal confirmation dialog** for the whole batch and applies nothing until the user confirms. Good for interactive, review-first destructive edits, but a **trap when driven through `mps_mcp_run_console_command`**: the run returns `executed:true` while the command silently blocks on the dialog, so the model stays unchanged until a human clicks through. Use `forEach` for headless runs.
 
