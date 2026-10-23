@@ -2,6 +2,11 @@ package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.PLAN_STEPS
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.checkpointNode
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.forkNode
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.planNode
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.transformNode
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -31,13 +36,6 @@ class JetBrainsMPSGenerationMcpToolsetIntegrationTest : McpIntegrationTestBase()
 
     private fun plan(parameters: String): String =
         runTool(toolset) { it.mps_mcp_generation("PLAN", JsonOrText(parameters)) }
-
-    private fun languageRuntime(namespace: String) =
-        checkNotNull(LanguageRegistry.getInstance(myProject.repository).getLanguage(namespace)) { "$namespace is not deployed" }
-
-    private fun concept(namespace: String, name: String): SConcept = readOnRepo {
-        languageRuntime(namespace).identity.concepts.filterIsInstance<SConcept>().single { it.name == name }
-    }
 
     /** A model of [solution] holding one root of [concept]. */
     private fun modelWithRoot(solution: Solution, modelName: String, concept: SConcept): SModel {
@@ -128,7 +126,7 @@ class JetBrainsMPSGenerationMcpToolsetIntegrationTest : McpIntegrationTestBase()
             val branch = planNode("BranchPlan")
             main.addChild(PLAN_STEPS, transformNode(languageRuntime(BASE_LANGUAGE).identity))
             main.addChild(PLAN_STEPS, checkpointNode("cp1"))
-            main.addChild(PLAN_STEPS, jetbrains.mps.smodel.SNode(FORK).apply { setReferenceTarget(FORK_PLAN, branch) })
+            main.addChild(PLAN_STEPS, forkNode(branch))
             branch.addChild(PLAN_STEPS, checkpointNode("branchCp"))
             // GenPlanTranslator reads the model's first Plan root.
             planModel.addRootNode(main)
@@ -223,43 +221,7 @@ class JetBrainsMPSGenerationMcpToolsetIntegrationTest : McpIntegrationTestBase()
         assertNull(JsonParser.parseString(missing).asJsonObject.get("data"))
     }
 
-    private fun planNode(name: String): SNode =
-        jetbrains.mps.smodel.SNode(PLAN).apply { setProperty(SNodeUtil.property_INamedConcept_name, name) }
-
-    private fun transformNode(language: org.jetbrains.mps.openapi.language.SLanguage): SNode = jetbrains.mps.smodel.SNode(TRANSFORM).apply {
-        addChild(TRANSFORM_LANGUAGES, jetbrains.mps.smodel.SNode(LANGUAGE_ID).apply {
-            setProperty(LANGUAGE_ID_ID, jetbrains.mps.smodel.adapter.ids.MetaIdHelper.getLanguage(language).serialize())
-            setProperty(LANGUAGE_ID_NAMESPACE, language.qualifiedName)
-        })
-    }
-
-    private fun checkpointNode(name: String): SNode = jetbrains.mps.smodel.SNode(CHECKPOINT).apply {
-        addChild(CHECKPOINT_SPEC, jetbrains.mps.smodel.SNode(IN_PLACE_CHECKPOINT_SPEC).apply {
-            setProperty(SNodeUtil.property_INamedConcept_name, name)
-        })
-    }
-
     private companion object {
         const val BASE_LANGUAGE = "jetbrains.mps.baseLanguage"
-
-        // jetbrains.mps.lang.generator.plan, as GenPlanTranslator reads it.
-        const val PLAN_LANG_HI = 0x7ab1a6fa0a114b95L
-        val PLAN_LANG_LO = 0x9e4875f363d6cb00uL.toLong()
-        val PLAN: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a20717fbL, "jetbrains.mps.lang.generator.plan.structure.Plan")
-        val CHECKPOINT: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071801L, "jetbrains.mps.lang.generator.plan.structure.Checkpoint")
-        val IN_PLACE_CHECKPOINT_SPEC: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x340cd07aed7ca161L, "jetbrains.mps.lang.generator.plan.structure.InPlaceCheckpointSpec")
-        val FORK: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x2bf683196b12a3cbL, "jetbrains.mps.lang.generator.plan.structure.Fork")
-        val PLAN_STEPS = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a20717fbL, 0x19443180a2071807L, "steps")
-        val CHECKPOINT_SPEC = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071801L, 0x340cd07aed7cb2d2L, "cpSpec")
-        val TRANSFORM: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071802L, "jetbrains.mps.lang.generator.plan.structure.Transform")
-        val TRANSFORM_LANGUAGES = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071802L, 0x28dd6d5a7549fa8dL, "languages")
-
-        // jetbrains.mps.lang.smodel's LanguageId, the language reference a plan's Transform step holds.
-        const val SMODEL_LANG_HI = 0x7866978ea0f04cc7L
-        val SMODEL_LANG_LO = 0x81bc4d213d9375e1uL.toLong()
-        val LANGUAGE_ID: SConcept = MetaAdapterFactory.getConcept(SMODEL_LANG_HI, SMODEL_LANG_LO, 0x312abca18ab8c8c0L, "jetbrains.mps.lang.smodel.structure.LanguageId")
-        val LANGUAGE_ID_ID = MetaAdapterFactory.getProperty(SMODEL_LANG_HI, SMODEL_LANG_LO, 0x312abca18ab8c8c0L, 0x312abca18ab8ccd8L, "languageId")
-        val LANGUAGE_ID_NAMESPACE = MetaAdapterFactory.getProperty(SMODEL_LANG_HI, SMODEL_LANG_LO, 0x312abca18ab8c8c0L, 0x312abca18ab8ccd7L, "namespace")
-        val FORK_PLAN = MetaAdapterFactory.getReferenceLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x2bf683196b12a3cbL, 0x2bf683196b12a3ccL, "plan")
     }
 }

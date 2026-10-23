@@ -1456,6 +1456,41 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         assertTrue(expectErr(response).contains("this.does.not.exist"))
     }
 
+    @Test
+    fun `a property type name resolves to the project's data type before a deployed one`() {
+        // jetbrains.mps.lang.structure ships an enumeration StaticScope; another project language declares its own.
+        val otherLanguage = "test.datatypes${System.nanoTime()}"
+        val dir = createDirInProject(otherLanguage)
+        var created: Language? = null
+        executeCommand { created = LanguageProducer(myProject).withGenerator(false).create(otherLanguage, dir) }
+        val otherStructureRef = readOnRepo { modelRefOf(checkNotNull(created).models.single { it.name.longName.endsWith(".structure") }) }
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_ENUM,
+                """{"structureModelRef":"$otherStructureRef","enumName":"StaticScope","valuesJson":[{"enumName":"MINE"}]}""",
+            )
+        })
+        val projectEnum = readOnRepo {
+            val model = PersistenceFacade.getInstance().createModelReference(otherStructureRef).resolve(myProject.repository)!!
+            model.rootNodes.single { it.name == "StaticScope" }
+        }
+
+        assertOk(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{"structureModelRef":"$structureModelRef","conceptsJson":[{"name":"Scoped","properties":[
+                   {"name":"bare","type":"StaticScope"},{"name":"qualified","type":"$otherLanguage.structure.StaticScope"}]}]}""",
+            )
+        })
+        // `bare` is the project-first check; `qualified` names its model, so it only guards the qualified form.
+        val scoped = expectSingleRoot("Scoped")
+        readOnRepo {
+            for (property in scoped.getChildrenByName("propertyDeclaration")) {
+                assertEquals("${property.name} is typed by the project's StaticScope", projectEnum, property.getReferenceTargetByName("dataType"))
+            }
+        }
+    }
+
     /**
      * A fresh language with a generator: concepts A, B and A2 (extends A), and aspect roots that
      * relate to them in every way LIST_CONCEPT_ASPECTS distinguishes. The language is not built,

@@ -2,6 +2,11 @@ package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.PLAN_STEPS
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.checkpointNode
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.forkNode
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.planNode
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.transformNode
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -14,9 +19,6 @@ import jetbrains.mps.messages.IMessageHandler
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SNodeUtil
-import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
-import jetbrains.mps.smodel.language.LanguageRegistry
-import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -250,9 +252,9 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
             // the main branch's transform after the fork writes 2_<minor>.
             val main = planNode("MainPlan")
             val branch = planNode("BranchPlan")
-            main.addChild(PLAN_STEPS, jetbrains.mps.smodel.SNode(FORK).apply { setReferenceTarget(FORK_PLAN, branch) })
-            main.addChild(PLAN_STEPS, transformNode(languages))
-            branch.addChild(PLAN_STEPS, transformNode(languages))
+            main.addChild(PLAN_STEPS, forkNode(branch))
+            main.addChild(PLAN_STEPS, transformNode(*languages.toTypedArray()))
+            branch.addChild(PLAN_STEPS, transformNode(*languages.toTypedArray()))
             planModel.addRootNode(main)
             planModel.addRootNode(branch)
         }
@@ -296,14 +298,14 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
         assertEquals("the main branch is listed before the fork branch", models.sortedBy { it.get("branch").asInt }, models)
     }
 
-    @Test
-    fun `MAKE droppedPrevious does not count the checkpoint models a make keeps`() {
+    /** A BaseLanguage model of a solution whose plan transforms it and then checkpoints it as `cp1`. */
+    private fun modelWithCheckpointPlan(): SModel {
         val solution = createSolution()
         val planModel = createModel(solution, "test.tm.cpplans")
-        val languages = listOf(languageRuntime(BASE_LANGUAGE).identity)
+        val baseLanguage = languageRuntime(BASE_LANGUAGE).identity
         executeCommand {
             val main = planNode("CheckpointPlan")
-            main.addChild(PLAN_STEPS, transformNode(languages))
+            main.addChild(PLAN_STEPS, transformNode(baseLanguage))
             main.addChild(PLAN_STEPS, checkpointNode("cp1"))
             planModel.addRootNode(main)
         }
@@ -315,15 +317,115 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
         })
         val model = createModel(solution, "test.tm.cpinput")
         executeCommand {
-            languages.forEach { (model as SModelInternal).addLanguage(it) }
-            val root = jetbrains.mps.smodel.SNode(concept(BASE_LANGUAGE, "ClassConcept"))
-            root.setProperty(SNodeUtil.property_INamedConcept_name, "Root")
-            model.addRootNode(root)
+            (model as SModelInternal).addLanguage(baseLanguage)
+            model.addRootNode(classRoot("Root"))
         }
-        // The make need not succeed: a failed generation still publishes its checkpoint model.
-        fun make(): JsonObject = expectOk(runTool(JetBrainsMPSNodeMcpToolset()) {
-            it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{ "models": ["${modelRefOf(model)}"], "rebuild": true, "saveTransientModels": true }""")
-        }).getAsJsonObject("transientModels")
+        return model
+    }
+
+    private fun classRoot(name: String): SNode = jetbrains.mps.smodel.SNode(concept(BASE_LANGUAGE, "ClassConcept")).apply {
+        setProperty(SNodeUtil.property_INamedConcept_name, name)
+    }
+
+    /** MAKE [model] keeping its transient models; the make need not succeed: a failed generation still publishes its checkpoint model. */
+    private fun makeCheckpointed(model: SModel): JsonObject = expectOk(runTool(JetBrainsMPSNodeMcpToolset()) {
+        it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{ "models": ["${modelRefOf(model)}"], "rebuild": true, "saveTransientModels": true }""")
+    }).getAsJsonObject("transientModels")
+
+    private fun checkpoints(data: JsonObject) = data.getAsJsonArray("checkpoints").map { it.asJsonObject }
+
+    @Test
+    fun `TRANSIENT_MODELS filtered by a checkpoint model lists its original's transient models`() {
+        val model = modelWithCheckpointPlan()
+        makeCheckpointed(model)
+        val longName = readOnRepo { model.name.longName }
+        val checkpoint = checkpoints(expectOk(generation("TRANSIENT_MODELS"))).single { it.get("name").asString == "$longName@cp1" }
+
+        val byCheckpoint = expectOk(generation("TRANSIENT_MODELS", """{"modelReference":"${checkpoint.get("reference").asString}"}"""))
+        assertEquals("the checkpoint's original is listed: $byCheckpoint", listOf(longName), originals(byCheckpoint).map { it.get("model").asString })
+        assertEquals(listOf(checkpoint.get("reference").asString), checkpoints(byCheckpoint).map { it.get("reference").asString })
+    }
+
+    @Test
+    fun `TRANSIENT_MODELS lists a swapped-out checkpoint model without loading it`() {
+        val model = modelWithCheckpointPlan()
+        makeCheckpointed(model)
+        val checkpointName = "${readOnRepo { model.name.longName }}@cp1"
+        val checkpointModel = readOnRepo {
+            myProject.getComponent(TransientModelsProvider::class.java)!!.checkpointsModule.models.single { it.name.value == checkpointName }
+        }
+        executeCommand { (checkpointModel as jetbrains.mps.extapi.model.SModelBase).unload() }
+        assumeTrue("the checkpoint model was swapped out", !readOnRepo { checkpointModel.isLoaded })
+
+        val listed = checkpoints(expectOk(generation("TRANSIENT_MODELS"))).single { it.get("name").asString == checkpointName }
+        assertFalse("$listed", listed.get("loaded").asBoolean)
+        assertFalse("an unloaded model's attributes are not read: $listed", listed.get("attributesAvailable").asBoolean)
+        assertFalse("the listing left the checkpoint model unloaded", readOnRepo { checkpointModel.isLoaded })
+    }
+
+    @Test
+    fun `MAKE traceAvailableFor names only the made models that have a trace`() {
+        // A do-not-generate model `x@aux` shares its trace key, the long name, with the generated `x`; so does the
+        // model `x` of the other made module, which has a trace of its own.
+        val made = createSolution()
+        val generated = createModel(made, "test.tm.trace")
+        val skipped = createModel(made, "test.tm.trace@aux")
+        val elsewhere = createModel(createSolution(), "test.tm.trace")
+        val notMade = createModel(createSolution(), "test.tm.trace")
+        val baseLanguage = languageRuntime(BASE_LANGUAGE).identity
+        executeCommand {
+            for (model in listOf(generated, skipped, elsewhere)) {
+                (model as SModelInternal).addLanguage(baseLanguage)
+                model.addRootNode(classRoot("Root"))
+            }
+            (skipped as jetbrains.mps.extapi.model.GeneratableSModel).isDoNotGenerate = true
+        }
+
+        val data = expectOk(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MAKE,
+                """{ "modules": ["${readOnRepo { made.moduleName }}", "${readOnRepo { elsewhere.module!!.moduleName }}"], "saveTransientModels": true }""",
+            )
+        })
+        assertTrue("the make must succeed: $data", data.get("success").asBoolean)
+        val transients = data.getAsJsonObject("transientModels")
+        assertEquals("each module kept its own transient module: $transients", 2, transients.getAsJsonArray("modules").size())
+        assertEquals(
+            "each module's generated model has its own trace, the do-not-generate one none: $transients",
+            listOf("test.tm.trace", "test.tm.trace"),
+            transients.getAsJsonArray("traceAvailableFor").map { it.asString },
+        )
+        readOnRepo {
+            // A same-named model of a module the make left alone: the repository-wide lookup credits it with a trace.
+            val provider = myProject.getComponent(TransientModelsProvider::class.java)!!
+            assertNotNull("the unscoped lookup finds a trace by long name", provider.getTrace(notMade.reference))
+            assertNull(TransientModelsOps.traceOf(provider, notMade.reference, myProject.repository))
+            assertEquals(listOf(generated.reference), TransientModelsOps.tracedModels(provider, listOf(generated.reference, notMade.reference), myProject.repository))
+        }
+    }
+
+    @Test
+    fun `scaffold_editor reports the transient models its make dropped when scaffolding fails after it`() {
+        createConceptRoot("Thing")
+        makeKeepingTransients(structureModel)
+        // A concept that was never built: scaffold_editor makes the structure model first, which drops the kept models.
+        val unbuilt = createConceptRoot("Unbuilt")
+
+        val response = runTool(JetBrainsMPSEditorMcpToolset()) {
+            it.mps_mcp_scaffold_editor(conceptRef = unbuilt, modelReference = "r:00000000-0000-0000-0000-000000000000(no.such.model)")
+        }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("scaffolding fails after the make: $response", envelope.get("ok").asBoolean)
+        assertFalse("the failure comes after the make: $response", envelope.get("error").asString.startsWith("Failed to make"))
+        val transients = envelope.getAsJsonObject("details")?.getAsJsonObject("transientModels")
+        assertNotNull("the error still reports the transient models the make dropped: $response", transients)
+        assertTrue(transients!!.get("droppedPrevious").asBoolean)
+    }
+
+    @Test
+    fun `MAKE droppedPrevious does not count the checkpoint models a make keeps`() {
+        val model = modelWithCheckpointPlan()
+        fun make(): JsonObject = makeCheckpointed(model)
 
         make()
         val checkpointName = "${readOnRepo { model.name.longName }}@cp1"
@@ -368,54 +470,10 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
             resolveConceptNode(project.repository, name)?.let { PersistenceFacade.getInstance().asString(it.reference) }
     }
 
-    private fun languageRuntime(namespace: String) =
-        checkNotNull(LanguageRegistry.getInstance(myProject.repository).getLanguage(namespace)) { "$namespace is not deployed" }
-
-    private fun concept(namespace: String, name: String): SConcept = readOnRepo {
-        languageRuntime(namespace).identity.concepts.filterIsInstance<SConcept>().single { it.name == name }
-    }
-
-    private fun planNode(name: String): SNode =
-        jetbrains.mps.smodel.SNode(PLAN).apply { setProperty(SNodeUtil.property_INamedConcept_name, name) }
-
-    private fun transformNode(languages: List<org.jetbrains.mps.openapi.language.SLanguage>): SNode = jetbrains.mps.smodel.SNode(TRANSFORM).apply {
-        for (language in languages) {
-            addChild(TRANSFORM_LANGUAGES, jetbrains.mps.smodel.SNode(LANGUAGE_ID).apply {
-                setProperty(LANGUAGE_ID_ID, jetbrains.mps.smodel.adapter.ids.MetaIdHelper.getLanguage(language).serialize())
-                setProperty(LANGUAGE_ID_NAMESPACE, language.qualifiedName)
-            })
-        }
-    }
-
-    private fun checkpointNode(name: String): SNode = jetbrains.mps.smodel.SNode(CHECKPOINT).apply {
-        addChild(CHECKPOINT_SPEC, jetbrains.mps.smodel.SNode(IN_PLACE_CHECKPOINT_SPEC).apply {
-            setProperty(SNodeUtil.property_INamedConcept_name, name)
-        })
-    }
-
     private fun link(node: SNode, name: String) = node.concept.containmentLinks.single { it.name == name }
 
     private companion object {
         const val BASE_LANGUAGE = "jetbrains.mps.baseLanguage"
         const val COLLECTIONS = "jetbrains.mps.baseLanguage.collections"
-
-        // jetbrains.mps.lang.generator.plan and smodel's LanguageId, as in JetBrainsMPSGenerationMcpToolsetIntegrationTest.
-        const val PLAN_LANG_HI = 0x7ab1a6fa0a114b95L
-        val PLAN_LANG_LO = 0x9e4875f363d6cb00uL.toLong()
-        val PLAN: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a20717fbL, "jetbrains.mps.lang.generator.plan.structure.Plan")
-        val FORK: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x2bf683196b12a3cbL, "jetbrains.mps.lang.generator.plan.structure.Fork")
-        val PLAN_STEPS = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a20717fbL, 0x19443180a2071807L, "steps")
-        val TRANSFORM: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071802L, "jetbrains.mps.lang.generator.plan.structure.Transform")
-        val TRANSFORM_LANGUAGES = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071802L, 0x28dd6d5a7549fa8dL, "languages")
-        val CHECKPOINT: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071801L, "jetbrains.mps.lang.generator.plan.structure.Checkpoint")
-        val IN_PLACE_CHECKPOINT_SPEC: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x340cd07aed7ca161L, "jetbrains.mps.lang.generator.plan.structure.InPlaceCheckpointSpec")
-        val CHECKPOINT_SPEC = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071801L, 0x340cd07aed7cb2d2L, "cpSpec")
-        val FORK_PLAN = MetaAdapterFactory.getReferenceLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x2bf683196b12a3cbL, 0x2bf683196b12a3ccL, "plan")
-
-        const val SMODEL_LANG_HI = 0x7866978ea0f04cc7L
-        val SMODEL_LANG_LO = 0x81bc4d213d9375e1uL.toLong()
-        val LANGUAGE_ID: SConcept = MetaAdapterFactory.getConcept(SMODEL_LANG_HI, SMODEL_LANG_LO, 0x312abca18ab8c8c0L, "jetbrains.mps.lang.smodel.structure.LanguageId")
-        val LANGUAGE_ID_ID = MetaAdapterFactory.getProperty(SMODEL_LANG_HI, SMODEL_LANG_LO, 0x312abca18ab8c8c0L, 0x312abca18ab8ccd8L, "languageId")
-        val LANGUAGE_ID_NAMESPACE = MetaAdapterFactory.getProperty(SMODEL_LANG_HI, SMODEL_LANG_LO, 0x312abca18ab8c8c0L, 0x312abca18ab8ccd7L, "namespace")
     }
 }

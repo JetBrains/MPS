@@ -85,7 +85,7 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         originalModelCandidates, or originalResolved:false), originalModule, transientModule, transientModuleReference,
         traceAvailable, models:[{name, reference, stereotype, kind INITIAL_CLONE|STEP|FORK_BRANCH|OTHER, stereotypePrefix?,
         minor?, branch, roots (or loaded:false for a swapped-out model)}]}], checkpoints:[{name, reference, stereotype, kind
-        CHECKPOINT, checkpoint?, generationPlan? (or attributesAvailable:false), roots}], notes}. `stereotypePrefix` matches
+        CHECKPOINT, checkpoint?, generationPlan? (or attributesAvailable:false), roots (or loaded:false)}], notes}. `stereotypePrefix` matches
         PLAN's `transientStereotypePrefix`, and for a branch's input copy (its lowest minor) the FORK's
         `branchInputStereotypePrefix`; `branch` is 0 on the main branch, so a fork branch's models, which reuse later
         main-branch prefixes, are told apart by reference and branch, never by name. Read a listed

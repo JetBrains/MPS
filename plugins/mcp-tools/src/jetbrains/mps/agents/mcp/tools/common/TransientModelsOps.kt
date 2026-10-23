@@ -6,11 +6,13 @@ import jetbrains.mps.extapi.model.ModelWithAttributes
 import jetbrains.mps.extapi.model.TransientSModel
 import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.generator.GenerationSettingsProvider
+import jetbrains.mps.generator.GenerationTrace
 import jetbrains.mps.generator.TransientModelsModule
 import jetbrains.mps.generator.TransientModelsProvider
 import jetbrains.mps.make.MakeServiceComponent
 import jetbrains.mps.project.MPSProject
 import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.model.SModelReference
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -80,6 +82,32 @@ internal object TransientModelsOps {
         mpsProject.getComponent(TransientModelsProvider::class.java)
             ?: throw AbstractOps.McpNotFoundException("This project has no transient models provider")
 
+    /** [provider]'s transient modules with published models, except the shared `checkpoints` module, which a make keeps. Needs read access. */
+    fun nonCheckpointModules(provider: TransientModelsProvider): List<TransientModelsModule> {
+        val checkpointsModule = provider.checkpointsModule
+        return provider.modules.filter { it !== checkpointsModule }
+    }
+
+    /**
+     * The generation trace the last make kept for [model], an input model or one of its transient models. A trace is
+     * keyed by the input's long name in the transient module of the input's own module, so only that module is asked:
+     * [TransientModelsProvider.getTrace] asks every module and would hand a model the trace of a same-named model of
+     * another module. A checkpoint model, whose module names no original, still gets that repository-wide lookup.
+     * Needs read access.
+     */
+    fun traceOf(provider: TransientModelsProvider, model: SModelReference, repository: SRepository): GenerationTrace? {
+        val module = model.moduleReference ?: model.resolve(repository)?.module?.moduleReference
+        if (module != null && module == provider.checkpointsModule?.moduleReference) return provider.getTrace(model)
+        val transientModules = nonCheckpointModules(provider)
+        transientModules.firstOrNull { it.moduleReference == module }?.let { return it.getTrace(model) }
+        val moduleName = module?.moduleName ?: return null
+        return transientModules.filter { it.moduleName?.let(::originalModuleName) == moduleName }.firstNotNullOfOrNull { it.getTrace(model) }
+    }
+
+    /** Those of [inputModels] the last make kept a generation trace for, by [traceOf]. Needs read access. */
+    fun tracedModels(provider: TransientModelsProvider, inputModels: List<SModelReference>, repository: SRepository): List<SModelReference> =
+        inputModels.filter { traceOf(provider, it, repository) != null }
+
     fun isMakeSessionActive(mpsProject: MPSProject): Boolean =
         mpsProject.getComponent(MakeServiceComponent::class.java)?.get()?.isSessionActive == true
 
@@ -124,7 +152,8 @@ internal object TransientModelsOps {
         val repository = mpsProject.repository
         val checkpointsModule = provider.checkpointsModule
         val filterLongName = filter?.name?.longName
-        val filterModuleName = filter?.module?.moduleName?.let { originalModuleName(it) ?: it }
+        // A checkpoint model's module is the shared `checkpoints` module, which names no original module.
+        val filterModuleName = filter?.module?.takeIf { it !== checkpointsModule }?.moduleName?.let { originalModuleName(it) ?: it }
 
         val originals = JsonArray()
         val checkpoints = JsonArray()
@@ -202,13 +231,16 @@ internal object TransientModelsOps {
         else addProperty("roots", model.rootNodes.count())
     }
 
-    /** A checkpoint model; its attributes are lost when the model was swapped out and reloaded, the stereotype is not. */
+    /**
+     * A checkpoint model; its attributes are lost when the model was swapped out and reloaded, the stereotype is not.
+     * Like [addRoots], reads the attributes of a loaded model only: reading one loads the model.
+     */
     private fun checkpointJson(model: SModel): JsonObject = JsonObject().apply {
         addProperty("name", model.name.value)
         addProperty("reference", asString(model))
         addProperty("stereotype", model.name.stereotype)
         addProperty("kind", parseStereotype(model.name.stereotype, branchOf(model), inCheckpointsModule = true).kind.name)
-        val attributes = model as? ModelWithAttributes
+        val attributes = (model as? ModelWithAttributes)?.takeIf { model.isLoaded }
         val checkpoint = attributes?.getAttribute(CHECKPOINT_ATTRIBUTE)
         if (checkpoint != null) {
             addProperty("checkpoint", checkpoint)
@@ -233,7 +265,7 @@ internal object TransientModelsOps {
         class Counts(val modules: Int, val models: Int, val checkpointModels: Int)
         val before = mpsProject.modelAccess.computeReadAction {
             val checkpointsModule = provider.checkpointsModule
-            val transientModules: List<SModule> = provider.modules.filter { it !== checkpointsModule }
+            val transientModules: List<SModule> = nonCheckpointModules(provider)
             Counts(
                 transientModules.size,
                 transientModules.sumOf { it.models.count() },

@@ -34,6 +34,7 @@ import jetbrains.mps.errors.item.QuickFixRuntimeAdapter
 import jetbrains.mps.errors.item.RuleIdFlavouredItem
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
+import jetbrains.mps.extapi.model.GeneratableSModel
 import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.generator.GenerationSettingsProvider
 import jetbrains.mps.generator.ModelGenerationStatusManager
@@ -332,6 +333,18 @@ abstract class AbstractOps : McpToolset {
         val obj = JsonParser.parseString(envelope).asJsonObject
         val all = obj.getAsJsonArray("warnings") ?: JsonArray().also { obj.add("warnings", it) }
         warnings.forEach(all::add)
+        return obj.toString()
+    }
+
+    /**
+     * Adds [details] to the `details` of an already built [envelope], success or failure, keeping the
+     * entries it has. Returns [envelope] untouched when there is nothing to add.
+     */
+    protected fun withDetails(envelope: String, details: Map<String, Any?>): String {
+        if (details.isEmpty()) return envelope
+        val obj = JsonParser.parseString(envelope).asJsonObject
+        val all = obj.getAsJsonObject("details") ?: JsonObject().also { obj.add("details", it) }
+        details.forEach { (key, value) -> all.add(key, GSON.toJsonTree(value)) }
         return obj.toString()
     }
 
@@ -4091,7 +4104,9 @@ abstract class AbstractOps : McpToolset {
                 }
 
                 val s = MakeSession(mpsProject, handler, rebuild)
+                // A non-generatable model shares its trace key, the long name, with a generated `foo` when it is `foo@<stereotype>`.
                 val inputModels = (models.asSequence() + expandedModules.asSequence().flatMap { it.models.asSequence() })
+                    .filter { (it as? GeneratableSModel)?.isGeneratable == true }
                     .map { it.reference }.distinct().toList()
                 MakePreparation(list, s, ids, refs, namespaces, inputModels, nonCheckpointTransientModules(mpsProject).isNotEmpty())
             }
@@ -4275,15 +4290,9 @@ abstract class AbstractOps : McpToolset {
         }
     }
 
-    /**
-     * The project's transient modules with published models, except the shared `checkpoints`
-     * module, which a make keeps. Needs a read action.
-     */
-    private fun nonCheckpointTransientModules(mpsProject: MPSProject): List<jetbrains.mps.generator.TransientModelsModule> {
-        val provider = mpsProject.getComponent(TransientModelsProvider::class.java) ?: return emptyList()
-        val checkpoints = provider.checkpointsModule
-        return provider.modules.filter { it !== checkpoints }
-    }
+    /** [TransientModelsOps.nonCheckpointModules] of the project, none without a provider. Needs a read action. */
+    private fun nonCheckpointTransientModules(mpsProject: MPSProject): List<jetbrains.mps.generator.TransientModelsModule> =
+        mpsProject.getComponent(TransientModelsProvider::class.java)?.let(TransientModelsOps::nonCheckpointModules).orEmpty()
 
     /** [MakeResult.transientModels] after a make. A failure only drops the details, never the make. */
     private suspend fun transientModelsReport(
@@ -4302,7 +4311,7 @@ abstract class AbstractOps : McpToolset {
                         models = m.models.count(),
                     )
                 }
-                val traced = if (provider == null) emptyList() else inputModels.filter { provider.getTrace(it) != null }.map { it.name.value }
+                val traced = if (provider == null) emptyList() else TransientModelsOps.tracedModels(provider, inputModels, mpsProject.repository).map { it.name.value }
                 TransientModelsReport(saved, droppedPrevious, modules, traced)
             }
         } catch (e: CancellationException) {

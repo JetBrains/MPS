@@ -177,7 +177,7 @@ internal object GenerationTraceOps {
     fun traceJson(mpsProject: MPSProject, node: SNode, repository: SRepository, options: TraceOptions): JsonObject? {
         val model = checkNotNull(node.model) { "a resolved node outside a model" }
         val provider = mpsProject.getComponent(TransientModelsProvider::class.java) ?: return null
-        val trace = provider.getTrace(model.reference) ?: return null
+        val trace = TransientModelsOps.traceOf(provider, model.reference, repository) ?: return null
         val collector = Collector()
         when (options.direction) {
             TraceDirection.FORWARD -> trace.walkForward(node, collector)

@@ -940,34 +940,9 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
             // Not a valid node reference
         }
 
-        // Try as FQN (ModelName.DataTypeName) using '.' as a separator, or search in all structure models
-        if (type.contains(".")) {
-            val lastDot = type.lastIndexOf(".")
-            val modelPart = type.substring(0, lastDot)
-            val nodePart = type.substring(lastDot + 1)
-
-            for (module in nameLookupModules(mpsProject.repository)) {
-                for (m in module.models) {
-                    if (m.name.longName == modelPart || m.name.longName == "$modelPart.structure") {
-                        val node = m.rootNodes.find { it.getProperty(PROP_Name) == nodePart }
-                        if (node != null && node.concept.isSubConceptOf(CONCEPT_DataTypeDeclaration)) {
-                            return node
-                        }
-                    }
-                }
-            }
-        } else {
-            for (module in nameLookupModules(mpsProject.repository)) {
-                for (m in module.models) {
-                    if (m.name.longName.endsWith(".structure")) {
-                        val node = m.rootNodes.find { it.getProperty(PROP_Name) == type }
-                        if (node != null && node.concept.isSubConceptOf(CONCEPT_DataTypeDeclaration)) {
-                            return node
-                        }
-                    }
-                }
-            }
-        }
+        // Try as FQN (ModelName.DataTypeName) using '.' as a separator, or search in all structure models, project first
+        resolveStructureDeclarationPreferringProject(mpsProject, type) { it.concept.isSubConceptOf(CONCEPT_DataTypeDeclaration) }
+            ?.let { return it }
 
         // Fallback for non-primitive core types if any
         if (coreModel != null) {
