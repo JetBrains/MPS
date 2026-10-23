@@ -9,6 +9,7 @@
  */
 package jetbrains.mps.agents.mcp.tools.integration;
 
+import jetbrains.mps.agents.mcp.tools.unit.GenerationOpsStepsTest;
 import jetbrains.mps.agents.mcp.tools.unit.IdeLogReaderTest;
 import jetbrains.mps.agents.mcp.tools.unit.JetBrainsMPSInitMcpToolsetTest;
 import jetbrains.mps.agents.mcp.tools.unit.McpTestSelectionTest;
@@ -51,6 +52,7 @@ import org.junit.runners.Suite;
     MigrationXmlExampleTest.class,
     MpsRuntimeVersionTest.class,
     IdeLogReaderTest.class,
+    GenerationOpsStepsTest.class,
     McpTestSelectionTest.class,
     SuiteRegistrationGuardTest.class,
 })

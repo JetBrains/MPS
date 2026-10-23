@@ -100,6 +100,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         JetBrainsMPSProjectMcpToolset(),
         JetBrainsMPSRunConfigurationMcpToolset(),
         JetBrainsMPSMigrationMcpToolset(),
+        JetBrainsMPSGenerationMcpToolset(),
     )
 
     @Test

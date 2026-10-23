@@ -18,7 +18,7 @@ import org.junit.runners.Suite;
 
 /**
  * Node tools: node and root-node tools, blueprints, node factories, assignability, problem checks,
- * types, editor state.
+ * types, generation plans, editor state.
  * <p>
  * Nested in {@link McpToolsIntegrationTestSuite}, which provides the environment; run it alone with
  * {@code MCP_TESTS=McpNodeToolsTestSuite} on the umbrella run configuration, never from the editor gutter.
@@ -29,6 +29,7 @@ import org.junit.runners.Suite;
     JetBrainsMPSNodeMcpToolsetIntegrationTest.class,
     JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.class,
     JetBrainsMPSTypesMcpToolsetIntegrationTest.class,
+    JetBrainsMPSGenerationMcpToolsetIntegrationTest.class,
     JetBrainsMPSRootNodeMcpToolsetIntegrationTest.class,
     NodeFactoryOnBlueprintPathIntegrationTest.class,
     AssignabilityHintIntegrationTest.class,

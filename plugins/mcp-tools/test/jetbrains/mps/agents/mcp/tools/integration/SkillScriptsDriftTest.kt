@@ -432,6 +432,7 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
             JetBrainsMPSJavaMcpToolset::class,
             JetBrainsMPSRunConfigurationMcpToolset::class,
             JetBrainsMPSMigrationMcpToolset::class,
+            JetBrainsMPSGenerationMcpToolset::class,
             JetBrainsMPSInitMcpToolset::class,
         )
     }

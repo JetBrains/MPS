@@ -26,6 +26,7 @@
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSJavaMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSRunConfigurationMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSMigrationMcpToolset" />
+    <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSGenerationMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSInitMcpToolset" />
   </extensions>
   <applicationListeners>
