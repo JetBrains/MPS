@@ -257,6 +257,8 @@ Phase 4 — commit `1edef9a6c990`, independent Opus review (round 1 approve with
 - Live: MAKE `jetbrains.mps.lang.text.structure` with `saveTransientModels:true`, then TRACE FORWARD (DropRootRule→RULE, LoopMacro→LOOP, Reduction_MappingRule→RULE plus a fragment parent→TEMPLATE), BACKWARD with NODE grouping and `compactTemplates`, BACKWARD on an original node (empty steps + note), and NOT_FOUND with the recovery line; no WARN+ in `idea.log`.
 - Follow-up: phase 4 now uses `TransientModelsOps.refuseWhileMakeActive`; no duplicate helper remains.
 
+Final gate and live check on HEAD `b464d7aec354` (MPS restarted by the user after the phase 4 commit): umbrella `McpToolsIntegrationTestSuite` 1288 finished, 1 failed — `SkillCatalogReplicationTest`, caused by phase 5's blueprint edits being mid-propagation during the run, not by phases 0–4. Live: MAKE `jetbrains.mps.lang.text.structure` `rebuild:true saveTransientModels:true` kept 9 models; TRANSIENT_MODELS reported them with `loaded:false` (swapped out right after the make); COPY_NODE on a transient root → `NOT_EDITABLE` naming the original; TRACE BACKWARD on a generated class → `Root_MappingRule` as `RULE` with `templateRoot`, and `originalInputNode` present this time; no WARN+ in `idea.log`.
+
 Restarting MPS for live checks: `mps_control.sh restart` relaunches from a capture in `$TMPDIR` that may belong to another worktree's MPS, and a fresh launch stops at a modal "Trust project" dialog. Restart by `mps_control.sh shutdown <project>` plus this worktree's IDEA `MPS` run configuration, and have the user confirm the dialog.
 
 ## 5. Tests
