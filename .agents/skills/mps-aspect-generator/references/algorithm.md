@@ -40,4 +40,6 @@ The step repeats micro-steps until a fixed point (no new transformations).
 
 ## Inspecting a real run
 
-Use `mps_mcp_open_node` to open the MappingConfiguration; the MPS UI has "Show Generation Plan" which displays the priority partition. Enable "Save transient models" to keep intermediate models after generation — then read them to confirm what each step actually produces.
+- **The plan.** `mps_mcp_generation` `PLAN` with `{"model": "<model>"}` lists the steps in order: which mapping configurations share a step (`transformations[].label`, e.g. `<generator model>.*`), the `CHECKPOINT`s of an explicit plan, and `conflicts` / `ignoredPriorityRules` when the priorities of a `DEFAULT` plan do not hold. It is computed now and lists every mapping configuration, also those an `isApplicable` condition drops at generation time.
+- **Each step's output.** `mps_mcp_alter_nodes` `MAKE` with `"saveTransientModels": true`, then `mps_mcp_generation` `TRANSIENT_MODELS` with `{"model": "<model>"}`: `<model>@0` is the input copy and `<model>@<transientStereotypePrefix><minor>` are the models of the `PLAN` step with that prefix; a step that changed nothing has no model. List a model's roots with `mps_mcp_get_project_structure` (`startingPoint` = its `reference`) and read them with `mps_mcp_print_node`.
+- **Which rule made a node.** `TRACE` `BACKWARD` from a node of a step model. See `references/debugging-misgeneration.md`.

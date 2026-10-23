@@ -53,7 +53,7 @@ Querying / interacting with the IDE. **All of `#make` / `#clean` / `#removeGenSo
 | `#removeGenSources` | `RemoveGenSources` | Expression | remove `source_gen` |
 | `#show` | `ShowExpression` | Expression | open the argument (usually a node sequence) in the usages view |
 | `#stat` | `StatCommand` | InterpretedCommand | statistics for a `node` / `model` / `project` / `global` target |
-| `#showGenPlan` | `ShowGenPlan` | InterpretedCommand | show the generation plan of a model (`ignoreExternalPlan` flag) |
+| `#showGenPlan` | `ShowGenPlan` | InterpretedCommand | show the generation plan of a model (`ignoreExternalPlan` flag); from an agent, call `mps_mcp_generation` `PLAN` instead, which returns the plan as JSON |
 | `#showBrokenRefs` | `ShowBrokenReferences` | InterpretedCommand | list broken references in a node set |
 | `#callAction` | `CallActionExpression` | Expression | invoke a registered IDE action with parameters |
 | `#modelProperties` / `#moduleProperties` | `ModelProperties` / `ModuleProperties` | Expression | open the properties dialog |

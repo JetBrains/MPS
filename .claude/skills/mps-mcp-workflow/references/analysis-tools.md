@@ -11,4 +11,5 @@ One file per section, each self-contained. Read only the files for your job, and
 | `mps_mcp_print_node` — Output Format | `references/analysis-tools/print-node-output.md` |
 | `mps_mcp_check_root_node_problems` — Output Format | `references/analysis-tools/check-root-node-problems-output.md` |
 | Intentions & quick-fixes | `references/analysis-tools/intentions-and-quick-fixes.md` |
+| `mps_mcp_generation` — generation plans, transient models, generation traces | `references/analysis-tools/generation.md` |
 | Workflow and Best Practices | `references/analysis-tools/workflow-best-practices.md` |

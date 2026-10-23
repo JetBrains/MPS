@@ -38,6 +38,8 @@ The console input holds exactly **one** command (`jetbrains.mps.console.base.str
 | BaseLanguage expression | `BLExpression` — `expression: Expression` | one expression; if non-void its value is printed (as text / AST / interactive response) |
 | Interpreted command | `InterpretedCommand` subtypes | non-generated commands: `#stat`, `#showGenPlan`, `#showBrokenRefs`, `#reloadClasses`, `?` (help) |
 
+`#showGenPlan` has an MCP equivalent: `mps_mcp_generation` `PLAN` returns the plan as JSON, so do not run the console command to read a plan.
+
 **Key fact that trips up blueprints:** the query commands (`#nodes`, `#instances`, …), the IDE commands `#make` / `#clean` / `#removeGenSources` / `#show` / `#callAction`, and the printers `#print` / `#printNode` / `#printNodeRef` / `#printSequence` / `#printText` are all baseLanguage **`Expression`s**, not `Command`s. To use one as a standalone command you put it inside a `BLExpression` (or inside `{ … }` statements). Only `InterpretedCommand` subtypes and `#reloadClasses` are commands in their own right.
 
 ## Reading a command's output
