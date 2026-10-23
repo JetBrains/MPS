@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.generator.CustomGenerationModuleFacet
+import jetbrains.mps.generator.TransientModelsProvider
 import jetbrains.mps.make.MakeServiceComponent
 import jetbrains.mps.make.MakeSession
 import jetbrains.mps.messages.IMessageHandler
@@ -295,6 +296,69 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
         assertEquals("the main branch is listed before the fork branch", models.sortedBy { it.get("branch").asInt }, models)
     }
 
+    @Test
+    fun `MAKE droppedPrevious does not count the checkpoint models a make keeps`() {
+        val solution = createSolution()
+        val planModel = createModel(solution, "test.tm.cpplans")
+        val languages = listOf(languageRuntime(BASE_LANGUAGE).identity)
+        executeCommand {
+            val main = planNode("CheckpointPlan")
+            main.addChild(PLAN_STEPS, transformNode(languages))
+            main.addChild(PLAN_STEPS, checkpointNode("cp1"))
+            planModel.addRootNode(main)
+        }
+        expectOk(runTool(JetBrainsMPSModuleMcpToolset()) {
+            it.mps_mcp_update_module_facet(
+                solution.moduleName!!, CustomGenerationModuleFacet.FACET_TYPE, true,
+                JsonOrText("""{"planModel":"${modelRefOf(planModel)}"}"""),
+            )
+        })
+        val model = createModel(solution, "test.tm.cpinput")
+        executeCommand {
+            languages.forEach { (model as SModelInternal).addLanguage(it) }
+            val root = jetbrains.mps.smodel.SNode(concept(BASE_LANGUAGE, "ClassConcept"))
+            root.setProperty(SNodeUtil.property_INamedConcept_name, "Root")
+            model.addRootNode(root)
+        }
+        // The make need not succeed: a failed generation still publishes its checkpoint model.
+        fun make(): JsonObject = expectOk(runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{ "models": ["${modelRefOf(model)}"], "rebuild": true, "saveTransientModels": true }""")
+        }).getAsJsonObject("transientModels")
+
+        make()
+        val checkpointName = "${readOnRepo { model.name.longName }}@cp1"
+        val kept = expectOk(generation("TRANSIENT_MODELS"))
+        assertTrue(
+            "the checkpoint step published its model: $kept",
+            kept.getAsJsonArray("checkpoints").any { it.asJsonObject.get("name").asString == checkpointName },
+        )
+        assertTrue("the make kept per-make transient models too: $kept", originals(kept).isNotEmpty())
+
+        expectOk(generation("DROP_TRANSIENT_MODELS", """{"includeCheckpoints":false}"""))
+        val onlyCheckpoints = expectOk(generation("TRANSIENT_MODELS"))
+        assertTrue("no per-make transient models are left: $onlyCheckpoints", originals(onlyCheckpoints).isEmpty())
+        assertTrue(
+            "the checkpoint model survived the drop: $onlyCheckpoints",
+            onlyCheckpoints.getAsJsonArray("checkpoints").any { it.asJsonObject.get("name").asString == checkpointName },
+        )
+        readOnRepo {
+            // What makes the exclusion matter: the provider still lists the checkpoints module.
+            val provider = myProject.getComponent(TransientModelsProvider::class.java)!!
+            assertEquals(listOf(provider.checkpointsModule), provider.modules.toList())
+        }
+
+        val afterCheckpointsOnly = make()
+        assertFalse("the kept checkpoint models are not reported dropped: $afterCheckpointsOnly", afterCheckpointsOnly.get("droppedPrevious").asBoolean)
+        assertTrue("the make kept per-make transient models: $afterCheckpointsOnly", afterCheckpointsOnly.getAsJsonArray("modules").size() > 0)
+        assertTrue(
+            "the checkpoints module is not reported as a per-make module: $afterCheckpointsOnly",
+            afterCheckpointsOnly.getAsJsonArray("modules").none { it.asJsonObject.get("module").asString == "checkpoints" },
+        )
+
+        val afterPerMake = make()
+        assertTrue("the previous make's transient models are reported dropped: $afterPerMake", afterPerMake.get("droppedPrevious").asBoolean)
+    }
+
     private class LookupOps : AbstractOps() {
         fun lookupModules(project: MPSProject) = nameLookupModules(project.repository)
         fun model(project: MPSProject, name: String): SModel? = resolveModel(project.repository, name)
@@ -323,6 +387,12 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
         }
     }
 
+    private fun checkpointNode(name: String): SNode = jetbrains.mps.smodel.SNode(CHECKPOINT).apply {
+        addChild(CHECKPOINT_SPEC, jetbrains.mps.smodel.SNode(IN_PLACE_CHECKPOINT_SPEC).apply {
+            setProperty(SNodeUtil.property_INamedConcept_name, name)
+        })
+    }
+
     private fun link(node: SNode, name: String) = node.concept.containmentLinks.single { it.name == name }
 
     private companion object {
@@ -337,6 +407,9 @@ class JetBrainsMPSGenerationTransientModelsIntegrationTest : McpIntegrationTestB
         val PLAN_STEPS = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a20717fbL, 0x19443180a2071807L, "steps")
         val TRANSFORM: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071802L, "jetbrains.mps.lang.generator.plan.structure.Transform")
         val TRANSFORM_LANGUAGES = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071802L, 0x28dd6d5a7549fa8dL, "languages")
+        val CHECKPOINT: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071801L, "jetbrains.mps.lang.generator.plan.structure.Checkpoint")
+        val IN_PLACE_CHECKPOINT_SPEC: SConcept = MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x340cd07aed7ca161L, "jetbrains.mps.lang.generator.plan.structure.InPlaceCheckpointSpec")
+        val CHECKPOINT_SPEC = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x19443180a2071801L, 0x340cd07aed7cb2d2L, "cpSpec")
         val FORK_PLAN = MetaAdapterFactory.getReferenceLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x2bf683196b12a3cbL, 0x2bf683196b12a3ccL, "plan")
 
         const val SMODEL_LANG_HI = 0x7866978ea0f04cc7L
