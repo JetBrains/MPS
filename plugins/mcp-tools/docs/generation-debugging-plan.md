@@ -2,7 +2,7 @@
 
 YouTrack: [MPS-40316](https://youtrack.jetbrains.com/issue/MPS-40316). All work under this plan is done on behalf of MPS-40316; commits that implement it carry the ID in their subject (`mcp-tools - MPS-40316 <summary>`).
 
-Status: exploration + plan, draft 3 (2026-10-23). Phase 0 is implemented (see section 4). Draft 3 folds in an Opus review (approve with changes, 16 findings; log at the end). Owner decisions taken on 2026-10-23: (1) one new tool `mps_mcp_generation`, not operations on `query_nodes`/`alter_nodes`; (2) toggling the global save-transient setting around the make is acceptable, including the status-bar widget briefly showing it. All paths are relative to the repository root. Line numbers were read from this checkout (branch `261/vaclav/MPS-40315-java-import-resolution`).
+Status: exploration + plan, draft 3 (2026-10-23). Phases 0, 1 and 2 are implemented; sections 3.1 (MAKE), 3.2 and 3.3 describe the design as drafted, and the implementation notes at the end of section 4 record where the code deviates. Draft 3 folds in an Opus review (approve with changes, 16 findings; log at the end). Owner decisions taken on 2026-10-23: (1) one new tool `mps_mcp_generation`, not operations on `query_nodes`/`alter_nodes`; (2) toggling the global save-transient setting around the make is acceptable, including the status-bar widget briefly showing it. All paths are relative to the repository root. Line numbers were read from this checkout (branch `261/vaclav/MPS-40315-java-import-resolution`).
 
 ## Goal
 
@@ -221,6 +221,25 @@ The visitor is a Kotlin port of `TraceBuilderUI`'s visitor core (the full class 
 **Phase 5 — skills and docs.** Update `mps-aspect-generator` (`SKILL.md` step 8, `references/algorithm.md`, `references/cookbook.md` "debugging misgeneration" recipe: MAKE with `saveTransientModels:true` → `TRANSIENT_MODELS` → `print_node` on the step model → `TRACE BACKWARD` on the wrong node → open the rule), `mps-aspect-generation-plan` (use `PLAN` to verify a plan instead of the UI), `mps-mcp-workflow/references/mcp-tools-index.md` (the tool index) and `analysis-tools.md`, `mps-console` (note `#showGenPlan` has an MCP equivalent). Propagate the changed skill folders to `.agents/skills/` and `.claude/skills/` (`SkillCatalogReplicationTest`), run `plugins/mcp-tools/scripts/validate_skill_catalog.py`.
 
 Phases 1 and 2 are independent after phase 0; 3 and 4 depend on 1 (they need a make that kept transients to test against).
+
+### Implementation notes (phases 1 and 2, 2026-10-23)
+
+Phase 1 — commit `1340dd42c9b9`, independent Opus review (round 1 approve with nits, round 2 approve):
+- The toggle lives in `common/SaveTransientModelsToggle.kt` (`withSaveTransientModels`); `performMake(..., saveTransientModels: Boolean? = null)` uses it as 3.2 prescribes.
+- A "Nothing to make" result carries no `transientModels` block. `alter_structure` ORs `droppedPrevious` over its two makes; the smart-reference scaffold path carries the block too.
+- `traceAvailableFor` probes `getTrace` per input model; the traces of a transient module cannot be enumerated.
+- `droppedPrevious` is sampled before the make, so it can be `true` for a make that fails before `configure` removes anything.
+- Test gaps: restore after a failed make is covered only by the helper unit test (a real make failure was impractical to force); the checkpoints exclusion is not exercised (the fixture publishes no checkpoint models). `AbstractOpsMakeTest` is registered in `McpContractAndSkillsTestSuite`, not `McpNodeToolsTestSuite`.
+
+Phase 2 — commit `1a77b48b7ed6`, independent Opus review (two rounds, approve with nits, all applied). `mps_mcp_generation` exposes `PLAN` only; the result differs from 3.3:
+- `prefixSharedWithMainBranch` became `prefixShared`, set on every TRANSFORM step whose prefix any other step of the plan (main, sibling fork or nested branch) also writes.
+- FORK steps carry `hasCondition` and `branchInputStereotypePrefix`; CHECKPOINT steps carry `plan`. `explicitPlanOrigin` is `FACET` or `DEVKIT` only; telling them apart builds the plan twice, as no API says which.
+- `planDiagnostics` entries are `{kind, text, reference?}` objects. New top-level `generatable` and `planComputed`: with an undeployed used language no plan is computed (each computation would log a SEVERE per missing language) and `notDeployedLanguages` lists them; the `NOT_DEPLOYED` coverage value is dropped.
+- A TRANSFORM step with no transformations ends its branch (`GenerationSession`); the result notes it.
+- Corrections to 1.3: the minor number runs on through a whole branch rather than restarting per step; a fork writes its branch-input copy as `<forkIndex>_<minor+100>` and the branch's minors continue from there (101 and up, above 200 nested), not from a fixed 101. The deprecated `EngagedGeneratorCollector` constructor is at `:63-68`.
+- Live check in a running MPS: `PLAN` on `jetbrains.mps.baseLanguage.scopes` returned a DEFAULT plan of 18 TRANSFORM steps and 14 generators (coverage `IN_PLAN` 10, `NO_GENERATORS` 3), with no WARN/SEVERE from the tool in `idea.log`. Explicit plans are verified by the integration test only (module-facet plan with CHECKPOINT and FORK).
+
+Gate for both phases: the umbrella `McpToolsIntegrationTestSuite` passed except three `JetBrainsMPSJavaMcpToolsetIntegrationTest` "…directly imported model" tests, caused by a stale `languages/baseLanguage/baseLanguage.scopes/classes_gen` that predated the MPS-40315 `source_gen` (`build_project` does not compile MPS-compiled solutions). After an MPS make of that module the class passed 49/49.
 
 ## 5. Tests
 
