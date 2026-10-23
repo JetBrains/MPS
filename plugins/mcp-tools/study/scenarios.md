@@ -34,6 +34,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S13 | Fix two injected bugs in the Kaja robot language's dataflow builders (a false "Unreachable command" on every `else` branch, a missing one on a `repeat 0 times` body), rebuild once, and leave the sandbox unchanged. |
 | S14 | Answer five def-use questions about one BaseLanguage method with a loop, branches and try-finally (which assignments reach which reads). Models must not change. |
 | S15 | Find why the generated Java has the wrong `PORTIONS` from the generation plan and trace (keep transient models, read the step model, trace the node back to its rule), fix the generator, rebuild, re-make, and free the transient models. |
+| S16 | S13's task and prompt on a fixture whose `if` builder bug reads as correct text (`ifjump after node.trueBranch`): the cell that needs the emitted program, `mps_mcp_query_dataflow` `PRINT_PROGRAM`. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -282,6 +283,19 @@ Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7 and S9, 
 S15 when one of those ran in the process; the worker rebuilds the language, so restart again before
 any later recipes cell. S13 and S14 (the dataflow cells) do not use `recipes*` and need no restart for it.
 
+**S16 — dataflow builder debugging, bug hidden in plausible text.** Fixture: `kaja-dataflow-2`
+(`kaja-dataflow` with S13's misplaced label replaced by `ifjump after node.trueBranch`, the
+unreferenced `label elseBranch` deleted; bug B kept). Same prompt as S13, same before and after
+check results; only the bug's legibility differs. Written 2026-10-23 for round 41, because the
+round-40 S13 worker fixed both bugs from builder prints alone, so S13 measures `PRINT_PROGRAM`
+weakly. Rehearsed twice by the observer (`before node.falseBranch`, and the stock label layout).
+Run to verify: `mps-aspect-dataflow`'s Debugging a Builder section and `mps_mcp_query_dataflow`
+`PRINT_PROGRAM`. A tool-free baseline needs the pre-tool catalog and `DISALLOWED_TOOLS` (the r41
+wrapper's `BASELINE=1`), or the catalog routes the worker to a tool it does not have.
+Read the process signals with `DF_program_prints`, `DF_builder_prints`, `M_makes` and
+`DF_console_runs`. Hypotheses: H2, H5, H7.
+Isolation: as S13 (Kaja module ids; restart MPS before every S16 run; never next to S13's fixture).
+
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
 after a start or restart.
@@ -302,7 +316,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model) | | menus, keymaps, action maps, substitute menus — no cell |
 | `mps-aspect-constraints` | S1 (property validator + a scope that excludes the referrer), S2 (non-blank property rule) | | S5 repairs instances; it does not author a rule |
 | `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
-| `mps-aspect-dataflow` | S13 (fixing two builders: a label position and a guard) | | no cell authors a builder for a new concept, a custom analyzer, or a builder mode |
+| `mps-aspect-dataflow` | S13 (fixing two builders: a label position and a guard), S16 (the same with a position bug that reads as correct) | | no cell authors a builder for a new concept, a custom analyzer, or a builder mode |
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
 | `mps-aspect-intentions` | S2 | | |
 | `mps-aspect-migrations` | S4 | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
@@ -328,6 +342,7 @@ skill whose **Run** column is not S1 or S3.
 | reference formats, dry-run name warnings | S3, S1 | S5 | |
 | `check_root_node_problems`, quick fixes | S5 | S1, S3 (end-of-task check only) | |
 | type queries (`mps_mcp_query_types`, `GET_TYPE`, `GET_EXPECTED_TYPE`, `references/analysis-tools/type-queries.md`) and `uncheckedSubtrees` | S11 (read-only), S12 (before and after a rule change) | | |
+| dataflow queries (`mps_mcp_query_dataflow`, `references/analysis-tools/dataflow-queries.md`) | S16 (`PRINT_PROGRAM`), S14 (`REACHING_WRITES` / `REACHING_READS`, read-only) | S13 | builder failures, custom analyzers (no cell) |
 | dataflow analysis results (reachability, reaching definitions / reads) | S13 (reachability through the checker), S14 (def-use questions; no tool answers them yet) | | |
 | `print_node` / concept-details shape | S8 (a wrong reading is shipped), S5 (repair against a print) | S1, S2, S6 | |
 | `scripts/mps_dump.py` | | S8, S6, S7, S1 (workers use it to orient; the prompt does not require it) | |
