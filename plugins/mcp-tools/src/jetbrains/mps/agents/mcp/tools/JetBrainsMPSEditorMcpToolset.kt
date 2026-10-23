@@ -4,6 +4,7 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
 import jetbrains.mps.project.MPSProject
@@ -199,16 +200,13 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
             var generationRequired = false
             if (model != null) {
                 try {
-                    // Use reflection for ModelGenerationStatusManager to avoid optional generator-engine dependency
-                    val mgsmClass = Class.forName("jetbrains.mps.generator.ModelGenerationStatusManager")
-                    val mgsm = mpsProject.getComponent(mgsmClass)
+                    val mgsm = mpsProject.getComponent(ModelGenerationStatusManager::class.java)
                     if (mgsm != null) {
-                        val method = mgsmClass.getMethod("generationRequired", org.jetbrains.mps.openapi.model.SModel::class.java)
-                        generationRequired = method.invoke(mgsm, model) as Boolean
+                        generationRequired = mgsm.generationRequired(model)
                     }
                 } catch (e: Exception) {
                     rethrowIfCancellation(e)
-                    logger.warn("Reflection failure checking generation status for model '${model.name}' via ModelGenerationStatusManager", e)
+                    logger.warn("Failure checking generation status for model '${model.name}' via ModelGenerationStatusManager", e)
                     if (model is EditableSModel && model.isChanged) {
                         generationRequired = true
                     }

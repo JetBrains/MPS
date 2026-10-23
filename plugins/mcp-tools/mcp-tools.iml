@@ -32,6 +32,7 @@
     <orderEntry type="module" module-name="project-check" />
     <orderEntry type="module" module-name="typesystemEngine" />
     <orderEntry type="module" module-name="make-runtime" />
+    <orderEntry type="module" module-name="generator-engine" />
     <orderEntry type="module" module-name="typechecking" />
     <orderEntry type="module" module-name="migration-platform" />
     <orderEntry type="module" module-name="migrations-runtime" />

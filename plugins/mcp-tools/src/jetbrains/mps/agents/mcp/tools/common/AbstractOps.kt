@@ -34,6 +34,7 @@ import jetbrains.mps.errors.item.QuickFixRuntimeAdapter
 import jetbrains.mps.errors.item.RuleIdFlavouredItem
 import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
+import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.IAttributeDescriptor
@@ -3631,9 +3632,7 @@ abstract class AbstractOps : McpToolset {
 
         // 3) Structure-model generation status — true when the source model has been
         //    edited since the last successful generation (covers both in-memory dirty
-        //    edits and saved-but-not-regenerated states). Accessed reflectively to
-        //    avoid a hard dependency on the optional generator-engine module — same
-        //    pattern as the pre-make gate elsewhere in this plugin.
+        //    edits and saved-but-not-regenerated states).
         //
         // sourceNode can still be null here when the descriptor is *not* hollow (has
         // properties/links but no resolvable source). This shape only appears in
@@ -3657,42 +3656,8 @@ abstract class AbstractOps : McpToolset {
             )
             return ScaffoldingStaleness.Fresh
         }
-        // Catch only the reflective lookup/invocation exceptions that signal the optional
-        // generator-engine module is absent or shaped differently than expected. Anything
-        // broader (ProcessCanceledException, Error, plain RuntimeException from inside
-        // generationRequired itself) must propagate so the EDT command honors cancellation
-        // and does not mask real failures as "model fresh".
-        val generationRequired = try {
-            val mgsmClass = Class.forName("jetbrains.mps.generator.ModelGenerationStatusManager")
-            val mgsm = project.getComponent(mgsmClass) ?: return ScaffoldingStaleness.Fresh
-            val method = mgsmClass.getMethod("generationRequired", SModel::class.java)
-            ((method.invoke(mgsm, structureModel) as? Boolean) ?: false)
-        } catch (_: ClassNotFoundException) {
-            // Optional generator-engine module not on the classpath; deterministic, structural.
-            false
-        } catch (_: NoSuchMethodException) {
-            // generationRequired() shape changed in this build; deterministic, structural.
-            false
-        } catch (e: java.lang.reflect.InvocationTargetException) {
-            // The target call itself threw. Unwrap and rethrow cancellation/Error so the EDT
-            // command terminates correctly; degrade open for anything else, but log it —
-            // generationRequired() is supposed to be a cheap, deterministic hash lookup, so
-            // any failure here represents a real regression worth surfacing in idea.log.
-            val cause = e.cause ?: e
-            rethrowIfCancellation(cause)
-            if (cause is Error) throw cause
-            if (cause is RuntimeException) throw cause
-            logger.warn(
-                "ModelGenerationStatusManager.generationRequired threw for model '${structureModel.name}'; " +
-                    "treating as Fresh (scaffolding will proceed). A stale descriptor may slip through " +
-                    "this branch; this should not happen in normal operation.",
-                cause,
-            )
-            false
-        } catch (_: IllegalAccessException) {
-            // JVM module / accessibility issue; deterministic for the running JDK + module setup.
-            false
-        }
+        val mgsm = project.getComponent(ModelGenerationStatusManager::class.java) ?: return ScaffoldingStaleness.Fresh
+        val generationRequired = mgsm.generationRequired(structureModel)
         if (generationRequired) {
             return ScaffoldingStaleness.Stale(
                 reason = "structure model '${structureModel.name}' has unbuilt changes; the language " +
