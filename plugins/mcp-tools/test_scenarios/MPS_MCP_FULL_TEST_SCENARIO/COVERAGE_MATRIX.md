@@ -6,11 +6,11 @@ parameters and enum values covered, the covering `Step PP.NN` ids, and the valid
 check (follow-up query / structure dump / file read), **F** = detailed payload read (inline
 `data`, or the temp file when `data` is a path).
 
-## A. MPS MCP tools (`mps_mcp_*`) — all 40
+## A. MPS MCP tools (`mps_mcp_*`) — all 41
 
 The authoritative list is the `@McpTool` methods of the toolsets registered in
 `plugins/mcp-tools/META-INF/plugin.xml` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/`).
-Rows 37–40 were added after the original 36; rows 38–40 are not exercised by this scenario (see
+Rows 37–41 were added after the original 36; rows 38–40 are not exercised by this scenario (see
 the note below the table).
 
 | # | Tool | Purpose | Valid? | Invalid? | Parameters / enum values covered | Steps | Val |
@@ -55,6 +55,7 @@ the note below the table).
 | 38 | `list_node_intentions` | List intentions/quick-fixes on a node | (◆) | (◆) | — | — (see `smoke-test-intentions.md`) | — |
 | 39 | `apply_intention` | Apply an intention or quick-fix | (◆) | (◆) | — | — (see `smoke-test-intentions.md`) | — |
 | 40 | `close_project` | Close the MPS project | (✕) | (✕) | — | — | — |
+| 41 | `clear_console` | Clear console history | ✅ | — | `dryRun` + real (`clearInput` not exercised) | 12.10–12.11 | R+S |
 
 (–) under "Invalid?" = no invalid case included for that tool because none is meaningful/safe
 beyond what shared dispatch already covers. ▲ for `query_structure`: the unknown-operation
