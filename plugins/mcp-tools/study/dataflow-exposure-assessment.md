@@ -1,7 +1,7 @@
 # Exposing the MPS dataflow runtime through `mps_mcp_*` — assessment
 
 Status: assessment, 2026-10-08; code pointers re-checked and the implementation section revised
-2026-10-22. No code change. Investigates whether dataflow graphs,
+2026-10-22; steps 1 and 2 implemented 2026-10-23 (see Recommendation). Investigates whether dataflow graphs,
 "value to here" / "value from here" inspections, or other dataflow-derived information would
 help agents editing DSL code if exposed as MCP tools, and how much each candidate would cost.
 The implemented `mps_mcp_query_types` (`src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSTypesMcpToolset.kt`,
@@ -130,6 +130,8 @@ typesystem rule bodies (`check_AbstractCheckingRule_NonTypesystemRule` and frien
 - the graph
 
 ### State of `plugins/mcp-tools`
+
+As of 2026-10-22, before step 1 (see Recommendation for what has been added since):
 
 - No dataflow code in `src/` or `test/`.
 - `check_root_node_problems` has no dataflow checker of its own; dataflow verdicts arrive only
@@ -371,6 +373,27 @@ Low value.
    `type-queries.md`. Edit the blueprints in `resources/jetbrains/mps/agents/mcp/skills/` and
    copy each changed skill folder to `.agents/skills/` and `.claude/skills/`, which
    `SkillCatalogReplicationTest` enforces.
+   Status 2026-10-23: steps 1 and 2 are done. `mps_mcp_query_dataflow`
+   (`src/.../JetBrainsMPSDataflowMcpToolset.kt`, façade `common/DataflowRuntime.kt`) has
+   `PRINT_PROGRAM`, `REACHING_WRITES` and `REACHING_READS`, with every wiring item above, and the
+   skill page `mps-mcp-workflow/references/analysis-tools/dataflow-queries.md`. `families.py`
+   counts `DF_queries`, `DF_program_prints` and `DF_reaching_queries`. Facts settled while
+   building it:
+   - BaseLanguage's body builder writes the method's parameters before the first statement, from
+     the `ParameterDeclaration`s. So a program built from the body is not partial for parameters;
+     it is partial for fields and for locals of an enclosing node. The tool's "outside variable"
+     test is therefore "declared outside the root and not written from a source outside it".
+   - The shipped reachability check skips instructions marked `mayBeUnreachable` (every label and
+     `endTry`, and `emitMayBeUnreachable` content such as the `jump after` of an if whose branches
+     both return) and those without a source. `unreachable` filters the same way, or a builder
+     author chases a phantom.
+   - Positions (`label`, `before`, `after`) and the try-block checks are resolved after every
+     builder has returned, so "Can't find a label" carries no builder frame on its stack;
+     `builderFailure.builder` is present only when a builder's own code threw.
+   - A closure's own builder emits only its captured reads, so the default root of a closure node
+     is the enclosing body, while a method or `ConceptFunction` node is its own root.
+   - Not covered by a test: a throwing builder (it needs a fixture language with a broken builder)
+     and the closure / initializer defaults.
 3. Re-run S13 (and S14) with the tool. Let turn and retry counts decide whether operation 3 is
    worth building.
 

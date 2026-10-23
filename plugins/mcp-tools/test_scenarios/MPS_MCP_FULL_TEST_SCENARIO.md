@@ -43,7 +43,7 @@ known tool-description discrepancies you should expect to re-confirm.
 | 7 | `MPS_MCP_FULL_TEST_SCENARIO/07_root_nodes_and_node_editing.md` | `create_root_node`, `insert_root_node_from_json`, `update_node`, `update_root_node_from_json`, `print_node`, `check_root_node_problems`, `alter_nodes` moves/fix. |
 | 8 | `MPS_MCP_FULL_TEST_SCENARIO/08_queries_and_navigation.md` | `query_nodes` (all ops), `search_root_node_by_name` (all scopes), `open_node`, `get_current_editor_root_node`. |
 | 9 | `MPS_MCP_FULL_TEST_SCENARIO/09_editor_scaffolding.md` | `scaffold_editor` (editor + component). |
-| 10 | `MPS_MCP_FULL_TEST_SCENARIO/10_baselanguage_parse_java.md` | `parse_java_and_insert` (all `featureKind` + `insert.mode` values); `query_nodes` GET_TYPE / GET_EXPECTED_TYPE, `query_types` (all operations), problem `rules` / `uncheckedSubtrees`. |
+| 10 | `MPS_MCP_FULL_TEST_SCENARIO/10_baselanguage_parse_java.md` | `parse_java_and_insert` (all `featureKind` + `insert.mode` values); `query_nodes` GET_TYPE / GET_EXPECTED_TYPE, `query_types` (all operations), `query_dataflow` (all operations), problem `rules` / `uncheckedSubtrees`. |
 | 11 | `MPS_MCP_FULL_TEST_SCENARIO/11_run_configurations.md` | `create_run_configuration` + helper IDE tools. |
 | 12 | `MPS_MCP_FULL_TEST_SCENARIO/12_console.md` | `insert_console_command_from_json`, `run_console_command`, `get_console_history`, `recall_console_command`. |
 | 13 | `MPS_MCP_FULL_TEST_SCENARIO/13_update_and_delete_modules.md` | `update_module` (RENAME / CHANGE_VIRTUAL_FOLDER / DELETE). |
@@ -94,7 +94,7 @@ that the "MCP is enabled/available" assumption is unmet.
    resolved in Step 01.01 — substitute the resolved absolute path into **every** call.
 
 2. **`parameters` is a JSON-encoded string.** Tools `mps_mcp_alter_structure`,
-   `mps_mcp_query_structure`, `mps_mcp_query_nodes`, `mps_mcp_query_types`,
+   `mps_mcp_query_structure`, `mps_mcp_query_nodes`, `mps_mcp_query_types`, `mps_mcp_query_dataflow`,
    `mps_mcp_alter_nodes`, and `mps_mcp_parse_java_and_insert` take an `operation` (where
    applicable) plus a **`parameters`** argument whose value is a **string containing JSON**.
    In the call blocks below, the `parameters` value is shown already escaped — pass it

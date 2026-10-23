@@ -53,6 +53,9 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   DF_builder_prints                print_node calls on a dataflow builder root (DataFlowBuilderDeclaration):
                                    reading builders to simulate the dataflow engine
   DF_console_runs                  run_console_command calls (a hand-written engine probe, among others)
+  DF_queries                       mps_mcp_query_dataflow calls, rejected ones included
+  DF_program_prints                of them, PRINT_PROGRAM calls
+  DF_reaching_queries              of them, REACHING_WRITES and REACHING_READS calls
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -76,7 +79,7 @@ module sweep (`details.truncated`, with or without perRoot rows), ok:false, unpa
 State: a container check sets the last verdict. A node check counts as C_root_after_clean_model
 after `clean` or `clean_unchecked` and as C_after_summary after `problem_summary`; with
 autoApplyQuickFixes it writes, so it resets the verdict. Any other mps_mcp_* call except print_node,
-get_project_structure, query_nodes, list_open_projects and mps_mcp_generation resets it too. Batches: calls grouped by
+get_project_structure, query_nodes, list_open_projects, mps_mcp_generation and mps_mcp_query_dataflow resets it too. Batches: calls grouped by
 `message.id`, as in analyze_runs.py (A2); a call without an id is its own batch.
 
 T_rule_prints reads the concept from the print_node result: `data.concept` of an inline JSON
@@ -97,7 +100,9 @@ that MAKE counts when it is listed first.
 DF_builder_prints works like T_rule_prints: the printed concept when the result has one, else a
 `nodeReference` in a `….dataFlow` model. It is the S13 signal (the builder is the artefact being
 fixed, so some prints are legitimate); DF_console_runs is the S13/S14 signal for a worker that
-reaches the engine through the MPS Console because no tool exposes it.
+reaches the engine through the MPS Console because no tool exposes it. DF_queries, DF_program_prints and
+DF_reaching_queries count the tool that exposes it (S13: PRINT_PROGRAM, S14: the reaching operations); the
+operation is compared trimmed and in any case. mps_mcp_query_dataflow is read-only for the check-verdict state.
 
 The M_makes_save_transient and GN_* columns are S15's signals (debug a misgeneration with the
 generation trace). `parameters` is read as the server reads it: a JSON object, or its string form.
@@ -143,9 +148,10 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "T_rule_prints", "T_type_queries", "T_type_queries_before_make", "M_makes", "M_reload_all",
         "M_makes_save_transient", "GN_plan", "GN_transient_models", "GN_trace", "GN_trace_backward",
         "GN_drop", "GN_trace_before_fix", "GN_transient_reads", "GN_template_prints",
-        "GN_template_prints_before_trace", "DF_builder_prints", "DF_console_runs"]
+        "GN_template_prints_before_trace", "DF_builder_prints", "DF_console_runs", "DF_queries",
+        "DF_program_prints", "DF_reaching_queries"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
-             "mps_mcp_list_open_projects", "mps_mcp_generation")
+             "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
 CLEAN_UNCHECKED_PREFIX = "no problems found in checked nodes"
 CLEAN_VERDICTS = ("clean", "clean_unchecked")
@@ -393,6 +399,12 @@ def fam(path):
         if n == "mps_mcp_run_console_command":
             f["DF_console_runs"] += 1
         operation = str(inp.get("operation") or "").strip().upper()
+        if n == "mps_mcp_query_dataflow":
+            f["DF_queries"] += 1
+            if operation == "PRINT_PROGRAM":
+                f["DF_program_prints"] += 1
+            elif operation in ("REACHING_WRITES", "REACHING_READS"):
+                f["DF_reaching_queries"] += 1
         if n == "mps_mcp_query_types" or (n == "mps_mcp_query_nodes" and operation in NODE_TYPE_QUERIES):
             f["T_type_queries"] += 1
             if not made:

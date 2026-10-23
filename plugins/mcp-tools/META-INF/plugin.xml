@@ -20,6 +20,7 @@
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSRootNodeMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSTypesMcpToolset" />
+    <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSDataflowMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSIntentionsMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSEditorMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSLanguageStructureMcpToolset" />

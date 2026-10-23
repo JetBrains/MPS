@@ -12,6 +12,7 @@ package jetbrains.mps.agents.mcp.tools.integration;
 import jetbrains.mps.agents.mcp.tools.unit.AbstractOpsAutoApplyQuickFixesTest;
 import jetbrains.mps.agents.mcp.tools.unit.AbstractOpsPropertyProblemsTest;
 import jetbrains.mps.agents.mcp.tools.unit.AssignableReferenceServiceTest;
+import jetbrains.mps.agents.mcp.tools.unit.DataflowBuilderFrameTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -29,6 +30,8 @@ import org.junit.runners.Suite;
     JetBrainsMPSNodeMcpToolsetIntegrationTest.class,
     JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.class,
     JetBrainsMPSTypesMcpToolsetIntegrationTest.class,
+    JetBrainsMPSDataflowMcpToolsetIntegrationTest.class,
+    DataflowBuilderFrameTest.class,
     JetBrainsMPSGenerationMcpToolsetIntegrationTest.class,
     JetBrainsMPSGenerationTraceIntegrationTest.class,
     JetBrainsMPSGenerationTransientModelsIntegrationTest.class,

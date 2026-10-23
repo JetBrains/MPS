@@ -94,6 +94,7 @@ class McpJsonOrTextWireShapeTest : McpIntegrationTestBase() {
         JetBrainsMPSConsoleMcpToolset(),
         JetBrainsMPSNodeMcpToolset(),
         JetBrainsMPSTypesMcpToolset(),
+        JetBrainsMPSDataflowMcpToolset(),
         JetBrainsMPSLanguageStructureMcpToolset(),
         JetBrainsMPSJavaMcpToolset(),
         JetBrainsMPSIntentionsMcpToolset(),

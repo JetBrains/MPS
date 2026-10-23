@@ -206,7 +206,8 @@ class FamiliesTest(unittest.TestCase):
                          "T_rule_prints\tT_type_queries\tT_type_queries_before_make\tM_makes\tM_reload_all\t"
                          "M_makes_save_transient\tGN_plan\tGN_transient_models\tGN_trace\tGN_trace_backward\t"
                          "GN_drop\tGN_trace_before_fix\tGN_transient_reads\tGN_template_prints\t"
-                         "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs", header)
+                         "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs\tDF_queries\t"
+                         "DF_program_prints\tDF_reaching_queries", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -466,6 +467,21 @@ class FamiliesTest(unittest.TestCase):
                        + [tool("r", "mcp__mps__mps_mcp_run_console_command", {}), result("r", ok({"executed": True}))]
                        + check("a", NODE, NODE_CLEAN))
         self.assertCounts(f, DF_console_runs=1, C_root_after_clean_model=0)
+
+    def test_t26_dataflow_queries_count_by_operation_and_keep_the_clean_verdict(self) -> None:
+        def query(tool_id: str, operation: str, payload) -> list[dict]:
+            return [tool(tool_id, "mcp__mps__mps_mcp_query_dataflow", {"operation": operation, "parameters": {"nodeReference": NODE}}),
+                    result(tool_id, payload)]
+        rejected = {"ok": False, "code": "INVALID_REQUEST", "error": "Unknown operation"}
+        f = self.count(check("m", MODEL, MODEL_CLEAN)
+                       + query("p", "PRINT_PROGRAM", ok({"instructions": []}))
+                       + query("q", " print_program ", ok({"instructions": []}))
+                       + query("w", "REACHING_WRITES", ok({"reads": []}))
+                       + query("r", "reaching_reads", ok({"writes": []}))
+                       + query("x", "REACHING_DEFINITIONS", rejected)
+                       + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, DF_queries=5, DF_program_prints=2, DF_reaching_queries=2, G_errors=1,
+                          C_root_after_clean_model=1, DF_builder_prints=0, DF_console_runs=0)
 
     def test_smoke_runs_are_skipped_and_out_writes_the_tsv(self) -> None:
         self.count(check("m", MODEL, MODEL_CLEAN))

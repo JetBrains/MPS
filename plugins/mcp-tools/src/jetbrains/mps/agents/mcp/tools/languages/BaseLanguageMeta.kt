@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.languages
 
 
+import jetbrains.mps.core.aspects.behaviour.SMethodIdV2
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 
 internal object BaseLanguageMeta {
@@ -21,6 +22,14 @@ internal object BaseLanguageMeta {
         baseLanguageId, baseLanguageStructureModelId, 0x11857355952L,
         "jetbrains.mps.baseLanguage.structure.IMethodCall"
     )
+    internal val iMethodLikeConcept = MetaAdapterFactory.getInterfaceConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x1208f458d37L,
+        "jetbrains.mps.baseLanguage.structure.IMethodLike"
+    )
+
+    /** `IMethodLike.getBody()`: the body of a method, a `ConceptFunction` or a closure. */
+    internal val getBodyId = SMethodIdV2.create("getBody", 1239354440022L, baseLanguageId xor baseLanguageStructureModelId)
+
     internal val iThisExpressionConcept = MetaAdapterFactory.getInterfaceConcept(
         baseLanguageId, baseLanguageStructureModelId, 0x11d206f8d91L,
         "jetbrains.mps.baseLanguage.structure.IThisExpression"
@@ -74,6 +83,10 @@ internal object BaseLanguageMeta {
         baseLanguageId, baseLanguageStructureModelId, 0xf8cc56b213L,
         "jetbrains.mps.baseLanguage.structure.ExpressionStatement"
     )
+    internal val instanceInitializerConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x118f0b909f7L,
+        "jetbrains.mps.baseLanguage.structure.InstanceInitializer"
+    )
     internal val instanceMethodCallOperationConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0x118154a6332L,
         "jetbrains.mps.baseLanguage.structure.InstanceMethodCallOperation"
@@ -109,6 +122,10 @@ internal object BaseLanguageMeta {
     internal val statementListConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0xf8cc56b200L,
         "jetbrains.mps.baseLanguage.structure.StatementList"
+    )
+    internal val staticInitializerConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0x11c7538039dL,
+        "jetbrains.mps.baseLanguage.structure.StaticInitializer"
     )
     internal val staticMethodDeclarationConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0xfbbebabf0aL,
@@ -179,6 +196,12 @@ internal object BaseLanguageMeta {
     )
     internal val parameterLink = MetaAdapterFactory.getContainmentLink(
         baseLanguageId, baseLanguageStructureModelId, 0xf8cc56b1fcL, 0xf8cc56b1feL, "parameter"
+    )
+    internal val instanceInitializerStatementListLink = MetaAdapterFactory.getContainmentLink(
+        baseLanguageId, baseLanguageStructureModelId, 0x118f0b909f7L, 0x118f0b95a3bL, "statementList"
+    )
+    internal val staticInitializerStatementListLink = MetaAdapterFactory.getContainmentLink(
+        baseLanguageId, baseLanguageStructureModelId, 0x11c7538039dL, 0x11c7538039eL, "statementList"
     )
     internal val typeLink = MetaAdapterFactory.getContainmentLink(
         baseLanguageId, baseLanguageStructureModelId, 0x450368d90ce1522fL, 0x450368d90ce15230L, "type"
