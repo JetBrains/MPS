@@ -109,13 +109,10 @@ internal class DataflowRuntime private constructor(private val loader: ClassLoad
         private fun indicesOf(set: Any?): Set<Int> = (set as Collection<*>).mapTo(sortedSetOf()) { index.invoke(it) as Int }
 
         /**
-         * The unreachable instructions the shipped reachability check counts: it skips those marked `mayBeUnreachable`
-         * (every label and `endTry`, and what a builder wraps in `mayBeUnreachable`) and those without a source.
+         * Every instruction no path from the start reaches. Which of them a language's check reports is its own choice:
+         * BaseLanguage's skips those marked [Instruction.mayBeUnreachable] and those without a source, Kaja's skips none.
          */
-        fun unreachable(): Set<Int> = unreachableInstructions().filterTo(sortedSetOf()) { !instructions[it].mayBeUnreachable && instructions[it].source != null }
-
-        /** Every instruction no path from the start reaches. */
-        fun unreachableInstructions(): Set<Int> = indicesOf(programClass.getMethod("getUnreachableInstructions").invoke(program))
+        fun unreachable(): Set<Int> = indicesOf(programClass.getMethod("getUnreachableInstructions").invoke(program))
 
         fun uninitializedReads(): Set<Int> = indicesOf(programClass.getMethod("getUninitializedReads").invoke(program))
 

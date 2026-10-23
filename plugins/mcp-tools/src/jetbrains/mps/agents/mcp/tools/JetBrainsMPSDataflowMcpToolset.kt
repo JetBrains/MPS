@@ -85,7 +85,8 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
         true branch depends on the builder. `outer`:true with `jumpTo`:null is a jump out of the program root (a jump
         back to instruction 0 in a program with outer jumps looks the same). The three index sets are the instructions
         the checks report on ("Unreachable node", "might not have been initialized", "Unused assignment"):
-        `unreachable` skips `mayBeUnreachable` instructions and those without a source, as the check does; entries about
+        `unreachable` lists every unreachable instruction, and which a language's check reports is its own choice
+        (BaseLanguage's skips `mayBeUnreachable` ones and those without a source; Kaja's reports them); entries about
         a variable declared outside the program root that the program never writes on entry (a field, an outer local)
         are left out, with a warning. REACHING_WRITES {nodeReference, programRoot?} → {program, scope, reads:[{index,
         source, variable, writes:[{index, source, variable, value, rule?}], uninitializedPath?, unreachable?,
@@ -291,7 +292,7 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
                 )
             }
             val outside = outsideVariables(program, root)
-            val unreachable = program.unreachableInstructions()
+            val unreachable = program.unreachable()
             val entries = JsonArray()
             if (writes) {
                 val uninitialized = program.uninitializedReads()

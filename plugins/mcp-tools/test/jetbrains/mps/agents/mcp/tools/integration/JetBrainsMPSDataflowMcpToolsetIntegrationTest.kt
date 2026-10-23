@@ -157,10 +157,14 @@ class JetBrainsMPSDataflowMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 ref(root.children.single { it.name == method }.children.single { it.containmentLink?.name == "body" })
             }
         }
-        // Both branches return, so IfStatement's `jump after` is unreachable; the check skips it, being mayBeUnreachable.
+        // Both branches return, so IfStatement's `jump after` is unreachable: listed, and flagged mayBeUnreachable, which is
+        // why BaseLanguage's check does not report it.
         val pick = data(query(DataflowQueryOperation.PRINT_PROGRAM, """{"nodeReference":"$pickBody"}"""))
-        assertEquals("$pick", 0, pick.getAsJsonArray("unreachable").size())
-        assertTrue("$pick", pick.getAsJsonArray("instructions").map { it.asJsonObject }.any { it.get("kind").asString == "jump" && it.has("mayBeUnreachable") })
+        val unreachable = pick.getAsJsonArray("unreachable").map { it.asInt }
+        val instructions = pick.getAsJsonArray("instructions").map { it.asJsonObject }
+        assertTrue("$pick", unreachable.isNotEmpty())
+        assertTrue("$pick", unreachable.all { instructions[it].has("mayBeUnreachable") || instructions[it].get("source").isJsonNull })
+        assertTrue("$pick", unreachable.any { instructions[it].get("kind").asString == "jump" })
 
         // An unused parameter is written from its declaration and never read: the "Unused parameter" warning's assignment.
         val ignore = data(query(DataflowQueryOperation.PRINT_PROGRAM, """{"nodeReference":"$ignoreBody"}"""))
