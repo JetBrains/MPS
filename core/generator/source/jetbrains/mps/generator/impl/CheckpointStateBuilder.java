@@ -122,9 +122,29 @@ class CheckpointStateBuilder {
 //    stepLabels.export(this);
     // IMPORTANT need to create CP model first, as DebugMappingsBuilder need cloned nodes to substitute
     // reference targets from transient model to that in CP model (see DMB.substitute)
+    // ^^^ now with explicit function to get output node in CP model (see 3rd arg in DMB cons), and a split "factory" vs "checkpoint" model, I might want to reconsider this.
     cloneTransientToCheckpoint();
     new ModelImports(myCheckpointModel).addModelImport(originalInputModel.getReference());
-    DebugMappingsBuilder dmb = new DebugMappingsBuilder(myCheckpointModel, myTransitionTrace.getActiveTransition(), myLogger);
+    DebugMappingsBuilder dmb = new DebugMappingsBuilder(myCheckpointModel, myTransitionTrace.getActiveTransition(), (label, outputNode) -> {
+      /*
+       * GeneratorMappings keep nodes from transient models as ML output. They are not necessarily always
+       * nodes from the very last step (i.e. if there's a transformation step that records ML and subsequent post-processing
+       * script that modifies the model again, SNode values in GeneratorMappings would be 'stale' and likely from a model already
+       * disposed (unless transients are kept). That's why we stick to SNodeId only.
+       * It's unlikely (i.e. I can't imagine a reasonable scenario, other than explicit genContext.registerLabel) that an output node won't be from a transient model
+       * or that we would mistakenly take a wrong one (i.e. if aforementioned script removes a node registered as an output and adds another one with the same id).
+       *
+       * Note, as MPSSPRT-335 suggests, when a generator that records labeled mappings is part of group of generators that may further transform
+       * output node, we may face errors here.
+       */
+      SNode tn = myCheckpointModel.getNode(outputNode.getNodeId());
+      if (tn == null) {
+        String s = String.format("Didn't find labeled output node in a checkpoint model, original value left. Instance of %s, label %s", outputNode.getConcept().getName(), label);
+        myLogger.error(outputNode.getReference(), s);
+        return outputNode;
+      }
+      return tn;
+    });
     ArrayList<String> availableLabels = new ArrayList<String>(stepLabels.getAvailableLabels());
     Collections.sort(availableLabels);
     myDebugMappingNode = dmb
