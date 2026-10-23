@@ -31,6 +31,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S10 | Create a second empty project that opens without a migration prompt, close this one, open the new one, add a solution with one class, and leave both projects closed. Runs last. |
 | S11 | Answer five type questions about the Expressions sample (a subtype, the supertypes, a variable's type and its rule, a commented-out declaration, an operand's expected type) by asking the type checker. Models must not change. |
 | S12 | Make `Bool` a subtype of `Number` in the Expressions sample and prove it on a scratch sandbox model: the type error before, a new subtyping rule, one rebuild, the error gone and the side effect on `true + 1` after. |
+| S15 | Find why the generated Java has the wrong `PORTIONS` from the generation plan and trace (keep transient models, read the step model, trace the node back to its rule), fix the generator, rebuild, re-make, and free the transient models. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -219,6 +220,36 @@ S12, also when S11 ran before it in the same process. S12 changes and builds the
 restart again before any later Expressions cell. The worker's MAKE writes generated files into the
 run project; criterion 5 compares `.mps` files only.
 
+**S15 — debug a misgeneration with the generation trace.** Fixture: `recipes-misgen` (`recipes-full`
+plus an observer-authored, interpreted generator `map Recipe` → `RecipeClass` and the injected
+defect D1, `PORTIONS` from `node.steps.size`; `scenarios/S15/DEFECT.md`). Mutates the generator's
+template model only; the samples must stay as they are.
+Forces `alter_nodes MAKE` with `saveTransientModels: true`, `mps_mcp_generation` `PLAN` (which step
+runs the recipes generator: index 2, prefix `2_`), `TRANSIENT_MODELS` (which step model first holds
+the wrong value: `@2_0`), a `TRACE` that finds the `Root_MappingRule` with `role: RULE` before the
+generator is edited, the fix in the template, a language rebuild and a re-make, and freeing the
+transient models. Reading the step model itself and tracing `BACKWARD` rather than `FORWARD` are not
+gated (a BACKWARD trace from `@6_7` already names `@2_0`); P5 and P2 measure them. Crepes is right by coincidence (4 steps, serves 4), so the symptom is
+recipe-dependent.
+Run to verify: `mps-aspect-generator` `references/debugging-misgeneration.md` (only cell),
+`mps_mcp_generation` (only cell), `alter_nodes MAKE saveTransientModels` and the `transientModels`
+block, transient-aware reads (`get_project_structure` / `print_node` on an `i:` reference), and the
+transient-model lifecycle rules (a make drops them; `NOT_EDITABLE` on writes).
+Read the process signals in `done_criteria.md` together with the `families.py` columns
+`M_makes_save_transient` (≥ 1), `GN_trace_before_fix` (≥ 1), `GN_template_prints_before_trace`
+(≤ 1), `GN_plan`, `GN_transient_models`, `GN_transient_reads`, `GN_drop`, and `M_makes` (3 expected).
+The generator is interpreted on purpose; compiled-generator tracing (coarser, no `LOOP`/`TEMPLATE`
+roles) stays with `JetBrainsMPSGenerationTraceIntegrationTest`. The plan read is a DEFAULT plan;
+explicit plans, checkpoints and forks are not authored or read here.
+Rehearsed 2026-10-23 (`runs-s15`, effort `medium`, one MPS restart per run): `S15-opus-1` (31 tool
+calls, 2 min 18 s) and `S15-sonnet-1` (27 calls, 1 min 51 s) both passed criteria 1–5 on the intended
+path, every P1–P7 signal on target (`GN_trace_before_fix` 1, `GN_template_prints_before_trace` 0,
+`M_makes` 3), 0 error envelopes. D2 stays held back.
+Hypotheses: H2, H5, H7.
+Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7 and S9, so restart MPS before
+S15 when one of those ran in the process; the worker rebuilds the language, so restart again before
+any later recipes cell. S13 and S14 are reserved for another study and untouched by this cell.
+
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
 after a start or restart.
@@ -242,7 +273,8 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
 | `mps-aspect-intentions` | S2 | | |
 | `mps-aspect-migrations` | S4 | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
-| `mps-aspect-generator` | S6 | | |
+| `mps-aspect-generator` | S6 (authoring a root mapping rule and macros), S15 (debugging a misgeneration, `references/debugging-misgeneration.md`) | | compiled-generator tracing (integration test only) |
+| `mps-aspect-generation-plan` | | S15 (reads a DEFAULT plan's steps and prefixes; no plan authoring) | authoring a plan, checkpoints or forks — no cell |
 | `mps-node-editing` | S1 and S6 (hand-written blueprints), S3 (bulk + aggregate root), S5 (surgical repair, identity-preserving moves), S2 and S4 and S7 (writes) | | S8 and S9 must not write |
 | `mps_mcp_alter_nodes` MOVE_NODE_TO_PARENT | S5 (forced: same-model reparent into a middle index) | | cross-model moves, promotion to root, console-node moves (no cell) |
 | `mps_mcp_alter_nodes` MOVE_CHILD | | S5 (the reorder; a same-parent MOVE_NODE_TO_PARENT also passes) | cross-model moves, promotion to root, console-node moves (no cell) |
@@ -254,9 +286,11 @@ skill whose **Run** column is not S1 or S3.
 | `mps-tests` | S7 | | |
 | `mps-run-configurations` | S7 | | |
 | `mps-console` | S9 | | evaluate before close |
-| `mps-project-management` | S10 | | observer opens for S1–S9, S11 and S12 do not measure this skill |
-| `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all twelve | | |
-| make / reload / hollow descriptors | S1, S2, S4, S6, S12 | | a MAKE that returns `runtimeReady: true` is the reload (D84) |
+| `mps-project-management` | S10 | | observer opens for S1–S9, S11, S12 and S15 do not measure this skill |
+| `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
+| make / reload / hollow descriptors | S1, S2, S4, S6, S12 | S15 | a MAKE that returns `runtimeReady: true` is the reload (D84) |
+| `mps_mcp_alter_nodes` MAKE `saveTransientModels`, the `transientModels` block | S15 | | |
+| `mps_mcp_generation` (`PLAN`, `TRANSIENT_MODELS`, `TRACE`, `DROP_TRANSIENT_MODELS`) and transient-model reads | S15 | | `TRACE` on compiled generators, fork branches (integration tests only) |
 | bulk insert, `references/bulk-creation.md` | S3 | S1 (a few roots, not bulk) | |
 | reference formats, dry-run name warnings | S3, S1 | S5 | |
 | `check_root_node_problems`, quick fixes | S5 | S1, S3 (end-of-task check only) | |
@@ -275,7 +309,6 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
 - `mps-aspect-actions`
 - `mps-aspect-dataflow`
 - `mps-aspect-editor-menus-and-keymaps`
-- `mps-aspect-generation-plan`
 - `mps-aspect-textgen`
 - `mps-aspect-accessories` (S1 wires a solution to a language; that is not accessory models or a runtime solution)
 - `mps-language-modularity`
@@ -293,9 +326,9 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
 2. Run the **Run** cells only, on the models the user names. One model is enough to see whether
    the changed path is taken; a second model is a variance check, not a requirement.
 3. If several cells share a fixture language, restart MPS between them: S2/S8 on `statechart`,
-   and any two of S3/S4/S5/S6/S7/S9 on `recipes*` (S4 is in that set — it loads the same
-   language). S11 and S12 each need a restart before them, and an MPS that has not loaded the
-   Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
+   and any two of S3/S4/S5/S6/S7/S9/S15 on `recipes*` (S4 is in that set — it loads the same
+   language; S15's worker rebuilds it). S11 and S12 each need a restart before them, and an MPS
+   that has not loaded the Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
    need that restart. S10 runs last, and only when it is in the list.
 4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S9 session state).

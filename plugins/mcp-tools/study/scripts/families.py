@@ -36,6 +36,20 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
                                    not reject (all of them without one)
   M_makes                          alter_nodes MAKE calls, rejected ones included
   M_reload_all                     reload_all calls
+  M_makes_save_transient           of M_makes, calls with `saveTransientModels` true that the envelope
+                                   did not reject
+  GN_plan                          mps_mcp_generation PLAN calls
+  GN_transient_models              mps_mcp_generation TRANSIENT_MODELS calls
+  GN_trace                         mps_mcp_generation TRACE calls, rejected ones included
+  GN_trace_backward                of them, calls with `direction` BACKWARD
+  GN_drop                          mps_mcp_generation DROP_TRANSIENT_MODELS calls
+  GN_trace_before_fix              TRACE calls that found a step, before the first accepted write
+                                   to a `@generator` model (all of them without one)
+  GN_transient_reads               print_node / get_project_structure / query_nodes /
+                                   check_root_node_problems calls on a transient step model or node
+  GN_template_prints               print_node calls on a node of a `@generator` model
+  GN_template_prints_before_trace  of them, calls before the first TRACE that found a step (all of
+                                   them without one)
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -59,7 +73,7 @@ module sweep (`details.truncated`, with or without perRoot rows), ok:false, unpa
 State: a container check sets the last verdict. A node check counts as C_root_after_clean_model
 after `clean` or `clean_unchecked` and as C_after_summary after `problem_summary`; with
 autoApplyQuickFixes it writes, so it resets the verdict. Any other mps_mcp_* call except print_node,
-get_project_structure, query_nodes and list_open_projects resets it too. Batches: calls grouped by
+get_project_structure, query_nodes, list_open_projects and mps_mcp_generation resets it too. Batches: calls grouped by
 `message.id`, as in analyze_runs.py (A2); a call without an id is its own batch.
 
 T_rule_prints reads the concept from the print_node result: `data.concept` of an inline JSON
@@ -78,6 +92,30 @@ first MAKE not rejected is the build of the new rule; an earlier language or san
 window too. "Before" is transcript order, so a query in the same batch as
 that MAKE counts when it is listed first.
 
+The M_makes_save_transient and GN_* columns are S15's signals (debug a misgeneration with the
+generation trace). `parameters` is read as the server reads it: a JSON object, or its string form.
+`saveTransientModels` is true as a JSON boolean or as the string "true" in any case, which the
+server also accepts; "yes" or 1 is rejected there and counts nowhere here; a MAKE the envelope
+rejects counts in M_makes but kept nothing, so not in M_makes_save_transient. `operation` and
+`direction` are compared trimmed and in any case. A `@generator` model is matched anywhere in the
+input, `parameters` included (`<model>@generator)` in a reference, or the bare model name), so a
+write to the generator's template model is any insert_root_node_from_json, create_root_node,
+update_node, update_root_node_from_json, parse_java_and_insert, apply_intention or non-MAKE
+alter_nodes call that names one and that the envelope did not reject; a rejected attempt or a write
+to the samples model leaves GN_trace_before_fix open. A transient read is one whose `nodeReference`
+or `startingPoint`, or an entry of `models` / `roots` (FIND_INSTANCES scopes), at the top level or
+in `parameters`, is a model of a `<module>@transient<n>` module or a node in one
+(`<uuid>/i:<hex>(mcp.study.kitchen@transient6/mcp.study.kitchen.samples@2_0)`, as TRANSIENT_MODELS
+lists it). A language's `@descriptor` model and a `checkpoints` model also have `i:` references and
+do not match; `r:` references never do. GN_trace_before_fix is P2 (traced before editing) and
+GN_template_prints_before_trace is P3 (one orientation print allowed). A TRACE "found a step" when
+the envelope is ok and one of `data.steps` has non-empty `changes` (or `nodes`, with groupBy NODE),
+or `data` is a temp-file path ending in `.json` (not read here): a TRACE answered with NOT_FOUND
+(asked after the next make dropped the trace), another ok:false envelope, no steps (BACKWARD from a
+node of the original model) or only empty ones (`includeEmptySteps`) opens and closes nothing. "Before" is transcript order, as for T_type_queries_before_make.
+mps_mcp_generation is read-only for the check-verdict state: DROP_TRANSIENT_MODELS frees transient
+models but writes no model.
+
 Stdlib only, Python >= 3.9.
 """
 from __future__ import annotations
@@ -95,9 +133,12 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "Bp_adhoc_python", "Bp_shipped_script", "B_inserts", "B_resp_bytes", "F_gcd_calls",
         "F_gcd_refine", "G_errors", "H_toolsearch", "X_outside_project",
         "C_root_after_clean_model_batches", "C_after_summary", "C_after_summary_batches",
-        "T_rule_prints", "T_type_queries", "T_type_queries_before_make", "M_makes", "M_reload_all"]
+        "T_rule_prints", "T_type_queries", "T_type_queries_before_make", "M_makes", "M_reload_all",
+        "M_makes_save_transient", "GN_plan", "GN_transient_models", "GN_trace", "GN_trace_backward",
+        "GN_drop", "GN_trace_before_fix", "GN_transient_reads", "GN_template_prints",
+        "GN_template_prints_before_trace"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
-             "mps_mcp_list_open_projects")
+             "mps_mcp_list_open_projects", "mps_mcp_generation")
 CLEAN = "no problems found"
 CLEAN_UNCHECKED_PREFIX = "no problems found in checked nodes"
 CLEAN_VERDICTS = ("clean", "clean_unchecked")
@@ -110,6 +151,15 @@ UUID_MODULE = re.compile(r"^[0-9a-f-]{36}\([^)]+\)$")
 MODEL_REF = re.compile(r"^([0-9a-f-]{36}/)?r:[^/]+\)$")
 NODE_REF = re.compile(r"r:[^()]*\([^)]*\)/")
 BARE_NAME = re.compile(r"^[A-Za-z_][\w.\-]*(@[\w.\-]+)?$")
+GENERATION_COLUMNS = {"PLAN": "GN_plan", "TRANSIENT_MODELS": "GN_transient_models", "TRACE": "GN_trace",
+                      "DROP_TRANSIENT_MODELS": "GN_drop"}
+GENERATOR_MODEL = re.compile(r"@generator\b")
+TRANSIENT_REF = re.compile(r"(^|/)i:[0-9a-fA-F]+\([^()/]*@transient\d*/")
+TRANSIENT_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
+                   "mps_mcp_check_root_node_problems")
+GENERATOR_WRITES = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node", "mps_mcp_update_node",
+                    "mps_mcp_update_root_node_from_json", "mps_mcp_parse_java_and_insert", "mps_mcp_apply_intention",
+                    "mps_mcp_alter_nodes")
 
 
 def load(path):
@@ -148,6 +198,47 @@ def envelope(result):
     except (TypeError, ValueError):
         return None
     return j if isinstance(j, dict) else None
+
+
+def params(inp):
+    """The call's `parameters` as a dict: a JSON object, or its string form; {} otherwise."""
+    p = inp.get("parameters")
+    if isinstance(p, str):
+        try:
+            p = json.loads(p)
+        except ValueError:
+            return {}
+    return p if isinstance(p, dict) else {}
+
+
+def is_true(value):
+    """A boolean parameter as the server reads it: true, or the string "true" in any case."""
+    return value is True or (isinstance(value, str) and value.lower() == "true")
+
+
+def names_generator_model(inp):
+    """Whether the input, `parameters` included, names a `@generator` model anywhere."""
+    return GENERATOR_MODEL.search(json.dumps(inp) + json.dumps(params(inp))) is not None
+
+
+def transient_read(inp):
+    """Whether `nodeReference`, `startingPoint`, or a `models` / `roots` entry, top level or in `parameters`, is transient."""
+    refs = []
+    for d in (inp, params(inp)):
+        for k in ("nodeReference", "startingPoint", "models", "roots"):
+            v = d.get(k)
+            refs += v if isinstance(v, list) else [v]
+    return any(isinstance(r, str) and TRANSIENT_REF.search(r) for r in refs)
+
+
+def trace_found(result, is_error):
+    """Whether a TRACE result reports a change: a step with non-empty `changes` / `nodes`, or a temp-file `data`."""
+    env = None if is_error else envelope(result)
+    data = env.get("data") if env and env.get("ok") is True else None
+    if isinstance(data, str):
+        return data.endswith(".json")
+    steps = data.get("steps") if isinstance(data, dict) else None
+    return isinstance(steps, list) and any(isinstance(s, dict) and (s.get("changes") or s.get("nodes")) for s in steps)
 
 
 def check_scope(inp, result):
@@ -231,6 +322,7 @@ def fam(path):
     after_clean, after_summary = set(), set()
     gcd = []
     made = False
+    generator_written = traced = False
     for i, u in enumerate(uses):
         n = u["name"].split("__")[-1]
         inp = u.get("input", {})
@@ -285,6 +377,25 @@ def fam(path):
         if n == "mps_mcp_alter_nodes" and operation == "MAKE":
             f["M_makes"] += 1
             made = made or not failed(r, err)
+            if is_true(params(inp).get("saveTransientModels")) and not failed(r, err):
+                f["M_makes_save_transient"] += 1
+        elif n in GENERATOR_WRITES and names_generator_model(inp) and not failed(r, err):
+            generator_written = True
+        if n == "mps_mcp_generation" and operation in GENERATION_COLUMNS:
+            f[GENERATION_COLUMNS[operation]] += 1
+            if operation == "TRACE":
+                if str(params(inp).get("direction") or "").strip().upper() == "BACKWARD":
+                    f["GN_trace_backward"] += 1
+                if trace_found(r, err):
+                    traced = True
+                    if not generator_written:
+                        f["GN_trace_before_fix"] += 1
+        if n in TRANSIENT_READS and transient_read(inp):
+            f["GN_transient_reads"] += 1
+        if n == "mps_mcp_print_node" and names_generator_model(inp):
+            f["GN_template_prints"] += 1
+            if not traced:
+                f["GN_template_prints_before_trace"] += 1
         if n == "mps_mcp_reload_all":
             f["M_reload_all"] += 1
         if n == "mps_mcp_get_concept_details":
