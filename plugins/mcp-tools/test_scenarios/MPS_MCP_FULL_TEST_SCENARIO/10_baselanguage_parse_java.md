@@ -1,6 +1,6 @@
-# 10 — BaseLanguage via `parse_java_and_insert`, and type queries
+# 10 — BaseLanguage via `parse_java_and_insert`, type queries and dataflow queries
 
-> **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{JAVA_CLASS_REF}}` (+ intra-part `{{JAVA_METHOD_REF}}`, the §10.12 context-node refs `{{IMC_REF}}`, `{{SMC_REF}}`, `{{CC_REF}}`, `{{CT_REF}}`, the §10.13–10.22 type-host refs `{{TYPE_HOST_REF}}`, `{{TH_PLUS_REF}}`, `{{TH_L_INIT_REF}}`, `{{TH_O_INIT_REF}}`, `{{TH_B_INIT_REF}}`, `{{TH_S_TYPE_REF}}`, `{{TH_O_TYPE_REF}}`, `{{TH_LIST_FIELD_REF}}`, and the §10.24 refs `{{TYPE_ERROR_REF}}`, `{{TE_BAD_FIELD_REF}}`, `{{TE_COMMENT_REF}}`).
+> **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{JAVA_CLASS_REF}}` (+ intra-part `{{JAVA_METHOD_REF}}`, the §10.12 context-node refs `{{IMC_REF}}`, `{{SMC_REF}}`, `{{CC_REF}}`, `{{CT_REF}}`, the §10.13–10.22 type-host refs `{{TYPE_HOST_REF}}`, `{{TH_PLUS_REF}}`, `{{TH_L_INIT_REF}}`, `{{TH_O_INIT_REF}}`, `{{TH_B_INIT_REF}}`, `{{TH_S_TYPE_REF}}`, `{{TH_O_TYPE_REF}}`, `{{TH_LIST_FIELD_REF}}`, the §10.24 refs `{{TYPE_ERROR_REF}}`, `{{TE_BAD_FIELD_REF}}`, `{{TE_COMMENT_REF}}`, and the §10.25–10.27 dataflow refs `{{DF_METHOD_REF}}`, `{{DF_BODY_REF}}`, `{{DF_INNER_IF_REF}}`, `{{DF_FEE_ZERO_REF}}`, `{{DF_FEE_READ_REF}}`).
 
 Tool: `mps_mcp_parse_java_and_insert`. Single argument `parameters` (a JSON-encoded string)
 with `code`, `featureKind` (`CLASS`/`METHOD`/`FIELD`/`NESTED_CLASS`/`STATEMENTS`/
@@ -20,6 +20,11 @@ the `rules` / `uncheckedSubtrees` fields of a `mps_mcp_check_root_node_problems`
 expected answers follow BaseLanguage's own rules: `int <: long`, `String <: Object`,
 `int + long → long`. Part 11 compiles this solution, so the type error and the comment seeded in
 10.24 are removed again before the part ends.
+
+Steps 10.25–10.27 seed a third class, `McpLedger`, and ask `mps_mcp_query_dataflow` about it: its
+program (`PRINT_PROGRAM`), and which writes reach a read and which reads a write feeds
+(`REACHING_WRITES` / `REACHING_READS`), with the default and an explicit `programRoot`. `McpLedger`
+is valid, warning-free Java and stays in the model.
 
 ---
 

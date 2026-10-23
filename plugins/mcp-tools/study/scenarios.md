@@ -230,15 +230,17 @@ only. The worker reads the false and missing "Unreachable command" errors, finds
 fixes both, rebuilds the language once, and leaves the sandbox and the `check_KajaDataflow` rule
 alone. Prompt frozen 2026-10-23 after the round-40 baseline (opus PASS, 2 MAKEs, 9 builder
 prints, no console probe).
-Run to verify: `mps-aspect-dataflow` (only cell): builder statements, labels and positions, the
-"validates but analyses wrongly" route, and the rebuild-then-check loop. Also the baseline for a
-future `mps_mcp_query_dataflow` `PRINT_PROGRAM` (`dataflow-exposure-assessment.md`).
-Read the process signals together with the `families.py` columns `DF_builder_prints`, `M_makes`
-(each extra MAKE is one trial-and-error cycle) and `DF_console_runs` (a hand-made engine probe).
+Run to verify: `mps-aspect-dataflow` (with S16): builder statements, labels and positions, the
+"validates but analyses wrongly" route, and the rebuild-then-check loop. Round 40 is its tool-free
+baseline, round 41 ran it with `mps_mcp_query_dataflow` `PRINT_PROGRAM`
+(`dataflow-exposure-assessment.md`).
+Read the process signals together with the `families.py` columns `DF_builder_prints`,
+`DF_program_prints`, `M_makes` (each extra MAKE is one trial-and-error cycle) and `DF_console_runs`
+(a hand-made engine probe).
 Hypotheses: H2, H5, H7.
 Isolation: the fixture copy has the module ids of `samples/robot_Kaja`, and S13 builds the
 language, so restart MPS before every S13 run, as before S11 and S12. It must not open next to the
-MPS checkout's own project. No other cell uses Kaja.
+MPS checkout's own project. S16 uses the same Kaja module ids; never open the two fixtures together.
 
 **S14 — def-use questions, read-only.** Fixture: `flow-java` (a synthesized empty project plus
 solution `flow.study` with one class, `Ledger`). Must not modify any model. Five questions about
@@ -247,9 +249,11 @@ early `return`, `continue` and a `try`/`finally`. The model checks clean, so no 
 answer away. The answers were read from the engine (`ReachingDefinitionsAnalyzer` /
 `ReachingReadsAnalyzer`) through a console probe kept next to the criteria. Prompt frozen
 2026-10-23 after the round-40 baseline (opus PASS with its own typed console probe of the engine).
-Run to verify: nothing in today's catalog. This is the tool-free baseline for a future
-`mps_mcp_query_dataflow` `REACHING_WRITES` / `REACHING_READS` and its skill page.
-Read the process signals together with `DF_console_runs` (did the worker ask the engine at all?).
+Run to verify: `mps_mcp_query_dataflow` `REACHING_WRITES` / `REACHING_READS` and its skill page
+(`references/analysis-tools/dataflow-queries.md`). Round 40 is the tool-free baseline, round 41 ran
+it with the tool.
+Read the process signals together with `DF_reaching_queries` (did the worker use the tool?) and
+`DF_console_runs` (did it fall back to a hand-made engine probe?).
 Hypotheses: H4, H7.
 Isolation: `flow.study` is unique to this fixture; no restart is needed before or after S14.
 
@@ -347,7 +351,6 @@ skill whose **Run** column is not S1 or S3.
 | `check_root_node_problems`, quick fixes | S5 | S1, S3 (end-of-task check only) | |
 | type queries (`mps_mcp_query_types`, `GET_TYPE`, `GET_EXPECTED_TYPE`, `references/analysis-tools/type-queries.md`) and `uncheckedSubtrees` | S11 (read-only), S12 (before and after a rule change) | | |
 | dataflow queries (`mps_mcp_query_dataflow`, `references/analysis-tools/dataflow-queries.md`) | S16 (`PRINT_PROGRAM`), S14 (`REACHING_WRITES` / `REACHING_READS`, read-only) | S13 | builder failures, custom analyzers (no cell) |
-| dataflow analysis results (reachability, reaching definitions / reads) | S13 (reachability through the checker), S14 (def-use questions; no tool answers them yet) | | |
 | `print_node` / concept-details shape | S8 (a wrong reading is shipped), S5 (repair against a print) | S1, S2, S6 | |
 | `scripts/mps_dump.py` | | S8, S6, S7, S1 (workers use it to orient; the prompt does not require it) | |
 | discovery of an unknown project (H4) | S2, S8 | | |
@@ -382,7 +385,7 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
    language; S15's worker rebuilds it). S11 and S12 each need a restart before them, and an MPS
    that has not loaded the Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
-   need that restart. S13 needs a restart before every run (it builds the Kaja sample). S14 needs
+   need that restart. S13 and S16 each need a restart before every run (they build the Kaja sample). S14 needs
    no restart. S10 runs last, and only when it is in the list.
 4. Read the cell's caveats before calling a FAIL a regression (S4/D48, S9 session state).
 5. The live catalog is what the run measures: `run_worker.sh` installs it and records

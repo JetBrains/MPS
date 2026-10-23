@@ -99,8 +99,9 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
         does not write on entry, whose other uses it cannot see. A declaration without an initializer emits no write.
         `scope` is `node` when the node itself emits the reads or writes, `subtree` when only its descendants do.
         Without `programRoot` the program is built from the body of the nearest IMethodLike above the node (a method,
-        ConceptFunction or closure; the IMethodLike itself for a node outside its body, e.g. a parameter; a method or
-        ConceptFunction node is its own root, a closure node gets the enclosing body), or the statement list of a static or instance initializer, else from the containing root;
+        ConceptFunction or closure; the IMethodLike itself for a node outside its body, e.g. a parameter; a method,
+        ConceptFunction or initializer node is its own root, a closure node gets the enclosing body), or the statement
+        list of a static or instance initializer, else from the containing root;
         `program.root` echoes it. BaseLanguage's body builder writes the method's parameters first. Analyses are
         intraprocedural and variable-level: nothing flows through calls or fields, and a language without builders
         yields an empty program. A builder that throws is a result, not an error: {builderFailure:{exception, message,
@@ -434,14 +435,18 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
 
     /**
      * The node REACHING_WRITES and REACHING_READS build from when no `programRoot` is given: the body of the nearest
-     * IMethodLike (the IMethodLike itself when [node] lies outside its body; a method or ConceptFunction node is its own), the statement list of the nearest static
-     * or instance initializer, else the containing root. Every shipped check builds from a body rather than from the
-     * declaration; a closure's own builder emits only its external reads, so its body is the root inside it.
+     * IMethodLike (the IMethodLike itself when [node] lies outside its body), the statement list of the nearest static
+     * or instance initializer, else the containing root. A method, ConceptFunction or initializer node is its own root.
+     * Every shipped check builds from a body rather than from the declaration; a closure's own builder emits only its
+     * external reads, so its body is the root inside it, and the enclosing body the root of the closure node.
      */
     private fun defaultProgramRoot(node: SNode): SNode {
-        // A method's or ConceptFunction's own program covers its body; a closure's emits only its captured reads.
-        val buildsItsBody = node.concept.isSubConceptOf(BaseLanguageMeta.baseMethodDeclarationConcept) ||
-            node.concept.isSubConceptOf(BaseLanguageMeta.conceptFunctionConcept)
+        // These builders build their body; a closure's (ClosureLiteral's, and the legacy Closure ConceptFunction's) emits only its captured reads.
+        val concept = node.concept
+        val buildsItsBody = concept.isSubConceptOf(BaseLanguageMeta.baseMethodDeclarationConcept) ||
+            concept.isSubConceptOf(BaseLanguageMeta.conceptFunctionConcept) && !concept.isSubConceptOf(BaseLanguageMeta.closureConcept) ||
+            concept.isSubConceptOf(BaseLanguageMeta.staticInitializerConcept) ||
+            concept.isSubConceptOf(BaseLanguageMeta.instanceInitializerConcept)
         for (ancestor in generateSequence(if (buildsItsBody) node else node.parent) { it.parent }) {
             val concept = ancestor.concept
             val body = when {

@@ -169,6 +169,7 @@ Additional fixed names introduced by this scenario (deterministic, collision-res
 | BaseLanguage runnable class root | `McpRunnable` (in `mcp.test.sandbox.other`) |
 | BaseLanguage type-query host class root | `McpTypeHost` (in `mcp.test.sandbox.other`) |
 | BaseLanguage problem-report class root | `McpTypeError` (in `mcp.test.sandbox.other`; Step 10.24 seeds a type error and a commented-out field in it, then deletes both, leaving an empty class) |
+| BaseLanguage dataflow-query class root | `McpLedger` (in `mcp.test.sandbox.other`; Step 10.25) |
 
 ## 6. Concept model the scenario builds (for reference)
 

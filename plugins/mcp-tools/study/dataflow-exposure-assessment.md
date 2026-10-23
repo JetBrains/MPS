@@ -385,15 +385,19 @@ Low value.
      test is therefore "declared outside the root and not written from a source outside it".
    - The shipped reachability check skips instructions marked `mayBeUnreachable` (every label and
      `endTry`, and `emitMayBeUnreachable` content such as the `jump after` of an if whose branches
-     both return) and those without a source. `unreachable` filters the same way, or a builder
-     author chases a phantom.
+     both return) and those without a source. The first tool filtered `unreachable` the same way;
+     round 41 showed that Kaja's check does not, so since `a4123fb6fc67` `unreachable` lists every
+     unreachable instruction and each one keeps its `mayBeUnreachable` flag (Step 3).
    - Positions (`label`, `before`, `after`) and the try-block checks are resolved after every
      builder has returned, so "Can't find a label" carries no builder frame on its stack;
      `builderFailure.builder` is present only when a builder's own code threw.
    - A closure's own builder emits only its captured reads, so the default root of a closure node
-     is the enclosing body, while a method or `ConceptFunction` node is its own root.
+     (a `ClosureLiteral`, or BaseLanguage's legacy `Closure`, a `ConceptFunction`) is the enclosing
+     body, while a method, other `ConceptFunction` or initializer node is its own root. The first tool
+     treated the legacy `Closure` as a `ConceptFunction` and gave an initializer node the class, whose
+     program is only `end`; both fixed after the MPS-40318 review.
    - Not covered by a test: a throwing builder (it needs a fixture language with a broken builder)
-     and the closure / initializer defaults.
+     and the `ClosureLiteral` default.
 3. Re-run S13 (and S14) with the tool. Let turn and retry counts decide whether operation 3 is
    worth building.
    Status 2026-10-23, round 41 (opus at medium effort, one run per cell, as round 40; evidence in

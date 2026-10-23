@@ -4,6 +4,7 @@ import jetbrains.mps.agents.mcp.tools.*
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.agents.mcp.tools.languages.BaseLanguageMeta
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.model.SNodeUtil
@@ -198,6 +199,47 @@ class JetBrainsMPSDataflowMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("the parameter feeds the foreach: $amounts", 1, amounts.getAsJsonArray("reads").size())
     }
 
+    @Test
+    fun `an initializer node is its own default program root`() {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        parseClass(model, INITIALIZERS_CODE)
+        val (staticInitializer, instanceInitializer) = readOnRepo {
+            val descendants = SNodeUtil.getDescendants(model.rootNodes.single { it.name == "Counters" }).toList()
+            listOf("StaticInitializer", "InstanceInitializer").map { concept -> ref(descendants.single { it.concept.name == concept }) }
+        }
+        for ((initializer, variable) in listOf(staticInitializer to "a", instanceInitializer to "b")) {
+            val result = data(query(DataflowQueryOperation.REACHING_READS, """{"nodeReference":"$initializer"}"""))
+            val program = result.getAsJsonObject("program")
+            assertEquals("$result", initializer, program.getAsJsonObject("root").get("reference").asString)
+            assertTrue(program.get("defaulted").asBoolean)
+            assertEquals("subtree", result.get("scope").asString)
+            val write = result.getAsJsonArray("writes").map { it.asJsonObject }.single { it.getAsJsonObject("variable").get("name").asString == variable }
+            assertEquals("the declaration feeds the field assignment: $write", 1, write.getAsJsonArray("reads").size())
+        }
+    }
+
+    @Test
+    fun `a legacy Closure node defaults to the enclosing body`() {
+        val ledger = createLedger()
+        // The legacy baseLanguage Closure is a ConceptFunction whose builder, like ClosureLiteral's, emits only its captured reads.
+        val closure = readOnRepo { resolveNodeRef(ledger.returnStatement) }.let { statement ->
+            val created = jetbrains.mps.smodel.SNode(BaseLanguageMeta.closureConcept)
+            executeCommand {
+                created.addChild(BaseLanguageMeta.closureConcept.containmentLinks.single { it.name == "body" },
+                    jetbrains.mps.smodel.SNode(BaseLanguageMeta.statementListConcept))
+                val expression = statement.children.single()
+                statement.insertChildBefore(expression.containmentLink!!, created, expression)
+                statement.removeChild(expression)
+            }
+            readOnRepo { ref(created) }
+        }
+        val result = data(query(DataflowQueryOperation.REACHING_WRITES, """{"nodeReference":"$closure"}"""))
+        val program = result.getAsJsonObject("program")
+        assertEquals("$result", ledger.body, program.getAsJsonObject("root").get("reference").asString)
+        assertTrue(program.get("defaulted").asBoolean)
+    }
+
     private fun ref(node: SNode) = PersistenceFacade.getInstance().asString(node.reference)
 
     private fun writesReaching(read: JsonObject): Set<Int> {
@@ -278,6 +320,8 @@ class JetBrainsMPSDataflowMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         const val SHAPES_CODE =
             "public class Shapes { public static int pick(boolean c) { if (c) { return 1; } else { return 2; } } " +
                 "public static int ignore(int x) { return 1; } }"
+        /** A field assignment in each kind of initializer. */
+        const val INITIALIZERS_CODE = "public class Counters { static int s; int t; static { int a = 1; s = a; } { int b = 2; t = b; } }"
         const val DUMMY_NODE_REF = "r:00000000-0000-0000-0000-000000000000(dummy)/1"
     }
 }
