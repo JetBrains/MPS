@@ -396,6 +396,44 @@ Low value.
      and the closure / initializer defaults.
 3. Re-run S13 (and S14) with the tool. Let turn and retry counts decide whether operation 3 is
    worth building.
+   Status 2026-10-23, round 41 (opus at medium effort, one run per cell, as round 40; evidence in
+   `~/MPSProjects/mcp-study/runs-r41/`, `analysis/families.tsv` and `analysis/metrics.csv`). All
+   runs PASS. MPS ran from this worktree (round 40 ran the `myMPS-fix` build, which had no tool).
+
+   | run | tool | turns | wall s | tool calls | MAKEs | builder prints | program prints | reaching queries | console runs | cost $ |
+   |---|---|---|---|---|---|---|---|---|---|---|
+   | r40 S13 | no | 34 | 141 | 31 | 2 | 9 | – | – | 0 | 1.11 |
+   | r41 S13 | yes (`7e141944e64f`) | 48 | 208 | 45 | 3 | 7 | 2 | – | 0 | 1.58 |
+   | r41 S16 | yes (`a4123fb6fc67`) | 35 | 139 | 32 | 2 | 7 | 2 | – | 0 | 1.18 |
+   | r41 S16 baseline | withheld, pre-tool catalog | 31 | 125 | 28 | 2 | 7 | 0 | – | 0 | 1.02 |
+   | r40 S14 | no | 30 | 148 | 28 | 0 | – | – | – | 1 | 1.19 |
+   | r41 S14 | yes | 10 | 48 | 8 | 0 | – | – | 2 | 0 | 0.56 |
+
+   - **REACHING_WRITES / REACHING_READS pay clearly.** S14 went from 28 calls, a hand-written typed
+     console probe and two reads of the MPS sources to 8 calls and two `query_dataflow` calls, with
+     the same five answers: a third of the turns and wall time, a fifth of the cache-read tokens,
+     under half the cost.
+   - **PRINT_PROGRAM did not pay at this model and effort.** In all three builder runs the worker
+     found both bugs from builder prints before its first sandbox check, S16's bug C included: the
+     baseline worker said "the `if` builder's false jump lands on `jump after node`" after five
+     prints. In S16 the skill's if pattern shows a `label elseBranch`, and its absence gave the bug
+     away. The remaining MAKE in every run was spent on the stock double report on `repeat`, which
+     the prompt allows; the tool did not shorten that either (S16 32 calls with it, 28 without).
+   - **It did catch one wrong fix.** In r41 S13 the worker's first move of `label elseBranch` landed
+     before `jump after node`; `PRINT_PROGRAM` showed `ifjump → label → jump`, and the worker
+     corrected it before the second MAKE.
+   - **Defect found by the round, fixed in `a4123fb6fc67`.** The first tool filtered `unreachable`
+     by `mayBeUnreachable`, as BaseLanguage's check does. Kaja's `check_KajaDataflow` reads no
+     such flag, so after the worker wrapped Repeat's `ifjump` in `mayBeUnreachable` the tool said
+     reachable and the checker still reported it: a rule read and a third MAKE in r41 S13. The tool
+     now lists every unreachable instruction with the flag per instruction.
+   - **Caveats.** One run per cell, one model at one effort. The catalogs differ by design (see the
+     tool column); `skillsSha256` is recorded per run. S16's prompt equals S13's.
+   - **EXPLAIN_PROBLEM (operation 3).** No run spent a turn on *why* a node is unreachable or a
+     variable uninitialized: the reachability symptoms were explained from builder text, and S14's
+     questions were def-use, not "might not have been initialized". The measurements do not justify
+     it. A cell worth running before deciding again: S13/S16 with a weaker worker model (sonnet), where
+     reading builders may not be enough.
 
 ## Console probe (2026-10-22, MPS 2026.1 build 261.25134)
 

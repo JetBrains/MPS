@@ -295,6 +295,10 @@ wrapper's `BASELINE=1`), or the catalog routes the worker to a tool it does not 
 Read the process signals with `DF_program_prints`, `DF_builder_prints`, `M_makes` and
 `DF_console_runs`. Hypotheses: H2, H5, H7.
 Isolation: as S13 (Kaja module ids; restart MPS before every S16 run; never next to S13's fixture).
+Round 41 (opus, medium; with and without the tool): both runs PASS and both found bug C from the
+builder text, by its missing `label elseBranch` against the skill's if pattern, so at that model and
+effort S16 measures `PRINT_PROGRAM` no better than S13. A harder variant would keep the label and
+misplace only the position, or put the bug in a builder no skill pattern covers.
 
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
