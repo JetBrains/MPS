@@ -392,10 +392,12 @@ Low value.
      builder has returned, so "Can't find a label" carries no builder frame on its stack;
      `builderFailure.builder` is present only when a builder's own code threw.
    - A closure's own builder emits only its captured reads, so the default root of a closure node
-     (a `ClosureLiteral`, or BaseLanguage's legacy `Closure`, a `ConceptFunction`) is the enclosing
-     body, while a method, other `ConceptFunction` or initializer node is its own root. The first tool
-     treated the legacy `Closure` as a `ConceptFunction` and gave an initializer node the class, whose
-     program is only `end`; both fixed after the MPS-40318 review.
+     (a `ClosureLiteral`, or regexp's `ReplaceBlock`, the concrete subconcept of BaseLanguage's
+     abstract `Closure`, a `ConceptFunction`) is the enclosing body, while a method, other
+     `ConceptFunction`, initializer or field node is its own root, and a node in a field's
+     initializer gets the field. The first tool treated `ReplaceBlock` as a plain `ConceptFunction`,
+     and gave an initializer, a field and a node in a field's initializer the class, whose program is
+     only `end`; all fixed after the MPS-40318 review.
    - Not covered by a test: a throwing builder (it needs a fixture language with a broken builder)
      and the `ClosureLiteral` default.
 3. Re-run S13 (and S14) with the tool. Let turn and retry counts decide whether operation 3 is

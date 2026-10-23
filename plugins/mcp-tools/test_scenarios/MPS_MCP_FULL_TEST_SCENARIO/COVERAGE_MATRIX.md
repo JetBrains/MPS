@@ -10,7 +10,7 @@ check (follow-up query / structure dump / file read), **F** = detailed payload r
 
 The authoritative list is the `@McpTool` methods of the toolsets registered in
 `plugins/mcp-tools/META-INF/plugin.xml` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/`).
-Rows 37–41 were added after the original 36; rows 38–40 are not exercised by this scenario (see
+Rows 37–42 were added after the original 36; rows 38–40 are not exercised by this scenario (see
 the note below the table).
 
 | # | Tool | Purpose | Valid? | Invalid? | Parameters / enum values covered | Steps | Val |

@@ -25,7 +25,7 @@ Each finding was checked against the code on `261/vaclav/MPS-40318`, the generat
 | # | Finding | Verdict | Action |
 |---|---|---|---|
 | 1.1 | Initializer node defaults to the class | **Confirmed** (reproduced by a test) | Fixed |
-| 1.2 | Legacy `Closure` node treated as its own root | **Confirmed** (reproduced by a test) | Fixed |
+| 1.2 | `Closure` node treated as its own root | **Confirmed** (reproduced by a test; the real node is regexp's `ReplaceBlock`) | Fixed |
 | 2.1 | Stale `unreachable` bullet in the assessment | **Confirmed** | Fixed |
 | 2.2 | Pre-tool text in `scenarios.md` | **Confirmed**, plus one more stale line | Fixed |
 | 2.3 | `McpLedger` bookkeeping in `test_scenarios/` | **Confirmed** | Fixed |
@@ -36,7 +36,7 @@ Each finding was checked against the code on `261/vaclav/MPS-40318`, the generat
 | 3.5 | Control-flow rethrow diverges | **Not a defect**: the divergence is deliberate | Not changed |
 | 3.6 | Routing test helpers copied | **Valid** | Refactored |
 
-Tests: both new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an initializer node is its own default program root`, `a legacy Closure node defaults to the enclosing body`) failed on the old `defaultProgramRoot`, with root `ClassConcept` / `size: 1` and root `Closure`. They pass with the fix. After all changes, the full `McpToolsIntegrationTestSuite` (no `MCP_TESTS` filter) passed: 1308 tests, 0 failed, 0 ignored. Prose-only changes have no further gate.
+Tests: the new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an initializer node is its own default program root`, `a ReplaceBlock closure node defaults to the enclosing body`, `a field and a node in its initializer default to the field`) each fail on the toolset as it was before the review: root `ClassConcept` with `size: 1` for the initializer and the field, and root `ReplaceBlock` for the closure. They pass with the fixes. See "Second round" at the end for the full-suite results.
 
 ---
 
@@ -63,7 +63,7 @@ Tests: both new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an in
 2. **`defaultProgramRoot` when `node` is a legacy `jetbrains.mps.baseLanguage.structure.Closure` (`JetBrainsMPSDataflowMcpToolset.kt:443-444`):**
    In BaseLanguage, `Closure` (`0x10c63f4f3f3L`, whose builder `Closure_DataFlow` only emits reads of external variables referenced in the closure, just like `closures.ClosureLiteral`) is a subconcept of `ConceptFunction`. Because `buildsItsBody` checks `node.concept.isSubConceptOf(BaseLanguageMeta.conceptFunctionConcept)` without `!node.concept.isSubConceptOf(BaseLanguageMeta.closureConcept)` (compare `ConceptFunctionParameterBinder.kt:142-143`, which explicitly guards against `BaseLanguageMeta.closureConcept`), a legacy `Closure` node is treated as `buildsItsBody = true` instead of defaulting to its enclosing body as documented.
 
-   **Verdict: confirmed.** `Closure`'s descriptor has `super_(… 0x108bbca0f48L)` (`ConceptFunction`), and `Closure_DataFlow.build` emits only `emitRead` for `getVariablesReferencedInClosure`. A test reproduced it: root `Closure`, `size: 1`. **Fixed:** the `ConceptFunction` clause excludes `closureConcept`, so a legacy `Closure` node, like a `ClosureLiteral` node, gets the enclosing body. A node inside a `Closure`'s body was already handled correctly and is unchanged. Covered by `a legacy Closure node defaults to the enclosing body`, which builds the node programmatically because the Java parser produces `ClosureLiteral` and never `Closure`.
+   **Verdict: confirmed.** `Closure`'s descriptor has `super_(… 0x108bbca0f48L)` (`ConceptFunction`), and `Closure_DataFlow.build` emits only `emitRead` for `getVariablesReferencedInClosure`. `Closure` itself is abstract (`class_(false, true, false)`). Its one concrete subconcept is regexp's `ReplaceBlock`, the block of `replace with /…/ { … }`, which has no builder of its own and inherits `Closure_DataFlow`: `MPSProgramBuilder.build` walks `getAllSuperConcepts`. **Fixed:** the `ConceptFunction` clause excludes `closureConcept`, so a `ReplaceBlock` node, like a `ClosureLiteral` node, gets the enclosing body. A node inside the block's body was already handled correctly and is unchanged. Covered by `a ReplaceBlock closure node defaults to the enclosing body`. That test builds a `ReplaceBlock` whose body reads the method's `total` and checks three things: the root is the method body, there is no `builderFailure`, and the block's own captured read is reached by `total`'s writes.
 
 ---
 
@@ -119,3 +119,18 @@ Tests: both new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an in
    `toolDescription`, `read`, `criticalDirectives`, and `assertNamesAll` in `SkillDataflowQueryRoutingTest` are copied verbatim from `SkillTypeQueryRoutingTest`. Extracting them into `SkillCatalogCheckout` (or a small shared test helper) would keep the markdown section slicing and reflection lookup in one place.
 
    **Verdict: valid.** (`toolDescription` was not quite verbatim: the dataflow copy hard-coded its toolset.) **Refactored:** the four helpers moved to `unit/SkillRoutingDocs.kt`. `SkillCatalogCheckout` stays about locating catalogs. Both routing tests import the helpers, and both still pass.
+
+---
+
+## Second round (2026-10-23): independent review of the fixes
+
+A second reviewer, who was given the code rather than these verdicts, read `f206245954c6` and `888355fce0c8`. It found no correctness bug in either commit and confirmed the refactor is behavior-preserving. Each of its findings was checked and all were acted on:
+
+1. **The Closure test asserted too little.** It checked only `program.root` and `program.defaulted`, which a `builderFailure` answer also carries. Its node was an instance of the abstract `Closure`, and its body was empty, so nothing was built. **Fixed:** the test now builds a concrete `ReplaceBlock` that captures `total`, and asserts no `builderFailure`, `scope: node`, and a captured read that `total`'s writes reach. The initializer test also asserts no `builderFailure`. While this test was being written, it caught a fixture slip: the block had been attached under the wrong role, so its builder never ran. It was attached to the right slot before the commit.
+2. **The docs named a node that cannot exist.** **Fixed:** the `@McpDescription`, the KDoc, `dataflow-queries.md` (all three catalogs) and the assessment now name `ClosureLiteral` and regexp's `ReplaceBlock`. They describe `Closure` as abstract, and they say that only a ConceptFunction *other than a closure* is its own root.
+3. **`COVERAGE_MATRIX.md:13`** still said "Rows 37–41 were added". **Fixed:** it now says 37–42.
+4. **Fields had the same "only `end`" defect as 1.1, and it predates this branch.** A field node, or a node in its initializer, fell back to the class. **Fixed:** a `FieldDeclaration` or `StaticFieldDeclaration` is its own root, and so is the nearest field above a node, because `VariableDeclaration_DataFlow` writes the field and builds its initializer. The field is only a fallback. `AnonymousClassCreator_DataFlow` builds an anonymous class's fields inside the program of the body around the class, so a field of an anonymous class in a method keeps that body as its root, and the method's locals and parameters stay visible. A first version made every field its own root; this was caught before the commit. A local declaration still has its body as root, since only the two field concepts match. The docs now say that a field's write has no value and comes before its initializer, while a local declaration without an initializer emits no write. Covered by `a field and a node in its initializer default to the field`, which also checks the anonymous-class case: the read of the parameter `k` in `new Object() { int f = k + 1; }` gets the method's body and the parameter's write.
+5. **A shadowed `concept` and an over-long comment in `defaultProgramRoot`.** **Fixed:** the root decision moved into `isOwnProgramRoot` / `isField` with KDoc.
+6. **The review document sat at the repo root.** **Fixed:** it moved here.
+
+Tests: on the toolset as it was before the review, both new tests fail. The field test gets root `ClassConcept` with `size: 1`, and the `ReplaceBlock` test gets the block itself as root. The full `McpToolsIntegrationTestSuite` (no `MCP_TESTS` filter) passed after the first round (1308 tests) and after the second (1309 tests: 0 failed, 0 ignored).

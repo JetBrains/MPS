@@ -75,6 +75,10 @@ internal object BaseLanguageMeta {
         baseLanguageId, baseLanguageStructureModelId, 0x116b46a08c4L,
         "jetbrains.mps.baseLanguage.structure.DotExpression"
     )
+    internal val fieldDeclarationConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0xf8c108ca68L,
+        "jetbrains.mps.baseLanguage.structure.FieldDeclaration"
+    )
     internal val fieldReferenceOperationConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0x116b483d77aL,
         "jetbrains.mps.baseLanguage.structure.FieldReferenceOperation"
@@ -122,6 +126,10 @@ internal object BaseLanguageMeta {
     internal val statementListConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0xf8cc56b200L,
         "jetbrains.mps.baseLanguage.structure.StatementList"
+    )
+    internal val staticFieldDeclarationConcept = MetaAdapterFactory.getConcept(
+        baseLanguageId, baseLanguageStructureModelId, 0xf93c84351fL,
+        "jetbrains.mps.baseLanguage.structure.StaticFieldDeclaration"
     )
     internal val staticInitializerConcept = MetaAdapterFactory.getConcept(
         baseLanguageId, baseLanguageStructureModelId, 0x11c7538039dL,

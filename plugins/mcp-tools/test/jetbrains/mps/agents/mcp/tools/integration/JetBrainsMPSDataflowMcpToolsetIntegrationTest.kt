@@ -5,6 +5,8 @@ import jetbrains.mps.agents.mcp.tools.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import jetbrains.mps.agents.mcp.tools.languages.BaseLanguageMeta
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.model.SNodeUtil
@@ -210,6 +212,7 @@ class JetBrainsMPSDataflowMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
         for ((initializer, variable) in listOf(staticInitializer to "a", instanceInitializer to "b")) {
             val result = data(query(DataflowQueryOperation.REACHING_READS, """{"nodeReference":"$initializer"}"""))
+            assertFalse("$result", result.has("builderFailure"))
             val program = result.getAsJsonObject("program")
             assertEquals("$result", initializer, program.getAsJsonObject("root").get("reference").asString)
             assertTrue(program.get("defaulted").asBoolean)
@@ -220,24 +223,75 @@ class JetBrainsMPSDataflowMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `a legacy Closure node defaults to the enclosing body`() {
+    fun `a field and a node in its initializer default to the field`() {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        parseClass(model, INITIALIZERS_CODE)
+        fun readOf(scope: SNode, variable: String) =
+            SNodeUtil.getDescendants(scope).single { it.concept.name.endsWith("Reference") && it.references.any { r -> r.targetNode?.name == variable } }
+        val (field, read, makeBody, captured) = readOnRepo {
+            val counters = model.rootNodes.single { it.name == "Counters" }
+            val field = counters.children.single { it.name == "u" }
+            val make = counters.children.single { it.name == "make" }
+            val anonymousField = SNodeUtil.getDescendants(make).single { it.concept.name == "FieldDeclaration" }
+            listOf(ref(field), ref(readOf(field, "t")), ref(make.children.single { it.containmentLink?.name == "body" }), ref(readOf(anonymousField, "k")))
+        }
+        val fromRead = data(query(DataflowQueryOperation.REACHING_WRITES, """{"nodeReference":"$read"}"""))
+        assertFalse("$fromRead", fromRead.has("builderFailure"))
+        assertEquals("$fromRead", field, fromRead.getAsJsonObject("program").getAsJsonObject("root").get("reference").asString)
+        assertTrue(fromRead.getAsJsonObject("program").get("defaulted").asBoolean)
+        val t = fromRead.getAsJsonArray("reads").single().asJsonObject
+        assertEquals("$t", "t", t.getAsJsonObject("variable").get("name").asString)
+        assertTrue("another field, written outside the program: $t", t.get("variableOutsideProgram").asBoolean)
+
+        // The field's builder writes the field itself, before its initializer.
+        val fromField = data(query(DataflowQueryOperation.REACHING_READS, """{"nodeReference":"$field"}"""))
+        assertEquals("$fromField", field, fromField.getAsJsonObject("program").getAsJsonObject("root").get("reference").asString)
+        assertEquals("node", fromField.get("scope").asString)
+        assertEquals("u", fromField.getAsJsonArray("writes").single().asJsonObject.getAsJsonObject("variable").get("name").asString)
+
+        // An anonymous class's builder builds its fields, so a field of one inside a method gets the method's body.
+        val anonymous = data(query(DataflowQueryOperation.REACHING_WRITES, """{"nodeReference":"$captured"}"""))
+        assertEquals("$anonymous", makeBody, anonymous.getAsJsonObject("program").getAsJsonObject("root").get("reference").asString)
+        val k = anonymous.getAsJsonArray("reads").single().asJsonObject
+        assertFalse("the parameter is written by the body's builder: $k", k.has("variableOutsideProgram"))
+        assertEquals("$k", "ParameterDeclaration", k.getAsJsonArray("writes").single().asJsonObject.getAsJsonObject("source").get("concept").asString)
+    }
+
+    @Test
+    fun `a ReplaceBlock closure node defaults to the enclosing body`() {
+        // regexp's ReplaceBlock is the concrete subconcept of BaseLanguage's abstract Closure, a ConceptFunction whose builder,
+        // inherited by ReplaceBlock, emits only the closure's captured reads, as ClosureLiteral's does.
+        assertTrue("jetbrains.mps.baseLanguage.regexp is not loaded", REPLACE_BLOCK.isSubConceptOf(BaseLanguageMeta.closureConcept))
         val ledger = createLedger()
-        // The legacy baseLanguage Closure is a ConceptFunction whose builder, like ClosureLiteral's, emits only its captured reads.
-        val closure = readOnRepo { resolveNodeRef(ledger.returnStatement) }.let { statement ->
-            val created = jetbrains.mps.smodel.SNode(BaseLanguageMeta.closureConcept)
+        // `return total` becomes `return <ReplaceBlock { total; }>`: ReturnStatement's builder builds whatever its slot holds.
+        val block = readOnRepo { resolveNodeRef(ledger.returnStatement) }.let { statement ->
+            val created = jetbrains.mps.smodel.SNode(REPLACE_BLOCK)
             executeCommand {
-                created.addChild(BaseLanguageMeta.closureConcept.containmentLinks.single { it.name == "body" },
-                    jetbrains.mps.smodel.SNode(BaseLanguageMeta.statementListConcept))
-                val expression = statement.children.single()
-                statement.insertChildBefore(expression.containmentLink!!, created, expression)
-                statement.removeChild(expression)
+                val total = statement.children.single()
+                val slot = total.containmentLink!!
+                statement.removeChild(total)
+                val read = jetbrains.mps.smodel.SNode(BaseLanguageMeta.expressionStatementConcept).apply { addChild(BaseLanguageMeta.expressionLink, total) }
+                val body = jetbrains.mps.smodel.SNode(BaseLanguageMeta.statementListConcept).apply {
+                    addChild(BaseLanguageMeta.statementListConcept.containmentLinks.single { it.name == "statement" }, read)
+                }
+                created.addChild(REPLACE_BLOCK.containmentLinks.single { it.name == "body" }, body)
+                statement.addChild(slot, created)
             }
             readOnRepo { ref(created) }
         }
-        val result = data(query(DataflowQueryOperation.REACHING_WRITES, """{"nodeReference":"$closure"}"""))
+        val result = data(query(DataflowQueryOperation.REACHING_WRITES, """{"nodeReference":"$block"}"""))
+        assertFalse("$result", result.has("builderFailure"))
         val program = result.getAsJsonObject("program")
         assertEquals("$result", ledger.body, program.getAsJsonObject("root").get("reference").asString)
         assertTrue(program.get("defaulted").asBoolean)
+        assertEquals("the block emits its captured read itself: $result", "node", result.get("scope").asString)
+        val reads = result.getAsJsonArray("reads")
+        assertEquals("$result", 1, reads.size())
+        val total = reads.single().asJsonObject
+        assertEquals("$total", "total", total.getAsJsonObject("variable").get("name").asString)
+        assertFalse("the body declares `total`: $total", total.has("variableOutsideProgram"))
+        assertTrue("the body's writes of `total` reach the block: $total", total.getAsJsonArray("writes").size() > 0)
     }
 
     private fun ref(node: SNode) = PersistenceFacade.getInstance().asString(node.reference)
@@ -321,7 +375,12 @@ class JetBrainsMPSDataflowMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "public class Shapes { public static int pick(boolean c) { if (c) { return 1; } else { return 2; } } " +
                 "public static int ignore(int x) { return 1; } }"
         /** A field assignment in each kind of initializer. */
-        const val INITIALIZERS_CODE = "public class Counters { static int s; int t; static { int a = 1; s = a; } { int b = 2; t = b; } }"
+        const val INITIALIZERS_CODE =
+            "public class Counters { static int s; int t; int u = t + 1; static { int a = 1; s = a; } { int b = 2; t = b; } " +
+                "public static Object make(int k) { return new Object() { int f = k + 1; }; } }"
         const val DUMMY_NODE_REF = "r:00000000-0000-0000-0000-000000000000(dummy)/1"
+        val REPLACE_BLOCK: SConcept = MetaAdapterFactory.getConcept(
+            0xdaafa647f1f74b0buL.toLong(), 0xb09669cd7c8408c0uL.toLong(), 0x1117ef80054L, "jetbrains.mps.baseLanguage.regexp.structure.ReplaceBlock"
+        )
     }
 }

@@ -15,6 +15,7 @@ import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.smodel.behaviour.BHReflection
 import jetbrains.mps.smodel.language.LanguageRegistry
+import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -94,12 +95,15 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
         programRoot?} → {program, scope, writes:[{index, source, variable, value, rule?, reads:[{index, source}],
         unreachable?, variableOutsideProgram?}]}: for each write, the reads it can feed; empty `reads` is a dead write
         within the program. `variableOutsideProgram`:true marks a variable declared outside the root that the program
-        does not write on entry, whose other uses it cannot see. A declaration without an initializer emits no write.
+        does not write on entry, whose other uses it cannot see. A local declaration without an initializer emits no
+        write; a field's builder writes the field, with no value, before its initializer.
         `scope` is `node` when the node itself emits the reads or writes, `subtree` when only its descendants do.
         Without `programRoot` the program is built from the body of the nearest IMethodLike above the node (a method,
-        ConceptFunction or closure; the IMethodLike itself for a node outside its body, e.g. a parameter; a method,
-        ConceptFunction or initializer node is its own root, a closure node gets the enclosing body), or the statement
-        list of a static or instance initializer, else from the containing root;
+        ConceptFunction or closure; the IMethodLike itself for a node outside its body, e.g. a parameter), the statement
+        list of a static or instance initializer, else the field, else from the containing root. A method, initializer
+        or field node is its own root, as is a ConceptFunction other than a closure; a closure node (a ClosureLiteral,
+        or regexp's ReplaceBlock, a BaseLanguage Closure) gets the enclosing body, and so does a field of an anonymous
+        class, whose builder builds its fields;
         `program.root` echoes it. BaseLanguage's body builder writes the method's parameters first. Analyses are
         intraprocedural and variable-level: nothing flows through calls or fields, and a language without builders
         yields an empty program. A builder that throws is a result, not an error: {builderFailure:{exception, message,
@@ -422,18 +426,14 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
     /**
      * The node REACHING_WRITES and REACHING_READS build from when no `programRoot` is given: the body of the nearest
      * IMethodLike (the IMethodLike itself when [node] lies outside its body), the statement list of the nearest static
-     * or instance initializer, else the containing root. A method, ConceptFunction or initializer node is its own root.
-     * Every shipped check builds from a body rather than from the declaration; a closure's own builder emits only its
-     * external reads, so its body is the root inside it, and the enclosing body the root of the closure node.
+     * or instance initializer, else the nearest field, else the containing root. Every shipped check builds from a body
+     * rather than from the declaration; a closure's own builder emits only its external reads, so its body is the root
+     * inside it, and the enclosing body the root of the closure node itself. A field is only the fallback: an anonymous
+     * class's builder builds its fields, so the body around the class is the root of a field in it.
      */
     private fun defaultProgramRoot(node: SNode): SNode {
-        // These builders build their body; a closure's (ClosureLiteral's, and the legacy Closure ConceptFunction's) emits only its captured reads.
-        val concept = node.concept
-        val buildsItsBody = concept.isSubConceptOf(BaseLanguageMeta.baseMethodDeclarationConcept) ||
-            concept.isSubConceptOf(BaseLanguageMeta.conceptFunctionConcept) && !concept.isSubConceptOf(BaseLanguageMeta.closureConcept) ||
-            concept.isSubConceptOf(BaseLanguageMeta.staticInitializerConcept) ||
-            concept.isSubConceptOf(BaseLanguageMeta.instanceInitializerConcept)
-        for (ancestor in generateSequence(if (buildsItsBody) node else node.parent) { it.parent }) {
+        var field: SNode? = null
+        for (ancestor in generateSequence(if (isOwnProgramRoot(node.concept)) node else node.parent) { it.parent }) {
             val concept = ancestor.concept
             val body = when {
                 concept.isSubConceptOf(BaseLanguageMeta.iMethodLikeConcept) ->
@@ -442,12 +442,33 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
                     ancestor.getChildren(BaseLanguageMeta.staticInitializerStatementListLink).firstOrNull()
                 concept.isSubConceptOf(BaseLanguageMeta.instanceInitializerConcept) ->
                     ancestor.getChildren(BaseLanguageMeta.instanceInitializerStatementListLink).firstOrNull()
+                isField(concept) -> {
+                    field = field ?: ancestor
+                    continue
+                }
                 else -> continue
             }
             return body?.takeIf { node.isInSubtreeOf(it) } ?: ancestor
         }
-        return node.containingRoot
+        return field ?: node.containingRoot
     }
+
+    /**
+     * A node of [concept] is its own default root: a method, a ConceptFunction, an initializer, or a field outside any
+     * body, whose builders build the body, the statement list or the initializer. A closure is not: `ClosureLiteral`
+     * and BaseLanguage's abstract `Closure` (a ConceptFunction; regexp's `ReplaceBlock` is concrete) emit only their
+     * captured reads.
+     */
+    private fun isOwnProgramRoot(concept: SConcept): Boolean =
+        concept.isSubConceptOf(BaseLanguageMeta.baseMethodDeclarationConcept) ||
+            concept.isSubConceptOf(BaseLanguageMeta.conceptFunctionConcept) && !concept.isSubConceptOf(BaseLanguageMeta.closureConcept) ||
+            concept.isSubConceptOf(BaseLanguageMeta.staticInitializerConcept) ||
+            concept.isSubConceptOf(BaseLanguageMeta.instanceInitializerConcept) ||
+            isField(concept)
+
+    /** A field's builder (`VariableDeclaration_DataFlow`) writes the field and builds its initializer. */
+    private fun isField(concept: SConcept): Boolean =
+        concept.isSubConceptOf(BaseLanguageMeta.fieldDeclarationConcept) || concept.isSubConceptOf(BaseLanguageMeta.staticFieldDeclarationConcept)
 
     private companion object {
         const val MAX_FAILURE_FRAMES = 12
