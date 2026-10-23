@@ -30,6 +30,7 @@ import org.junit.runners.Suite;
     JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest.class,
     JetBrainsMPSTypesMcpToolsetIntegrationTest.class,
     JetBrainsMPSGenerationMcpToolsetIntegrationTest.class,
+    JetBrainsMPSGenerationTraceIntegrationTest.class,
     JetBrainsMPSGenerationTransientModelsIntegrationTest.class,
     JetBrainsMPSRootNodeMcpToolsetIntegrationTest.class,
     NodeFactoryOnBlueprintPathIntegrationTest.class,

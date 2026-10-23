@@ -205,9 +205,12 @@ class JetBrainsMPSGenerationMcpToolsetIntegrationTest : McpIntegrationTestBase()
         assertMissingParameterKeys(runTool(toolset) { it.mps_mcp_generation() }, listOf("operation", "parameters"))
         assertMissingParameterKeys(plan("""{"ignoreExternalPlan":true}"""), listOf("model"))
 
-        val unknownOperation = JsonParser.parseString(runTool(toolset) { it.mps_mcp_generation("TRACE", JsonOrText("{}")) }).asJsonObject
+        val unknownOperation = JsonParser.parseString(runTool(toolset) { it.mps_mcp_generation("NO_SUCH_OPERATION", JsonOrText("{}")) }).asJsonObject
         assertEquals("INVALID_REQUEST", unknownOperation.get("code").asString)
-        assertTrue("only implemented operations are offered: $unknownOperation", unknownOperation.get("error").asString.endsWith("Valid operations: PLAN."))
+        assertTrue(
+            "only implemented operations are offered: $unknownOperation",
+            unknownOperation.get("error").asString.endsWith("Valid operations: PLAN, TRACE, TRANSIENT_MODELS, DROP_TRANSIENT_MODELS."),
+        )
 
         val misspelled = JsonParser.parseString(plan("""{"model":"x","ignoreExternalPlans":true}""")).asJsonObject
         assertEquals("INVALID_REQUEST", misspelled.get("code").asString)

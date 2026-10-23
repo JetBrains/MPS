@@ -12,6 +12,7 @@ import jetbrains.mps.project.MPSProject
 /** The operations of `mps_mcp_generation`; each one has its own `parameters` keys in [generationParameterKeys]. */
 enum class GenerationOperation {
     PLAN,
+    TRACE,
     TRANSIENT_MODELS,
     DROP_TRANSIENT_MODELS,
 }
@@ -23,6 +24,12 @@ private val PLAN_KEYS = ParameterKeys.of(
     "ignoreExternalPlan",
 )
 
+private val TRACE_KEYS = ParameterKeys.of(
+    required(PARAM_NODE_REFERENCE, "the node's reference, from an original model or one of its transient models"),
+    required("direction", "FORWARD or BACKWARD"),
+    "groupBy", "compactTemplates", "includeEmptySteps", "maxChanges",
+)
+
 private val TRANSIENT_MODELS_KEYS = ParameterKeys.of(PARAM_MODEL)
 
 private val DROP_TRANSIENT_MODELS_KEYS = ParameterKeys.of("includeCheckpoints")
@@ -30,6 +37,7 @@ private val DROP_TRANSIENT_MODELS_KEYS = ParameterKeys.of("includeCheckpoints")
 /** The accepted `parameters` keys of each [GenerationOperation]. */
 private fun generationParameterKeys(operation: GenerationOperation): ParameterKeys = when (operation) {
     GenerationOperation.PLAN -> PLAN_KEYS
+    GenerationOperation.TRACE -> TRACE_KEYS
     GenerationOperation.TRANSIENT_MODELS -> TRANSIENT_MODELS_KEYS
     GenerationOperation.DROP_TRANSIENT_MODELS -> DROP_TRANSIENT_MODELS_KEYS
 }
@@ -57,6 +65,20 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         `conflicts` and `ignoredPriorityRules` (mapping priority problems) come with a DEFAULT plan only. The plan is computed
         now; mapping-configuration and fork conditions are evaluated at generation time, so the static plan lists every
         candidate. `warnings` reports an undeployed language, a model make does not generate, and plan lookup errors.
+        TRACE {nodeReference, direction FORWARD|BACKWARD, groupBy CHANGE|NODE, compactTemplates, includeEmptySteps (these
+        three default to the IDE tracer's settings), maxChanges (default 200, caps the returned entries)} → the generation
+        trace of a node, what the IDE's "Show Generation Trace"/"Traceback" shows; needs a make with saveTransientModels:true,
+        else NOT_FOUND. Result {node, direction, originalInputNode? (the input node a transient node was generated from),
+        options, steps:[{input, output, inputReference, outputReference, changes:[{input, output, templates}] (CHANGE) or
+        nodes:[{input, outputs, templates}|{output, inputs, templates}] (NODE)}], changesTotal, truncated?, changesReturned?,
+        notes}; the counts are of entries, one per change with CHANGE or per node group with NODE. A changed node is
+        {reference, concept, presentation, model}, `{reference, resolved:false}` when it no longer resolves, or `<no input>`/
+        `<no output>` for a created or deleted node. A template is a node with `role` RULE (the mapping rule that fired),
+        TEMPLATE_CALL (a template call, weave or call-site macro, or a rule's template reference), LOOP (a loop macro),
+        TEMPLATE (the parent of a template fragment) or UNKNOWN, plus `templateRoot`, `templateModel` and `generatorModule`;
+        interpreted generators record LOOP and TEMPLATE, compiled ones only rules and calls. compactTemplates keeps only
+        the innermost template within each template root, which can hide the rule that encloses it. BACKWARD from a node of
+        the original model has no steps: start from a node of one of its transient models.
         TRANSIENT_MODELS {model? (an original model by reference or name, or a transient model by reference; omitted = all)}
         → the transient models the project's last make kept (MAKE with saveTransientModels:true), what the Project view's
         Transient models folder shows: {saveTransientModelsSetting, originals:[{model, originalModelReference (or
@@ -78,7 +100,7 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         `mps-aspect-generator` skills.
     """)
     suspend fun mps_mcp_generation(
-        @McpDescription("Required. The operation to perform (PLAN, TRANSIENT_MODELS, DROP_TRANSIENT_MODELS)") operation: String = "",
+        @McpDescription("Required. The operation to perform (PLAN, TRACE, TRANSIENT_MODELS, DROP_TRANSIENT_MODELS)") operation: String = "",
         @McpDescription("Required. Parameters for the operation, as a JSON object — sent as real JSON or as its string form.") parameters: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Inline results up to this many characters in `data`; larger ones are saved to a temp file whose path is returned instead (default 20000).") maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String {
@@ -118,6 +140,7 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
 
         when (operation) {
             GenerationOperation.PLAN -> opPlan(mpsProject, params, maxInlineBytes)
+            GenerationOperation.TRACE -> opTrace(mpsProject, params, maxInlineBytes)
             GenerationOperation.TRANSIENT_MODELS -> opTransientModels(mpsProject, params, maxInlineBytes)
             GenerationOperation.DROP_TRANSIENT_MODELS -> opDropTransientModels(mpsProject, params)
         }
@@ -152,5 +175,24 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         // On the EDT outside any read action: the provider takes its own write action.
         val dropped = withModalTimeoutOnEdt { TransientModelsOps.dropTransientModels(mpsProject, includeCheckpoints) }
         return finalizeResult(dropped.json.toString(), warnings = dropped.warnings)
+    }
+
+    private suspend fun opTrace(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
+        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
+        val options = GenerationTraceOps.parseOptions(params, GenerationTraceOps.traceSettings(mpsProject))
+        TransientModelsOps.refuseWhileMakeActive(mpsProject, "TRACE")
+        // (trace or null, model name) or null for a missing node; the user errors are thrown outside the read action.
+        val found = executeBackgroundRead(mpsProject) {
+            resolveNodeReferencePreferringProject(mpsProject, nodeReference)?.resolve(mpsProject.repository)?.let { node ->
+                GenerationTraceOps.traceJson(mpsProject, node, mpsProject.repository, options) to node.model?.name?.value
+            }
+        } ?: throw McpNotFoundException(
+            "Node '$nodeReference' at parameters.nodeReference not found. A transient node reference stops resolving when the next make starts."
+        )
+        val trace = found.first ?: throw McpNotFoundException(
+            "No generation trace for model '${found.second}': rerun mps_mcp_alter_nodes MAKE on it with saveTransientModels:true, then call TRACE again."
+        )
+        val warnings = if (trace.has("truncated")) listOf("Only the first ${options.maxChanges} entries are returned; raise parameters.maxChanges for more.") else emptyList()
+        return finalizeResult(trace.toString(), maxInlineBytes, warnings = warnings)
     }
 }
