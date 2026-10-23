@@ -14,6 +14,9 @@ The gap this cell measures: no cell authors or debugs a dataflow builder
 (`../../dataflow-exposure-assessment.md`). The only feedback an agent gets today is the presence
 or absence of a checker message after a rebuild. It never sees the program the builder emitted.
 This is the tool-free baseline for a later `mps_mcp_query_dataflow` `PRINT_PROGRAM`.
+That tool now exists: round 40 is the baseline, round 41 ran this cell with it. S16 is the variant
+meant to show its bug only in the program; round 41 found that bug from builder text too
+(`../../dataflow-exposure-assessment.md`, Recommendation).
 
 References. Dataflow model `r:5784598d-868b-437e-9c58-15fb07e7f373(jetbrains.mps.samples.Kaja.dataFlow)`
 (`<df>`), sandbox model `r:1a01fdc1-6171-4a9b-86c9-e6b8bbdfe8af(Kaja.sandbox.sandbox)` (`<sandbox>`).
@@ -107,3 +110,6 @@ Read the `families.py` row of the run plus the transcript.
 - **P5 symptom to builder.** In the transcript, the turns between the first sandbox check and the
   first write to `<df>`, once for each bug. Criterion 2 needs both fixes, so neither can pass by
   luck.
+- **P6 program read** (since round 41). `DF_program_prints` (and `DF_queries`): did the worker look
+  at the emitted program, on which node, and before or after the first builder edit? A run without
+  the tool (round 40, or `disallowedTools` in the meta) has 0 by construction.

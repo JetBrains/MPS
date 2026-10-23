@@ -1,7 +1,7 @@
 # Exposing the MPS dataflow runtime through `mps_mcp_*` — assessment
 
 Status: assessment, 2026-10-08; code pointers re-checked and the implementation section revised
-2026-10-22; steps 1 and 2 implemented 2026-10-23 (see Recommendation). Investigates whether dataflow graphs,
+2026-10-22; steps 1 and 2 implemented and step 3 run (round 41) 2026-10-23 (see Recommendation). Investigates whether dataflow graphs,
 "value to here" / "value from here" inspections, or other dataflow-derived information would
 help agents editing DSL code if exposed as MCP tools, and how much each candidate would cost.
 The implemented `mps_mcp_query_types` (`src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSTypesMcpToolset.kt`,
@@ -24,8 +24,10 @@ from the `.mps` models next to it; the models are the source of truth.
   today. Modest and situational for agents **editing DSL user code**: every verdict MPS derives
   from dataflow is already a problem message, and MPS dataflow is intraprocedural and
   variable-level, much narrower than IntelliJ's "Analyze data flow to here".
-- No demand signal either way. The study has no dataflow scenario, and none of the hotspot
-  reports (rounds 2–33; rounds 7 and 27–29 have none) record an agent struggling with a dataflow problem.
+- No demand signal either way. As of 2026-10-08 the study had no dataflow scenario, and none of the
+  hotspot reports (rounds 2–33; rounds 7 and 27–29 have none) record an agent struggling with a
+  dataflow problem. S13, S14 and S16 have since been added and measured (rounds 40 and 41, see
+  Recommendation).
 - Recommendation: first a study scenario for builder authoring, run without the tool as a
   baseline. Then a small `query_dataflow` tool with a program dump and the two reaching
   operations, behind a reflective façade over the runtime. Defer the path-witness "explain"

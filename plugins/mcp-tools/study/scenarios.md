@@ -79,7 +79,7 @@ Run to verify: `mps-node-editing` bulk path, `scripts/table_to_bulk_insert.py` (
 just the PASS), `mps-mcp-workflow` `references/bulk-creation.md`, reference wiring after insert.
 Does not author any aspect. A pass says nothing about structure, editor, or constraints docs.
 Hypotheses: H3 bulk, H6 refs, H1.
-Isolation: shares `mcp.study.recipes` with S5, S6, S7, and S9.
+Isolation: shares `mcp.study.recipes` with S4–S7, S9 and S15.
 
 **S4 — refactor and migrate.** Fixture: a passing S1 project **with the sample Recipe and Cookbook
 roots kept** (`recipes-full`, not the stripped `recipes` tarball — the prompt requires existing
@@ -97,9 +97,8 @@ failed "migration applied" is then the tool gap, not a docs regression. `mps_con
 passes `-Dmps.migration.assistant.auto=false`, so the wizard cannot open before the worker's first
 call either.
 Hypotheses: H2, H5, H8.
-Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, and S9. Restart before this
-cell if any of those already loaded the language in this process (D80 includes S4; the skill's
-restart list omits it).
+Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9 and S15. Restart before this
+cell if any of those already loaded the language in this process (D80 includes S4).
 
 **S5 — repair a broken model.** Fixture: `recipes-broken` (`recipes-full` plus the 12 injections
 in `scenarios/S5/PROBLEMS.md`). Mutates samples only; root count must stay the same unless the
@@ -166,7 +165,7 @@ Run to verify: `mps-console` (only cell).
 Console history and the current input are session state. Evaluate before the project is closed;
 after a close the evidence is gone.
 Hypotheses: H1, H7.
-Isolation: shares the recipes module id with S3, S5, S6, S7. May precede a language-changing
+Isolation: shares the recipes module id with S3–S7 and S15. May precede a language-changing
 cell in the same process.
 
 **S10 — project lifecycle.** Fixture: synthesized `empty-project`. The worker creates
@@ -285,7 +284,7 @@ path, every P1–P7 signal on target (`GN_trace_before_fix` 1, `GN_template_prin
 Hypotheses: H2, H5, H7.
 Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7 and S9, so restart MPS before
 S15 when one of those ran in the process; the worker rebuilds the language, so restart again before
-any later recipes cell. S13 and S14 (the dataflow cells) do not use `recipes*` and need no restart for it.
+any later recipes cell. S13, S14 and S16 (the dataflow cells) do not use `recipes*` and need no restart for it.
 
 **S16 — dataflow builder debugging, bug hidden in plausible text.** Fixture: `kaja-dataflow-2`
 (`kaja-dataflow` with S13's misplaced label replaced by `ifjump after node.trueBranch`, the
@@ -341,7 +340,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-tests` | S7 | | |
 | `mps-run-configurations` | S7 | | |
 | `mps-console` | S9 | | evaluate before close |
-| `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S15 do not measure this skill |
+| `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S16 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
 | make / reload / hollow descriptors | S1, S2, S4, S6, S12 | S15 | a MAKE that returns `runtimeReady: true` is the reload (D84) |
 | `mps_mcp_alter_nodes` MAKE `saveTransientModels`, the `transientModels` block | S15 | | |

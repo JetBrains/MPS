@@ -21,7 +21,8 @@ probe is observer tooling: workers never see it.
 The gap this cell measures: def-use questions that `FIND_USAGES` cannot answer, because it is
 structural and flow-insensitive, and that the checker never reports. Today an agent answers them
 by simulating the method in its head. This is the tool-free baseline for a later
-`mps_mcp_query_dataflow` `REACHING_WRITES` / `REACHING_READS`.
+`mps_mcp_query_dataflow` `REACHING_WRITES` / `REACHING_READS`. That tool now exists: round 40 is the
+baseline, round 41 ran this cell with it (`../../dataflow-exposure-assessment.md`, Recommendation).
 
 ```java
 public static int settle(int[] amounts, boolean strict) {
@@ -108,3 +109,6 @@ Pass = criteria 1–6 hold.
   `REACHING_WRITES` / `REACHING_READS` would replace.
 - **P3 no checker shortcut.** A `check_root_node_problems` on `<code>` answers nothing here (the
   model is clean). Count it, but it is not an error.
+- **P4 tool use** (since round 41). `DF_reaching_queries` (and `DF_queries`): did the worker ask
+  `REACHING_WRITES` / `REACHING_READS`, and did it still fall back to a console probe (P1)? A run
+  without the tool (round 40, or `disallowedTools` in the meta) has 0 by construction.

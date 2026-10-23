@@ -98,11 +98,12 @@ first MAKE not rejected is the build of the new rule; an earlier language or san
 window too. "Before" is transcript order, so a query in the same batch as
 that MAKE counts when it is listed first.
 DF_builder_prints works like T_rule_prints: the printed concept when the result has one, else a
-`nodeReference` in a `….dataFlow` model. It is the S13 signal (the builder is the artefact being
-fixed, so some prints are legitimate); DF_console_runs is the S13/S14 signal for a worker that
-reaches the engine through the MPS Console because no tool exposes it. DF_queries, DF_program_prints and
-DF_reaching_queries count the tool that exposes it (S13: PRINT_PROGRAM, S14: the reaching operations); the
-operation is compared trimmed and in any case. mps_mcp_query_dataflow is read-only for the check-verdict state.
+`nodeReference` in a `….dataFlow` model. It is the S13 and S16 signal (the builder is the artefact
+being fixed, so some prints are legitimate); DF_console_runs is the S13/S14/S16 signal for a worker
+that reaches the engine through the MPS Console instead of a tool. DF_queries, DF_program_prints and
+DF_reaching_queries count the tool that exposes it (S13 and S16: PRINT_PROGRAM, S14: the reaching
+operations); the operation is compared trimmed and in any case. mps_mcp_query_dataflow is read-only
+for the check-verdict state.
 
 The M_makes_save_transient and GN_* columns are S15's signals (debug a misgeneration with the
 generation trace). `parameters` is read as the server reads it: a JSON object, or its string form.

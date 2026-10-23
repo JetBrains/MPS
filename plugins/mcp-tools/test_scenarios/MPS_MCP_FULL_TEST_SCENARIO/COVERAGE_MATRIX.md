@@ -6,12 +6,12 @@ parameters and enum values covered, the covering `Step PP.NN` ids, and the valid
 check (follow-up query / structure dump / file read), **F** = detailed payload read (inline
 `data`, or the temp file when `data` is a path).
 
-## A. MPS MCP tools (`mps_mcp_*`) — all 42
+## A. MPS MCP tools (`mps_mcp_*`) — all 45
 
 The authoritative list is the `@McpTool` methods of the toolsets registered in
 `plugins/mcp-tools/META-INF/plugin.xml` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/`).
-Rows 37–42 were added after the original 36; rows 38–40 are not exercised by this scenario (see
-the note below the table).
+Rows 37–45 were added after the original 36; rows 38–40 and 43–45 are not exercised by this
+scenario (see the notes below the table).
 
 | # | Tool | Purpose | Valid? | Invalid? | Parameters / enum values covered | Steps | Val |
 |--:|------|---------|:------:|:--------:|----------------------------------|-------|-----|
@@ -57,6 +57,9 @@ the note below the table).
 | 40 | `close_project` | Close the MPS project | (✕) | (✕) | — | — | — |
 | 41 | `clear_console` | Clear console history | ✅ | — | `dryRun` + real (`clearInput` not exercised) | 12.10–12.11 | R+S |
 | 42 | `query_dataflow` | Dataflow queries | ✅ | ✅ | ops PRINT_PROGRAM/REACHING_WRITES/REACHING_READS; `maxInstructions` cap, default and explicit `programRoot`, outer jumps; invalid=`maxInstructions` 0, `programRoot` not containing the node, unknown op | 10.26–10.27 | R+S |
+| 43 | `generation` | Generation plan, transient models, trace | (○) | (○) | — | — (see below) | — |
+| 44 | `run_migrations` | Run pending migrations | (○) | (○) | — | — (see below) | — |
+| 45 | `read_ide_log` | Read the IDE log | (○) | (○) | — | — (see below) | — |
 
 (–) under "Invalid?" = no invalid case included for that tool because none is meaningful/safe
 beyond what shared dispatch already covers. ▲ for `query_structure`: the unknown-operation
@@ -67,6 +70,13 @@ failure mode is representatively covered by `alter_structure` (06.12) and `query
 `test_scenarios/smoke-test-intentions.md` (intentions, manual and auto-applied quick-fixes,
 negative cases), not by this scenario. Record them as "not covered here — see the intentions
 smoke test" in the run report.
+
+(○) Not exercised by this scenario; covered elsewhere. `generation` (`PLAN`, `TRANSIENT_MODELS`,
+`TRACE`, `DROP_TRANSIENT_MODELS`): `JetBrainsMPSGeneration*IntegrationTest` and study cell S15.
+`run_migrations`: `JetBrainsMPSMigrationMcpToolsetIntegrationTest` and study cell S4.
+`read_ide_log`: `JetBrainsMPSProjectMcpToolsetIntegrationTest` and step V10 of
+`test_scenarios/mcp-verification-scenario-console-imports.md`. Record them as "not covered here" in
+the run report.
 
 (✕) `close_project` is deliberately not exercised: closing `{{PROJECT_DIR}}` mid-run would end
 the scenario, and part 14 must still snapshot the project. Opening and closing projects is the

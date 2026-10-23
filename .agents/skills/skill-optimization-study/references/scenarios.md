@@ -8,20 +8,21 @@ Location: `plugins/mcp-tools/study/scenarios/<S>/worker_prompt.md` + `done_crite
 Fixtures are NOT kept as tarballs in git — regenerate them per `plugins/mcp-tools/study/fixtures/README.md`
 (empty = **synthesized per run** by `scripts/new_study_project.py`, not a tarball at all;
 statechart = Projectxx5; recipes = a passing S1 project
-with sample Recipe/Cookbook roots deleted, for S3; recipes-full = the same S1 project with
-those samples kept, for S5/S6; recipes-broken = recipes-full + `scenarios/S5/PROBLEMS.md`;
+with sample Recipe/Cookbook roots deleted, for S3, S7 and S9; recipes-full = the same S1 project
+with those samples kept, for S4 and S6; recipes-broken = recipes-full + `scenarios/S5/PROBLEMS.md`;
 recipes-misgen = recipes-full + an observer-authored generator with one injected defect
 (`scenarios/S15/DEFECT.md`), for S15; expressions = `samples/expressions` with `classes_gen`, for
 S11 and S12; kaja-dataflow = `samples/robot_Kaja` with two injected dataflow-builder bugs, built,
-for S13; flow-java = a synthesized project plus one BaseLanguage class, for S14).
+for S13; kaja-dataflow-2 = kaja-dataflow with S13's `if` bug replaced by one that reads as correct
+text, for S16; flow-java = a synthesized project plus one BaseLanguage class, for S14).
 
 | # | Scenario | Fixture | Hypotheses |
 |---|---|---|---|
 | S1 | Greenfield DSL `mcp.study.recipes` + solution with 3 samples | empty-project | H1 blueprints, H2 make/scaffold, H8 stale |
 | S2 | Extend StateChart with `Guard` + intention | statechart | H4 discovery, H7 skills |
 | S3 | 40 recipes from `recipes.csv` (bulk, cross-refs, cookbook) | recipes (+ csv) | H3 bulk, H6 refs, H1 |
-| S4 | Rename property, change cardinality, migration | recipes | H2, H5 validation, H8 |
-| S5 | Fix 12 injected problems (`fixtures/PROBLEMS.md`) + 2 identity-preserving moves (prompt item 4, revised 2026-10-22) | recipes-broken | H5 |
+| S4 | Rename property, change cardinality, migration | recipes-full | H2, H5 validation, H8 |
+| S5 | Fix 12 injected problems (`scenarios/S5/PROBLEMS.md`) + 2 identity-preserving moves (prompt item 4, revised 2026-10-22) | recipes-broken | H5 |
 | S6 | Generator → Java per Recipe; behavior via parser and via JSON AST | recipes-full | H1, H2 |
 | S7 | `@tests` model, 3 NodesTestCases + 1 EditorTestCase, run config | recipes | H2, H7 |
 | S8 | Onboard unknown project → `statechart-dsl` skill via `mps-dsl-memory` | statechart | H4, H7 |
@@ -32,6 +33,7 @@ for S13; flow-java = a synthesized project plus one BaseLanguage class, for S14)
 | S13 | Dataflow builder debugging: fix a misplaced label and a wrong guard so "Unreachable command" is right, one rebuild | kaja-dataflow | H2, H5, H7 |
 | S14 | Def-use questions, read-only: which assignments reach which reads in a method with a loop and try-finally | flow-java | H4, H7 |
 | S15 | Debug a misgeneration with the generation trace: keep transient models, read the step model, `TRACE` `BACKWARD` to the rule, fix the template, rebuild, re-make, drop the transients | recipes-misgen | H2, H5, H7 |
+| S16 | S13's prompt on a builder bug that reads as correct text (`ifjump after node.trueBranch`), meant to need the emitted program (`PRINT_PROGRAM`) | kaja-dataflow-2 | H2, H5, H7 |
 
 | SMOKE | Harness check: list open projects and stop (read-only; no `done_criteria.md`; runs against the harness project; never evaluated) | — | — |
 
@@ -50,7 +52,7 @@ first round under `per-shared-fixture-restart` isolation). Later rounds are list
 
 ## Project create / open / close (orchestrator, every scenario)
 
-The observer creates, opens and closes the scratch project for S1–S15 and, when needed, the harness
+The observer creates, opens and closes the scratch project for S1–S16 and, when needed, the harness
 project for SMOKE, and it starts, restarts and shuts MPS down. Do not ask the user to File→Open,
 Close Project or restart the IDE. Before each action, tell the user the absolute path that will
 close (if any) and the absolute path that will open. Synthesize an empty project with
@@ -109,7 +111,7 @@ observer's job, after the left-behind state has been recorded.
 ## Adding a scenario for a changed skill/tool
 Pick the smallest task that forces the changed path (e.g. a new tool parameter), reuse a fixture,
 write done criteria first, run once per selected model, compare its chains with the baseline `chains.json`.
-The observer opens and closes the reused fixture the same way as S1–S9 and S11–S15 (announce paths; CLI open;
+The observer opens and closes the reused fixture the same way as S1–S9 and S11–S16 (announce paths; CLI open;
 `mps_mcp_close_project` close). Do not make the worker or the evaluator perform the swap — unless
 the swap itself is the changed surface, which is S10's declared exception above and should stay the
 only one. A lifecycle scenario also needs `relatedProjects` in its run meta (`run_worker.sh` derives
