@@ -10,8 +10,9 @@ The integration tests cannot reach the live console lookup: the headless fixture
 Console tool window. They drive the alias and admission rules with a temporary model standing in
 for the console model, and run the import logic on it. The expected outcomes below were confirmed
 in a live run on 2026-10-23 (MPS 2026.1, build 261.25134), except V9, skipped with one project open;
-C1–C6 were confirmed in a second live run the same day. If a response's shape differs but the
-checked values match, record PASS with a "shape" note and quote the difference.
+C2–C6 were confirmed in a second live run the same day. V8 and C1 below were revised for 2026.2
+after MPS-40111 and have not yet been confirmed in a live 2026.2 run. If a response's shape differs
+but the checked values match, record PASS with a "shape" note and quote the difference.
 
 | # | What it proves |
 |---|----------------|
@@ -23,7 +24,7 @@ checked values match, record PASS with a "shape" note and quote the difference.
 | V5 | the built-in devkit guard |
 | V6 | MCP imports are not undoable |
 | V7 | Clear drops the import but not the module dependency |
-| V8 | plugin reload recreates the console model and restores the history loaded at project open |
+| V8 | plugin reload recreates the console model and preserves current pinned-tab history |
 | V9 | refusal of another project's model |
 | C1 | `clear_console` dry run counts the history and changes nothing |
 | C2 | `clear_console` empties the history and keeps the input |
@@ -113,18 +114,20 @@ false`. (Clear re-derives imports from the input it keeps, so a kept input would
 result.) Then V4's DELETE: expect `removed: false`, because Clear dropped the import. Then insert
 the probe (V0 call): expect `problems: []`, because the module dependency outlives Clear.
 
-**V8 — plugin reload.** `mps_mcp_reload_all`. Then V4's DELETE with `modelReference:
-OLD_CONSOLE_MODEL`: expect `ok:false` with NOT_FOUND. Then `mps_mcp_get_console_history`: expect
-the history **as loaded when the project opened**, so the V7 Clear is undone (reload restores the
-loaded state, not the current one). V1 with `modelReference: "console"` must succeed with
-`console: true`.
+**V8 — plugin reload.** Run the probe with `mps_mcp_run_console_command` first, so the history
+contains exactly that one entry after V7's Clear. Call `mps_mcp_reload_all`. Then V4's DELETE with
+`modelReference: OLD_CONSOLE_MODEL`: expect `ok:false` with NOT_FOUND. Call
+`mps_mcp_get_console_history`: expect exactly the probe entry; the V7 Clear remains in effect, and
+reload preserves the current pinned-tab history rather than restoring the history loaded when the
+project opened. V1 with `modelReference: "console"` must succeed with `console: true` and report
+the import as either added or already present.
 
 **V9 — refusal.** If a second MPS project is open, call V1 with `modelReference` set to one of its
 models' persistent references and expect "not part of the project selected by projectPath".
 Otherwise record SKIP.
 
 **C1 — dry run.** Call `mps_mcp_get_console_history` and count its entries (the history V8
-restored). Then `mps_mcp_clear_console(dryRun: true)`: expect `ok:true`, `dryRun: true`,
+preserved). Then `mps_mcp_clear_console(dryRun: true)`: expect `ok:true`, `dryRun: true`,
 `historyEntriesRemoved` equal to that count, and three warnings. `mps_mcp_get_console_history`
 again: unchanged.
 

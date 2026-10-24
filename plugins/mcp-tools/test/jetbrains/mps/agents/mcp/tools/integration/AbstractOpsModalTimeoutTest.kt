@@ -43,8 +43,17 @@ class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
         ApplicationManager.getApplication().invokeAndWait(action, ModalityState.any())
     }
 
-    /** Enters a fresh modal state (as a real modal dialog's `show()` would) and returns its entity. */
+    /**
+     * Enters a fresh modal state (as a real modal dialog's `show()` would) and returns its entity.
+     *
+     * Waits for smart mode first: the fixture's model save and the project open leave dumb-mode
+     * tasks running in the background, and their enter/exit-dumb-mode listeners transfer a write
+     * action to the EDT. Under this foreign modal entity `TransactionGuard` rejects that as
+     * "Write-unsafe context", which kills the DumbService coroutine mid-transition and hangs the
+     * next `waitUntilIndexesAreReady`.
+     */
     private fun enterModal(): Any {
+        waitForSmartMode()
         val entity = Any()
         invokeAndWaitOnEdt { LaterInvocator.enterModal(entity) }
         return entity

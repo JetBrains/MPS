@@ -37,7 +37,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
         private val CLEAR_CONSOLE_WARNINGS = listOf(
             "The console module's module dependencies stay, so names that resolved through them still resolve.",
             "After a clear, references into the console history are invalid; only a kept input command keeps its reference.",
-            "A plugin reload (mps_mcp_reload_all) restores the console history as it was loaded when the project opened.",
+            "A plugin reload (mps_mcp_reload_all) preserves the current console history rather than restoring the history from when the project opened.",
         )
 
         // A response preview lays out the whole Response in a headless editor only to keep 200 chars, so
@@ -397,7 +397,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Clears the MPS Console — exactly as the Console toolbar's Clear button. **This deletes the user's console history** (every executed command and its response), and Ctrl+Z in the Console does not bring it back. Look at it first with `mps_mcp_get_console_history`, and check what would go with `dryRun`. The current input command survives, as with the button, unless `clearInput=true` removes it too. The console model then keeps only the built-in devkits plus the imports and used languages the remaining input references; the console module's module dependencies stay, so names that resolved through them still resolve. Use `clearInput=true` before a clean check of which imports a command needs. Every reference into the console except the kept input command is invalid afterwards. A plugin reload (`mps_mcp_reload_all`) restores the history as it was loaded when the project opened. Requires the MPS Console plugin. Returns `historyEntriesRemoved` (executed commands), `responsesRemoved`, and `inputKept`.
+        Clears the MPS Console — exactly as the Console toolbar's Clear button. **This deletes the user's console history** (every executed command and its response), and Ctrl+Z in the Console does not bring it back. Look at it first with `mps_mcp_get_console_history`, and check what would go with `dryRun`. The current input command survives, as with the button, unless `clearInput=true` removes it too. The console model then keeps only the built-in devkits plus the imports and used languages the remaining input references; the console module's module dependencies stay, so names that resolved through them still resolve. Use `clearInput=true` before a clean check of which imports a command needs. Every reference into the console except the kept input command is invalid afterwards. A plugin reload (`mps_mcp_reload_all`) preserves the current console history rather than restoring the history from when the project opened. Requires the MPS Console plugin. Returns `historyEntriesRemoved` (executed commands), `responsesRemoved`, and `inputKept`.
     """
     )
     suspend fun mps_mcp_clear_console(

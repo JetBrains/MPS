@@ -21,7 +21,7 @@ mps_mcp_model_dependency(modelReference: "console",
 ## Lifetime
 
 - **Console ▸ Clear** drops the imports and used languages, then re-adds the built-in devkits and whatever the current input references. It keeps the module dependencies, so code keeps resolving through them after Clear. `mps_mcp_clear_console` does the same, and deletes the user's history; pass `clearInput: true` for a clean check of what a command needs, since a kept input keeps its imports.
-- **A plugin reload** (including `mps_mcp_reload_all`) creates a new console model and module, and restores the history **as it was loaded when the project opened**, not the current one: a Clear since then is undone, and the restored commands bring back their derived imports and dependencies. Closing the project saves the current history; on reopen, only imports and dependencies that history commands reference come back.
+- **A plugin reload** (including `mps_mcp_reload_all`) creates a new console model and module, and preserves the current pinned-tab history rather than restoring the history from when the project opened: a Clear stays in effect, and commands in the restored history bring back their derived imports and dependencies. The current input command is not preserved across the reload. Closing the project saves the current history; on reopen, only imports and dependencies that history commands reference come back.
 - **Ctrl+Z** in the Console does not revert an MCP import: import changes are not on the editor's undo stack.
 
 ## Pitfalls
