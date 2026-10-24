@@ -6,12 +6,12 @@ parameters and enum values covered, the covering `Step PP.NN` ids, and the valid
 check (follow-up query / structure dump / file read), **F** = detailed payload read (inline
 `data`, or the temp file when `data` is a path).
 
-## A. MPS MCP tools (`mps_mcp_*`) — all 40
+## A. MPS MCP tools (`mps_mcp_*`) — all 45
 
 The authoritative list is the `@McpTool` methods of the toolsets registered in
 `plugins/mcp-tools/META-INF/plugin.xml` (`plugins/mcp-tools/src/jetbrains/mps/agents/mcp/tools/`).
-Rows 37–40 were added after the original 36; rows 38–40 are not exercised by this scenario (see
-the note below the table).
+Rows 37–45 were added after the original 36; rows 38–40 and 43–45 are not exercised by this
+scenario (see the notes below the table).
 
 | # | Tool | Purpose | Valid? | Invalid? | Parameters / enum values covered | Steps | Val |
 |--:|------|---------|:------:|:--------:|----------------------------------|-------|-----|
@@ -50,11 +50,16 @@ the note below the table).
 | 33 | `query_structure` | Structure reads | ✅ | (▲) | ops GET_ENUMERATION_LITERALS(both forms)/IS_SUBCONCEPT_OF/GET_SUB_CONCEPTS/GET_ASSIGNABLE_CONCEPTS/GET_ALL_SUPERCONCEPTS/LIST_CONCEPT_ASPECTS/IS_SMART_REFERENCE/GET_ASSIGNABLE_REFERENCES; LIST_CONCEPT_ASPECTS `includeInherited`=false/true + `relation`/`targetsConcept`; `mode`,`sortBy`,`scopeMode`,`kindFilter` (see §C) | 06.16–06.22 (incl. 06.20b), 08.22–08.24, 09.05, 10.12 | R+F |
 | 34 | `scaffold_editor` | Generate editor | ✅ | ✅ | `type`=editor/component; `detectComponents`; include-lists; invalid=bad concept | 09.01–09.04 | R+S |
 | 35 | `create_run_configuration` | Make run config | ✅ | ✅ | default + `configurationName`; ClassConcept-with-`main` + `ITestCase` dispatch; one model, multi-root, mixed targets; invalid=non-runnable / no tests / model-as-node | 11.01–11.03, 11.06–11.08 | R+S |
-| 36 | `parse_java_and_insert` | Parse+insert Java | ✅ | ✅ | `featureKind`=CLASS/METHOD/FIELD/NESTED_CLASS/CLASS_CONTENT/STATEMENTS/EXPRESSION; `insert.mode`=root/child/console/replace; invalid=CLASS_STUB, unknown key | 10.01–10.10, 10.12.s1, 10.13, 10.24.s1 | R+S |
+| 36 | `parse_java_and_insert` | Parse+insert Java | ✅ | ✅ | `featureKind`=CLASS/METHOD/FIELD/NESTED_CLASS/CLASS_CONTENT/STATEMENTS/EXPRESSION; `insert.mode`=root/child/console/replace; invalid=CLASS_STUB, unknown key | 10.01–10.10, 10.12.s1, 10.13, 10.24.s1, 10.25 | R+S |
 | 37 | `query_types` | Typesystem queries | ✅ | ✅ | ops IS_SUBTYPE/SUPERTYPES/COMMON_SUPERTYPE/COERCE/OPERATION_TYPE/EXPLAIN_TYPE; operands `typeConceptRef`/`typeNodeReference`/`nodeReference`; `depth`,`weak`,`strong`,`operatorNode`/`operatorConceptRef`,`includeApplyRule`,`maxRootNodes`; `parameters` as string and as real JSON object, lower-case op; invalid=`nodeReference` on a type node, one COMMON_SUPERTYPE operand, interface `conceptRef`, `maxRootNodes` too small, unknown op (see §C) | 10.17–10.23, 10.24.s3 | R+S |
 | 38 | `list_node_intentions` | List intentions/quick-fixes on a node | (◆) | (◆) | — | — (see `smoke-test-intentions.md`) | — |
 | 39 | `apply_intention` | Apply an intention or quick-fix | (◆) | (◆) | — | — (see `smoke-test-intentions.md`) | — |
 | 40 | `close_project` | Close the MPS project | (✕) | (✕) | — | — | — |
+| 41 | `clear_console` | Clear console history | ✅ | — | `dryRun` + real (`clearInput` not exercised) | 12.10–12.11 | R+S |
+| 42 | `query_dataflow` | Dataflow queries | ✅ | ✅ | ops PRINT_PROGRAM/REACHING_WRITES/REACHING_READS; `maxInstructions` cap, default and explicit `programRoot`, outer jumps; invalid=`maxInstructions` 0, `programRoot` not containing the node, unknown op | 10.26–10.27 | R+S |
+| 43 | `generation` | Generation plan, transient models, trace | (○) | (○) | — | — (see below) | — |
+| 44 | `run_migrations` | Run pending migrations | (○) | (○) | — | — (see below) | — |
+| 45 | `read_ide_log` | Read the IDE log | (○) | (○) | — | — (see below) | — |
 
 (–) under "Invalid?" = no invalid case included for that tool because none is meaningful/safe
 beyond what shared dispatch already covers. ▲ for `query_structure`: the unknown-operation
@@ -65,6 +70,13 @@ failure mode is representatively covered by `alter_structure` (06.12) and `query
 `test_scenarios/smoke-test-intentions.md` (intentions, manual and auto-applied quick-fixes,
 negative cases), not by this scenario. Record them as "not covered here — see the intentions
 smoke test" in the run report.
+
+(○) Not exercised by this scenario; covered elsewhere. `generation` (`PLAN`, `TRANSIENT_MODELS`,
+`TRACE`, `DROP_TRANSIENT_MODELS`): `JetBrainsMPSGeneration*IntegrationTest` and study cell S15.
+`run_migrations`: `JetBrainsMPSMigrationMcpToolsetIntegrationTest` and study cell S4.
+`read_ide_log`: `JetBrainsMPSProjectMcpToolsetIntegrationTest` and step V10 of
+`test_scenarios/mcp-verification-scenario-console-imports.md`. Record them as "not covered here" in
+the run report.
 
 (✕) `close_project` is deliberately not exercised: closing `{{PROJECT_DIR}}` mid-run would end
 the scenario, and part 14 must still snapshot the project. Opening and closing projects is the
@@ -106,6 +118,7 @@ the scenario, and part 14 must still snapshot the project. Opening and closing p
 - **`query_types.operation`**: IS_SUBTYPE ✔(10.17a–c), SUPERTYPES ✔(10.18), COMMON_SUPERTYPE ✔(10.19a), COERCE ✔(10.20a–b), OPERATION_TYPE ✔(10.21), EXPLAIN_TYPE ✔(10.22a–b, 10.24.s3); unknown op ✔(10.23)
 - **`query_types` operand forms**: `typeConceptRef` ✔(10.17a), `typeNodeReference` ✔(10.17c), `nodeReference` ✔(10.20a; rejected on a type node 10.17e). *Not exercised:* `blueprint` / a printed type object passed back — it means embedding a whole printed type in the escaped `parameters` string; covered by `JetBrainsMPSTypesMcpToolsetIntegrationTest`.
 - **`query_types` options**: `SUPERTYPES.depth` default ✔(10.18a) / 1 + `details.truncated` ✔(10.18b), `SUPERTYPES.weak`=false ✔(10.18c), `COERCE.strong`=true ✔(10.20b), `OPERATION_TYPE` `operatorNode` ✔(10.21a) / `operatorConceptRef` + `detached instance` warning ✔(10.21b), `EXPLAIN_TYPE.includeApplyRule`=true ✔(10.22b), `EXPLAIN_TYPE.maxRootNodes` too small ✔(10.22c); `parameters` as a real JSON object + lower-case operation ✔(10.17d)
+- **`query_dataflow.operation`**: PRINT_PROGRAM ✔(10.26a–c), REACHING_WRITES ✔(10.27a, 10.27c), REACHING_READS ✔(10.27b); unknown op ✔(10.27e). *Not exercised:* a builder failure (`builderFailure`) — it needs a language whose builder throws; the frame lookup is covered by `DataflowBuilderFrameTest`.
 - **`query_nodes.scope` (FIND_INSTANCES)**: editable ✔(08.01), all ✔(08.02), models ✔(08.03), modules ✔(08.04), roots ✔(08.05)
 - **`alter_nodes.operation`**: MOVE_CHILD ✔(07.32), MOVE_NODE_TO_PARENT ✔(07.33), MAKE ✔(06.13/06.24/06.25), FIX_REFERENCES ✔(07.34)
 - **`alter_nodes MAKE` targets**: modules+rebuild ✔(06.13), models ✔(06.24), wholeProject ✔(06.25)

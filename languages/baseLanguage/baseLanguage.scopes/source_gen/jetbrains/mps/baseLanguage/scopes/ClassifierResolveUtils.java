@@ -18,6 +18,8 @@ import jetbrains.mps.project.AbstractModule;
 import jetbrains.mps.scope.VisibleDepsSearchScope;
 import jetbrains.mps.smodel.SModelStereotype;
 import jetbrains.mps.smodel.LanguageID;
+import java.util.Set;
+import java.util.LinkedHashSet;
 import java.util.Collections;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations;
@@ -84,8 +86,18 @@ public class ClassifierResolveUtils {
       visibleModels = new VisibleDepsSearchScope(module.getRepository(), module).getModels();
     }
     final String stubStereoType = SModelStereotype.getStubStereotypeForId(LanguageID.JAVA);
-    result = new ModelsByName(visibleModels).resolveClassifierByFqNameWithNonStubPriority(classifierName, stubStereoType);
+    result = new ModelsByName(withImportedModels(modelPlusImported.getModels(), visibleModels)).resolveClassifierByFqNameWithNonStubPriority(classifierName, stubStereoType);
     return (Sequence.fromIterable(result).count() == 1 ? Sequence.fromIterable(result).first() : null);
+  }
+  private static Iterable<SModel> withImportedModels(Iterable<SModel> importedModels, Iterable<SModel> visibleModels) {
+    Set<SModel> result = new LinkedHashSet<SModel>();
+    for (SModel model : importedModels) {
+      result.add(model);
+    }
+    for (SModel model : visibleModels) {
+      result.add(model);
+    }
+    return result;
   }
 
   private static Iterable<SNode> resolveClassifierByFqName(SModel modelDescriptor, String classifierFqName) {
@@ -211,7 +223,7 @@ public class ClassifierResolveUtils {
       scope = new GlobalScope(contextNodeModel.getRepository());
     }
     final List<SModel> scopeModels = ListSequence.fromListWithValues(new ArrayList<SModel>(), scope.getModels());
-    ModelsByName modelsByName = new ModelsByName(scopeModels);
+    ModelsByName modelsByName = new ModelsByName(withImportedModels(new ModelPlusImportedScope(contextNodeModel, false, null).getModels(), scopeModels));
     final String javaStubStereotype = SModelStereotype.getStubStereotypeForId(LanguageID.JAVA);
 
     // walk through single-type imports
@@ -424,7 +436,7 @@ public class ClassifierResolveUtils {
 
     List<SNode> result = ListSequence.fromList(new ArrayList<SNode>());
     SModule module = SNodeOperations.getModel(imports).getModule();
-    ModelsByName models = new ModelsByName(((AbstractModule) module).getScope().getModels());
+    ModelsByName models = new ModelsByName(withImportedModels(new ModelPlusImportedScope(imports.getModel(), false, null).getModels(), ((AbstractModule) module).getScope().getModels()));
     final String stubStereoType = SModelStereotype.getStubStereotypeForId(LanguageID.JAVA);
     for (SNode imp : Sequence.fromIterable(staticImports)) {
 

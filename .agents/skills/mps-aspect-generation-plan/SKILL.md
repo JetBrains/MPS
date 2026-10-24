@@ -40,7 +40,7 @@ A **generation plan** (`Plan`) is an ordered script that controls which generato
 5. Insert `Checkpoint` steps wherever downstream generators must resolve cross-model references.
 6. Add `Fork` steps for any output variant requiring its own branch (e.g. XML alongside Java); or add a separate `PlanContribution` root for conditional activation.
 7. Attach the plan to models via a DevKit (production) or the Custom generation facet (prototyping).
-8. Verify with MPS UI **Show generation plan** and `mps_mcp_check_root_node_problems`.
+8. Verify with `mps_mcp_generation` `PLAN` on a model the plan governs (`planSource: EXPLICIT`, the steps in order, no `NOT_IN_PLAN` coverage) and `mps_mcp_check_root_node_problems`; see `references/verification-and-discovery.md`.
 
 ## Related Skills
 
@@ -61,5 +61,5 @@ A **generation plan** (`Plan`) is an ordered script that controls which generato
 - Fork selectors and parameters — open when conditionally activating forks via `ParameterEquals` or `ConceptListSelector`, or defining a `ParameterDeclaration`. See [references/fork-selectors.md](references/fork-selectors.md).
 - Model attributes (`InitModelAttributes`, `targetFacet`) — open when routing the output of a branch to a specific facet such as documentation generation. Includes the verified `ModelAttributeAssignment` blueprint. See [references/model-attributes.md](references/model-attributes.md).
 - Concept quick reference — open when assembling JSON that requires `conceptReference` strings or qualified concept names. See [references/concept-quick-reference.md](references/concept-quick-reference.md).
-- Verification and discovery — open to find existing plans (`FIND_INSTANCES`, search by name) or to validate a plan using MPS UI and MCP tools. See [references/verification-and-discovery.md](references/verification-and-discovery.md).
+- Verification and discovery — open to find existing plans (`FIND_INSTANCES`, search by name) or to verify a plan with `mps_mcp_generation` `PLAN`. See [references/verification-and-discovery.md](references/verification-and-discovery.md).
 - Authoring checklist — open at the end of an authoring session for a final scan before merging. See [references/authoring-checklist.md](references/authoring-checklist.md).

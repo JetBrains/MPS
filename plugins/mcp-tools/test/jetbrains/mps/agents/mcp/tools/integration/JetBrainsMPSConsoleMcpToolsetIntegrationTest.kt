@@ -27,6 +27,8 @@ import java.io.File
  *    the console-unavailable branch (structured error, no crash, in the headless fixture). The happy
  *    paths (listing real history entries; recalling one into the input slot; executing the current
  *    command) need a live Console and are verified manually.
+ *  - `mps_mcp_clear_console` — the console-unavailable branch and the binding of both parameters;
+ *    clearing a real history is verified live.
  */
 class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     @Test
@@ -64,6 +66,17 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // manually against a running Console.
         val response = runTool(JetBrainsMPSConsoleMcpToolset()) {
             it.mps_mcp_run_console_command()
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope when the console is unavailable: $response", obj.get("ok").asBoolean)
+    }
+
+    @Test
+    fun `clear_console returns an error envelope when the console is unavailable`() {
+        // The headless fixture never initializes the Console tool window; the happy path (history
+        // removed, input kept or cleared) is verified live in mcp-verification-scenario-console-imports.md.
+        val response = runTool(JetBrainsMPSConsoleMcpToolset()) {
+            it.mps_mcp_clear_console()
         }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope when the console is unavailable: $response", obj.get("ok").asBoolean)
@@ -147,5 +160,21 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("expected error envelope when the console is unavailable: $response", obj.get("ok").asBoolean)
         assertFalse("must not be the missing-parameter rejection anymore", obj.get("code")?.asString == "INVALID_REQUEST" &&
             obj.get("error").asString.startsWith("historyNodeReference is required."))
+    }
+
+    @Test
+    fun `clear_console binds clearInput and dryRun through the bridge`() {
+        val properties = publishedInputSchema(JetBrainsMPSConsoleMcpToolset(), "mps_mcp_clear_console").propertiesSchema
+        assertTrue("both parameters must be published: ${properties.keys}", properties.keys.containsAll(listOf("clearInput", "dryRun")))
+        val response = callThroughBridge(
+            JetBrainsMPSConsoleMcpToolset(), "mps_mcp_clear_console",
+            mapOf(
+                "clearInput" to kotlinx.serialization.json.JsonPrimitive(true),
+                "dryRun" to kotlinx.serialization.json.JsonPrimitive(true),
+            ),
+        )
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected the console-unavailable envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("a binding rejection is not the console-unavailable branch: $response", "NOT_FOUND", obj.get("code").asString)
     }
 }

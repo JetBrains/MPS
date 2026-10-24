@@ -131,6 +131,8 @@ Send:
 - Validation: `ok==true`. `data.createdReferences` maps `StateChart`/`State`/`Transition`/
   `Event` to `r:...` node refs. **`data.makeStatus` must be `"success"`.**
   `data.recoveryStage` may be `"module-rebuild"` (expected on first deploy — not an error).
+  `data.transientModels.droppedPrevious` is a boolean (the internal make discarded earlier
+  transient models when `true`).
 - **If `makeStatus` is `"runtime_stale"`** → record a note and run the recovery in Step 06.05a
   before continuing. Otherwise skip 06.05a.
 - Optionally capture the four refs as `{{STATECHART_CONCEPT_REF}}` etc., though later steps use
@@ -316,6 +318,8 @@ Decoded: `{ "modules": ["mcp.test.statechart"], "rebuild": true }`
 }
 ```
 - Validation: `ok==true`; `data.success==true`; `data.runtimeReady==true`.
+  `data.transientModels` is present with boolean `saved` and `droppedPrevious` and arrays
+  `modules` and `traceAvailableFor`; `saved` matches the IDE's "Save transient models" setting.
 
 ---
 
@@ -532,22 +536,26 @@ Then query the literals by that ref:
 
 ---
 
-### Step 06.24 — `alter_nodes MAKE` a single model (`{"models":[...]}`) `[SUCCESS]`
+### Step 06.24 — `alter_nodes MAKE` a single model (`{"models":[...]}`) keeping transient models `[SUCCESS]`
 
-Exercises the `MAKE` `models` form. Make the structure model.
+Exercises the `MAKE` `models` form and `saveTransientModels:true`. Make the structure model.
 
-Decoded: `{ "models": ["mcp.test.statechart.structure"] }`
+Decoded: `{ "models": ["mcp.test.statechart.structure"], "saveTransientModels": true }`
 ```json
 {
   "tool": "mps_mcp_alter_nodes",
   "arguments": {
     "projectPath": "{{PROJECT_DIR}}",
     "operation": "MAKE",
-    "parameters": "{\"models\":[\"mcp.test.statechart.structure\"]}"
+    "parameters": "{\"models\":[\"mcp.test.statechart.structure\"],\"saveTransientModels\":true}"
   }
 }
 ```
-- Validation: `ok==true`; `data.success==true`.
+- Validation: `ok==true`; `data.success==true`; `data.transientModels.saved==true`;
+  `data.transientModels.modules` is non-empty, each entry with `module`, `reference` and
+  `models > 0`; `data.transientModels.traceAvailableFor` contains
+  `mcp.test.statechart.structure`; `data.warnings` has an entry starting with
+  `Transient models were kept`. The IDE's "Save transient models" setting is unchanged afterwards.
 
 ---
 
@@ -566,7 +574,9 @@ Decoded: `{ "wholeProject": true }`
   }
 }
 ```
-- Validation: `ok==true`; `data.success==true`.
+- Validation: `ok==true`; `data.success==true`; `data.transientModels.droppedPrevious==true`
+  (06.24 kept transient models, and every make discards them first); `data.transientModels.saved`
+  matches the IDE's "Save transient models" setting.
 
 ---
 

@@ -1,6 +1,6 @@
-# 10 — BaseLanguage via `parse_java_and_insert`, and type queries
+# 10 — BaseLanguage via `parse_java_and_insert`, type queries and dataflow queries
 
-> **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{JAVA_CLASS_REF}}` (+ intra-part `{{JAVA_METHOD_REF}}`, the §10.12 context-node refs `{{IMC_REF}}`, `{{SMC_REF}}`, `{{CC_REF}}`, `{{CT_REF}}`, the §10.13–10.22 type-host refs `{{TYPE_HOST_REF}}`, `{{TH_PLUS_REF}}`, `{{TH_L_INIT_REF}}`, `{{TH_O_INIT_REF}}`, `{{TH_B_INIT_REF}}`, `{{TH_S_TYPE_REF}}`, `{{TH_O_TYPE_REF}}`, `{{TH_LIST_FIELD_REF}}`, and the §10.24 refs `{{TYPE_ERROR_REF}}`, `{{TE_BAD_FIELD_REF}}`, `{{TE_COMMENT_REF}}`).
+> **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{JAVA_CLASS_REF}}` (+ intra-part `{{JAVA_METHOD_REF}}`, the §10.12 context-node refs `{{IMC_REF}}`, `{{SMC_REF}}`, `{{CC_REF}}`, `{{CT_REF}}`, the §10.13–10.22 type-host refs `{{TYPE_HOST_REF}}`, `{{TH_PLUS_REF}}`, `{{TH_L_INIT_REF}}`, `{{TH_O_INIT_REF}}`, `{{TH_B_INIT_REF}}`, `{{TH_S_TYPE_REF}}`, `{{TH_O_TYPE_REF}}`, `{{TH_LIST_FIELD_REF}}`, the §10.24 refs `{{TYPE_ERROR_REF}}`, `{{TE_BAD_FIELD_REF}}`, `{{TE_COMMENT_REF}}`, and the §10.25–10.27 dataflow refs `{{DF_METHOD_REF}}`, `{{DF_BODY_REF}}`, `{{DF_INNER_IF_REF}}`, `{{DF_FEE_ZERO_REF}}`, `{{DF_FEE_READ_REF}}`).
 
 Tool: `mps_mcp_parse_java_and_insert`. Single argument `parameters` (a JSON-encoded string)
 with `code`, `featureKind` (`CLASS`/`METHOD`/`FIELD`/`NESTED_CLASS`/`STATEMENTS`/
@@ -20,6 +20,11 @@ the `rules` / `uncheckedSubtrees` fields of a `mps_mcp_check_root_node_problems`
 expected answers follow BaseLanguage's own rules: `int <: long`, `String <: Object`,
 `int + long → long`. Part 11 compiles this solution, so the type error and the comment seeded in
 10.24 are removed again before the part ends.
+
+Steps 10.25–10.27 seed a third class, `McpLedger`, and ask `mps_mcp_query_dataflow` about it: its
+program (`PRINT_PROGRAM`), and which writes reach a read and which reads a write feeds
+(`REACHING_WRITES` / `REACHING_READS`), with the default and an explicit `programRoot`. `McpLedger`
+is valid, warning-free Java and stays in the model.
 
 ---
 
@@ -745,5 +750,90 @@ makes the solution.
 - Validation: `ok==true`. Then re-run the check call of 10.24.s2: `data=="no problems found"`,
   no `details.uncheckedSubtrees`, and no `warnings` entry about unchecked subtrees.
 - `McpTypeError` is now an empty, valid class and stays in the model (final-state policy).
+
+---
+
+### Step 10.25 — Seed the dataflow host `McpLedger` `[CAPTURE]` `[READ-FILE]`
+
+A third class root whose method has a loop with `continue`, a branch and a final read, the subject of
+`mps_mcp_query_dataflow`. It is valid, warning-free Java, so part 11's make still compiles it.
+
+Decoded `parameters`:
+```json
+{
+  "code": "public class McpLedger { public static int settle(int[] amounts) { int total = 0; int fee = 5; for (int a : amounts) { if (a < 0) { continue; } total = total + a; } if (total > 100) { fee = 0; } return total - fee; } }",
+  "featureKind": "CLASS",
+  "insert": { "mode": "root", "modelRef": "mcp.test.sandbox.other" }
+}
+```
+Send:
+```json
+{
+  "tool": "mps_mcp_parse_java_and_insert",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "parameters": "{\"code\":\"public class McpLedger { public static int settle(int[] amounts) { int total = 0; int fee = 5; for (int a : amounts) { if (a < 0) { continue; } total = total + a; } if (total > 100) { fee = 0; } return total - fee; } }\",\"featureKind\":\"CLASS\",\"insert\":{\"mode\":\"root\",\"modelRef\":\"mcp.test.sandbox.other\"}}"
+  }
+}
+```
+- Validation: `ok==true`; `data.inserted[0].name=="McpLedger"`; `data.problems==[]`.
+- Then `mps_mcp_print_node` on `data.inserted[0].reference` with `deep: true`. **Capture** the method
+  `settle` as `{{DF_METHOD_REF}}`, its `body` child (a `StatementList`) as `{{DF_BODY_REF}}`, and the
+  `IfStatement` `if (a < 0)` inside the loop as `{{DF_INNER_IF_REF}}`.
+
+---
+
+### Step 10.26 — `query_dataflow PRINT_PROGRAM` (`maxInstructions`) `[SUCCESS]` + `[FAILURE]`
+
+10.26a, the whole body:
+```json
+{ "tool": "mps_mcp_query_dataflow",
+  "arguments": { "projectPath": "{{PROJECT_DIR}}", "operation": "PRINT_PROGRAM",
+    "parameters": "{\"nodeReference\":\"{{DF_BODY_REF}}\"}" } }
+```
+- Validation: `ok==true`; `data.program.root.concept=="StatementList"`, `data.program.hasOuterJumps==false`;
+  `data.instructions` has `data.program.size` entries, the last with `kind=="end"`; the kinds include
+  `read`, `write`, `ifjump`, `jump` and `ret`; every `write` has a `rule` whose `rule` ends with `_DataFlow`
+  and whose `ruleReference` lies in model `jetbrains.mps.baseLanguage.dataFlow`; the first writes are of
+  `amounts` (the parameter, written by the body's builder), `total` and `fee`; `data.unreachable==[]`.
+- **Capture** from `data.instructions`: the `source.reference` of the second `write` whose `variable.name=="fee"`
+  (`fee = 0`) as `{{DF_FEE_ZERO_REF}}`, and of the last `read` whose `variable.name=="fee"` (in
+  `return total - fee`) as `{{DF_FEE_READ_REF}}`.
+
+10.26b, the inner `if`, whose `continue` jumps out of it: `parameters` `{"nodeReference":"{{DF_INNER_IF_REF}}"}`.
+- Validation: `ok==true`; `data.program.hasOuterJumps==true`; one instruction has `outer==true` and
+  `jumpTo==null`; `warnings` has an entry containing `outer jumps`.
+
+10.26c, a cap: `{"nodeReference":"{{DF_BODY_REF}}","maxInstructions":3}` → `ok==true`, 3 instructions,
+`details.truncated==true`, `details.instructionsReturned==3`.
+
+10.26d `[FAILURE]`: `{"nodeReference":"{{DF_BODY_REF}}","maxInstructions":0}` → `ok==false`,
+`code=="INVALID_REQUEST"`, `error` names `maxInstructions`.
+
+---
+
+### Step 10.27 — `query_dataflow REACHING_WRITES` / `REACHING_READS` (`programRoot`) `[SUCCESS]` + `[FAILURE]`
+
+10.27a, `operation:"REACHING_WRITES"`, `{"nodeReference":"{{DF_FEE_READ_REF}}"}`:
+- Validation: `ok==true`; `data.program.defaulted==true` and `data.program.root.reference=={{DF_BODY_REF}}`
+  (the default root is the method body); `data.scope=="node"`; `data.reads` has one entry, whose `writes`
+  are the two writes of `fee` (`int fee = 5` and `{{DF_FEE_ZERO_REF}}`); no `uninitializedPath`.
+
+10.27b, `operation:"REACHING_READS"`, `{"nodeReference":"{{DF_FEE_ZERO_REF}}"}`:
+- Validation: `ok==true`; `data.writes` has one entry (`variable.name=="fee"`) whose `reads` is exactly
+  one read, with `source.reference=={{DF_FEE_READ_REF}}`.
+
+10.27c, `operation:"REACHING_WRITES"`, `{"nodeReference":"{{DF_FEE_READ_REF}}","programRoot":"{{DF_METHOD_REF}}"}`:
+- Validation: `ok==true`; `data.program.root.reference=={{DF_METHOD_REF}}`, no `data.program.defaulted`;
+  the same two writes reach the read (compare by `source.reference`, not `index`).
+
+10.27d `[FAILURE]`, a root that does not contain the node:
+`{"nodeReference":"{{DF_FEE_READ_REF}}","programRoot":"{{DF_INNER_IF_REF}}"}` → `ok==false`,
+`code=="INVALID_REQUEST"`, `error` names `programRoot`.
+
+10.27e `[FAILURE]`, an unknown operation: `operation:"REACHING_DEFINITIONS"` with the parameters of 10.27a →
+`ok==false`, `code=="INVALID_REQUEST"`, `error` lists `PRINT_PROGRAM`, `REACHING_WRITES` and `REACHING_READS`.
+
+`McpLedger` stays in the model (final-state policy).
 
 Proceed to `11_run_configurations.md`.

@@ -53,7 +53,7 @@ Querying / interacting with the IDE. **All of `#make` / `#clean` / `#removeGenSo
 | `#removeGenSources` | `RemoveGenSources` | Expression | remove `source_gen` |
 | `#show` | `ShowExpression` | Expression | open the argument (usually a node sequence) in the usages view |
 | `#stat` | `StatCommand` | InterpretedCommand | statistics for a `node` / `model` / `project` / `global` target |
-| `#showGenPlan` | `ShowGenPlan` | InterpretedCommand | show the generation plan of a model (`ignoreExternalPlan` flag) |
+| `#showGenPlan` | `ShowGenPlan` | InterpretedCommand | show the generation plan of a model (`ignoreExternalPlan` flag); from an agent, call `mps_mcp_generation` `PLAN` instead, which returns the plan as JSON |
 | `#showBrokenRefs` | `ShowBrokenReferences` | InterpretedCommand | list broken references in a node set |
 | `#callAction` | `CallActionExpression` | Expression | invoke a registered IDE action with parameters |
 | `#modelProperties` / `#moduleProperties` | `ModelProperties` / `ModuleProperties` | Expression | open the properties dialog |
@@ -74,7 +74,7 @@ Extra scopes contributed here: `global` (`GlobalScope`, all modules in the repos
 For reusable, multi-command scripts and bulk refactoring:
 
 - **`ConsoleScript`** (root, child `command: Command[0..n]`) — a saved script: create a model, import `jetbrains.mps.console.scripts`, add a `ConsoleScript` root and write console commands in it.
-- **`#exec`** (`Execute`) — run a script: import the script's model into the console, then `#exec <scriptName>`.
+- **`#exec`** (`Execute`) — run a script: import the script's model into the console (Ctrl+M, or `mps_mcp_model_dependency(modelReference: "console", targetModels: "<script model>")` from an agent), then `#exec <scriptName>`.
 - **`forEach`** (`VisitAllOperation`, alias `forEach`, child `closure: Expression[1]`) — apply a closure to every node in a sequence **immediately**, inside the console's own write command, with no dialog. This is the operation for unattended / MCP-driven bulk mutation.
 - **`refactor`** (`RefactorOperation`, child `closure: Expression[1]`) — like `forEach`, but it first pops a **modal confirmation dialog** for the whole batch and applies nothing until the user confirms. Good for interactive, review-first destructive edits, but a **trap when driven through `mps_mcp_run_console_command`**: the run returns `executed:true` while the command silently blocks on the dialog, so the model stays unchanged until a human clicks through. Use `forEach` for headless runs.
 

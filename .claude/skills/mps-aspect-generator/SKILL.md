@@ -45,7 +45,7 @@ Idiomatic generators keep the stable part **out** of the templates and emit thin
    - **A `RootTemplateAnnotation` alone does NOT register a root mapping.** It only marks a target root as a template; a `Root_MappingRule` (step 4) whose `template` reference points to that annotated root is also required. Without the rule, generation silently produces no output for that root — MAKE still reports success.
 6. Declare any mapping labels on the `MappingConfiguration`; tag writers (`labelDeclaration` ref or `$LABEL$` macro); read with `genContext.get/pick output <label> for (<input>)` inside `$REF$` or other queries.
 7. Validate with `mps_mcp_check_root_node_problems` on the `MappingConfiguration` and every template (re-run with `onlyNodesWithProblems = false` if siblings look "missing").
-8. `mps_mcp_alter_nodes MAKE` over the generator and a sample model; **read the generated text** (see *Reading generator output* below). Use the Generator Tracer / `$TRACE$` macros to bisect misgenerated fragments.
+8. `mps_mcp_alter_nodes MAKE` over the generator and a sample model; **read the generated text** (see *Reading generator output* below). To find the rule behind a misgenerated node, MAKE the sample model with `saveTransientModels: true`, read the step models from `mps_mcp_generation` `TRANSIENT_MODELS` and walk `TRACE` `BACKWARD` from the wrong node (`references/debugging-misgeneration.md`).
 
 If MPS MCP tools are unavailable, do not hand-edit serialized `.mps` files unless explicitly asked — inspect only and report.
 
@@ -91,6 +91,7 @@ After a `MAKE`, generators write Java (and TextGen artifacts like `.xml`, `.scxm
 - `genContext` operations catalog (every `GenerationContextOp_*` with editor alias and purpose): `references/generation-context.md`.
 - Generation algorithm — pipeline stages (selection → implicit grouping/ordering → explicit priorities → step-by-step transformation → TextGen), micro-steps, weaving vs. reduction ordering: `references/algorithm.md`.
 - Cookbook recipes — multi-root, cross-ref, unique IDs, extensible generators, loop-extraction refactor: `references/cookbook.md`.
+- Debugging misgeneration — keep transient models, read a step's output, trace a node back to the rule that produced it (`mps_mcp_generation`): `references/debugging-misgeneration.md`.
 - Common failures — symptom-to-cause-to-fix table: `references/common-failures.md`.
 - Validated concept FQNs and minimal `MappingConfiguration` blueprint: `references/concept-fqns.md`.
 - Calling from/into the generator — behaviors, `RulesFunctions_*`, utility models: `references/calling-into-generator.md`.

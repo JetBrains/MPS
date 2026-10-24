@@ -33,7 +33,7 @@ import kotlin.collections.listOf
  *  - `query_nodes` ops: `GET_PARENT`, `GET_ROOT`, `GET_MODEL_FOR_NODE`,
  *    `NODE_INDEX`, `SIBLINGS`, `GET_CHILD_ROLE`, `GET_TYPE`
  *  - `alter_nodes` ops: `MOVE_CHILD`, `MOVE_NODE_TO_PARENT`,
- *    `MAKE` (input validation only), `FIX_REFERENCES`,
+ *    `MAKE` (input validation, `saveTransientModels` and the `transientModels` block), `FIX_REFERENCES`,
  *  - `show_node_representation`, `print_node_json` (shallow + deep),
  *  - `check_root_node_problems` (clean root reports "no problems").
  */
@@ -649,6 +649,197 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     }
 
     @Test
+    fun `alter_nodes MOVE_CHILD infers parent and childRole when omitted`() {
+        // D99: agents call MOVE_CHILD with {"nodeReference": "<child>", "position": N} or
+        // {"childNodeRef": "<child>", "position": N}, omitting the parent and/or containment role.
+        val parentRef = createConceptRoot("MoveHostInferred")
+        val otherParentRef = createConceptRoot("MoveHostOther")
+        addPropertyChild(parentRef, "x", "string")
+        addPropertyChild(parentRef, "y", "string")
+        addPropertyChild(parentRef, "z", "string")
+
+        val (xRef, yRef, zRef) = readOnRepo {
+            val kids = resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+            val byName = kids.associate { it.name to PersistenceFacade.getInstance().asString(it.reference) }
+            Triple(byName.getValue("x"), byName.getValue("y"), byName.getValue("z"))
+        }
+
+        fun propertyOrder(): List<String> = readOnRepo {
+            resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+                .mapNotNull { it.name }
+        }
+
+        fun envelope(parameters: String) = JsonParser.parseString(runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, parameters)
+        }).asJsonObject
+
+        fun warnings(obj: JsonObject): List<String> =
+            obj.getAsJsonArray("warnings")?.map { it.asString }.orEmpty()
+
+        fun inferred(obj: JsonObject): List<String> =
+            obj.getAsJsonObject("details")?.getAsJsonArray("inferredParameters")?.map { it.asString }.orEmpty()
+
+        // 1. Lone nodeReference + position (Call 1 shape in S2-opus-1, S4-opus-3, S4-opus-4): move 'z' to 0 -> [z, x, y]
+        val viaNodeRef = envelope("""{"nodeReference":"$zRef","position":0}""")
+        assertEquals(0, expectOk(viaNodeRef.toString()).get("index").asInt)
+        assertEquals(listOf("z", "x", "y"), propertyOrder())
+        // The caller is told that nodeReference was read as the child, not the parent.
+        val nodeRefWarnings = warnings(viaNodeRef)
+        assertEquals("one interpretation warning expected: $viaNodeRef", 1, nodeRefWarnings.size)
+        assertTrue(nodeRefWarnings.single(), nodeRefWarnings.single().contains("was read as the node to move"))
+        assertTrue(nodeRefWarnings.single(), nodeRefWarnings.single().contains(parentRef))
+        val nodeRefDetails = viaNodeRef.getAsJsonObject("details")
+        assertEquals(zRef, nodeRefDetails.get("movedNode").asString)
+        assertEquals(parentRef, nodeRefDetails.get("parentReference").asString)
+        assertEquals("propertyDeclaration", nodeRefDetails.get("childRole").asString)
+        assertEquals(listOf("parent", "childRole"), inferred(viaNodeRef))
+
+        // The no-op answer (already at the target index) carries the same interpretation.
+        val noOp = envelope("""{"nodeReference":"$zRef","position":0}""")
+        assertTrue("no-op must be ok: $noOp", noOp.get("ok").asBoolean)
+        assertEquals(1, warnings(noOp).size)
+        assertEquals(listOf("parent", "childRole"), inferred(noOp))
+
+        // 2. Lone childNodeRef + position (Call 1 shape in S2-sonnet-1): move 'z' to end (-1) -> [x, y, z]
+        val viaChildRef = envelope("""{"childNodeRef":"$zRef","position":-1}""")
+        assertEquals(2, expectOk(viaChildRef.toString()).get("index").asInt)
+        assertEquals(listOf("x", "y", "z"), propertyOrder())
+        // childNodeRef is unambiguous: no warning, but the inferred parent and role are reported.
+        assertEquals("childNodeRef needs no warning: $viaChildRef", emptyList<String>(), warnings(viaChildRef))
+        assertEquals(listOf("parent", "childRole"), inferred(viaChildRef))
+
+        // 3. childNodeRef + childRole + position (Call 2 shape in S4-opus-3, S4-opus-4): move 'y' to 0 -> [y, x, z]
+        val moveWithRole = expectOk(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"childNodeRef":"$yRef","childRole":"propertyDeclaration","position":0}""",
+            )
+        })
+        assertEquals(0, moveWithRole.get("index").asInt)
+        assertEquals(listOf("y", "x", "z"), propertyOrder())
+
+        // The full form infers nothing, so it reports neither details nor warnings: move 'y' to end -> [x, z, y]
+        val fullForm = envelope(
+            """{"nodeReference":"$parentRef","childRole":"propertyDeclaration","childNodeRef":"$yRef","position":-1}""",
+        )
+        assertTrue("full form must be ok: $fullForm", fullForm.get("ok").asBoolean)
+        assertEquals(listOf("x", "z", "y"), propertyOrder())
+        assertFalse("full form must carry no details: $fullForm", fullForm.has("details"))
+        assertFalse("full form must carry no warnings: $fullForm", fullForm.has("warnings"))
+
+        // 4. nodeReference (parent) + childNodeRef + position (childRole omitted): move 'x' to end -> [z, y, x]
+        val moveWithParent = expectOk(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$parentRef","childNodeRef":"$xRef","position":-1}""",
+            )
+        })
+        assertEquals(2, moveWithParent.get("index").asInt)
+        assertEquals(listOf("z", "y", "x"), propertyOrder())
+
+        // 5. Supplied parent/role are still validated
+        val wrongParentErr = expectErr(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$otherParentRef","childNodeRef":"$xRef","position":0}""",
+            )
+        })
+        assertTrue("wrong parent must be rejected: $wrongParentErr", wrongParentErr.contains("is not a child of"))
+
+        // PropertyDeclaration itself declares no 'linkDeclaration' role; a role the child's own concept
+        // declares would hit the ambiguity rejection instead (see the test below).
+        val wrongRoleErr = expectErr(runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$xRef","childRole":"linkDeclaration","position":0}""",
+            )
+        })
+        assertTrue("wrong role must be rejected: $wrongRoleErr", wrongRoleErr.contains("is not in role 'linkDeclaration'"))
+
+        // An unknown role on an inferred parent names where that parent came from.
+        val unknownRole = envelope("""{"childNodeRef":"$xRef","childRole":"noSuchRole","position":0}""")
+        assertFalse("unknown role must be rejected: $unknownRole", unknownRole.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", unknownRole.get("code").asString)
+        val unknownRoleErr = unknownRole.get("error").asString
+        assertTrue(unknownRoleErr, unknownRoleErr.contains("(the parent inferred from '$xRef')"))
+    }
+
+    @Test
+    fun `alter_nodes MOVE_CHILD rejects a root node passed as a lone reference`() {
+        val rootRef = createConceptRoot("MoveRootError")
+        for (key in listOf("nodeReference", "childNodeRef")) {
+            val response = runTool(toolset) {
+                it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, """{"$key":"$rootRef","position":0}""")
+            }
+            val obj = JsonParser.parseString(response).asJsonObject
+            assertFalse("root node under '$key' must be rejected: $response", obj.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", obj.get("code").asString)
+            val error = obj.get("error").asString
+            assertEquals(
+                "Node '$rootRef' is a root node and cannot be reordered with MOVE_CHILD; to move one of its " +
+                    "children, pass nodeReference='$rootRef' and childNodeRef=<child>",
+                error,
+            )
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_CHILD rejects a lone nodeReference whose concept has the given childRole`() {
+        // D99 follow-up: {nodeReference:<parent>, childRole, position} with childNodeRef forgotten
+        // reads nodeReference as the node to move. When that node's own concept declares childRole,
+        // the caller most likely meant it as the parent, and in a self-nesting structure the call
+        // would otherwise move the parent itself and answer ok.
+        val parentRef = createConceptRoot("MoveAmbiguous")
+        addPropertyChild(parentRef, "x", "string")
+        addPropertyChild(parentRef, "y", "string")
+        fun propertyOrder(): List<String> = readOnRepo {
+            resolveNode(parentRef).children
+                .filter { it.containmentLink?.name == "propertyDeclaration" }
+                .mapNotNull { it.name }
+        }
+
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(
+                MPSAlterOperation.MOVE_CHILD,
+                """{"nodeReference":"$parentRef","childRole":"propertyDeclaration","position":0}""",
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("ambiguous request must be rejected: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue(error, error.startsWith("Ambiguous MOVE_CHILD request"))
+        assertTrue(error, error.contains("childNodeRef=<child>"))
+        assertEquals("a rejected request must not move anything", listOf("x", "y"), propertyOrder())
+    }
+
+    @Test
+    fun `MOVE_CHILD console guard admits only parents inside the current command`() {
+        // The headless fixture has no live MPS Console, so the guard the lone-reference form runs
+        // for a console node is exercised directly: a project root stands in for the command.
+        val rootRef = createConceptRoot("MoveConsoleGuard")
+        addPropertyChild(rootRef, "x", "string")
+        readOnRepo {
+            val root = resolveNode(rootRef)
+            val x = root.children.single { it.containmentLink?.name == "propertyDeclaration" }
+            // A child of the command: its parent is the command itself, so the move is allowed.
+            assertNull(toolset.moveChildConsoleError("x", root, currentCommand = root))
+            // The command node itself: its parent lies outside the command, so it is refused.
+            assertEquals(
+                "Node 'x' is the top-level MPS Console input command and has no parent inside the command.",
+                toolset.moveChildConsoleError("x", root, currentCommand = x),
+            )
+            // An empty console input admits nothing.
+            assertEquals(
+                "The MPS Console has no current input command, so 'x' cannot be moved.",
+                toolset.moveChildConsoleError("x", root, currentCommand = null),
+            )
+        }
+    }
+
+    @Test
     fun `alter_nodes MOVE_CHILD clamps an over-range position to the last index`() {
         val parentRef = createConceptRoot("MoveHostClamp")
         addPropertyChild(parentRef, "x", "string")
@@ -882,15 +1073,11 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
 
     @Test
     fun `alter_nodes MOVE_NODE_TO_PARENT omission still promotes a child to a root`() {
-        val parentRef = createConceptRoot("MNPPromotionParent")
-        addPropertyChild(parentRef, "promoted", "string")
-        val promotedRef = readOnRepo {
-            val promoted = resolveNode(parentRef).children.single { it.name == "promoted" }
-            PersistenceFacade.getInstance().asString(promoted.reference)
-        }
+        // A rootable child is needed since D110 (M4): a nested class is a ClassConcept in `member`.
+        val host = createMoveHost()
         val params = JsonObject().apply {
-            addProperty("nodeReference", promotedRef)
-            addProperty("modelReference", structureModelRef)
+            addProperty("nodeReference", host.innerRef)
+            addProperty("modelReference", host.modelRef)
         }.toString()
 
         val response = runTool(toolset) {
@@ -898,12 +1085,13 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
         val envelope = JsonParser.parseString(response).asJsonObject
         assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        assertFalse("nothing was ignored: $response", envelope.has("warnings"))
 
         readOnRepo {
-            val promoted = resolveNode(promotedRef)
+            val promoted = resolveNode(host.innerRef)
             assertNull("the promoted node must become a root", promoted.parent)
-            assertEquals(structureModel.reference, promoted.model?.reference)
-            assertTrue(structureModel.rootNodes.any { it.reference == promoted.reference })
+            assertEquals(host.modelRef, PersistenceFacade.getInstance().asString(promoted.model!!.reference))
+            assertTrue(promoted.model!!.rootNodes.any { it.reference == promoted.reference })
         }
     }
 
@@ -992,6 +1180,341 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             )
         }
         assertTrue(expectErr(response).contains("one of newParentRef/modelReference is required"))
+    }
+
+    // D110: every rejection comes before the detach, so each of these asserts the model is unchanged.
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT rejects a move under the node itself or its descendant`() {
+        val host = createMoveHost()
+        val before = placementOf(host.plusRef)
+        for ((nodeRef, newParentRef) in listOf(host.plusRef to host.plusRef, host.totalRef to host.plusRef)) {
+            val (response, records) = captureLogRecords {
+                moveNodeToParent("""{"nodeReference":"$nodeRef","newParentRef":"$newParentRef","role":"leftExpression"}""")
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+            assertTrue(response, envelope.get("error").asString.contains("the new parent is the node itself or one of its descendants"))
+            assertEquals("no SEVERE may be logged: $records", emptyList<String>(),
+                records.filter { it.level == java.util.logging.Level.SEVERE }.map { it.message })
+        }
+        assertEquals("the subtree must stay in place", before, placementOf(host.plusRef))
+        readOnRepo {
+            assertEquals("the subtree must stay intact", 2, resolveNode(host.plusRef).children.count())
+            assertEquals(host.totalRef, PersistenceFacade.getInstance().asString(resolveNode(host.plusRef).parent!!.reference))
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT keeps a single-valued role to one child`() {
+        val host = createMoveHost()
+        val rightBefore = placementOf(host.rightRef)
+
+        val occupied = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.totalRef}","role":"initializer"}""")
+        val occupiedError = expectErr(occupied)
+        assertTrue(occupiedError, occupiedError.contains("single-valued (0..1) and already holds '${host.plusRef}'"))
+
+        val badPosition = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.emptyRef}","role":"initializer","position":1}""")
+        val badPositionError = expectErr(badPosition)
+        assertTrue(badPositionError, badPositionError.contains("only -1 or 0 are allowed"))
+        assertEquals("rejected moves must leave the node in place", rightBefore, placementOf(host.rightRef))
+
+        // The occupant moved onto its own slot is a no-op.
+        val plusBefore = placementOf(host.plusRef)
+        expectOk(moveNodeToParent("""{"nodeReference":"${host.plusRef}","newParentRef":"${host.totalRef}","role":"initializer","position":0}"""))
+        assertEquals(plusBefore, placementOf(host.plusRef))
+
+        val moved = moveNodeToParent("""{"nodeReference":"${host.plusRef}","newParentRef":"${host.emptyRef}","role":"initializer"}""")
+        val envelope = JsonParser.parseString(moved).asJsonObject
+        assertTrue("expected ok envelope: $moved", envelope.get("ok").asBoolean)
+        assertFalse("an optional role left empty is no warning: $moved", envelope.has("warnings"))
+        readOnRepo {
+            assertEquals(host.emptyRef, PersistenceFacade.getInstance().asString(resolveNode(host.plusRef).parent!!.reference))
+            assertTrue(resolveNode(host.totalRef).children.none { it.containmentLink?.name == "initializer" })
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT rejects a concept the role does not accept, with wrapper hints`() {
+        val host = createMoveHost()
+        val before = placementOf(host.rightRef)
+        val response = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.bodyRef}","role":"statement"}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertTrue(response, envelope.get("error").asString.contains("Concept assignability error"))
+        val wrappers = envelope.getAsJsonObject("details").getAsJsonArray("wrapperCandidates")
+        assertEquals(response, "jetbrains.mps.baseLanguage.structure.ExpressionStatement", wrappers[0].asJsonObject.get("concept").asString)
+        assertEquals(before, placementOf(host.rightRef))
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT lists the roles that fit when the role is unknown`() {
+        val sourceRef = createConceptRoot("MNPRoleSource")
+        val targetRef = createConceptRoot("MNPRoleTarget")
+        addPropertyChild(sourceRef, "movee", "string")
+        val moveeRef = childRef(sourceRef, "movee")
+        val before = placementOf(moveeRef)
+
+        val response = moveNodeToParent("""{"nodeReference":"$moveeRef","newParentRef":"$targetRef","role":"properties"}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("NOT_FOUND", envelope.get("code").asString)
+        assertTrue(response, envelope.get("error").asString.contains("accept a 'PropertyDeclaration': 'propertyDeclaration' (0..n)"))
+        val candidates = envelope.getAsJsonObject("details").getAsJsonArray("candidateRoles")
+        assertEquals("attribute and BaseConcept-typed links must not be offered: $response",
+            listOf("propertyDeclaration"), candidates.map { it.asJsonObject.get("role").asString })
+        assertEquals("0..n", candidates[0].asJsonObject.get("cardinality").asString)
+        assertEquals(before, placementOf(moveeRef))
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT refuses to make a non-rootable node a root`() {
+        val parentRef = createConceptRoot("MNPNotRootable")
+        addPropertyChild(parentRef, "movee", "string")
+        val moveeRef = childRef(parentRef, "movee")
+        val before = placementOf(moveeRef)
+
+        val response = moveNodeToParent("""{"nodeReference":"$moveeRef","modelReference":"$structureModelRef"}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", envelope.get("code").asString)
+        assertTrue(response, envelope.get("error").asString.contains("Concept 'PropertyDeclaration' is not a rootable concept"))
+        assertEquals(before, placementOf(moveeRef))
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT rejects both targets and warns about keys the make-root form ignores`() {
+        val host = createMoveHost()
+        val before = placementOf(host.innerRef)
+        val both = moveNodeToParent(
+            """{"nodeReference":"${host.innerRef}","newParentRef":"${host.rootRef}","role":"member","modelReference":"${host.modelRef}"}"""
+        )
+        val bothError = expectErr(both)
+        assertTrue(bothError, bothError.contains("not both"))
+        assertEquals(before, placementOf(host.innerRef))
+
+        val response = moveNodeToParent("""{"nodeReference":"${host.innerRef}","modelReference":"${host.modelRef}","role":"member","position":0}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        val warnings = envelope.getAsJsonArray("warnings").map { it.asString }
+        assertTrue(response, warnings.any { it.contains("'role' and 'position' apply only with newParentRef") })
+        readOnRepo { assertNull(resolveNode(host.innerRef).parent) }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT across models imports the source model and warns about incoming usages`() {
+        val targetConceptRef = createConceptRoot("MNPXTarget")
+        val holderRef = createConceptRoot(
+            "MNPXHolder",
+            childrenJson = """[ { "role": "item", "target": "jetbrains.mps.lang.core.structure.BaseConcept", "multiple": true, "optional": true } ]""",
+        )
+        val linkRef = readOnRepo {
+            val link = resolveNode(holderRef).children.single { it.containmentLink?.name == "linkDeclaration" }
+            PersistenceFacade.getInstance().asString(link.reference)
+        }
+        okEnvelope(runTool(toolset) {
+            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE, references = listOf(listOf(linkRef, "target", targetConceptRef)))
+        })
+
+        val otherLanguage = freshLanguage()
+        val otherStructure = readOnRepo { otherLanguage.models.single { it.name.longName.endsWith(".structure") } }
+        val otherStructureRef = modelRefOf(otherStructure)
+        okEnvelope(runTool {
+            it.mps_mcp_alter_structure(
+                MPSStructureAlterOperation.CREATE_CONCEPTS,
+                """{ "structureModelRef": "$otherStructureRef", "conceptsJson": [ { "name": "MNPXDestination" } ] }""",
+            )
+        })
+        val destinationRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(otherStructure.rootNodes.single { it.name == "MNPXDestination" }.reference)
+        }
+
+        val response = moveNodeToParent("""{"nodeReference":"$linkRef","newParentRef":"$destinationRef","role":"linkDeclaration"}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        val fixReferences = envelope.getAsJsonObject("data").getAsJsonObject("fixReferences")
+        assertEquals(response, 0, fixReferences.get("stillBroken").asInt)
+        val warnings = envelope.getAsJsonArray("warnings").map { it.asString }
+        assertTrue(response, warnings.any { it.contains("does not update incoming usages") })
+
+        readOnRepo {
+            val moved = resolveNodeRef(linkRef.replace(structureModelRef, otherStructureRef))
+            assertEquals(destinationRef, PersistenceFacade.getInstance().asString(moved.parent!!.reference))
+            val target = moved.references.single { it.link.name == "target" }.targetNode
+            assertEquals("the reference out of the subtree must still resolve", targetConceptRef,
+                target?.let { PersistenceFacade.getInstance().asString(it.reference) })
+            assertTrue("the target model must import the source model",
+                (otherStructure as jetbrains.mps.smodel.SModelInternal).modelImports.contains(structureModel.reference))
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT make-root across models keeps references inside the moved subtree`() {
+        val selfRef = createConceptRoot(
+            "MNPXSelf",
+            childrenJson = """[
+                { "role": "first", "target": "jetbrains.mps.lang.core.structure.BaseConcept", "multiple": false, "optional": true },
+                { "role": "second", "target": "jetbrains.mps.lang.core.structure.BaseConcept", "multiple": true, "optional": true }
+            ]""",
+        )
+        val linkRefs = readOnRepo {
+            resolveNode(selfRef).children.filter { it.containmentLink?.name == "linkDeclaration" }
+                .map { PersistenceFacade.getInstance().asString(it.reference) }
+        }
+        assertEquals(2, linkRefs.size)
+        okEnvelope(runTool(toolset) {
+            it.mps_mcp_update_node(NodeUpdateOperation.SET, NodeUpdateKind.REFERENCE, references = linkRefs.map { listOf(it, "target", selfRef) })
+        })
+
+        val otherLanguage = freshLanguage()
+        val otherStructure = readOnRepo { otherLanguage.models.single { it.name.longName.endsWith(".structure") } }
+        val otherStructureRef = modelRefOf(otherStructure)
+
+        val response = moveNodeToParent("""{"nodeReference":"$selfRef","modelReference":"$otherStructureRef"}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        assertEquals(response, 0, envelope.getAsJsonObject("data").getAsJsonObject("fixReferences").get("stillBroken").asInt)
+        assertEquals(selfRef, envelope.getAsJsonObject("details").get("movedNode").asString.replace(otherStructureRef, structureModelRef))
+        assertEquals(structureModelRef, envelope.getAsJsonObject("details").get("previousModelReference").asString)
+
+        readOnRepo {
+            val moved = resolveNodeRef(selfRef.replace(structureModelRef, otherStructureRef))
+            assertNull(moved.parent)
+            assertEquals(otherStructure.reference, moved.model?.reference)
+            for (link in moved.children.filter { it.containmentLink?.name == "linkDeclaration" }) {
+                val reference = link.references.single { it.link.name == "target" }
+                assertEquals("'${link.name}' must point at the moved node in its new model", moved.reference, reference.targetNode?.reference)
+                assertEquals("'${link.name}' must persist the new model", otherStructure.reference, reference.targetSModelReference)
+            }
+        }
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT across models imports the languages of the moved subtree`() {
+        val host = createMoveHost()
+        val solution = createSolution()
+        val targetModel = createModel(solution, "${solution.moduleName}.target")
+        val baseLanguage = "jetbrains.mps.baseLanguage"
+        readOnRepo {
+            val internal = targetModel as jetbrains.mps.smodel.SModelInternal
+            assertTrue("the fixture model must import no DevKit", internal.importedDevkits().isEmpty())
+            assertFalse("the fixture model must not use BaseLanguage yet",
+                internal.importedLanguageIds().any { it.qualifiedName == baseLanguage })
+        }
+
+        val response = moveNodeToParent("""{"nodeReference":"${host.innerRef}","modelReference":"${modelRefOf(targetModel)}"}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        val added = envelope.getAsJsonObject("details").getAsJsonArray("addedUsedLanguages").map { it.asString }
+        assertTrue(response, baseLanguage in added)
+        readOnRepo {
+            assertTrue("the target model must now use BaseLanguage",
+                (targetModel as jetbrains.mps.smodel.SModelInternal).importedLanguageIds().any { it.qualifiedName == baseLanguage })
+        }
+
+        // A move within one model adds nothing.
+        val sameModel = JsonParser.parseString(moveNodeToParent(
+            """{"nodeReference":"${host.totalRef}","newParentRef":"${host.rootRef}","role":"member"}"""
+        )).asJsonObject
+        assertTrue("expected ok envelope: $sameModel", sameModel.get("ok").asBoolean)
+        assertFalse(sameModel.toString(), sameModel.getAsJsonObject("details").has("addedUsedLanguages"))
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT warns when it empties a required role`() {
+        val host = createMoveHost()
+        val response = moveNodeToParent("""{"nodeReference":"${host.rightRef}","newParentRef":"${host.emptyRef}","role":"initializer"}""")
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", envelope.get("ok").asBoolean)
+        val warnings = envelope.getAsJsonArray("warnings").map { it.asString }
+        assertTrue(response, warnings.any { it.contains("required role 'rightExpression' (1)") && it.contains(host.plusRef) })
+    }
+
+    @Test
+    fun `alter_nodes MOVE_NODE_TO_PARENT reports the move in details for both forms`() {
+        val sourceRef = createConceptRoot("MNPDetailsSource")
+        val targetRef = createConceptRoot("MNPDetailsTarget")
+        addPropertyChild(sourceRef, "movee", "string")
+        val moveeRef = childRef(sourceRef, "movee")
+        val reparent = JsonParser.parseString(
+            moveNodeToParent("""{"nodeReference":"$moveeRef","newParentRef":"$targetRef","role":"propertyDeclaration"}""")
+        ).asJsonObject
+        assertTrue("expected ok envelope: $reparent", reparent.get("ok").asBoolean)
+        val reparentDetails = reparent.getAsJsonObject("details")
+        assertEquals(moveeRef, reparentDetails.get("movedNode").asString)
+        assertEquals(sourceRef, reparentDetails.get("previousParentReference").asString)
+        assertEquals(targetRef, reparentDetails.get("parentReference").asString)
+        assertEquals("propertyDeclaration", reparentDetails.get("role").asString)
+        assertEquals(0, reparent.getAsJsonObject("data").get("index").asInt)
+
+        val host = createMoveHost()
+        val makeRoot = JsonParser.parseString(
+            moveNodeToParent("""{"nodeReference":"${host.innerRef}","modelReference":"${host.modelRef}"}""")
+        ).asJsonObject
+        assertTrue("expected ok envelope: $makeRoot", makeRoot.get("ok").asBoolean)
+        val makeRootDetails = makeRoot.getAsJsonObject("details")
+        assertEquals(host.innerRef, makeRootDetails.get("movedNode").asString)
+        assertEquals(host.rootRef, makeRootDetails.get("previousParentReference").asString)
+        assertEquals(host.modelRef, makeRootDetails.get("modelReference").asString)
+        assertFalse(makeRootDetails.has("role"))
+    }
+
+    private fun moveNodeToParent(parameters: String): String =
+        runTool(toolset) { it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_NODE_TO_PARENT, parameters) }
+
+    private fun childRef(parentRef: String, name: String): String = readOnRepo {
+        PersistenceFacade.getInstance().asString(resolveNode(parentRef).children.single { it.name == name }.reference)
+    }
+
+    /** Where [ref] sits: its parent, role, index in the role and model, as reference strings. */
+    private fun placementOf(ref: String): List<Any?> = readOnRepo {
+        val node = resolveNode(ref)
+        val facade = PersistenceFacade.getInstance()
+        val link = node.containmentLink
+        listOf(
+            node.parent?.let { facade.asString(it.reference) },
+            link?.name,
+            link?.let { node.parent!!.getChildren(it).indexOfFirst { c -> c.reference == node.reference } },
+            node.model?.let { facade.asString(it.reference) },
+        )
+    }
+
+    private class MoveHost(
+        val modelRef: String, val rootRef: String, val totalRef: String, val plusRef: String,
+        val rightRef: String, val emptyRef: String, val bodyRef: String, val innerRef: String,
+    )
+
+    /** `class MoveHost { int total = 1 + 2; int empty; void m() {} static class Inner {} }` in a fresh solution's model. */
+    private fun createMoveHost(): MoveHost {
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"class MoveHost { int total = 1 + 2; int empty; void m() { } static class Inner { } }","featureKind":"CLASS",
+                    "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
+            )
+        }
+        assertTrue("expected ok envelope from parse_java_and_insert: $response",
+            JsonParser.parseString(response).asJsonObject.get("ok").asBoolean)
+        return readOnRepo {
+            val facade = PersistenceFacade.getInstance()
+            fun ref(node: SNode) = facade.asString(node.reference)
+            val root = model.rootNodes.single { it.name == "MoveHost" }
+            val total = root.children.single { it.name == "total" }
+            val plus = total.children.single { it.containmentLink?.name == "initializer" }
+            val method = root.children.single { it.name == "m" }
+            MoveHost(
+                modelRef = modelRefOf(model),
+                rootRef = ref(root),
+                totalRef = ref(total),
+                plusRef = ref(plus),
+                rightRef = ref(plus.children.single { it.containmentLink?.name == "rightExpression" }),
+                emptyRef = ref(root.children.single { it.name == "empty" }),
+                bodyRef = ref(method.children.single { it.containmentLink?.name == "body" }),
+                innerRef = ref(root.children.single { it.name == "Inner" }),
+            )
+        }
     }
 
     // ── alter_nodes: MAKE input validation ─────────────────────────────────────────
@@ -1098,6 +1621,93 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
                     joined.contains("ClassLoaderManager.reload failed"),
             )
         }
+    }
+
+    // ── alter_nodes: MAKE saveTransientModels ──────────────────────────────────────
+
+    private fun generationSettings(): jetbrains.mps.generator.IModifiableGenerationSettings =
+        checkNotNull(myProject.getComponent(jetbrains.mps.generator.GenerationSettingsProvider::class.java)?.generationSettings) {
+            "The integration environment must provide generation settings"
+        }
+
+    private fun makeStructureModel(extra: String): JsonObject {
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{ "models": ["$structureModelRef"]$extra }""")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val data = parseDataObject(obj.get("data"))
+        assertTrue("the make must succeed: $data", data.get("success").asBoolean)
+        return data
+    }
+
+    @Test
+    fun `alter_nodes MAKE saveTransientModels keeps the transient models for this make only`() {
+        val settings = generationSettings()
+        val original = settings.isSaveTransientModels
+        try {
+            settings.isSaveTransientModels = false
+            val kept = makeStructureModel(""", "saveTransientModels": true""")
+            assertFalse("the global setting is restored after the make", settings.isSaveTransientModels)
+            val transients = kept.getAsJsonObject("transientModels")
+            assertNotNull("a make that ran reports transientModels: $kept", transients)
+            assertTrue("saved: $transients", transients.get("saved").asBoolean)
+            val modules = transients.getAsJsonArray("modules").map { it.asJsonObject }
+            assertTrue("the kept make lists its transient module: $transients", modules.isNotEmpty())
+            assertTrue("the transient module has models: $transients", modules.all { it.get("models").asInt > 0 })
+            val structureModelName = readOnRepo { structureModel.name.value }
+            assertTrue(
+                "the structure model has a trace: $transients",
+                transients.getAsJsonArray("traceAvailableFor").any { it.asString == structureModelName },
+            )
+            assertTrue("kept transients carry the warning: $kept", warningsOf(kept).any { it.startsWith("Transient models were kept") })
+            val transientModelRef = readOnRepo {
+                val module = PersistenceFacade.getInstance().createModuleReference(modules.first().get("reference").asString)
+                    .resolve(myProject.repository)
+                assertNotNull("the reported transient module resolves", module)
+                module!!.models.first().reference
+            }
+
+            settings.isSaveTransientModels = true
+            val dropped = makeStructureModel(""", "saveTransientModels": false""")
+            assertTrue("the global setting is restored to true after the make", settings.isSaveTransientModels)
+            val droppedTransients = dropped.getAsJsonObject("transientModels")
+            assertFalse("saved: $droppedTransients", droppedTransients.get("saved").asBoolean)
+            assertTrue("the earlier transient models are reported dropped: $droppedTransients", droppedTransients.get("droppedPrevious").asBoolean)
+            assertEquals("nothing is kept: $droppedTransients", 0, droppedTransients.getAsJsonArray("modules").size())
+            assertEquals("no trace without kept transients: $droppedTransients", 0, droppedTransients.getAsJsonArray("traceAvailableFor").size())
+            assertTrue("no kept-transients warning: $dropped", warningsOf(dropped).none { it.startsWith("Transient models were kept") })
+            readOnRepo {
+                assertNull("the earlier transient model no longer resolves", transientModelRef.resolve(myProject.repository))
+            }
+        } finally {
+            settings.isSaveTransientModels = original
+        }
+    }
+
+    @Test
+    fun `alter_nodes MAKE without saveTransientModels follows the IDE setting`() {
+        val settings = generationSettings()
+        val original = settings.isSaveTransientModels
+        try {
+            settings.isSaveTransientModels = false
+            val data = makeStructureModel("")
+            val transients = data.getAsJsonObject("transientModels")
+            assertFalse("saved follows the setting: $transients", transients.get("saved").asBoolean)
+            assertFalse("the setting is untouched", settings.isSaveTransientModels)
+            assertFalse("the first make of a fresh test project drops nothing: $transients", transients.get("droppedPrevious").asBoolean)
+        } finally {
+            settings.isSaveTransientModels = original
+        }
+    }
+
+    @Test
+    fun `alter_nodes MAKE rejects a non-boolean saveTransientModels`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MAKE, """{ "models": ["$structureModelRef"], "saveTransientModels": "yes" }""")
+        }
+        val err = expectErr(response)
+        assertTrue("the error names the parameter: $err", err.contains("saveTransientModels"))
     }
 
     // ── alter_nodes: COPY_NODE ─────────────────────────────────────────────────────

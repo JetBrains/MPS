@@ -41,4 +41,4 @@ In generator templates, use:
 - `genContext.get output by label and input` — for nodes generated through reduction/root mapping rules
 - `genContext.get output for model` — for nodes generated through conditional root mapping rules
 
-The checkpoint model is persisted in the project until a rebuild. It is named `<plan-name>-<checkpoint-name>`. A debug root inside each checkpoint lists mapping label names with pointers to the stored input and output nodes.
+The checkpoint model is persisted in the generator caches (as `<plan>-<checkpoint>` files) until a rebuild. It lives in the shared `checkpoints` module (one for all open projects) as `<model>@<checkpoint name>`, lower-cased with non-alphanumerics as `_` (e.g. `foo.structure@descriptorclasses`); `mps_mcp_generation` `PLAN` gives it as the CHECKPOINT step's `checkpointModelName` (when `persisted: true`) and `TRANSIENT_MODELS` lists it under `checkpoints` with its `reference`. A debug root inside each checkpoint lists mapping label names with pointers to the stored input and output nodes.

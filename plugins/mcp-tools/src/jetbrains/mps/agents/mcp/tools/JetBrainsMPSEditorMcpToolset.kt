@@ -2,8 +2,10 @@ package jetbrains.mps.agents.mcp.tools
 
 import jetbrains.mps.agents.mcp.tools.common.*
 
+import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
 import jetbrains.mps.project.MPSProject
@@ -16,7 +18,6 @@ import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.language.SContainmentLink
 import org.jetbrains.mps.openapi.language.SReferenceLink
-import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.model.SNodeReference
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -196,24 +197,8 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                 null
             }
 
-            var generationRequired = false
-            if (model != null) {
-                try {
-                    // Use reflection for ModelGenerationStatusManager to avoid optional generator-engine dependency
-                    val mgsmClass = Class.forName("jetbrains.mps.generator.ModelGenerationStatusManager")
-                    val mgsm = mpsProject.getComponent(mgsmClass)
-                    if (mgsm != null) {
-                        val method = mgsmClass.getMethod("generationRequired", org.jetbrains.mps.openapi.model.SModel::class.java)
-                        generationRequired = method.invoke(mgsm, model) as Boolean
-                    }
-                } catch (e: Exception) {
-                    rethrowIfCancellation(e)
-                    logger.warn("Reflection failure checking generation status for model '${model.name}' via ModelGenerationStatusManager", e)
-                    if (model is EditableSModel && model.isChanged) {
-                        generationRequired = true
-                    }
-                }
-            }
+            val generationRequired = model != null &&
+                mpsProject.getComponent(ModelGenerationStatusManager::class.java)?.generationRequired(model) == true
 
             // If a concept is not valid (not properly loaded in runtime) or generation is required for its model, we must perform a make.
             // A null sourceNode also signals a stale/hollow runtime descriptor: c.isValid only checks
@@ -222,11 +207,19 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
             if (c != null && c.isValid && c.sourceNode != null && !generationRequired) null
             else model
         }
-        if (structureModelForMake != null) {
+        val droppedPreviousTransients: Boolean? = if (structureModelForMake != null) {
             val makeResult = performMake(mpsProject, listOf(structureModelForMake), emptyList(), true)
+            val dropped = makeResult.transientModels?.droppedPrevious
             if (!makeResult.success) {
-                return errJson("Failed to make the structure model for concept '$conceptRef': ${makeResult.message}")
+                return errJson(
+                    "Failed to make the structure model for concept '$conceptRef': ${makeResult.message}",
+                    details = transientModelsDroppedDetails(dropped),
+                )
             }
+            dropped
+        } else null
+        fun JsonObject.addTransientModelsDropped() {
+            droppedPreviousTransients?.let { add("transientModels", jsonObject { addProperty("droppedPrevious", it) }) }
         }
 
         var result: String? = null
@@ -394,6 +387,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                         result = jsonObject {
                             addProperty("editorNodeRef", refStr)
                             addProperty("message", "Scaffolded smart reference editor.")
+                            addTransientModelsDropped()
                         }.toString()
                         // Mark success BEFORE the early return: the finally block keys rollback
                         // off `!succeeded`, so an early return on the happy path that forgets
@@ -830,6 +824,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                             addProperty("substituteMenuRef", menuRefStr)
                             addProperty("substituteMenuCreated", menuCreated)
                             addProperty("message", "Scaffolded marker editor: editable empty cell$menuMsg$menuDescriptorNote.")
+                            addTransientModelsDropped()
                         }.toString()
                         succeeded = true
                         return@executeShortCommandOnEdt
@@ -843,6 +838,7 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                     result = jsonObject {
                         addProperty("editorNodeRef", refStr)
                         addProperty("message", msg)
+                        addTransientModelsDropped()
                     }.toString()
                     succeeded = true
                 } catch (e: Throwable) {
@@ -893,14 +889,19 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
                 }
             }
         val err = error
+        // The pre-make dropped the earlier transient models even when scaffolding failed afterwards.
+        val details = transientModelsDroppedDetails(droppedPreviousTransients)
         return if (err != null) {
-            err.takeIf { it.startsWith("{\"ok\":") } ?: errJson(err)
+            err.takeIf { it.startsWith("{\"ok\":") }?.let { withDetails(it, details) } ?: errJson(err, details = details)
         } else if (result != null) {
             okJson(result)
         } else {
-            errJson("scaffolding produced no result")
+            errJson("scaffolding produced no result", details = details)
         }
     }
+
+    private fun transientModelsDroppedDetails(dropped: Boolean?): Map<String, Any?> =
+        dropped?.let { mapOf("transientModels" to mapOf("droppedPrevious" to it)) }.orEmpty()
 
     private fun applyStyle(node: SNode, styleRef: String, mpsProject: MPSProject) {
         val repo = mpsProject.repository

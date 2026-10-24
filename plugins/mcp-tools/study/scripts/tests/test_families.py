@@ -76,6 +76,45 @@ def printed(tool_id: str, concept: str) -> list[dict]:
             result(tool_id, ok({"name": "n", "concept": concept, "properties": [], "children": []}))]
 
 
+SAMPLES = "r:38cfdf05-3b6a-4864-b1ba-70dca7ae70da(mcp.study.kitchen.samples)"
+TEMPLATES = "r:98539ed4-bf63-4715-a114-6d1e7a8ca01d(mcp.study.recipes.generator.templates@generator)"
+TEMPLATE_NODE = TEMPLATES + "/4956319657762978653"  # S15: the ExpressionStatement of the PORTIONS macro
+TRANSIENT_MODEL = "b0e169d0-d6c6-4e35-82bf-9dedc21ca58f/i:10000002(mcp.study.kitchen@transient6/mcp.study.kitchen.samples@2_0)"
+TRANSIENT_NODE = TRANSIENT_MODEL + "/4956319657763309881"
+CHECKPOINT_MODEL = "00000000-0000-4000-5f02-5beb5f025beb/i:f9a6a79(checkpoints/mcp.study.recipes.structure@descriptorclasses)"
+DESCRIPTOR_MODEL = "d723428a-5d9b-4750-9dd9-f09f6644bf03/i:f010101(mcp.study.recipes/mcp.study.recipes@descriptor)"
+BACKWARD = {"nodeReference": TRANSIENT_NODE, "direction": "BACKWARD"}
+# What TRACE BACKWARD answered from the PORTIONS initializer in the S15 fixture walk, trimmed.
+FOUND = ok({"steps": [{"input": "mcp.study.kitchen.samples@0", "output": "mcp.study.kitchen.samples@2_0", "changes": [
+    {"templates": [{"concept": "Root_MappingRule", "presentation": "map Recipe", "role": "RULE"}]}]}]})
+NO_STEPS = ok({"steps": [], "changesTotal": 0})
+NOT_FOUND = {"ok": False, "error": "not found", "code": "NOT_FOUND"}
+REJECTED = {"ok": False, "error": "MAKE_INPUT_INVALID"}
+
+
+def call(tool_id: str, name: str, operation: str, parameters, payload=None) -> list[dict]:
+    """An `operation` + `parameters` call (parameters as an object or its string form) and its result."""
+    return [tool(tool_id, "mcp__mps__" + name, {"projectPath": "/p", "operation": operation, "parameters": parameters}),
+            result(tool_id, ok({"success": True}) if payload is None else payload)]
+
+
+def gen(tool_id: str, operation: str, parameters, payload=None) -> list[dict]:
+    """A mps_mcp_generation call and its result; a TRACE answers FOUND unless told otherwise."""
+    return call(tool_id, "mps_mcp_generation", operation, parameters, FOUND if payload is None else payload)
+
+
+def template_print(tool_id: str) -> list[dict]:
+    """A print_node call on a node of the generator's template model."""
+    return [tool(tool_id, PRINT, {"projectPath": "/p", "nodeReference": TEMPLATES + "/4956319657762963862"}),
+            result(tool_id, ok({"name": "RecipeClass", "concept": "ClassConcept"}))]
+
+
+def write(tool_id: str, name: str, inp: dict, payload=None) -> list[dict]:
+    return [tool(tool_id, "mcp__mps__" + name, {"projectPath": "/p", **inp}),
+            result(tool_id, ok("done") if payload is None else payload)]
+
+
+
 class FamiliesTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
@@ -164,7 +203,11 @@ class FamiliesTest(unittest.TestCase):
                          "Bp_adhoc_python\tBp_shipped_script\tB_inserts\tB_resp_bytes\tF_gcd_calls\t"
                          "F_gcd_refine\tG_errors\tH_toolsearch\tX_outside_project\t"
                          "C_root_after_clean_model_batches\tC_after_summary\tC_after_summary_batches\t"
-                         "T_rule_prints\tT_type_queries\tT_type_queries_before_make\tM_makes\tM_reload_all", header)
+                         "T_rule_prints\tT_type_queries\tT_type_queries_before_make\tM_makes\tM_reload_all\t"
+                         "M_makes_save_transient\tGN_plan\tGN_transient_models\tGN_trace\tGN_trace_backward\t"
+                         "GN_drop\tGN_trace_before_fix\tGN_transient_reads\tGN_template_prints\t"
+                         "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs\tDF_queries\t"
+                         "DF_program_prints\tDF_reaching_queries", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -306,6 +349,139 @@ class FamiliesTest(unittest.TestCase):
         built_and_failed = self.count(call("a", "mps_mcp_alter_nodes", "MAKE", ok({"success": False}))
                                       + call("b", "mps_mcp_query_types", "IS_SUBTYPE", ok(None)))
         self.assertCounts(built_and_failed, T_type_queries=1, T_type_queries_before_make=0, M_makes=1, G_errors=0)
+
+    def test_gn_generation_operations_counted(self) -> None:
+        events = []
+        for i, (operation, extra) in enumerate([
+                ("PLAN", {"model": SAMPLES}), ("TRANSIENT_MODELS", {"model": SAMPLES}),
+                (" transient_models ", {}), ("TRACE", BACKWARD),
+                ("trace", {"nodeReference": SAMPLES + "/12157282221949763", "direction": " forward "}),
+                ("TRACE", {"nodeReference": TRANSIENT_NODE, "direction": "backward"}),
+                ("DROP_TRANSIENT_MODELS", {}), ("NO_SUCH_OPERATION", {})]):
+            events += gen(f"g{i}", operation, extra)
+        self.assertCounts(self.count(events), GN_plan=1, GN_transient_models=2, GN_trace=3, GN_trace_backward=2,
+                          GN_drop=1, GN_trace_before_fix=3, tool_uses=8)
+
+    def test_m_makes_save_transient_string_and_object_parameters(self) -> None:
+        events = []
+        for i, (parameters, payload) in enumerate([
+                ({"models": [SAMPLES], "saveTransientModels": True}, None),
+                (json.dumps({"models": [SAMPLES], "saveTransientModels": True}), None),
+                ({"models": [SAMPLES], "saveTransientModels": "TRUE"}, None),  # the server accepts the string form
+                ({"models": [SAMPLES], "saveTransientModels": "yes"}, None),   # the server rejects it
+                ({"models": [SAMPLES], "saveTransientModels": False}, None),
+                ({"models": [SAMPLES]}, None), ("not json", None),
+                ({"models": [SAMPLES + "/12157282221949763"], "saveTransientModels": True}, REJECTED)]):
+            events += call(f"m{i}", "mps_mcp_alter_nodes", "MAKE", parameters, payload)
+        self.assertCounts(self.count(events), M_makes=8, M_makes_save_transient=3, G_errors=1)
+        self.assertEqual({}, families.params({"parameters": "[1, 2]"}))
+
+    def test_gn_trace_before_fix_window_closes_on_an_accepted_generator_write(self) -> None:
+        f = self.count(gen("a", "TRACE", BACKWARD)
+                       + write("s", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY", "properties": [
+                           [SAMPLES + "/12157282221949763", "servings", "3"]]})
+                       + call("k", "mps_mcp_alter_nodes", "MAKE", {"modules": [TEMPLATES]})
+                       + write("r", "mps_mcp_update_node", {"operation": "SET", "kind": "CHILD",
+                                                            "childNodeRef": TEMPLATE_NODE}, {"ok": False, "error": "bad"})
+                       + gen("b", "TRACE", BACKWARD)
+                       + gen("x", "TRACE", BACKWARD, NOT_FOUND)
+                       + write("p", "mps_mcp_parse_java_and_insert", {"parameters": json.dumps(
+                           {"code": "x", "insert": {"mode": "replace", "targetRef": TEMPLATE_NODE}})})
+                       + gen("c", "TRACE", BACKWARD))
+        self.assertCounts(f, GN_trace=4, GN_trace_backward=4, GN_trace_before_fix=2, G_errors=2)
+        for name, inp in [("mps_mcp_update_node", {"nodeReference": TEMPLATE_NODE}),
+                          ("mps_mcp_insert_root_node_from_json",
+                           {"modelReference": "mcp.study.recipes.generator.templates@generator"}),
+                          ("mps_mcp_create_root_node", {"modelReference": TEMPLATES}),
+                          ("mps_mcp_update_root_node_from_json", {"nodeReference": TEMPLATES + "/4956319657762963862"}),
+                          ("mps_mcp_apply_intention", {"nodeReference": TEMPLATE_NODE}),
+                          ("mps_mcp_alter_nodes", {"operation": "MOVE_CHILD", "parameters": {"nodeReference": TEMPLATE_NODE}})]:
+            with self.subTest(tool=name):
+                f = self.count(write("w", name, inp) + gen("t", "TRACE", BACKWARD))
+                self.assertCounts(f, GN_trace=1, GN_trace_before_fix=0)
+
+    def test_gn_a_trace_without_steps_is_not_tracing(self) -> None:
+        f = self.count(gen("o", "TRACE", {"nodeReference": SAMPLES + "/12157282221949763", "direction": "BACKWARD"},
+                           NO_STEPS)
+                       + template_print("a") + gen("p", "TRACE", BACKWARD, ok("/tmp/mps-node-1.json"))
+                       + template_print("b"))
+        self.assertCounts(f, GN_trace=2, GN_trace_backward=2, GN_trace_before_fix=1, GN_template_prints=2,
+                          GN_template_prints_before_trace=1)
+        self.assertFalse(families.trace_found(json.dumps(FOUND), True))
+        empty_steps = ok({"steps": [{"input": "mcp.study.kitchen.samples@0", "changes": []}]})
+        self.assertFalse(families.trace_found(json.dumps(empty_steps), False))
+        self.assertTrue(families.trace_found(json.dumps(ok({"steps": [{"nodes": [{"reference": "x"}]}]})), False))
+        self.assertFalse(families.trace_found(json.dumps(ok("no trace")), False))
+
+    def test_gn_template_prints_before_trace(self) -> None:
+        f = self.count(template_print("a") + template_print("b")
+                       + [tool("s", PRINT, {"nodeReference": SAMPLES + "/12157282221949763"}),
+                          result("s", ok({"concept": "Recipe"}))]
+                       + gen("n", "TRACE", BACKWARD, NOT_FOUND)
+                       + template_print("c") + gen("t", "TRACE", BACKWARD) + template_print("d"))
+        self.assertCounts(f, GN_template_prints=4, GN_template_prints_before_trace=3, GN_trace=2,
+                          GN_trace_before_fix=1)
+        never_traced = self.count(template_print("a"))
+        self.assertCounts(never_traced, GN_template_prints=1, GN_template_prints_before_trace=1)
+
+    def test_gn_transient_reads_match_transient_step_models_only(self) -> None:
+        events = []
+        for i, (name, inp) in enumerate([
+                ("mps_mcp_print_node", {"nodeReference": TRANSIENT_NODE}),
+                ("mps_mcp_get_project_structure", {"startingPoint": TRANSIENT_MODEL, "includeRootNodes": True}),
+                ("mps_mcp_query_nodes", {"operation": "FIND_INSTANCES", "parameters": {
+                    "conceptRef": "jetbrains.mps.baseLanguage.structure.IntegerConstant", "scope": "models",
+                    "models": [TRANSIENT_MODEL]}}),
+                ("mps_mcp_query_nodes", {"operation": "FIND_INSTANCES", "parameters": json.dumps({
+                    "conceptRef": "jetbrains.mps.baseLanguage.structure.StringLiteral", "scope": "roots",
+                    "roots": [TRANSIENT_MODEL + "/4956319657763309877"]})}),
+                ("mps_mcp_check_root_node_problems", {"nodeReference": TRANSIENT_MODEL}),
+                ("mps_mcp_print_node", {"nodeReference": "i:10000009(mcp.study.kitchen@transient12/mcp.study.kitchen.samples@6_7)/9"}),
+                ("mps_mcp_get_project_structure", {"startingPoint": CHECKPOINT_MODEL}),
+                ("mps_mcp_get_project_structure", {"startingPoint": DESCRIPTOR_MODEL}),
+                ("mps_mcp_print_node", {"nodeReference": SAMPLES + "/12157282221949763"}),
+                ("mps_mcp_get_project_structure", {"startingPoint": "mcp.study.kitchen.samples@2_0"}),
+                ("mps_mcp_query_nodes", {"operation": "FIND_INSTANCES", "parameters": {"scope": "models", "models": [SAMPLES]}}),
+                ("mps_mcp_update_node", {"nodeReference": TRANSIENT_NODE})]):
+            events += [tool(f"r{i}", "mcp__mps__" + name, inp), result(f"r{i}", ok("x"))]
+        self.assertCounts(self.count(events), GN_transient_reads=6)
+
+    def test_generation_is_read_only_for_check_verdict(self) -> None:
+        f = self.count(check("m", MODEL, MODEL_CLEAN) + gen("t", "TRACE", BACKWARD)
+                       + gen("d", "DROP_TRANSIENT_MODELS", {}) + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, C_root_after_clean_model=1, GN_trace=1, GN_drop=1)
+
+    def test_t24_builder_prints_count_by_concept_else_by_the_dataflow_model(self) -> None:
+        builder = "r:5784598d-868b-437e-9c58-15fb07e7f373(jetbrains.mps.samples.Kaja.dataFlow)/6630310702469676828"
+        f = self.count(printed("a", "DataFlowBuilderDeclaration")
+                       + printed("b", "jetbrains.mps.lang.dataFlow.structure.DataFlowBuilderDeclaration")
+                       + printed("c", "SubtypingRule")
+                       + [tool("t", PRINT, {"nodeReference": builder, "format": "PLAIN TEXT"}),
+                          result("t", ok("data flow builder for IfStatement { … }")),
+                          tool("s", PRINT, {"nodeReference": builder + "1"}),
+                          result("s", ok({"name": "s", "concept": "EmitJumpStatement"}))])
+        self.assertCounts(f, DF_builder_prints=3, T_rule_prints=1, tool_uses=5)
+
+    def test_t25_console_runs_count_and_reset_the_clean_verdict(self) -> None:
+        f = self.count(check("m", MODEL, MODEL_CLEAN)
+                       + [tool("r", "mcp__mps__mps_mcp_run_console_command", {}), result("r", ok({"executed": True}))]
+                       + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, DF_console_runs=1, C_root_after_clean_model=0)
+
+    def test_t26_dataflow_queries_count_by_operation_and_keep_the_clean_verdict(self) -> None:
+        def query(tool_id: str, operation: str, payload) -> list[dict]:
+            return [tool(tool_id, "mcp__mps__mps_mcp_query_dataflow", {"operation": operation, "parameters": {"nodeReference": NODE}}),
+                    result(tool_id, payload)]
+        rejected = {"ok": False, "code": "INVALID_REQUEST", "error": "Unknown operation"}
+        f = self.count(check("m", MODEL, MODEL_CLEAN)
+                       + query("p", "PRINT_PROGRAM", ok({"instructions": []}))
+                       + query("q", " print_program ", ok({"instructions": []}))
+                       + query("w", "REACHING_WRITES", ok({"reads": []}))
+                       + query("r", "reaching_reads", ok({"writes": []}))
+                       + query("x", "REACHING_DEFINITIONS", rejected)
+                       + check("a", NODE, NODE_CLEAN))
+        self.assertCounts(f, DF_queries=5, DF_program_prints=2, DF_reaching_queries=2, G_errors=1,
+                          C_root_after_clean_model=1, DF_builder_prints=0, DF_console_runs=0)
 
     def test_smoke_runs_are_skipped_and_out_writes_the_tsv(self) -> None:
         self.count(check("m", MODEL, MODEL_CLEAN))

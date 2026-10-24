@@ -26,10 +26,13 @@ import jetbrains.mps.project.validation.ModelValidator
 import jetbrains.mps.project.validation.ValidationUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import org.jetbrains.mps.openapi.language.SAbstractConcept
+import org.jetbrains.mps.openapi.language.SContainmentLink
+import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
+import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import java.util.concurrent.TimeUnit
 
@@ -90,9 +93,15 @@ private val MAKE_PARAMETER_SCHEMA: Map<String, String> = linkedMapOf(
     "modules" to "Optional: array of persistent module references",
     "rebuild" to "Optional: boolean, default false",
     "wholeProject" to "Optional: boolean, default false. If true, 'models' and 'modules' must be absent.",
+    "saveTransientModels" to "Optional: boolean. Keep the transient models and generation trace of this make; omitted = the IDE's current setting.",
 )
 
 private val MAKE_PARAMETER_KEYS: Set<String> = MAKE_PARAMETER_SCHEMA.keys
+
+private const val TRANSIENT_MODELS_KEPT_WARNING =
+    "Transient models were kept. The next make, from any tool, the console, a run configuration or the user, " +
+        "discards them and their trace. List them with mps_mcp_generation TRANSIENT_MODELS; they are read-only and " +
+        "addressed by reference: bare-name lookups skip transient copies."
 
 private val FIND_USAGES_KEYS =
     ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose usages to find")) + SEARCH_SCOPE_KEYS
@@ -110,9 +119,12 @@ private val FIX_REFERENCES_KEYS =
     ParameterKeys.of(required(PARAM_NODE_REFERENCE, "the reference of the node whose subtree's references to fix"))
 
 private val MOVE_CHILD_KEYS = ParameterKeys.of(
-    required(PARAM_NODE_REFERENCE, "the parent node's reference"),
-    required("childRole", "the containment role name"),
-    required(PARAM_CHILD_NODE_REF, "the reference of the child to move"),
+    PARAM_NODE_REFERENCE, "childRole", PARAM_CHILD_NODE_REF,
+    requiredOneOf(
+        PARAM_NODE_REFERENCE, PARAM_CHILD_NODE_REF,
+        expected = "the reference of the child to move (childNodeRef, or nodeReference when childNodeRef is omitted; " +
+            "when both are passed, nodeReference is the parent node's reference)",
+    ),
     required("position", "the 0-based target index, or -1 to move to the end"),
 )
 
@@ -187,7 +199,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         The answer can depend on the node already in the slot, though not on what the node itself adds (a value that widens
         a variable can be wider than the answer); for an empty slot, ask via the node you are about to replace. To compare or widen
         types (IS_SUBTYPE, SUPERTYPES, COMMON_SUPERTYPE, COERCE, OPERATION_TYPE), or to see why a node has its type
-        (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Returns `{"ok":true,"data":{...}}`
+        (EXPLAIN_TYPE, the type-system trace), use `mps_mcp_query_types`. Node references of transient models a make kept
+        (`mps_mcp_generation` TRANSIENT_MODELS) are accepted as `nodeReference`; `mps_mcp_generation`
+        TRACE tells which input node and rule produced such a node. Returns `{"ok":true,"data":{...}}`
         on success or `{"ok":false,"error":"..."}` on failure. For the list-producing operations (FIND_INSTANCES,
         FIND_USAGES, SIBLINGS) `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000),
         otherwise a temp-file path. See `mps-node-editing` and `mps-mcp-workflow` skills.
@@ -249,8 +263,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription("""        
-        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root. Explicit `newParentRef:null` is rejected. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
-         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool; node references are not accepted — resolve the node's module or model first. Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
+        Structural node mutations and code generation: move a child within its role, move a node to a new parent or make it a root, create a deep copy of a node, make/rebuild models/modules/whole project, fix broken references. Parameters are a JSON object (real JSON or its string form). For MOVE_CHILD, supply `childNodeRef` (or `nodeReference`) for the child to move and `position`; `nodeReference` (the parent, when `childNodeRef` is also passed) and `childRole` are inferred from the child when omitted and validated when supplied; whatever was inferred is reported in `details` (`movedNode`, `parentReference`, `childRole`, `inferredParameters`), a lone `nodeReference` read as the child adds a `warnings` entry, and a lone `nodeReference` plus a `childRole` that the node's own concept also declares is rejected as ambiguous. For MOVE_NODE_TO_PARENT, supply a non-null `newParentRef` plus `role` to reparent; omit `newParentRef` and supply `modelReference` to intentionally promote the node to a root (its concept must be rootable; `role`/`position` are then ignored with a warning). Explicit `newParentRef:null`, and `newParentRef` together with `modelReference`, are rejected. Every MOVE_NODE_TO_PARENT check runs before the model changes: a new parent that is the node or its descendant, a concept the role does not accept, and a single-valued role that already holds another node are rejected (unlike update_node ADD CHILD, a move never replaces an occupant); an unknown `role` lists the roles that fit in `details.candidateRoles`. The response's `details` reports `movedNode`, `previousParentReference` (or `previousModelReference`), and `parentReference` plus `role`, or `modelReference`. A move to another model keeps the references within and out of the moved subtree resolvable (`data.fixReferences`), adding the model imports, module dependencies and used languages the subtree needs (languages added are listed in `details.addedUsedLanguages`), but does not update incoming references from elsewhere: a `warnings` entry says any such references stop resolving; use MPS's Move refactoring for a full move. For MOVE_CHILD and MOVE_NODE_TO_PARENT, `position` is 0-based and `-1` moves to the end; a `position` at or beyond the role's child count is clamped to the end (not rejected) and a negative value other than -1 is rejected — the response's `data.index` reports the moved (clamped) node's actual resulting index.
+         MAKE parameters: {"modules":[<moduleRef>,...]} | {"models":[<modelRef>,...]} | {"wholeProject":true}, plus optional "rebuild":bool and "saveTransientModels":bool; node references are not accepted — resolve the node's module or model first. `saveTransientModels` keeps (true) or drops (false) this make's transient models and generation trace, overriding the IDE setting for this make only (omitted = the IDE setting). Every make starts by discarding all earlier transient models except the shared `checkpoints` module: a make that ran reports `transientModels` {`saved`, `droppedPrevious` (earlier transient models existed and are now gone), `modules` [{`module`, `reference`, `models`}], `traceAvailableFor` (input models with a generation trace)}; "Nothing to make" reports no block. A successful make that built a language and reloaded its runtime adds `migrationsPending` (pending migrations of the project; apply them with `mps_mcp_run_migrations`). Returns `{"ok":true,"data":{...}}` on success or `{"ok":false,"error":"..."}` on failure. See `mps-node-editing` and `mps-mcp-workflow` skills.
          For COPY_NODE, a root node is copied and added as a new root in the same model; a node inside a multi-child collection role (`[0..*]` or `[1..*]`) is copied and inserted as the next sibling; a node in a single-child role (`[0..1]` or `[1]`) returns an error because copying a singleton child makes no structural sense.
          Prefer COPY_NODE over hand-authoring a JSON blueprint when a new node should closely resemble one that already exists — it's fewer calls and guarantees a structurally valid clone; adjust the copy afterward with mps_mcp_update_node.
     """)
@@ -436,9 +450,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun opMoveChild(params: JsonObject): String {
-        val nodeReference = params.requiredParamString(PARAM_NODE_REFERENCE)
-        val childRole = params.requiredParamString("childRole")
-        val childNodeRef = params.requiredParamString(PARAM_CHILD_NODE_REF)
+        val nodeReference = params.paramString(PARAM_NODE_REFERENCE)
+        val childRole = params.paramString("childRole")
+        val childNodeRef = params.paramString(PARAM_CHILD_NODE_REF)
         val position = params.requiredParamInt("position")
         return moveNodeChild(nodeReference, childRole, childNodeRef, position)
     }
@@ -452,6 +466,13 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         val role = params.paramString("role")
         val position = params.paramInt("position")
         val modelReference = params.paramString(PARAM_MODEL_REFERENCE)
+        if (newParentRef != null && modelReference != null) {
+            return errJson(
+                "Pass either 'newParentRef' (with 'role') to move the node under another node, or 'modelReference' " +
+                    "to make it a root of that model, not both",
+                McpErrorCode.INVALID_REQUEST
+            )
+        }
         return moveNodeToParent(nodeReference, newParentRef, role, position, modelReference)
     }
 
@@ -466,6 +487,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
                 // Refuse console nodes: the console model is throwaway, copying doesn't make sense.
                 val sourceModel = node.model
+                // The copy lands in the source's own model, so a transient source is a write to a read-only model.
+                sourceModel?.let { transientModelRefusal(repo, it, "Node '$nodeReference'") }?.let { return@executeShortCommandOnEdt it }
                 if (sourceModel != null && sourceModel !is EditableSModel) {
                     val module = sourceModel.module
                     val isConsole = module != null && !isModuleInProject(repo, sourceModel)
@@ -670,6 +693,8 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         val modulesArray = modulesElem?.asJsonArray
         val rebuild = params.paramBoolean("rebuild", default = false)
         val wholeProject = params.paramBoolean("wholeProject", default = false)
+        val saveTransientModels = params.get("saveTransientModels")?.takeUnless { it.isJsonNull }
+            ?.let { params.paramBoolean("saveTransientModels", default = false) }
 
         if (wholeProject && (modelsArray != null || modulesArray != null)) {
             return errJson("Parameters 'models' and 'modules' must not be provided when 'wholeProject' is true")
@@ -714,6 +739,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
             resolvedTargets.modelsToMake.toList(),
             resolvedTargets.modulesToMake.toList(),
             rebuild,
+            saveTransientModels,
         )
         val result = mutableMapOf<String, Any>()
         result["success"] = makeResult.success
@@ -722,10 +748,20 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         // so chained calls (scaffold_editor, get_concept_details) can decide to rebuild
         // (`rebuild=true`) instead of hitting a hollow descriptor downstream.
         result["runtimeReady"] = makeResult.runtimeReady
+        // A rebuilt language is what makes its new migration scripts visible; tell the caller here,
+        // since the Migration Assistant no longer opens on its own while an agent drives the IDE.
+        makeResult.migrationsPending?.let { pending ->
+            result["migrationsPending"] = pending
+            if (pending > 0) {
+                result["migrationsHint"] = "$pending migration(s) are pending in this project. List them with " +
+                    "mps_mcp_run_migrations (operation CHECK), then apply them with operation APPLY."
+            }
+        }
         if (makeResult.details.isNotEmpty()) {
             result["details"] = makeResult.details
         }
-        val warnings = resolvedTargets.warnings()
+        makeResult.transientModels?.let { result["transientModels"] = it }
+        val warnings = resolvedTargets.warnings() + listOfNotNull(TRANSIENT_MODELS_KEPT_WARNING.takeIf { makeResult.transientModels?.saved == true })
         if (warnings.isNotEmpty()) {
             result["warnings"] = warnings
         }
@@ -865,6 +901,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 // Auto-apply writes the model, so guard editability + project membership like the
                 // other write tools before mutating anything.
                 val model = root.model
+                model?.let { transientModelRefusal(repo, it, "Cannot auto-apply quick fixes: node '$nodeReference'") }?.let { return it }
                 if (model !is EditableSModel) {
                     return errJson(
                         "Cannot auto-apply quick fixes: the model containing '$nodeReference' is not editable",
@@ -1248,6 +1285,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         Prints the specified node as JSON. `data` is inline when the printout is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `deep=true` inlines all descendants; `deep=false` (default) lists direct children's refs only. The result (inline `data` or the saved envelope) is consumable by every node-mutation tool (`mps_mcp_update_node`, `mps_mcp_update_root_node_from_json`, etc.). See `mps-mcp-workflow/references/analysis-tools.md` for the output schema and `mps-node-editing/references/json-format.md` for the matching blueprint shape.
         A stored property, child role or reference that the node's concept does not declare is printed with `declared:false`; a node whose concept is not loaded (its language is not loaded or no longer declares it) prints `conceptLoaded:false` with only such entries (types and docs only for features of loaded languages), and the envelope `warnings` say so — build the language or use `PLAIN TEXT`, never read that printout as an empty node.
         `nodeReference` must be a node reference (`r:<uuid>(model)/<node-id>`). A model reference or qualified model name is rejected with INVALID_REQUEST that names the model and a retry line for `mps_mcp_get_project_structure` (`startingPoint`, `includeNodes=true`); `mps_mcp_check_root_node_problems` accepts those model forms in `nodeReference`.
+        A node of a transient model a make kept (references from `mps_mcp_generation` TRANSIENT_MODELS, `i:` model ids) prints like any other; `mps_mcp_generation` TRACE tells which input node and rule produced it.
         Alternatively, if HTML or PLAIN TEXT format is required, it returns the editor-projected representation of the specified node as a string, inline or as a temp-file path under the same `maxInlineBytes` rule.
         If the goal is to duplicate this node rather than merely inspect it, prefer `mps_mcp_alter_nodes` `COPY_NODE` over printing it deep and re-inserting the JSON — it's fewer calls and produces a structurally guaranteed-valid clone.
     """
@@ -1560,39 +1598,116 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     }
 
     private suspend fun moveNodeChild(
-        nodeReference: String,
-        childRole: String,
-        childNodeRef: String,
+        nodeReference: String?,
+        childRole: String?,
+        childNodeRef: String?,
         position: Int
     ): String {
         return withMpsProject("Moving MPS node child") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository
-                val (parent, model, console) = when (
-                    val r = resolveEditableNodeAllowingConsole(mpsProject, nodeReference, { "Parent node '$it' not found" })
-                ) {
-                    is ConsoleAwareResolution.Ok -> Triple(r.node, r.model, r.console)
-                    is ConsoleAwareResolution.Err -> return@executeShortCommandOnEdt r.errJson
-                }
-                val childNode = resolveNodeReferencePreferringProject(mpsProject, childNodeRef)?.resolve(repo)
-                    ?: return@executeShortCommandOnEdt errJson("Child node '$childNodeRef' not found", McpErrorCode.NOT_FOUND)
-                if (childNode.model?.reference != parent.model?.reference) {
-                    return@executeShortCommandOnEdt errJson("Child node '$childNodeRef' is not in the same model as parent '$nodeReference'", McpErrorCode.INVALID_REQUEST)
+                val effectiveChildRef: String
+                val parent: SNode
+                val childNode: SNode
+                val model: EditableSModel
+                val console: ConsoleTarget?
+                // Without childNodeRef a lone nodeReference names the node to move, not its parent
+                // (D99), so the response must say how it was read (see `warnings` below).
+                val loneNodeReference = childNodeRef == null
+                val parentGiven = nodeReference != null && childNodeRef != null
+                if (parentGiven) {
+                    effectiveChildRef = checkNotNull(childNodeRef)
+                    val resolvedParent = when (
+                        val r = resolveEditableNodeAllowingConsole(mpsProject, checkNotNull(nodeReference), { "Parent node '$it' not found" })
+                    ) {
+                        is ConsoleAwareResolution.Ok -> r
+                        is ConsoleAwareResolution.Err -> return@executeShortCommandOnEdt r.errJson
+                    }
+                    parent = resolvedParent.node
+                    model = resolvedParent.model
+                    console = resolvedParent.console
+                    childNode = resolveNodeReferencePreferringProject(mpsProject, effectiveChildRef)?.resolve(repo)
+                        ?: return@executeShortCommandOnEdt errJson("Child node '$childNodeRef' not found", McpErrorCode.NOT_FOUND)
+                    if (childNode.model?.reference != parent.model?.reference) {
+                        return@executeShortCommandOnEdt errJson("Child node '$childNodeRef' is not in the same model as parent '$nodeReference'", McpErrorCode.INVALID_REQUEST)
+                    }
+                    // Compare by reference: resolve() and the parent walk need not hand back the same
+                    // SNode wrapper for one logical node (see isSameOrDescendantOf).
+                    if (childNode.parent?.reference != parent.reference) {
+                        return@executeShortCommandOnEdt errJson("Node '$childNodeRef' is not a child of '$nodeReference'", McpErrorCode.INVALID_REQUEST)
+                    }
+                } else {
+                    // MOVE_CHILD_KEYS requires one of nodeReference/childNodeRef, and the dispatcher
+                    // rejects the call through rejectMissingParameterKeys before it gets here.
+                    effectiveChildRef = childNodeRef ?: checkNotNull(nodeReference)
+                    val resolvedChild = when (
+                        val r = resolveEditableNodeAllowingConsole(mpsProject, effectiveChildRef, { "Child node '$it' not found" })
+                    ) {
+                        is ConsoleAwareResolution.Ok -> r
+                        is ConsoleAwareResolution.Err -> return@executeShortCommandOnEdt r.errJson
+                    }
+                    childNode = resolvedChild.node
+                    model = resolvedChild.model
+                    console = resolvedChild.console
+                    // A lone nodeReference in the old {nodeReference:<parent>, childRole, position}
+                    // shape, with childNodeRef forgotten, would otherwise move the parent itself
+                    // whenever that parent sits in a role of the same name (nested blocks, XML
+                    // elements, trees), and answer ok.
+                    if (loneNodeReference && childRole != null && childNode.concept.containmentLinks.any { it.name == childRole }) {
+                        return@executeShortCommandOnEdt errJson(
+                            "Ambiguous MOVE_CHILD request: without childNodeRef, nodeReference '$effectiveChildRef' is the node " +
+                                "to move, but its concept '${childNode.concept.name}' also has a child role '$childRole', so it " +
+                                "may be meant as the parent. To move one of its children, pass nodeReference='$effectiveChildRef' " +
+                                "and childNodeRef=<child>; to move '$effectiveChildRef' itself, pass it as childNodeRef instead.",
+                            McpErrorCode.INVALID_REQUEST
+                        )
+                    }
+                    parent = childNode.parent ?: return@executeShortCommandOnEdt errJson(
+                        "Node '$effectiveChildRef' is a root node and cannot be reordered with MOVE_CHILD; to move one of " +
+                            "its children, pass nodeReference='$effectiveChildRef' and childNodeRef=<child>",
+                        McpErrorCode.INVALID_REQUEST
+                    )
+                    if (console != null) {
+                        moveChildConsoleError(effectiveChildRef, parent, currentConsoleCommand(console.consoleModel))
+                            ?.let { return@executeShortCommandOnEdt errJson(it, McpErrorCode.INVALID_REQUEST) }
+                    }
                 }
 
-                if (childNode.parent != parent) {
-                    return@executeShortCommandOnEdt errJson("Node '$childNodeRef' is not a child of '$nodeReference'", McpErrorCode.INVALID_REQUEST)
+                val role = if (childRole != null) {
+                    val found = parent.concept.containmentLinks.find { it.name == childRole }
+                        ?: return@executeShortCommandOnEdt errJson(
+                            "Child role '$childRole' not found in concept '${parent.concept.name}'" +
+                                (if (parentGiven) "" else " (the parent inferred from '$effectiveChildRef')"),
+                            McpErrorCode.NOT_FOUND
+                        )
+                    if (childNode.containmentLink != found) {
+                        return@executeShortCommandOnEdt errJson("Node '$effectiveChildRef' is not in role '$childRole'", McpErrorCode.INVALID_REQUEST)
+                    }
+                    found
+                } else {
+                    // A node with a parent always has a containment link.
+                    checkNotNull(childNode.containmentLink)
                 }
+                val roleName = role.name
 
-                val role = parent.concept.containmentLinks.find { it.name == childRole }
-                    ?: return@executeShortCommandOnEdt errJson("Child role '$childRole' not found in concept '${parent.concept.name}'", McpErrorCode.NOT_FOUND)
-
-                if (childNode.containmentLink != role) {
-                    return@executeShortCommandOnEdt errJson("Node '$childNodeRef' is not in role '$childRole'", McpErrorCode.INVALID_REQUEST)
-                }
+                val inferred = listOfNotNull(
+                    "parent".takeIf { !parentGiven },
+                    "childRole".takeIf { childRole == null },
+                )
+                val details: Map<String, Any?> = if (inferred.isEmpty()) emptyMap() else mapOf(
+                    "movedNode" to PersistenceFacade.getInstance().asString(childNode.reference),
+                    "parentReference" to PersistenceFacade.getInstance().asString(parent.reference),
+                    "childRole" to roleName,
+                    "inferredParameters" to inferred,
+                )
+                val interpretation = if (loneNodeReference) {
+                    "nodeReference '$effectiveChildRef' was read as the node to move, because childNodeRef was omitted; " +
+                        "its parent is '${PersistenceFacade.getInstance().asString(parent.reference)}' and its role " +
+                        "'$roleName'. To move a child of '$effectiveChildRef' instead, pass childNodeRef as well."
+                } else null
 
                 if (!role.isMultiple) {
-                    return@executeShortCommandOnEdt errJson("Role '$childRole' is not a collection (cardinality 0..1 or 1)", McpErrorCode.INVALID_REQUEST)
+                    return@executeShortCommandOnEdt errJson("Role '$roleName' is not a collection (cardinality 0..1 or 1)", McpErrorCode.INVALID_REQUEST)
                 }
 
                 val childrenInRole = parent.getChildren(role).toList()
@@ -1607,7 +1722,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 // resolveInsertIndex (which inserts a NEW child and clamps to `count`).
                 if (position < -1) {
                     return@executeShortCommandOnEdt errJson(
-                        "position $position is invalid for role '$childRole'; use -1 to move to the " +
+                        "position $position is invalid for role '$roleName'; use -1 to move to the " +
                             "end, or supply a value >= 0",
                         McpErrorCode.INVALID_REQUEST
                     )
@@ -1616,7 +1731,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
                 if (targetIndex == currentIndex) {
                     // Already at the correct position
-                    return@executeShortCommandOnEdt okJson(nodeInfoJsonObjectWithIndex(childNode, mpsProject))
+                    return@executeShortCommandOnEdt okJson(
+                        nodeInfoJsonObjectWithIndex(childNode, mpsProject),
+                        warnings = listOfNotNull(interpretation),
+                        details = details,
+                    )
                 }
 
                 // Repositioning
@@ -1636,9 +1755,26 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 val warn = persistOrRefreshConsole(model, console)
                 // Return the moved node with its actual resulting index (consistent with
                 // MOVE_NODE_TO_PARENT), so a caller that overshot `position` sees where it landed.
-                okJson(nodeInfoJsonObjectWithIndex(childNode, mpsProject), warnings = listOfNotNull(warn))
+                okJson(
+                    nodeInfoJsonObjectWithIndex(childNode, mpsProject),
+                    warnings = listOfNotNull(interpretation, warn),
+                    details = details,
+                )
             }
         }
+    }
+
+    /**
+     * The MOVE_CHILD rejection for a console node [childRef] given without its parent, or null when
+     * the move stays inside the current console input command: its inferred [parent] must be the
+     * [currentCommand] or lie inside it, so the command node itself (whose parent is the console's
+     * command holder) is never reordered. Must be called under a read action.
+     */
+    internal fun moveChildConsoleError(childRef: String, parent: SNode, currentCommand: SNode?): String? = when {
+        // Unreachable in practice: a node admitted as a console node lies inside the current command.
+        currentCommand == null -> "The MPS Console has no current input command, so '$childRef' cannot be moved."
+        isSameOrDescendantOf(parent, currentCommand) -> null
+        else -> "Node '$childRef' is the top-level MPS Console input command and has no parent inside the command."
     }
 
     private suspend fun moveNodeToParent(
@@ -1651,26 +1787,19 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         return withMpsProject("Moving MPS node to parent") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
                 val repo = mpsProject.repository
-                val sNodeRef = resolveNodeReference(mpsProject, nodeReference) ?: resolveNodeReference(repo, nodeReference)
-                val node = sNodeRef?.resolve(repo)
-                    ?: return@executeShortCommandOnEdt errJson("Node '$nodeReference' not found", McpErrorCode.NOT_FOUND)
-
-                // The node may be a non-root inside an editable model, OR a root
-                // node whose model is non-editable but we still want to refuse.
-                // We can't reuse resolveEditableNodeAndModel here because a node
-                // not currently in any model is also valid (rare but possible).
-                val sourceModel = node.model
-                if (sourceModel != null && sourceModel !is EditableSModel) {
-                    val isConsole = sourceModel.module?.let { !isModuleInProject(repo, sourceModel) } ?: false
-                    return@executeShortCommandOnEdt errJson(
-                        if (isConsole) "Cannot move a node from the MPS Console — console models are transient and do not support move operations"
-                        else "Source model is not editable",
-                        McpErrorCode.NOT_EDITABLE
-                    )
+                // Every rejection below must come before detachNode: MPS commands do not roll back, so a
+                // failure after the detach would leave the subtree removed from the model (D110).
+                val (node, sourceModel, sourceConsole) = when (
+                    val r = resolveEditableNodeAllowingConsole(mpsProject, nodeReference, nonEditableMessage = "Source model is not editable")
+                ) {
+                    is ConsoleAwareResolution.Ok -> Triple(r.node, r.model, r.console)
+                    is ConsoleAwareResolution.Err -> return@executeShortCommandOnEdt r.errJson
                 }
-                if (sourceModel != null && !isModelInSelectedProject(mpsProject, sourceModel)) {
-                    return@executeShortCommandOnEdt crossProjectErr("Node '$nodeReference'")
-                }
+                val facade = PersistenceFacade.getInstance()
+                val previousParent = node.parent
+                val previousLink = node.containmentLink
+                val previous = if (previousParent != null) "previousParentReference" to facade.asString(previousParent.reference)
+                    else "previousModelReference" to facade.asString(sourceModel.reference)
 
                 if (newParentRef != null) {
                     val (newParent, targetModel, targetConsole) = when (
@@ -1685,43 +1814,80 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     // Console-boundary guard: a node may be relocated WITHIN the current console command,
                     // or BETWEEN project models, but never across the console boundary. The console model
                     // is a throwaway temp model, so moving project nodes into it (or console nodes out of
-                    // it) is meaningless and would try to persist the temp model.
-                    if (targetConsole != null) {
-                        // Target is inside the console command: require the source to be a node inside the
-                        // SAME console's current command (resolved the same way, so history / stale /
-                        // external refs are rejected).
-                        when (val sr = resolveEditableNodeAllowingConsole(mpsProject, nodeReference)) {
-                            is ConsoleAwareResolution.Ok ->
-                                if (sr.console?.consoleModel?.reference != targetConsole.consoleModel.reference) {
-                                    return@executeShortCommandOnEdt errJson(
-                                        "MOVE_NODE_TO_PARENT cannot move a node from outside the MPS Console into the " +
-                                            "console input. Build the console command with mps_mcp_parse_java_and_insert " +
-                                            "(insert.mode \"console\") or mps_mcp_insert_console_command_from_json.",
-                                        McpErrorCode.INVALID_REQUEST
-                                    )
-                                }
-                            is ConsoleAwareResolution.Err -> return@executeShortCommandOnEdt sr.errJson
-                        }
-                    } else if (sourceModel != null && !isModuleInProject(repo, sourceModel)) {
-                        // Target is a project model: refuse a console node, or a node from another open
-                        // project, as the source (consistent with the other write tools' project guard).
-                        return@executeShortCommandOnEdt crossProjectErr("Source node '$nodeReference'")
-                    }
-
-                    val containmentLink = newParent.concept.containmentLinks.find { it.name == role }
-                        ?: return@executeShortCommandOnEdt errJson("Child role '$role' not found in concept '${newParent.concept.name}'", McpErrorCode.NOT_FOUND)
-
-                    // Reject an out-of-range index BEFORE detaching so an invalid request leaves the
-                    // model untouched. A position past the child count is NOT rejected — the
-                    // append/clamp decision is made post-detach by resolveInsertIndex (below),
-                    // against the destination role's then-current count, so it never sees an invalid
-                    // value here and never returns Invalid. Matches the other insert tools.
-                    if (position != null && position < -1) {
+                    // it) is meaningless and would try to persist the temp model. Both resolutions admit a
+                    // console node only from the current command of this project's console.
+                    if (targetConsole != null && sourceConsole?.consoleModel?.reference != targetConsole.consoleModel.reference) {
                         return@executeShortCommandOnEdt errJson(
-                            "position $position is invalid for role '${containmentLink.name}'; use -1 " +
-                                "or omit position to append, or supply a value >= 0",
+                            "MOVE_NODE_TO_PARENT cannot move a node from outside the MPS Console into the " +
+                                "console input. Build the console command with mps_mcp_parse_java_and_insert " +
+                                "(insert.mode \"console\") or mps_mcp_insert_console_command_from_json.",
                             McpErrorCode.INVALID_REQUEST
                         )
+                    }
+                    if (targetConsole == null && sourceConsole != null) {
+                        return@executeShortCommandOnEdt errJson(
+                            "MOVE_NODE_TO_PARENT cannot move a node out of the MPS Console input into a project " +
+                                "model: the console model is temporary. Recreate the node in the project model instead.",
+                            McpErrorCode.INVALID_REQUEST
+                        )
+                    }
+                    if (sourceConsole != null && previousParent != null) {
+                        moveChildConsoleError(nodeReference, previousParent, currentConsoleCommand(sourceConsole.consoleModel))
+                            ?.let { return@executeShortCommandOnEdt errJson(it, McpErrorCode.INVALID_REQUEST) }
+                    }
+                    if (isSameOrDescendantOf(newParent, node)) {
+                        return@executeShortCommandOnEdt errJson(
+                            "Cannot move '$nodeReference' under '$newParentRef': the new parent is the node itself " +
+                                "or one of its descendants.",
+                            McpErrorCode.INVALID_REQUEST
+                        )
+                    }
+
+                    // role is required together with newParentRef (MOVE_NODE_TO_PARENT_KEYS).
+                    val roleName = checkNotNull(role)
+                    val containmentLink = newParent.concept.containmentLinks.find { it.name == roleName }
+                        ?: return@executeShortCommandOnEdt roleNotFoundErr(roleName, newParent, node, repo)
+                    if (!node.concept.isSubConceptOf(containmentLink.targetConcept)) {
+                        throw childAssignabilityFailure("nodeReference", node.concept, containmentLink, newParent.concept, targetModel)
+                    }
+
+                    val details = mapOf(
+                        "movedNode" to facade.asString(node.reference),
+                        previous,
+                        "parentReference" to facade.asString(newParent.reference),
+                        "role" to containmentLink.name,
+                    )
+                    if (containmentLink.isMultiple) {
+                        // Reject an out-of-range index BEFORE detaching so an invalid request leaves the
+                        // model untouched. A position past the child count is NOT rejected — the
+                        // append/clamp decision is made post-detach by resolveInsertIndex (below),
+                        // against the destination role's then-current count, so it never sees an invalid
+                        // value here and never returns Invalid. Matches the other insert tools.
+                        if (position != null && position < -1) {
+                            return@executeShortCommandOnEdt errJson(
+                                "position $position is invalid for role '${containmentLink.name}'; use -1 " +
+                                    "or omit position to append, or supply a value >= 0",
+                                McpErrorCode.INVALID_REQUEST
+                            )
+                        }
+                    } else {
+                        singleRolePositionError(containmentLink.name, position)
+                            ?.let { return@executeShortCommandOnEdt errJson(it, McpErrorCode.INVALID_REQUEST) }
+                        // Unlike update_node ADD CHILD, which replaces the occupant of a single role, a move
+                        // never deletes a node the caller did not name.
+                        val occupant = newParent.getChildren(containmentLink).firstOrNull()
+                        if (occupant != null) {
+                            if (occupant.reference == node.reference) {
+                                return@executeShortCommandOnEdt okJson(nodeInfoJsonObjectWithIndex(node, mpsProject), details = details)
+                            }
+                            return@executeShortCommandOnEdt errJson(
+                                "Role '${containmentLink.name}' of '$newParentRef' is single-valued " +
+                                    "(${getCardinality(containmentLink)}) and already holds " +
+                                    "'${facade.asString(occupant.reference)}'. MOVE_NODE_TO_PARENT does not replace it: " +
+                                    "move or delete that node first.",
+                                McpErrorCode.INVALID_REQUEST
+                            )
+                        }
                     }
 
                     detachNode(node, sourceModel)
@@ -1732,16 +1898,30 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         is InsertIndex.At -> newParent.insertChildBefore(containmentLink, node, childrenInRole[ix.index])
                         else -> newParent.addChild(containmentLink, node)
                     }
+                    val crossModel = sourceModel.reference != targetModel.reference
+                    // A cross-model move is always between project models: the console guards above
+                    // keep a console move inside the one console model.
+                    val addedLanguages = if (crossModel) UsedLanguages.addMissingFor(targetModel, repo, listOf(node)) else emptyList()
+                    val fixResult = if (crossModel) performFixReferences(mpsProject, node) else null
                     // Persist the project target, or refresh imports for a console target (the console
                     // temp model is never saved to disk). For a cross-model project move also persist the
                     // source model; a within-console move keeps source and target in the same model.
                     val warn = persistOrRefreshConsole(targetModel, targetConsole)
-                    if (targetConsole == null && sourceModel != null && sourceModel != targetModel) {
+                    if (crossModel) {
                         saveModelAndModule(sourceModel)
                     }
                     // Report the moved node's actual index so a caller that overshot `position`
                     // (now clamped to an append) can see where it landed.
-                    okJson(nodeInfoJsonObjectWithIndex(node, mpsProject), warnings = listOfNotNull(warn))
+                    val nodeInfo = nodeInfoJsonObjectWithIndex(node, mpsProject)
+                    okJson(
+                        if (fixResult != null) withFixReferencesInfo(nodeInfo, fixResult) else nodeInfo,
+                        warnings = listOfNotNull(
+                            emptiedRequiredRoleWarning(previousParent, previousLink),
+                            incomingUsagesWarning(node).takeIf { crossModel },
+                            warn,
+                        ),
+                        details = details + addedUsedLanguagesDetail(addedLanguages),
+                    )
 
                 } else {
                     val targetModel = when (val r = resolveEditableModel(mpsProject, checkNotNull(modelReference))) {
@@ -1749,33 +1929,100 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                         is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
                     }
                     // Make-root is a project-model operation: resolveEditableModel already refuses a
-                    // non-project (incl. console) target model; also refuse a console node, or a node from
-                    // another open project, as the source — the console has a single ConsoleRoot and is
-                    // not a place to promote arbitrary roots.
-                    if (sourceModel != null && !isModuleInProject(repo, sourceModel)) {
-                        return@executeShortCommandOnEdt crossProjectErr("Source node '$nodeReference'")
+                    // non-project (incl. console) target model.
+                    if (sourceConsole != null) {
+                        return@executeShortCommandOnEdt errJson(
+                            "MOVE_NODE_TO_PARENT cannot make a node of the MPS Console input a root: the console " +
+                                "model is temporary and holds a single command. Recreate the node as a root of the " +
+                                "project model instead.",
+                            McpErrorCode.INVALID_REQUEST
+                        )
+                    }
+                    if (!isRootable(node.concept, repo)) {
+                        return@executeShortCommandOnEdt errJson(
+                            "Concept '${node.concept.name}' is not a rootable concept, so '$nodeReference' cannot " +
+                                "be made a root; pass newParentRef and role to move it under another node instead.",
+                            McpErrorCode.INVALID_REQUEST
+                        )
                     }
 
                     detachNode(node, sourceModel)
 
                     // Add as root
                     targetModel.addRootNode(node)
+                    val crossModel = sourceModel.reference != targetModel.reference
+                    val addedLanguages = if (crossModel) UsedLanguages.addMissingFor(targetModel, repo, listOf(node)) else emptyList()
+                    val fixResult = if (crossModel) performFixReferences(mpsProject, node) else null
                     saveModelAndModule(targetModel)
-                    if (sourceModel != null && sourceModel != targetModel) {
+                    if (crossModel) {
                         saveModelAndModule(sourceModel)
                     }
-                    okJson(nodeInfoJson(node, mpsProject))
+                    val nodeInfo = nodeInfoJsonObject(node, mpsProject)
+                    okJson(
+                        if (fixResult != null) withFixReferencesInfo(nodeInfo, fixResult) else nodeInfo,
+                        warnings = listOfNotNull(
+                            listOfNotNull("role".takeIf { role != null }, "position".takeIf { position != null })
+                                .takeIf { it.isNotEmpty() }
+                                ?.let { ignored ->
+                                    "${ignored.joinToString(" and ") { "'$it'" }} " +
+                                        "${if (ignored.size == 1) "applies" else "apply"} only with newParentRef; " +
+                                        "ignored when making the node a root"
+                                },
+                            emptiedRequiredRoleWarning(previousParent, previousLink),
+                            incomingUsagesWarning(node).takeIf { crossModel },
+                        ),
+                        details = mapOf(
+                            "movedNode" to facade.asString(node.reference),
+                            previous,
+                            "modelReference" to facade.asString(targetModel.reference),
+                        ) + addedUsedLanguagesDetail(addedLanguages),
+                    )
                 }
             }
         }
     }
 
-    private fun detachNode(node: SNode, sourceModel: EditableSModel?) {
+    /**
+     * The NOT_FOUND rejection of an unknown [roleName] under [newParent], listing the roles of its
+     * concept that accept [node] so the retry takes one call.
+     */
+    private fun roleNotFoundErr(roleName: String, newParent: SNode, node: SNode, repo: SRepository): String {
+        val candidates = AssignabilityHints.acceptingLinks(newParent.concept, node.concept)
+        val fitting = if (candidates.isEmpty()) "; none of its child roles accepts a '${node.concept.name}'"
+            else "; child roles that accept a '${node.concept.name}': " +
+                candidates.joinToString(", ") { "'${it.name}' (${getCardinality(it)})" }
+        return errJson(
+            "Child role '$roleName' not found in concept '${newParent.concept.name}'$fitting",
+            McpErrorCode.NOT_FOUND,
+            mapOf("candidateRoles" to candidates.map { containmentLinkInfoJsonObject(it, repo) }),
+        )
+    }
+
+    /** `addedUsedLanguages`, the qualified names of the languages a cross-model move imported, when there are any. */
+    private fun addedUsedLanguagesDetail(added: List<SLanguage>): Map<String, Any?> =
+        if (added.isEmpty()) emptyMap() else mapOf("addedUsedLanguages" to added.map { it.qualifiedName })
+
+    /** A warning when the move emptied the mandatory single role [link] of [previousParent], or null. */
+    private fun emptiedRequiredRoleWarning(previousParent: SNode?, link: SContainmentLink?): String? {
+        if (previousParent == null || link == null || link.isMultiple || link.isOptional) return null
+        if (previousParent.getChildren(link).any()) return null
+        return "The required role '${link.name}' (1) of the previous parent " +
+            "'${PersistenceFacade.getInstance().asString(previousParent.reference)}' is now empty; a model check " +
+            "reports it until the role gets a child."
+    }
+
+    private fun incomingUsagesWarning(node: SNode): String =
+        "'${PersistenceFacade.getInstance().asString(node.reference)}' moved to another model. References within " +
+            "and out of the moved subtree were kept resolvable (see data.fixReferences), but MOVE_NODE_TO_PARENT does " +
+            "not update incoming usages: any references to its nodes from elsewhere, including its previous model, " +
+            "still name that model and no longer resolve. For a full move, use MPS's Move refactoring in the IDE."
+
+    private fun detachNode(node: SNode, sourceModel: EditableSModel) {
         val currentParent = node.parent
         if (currentParent != null) {
             currentParent.removeChild(node)
         } else {
-            sourceModel?.removeRootNode(node)
+            sourceModel.removeRootNode(node)
         }
     }
 
