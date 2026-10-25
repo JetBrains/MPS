@@ -10,12 +10,17 @@ import com.intellij.mcpserver.annotations.McpTool
 import jetbrains.mps.model.ModelDeleteHelper
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
+import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.ModelsAutoImportsManager
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.language.LanguageAspectSupport
+import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SModelName
+import org.jetbrains.mps.openapi.model.SModelReference
+import org.jetbrains.mps.openapi.model.SNodeUtil
+import org.jetbrains.mps.openapi.module.SModuleReference
 import org.jetbrains.mps.openapi.module.SDependencyScope
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import javax.lang.model.SourceVersion
@@ -24,17 +29,18 @@ import javax.lang.model.SourceVersion
 // surface, and they are invoked via reflection by the MCP server framework, so static
 // analysis flags them as "never used".
 @Suppress("FunctionName", "unused")
-class JetBrainsMPSModelMcpToolset : AbstractOps() {
+class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
 
     @McpTool
     @McpDescription(
         """
         Adds or deletes one or more imports to an MPS model and ensures the containing module has a `Default` dependency on each target's module. Already-imported targets are skipped when adding. `targetModels` accepts a single name/reference or a JSON array. ADD returns `{ "added": N, "alreadyPresent": M }`; DELETE returns `{ "removed": true|false }` where `removed:false` means the import was not present — a successful idempotent no-op, not a failure. A model never imports itself, so when source and target resolve to the same model the ADD is dropped (no import is written) and DELETE returns `removed:false`.
+        `modelReference: "console"` targets the model of the MPS Console's current editable tab, so typed Java inserted with `mps_mcp_parse_java_and_insert` (`insert.mode:"console"`) can resolve MPS classes. Console writes are not saved, return `"console": true` and a lifetime warning (Console > Clear, a plugin reload or project close drops the imports), and DELETE warns when the console still references the model, since the console may then add the import back (execute and paste re-derive imports from the input and history, Clear from the input only).
         Supported operations: ADD or DELETE.
     """
     )
     suspend fun mps_mcp_model_dependency(
-        @McpDescription("Required. Source model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
+        @McpDescription("Required. Source model: a persistent model reference (preferred), the model's long/short name resolved in the project selected by projectPath, or `\"console\"` for the MPS Console model (a project model named `console` then needs its persistent reference).")
         modelReference: String = "",
         @McpDescription("Required. Target model name(s) or reference(s). Single string or JSON array: [\"model1\", \"model2\"] (a real array or the array written as a string)")
         targetModels: JsonOrText = JsonOrText.EMPTY,
@@ -83,132 +89,153 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
             return@withMpsProject "{" + "\"ok\":$allSucceeded,\"data\":" + array + "}"
         }
 
+        // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+        ensureConsoleContentForAlias(mpsProject.project, modelReference)?.let { return@withMpsProject it }
         executeShortCommandOnEdt(mpsProject) {
-            val model = when (val r = resolveEditableModel(mpsProject, modelReference)) {
-                is EditableModelResolution.Ok -> r.model
-                is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
+            when (val r = resolveEditableModelAllowingConsole(mpsProject, modelReference)) {
+                is ConsoleAwareModelResolution.Ok -> addModelImports(mpsProject, r.model, targetList, console = r.console != null)
+                is ConsoleAwareModelResolution.Err -> r.errJson
             }
-            if (model !is SModelInternal) {
-                return@executeShortCommandOnEdt errJson("Model is not editable or doesn't support imports: ${model.name}")
-            }
-
-            val module = model.module
-
-            // Two-pass: resolve and validate ALL targets before mutating anything. A failure
-            // mid-batch used to leave already-applied imports/module-dependency changes in
-            // memory while reporting an error to the caller — half-applied state that wasn't
-            // ever saved to disk but was visible to subsequent operations within the same
-            // session. Resolving up front converts the operation into an all-or-nothing batch.
-            val resolvedTargets = mutableListOf<SModel>()
-            for (targetModel in targetList) {
-                // Resolve the input (which may be a persistent r:UUID(name) reference OR a bare
-                // qualified name) to an actual SModel and use that model's reference. This is
-                // critical: PersistenceFacade.createModelReference does NOT throw on a bare name
-                // — it returns a name-only SModelReference with no UUID, which would then be
-                // serialized into the .mps file as a malformed <import ref="<name>"/> entry and
-                // would also fail to match existing UUID-bearing imports in the duplicate check.
-                val targetModelResolved = resolveModelPreferringProject(mpsProject, targetModel)
-                    ?: return@executeShortCommandOnEdt errJson("Target model not found: $targetModel")
-                resolvedTargets += targetModelResolved
-            }
-
-            var added = 0
-            var alreadyPresent = 0
-            var moduleDirty = false
-
-            for (targetModelResolved in resolvedTargets) {
-                val targetRef = targetModelResolved.reference
-
-                if (model.modelImports.contains(targetRef)) {
-                    alreadyPresent++
-                } else {
-                    model.addModelImport(targetRef)
-                    added++
-                }
-
-                // Add module dependency. We do this even when the model import is already present,
-                // because the module-level dependency may still be missing (e.g. a user previously
-                // imported the model manually without registering the module dependency).
-                val targetModule = targetModelResolved.module
-                if (targetModule != null && targetModule != module && module is AbstractModule) {
-                    val targetModuleRef = targetModule.moduleReference
-                    // Find the existing dependency on the underlying ModuleDescriptor (the mutable
-                    // jetbrains.mps.project.structure.modules.Dependency, not the OpenAPI SDependency
-                    // view exposed via declaredDependencies).
-                    val existingDep = module.moduleDescriptor
-                        ?.dependencies
-                        ?.firstOrNull { it.moduleRef.moduleId == targetModuleRef.moduleId }
-                    if (existingDep == null) {
-                        // No prior dependency — addDependency creates one with DEFAULT scope.
-                        module.addDependency(targetModuleRef, false)
-                        moduleDirty = true
-                    } else if (existingDep.scope != SDependencyScope.DEFAULT) {
-                        // A non-Default scope (e.g. Generation Target, Runtime) would not satisfy
-                        // the model-import contract from this tool, which advertises that it adds
-                        // a "Default" dependency. Promote the existing dep to Default so the
-                        // imported model is reachable through normal module classpath resolution.
-                        existingDep.scope = SDependencyScope.DEFAULT
-                        module.setChanged()
-                        moduleDirty = true
-                    }
-                }
-            }
-
-            if (added > 0) {
-                model.save()
-            }
-            // Only save the module descriptor when a module-level change actually happened
-            // (new module dependency added, or an existing one promoted to DEFAULT scope).
-            // A pure model-import-only update doesn't touch the module descriptor.
-            if (moduleDirty) {
-                (module as? AbstractModule)?.save()
-            }
-
-            okJson(jsonObject {
-                addProperty("added", added)
-                addProperty("alreadyPresent", alreadyPresent)
-            })
         }
+    }
+
+    /**
+     * The ADD half of [mps_mcp_model_dependency] on an already resolved [model]; must run inside a
+     * command. A [console] model is never saved and its response carries the console lifetime warning.
+     */
+    internal fun addModelImports(mpsProject: MPSProject, model: EditableSModel, targetList: List<String>, console: Boolean): String {
+        if (model !is SModelInternal) {
+            return errJson("Model is not editable or doesn't support imports: ${model.name}")
+        }
+
+        val module = model.module
+
+        // Two-pass: resolve and validate ALL targets before mutating anything. A failure
+        // mid-batch used to leave already-applied imports/module-dependency changes in
+        // memory while reporting an error to the caller — half-applied state that wasn't
+        // ever saved to disk but was visible to subsequent operations within the same
+        // session. Resolving up front converts the operation into an all-or-nothing batch.
+        val resolvedTargets = mutableListOf<SModel>()
+        for (targetModel in targetList) {
+            // Resolve the input (which may be a persistent r:UUID(name) reference OR a bare
+            // qualified name) to an actual SModel and use that model's reference. This is
+            // critical: PersistenceFacade.createModelReference does NOT throw on a bare name
+            // — it returns a name-only SModelReference with no UUID, which would then be
+            // serialized into the .mps file as a malformed <import ref="<name>"/> entry and
+            // would also fail to match existing UUID-bearing imports in the duplicate check.
+            val targetModelResolved = resolveModelPreferringProject(mpsProject, targetModel)
+                ?: return errJson("Target model not found: $targetModel")
+            resolvedTargets += targetModelResolved
+        }
+
+        var added = 0
+        var alreadyPresent = 0
+        var moduleDirty = false
+
+        for (targetModelResolved in resolvedTargets) {
+            val targetRef = targetModelResolved.reference
+
+            if (model.modelImports.contains(targetRef)) {
+                alreadyPresent++
+            } else {
+                model.addModelImport(targetRef)
+                added++
+            }
+
+            // Add module dependency. We do this even when the model import is already present,
+            // because the module-level dependency may still be missing (e.g. a user previously
+            // imported the model manually without registering the module dependency).
+            val targetModule = targetModelResolved.module
+            if (targetModule != null && targetModule != module && module is AbstractModule) {
+                val targetModuleRef = targetModule.moduleReference
+                // Find the existing dependency on the underlying ModuleDescriptor (the mutable
+                // jetbrains.mps.project.structure.modules.Dependency, not the OpenAPI SDependency
+                // view exposed via declaredDependencies).
+                val existingDep = module.moduleDescriptor
+                    ?.dependencies
+                    ?.firstOrNull { it.moduleRef.moduleId == targetModuleRef.moduleId }
+                if (existingDep == null) {
+                    // No prior dependency — addDependency creates one with DEFAULT scope.
+                    module.addDependency(targetModuleRef, false)
+                    moduleDirty = true
+                } else if (existingDep.scope != SDependencyScope.DEFAULT) {
+                    // A non-Default scope (e.g. Generation Target, Runtime) would not satisfy
+                    // the model-import contract from this tool, which advertises that it adds
+                    // a "Default" dependency. Promote the existing dep to Default so the
+                    // imported model is reachable through normal module classpath resolution.
+                    existingDep.scope = SDependencyScope.DEFAULT
+                    module.setChanged()
+                    moduleDirty = true
+                }
+            }
+        }
+
+        // The console model and its module are temporary: save() is a no-op on both, so skip it.
+        if (added > 0 && !console) {
+            model.save()
+        }
+        // Only save the module descriptor when a module-level change actually happened
+        // (new module dependency added, or an existing one promoted to DEFAULT scope).
+        // A pure model-import-only update doesn't touch the module descriptor.
+        if (moduleDirty && !console) {
+            (module as? AbstractModule)?.save()
+        }
+
+        return consoleAwareOk(console, jsonObject {
+            addProperty("added", added)
+            addProperty("alreadyPresent", alreadyPresent)
+        })
     }
 
     private suspend fun removeModelDependency(modelReference: String, targetModelRef: String
     ): String = withMpsProject("Removing MPS model dependency") { mpsProject ->
+        // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+        ensureConsoleContentForAlias(mpsProject.project, modelReference)?.let { return@withMpsProject it }
         executeShortCommandOnEdt(mpsProject) {
-            val model = when (val r = resolveEditableModel(mpsProject, modelReference)) {
-                is EditableModelResolution.Ok -> r.model
-                is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
+            when (val r = resolveEditableModelAllowingConsole(mpsProject, modelReference)) {
+                is ConsoleAwareModelResolution.Ok -> removeModelImport(mpsProject, r.model, targetModelRef, console = r.console != null)
+                is ConsoleAwareModelResolution.Err -> r.errJson
             }
-            if (model !is SModelInternal) {
-                return@executeShortCommandOnEdt errJson("Model is not editable or doesn't support imports: ${model.name}")
-            }
-
-            val targetRef = tryCreateReference {
-                PersistenceFacade.getInstance().createModelReference(targetModelRef)
-            } ?: return@executeShortCommandOnEdt errJson("Invalid target model reference: $targetModelRef")
-
-            // Precheck so the response can tell the caller whether anything actually changed.
-            // deleteModelImport() itself is silently idempotent — without this check, a typo in
-            // the targetRef would look indistinguishable from a successful removal.
-            val wasPresent = model.modelImports.contains(targetRef)
-            if (wasPresent) {
-                model.deleteModelImport(targetRef)
-                model.save()
-            }
-            okJson(jsonObject {
-                addProperty("removed", wasPresent)
-            })
         }
+    }
+
+    /** The per-target DELETE half of [mps_mcp_model_dependency] on an already resolved [model]; must run inside a command. */
+    internal fun removeModelImport(mpsProject: MPSProject, model: EditableSModel, targetModelRef: String, console: Boolean): String {
+        if (model !is SModelInternal) {
+            return errJson("Model is not editable or doesn't support imports: ${model.name}")
+        }
+
+        // Resolve the target as ADD does: a bare name gives createModelReference a name-only
+        // reference that never equals the stored, id-bearing import. The parse fallback still
+        // removes an import whose target model is gone from the repository.
+        val targetRef = resolveModelPreferringProject(mpsProject, targetModelRef)?.reference
+            ?: tryCreateReference { PersistenceFacade.getInstance().createModelReference(targetModelRef) }
+            ?: return errJson("Invalid target model reference: $targetModelRef")
+
+        // Precheck so the response can tell the caller whether anything actually changed.
+        // deleteModelImport() itself is silently idempotent — without this check, a typo in
+        // the targetRef would look indistinguishable from a successful removal.
+        val wasPresent = model.modelImports.contains(targetRef)
+        if (wasPresent) {
+            model.deleteModelImport(targetRef)
+            if (!console) model.save()
+        }
+        val rederived = console && wasPresent && referencesModel(model, targetRef)
+        return consoleAwareOk(
+            console, jsonObject { addProperty("removed", wasPresent) },
+            listOfNotNull(if (rederived) CONSOLE_REDERIVED_IMPORT_WARNING else null),
+        )
     }
 
     @McpTool
     @McpDescription(
         """
-        Adds or deletes a used language or devkit to an MPS model (`kind` = `"language"` or `"devkit"`). If the language being added is already provided by an imported DevKit, the call is a no-op and `providedByDevKit` reports the supplying DevKit.
+        Adds or deletes a used language or devkit to an MPS model (`kind` = `"language"` or `"devkit"`). If the language being added is already provided by an imported DevKit, the call is a no-op and `providedByDevKit` reports the supplying DevKit. `modelReference: "console"` targets the MPS Console model, as in `mps_mcp_model_dependency`; deleting one of the console's built-in devkits (`jetbrains.mps.console.devkit` and the devkits extending it) is refused.
         Supported operations: ADD or DELETE. 
     """
     )
     suspend fun mps_mcp_model_used_language(
-        @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
+        @McpDescription("Required. Target model: a persistent model reference (preferred), the model's long/short name resolved in the project selected by projectPath, or `\"console\"` for the MPS Console model (a project model named `console` then needs its persistent reference).")
         modelReference: String = "",
         @McpDescription("Required. Language or devkit to add/remove. Accepts a persistent reference (`l:<uuid>:<qualifiedName>` for a language, `<uuid>(<name>)` for a devkit) or a plain qualified name. A plain name resolves against languages/devkits loaded in the project; a Language module that was created but never built is also resolved by name via the project repository. On ADD, a persistent language reference is accepted only when its uuid is a deployed language or a loaded Language module; an unresolved id is rejected with `Language not found` and nothing is stored. The stored name is the language's own qualified name, not the one written in the reference.")
         usedLanguage: String = "",
@@ -239,140 +266,199 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
             return@withMpsProject removeModelUsedLanguage(modelReference, usedLanguage, kind)
         }
 
+        // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+        ensureConsoleContentForAlias(mpsProject.project, modelReference)?.let { return@withMpsProject it }
         executeShortCommandOnEdt(mpsProject) {
-            val model = when (val r = resolveEditableModel(mpsProject, modelReference)) {
-                is EditableModelResolution.Ok -> r.model
-                is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
+            when (val r = resolveEditableModelAllowingConsole(mpsProject, modelReference)) {
+                is ConsoleAwareModelResolution.Ok -> addUsedLanguage(mpsProject, r.model, usedLanguage, kind, console = r.console != null)
+                is ConsoleAwareModelResolution.Err -> r.errJson
             }
-            if (model !is SModelInternal) {
-                return@executeShortCommandOnEdt errJson("Model is not editable or doesn't support used languages: ${model.name}")
-            }
+        }
+    }
 
-            when (kind) {
-                "language" -> {
-                    val lang = resolveLanguagePreferringProject(mpsProject, usedLanguage)
-                    // A freshly-created Language module that has never been built has no
-                    // LanguageRuntime, so it is absent from LanguageRegistry.allLanguages above.
-                    // Fall back to resolving the Language *module* by name in the project
-                    // repository and adapting it to an SLanguage via its module id (no runtime
-                    // needed) — this lets an unbuilt language be imported by plain name.
-                    // A rejected `l:` string also reaches this fallback; it matches no module and yields null.
-                    ?: (resolveModule(mpsProject, usedLanguage, projectOnly = true) as? jetbrains.mps.smodel.Language)
-                        ?.let { jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getLanguage(it) }
-                    ?: return@executeShortCommandOnEdt errJson("Language not found: $usedLanguage")
+    /** The ADD half of [mps_mcp_model_used_language] on an already resolved [model]; must run inside a command. */
+    internal fun addUsedLanguage(mpsProject: MPSProject, model: EditableSModel, usedLanguage: String, kind: String, console: Boolean): String {
+        if (model !is SModelInternal) {
+            return errJson("Model is not editable or doesn't support used languages: ${model.name}")
+        }
 
-                    // k: when the language is already supplied by an imported DevKit, addLanguage
-                    // would be a no-op (DevKit-exported languages are already in scope), so we
-                    // skip both the addLanguage call and the model.save() that follows. The
-                    // structured response lets the caller distinguish "added now" from "already
-                    // available via DevKit", which matters for tooling that reports the diff.
-                    for (dkRef in model.importedDevkits()) {
-                        val dk = dkRef.resolve(mpsProject.repository) as? DevKit ?: continue
-                        if (dk.allExportedLanguageIds.contains(lang)) {
-                            val payload = JsonObject().apply {
-                                addProperty("added", false)
-                                addProperty("providedByDevKit", true)
-                                addProperty("devKit", dk.moduleName)
-                            }
-                            return@executeShortCommandOnEdt okJson(payload.toString())
-                        }
-                    }
-                    model.addLanguage(lang)
-                    model.save()
-                    val payload = JsonObject().apply {
-                        addProperty("added", true)
-                        addProperty("providedByDevKit", false)
-                    }
-                    okJson(payload.toString())
-                }
+        return when (kind) {
+            "language" -> {
+                val lang = resolveLanguagePreferringProject(mpsProject, usedLanguage)
+                // A freshly-created Language module that has never been built has no
+                // LanguageRuntime, so it is absent from LanguageRegistry.allLanguages above.
+                // Fall back to resolving the Language *module* by name in the project
+                // repository and adapting it to an SLanguage via its module id (no runtime
+                // needed) — this lets an unbuilt language be imported by plain name.
+                // A rejected `l:` string also reaches this fallback; it matches no module and yields null.
+                ?: (resolveModule(mpsProject, usedLanguage, projectOnly = true) as? jetbrains.mps.smodel.Language)
+                    ?.let { jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration.getLanguage(it) }
+                ?: return errJson("Language not found: $usedLanguage")
 
-                "devkit" -> {
-                    val devkitRef = (resolveModulePreferringProject(mpsProject, usedLanguage) as? DevKit)?.moduleReference
-                    ?: return@executeShortCommandOnEdt errJson("Devkit not found: $usedLanguage")
-
-                    if (model.importedDevkits().contains(devkitRef)) {
-                        val payload = JsonObject().apply {
+                // k: when the language is already supplied by an imported DevKit, addLanguage
+                // would be a no-op (DevKit-exported languages are already in scope), so we
+                // skip both the addLanguage call and the model.save() that follows. The
+                // structured response lets the caller distinguish "added now" from "already
+                // available via DevKit", which matters for tooling that reports the diff.
+                for (dkRef in model.importedDevkits()) {
+                    val dk = dkRef.resolve(mpsProject.repository) as? DevKit ?: continue
+                    if (dk.allExportedLanguageIds.contains(lang)) {
+                        return consoleAwareOk(console, jsonObject {
                             addProperty("added", false)
-                            addProperty("alreadyPresent", true)
-                        }
-                        return@executeShortCommandOnEdt okJson(payload.toString())
+                            addProperty("providedByDevKit", true)
+                            addProperty("devKit", dk.moduleName)
+                        })
                     }
+                }
+                model.addLanguage(lang)
+                if (!console) model.save()
+                consoleAwareOk(console, jsonObject {
+                    addProperty("added", true)
+                    addProperty("providedByDevKit", false)
+                })
+            }
 
-                    model.addDevKit(devkitRef)
-                    model.save()
-                    val payload = JsonObject().apply {
-                        addProperty("added", true)
-                        addProperty("alreadyPresent", false)
-                    }
-                    okJson(payload.toString())
+            "devkit" -> {
+                val devkitRef = (resolveModulePreferringProject(mpsProject, usedLanguage) as? DevKit)?.moduleReference
+                ?: return errJson("Devkit not found: $usedLanguage")
+
+                if (model.importedDevkits().contains(devkitRef)) {
+                    return consoleAwareOk(console, jsonObject {
+                        addProperty("added", false)
+                        addProperty("alreadyPresent", true)
+                    })
                 }
 
-                else -> errJson("Invalid kind: $kind. Must be 'language' or 'devkit'.")
+                model.addDevKit(devkitRef)
+                if (!console) model.save()
+                consoleAwareOk(console, jsonObject {
+                    addProperty("added", true)
+                    addProperty("alreadyPresent", false)
+                })
             }
+
+            else -> errJson("Invalid kind: $kind. Must be 'language' or 'devkit'.")
         }
     }
 
     private suspend fun removeModelUsedLanguage(modelReference: String, usedLanguageRef: String, kind: String
     ): String = withMpsProject("Removing MPS model used language") { mpsProject ->
+        // Create the Console's lazy content outside the model lock (MPS-40309, see resolveConsoleEditableTab).
+        ensureConsoleContentForAlias(mpsProject.project, modelReference)?.let { return@withMpsProject it }
         executeShortCommandOnEdt(mpsProject) {
-            val model = when (val r = resolveEditableModel(mpsProject, modelReference)) {
-                is EditableModelResolution.Ok -> r.model
-                is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
-            }
-            if (model !is SModelInternal) {
-                return@executeShortCommandOnEdt errJson("Model is not editable or doesn't support used languages: ${model.name}")
-            }
-
-            when (kind) {
-                "language" -> {
-                    // Symmetric with mps_mcp_model_used_language: accept either a persistent
-                    // l:UUID:name reference OR a bare qualified name. For the bare-name fallback we
-                    // search the model's OWN imported languages rather than the global
-                    // LanguageRegistry — that locates the exact SLanguage instance the model
-                    // currently holds, which is what deleteLanguageId compares against, and avoids
-                    // picking up an unrelated SLanguage that happens to share the qualifiedName.
-                    val lang = tryCreateReference {
-                        PersistenceFacade.getInstance().createLanguage(usedLanguageRef)
-                    }
-                        ?: model.importedLanguageIds().find { it.qualifiedName == usedLanguageRef }
-                        ?: return@executeShortCommandOnEdt errJson(
-                            "Language not found in model's used languages: $usedLanguageRef")
-
-                    // deleteLanguageId is silently idempotent, so precompute membership to give the
-                    // caller a meaningful `removed` flag (matches mps_mcp_model_dependency).
-                    val wasPresent = model.importedLanguageIds().any { it == lang }
-                    if (wasPresent) {
-                        model.deleteLanguageId(lang)
-                        model.save()
-                    }
-                    okJson(jsonObject { addProperty("removed", wasPresent) })
+            when (val r = resolveEditableModelAllowingConsole(mpsProject, modelReference)) {
+                is ConsoleAwareModelResolution.Ok -> {
+                    val console = r.console != null
+                    val builtInDevkits = if (console) consoleBuiltInDevkits(mpsProject.repository) else emptySet()
+                    removeUsedLanguage(mpsProject, r.model, usedLanguageRef, kind, console, builtInDevkits)
                 }
-
-                "devkit" -> {
-                    val devkitRef = tryCreateReference {
-                        PersistenceFacade.getInstance().createModuleReference(usedLanguageRef)
-                    }
-                        // Same name-fallback strategy as the language branch: search the model's
-                        // OWN imported devkits, resolving each through the repository so we can
-                        // compare by moduleName.
-                        ?: model.importedDevkits().firstOrNull { dkRef ->
-                            (dkRef.resolve(mpsProject.repository) as? DevKit)?.moduleName == usedLanguageRef
-                        }
-                        ?: return@executeShortCommandOnEdt errJson(
-                            "Devkit not found in model's used devkits: $usedLanguageRef")
-
-                    val wasPresent = model.importedDevkits().any { it == devkitRef }
-                    if (wasPresent) {
-                        model.deleteDevKit(devkitRef)
-                        model.save()
-                    }
-                    okJson(jsonObject { addProperty("removed", wasPresent) })
-                }
-
-                else -> errJson("Invalid kind: $kind. Must be 'language' or 'devkit'.")
+                is ConsoleAwareModelResolution.Err -> r.errJson
             }
         }
     }
+
+    /**
+     * The DELETE half of [mps_mcp_model_used_language] on an already resolved [model]; must run
+     * inside a command. A devkit in [protectedDevkits] (the console's built-ins) is refused.
+     */
+    internal fun removeUsedLanguage(
+        mpsProject: MPSProject,
+        model: EditableSModel,
+        usedLanguageRef: String,
+        kind: String,
+        console: Boolean,
+        protectedDevkits: Set<SModuleReference> = emptySet(),
+    ): String {
+        if (model !is SModelInternal) {
+            return errJson("Model is not editable or doesn't support used languages: ${model.name}")
+        }
+
+        return when (kind) {
+            "language" -> {
+                // Symmetric with mps_mcp_model_used_language: accept either a persistent
+                // l:UUID:name reference OR a bare qualified name. For the bare-name fallback we
+                // search the model's OWN imported languages rather than the global
+                // LanguageRegistry — that locates the exact SLanguage instance the model
+                // currently holds, which is what deleteLanguageId compares against, and avoids
+                // picking up an unrelated SLanguage that happens to share the qualifiedName.
+                val lang = tryCreateReference {
+                    PersistenceFacade.getInstance().createLanguage(usedLanguageRef)
+                }
+                    ?: model.importedLanguageIds().find { it.qualifiedName == usedLanguageRef }
+                    ?: return errJson("Language not found in model's used languages: $usedLanguageRef")
+
+                // deleteLanguageId is silently idempotent, so precompute membership to give the
+                // caller a meaningful `removed` flag (matches mps_mcp_model_dependency).
+                val wasPresent = model.importedLanguageIds().any { it == lang }
+                if (wasPresent) {
+                    model.deleteLanguageId(lang)
+                    if (!console) model.save()
+                }
+                val rederived = console && wasPresent && usesLanguageNotFromDevkit(mpsProject, model, lang)
+                consoleAwareOk(
+                    console, jsonObject { addProperty("removed", wasPresent) },
+                    listOfNotNull(if (rederived) CONSOLE_REDERIVED_LANGUAGE_WARNING else null),
+                )
+            }
+
+            "devkit" -> {
+                val devkitRef = tryCreateReference {
+                    PersistenceFacade.getInstance().createModuleReference(usedLanguageRef)
+                }
+                    // Same name-fallback strategy as the language branch: search the model's
+                    // OWN imported devkits, resolving each through the repository so we can
+                    // compare by moduleName.
+                    ?: model.importedDevkits().firstOrNull { dkRef ->
+                        (dkRef.resolve(mpsProject.repository) as? DevKit)?.moduleName == usedLanguageRef
+                    }
+                    ?: return errJson("Devkit not found in model's used devkits: $usedLanguageRef")
+
+                if (protectedDevkits.any { it.moduleId == devkitRef.moduleId }) {
+                    return errJson(
+                        "Devkit '$usedLanguageRef' is a built-in MPS Console devkit (jetbrains.mps.console.devkit or a devkit " +
+                            "extending it) and cannot be removed: the console languages would be missing until Console > Clear.",
+                        McpErrorCode.INVALID_REQUEST,
+                    )
+                }
+
+                val wasPresent = model.importedDevkits().any { it == devkitRef }
+                if (wasPresent) {
+                    model.deleteDevKit(devkitRef)
+                    if (!console) model.save()
+                }
+                consoleAwareOk(console, jsonObject { addProperty("removed", wasPresent) })
+            }
+
+            else -> errJson("Invalid kind: $kind. Must be 'language' or 'devkit'.")
+        }
+    }
+
+    /**
+     * The success envelope of the import and used-language writes. A [console] write is marked with
+     * `"console": true` and carries the console lifetime warning ahead of [extraWarnings].
+     */
+    private fun consoleAwareOk(console: Boolean, payload: JsonObject, extraWarnings: List<String> = emptyList()): String {
+        if (!console) return okJson(payload, warnings = extraWarnings)
+        payload.addProperty("console", true)
+        return okJson(payload, warnings = listOf(CONSOLE_LIFETIME_WARNING) + extraWarnings)
+    }
+
+    /**
+     * Whether a node in [model] (the console input or history) has a concept of [language] that no
+     * imported devkit provides; `ModelDependencyUpdate.updateUsedLanguages` re-adds only those.
+     */
+    private fun <M> usesLanguageNotFromDevkit(mpsProject: MPSProject, model: M, language: SLanguage): Boolean
+        where M : SModel, M : SModelInternal {
+        val fromDevkit = model.importedDevkits().any { ref ->
+            (ref.resolve(mpsProject.repository) as? DevKit)?.allExportedLanguageIds?.contains(language) == true
+        }
+        return !fromDevkit && SNodeUtil.getDescendants(model).any { it.concept.language == language }
+    }
+
+    /** Whether a reference in [model] (the console input or history) points into [target]. */
+    private fun referencesModel(model: SModel, target: SModelReference): Boolean =
+        SNodeUtil.getDescendants(model).any { node -> node.references.any { it.targetSModelReference == target } }
+
 
     // ---- CREATE ----
     @McpTool
@@ -552,6 +638,19 @@ class JetBrainsMPSModelMcpToolset : AbstractOps() {
             }
         }
         return null
+    }
+
+    private companion object {
+        const val CONSOLE_LIFETIME_WARNING =
+            "Console model imports and used languages last until Console > Clear, a plugin reload or project close; " +
+                "module dependencies stay until the console module is recreated. On reopen, only imports referenced " +
+                "by history commands are restored."
+        const val CONSOLE_REDERIVED_IMPORT_WARNING =
+            "The console still references this model, so it may add the import back: the next execute or paste " +
+                "re-derives imports from the input and history, Clear from the input only."
+        const val CONSOLE_REDERIVED_LANGUAGE_WARNING =
+            "The console still uses this language, so it may add it back: the next execute or paste re-derives " +
+                "used languages from the input and history, Clear from the input only."
     }
 
 }

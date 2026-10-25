@@ -1,6 +1,8 @@
 # Plan: run language migrations over MCP without the Migration Assistant dialog (D48)
 
-Status: analysis done (2026-10-08), nothing implemented. Defect record: D48 in
+Status: implemented (2026-10-12), uncommitted. Parts A, B and C are in, `build.mps` carries the
+dependency, both test suites are green and live S4 ran without `MODAL_BLOCKED`. Section 7 lists what
+was built and where it deviates from this plan; `d48-handoff.md` has the working state. Defect record: D48 in
 `study/docs-defects.md` (S4-sonnet-1, round 9: server calls 52-56 all `MODAL_BLOCKED`, EDT blocked
 in `Dialog.show` under `MigrationTrigger.runMigration`). Scenario S4 (`study/scenarios/S4/`) is the
 measurement cell; `study/scenarios.md` calls its apply half "blocked for a tool gap".
@@ -311,3 +313,208 @@ language makes.
 3. Tests (section 3), `McpWorkspaceToolsTestSuite` + `McpContractAndSkillsTestSuite`.
 4. Docs (section C), skill propagation, `SkillCatalogReplicationTest`.
 5. Live S4 round (section 4), D48 to the archive.
+
+## 7. Implementation status (2026-10-12)
+
+### Done (JVM side, uncommitted)
+
+- `migration/HeadlessMigrations.kt`: the engine (`MigrationSetup` → `MigrationSessionImpl` with the
+  wizard's step flags → `MigrationTask` → `saveAll`), the CHECK projection, the blockers, and the
+  count behind `migrationsPending`. A recording `MigrationExecutor` wraps
+  `NotifyingMigrationExecutor(MigrationExecutorImpl)` and reads each module's stamp around the step.
+- `JetBrainsMPSMigrationMcpToolset.kt`: `mps_mcp_run_migrations`, registered in `plugin.xml`.
+- `migration/MigrationAssistantGuard.kt`: the B1 `ToolCallListener` plus a light project service
+  (`MigrationAssistantSuppression`) that is the suppression owner and is disposed with its project.
+- B3: `MakeResult.migrationsPending`, computed in `performMake` after a successful make with a
+  language target; `MAKE` adds `migrationsPending` and, above 0, `migrationsHint`.
+- `mcp-tools.iml` (`migration-platform`, `migrations-runtime`), `plugin.xml` `<depends>` on
+  `jetbrains.mps.ide.migration.workbench`.
+- Tests: `JetBrainsMPSMigrationMcpToolsetIntegrationTest` in `McpWorkspaceToolsTestSuite`; the
+  suite loads `mps-modelchecker` and `mps-migration`; the toolset is added to the reflective lists
+  in `McpJsonOrTextWireShapeTest` and `SkillScriptsDriftTest`; `AbstractOpsMakeTest` asserts no
+  count on a no-op make; the `mcp-tools-index.md` budget in `SkillReferenceLayoutTest` went from
+  17 920 to 18 432 bytes.
+- Docs: `mps-aspect-migrations` step 7 and `references/run-migrations.md`, the tool row in
+  `mcp-tools-index.md`, both propagated; study `scenarios.md` (S4), `docs-defects.md` (D48 status),
+  `mps_control.sh start` (`-Dmps.migration.assistant.auto=false`; `MIGRATION_ASSISTANT_AUTO=true`
+  keeps the wizard only until the first `mps_mcp_*` call).
+
+### Deviations from sections 2 and 3
+
+1. **The engine lives in mcp-tools, the trigger only owns the lifecycle (A3).** Instead of
+   `runMigrationsHeadless(...)` returning a `HeadlessMigrationOutcome` built in the MPS model, the
+   trigger gets `runHeadlessMigration(Runnable)` and the tool passes it the engine run. Both paths
+   (trigger in the IDE, `HeadlessMigrationExecutor` in tests) then run the same code, so the
+   integration tests cover what the live IDE executes; with the plan's split the tests would only
+   have covered the inline copy. It also shrinks the model change to a few short methods.
+2. **`suppressAutoAssistant(Disposable owner)`, no `releaseAutoAssistant` (A1).** `MigrationBlock`
+   is package-private, so `MigrationBlock.BlockCause` cannot be named from mcp-tools even though
+   the nested class is public. A `Disposable` owner removes the pairing discipline: the
+   suppression ends when the owner (the project service) is disposed.
+3. **`getNotDeployedUsedLanguages` stays package-private (A4).** The tool computes the same set
+   itself (used languages of the migrateable project modules without a runtime), which the headless
+   path needs anyway.
+4. **`operation: CHECK | APPLY` instead of `mode: check | apply` (B2).** Every other mode-switching
+   tool uses `operation`, and the study's call log records `operation` as its `op` column. Matching
+   is case-insensitive.
+5. **Two blockers became `runtimeProblems` (B2).** "languages not deployed" and "language runtime
+   stale" are reported in CHECK (and in APPLY's `planned`) but do not refuse APPLY, and are scoped
+   to the checked modules. As blockers, one never-built sandbox language anywhere in the project
+   made APPLY impossible, while the wizard's explicit run ignores `NOT_DEPLOYED` and
+   `MigrationSetup` already skips the version update when dependencies are missing. The blockers
+   are a running make session, a project migrated by a newer MPS, and another APPLY running (one
+   APPLY at a time in the IDE).
+6. **Cancellation, progress, recount (B2).** The engine's progress monitor never reports
+   cancellation: `MigrationTask` has no cancellation points, and the checkers that poll
+   `isCanceled()` return a partial result, which would let a halting pre-check pass. A cancellation
+   before the run still stops it. Steps arrive on the EDT under the write lock, so they are only
+   recorded there and a coroutine forwards the latest one to `reportToolActivity` every 500 ms. The
+   `remaining` recount after APPLY has no timeout and its failure only drops the field with a
+   warning, since the migrations are already written by then. The scope is passed as module
+   references and resolved inside each read, because the sync and reload at the start of a run
+   replace module instances.
+7. **Answer shape (B2).** `errors[]` became `error: {shortMessage, message, canIgnore, problemCount,
+   problems:[{message, path, pathKind}]}` (one `MigrationError` per run, problems capped at 200);
+   APPLY adds `remaining` (pending counts after the run) and `versionsUpdated`; `toVersion` is
+   `fromVersion + 1`. Before writing, APPLY probes the EDT for 10 s and answers `MODAL_BLOCKED`
+   when a dialog (typically the wizard opened before the suppression) holds it.
+8. **Test environment (section 3).** The suite adds `mps-modelchecker` and `mps-migration` by
+   folder, not `withMigrationPlugin()`, which also loads `mps-project-migrations` and would make
+   every fixture report pending project migrations. A real make is not guaranteed in the test
+   environment (see `JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest`), so the end-to-end
+   language-migration test uses `assumeTrue` on `success && runtimeReady`; a version-update test
+   covers APPLY without a make.
+
+### Part A contract (what mcp-tools compiles against)
+
+The code below is the contract as first written. Live verification later added `myPostponeLock` and a
+`myHeadlessRunning` check to `postponeWithoutAssistant`, and the second review put both
+`expireRequired()` calls of `runHeadlessMigration` under that lock; the generated
+`MigrationTrigger.java` is the current state.
+
+On `MigrationTrigger` (`jetbrains.mps.ide.migration`, node `6781485246382122239`):
+
+```java
+private static final String AUTO_ASSISTANT_PROPERTY = "mps.migration.assistant.auto";
+private final Set<Disposable> myAssistantSuppressors = ConcurrentHashMap.newKeySet();
+private final AtomicBoolean myHeadlessRunning = new AtomicBoolean(false);
+
+/** Until owner is disposed, a check that finds pending migrations posts the "Migration required"
+ *  balloon instead of opening the wizard. Explicit runs (force) are unaffected. */
+public void suppressAutoAssistant(@NotNull Disposable owner) {
+  if (myAssistantSuppressors.add(owner)) {
+    Disposer.register(owner, () -> myAssistantSuppressors.remove(owner));
+  }
+}
+
+public boolean isAutoAssistantSuppressed() {
+  return !myAssistantSuppressors.isEmpty() || "false".equalsIgnoreCase(System.getProperty(AUTO_ASSISTANT_PROPERTY));
+}
+
+/** Runs migration (the caller drives MigrationTask) off the EDT, with checks blocked. */
+public void runHeadlessMigration(@NotNull Runnable migration) {
+  if (!myHeadlessRunning.compareAndSet(false, true)) {
+    throw new IllegalStateException("A headless migration is already running in this project");
+  }
+  MigrationBlock.BlockCause cause = new MigrationBlock.BlockCause("migration is running headlessly");
+  myMigrationBlock.blockMigrationsCheck(cause);
+  myMigrationRunning = true;
+  // before the run: a human clicking the balloon's Migrate meanwhile would get the modal
+  // "Migration can't start", which stalls every invokeAndWait of the run until it is dismissed
+  myNotifications.expireRequired();
+  try {
+    syncRefresh();
+    migration.run();
+  } finally {
+    try {
+      // also after a failed run: partly migrated models must be re-read
+      cleanup();
+    } finally {
+      myPostponedState.set(null);
+      // a check queued before the run may have posted a balloon from the half-migrated state
+      myNotifications.expireRequired();
+      myMigrationRunning = false;
+      myHeadlessRunning.set(false);
+      // sets myShouldCheckAfterUnblock, so the unblock below re-checks once and re-announces what
+      // the run left pending (a balloon while suppressed); no second, racing check
+      myMigrationBlock.isMigrationForbidden();
+      myMigrationBlock.unblockMigrationsCheck(cause);
+    }
+  }
+}
+```
+
+Deliberately not `synchronized`: `scheduleMigration` is, and the *Run Migration Assistant* action
+calls it on the EDT, which would then wait for the monitor while the run waits in `invokeAndWait`
+for the EDT. With the guard, that action during a run meets the run's block cause and shows "Migration
+can't start", a modal that only pauses the run until it is dismissed.
+
+In `scheduleMigration(force)`, right after the existing `force` gate:
+
+```java
+if (!force && isAutoAssistantSuppressed()) {
+  postponeWithoutAssistant();
+  return;
+}
+```
+
+and the same test again inside the `invokeLater` lambda, before the `Task.Modal`, because a check
+queued before the first tool call (the project-open check) would otherwise still show the modal
+progress and the wizard: when it holds there, call `postponeWithoutAssistant()` (so the
+`MigrationSetup` is computed on a pooled thread, not on the EDT) and let the existing `finally`
+unblock `scheduledBlockCause`.
+
+```java
+private void postponeWithoutAssistant() {
+  final MigrationBlock.BlockCause cause = new MigrationBlock.BlockCause("migration is already scheduled");
+  myMigrationBlock.blockMigrationsCheck(cause);
+  ApplicationManager.getApplication().executeOnPooledThread(() -> {
+    try {
+      if (myProject.isDisposed()) {
+        return;
+      }
+      MigrationSetup setup = myMpsProject.getModelAccess().computeReadAction(() -> new MigrationSetup(myMpsProject));
+      PostponedState newState = PostponedState.current(setup);
+      if (newState.hasSomethingToApply()) {
+        myPostponedState.set(newState);
+        myNotifications.showRequired(setup);
+      }
+    } finally {
+      myMigrationBlock.unblockMigrationsCheck(cause);
+    }
+  });
+}
+```
+
+On `MigrationNotificationsSupport` (node `2632090902167058889`):
+
+```java
+public void expireRequired() {
+  if (myLastNotification != null && myLastNotification.getType() == NotificationType.INFORMATION) {
+    myLastNotification.expire();
+    myLastNotification = null;
+  }
+}
+```
+
+Then regenerate `jetbrains.mps.ide.migration` (its `source_gen` is committed), build
+`migration-platform` and `mcp-tools` in IDEA, and add to `build.mps` (`mpsMcpTools` compile
+classpath) `${artifacts.mpsMigrationCore}/migration-platform/lib/migration-platform.jar`, the
+migrations runtime jar if it is not already in `mps-core.jar`, and the plugin dependency, then
+regenerate `build/mpsMcpTools.xml` (`mps-distribution-build` skill).
+
+### Still to do
+
+Nothing from the original list: Part A is in the model, the `TODO(D48 part A)` stubs are restored,
+`build.mps` and `build/mpsMcpTools.xml` carry the dependency, the suites are green and live
+verification is done (D48 row in `study/docs-defects.md`). The open items are in `d48-handoff.md`.
+
+## 8. Superseded: the suppression lease (2026-10-22)
+
+B1 and deviation 2 above describe a per-project suppression lease (a counted `Disposable` token
+with a scheduled expiry). It was replaced by a single application-wide deadline on
+`MigrationTrigger`, bumped by every `mps_mcp_*` call and kept ahead by a per-call heartbeat in
+`performMake`, `APPLY` and `reload_all`. The design, the review findings it closes and the
+behaviour table are in `d48-deadline-suppression-plan.md`; the trigger's public API is now
+`suppressAutoAssistantFor(long)`, `isAutoAssistantSuppressed()` and
+`clearAutoAssistantSuppression()`, all static.

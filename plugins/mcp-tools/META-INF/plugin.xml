@@ -9,6 +9,7 @@
   <depends>jetbrains.mps.core</depends>
   <depends>com.intellij.modules.mps</depends>
   <depends>jetbrains.mps.ide.java</depends>
+  <depends>jetbrains.mps.ide.migration.workbench</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSProjectMcpToolset" />
@@ -19,15 +20,20 @@
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSRootNodeMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSTypesMcpToolset" />
+    <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSDataflowMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSIntentionsMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSEditorMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSLanguageStructureMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSJavaMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSRunConfigurationMcpToolset" />
+    <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSMigrationMcpToolset" />
+    <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSGenerationMcpToolset" />
     <mcpServer.mcpToolset implementation="jetbrains.mps.agents.mcp.tools.JetBrainsMPSInitMcpToolset" />
   </extensions>
   <applicationListeners>
     <!-- Optional per-call JSON-lines log; active only with -Dmps.mcp.calllog=<file>. -->
     <listener class="jetbrains.mps.agents.mcp.tools.logging.McpCallLogListener" topic="com.intellij.mcpserver.ToolCallListener" />
+    <!-- Suppresses the Migration Assistant auto-start in a project once an agent calls an mps_mcp_* tool (D48). -->
+    <listener class="jetbrains.mps.agents.mcp.tools.migration.MigrationAssistantGuard" topic="com.intellij.mcpserver.ToolCallListener" />
   </applicationListeners>
 </idea-plugin>

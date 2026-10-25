@@ -7,6 +7,7 @@ import com.google.gson.JsonParser
 import com.intellij.diagnostic.ThreadDumper
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.TransactionGuard
 import com.intellij.openapi.application.impl.LaterInvocator
 import com.intellij.testFramework.IndexingTestUtil
 import kotlinx.coroutines.delay
@@ -49,9 +50,8 @@ class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
 
     /**
      * Opening the fresh test project and creating its modules (in the base-class `@Before`s) starts
-     * scanning/indexing. Since 263, a dumb-mode write action transferred to the EDT while a modal
-     * state entered via [enterModal] is active fails as write-unsafe and can deadlock the test, so the
-     * modal state must only be entered once indexing is over.
+     * scanning/indexing. Letting it finish first keeps dumb-mode transitions out of the modal window;
+     * [enterModal] explains why such a transition must not fail there anyway.
      */
     @Before
     fun waitForIndexing() {
@@ -64,14 +64,31 @@ class AbstractOpsModalTimeoutTest : McpIntegrationTestBase() {
         invokeAndWaitOnEdt { LaterInvocator.leaveAllModals() }
     }
 
-    private fun invokeAndWaitOnEdt(action: () -> Unit) {
-        ApplicationManager.getApplication().invokeAndWait(action, ModalityState.any())
+    private fun invokeAndWaitOnEdt(modality: ModalityState = ModalityState.any(), action: () -> Unit) {
+        ApplicationManager.getApplication().invokeAndWait(action, modality)
     }
 
-    /** Enters a fresh modal state (as a real modal dialog's `show()` would) and returns its entity. */
+    /**
+     * Enters a fresh modal state (as a real modal dialog's `show()` would) and returns its entity.
+     *
+     * The modal state is entered from a write-safe context (`nonModal`, not `any`), as a dialog shown
+     * from a user action is: `TransactionGuardImpl.enteredModality` records the new modality as
+     * write-safe only if writing is allowed at that moment. Dumb-mode transitions transfer
+     * a write action (firing a PSI modification event) to the EDT; under a write-unsafe modality
+     * `TransactionGuard` rejects it as "Write-unsafe context", which kills the DumbService coroutine
+     * mid-transition, so smart mode never returns and `ModuleInProjectTest.after` hangs. Waiting for
+     * smart mode first only narrows that window, as the end-to-end test stays modal for ~30s.
+     */
     private fun enterModal(): Any {
+        waitForSmartMode()
         val entity = Any()
-        invokeAndWaitOnEdt { LaterInvocator.enterModal(entity) }
+        invokeAndWaitOnEdt(ModalityState.nonModal()) {
+            LaterInvocator.enterModal(entity)
+            assertTrue(
+                "the fake modal dialog must be write-safe, like a real one shown from a user action",
+                TransactionGuard.getInstance().isWriteSafeModality(ModalityState.current())
+            )
+        }
         return entity
     }
 

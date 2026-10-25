@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools.java
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.languages.*
+import jetbrains.mps.agents.mcp.tools.common.UsedLanguages
 
 import com.intellij.openapi.diagnostic.Logger
 import jetbrains.mps.classloading.ClassLoaderManager
@@ -13,7 +14,6 @@ import jetbrains.mps.messages.IMessage
 import jetbrains.mps.messages.IMessageHandler
 import jetbrains.mps.progress.EmptyProgressMonitor
 import jetbrains.mps.project.AbstractModule
-import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.structure.modules.Dependency
 import jetbrains.mps.smodel.DynamicReference
 import jetbrains.mps.smodel.ModelDependencyResolver
@@ -25,11 +25,9 @@ import jetbrains.mps.smodel.constraints.ModelConstraints
 import jetbrains.mps.smodel.language.LanguageRegistry
 import jetbrains.mps.typechecking.TypecheckingFacade
 import org.jetbrains.mps.openapi.language.SContainmentLink
-import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SModelReference
 import org.jetbrains.mps.openapi.model.SNode
-import org.jetbrains.mps.openapi.module.SDependencyScope
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import kotlinx.coroutines.CancellationException
@@ -38,13 +36,13 @@ import java.lang.reflect.Field
 /**
  * Java parser -> MPS reference-resolution engine for [JetBrainsMPSJavaMcpToolset]. Given freshly
  * parsed-and-inserted baseLanguage nodes, it iteratively resolves their method/type/dynamic
- * references, expands the model's used-languages and cross-model imports, and reports whether the
- * JDK module dependency needs adding. Extracted from the toolset so the toolset stays thin
+ * references, expands the model's used-languages and cross-model imports, and manages the JDK
+ * module dependency needed during resolution. Extracted from the toolset so the toolset stays thin
  * (dispatch + serialization) and this engine is exercisable on its own.
  *
  * Stateless apart from its [logger]; every operation takes the (model, repo, inserted, options) it
  * works on. JetBrainsMPSJavaMcpToolset.finalizeInsertedNodes is the sole caller: it runs
- * [resolveIteratively] and stages the [ensureJDKDependency] result onto the success path.
+ * [addJDKDependency] before [resolveIteratively], then keeps or removes it according to the outcome.
  */
 internal class JavaParseResolver {
     private val logger = Logger.getInstance(JavaParseResolver::class.java)
@@ -57,7 +55,7 @@ internal class JavaParseResolver {
 
     private companion object {
         // The built-in JDK module's reference. jetbrains.mps.baseLanguage relies on it for the
-        // java.lang.* classpath; ensureJDKDependency adds it when the target module lacks it.
+        // java.lang.* classpath; addJDKDependency adds it when the target module lacks it.
         const val JDK_MODULE_REFERENCE = "6354ebe7-c22a-4a0f-ac54-50b52ab9b065(JDK)"
     }
 
@@ -288,29 +286,11 @@ internal class JavaParseResolver {
         }
     }
 
-    // Imports each candidate language as a used-language of [model], skipping any the model already
-    // uses or that a DevKit already provides. Shared by finalizeResolutionDependencies (parser-
-    // declared languages) and updateModelDependencies (languages found by scanning inserted nodes).
-    private fun addMissingUsedLanguages(
-        model: SModel,
-        repo: SRepository,
-        imports: ModelImports,
-        candidates: Iterable<SLanguage>
-    ) {
-        val alreadyUsed = ModelDependencyResolver(LanguageRegistry.getInstance(repo), repo).usedLanguages(model)
-        for (lang in candidates) {
-            if (!alreadyUsed.contains(lang) && !isLanguageProvidedByDevKit(model, repo, lang)) {
-                imports.addUsedLanguage(lang)
-            }
-        }
-    }
-
     // c2: Deferred used-language finalization. Runs after the resolution loop on the success path,
     // and also on the early-return path when doResolveRefs is false. The parser-declared language
     // imports used to run BEFORE the loop, but moving them after means a mid-loop exception leaves
-    // the model unchanged in memory. The JDK dependency is finalized separately by the caller
-    // (finalizeInsertedNodes), which stages the descriptor mutation onto the success path only;
-    // ensureJDKDependency is side-effect-free, so it is intentionally not called here.
+    // the model unchanged in memory. The caller stages the JDK dependency separately and removes it
+    // when resolution fails or the insert is not persisted.
     //
     // parseResult.languages only reflects what JavaParser itself produced. Post-parse adapters
     // (e.g. ConceptBehaviorJavaParseAdapter) can graft in nodes of languages the parser never
@@ -330,31 +310,31 @@ internal class JavaParseResolver {
             val scanner = ModelDependencyScanner()
             scanner.usedLanguages(true).walk(inserted)
             val candidates = (parseResult.languages ?: emptySet()) + scanner.usedLanguages
-            addMissingUsedLanguages(model, repo, ModelImports(model), candidates)
+            UsedLanguages.addMissing(model, repo, ModelImports(model), candidates)
         }
     }
 
-    internal fun ensureJDKDependency(model: SModel): Dependency? {
+    internal fun addJDKDependency(model: SModel): Dependency? {
         val module = model.module as? AbstractModule ?: return null
         val jdkRef = PersistenceFacade.getInstance().createModuleReference(JDK_MODULE_REFERENCE)
         if (module.scope.resolve(jdkRef) != null) return null
 
-        // Guard: a module with no descriptor can't receive the dependency the caller would add,
-        // so return null rather than a Dependency that would be silently dropped (and avoid a
-        // spurious setChanged() on the caller side).
-        module.moduleDescriptor ?: return null
-        // Staged: the actual add + setChanged() is performed by the caller in
-        // finalizeInsertedNodes after resolveIteratively has succeeded.
-        return Dependency(jdkRef, SDependencyScope.DEFAULT, false)
+        val descriptor = module.moduleDescriptor ?: return null
+        if (descriptor.dependencies.any { it.moduleRef == jdkRef }) return null
+        return try {
+            module.addDependency(jdkRef, false)
+        } catch (addFailure: Throwable) {
+            try {
+                descriptor.dependencies.firstOrNull { it.moduleRef == jdkRef }?.let(module::removeDependency)
+            } catch (cleanupFailure: Throwable) {
+                addFailure.addSuppressed(cleanupFailure)
+            }
+            throw addFailure
+        }
     }
 
-    private fun isLanguageProvidedByDevKit(model: SModel, repo: SRepository, lang: SLanguage): Boolean {
-        if (model !is SModelInternal) return false
-        for (dkRef in model.importedDevkits()) {
-            val dk = dkRef.resolve(repo) as? DevKit ?: continue
-            if (dk.allExportedLanguageIds.any { it == lang }) return true
-        }
-        return false
+    internal fun removeJDKDependency(model: SModel, dependency: Dependency) {
+        (model.module as? AbstractModule)?.removeDependency(dependency)
     }
 
     // `importUsedLanguages` gates language imports only. Cross-model reference imports are always
@@ -371,7 +351,7 @@ internal class JavaParseResolver {
         scanner.usedLanguages(true).crossModelReferences(true).walk(inserted)
 
         if (importUsedLanguages) {
-            addMissingUsedLanguages(model, repo, imports, scanner.usedLanguages)
+            UsedLanguages.addMissing(model, repo, imports, scanner.usedLanguages)
         }
 
         val effectiveImportedModels = mutableSetOf<SModelReference>()
@@ -426,22 +406,6 @@ internal class JavaParseResolver {
         doResolveRefs: Boolean,
         parseResult: JavaParser.JavaParseResult
     ): List<String> {
-        // c2: ensureJDKDependency and the initial parser-declared-language imports used to run
-        // here, before the resolution loop. That made them load-bearing for resolution (the
-        // tryResolveRefs pass needs JDK in scope to resolve java.lang.* references and the
-        // parser-declared languages to find concept-level refs), but it also meant that if the
-        // loop threw mid-way the model retained those imports and the module retained the JDK
-        // dependency in memory. Now the parser-declared language imports run AFTER the loop, in
-        // finalizeResolutionDependencies, and the JDK dependency is added by finalizeInsertedNodes
-        // on the success path (see ensureJDKDependency).
-        //
-        // Trade-off: in modules that do not already have JDK in scope, the loop's tryResolveRefs
-        // pass will not be able to resolve JDK references — they remain Unknown until the
-        // post-loop pass adds JDK and the user re-runs resolution. The in-loop
-        // updateModelDependencies still expands scope iteratively for cross-model refs found in
-        // the inserted nodes, so resolution quality is unaffected for modules that already have
-        // JDK and for non-JDK cross-model refs.
-
         if (!doResolveRefs) {
             finalizeResolutionDependencies(model, repo, inserted, doImportLang, parseResult)
             return emptyList()
@@ -463,9 +427,9 @@ internal class JavaParseResolver {
         val smodelLanguage = SmodelLanguageMeta.smodelLanguage
         val smodelAvailable = doImportLang ||
             importedBeforeResolve?.contains(smodelLanguage) == true ||
-            isLanguageProvidedByDevKit(model, repo, smodelLanguage)
+            UsedLanguages.isProvidedByDevKit(model, repo, smodelLanguage)
         fun smodelInScope() = (model as? SModelInternal)?.importedLanguageIds()?.contains(smodelLanguage) == true ||
-            isLanguageProvidedByDevKit(model, repo, smodelLanguage)
+            UsedLanguages.isProvidedByDevKit(model, repo, smodelLanguage)
 
         val slots = slotsOf(inserted)
         fun resync() = resyncDetached(inserted, slots)

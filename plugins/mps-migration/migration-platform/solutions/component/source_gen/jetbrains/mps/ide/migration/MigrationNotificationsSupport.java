@@ -105,6 +105,13 @@ import jetbrains.mps.internal.collections.runtime.IterableUtils;
     return true;
   }
 
+  public void expireRequired() {
+    if (myLastNotification != null && myLastNotification.getType() == NotificationType.INFORMATION) {
+      myLastNotification.expire();
+      myLastNotification = null;
+    }
+  }
+
   private NotificationGroup getNotifyGroup() {
     return NotificationGroupManager.getInstance().getNotificationGroup("Migration");
   }

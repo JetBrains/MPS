@@ -184,7 +184,7 @@ public class EnvironmentConfig {
   }
 
   public EnvironmentConfig withModelCheckerPlugin() {
-    return addDistributedPlugin("mps-modelchecker", "jetbrains.mps.ide.modelchecker");
+    return withPlatformVcsPlugin().addDistributedPlugin("mps-modelchecker", "jetbrains.mps.ide.modelchecker");
   }
 
   public EnvironmentConfig withMigrationPlugin() {

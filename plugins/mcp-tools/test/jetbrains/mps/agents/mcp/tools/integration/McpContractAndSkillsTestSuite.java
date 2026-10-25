@@ -9,6 +9,8 @@
  */
 package jetbrains.mps.agents.mcp.tools.integration;
 
+import jetbrains.mps.agents.mcp.tools.unit.GenerationOpsStepsTest;
+import jetbrains.mps.agents.mcp.tools.unit.GenerationTraceRoleTest;
 import jetbrains.mps.agents.mcp.tools.unit.IdeLogReaderTest;
 import jetbrains.mps.agents.mcp.tools.unit.JetBrainsMPSInitMcpToolsetTest;
 import jetbrains.mps.agents.mcp.tools.unit.McpTestSelectionTest;
@@ -17,10 +19,12 @@ import jetbrains.mps.agents.mcp.tools.unit.McpToolParameterOptionalityTest;
 import jetbrains.mps.agents.mcp.tools.unit.MigrationXmlExampleTest;
 import jetbrains.mps.agents.mcp.tools.unit.MpsRuntimeVersionTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillCatalogReplicationTest;
+import jetbrains.mps.agents.mcp.tools.unit.SkillDataflowQueryRoutingTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillReferenceLayoutTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillScriptsPackagingTest;
 import jetbrains.mps.agents.mcp.tools.unit.SkillTypeQueryRoutingTest;
 import jetbrains.mps.agents.mcp.tools.unit.SuiteRegistrationGuardTest;
+import jetbrains.mps.agents.mcp.tools.unit.TransientStereotypeParserTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -48,9 +52,13 @@ import org.junit.runners.Suite;
     SkillCatalogReplicationTest.class,
     SkillReferenceLayoutTest.class,
     SkillTypeQueryRoutingTest.class,
+    SkillDataflowQueryRoutingTest.class,
     MigrationXmlExampleTest.class,
     MpsRuntimeVersionTest.class,
     IdeLogReaderTest.class,
+    GenerationOpsStepsTest.class,
+    TransientStereotypeParserTest.class,
+    GenerationTraceRoleTest.class,
     McpTestSelectionTest.class,
     SuiteRegistrationGuardTest.class,
 })

@@ -30,10 +30,13 @@ import jetbrains.mps.project.Solution
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.modules.SolutionProducer
 import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.language.LanguageRegistry
+import jetbrains.mps.smodel.language.LanguageRuntime
 import jetbrains.mps.tool.environment.Environment
 import jetbrains.mps.vfs.IFile
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.JsonObject
+import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SModelName
 import org.jetbrains.mps.openapi.model.SNode
@@ -183,6 +186,14 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
 
     protected fun <T> readOnRepo(block: () -> T): T =
         myProject.modelAccess.computeReadAction<T> { block() }
+
+    protected fun languageRuntime(namespace: String): LanguageRuntime =
+        checkNotNull(LanguageRegistry.getInstance(myProject.repository).getLanguage(namespace)) { "$namespace is not deployed" }
+
+    /** The concrete concept [name] of the deployed language [namespace]. */
+    protected fun concept(namespace: String, name: String): SConcept = readOnRepo {
+        languageRuntime(namespace).identity.concepts.filterIsInstance<SConcept>().single { it.name == name }
+    }
 
     /** [response] is the missing-key rejection (study D49) listing exactly [expected], in order. */
     protected fun assertMissingParameterKeys(response: String, expected: List<String>) {

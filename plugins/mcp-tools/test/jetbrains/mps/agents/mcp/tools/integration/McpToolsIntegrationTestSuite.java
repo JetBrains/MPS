@@ -71,6 +71,7 @@ public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
     EnvironmentConfig cfg = EnvironmentConfig.defaultConfig()
         .withTestingPlugin()
         .withBuildPlugin()
+        .withModelCheckerPlugin()
         .withTestModeOn();
     String pluginsDir = PathManager.getPreInstalledPluginsPath();
     cfg.addPlugin(new File(pluginsDir, "debugger-api").getAbsolutePath(), "jetbrains.mps.debugger.api");
@@ -79,6 +80,11 @@ public class McpToolsIntegrationTestSuite extends BaseMpsSuite {
     cfg.addPlugin(new File(pluginsDir, "execution-languages").getAbsolutePath(), "jetbrains.mps.execution.languages");
     cfg.addPlugin(new File(pluginsDir, "execution-configurations").getAbsolutePath(), "jetbrains.mps.execution.configurations");
     cfg.addPlugin(new File(pluginsDir, "platform-testRunner-plugin").getAbsolutePath(), "platform-testRunner-plugin");
+    // mps_mcp_run_migrations needs the migration engine and its project service (MigrationProperties);
+    // the migration plugin depends on mps-modelchecker (which in 263 requires platform-vcs-plugin,
+    // which withModelCheckerPlugin() above adds). Not withMigrationPlugin():
+    // that also adds mps-project-migrations, whose project migrations would make every fixture "pending".
+    cfg.addPlugin(new File(pluginsDir, "mps-migration").getAbsolutePath(), "jetbrains.mps.ide.migration.workbench");
     ourEnvironment = new IdeaEnvironment(cfg);
     ourEnvironment.init();
   }

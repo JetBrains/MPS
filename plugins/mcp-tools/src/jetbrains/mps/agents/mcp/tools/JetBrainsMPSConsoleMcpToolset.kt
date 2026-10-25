@@ -32,6 +32,13 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
         // BLCommand extends GeneratedCommand which implements the console `Command` interface.
         private const val BL_COMMAND_CONCEPT = "jetbrains.mps.console.base.structure.BLCommand"
         private const val STATEMENT_LIST_CONCEPT = "jetbrains.mps.baseLanguage.structure.StatementList"
+        private const val DIALOG_CONSOLE_TAB_FQN = "jetbrains.mps.console.tool.DialogConsoleTab"
+
+        private val CLEAR_CONSOLE_WARNINGS = listOf(
+            "The console module's module dependencies stay, so names that resolved through them still resolve.",
+            "After a clear, references into the console history are invalid; only a kept input command keeps its reference.",
+            "A plugin reload (mps_mcp_reload_all) preserves the current console history rather than restoring the history from when the project opened.",
+        )
 
         // A response preview lays out the whole Response in a headless editor only to keep 200 chars, so
         // a response with more printed items than this (e.g. a `forEach` that `#print`s every node) gets
@@ -386,6 +393,83 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
             toolFailure("Running the current MPS console command", e)
         })
     }
+
+    @McpTool
+    @McpDescription(
+        """
+        Clears the MPS Console — exactly as the Console toolbar's Clear button. **This deletes the user's console history** (every executed command and its response), and Ctrl+Z in the Console does not bring it back. Look at it first with `mps_mcp_get_console_history`, and check what would go with `dryRun`. The current input command survives, as with the button, unless `clearInput=true` removes it too. The console model then keeps only the built-in devkits plus the imports and used languages the remaining input references; the console module's module dependencies stay, so names that resolved through them still resolve. Use `clearInput=true` before a clean check of which imports a command needs. Every reference into the console except the kept input command is invalid afterwards. A plugin reload (`mps_mcp_reload_all`) preserves the current console history rather than restoring the history from when the project opened. Requires the MPS Console plugin. Returns `historyEntriesRemoved` (executed commands), `responsesRemoved`, and `inputKept`.
+    """
+    )
+    suspend fun mps_mcp_clear_console(
+        @McpDescription("Optional: if true, also remove the current input command, so the console keeps no imports beyond the built-in ones. Default: false (the input stays, as with the Clear button).") clearInput: Boolean = false,
+        @McpDescription("Optional: if true, only report what would be removed, without changing the console. Default: false.") dryRun: Boolean = false
+    ): String {
+        currentCoroutineContext().reportToolActivity("Clearing the MPS console")
+        val project = currentCoroutineContext().project
+        return McpCallOutcomes.record(try {
+            var reply: String = errJson("Clearing the MPS console did not complete", McpErrorCode.INTERNAL_ERROR)
+            withModalTimeoutOnEdt {
+                val console = when (val r = resolveConsoleEditableTab(project)) {
+                    is ConsoleResolution.Ok -> r
+                    is ConsoleResolution.Err -> {
+                        reply = r.errJson
+                        return@withModalTimeoutOnEdt
+                    }
+                }
+                if (!isDialogConsoleTab(console.tab)) {
+                    reply = errJson(
+                        "The current MPS Console tab (${console.tab.javaClass.simpleName}) cannot be cleared; only a dialog tab has a history to clear.",
+                        McpErrorCode.INVALID_REQUEST
+                    )
+                    return@withModalTimeoutOnEdt
+                }
+                val mpsProject = ProjectHelper.fromIdeaProject(project) ?: run {
+                    reply = errJson("No MPS project available", McpErrorCode.NOT_FOUND)
+                    return@withModalTimeoutOnEdt
+                }
+                val clearCommand = {
+                    val items = consoleHistoryItems(console.consoleModel)
+                    val commands = items.count { isConsoleCommandHolder(it) }
+                    val input = currentConsoleCommand(console.consoleModel)
+                    if (!dryRun) {
+                        val clear = console.tab.javaClass.getMethod("clear")
+                        if (clearInput) input?.delete()
+                        clear.invoke(console.tab)
+                    }
+                    jsonObject {
+                        addProperty("historyEntriesRemoved", commands)
+                        addProperty("responsesRemoved", items.size - commands)
+                        addProperty("inputKept", input != null && !clearInput)
+                        if (dryRun) addProperty("dryRun", true)
+                    }
+                }
+                // Mirror ConsoleClear_Action's UNDO_PROJECT access; a dry run only reads.
+                val data = try {
+                    if (dryRun) {
+                        mpsProject.modelAccess.computeReadAction(clearCommand)
+                    } else {
+                        var result: JsonObject? = null
+                        mpsProject.modelAccess.executeCommand { result = clearCommand() }
+                        result!!
+                    }
+                } catch (e: ReflectiveOperationException) {
+                    reply = errJson(
+                        "Failed to clear the MPS Console: ${reflectionFailureDetail(e)}",
+                        McpErrorCode.INTERNAL_ERROR
+                    )
+                    return@withModalTimeoutOnEdt
+                }
+                reply = okJson(data, warnings = CLEAR_CONSOLE_WARNINGS)
+            }
+            reply
+        } catch (e: Exception) {
+            toolFailure("Clearing the MPS console", e)
+        })
+    }
+
+    /** True when [tab] is a `DialogConsoleTab`, the only console tab `clear()` exists on. Checked by name: the console plugin is optional. */
+    private fun isDialogConsoleTab(tab: Any): Boolean =
+        generateSequence<Class<*>>(tab.javaClass) { it.superclass }.any { it.name == DIALOG_CONSOLE_TAB_FQN }
 
     /**
      * A console node preview. [complete] is true when [text] equals the trimmed `mps_mcp_print_node` PLAIN TEXT,

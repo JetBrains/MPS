@@ -29,8 +29,6 @@ import jetbrains.mps.newTypesystem.operation.block.AddDependencyOperation
 import jetbrains.mps.newTypesystem.operation.block.RemoveDependencyOperation
 import jetbrains.mps.newTypesystem.operation.equation.AddEquationOperation
 import jetbrains.mps.project.MPSProject
-import jetbrains.mps.smodel.Language
-import jetbrains.mps.smodel.ModuleRepositoryFacade
 import jetbrains.mps.smodel.SNodePointer
 import jetbrains.mps.typechecking.TypecheckingFacade
 import jetbrains.mps.typechecking.TypecheckingSession
@@ -520,14 +518,8 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
      * `{rule, ruleReference, statement}`: the ids name a node inside a rule, the rule is its root. Ids a
      * hand-written provider passes may not parse; the statement then keeps them as given.
      */
-    private fun ruleJsonObject(ruleModelId: String?, ruleNodeId: String?, mpsProject: MPSProject): JsonObject {
-        val pointer: SNodeReference? = runCatching { SNodePointer(ruleModelId, ruleNodeId) }.getOrNull()
-        return pointer?.let { ruleJsonObject(it, it.resolve(mpsProject.repository)?.containingRoot) } ?: JsonObject().apply {
-            addProperty("rule", null as String?)
-            addProperty("ruleReference", null as String?)
-            addProperty("statement", "$ruleModelId/$ruleNodeId")
-        }
-    }
+    private fun ruleJsonObject(ruleModelId: String?, ruleNodeId: String?, mpsProject: MPSProject): JsonObject =
+        ruleJsonObject(runCatching { SNodePointer(ruleModelId, ruleNodeId) }.getOrNull(), "$ruleModelId/$ruleNodeId", mpsProject.repository)
 
     /** A parsed type operand: the type itself, or a node whose type is still to be computed. */
     private sealed class Operand {
@@ -868,11 +860,7 @@ private class TypeTrace(
         val modelName = ruleClass.packageName
         val root = if (ruleClass.simpleName.endsWith(suffix) && modelName.endsWith(".typesystem")) {
             val ruleName = ruleClass.simpleName.removeSuffix(suffix)
-            ModuleRepositoryFacade(repository).getModulesByName(modelName.removeSuffix(".typesystem")).asSequence()
-                .filterIsInstance<Language>()
-                .flatMap { it.models.asSequence() }
-                .filter { it.name.longName == modelName }
-                .flatMap { it.rootNodes.asSequence() }
+            aspectModelRoots(repository, modelName, "typesystem")
                 .firstOrNull { it.concept.name == conceptName && it.name == ruleName }
         } else {
             null

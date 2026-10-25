@@ -4,19 +4,17 @@ import jetbrains.mps.agents.mcp.tools.DEFAULT_MAX_ROOT_NODES
 import jetbrains.mps.agents.mcp.tools.JetBrainsMPSNodeMcpToolset
 import jetbrains.mps.agents.mcp.tools.JetBrainsMPSTypesMcpToolset
 import jetbrains.mps.agents.mcp.tools.TypesQueryOperation
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.assertNamesAll
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.criticalDirectives
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.read
+import jetbrains.mps.agents.mcp.tools.unit.SkillRoutingDocs.toolDescription
 
-import com.intellij.mcpserver.annotations.McpDescription
-import com.intellij.mcpserver.annotations.McpTool
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.file.Files
-import java.nio.file.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.readText
-import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredFunctions
-import kotlin.reflect.full.findAnnotation
 
 /**
  * Doc-drift gate for the type-query routing in the blueprint skill catalog (MPS-40240 §6).
@@ -123,43 +121,13 @@ class SkillTypeQueryRoutingTest {
 
     // --- helpers ---------------------------------------------------------
 
-    private fun toolDescription(toolset: KClass<*>, tool: String): String =
-        toolset.declaredFunctions
-            .single { it.name == tool && it.findAnnotation<McpTool>() != null }
-            .findAnnotation<McpDescription>()!!.description
-
     private fun operationNames(): List<String> = TypesQueryOperation.entries.map { it.name }
-
-    private fun read(relative: String): String {
-        val file: Path = SkillCatalogCheckout.blueprint().resolve(relative)
-        assertTrue("$relative is missing from the blueprint catalog", file.isRegularFile())
-        return file.readText()
-    }
-
-    /**
-     * The `## Critical Directives` section of a `SKILL.md`: from its heading to the next `## `
-     * heading. Blockquotes and blank lines inside stay in, so every directive is seen, not just the
-     * first paragraph.
-     */
-    private fun criticalDirectives(relative: String): String {
-        val lines = read(relative).lines()
-        val start = lines.indexOfFirst { it.trimEnd() == CRITICAL_DIRECTIVES }
-        assertTrue("$relative has no `$CRITICAL_DIRECTIVES` section", start >= 0)
-        val end = (start + 1 until lines.size).firstOrNull { lines[it].startsWith("## ") } ?: lines.size
-        return lines.subList(start, end).joinToString("\n")
-    }
-
-    private fun assertNamesAll(source: String, text: String, tokens: List<String>) {
-        val missing = tokens.filterNot { text.contains(it) }
-        assertTrue("$source no longer names: ${missing.joinToString(", ")}", missing.isEmpty())
-    }
 
     private companion object {
         private const val WORKFLOW_SKILL = "mps-mcp-workflow/SKILL.md"
         private const val NODE_EDITING_SKILL = "mps-node-editing/SKILL.md"
         private const val LANGUAGE_ANALYSIS_SKILL = "mps-language-analysis/SKILL.md"
         private const val TYPE_QUERIES = "mps-mcp-workflow/references/analysis-tools/type-queries.md"
-        private const val CRITICAL_DIRECTIVES = "## Critical Directives"
         private const val QUERY_TYPES_TOOL = "mps_mcp_query_types"
         private const val UNCHECKED_SUBTREES = "uncheckedSubtrees"
 

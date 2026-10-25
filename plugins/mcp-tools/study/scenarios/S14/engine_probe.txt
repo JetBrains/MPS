@@ -1,0 +1,34 @@
+try {
+  Class<?> df = Class.forName("jetbrains.mps.lang.dataFlow.DataFlow");
+  ClassLoader cl = df.getClassLoader();
+  Class<?> pf = Class.forName("org.jetbrains.mps.openapi.persistence.PersistenceFacade", true, cl);
+  Object facade = pf.getMethod("getInstance").invoke(null);
+  Object ref = pf.getMethod("createNodeReference", String.class).invoke(facade, "r:ef31fc21-bbc2-41af-84c2-82df86dfcd50(flow.study.code)/915666084355835810");
+  Class<?> repoCls = Class.forName("jetbrains.mps.smodel.MPSModuleRepository", true, cl);
+  Object repo = repoCls.getMethod("getInstance").invoke(null);
+  Class<?> srepo = Class.forName("org.jetbrains.mps.openapi.module.SRepository", true, cl);
+  Class<?> snref = Class.forName("org.jetbrains.mps.openapi.model.SNodeReference", true, cl);
+  Object node = snref.getMethod("resolve", srepo).invoke(ref, repo);
+  Class<?> snode = Class.forName("org.jetbrains.mps.openapi.model.SNode", true, cl);
+  Object program = df.getMethod("buildProgram", snode).invoke(null, node);
+  Class<?> prog = program.getClass();
+  StringBuilder sb = new StringBuilder();
+  int size = (Integer) prog.getMethod("size").invoke(program);
+  for (int i = 0; i < size; i++) {
+    Object ins = prog.getMethod("get", int.class).invoke(program, i);
+    Object src = ins.getClass().getMethod("getSource").invoke(ins);
+    String sid = src == null ? "-" : String.valueOf(snode.getMethod("getNodeId").invoke(src));
+    String sc = src == null ? "-" : String.valueOf(snode.getMethod("getConcept").invoke(src));
+    sb.append(ins).append(" | src=").append(sid).append(" ").append(sc).append("\n");
+  }
+  Class<?> dfa = Class.forName("jetbrains.mps.lang.dataFlow.framework.DataFlowAnalyzer", true, cl);
+  Object rdA = Class.forName("jetbrains.mps.lang.dataFlow.framework.analyzers.ReachingDefinitionsAnalyzer", true, cl).getDeclaredConstructor(new Class<?>[0]).newInstance(new Object[0]);
+  Object rrA = Class.forName("jetbrains.mps.lang.dataFlow.framework.analyzers.ReachingReadsAnalyzer", true, cl).getDeclaredConstructor(new Class<?>[0]).newInstance(new Object[0]);
+  sb.append("=== REACHING DEFINITIONS\n").append(prog.getMethod("analyze", dfa).invoke(program, rdA));
+  sb.append("=== REACHING READS\n").append(prog.getMethod("analyze", dfa).invoke(program, rrA));
+  java.io.FileWriter fw = new java.io.FileWriter("/tmp/df-probe.txt"); fw.write(sb.toString()); fw.close();
+} catch (Throwable t) {
+  java.io.StringWriter w = new java.io.StringWriter();
+  t.printStackTrace(new java.io.PrintWriter(w));
+  try { java.io.FileWriter fw2 = new java.io.FileWriter("/tmp/df-probe.txt"); fw2.write("ERROR\n" + w); fw2.close(); } catch (Exception e) { }
+}

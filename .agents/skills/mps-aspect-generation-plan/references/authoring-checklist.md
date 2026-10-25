@@ -10,5 +10,5 @@ Open at the end of an authoring session for a final scan before merging.
 6. Add `Fork` steps for any output variant that needs its own generation branch (e.g., XML alongside Java).
 7. Add a `PlanContribution` root in the same model (or a separate model) if the fork should be conditional and not require modifying the main plan.
 8. Associate the plan with models via a DevKit (production) or the Custom generation facet (prototyping).
-9. Verify using **Show generation plan** in MPS and confirm all languages are covered.
+9. Verify with `mps_mcp_generation` `PLAN`: `planSource` is `EXPLICIT` and no `usedLanguages` entry is `NOT_IN_PLAN`.
 10. Run `mps_mcp_check_root_node_problems` to validate the plan node has no errors.

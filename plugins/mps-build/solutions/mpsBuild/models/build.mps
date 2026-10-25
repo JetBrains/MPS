@@ -74036,6 +74036,9 @@
       <node concept="nCB5N" id="X5qzrOgtl1" role="nCB5Z">
         <ref role="nCB5Y" node="6zSiHRgtmKh" resolve="kernel-resources" />
       </node>
+      <node concept="nCB5N" id="1f$9YSelJb8" role="nCB5Z">
+        <ref role="nCB5Y" node="1nJh0raUWjx" resolve="migration-platform" />
+      </node>
       <node concept="2GhqfE" id="6o2kRugjoEO" role="nCB5Z">
         <node concept="3yrxFa" id="6o2kRugjoEQ" role="3yrxIG">
           <ref role="3yrxFb" node="6o2kRugjorG" />
@@ -74075,6 +74078,9 @@
     </node>
     <node concept="2sgV4H" id="X5qzrOj7dh" role="1l3spa">
       <ref role="1l3spb" node="6IJvZDkyfZ_" resolve="mpsTrueBootstrap" />
+    </node>
+    <node concept="2sgV4H" id="1f$9YSelJb7" role="1l3spa">
+      <ref role="1l3spb" node="77ZqjhZbLRc" resolve="mpsMigrationCore" />
     </node>
   </node>
   <node concept="13uchq" id="6WWoVOxxbN1">

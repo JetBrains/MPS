@@ -537,6 +537,22 @@ Decoded `parameters`: `{ "nodeReference":"{{GEARBOX_REF}}", "childRole":"states"
 }
 ```
 - Validation: `ok==true`; `data.index==0` (Driving moved to the front of `states`).
+- Then repeat the call with the lone-child form, decoded `parameters`
+  `{ "childNodeRef":"{{GBX_DRIVING_REF}}", "position":0 }` (parent and role inferred from the child;
+  Driving is already at index 0, so nothing moves):
+```json
+{
+  "tool": "mps_mcp_alter_nodes",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "operation": "MOVE_CHILD",
+    "parameters": "{\"childNodeRef\":\"{{GBX_DRIVING_REF}}\",\"position\":0}"
+  }
+}
+```
+- Validation: `ok==true`; `data.index==0`; `details.parentReference=={{GEARBOX_REF}}`,
+  `details.childRole=="states"`, `details.inferredParameters==["parent","childRole"]`; no `warnings`
+  (a lone `nodeReference` instead of `childNodeRef` would add one saying how it was read).
 
 ---
 
@@ -554,7 +570,9 @@ Decoded `parameters`: `{ "nodeReference":"{{GBX_MOBILE_REF}}", "newParentRef":"{
 }
 ```
 - Validation: `ok==true`; `data.parentReference=={{OTHER_ROOT_REF}}` (Mobile now under
-  OtherStateChart). Note required keys: `newParentRef` (not `parentReference`) and `role`
+  OtherStateChart); `details.movedNode=={{GBX_MOBILE_REF}}`,
+  `details.previousParentReference=={{GEARBOX_REF}}`, `details.parentReference=={{OTHER_ROOT_REF}}`,
+  `details.role=="states"`. Note required keys: `newParentRef` (not `parentReference`) and `role`
   (not `childRole`).
 
 ---

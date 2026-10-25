@@ -56,7 +56,8 @@ sites. So **inside a `parameters` blob both spellings are accepted**:
 | `superConceptRef` | `superConceptReference` | `mps_mcp_query_structure` (`IS_SUBCONCEPT_OF`) |
 | `structureModelRef` | `structureModelReference` | `mps_mcp_alter_structure` |
 | `enumerationRef` | `enumerationReference` | `mps_mcp_query_structure` (`GET_ENUMERATION_LITERALS`) |
-| `nodeReference` | `nodeRef` | `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure`, `mps_mcp_query_types` operands and `EXPLAIN_TYPE` |
+| `nodeReference` | `nodeRef` | `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure`, `mps_mcp_query_types` operands and `EXPLAIN_TYPE`, `mps_mcp_query_dataflow` |
+| `programRoot` | `programRootReference` | `mps_mcp_query_dataflow` (`REACHING_WRITES`, `REACHING_READS`) |
 | `typeNodeReference` | `typeNodeRef` | `mps_mcp_query_types` operands |
 | `typeConceptRef` | `typeConceptReference` | `mps_mcp_query_types` operands |
 | `operatorNode` | `operatorNodeRef`, `operatorNodeReference` | `mps_mcp_query_types` (`OPERATION_TYPE`) |
@@ -131,8 +132,9 @@ value, so it is not reported.
 
 In `mps_mcp_query_nodes`, `mps_mcp_alter_nodes`, `mps_mcp_query_structure` and
 `mps_mcp_alter_structure`, once no unknown key is left, the operation checks the keys it requires
-and answers **every absent one in a single `INVALID_REQUEST`** — `nodeReference and childRole are
-required in 'parameters' for MOVE_CHILD. Retry with nodeReference set to …; childRole set to ….` —
+and answers **every absent one in a single `INVALID_REQUEST`** — for MOVE_NODE_TO_PARENT sent with
+`newParentRef` alone, `nodeReference and role are required in 'parameters' for MOVE_NODE_TO_PARENT.
+Retry with nodeReference set to …; role set to ….` —
 repeating them in `details.missingParameters`, as a top-level rejection does. A key is absent when
 no accepted spelling carries a non-null value; an empty string or a value of the wrong type counts
 as present and gets the operation's own error instead.
@@ -140,7 +142,8 @@ as present and gets the operation's own error instead.
 Alternative forms are part of the same check:
 
 - A choice between keys is named `one of a/b`: `one of conceptRef/conceptRefs` for FIND_INSTANCES,
-  `one of conceptsJson/interfaceConceptsJson/conceptNames` for CREATE_CONCEPTS, and
+  `one of conceptsJson/interfaceConceptsJson/conceptNames` for CREATE_CONCEPTS,
+  `one of nodeReference/childNodeRef` for MOVE_CHILD, and
   `one of newParentRef/modelReference` for MOVE_NODE_TO_PARENT. That name appears verbatim in
   `details.missingParameters` too, so an entry there is either a key or such a choice, never a
   key to send as written.

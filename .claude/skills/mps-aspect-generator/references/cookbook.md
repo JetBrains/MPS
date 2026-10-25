@@ -1,6 +1,6 @@
 # Cookbook recipes
 
-Read this when: applying a recognized recipe — parsing a Java template and attaching macros to its literals, multiple roots from one input, cross-reference wiring, unique IDs, extensible generators, debugging a failing step, breaking out of a reduction loop, choosing between switch vs. reduction, or extracting an inline LOOP into a standalone reduction.
+Read this when: applying a recognized recipe — parsing a Java template and attaching macros to its literals, multiple roots from one input, cross-reference wiring, unique IDs, extensible generators, debugging misgeneration (which rule produced a node), breaking out of a reduction loop, choosing between switch vs. reduction, or extracting an inline LOOP into a standalone reduction.
 
 ## Parse a Java template, then attach `$PROPERTY$` macros to its literals
 
@@ -40,12 +40,9 @@ To let other generators inject behaviour into yours:
 
 If the bug is in `source_gen/`, the fix is almost always upstream — in the template, macro body, or concept behavior. Edit there, regenerate, and re-verify. Only patch generated code when explicitly instructed or when the generator is absent (e.g. you are reading legacy bundled output).
 
-## Debugging a failing step
+## Debugging misgeneration
 
-1. Enable "Save transient models" (Preferences → Build, Execution, Deployment → Generator, or project-level setting).
-2. Regenerate. Intermediate models appear under the project; open them via `mps_mcp_open_node` or the Project View.
-3. Use the Generator Tracer tool (UI) to walk forward from an input node or backward from an output node and see which rules fired.
-4. Validate the MappingConfiguration + templates with `mps_mcp_check_root_node_problems` to catch structure-level errors before runtime.
+To find the rule that produced a wrong node: MAKE with `saveTransientModels: true` → `mps_mcp_generation` `TRANSIENT_MODELS` → `mps_mcp_print_node` on the step model → `TRACE` `BACKWARD` on the wrong node → open the rule. The full recipe and the lifecycle rules of transient models are in `references/debugging-misgeneration.md`.
 
 ## When a reduction loops
 

@@ -7,7 +7,11 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.IAttributeDescriptor
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
+import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.smodel.ModelDependencyResolver
+import jetbrains.mps.smodel.ModelImports
 import jetbrains.mps.smodel.SModelInternal
+import jetbrains.mps.smodel.language.LanguageRegistry
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -58,6 +62,143 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 setOf("jetbrains.mps.baseLanguage"),
                 usedLanguageNames(javaModel)
             )
+        }
+    }
+
+    @Test
+    fun `fully qualified type resolves from a directly imported model`() {
+        val (javaModel, externalType) = createModelWithImportedExternalType()
+        val javaModelRef = modelRefOf(javaModel)
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "class Probe { mcp.external.ExternalType value; }",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertNoErrorProblems(data, response)
+
+        readOnRepo {
+            val probe = javaModel.rootNodes.single()
+            assertEquals(externalType.reference, singleClassifierTarget(probe).reference)
+        }
+    }
+
+    @Test
+    fun `Java import resolves a type from a directly imported model`() {
+        val (javaModel, externalType) = createModelWithImportedExternalType()
+        val javaModelRef = modelRefOf(javaModel)
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "import mcp.external.ExternalType;\nclass Probe { ExternalType value; }",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertNoErrorProblems(data, response)
+
+        readOnRepo {
+            val probe = javaModel.rootNodes.single()
+            assertEquals(externalType.reference, singleClassifierTarget(probe).reference)
+            assertTrue(ModelImports(javaModel).importedModels.any { it == externalType.model!!.reference })
+        }
+    }
+
+    @Test
+    fun `explicit static import resolves a field from a directly imported model`() {
+        val (javaModel, externalType) = createModelWithImportedExternalType()
+        val javaModelRef = modelRefOf(javaModel)
+        val externalField = readOnRepo { descendantNamed(externalType, "VALUE") }
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "import static mcp.external.ExternalType.VALUE;\nclass Probe { int value = VALUE; }",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertNoErrorProblems(data, response)
+
+        readOnRepo {
+            assertReferences(javaModel.rootNodes.single(), externalField)
+        }
+    }
+
+    @Test
+    fun `wildcard static import resolves a method from a directly imported model`() {
+        val (javaModel, externalType) = createModelWithImportedExternalType()
+        val javaModelRef = modelRefOf(javaModel)
+        val externalMethod = readOnRepo { descendantNamed(externalType, "answer") }
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "import static mcp.external.ExternalType.*;\nclass Probe { int value = answer(); }",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertNoErrorProblems(data, response)
+
+        readOnRepo {
+            assertReferences(javaModel.rootNodes.single(), externalMethod)
+        }
+    }
+
+    @Test
+    fun `Java import resolves a JDK type on the first insert`() {
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+        val jdkRef = PersistenceFacade.getInstance()
+            .createModuleReference("6354ebe7-c22a-4a0f-ac54-50b52ab9b065(JDK)")
+
+        readOnRepo {
+            val module = javaModel.module as AbstractModule
+            assertTrue(module.moduleDescriptor!!.dependencies.none { it.moduleRef == jdkRef })
+        }
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """
+                {
+                  "code": "import java.math.BigDecimal;\nclass Probe { BigDecimal value; }",
+                  "featureKind": "CLASS",
+                  "insert": { "mode": "root", "modelRef": "$javaModelRef" }
+                }
+                """.trimIndent()
+            )
+        }
+        val data = assertOkData(response)
+        assertNoErrorProblems(data, response)
+
+        readOnRepo {
+            val target = singleClassifierTarget(javaModel.rootNodes.single())
+            assertEquals("BigDecimal", target.name)
+            assertEquals("java.math", target.model!!.name.longName)
+            assertTrue(ModelImports(javaModel).importedModels.any { it.name.longName == "java.math" })
+            val module = javaModel.module as AbstractModule
+            assertTrue(module.moduleDescriptor!!.dependencies.any { it.moduleRef == jdkRef })
         }
     }
 
@@ -1673,6 +1814,27 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         )
     }
 
+    @Test
+    fun `hasUnresolvedJavaNames flags an unbound type and passes resolved code`() {
+        // The console-mode imports hint keys on this check; the console itself is not available
+        // headlessly, so the check runs on root-mode inserts.
+        val toolset = JetBrainsMPSJavaMcpToolset()
+        val javaModel = createJavaModel()
+        val javaModelRef = modelRefOf(javaModel)
+        for (code in listOf("class Resolved { String value; }", "class Unresolved { no.such.Type value; }")) {
+            assertOkData(runTool(toolset) {
+                it.mps_mcp_parse_java_and_insert(
+                    """{"code":"$code","featureKind":"CLASS","insert":{"mode":"root","modelRef":"$javaModelRef"}}"""
+                )
+            })
+        }
+        readOnRepo {
+            val roots = javaModel.rootNodes.associateBy { it.name }
+            assertFalse(toolset.hasUnresolvedJavaNames(listOf(roots.getValue("Resolved"))))
+            assertTrue(toolset.hasUnresolvedJavaNames(listOf(roots.getValue("Unresolved"))))
+        }
+    }
+
     /** Seeds an empty class root via root-mode insertion and returns its SNodeReference string. */
     private fun seedClassRoot(toolset: JetBrainsMPSJavaMcpToolset, modelRef: String, name: String): String {
         val seed = runTool(toolset) {
@@ -1698,6 +1860,59 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     private fun createJavaModel(): SModel {
         val solution = createSolution()
         return createModel(solution, "${solution.moduleName}.code")
+    }
+
+    private fun createModelWithImportedExternalType(): Pair<SModel, SNode> {
+        val targetSolution = createSolution()
+        val targetModel = createModel(targetSolution, "mcp.external")
+        val targetModelRef = modelRefOf(targetModel)
+        val seedResponse = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"public class ExternalType { public static int VALUE = 42; public static int answer() { return 42; } }","featureKind":"CLASS",
+                    "insert":{"mode":"root","modelRef":"$targetModelRef"}}"""
+            )
+        }
+        assertOkData(seedResponse)
+        val externalType = readOnRepo { targetModel.rootNodes.single() }
+
+        val sourceModel = createJavaModel()
+        executeCommand { ModelImports(sourceModel).addModelImport(targetModel.reference) }
+        readOnRepo {
+            val sourceModule = sourceModel.module as AbstractModule
+            assertTrue(
+                "fixture must expose the target through a model import only",
+                sourceModule.moduleDescriptor!!.dependencies.none { it.moduleRef == targetSolution.moduleReference }
+            )
+            val repo = sourceModel.repository!!
+            val directImports = ModelDependencyResolver(LanguageRegistry.getInstance(repo), repo).directImports(sourceModel)
+            assertTrue("fixture model import must resolve in the repository", directImports.contains(targetModel))
+        }
+        return sourceModel to externalType
+    }
+
+    private fun descendantNamed(root: SNode, name: String): SNode {
+        return SNodeOperations.getNodeDescendants(root, null, true, emptyArray()).single { it.name == name }
+    }
+
+    private fun assertReferences(root: SNode, target: SNode) {
+        val referencesTarget = SNodeOperations.getNodeDescendants(root, null, true, emptyArray())
+            .any { node -> node.references.any { it.targetNode == target } }
+        assertTrue("expected ${root.name} to reference ${target.name}", referencesTarget)
+    }
+
+    private fun singleClassifierTarget(root: SNode): SNode {
+        val classifierTypes = SNodeOperations.getNodeDescendants(root, null, true, emptyArray())
+            .filter { it.concept.name == "ClassifierType" }
+            .toList()
+        assertEquals("expected one classifier type under ${root.name}", 1, classifierTypes.size)
+        return checkNotNull(classifierTypes.single().references.single { it.link.name == "classifier" }.targetNode)
+    }
+
+    private fun assertNoErrorProblems(data: JsonObject, response: String) {
+        val errors = data.getAsJsonArray("problems").filter {
+            it.asJsonObject.get("severity").asString == "error"
+        }
+        assertTrue("insert must not report errors: $response", errors.isEmpty())
     }
 
     private fun assertOkData(response: String): JsonObject {

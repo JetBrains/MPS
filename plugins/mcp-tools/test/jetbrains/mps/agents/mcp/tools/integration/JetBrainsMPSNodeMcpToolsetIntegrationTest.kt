@@ -1951,19 +1951,22 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     @Test
     fun `alter_nodes MOVE_CHILD names every missing parameter at once`() {
-        // D49: round 10 learned about nodeReference and childRole on two sequential retries.
+        // D49 / D99: MOVE_CHILD requires one of nodeReference/childNodeRef and position; omitting both
+        // reports both requirements in a single rejection.
         val response = callThroughBridge(
             JetBrainsMPSNodeMcpToolset(),
             "mps_mcp_alter_nodes",
             mapOf(
                 "operation" to McpJsonPrimitive("MOVE_CHILD"),
-                "parameters" to McpJsonPrimitive("""{"childNodeRef":"$DUMMY_NODE_REF","position":0}"""),
+                "parameters" to McpJsonPrimitive("""{"childRole":"propertyDeclaration"}"""),
             ),
         )
-        assertMissingParameterKeys(response, listOf("nodeReference", "childRole"))
+        assertMissingParameterKeys(response, listOf("one of nodeReference/childNodeRef", "position"))
         assertEquals(
-            "nodeReference and childRole are required in 'parameters' for MOVE_CHILD. Retry with " +
-                "nodeReference set to the parent node's reference; childRole set to the containment role name.",
+            "one of nodeReference/childNodeRef and position are required in 'parameters' for MOVE_CHILD. Retry with " +
+                "one of nodeReference/childNodeRef set to the reference of the child to move (childNodeRef, or " +
+                "nodeReference when childNodeRef is omitted; when both are passed, nodeReference is the parent " +
+                "node's reference); position set to the 0-based target index, or -1 to move to the end.",
             JsonParser.parseString(response).asJsonObject.get("error").asString,
         )
     }
@@ -1988,8 +1991,8 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
 
         val alterations = mapOf(
-            MPSAlterOperation.MOVE_CHILD to (listOf("nodeReference", "childRole", "childNodeRef", "position") to
-                """{"nodeReference":"$DUMMY_NODE_REF","childRole":"kid","childNodeRef":"$DUMMY_NODE_REF","position":0}"""),
+            MPSAlterOperation.MOVE_CHILD to (listOf("one of nodeReference/childNodeRef", "position") to
+                """{"childNodeRef":"$DUMMY_NODE_REF","position":0}"""),
             MPSAlterOperation.MOVE_NODE_TO_PARENT to (listOf("nodeReference", "one of newParentRef/modelReference") to
                 """{"nodeReference":"$DUMMY_NODE_REF","modelReference":"$dummyModel"}"""),
             MPSAlterOperation.COPY_NODE to (listOf("nodeReference") to """{"nodeReference":"$DUMMY_NODE_REF"}"""),
@@ -2023,11 +2026,22 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val obj = JsonParser.parseString(runTool(toolset) { it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, parameters) }).asJsonObject
             return obj.getAsJsonObject("details")?.getAsJsonArray("missingParameters")?.map { it.asString }.orEmpty()
         }
-        assertEquals(listOf("childRole", "position"), missing("""{"nodeRef":"$DUMMY_NODE_REF","childNodeReference":"$DUMMY_NODE_REF"}"""))
-        assertEquals(listOf("nodeReference", "position"), missing("""{"nodeRef":null,"childRole":"","childNodeRef":"x","position":null}"""))
-        assertEquals(listOf("nodeReference", "childRole"), missing("""{"childNodeRef":["x"],"position":"end"}"""))
-        // Two spellings of one key are rejected by the typed read, which runs only once nothing is absent.
-        assertEquals(listOf("childRole", "childNodeRef"), missing("""{"nodeReference":"x","nodeRef":"x","position":0}"""))
+        assertEquals(listOf("position"), missing("""{"nodeRef":"$DUMMY_NODE_REF"}"""))
+        assertEquals(listOf("position"), missing("""{"childNodeReference":"$DUMMY_NODE_REF"}"""))
+        assertEquals(listOf("one of nodeReference/childNodeRef", "position"), missing("""{"nodeRef":null,"childRole":"","childNodeRef":null,"position":null}"""))
+        assertEquals(listOf("position"), missing("""{"childNodeRef":"","position":null}"""))
+        assertEquals(listOf("one of nodeReference/childNodeRef"), missing("""{"childNodeRef":null,"position":"end"}"""))
+        assertEquals(listOf("position"), missing("""{"childNodeRef":["x"],"position":null}"""))
+        // Two spellings of one key do not hide another absent key: the missing-key check answers first.
+        assertEquals(listOf("position"), missing("""{"nodeReference":"x","nodeRef":"x"}"""))
+        // Once nothing is absent, the typed read rejects the duplicate spelling itself.
+        val duplicate = JsonParser.parseString(runTool(toolset) {
+            it.mps_mcp_alter_nodes(MPSAlterOperation.MOVE_CHILD, """{"nodeReference":"x","nodeRef":"x","position":0}""")
+        }).asJsonObject
+        assertFalse("duplicate spelling must be rejected: $duplicate", duplicate.get("ok").asBoolean)
+        val duplicateError = duplicate.get("error").asString
+        assertTrue(duplicateError, duplicateError.contains("same parameter under different spellings"))
+        assertTrue(duplicateError, duplicateError.contains("Keep 'nodeReference' and remove 'nodeRef'"))
     }
 
     @Test

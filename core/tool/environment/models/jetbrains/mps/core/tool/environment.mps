@@ -2887,13 +2887,18 @@
       <property role="TrG5h" value="withModelCheckerPlugin" />
       <node concept="3clFbS" id="2btCvgzFdFl" role="3clF47">
         <node concept="3cpWs6" id="2btCvgzFhoS" role="3cqZAp">
-          <node concept="1rXfSq" id="2btCvgzFhoY" role="3cqZAk">
-            <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
-            <node concept="Xl_RD" id="2btCvgzFhoZ" role="37wK5m">
-              <property role="Xl_RC" value="mps-modelchecker" />
+          <node concept="2OqwBi" id="2Qmly3bRdE3" role="3cqZAk">
+            <node concept="1rXfSq" id="2Qmly3bRdE4" role="2Oq$k0">
+              <ref role="37wK5l" node="5whBXIGKmsC" resolve="withPlatformVcsPlugin" />
             </node>
-            <node concept="Xl_RD" id="2btCvgzFhp0" role="37wK5m">
-              <property role="Xl_RC" value="jetbrains.mps.ide.modelchecker" />
+            <node concept="liA8E" id="2Qmly3bRdE5" role="2OqNvi">
+              <ref role="37wK5l" node="5avE1b7v6tC" resolve="addDistributedPlugin" />
+              <node concept="Xl_RD" id="2Qmly3bRdE6" role="37wK5m">
+                <property role="Xl_RC" value="mps-modelchecker" />
+              </node>
+              <node concept="Xl_RD" id="2Qmly3bRdE7" role="37wK5m">
+                <property role="Xl_RC" value="jetbrains.mps.ide.modelchecker" />
+              </node>
             </node>
           </node>
         </node>

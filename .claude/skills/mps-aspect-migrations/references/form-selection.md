@@ -51,7 +51,8 @@ Enhancement scripts (`lang.script`) live in models named `<language>.scripts` an
 | Composition of multiple migrations | `PureMigrationScript` + `IncludeMigrationPart` children |
 | Complex programmatic transformation (compute new values, conditional logic) | `MigrationScript` with BL `execute()` body |
 | Data must flow between scripts (one computes, another uses) | `MigrationScript` with `ProducedAnnotationDataDeclaration`/`AnnotationDataDependency` + `putData`/`getData` |
-| Instance-level update of properties/children/references on existing nodes | `lang.script` Enhancement Script with `MigrationScriptPart_Instance` |
+| Instance-level update tied to a language version bump (fill a new required child, compute a value), applied by `mps_mcp_run_migrations` | `MigrationScript` with an `execute()` sweep: three writes, see [migration-script-body.md](migration-script-body.md) § Per-instance sweep |
+| On-demand instance-level update of properties/children/references, not version-gated | `lang.script` Enhancement Script with `MigrationScriptPart_Instance` |
 | Extract a new interface from a classifier | `lang.script` Enhancement Script with `ExtractInterfaceMigration` |
 
 ## Model naming and location

@@ -5,7 +5,7 @@
 Tools: `mps_mcp_insert_console_command_from_json` (`dryRun` + real),
 `mps_mcp_get_current_editor_root_node` (`source:"console"` success form),
 `mps_mcp_run_console_command` (`dryRun` + real), `mps_mcp_get_console_history`,
-`mps_mcp_recall_console_command`. Requires the MPS Console plugin (available).
+`mps_mcp_recall_console_command`, `mps_mcp_clear_console` (`dryRun` + real). Requires the MPS Console plugin (available).
 
 The command used is a `BLExpression` wrapping a `StringLiteral` (a harmless value command).
 `json` is passed as a string (single-level).
@@ -159,5 +159,40 @@ A `Make` (`ideCommands.Make`) is a baseLanguage **Expression**, not a `Command` 
   command (not assignable to the wrapped `Statement`/`Command` role). Match on substance, not
   the exact text — the assignability cause may be wrapped (e.g. "Failed to instantiate console
   command from JSON: …").
+
+---
+
+### Step 12.10 — `clear_console` with `dryRun:true` `[SUCCESS]`
+
+```json
+{
+  "tool": "mps_mcp_clear_console",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}",
+    "dryRun": true
+  }
+}
+```
+- Validation: `ok==true`, `data.dryRun==true`; `data.historyEntriesRemoved` equals the number of
+  `kind:"command"` entries from Step 12.06 (at least 1), and `data.inputKept==true` (the command
+  recalled in 12.08 is still in the input). A follow-up `mps_mcp_get_console_history` returns the
+  same entries as before.
+
+---
+
+### Step 12.11 — `clear_console` (real) `[SUCCESS]`
+
+```json
+{
+  "tool": "mps_mcp_clear_console",
+  "arguments": {
+    "projectPath": "{{PROJECT_DIR}}"
+  }
+}
+```
+- Validation: `ok==true`; `data.historyEntriesRemoved` matches 12.10 and `data.inputKept==true`.
+  A follow-up `mps_mcp_get_console_history` returns `[]`, and
+  `mps_mcp_get_current_editor_root_node` with `source:"console"` still returns the recalled
+  command. `{{HISTORY_REF}}` is stale from here on.
 
 Proceed to `13_update_and_delete_modules.md`.

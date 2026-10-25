@@ -2,7 +2,7 @@
 # Run one headless worker for the skill-script automation study.
 #
 # usage: run_worker.sh <scenario> <model> <run-no> <project-dir>
-#   scenario     S1..S12 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
+#   scenario     S1..S16 or SMOKE (directory under study/scenarios/; SMOKE is the read-only harness check)
 #   model        worker model id for the observer harness (claude alias or Junie CLI id)
 #   run-no       1, 2, ...
 #   project-dir  absolute path of the scratch MPS project (must be open in MPS)
@@ -44,6 +44,9 @@
 # (the selector's mcpServer.xml, or the 64343 default) exits 3. It is exported BEFORE
 # install_skills.py and recorded as `mpsMcpUrl` / `mpsMcpUrlSource`. The worker's config
 # is generated into $RUNS/<id>-mcp/ (scripts/worker_mcp_config.py) — no tracked config pins a port.
+# DISALLOWED_TOOLS (optional, Claude only) is passed as `--disallowedTools` and recorded as
+# `disallowedTools` in the meta: a tool-free baseline for a tool that exists now (e.g. S16 without
+# mps_mcp_query_dataflow); pair it with a catalog that does not route to that tool.
 # MCP_CONFIG (optional) replaces it: a FILE for Claude, a DIRECTORY holding mcp.json for Junie; the
 # meta records `mcpConfigSource` (env|generated) and `mcpConfigPath`.
 #
@@ -61,6 +64,7 @@ MAX_TURNS=${MAX_TURNS:-400}
 ISOLATION=${ISOLATION:-per-round}
 PROJECT_SYNTHESIZED=${PROJECT_SYNTHESIZED:-0}
 EFFORT=${EFFORT:-}
+DISALLOWED_TOOLS=${DISALLOWED_TOOLS:-}
 MCP_CONFIG=${MCP_CONFIG:-}
 PROMPT="$STUDY/scenarios/$SCENARIO/worker_prompt.md"
 # Same character class as the plan: anything other than [A-Za-z0-9._-] becomes '-'.
@@ -112,6 +116,10 @@ if [ "$HARNESS" = junie ]; then
   command -v junie >/dev/null || { echo "junie CLI not on PATH" >&2; exit 2; }
 else
   command -v claude >/dev/null || { echo "claude CLI not on PATH" >&2; exit 2; }
+fi
+
+if [ -n "$DISALLOWED_TOOLS" ] && [ "$HARNESS" != claude ]; then
+  echo "DISALLOWED_TOOLS is supported for the claude harness only" >&2; exit 2
 fi
 
 if [ -n "$EFFORT" ]; then
@@ -223,7 +231,7 @@ INVENTORY_SHA=$( [ -f "$RUNS/inventory.json" ] && shasum -a 256 "$RUNS/inventory
 python3 - "$RUNS/$ID.meta.json" <<PY
 import json,sys
 json.dump({"id":"$ID","scenario":"$SCENARIO","model":"$MODEL","modelSlug":"$MODEL_SLUG",
-  "harness":"$HARNESS","effort":"$EFFORT" or None,"run":$RUN,"project":"$PROJECT",
+  "harness":"$HARNESS","effort":"$EFFORT" or None,"disallowedTools":"$DISALLOWED_TOOLS" or None,"run":$RUN,"project":"$PROJECT",
   "relatedProjects":[p for p in "$RELATED".split(":") if p],
   "promptSha256":"$PROMPT_SHA","inventorySha256":"$INVENTORY_SHA","skillsSha256":"$SKILLS_SHA","guidesSha256":"$GUIDES_SHA",
   "skillsInstalled":json.loads("$SKILLS_INSTALLED"),"maxTurns":$MAX_TURNS,
@@ -255,6 +263,7 @@ else
       --output-format stream-json --verbose --max-turns "$MAX_TURNS" \
       --permission-mode bypassPermissions \
       --mcp-config "$MCP_CONFIG_PATH" --strict-mcp-config \
+      ${DISALLOWED_TOOLS:+--disallowedTools "$DISALLOWED_TOOLS"} \
       < /dev/null > "$RUNS/$ID-worker.jsonl" 2> "$RUNS/$ID-worker.stderr" )
 fi
 EXIT=$?
