@@ -42,6 +42,8 @@ import jetbrains.mps.generator.TransientModelsProvider
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.IAttributeDescriptor
+import jetbrains.mps.make.IMakeNotificationListener
+import jetbrains.mps.make.MakeNotification
 import jetbrains.mps.make.MakeServiceComponent
 import jetbrains.mps.make.MakeSession
 import jetbrains.mps.messages.IMessage
@@ -184,6 +186,12 @@ abstract class AbstractOps : McpToolset {
          * `implement-mps-language-structure-concepts.md` so the skill doc stays in sync.
          */
         internal const val LANGUAGE_RELOAD_TIMEOUT_SECONDS: Long = 10L
+
+        /**
+         * Maximum time `performMake` waits, after the build completes, for the make service to close
+         * its session. On timeout the make still returns, with a warning in `MakeResult.details`.
+         */
+        internal const val SESSION_CLOSE_TIMEOUT_SECONDS: Long = 10L
 
         /**
          * Recovery hint for the dirty-source-model branch of [checkScaffoldingStaleness] —
@@ -4174,6 +4182,21 @@ abstract class AbstractOps : McpToolset {
                 val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
                 languageRegistry.addRegistryListener(reloadListener)
 
+                // WorkbenchMakeTask releases future.get() before its done() closes the session, so a
+                // tool that refuses to run during a make (TRACE, TRANSIENT_MODELS, ...) could still see
+                // our session open right after this make returned. Only one session is open at a time,
+                // so the first SESSION_CLOSED after ours opened is practically always ours (a previous
+                // session's notification still in flight is the rare exception); waiting for it, rather
+                // than for isSessionActive to turn false, does not stall when another make opens right
+                // after. A make cancelled from the progress UI rethrows before this wait.
+                val sessionClosedLatch = CountDownLatch(1)
+                val sessionListener = object : IMakeNotificationListener {
+                    override fun sessionClosed(notification: MakeNotification) {
+                        sessionClosedLatch.countDown()
+                    }
+                }
+                makeServiceComponent.addListener(sessionListener)
+
                 // Captured inside the `withContext` block below and read after the make finishes.
                 // Starts true so the "no language modules to track" path (targetLanguageIds empty)
                 // returns the N/A default; flipped to false only when the build succeeded but the
@@ -4185,7 +4208,7 @@ abstract class AbstractOps : McpToolset {
                     // makes from reading it. Restored before the class reload below.
                     val r = withSaveTransientModels(generationSettings, saveTransientModels) {
                         val future = makeService.make(session, resourcesList, null, null, makeMonitor)
-                        try {
+                        val makeResult = try {
                             // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
                             // structured-cancel actually unblocks future.get() instead of waiting for the
                             // build to finish.
@@ -4197,6 +4220,20 @@ abstract class AbstractOps : McpToolset {
                             future.cancel(true)
                             throw e
                         }
+                        val sessionClosed = runInterruptible(Dispatchers.IO) {
+                            sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        }
+                        if (!sessionClosed) {
+                            logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished")
+                            messages.add(
+                                MakeMessage(
+                                    "WARNING",
+                                    "The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished; " +
+                                            "tools refused while a make session is active may need a retry."
+                                )
+                            )
+                        }
+                        makeResult
                     }
                     withContext(Dispatchers.IO) {
                         // isSucessful is a typo in the MPS IResult API (jetbrains.mps.make.script.IResult).
@@ -4265,6 +4302,7 @@ abstract class AbstractOps : McpToolset {
                     }
                 } finally {
                     languageRegistry.removeRegistryListener(reloadListener)
+                    makeServiceComponent.removeListener(sessionListener)
                 }
 
                 val transientModels = transientModelsReport(

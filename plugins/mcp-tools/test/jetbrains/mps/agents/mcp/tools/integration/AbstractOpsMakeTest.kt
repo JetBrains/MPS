@@ -40,6 +40,23 @@ class AbstractOpsMakeTest : McpIntegrationTestBase() {
         assertNull("Only a make that built a language counts pending migrations", result.migrationsPending)
     }
 
+    /**
+     * WorkbenchMakeTask releases `future.get()` before its `done()` closes the session; a tool refused
+     * during a make (TRACE, TRANSIENT_MODELS, ...) called right after this make returned must not see it
+     * still open. The window is a race, so without the wait in performMake this fails only sometimes.
+     */
+    @Test
+    fun `performMake returns only once the make session is closed`() {
+        val makeService = myProject.getComponent(MakeServiceComponent::class.java)?.get()
+        assertNotNull("The integration environment must provide a make service", makeService)
+        assertFalse("A test must start without an active make session", makeService!!.isSessionActive)
+
+        val result = runTool(MakeOps()) { it.make(myProject, structureModel) }
+
+        assertTrue("the make succeeds: ${result.message} ${result.details}", result.success)
+        assertFalse("the make session is closed once performMake returned", makeService.isSessionActive)
+    }
+
     @Test
     fun `performMake without inputs reports no transientModels block`() {
         val result = runTool(MakeOps()) { it.makeNoResources(myProject) }
