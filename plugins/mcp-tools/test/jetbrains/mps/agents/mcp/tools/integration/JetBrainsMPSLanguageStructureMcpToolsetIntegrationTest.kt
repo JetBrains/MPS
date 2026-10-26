@@ -642,6 +642,32 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         assertEquals("INTERNAL_ERROR", envelope.get("code").asString)
     }
 
+    // ── JSON syntax errors in the parameters blob ─────────────────────────────────────
+
+    @Test
+    fun `a truncated CREATE_CONCEPTS blob suggests moving only its nested file keys out`() {
+        val error = expectErr(runTool {
+            it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, """{"structureModelRef":"r:x","conceptsJson":[{"name":"Foo"}""")
+        })
+        assertTrue(error, error.startsWith("Invalid JSON parameters: "))
+        assertTrue(error, error.contains("unbalanced: 2 closer(s) missing at the end of input: ']' then '}'"))
+        assertTrue(error, error.contains("move each of conceptsJson / interfaceConceptsJson into its own temp file"))
+        assertFalse(error, error.contains("valuesJson"))
+        assertFalse("the blob itself cannot be a file: $error", error.contains("Pass an absolute temp-file path instead of inline JSON"))
+    }
+
+    @Test
+    fun `a truncated UPDATE_CONCEPT_PROPERTY blob reports the diagnosis without a nested-key sentence`() {
+        val error = expectErr(runTool {
+            it.mps_mcp_alter_structure(MPSStructureAlterOperation.UPDATE_CONCEPT_PROPERTY, """{"conceptRef":"a.b.C","propertyName":"title"""")
+        })
+        assertTrue(error, error.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(error, error.contains("mps-node-editing/references/troubleshooting.md"))
+        assertFalse(error, error.contains("temp file"))
+        assertFalse(error, error.contains("temp-file"))
+        assertFalse(error, error.contains("conceptsJson"))
+    }
+
     // ── UPDATE_CONCEPT_PROPERTY ───────────────────────────────────────────────────────
 
     @Test

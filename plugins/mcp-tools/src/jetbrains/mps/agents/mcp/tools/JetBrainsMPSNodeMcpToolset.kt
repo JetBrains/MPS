@@ -242,8 +242,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
     ): String {
         return withMpsProject("Querying MPS nodes: $operation") { mpsProject ->
             val params = try {
-                Gson().fromJson(parameters, JsonObject::class.java)
+                parseParametersBlob(parameters)
             } catch (e: Exception) {
+                rethrowIfCancellation(e)
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
             }
             params.rejectUnknownParameterKeys(operation.name, queryNodesParameterKeys(operation))
@@ -301,7 +302,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
      */
     suspend fun mps_mcp_alter_nodes(operation: MPSAlterOperation, parameters: String): String {
         // Guarded here rather than in the wrapper so neither entry point can reach the Gson parse
-        // with no object to parse: blank text and a bare `null` both decode to a null JsonObject.
+        // with no object to parse: blank text decodes to a null JsonObject (a bare `null` fails the parse).
         // `rejectUnknownParameterKeys` already answers that for the four operations with a key
         // list, but MAKE has none and dereferenced it into an opaque INTERNAL_ERROR. Recorded
         // explicitly because this returns before `withMpsProject`, the only other call site that
@@ -309,8 +310,9 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
         if (parameters.isBlank()) return McpCallOutcomes.record(missingAlterNodesParameters(operation))
         return withMpsProject("Altering MPS nodes: $operation") { mpsProject ->
             val params = try {
-                Gson().fromJson(parameters, JsonObject::class.java)
+                parseParametersBlob(parameters)
             } catch (e: Exception) {
+                rethrowIfCancellation(e)
                 return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
             } ?: return@withMpsProject missingAlterNodesParameters(operation)
             alterNodesParameterKeys(operation)?.let {

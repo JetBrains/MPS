@@ -111,6 +111,15 @@ class McpToolInputSchemasTest {
     }
 
     @Test
+    fun structureConceptReportsUnbalancedJsonWithTempFileAdvice() {
+        val message = catchInvalidJson { parseStructureConceptSpecs("""[{"name":"Foo"}""", "conceptsJson") }
+
+        assertTrue(message, message.startsWith("Invalid JSON for conceptsJson: "))
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: ']'"))
+        assertTrue(message, message.contains("Pass an absolute temp-file path instead of inline JSON"))
+    }
+
+    @Test
     fun structureConceptRejectsPropertyEntryMissingName() {
         assertSchemaFailure("Missing 'conceptsJson[0].properties[0].name'") {
             parseStructureConceptSpecs(
@@ -1246,6 +1255,16 @@ class McpToolInputSchemasTest {
     }
 
     @Test
+    fun javaInsertReportsUnbalancedParametersWithoutTempFileAdvice() {
+        val message = catchInvalidJson { parseJavaParseInsertRequest("""{"code":"class Foo {}","insert":{"mode":"root"}""") }
+
+        assertTrue(message, message.startsWith("Invalid JSON for parameters: "))
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(message, message.contains("mps-node-editing/references/troubleshooting.md"))
+        assertFalse(message, message.contains("temp-file"))
+    }
+
+    @Test
     fun javaInsertRejectsNonBooleanForBooleanField() {
         assertSchemaFailure("'parameters.recovery' must be a boolean") {
             parseJavaParseInsertRequest(
@@ -1677,7 +1696,7 @@ class McpToolInputSchemasTest {
 
     @Test
     fun anAbsentParametersBlobIsRejectedNamingTheAcceptedKeys() {
-        // Gson answers null for a blank blob and for the literal `null`; the dispatchers used to
+        // Gson answers null for a blank blob (a literal `null` fails the parse); the dispatchers used to
         // dereference that into an opaque INTERNAL_ERROR.
         val message = catchSchemaFailure {
             (null as JsonObject?).rejectUnknownParameterKeys("IS_SMART_REFERENCE", demoKeys)

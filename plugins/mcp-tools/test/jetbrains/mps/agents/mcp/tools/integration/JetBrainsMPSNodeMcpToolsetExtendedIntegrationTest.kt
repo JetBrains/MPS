@@ -611,6 +611,30 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         assertTrue(expectErr(response).contains("Invalid JSON parameters"))
     }
 
+    @Test
+    fun `query_nodes with truncated JSON parameters reports the missing closer without temp-file advice`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, "{ \"nodeReference\": \"x\"")
+        }
+        val error = expectErr(response)
+        assertTrue(error, error.startsWith("Invalid JSON parameters: "))
+        assertTrue(error, error.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(error, error.contains("mps-node-editing/references/troubleshooting.md"))
+        assertFalse("a parameters blob cannot be a file: $error", error.contains("temp-file"))
+        assertFalse("a parameters blob cannot be a file: $error", error.contains("temp file"))
+    }
+
+    @Test
+    fun `query_nodes with a blank parameters blob still names the accepted keys`() {
+        // The enum overload skips rejectMissingParameters, so blank text reaches the parse and must
+        // decode to null for rejectUnknownParameterKeys, not fail as an empty JSON string.
+        val response = runTool(toolset) { it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, " ") }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertEquals(response, "INVALID_REQUEST", envelope.get("code").asString)
+        assertTrue(response, envelope.get("error").asString.contains("must be a JSON object carrying the keys for GET_PARENT"))
+        assertTrue(response, envelope.get("error").asString.contains("Accepted: 'nodeReference'"))
+    }
+
     // ── alter_nodes: MOVE_CHILD ─────────────────────────────────────────────────────
 
     @Test

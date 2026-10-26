@@ -1245,6 +1245,46 @@ class AbstractOpsPropertyProblemsTest {
         assertEquals(" ".repeat(10) + "\t" + " ".repeat(6) + "^", message.lines().first { it.trim() == "^" })
     }
 
+    private fun gsonFailure(json: String): String =
+        try {
+            JsonParser.parseString(json)
+            fail("Expected malformed JSON to fail: $json")
+            ""
+        } catch (e: JsonSyntaxException) {
+            e.message.orEmpty()
+        }
+
+    @Test
+    fun parseJsonFileGuidanceNamesNoSkill() {
+        val message = parseFailure("""{"a":1""")
+        assertTrue(message, message.contains("Pass an absolute temp-file path instead of inline JSON. See mps-node-editing/references/troubleshooting.md."))
+        assertFalse(message, message.contains("(see the mps-node-editing skill)"))
+    }
+
+    @Test
+    fun inlineGuidanceGivesOnlyTheTroubleshootingPointer() {
+        val json = """{"a":1"""
+        val message = JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.INLINE)
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(message, message.endsWith("\n\nSee mps-node-editing/references/troubleshooting.md."))
+        assertFalse(message, message.contains("temp-file"))
+        assertFalse(message, message.contains("temp file"))
+        assertFalse(message, message.contains("inline limit"))
+        assertEquals("an empty key list is plain INLINE", message, JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.inlineOnly(emptyList())))
+    }
+
+    @Test
+    fun inlineOnlyGuidanceNamesExactlyTheNestedFileKeys() {
+        val json = """{"conceptsJson":[{"name":"Foo"}"""
+        val concepts = JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.inlineOnly(listOf("conceptsJson")))
+        assertTrue(concepts, concepts.contains("`parameters` itself must be inline; move conceptsJson into a temp file and pass its absolute path instead."))
+        assertTrue(concepts, concepts.contains("mps-node-editing/references/troubleshooting.md"))
+        assertFalse(concepts, concepts.contains("inline limit"))
+        val values = JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.inlineOnly(listOf("valuesJson")))
+        assertTrue(values, values.contains("move valuesJson into a temp file"))
+        assertFalse(values, values.contains("conceptsJson into"))
+    }
+
     @Test
     fun dryRunKeepsToolCreatedTempFileAfterRead() {
         val file = ops.saveToTempFileForTest("""{"concept":"test.lang.structure.TestConcept"}""")

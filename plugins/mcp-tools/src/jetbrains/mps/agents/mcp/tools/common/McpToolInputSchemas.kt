@@ -1,6 +1,5 @@
 package jetbrains.mps.agents.mcp.tools.common
 
-
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -8,6 +7,8 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import jetbrains.mps.java.core.newparser.FeatureKind
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 class ToolInputJsonException(message: String) : IllegalArgumentException(message)
 
@@ -175,10 +176,13 @@ internal class ParameterKeys private constructor(
  * blob, and the counterpart of the "reject the ignored key" rule [paramString] applies to two
  * spellings of one key.
  */
+@OptIn(ExperimentalContracts::class)
 internal fun JsonObject?.rejectUnknownParameterKeys(context: String, keys: ParameterKeys) {
-  // Gson answers `null` for a blank blob and for the literal `null`, which the dispatchers then
-  // dereferenced into an opaque INTERNAL_ERROR. Reachable from the wire since `parameters` became
-  // a [JsonOrText]: it maps a JSON null to the empty string.
+  // Lets a caller use a blob parsed by AbstractOps.parseParametersBlob as non-null after this check.
+  contract { returns() implies (this@rejectUnknownParameterKeys != null) }
+  // Gson answers `null` for a blank blob (a literal `null` fails the parse instead), which the
+  // dispatchers then dereferenced into an opaque INTERNAL_ERROR. Reachable from the wire since
+  // `parameters` became a [JsonOrText]: it maps a JSON null to the empty string.
   val params = this ?: throw ToolInputSchemaException(
     "'$PARAMETERS_PATH' must be a JSON object carrying the keys for $context, not empty or null. " +
       "Accepted: ${keys.canonical.joinToString(", ") { "'$it'" }}."
@@ -636,7 +640,7 @@ private fun validateInsertTarget(insertTarget: JavaInsertTarget) {
 }
 
 private fun parseArray(json: String, sourceName: String): JsonArray {
-  val element = parseElement(json, sourceName)
+  val element = parseElement(json, sourceName, JsonInputGuidance.FILE)
   if (!element.isJsonArray) {
     throw ToolInputSchemaException("$sourceName must be a JSON array")
   }
@@ -644,14 +648,14 @@ private fun parseArray(json: String, sourceName: String): JsonArray {
 }
 
 private fun parseParametersObject(json: String): JsonObject {
-  val element = parseElement(json, "parameters")
+  val element = parseElement(json, "parameters", JsonInputGuidance.INLINE)
   if (!element.isJsonObject) {
     throw ToolInputSchemaException("parameters must be a JSON object")
   }
   return element.asJsonObject
 }
 
-private fun parseElement(json: String, sourceName: String): JsonElement {
+private fun parseElement(json: String, sourceName: String, guidance: JsonInputGuidance): JsonElement {
   if (json.isBlank()) {
     throw ToolInputSchemaException("$sourceName must not be blank")
   }
@@ -659,7 +663,7 @@ private fun parseElement(json: String, sourceName: String): JsonElement {
     return JsonParser.parseString(json)
   }
   catch (e: JsonParseException) {
-    throw ToolInputJsonException("Invalid JSON for $sourceName: ${e.message ?: "Invalid JSON syntax"}")
+    throw ToolInputJsonException("Invalid JSON for $sourceName: ${JsonSyntaxErrors.describe(json, e.message ?: "Invalid JSON syntax", guidance)}")
   }
 }
 

@@ -138,9 +138,6 @@ abstract class AbstractOps : McpToolset {
         private const val TEMP_JSON_PREFIX = "mps-node-"
         private const val TEMP_JSON_SUFFIX = ".json"
         private const val MAX_INPUT_FILE_SIZE_BYTES = 10L * 1024 * 1024
-        private const val MAX_INLINE_JSON_CHARS = 4096
-        private const val EXCERPT_RADIUS = 80
-        private const val MAX_LISTED_CLOSERS = 8
 
         /**
          * Default inline/temp-file cut-off for read tools that expose a `maxInlineBytes`
@@ -1343,7 +1340,7 @@ abstract class AbstractOps : McpToolset {
         return parseJson(jsonString, JsonElement::class.java)
     }
 
-    fun <T> parseJson(jsonString: String, type: java.lang.reflect.Type): T {
+    fun <T> parseJson(jsonString: String, type: java.lang.reflect.Type, guidance: JsonInputGuidance = JsonInputGuidance.FILE): T {
         if (jsonString.isBlank()) {
             throw McpInvalidRequestException("JSON string is empty or blank")
         }
@@ -1351,129 +1348,17 @@ abstract class AbstractOps : McpToolset {
             return GSON.fromJson(jsonString, type)
                 ?: throw McpInvalidRequestException("JSON value is null")
         } catch (e: JsonSyntaxException) {
-            throw McpInvalidRequestException(describeJsonSyntaxError(jsonString, e.message ?: "Invalid JSON syntax"))
+            throw McpInvalidRequestException(JsonSyntaxErrors.describe(jsonString, e.message ?: "Invalid JSON syntax", guidance))
         }
     }
 
-    private class JsonSyntaxDiagnosis(
-        val text: String,
-        val scanLine: Int?,
-        val scanColumn: Int?,
-        val addsGuidance: Boolean,
-    )
-
-    private fun describeJsonSyntaxError(json: String, rawMessage: String): String {
-        // The bracket scan decides what went wrong, unless Gson stopped earlier than the scan's position
-        // for another reason. Gson parses leniently, so its "Use JsonReader.setStrictness(...)" text can
-        // only mean trailing content, and its troubleshooting link is no help to the caller.
-        val gsonMessage = rawMessage.lineSequence().first()
-            .replace(Regex("Use JsonReader\\.\\S+ to accept malformed JSON"), "Malformed JSON")
-            .replace(Regex("^[\\w.$]+(Exception|Error): "), "")
-        val located = Regex("at line (\\d+) column (\\d+)").find(gsonMessage)
-        val gsonLine = located?.groupValues?.get(1)?.toInt()
-        val gsonColumn = located?.groupValues?.get(2)?.toInt()
-        val diagnosis = JsonBracketScan.scan(json)?.let { diagnoseJsonScan(it) }
-        val gsonStoppedFirst = diagnosis != null && gsonLine != null && gsonColumn != null &&
-                gsonStoppedBeforeScan(json, diagnosis, gsonLine, gsonColumn)
-
-        val head = when {
-            diagnosis == null -> gsonMessage
-            located == null -> diagnosis.text
-            gsonStoppedFirst -> "Parser: $gsonMessage\nFurther on: ${diagnosis.text}"
-            else -> "${diagnosis.text}\nParser: ${gsonMessage.substring(located.range.first)}"
+    /** Parses an operation tool's `parameters` object; a blank blob stays null for the key checks to answer (a literal `null` is a syntax error). */
+    protected fun parseParametersBlob(parameters: String, nestedFileKeys: List<String> = emptyList()): JsonObject? =
+        try {
+            GSON.fromJson(parameters, JsonObject::class.java)
+        } catch (e: JsonSyntaxException) {
+            throw McpInvalidRequestException(JsonSyntaxErrors.describe(parameters, e.message ?: "Invalid JSON syntax", JsonInputGuidance.inlineOnly(nestedFileKeys)))
         }
-        val line = if (gsonStoppedFirst) gsonLine else diagnosis?.scanLine ?: gsonLine
-        val column = if (gsonStoppedFirst) gsonColumn else diagnosis?.scanColumn ?: gsonColumn
-        val parts = mutableListOf(head)
-        if (line != null && column != null) parts.add(getJsonExcerpt(json, line, column))
-        if (diagnosis != null && diagnosis.addsGuidance) {
-            parts.add(
-                "received ${json.length} chars (inline limit $MAX_INLINE_JSON_CHARS). " +
-                (if (json.length <= MAX_INLINE_JSON_CHARS) {
-                    "Pass an absolute temp-file path instead of inline JSON (see the mps-node-editing skill). "
-                } else "") +
-                "See mps-node-editing/references/troubleshooting.md."
-            )
-        }
-        return parts.joinToString("\n\n")
-    }
-
-    /** Gson's column is the offending character's own or one past it, never before the scan's; a finding without a position sits at the end of input. */
-    private fun gsonStoppedBeforeScan(json: String, diagnosis: JsonSyntaxDiagnosis, gsonLine: Int, gsonColumn: Int): Boolean {
-        val scanLine = diagnosis.scanLine
-        val scanColumn = diagnosis.scanColumn
-        if (scanLine != null && scanColumn != null) {
-            return gsonLine < scanLine || (gsonLine == scanLine && gsonColumn < scanColumn)
-        }
-        val endLine = json.count { it == '\n' } + 1
-        val endColumn = json.length - json.lastIndexOf('\n')
-        return gsonLine < endLine || (gsonLine == endLine && gsonColumn < endColumn)
-    }
-
-    private fun diagnoseJsonScan(finding: JsonBracketScan.Finding): JsonSyntaxDiagnosis = when (finding) {
-        is JsonBracketScan.Finding.UnterminatedString -> JsonSyntaxDiagnosis(
-            "unterminated string opened at line ${finding.line} column ${finding.column} \u2014 " +
-                    "the input may have been cut off, or a `\"` inside a string is unescaped",
-            finding.line, finding.column, true,
-        )
-        is JsonBracketScan.Finding.MissingClosers -> {
-            val shown = finding.missing.take(MAX_LISTED_CLOSERS).joinToString(" then ") { "'$it'" }
-            val more = if (finding.missing.size > MAX_LISTED_CLOSERS) " and ${finding.missing.size - MAX_LISTED_CLOSERS} more" else ""
-            JsonSyntaxDiagnosis(
-                "unbalanced: ${finding.missing.size} closer(s) missing at the end of input: $shown$more. " +
-                        "The position of the omission cannot be inferred from counts (the path on the Parser line " +
-                        "shows where parsing stopped); appending the missing closers usually " +
-                        "parses but may nest later roles under the wrong node, so re-check the structure.",
-                null, null, true,
-            )
-        }
-        is JsonBracketScan.Finding.MismatchedCloser -> {
-            JsonSyntaxDiagnosis(
-                "unbalanced: '${finding.closer}' at line ${finding.line} column ${finding.column} closes the " +
-                        "'${finding.opener}' opened at line ${finding.openerLine} column ${finding.openerColumn}: " +
-                        "a '${JsonBracketScan.closerFor(finding.opener)}' is missing before it",
-                finding.line, finding.column, true,
-            )
-        }
-        is JsonBracketScan.Finding.ExtraClosers -> JsonSyntaxDiagnosis(
-            "unbalanced: ${finding.count} extra closer(s) after the top-level value ended, " +
-                    "the first at line ${finding.line} column ${finding.column}",
-            finding.line, finding.column, true,
-        )
-        is JsonBracketScan.Finding.TrailingContent -> JsonSyntaxDiagnosis(
-            "unexpected content after the top-level value at line ${finding.line} column ${finding.column}",
-            finding.line, finding.column, false,
-        )
-    }
-
-    /** Shows the lines around [line] with a caret under [column]; long lines are cut to a window around the caret. */
-    private fun getJsonExcerpt(json: String, line: Int, column: Int): String {
-        val lines = json.split('\n')
-        val result = StringBuilder()
-        val startLine = (line - 3).coerceAtLeast(0)
-        val endLine = (line + 2).coerceAtMost(lines.size - 1)
-
-        for (i in startLine..endLine) {
-            val currentLine = lines[i].trimEnd('\r')
-            val lineNumber = i + 1
-            val isErrorLine = lineNumber == line
-            val prefix = if (isErrorLine) "-> " else "   "
-            val caret = if (isErrorLine) (column - 1).coerceIn(0, currentLine.length) else 0
-            val from = (caret - EXCERPT_RADIUS).coerceAtLeast(0)
-            val to = (if (isErrorLine) caret + EXCERPT_RADIUS else 2 * EXCERPT_RADIUS).coerceAtMost(currentLine.length)
-            val lead = if (from > 0) "..." else ""
-            val tail = if (to < currentLine.length) "..." else ""
-            result.append(String.format("%s%4d | %s%s%s\n", prefix, lineNumber, lead, currentLine.substring(from, to), tail))
-            if (isErrorLine) {
-                result.append("          ").append(" ".repeat(lead.length)) // 10 spaces to match "   XXXX | " (3 + 4 + 3)
-                for (j in from until caret) {
-                    result.append(if (currentLine[j] == '\t') '\t' else ' ')
-                }
-                result.append("^\n")
-            }
-        }
-        return result.toString().trimEnd('\n')
-    }
 
     protected fun namedReferenceJsonObject(name: String, reference: String): JsonObject {
         val obj = JsonObject()

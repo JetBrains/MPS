@@ -170,6 +170,13 @@ private fun alterStructureParameterKeys(operation: MPSStructureAlterOperation): 
     MPSStructureAlterOperation.RENAME_CONCEPT_REFERENCE -> RENAME_ROLE_KEYS
 }
 
+/** The blob keys whose values may be temp-file paths; a syntax error in the blob suggests moving them out. */
+private fun alterStructureNestedFileKeys(operation: MPSStructureAlterOperation): List<String> = when (operation) {
+    MPSStructureAlterOperation.CREATE_CONCEPTS -> listOf("conceptsJson", "interfaceConceptsJson")
+    MPSStructureAlterOperation.CREATE_ENUM -> listOf("valuesJson")
+    else -> emptyList()
+}
+
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
 // surface, and they are invoked via reflection by the MCP server framework, so static
 // analysis flags them as "never used".
@@ -215,8 +222,9 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     suspend fun mps_mcp_query_structure(operation: MPSStructureQueryOperation, parameters: String): String = withMpsProject(queryStructureActivity(operation)) { mpsProject ->
         val gson = Gson()
         val params = try {
-            gson.fromJson(parameters, JsonObject::class.java)
+            parseParametersBlob(parameters)
         } catch (e: Exception) {
+            rethrowIfCancellation(e)
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
         params.rejectUnknownParameterKeys(operation.name, queryStructureParameterKeys(operation))
@@ -305,8 +313,9 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
 
                 MPSStructureQueryOperation.GET_ASSIGNABLE_REFERENCES -> {
                     val request = try {
-                        Gson().fromJson(parameters, GetAssignableReferencesRequest::class.java)
+                        parseJson<GetAssignableReferencesRequest>(parameters, GetAssignableReferencesRequest::class.java, JsonInputGuidance.INLINE)
                     } catch (e: Exception) {
+                        rethrowIfCancellation(e)
                         return@withMpsProject invalidJson("Invalid parameters for GET_ASSIGNABLE_REFERENCES: ${e.message}")
                     }
 
@@ -397,8 +406,9 @@ class JetBrainsMPSLanguageStructureMcpToolset : AbstractNodeOps() {
     suspend fun mps_mcp_alter_structure(operation: MPSStructureAlterOperation, parameters: String): String = withMpsProject("Performing MPS structure alteration: $operation") { mpsProject ->
         val gson = Gson()
         val params = try {
-            gson.fromJson(parameters, JsonObject::class.java)
+            parseParametersBlob(parameters, alterStructureNestedFileKeys(operation))
         } catch (e: Exception) {
+            rethrowIfCancellation(e)
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
         params.rejectUnknownParameterKeys(operation.name, alterStructureParameterKeys(operation))

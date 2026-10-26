@@ -1606,7 +1606,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
             JsonParser.parseString(settingsJson)
         }
         catch (e: JsonParseException) {
-            return mementoError("settingsJson is not valid JSON: ${e.message ?: e.toString()}")
+            return mementoError("settingsJson is not valid JSON: ${JsonSyntaxErrors.describe(settingsJson, e.message ?: e.toString(), JsonInputGuidance.INLINE)}")
         }
         if (!element.isJsonObject) {
             return mementoError("settingsJson must be a JSON object")
