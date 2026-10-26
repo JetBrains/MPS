@@ -63,6 +63,12 @@ import jetbrains.mps.internal.collections.runtime.IterableUtils;
     Messages.showMessageDialog(myIdeaProject, "The migration can not be run" + ((cause == null ? "" : " as " + cause)) + ".\n" + "Migration assistant will not be started.", "Migration can't start", null);
   }
 
+  public void showPostponed(String cause) {
+    // a balloon, not a dialog: this comes up while a make may be running, and a modal dialog would stall the make
+    Notification notification = getNotifyGroup().createNotification("Migration postponed", "<p>The migration can not run now" + ((cause == null ? "" : " as " + cause)) + "." + "<p>The project is checked for migrations again once that is over.", NotificationType.INFORMATION);
+    notification.notify(myIdeaProject);
+  }
+
   public void showNotRequired() {
     if (myLastNotification != null) {
       myLastNotification.expire();

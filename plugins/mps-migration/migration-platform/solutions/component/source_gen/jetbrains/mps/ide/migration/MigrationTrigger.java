@@ -303,6 +303,16 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
             postponeWithoutAssistant();
             return;
           }
+          // a make may have opened its session since this migration was scheduled. Leave without running: the call sets the
+          // re-check flag, so the unblock in finally, or the make's sessionClosed() if that comes later, schedules it again
+          // as a later non-force check. A user-invoked run (force) gets a balloon saying why; not the modal dialog of the check
+          // at the start of scheduleMigration, because a make may be running now and the dialog would stall it
+          if (myMigrationBlock.isMigrationForbiddenWithout(scheduledBlockCause, MigrationNotificationsSupport.NOT_DEPLOYED)) {
+            if (force) {
+              myNotifications.showPostponed(myMigrationBlock.getMigrationForbiddenMessageWithout(scheduledBlockCause, MigrationNotificationsSupport.NOT_DEPLOYED));
+            }
+            return;
+          }
           ProgressManager.getInstance().run(new Task.Modal(myProject, "Synchronizing Files...", false) {
             public void run(@NotNull ProgressIndicator pi) {
               pi.setIndeterminate(true);
@@ -310,6 +320,13 @@ public class MigrationTrigger implements IStartupMigrationExecutor {
               syncRefresh();
             }
           });
+          // the modal progress above pumps events, so a make can open its session during it; check again, as above
+          if (myMigrationBlock.isMigrationForbiddenWithout(scheduledBlockCause, MigrationNotificationsSupport.NOT_DEPLOYED)) {
+            if (force) {
+              myNotifications.showPostponed(myMigrationBlock.getMigrationForbiddenMessageWithout(scheduledBlockCause, MigrationNotificationsSupport.NOT_DEPLOYED));
+            }
+            return;
+          }
           final MigrationSetup migrationSetup = myMpsProject.getModelAccess().computeReadAction(() -> new MigrationSetup(myMpsProject));
           // XXX compare to MT.getNewMigrations(). This one is getActualMigrations()
           //     I don't see a point of using PostponedState here, why not MigrationSetup directly? Just for
