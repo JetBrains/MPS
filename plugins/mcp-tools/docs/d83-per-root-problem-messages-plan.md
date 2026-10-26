@@ -1,6 +1,6 @@
 # D83 — `perRoot` rows carry counts but no message text
 
-Status: draft 3, 2026-09-30, final. Nothing implemented. Two reviewer rounds, each "approve with changes" (F1–F10, then G1–G5), are folded in below and listed under "Review record". The reviewer asked for no further draft.
+Status: implemented 2026-10-26 (MPS-40338). Two reviewer rounds on the plan, each "approve with changes" (F1–F10, then G1–G5), are folded in below and listed under "Review record".
 
 ## The defect (from `study/docs-defects.md`)
 

@@ -154,6 +154,8 @@ abstract class AbstractOps : McpToolset {
          * signatures and descriptions can state the same number the code uses.
          */
         const val SUMMARY_RESPONSE_THRESHOLD: Int = 10
+        protected const val MAX_PROBLEM_MESSAGES_PER_ROW: Int = 5
+        protected const val MAX_PROBLEM_MESSAGE_CHARS: Int = 300
 
         /**
          * Timeout for model operations; acts as a safety net for unexpected blocking (e.g. a
@@ -2108,37 +2110,229 @@ abstract class AbstractOps : McpToolset {
     /** Error/warning tallies of one subtree, as reported by [problemCounts]. */
     protected data class ProblemCounts(val errors: Int, val warnings: Int)
 
+    /** One distinct `(severity, message)` group in a [ProblemSummary], in first-occurrence order. */
+    protected class ProblemTally(
+        val severity: MessageStatus,
+        val message: String,
+        var count: Int,
+        var node: SNodeReference?,
+        var hasQuickFix: Boolean,
+    )
+
+    /** Error/warning counts plus distinct-message [tallies] (in first-occurrence order) for [problemSummary]. */
+    protected class ProblemSummary(
+        val errors: Int,
+        val warnings: Int,
+        val tallies: LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>,
+    )
+
     /**
-     * Counts the problems [nodeWithProblemsListJsonArray] would print for [node]'s subtree, split by
-     * severity: the checker-reported items plus the two "soft" problems the formatter synthesizes
-     * (empty enumeration property / invalid property value). Counting here rather than over the
-     * rendered JSON keeps the per-root tallies of a model-scope check consistent with the report the
-     * same call would produce for that root. `info` items are not counted, matching
-     * [hasLocalProblems], which ignores them for the green/red decision.
+     * Counts and tallies the problems [nodeWithProblemsListJsonArray] would print for [node]'s subtree,
+     * split by severity: the checker-reported `ERROR`/`WARNING` items plus the two "soft" problems the
+     * formatter synthesizes (empty enumeration property / invalid property value). Counting and listing
+     * in one visitor keeps the per-root counts and `messages` of a model-scope check consistent with
+     * the report the same call would produce for that root. `info` items are ignored. The invalid-value
+     * soft error is suppressed only when a problem on that property mentions `"invalid"`, matching
+     * [nodeWithProblemsJsonObject] (D83 / F5). With [collectMessages] false only the counts are computed
+     * and [ProblemSummary.tallies] stays empty.
      */
-    protected fun problemCounts(node: SNode, problems: Map<SNode, List<NodeReportItem>>): ProblemCounts {
+    protected fun problemSummary(
+        node: SNode,
+        problems: Map<SNode, List<NodeReportItem>>,
+        collectMessages: Boolean = true,
+    ): ProblemSummary {
         var errors = 0
         var warnings = 0
+        val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+
+        fun record(severity: MessageStatus, message: String, nodeRef: SNodeReference?, hasQuickFix: Boolean) {
+            when (severity) {
+                MessageStatus.ERROR -> errors++
+                MessageStatus.WARNING -> warnings++
+                else -> return
+            }
+            if (!collectMessages) return
+            val key = severity to message
+            val existing = tallies[key]
+            if (existing != null) {
+                existing.count++
+                if (hasQuickFix) existing.hasQuickFix = true
+            } else {
+                tallies[key] = ProblemTally(severity, message, 1, nodeRef, hasQuickFix)
+            }
+        }
 
         fun visit(n: SNode) {
             val nodeProblems = problems[n] ?: emptyList()
+            val nodeRef = n.reference
             for (item in nodeProblems) {
-                when (item.severity) {
-                    MessageStatus.ERROR -> errors++
-                    MessageStatus.WARNING -> warnings++
-                    else -> {}
+                if (item.severity == MessageStatus.ERROR || item.severity == MessageStatus.WARNING) {
+                    val hasFix = QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item).isNotEmpty()
+                    record(item.severity, item.message, nodeRef, hasFix)
                 }
             }
             for (prop in n.concept.properties) {
                 val propertyState = getPropertyState(n, prop)
-                if (propertyState.isEmptyEnum) errors++
-                if (propertyState.isInvalid && nodeProblems.none { it.message.contains("invalid", ignoreCase = true) }) errors++
+                if (propertyState.isEmptyEnum) {
+                    record(MessageStatus.ERROR, "Empty enumeration property: '${prop.name}'", nodeRef, false)
+                }
+                val propProblems = nodeProblems.filter { (it.messageTarget as? PropertyMessageTarget)?.role == prop.name }
+                if (propertyState.isInvalid && propProblems.none { it.message.contains("invalid", ignoreCase = true) }) {
+                    record(MessageStatus.ERROR, "Property value is invalid: '${prop.name}'", nodeRef, false)
+                }
             }
             for (child in n.children) visit(child)
         }
 
         visit(node)
-        return ProblemCounts(errors, warnings)
+        return ProblemSummary(errors, warnings, tallies)
+    }
+
+    /** Counts-only thin wrapper over [problemSummary], kept for tests. */
+    protected fun problemCounts(node: SNode, problems: Map<SNode, List<NodeReportItem>>): ProblemCounts {
+        val summary = problemSummary(node, problems, collectMessages = false)
+        return ProblemCounts(summary.errors, summary.warnings)
+    }
+
+    /**
+     * Counts and tallies `ERROR`/`WARNING` model-level problems for a module `perRoot` row (D83 §2).
+     * For a [NodeReportItem], `node` is its node; otherwise `node` is null. `hasQuickFix` is always
+     * false because [modelWithProblemsJsonObject] never lists quick fixes on model-level items (§1).
+     */
+    protected fun modelProblemSummary(modelProblems: List<ModelReportItem>): ProblemSummary {
+        var errors = 0
+        var warnings = 0
+        val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+        for (problem in modelProblems) {
+            when (problem.severity) {
+                MessageStatus.ERROR -> errors++
+                MessageStatus.WARNING -> warnings++
+                else -> continue
+            }
+            val key = problem.severity to problem.message
+            val existing = tallies[key]
+            if (existing != null) {
+                existing.count++
+            } else {
+                tallies[key] = ProblemTally(
+                    problem.severity,
+                    problem.message,
+                    1,
+                    (problem as? NodeReportItem)?.node,
+                    false,
+                )
+            }
+        }
+        return ProblemSummary(errors, warnings, tallies)
+    }
+
+    protected fun mergeTallies(
+        into: LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>,
+        from: Iterable<ProblemTally>,
+    ) {
+        for (t in from) {
+            val key = t.severity to t.message
+            val existing = into[key]
+            if (existing != null) {
+                existing.count += t.count
+                if (existing.node == null) existing.node = t.node
+                if (t.hasQuickFix) existing.hasQuickFix = true
+            } else {
+                into[key] = ProblemTally(t.severity, t.message, t.count, t.node, t.hasQuickFix)
+            }
+        }
+    }
+
+    protected fun truncateProblemMessage(message: String, maxChars: Int = MAX_PROBLEM_MESSAGE_CHARS): String {
+        if (message.length <= maxChars) return message
+        var cut = maxChars - 1
+        if (cut > 0 && message[cut - 1].isHighSurrogate()) {
+            cut--
+        }
+        return message.substring(0, cut) + "…"
+    }
+
+    /**
+     * Sorts [tallies] (errors before warnings, higher `count` first, then first occurrence), takes at
+     * most [perRow] entries, and truncates each message at a code-point boundary to 300 characters.
+     */
+    protected fun messagesJsonArray(
+        tallies: Collection<ProblemTally>,
+        perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+    ): JsonArray {
+        val sorted = tallies.sortedWith(
+            compareBy<ProblemTally> { if (it.severity == MessageStatus.ERROR) 0 else 1 }
+                .thenByDescending { it.count }
+        )
+        val arr = JsonArray()
+        for (tally in sorted.take(perRow)) {
+            arr.add(jsonObject {
+                addProperty("severity", problemSeverity(tally.severity))
+                addProperty("message", truncateProblemMessage(tally.message))
+                addProperty("count", tally.count)
+                tally.node?.let { addProperty("node", PersistenceFacade.getInstance().asString(it)) }
+                if (tally.hasQuickFix) addProperty("hasQuickFixes", true)
+            })
+        }
+        return arr
+    }
+
+    /** Attaches `messages` and, when [tallies] exceed [perRow], `moreMessages` to [row]. No-op when [tallies] is empty. */
+    protected fun addMessagesToRow(
+        row: JsonObject,
+        tallies: Collection<ProblemTally>,
+        perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+    ) {
+        if (tallies.isEmpty()) return
+        row.add("messages", messagesJsonArray(tallies, perRow))
+        if (tallies.size > perRow) {
+            row.addProperty("moreMessages", tallies.size - perRow)
+        }
+    }
+
+    /** Chosen `perRoot` payload string and the `details.messagesPerRow` value (null when every row is clean). */
+    protected data class PerRootFormChoice(val dataJson: String, val messagesPerRow: Int?)
+
+    /**
+     * Picks the inline `perRoot` form that fits [maxInlineBytes] (D83 §3):
+     * 1. Up to [MAX_PROBLEM_MESSAGES_PER_ROW] (5) distinct messages per row.
+     * 2. Up to 1 message per row (plus `moreMessages`) if form 1 exceeds [maxInlineBytes].
+     * 3. Form 1 again when form 2 also exceeds [maxInlineBytes], so [finalizeResult] writes the full
+     *    5-per-row payload to the temp file.
+     *
+     * When no row has any messages, `messagesPerRow` is `null` (omitted from `details`).
+     */
+    protected fun choosePerRootForm(
+        rows: List<Pair<JsonObject, Collection<ProblemTally>>>,
+        maxInlineBytes: Int,
+    ): PerRootFormChoice {
+        val anyMessages = rows.any { it.second.isNotEmpty() }
+        val form1 = renderPerRootRows(rows, MAX_PROBLEM_MESSAGES_PER_ROW)
+        if (!anyMessages) {
+            return PerRootFormChoice(form1, null)
+        }
+        if (form1.length <= maxInlineBytes) {
+            return PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW)
+        }
+        val form2 = renderPerRootRows(rows, 1)
+        return if (form2.length <= maxInlineBytes) {
+            PerRootFormChoice(form2, 1)
+        } else {
+            PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW)
+        }
+    }
+
+    private fun renderPerRootRows(
+        rows: List<Pair<JsonObject, Collection<ProblemTally>>>,
+        perRow: Int,
+    ): String {
+        val array = JsonArray()
+        for ((base, tallies) in rows) {
+            val row = base.deepCopy()
+            addMessagesToRow(row, tallies, perRow)
+            array.add(row)
+        }
+        return array.toString()
     }
 
     protected fun nodeWithProblemsListToJson(
@@ -2568,6 +2762,18 @@ abstract class AbstractOps : McpToolset {
         return modelWithProblemsJsonObject(model, problems, currentProject).toString()
     }
 
+    protected fun modelProblemsJsonArray(problems: List<ModelReportItem>): JsonArray {
+        val problemArray = JsonArray()
+        for (problem in problems) {
+            val problemObj = problemJsonObject(problem.severity, problem.message)
+            if (problem is NodeReportItem) {
+                problemObj.addProperty("node", PersistenceFacade.getInstance().asString(problem.node))
+            }
+            problemArray.add(problemObj)
+        }
+        return problemArray
+    }
+
     protected fun modelWithProblemsJsonObject(
         model: SModel,
         problems: List<ModelReportItem>,
@@ -2578,15 +2784,7 @@ abstract class AbstractOps : McpToolset {
         obj.addProperty("reference", PersistenceFacade.getInstance().asString(model.reference))
         obj.addProperty("module", model.module?.moduleName ?: "")
         addContainingProjectIfForeign(obj, currentProject, model)
-        val problemArray = JsonArray()
-        for (problem in problems) {
-            val problemObj = problemJsonObject(problem.severity, problem.message)
-            if (problem is NodeReportItem) {
-                problemObj.addProperty("node", PersistenceFacade.getInstance().asString(problem.node))
-            }
-            problemArray.add(problemObj)
-        }
-        obj.add("problems", problemArray)
+        obj.add("problems", modelProblemsJsonArray(problems))
         return obj
     }
 

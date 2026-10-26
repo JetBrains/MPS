@@ -9,9 +9,11 @@ import com.google.gson.JsonParser
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.structure.modules.Dependency
 import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import java.util.UUID
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -2386,16 +2388,39 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
 
         val entries = payloadArrayFromOkData(response).map { it.asJsonObject }
         assertEquals("perRoot must answer for every root, clean ones included", rootCount, entries.size)
+        val baseKeys = setOf("root", "name", "concept", "errors", "warnings")
         for (entry in entries) {
+            val total = entry.get("errors").asInt + entry.get("warnings").asInt
+            val expectedKeys = if (total == 0) baseKeys else baseKeys + "messages"
             assertEquals(
-                "a perRoot entry must be {root, name, concept, errors, warnings}: $entry",
-                setOf("root", "name", "concept", "errors", "warnings"), entry.keySet(),
+                "clean rows have $baseKeys and rows with problems add messages: $entry",
+                expectedKeys, entry.keySet() - "moreMessages",
             )
         }
         val refs = entries.map { it.get("root").asString }.toSet()
         assertTrue("both roots must be covered: $refs", refs.containsAll(setOf(brokenRef, otherRef)))
         val broken = entries.single { it.get("root").asString == brokenRef }
         assertTrue("the broken root must report at least one error: $broken", broken.get("errors").asInt >= 1)
+        val messages = broken.getAsJsonArray("messages").map { it.asJsonObject }
+        assertTrue("the broken root must carry at least one error entry: $messages", messages.any { it.get("severity").asString == "error" })
+        if (!broken.has("moreMessages")) {
+            assertEquals(
+                "message counts must sum to errors + warnings when uncapped: $broken",
+                broken.get("errors").asInt + broken.get("warnings").asInt,
+                messages.sumOf { it.get("count").asInt },
+            )
+        }
+        for (msg in messages) {
+            val nodeRef = msg.get("node").asString
+            readOnRepo {
+                val resolved = resolveNode(nodeRef)
+                assertEquals(
+                    "message node '$nodeRef' must belong to the broken root: $msg",
+                    brokenRef,
+                    PersistenceFacade.getInstance().asString(resolved.containingRoot.reference),
+                )
+            }
+        }
     }
 
     // ── module scope (D63) ─────────────────────────────────────────────────────────────────
@@ -2476,13 +2501,95 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
 
         val rows = payloadArrayFromOkData(response).map { it.asJsonObject }
         assertEquals("one row per model, clean ones included: $rows", 6, rows.size)
+        val baseKeys = setOf("model", "name", "rootsChecked", "errors", "warnings")
         for (row in rows) {
-            assertEquals(setOf("model", "name", "rootsChecked", "errors", "warnings"), row.keySet())
+            val total = row.get("errors").asInt + row.get("warnings").asInt
+            val expectedKeys = if (total == 0) baseKeys else baseKeys + "messages"
+            assertEquals(expectedKeys, row.keySet() - "moreMessages")
         }
-        assertTrue(rows.single { it.get("model").asString == structureModelRef }.get("errors").asInt >= 1)
+        val structureRow = rows.single { it.get("model").asString == structureModelRef }
+        assertTrue(structureRow.get("errors").asInt >= 1)
+        assertTrue(structureRow.getAsJsonArray("messages").size() >= 1)
         val cleanRow = rows.single { it.get("model").asString == modelRefOf(clean) }
         assertEquals(0, cleanRow.get("errors").asInt)
         assertEquals(0, cleanRow.get("warnings").asInt)
+    }
+
+    @Test
+    fun `check_root_node_problems perRoot reports model-level problems on model and module scopes`() {
+        val lang = freshLanguage()
+        val model = createModel(lang, "${lang.moduleName}.ghostlang")
+        val modelRef = modelRefOf(model)
+        val ghostLangName = "test.ghost.used.language.${System.nanoTime()}"
+        executeCommand {
+            val uuid = UUID.randomUUID()
+            val ghostLang = MetaAdapterFactory.getLanguage(uuid.mostSignificantBits, uuid.leastSignificantBits, ghostLangName)
+            (model as SModelInternal).addLanguage(ghostLang)
+        }
+
+        val modelPerRoot = okEnvelope(runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(modelRef, perRoot = true)
+        })
+        val modelProblems = modelPerRoot.getAsJsonObject("details").getAsJsonArray("modelProblems").map { it.asJsonObject }
+        val modelProblem = modelProblems.singleOrNull { it.get("message").asString.contains(ghostLangName) }
+        assertNotNull("details.modelProblems must list the missing used language: $modelProblems", modelProblem)
+        assertEquals("error", modelProblem!!.get("severity").asString)
+        assertFalse("MissingImportedLanguageError is not a NodeReportItem, so node is omitted: $modelProblem", modelProblem.has("node"))
+        assertTrue(
+            warningsOf(modelPerRoot).toString(),
+            warningsOf(modelPerRoot).any { it.contains("see details.modelProblems") },
+        )
+
+        val modulePerRoot = runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(moduleRefOf(lang), perRoot = true)
+        }
+        val modelRow = payloadArrayFromOkData(modulePerRoot).map { it.asJsonObject }.single { it.get("model").asString == modelRef }
+        val rowMessages = modelRow.getAsJsonArray("messages").map { it.asJsonObject }
+        val rowEntry = rowMessages.singleOrNull { it.get("message").asString.contains(ghostLangName) }
+        assertNotNull("module perRoot row must include the model-level problem in messages: $modelRow", rowEntry)
+        assertFalse("model-level problem must omit node: $rowEntry", rowEntry!!.has("node"))
+        assertFalse("model-level problem must omit hasQuickFixes even when the item carries a fix: $rowEntry", rowEntry.has("hasQuickFixes"))
+        assertEquals(
+            "message counts must sum to errors + warnings on the model row: $modelRow",
+            modelRow.get("errors").asInt + modelRow.get("warnings").asInt,
+            rowMessages.sumOf { it.get("count").asInt },
+        )
+    }
+
+    @Test
+    fun `check_root_node_problems perRoot falls back to 1 message per row when form 1 exceeds maxInlineBytes`() {
+        val brokenRef = createConceptRoot("PerRootFallback")
+        clearConceptId(brokenRef)
+        executeCommand {
+            val root = resolveNode(brokenRef)
+            val linkRole = root.concept.containmentLinks.first { it.name == "linkDeclaration" }
+            val decl = jetbrains.mps.smodel.SNode(SNodeUtil.concept_LinkDeclaration)
+            root.addChild(linkRole, decl)
+        }
+
+        val uncappedResponse = runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true)
+        }
+        val uncappedEnvelope = okEnvelope(uncappedResponse)
+        assertTrue("uncapped call must stay inline: $uncappedEnvelope", uncappedEnvelope.get("data").isJsonArray)
+        assertEquals(5, uncappedEnvelope.getAsJsonObject("details").get("messagesPerRow").asInt)
+        val uncappedRows = uncappedEnvelope.getAsJsonArray("data").map { it.asJsonObject }
+        val multiMessageRow = uncappedRows.firstOrNull {
+            it.has("messages") && it.getAsJsonArray("messages").size() >= 2
+        }
+        assertNotNull("precondition: at least one row must have >= 2 distinct messages: $uncappedRows", multiMessageRow)
+        val form1Length = uncappedEnvelope.get("data").toString().length
+
+        val fallbackResponse = runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true, maxInlineBytes = form1Length - 1)
+        }
+        val fallbackEnvelope = okEnvelope(fallbackResponse)
+        assertTrue("form 2 must fit inline at form1Length - 1: $fallbackEnvelope", fallbackEnvelope.get("data").isJsonArray)
+        assertEquals(1, fallbackEnvelope.getAsJsonObject("details").get("messagesPerRow").asInt)
+        val fallbackBroken = fallbackEnvelope.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString == multiMessageRow!!.get("root").asString }
+        assertEquals(1, fallbackBroken.getAsJsonArray("messages").size())
+        assertTrue(fallbackBroken.get("moreMessages").asInt >= 1)
     }
 
     @Test
