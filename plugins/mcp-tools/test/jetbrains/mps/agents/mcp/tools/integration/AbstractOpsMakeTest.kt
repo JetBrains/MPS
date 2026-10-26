@@ -6,7 +6,11 @@ import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
 import jetbrains.mps.generator.DefaultModifiableGenerationSettings
 import jetbrains.mps.generator.GenerationSettingsProvider
 import jetbrains.mps.make.MakeServiceComponent
+import jetbrains.mps.make.MakeSession
+import jetbrains.mps.make.resources.IResource
+import jetbrains.mps.messages.IMessageHandler
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.smodel.resources.ModelsToResources
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
@@ -23,6 +27,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
+import java.util.concurrent.TimeUnit
 
 class AbstractOpsMakeTest : McpIntegrationTestBase() {
 
@@ -42,9 +47,9 @@ class AbstractOpsMakeTest : McpIntegrationTestBase() {
     }
 
     /**
-     * WorkbenchMakeTask releases `future.get()` before its `done()` closes the session; a tool refused
-     * during a make (TRACE, TRANSIENT_MODELS, ...) called right after this make returned must not see it
-     * still open. The window is a race, so without the wait in performMake this fails only sometimes.
+     * A tool refused during a make (TRACE, TRANSIENT_MODELS, ...) called right after this make returned
+     * must not see the session still open. `WorkbenchMakeTask` closes the session before it releases
+     * `future.get()`, and `performMake` also waits for SESSION_CLOSED as a guard.
      */
     @Test
     fun `performMake returns only once the make session is closed`() {
@@ -56,6 +61,29 @@ class AbstractOpsMakeTest : McpIntegrationTestBase() {
 
         assertTrue("the make succeeds: ${result.message} ${result.details}", result.success)
         assertFalse("the make session is closed once performMake returned", makeService.isSessionActive)
+    }
+
+    /**
+     * MPS-40329: `WorkbenchMakeTask` released `future.get()` before its `done()` closed the session, so a
+     * caller could see the session open right after `get()` returned. This drives the make service
+     * directly, without the SESSION_CLOSED wait in `performMake`. The window is a race, so a regression
+     * fails this test only sometimes, which is why it repeats.
+     */
+    @Test
+    fun `make future get returns only once the make session is closed`() {
+        val makeService = myProject.getComponent(MakeServiceComponent::class.java)?.get()
+        assertNotNull("The integration environment must provide a make service", makeService)
+        assertFalse("A test must start without an active make session", makeService!!.isSessionActive)
+
+        val resources = myProject.modelAccess.computeReadAction<List<IResource>> {
+            ModelsToResources(listOf(structureModel), false).resources().toList()
+        }
+        repeat(20) { cycle ->
+            val session = MakeSession(myProject, IMessageHandler.NULL_HANDLER, false)
+            assertTrue("cycle $cycle: the session opens", makeService.openNewSession(session))
+            makeService.make(session, resources).get(120, TimeUnit.SECONDS)
+            assertFalse("cycle $cycle: the make session is closed once get() returned", makeService.isSessionActive)
+        }
     }
 
     @Test

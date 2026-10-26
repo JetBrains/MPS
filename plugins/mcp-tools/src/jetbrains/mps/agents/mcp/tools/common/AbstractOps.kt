@@ -4191,9 +4191,11 @@ abstract class AbstractOps : McpToolset {
                 val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
                 languageRegistry.addRegistryListener(reloadListener)
 
-                // WorkbenchMakeTask releases future.get() before its done() closes the session, so a
-                // tool that refuses to run during a make (TRACE, TRANSIENT_MODELS, ...) could still see
-                // our session open right after this make returned. Only one session is open at a time,
+                // A guard: WorkbenchMakeTask now runs done(), which closes the session, before it
+                // releases future.get() (MPS-40329), so the latch is normally counted down already when
+                // get() returns. Older MPS builds released get() first, and a tool that refuses to run
+                // during a make (TRACE, TRANSIENT_MODELS, ...) could then still see our session open
+                // right after this make returned. Only one session is open at a time,
                 // so the first SESSION_CLOSED after ours opened is practically always ours (a previous
                 // session's notification still in flight is the rare exception); waiting for it, rather
                 // than for isSessionActive to turn false, does not stall when another make opens right
