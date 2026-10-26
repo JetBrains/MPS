@@ -25,6 +25,15 @@ import jetbrains.mps.ide.messages.MessageListOptions;
 import jetbrains.mps.make.MakeSession;
 import jetbrains.mps.make.IMakeService;
 import jetbrains.mps.make.MakeServiceComponent;
+import java.util.concurrent.CountDownLatch;
+import jetbrains.mps.make.IMakeNotificationListener;
+import jetbrains.mps.make.MakeNotification;
+import com.intellij.openapi.progress.impl.BackgroundableProcessIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import java.util.concurrent.TimeUnit;
+import com.intellij.openapi.progress.ProcessCanceledException;
+import jetbrains.mps.messages.Message;
+import jetbrains.mps.messages.MessageKind;
 import java.util.concurrent.Future;
 import jetbrains.mps.make.script.IResult;
 import java.util.concurrent.CancellationException;
@@ -80,8 +89,50 @@ public class MakeNodePointers_BeforeTask extends BaseMpsBeforeTaskProvider<MakeN
       IMessageList handler = mvt.getMessageList("Make before Run", MessageListOptions.DeafOnMessage, MessageListOptions.ReuseExisting);
       handler.clear();
       MakeSession session = new MakeSession(mpsProject, handler, true);
-      IMakeService makeService = mpsProject.getComponent(MakeServiceComponent.class).get();
-      if (makeService.openNewSession(session)) {
+      final IMakeService makeService = mpsProject.getComponent(MakeServiceComponent.class).get();
+      // Another make holds the session: wait until it closes, then try once more. Skipping the make would run stale classes.
+      boolean opened = makeService.openNewSession(session);
+      if (!(opened)) {
+        final CountDownLatch sessionClosed = new CountDownLatch(1);
+        IMakeNotificationListener closeListener = new IMakeNotificationListener() {
+          @Override
+          public void sessionClosed(MakeNotification notification) {
+            sessionClosed.countDown();
+          }
+        };
+        // registered before isSessionActive() is asked again, so a close in between is not missed
+        makeService.addListener(closeListener);
+        // before-run tasks run on a pooled thread without a progress indicator; this one lets the user cancel the wait
+        BackgroundableProcessIndicator waitIndicator = new BackgroundableProcessIndicator(project, "Waiting for the running make to finish", "Cancel", null, true);
+        try {
+          ProgressManager.getInstance().runProcess(new Runnable() {
+            public void run() {
+              long deadline = System.nanoTime() + TimeUnit.MINUTES.toNanos(5);
+              try {
+                while (makeService.isSessionActive() && !(sessionClosed.await(100, TimeUnit.MILLISECONDS))) {
+                  ProgressManager.checkCanceled();
+                  if (project.isDisposed() || System.nanoTime() - deadline > 0) {
+                    return;
+                  }
+                }
+              } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+              }
+            }
+          }, waitIndicator);
+        } catch (ProcessCanceledException e) {
+          // not rethrown: BaseMpsBeforeTaskProvider would log it as an error. false cancels the run as well
+          handler.handle(new Message(MessageKind.INFORMATION, "Waiting for the running make was cancelled, so the run was not started."));
+          return false;
+        } finally {
+          makeService.removeListener(closeListener);
+        }
+        if (project.isDisposed() || Thread.currentThread().isInterrupted()) {
+          return false;
+        }
+        opened = makeService.openNewSession(session);
+      }
+      if (opened) {
         Future<IResult> future = makeService.make(session, resources);
         IResult result = null;
         try {
@@ -93,7 +144,10 @@ public class MakeNodePointers_BeforeTask extends BaseMpsBeforeTaskProvider<MakeN
         }
         return result != null && result.isSucessful();
       }
-      return true;
+      // never run silently without the make
+      handler.handle(new Message(MessageKind.ERROR, ((makeService.isSessionActive() ? "Another make is still running, so the run was not started. Run again once it has finished." : "The make could not start (indexing may still be in progress), so the run was not started."))));
+      handler.wake();
+      return false;
     }
   }
 }
