@@ -621,7 +621,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
 
-        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1)
+        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1, diagnosis = "unterminated string", expectTempFileHint = true)
         assertEquals("parse failure must not insert any root", before, structureRoots().size)
     }
 
@@ -1022,7 +1022,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = false)
         }
 
-        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1)
+        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1, diagnosis = "unbalanced", expectTempFileHint = true)
         assertEquals("UnchangedAfterBadArray", readOnRepo {
             PersistenceFacade.getInstance().createNodeReference(rootRef).resolve(structureModel.repository)!!.name
         })
@@ -1064,7 +1064,10 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val malformedFromFile = runTool(toolset) {
                 it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(incompleteFile.absolutePath), dryRun = true)
             }
-            assertIncompleteJson(malformedFromFile, incomplete.length, expectedColumn = incomplete.length + 1)
+            assertIncompleteJson(
+                malformedFromFile, incomplete.length, expectedColumn = incomplete.length + 1,
+                diagnosis = "unterminated string", expectTempFileHint = false,
+            )
         } finally {
             validFile.delete()
             incompleteFile.delete()
@@ -1415,15 +1418,15 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("scope errors must not return warnings: $errorJson", envelope.has("warnings"))
     }
 
-    private fun assertIncompleteJson(response: String, length: Int, expectedColumn: Int) {
+    private fun assertIncompleteJson(response: String, length: Int, expectedColumn: Int, diagnosis: String, expectTempFileHint: Boolean) {
         val envelope = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
         assertEquals("INVALID_JSON", envelope.get("code").asString)
         val error = envelope.get("error").asString
         assertTrue("expected received length: $error", error.contains("received $length chars (inline limit 4096)"))
         assertTrue("expected Gson location: $error", error.contains("at line 1 column $expectedColumn"))
-        assertTrue("expected brace hint: $error", error.contains("unbalanced"))
-        assertTrue("expected temp-file hint: $error", error.contains("absolute temp-file path"))
+        assertTrue("expected diagnosis '$diagnosis': $error", error.contains(diagnosis))
+        assertEquals("temp-file hint only for input that fits inline: $error", expectTempFileHint, error.contains("absolute temp-file path"))
         assertFalse("syntax diagnosis must not claim the inline guard fired: $error", error.contains("Direct JSON input is too large"))
     }
 

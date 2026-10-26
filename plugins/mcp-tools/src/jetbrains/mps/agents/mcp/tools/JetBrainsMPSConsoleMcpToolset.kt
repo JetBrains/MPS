@@ -5,7 +5,6 @@ import jetbrains.mps.agents.mcp.tools.logging.*
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
@@ -65,7 +64,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
 
             val jsonElement = try {
-                JsonParser.parseString(actualJson)
+                parseJsonElement(actualJson)
             } catch (e: Exception) {
                 rethrowIfCancellation(e)
                 return@withMpsProject invalidJson("Failed to parse JSON: ${e.message}")

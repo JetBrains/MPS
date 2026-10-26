@@ -1022,28 +1022,136 @@ class AbstractOpsPropertyProblemsTest {
         }
     }
 
-    @Test
-    fun parseJsonOnTruncatedInputAppendsBraceImbalanceHint() {
-        val json = """{"a":1"""
+    private fun parseFailure(json: String): String {
         try {
-            // Truncated object (missing closing brace): Gson throws a JsonSyntaxException backed by an
-            // EOFException whose message is "End of input at line N column M ...".
-            ops.parseJson(json)
-            fail("Expected truncated JSON to fail")
+            ops.parseJsonElement(json)
         } catch (e: AbstractOps.McpInvalidRequestException) {
-            // Assert against the REAL Gson message (we fed malformed JSON), so a future Gson reword of
-            // "End of input" fails this test rather than silently disabling the hint.
-            assertTrue(
-                "Expected the EOF Gson message, got: ${e.message}",
-                e.message.orEmpty().contains("End of input")
-            )
-            assertTrue(
-                "Expected the brace-imbalance hint, got: ${e.message}",
-                e.message.orEmpty().contains("unbalanced")
-            )
-            assertTrue(e.message.orEmpty().contains("received ${json.length} chars (inline limit 4096)"))
-            assertTrue(e.message.orEmpty().contains("absolute temp-file path"))
+            return e.message.orEmpty()
         }
+        fail("Expected malformed JSON to fail: $json")
+        return ""
+    }
+
+    private fun bigBlueprint(nodes: Int = 45): String =
+        (0 until nodes).joinToString(",", prefix = """{"concept":"test.C","children":[{"role":"child","nodes":[""", postfix = "]}]}") {
+            """{"concept":"test.D","properties":[{"name":"name","value":"node$it"}]}"""
+        }
+
+    @Test
+    fun parseJsonOnMissingCloserReportsUnbalancedWithGsonLocation() {
+        val json = """{"a":1"""
+        val message = parseFailure(json)
+        assertTrue("Expected the closer diagnosis, got: $message", message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(message.contains("cannot be inferred from counts"))
+        assertTrue("Expected real Gson location: $message", message.contains("at line 1 column ${json.length + 1} path \$.a"))
+        assertFalse("Gson's EOF text must be replaced: $message", message.contains("End of input"))
+        assertTrue(message.contains("received ${json.length} chars (inline limit 4096)"))
+        assertTrue(message.contains("absolute temp-file path"))
+        assertTrue(message.contains("mps-node-editing/references/troubleshooting.md"))
+    }
+
+    @Test
+    fun parseJsonListsMissingClosersInnermostFirst() {
+        val message = parseFailure("""{"a":[{"b":1""")
+        assertTrue(message, message.contains("3 closer(s) missing at the end of input: '}' then ']' then '}'"))
+    }
+
+    @Test
+    fun parseJsonOnUnterminatedStringDoesNotClaimUnbalanced() {
+        val json = "{\"a\":1,\n \"b\": \"cut off"
+        val message = parseFailure(json)
+        assertTrue(message, message.contains("unterminated string opened at line 2 column 7"))
+        assertTrue(message.contains("unescaped"))
+        assertFalse(message, message.contains("unbalanced"))
+        assertTrue(message.contains("received ${json.length} chars (inline limit 4096)"))
+        assertTrue(message.contains("absolute temp-file path"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret must sit under the opening quote", 10 + 6, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonOnMismatchedCloserNamesTheOpener() {
+        val message = parseFailure("""{"a":[1,2},"b":3}""")
+        assertTrue(message, message.contains("unbalanced: '}' at line 1 column 10 closes the '[' opened at line 1 column 6: a ']' is missing before it"))
+        assertTrue(message.contains("absolute temp-file path"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret must sit under the offending closer", 10 + 9, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonOnExtraClosersAfterTopLevelValue() {
+        val message = parseFailure("""{"a":[1]}]}""")
+        assertTrue(message, message.contains("unbalanced: 2 extra closer(s) after the top-level value ended, the first at line 1 column 10"))
+        assertFalse("Gson's lenient-mode text must be dropped: $message", message.contains("setStrictness"))
+        assertFalse(message.contains("Troubleshooting.md"))
+        assertTrue(message.contains("absolute temp-file path"))
+    }
+
+    @Test
+    fun parseJsonOnTrailingContentAfterTopLevelValue() {
+        val json = """{"a":1} x"""
+        val message = parseFailure(json)
+        assertTrue(message, message.contains("unexpected content after the top-level value at line 1 column 9"))
+        assertFalse(message.contains("unbalanced"))
+        assertFalse(message.contains("received ${json.length} chars"))
+        assertFalse(message.contains("absolute temp-file path"))
+        assertFalse(message.contains("setStrictness"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals(10 + 8, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonIgnoresBracketsAndEscapedQuotesInsideStrings() {
+        // Balanced apart from the missing final '}': the ']' '}' '{' and the escaped quote sit inside strings.
+        val message = parseFailure("""{"a":"x]}{ \" [","b":2""")
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertFalse(message.contains("closes the"))
+        assertFalse(message.contains("extra closer"))
+    }
+
+    @Test
+    fun parseJsonReportsScanLineWhenItDiffersFromGsonLine() {
+        // Gson reports the end of input on line 4; the scan points at the line where the string was opened.
+        val message = parseFailure("{\"a\":1,\n \"b\": \"cut\noff\nmore")
+        assertTrue(message, message.contains("unterminated string opened at line 2 column 7"))
+        assertTrue(message, message.contains("at line 4 column"))
+        assertTrue(message.lines().any { it.startsWith("->    2 | ") })
+        assertFalse(message.lines().any { it.startsWith("->    4 | ") })
+    }
+
+    @Test
+    fun parseJsonOmitsTempFileSentenceForInputLongerThanInlineLimit() {
+        val json = """{"a":"""" + "x".repeat(4200)
+        val message = parseFailure(json)
+        assertTrue(message, message.contains("unterminated string"))
+        assertTrue(message.contains("received ${json.length} chars (inline limit 4096)"))
+        assertFalse(message, message.contains("absolute temp-file path"))
+        assertTrue(message.contains("mps-node-editing/references/troubleshooting.md"))
+    }
+
+    @Test
+    fun parseJsonExcerptIsWindowedAndClampedAtEndOfInput() {
+        val json = bigBlueprint()
+        assertTrue(json.length > 3000)
+        val message = parseFailure(json.dropLast(2))
+        val excerptLine = message.lines().first { it.startsWith("->") }
+        assertTrue("excerpt must be windowed: ${excerptLine.length}", excerptLine.length < 200)
+        assertTrue(excerptLine.contains("| ..."))
+        assertFalse("window ends at EOF, no trailing ellipsis", excerptLine.endsWith("..."))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret clamped just past the last character", excerptLine.length, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonErrorForLargeSingleLineBlueprintStaysUnderOneKilobyte() {
+        val json = bigBlueprint()
+        assertTrue(json.length in 3000..4096)
+        val withExtraCloser = parseFailure(json + "}")
+        assertTrue(withExtraCloser, withExtraCloser.contains("1 extra closer(s)"))
+        assertTrue("extra closer: ${withExtraCloser.length} chars", withExtraCloser.length < 1024)
+        val withMissingCloser = parseFailure(json.dropLast(1))
+        assertTrue(withMissingCloser, withMissingCloser.contains("1 closer(s) missing"))
+        assertTrue("missing closer: ${withMissingCloser.length} chars", withMissingCloser.length < 1024)
     }
 
     @Test
@@ -1079,7 +1187,62 @@ class AbstractOpsPropertyProblemsTest {
             assertFalse(message.contains("received ${json.length} chars"))
             assertFalse(message.contains("unbalanced"))
             assertFalse(message.contains("absolute temp-file path"))
+            assertFalse(message.contains("Troubleshooting.md"))
+            assertFalse(message.contains("setStrictness"))
+            assertFalse(message.contains("mps-node-editing/references/troubleshooting.md"))
         }
+    }
+
+    @Test
+    fun parseJsonKeepsGsonReasonWhenItStoppedBeforeTheBracketFinding() {
+        // Gson stops at the missing ':' (column 7); the scan only finds the mismatched '}' at column 14.
+        val message = parseFailure("""{"a" 1, "b":[}""")
+        assertTrue(message, message.contains("Parser: Expected ':' at line 1 column 7 path \$.a"))
+        assertTrue(message, message.contains("Further on: unbalanced: '}' at line 1 column 14 closes the '[' opened at line 1 column 13"))
+        assertFalse("the class name prefix must be stripped: $message", message.contains("MalformedJsonException"))
+        assertFalse(message.contains("setStrictness"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret must follow the parser's position, not the later finding", 10 + 6, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonLeadsWithTheMismatchWhenGsonStoppedAtTheSamePosition() {
+        for (json in listOf("""{"n":[{"a":1},}""", """[1,[2,}]]""", "{\"n\":[\n{\"a\":1},}")) {
+            val message = parseFailure(json)
+            assertTrue(json + " -> " + message, message.startsWith("unbalanced: '}'"))
+            assertFalse(json + " -> " + message, message.contains("Further on"))
+            assertFalse(json + " -> " + message, message.contains("Parser: Expected"))
+        }
+    }
+
+    @Test
+    fun parseJsonKeepsGsonReasonWhenItStoppedBeforeTheEndOfInput() {
+        val message = parseFailure("""{"a" 1, "b":[""")
+        assertTrue(message, message.contains("Parser: Expected ':' at line 1 column 7"))
+        assertTrue(message, message.contains("Further on: unbalanced: 2 closer(s) missing at the end of input"))
+    }
+
+    @Test
+    fun parseJsonSummarisesMoreThanEightMissingClosers() {
+        val message = parseFailure("[".repeat(11))
+        assertTrue(message, message.contains("11 closer(s) missing at the end of input: ']' then ']' then ']' then ']' then ']' then ']' then ']' then ']' and 3 more."))
+        assertFalse(message, message.contains(".."))
+        assertFalse("the example path must not read as the actual one: $message", message.contains("children[3]"))
+    }
+
+    @Test
+    fun parseJsonExcerptDropsCarriageReturnsAndKeepsCaretAligned() {
+        val message = parseFailure("{\"a\":1,\r\n\"b\":[1}")
+        assertTrue(message, message.contains("closes the '[' opened at line 2 column 5"))
+        assertFalse("CR must not leak into the excerpt: $message", message.contains('\r'))
+        assertEquals(" ".repeat(10 + 6) + "^", message.lines().first { it.trim() == "^" })
+    }
+
+    @Test
+    fun parseJsonExcerptPreservesTabsInCaretPadding() {
+        val message = parseFailure("{\"a\":1,\n\t\"b\":[1}")
+        assertTrue(message, message.contains("closes the '[' opened at line 2 column 6"))
+        assertEquals(" ".repeat(10) + "\t" + " ".repeat(6) + "^", message.lines().first { it.trim() == "^" })
     }
 
     @Test

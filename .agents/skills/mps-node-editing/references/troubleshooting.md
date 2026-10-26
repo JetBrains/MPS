@@ -1,5 +1,12 @@
 # Node Editing — Troubleshooting
 
+* **`INVALID_JSON` with `unbalanced: …`, `unterminated string …` or `unexpected content …`**: the blueprint is not valid JSON. The server scans the text outside strings and names the likely cause; it is a diagnosis, not a proof, and the `Parser location` line (`at line L column C path $.children[3]`) shows where the parser itself stopped.
+  * `unbalanced: N closer(s) missing at the end of input`: the input ended with brackets still open. Counting cannot tell where the closer was omitted, so appending the listed closers usually parses but may nest later roles under the wrong node; re-check the structure, or regenerate it.
+  * `unbalanced: ']' at line L column C closes the '{' opened at …`: a `}` is missing before that `]` (or the reverse).
+  * `unbalanced: K extra closer(s) after the top-level value ended`: the top-level value was already complete; delete the surplus closers and check that nothing was dropped before them.
+  * `unterminated string opened at line L column C`: the input was cut off inside a string, or a `"` inside a string is unescaped (write it as `\"`).
+  * `unexpected content after the top-level value`: a second value or text follows the blueprint; send exactly one object or array.
+  * **Fix**: do not hand-count braces. Generate the blueprint with a script (build it as data, serialise it with `json.dumps`), write it to a file under `$TMPDIR` and pass the absolute path. Inline JSON over 4096 characters is rejected anyway, and the error then reports the received length.
 * **`Cannot invoke "JsonElement.getAsString()" because ... is null`**: a required JSON field (like `concept` or `role`) is missing.
 * **Notation mismatch**: user-provided textual code may differ from the canonical JSON structure; always map it to the structure defined by the concept.
 * **`Unknown property '...'` / `Unknown child role '...'` / `Unknown reference role '...'`**: the JSON blueprint uses a property name or role name that is not defined on the specified concept. Check spelling or use `mps_mcp_get_concept_details` to verify the concept's structure.
