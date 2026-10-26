@@ -121,6 +121,9 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS")
             fun line(ago: Long, level: String, message: String) =
                 "${LocalDateTime.now().minusMinutes(ago).format(format)} [  12345] ${level.padStart(6)} - jetbrains.mps.Test - $message"
+            // pretend this IDE started 10 minutes ago: the 20- and 30-minute-old records are then a
+            // previous process's, still sitting in the same files (idea.log is not truncated on start)
+            val ideStart = LocalDateTime.now().minusMinutes(10)
             val marker = "mcp-read-ide-log-marker-${UUID.randomUUID()}"
             Files.writeString(directory.resolve("idea.1.log"), line(30, "WARN", "$marker old") + "\n")
             Files.writeString(
@@ -133,12 +136,36 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                     line(0, "INFO", "idle"),
                 ).joinToString("\n", postfix = "\n"),
             )
-            val toolset = JetBrainsMPSProjectMcpToolset(ideLogDirectorySource = { directory })
+            val toolset = JetBrainsMPSProjectMcpToolset(
+                ideLogDirectorySource = { directory },
+                ideStartTimeSource = { ideStart },
+            )
 
             val all = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_read_ide_log() })
             assertEquals(directory.resolve("idea.log").toAbsolutePath().normalize().toString(), all.get("logFile").asString)
             assertEquals("idea.log alone does not fill the tail, so idea.1.log is read too: $all", 2, all.getAsJsonArray("filesRead").size())
             assertEquals(4, all.getAsJsonArray("records").size())
+            assertEquals(ideStart.format(format), all.get("ideStartTimestamp").asString)
+            assertEquals(2, all.get("previousSessionRecords").asInt)
+            val allRecords = all.getAsJsonArray("records").map { it.asJsonObject }
+            assertEquals(
+                "the two records older than the IDE start must be marked, the recent ones must not: $all",
+                listOf(true, true, false, false),
+                allRecords.map { it.get("previousSession")?.asBoolean ?: false },
+            )
+
+            // the documented way to read the current session only: feed ideStartTimestamp back as since
+            val currentSession = payloadObjectFromOkData(runTool(toolset) {
+                it.mps_mcp_read_ide_log(since = all.get("ideStartTimestamp").asString)
+            })
+            val currentRecords = currentSession.getAsJsonArray("records").map { it.asJsonObject }
+            assertEquals(
+                "since = ideStartTimestamp must keep exactly the unmarked records: $currentSession",
+                listOf(marker, "idle"),
+                currentRecords.map { it.get("message").asString },
+            )
+            assertFalse("no record after the IDE start may be marked: $currentSession", currentRecords.any { it.has("previousSession") })
+            assertFalse("nothing marked means no such count: $currentSession", currentSession.has("previousSessionRecords"))
 
             val found = payloadObjectFromOkData(runTool(toolset) {
                 it.mps_mcp_read_ide_log(grep = marker, minLevel = "WARN", sinceMinutes = 5)
@@ -149,6 +176,8 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertEquals("WARN", record.get("level").asString)
             assertEquals(marker, record.get("message").asString)
             assertEquals("jetbrains.mps.Test", record.get("category").asString)
+            assertFalse("a record of this session must not be marked: $record", record.has("previousSession"))
+            assertFalse("nothing marked means no such count: $found", found.has("previousSessionRecords"))
             assertTrue(record.get("stackTrace").asString.startsWith("java.lang.IllegalStateException: boom\n\tat "))
             assertEquals(1, found.getAsJsonObject("levelCounts").get("WARN").asInt)
             assertEquals(1, found.getAsJsonArray("filesRead").size())

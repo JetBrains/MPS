@@ -96,6 +96,44 @@ class IdeLogReaderTest {
     }
 
     @Test
+    fun `ideStart marks the records predating it and never drops one`() {
+        write(
+            "idea.log",
+            line("10:00:00,000", "SEVERE", "a", "shutdown leak", uptime = 31_623),
+            line("10:04:00,000", "INFO", "a", "first record of the new session", uptime = 120),
+            line("10:04:30,000", "WARN", "a", "this session"),
+        )
+        val result = IdeLogReader.read(dir(), Query(ideStart = at("10:04:00")))
+        assertEquals(
+            listOf("shutdown leak", "first record of the new session", "this session"),
+            result.records.map { it.message },
+        )
+        assertEquals(listOf(true, false, false), result.records.map { it.previousSession })
+        assertEquals(1, result.previousSessionRecords)
+        assertEquals(3, result.matchedRecords)
+
+        val unbounded = IdeLogReader.read(dir(), Query())
+        assertFalse(unbounded.records.any { it.previousSession })
+        assertEquals(0, unbounded.previousSessionRecords)
+    }
+
+    @Test
+    fun `ideStart marks records of rotated files and leaves the walk alone`() {
+        write("idea.log", line("12:00:00,000", "WARN", "a", "this session"))
+        write("idea.1.log", line("11:00:00,000", "SEVERE", "a", "previous session's shutdown"))
+
+        val result = IdeLogReader.read(dir(), Query(tailRecords = 10, ideStart = at("11:30:00")))
+        assertEquals(listOf("previous session's shutdown", "this session"), result.records.map { it.message })
+        assertEquals(listOf(true, false), result.records.map { it.previousSession })
+        assertEquals(listOf("idea.log", "idea.1.log"), result.filesRead.map { it.fileName.toString() })
+    }
+
+    @Test
+    fun `formatTimestamp writes the timestamp the way the log stamps it`() {
+        assertEquals("2026-10-08 10:04:00,000", IdeLogReader.formatTimestamp(at("10:04:00")))
+    }
+
+    @Test
     fun `grep matches the first line or any stack-trace line`() {
         write(
             "idea.log",
