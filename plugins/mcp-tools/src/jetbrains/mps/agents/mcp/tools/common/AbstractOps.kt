@@ -4045,6 +4045,9 @@ abstract class AbstractOps : McpToolset {
             if (makeService.isSessionActive) {
                 return MakeResult(false, "Another make session is already active", runtimeReady = false)
             }
+            if (HeadlessMigrations.applyRunning.get()) {
+                return MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
+            }
 
             val messages = mutableListOf<MakeMessage>()
             val makeMonitor = coroutineProgressMonitor()
@@ -4139,6 +4142,12 @@ abstract class AbstractOps : McpToolset {
             }
             if (!openNewSessionFlag) {
                 return MakeResult(false, "Opening the make session failed", runtimeReady = false)
+            }
+            // APPLY sets applyRunning, then checks isSessionActive; we open the session, then check
+            // applyRunning. With both sides publishing before checking the other, at most one proceeds.
+            if (HeadlessMigrations.applyRunning.get()) {
+                makeService.closeSession(session)
+                return MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
             }
             val generationSettings = mpsProject.getComponent(GenerationSettingsProvider::class.java).generationSettings
             val savedTransients = saveTransientModels ?: generationSettings.isSaveTransientModels

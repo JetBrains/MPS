@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
 
 import jetbrains.mps.generator.DefaultModifiableGenerationSettings
 import jetbrains.mps.generator.GenerationSettingsProvider
@@ -147,6 +148,19 @@ class AbstractOpsMakeTest : McpIntegrationTestBase() {
                 }
             }
             settings.isSaveTransientModels = original
+        }
+    }
+
+    @Test
+    fun `performMake is refused while a run_migrations APPLY is running`() {
+        assertTrue(HeadlessMigrations.applyRunning.compareAndSet(false, true))
+        try {
+            val result = runTool(MakeOps()) { it.make(myProject, structureModel) }
+            assertFalse(result.success)
+            assertFalse(result.runtimeReady)
+            assertEquals("a run_migrations APPLY is running", result.message)
+        } finally {
+            HeadlessMigrations.applyRunning.set(false)
         }
     }
 

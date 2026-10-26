@@ -22,7 +22,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.mps.openapi.module.SModuleReference
-import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
 // MCP tool methods use snake_case names because they are part of the public MCP protocol
@@ -36,12 +35,6 @@ class JetBrainsMPSMigrationMcpToolset : AbstractOps() {
 
         /** How often the latest migration step is forwarded to `reportToolActivity`. */
         const val STEP_REPORT_INTERVAL_MS: Long = 500
-
-        /**
-         * One APPLY at a time in the whole IDE: two runs would force-save and update versions twice,
-         * interleave their steps, and toggle the global fast-find-usages switch `MigrationTask` flips.
-         */
-        val applyRunning = AtomicBoolean(false)
     }
 
     @McpTool
@@ -105,7 +98,7 @@ class JetBrainsMPSMigrationMcpToolset : AbstractOps() {
                 addProperty("status", "NOTHING_TO_DO")
             }, warnings)
         }
-        if (!applyRunning.compareAndSet(false, true)) {
+        if (!HeadlessMigrations.applyRunning.compareAndSet(false, true)) {
             return errJson(
                 "Migrations not applied, nothing was written: another mps_mcp_run_migrations APPLY is " +
                     "running. Wait for it to finish, then CHECK again.",
@@ -124,25 +117,41 @@ class JetBrainsMPSMigrationMcpToolset : AbstractOps() {
                 // The run cannot be cancelled once it writes (see HeadlessMigrations.StepMonitor);
                 // a cancellation that arrived before this point still stops it.
                 currentCoroutineContext().ensureActive()
-                runEngine(mpsProject, scope, haltOnPrecheckFailure, haltOnDependencyError)
-            } finally {
-                applyRunning.set(false)
-            }
-
-            // Everything is written by now. A failure to recount must not turn the answer into an error,
-            // or the caller would believe nothing was migrated. No timeout: after the trigger unloads
-            // every model, the recount reloads them, which takes long on a large project.
-            val remaining = try {
-                withContext(Dispatchers.Default) {
-                    mpsProject.modelAccess.computeReadAction { HeadlessMigrations.plan(mpsProject, scope) }
+                if (HeadlessMigrations.isMakeSessionActive(mpsProject)) {
+                    null to false
+                } else {
+                    runEngine(mpsProject, scope, haltOnPrecheckFailure, haltOnDependencyError)
                 }
-            } catch (e: Exception) {
-                rethrowIfCancellation(e)
-                logger.warn("Could not recount the pending migrations after APPLY", e)
-                responseWarnings.add("The migrations ran, but recounting what is still pending failed (${e.message ?: e}); CHECK again.")
-                null
+            } finally {
+                HeadlessMigrations.applyRunning.set(false)
             }
-            Triple(outcome, modelsUnloaded, remaining)
+            if (outcome == null) {
+                Triple(null, modelsUnloaded, null)
+            } else {
+                // Everything is written by now. A failure to recount must not turn the answer into an error,
+                // or the caller would believe nothing was migrated. No timeout: after the trigger unloads
+                // every model, the recount reloads them, which takes long on a large project.
+                val remaining = try {
+                    withContext(Dispatchers.Default) {
+                        mpsProject.modelAccess.computeReadAction { HeadlessMigrations.plan(mpsProject, scope) }
+                    }
+                } catch (e: Exception) {
+                    rethrowIfCancellation(e)
+                    logger.warn("Could not recount the pending migrations after APPLY", e)
+                    responseWarnings.add("The migrations ran, but recounting what is still pending failed (${e.message ?: e}); CHECK again.")
+                    null
+                }
+                Triple(outcome, modelsUnloaded, remaining)
+            }
+        }
+        if (outcome == null) {
+            val blockers = listOf(HeadlessMigrations.MAKE_SESSION_ACTIVE_BLOCKER)
+            return errJson(
+                "Migrations not applied, nothing was written: ${blockers.joinToString("; ")}.",
+                McpErrorCode.INVALID_REQUEST,
+                mapOf("blockers" to blockers),
+                warnings,
+            )
         }
 
         return okJson(jsonObject {
