@@ -6,9 +6,20 @@ import jetbrains.mps.agents.mcp.tools.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.application.TransactionGuard
+import com.intellij.openapi.application.impl.LaterInvocator
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.util.Disposer
+import com.intellij.testFramework.PlatformTestUtil
+import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.modules.LanguageProducer
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -20,6 +31,8 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
+import java.util.logging.Level
 
 /**
  * End-to-end integration tests for [JetBrainsMPSProjectMcpToolset].
@@ -44,6 +57,18 @@ import java.util.UUID
  *    command) need a live Console and are verified manually.
  */
 class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
+
+    private var extraProject: MPSProject? = null
+
+    @After
+    fun cleanUpCloseProjectFixtures() {
+        extraProject?.let { project ->
+            if (!project.project.isDisposed) {
+                mcpEnvironment.closeProject(project)
+            }
+        }
+        extraProject = null
+    }
 
     @Test
     fun `list-open-projects reports the current MPS project and selector paths`() {
@@ -732,6 +757,89 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "the rejection must name the value and the allowed set: $error",
             error.contains("'shape'") && error.contains("full") && error.contains("names")
         )
+    }
+
+    @Test
+    fun `close-project with force runs projectClosing in a write-safe context under a modal`() {
+        val target = (mcpEnvironment.createEmptyProject() as MPSProject).also { extraProject = it }
+        val targetIdeaProject = target.project
+        val writingAllowed = AtomicReference<Boolean?>(null)
+        val disposable = Disposer.newDisposable("close-project-f5a-test")
+        try {
+            ApplicationManager.getApplication().messageBus.connect(disposable)
+                .subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
+                    override fun projectClosing(project: Project) {
+                        if (project === targetIdeaProject) {
+                            writingAllowed.set(TransactionGuard.getInstance().isWritingAllowed)
+                        }
+                    }
+                })
+            val modal = Any()
+            ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.enterModal(modal) }, ModalityState.nonModal())
+            val response = try {
+                runToolForProject(target, JetBrainsMPSProjectMcpToolset()) {
+                    it.mps_mcp_close_project(force = true)
+                }
+            } finally {
+                ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
+            }
+            val data = expectOk(response)
+            assertTrue(data.get("closed").asBoolean)
+            assertTrue(data.get("force").asBoolean)
+            assertEquals(
+                "force close must re-dispatch under the modal's modality so projectClosing runs write-safe",
+                true,
+                writingAllowed.get(),
+            )
+            assertTrue("target project must be closed", targetIdeaProject.isDisposed || !targetIdeaProject.isOpen)
+        } finally {
+            Disposer.dispose(disposable)
+        }
+    }
+
+    @Test
+    fun `close-project non-force timeout reports closePending and completes once the modal closes`() {
+        val target = (mcpEnvironment.createEmptyProject() as MPSProject).also { extraProject = it }
+        val targetIdeaProject = target.project
+        val targetName = targetIdeaProject.name
+        val modal = Any()
+        var modalEntered = true
+        ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.enterModal(modal) }, ModalityState.nonModal())
+        try {
+            val toolset = JetBrainsMPSProjectMcpToolset(closeProjectTimeoutMs = 200L)
+            val response = runToolForProject(target, toolset) {
+                it.mps_mcp_close_project(force = false)
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected MODAL_BLOCKED envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("MODAL_BLOCKED", envelope.get("code").asString)
+            val error = envelope.get("error").asString
+            assertTrue("error must say the close is still pending: $error", error.contains("still pending"))
+            assertTrue("error must direct the caller to mps_mcp_list_open_projects: $error", error.contains("mps_mcp_list_open_projects"))
+            val details = envelope.getAsJsonObject("details")
+            assertTrue("MODAL_BLOCKED details must carry closePending=true: $details", details.get("closePending").asBoolean)
+            assertFalse("project must still be open while the modal blocks the EDT", targetIdeaProject.isDisposed)
+
+            val (_, records) = captureLogRecords {
+                ApplicationManager.getApplication().invokeAndWait({
+                    LaterInvocator.leaveModal(modal)
+                    modalEntered = false
+                    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+                }, ModalityState.any())
+            }
+            assertTrue("the pending close must complete once the modal is left", targetIdeaProject.isDisposed || !targetIdeaProject.isOpen)
+            assertTrue(
+                "the abandoned close completion must be logged at INFO: ${records.map { "${it.level}: ${it.message}" }}",
+                records.any {
+                    it.level == Level.INFO &&
+                        it.message?.contains("Abandoned close_project for '$targetName' finished after timeout: project closed") == true
+                },
+            )
+        } finally {
+            if (modalEntered) {
+                ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
+            }
+        }
     }
 
     private fun rootNamed(payload: JsonObject, rootName: String): JsonObject =

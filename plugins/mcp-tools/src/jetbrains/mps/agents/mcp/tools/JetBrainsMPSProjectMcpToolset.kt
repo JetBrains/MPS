@@ -66,6 +66,7 @@ class JetBrainsMPSProjectMcpToolset(
     private val runtimeVersionSource: () -> MpsRuntimeVersion? = { MpsRuntimeVersion.fromApplicationOrNull() },
     // PathManager honours -Didea.log.path and falls back to the OS default for the paths selector.
     private val ideLogDirectorySource: () -> Path = { Paths.get(PathManager.getLogPath()) },
+    private val closeProjectTimeoutMs: Long = CLOSE_PROJECT_TIMEOUT_MS,
 ) : AbstractOps() {
 
     @McpTool
@@ -860,7 +861,9 @@ class JetBrainsMPSProjectMcpToolset(
         an already-open modal.
 
         TIMEOUT: this call waits at most 20 seconds. If a modal dialog blocks the close, the tool
-        returns `ok:false` with `code: MODAL_BLOCKED` instead of hanging.
+        returns `ok:false` with `code: MODAL_BLOCKED` instead of hanging. For a non-force close,
+        `details.closePending: true`: the close is still pending on the EDT and completes once the
+        dialog is answered.
 
         See the Closing a project section of `mps-project-management` for project selection,
         timeout recovery, and when to force-close.
@@ -888,17 +891,24 @@ class JetBrainsMPSProjectMcpToolset(
                     val projectName = ideaProject.name
                     val basePath = ideaProject.basePath
                     val closed = try {
-                        withTimeout(CLOSE_PROJECT_TIMEOUT_MS) {
-                            val performShutdown = shutdownWithLastProject &&
-                                ProjectManager.getInstance().openProjects.filterNot { it.isDisposed }.filter { it != ideaProject }.isEmpty()
-                            closeIdeaProjectOnEdt(ideaProject, performShutdown, force)
+                        withTimeout(closeProjectTimeoutMs) {
+                            closeIdeaProjectOnEdt(ideaProject, shutdownWithLastProject, force)
                         }
                     } catch (e: TimeoutCancellationException) {
+                        // A timed-out force close is withdrawn if it has not started (closeIdeaProjectOnEdt).
+                        val message = if (force) {
+                            "Force-closing the project timed out after ${closeProjectTimeoutMs}ms and the close was " +
+                                    "withdrawn. Check with `mps_mcp_list_open_projects` whether the project is still open."
+                        } else {
+                            "Closing the project timed out after ${closeProjectTimeoutMs}ms, but the close is still " +
+                                    "pending on the EDT and completes once the blocking modal dialog is answered. " +
+                                    "Ask the user to answer or close the dialog, then check `mps_mcp_list_open_projects` " +
+                                    "before retrying. To skip save/confirmation dialogs that this close itself would show, " +
+                                    "retry with force=true only if the project is still open."
+                        }
                         throw McpModalBlockedException(
-                            "Closing the project timed out after ${CLOSE_PROJECT_TIMEOUT_MS}ms. " +
-                                    "A modal dialog is likely open in MPS. Ask the user to close it manually, then retry. " +
-                                    "To skip save/confirmation dialogs that this close itself would show, retry with force=true.",
-                            mapOf("timeoutMs" to CLOSE_PROJECT_TIMEOUT_MS, "force" to force),
+                            message,
+                            mapOf("timeoutMs" to closeProjectTimeoutMs, "force" to force, "closePending" to !force),
                         )
                     }
                     if (!closed) {
@@ -925,31 +935,54 @@ class JetBrainsMPSProjectMcpToolset(
 
     /**
      * Dispatches project close onto the EDT without occupying this coroutine on that thread, so a
-     * modal dialog shown *by* the close can still trip [CLOSE_PROJECT_TIMEOUT_MS].
+     * modal dialog shown *by* the close can still trip [closeProjectTimeoutMs].
      *
      * `force=false` uses [ModalityState.nonModal] and [CloseProjectAction] (File | Close Project),
-     * which shows the Welcome screen when no other project remains. `force=true` uses
-     * `ModalityState.any()` plus [ProjectManagerEx.forceCloseProject], then the same Welcome-frame
-     * housekeeping from [com.intellij.ide.actions.CloseProjectsActionBase].
+     * which shows the Welcome screen when no other project remains; if the wait times out first,
+     * the queued action still runs once the blocking dialog closes and its outcome is logged at INFO.
+     * `force=true` uses `ModalityState.any()` only to reach the EDT under an open modal dialog, reads
+     * `ModalityState.current()` there, and re-dispatches [closeIdeaProjectNow] under that modality so
+     * `TransactionGuardImpl.wrapLaterInvocation` grants writing (`any()` is never write-safe).
      */
     private suspend fun closeIdeaProjectOnEdt(
         ideaProject: Project,
-        performShutdown: Boolean,
+        shutdownWithLastProject: Boolean,
         force: Boolean
     ): Boolean {
         return suspendCancellableCoroutine { cont ->
             val abandoned = AtomicBoolean(false)
             cont.invokeOnCancellation { abandoned.set(true) }
-            val modality = if (force) ModalityState.any() else ModalityState.nonModal()
-            ApplicationManager.getApplication().invokeLater({
-                if (abandoned.get()) return@invokeLater
-                val result = runCatching { closeIdeaProjectNow(ideaProject, performShutdown, force) }
-                if (abandoned.get() || !cont.isActive) return@invokeLater
+            val app = ApplicationManager.getApplication()
+            val runClose = Runnable {
+                if (abandoned.get() && force) return@Runnable
+                val result = runCatching { closeIdeaProjectNow(ideaProject, shutdownWithLastProject, force) }
+                if (abandoned.get() || !cont.isActive) {
+                    result.fold(
+                        onSuccess = { closed ->
+                            logger.info(
+                                "Abandoned close_project for '${ideaProject.name}' finished after timeout: " +
+                                        if (closed) "project closed" else "project remained open (dialog cancelled)"
+                            )
+                        },
+                        onFailure = { e ->
+                            logger.info("Abandoned close_project for '${ideaProject.name}' failed after timeout", e)
+                        },
+                    )
+                    return@Runnable
+                }
                 result.fold(
                     onSuccess = { cont.resume(it) },
                     onFailure = { cont.resumeWithException(it) },
                 )
-            }, modality)
+            }
+            if (force) {
+                app.invokeLater({
+                    if (abandoned.get()) return@invokeLater
+                    app.invokeLater(runClose, ModalityState.current())
+                }, ModalityState.any())
+            } else {
+                app.invokeLater(runClose, ModalityState.nonModal())
+            }
         }
     }
 
@@ -959,10 +992,13 @@ class JetBrainsMPSProjectMcpToolset(
      * path, [WelcomeFrame.showIfNoProjectOpened]) are what keep other projects visible or bring back
      * the Welcome screen. `force=true` cannot use the action because it always shows save/can-close
      * dialogs, so that path replicates the same housekeeping around [ProjectManagerEx.forceCloseProject].
+     *
+     * Whether to shut down is decided here, after the close, because a non-force close that timed out
+     * may run much later, when other projects have been opened.
      */
     private fun closeIdeaProjectNow(
         ideaProject: Project,
-        performShutdown: Boolean,
+        shutdownWithLastProject: Boolean,
         force: Boolean
     ): Boolean {
         if (ideaProject.isDisposed) return true
@@ -973,7 +1009,7 @@ class JetBrainsMPSProjectMcpToolset(
             )
             CloseProjectAction().actionPerformed(event)
             val closed = ideaProject.isDisposed || !ideaProject.isOpen
-            if (closed && performShutdown) {
+            if (closed && shutdownWithLastProject && noOtherOpenProjects(ideaProject)) {
                 ApplicationManager.getApplication().invokeLater({
                     ApplicationManager.getApplication().exit()
                 })
@@ -988,7 +1024,7 @@ class JetBrainsMPSProjectMcpToolset(
         }
         if (closed) {
             RecentProjectsManager.getInstance().updateLastProjectPath()
-            if (performShutdown) {
+            if (shutdownWithLastProject && noOtherOpenProjects(ideaProject)) {
                 ApplicationManager.getApplication().invokeLater({
                     ApplicationManager.getApplication().exit()
                 })
@@ -998,6 +1034,9 @@ class JetBrainsMPSProjectMcpToolset(
         }
         return closed
     }
+
+    private fun noOtherOpenProjects(ideaProject: Project): Boolean =
+        ProjectManager.getInstance().openProjects.none { !it.isDisposed && it != ideaProject }
 
     private companion object {
         const val CLOSE_PROJECT_TIMEOUT_MS: Long = 20_000
