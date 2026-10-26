@@ -147,6 +147,12 @@ class AbstractOpsMakeTest : McpIntegrationTestBase() {
         assertEquals("no change, no listener notification", 0, notifications)
     }
 
+    /**
+     * `WorkbenchMakeTask.cancel` cancels the make's progress monitor, so the make stops and closes its
+     * session, and the `NonCancellable` wait in `performMake`'s cancel branch returns once it has. With an
+     * MPS build whose `cancel` only sets a flag, the wait gives up after `SESSION_CLOSE_TIMEOUT_SECONDS`
+     * and the session assertion below fails whenever the make outlasts that bound.
+     */
     @Test
     fun `performMake restores the save-transient setting when the make is cancelled`() {
         val makeService = myProject.getComponent(MakeServiceComponent::class.java)?.get()
@@ -166,10 +172,12 @@ class AbstractOpsMakeTest : McpIntegrationTestBase() {
                     }
                     make.cancelAndJoin()
                     assertTrue("the make was cancelled", make.isCancelled)
+                    assertFalse("the make session is closed once cancelAndJoin returned", makeService!!.isSessionActive)
                 }
             }
             assertFalse("the previous value is restored after the cancel", settings.isSaveTransientModels)
         } finally {
+            // Cleanup only, so a failure above does not cascade into later makes; the assertion above is the check.
             runBlocking {
                 withTimeout(120_000) {
                     while (makeService!!.isSessionActive) delay(50)

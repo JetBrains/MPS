@@ -4199,7 +4199,9 @@ abstract class AbstractOps : McpToolset {
                 // so the first SESSION_CLOSED after ours opened is practically always ours (a previous
                 // session's notification still in flight is the rare exception); waiting for it, rather
                 // than for isSessionActive to turn false, does not stall when another make opens right
-                // after. A make cancelled from the progress UI rethrows before this wait.
+                // after. A cancelled make waits for the same latch under NonCancellable before
+                // rethrowing so withSaveTransientModels restores the setting only after the make stops
+                // reading it.
                 val sessionClosedLatch = CountDownLatch(1)
                 val sessionListener = object : IMakeNotificationListener {
                     override fun sessionClosed(notification: MakeNotification) {
@@ -4229,6 +4231,12 @@ abstract class AbstractOps : McpToolset {
                         } catch (e: CancellationException) {
                             makeMonitor.cancel()
                             future.cancel(true)
+                            withContext(NonCancellable + Dispatchers.IO) {
+                                val sessionClosed = sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                if (!sessionClosed) {
+                                    logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make was cancelled")
+                                }
+                            }
                             throw e
                         }
                         val sessionClosed = runInterruptible(Dispatchers.IO) {
