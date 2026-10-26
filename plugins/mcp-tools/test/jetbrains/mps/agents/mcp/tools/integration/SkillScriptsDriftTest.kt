@@ -157,6 +157,131 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `table_to_bulk_insert appends an aggregate root and rejects specs it cannot honour`() {
+        Python3.require()
+        val scriptDir = installSkills().resolve("mps-node-editing").resolve("scripts")
+        val script = scriptDir.resolve("table_to_bulk_insert.py").toString()
+        val table = scriptDir.resolve("examples").resolve("courses.csv")
+        val mapping = scriptDir.resolve("examples").resolve("courses.map.json")
+
+        val plain = runPython(script, table.toString(), mapping.toString())
+        assertEquals("script must exit 0, output: ${plain.output}", 0, plain.exitCode)
+        val plainSummary = JsonParser.parseString(plain.output.trim()).asJsonObject
+        generatedFiles.add(Path.of(plainSummary.get("path").asString))
+        assertTrue("a spec without an aggregate prints no aggregateReferences: ${plain.output}",
+                   !plainSummary.has("aggregateReferences"))
+
+        val built = runPython(script, table.toString(), aggregateSpec(mapping).toString())
+        assertEquals("script must exit 0, output: ${built.output}", 0, built.exitCode)
+        val summary = JsonParser.parseString(built.output.trim()).asJsonObject
+        val blueprintFile = Path.of(summary.get("path").asString)
+        generatedFiles.add(blueprintFile)
+        assertEquals("roots counts the aggregate", EXAMPLE_ROW_COUNT + 1, summary.get("roots").asInt)
+        assertEquals(EXAMPLE_ROW_COUNT, summary.get("aggregateReferences").asInt)
+        assertEquals(plainSummary.get("children"), summary.get("children"))
+        assertEquals(plainSummary.get("references"), summary.get("references"))
+
+        val roots = JsonParser.parseString(Files.readString(blueprintFile)).asJsonArray
+        val rowNames = roots.take(EXAMPLE_ROW_COUNT).map { root ->
+            root.asJsonObject.getAsJsonArray("properties").map { it.asJsonObject }
+                .first { it.get("name").asString == "name" }.get("value").asString
+        }
+        val aggregate = roots.last().asJsonObject
+        assertEquals("com.example.courses.structure.Catalog", aggregate.get("concept").asString)
+        assertEquals("Course Catalog", aggregate.getAsJsonArray("properties")[0].asJsonObject.get("value").asString)
+        val wrappers = aggregate.getAsJsonArray("children").single().asJsonObject.getAsJsonArray("nodes")
+        assertEquals("entries", aggregate.getAsJsonArray("children").single().asJsonObject.get("role").asString)
+        assertEquals("one wrapper per row, in table order", rowNames, wrappers.map {
+            val reference = it.asJsonObject.getAsJsonArray("references").single().asJsonObject
+            assertEquals("course", reference.get("role").asString)
+            reference.get("target").asString
+        })
+
+        fun rejected(label: String, spec: Path, expected: String, tablePath: Path = table) {
+            val result = runPython(script, tablePath.toString(), spec.toString())
+            assertEquals("$label must exit 3 (bad input), output: ${result.output}", 3, result.exitCode)
+            assertTrue("$label must name '$expected', output: ${result.output}", result.output.contains(expected))
+        }
+        rejected("an aggregate without a wrapper", aggregateSpec(mapping) { it.getAsJsonObject("aggregate").remove("wrapper") }, "wrapper")
+        rejected("an aggregate without nameColumn", aggregateSpec(mapping) { it.remove("nameColumn") }, "nameColumn")
+        rejected("an aggregate of the row concept", aggregateSpec(mapping) {
+            it.getAsJsonObject("aggregate").addProperty("concept", it.get("concept").asString)
+        }, "must differ")
+        val lines = Files.readAllLines(table).toMutableList()
+        lines[2] = lines[1].substringBefore(',') + "," + lines[2].substringAfter(',')
+        val repeated = Files.createTempFile("courses-repeated", ".csv")
+        generatedFiles.add(repeated)
+        Files.write(repeated, lines)
+        rejected("a repeated row name", aggregateSpec(mapping), "row 2", repeated)
+    }
+
+    @Test
+    fun `table_to_bulk_insert --verify checks the aggregate root against the table`() {
+        Python3.require()
+        val scriptDir = installSkills().resolve("mps-node-editing").resolve("scripts")
+        val script = scriptDir.resolve("table_to_bulk_insert.py").toString()
+        val table = scriptDir.resolve("examples").resolve("courses.csv").toString()
+        val spec = aggregateSpec(scriptDir.resolve("examples").resolve("courses.map.json")).toString()
+
+        val built = runPython(script, table, spec)
+        assertEquals("script must exit 0, output: ${built.output}", 0, built.exitCode)
+        val blueprintFile = Path.of(JsonParser.parseString(built.output.trim()).asJsonObject.get("path").asString)
+        generatedFiles.add(blueprintFile)
+        val dump = modelDumpOf(JsonParser.parseString(Files.readString(blueprintFile)).asJsonArray)
+
+        fun verifyDump(model: JsonObject): Pair<PythonResult, JsonObject> {
+            val file = Files.createTempFile("verify-aggregate", ".json")
+            generatedFiles.add(file)
+            Files.writeString(file, model.toString())
+            val result = runPython(script, table, spec, "--verify", file.toString())
+            return result to JsonParser.parseString(result.output.trim().lines().last()).asJsonObject
+        }
+        fun rootsOf(model: JsonObject) = model.getAsJsonObject("data").getAsJsonArray("rootNodes")
+        fun wrappersOf(model: JsonObject) = rootsOf(model).last().asJsonObject
+            .getAsJsonArray("children").single().asJsonObject.getAsJsonArray("nodes")
+
+        val (clean, cleanSummary) = verifyDump(dump)
+        assertEquals("a dump of exactly the table must verify, output: ${clean.output}", 0, clean.exitCode)
+        assertEquals(EXAMPLE_ROW_COUNT, cleanSummary.get("matched").asInt)
+        assertEquals("matched", cleanSummary.get("aggregate").asString)
+        assertEquals(0, cleanSummary.get("extraRoots").asInt)
+
+        val retargeted = dump.deepCopy()
+        val other = wrappersOf(retargeted)[7].asJsonObject.getAsJsonArray("references")[0].asJsonObject.get("target").asString
+        wrappersOf(retargeted)[5].asJsonObject.getAsJsonArray("references")[0].asJsonObject.addProperty("target", other)
+        val (retargetedResult, retargetedSummary) = verifyDump(retargeted)
+        assertEquals("a changed wrapper target must fail, output: ${retargetedResult.output}", 1, retargetedResult.exitCode)
+        val retargetedLines = retargetedResult.output.trim().lines()
+        assertEquals("exactly one difference and the summary, output: ${retargetedResult.output}", 2, retargetedLines.size)
+        assertTrue("the difference names the aggregate and the wrapper: ${retargetedLines[0]}",
+                   retargetedLines[0].startsWith("aggregate (Course Catalog): entries[5]/course"))
+        assertEquals("rows are untouched", 0, retargetedSummary.get("mismatched").asInt)
+        assertEquals("mismatched", retargetedSummary.get("aggregate").asString)
+
+        val shortened = dump.deepCopy()
+        wrappersOf(shortened).remove(EXAMPLE_ROW_COUNT - 1)
+        val (shortenedResult, _) = verifyDump(shortened)
+        assertEquals(1, shortenedResult.exitCode)
+        val shortenedLines = shortenedResult.output.trim().lines()
+        assertEquals("only the count differs when the last wrapper is gone, output: ${shortenedResult.output}", 2, shortenedLines.size)
+        assertTrue(shortenedLines[0].contains("entries: expected $EXAMPLE_ROW_COUNT child(ren), got ${EXAMPLE_ROW_COUNT - 1}"))
+
+        val withoutRoot = dump.deepCopy()
+        rootsOf(withoutRoot).remove(EXAMPLE_ROW_COUNT)
+        val (withoutRootResult, withoutRootSummary) = verifyDump(withoutRoot)
+        assertEquals(1, withoutRootResult.exitCode)
+        assertTrue("a missing aggregate is one line: ${withoutRootResult.output}",
+                   withoutRootResult.output.contains("aggregate (Course Catalog): no Catalog root with that name"))
+        assertEquals("missing", withoutRootSummary.get("aggregate").asString)
+
+        val twice = dump.deepCopy()
+        rootsOf(twice).add(rootsOf(twice).last().deepCopy())
+        val (twiceResult, twiceSummary) = verifyDump(twice)
+        assertEquals("a second aggregate root is an extra root, not a difference, output: ${twiceResult.output}", 0, twiceResult.exitCode)
+        assertEquals(1, twiceSummary.get("extraRoots").asInt)
+    }
+
+    @Test
     fun `mps_dump rejects a dump of the wrong kind and names the subcommand that reads it`() {
         Python3.require()
         val scriptDir = installSkills().resolve("mps-mcp-workflow").resolve("scripts")
@@ -398,6 +523,26 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
             }
         }
         return registry
+    }
+
+    /**
+     * [mapping] plus an `aggregate` section (a `Catalog` named `Course Catalog`, which no course
+     * is), after [mutate] had its say, written to a temp file the test cleans up.
+     */
+    private fun aggregateSpec(mapping: Path, mutate: (JsonObject) -> Unit = {}): Path {
+        val spec = JsonParser.parseString(Files.readString(mapping)).asJsonObject
+        spec.add("aggregate", JsonObject().apply {
+            addProperty("concept", "com.example.courses.structure.Catalog")
+            addProperty("name", "Course Catalog")
+            addProperty("role", "entries")
+            addProperty("wrapper", "com.example.courses.structure.CourseRef")
+            addProperty("referenceRole", "course")
+        })
+        mutate(spec)
+        val file = Files.createTempFile("aggregate-map", ".json")
+        generatedFiles.add(file)
+        Files.writeString(file, spec.toString())
+        return file
     }
 
     private data class PythonResult(val exitCode: Int, val output: String)

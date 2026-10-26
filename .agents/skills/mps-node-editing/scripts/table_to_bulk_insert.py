@@ -9,7 +9,9 @@ required for anything over 4 KB) and prints the path plus the counts:
   {"children":183,"path":"/var/.../bulk_insert-....json","references":65,"roots":40}
 
 `children` counts the child nodes built from `childLists`, `references` the reference-wrapper
-children built from `referenceLists`. Hand the printed path to the tool:
+children built from `referenceLists`. `roots` is the length of the array (the rows, plus one
+when the spec has an `aggregate`, below), and `aggregateReferences` (only then) the wrappers
+of that root. Hand the printed path to the tool:
 
   mps_mcp_insert_root_node_from_json(modelReference="<model>", json="<path>")
 
@@ -55,11 +57,25 @@ the property keeps its MPS default instead of being written as an empty value:
         "targetConcept": "my.lang.structure.Course",
         "splitter": "|"
       }
+    },
+    "aggregate": {                               // one extra root that references every row
+      "concept": "my.lang.structure.Catalog",    // must differ from the row concept
+      "name": "All Courses",                     // literal, written to the `name` property
+      "role": "entries",                         // child role of the root holding the wrappers
+      "wrapper": "my.lang.structure.CourseRef",  // one wrapper child per row, in table order
+      "referenceRole": "course"                  // the wrapper's reference; target = row name
     }
   }
 
 `targetConcept` is documentation for the reader; targets are written as names unless
 `"targetByName": false`, in which case the cell must already hold `r:...` node references.
+
+`aggregate` adds a root such as a cookbook that lists every row. It is the last element of the
+same array, so it lands in the same atomic insert (a failed insert rolls back the rows too),
+and its targets are the rows' `nameColumn` values, resolved like any other name. All five keys
+are required, the spec needs `nameColumn`, and the row names must be unique; the script exits 3
+otherwise. With `--limit N` it lists only those N rows. Not supported: a root without a name,
+extra properties on it, a subset of the rows, several aggregates. Write such a root by hand.
 
 Verify mode checks an inserted model against the same table and spec, instead of a
 hand-written comparison script. Dump the model once, one level below the roots:
@@ -78,15 +94,24 @@ property, child and reference the spec produces, the dump must hold the same val
 fields also match an absent value when the cell is 0, and a reference matches when it
 resolves to a node of the expected name (or, with `targetByName: false`, the expected `r:`
 ref). What the spec does not produce is not checked: other properties, other child roles,
-and children a node factory added. `extraRoots` counts roots of the spec's concept that no
-row claims. At most --max-lines differences are printed; when there are more, the full list
-is written to a file under the system temp directory, named by `file` in the summary. This
-mode reads the dump with `mps_dump.py` from `../../mps-mcp-workflow/scripts` (the installed
-skills layout).
+and children a node factory added. `extraRoots` counts roots of the spec's concept (and of
+the aggregate's) that no row claims. At most --max-lines differences are printed; when there
+are more, the full list is written to a file under the system temp directory, named by `file`
+in the summary. This mode reads the dump with `mps_dump.py` from `../../mps-mcp-workflow/scripts`
+(the installed skills layout).
 
-Exit codes: 0 ok (with --verify: every row matched), 1 --verify found a difference, 2 usage,
-3 bad input (unreadable table/spec/dump, unknown column, bad int or enum literal, missing
-required field, a dump too shallow for the spec) — the message names the row and the column.
+With an `aggregate`, the root of its concept with its name is checked too: its wrapper count,
+and each wrapper's target against the row at that position. Differences read
+`aggregate (All Courses): entries[3]/course: expected 'Pho', got 'Pad Thai'`, a missing root
+is one `no Catalog root with that name` line, and the summary gains `"aggregate":
+"matched"|"mismatched"|"missing"`. `rows`, `matched`, `mismatched` and `missing` still count
+rows only; `differences` counts every line. `--verify --limit N` against a model with all the
+rows reports the aggregate as mismatched (N wrappers expected, more found).
+
+Exit codes: 0 ok (with --verify: every row and the aggregate matched), 1 --verify found a
+difference, 2 usage, 3 bad input (unreadable table/spec/dump, unknown column, bad int or enum
+literal, missing required field, a malformed `aggregate`, a dump too shallow for the spec) —
+the message names the row and the column.
 """
 
 from __future__ import annotations
@@ -112,6 +137,8 @@ TOOL_DEPENDENCIES = [
         "parameters": ["startingPoint", "includeNodes", "nodeDepth"],
     },
 ]
+
+AGGREGATE_KEYS = ("concept", "name", "role", "wrapper", "referenceRole")
 
 LIBRARY_DIR = os.path.normpath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -150,7 +177,30 @@ def load_spec(path):
         raise BadInput("mapping spec %s is not valid JSON: %s" % (path, e))
     if not isinstance(spec, dict) or not spec.get("concept"):
         raise BadInput("mapping spec %s must be an object with a 'concept' field" % path)
+    _check_aggregate(spec, path)
     return spec
+
+
+def _check_aggregate(spec, path):
+    """Rejects an `aggregate` section the script cannot honour exactly."""
+    aggregate = spec.get("aggregate")
+    if aggregate is None:
+        return
+    if not isinstance(aggregate, dict):
+        raise BadInput("mapping spec %s: 'aggregate' must be an object with %s"
+                       % (path, ", ".join(AGGREGATE_KEYS)))
+    missing = [key for key in AGGREGATE_KEYS
+               if not isinstance(aggregate.get(key), str) or not aggregate[key].strip()]
+    if missing:
+        raise BadInput("mapping spec %s: 'aggregate' lacks %s (it needs all of %s)"
+                       % (path, ", ".join(missing), ", ".join(AGGREGATE_KEYS)))
+    if not spec.get("nameColumn"):
+        raise BadInput("mapping spec %s: 'aggregate' references each row by name, so the spec "
+                       "needs a 'nameColumn'" % path)
+    if aggregate["concept"] == spec["concept"]:
+        raise BadInput("mapping spec %s: 'aggregate.concept' must differ from the row concept "
+                       "'%s', or a row named like the aggregate would become ambiguous"
+                       % (path, spec["concept"]))
 
 
 def _cell(row, column, where):
@@ -256,8 +306,32 @@ def _reference_lists(row, spec, where):
     return roles, references
 
 
+def _aggregate_root(rows, spec):
+    """The aggregate root: one wrapper per row, each referencing the row by its name."""
+    aggregate = spec["aggregate"]
+    names = []
+    first_row = {}
+    for index, row in enumerate(rows, start=1):
+        name = _cell(row, spec["nameColumn"], "row %d" % index)
+        if name in first_row:
+            raise BadInput("row %d: the name '%s' is already row %d's, so the aggregate cannot "
+                           "reference both by name" % (index, name, first_row[name]))
+        first_row[name] = index
+        names.append(name)
+    wrappers = [{"concept": aggregate["wrapper"],
+                 "references": [{"role": aggregate["referenceRole"], "target": name}]}
+                for name in names]
+    return {"concept": aggregate["concept"],
+            "properties": [{"name": "name", "value": aggregate["name"]}],
+            "children": [{"role": aggregate["role"], "nodes": wrappers}]}
+
+
 def build(rows, spec):
-    """The top-level blueprint array plus the `{roots, children, references}` counts."""
+    """The top-level blueprint array plus the `{roots, children, references}` counts.
+
+    With an `aggregate` section the array ends with the aggregate root, `roots` counts it, and
+    `aggregateReferences` counts its wrappers.
+    """
     blueprint = []
     children_total = 0
     references_total = 0
@@ -274,8 +348,12 @@ def build(rows, spec):
         children_total += children
         references_total += references
         blueprint.append(node)
-    return blueprint, {"roots": len(blueprint), "children": children_total,
-                       "references": references_total}
+    counts = {"children": children_total, "references": references_total}
+    if spec.get("aggregate"):
+        blueprint.append(_aggregate_root(rows, spec))
+        counts["aggregateReferences"] = len(rows)
+    counts["roots"] = len(blueprint)
+    return blueprint, counts
 
 
 # ── verify mode ───────────────────────────────────────────────────────────────────────
@@ -388,6 +466,10 @@ def verify(rows, spec, dump_path):
         by_name.setdefault(root.get("name"), []).append(root)
 
     expected, _ = build(rows, spec)
+    aggregate = spec.get("aggregate")
+    aggregate_node = expected.pop() if aggregate else None
+    aggregate_concept = _short(aggregate["concept"]) if aggregate else None
+    aggregate_roots = [r for r in dump_roots if _short(r.get("concept")) == aggregate_concept]
     types = _field_types(spec)
     differences = []
     matched = mismatched = missing = 0
@@ -409,14 +491,33 @@ def verify(rows, spec, dump_path):
             mismatched += 1
         else:
             matched += 1
+    aggregate_state = None
+    if aggregate:
+        where = "aggregate (%s)" % aggregate["name"]
+        claimable = [r for r in aggregate_roots if r.get("name") == aggregate["name"]]
+        if not claimable:
+            aggregate_state = "missing"
+            differences.append("%s: no %s root with that name in the dump"
+                               % (where, _short(aggregate["concept"])))
+        else:
+            aggregate_roots.remove(claimable[0])
+            found = []
+            try:
+                _compare(aggregate_node, claimable[0], "", types, found)
+            except BadInput as e:
+                raise BadInput("%s: %s" % (where, e))
+            differences.extend("%s: %s" % (where, line) for line in found)
+            aggregate_state = "mismatched" if found else "matched"
     summary = {
         "rows": len(rows),
         "matched": matched,
         "mismatched": mismatched,
         "missing": missing,
         "differences": len(differences),
-        "extraRoots": sum(len(left) for left in by_name.values()),
+        "extraRoots": sum(len(left) for left in by_name.values()) + len(aggregate_roots),
     }
+    if aggregate_state:
+        summary["aggregate"] = aggregate_state
     return summary, differences
 
 

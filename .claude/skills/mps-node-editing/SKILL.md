@@ -164,6 +164,9 @@ into the top-level-array blueprint `mps_mcp_insert_root_node_from_json` accepts,
 file under the system temp directory, and prints `{path, roots, children, references}`. Covers
 typed properties (`int`, enum literals), split-column child lists, and reference-wrapper
 children whose targets are written as names for the tool to resolve after the batch lands.
+A cookbook-style root that references every row is the spec's `aggregate` key: the script
+appends it to the same batch (`roots` then counts it, and `aggregateReferences` is printed), and
+the same `--verify` checks it, so there is no second insert and no separate check to write.
 
 ```
 python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json
@@ -187,7 +190,8 @@ row 7 (Conducting): lessons[2].minutes: expected '10', got '12'
 
 It pairs rows with roots by the spec's `nameColumn`, and compares every property, child and
 reference target the spec produces. It exits 0 when every row matches and 1 on any
-difference.
+difference. With an `aggregate`, that includes the aggregate root's wrapper count and each
+wrapper's target.
 
 Run `--help` for the full mapping-spec reference, `--list-tools` for the tools and parameters
 it depends on; `scripts/examples/` holds a 40-row `courses.csv` with its matching
@@ -197,6 +201,7 @@ the script source or the examples first.
 No `python3` (typically Windows): author the array by hand as described in
 `references/json-format.md` — one object per row, `properties` entries omitted for empty cells
 so the MPS default applies, one child role per list column, and one wrapper child per
-reference with `{"role": …, "target": "<name>"}` — write it to a file under `$TMPDIR`
+reference with `{"role": …, "target": "<name>"}` (an aggregate root goes last, one such
+wrapper per row) — write it to a file under `$TMPDIR`
 (or `/tmp` on macOS) and pass that path. Prefer `--limit`-sized batches, or the
 staged construction in `references/staged-construction.md`, over one oversized blueprint.
