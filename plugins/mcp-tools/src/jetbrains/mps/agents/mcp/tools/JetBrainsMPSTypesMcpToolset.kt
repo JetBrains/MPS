@@ -406,6 +406,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             val type = typeOperands(listOf(params.get("type") to "parameters.type"), mpsProject, engine).single()
             val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
                 ?: throw McpNotFoundException("Concept '$conceptRef' at parameters.conceptRef not found")
+            ConceptGate(mpsProject).require(concept, "Concept '${structureQualifiedName(concept)}' at parameters.conceptRef", TYPE_OPERAND_NOT_BUILT)
             if (concept !is SConcept) {
                 throw McpInvalidRequestException(
                     "Concept '${concept.name}' at parameters.conceptRef is an interface concept; COERCE takes a non-interface type concept"
@@ -592,6 +593,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
             in OPERAND_NODE.spellings -> {
                 val node = resolveNodeReferencePreferringProject(mpsProject, ref)?.resolve(mpsProject.repository)
                     ?: throw McpNotFoundException("Node '$ref' at $path.$key not found")
+                ConceptGate(mpsProject).require(node.concept, "Concept '${structureQualifiedName(node.concept)}' of node '$ref' at $path.$key", TYPE_OPERAND_NOT_BUILT)
                 Operand.OfNode(node, ref, "$path.$key")
             }
             in OPERAND_TYPE_NODE.spellings -> Operand.Type(
@@ -616,6 +618,7 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
     private fun concreteConcept(conceptRef: String, path: String, mpsProject: MPSProject): SConcept {
         val concept: SAbstractConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
             ?: throw McpNotFoundException("Concept '$conceptRef' at $path not found")
+        ConceptGate(mpsProject).require(concept, "Concept '${structureQualifiedName(concept)}' at $path", TYPE_OPERAND_NOT_BUILT)
         if (concept !is SConcept || concept.isAbstract) {
             throw McpInvalidRequestException(
                 "Concept '${concept.name}' at $path is ${if (concept is SConcept) "abstract" else "an interface concept"}; a concrete concept is required"

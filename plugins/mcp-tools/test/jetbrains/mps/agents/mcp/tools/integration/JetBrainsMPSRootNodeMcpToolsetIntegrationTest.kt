@@ -710,9 +710,9 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `insert_root_node_from_json resolves a conceptReference declared in an unbuilt language`() {
-        // The concept exists only as a declaration in the never-built fixture language, so it resolves
-        // through the structure model and its language through the Language module, not the registry.
+    fun `insert_root_node_from_json resolves a conceptReference declared in an unbuilt language and refuses it as not built`() {
+        // The concept exists only as a declaration in the never-built fixture language: it resolves
+        // through the structure model, and the refusal names that Language module (D112).
         val conceptName = "UnbuiltRootable${System.nanoTime()}"
         val declaration = createRootableConcept(conceptName)
         val conceptRef = readOnRepo { PersistenceFacade.getInstance().asString(MetaAdapterByDeclaration.getConcept(declaration)) }
@@ -722,14 +722,66 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) {
             it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText("""{ "conceptReference": "$conceptRef" }"""), dryRun = false)
         }
-        expectOk(response)
-        readOnRepo {
-            val root = target.rootNodes.single()
-            assertEquals(conceptName, root.concept.name)
-            val imported = (target as SModelInternal).importedLanguageIds()
-                .single { it.sourceModuleReference.moduleId == language.moduleReference.moduleId }
-            assertEquals(language.moduleName, imported.qualifiedName)
+        expectLanguageNotBuilt(response, language)
+        assertNoTraceOfUnbuiltInsert(target)
+    }
+
+    @Test
+    fun `insert_root_node_from_json refuses a blueprint of an unbuilt language before reading its properties`() {
+        val conceptName = "UnbuiltWithProperty${System.nanoTime()}"
+        createRootableConcept(conceptName, propertiesJson = """[{"name":"initial","type":"string"}]""")
+        val target = createModel(createSolution(), "test.unbuiltprop${System.nanoTime()}")
+        val json = """
+            { "concept": "${language.moduleName}.structure.$conceptName", "name": "probe",
+              "properties": [ { "name": "initial", "value": "x" } ] }
+        """.trimIndent()
+
+        for (dryRun in listOf(true, false)) {
+            val response = runTool(toolset) { it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText(json), dryRun = dryRun) }
+            val error = expectLanguageNotBuilt(response, language).get("error").asString
+            assertTrue("dryRun=$dryRun must name the concept and the build: $error", error.contains(conceptName) && error.contains("MAKE"))
         }
+        assertNoTraceOfUnbuiltInsert(target)
+    }
+
+    @Test
+    fun `create_root_node refuses a concept of an unbuilt language`() {
+        val conceptName = "UnbuiltCreated${System.nanoTime()}"
+        createRootableConcept(conceptName)
+        val target = createModel(createSolution(), "test.unbuiltcreate${System.nanoTime()}")
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_root_node(modelRefOf(target), "${language.moduleName}.structure.$conceptName", name = "probe")
+        }
+        expectLanguageNotBuilt(response, language)
+        readOnRepo { assertTrue("a refused create must not add a root", target.rootNodes.none()) }
+    }
+
+    @Test
+    fun `insert_root_node_from_json keeps the Unknown property rejection for a built concept`() {
+        // Stale-branch guard: the property is declared nowhere, so a built concept still gets the authoring error.
+        val target = createModel(createSolution(), "test.builtunknown${System.nanoTime()}")
+        val json = """
+            { "concept": "jetbrains.mps.baseLanguage.structure.ClassConcept", "name": "Probe",
+              "properties": [ { "name": "noSuchProperty${System.nanoTime()}", "value": "x" } ] }
+        """.trimIndent()
+
+        for (dryRun in listOf(true, false)) {
+            val obj = JsonParser.parseString(runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText(json), dryRun = dryRun)
+            }).asJsonObject
+            assertFalse("dryRun=$dryRun: $obj", obj.get("ok").asBoolean)
+            assertEquals("dryRun=$dryRun: $obj", "INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("dryRun=$dryRun: $obj", obj.get("error").asString.contains("Unknown property 'noSuchProperty"))
+        }
+        readOnRepo { assertTrue(target.rootNodes.none()) }
+    }
+
+    /** A refused insert adds no root and does not import the unbuilt language. */
+    private fun assertNoTraceOfUnbuiltInsert(target: org.jetbrains.mps.openapi.model.SModel) = readOnRepo {
+        assertTrue("a refused insert must not add a root", target.rootNodes.none())
+        val imported = (target as SModelInternal).importedLanguageIds().map { it.sourceModuleReference.moduleId }
+        assertFalse("a refused insert must not import the unbuilt language: $imported", imported.contains(language.moduleReference.moduleId))
     }
 
     @Test
@@ -760,10 +812,11 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     /** Creates a rootable `ConceptDeclaration` named [name] in the fixture's structure model and returns it. */
-    private fun createRootableConcept(name: String): SNode {
+    private fun createRootableConcept(name: String, propertiesJson: String? = null): SNode {
+        val properties = propertiesJson?.let { """, "properties": $it""" } ?: ""
         val params = """
             { "structureModelRef": "$structureModelRef",
-              "conceptsJson": [ { "name": "$name", "rootable": true } ] }
+              "conceptsJson": [ { "name": "$name", "rootable": true$properties } ] }
         """.trimIndent()
         expectOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params) })
         return readOnRepo { structureModel.rootNodes.single { it.name == name } }

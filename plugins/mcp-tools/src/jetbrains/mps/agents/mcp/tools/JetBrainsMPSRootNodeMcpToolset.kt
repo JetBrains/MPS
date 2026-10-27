@@ -290,7 +290,9 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                 val cache = ProjectMembershipCache(mpsProject)
                 for (model in searchScope.models) {
                     for (root in model.rootNodes) {
-                        if (root.name in nameSet) {
+                        // A root of an unbuilt concept has no `name` through its descriptor; the stored property still names it (D112).
+                        val rootName = root.name ?: root.getProperty(SNodeUtil.property_INamedConcept_name)
+                        if (rootName in nameSet) {
                             results.add(nodeInfoJson(root, mpsProject, cache))
                         }
                     }
@@ -356,6 +358,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                 // Collected on both paths: a real insert is exactly where a node-factory failure
                 // matters, since the half-initialized node is the one that gets committed.
                 val batchWarnings = mutableListOf<String>()
+                val gate = ConceptGate(mpsProject)
                 for ((index, jsonObject) in jsonObjects.withIndex()) {
                     val indexLabel = if (jsonObjects.size > 1) " [$index]" else ""
                     when (val r = resolveRootableConcept(
@@ -369,7 +372,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     }
 
                     val newNode = try {
-                        instantiateNode(jsonObject, model, dryRun, warnings = batchWarnings, mpsProject = mpsProject)
+                        instantiateNode(jsonObject, model, dryRun, "$", batchWarnings, mpsProject, gate)
                     } catch (e: Exception) {
                         return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate node$indexLabel from JSON", e, batchWarnings)
                     }
@@ -449,10 +452,14 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                     is RootableConceptResolution.Ok -> r.concept
                     is RootableConceptResolution.Err -> return@executeShortCommandOnEdt r.errJson
                 }
+                ConceptGate(mpsProject).require(sConcept, "Concept '${structureQualifiedName(sConcept)}'", "the root cannot be created until the language is built")
                 val newNode = SNodeFactoryOperations.createNewRootNode(model, sConcept, null)
                 val nameProperty = SNodeUtil.property_INamedConcept_name
+                val warnings = mutableListOf<String>()
                 if (newNode.concept.properties.contains(nameProperty)) {
                     newNode.setProperty(nameProperty, name)
+                } else if (name.isNotBlank()) {
+                    warnings += "concept '${sConcept.name}' has no 'name' property (it does not implement INamedConcept), so name '$name' was not applied"
                 }
                 // Initialize compulsory references with the first scope-available candidate
                 // as a placeholder. We deliberately do NOT call performFixReferences here:
@@ -475,7 +482,7 @@ class JetBrainsMPSRootNodeMcpToolset : AbstractNodeOps() {
                 }
 
                 saveModelAndModule(model)
-                okJson(nodeInfoJson(newNode, mpsProject))
+                okJson(nodeInfoJsonObject(newNode, mpsProject), warnings)
             }
         }
     }

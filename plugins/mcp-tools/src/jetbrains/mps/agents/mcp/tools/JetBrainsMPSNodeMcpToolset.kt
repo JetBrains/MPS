@@ -9,6 +9,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.agents.mcp.tools.languages.StructureDeclarations
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.MessageStatus
@@ -1610,7 +1611,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                     is ConsoleAwareResolution.Err -> return@executeShortCommandOnEdt r.errJson
                 }
 
+                val gate = ConceptGate(mpsProject)
+                gate.require(node.concept, "Concept '${structureQualifiedName(node.concept)}' of node '$nodeReference'", NODE_EDIT_NOT_BUILT)
                 val sProperty = node.concept.properties.find { it.name == propertyName }
+                    ?: gate.staleFeature(node.concept, StructureDeclarations.FeatureKind.PROPERTY, propertyName, "parameter propertyName", NODE_EDIT_NOT_BUILT)?.let { throw it }
                     ?: return@executeShortCommandOnEdt errJson("Property '$propertyName' not found in concept '${node.concept.name}'", McpErrorCode.NOT_FOUND)
 
                 setProperty(node, sProperty, propertyValue)
@@ -1697,7 +1701,10 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
                 }
 
                 val role = if (childRole != null) {
+                    val gate = ConceptGate(mpsProject)
+                    gate.require(parent.concept, "Concept '${structureQualifiedName(parent.concept)}' of parent node '${PersistenceFacade.getInstance().asString(parent.reference)}'", NODE_EDIT_NOT_BUILT)
                     val found = parent.concept.containmentLinks.find { it.name == childRole }
+                        ?: gate.staleFeature(parent.concept, StructureDeclarations.FeatureKind.CHILD, childRole, "parameter childRole", NODE_EDIT_NOT_BUILT)?.let { throw it }
                         ?: return@executeShortCommandOnEdt errJson(
                             "Child role '$childRole' not found in concept '${parent.concept.name}'" +
                                 (if (parentGiven) "" else " (the parent inferred from '$effectiveChildRef')"),
@@ -1868,7 +1875,11 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
                     // role is required together with newParentRef (MOVE_NODE_TO_PARENT_KEYS).
                     val roleName = checkNotNull(role)
+                    val gate = ConceptGate(mpsProject)
+                    gate.require(newParent.concept, "Concept '${structureQualifiedName(newParent.concept)}' of new parent '$newParentRef'", NODE_EDIT_NOT_BUILT)
+                    gate.require(node.concept, "Concept '${structureQualifiedName(node.concept)}' of moved node '$nodeReference'", NODE_EDIT_NOT_BUILT)
                     val containmentLink = newParent.concept.containmentLinks.find { it.name == roleName }
+                        ?: gate.staleFeature(newParent.concept, StructureDeclarations.FeatureKind.CHILD, roleName, "parameter role", NODE_EDIT_NOT_BUILT)?.let { throw it }
                         ?: return@executeShortCommandOnEdt roleNotFoundErr(roleName, newParent, node, repo)
                     if (!node.concept.isSubConceptOf(containmentLink.targetConcept)) {
                         throw childAssignabilityFailure("nodeReference", node.concept, containmentLink, newParent.concept, targetModel)

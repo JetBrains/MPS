@@ -496,7 +496,10 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
             is ConsoleAwareResolution.Ok -> Triple(r.node, r.model, r.console)
             is ConsoleAwareResolution.Err -> return InsertOutcome.Err(r.errJson)
         }
+        val gate = ConceptGate(mpsProject)
+        gate.require(requestedParent.concept, "Concept '${structureQualifiedName(requestedParent.concept)}' of parent node '$parentRefStr'", NODE_EDIT_NOT_BUILT)
         val requestedLink = requestedParent.concept.containmentLinks.find { it.name == roleName }
+            ?: gate.staleFeature(requestedParent.concept, StructureDeclarations.FeatureKind.CHILD, roleName, "insert.role", NODE_EDIT_NOT_BUILT)?.let { throw it }
             ?: return InsertOutcome.Err(errJson(
                 "Child role '$roleName' not found in concept '${requestedParent.concept.name}'",
                 McpErrorCode.NOT_FOUND

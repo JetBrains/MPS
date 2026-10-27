@@ -78,7 +78,7 @@ class ScaffoldEditorStalenessTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `checkScaffoldingStaleness flags a hollow runtime descriptor with the rebuild=true recovery hint`() {
+    fun `checkScaffoldingStaleness flags a concept id unknown to the runtime and undeclared with the rebuild=true recovery hint`() {
         // Deterministic precondition for the hollow-descriptor branch: forge a concept facade
         // into a *registered* language with a bogus concept id. `PersistenceFacade.createConcept`
         // returns the bare runtime SAbstractConcept with null sourceNode and empty
@@ -102,8 +102,8 @@ class ScaffoldEditorStalenessTest : McpIntegrationTestBase() {
         )
         val stale = staleness as AbstractOps.ScaffoldingStaleness.Stale
         assertTrue(
-            "expected hollow-descriptor branch (the language is loaded but the concept facade is empty); got reason: ${stale.reason}",
-            stale.reason.contains("hollow runtime descriptor"),
+            "expected the undeclared branch (the language is loaded, the id is unknown to it and no structure model declares it); got reason: ${stale.reason}",
+            stale.reason.contains("not declared in any structure model"),
         )
         assertTrue(
             "hollow-descriptor recovery hint must recommend rebuild=true; got: ${stale.recoveryHint}",
@@ -144,9 +144,9 @@ class ScaffoldEditorStalenessTest : McpIntegrationTestBase() {
             is AbstractOps.ScaffoldingStaleness.Stale -> {
                 println("[ScaffoldEditorStalenessTest] integration backstop Stale branch: ${staleness.reason}")
                 val branchWordings = listOf(
-                    "has no loaded runtime",
-                    "hollow runtime descriptor",
-                    "has unbuilt changes",
+                    "has no built runtime",
+                    "does not know this concept yet",
+                    "changed since its runtime was built",
                 )
                 assertTrue(
                     "Stale.reason must match one of the three documented branches; got: ${staleness.reason}",

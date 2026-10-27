@@ -41,6 +41,29 @@ import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     @Test
+    fun `update_node ADD CHILD refuses a blueprint of an unbuilt language before checking assignability`() {
+        // The parent is a built ConceptDeclaration; the child's concept is declared only in the never-built
+        // fixture language, so its fail-safe adapter would otherwise fail the role's assignability check.
+        val parentRef = createConceptRoot("AddChildParent${System.nanoTime()}")
+        val childConcept = "UnbuiltChild${System.nanoTime()}"
+        createConceptRoot(childConcept, propertiesJson = """[{"name":"initial","type":"string"}]""")
+        val childJson = """{ "concept": "${language.moduleName}.structure.$childConcept", "properties": [ { "name": "initial", "value": "x" } ] }"""
+        val childrenBefore = readOnRepo { resolveNodeRef(parentRef).children.count() }
+
+        for (dryRun in listOf(true, false)) {
+            val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_update_node(
+                    "ADD", "CHILD", nodeReference = parentRef, childRole = "propertyDeclaration",
+                    childJson = JsonOrText(childJson), dryRun = dryRun,
+                )
+            }
+            // The code alone rules out the assignability failure (INVALID_REFERENCE) the fail-safe adapter produced.
+            expectLanguageNotBuilt(response, language)
+        }
+        assertEquals("a refused ADD CHILD must not add a child", childrenBefore, readOnRepo { resolveNodeRef(parentRef).children.count() })
+    }
+
+    @Test
     fun `find-usages with null scope defaults to editable and returns the usage`() {
         val createParams = """
             {

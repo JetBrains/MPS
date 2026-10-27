@@ -8,6 +8,7 @@ import com.google.gson.JsonParser
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.SModelStereotype
+import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.junit.Assert.assertEquals
@@ -1556,7 +1557,7 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
             aRef = refs[0]; bRef = refs[1]; a2Ref = refs[2]
 
             insert(typesystemModelRef, inferenceRule("infer_A", conceptCondition(aRef), body = conceptLiteral(bRef)))
-            insert(typesystemModelRef, inferenceRule("infer_A_pattern", patternCondition("$languageName.structure.A")))
+            insert(typesystemModelRef, inferenceRule("infer_A_pattern", patternCondition()))
             insert(
                 typesystemModelRef,
                 """{"concept":"jetbrains.mps.lang.typesystem.structure.ComparisonRule","properties":[{"name":"name","value":"compare_A_B"}],
@@ -1566,8 +1567,9 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
             insert(
                 typesystemModelRef,
                 """{"concept":"jetbrains.mps.lang.typesystem.structure.ComparisonRule","properties":[{"name":"name","value":"compare_patternA_A"}],
-                   "children":[{"role":"applicableNode","nodes":[${patternCondition("$languageName.structure.A")}]},{"role":"anotherNode","nodes":[${conceptCondition(aRef)}]}]}""",
+                   "children":[{"role":"applicableNode","nodes":[${patternCondition()}]},{"role":"anotherNode","nodes":[${conceptCondition(aRef)}]}]}""",
             )
+            quoteInEmptyQuotations(typesystemModelRef, aRef)
             insert(
                 typesystemModelRef,
                 """{"concept":"jetbrains.mps.lang.typesystem.structure.InequationReplacementRule","properties":[{"name":"name","value":"replace_B_A"}],
@@ -1602,10 +1604,24 @@ class JetBrainsMPSLanguageStructureMcpToolsetIntegrationTest : McpIntegrationTes
         private fun conceptCondition(conceptRef: String) =
             """{"concept":"jetbrains.mps.lang.typesystem.structure.ConceptReference","references":[{"role":"concept","target":"$conceptRef"}]}"""
 
-        private fun patternCondition(quotedConcept: String) =
+        /** The quoted node is added by [quoteInEmptyQuotations]: a blueprint node of the unbuilt fixture language is refused (D112). */
+        private fun patternCondition() =
             """{"concept":"jetbrains.mps.lang.typesystem.structure.PatternCondition","children":[{"role":"pattern","nodes":[
                  {"concept":"jetbrains.mps.lang.pattern.structure.PatternExpression","children":[{"role":"pattern","nodes":[
-                   {"concept":"jetbrains.mps.lang.quotation.structure.Quotation","children":[{"role":"quotedNode","nodes":[{"concept":"$quotedConcept"}]}]}]}]}]}]}"""
+                   {"concept":"jetbrains.mps.lang.quotation.structure.Quotation"}]}]}]}]}"""
+
+        /** Puts a node of the concept declared by [declarationRef] into every Quotation of [modelRef] that has none. */
+        private fun quoteInEmptyQuotations(modelRef: String, declarationRef: String) = executeCommand {
+            val facade = PersistenceFacade.getInstance()
+            val model = facade.createModelReference(modelRef).resolve(myProject.repository)!!
+            val concept = MetaAdapterByDeclaration.getInstanceConcept(facade.createNodeReference(declarationRef).resolve(myProject.repository)!!)
+            fun SNode.selfAndDescendants(): Sequence<SNode> = sequenceOf(this) + children.asSequence().flatMap { it.selfAndDescendants() }
+            model.rootNodes.asSequence().flatMap { it.selfAndDescendants() }
+                .filter { it.concept.name == "Quotation" && it.children.none() }.toList()
+                .forEach { quotation ->
+                    quotation.addChild(quotation.concept.containmentLinks.single { it.name == "quotedNode" }, model.createNode(concept))
+                }
+        }
 
         /** `conceptNode/<target>/` as an expression statement: an `SReference` to the declaration, not an aspect relation. */
         private fun conceptLiteral(conceptRef: String) =

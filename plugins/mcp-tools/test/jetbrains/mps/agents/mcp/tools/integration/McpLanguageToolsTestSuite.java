@@ -27,6 +27,7 @@ import org.junit.runners.Suite;
     JetBrainsMPSLanguageMcpToolsetIntegrationTest.class,
     JetBrainsMPSEditorMcpToolsetIntegrationTest.class,
     ScaffoldEditorStalenessTest.class,
+    LanguageReadinessTest.class,
     JetBrainsMPSIntentionsMcpToolsetIntegrationTest.class,
     IntentionsCandidateSelectionTest.class,
 })

@@ -120,7 +120,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 // Collected on both paths so a node-factory failure is reported for a real insert too.
                 val warnings = mutableListOf<String>()
                 val command = try {
-                    instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings)
+                    instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings, readinessProject = mpsProject)
                 } catch (e: Exception) {
                     return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate console command from JSON", e, warnings)
                 }

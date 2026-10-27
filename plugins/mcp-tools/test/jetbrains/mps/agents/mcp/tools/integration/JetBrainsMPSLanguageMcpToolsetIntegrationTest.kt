@@ -318,28 +318,54 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     @Test
     fun `get-concept-details resolves a fully qualified name in a project language that was never compiled`() {
-        // The closest fixture available to the "language registered but runtime descriptor hollow"
-        // case the round-3 plan suspected: `createConceptRoot` writes a ConceptDeclaration into the
-        // test language's structure model without a make, so the language has no compiled runtime
-        // and is absent from the LanguageRegistry. Resolution must still succeed, through
+        // The fixture language is never built, so the runtime cannot serve its concepts (D112): the
+        // record must come from the structure-model declaration, carry the declared content, and be
+        // marked so, with the build named in the envelope. Resolution goes through
         // `resolveConceptNodeInModules` step 3 (split on the last dot, match `<model>.structure`).
-        // That the fixture language is absent from the LanguageRegistry is pinned independently by
-        // `get-concept-details warns when a persistent languageRef resolves syntactically but is
-        // not loaded in LanguageRegistry` below.
-        createConceptRoot("D20UncompiledProbe")
-        val fqn = readOnRepo { structureModel.name.longName + ".D20UncompiledProbe" }
-
-        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-            it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(fqn))
-        }
-
-        val concept = readConceptArrayFromOkPath(response).single().asJsonObject
-        assertEquals("D20UncompiledProbe", concept.get("name").asString)
-        assertTrue(
-            "an uncompiled concept resolved by FQN must still carry the documented detail blocks: $concept",
-            concept.has("properties") && concept.has("references") &&
-                    concept.has("children") && concept.has("sampleNode"),
+        val name = "D20UncompiledProbe${System.nanoTime()}"
+        createConceptRoot(
+            name,
+            implements = "jetbrains.mps.lang.core.structure.INamedConcept",
+            propertiesJson = """[{"name":"initial","type":"string"},{"name":"count","type":"integer"}]""",
+            childrenJson = """[{"role":"items","target":"jetbrains.mps.lang.core.structure.BaseConcept","multiple":true,"optional":true}]""",
         )
+        val fqn = readOnRepo { structureModel.name.longName + "." + name }
+        val languageName = readOnRepo { language.moduleName!! }
+
+        for (detail in listOf("full", "shape")) {
+            val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+                it.mps_mcp_get_concept_details(conceptRefs = JsonOrText(fqn), detail = detail)
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            val concept = readConceptArrayFromOkPath(response).single().asJsonObject
+            assertEquals("detail=$detail: $concept", fqn, concept.get("qualifiedName").asString)
+            assertFalse("detail=$detail: a concrete declaration must not read as abstract: $concept", concept.get("isAbstract").asBoolean)
+            val properties = concept.getAsJsonArray("properties").associate { it.asJsonObject.get("name").asString to it.asJsonObject.get("type").asString }
+            assertEquals("detail=$detail: declared property: $properties", "string", properties["initial"])
+            assertEquals("detail=$detail: declared property: $properties", "integer", properties["count"])
+            assertEquals("detail=$detail: inherited INamedConcept.name: $properties", "string", properties["name"])
+            val child = concept.getAsJsonArray("children").map { it.asJsonObject }.single { it.get("name").asString == "items" }
+            assertEquals("detail=$detail: child cardinality: $child", "0..n", child.get("cardinality").asString)
+            assertEquals("detail=$detail: child target: $child", "jetbrains.mps.lang.core.structure.BaseConcept", child.get("targetConcept").asString)
+            assertEquals("detail=$detail: marker: $concept", "hollow", concept.get("descriptorStatus").asString)
+            assertEquals("detail=$detail: marker: $concept", "no_runtime", concept.get("runtimeStatus").asString)
+            assertEquals("detail=$detail: marker: $concept", "declaration", concept.get("source").asString)
+            val build = envelope.getAsJsonObject("details").getAsJsonObject("languageBuild")
+            assertEquals("details.languageBuild: $build", "no_runtime", build.get("status").asString)
+            assertEquals("details.languageBuild: $build", languageName, build.get("language").asString)
+            val recovery = build.getAsJsonObject("recovery")
+            assertEquals("MAKE", recovery.get("operation").asString)
+            assertTrue("rebuild:true: $recovery", recovery.getAsJsonObject("parameters").get("rebuild").asBoolean)
+            val warnings = envelope.getAsJsonArray("warnings").map { it.asString }
+            assertTrue("warning names the build: $warnings", warnings.any { it.contains("mps_mcp_alter_nodes MAKE") && it.contains(languageName) })
+            if (detail == "full") {
+                assertTrue(
+                    "full record must carry the documented blocks and the declared interface: $concept",
+                    concept.has("sampleNode") && concept.getAsJsonArray("superInterfaces").any { it.asString.contains("INamedConcept") },
+                )
+                assertEquals("sourceNode is the declaration: $concept", true, concept.get("sourceNode").asString.startsWith("r:"))
+            }
+        }
     }
 
     @Test
@@ -726,51 +752,59 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `get-concept-details languageRefs of an unbuilt project language names MAKE not search_concepts`() {
-        // Study D35: languageRefs cannot enumerate a project language whose runtime is not
-        // deployed (qualified name and l:<uuid>:<name> both fail), while conceptRefs with a
-        // fully qualified concept name still works. The rejection must name MAKE / conceptRefs
-        // and must not send the caller to mps_mcp_search_concepts.
+    fun `get-concept-details languageRefs of an unbuilt project language answers from the structure model and names MAKE`() {
+        // Study D35 / D112: a project language without a built runtime is not a search miss. Its
+        // concepts are read from the structure model, marked, and the envelope names the one build
+        // that makes the runtime serve them; it must not send the caller to mps_mcp_search_concepts.
+        val probe = "D35LanguageProbe${System.nanoTime()}"
+        createConceptRoot(probe)
         val languageName = readOnRepo { language.moduleName!! }
         val persistentRef = readOnRepo {
             PersistenceFacade.getInstance().asString(MetaAdapterFactory.getLanguage(language.moduleReference))
         }
         for (ref in listOf(languageName, persistentRef)) {
             val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
-                it.mps_mcp_get_concept_details(
-                    conceptRefs = emptyList(),
-                    languageRefs = listOf(ref),
-                )
+                it.mps_mcp_get_concept_details(conceptRefs = emptyList(), languageRefs = listOf(ref))
             }
             val obj = JsonParser.parseString(response).asJsonObject
-            assertFalse("expected error envelope for unbuilt languageRefs='$ref': $response", obj.get("ok").asBoolean)
-            val error = obj.get("error").asString
-            assertTrue("error must name the languageRef: $error", error.contains(ref))
-            assertTrue("error must diagnose missing runtime: $error", error.contains("runtime is not deployed"))
-            assertTrue("error must recommend MAKE: $error", error.contains("mps_mcp_alter_nodes MAKE"))
-            assertTrue("error must recommend conceptRefs: $error", error.contains("conceptRefs"))
-            assertFalse(
-                "unbuilt project language must not send the caller to search_concepts: $error",
-                error.contains("mps_mcp_search_concepts"),
-            )
-            val entry = unresolvedDetailsOf(obj).singleEntryFor(ref)
-            assertEquals("language", entry.get("kind").asString)
-            assertTrue("undeployed flag: $entry", entry.get("undeployed").asBoolean)
-            assertTrue(
-                "route must recommend MAKE / conceptRefs: ${entry.get("route").asString}",
-                entry.get("route").asString.contains("mps_mcp_alter_nodes MAKE") &&
-                    entry.get("route").asString.contains("conceptRefs"),
-            )
-            assertEquals(
-                "registry suggestions are a dead end for an unbuilt language",
-                0,
-                entry.get("suggestions").asJsonArray.size(),
-            )
+            assertTrue("expected ok envelope for unbuilt languageRefs='$ref': $response", obj.get("ok").asBoolean)
+            val concepts = readConceptArrayFromOkPath(response).map { it.asJsonObject }
+            val probeRecord = concepts.single { it.get("name").asString == probe }
+            assertEquals("declaration-sourced record: $probeRecord", "declaration", probeRecord.get("source").asString)
+            assertEquals("marker: $probeRecord", "hollow", probeRecord.get("descriptorStatus").asString)
+            assertEquals("marker: $probeRecord", "no_runtime", probeRecord.get("runtimeStatus").asString)
+            val warnings = obj.getAsJsonArray("warnings").map { it.asString }
+            assertTrue("warning must recommend MAKE: $warnings", warnings.any { it.contains("mps_mcp_alter_nodes MAKE") && it.contains(languageName) })
+            assertTrue("no warning may send the caller to search_concepts: $warnings", warnings.none { it.contains("mps_mcp_search_concepts") })
+            val build = obj.getAsJsonObject("details").getAsJsonObject("languageBuild")
+            assertEquals("no_runtime", build.get("status").asString)
+            assertEquals(languageName, build.get("language").asString)
+            assertFalse("an unbuilt project language is resolved, not unresolved: $obj", obj.getAsJsonObject("details").has("unresolved"))
         }
     }
 
     @Test
-    fun `get-concept-details warns when a persistent languageRef resolves syntactically but is not loaded in LanguageRegistry`() {
+    fun `search-concepts finds a concept of the never-built project language from its declaration`() {
+        val probe = "SearchDeclProbe${System.nanoTime()}"
+        createConceptRoot(probe)
+        val languageName = readOnRepo { language.moduleName!! }
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_search_concepts(searchTexts = listOf(probe), scope = "project")
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue("expected ok envelope: $response", obj.get("ok").asBoolean)
+        val hit = readConceptArrayFromOkPath(response).map { it.asJsonObject }.single { it.get("name").asString == probe }
+        assertEquals("declaration", hit.get("source").asString)
+        assertEquals("hollow", hit.get("descriptorStatus").asString)
+        assertEquals("no_runtime", hit.get("runtimeStatus").asString)
+        assertEquals(languageName, obj.getAsJsonObject("details").getAsJsonObject("languageBuild").get("language").asString)
+        assertTrue(obj.getAsJsonArray("warnings").any { it.asString.contains("mps_mcp_alter_nodes MAKE") })
+    }
+
+    @Test
+    fun `get-concept-details combines a built concept with an unbuilt project language in one answer`() {
+        val probe = "D35MixedProbe${System.nanoTime()}"
+        createConceptRoot(probe)
         val unloadedLanguageRef: String = readOnRepo {
             PersistenceFacade.getInstance().asString(MetaAdapterFactory.getLanguage(language.moduleReference))
         }
@@ -781,36 +815,20 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             )
         }
 
-        val concepts = readConceptArrayFromOkPath(response)
-        val resolvedNames = concepts.map { it.asJsonObject.get("qualifiedName").asString }
-        assertEquals(
-            "resolved concept data must still be returned when an unloaded runtime language is also requested",
-            listOf("jetbrains.mps.lang.core.structure.BaseConcept"), resolvedNames
-        )
+        val concepts = readConceptArrayFromOkPath(response).map { it.asJsonObject }
+        val baseConcept = concepts.single { it.get("qualifiedName").asString == "jetbrains.mps.lang.core.structure.BaseConcept" }
+        assertFalse("a built concept carries no marker: $baseConcept", baseConcept.has("descriptorStatus"))
+        val probeRecord = concepts.single { it.get("name").asString == probe }
+        assertEquals("declaration", probeRecord.get("source").asString)
 
         val obj = JsonParser.parseString(response).asJsonObject
         val warningTexts = obj.get("warnings").asJsonArray.map { it.asString }
         assertTrue(
-            "partial-success envelope must warn about the unresolved runtime language; got=$warningTexts",
-            warningTexts.any { it.contains(unloadedLanguageRef) }
+            "the envelope must name the unbuilt language and its build; got=$warningTexts",
+            warningTexts.any { it.contains("mps_mcp_alter_nodes MAKE") },
         )
-        assertTrue(
-            "warning must diagnose missing runtime rather than a search miss; got=$warningTexts",
-            warningTexts.any { it.contains("runtime is not deployed") && it.contains("mps_mcp_alter_nodes MAKE") },
-        )
-        assertTrue(
-            "warning must not send the caller to search_concepts; got=$warningTexts",
-            warningTexts.none { it.contains("mps_mcp_search_concepts") },
-        )
-        val entry = unresolvedDetailsOf(obj).singleEntryFor(unloadedLanguageRef)
-        assertEquals("language", entry.get("kind").asString)
-        assertTrue("undeployed flag: $entry", entry.get("undeployed").asBoolean)
-        val suggestionRefs = entry.get("suggestions").asJsonArray
-            .map { it.asJsonObject.get("languageReference")?.asString }
-        assertTrue(
-            "the unloaded language should not suggest itself from the registry-backed candidate list; got=$suggestionRefs",
-            suggestionRefs.none { it == unloadedLanguageRef }
-        )
+        assertTrue("no search_concepts detour; got=$warningTexts", warningTexts.none { it.contains("mps_mcp_search_concepts") })
+        assertFalse("nothing is unresolved: $obj", obj.getAsJsonObject("details").has("unresolved"))
     }
 
     @Test
@@ -1420,9 +1438,12 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "the project scope must contain a language the fixture module uses; got=${scoped.map { it.qualifiedName }}",
             scoped.any { it.qualifiedName == "jetbrains.mps.lang.structure" }
         )
+        // The project's own unbuilt languages are in scope too (their concepts come from the
+        // structure model, D112), so the registry plus the project's Language modules is the bound.
+        val ownLanguages = readOnRepo { myProject.projectModules.filterIsInstance<jetbrains.mps.smodel.Language>().map { MetaAdapterByDeclaration.getLanguage(it) }.toSet() }
         assertTrue(
-            "the project scope must be a subset of the registry; extra=${scoped.filter { it !in all }.map { l -> l.qualifiedName }}",
-            all.containsAll(scoped)
+            "the project scope must be a subset of the registry plus the project's own languages; extra=${scoped.filter { it !in all && it !in ownLanguages }.map { l -> l.qualifiedName }}",
+            scoped.all { it in all || it in ownLanguages }
         )
         assertTrue(
             "the project scope must be strictly smaller than the registry, otherwise it narrows nothing; " +

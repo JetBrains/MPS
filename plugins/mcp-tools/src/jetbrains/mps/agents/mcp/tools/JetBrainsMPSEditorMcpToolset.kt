@@ -5,7 +5,6 @@ import jetbrains.mps.agents.mcp.tools.common.*
 import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
-import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SConceptOperations
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SNodeOperations
 import jetbrains.mps.project.MPSProject
@@ -179,40 +178,44 @@ class JetBrainsMPSEditorMcpToolset : AbstractNodeOps() {
         includeReferences: List<String>?,
         includeChildren: List<String>?
     ): String {
-        // Only skip the make if the concept is properly loaded (valid) and its structure model does not need generation.
-        // This avoids skipping make for concepts that were just created but not yet compiled/indexed.
-        val structureModelForMake = mpsProject.modelAccess.computeReadAction {
-            val c = try {
+        // Build first when the runtime cannot serve the concept (D112): no runtime, a concept created
+        // after the last build, or a structure model edited since. The shared staged recovery picks
+        // the cheapest make that materialises the concept's descriptor.
+        val makePlan = mpsProject.modelAccess.computeReadAction {
+            val concept = try {
                 resolveConceptPreferringProject(mpsProject, conceptRef)
             } catch (e: Exception) {
                 rethrowIfCancellation(e)
                 logger.warn("Failed to resolve concept '$conceptRef'", e)
                 null
             }
-            val model = try {
-                resolveConceptNodePreferringProject(mpsProject, conceptRef)?.model
+            val declaration = try {
+                resolveConceptNodePreferringProject(mpsProject, conceptRef)
             } catch (e: Exception) {
                 rethrowIfCancellation(e)
                 logger.warn("Failed to resolve concept node '$conceptRef'", e)
                 null
             }
-
-            val generationRequired = model != null &&
-                mpsProject.getComponent(ModelGenerationStatusManager::class.java)?.generationRequired(model) == true
-
-            // If a concept is not valid (not properly loaded in runtime) or generation is required for its model, we must perform a make.
-            // A null sourceNode also signals a stale/hollow runtime descriptor: c.isValid only checks
-            // that *some* descriptor is present, but a hollow descriptor (no origin, empty
-            // properties/references/children) leaves nothing to scaffold from.
-            if (c != null && c.isValid && c.sourceNode != null && !generationRequired) null
-            else model
+            val model = declaration?.model
+            val module = model?.module as? Language
+            val readiness = concept?.let { LanguageReadiness.of(it, declaration, mpsProject) }
+            if (readiness == null || readiness is ConceptReadiness.Ready || model == null || module == null) null
+            else Triple(module, model, readiness)
         }
-        val droppedPreviousTransients: Boolean? = if (structureModelForMake != null) {
-            val makeResult = performMake(mpsProject, listOf(structureModelForMake), emptyList(), true)
-            val dropped = makeResult.transientModels?.droppedPrevious
-            if (!makeResult.success) {
+        val droppedPreviousTransients: Boolean? = if (makePlan != null) {
+            val (module, model, readiness) = makePlan
+            val ensured = ensureLanguageRuntime(mpsProject, module, model, readiness) {
+                executeBackgroundRead(mpsProject) {
+                    val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
+                    val declaration = resolveConceptNodePreferringProject(mpsProject, conceptRef)
+                    if (concept != null && LanguageReadiness.ofIgnoringStaleness(concept, declaration, mpsProject) is ConceptReadiness.Ready) emptyList()
+                    else listOf(conceptRef)
+                }
+            }
+            val dropped = ensured.makes.mapNotNull { it.transientModels?.droppedPrevious }.let { if (it.isEmpty()) null else it.any { d -> d } }
+            if (!ensured.make.success) {
                 return errJson(
-                    "Failed to make the structure model for concept '$conceptRef': ${makeResult.message}",
+                    "Failed to make the structure model for concept '$conceptRef': ${ensured.make.message}",
                     details = transientModelsDroppedDetails(dropped),
                 )
             }

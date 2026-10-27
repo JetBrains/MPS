@@ -37,7 +37,6 @@ import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
 import jetbrains.mps.extapi.model.GeneratableSModel
 import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.generator.GenerationSettingsProvider
-import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.generator.TransientModelsProvider
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.ide.project.ProjectHelper
@@ -104,6 +103,8 @@ abstract class AbstractOps : McpToolset {
         NOT_EDITABLE,
         MAKE_INPUT_INVALID,
         MODAL_BLOCKED,
+        /** The concept's language has no usable runtime for it (see [LanguageReadiness]); the response carries `details.languageBuild`. */
+        LANGUAGE_NOT_BUILT,
         INTERNAL_ERROR
     }
 
@@ -133,6 +134,10 @@ abstract class AbstractOps : McpToolset {
 
     class McpModalBlockedException(message: String, details: Map<String, Any?> = emptyMap()) :
         McpUserException(McpErrorCode.MODAL_BLOCKED, message, details)
+
+    /** Built by [LanguageReadiness.notBuilt]; `details` always holds the `languageBuild` block. */
+    class McpLanguageNotBuiltException(message: String, details: Map<String, Any?>) :
+        McpUserException(McpErrorCode.LANGUAGE_NOT_BUILT, message, details)
 
     companion object {
         private const val TEMP_JSON_PREFIX = "mps-node-"
@@ -204,19 +209,16 @@ abstract class AbstractOps : McpToolset {
             "Run `mps_mcp_alter_nodes` with operation=MAKE on the language's structure model, then retry."
 
         /**
-         * Recovery hint for the hollow-descriptor branch of [checkScaffoldingStaleness] — the
-         * language runtime is loaded but its concept descriptor has no source node and no
-         * properties/links. This shape only appears when an incremental make has left stale
-         * language-aspect descriptor classes on disk; `mps_mcp_reload_all` alone is not
-         * sufficient because the on-disk class files are still stale. Use `rebuild=true` to
-         * force a clean regeneration.
+         * Recovery hint for the not-built branches of [checkScaffoldingStaleness]: the language has
+         * no runtime, or its runtime does not know the concept. `mps_mcp_reload_all` alone is not
+         * sufficient because the descriptor classes on disk are what is missing or stale.
          */
         internal const val DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW: String =
             "Run `mps_mcp_alter_nodes` with operation=MAKE and rebuild=true targeting the " +
-                "language module (a model-scoped make can leave a never-deployed language's " +
-                "runtime hollow), then retry. (`mps_mcp_reload_all` alone is not sufficient — " +
+                "language module (a model-scoped make does not materialise a never-built language's " +
+                "runtime), then retry. (`mps_mcp_reload_all` alone is not sufficient — " +
                 "the language-aspect descriptor classes on disk are still stale until a clean " +
-                "rebuild.)"
+                "rebuild.) " + LanguageReadiness.MAKE_CHANGES_NO_MODEL_NOTE
         private val GSON = Gson()
         // serializeNulls: the inline form keeps `"type": null`, so the temp-file form must too.
         private val PRETTY_GSON = GsonBuilder().setPrettyPrinting().serializeNulls().create()
@@ -1434,7 +1436,11 @@ abstract class AbstractOps : McpToolset {
         modelReferenceJsonObject(plan, currentProject)
 
     protected fun nodeInfoJsonObject(n: SNode, currentProject: MPSProject? = null, cache: ProjectMembershipCache? = null): JsonObject {
-        val name = n.name ?: n.presentation
+        // A node of an unbuilt concept has no descriptor; its presentation is the fail-safe
+        // "<Concept> (concept is not found)", which must not pose as a name (D112).
+        val conceptLoaded = n.concept.isValid
+        val name = if (conceptLoaded) n.name ?: n.presentation
+        else n.getProperty(SNodeUtil.property_INamedConcept_name) ?: n.concept.name
         val concept = n.concept.name
         val conceptReference = PersistenceFacade.getInstance().asString(n.concept)
         val declarationNode = n.concept.sourceNode?.resolve(n.model?.repository)
@@ -1451,6 +1457,7 @@ abstract class AbstractOps : McpToolset {
         val obj = JsonObject()
         obj.addProperty("name", name)
         obj.addProperty("concept", concept)
+        if (!conceptLoaded) obj.addProperty("conceptLoaded", false)
         obj.addProperty("conceptDoc", conceptDoc)
         obj.addProperty("conceptDeprecated", conceptDeprecated)
         obj.addProperty("conceptReference", conceptReference)
@@ -3139,6 +3146,17 @@ abstract class AbstractOps : McpToolset {
         return null
     }
 
+    /**
+     * [LanguageReadiness.of] for a concept whose declaration the caller has not resolved: the runtime
+     * `sourceNode` when the descriptor is present, otherwise the structure-model lookup by reference.
+     */
+    protected fun readinessOf(concept: SAbstractConcept, mpsProject: MPSProject): ConceptReadiness {
+        val repository = mpsProject.repository
+        val declaration = concept.sourceNode?.resolve(repository)
+            ?: if (concept.isValid) null else resolveConceptNodePreferringProject(mpsProject, PersistenceFacade.getInstance().asString(concept))
+        return LanguageReadiness.of(concept, declaration, mpsProject)
+    }
+
     protected fun resolveConceptPreferringProject(mpsProject: MPSProject, conceptRef: String): SAbstractConcept? {
         refreshRegistries(mpsProject.repository)
         resolveConceptNodePreferringProject(mpsProject, conceptRef)?.let {
@@ -3645,7 +3663,8 @@ abstract class AbstractOps : McpToolset {
         concept: SAbstractConcept,
         repository: SRepository,
         currentProject: MPSProject? = null,
-        cache: ProjectMembershipCache? = null
+        cache: ProjectMembershipCache? = null,
+        markReadiness: Boolean = true
     ): JsonObject {
         val facade = PersistenceFacade.getInstance()
         val c = cache ?: ProjectMembershipCache(currentProject)
@@ -3693,44 +3712,18 @@ abstract class AbstractOps : McpToolset {
         obj.addProperty("virtualFolder", virtualFolder)
         obj.addProperty("present", true)
         addContainingProjectIfForeign(obj, currentProject, concept, repository, cache = c)
-        // Surface staleness so downstream callers (get_concept_details, search_concepts, …) do
-        // not silently treat a hollow runtime descriptor as a real one. The check matches the
-        // up-front gate in scaffold_editor: a runtime concept with no sourceNode and empty
-        // properties/references/children is a stale descriptor produced by an incremental
-        // make that did not regenerate the language aspect descriptor. The recovery is a
-        // clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true`;
-        // `mps_mcp_reload_all` alone is not sufficient because the StructureAspectDescriptor
-        // class files on disk are still stale.
-        addHollowDescriptorMarker(obj, concept)
+        // A concept the runtime cannot serve must not pose as a healthy one (D112); callers that
+        // classified the concept already pass markReadiness = false.
+        if (markReadiness && currentProject != null) addHollowDescriptorMarker(obj, concept, currentProject)
         return obj
     }
 
-    /**
-     * Marks [obj] when [concept] is served from a stale runtime descriptor. Shared so every
-     * record that names a concept carries the same marker and the same recovery action — a
-     * projection that drops it would report a hollow concept as a healthy one.
-     */
-    protected fun addHollowDescriptorMarker(obj: JsonObject, concept: SAbstractConcept) {
-        if (!isHollowDescriptor(concept)) return
-        obj.addProperty("descriptorStatus", "hollow")
-        obj.addProperty(
-            "descriptorRecoveryAction",
-            "Run mps_mcp_alter_nodes with operation=MAKE and rebuild=true targeting the language module (not just the structure model), then retry."
-        )
-    }
-
-    /**
-     * Heuristic used to detect a stale language runtime descriptor produced by an incremental
-     * make that did not regenerate the language aspect descriptor. A real concept has either a
-     * resolvable `sourceNode` or some non-empty properties/links; the all-null/all-empty shape
-     * only appears when the runtime is out of sync with the structure model. See the comment in
-     * [conceptInfoJsonObject] and the gate in `mps_mcp_scaffold_editor` for the recovery path.
-     */
-    protected fun isHollowDescriptor(concept: SAbstractConcept): Boolean {
-        return concept.sourceNode == null &&
-            concept.properties.isEmpty() &&
-            concept.referenceLinks.isEmpty() &&
-            concept.containmentLinks.isEmpty()
+    /** Marks [obj] when the runtime cannot serve [concept] (see [LanguageReadiness.recordMarkers]). */
+    protected fun addHollowDescriptorMarker(obj: JsonObject, concept: SAbstractConcept, currentProject: MPSProject) {
+        val readiness = readinessOf(concept, currentProject)
+        if (readiness is ConceptReadiness.NotBuilt && readiness !is ConceptReadiness.NotBuilt.Stale) {
+            for ((key, value) in LanguageReadiness.recordMarkers(readiness, fromDeclaration = false)) obj.addProperty(key, value as String)
+        }
     }
 
     /**
@@ -3749,16 +3742,16 @@ abstract class AbstractOps : McpToolset {
      *
      * @param conceptDeclRefs node references (`r:...`) of the created concept *declaration*
      *   nodes, as collected in `createdReferences`.
-     * @return the names (or, when a name is unavailable, the refs) of concepts whose runtime
-     *   descriptor is still hollow or entirely absent from the registry. An empty list means
-     *   every created concept is consistently readable. Must be called inside a read action.
+     * @return the names (or, when a name is unavailable, the refs) of concepts the runtime still
+     *   cannot serve ([LanguageReadiness]: no runtime, or the concept is not in it). An empty list
+     *   means every created concept is consistently readable. Must be called inside a read action.
      */
-    protected fun hollowRuntimeConcepts(repository: SRepository, conceptDeclRefs: Collection<String>): List<String> {
+    protected fun hollowRuntimeConcepts(mpsProject: MPSProject, conceptDeclRefs: Collection<String>): List<String> {
         if (conceptDeclRefs.isEmpty()) return emptyList()
+        val repository = mpsProject.repository
         refreshRegistries(repository)
         val facade = PersistenceFacade.getInstance()
-        val registry = LanguageRegistry.getInstance(repository)
-        val hollow = mutableListOf<String>()
+        val notServed = mutableListOf<String>()
         for (ref in conceptDeclRefs) {
             val declNode = try {
                 facade.createNodeReference(ref)?.resolve(repository)
@@ -3768,24 +3761,15 @@ abstract class AbstractOps : McpToolset {
             }
             if (declNode == null) {
                 // The declaration node we just created no longer resolves — treat as not-ready.
-                hollow.add(ref)
+                notServed.add(ref)
                 continue
             }
-            val name = declNode.name ?: ref
-            val declConcept = MetaAdapterByDeclaration.getConcept(declNode)
-            val runtime = registry.getLanguage(declConcept.language)
-            if (runtime == null) {
-                // Language has no loaded runtime at all — the strongest form of "stale".
-                hollow.add(name)
-                continue
-            }
-            val declRef = facade.asString(declConcept)
-            val runtimeConcept = runtime.concepts.find { facade.asString(it) == declRef }
-            if (runtimeConcept == null || isHollowDescriptor(runtimeConcept)) {
-                hollow.add(name)
+            val concept = MetaAdapterByDeclaration.getConcept(declNode)
+            if (concept == null || LanguageReadiness.ofIgnoringStaleness(concept, declNode, mpsProject) !is ConceptReadiness.Ready) {
+                notServed.add(declNode.name ?: ref)
             }
         }
-        return hollow
+        return notServed
     }
 
     /**
@@ -3816,70 +3800,20 @@ abstract class AbstractOps : McpToolset {
     internal fun checkScaffoldingStaleness(
         concept: SAbstractConcept,
         project: MPSProject,
-    ): ScaffoldingStaleness {
-        // 1) Language registry — clearer error than the model-level check when the
-        //    language has not been loaded at all (e.g. missing dependency, never-built).
-        val repository = project.repository
-        if (LanguageRegistry.getInstance(repository).getLanguage(concept.language) == null) {
-            return ScaffoldingStaleness.Stale(
-                reason = "Language '${concept.language.qualifiedName}' has no loaded runtime",
-                recoveryHint = "Build the language module (or check that it is listed in the project's " +
-                    "module dependencies), then retry.",
-            )
-        }
-
-        // 2) Hollow descriptor — null sourceNode plus empty properties/links is the
-        //    sentinel for an on-disk language-aspect descriptor that survived an
-        //    incremental make in a stale shape. `generationRequired` does NOT catch
-        //    this case (the source model can be clean while the on-disk descriptor
-        //    classes are corrupt), so we keep the dedicated check here. Recovery
-        //    requires `MAKE rebuild=true`, not the plain MAKE that the dirty-model
-        //    branch recommends, hence the distinct recovery hint.
-        if (isHollowDescriptor(concept)) {
-            return ScaffoldingStaleness.Stale(
-                reason = "hollow runtime descriptor (null sourceNode and no properties, references, " +
-                    "or children); the language runtime is out of sync with the structure model",
-                recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW,
-            )
-        }
-
-        // 3) Structure-model generation status — true when the source model has been
-        //    edited since the last successful generation (covers both in-memory dirty
-        //    edits and saved-but-not-regenerated states).
-        //
-        // sourceNode can still be null here when the descriptor is *not* hollow (has
-        // properties/links but no resolvable source). This shape only appears in
-        // unusual states (e.g. partial reload after structure-model removal); without
-        // a structure model to probe, we can't run the dirty-model check, so we
-        // degrade open but log so a real regression is observable in idea.log.
-        val sourceNode = concept.sourceNode?.resolve(repository) ?: run {
-            logger.warn(
-                "checkScaffoldingStaleness: concept '${concept.language.qualifiedName}.${concept.name}' " +
-                    "has non-empty descriptor but unresolvable sourceNode; treating as Fresh and " +
-                    "letting scaffolding proceed (cannot probe generation status without a source model)."
-            )
-            return ScaffoldingStaleness.Fresh
-        }
-        val structureModel = sourceNode.model ?: run {
-            logger.warn(
-                "checkScaffoldingStaleness: source node for concept " +
-                    "'${concept.language.qualifiedName}.${concept.name}' resolved but has no enclosing " +
-                    "model; treating as Fresh. This is an anomalous repository state that should not " +
-                    "normally occur — investigate if seen in production."
-            )
-            return ScaffoldingStaleness.Fresh
-        }
-        val mgsm = project.getComponent(ModelGenerationStatusManager::class.java) ?: return ScaffoldingStaleness.Fresh
-        val generationRequired = mgsm.generationRequired(structureModel)
-        if (generationRequired) {
-            return ScaffoldingStaleness.Stale(
-                reason = "structure model '${structureModel.name}' has unbuilt changes; the language " +
-                    "runtime is out of sync with the source model and scaffolding would produce a " +
-                    "stale editor",
-                recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION,
-            )
-        }
-        return ScaffoldingStaleness.Fresh
+    ): ScaffoldingStaleness = when (val readiness = readinessOf(concept, project)) {
+        ConceptReadiness.Ready -> ScaffoldingStaleness.Fresh
+        ConceptReadiness.Undeclared -> ScaffoldingStaleness.Stale(
+            reason = "concept '${structureQualifiedName(concept)}' is unknown to the runtime and not declared in any structure model",
+            recoveryHint = "Check the concept reference. For a concept of an unbuilt language: $DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW",
+        )
+        is ConceptReadiness.NotBuilt.Stale -> ScaffoldingStaleness.Stale(
+            reason = LanguageReadiness.describe(readiness),
+            recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION,
+        )
+        is ConceptReadiness.NotBuilt -> ScaffoldingStaleness.Stale(
+            reason = LanguageReadiness.describe(readiness),
+            recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW,
+        )
     }
 
     protected fun saveToTempFile(json: String): File {
@@ -4178,6 +4112,37 @@ abstract class AbstractOps : McpToolset {
         val inputModels: List<SModelReference>,
         val transientsPresent: Boolean,
     )
+
+    /** Outcome of [ensureLanguageRuntime]: every make that ran (last one is decisive), the extra stage if any, and what is still not served. */
+    data class LanguageRuntimeEnsured(val makes: List<MakeResult>, val recoveryStage: String?, val stillNotBuilt: List<String>) {
+        val make: MakeResult get() = makes.last()
+    }
+
+    /**
+     * The one staged recovery for a language whose runtime cannot serve its concepts (D112 §4.4).
+     * With no runtime at all, a module-scoped clean rebuild at once: a model-scoped make does not
+     * materialise a runtime (`LanguageRegistry.onLoaded` skips an already-present language id).
+     * Otherwise a clean make of the structure model, verified by [verify] (the names still not
+     * served; empty means success), with the module rebuild as the fallback.
+     */
+    protected suspend fun ensureLanguageRuntime(
+        mpsProject: MPSProject,
+        module: Language,
+        structureModel: SModel,
+        readiness: ConceptReadiness,
+        verify: suspend () -> List<String>,
+    ): LanguageRuntimeEnsured {
+        val makes = mutableListOf<MakeResult>()
+        if (readiness !is ConceptReadiness.NotBuilt.NoRuntime) {
+            val modelMake = performMake(mpsProject, listOf(structureModel), emptyList(), true)
+            makes.add(modelMake)
+            val remaining = if (modelMake.success) verify() else emptyList()
+            if (!modelMake.success || remaining.isEmpty()) return LanguageRuntimeEnsured(makes, null, remaining)
+        }
+        val moduleMake = performMake(mpsProject, emptyList(), listOf(module), true)
+        makes.add(moduleMake)
+        return LanguageRuntimeEnsured(makes, "module-rebuild", if (moduleMake.success) verify() else emptyList())
+    }
 
     /**
      * Performs a make operation on the given models.
