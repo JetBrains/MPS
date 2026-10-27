@@ -727,6 +727,28 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `get-concept-details keeps a slot for a near miss in the named language`() {
+        // ConceptFunctionParameter_node exists in several other languages. The constraints language's
+        // own parameter is ConstraintsFunctionParameter_node, whose name has three of the four
+        // subtokens and whose text never says "Concept": it must still get the slot kept for the
+        // named language, ahead of concepts that match all four only through their docs.
+        val ref = "jetbrains.mps.lang.constraints.structure.ConceptFunctionParameter_node"
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf(ref))
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val suggestionFqns = unresolvedDetailsOf(obj).singleEntryFor(ref).get("suggestions").asJsonArray
+            .map { it.asJsonObject.get("qualifiedName").asString }
+        val nearMiss = suggestionFqns.indexOf("jetbrains.mps.lang.constraints.structure.ConstraintsFunctionParameter_node")
+        assertTrue("the near miss must be suggested: $suggestionFqns", nearMiss >= 0)
+        assertTrue(
+            "only same-named concepts of other languages may come before it: $suggestionFqns",
+            suggestionFqns.take(nearMiss).all { it.endsWith(".structure.ConceptFunctionParameter_node") }
+        )
+    }
+
+    @Test
     fun `get-concept-details fails loudly with suggestions when all languageRefs are unresolvable`() {
         val bogusLanguageRef = "jetbrains.mps.lang.smodl"
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {

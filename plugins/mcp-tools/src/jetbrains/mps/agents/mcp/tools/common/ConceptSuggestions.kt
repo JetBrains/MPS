@@ -124,7 +124,7 @@ class ConceptSuggestions(
         val scopedStrict = scoped?.strict.orEmpty().asSequence()
 
         if (exact.isNotEmpty()) {
-            val tokens = scopedStrict.take(limit).toList()
+            val tokens = scoped?.besideExact.orEmpty().take(limit)
             return if (exact.size >= limit && tokens.isNotEmpty()) exact.take(limit - 1) + tokens.first()
             else exact.take(limit) + tokens.take(limit - exact.size.coerceAtMost(limit))
         }
@@ -207,8 +207,12 @@ class ConceptSuggestions(
         return n
     }
 
-    /** Strict matches ordered by name hits, then closeness of length, then name; [fallback] only in [Mode.DETAILS] and only when [strict] is empty. */
-    private class TokenMatches(val strict: List<SAbstractConcept>, val fallback: List<SAbstractConcept>)
+    /**
+     * [strict] matches ordered by name hits, then closeness of length, then name; [fallback] only in
+     * [Mode.DETAILS] and only when [strict] is empty. [besideExact] is what may share the list with
+     * exact-name hits: [strict] plus the [isNameNearMiss] names, in the same order.
+     */
+    private class TokenMatches(val strict: List<SAbstractConcept>, val fallback: List<SAbstractConcept>, val besideExact: List<SAbstractConcept>)
 
     /**
      * Subtoken matches of [simpleName] in [languages] (tier 3 of [suggest]).
@@ -221,10 +225,15 @@ class ConceptSuggestions(
      * link between the parent and the child") would out-score a concept whose NAME matches the
      * query — clearly wrong for a "did you mean" hint.
      *
-     * [Mode.REJECTION] matches name, alias and short description only, and for three or more
-     * subtokens also accepts a concept whose name has all but one of them: the constraints
-     * language's `ConstraintsFunctionParameter_node` is the answer to `ConceptFunctionParameter_node`,
-     * and nothing about it says `Concept`.
+     * [Mode.REJECTION] matches name, alias and short description only, and counts a concept whose
+     * name has all but one of three or more subtokens as a strict match ([isNameNearMiss]): the
+     * constraints language's `ConstraintsFunctionParameter_node` is the answer to
+     * `ConceptFunctionParameter_node`, and nothing about it says `Concept`.
+     *
+     * [Mode.DETAILS] offers such a near miss only beside exact-name hits ([TokenMatches.besideExact]).
+     * Counting it as strict there would also switch the scored fallback off for every input whose
+     * only matches are near misses, and outrank the concepts the fallback chose by doc hits; next to
+     * exact hits nothing else competes for the slots but [strict].
      */
     private fun tokenMatches(
         simpleName: String,
@@ -234,8 +243,9 @@ class ConceptSuggestions(
         usable: (SAbstractConcept) -> Boolean
     ): TokenMatches {
         val subtokens = subtokensOf(simpleName)
-        if (subtokens.isEmpty()) return TokenMatches(emptyList(), emptyList())
+        if (subtokens.isEmpty()) return TokenMatches(emptyList(), emptyList(), emptyList())
         val strict = ArrayList<Pair<SAbstractConcept, Int>>()
+        val nearMisses = ArrayList<Pair<SAbstractConcept, Int>>()
         val rankedHeap = PriorityQueue<Pair<SAbstractConcept, Int>>(limit, compareBy { it.second })
         for (lang in languages) {
             if (mode == Mode.REJECTION) {
@@ -243,7 +253,7 @@ class ConceptSuggestions(
                     val haystack = "${named.alias} ${named.shortDescription}"
                     val nameHits = subtokens.count { named.name.contains(it, ignoreCase = true) }
                     val allHit = subtokens.all { named.name.contains(it, ignoreCase = true) || haystack.contains(it, ignoreCase = true) }
-                    if ((allHit || (subtokens.size >= 3 && nameHits >= subtokens.size - 1)) && usable(named.concept)) strict.add(named.concept to nameHits)
+                    if ((allHit || isNameNearMiss(subtokens.size, nameHits)) && usable(named.concept)) strict.add(named.concept to nameHits)
                 }
                 continue
             }
@@ -267,7 +277,10 @@ class ConceptSuggestions(
                 }
                 if (totalHits == subtokens.size) {
                     strict.add(concept to nameHits)
-                } else if (strict.isEmpty() && totalHits > 0) {
+                } else if (isNameNearMiss(subtokens.size, nameHits)) {
+                    nearMisses.add(concept to nameHits)
+                }
+                if (totalHits < subtokens.size && strict.isEmpty() && totalHits > 0) {
                     // Compound score: name hits dominate, doc/alias hits are a tiebreaker only.
                     // The 100-multiplier is a soft cap that the per-concept subtoken counts can't
                     // realistically saturate (search words rarely exceed ~10 subtokens), so
@@ -282,16 +295,20 @@ class ConceptSuggestions(
                 }
             }
         }
-        if (strict.isNotEmpty()) {
-            val ordered = strict.sortedWith(
-                compareByDescending<Pair<SAbstractConcept, Int>> { it.second }
-                    .thenBy { Math.abs((it.first.name ?: "").length - simpleName.length) }
-                    .thenBy { AbstractOps.structureQualifiedName(it.first) }
-            ).map { it.first }.distinct()
-            return TokenMatches(ordered, emptyList())
-        }
-        return TokenMatches(emptyList(), rankedHeap.sortedByDescending { it.second }.map { it.first })
+        val order = compareByDescending<Pair<SAbstractConcept, Int>> { it.second }
+            .thenBy { Math.abs((it.first.name ?: "").length - simpleName.length) }
+            .thenBy { AbstractOps.structureQualifiedName(it.first) }
+        val ordered = strict.sortedWith(order).map { it.first }.distinct()
+        val besideExact = if (nearMisses.isEmpty()) ordered else (strict + nearMisses).sortedWith(order).map { it.first }.distinct()
+        if (ordered.isNotEmpty()) return TokenMatches(ordered, emptyList(), besideExact)
+        return TokenMatches(emptyList(), rankedHeap.sortedByDescending { it.second }.map { it.first }, besideExact)
     }
+
+    /**
+     * A name that has all but one of [subtokenCount] subtokens, three or more: one wrong word in a
+     * long name (`Concept` for `Constraints`) is a near miss, while one of two is just a shared word.
+     */
+    private fun isNameNearMiss(subtokenCount: Int, nameHits: Int): Boolean = subtokenCount >= 3 && nameHits >= subtokenCount - 1
 
     companion object {
         // Splits identifiers on non-alphanumerics, camelCase boundaries, and digit/letter

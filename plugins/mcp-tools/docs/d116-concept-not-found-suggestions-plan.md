@@ -117,7 +117,8 @@ resolves, else none.
      alias `node` and description lack `Concept`). An FQN-shaped rejection input never goes project-wide in
      tier 3: `SumOperation` (collections has no `sum` in any name, alias or short description) ends with no
      suggestions.
-   - The reserved slot takes a strict (or, in `REJECTION`, an n − 1) match only, never a `DETAILS` fallback-heap
+   - The reserved slot takes a strict or an n − 1 match only (in `DETAILS` too, since the follow-up in
+     "Implementation notes"), never a `DETAILS` fallback-heap
      entry, so an unrelated name cannot push out an exact hit. With k < `limit` exact hits, tier 3 fills the
      remaining `limit − k` slots. Tier-3 candidates already returned by tiers 1–2 are skipped, the reserved slot
      included (`…collections.structure.Foreachvariable` must not list `ForEachVariable` twice).
@@ -251,6 +252,15 @@ Deviations from the plan, each from the implementation or its review:
   language has no runtime or the model is already loaded: in this checkout every language is project-owned, and
   reading all roots would load every structure model inside the EDT command. The cost is a missed candidate for a
   concept added since the last build to a model nobody has loaded; it still resolves normally.
+- Follow-up (after commit `d95675403efc`): in `DETAILS`, an n − 1 name near miss may also take the slots beside
+  exact-name hits (the kept slot included), ranked with the strict matches by name hits and length, so
+  `get_concept_details` gives `ConceptFunctionParameter_node`'s kept slot to `ConstraintsFunctionParameter_node`
+  rather than to `ConstraintFunctionParameter_childConcept`, a strict match only through its docs. It is not
+  counted as strict otherwise, so a `get_concept_details` input without an exact-name hit is answered as at
+  `d95675403efc`: counting near misses as strict would switch the scored fallback off whenever they are the only
+  matches. Live check (MPS 261.25134): the constraints input lists the four other languages'
+  `ConceptFunctionParameter_node`s, then `ConstraintsFunctionParameter_node`; `Node_GetPropertyOperation` is
+  unchanged (`Node_GetAncestorsOperation`, … — strict matches through their docs, ranked by name hits).
 - Other-project and site filters (`usable`) run during the token scan, as the old ranker did, so a filtered strict
   match cannot switch off the `DETAILS` fallback.
 
