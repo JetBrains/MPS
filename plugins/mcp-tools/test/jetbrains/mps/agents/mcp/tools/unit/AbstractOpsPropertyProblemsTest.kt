@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools.unit
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.java.JavaSyntaxProblems
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -1523,6 +1524,116 @@ class AbstractOpsPropertyProblemsTest {
 
         assertEquals("void run() {}", source.code)
         assertEquals(FeatureKind.CLASS_CONTENT, source.featureKind)
+    }
+
+    // ── D117: a leading import/package header in non-CLASS Java ──────────────────────────────
+
+    @Test
+    fun leadingHeaderFindsTheTranscriptsImportsOnOneLine() {
+        val code = "import org.jetbrains.mps.openapi.model.SNode; import java.util.List; " +
+            "import java.util.ArrayList; import jetbrains.mps.scope.ListScope;\nSNode self = null;"
+        val header = JavaSyntaxProblems.leadingHeader(code)!!
+
+        assertEquals(
+            listOf(
+                "import org.jetbrains.mps.openapi.model.SNode;", "import java.util.List;",
+                "import java.util.ArrayList;", "import jetbrains.mps.scope.ListScope;",
+            ),
+            header.declarations,
+        )
+        assertEquals(code.indexOf("ListScope;") + "ListScope;".length, header.end)
+    }
+
+    @Test
+    fun leadingHeaderSkipsCommentsAndAcceptsEveryDeclarationForm() {
+        val code = "\n  // lead\n/* c */ package p.q;\nimport static a.B.c; /* between */ import a.b.*;\nimport/*c*/a.B; x();"
+        val header = JavaSyntaxProblems.leadingHeader(code)!!
+
+        assertEquals(
+            listOf("package p.q;", "import static a.B.c;", "import a.b.*;", "import/*c*/a.B;"),
+            header.declarations,
+        )
+        assertEquals(code.indexOf(" x();"), header.end)
+    }
+
+    @Test
+    fun leadingHeaderIgnoresCodeThatDoesNotStartWithADeclaration() {
+        assertNull(JavaSyntaxProblems.leadingHeader("int x = 1;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("important = 1;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("imports.add(x);"))
+        assertNull(JavaSyntaxProblems.leadingHeader("int x; import a.B;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("  // only a comment\n"))
+        // An import missing its `;` must not swallow the statement after it.
+        assertNull(JavaSyntaxProblems.leadingHeader("import java.util.List\nList<String> xs = null;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("@Deprecated package p;"))
+    }
+
+    @Test
+    fun headerHintNamesTheKindTheFirstDeclarationAndAQualifiedName() {
+        val hint = JavaSyntaxProblems.headerHint(
+            listOf("import java.util.List;", "import java.util.ArrayList;", "import a.B;", "import c.D;"), "STATEMENTS"
+        )!!
+
+        assertTrue(hint, hint.startsWith("The code starts with `import java.util.List;` (and 3 more declarations), "))
+        assertTrue(hint, hint.contains("featureKind \"STATEMENTS\" accepts no `import` or `package` declarations"))
+        assertTrue(hint, hint.contains("fully qualified (`java.util.List`)"))
+        assertTrue(hint, hint.contains("mps_mcp_model_dependency(modelReference: \"console\""))
+        assertFalse(hint, hint.contains("featureKind \"CLASS\""))
+    }
+
+    @Test
+    fun headerHintDerivesTheExampleFromStaticAndWildcardImports() {
+        fun example(declaration: String) = JavaSyntaxProblems.headerHint(listOf(declaration), "METHOD")!!
+            .substringAfter("fully qualified (`").substringBefore("`)")
+
+        assertEquals("a.B", example("import a.B;"))
+        assertEquals("a.B", example("import static a.B.c;"))
+        assertEquals("a.B", example("import static a.B.*;"))
+        assertEquals("a.b.<Class>", example("import a.b.*;"))
+        assertEquals("a.B", example("import/*c*/a.B;"))
+        assertFalse(JavaSyntaxProblems.headerHint(listOf("import a.B;"), "METHOD")!!.contains("(and"))
+        assertTrue(
+            JavaSyntaxProblems.headerHint(listOf("import a.B;", "import c.D;"), "FIELD")!!
+                .contains("`import a.B;` (and 1 more declaration),")
+        )
+    }
+
+    @Test
+    fun headerHintForAPackageOnlyHeaderGivesNoQualifiedNameAdvice() {
+        val hint = JavaSyntaxProblems.headerHint(listOf("package p.q;"), "EXPRESSION")!!
+
+        assertTrue(hint, hint.contains("featureKind \"EXPRESSION\""))
+        assertTrue(hint, hint.endsWith("Remove the `package` declaration."))
+        assertFalse(hint, hint.contains("fully qualified"))
+        assertNull(JavaSyntaxProblems.headerHint(emptyList(), "STATEMENTS"))
+    }
+
+    @Test
+    fun headerHintUsesTheFirstImportAfterAPackageForTheExample() {
+        val hint = JavaSyntaxProblems.headerHint(listOf("package p;", "import java.util.Map;"), "STATEMENTS")!!
+
+        assertTrue(hint, hint.contains("`package p;` (and 1 more declaration)"))
+        assertTrue(hint, hint.contains("fully qualified (`java.util.Map`)"))
+    }
+
+    @Test
+    fun problemsAfterHeaderDropsHeaderErrorsAndKeepsUnlocatedOnes() {
+        val header = JavaSyntaxProblems.Problem(1, "Syntax error on token \"import\", assert expected", 0)
+        val body = JavaSyntaxProblems.Problem(1, "Syntax error on token \"!=\", invalid AssignmentOperator", 25)
+        val unknown = JavaSyntaxProblems.Problem(1, "no offset", null)
+        val negative = JavaSyntaxProblems.Problem(1, "negative offset", -1)
+
+        assertEquals(
+            listOf(body, unknown, negative),
+            JavaSyntaxProblems.problemsAfterHeader(listOf(header, body, unknown, negative), headerEnd = 22, offsetShift = 0),
+        )
+        // EXPRESSION: ecj's offsets include the wrapper prefix, so a body error at caller offset 25 reads 47.
+        val shiftedHeader = header.copy(sourceStart = 22)
+        val shiftedBody = body.copy(sourceStart = 47)
+        assertEquals(
+            listOf(shiftedBody),
+            JavaSyntaxProblems.problemsAfterHeader(listOf(shiftedHeader, shiftedBody), headerEnd = 22, offsetShift = 22),
+        )
     }
 
     @Test

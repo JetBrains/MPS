@@ -1026,6 +1026,121 @@ class JetBrainsMPSJavaMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         }
     }
 
+    @Test
+    fun `STATEMENTS with a leading import is rejected with the header hint`() {
+        // D117: ecj answers a leading import with "Syntax error on token import, assert expected";
+        // the rejection must name the import and the fix instead, and drop the inapplicable
+        // `recovery: true` opt-in.
+        val (methodRef, bodyRef) = seedMethodWithBody("Importer", "void run() {}")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"import java.util.List;\nList<String> xs = null;","featureKind":"STATEMENTS",
+                    "insert":{"mode":"child","parentRef":"$methodRef","role":"body"}}"""
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("INVALID_REQUEST", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue(error, error.contains("`import java.util.List;`"))
+        assertTrue(error, error.contains("featureKind \"STATEMENTS\""))
+        assertTrue(error, error.contains("fully qualified (`java.util.List`)"))
+        assertTrue(error, error.contains("mps_mcp_model_dependency"))
+        assertFalse("the header's own ecj errors are dropped: $error", error.contains("assert expected"))
+        assertFalse("recovery is no fix for a header: $error", error.contains("recovery: true"))
+        assertFalse(error, error.contains("featureKind \"CLASS\""))
+
+        readOnRepo {
+            assertTrue("the rejection must not have touched the body", resolveNodeRef(bodyRef).children.none())
+        }
+    }
+
+    @Test
+    fun `METHOD with a leading import names METHOD in the header hint`() {
+        val (methodRef, _) = seedMethodWithBody("MemberImporter", "void run() {}")
+        val classRef = readOnRepo {
+            PersistenceFacade.getInstance().asString(checkNotNull(resolveNodeRef(methodRef).parent).reference)
+        }
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"import java.util.List;\nvoid other() {}","featureKind":"METHOD","contextNodeRef":"$classRef",
+                    "insert":{"mode":"child","parentRef":"$classRef","role":"member"}}"""
+            )
+        }
+        val error = expectErr(response)
+        assertTrue(error, error.contains("featureKind \"METHOD\" accepts no `import`"))
+        assertFalse(error, error.contains("recovery: true"))
+    }
+
+    @Test
+    fun `EXPRESSION with a leading import names EXPRESSION in the header hint`() {
+        // The EXPRESSION is parsed inside `Object __mcp_expr__ = ...;`, so detection must run on the caller's code.
+        val (methodRef, _) = seedMethodWithBody("ExpressionImporter", "int run() { return 0; }")
+        val returnRef = readOnRepo {
+            val returnStatement = SNodeOperations.getNodeDescendants(resolveNodeRef(methodRef), null, false, emptyArray())
+                .single { it.concept.name == "ReturnStatement" }
+            PersistenceFacade.getInstance().asString(returnStatement.reference)
+        }
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"import java.util.List; new java.util.ArrayList<String>()","featureKind":"EXPRESSION",
+                    "insert":{"mode":"child","parentRef":"$returnRef","role":"expression"}}"""
+            )
+        }
+        val error = expectErr(response)
+        assertTrue(error, error.contains("featureKind \"EXPRESSION\" accepts no `import`"))
+        assertFalse(error, error.contains("delete this token"))
+    }
+
+    @Test
+    fun `a body error after a header on the same line is still reported`() {
+        // Pruning is by ecj offset, not line: the transcript put imports and code on one line.
+        val (methodRef, _) = seedMethodWithBody("SameLine", "void run() {}")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"/* c */ import java.util.List; x != null && y;","featureKind":"STATEMENTS",
+                    "insert":{"mode":"child","parentRef":"$methodRef","role":"body"}}"""
+            )
+        }
+        val error = expectErr(response)
+        assertTrue(error, error.contains("`import java.util.List;`"))
+        assertTrue(error, error.contains("Other parser errors: line 1: "))
+        assertTrue(error, error.contains("\"!=\""))
+        assertFalse(error, error.contains("assert expected"))
+    }
+
+    @Test
+    fun `recovery true with a leading import inserts the repaired code and warns with the header hint`() {
+        // Live probe 2026-10-27: recovery does not drop an import, it turns it into
+        // `assert List.<no static member>;`. If ecj ever returns no nodes instead, this must fail
+        // so that branch gets its own assertion.
+        val (methodRef, bodyRef) = seedMethodWithBody("Recovered", "void run() {}")
+
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"import java.util.List;","featureKind":"STATEMENTS","recovery":true,
+                    "insert":{"mode":"child","parentRef":"$methodRef","role":"body"}}"""
+            )
+        }
+        assertOkData(response)
+        val warnings = JsonParser.parseString(response).asJsonObject.getAsJsonArray("warnings").map { it.asString }
+        assertTrue(
+            "the recovery warning must carry the header hint: $warnings",
+            warnings.any { it.contains("repaired because 'recovery' is true") && it.contains("fully qualified (`java.util.List`)") },
+        )
+        readOnRepo {
+            assertTrue(
+                "recovery turns the import into an assert statement",
+                SNodeOperations.getNodeDescendants(resolveNodeRef(bodyRef), null, false, emptyArray())
+                    .any { it.concept.name == "AssertStatement" },
+            )
+        }
+    }
+
     private fun bodyStatements(body: SNode): List<SNode> =
         body.children.filter { it.containmentLink?.name == "statement" }
 

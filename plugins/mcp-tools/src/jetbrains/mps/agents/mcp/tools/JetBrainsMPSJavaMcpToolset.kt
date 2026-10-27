@@ -36,6 +36,9 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
     companion object {
         data class EffectiveJavaParseSource(val code: String, val featureKind: FeatureKind)
 
+        // What effectiveJavaParseSource puts in front of an EXPRESSION, so ecj's offsets run this far ahead of the caller's.
+        private const val EXPRESSION_WRAPPER_PREFIX = "Object __mcp_expr__ = "
+
         private const val CONSOLE_UNRESOLVED_NAMES_WARNING =
             "Some Java names did not resolve. Console code sees JDK classes and the models the console model imports " +
                 "or its module depends on: add the models that declare the missing classes with " +
@@ -78,7 +81,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
 
             val stripped = code.trimEnd().trimEnd(';')
             // Plain arithmetic such as "a - b * c" is not a valid Java expression-statement, so parse it through a variable initializer.
-            return EffectiveJavaParseSource("Object __mcp_expr__ = $stripped;", FeatureKind.STATEMENTS)
+            return EffectiveJavaParseSource("$EXPRESSION_WRAPPER_PREFIX$stripped;", FeatureKind.STATEMENTS)
         }
     }
 
@@ -160,8 +163,26 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                 // null: the reflective re-run failed, so errorMsg is the only signal left.
                 val errors = JavaSyntaxProblems.errors(effectiveSource.code, effectiveSource.featureKind, recovery)
                 if (errors == null || errors.isNotEmpty()) {
-                    syntaxDetails = errors?.let { JavaSyntaxProblems.describe(it, isExpression) }
-                        ?: "The parser reported problems but no details (${parseResult.errorMsg})."
+                    val noDetails = "The parser reported problems but no details (${parseResult.errorMsg})."
+                    // D117: ecj reports a leading `import` as "Syntax error on token import, assert expected", which
+                    // says nothing about the cause; name it. CLASS accepts a header, and CLASS_STUB is rejected
+                    // before this point. Detection runs on the caller's code, so an EXPRESSION is covered too.
+                    val header =
+                        if (effectiveSource.featureKind != FeatureKind.CLASS) JavaSyntaxProblems.leadingHeader(code) else null
+                    val headerHint = header?.let {
+                        JavaSyntaxProblems.headerHint(it.declarations, if (isExpression) "EXPRESSION" else featureKind.name)
+                    }
+                    syntaxDetails = if (header != null && headerHint != null) {
+                        // The header's own errors are dropped; the body's still need reporting in this call.
+                        val others = errors?.let {
+                            val shift = if (isExpression) EXPRESSION_WRAPPER_PREFIX.length else 0
+                            JavaSyntaxProblems.describe(JavaSyntaxProblems.problemsAfterHeader(it, header.end, shift), isExpression)
+                        }
+                        listOfNotNull(headerHint, others?.let { "Other parser errors: $it" }, if (errors == null) noDetails else null)
+                            .joinToString(" ")
+                    } else {
+                        errors?.let { JavaSyntaxProblems.describe(it, isExpression) } ?: noDetails
+                    }
                     if (recovery && recoveryExplicit) {
                         syntaxWarnings.add(
                             "The Java code has syntax errors that the parser repaired because 'recovery' is true, " +
@@ -170,7 +191,7 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
                         )
                     } else {
                         return@executeBackgroundRead JavaParsePreparation.Err(
-                            syntaxErrorRejection(syntaxDetails),
+                            syntaxErrorRejection(syntaxDetails, headerHint != null),
                             code = McpErrorCode.INVALID_REQUEST
                         )
                     }
@@ -198,13 +219,18 @@ class JetBrainsMPSJavaMcpToolset : AbstractNodeOps() {
         }
     }
 
-    private fun syntaxErrorRejection(details: String): String =
+    // D117: for a header, the generic advice and the `recovery: true` opt-in do not apply (recovery turns
+    // `import a.B;` into `assert B.<no static member>;`), so [details] already carries the whole fix.
+    private fun syntaxErrorRejection(details: String, headerHint: Boolean): String = if (headerHint) {
+        "The Java code has syntax errors (the parser accepts Java 8 syntax): $details Nothing was inserted."
+    } else {
         "The Java code has syntax errors (the parser accepts Java 8 syntax): $details " +
             "Nothing was inserted: the parser's recovery would have repaired the code into something else — " +
             "for example, the bare expression `a != null && b;` becomes the assignment `a = (null && b)`. " +
             "Fix the code: an expression that is not a statement needs `return`, an `if`, or " +
             "`featureKind: \"EXPRESSION\"`; newer syntax (records, switch expressions, text blocks, `var`) is not " +
             "supported. To insert the repaired result anyway, pass `recovery: true`."
+    }
 
     private fun unwrapExpressionNodes(nodes: List<SNode>, isExpression: Boolean): List<SNode> {
         if (!isExpression) {
