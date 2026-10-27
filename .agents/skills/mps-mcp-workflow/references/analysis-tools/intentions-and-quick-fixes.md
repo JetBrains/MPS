@@ -39,4 +39,5 @@ Two tools bring the editor's Alt+Enter context actions to a node **without openi
   target model; only the target model is saved automatically.
 
 Typical loop: `check_root_node_problems` → read a `quickFixes` id → `apply_intention` → re-check.
+An info-only node is not listed in the report; read the hint's id from `details.infoMessages[].quickFixIds` and apply it on that entry's `node`.
 Or `list_node_intentions` → pick an entry → `apply_intention(entry.targetNode, entry.id)`.

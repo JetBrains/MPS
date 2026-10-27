@@ -23,6 +23,7 @@ import jetbrains.mps.checkers.TargetConceptChecker2
 import jetbrains.mps.classloading.ClassLoaderManager
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.MessageStatus
+import jetbrains.mps.errors.QuickFix_Runtime
 import jetbrains.mps.errors.item.EditorQuickFix
 import jetbrains.mps.errors.item.IssueKindReportItem
 import jetbrains.mps.errors.item.ModelReportItem
@@ -165,6 +166,7 @@ abstract class AbstractOps : McpToolset {
         const val SUMMARY_RESPONSE_THRESHOLD: Int = 10
         protected const val MAX_PROBLEM_MESSAGES_PER_ROW: Int = 5
         protected const val MAX_PROBLEM_NODES_PER_MESSAGE: Int = 5
+        protected const val MAX_INFO_QUICK_FIX_IDS: Int = 3
         protected const val MAX_PROBLEM_MESSAGE_CHARS: Int = 300
 
         /**
@@ -2122,8 +2124,16 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
-     * Returns true if [node] itself has either a checker-reported problem or a "soft" problem
+     * True for the severities that make a check unclean (`ERROR`, `WARNING`). `info` items
+     * ([MessageStatus.OK]) are advice: they are summarized by [infoSummary] instead (D118).
+     */
+    protected fun isProblemSeverity(severity: MessageStatus): Boolean =
+        severity == MessageStatus.ERROR || severity == MessageStatus.WARNING
+
+    /**
+     * Returns true if [node] itself has either a checker-reported error or warning or a "soft" problem
      * detected directly here (empty enum / property value rejected by [SProperty.isValid]).
+     * `info` items are not problems; they are summarized by [infoSummary] (D118).
      * Does NOT recurse into children — use [hasAnyProblems] for the subtree check.
      *
      * Shared between the list formatter and the green/red fast-path in mps_mcp_check_root_node_problems
@@ -2131,7 +2141,7 @@ abstract class AbstractOps : McpToolset {
      * agree it has nothing to print.
      */
     protected fun hasLocalProblems(node: SNode, problems: Map<SNode, List<NodeReportItem>>): Boolean {
-        if (problems[node]?.isNotEmpty() == true) return true
+        if (problems[node]?.any { isProblemSeverity(it.severity) } == true) return true
 
         for (prop in node.concept.properties) {
             val propertyState = getPropertyState(node, prop)
@@ -2158,7 +2168,8 @@ abstract class AbstractOps : McpToolset {
      * One distinct `(severity, message)` group in a [ProblemSummary], in first-occurrence order.
      * [count] counts report items; [nodes] holds the distinct reporting nodes in first-occurrence
      * order, so it can be shorter than [count] (a node reporting the text twice, or model-level
-     * items without a node). [node] is the first of them (D119).
+     * items without a node). [node] is the first of them (D119). [quickFixIds] is filled only by
+     * [infoSummary]: the quick-fix ids found on [node] (D118).
      */
     protected class ProblemTally(
         val severity: MessageStatus,
@@ -2166,6 +2177,7 @@ abstract class AbstractOps : McpToolset {
         var count: Int,
         val nodes: LinkedHashSet<SNodeReference>,
         var hasQuickFix: Boolean,
+        val quickFixIds: LinkedHashSet<String> = LinkedHashSet(),
     ) {
         constructor(severity: MessageStatus, message: String, count: Int, node: SNodeReference?, hasQuickFix: Boolean) :
             this(severity, message, count, LinkedHashSet<SNodeReference>().also { if (node != null) it.add(node) }, hasQuickFix)
@@ -2222,7 +2234,7 @@ abstract class AbstractOps : McpToolset {
             val nodeProblems = problems[n] ?: emptyList()
             val nodeRef = n.reference
             for (item in nodeProblems) {
-                if (item.severity == MessageStatus.ERROR || item.severity == MessageStatus.WARNING) {
+                if (isProblemSeverity(item.severity)) {
                     val hasFix = QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item).isNotEmpty()
                     record(item.severity, item.message, nodeRef, hasFix)
                 }
@@ -2294,9 +2306,59 @@ abstract class AbstractOps : McpToolset {
                 existing.count += t.count
                 existing.nodes.addAll(t.nodes)
                 if (t.hasQuickFix) existing.hasQuickFix = true
+                // An existing key keeps its own quickFixIds: they are its first node's (D118).
             } else {
-                into[key] = ProblemTally(t.severity, t.message, t.count, LinkedHashSet(t.nodes), t.hasQuickFix)
+                into[key] = ProblemTally(t.severity, t.message, t.count, LinkedHashSet(t.nodes), t.hasQuickFix, LinkedHashSet(t.quickFixIds))
             }
+        }
+    }
+
+    /**
+     * Tallies the `info` items ([MessageStatus.OK]) of [node]'s subtree, grouped by text in subtree
+     * order, as [problemSummary] does for errors and warnings — kept separate so the D83 counts and
+     * `messages` cannot pick up info. A group's [ProblemTally.quickFixIds] are the fix ids on its first
+     * node, so `mps_mcp_apply_intention(node, id)` cannot miss; [ProblemTally.hasQuickFix] stays false
+     * (D118).
+     */
+    protected fun infoSummary(
+        node: SNode,
+        problems: Map<SNode, List<NodeReportItem>>,
+    ): LinkedHashMap<Pair<MessageStatus, String>, ProblemTally> {
+        val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+        fun visit(n: SNode) {
+            val nodeRef = n.reference
+            problems[n]?.forEach { item ->
+                if (item.severity != MessageStatus.OK) return@forEach
+                val key = item.severity to item.message
+                val tally = tallies[key]?.also {
+                    it.count++
+                    it.nodes.add(nodeRef)
+                } ?: ProblemTally(item.severity, item.message, 1, nodeRef, false).also { tallies[key] = it }
+                if (tally.node == nodeRef) {
+                    QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item).mapTo(tally.quickFixIds) { quickFixId(it) }
+                }
+            }
+            for (child in n.children) visit(child)
+        }
+        visit(node)
+        return tallies
+    }
+
+    /**
+     * Adds `infoMessages` (at most [MAX_PROBLEM_MESSAGES_PER_ROW] groups, `node` and `moreNodes` only,
+     * up to [MAX_INFO_QUICK_FIX_IDS] `quickFixIds` each) and `moreInfoMessages` to [details]. No-op
+     * when [tallies] is empty (D118).
+     */
+    protected fun addInfoMessages(details: MutableMap<String, Any?>, tallies: Collection<ProblemTally>) {
+        if (tallies.isEmpty()) return
+        details["infoMessages"] = messagesJsonArray(
+            tallies,
+            perRow = MAX_PROBLEM_MESSAGES_PER_ROW,
+            nodesPerMessage = 1,
+            quickFixIdsPerMessage = MAX_INFO_QUICK_FIX_IDS,
+        )
+        if (tallies.size > MAX_PROBLEM_MESSAGES_PER_ROW) {
+            details["moreInfoMessages"] = tallies.size - MAX_PROBLEM_MESSAGES_PER_ROW
         }
     }
 
@@ -2314,12 +2376,14 @@ abstract class AbstractOps : McpToolset {
      * most [perRow] entries, and truncates each message at a code-point boundary to 300 characters.
      * A tally with more than one distinct node lists up to [nodesPerMessage] of them in `nodes`
      * (omitted at 1, where it would only repeat `node`) and the distinct nodes not listed in
-     * `node`/`nodes` in `moreNodes` (D119).
+     * `node`/`nodes` in `moreNodes` (D119). With [quickFixIdsPerMessage] > 0, a tally's non-empty
+     * [ProblemTally.quickFixIds] are listed (first [quickFixIdsPerMessage]) in `quickFixIds` (D118).
      */
     protected fun messagesJsonArray(
         tallies: Collection<ProblemTally>,
         perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
         nodesPerMessage: Int = MAX_PROBLEM_NODES_PER_MESSAGE,
+        quickFixIdsPerMessage: Int = 0,
     ): JsonArray {
         val sorted = tallies.sortedWith(
             compareBy<ProblemTally> { if (it.severity == MessageStatus.ERROR) 0 else 1 }
@@ -2341,6 +2405,9 @@ abstract class AbstractOps : McpToolset {
                     if (tally.nodes.size > nodesPerMessage) addProperty("moreNodes", tally.nodes.size - nodesPerMessage)
                 }
                 if (tally.hasQuickFix) addProperty("hasQuickFixes", true)
+                if (quickFixIdsPerMessage > 0 && tally.quickFixIds.isNotEmpty()) {
+                    add("quickFixIds", JsonArray().also { ids -> tally.quickFixIds.take(quickFixIdsPerMessage).forEach(ids::add) })
+                }
             })
         }
         return arr
@@ -2596,7 +2663,7 @@ abstract class AbstractOps : McpToolset {
         val arr = JsonArray()
         fun traverse(n: SNode) {
             problems[n]?.forEach { item ->
-                if (item.severity == MessageStatus.ERROR || item.severity == MessageStatus.WARNING) {
+                if (isProblemSeverity(item.severity)) {
                     val o = JsonObject()
                     o.addProperty("reference", PersistenceFacade.getInstance().asString(n.reference))
                     o.addProperty("concept", n.concept.name)
@@ -2661,6 +2728,29 @@ abstract class AbstractOps : McpToolset {
         val declarationNode: SNodeReference?,
     )
 
+    private fun quickFixRuntime(fix: QuickFixBase): QuickFix_Runtime? = (fix as? QuickFixRuntimeAdapter)?.let {
+        try {
+            it.fixRuntime
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            null
+        }
+    }
+
+    /**
+     * The id under which [fix] is listed and applied: the runtime QuickFix_Runtime class (the
+     * *_QuickFix FQN a checking rule names) so the id matches what the editor menu / declaration
+     * reveals; the fix's own class for non-adapter fixes so every listed fix stays addressable by
+     * mps_mcp_apply_intention. Degenerate case, kept deliberately: an adapter whose getFixRuntime()
+     * threw (broken language runtime) falls back to the non-unique QuickFixRuntimeAdapter FQN — the
+     * id stays always-present as documented, apply matches the same fallback, and execute then fails
+     * with a contained error.
+     */
+    protected fun quickFixId(fix: QuickFixBase): String = quickFixIdOf(fix, quickFixRuntime(fix))
+
+    private fun quickFixIdOf(fix: QuickFixBase, runtime: QuickFix_Runtime?): String =
+        runtime?.javaClass?.name ?: fix.javaClass.name
+
     /**
      * Extracts the quick-fixes attached to [item] via [QuickFixReportItem.FLAVOUR_QUICKFIX]
      * (empty for items carrying none — safe on any [NodeReportItem]). Fix identity and description
@@ -2672,22 +2762,8 @@ abstract class AbstractOps : McpToolset {
         val fixes = QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item)
         val result = ArrayList<QuickFixInfo>(fixes.size)
         for (fix in fixes) {
-            val runtime = (fix as? QuickFixRuntimeAdapter)?.let {
-                try {
-                    it.fixRuntime
-                } catch (e: Exception) {
-                    rethrowIfCancellation(e)
-                    null
-                }
-            }
-            // Prefer the runtime QuickFix_Runtime class (the *_QuickFix FQN a checking rule names) so
-            // the id matches what the editor menu / declaration reveals; fall back to the fix's own
-            // class for non-adapter fixes so every listed fix stays addressable by mps_mcp_apply_intention.
-            // Degenerate case, kept deliberately: an adapter whose getFixRuntime() threw (broken
-            // language runtime) falls back to the non-unique QuickFixRuntimeAdapter FQN — the id stays
-            // always-present as documented, apply matches the same fallback, and execute then fails
-            // with a contained error.
-            val id = runtime?.javaClass?.name ?: fix.javaClass.name
+            val runtime = quickFixRuntime(fix)
+            val id = quickFixIdOf(fix, runtime)
             val declarationNode = runtime?.declarationNode
             val rawDescription = (fix as? EditorQuickFix)?.let {
                 try {

@@ -4,6 +4,7 @@ import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 import jetbrains.mps.agents.mcp.tools.java.JavaSyntaxProblems
 
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
@@ -108,6 +109,18 @@ class AbstractOpsPropertyProblemsTest {
 
     private val ops = object : AbstractOps() {
         fun hasLocalProblemsForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) = hasLocalProblems(node, problems)
+        fun hasAnyProblemsForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) = hasAnyProblems(node, problems)
+        fun nodeWithProblemsListForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) =
+            nodeWithProblemsListJsonArray(node, problems)
+
+        /** The `details` that [addInfoMessages] builds from the [infoSummary] of each root, merged via [mergeTallies] in order. */
+        fun infoDetailsForTest(vararg roots: Pair<SNode, Map<SNode, List<NodeReportItem>>>): Map<String, Any?> {
+            val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+            for ((root, problems) in roots) mergeTallies(tallies, infoSummary(root, problems).values)
+            return mutableMapOf<String, Any?>().also { addInfoMessages(it, tallies.values) }
+        }
+
+        fun quickFixIdForTest(fix: QuickFixBase) = quickFixId(fix)
         fun nodeWithProblemsToJsonForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) =
             nodeWithProblemsToJson(node, problems, deep = false)
 
@@ -681,6 +694,163 @@ class AbstractOpsPropertyProblemsTest {
         val withoutFix = messages.single { it.get("message").asString == "without fix" }
         assertTrue(withFix.get("hasQuickFixes").asBoolean)
         assertFalse("hasQuickFixes must be omitted when no item has a fix: $withoutFix", withoutFix.has("hasQuickFixes"))
+    }
+
+    // D118: `info` items never make a node unclean; they are summarized in details.infoMessages.
+
+    @Test
+    fun infoOnlyNodeHasNoLocalProblems() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(170L)) }
+        assertFalse(ops.hasLocalProblemsForTest(node, mapOf(node to listOf(stubNodeReportItem(node, MessageStatus.OK)))))
+        assertTrue(
+            ops.hasLocalProblemsForTest(
+                node,
+                mapOf(node to listOf(stubNodeReportItem(node, MessageStatus.OK), stubNodeReportItem(node, MessageStatus.WARNING))),
+            )
+        )
+    }
+
+    @Test
+    fun infoOnlyChildKeepsItsParentClean() {
+        val (parent, children) = nodeWithChildren(171L, 1)
+        assertFalse(ops.hasAnyProblemsForTest(parent, mapOf(children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK)))))
+    }
+
+    @Test
+    fun problemListOmitsInfoOnlyNodesButKeepsInfoOnListedNodes() {
+        val (root, children) = nodeWithChildren(174L, 2)
+        val (infoOnly, withError) = children
+        val list = ops.nodeWithProblemsListForTest(
+            root,
+            mapOf(
+                infoOnly to listOf(stubNodeReportItem(infoOnly, MessageStatus.OK, "hint on the clean node")),
+                withError to listOf(
+                    stubNodeReportItem(withError, MessageStatus.ERROR, "broken"),
+                    stubNodeReportItem(withError, MessageStatus.OK, "hint on the broken node"),
+                ),
+            ),
+        ).map { it.asJsonObject }
+
+        assertEquals(listOf(PersistenceFacade.getInstance().asString(withError.reference)), list.map { it.get("reference").asString })
+        val severities = list.single().getAsJsonArray("problems").map { it.asJsonObject.get("severity").asString }
+        assertEquals(listOf("error", "info"), severities)
+    }
+
+    @Test
+    fun infoSummaryGroupsInfoTextsAndIgnoresErrorsAndWarnings() {
+        val (root, children) = nodeWithChildren(178L, 3)
+        val ref = { n: SNode -> PersistenceFacade.getInstance().asString(n.reference) }
+        val problems = mapOf(
+            root to listOf(stubNodeReportItem(root, MessageStatus.ERROR, "use string"), stubNodeReportItem(root, MessageStatus.WARNING, "other")),
+            children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK, "use string", quickFixes = listOf(FIX_A))),
+            children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "use string")),
+            children[2] to listOf(
+                stubNodeReportItem(children[2], MessageStatus.OK, "use string"),
+                stubNodeReportItem(children[2], MessageStatus.OK, "superfluous cast"),
+            ),
+        )
+        val infos = ops.infoDetailsForTest(root to problems).getValue("infoMessages") as JsonArray
+
+        assertEquals(listOf("use string", "superfluous cast"), infos.map { it.asJsonObject.get("message").asString })
+        val useString = infos[0].asJsonObject
+        assertEquals("info", useString.get("severity").asString)
+        assertEquals(3, useString.get("count").asInt)
+        assertEquals(ref(children[0]), useString.get("node").asString)
+        assertEquals(2, useString.get("moreNodes").asInt)
+        assertFalse("infoMessages render node + moreNodes only: $useString", useString.has("nodes"))
+        assertFalse("quickFixIds supersede hasQuickFixes: $useString", useString.has("hasQuickFixes"))
+        assertEquals(listOf(ops.quickFixIdForTest(FIX_A)), useString.getAsJsonArray("quickFixIds").map { it.asString })
+        assertFalse("an entry without fixes has no quickFixIds: ${infos[1]}", infos[1].asJsonObject.has("quickFixIds"))
+
+        val (errors, warnings, row) = ops.problemSummaryForTest(root, problems)
+        assertEquals("the info items with the error's text must not leak into the tally", 1 to 1, errors to warnings)
+        assertEquals(
+            listOf("error" to "use string", "warning" to "other"),
+            row.getAsJsonArray("messages").map { it.asJsonObject.get("severity").asString to it.asJsonObject.get("message").asString },
+        )
+        assertEquals(1, row.getAsJsonArray("messages")[0].asJsonObject.get("count").asInt)
+    }
+
+    @Test
+    fun infoSummaryOfAChildExcludesItsSiblings() {
+        val (_, children) = nodeWithChildren(183L, 2)
+        val details = ops.infoDetailsForTest(
+            children[0] to mapOf(
+                children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK, "mine")),
+                children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "sibling's")),
+            ),
+        )
+        assertEquals(listOf("mine"), (details.getValue("infoMessages") as JsonArray).map { it.asJsonObject.get("message").asString })
+    }
+
+    @Test
+    fun infoMessagesCapAtFiveTextsAndThreeFixIds() {
+        assertEquals("the four stub fixes need distinct ids", 4, listOf(FIX_A, FIX_B, FIX_C, FIX_D).map { ops.quickFixIdForTest(it) }.toSet().size)
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(186L)) }
+        val items = listOf(stubNodeReportItem(node, MessageStatus.OK, "hint 0", quickFixes = listOf(FIX_A, FIX_B, FIX_C, FIX_D))) +
+            (1..6).map { stubNodeReportItem(node, MessageStatus.OK, "hint $it") }
+        val details = ops.infoDetailsForTest(node to mapOf(node to items))
+
+        val infos = details.getValue("infoMessages") as JsonArray
+        assertEquals(5, infos.size())
+        assertEquals(2, details["moreInfoMessages"])
+        assertEquals(
+            listOf(FIX_A, FIX_B, FIX_C).map { ops.quickFixIdForTest(it) },
+            infos[0].asJsonObject.getAsJsonArray("quickFixIds").map { it.asString },
+        )
+    }
+
+    @Test
+    fun noInfoItemsLeaveDetailsUntouched() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(187L)) }
+        assertTrue(ops.infoDetailsForTest(node to mapOf(node to listOf(stubNodeReportItem(node, MessageStatus.ERROR)))).isEmpty())
+    }
+
+    @Test
+    fun infoQuickFixIdsComeFromTheFirstNodeOnlyAcrossNodesAndMerges() {
+        val (root, children) = nodeWithChildren(188L, 2)
+        val (otherRoot, otherChildren) = nodeWithChildren(191L, 1)
+        val firstRootProblems = mapOf(
+            children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK, "shared", quickFixes = listOf(FIX_A))),
+            children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "shared", quickFixes = listOf(FIX_B))),
+        )
+        val secondRootProblems = mapOf(
+            otherChildren[0] to listOf(
+                stubNodeReportItem(otherChildren[0], MessageStatus.OK, "shared", quickFixes = listOf(FIX_C)),
+                stubNodeReportItem(otherChildren[0], MessageStatus.OK, "second root only", quickFixes = listOf(FIX_D)),
+            ),
+        )
+        val ids = { details: Map<String, Any?>, text: String ->
+            (details.getValue("infoMessages") as JsonArray).map { it.asJsonObject }
+                .single { it.get("message").asString == text }.getAsJsonArray("quickFixIds").map { it.asString }
+        }
+
+        val merged = ops.infoDetailsForTest(root to firstRootProblems, otherRoot to secondRootProblems)
+        assertEquals("an existing key keeps its first node's ids", listOf(ops.quickFixIdForTest(FIX_A)), ids(merged, "shared"))
+        assertEquals("a new key copies the source's ids", listOf(ops.quickFixIdForTest(FIX_D)), ids(merged, "second root only"))
+        assertEquals(3, (merged.getValue("infoMessages") as JsonArray).map { it.asJsonObject }.single { it.get("message").asString == "shared" }.get("count").asInt)
+    }
+
+    @Test
+    fun infoQuickFixIdsUniteEveryItemOfTheFirstNode() {
+        val (root, children) = nodeWithChildren(193L, 2)
+        val details = ops.infoDetailsForTest(
+            root to mapOf(
+                children[0] to listOf(
+                    stubNodeReportItem(children[0], MessageStatus.OK, "twice", quickFixes = listOf(FIX_A)),
+                    stubNodeReportItem(children[0], MessageStatus.OK, "twice", quickFixes = listOf(FIX_B)),
+                ),
+                children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "twice", quickFixes = listOf(FIX_C))),
+            ),
+        )
+        val entry = (details.getValue("infoMessages") as JsonArray).single().asJsonObject
+        assertEquals(3, entry.get("count").asInt)
+        assertEquals(listOf(FIX_A, FIX_B).map { ops.quickFixIdForTest(it) }, entry.getAsJsonArray("quickFixIds").map { it.asString })
+    }
+
+    @Test
+    fun quickFixIdOfANonAdapterFixIsItsClassName() {
+        assertEquals(FIX_A.javaClass.name, ops.quickFixIdForTest(FIX_A))
     }
 
     @Test
@@ -2241,6 +2411,29 @@ class AbstractOpsPropertyProblemsTest {
             }
         }
         return parent to children
+    }
+
+    // Four separate object expressions, not one factory: a non-adapter fix's id is its class name,
+    // so the D118 cap and first-node tests need four distinct classes.
+    private val FIX_A: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+    }
+    private val FIX_B: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+    }
+    private val FIX_C: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+    }
+    private val FIX_D: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
     }
 
     private fun stubNodeReportItem(

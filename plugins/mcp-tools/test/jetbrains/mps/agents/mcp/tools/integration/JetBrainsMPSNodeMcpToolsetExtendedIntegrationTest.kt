@@ -6,6 +6,7 @@ import jetbrains.mps.agents.mcp.tools.common.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.project.Solution
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.structure.modules.Dependency
 import jetbrains.mps.smodel.Language
@@ -14,6 +15,7 @@ import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import java.util.UUID
+import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -2450,6 +2452,114 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
     // ── module scope (D63) ─────────────────────────────────────────────────────────────────
 
     private fun moduleRefOf(module: SModule): String = PersistenceFacade.getInstance().asString(module.moduleReference)
+
+    // D118: an `info` item (BaseLanguage's "It's recommended to use string type" on a java.lang.String
+    // field type) never makes a check unclean; it is summarized in details.infoMessages.
+
+    private class InfoHost(val solution: Solution, val model: SModel, val rootRef: String)
+
+    /**
+     * A fresh solution model (or [host]'s) with `public class <name> { <body> }` parsed in as a root.
+     * Public, with public members, so BaseLanguage's "never used" warnings stay out of the fixture.
+     */
+    private fun createInfoHost(name: String, body: String, host: InfoHost? = null): InfoHost {
+        val solution = host?.solution ?: createSolution()
+        val model = host?.model ?: createModel(solution, "${solution.moduleName}.code")
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"public class $name { $body }","featureKind":"CLASS",
+                    "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
+            )
+        }
+        okEnvelope(response)
+        val rootRef = readOnRepo { PersistenceFacade.getInstance().asString(model.rootNodes.single { it.name == name }.reference) }
+        return InfoHost(solution, model, rootRef)
+    }
+
+    /** `data` as the clean verdict string, failing with the whole envelope when it is a report. */
+    private fun verdictOf(envelope: JsonObject): String {
+        val data = envelope.get("data")
+        assertTrue("expected a verdict string, got a report: $envelope", data.isJsonPrimitive)
+        return data.asString
+    }
+
+    private fun stringTypeHint(details: JsonObject?): JsonObject {
+        assertNotNull("expected details.infoMessages", details)
+        val infos = details!!.getAsJsonArray("infoMessages")
+        assertNotNull("expected details.infoMessages: $details", infos)
+        val hint = infos.map { it.asJsonObject }.single { it.get("message").asString.contains("string type") }
+        assertEquals("info", hint.get("severity").asString)
+        assertTrue("the hint must name its node: $hint", hint.has("node"))
+        return hint
+    }
+
+    @Test
+    fun `check_root_node_problems answers clean on an info-only root and lists the hint with its fix id`() {
+        val host = createInfoHost("InfoOnly", "public java.lang.String name;")
+
+        val envelope = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) })
+
+        assertEquals("no problems found", verdictOf(envelope))
+        val hint = stringTypeHint(envelope.getAsJsonObject("details"))
+        val fixId = hint.getAsJsonArray("quickFixIds").map { it.asString }.single { it.endsWith("ConvertString_QuickFix") }
+
+        val applied = okEnvelope(runTool(JetBrainsMPSIntentionsMcpToolset()) {
+            it.mps_mcp_apply_intention(nodeReference = hint.get("node").asString, intentionId = fixId)
+        })
+        assertTrue("the hint's fix must apply on its node: $applied", applied.getAsJsonObject("data").get("applied").asBoolean)
+        val after = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) })
+        assertEquals("no problems found", verdictOf(after))
+        assertFalse("the applied fix removes the hint: $after", after.getAsJsonObject("details")?.has("infoMessages") == true)
+    }
+
+    @Test
+    fun `check_root_node_problems answers clean on a model whose only items are info at model and perRoot and module scope`() {
+        val host = createInfoHost("InfoModel", "public java.lang.String name;")
+
+        val clean = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(host.model)) })
+        assertEquals("no problems found", verdictOf(clean))
+        assertEquals(1, clean.getAsJsonObject("details").get("rootsChecked").asInt)
+        stringTypeHint(clean.getAsJsonObject("details"))
+
+        val perRoot = runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(host.model), perRoot = true) }
+        val row = payloadArrayFromOkData(perRoot).single().asJsonObject
+        assertEquals(0, row.get("errors").asInt)
+        assertEquals(0, row.get("warnings").asInt)
+        assertFalse("info stays out of the row's messages: $row", row.has("messages"))
+        stringTypeHint(okEnvelope(perRoot).getAsJsonObject("details"))
+
+        val module = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(moduleRefOf(host.solution)) })
+        assertEquals("no problems found", verdictOf(module))
+        stringTypeHint(module.getAsJsonObject("details"))
+    }
+
+    @Test
+    fun `check_root_node_problems on a model lists only the erroring root and not the info-only one`() {
+        val infoHost = createInfoHost("InfoSibling", "public java.lang.String name;")
+        val broken = createInfoHost("BrokenSibling", "public int n = true;", infoHost)
+
+        val envelope = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(infoHost.model)) })
+
+        val roots = envelope.getAsJsonObject("data").getAsJsonArray("roots").map { it.asJsonObject.get("root").asString }
+        assertEquals("$envelope", listOf(broken.rootRef), roots)
+        stringTypeHint(envelope.getAsJsonObject("details"))
+    }
+
+    @Test
+    fun `check_root_node_problems on an unclean root drops the info-only node from data but keeps the hint even when spilled`() {
+        val host = createInfoHost("MixedRoot", "public java.lang.String name; public int n = true;")
+
+        val response = runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) }
+        val envelope = okEnvelope(response)
+        val listed = payloadArrayFromOkData(response).map { it.asJsonObject }
+        assertTrue("the error must be listed: $response", listed.isNotEmpty())
+        val hint = stringTypeHint(envelope.getAsJsonObject("details"))
+        assertFalse("the info-only node must not be listed: $response", listed.any { it.get("reference").asString == hint.get("node").asString })
+
+        val spilled = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef, maxInlineBytes = 1) })
+        assertTrue("maxInlineBytes=1 spills data to a file: $spilled", spilled.get("data").asString.endsWith(".json"))
+        stringTypeHint(spilled.getAsJsonObject("details"))
+    }
 
     private fun freshLanguage(withGenerator: Boolean = false): Language {
         val name = "test.modscope${System.nanoTime()}"
