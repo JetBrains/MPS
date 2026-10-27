@@ -17,8 +17,6 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import org.jetbrains.mps.openapi.model.SNodeId;
-import jetbrains.mps.extapi.model.TransientSModel;
-import jetbrains.mps.generator.impl.plan.CrossModelEnvironment;
 import java.util.ArrayList;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.language.SConcept;
@@ -46,7 +44,7 @@ public class DebugMappingsBuilder {
     LabelEntryBuilder b = new LabelEntryBuilder(label);
     for (SNode keyInputNode : keys) {
       assert keyInputNode != null;
-      SNode in = gdInputNode(keyInputNode);
+      SNode in = gdInputNode(InputKeyRecord.of(keyInputNode, myOriginTrace));
       SNodeReference origin = TracingUtil.getInput(keyInputNode);
       b.newKeyed(in, origin, outputNodes.apply(keyInputNode));
     }
@@ -63,10 +61,10 @@ public class DebugMappingsBuilder {
     final SNode rn = SLinkOperations.addNewChild(rv, LINKS.records$1M3v, null);
     SPropertyOperations.assign(rn, PROPS.label$dc7G, lr.label);
     if (lr.key1 != null) {
-      SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(lr.key1));
+      SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(InputKeyRecord.of(lr.key1, myOriginTrace)));
     }
     if (lr.key2 != null) {
-      SLinkOperations.setTarget(rn, LINKS.input2$dvP0, cpInputNode(lr.key2));
+      SLinkOperations.setTarget(rn, LINKS.input2$dvP0, cpInputNode(InputKeyRecord.of(lr.key2, myOriginTrace)));
     }
     lr.values.forEach((SNode o) -> {
       SNode r = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
@@ -79,28 +77,25 @@ public class DebugMappingsBuilder {
     return rv;
   }
 
-  private SNode cpInputNode(SNode input) {
+  private SNode cpInputNode(InputKeyRecord key) {
     SNode presentation = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.CP_InputNode$p_);
 
     // XXX copied from similar code for GeneratorDebug_InputNode, see gdInputNode()
-    SNodeId inputNodeId = (myOriginTrace.hasOrigin(input) ? myOriginTrace.getOrigin(input) : input.getNodeId());
-    SPropertyOperations.assign(presentation, PROPS.nodeId$wvdy, inputNodeId.toString());
-    SPropertyOperations.assign(presentation, PROPS.presentation$PQVs, input.getPresentation());
-    SModel inputNodeModel = input.getModel();
-    if (inputNodeModel != null && (isCheckpointModel(inputNodeModel) || !(inputNodeModel instanceof TransientSModel))) {
-      // no reason to save reference to a model that would be disposed and eventually break the reference
-      SPropertyOperations.assign(presentation, PROPS.modelName$PRat, inputNodeModel.getName().getValue());
+    SNodeId inputNodeId = key.inputNode.getNodeId();
+    SPropertyOperations.assign(presentation, PROPS.nodeId$wvdy, String.valueOf(inputNodeId));
+    SPropertyOperations.assign(presentation, PROPS.presentation$PQVs, key.inputNodeName);
+    if (key.inputModel != null) {
+      SPropertyOperations.assign(presentation, PROPS.modelName$PRat, key.inputModel.getName().getValue());
       // The problem with direct reference is that I need to respect change in model reference for persisted CP model if it changes
-      SLinkOperations.setTarget(presentation, LINKS.nodePtr$Snb7, input);
+      SLinkOperations.setPointer(presentation, LINKS.nodePtr$Snb7, key.inputNode);
     }
-    SNodeReference origin = TracingUtil.getInput(input);
-    if (origin != null) {
-      SLinkOperations.setPointer(presentation, LINKS.inputOrigin$dhK4, origin);
+    if (key.originNode != null) {
+      SLinkOperations.setPointer(presentation, LINKS.inputOrigin$dhK4, key.originNode);
     }
     return presentation;
   }
 
-  private SNode gdInputNode(SNode keyInputNode) {
+  private SNode gdInputNode(InputKeyRecord key) {
     SNode in = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_InputNode$7f);
     SNode inputNodeIdentity = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.ElementaryNodeId$Yd);
     /*
@@ -111,26 +106,16 @@ public class DebugMappingsBuilder {
 
     */
 
-    SNodeId inputNodeId = (myOriginTrace.hasOrigin(keyInputNode) ? myOriginTrace.getOrigin(keyInputNode) : keyInputNode.getNodeId());
-    SPropertyOperations.assign(inputNodeIdentity, PROPS.nodeId$2ASg, inputNodeId.toString());
+    SNodeId inputNodeId = key.inputNode.getNodeId();
+    SPropertyOperations.assign(inputNodeIdentity, PROPS.nodeId$2ASg, String.valueOf(inputNodeId));
     SLinkOperations.setTarget(in, LINKS.node$CLNB, inputNodeIdentity);
-    SPropertyOperations.assign(in, PROPS.presentation$FmHa, keyInputNode.getPresentation());
-    SModel inputNodeModel = keyInputNode.getModel();
-    // in fact, inputNodeModel when keyInputNode is from the same model is unlikely to be checkpoint, we need its counterpart
-    // from myOriginTrace's checkpoint model, but I have no idea how to get one here.
-    if (inputNodeModel != null && (isCheckpointModel(inputNodeModel) || !(inputNodeModel instanceof TransientSModel))) {
-      // no reason to save reference to a model that would be disposed and eventually break the reference
-      SPropertyOperations.assign(in, PROPS.modelName$F5oU, inputNodeModel.getName().getValue());
+    SPropertyOperations.assign(in, PROPS.presentation$FmHa, key.inputNodeName);
+    if (key.inputModel != null) {
+      SPropertyOperations.assign(in, PROPS.modelName$F5oU, key.inputModel.getName().getValue());
       // The problem with direct reference is that I need to respect change in model reference for persisted CP model if it changes
-      SLinkOperations.setTarget(in, LINKS.nodePtr$Fm07, keyInputNode);
+      SLinkOperations.setPointer(in, LINKS.nodePtr$Fm07, key.inputNode);
     }
     return in;
-  }
-
-  private boolean isCheckpointModel(SModel m) {
-    // CP models may be exposed as transients; we need to keep references to CP models
-    // Need better condition than just model attribute, though.
-    return CrossModelEnvironment.isCheckpointModel(m);
   }
 
   private final class LabelEntryBuilder {
