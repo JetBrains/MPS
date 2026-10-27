@@ -24,19 +24,32 @@ utility methods
 
 ## Inline assertion annotations
 
-The most idiomatic way to test typesystem/constraints/scope rules is to annotate nodes inside the snippets with intentions from `lang.test`:
+The most idiomatic way to test typesystem/constraints/scope rules is to annotate nodes inside the snippets with intentions from `lang.test` (for constraints rules, see "Asserting a constraints violation" below):
 
-| Annotation concept | Intention name | Asserts |
+| Annotation concept | Alias | Asserts |
 |---|---|---|
-| `NodeErrorCheckOperation` (`1TM$A`) | "Add Node Operations Test Annotation" → `has error` | The annotated node has the given checking error/quick-fix |
-| `NodeErrorCheckOperation` with `kind=warning` | `has warning` | Warning is reported |
-| `NodeErrorCheckOperation` with `kind=info` | `has info` | Info is reported |
-| `NodeTypeCheckOperation` (`30Omv`) | `has type` | Annotated node has the given inferred type |
-| `NodeTypeCheckOperation` with `expected=true` | `has expected type` | Annotated node has the given *expected* type (context type) |
-| `NodeTypeCheckOperation` with `kind=typeIn` | `has type in` | Inferred type is one of several |
+| `NodeErrorCheckOperation` (`1TM$A`) | `has error` | The annotated node has an error (any error, unless `errorRef` names the rule) |
+| `NodeConstraintsErrorCheckOperation` | `has constraints error` | An error from the constraints rule that the required `errorRef` names |
+| `NodeWarningCheckOperation` | `has warning` | A warning is reported (optional `warningRef`) |
+| `NodeConstraintsWarningCheckOperation` | `has constraints warning` | A warning from the constraints rule that the required `warningRef` names |
+| `NodeInfoCheckOperation` | `has info` | An info is reported |
+| `NodeTypeCheckOperation` (`30Omv`) | `has type` | Annotated node has the inferred type in its single `type` child |
+| `NodeExpectedTypeCheckOperation` | `has expected type` | Annotated node has the given *expected* type (context type); same single `type` child |
+| `NodeTypeSetCheckOperation` | `has type in` | Inferred type is one of its `type` children (1..n) |
 | `NodeTypeSystemErrorCheckOperation` (`2DdRWr`) | `has typesystem error` | A typesystem-rule error is raised; can reference `RuleReference` |
 | `CheckNodeForErrorMessagesOperation` (`7OXhh`) | (used implicitly by `check ... for error messages`) | Wraps a subtree to check error messages |
 | `TestNodeAnnotation` / `TestNodeReference` (`3xLA65` / `3xONca`) | "Add Test Node Label" | Tag a node with a **label**; reference it from test methods as `node<label>` |
+
+Each is a separate concept; there is no `kind` or `expected` property to switch between them. In MPS, "Add Node Operations Test Annotation" (Alt+Enter) creates them.
+
+**Every check operation sits in a `NodeOperationsContainer`.** The operations are children in its `nodeOperations` role (0..n), and the container goes into the annotated node's `smodelAttribute` role. A bare operation in `smodelAttribute` is rejected. One container per node holds several operations:
+
+```json
+{ "role": "smodelAttribute", "nodes": [{
+    "concept": "jetbrains.mps.lang.test.structure.NodeOperationsContainer",
+    "children": [{ "role": "nodeOperations", "nodes": [
+      { "concept": "jetbrains.mps.lang.test.structure.NodeErrorCheckOperation" } ] }] }] }
+```
 
 The visual cue in the editor is `<check ... has error IsNotSubtypeOf>` or `<check expression has type int>` wrapping the asserted node.
 
@@ -57,6 +70,52 @@ public void testWrongUseOfStaticMethod() {
 ```
 
 Source: `testbench/testsolutions/jetbrains.mps.baseLanguage.methodReferences.test/models/jetbrains.mps.baseLanguage.methodReferences.test.typesystem@tests.mps`
+
+### Asserting a constraints violation
+
+A failing property validator, `canBeChild`, `canBeParent`, `canBeAncestor` or `canBeRoot` is an error report. Assert it with `has error`:
+
+1. **Default: `NodeErrorCheckOperation` with no `errorRef`.** It passes when any error is reported on the annotated node. Annotate the node the checker reports on:
+   - a property violation goes on the node that owns the property;
+   - can-be-child goes on the child;
+   - can-be-parent goes on **the parent**;
+   - can-be-ancestor goes on **the ancestor**;
+   - can-be-root goes on the root.
+2. **Vacuity trap.** "Any error" also matches an unrelated one, such as a missing obligatory child or an unresolved reference. Make the snippet otherwise valid, then run `mps_mcp_check_root_node_problems` on the test root before you run the test. The only error on the annotated node must be the intended one.
+3. **To be precise, add `expectedMessage`.** This is an `ExpectedMessageContainer` whose `text` property holds the exact message the check printed, e.g. `Property constraint violation for the property "servings"`. An empty `text` matches any message. If the language has a feedback aspect, the text the test run sees can differ from what the IDE check prints: confirm it with a test run, or leave `expectedMessage` out.
+4. **Strict and rarely needed: `errorRef`.** Any `has error` with an `errorRef` passes only for an error reported by that rule, and `has constraints error` requires one. The `errorRef` is an `UnknownRuleReference`. Its `declaration` is the constraint **function** node (`propertyValidator`, `canBeChild`, …), not the `NodePropertyConstraint` or `ConceptConstraints` that holds it. Pointing at the container fails with `does not have the expected 'error' message ''`. The function's node id is the `SNodePointer` that the generated `source_gen/…/constraints/<Concept>_Constraints.java` passes to `setBreakingNode`, either directly or through a `…BreakingPoint` field. Use `errorRef` only to tell two rules on one node apart.
+
+A `TestNode` snippet whose `Recipe` breaks a `servings` property validator. It has a valid step, so the validator's error is the only one:
+
+```json
+{
+  "concept": "jetbrains.mps.lang.test.structure.TestNode",
+  "children": [{ "role": "nodeToCheck", "nodes": [{
+    "concept": "mcp.study.recipes.structure.Recipe",
+    "properties": [{ "name": "name", "value": "ZeroServings" }, { "name": "servings", "value": "0" }],
+    "children": [
+      { "role": "steps", "nodes": [{ "concept": "mcp.study.recipes.structure.Step",
+          "properties": [{ "name": "text", "value": "Mix" }, { "name": "minutes", "value": "5" }] }] },
+      { "role": "smodelAttribute", "nodes": [{
+          "concept": "jetbrains.mps.lang.test.structure.NodeOperationsContainer",
+          "children": [{ "role": "nodeOperations", "nodes": [{
+            "concept": "jetbrains.mps.lang.test.structure.NodeErrorCheckOperation",
+            "children": [{ "role": "expectedMessage", "nodes": [{
+              "concept": "jetbrains.mps.lang.test.structure.ExpectedMessageContainer",
+              "properties": [{ "name": "text", "value": "Property constraint violation for the property \"servings\"" }] }] }]
+          }] }] }] }
+    ]
+  }] }]
+}
+```
+
+The strict variant adds an `errorRef` child to the same operation:
+
+```json
+{ "role": "errorRef", "nodes": [{
+    "concept": "jetbrains.mps.lang.test.structure.UnknownRuleReference",
+    "references": [{ "role": "declaration", "target": "<constraint-function-node-ref>" }] }] }
+```
 
 ## Labelled-node assertions in test methods
 
