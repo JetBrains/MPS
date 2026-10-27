@@ -151,7 +151,9 @@ reading the whole 10–40 KB file: `roots`, `models`, `node`, `tree`, `shape`, `
 other skills' scripts import (`load`, `roots`, `props`, `refs`, `children`, `find`, `shape`);
 `props` marks enum properties that sit at their enumeration's default value (the printer flags
 them with `isDefault`; an older dump that omits them is filled from the concept details'
-`enumerationDefault`).
+`enumerationDefault`). Lower `maxInlineBytes` only to get a file for this script: for any other
+result a smaller value moves the answer into a file you must then read, so keep the default and
+narrow the call (`references/analysis-tools/overview.md`).
 
 ```
 python3 scripts/mps_dump.py roots /var/folders/.../mps-node-123.json --concept Course

@@ -138,6 +138,9 @@ Known gap, not a docs miss by itself: the tool takes one root, so four roots bec
 configurations (D53). The editor-test caret check compares the annotated node, `cellId` and
 `selectionStart`/`selectionEnd`, never `caretPosition`/`isLastPosition`. In `before` the caret alone places it unless the selection is non-empty
 (D71, D93, docs fixed 2026-09-30, re-measure: no `CellReference` failure, no `before`-selection tree diff, no source hunt).
+Prompt step 1 revised 2026-10-27 (after round 45, where `S7-opus-1` grouped the three checks in one
+root) to say "three NodesTestCase roots, one per check". The criterion is unchanged, so earlier
+passes stay comparable; split totals by `promptSha256`.
 Hypotheses: H2, H7.
 
 **S8 — onboard and record.** Fixture: `statechart`. Must not modify any MPS model.
