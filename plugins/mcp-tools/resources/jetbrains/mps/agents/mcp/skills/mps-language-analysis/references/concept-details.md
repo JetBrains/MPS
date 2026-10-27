@@ -51,13 +51,12 @@ stores nothing.
 
 ## Suggestion heuristic
 
-Suggestions are computed by subtoken-matching the input (the same camelCase- and underscore-aware splitter used by `mps_mcp_search_concepts`).
-
-- If the input is FQN-shaped (e.g. `"jetbrains.mps.lang.smodel.structure.X"`) and the implied language resolves, suggestions are scoped to that language first.
-- Otherwise the search runs project-wide.
+- **Exact name or alias first.** Concepts whose simple name equals the input's, ignoring case, come first, then concepts whose alias equals it (`Int` finds the concept whose editor shows `Int`). They may be in another language than the one you named (`…lang.smodel.structure.ThisNodeExpression` finds `jetbrains.mps.lang.behavior.structure.ThisNodeExpression`). Name matches come before alias matches, an exact-case match before a different-case one, and then matches in the language you named (or the nearest namespace) before the rest.
+- **Then subtoken matches** (the same camelCase- and underscore-aware splitter used by `mps_mcp_search_concepts`). If the input is FQN-shaped (e.g. `"jetbrains.mps.lang.smodel.structure.X"`) and the implied language resolves, they are scoped to that language, and one slot is kept for its best match even when exact matches from other languages fill the rest.
+- Only when nothing matched so far does the search run project-wide.
 - Candidates owned by **another open MPS project** are never suggested: the module repository is shared between open projects, so an unfiltered list could answer a plain name with a same-named concept or language you cannot edit. Read-only libraries and stubs (owned by no project) remain candidates.
 
-Treat the suggestion list as a **candidate set**, not a ranked answer. For free-form lookup, use `mps_mcp_search_concepts` (see `references/search-concepts.md` for the matching algorithm).
+Treat the suggestion list as a **candidate set**, not a ranked answer; an exact-name match is almost always the concept you meant. For free-form lookup, use `mps_mcp_search_concepts` (see `references/search-concepts.md` for the matching algorithm).
 
 ## Detail level and inlining
 

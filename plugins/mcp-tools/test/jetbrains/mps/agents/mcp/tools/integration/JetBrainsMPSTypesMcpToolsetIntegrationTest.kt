@@ -84,6 +84,24 @@ class JetBrainsMPSTypesMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `an unknown typeConceptRef names the closest concepts, by alias and marked abstract`() {
+        // D116, study run r44 S11-sonnet-1: the caller names a type by the alias the editor shows.
+        val byAlias = JsonParser.parseString(query(TypesQueryOperation.IS_SUBTYPE, """{"sub":{"typeConceptRef":"int"},"super":${conceptOperand(LONG_TYPE)}}""")).asJsonObject
+        assertEquals(byAlias.toString(), "NOT_FOUND", byAlias.get("code").asString)
+        assertTrue(byAlias.toString(), byAlias.get("error").asString.startsWith("Concept 'int' at parameters.sub.typeConceptRef not found. Closest concepts: "))
+        val aliasNames = byAlias.getAsJsonObject("details").getAsJsonArray("suggestions").map { it.asJsonObject }
+        assertTrue(byAlias.toString(), aliasNames.any { it.get("qualifiedName").asString == INTEGER_TYPE && it.get("alias").asString == "int" })
+
+        // A concrete type is required here, so the abstract Type is offered but marked.
+        val abstractOnly = JsonParser.parseString(query(TypesQueryOperation.SUPERTYPES, """{"type":{"typeConceptRef":"jetbrains.mps.baseLanguage.structure.type"}}""")).asJsonObject
+        assertEquals(abstractOnly.toString(), "NOT_FOUND", abstractOnly.get("code").asString)
+        assertTrue(abstractOnly.toString(), abstractOnly.get("error").asString.contains("Closest concepts: jetbrains.mps.baseLanguage.structure.Type (abstract)"))
+        val type = abstractOnly.getAsJsonObject("details").getAsJsonArray("suggestions").map { it.asJsonObject }
+            .first { it.get("qualifiedName").asString == "jetbrains.mps.baseLanguage.structure.Type" }
+        assertTrue(abstractOnly.toString(), type.get("isAbstract").asBoolean)
+    }
+
+    @Test
     fun `SUPERTYPES walks the lattice and reports a depth cap`() {
         val response = query(TypesQueryOperation.SUPERTYPES, """{"type":${conceptOperand(INTEGER_TYPE)}}""")
         val envelope = JsonParser.parseString(response).asJsonObject

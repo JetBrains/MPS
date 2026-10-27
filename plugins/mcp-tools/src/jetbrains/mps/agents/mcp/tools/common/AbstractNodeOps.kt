@@ -59,6 +59,7 @@ import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.language.SConceptFeature
 import org.jetbrains.mps.openapi.language.SContainmentLink
 import org.jetbrains.mps.openapi.language.SEnumeration
+import org.jetbrains.mps.openapi.language.SInterfaceConcept
 import org.jetbrains.mps.openapi.language.SProperty
 import org.jetbrains.mps.openapi.language.SReferenceLink
 import org.jetbrains.mps.openapi.model.EditableSModel
@@ -393,32 +394,45 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         rejectUnloadedConceptRecord(jsonObject, jsonPath, conceptName ?: conceptRef)
 
-        val sConcept = run {
-            // Try conceptReference first (c:... form), fall back to concept name if it fails or is absent.
-            // Name-based resolution is more reliable because agents tend to get names right
-            // but occasionally produce slightly incorrect concept reference IDs.
-            val byRef = if (!conceptRef.isNullOrEmpty()) {
-                (if (mpsProject != null) resolveConceptPreferringProject(mpsProject, conceptRef) else resolveConcept(model.repository, conceptRef)) as? SConcept
+        // Try conceptReference first (c:... form), fall back to concept name if it fails or is absent.
+        // Name-based resolution is more reliable because agents tend to get names right
+        // but occasionally produce slightly incorrect concept reference IDs.
+        val resolve = { ref: String ->
+            if (mpsProject != null) resolveConceptPreferringProject(mpsProject, ref) else resolveConcept(model.repository, ref)
+        }
+        val rawByRef = if (!conceptRef.isNullOrEmpty()) resolve(conceptRef) else null
+        val rawByName = if (!conceptName.isNullOrEmpty()) resolve(conceptName) else null
+        val byRef = rawByRef as? SConcept
+        val byName = rawByName as? SConcept
+        if (!conceptRef.isNullOrEmpty() && byRef == null && byName != null) {
+            warnings?.add(
+                "conceptReference '$conceptRef' at $jsonPath does not resolve to a loaded concrete concept and was ignored; " +
+                    "the node was created from concept '$conceptName'"
+            )
+        }
+        val sConcept = byRef ?: byName ?: run {
+            // An interface concept resolves but no node can have it; saying "not found" would send the
+            // caller looking for a concept it already named (D116).
+            val (interfaceKey, interfaceValue) = when {
+                rawByRef is SInterfaceConcept -> "conceptReference" to conceptRef
+                rawByName is SInterfaceConcept -> "concept" to conceptName
+                else -> null to null
             }
-            else null
-            val byName = if (!conceptName.isNullOrEmpty()) {
-                (if (mpsProject != null) resolveConceptPreferringProject(mpsProject, conceptName) else resolveConcept(model.repository, conceptName)) as? SConcept
-            }
-            else null
-            if (!conceptRef.isNullOrEmpty() && byRef == null && byName != null) {
-                warnings?.add(
-                    "conceptReference '$conceptRef' at $jsonPath does not resolve to a loaded concrete concept and was ignored; " +
-                        "the node was created from concept '$conceptName'"
+            if (interfaceKey != null) {
+                throw McpInvalidRequestException(
+                    "Concept '$interfaceValue' at $jsonPath ($interfaceKey) is an interface concept; a node needs a concrete concept"
                 )
             }
-            byRef ?: byName
-        } ?: throw McpNotFoundException(
-            when {
-                conceptName.isNullOrEmpty() -> "Concept reference '$conceptRef' not found at $jsonPath"
-                conceptRef.isNullOrEmpty() -> "Concept '$conceptName' not found at $jsonPath"
-                else -> "Concept '$conceptName' with reference '$conceptRef' not found at $jsonPath"
-            }
-        )
+            val hint = conceptHint(mpsProject?.repository ?: model.repository, mpsProject, conceptName, conceptRef)
+            throw McpNotFoundException(
+                when {
+                    conceptName.isNullOrEmpty() -> "Concept reference '$conceptRef' not found at $jsonPath"
+                    conceptRef.isNullOrEmpty() -> "Concept '$conceptName' not found at $jsonPath"
+                    else -> "Concept '$conceptName' with reference '$conceptRef' not found at $jsonPath"
+                } + hint.messageSuffix,
+                hint.details
+            )
+        }
 
         // Import the language that owns the concept's id, never the concept's own adapter: a parsed
         // reference can carry a fabricated language id. Checked before the dry-run guard so a dry run
@@ -987,9 +1001,13 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         val concept = listOfNotNull(conceptRef, conceptName).firstNotNullOfOrNull {
             resolveConceptPreferringProject(mpsProject, it) as? SConcept
-        } ?: throw McpInvalidRequestException(
-            "Concept '${conceptName ?: conceptRef}' at $jsonPath is not a loaded concrete concept"
-        )
+        } ?: run {
+            val hint = conceptHint(mpsProject.repository, mpsProject, conceptName, conceptRef, concreteRequired = true)
+            throw McpInvalidRequestException(
+                "Concept '${conceptName ?: conceptRef}' at $jsonPath is not a loaded concrete concept" + hint.messageSuffix,
+                hint.details
+            )
+        }
         // Before isAbstract: a concept the runtime does not know reads as abstract.
         gate.require(concept, "Concept '${structureQualifiedName(concept)}' at $jsonPath", TYPE_OPERAND_NOT_BUILT)
         if (concept.isAbstract) {

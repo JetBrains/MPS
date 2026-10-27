@@ -3,8 +3,6 @@ package jetbrains.mps.agents.mcp.tools
 import jetbrains.mps.agents.mcp.tools.common.*
 import jetbrains.mps.agents.mcp.tools.languages.ConceptDeclarationView
 import jetbrains.mps.agents.mcp.tools.languages.StructureDeclarations
-import jetbrains.mps.project.ModuleId
-import jetbrains.mps.agents.mcp.tools.languages.StructureLanguageMeta
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
 
 import com.google.gson.JsonArray
@@ -43,15 +41,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
 
     companion object {
         private val WHITESPACE = Regex("\\s+")
-        // Splits identifiers on non-alphanumerics, camelCase boundaries, and digit/letter
-        // transitions. Used to turn a query word like "Node_GetPropertyOperation" into
-        // ["Node","Get","Property","Operation"] and "PropertyAccess" into ["Property","Access"]
-        // so that concepts whose names contain those parts (possibly across underscores or in a
-        // different order) can still be matched.
-        private val TOKEN_BOUNDARY = Regex(
-            "[^A-Za-z0-9]+|(?<=[a-z])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])|(?<=[A-Za-z])(?=[0-9])|(?<=[0-9])(?=[A-Za-z])"
-        )
-        private const val MIN_SUBTOKEN_LENGTH = 2
         const val MAX_FALLBACK_RESULTS = 20
 
         // Cap on "did you mean" hints emitted per unresolved input by mps_mcp_get_concept_details.
@@ -98,17 +87,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         const val SEARCH_CONCEPTS_HINT =
             "See details.unresolved for suggestions, or use mps_mcp_search_concepts."
 
-        // Single-character subtokens like "5" or "D" are substrings of almost any docstring and
-        // would let unrelated concepts match — keep only subtokens of at least MIN_SUBTOKEN_LENGTH
-        // characters. The whole-word fallback only kicks in when the word itself meets the
-        // minimum length (e.g. "R2D2"); a too-short whole word like "x" returns an empty list,
-        // which callers interpret as "this word can never match" so single-character queries do
-        // not degenerate into universal wildcards.
-        private fun subtokensOf(word: String): List<String> {
-            val parts = word.split(TOKEN_BOUNDARY).filter { it.length >= MIN_SUBTOKEN_LENGTH }
-            if (parts.isNotEmpty()) return parts
-            return if (word.length >= MIN_SUBTOKEN_LENGTH) listOf(word) else emptyList()
-        }
     }
 
     @McpTool
@@ -258,7 +236,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
 
                 val nonConcepts = nonConceptDeclarationsFor(mpsProject, unresolvedConceptRefs)
                 val unresolvedJson = buildUnresolvedDetailsJson(
-                    unresolvedConceptRefs, unresolvedLanguageRefs, nonConcepts, registry, repo, cache,
+                    unresolvedConceptRefs, unresolvedLanguageRefs, nonConcepts, repo, cache,
                 )
 
                 if (conceptSet.isEmpty()) {
@@ -401,6 +379,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             val repo = mpsProject.repository
             val registry = LanguageRegistry.getInstance(repo)
             val cache = ProjectMembershipCache(mpsProject)
+            val catalog = conceptSuggestions(repo, cache)
             // An explicit `modelReference` is the narrowest scope and is honoured as given; the
             // two `scope` values differ only in how much of the shared repository they admit.
             // Both drop languages owned by another open project, so a free-form query cannot
@@ -413,7 +392,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             } else if (requestedScope == SEARCH_SCOPE_PROJECT) {
                 languagesInProjectScope(mpsProject, registry, repo, cache)
             } else {
-                languagesInProject(registry, repo, cache)
+                catalog.languagesInProject()
             }
 
             val termGroups: List<List<String>> = searchTexts
@@ -429,7 +408,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             // with a stray short token) instead of returning unrelated fallback results that
             // look like the typo found something.
             val groupSubtokens: List<List<List<String>>> = termGroups.map { group ->
-                group.map { subtokensOf(it) }
+                group.map { ConceptSuggestions.subtokensOf(it) }
             }
             val unmatchableWords = mutableListOf<String>()
             for ((groupIdx, group) in termGroups.withIndex()) {
@@ -440,13 +419,13 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             if (unmatchableWords.isNotEmpty()) {
                 val offenders = unmatchableWords.distinct().joinToString(", ") { "'$it'" }
                 return@executeShortReadOnEdt errJson(
-                    "Search words must have at least $MIN_SUBTOKEN_LENGTH characters; the following are too short and would never match: $offenders. Remove or extend them and retry."
+                    "Search words must have at least ${ConceptSuggestions.MIN_SUBTOKEN_LENGTH} characters; the following are too short and would never match: $offenders. Remove or extend them and retry."
                 )
             }
 
             // Original query words, used to float an exact name match above the cap.
             val queryWords = termGroups.flatten().toSet()
-            var matches = matchConcepts(languages, registry, repo, cache, groupSubtokens, queryWords)
+            var matches = matchConcepts(languages, catalog, groupSubtokens, queryWords)
             val warnings = mutableListOf<String>()
             // A project-scoped miss must not become a dead end: the caller asked a question the
             // narrow scope cannot answer, and telling it to retry costs a turn (study defect D35
@@ -462,9 +441,9 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 // very nearly the whole registry, and rescanning it would double the cost of
                 // every miss. matchConcepts resolves and reads the doc of every concept it sees,
                 // so the set comparison is free next to the scan it avoids.
-                val allLanguages = languagesInProject(registry, repo, cache)
+                val allLanguages = catalog.languagesInProject()
                 val widened = if (allLanguages.toSet() == languages.toSet()) matches
-                else matchConcepts(allLanguages, registry, repo, cache, groupSubtokens, queryWords)
+                else matchConcepts(allLanguages, catalog, groupSubtokens, queryWords)
                 // Keep the widened answer only when it is actually better: a strict hit, or
                 // anything at all where the narrow pass had nothing. Registry-wide *fallback*
                 // candidates are less relevant than the project's own, so they do not displace them.
@@ -524,9 +503,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      */
     private fun matchConcepts(
         languages: Iterable<SLanguage>,
-        registry: LanguageRegistry,
-        repo: SRepository,
-        cache: ProjectMembershipCache,
+        catalog: ConceptSuggestions,
         groupSubtokens: List<List<List<String>>>,
         queryWords: Set<String>
     ): ConceptMatches {
@@ -547,7 +524,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         var strictFound = false
 
         for (lang in languages) {
-            val entries = conceptsWithDeclarations(lang, registry, repo, cache)
+            val entries = catalog.conceptsWithDeclarations(lang)
             if (entries.isEmpty()) continue
             // Use only the trailing segment of the qualified name so that natural queries
             // like "<concept> <language fragment>" work (e.g. "collections", "smodel") without
@@ -559,7 +536,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 // The language-name fragment is kept out of this string so it does not have
                 // to be concatenated for every concept (a language has up to hundreds);
                 // subtoken matching checks it separately below.
-                val perConceptInfo = conceptMatchText(concept, declaration)
+                val perConceptInfo = catalog.conceptMatchText(concept, declaration)
 
                 var anyGroupAllMatch = false
                 var bestGroupScore = 0
@@ -1035,112 +1012,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     }
 
     /**
-     * Ranks concept candidates whose haystack subtoken-matches [simpleName], capped at [limit].
-     *
-     * Strict matches (every subtoken of [simpleName] found in the haystack) take priority; if
-     * none exist, falls back to ranking by a compound score that weights name hits more heavily
-     * than doc/alias hits. Without that weighting, a concept whose documentation happens to
-     * mention several query words (e.g. `ConstraintFunctionParameter_link` whose doc reads
-     * "the containment link between the parent and the child") would out-score a concept whose
-     * NAME matches the query — clearly wrong for a "did you mean" hint. Concepts are still
-     * surfaced in [SAbstractConcept] form so the calling envelope can format them uniformly.
-     *
-     * The haystack composition matches [mps_mcp_search_concepts] (concept name + alias + short
-     * description + documentation + trailing language-name segment) so that namespace prefixes
-     * like `jetbrains.mps.lang` do not act as universal wildcards.
-     */
-    private fun rankConceptSuggestions(
-        simpleName: String,
-        languages: Iterable<SLanguage>,
-        registry: LanguageRegistry,
-        repository: SRepository,
-        cache: ProjectMembershipCache,
-        limit: Int
-    ): List<SAbstractConcept> {
-        val subtokens = subtokensOf(simpleName)
-        if (subtokens.isEmpty()) return emptyList()
-        val strictMatches = mutableListOf<SAbstractConcept>()
-        val rankedHeap = PriorityQueue<Pair<SAbstractConcept, Int>>(limit, compareBy { it.second })
-        for (lang in languages) {
-            val langSimpleName = lang.qualifiedName.substringAfterLast('.')
-            for ((concept, declaration) in conceptsWithDeclarations(lang, registry, repository, cache)) {
-                if (cache.isFromAnotherOpenProject(concept, repository)) continue
-                val name = concept.name ?: ""
-                val extraHaystack = conceptMatchText(concept, declaration).removePrefix(name)
-                var nameHits = 0
-                var extraHits = 0
-                var totalHits = 0
-                for (token in subtokens) {
-                    val inName = name.contains(token, ignoreCase = true)
-                    val inExtras = extraHaystack.contains(token, ignoreCase = true) ||
-                        langSimpleName.contains(token, ignoreCase = true)
-                    if (inName) nameHits++
-                    if (inName || inExtras) {
-                        totalHits++
-                        if (!inName) extraHits++
-                    }
-                }
-                if (totalHits == subtokens.size) {
-                    strictMatches.add(concept)
-                    if (strictMatches.size >= limit) return strictMatches
-                } else if (strictMatches.isEmpty() && totalHits > 0) {
-                    // Compound score: name hits dominate, doc/alias hits are a tiebreaker only.
-                    // The 100-multiplier is a soft cap that the per-concept subtoken counts can't
-                    // realistically saturate (search words rarely exceed ~10 subtokens), so
-                    // (nameHits, extraHits) is effectively lexicographic.
-                    val score = nameHits * 100 + extraHits
-                    if (rankedHeap.size < limit) {
-                        rankedHeap.offer(concept to score)
-                    } else if (score > rankedHeap.peek().second) {
-                        rankedHeap.poll()
-                        rankedHeap.offer(concept to score)
-                    }
-                }
-            }
-        }
-        if (strictMatches.isNotEmpty()) return strictMatches
-        return rankedHeap.sortedByDescending { it.second }.map { it.first }
-    }
-
-    /**
-     * Computes "did you mean" candidates for an unresolved conceptRef.
-     *
-     * If the input is FQN-shaped (e.g. `jetbrains.mps.lang.smodel.structure.Foo`) AND the
-     * implied language (`jetbrains.mps.lang.smodel`) is loaded, suggestions are scoped to that
-     * language first. If the scoped search yields no candidates (or the input isn't FQN-shaped),
-     * a project-wide search runs as fallback. The simple name is what gets subtoken-matched; the
-     * `<lang>.structure.` prefix is intentionally not part of the haystack — it has no
-     * discriminating signal once the scope is chosen.
-     */
-    private fun suggestForUnresolvedConceptRef(
-        ref: String,
-        registry: LanguageRegistry,
-        repository: SRepository,
-        cache: ProjectMembershipCache
-    ): List<SAbstractConcept> {
-        val simpleName = ref.substringAfterLast('.')
-        val candidateLanguages = languagesInProject(registry, repository, cache)
-        if (ref.contains('.')) {
-            val beforeLast = ref.substringBeforeLast('.')
-            if (beforeLast.endsWith(".structure")) {
-                val langName = beforeLast.removeSuffix(".structure")
-                val targetLang = candidateLanguages.firstOrNull { it.qualifiedName == langName }
-                if (targetLang != null) {
-                    val scoped = rankConceptSuggestions(
-                        simpleName, listOf(targetLang), registry, repository, cache,
-                        MAX_SUGGESTIONS_PER_UNRESOLVED
-                    )
-                    if (scoped.isNotEmpty()) return scoped
-                }
-            }
-        }
-        return rankConceptSuggestions(
-            simpleName, candidateLanguages, registry, repository, cache,
-            MAX_SUGGESTIONS_PER_UNRESOLVED
-        )
-    }
-
-    /**
      * One `mps_mcp_search_concepts` hit, at the requested detail.
      *
      * The `summary` projection is the default because search answers "which concept do I want",
@@ -1287,55 +1158,6 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         )
 
     /**
-     * Registered languages minus the ones owned by another open MPS project. The module
-     * repository is shared across open projects, so an unfiltered candidate list can answer a
-     * plain name with a same-named concept or language living in a sibling project — the caller
-     * cannot edit it and following the hint silently leaves its own project. Library and stub
-     * languages (owned by no open project) stay in the list.
-     */
-    private fun languagesInProject(
-        registry: LanguageRegistry,
-        repository: SRepository,
-        cache: ProjectMembershipCache
-    ): List<SLanguage> {
-        val languages = LinkedHashSet<SLanguage>()
-        registry.allLanguages.filterTo(languages) { !cache.isFromAnotherOpenProject(it, repository) }
-        // The project's own unbuilt languages have no registry entry; their concepts come from declarations (D112).
-        cache.currentProject?.projectModules?.forEach { if (it is Language) languages.add(MetaAdapterByDeclaration.getLanguage(it)) }
-        return languages.toList()
-    }
-
-    /**
-     * The concepts a search sees for [lang], each with its declaration node: the built runtime's
-     * concepts plus, for a Language module in the repository, the structure-model declarations the
-     * runtime does not know yet — every concept when the language was never built (D112).
-     */
-    private fun conceptsWithDeclarations(
-        lang: SLanguage,
-        registry: LanguageRegistry,
-        repo: SRepository,
-        cache: ProjectMembershipCache
-    ): List<Pair<SAbstractConcept, SNode?>> {
-        val runtime = registry.getLanguage(lang)
-        val module = if (cache.isInCurrentProject(lang, repo)) repo.getModule(ModuleId.regular(MetaIdHelper.getLanguage(lang).idValue)) as? Language else null
-        if (runtime == null && module == null) return emptyList()
-        val result = LinkedHashMap<SAbstractConcept, SNode?>()
-        runtime?.concepts?.forEach { result[it] = it.sourceNode?.resolve(repo) }
-        module?.structureModelDescriptor?.rootNodes?.forEach { root ->
-            val concept = StructureDeclarations.conceptOf(root) ?: return@forEach
-            if (concept !in result) result[concept] = root
-        }
-        return result.entries.map { it.key to it.value }
-    }
-
-    /** `name alias shortDescription doc`, read off the declaration when there is one so an unbuilt concept matches like a built one. */
-    private fun conceptMatchText(concept: SAbstractConcept, declaration: SNode?): String {
-        val alias = declaration?.getProperty(StructureLanguageMeta.abstractConceptDeclarationAliasProperty) ?: concept.conceptAlias ?: ""
-        val desc = declaration?.getProperty(StructureLanguageMeta.abstractConceptDeclarationShortDescriptionProperty) ?: concept.shortDescription ?: ""
-        return "${concept.name} $alias $desc ${getDoc(declaration)}"
-    }
-
-    /**
      * Computes "did you mean" candidates for an unresolved languageRef by subtoken-matching the
      * trailing segment of every registered language's qualified name. Cheaper than the concept
      * ranker (only the language list, not its concepts), and the namespace tail (e.g.
@@ -1343,13 +1165,12 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
      */
     private fun suggestForUnresolvedLanguageRef(
         ref: String,
-        registry: LanguageRegistry,
         repository: SRepository,
         cache: ProjectMembershipCache
     ): List<SLanguage> {
-        val subtokens = subtokensOf(ref.substringAfterLast('.'))
+        val subtokens = ConceptSuggestions.subtokensOf(ref.substringAfterLast('.'))
         if (subtokens.isEmpty()) return emptyList()
-        return languagesInProject(registry, repository, cache)
+        return conceptSuggestions(repository, cache).languagesInProject()
             .mapNotNull { lang ->
                 val tail = lang.qualifiedName.substringAfterLast('.')
                 val score = subtokens.count { tail.contains(it, ignoreCase = true) }
@@ -1418,11 +1239,11 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         unresolvedConceptRefs: Collection<String>,
         unresolvedLanguageRefs: Collection<String>,
         nonConcepts: Map<String, NonConceptDeclaration>,
-        registry: LanguageRegistry,
         repository: SRepository,
         cache: ProjectMembershipCache
     ): JsonArray {
         val facade = PersistenceFacade.getInstance()
+        val catalog = conceptSuggestions(repository, cache)
         val arr = JsonArray()
         for (ref in unresolvedConceptRefs) {
             val entry = JsonObject()
@@ -1437,7 +1258,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 continue
             }
             val suggestions = JsonArray()
-            for (c in suggestForUnresolvedConceptRef(ref, registry, repository, cache)) {
+            for (c in catalog.suggest(ref, MAX_SUGGESTIONS_PER_UNRESOLVED, ConceptSuggestions.Mode.DETAILS)) {
                 val s = JsonObject()
                 s.addProperty("qualifiedName", structureQualifiedName(c))
                 s.addProperty("conceptReference", facade.asString(c))
@@ -1451,7 +1272,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             entry.addProperty("ref", ref)
             entry.addProperty("kind", "language")
             val suggestions = JsonArray()
-            for (lang in suggestForUnresolvedLanguageRef(ref, registry, repository, cache)) {
+            for (lang in suggestForUnresolvedLanguageRef(ref, repository, cache)) {
                 val s = JsonObject()
                 s.addProperty("qualifiedName", lang.qualifiedName)
                 s.addProperty("languageReference", facade.asString(lang))

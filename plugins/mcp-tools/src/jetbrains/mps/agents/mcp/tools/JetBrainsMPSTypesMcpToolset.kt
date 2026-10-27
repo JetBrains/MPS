@@ -404,8 +404,11 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
         val strong = params.paramBoolean("strong", default = false)
         return readWithEngine(mpsProject) { engine ->
             val type = typeOperands(listOf(params.get("type") to "parameters.type"), mpsProject, engine).single()
-            val concept = resolveConceptPreferringProject(mpsProject, conceptRef)
-                ?: throw McpNotFoundException("Concept '$conceptRef' at parameters.conceptRef not found")
+            val concept = resolveConceptPreferringProject(mpsProject, conceptRef) ?: run {
+                // The parameter takes a name or a reference alike; conceptHint reads either from conceptReference.
+                val hint = conceptHint(mpsProject.repository, mpsProject, concept = null, conceptReference = conceptRef)
+                throw McpNotFoundException("Concept '$conceptRef' at parameters.conceptRef not found" + hint.messageSuffix, hint.details)
+            }
             ConceptGate(mpsProject).require(concept, "Concept '${structureQualifiedName(concept)}' at parameters.conceptRef", TYPE_OPERAND_NOT_BUILT)
             if (concept !is SConcept) {
                 throw McpInvalidRequestException(
@@ -616,8 +619,10 @@ class JetBrainsMPSTypesMcpToolset : AbstractNodeOps() {
     }
 
     private fun concreteConcept(conceptRef: String, path: String, mpsProject: MPSProject): SConcept {
-        val concept: SAbstractConcept = resolveConceptPreferringProject(mpsProject, conceptRef)
-            ?: throw McpNotFoundException("Concept '$conceptRef' at $path not found")
+        val concept: SAbstractConcept = resolveConceptPreferringProject(mpsProject, conceptRef) ?: run {
+            val hint = conceptHint(mpsProject.repository, mpsProject, concept = null, conceptReference = conceptRef, concreteRequired = true)
+            throw McpNotFoundException("Concept '$conceptRef' at $path not found" + hint.messageSuffix, hint.details)
+        }
         ConceptGate(mpsProject).require(concept, "Concept '${structureQualifiedName(concept)}' at $path", TYPE_OPERAND_NOT_BUILT)
         if (concept !is SConcept || concept.isAbstract) {
             throw McpInvalidRequestException(

@@ -712,6 +712,21 @@ class JetBrainsMPSLanguageMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `get-concept-details suggests a same-named concept of another language first`() {
+        // D116: the agent named the wrong language and the wrong case; the name is still the best signal.
+        val ref = "jetbrains.mps.baseLanguage.structure.ForeachVariable"
+        val response = runTool(JetBrainsMPSLanguageMcpToolset()) {
+            it.mps_mcp_get_concept_details(conceptRefs = listOf(ref))
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
+        val suggestionFqns = unresolvedDetailsOf(obj).singleEntryFor(ref).get("suggestions").asJsonArray
+            .map { it.asJsonObject.get("qualifiedName").asString }
+        assertEquals(response, "jetbrains.mps.baseLanguage.collections.structure.ForEachVariable", suggestionFqns.first())
+        assertEquals("no suggestion twice: $suggestionFqns", suggestionFqns.size, suggestionFqns.toSet().size)
+    }
+
+    @Test
     fun `get-concept-details fails loudly with suggestions when all languageRefs are unresolvable`() {
         val bogusLanguageRef = "jetbrains.mps.lang.smodl"
         val response = runTool(JetBrainsMPSLanguageMcpToolset()) {

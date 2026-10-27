@@ -144,6 +144,11 @@ abstract class AbstractOps : McpToolset {
         private const val TEMP_JSON_SUFFIX = ".json"
         private const val MAX_INPUT_FILE_SIZE_BYTES = 10L * 1024 * 1024
 
+        // Candidates a "concept not found" rejection names (D116): a nudge, kept to one line.
+        private const val MAX_REJECTION_SUGGESTIONS = 3
+        // `c:<language>/<id>:<qualified name>` and `c:<language>/<id>(<qualified name>)`.
+        private val NAMED_CONCEPT_REFERENCE = Regex("""c:[0-9a-fA-F-]+/-?\d+(?::(.+)|\((.+)\))""")
+
         /**
          * Default inline/temp-file cut-off for read tools that expose a `maxInlineBytes`
          * parameter: a serialized payload up to this length is returned inline in `data`,
@@ -918,7 +923,7 @@ abstract class AbstractOps : McpToolset {
      * later project open/close is observed by the next tool call, which builds a fresh cache — there is
      * nothing to invalidate because the cache never outlives the locked window.
      */
-    protected class ProjectMembershipCache(val currentProject: MPSProject?) {
+    protected class ProjectMembershipCache(override val currentProject: MPSProject?) : ConceptSuggestions.Membership {
         // Current project's own modules (+ owned generators), resolved once: membership is then a set
         // lookup instead of rebuilding projectModulesWithGenerators for every element.
         private val currentModuleRefs: Set<SModuleReference>? =
@@ -964,10 +969,10 @@ abstract class AbstractOps : McpToolset {
          * language belonging to a sibling project. Elements owned by no open project (read-only
          * libraries and stubs) are NOT foreign — they are legitimately visible everywhere.
          */
-        fun isFromAnotherOpenProject(concept: SAbstractConcept, repository: SRepository): Boolean =
+        override fun isFromAnotherOpenProject(concept: SAbstractConcept, repository: SRepository): Boolean =
             isForeign(ownerOfConcept(repository, concept))
 
-        fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean =
+        override fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean =
             isForeign(ownerOfLanguage(repository, language))
 
         /**
@@ -976,7 +981,7 @@ abstract class AbstractOps : McpToolset {
          * language is neither foreign nor in the current project, so a scope that wants "what
          * this project defines" must ask this rather than negate the foreignness test.
          */
-        fun isInCurrentProject(language: SLanguage, repository: SRepository): Boolean {
+        override fun isInCurrentProject(language: SLanguage, repository: SRepository): Boolean {
             val current = currentProject ?: return false
             val owner = ownerOfLanguage(repository, language) ?: return false
             return sameOpenProject(owner, current)
@@ -986,6 +991,73 @@ abstract class AbstractOps : McpToolset {
             val current = currentProject ?: return false
             return owner != null && !sameOpenProject(owner, current)
         }
+    }
+
+    /** The concept scan and "did you mean" ranker for one tool call, sharing [cache]'s ownership lookups. */
+    protected fun conceptSuggestions(repository: SRepository, cache: ProjectMembershipCache): ConceptSuggestions =
+        ConceptSuggestions(repository, cache, ::getDoc, ::getDeprecationInfo)
+
+    /**
+     * The part of a "concept not found" rejection that names the concepts the caller probably meant:
+     * [messageSuffix] (`. Closest concepts: A, B, C`) to append to the site's own message, and
+     * [details] (`suggestions`, one `{qualifiedName, conceptReference, alias?, isAbstract?}` each).
+     * Both are empty when nothing is close (study defect D116).
+     */
+    protected class ConceptHint(val messageSuffix: String, val details: Map<String, Any?>) {
+        companion object {
+            val NONE = ConceptHint("", emptyMap())
+        }
+    }
+
+    /**
+     * [ConceptHint] for a `concept` / `conceptReference` pair that resolved to no concept a node can
+     * have. Interface concepts are never offered, since no rejecting site accepts one, nor are the
+     * concepts [accept] refuses (a root needs a rootable one). When [concreteRequired], an abstract
+     * candidate is kept but marked, so `Type` tells the caller to name a concrete subconcept rather
+     * than vanishing from the list.
+     *
+     * The name comes from [concept], else from a `c:<language>/<id>:<qualified name>` or
+     * `c:<language>/<id>(<qualified name>)` reference, else from a [conceptReference] that is not a
+     * `c:` reference at all; a bare `c:<language>/<id>` has no name worth matching. A failure while
+     * ranking yields [ConceptHint.NONE]: the hint must never replace the rejection it decorates.
+     */
+    protected fun conceptHint(
+        repository: SRepository,
+        currentProject: MPSProject?,
+        concept: String?,
+        conceptReference: String?,
+        concreteRequired: Boolean = false,
+        accept: (SAbstractConcept) -> Boolean = { true }
+    ): ConceptHint {
+        val name = concept?.takeIf { it.isNotBlank() } ?: conceptReference?.let { nameInConceptReference(it) } ?: return ConceptHint.NONE
+        val candidates = try {
+            conceptSuggestions(repository, ProjectMembershipCache(currentProject))
+                .suggest(name, MAX_REJECTION_SUGGESTIONS, ConceptSuggestions.Mode.REJECTION) { it !is SInterfaceConcept && accept(it) }
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            logger.warn("Could not rank concept suggestions for '$name'", e)
+            return ConceptHint.NONE
+        }
+        if (candidates.isEmpty()) return ConceptHint.NONE
+        val facade = PersistenceFacade.getInstance()
+        val markedAbstract = { c: SAbstractConcept -> concreteRequired && c is SConcept && c.isAbstract }
+        val suggestions = JsonArray()
+        for (c in candidates) {
+            suggestions.add(JsonObject().apply {
+                addProperty("qualifiedName", structureQualifiedName(c))
+                addProperty("conceptReference", facade.asString(c))
+                c.conceptAlias?.takeIf { it.isNotEmpty() }?.let { addProperty("alias", it) }
+                if (markedAbstract(c)) addProperty("isAbstract", true)
+            })
+        }
+        val names = candidates.joinToString(", ") { structureQualifiedName(it) + if (markedAbstract(it)) " (abstract)" else "" }
+        return ConceptHint(". Closest concepts: $names", mapOf("suggestions" to suggestions))
+    }
+
+    private fun nameInConceptReference(ref: String): String? {
+        if (!ref.startsWith("c:")) return ref.takeIf { it.isNotBlank() && !it.contains('/') }
+        val match = NAMED_CONCEPT_REFERENCE.matchEntire(ref) ?: return null
+        return (match.groups[1] ?: match.groups[2])?.value
     }
 
     private fun projectReferenceJsonObject(project: MPSProject): JsonObject {
@@ -1190,7 +1262,13 @@ abstract class AbstractOps : McpToolset {
             crossProjectErr("Concept '${conceptReference ?: conceptName}'")
         }
         else {
-            errJson("Concept not found$label: concept='$conceptName', conceptReference='$conceptReference'", McpErrorCode.NOT_FOUND)
+            val repository = mpsProject.repository
+            val hint = conceptHint(repository, mpsProject, conceptName, conceptReference) { it is SConcept && isRootable(it, repository) }
+            errJson(
+                "Concept not found$label: concept='$conceptName', conceptReference='$conceptReference'" + hint.messageSuffix,
+                McpErrorCode.NOT_FOUND,
+                hint.details
+            )
         }
     }
 

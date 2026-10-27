@@ -1249,6 +1249,24 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `add-node-child with an unknown concept names the closest concept of the named language`() {
+        // D116, study run r43 S6-sonnet-1: the collections operation is GetSizeOperation.
+        val fooRef = createFooConcept()
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = fooRef, childRole = "propertyDeclaration",
+                childJson = """{ "concept": "jetbrains.mps.baseLanguage.collections.structure.SizeOperation" }""", dryRun = true,
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse(response, obj.get("ok").asBoolean)
+        assertTrue(response, obj.get("error").asString.contains(". Closest concepts: jetbrains.mps.baseLanguage.collections.structure.GetSizeOperation"))
+        val first = obj.getAsJsonObject("details").getAsJsonArray("suggestions")[0].asJsonObject
+        assertEquals("jetbrains.mps.baseLanguage.collections.structure.GetSizeOperation", first.get("qualifiedName").asString)
+        assertTrue(response, first.get("conceptReference").asString.startsWith("c:"))
+    }
+
+    @Test
     fun `add-node-child rewrites a references map into the array form`() {
         val fooRef = createFooConcept()
         val childJson = """

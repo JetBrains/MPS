@@ -1552,6 +1552,100 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("expected error envelope when the inspector is unavailable: $response", obj.get("ok").asBoolean)
     }
 
+    // ── D116: an unknown blueprint concept names the closest concepts ─────────────────────
+
+    /** A dry-run insert of [blueprint]; the rejection envelope. */
+    private fun rejectedBlueprint(blueprint: String): JsonObject {
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(blueprint), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected an error envelope: $response", obj.get("ok").asBoolean)
+        return obj
+    }
+
+    /**
+     * A concept declaration whose one `propertyDeclaration` child is [child] (a blueprint object):
+     * a root's own concept is checked by the rootable-concept lookup, a child's by the blueprint
+     * instantiation, as in study run r44 S1-sonnet-1.
+     */
+    private fun withChild(child: String): String =
+        """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "D116Host" } ],
+             "children": [ { "role": "propertyDeclaration", "nodes": [ $child ] } ] }"""
+
+    private fun suggestedNames(envelope: JsonObject): List<String> =
+        envelope.getAsJsonObject("details")?.getAsJsonArray("suggestions")
+            ?.map { it.asJsonObject.get("qualifiedName").asString }.orEmpty()
+
+    @Test
+    fun `an unknown concept with the name of a concept in another language suggests that concept first`() {
+        val foreach = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.baseLanguage.structure.ForeachVariable" }"""))
+        val error = foreach.get("error").asString
+        assertTrue(error, error.contains("Concept 'jetbrains.mps.baseLanguage.structure.ForeachVariable' not found at $.children[0].nodes[0]"))
+        assertTrue(error, error.contains(". Closest concepts: jetbrains.mps.baseLanguage.collections.structure.ForEachVariable"))
+        assertEquals(foreach.toString(), "jetbrains.mps.baseLanguage.collections.structure.ForEachVariable", suggestedNames(foreach).first())
+        assertTrue("at most three: $foreach", suggestedNames(foreach).size <= 3)
+
+        val thisNode = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.lang.smodel.structure.ThisNodeExpression" }"""))
+        assertEquals(thisNode.toString(), "jetbrains.mps.lang.behavior.structure.ThisNodeExpression", suggestedNames(thisNode).first())
+    }
+
+    @Test
+    fun `an unknown root concept names the closest rootable concept`() {
+        val root = rejectedBlueprint("""{ "concept": "jetbrains.mps.baseLanguage.structure.classConcept" }""")
+        assertEquals(root.toString(), "NOT_FOUND", root.get("code").asString)
+        assertTrue(root.toString(), root.get("error").asString.startsWith(
+            "Concept not found: concept='jetbrains.mps.baseLanguage.structure.classConcept', conceptReference='null'. " +
+                "Closest concepts: jetbrains.mps.baseLanguage.structure.ClassConcept"
+        ))
+    }
+
+    @Test
+    fun `a near miss in the named language keeps a slot beside same-named concepts of other languages`() {
+        // ConceptFunctionParameter_node exists in several other languages; the constraints language's
+        // own parameter is ConstraintsFunctionParameter_node, a token match only.
+        val obj = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.lang.constraints.structure.ConceptFunctionParameter_node" }"""))
+        val names = suggestedNames(obj)
+        assertEquals(obj.toString(), 3, names.size)
+        assertTrue(obj.toString(), names.take(2).all { it.endsWith(".structure.ConceptFunctionParameter_node") })
+        assertEquals(obj.toString(), "jetbrains.mps.lang.constraints.structure.ConstraintsFunctionParameter_node", names.last())
+    }
+
+    @Test
+    fun `an unknown concept with no near match and a bare concept reference get no suggestions`() {
+        val sum = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.baseLanguage.collections.structure.SumOperation" }"""))
+        assertTrue(sum.toString(), sum.get("error").asString.contains("Concept 'jetbrains.mps.baseLanguage.collections.structure.SumOperation' not found"))
+        assertFalse(sum.toString(), sum.get("error").asString.contains("Closest concepts"))
+        assertTrue(sum.toString(), suggestedNames(sum).isEmpty())
+
+        val bare = rejectedBlueprint(withChild("""{ "conceptReference": "c:${UUID.randomUUID()}/123" }"""))
+        assertTrue(bare.toString(), bare.get("error").asString.contains("Concept reference 'c:"))
+        assertFalse(bare.toString(), bare.get("error").asString.contains("Closest concepts"))
+    }
+
+    @Test
+    fun `an interface concept in a blueprint is named as such, not as not found`() {
+        val named = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.lang.core.structure.INamedConcept" }"""))
+        val error = named.get("error").asString
+        assertTrue(error, error.contains(
+            "Concept 'jetbrains.mps.lang.core.structure.INamedConcept' at $.children[0].nodes[0] (concept) is an interface concept; a node needs a concrete concept"
+        ))
+        assertFalse(error, error.contains("not found"))
+        assertTrue(named.toString(), suggestedNames(named).isEmpty())
+
+        // A concrete concept beside an interface conceptReference still wins, with the existing warning.
+        val iNamed = MetaAdapterFactory.getInterfaceConcept(
+            0xceab519525ea4f22uL.toLong(), 0x9b92103b95ca8c0cuL.toLong(), 0x110396eaaa4L, "jetbrains.mps.lang.core.structure.INamedConcept"
+        )
+        val child = """{ "concept": "$propertyDeclarationFqn", "conceptReference": "${PersistenceFacade.getInstance().asString(iNamed)}" }"""
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(withChild(child)), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue(response, obj.get("ok").asBoolean)
+        assertTrue(response, obj.getAsJsonArray("warnings").any { it.asString.contains("was ignored; the node was created from concept '$propertyDeclarationFqn'") })
+    }
+
     // ── D43: missing-required-parameter rejections through the real bridge ────────────────
     // These go through callThroughBridge, not runTool: only the bridge's own argument binding
     // can observe a wrong-key spelling being silently dropped before the tool body runs.
