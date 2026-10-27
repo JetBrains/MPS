@@ -35,7 +35,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 
 /**
  * Translate information about mapping labels known at checkpoint step to read-only, persisted (even though memory-only now) {@link CheckpointState state}
@@ -182,8 +181,14 @@ class CheckpointStateBuilder {
     }
     //
     LabelRecord[] clr = stepLabels.compositeLabelsToArray();
+    // XXX perhaps, comparator based on InputKeyRecord would be better.
     Arrays.sort(clr, LabelRecord.comparator());
-    Arrays.stream(clr).forEach(dmb::withComposite);
+    for (LabelRecord lr : clr) {
+      InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, myTransitionTrace.getActiveTransition()) : null;
+      InputKeyRecord k2 = lr.key2 != null ? InputKeyRecord.of(lr.key2, myTransitionTrace.getActiveTransition()) : null;
+      // Note, lr.values are accessed by reference. When this code moves to major step end, shall make a copy!
+      dmb.withComposite(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
+    }
     myDebugMappingNode = dmb.done();
     // see MPSSPRT-455
     OriginalModelTag.installTo(myDebugMappingNode, originalInputModel.getReference());

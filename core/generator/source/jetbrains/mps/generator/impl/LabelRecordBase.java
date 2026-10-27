@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2020 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package jetbrains.mps.generator.impl;
 
 import jetbrains.mps.generator.impl.LMCollector.OneOrMany;
+
+import java.util.function.Consumer;
 
 /**
  * FIXME Made public just for the sake of MappingsMemento from .cache package, need to re-arrange all the classes
@@ -39,5 +41,9 @@ import jetbrains.mps.generator.impl.LMCollector.OneOrMany;
 
   /*package*/ public LabelRecordBase(String label, K in1, K in2, V out) {
     this(label, in1, in2, new OneOrMany<>(out));
+  }
+
+  public void forEachValue(Consumer<? super V> consumer) {
+    values.forEach(consumer);
   }
 }

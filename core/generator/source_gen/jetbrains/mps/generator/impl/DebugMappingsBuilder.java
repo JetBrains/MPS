@@ -57,16 +57,16 @@ public class DebugMappingsBuilder {
     ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
   }
 
-  public void withComposite(final LabelRecord lr) {
+  public void withComposite(final LabelRecordBase<InputKeyRecord, SNode> lr) {
     final SNode rn = SLinkOperations.addNewChild(rv, LINKS.records$1M3v, null);
     SPropertyOperations.assign(rn, PROPS.label$dc7G, lr.label);
     if (lr.key1 != null) {
-      SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(InputKeyRecord.of(lr.key1, myOriginTrace)));
+      SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(lr.key1));
     }
     if (lr.key2 != null) {
-      SLinkOperations.setTarget(rn, LINKS.input2$dvP0, cpInputNode(InputKeyRecord.of(lr.key2, myOriginTrace)));
+      SLinkOperations.setTarget(rn, LINKS.input2$dvP0, cpInputNode(lr.key2));
     }
-    lr.values.forEach((SNode o) -> {
+    lr.forEachValue((SNode o) -> {
       SNode r = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
       SLinkOperations.setTarget(r, LINKS.node$JBUG, mySubstituteOutputNode.apply(lr.label, o));
       ListSequence.fromList(SLinkOperations.getChildren(rn, LINKS.output$dhZ5)).addElement(r);
@@ -81,7 +81,7 @@ public class DebugMappingsBuilder {
     SNode presentation = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.CP_InputNode$p_);
 
     // XXX copied from similar code for GeneratorDebug_InputNode, see gdInputNode()
-    SNodeId inputNodeId = key.inputNode.getNodeId();
+    SNodeId inputNodeId = key.inputNodeId;
     SPropertyOperations.assign(presentation, PROPS.nodeId$wvdy, String.valueOf(inputNodeId));
     SPropertyOperations.assign(presentation, PROPS.presentation$PQVs, key.inputNodeName);
     if (key.inputModel != null) {
@@ -106,7 +106,7 @@ public class DebugMappingsBuilder {
 
     */
 
-    SNodeId inputNodeId = key.inputNode.getNodeId();
+    SNodeId inputNodeId = key.inputNodeId;
     SPropertyOperations.assign(inputNodeIdentity, PROPS.nodeId$2ASg, String.valueOf(inputNodeId));
     SLinkOperations.setTarget(in, LINKS.node$CLNB, inputNodeIdentity);
     SPropertyOperations.assign(in, PROPS.presentation$FmHa, key.inputNodeName);

@@ -83,7 +83,7 @@ public abstract class LMLookup {
             continue;
           }
           if (nullSafeMatch(r.key1, k1) && nullSafeMatch(r.key2, k2)) {
-            r.values.forEach(builder);
+            r.forEachValue(builder);
             break;
           }
         }
