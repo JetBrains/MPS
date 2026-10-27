@@ -525,6 +525,17 @@ private val JAVA_INSERT_PARAMETER_KEYS = ParameterKeys.of(
   "code", "featureKind", "recovery", "contextNodeRef", "insert", "postProcess",
 )
 
+/**
+ * The `featureKind` values `mps_mcp_parse_java_and_insert` accepts, in the order
+ * `parameters-schema.md` lists them. Not [FeatureKind.entries]: `CLASS_STUB` is rejected, and
+ * `EXPRESSION` is this tool's own kind (parsed as [FeatureKind.STATEMENTS]).
+ */
+internal val JAVA_INSERT_FEATURE_KINDS = listOf(
+  "CLASS", "NESTED_CLASS", "FIELD", "METHOD", "STATEMENTS", "CLASS_CONTENT", "EXPRESSION",
+)
+
+private val ACCEPTED_JAVA_INSERT_FEATURE_KINDS = JAVA_INSERT_FEATURE_KINDS.joinToString(", ") { "'$it'" }
+
 fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
   val obj = parseParametersObject(parameters)
   // Reject unrecognized top-level keys so a misspelled or unsupported field fails loudly
@@ -539,7 +550,11 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
 
   val featureKindText = obj.requiredString("featureKind", "parameters")
   if (featureKindText == "CLASS_STUB") {
-    throw ToolInputSchemaException("featureKind 'CLASS_STUB' is not supported")
+    // Too far from 'CLASS' for suggestParameterName, so name the replacement explicitly.
+    throw ToolInputSchemaException(
+      "featureKind 'CLASS_STUB' is not supported: use 'CLASS' for a top-level class root, " +
+        "or 'NESTED_CLASS' for a member class. Accepted: $ACCEPTED_JAVA_INSERT_FEATURE_KINDS."
+    )
   }
   val isExpression = featureKindText == "EXPRESSION"
   val featureKind = if (isExpression) {
@@ -550,7 +565,11 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
       FeatureKind.valueOf(featureKindText)
     }
     catch (_: IllegalArgumentException) {
-      throw ToolInputSchemaException("Unknown featureKind: '$featureKindText'")
+      val suggestion = suggestParameterName(featureKindText, JAVA_INSERT_FEATURE_KINDS)
+      val didYouMean = if (suggestion != null) " (did you mean '$suggestion'?)" else ""
+      throw ToolInputSchemaException(
+        "Unknown featureKind: '$featureKindText'$didYouMean. Accepted: $ACCEPTED_JAVA_INSERT_FEATURE_KINDS."
+      )
     }
   }
 

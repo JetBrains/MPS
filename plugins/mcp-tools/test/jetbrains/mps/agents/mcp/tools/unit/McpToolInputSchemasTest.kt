@@ -6,6 +6,7 @@ import jetbrains.mps.agents.mcp.tools.references.GetAssignableReferencesRequest
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.java.core.newparser.FeatureKind
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -749,6 +750,9 @@ class McpToolInputSchemasTest {
 
     // ---- parseJavaParseInsertRequest ----
 
+    private val acceptedFeatureKinds =
+        "'CLASS', 'NESTED_CLASS', 'FIELD', 'METHOD', 'STATEMENTS', 'CLASS_CONTENT', 'EXPRESSION'"
+
     @Test
     fun javaInsertParsesRootMode() {
         val request = parseJavaParseInsertRequest(
@@ -1013,7 +1017,10 @@ class McpToolInputSchemasTest {
 
     @Test
     fun javaInsertRejectsClassStubFeatureKind() {
-        assertSchemaFailure("featureKind 'CLASS_STUB' is not supported") {
+        assertSchemaFailure(
+            "featureKind 'CLASS_STUB' is not supported: use 'CLASS' for a top-level class root, " +
+                "or 'NESTED_CLASS' for a member class. Accepted: $acceptedFeatureKinds."
+        ) {
             parseJavaParseInsertRequest(
                 """{"code":"class Foo {}","featureKind":"CLASS_STUB","insert":{"mode":"root","modelRef":"r:m"}}"""
             )
@@ -1022,11 +1029,33 @@ class McpToolInputSchemasTest {
 
     @Test
     fun javaInsertRejectsUnknownFeatureKind() {
-        assertSchemaFailure("Unknown featureKind: 'BANANA'") {
+        assertSchemaFailure("Unknown featureKind: 'BANANA'. Accepted: $acceptedFeatureKinds.") {
             parseJavaParseInsertRequest(
                 """{"code":"class Foo {}","featureKind":"BANANA","insert":{"mode":"root","modelRef":"r:m"}}"""
             )
         }
+    }
+
+    @Test
+    fun javaInsertSuggestsTheFeatureKindForWrongCaseOrTypo() {
+        for ((input, expected) in listOf("class" to "CLASS", "STATEMENT" to "STATEMENTS", "NESTEDCLASS" to "NESTED_CLASS")) {
+            assertSchemaFailure(
+                "Unknown featureKind: '$input' (did you mean '$expected'?). Accepted: $acceptedFeatureKinds."
+            ) {
+                parseJavaParseInsertRequest(
+                    """{"code":"class Foo {}","featureKind":"$input","insert":{"mode":"root","modelRef":"r:m"}}"""
+                )
+            }
+        }
+    }
+
+    @Test
+    fun javaInsertFeatureKindsTrackTheParserEnum() {
+        // Fails when MPS adds a FeatureKind the accepted list (and its rejection message) misses.
+        assertEquals(
+            (FeatureKind.entries.map { it.name } - "CLASS_STUB" + "EXPRESSION").toSet(),
+            JAVA_INSERT_FEATURE_KINDS.toSet(),
+        )
     }
 
     @Test
