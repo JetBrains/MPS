@@ -9,6 +9,7 @@ import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
 import jetbrains.mps.smodel.SModelInternal
+import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.ids.MetaIdByDeclaration
 import jetbrains.mps.smodel.adapter.ids.MetaIdHelper
 import jetbrains.mps.smodel.adapter.ids.SLanguageId
@@ -18,6 +19,7 @@ import jetbrains.mps.smodel.tempmodel.TempModuleOptions
 import jetbrains.mps.smodel.tempmodel.TemporaryModels
 import org.jetbrains.mps.openapi.model.EditableSModel
 import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModuleReference
 import org.jetbrains.mps.openapi.module.SModuleId
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -914,6 +916,35 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             readOnRepo {
                 assertTrue("a refused write must not touch the model", (temp as SModelInternal).modelImports.isEmpty())
             }
+        }
+    }
+
+    @Test
+    fun `a temp model node and model resolve without the module id prefix (D121)`() {
+        withTempModel { temp ->
+            var root: SNode? = null
+            executeCommand {
+                root = jetbrains.mps.smodel.SNode(BaseLanguageMeta.classConceptConcept).also {
+                    it.setProperty(SNodeUtil.property_INamedConcept_name, "D121Root")
+                    temp.addRootNode(it)
+                }
+            }
+            val prefixed = readOnRepo { PersistenceFacade.getInstance().asString(checkNotNull(root).reference) }
+            val moduleIdPrefix = readOnRepo { temp.module.moduleId.toString() } + "/"
+            assertTrue("the premise: a temp model's node reference carries the module id: $prefixed", prefixed.startsWith(moduleIdPrefix))
+            val stripped = prefixed.removePrefix(moduleIdPrefix)
+
+            val nodeTools = JetBrainsMPSNodeMcpToolset()
+            val printed = expectOk(runTool(nodeTools) { it.mps_mcp_print_node(stripped) })
+            assertEquals(prefixed, printed.get("reference").asString)
+            val text = JsonParser.parseString(runTool(nodeTools) { it.mps_mcp_print_node(stripped, format = "PLAIN TEXT") }).asJsonObject
+            assertTrue("PLAIN TEXT: $text", text.get("ok").asBoolean)
+
+            // The model form: the node parse fails and the model fallback resolves it (a bare temp model may report problems).
+            val strippedModel = modelRefOf(temp).removePrefix(moduleIdPrefix)
+            val checked = JsonParser.parseString(runTool(nodeTools) { it.mps_mcp_check_root_node_problems(strippedModel) }).asJsonObject
+            assertTrue("model check: $checked", checked.get("ok").asBoolean)
+            assertEquals("model", checked.getAsJsonObject("details").get("scope").asString)
         }
     }
 

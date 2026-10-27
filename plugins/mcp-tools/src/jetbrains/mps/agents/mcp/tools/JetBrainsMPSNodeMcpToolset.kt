@@ -884,7 +884,7 @@ class JetBrainsMPSNodeMcpToolset : AbstractNodeOps() {
 
         // Try resolving as node reference
         val sNodeRef = try {
-            PersistenceFacade.getInstance().createNodeReference(nodeReference)
+            withoutInvalidModule(PersistenceFacade.getInstance().createNodeReference(nodeReference))
         } catch (e: Exception) {
             rethrowIfCancellation(e)
             null

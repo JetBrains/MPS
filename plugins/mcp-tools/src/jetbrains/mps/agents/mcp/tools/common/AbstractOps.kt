@@ -3364,7 +3364,7 @@ abstract class AbstractOps : McpToolset {
     protected fun resolveModel(repository: SRepository, modelReference: String): SModel? {
         // 1. Try as a model reference
         try {
-            val ref = PersistenceFacade.getInstance().createModelReference(modelReference)
+            val ref = withoutInvalidModule(PersistenceFacade.getInstance().createModelReference(modelReference))
             ref.resolve(repository)?.let { return it }
         } catch (e: Exception) {
             rethrowIfCancellation(e)
@@ -3397,7 +3397,7 @@ abstract class AbstractOps : McpToolset {
     protected fun resolveModel(mpsProject: MPSProject, modelReference: String, projectOnly: Boolean = true): SModel? {
         // 1. Try as a model reference
         try {
-            val ref = PersistenceFacade.getInstance().createModelReference(modelReference)
+            val ref = withoutInvalidModule(PersistenceFacade.getInstance().createModelReference(modelReference))
             val resolved = ref.resolve(mpsProject.repository)
             if (resolved != null && (!projectOnly || isModelInSelectedProject(mpsProject, resolved))) {
                 return resolved
@@ -3547,7 +3547,7 @@ abstract class AbstractOps : McpToolset {
         }
         val facade = PersistenceFacade.getInstance()
         try {
-            return facade.createNodeReference(nodeRefStr)
+            return withoutInvalidModule(facade.createNodeReference(nodeRefStr))
         } catch (e: Exception) {
             rethrowIfCancellation(e)
             // Try searching by name (root nodes)
@@ -3587,7 +3587,7 @@ abstract class AbstractOps : McpToolset {
         val repository = mpsProject.repository
         val facade = PersistenceFacade.getInstance()
         try {
-            val ref = facade.createNodeReference(nodeRefStr)
+            val ref = withoutInvalidModule(facade.createNodeReference(nodeRefStr))
             val node = ref.resolve(repository)
             if (node != null && node.model?.let { isModelInSelectedProject(mpsProject, it) } == true) {
                 return node.reference

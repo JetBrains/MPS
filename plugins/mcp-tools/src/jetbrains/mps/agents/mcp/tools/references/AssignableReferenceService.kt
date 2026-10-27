@@ -6,6 +6,7 @@ import jetbrains.mps.agents.mcp.tools.common.AbstractOps
 import jetbrains.mps.agents.mcp.tools.common.AbstractOps.McpLanguageNotBuiltException
 import jetbrains.mps.agents.mcp.tools.common.ConceptReadiness
 import jetbrains.mps.agents.mcp.tools.common.LanguageReadiness
+import jetbrains.mps.agents.mcp.tools.common.withoutInvalidModule
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.scope.ErrorScope
 import jetbrains.mps.scope.FilteringByConceptScope
@@ -95,7 +96,7 @@ class AssignableReferenceService(
         val referenceRole = request.referenceRole ?: return helpers.errorResponse("Parameter 'referenceRole' is missing")
 
         val contextNode = guardOrNull {
-            helpers.facade.createNodeReference(contextNodeRef).resolve(repository)
+            withoutInvalidModule(helpers.facade.createNodeReference(contextNodeRef)).resolve(repository)
         } ?: return helpers.errorResponse("Context node '${request.contextNode}' not found")
 
         val owningConcept = if (request.owningConcept != null) {
@@ -341,7 +342,7 @@ class AssignableReferenceService(
                     if (argTypeRefStr == "unknown" || paramTypeNode == null) continue
 
                     val argTypeNode = guardOrNull {
-                        helpers.facade.createNodeReference(argTypeRefStr).resolve(repository)
+                        withoutInvalidModule(helpers.facade.createNodeReference(argTypeRefStr)).resolve(repository)
                     } ?: continue
 
                     // FIX #6: Compare the classifier each type expression references, not the type
