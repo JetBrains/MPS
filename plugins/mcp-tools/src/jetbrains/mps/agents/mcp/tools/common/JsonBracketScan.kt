@@ -5,6 +5,9 @@ internal const val MAX_INLINE_JSON_CHARS = 4096
 
 private const val TROUBLESHOOTING_POINTER = "See mps-node-editing/references/troubleshooting.md."
 
+/** Study D120: a blueprint that failed to parse is almost always a hand-nested deep one, which this script builds instead. */
+private const val BLUEPRINT_SCRIPT_POINTER = "To build a deep blueprint, run mps-node-editing's scripts/blueprint.py."
+
 /**
  * What a JSON syntax error advises: [FILE] for inputs that also accept a temp-file path, [INLINE] for
  * inputs that must be inline, and [inlineOnly] for an inline blob whose nested values may be files.
@@ -14,7 +17,7 @@ class JsonInputGuidance private constructor(private val fileCapable: Boolean, pr
         fileCapable ->
             "received ${json.length} chars (inline limit $MAX_INLINE_JSON_CHARS). " +
                     (if (json.length <= MAX_INLINE_JSON_CHARS) "Pass an absolute temp-file path instead of inline JSON. " else "") +
-                    TROUBLESHOOTING_POINTER
+                    "$TROUBLESHOOTING_POINTER $BLUEPRINT_SCRIPT_POINTER"
         nestedFileKeys.isEmpty() -> TROUBLESHOOTING_POINTER
         nestedFileKeys.size == 1 -> "`parameters` itself must be inline; move ${nestedFileKeys.single()} into a temp file " +
                 "and pass its absolute path instead. $TROUBLESHOOTING_POINTER"

@@ -52,6 +52,7 @@ Every blueprint node gets its behavior constructor and, outside a dry run, its n
   * A leading `$TMPDIR`, `${TMPDIR}`, `$TEMP`, `${TEMP}`, `$TMP`, `${TMP}`, `%TEMP%`, `%TMP%`, or `%TMPDIR%` in the path is expanded by the server.
   * Shell example: `f="$TMPDIR/blueprint-$$.json"; cat > "$f" <<'JSON' … JSON` and pass `$f` (or the unexpanded `$TMPDIR/...` form).
   * An agent file-writing tool (e.g. `Write`) is fine too: write under `$TMPDIR`, or `/tmp` on macOS.
+  * A deep blueprint (a BaseLanguage body, or more than ~5 node levels) is best generated with `scripts/blueprint.py` (see "Scripts" in `SKILL.md`), which writes the file there and prints its path.
 
 ## Response Envelope
 

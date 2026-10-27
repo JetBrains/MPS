@@ -1259,6 +1259,15 @@ class AbstractOpsPropertyProblemsTest {
         val message = parseFailure("""{"a":1""")
         assertTrue(message, message.contains("Pass an absolute temp-file path instead of inline JSON. See mps-node-editing/references/troubleshooting.md."))
         assertFalse(message, message.contains("(see the mps-node-editing skill)"))
+        // Study D120: the recovery points at the script that builds a deep blueprint without hand-typed closers.
+        assertTrue(message, message.endsWith("troubleshooting.md. To build a deep blueprint, run mps-node-editing's scripts/blueprint.py."))
+    }
+
+    @Test
+    fun parseJsonFileGuidanceOverTheInlineLimitStillNamesTheBlueprintScript() {
+        val message = parseFailure("{\"a\":\"" + "x".repeat(5000) + "\"")
+        assertFalse(message, message.contains("Pass an absolute temp-file path instead of inline JSON"))
+        assertTrue(message, message.contains("See mps-node-editing/references/troubleshooting.md. To build a deep blueprint, run mps-node-editing's scripts/blueprint.py."))
     }
 
     @Test

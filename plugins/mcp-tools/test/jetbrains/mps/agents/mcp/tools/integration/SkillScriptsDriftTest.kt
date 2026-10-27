@@ -282,6 +282,116 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
     }
 
     @Test
+    fun `blueprint builds the deep tree a worker hand-nested one closer pair short`() {
+        Python3.require()
+        val script = installSkills().resolve("mps-node-editing").resolve("scripts").resolve("blueprint.py").toString()
+
+        // Study D120, round 44 S2-sonnet-1:40: this StatementList, typed inline, lost one `]}` pair
+        // mid-input, so `rValue` landed under the DotExpression. Built from node() calls it cannot.
+        val result = runPython(script, "-", stdin = """
+            BL = "jetbrains.mps.baseLanguage.structure."
+            SM = "jetbrains.mps.lang.smodel.structure."
+            S = "r:b8fed1ba-9aea-4e94-b51f-2af0e283a204(com.example.statechart.structure)/"
+            lvalue = node(BL + "DotExpression", children={
+                "operand": node("jetbrains.mps.lang.intentions.structure.ConceptFunctionParameter_node"),
+                "operation": node(SM + "SLinkAccess", refs={"link": S + "8390877815955397132"})})
+            rvalue = node(BL + "GenericNewExpression", children={"creator": node(SM + "SNodeCreator", children={
+                "createdType": node(SM + "SNodeType", refs={"concept": S + "8390877815955244107"})})})
+            emit(node(BL + "StatementList", children={"statement": [node(BL + "ExpressionStatement", children={
+                "expression": node(BL + "AssignmentExpression", children={"lValue": lvalue, "rValue": rvalue})})]}),
+                 stem="d120", single=True)
+        """.trimIndent())
+        assertEquals("script must exit 0, output: ${result.output}", 0, result.exitCode)
+
+        val summary = JsonParser.parseString(result.output.trim()).asJsonObject
+        val file = Path.of(summary.get("path").asString)
+        generatedFiles.add(file)
+        assertTrue("the blueprint must be written inside the system temp directory: $file",
+                   file.startsWith(Path.of(System.getProperty("java.io.tmpdir")).toAbsolutePath().normalize()))
+        assertEquals("nine nodes: ${result.output}", 9, summary.get("nodes").asInt)
+        assertEquals("six node levels: ${result.output}", 6, summary.get("depth").asInt)
+
+        val bl = "jetbrains.mps.baseLanguage.structure"
+        val sm = "jetbrains.mps.lang.smodel.structure"
+        val s = "r:b8fed1ba-9aea-4e94-b51f-2af0e283a204(com.example.statechart.structure)/"
+        val expected = """
+            {"concept":"$bl.StatementList","children":[{"role":"statement","nodes":[
+              {"concept":"$bl.ExpressionStatement","children":[{"role":"expression","nodes":[
+                {"concept":"$bl.AssignmentExpression","children":[
+                  {"role":"lValue","nodes":[{"concept":"$bl.DotExpression","children":[
+                    {"role":"operand","nodes":[{"concept":"jetbrains.mps.lang.intentions.structure.ConceptFunctionParameter_node"}]},
+                    {"role":"operation","nodes":[{"concept":"$sm.SLinkAccess","references":[{"role":"link","target":"${s}8390877815955397132"}]}]}]}]},
+                  {"role":"rValue","nodes":[{"concept":"$bl.GenericNewExpression","children":[
+                    {"role":"creator","nodes":[{"concept":"$sm.SNodeCreator","children":[
+                      {"role":"createdType","nodes":[{"concept":"$sm.SNodeType","references":[{"role":"concept","target":"${s}8390877815955244107"}]}]}]}]}]}]}]}]}]}]}]}
+        """.trimIndent()
+        assertEquals(JsonParser.parseString(expected), JsonParser.parseString(Files.readString(file)))
+    }
+
+    @Test
+    fun `blueprint names the JSON path of a bad node and never waits for stdin`() {
+        Python3.require()
+        val script = installSkills().resolve("mps-node-editing").resolve("scripts").resolve("blueprint.py").toString()
+
+        val bare = runPython(script)
+        assertEquals("a call without `-` is a usage error, output: ${bare.output}", 2, bare.exitCode)
+        assertTrue(bare.output, bare.output.contains("pass `-` and the Python snippet on stdin"))
+
+        val shortName = runPython(script, "-", stdin = """
+            BL = "jetbrains.mps.baseLanguage.structure."
+            emit(node(BL + "StatementList", children={"statement": node(BL + "ExpressionStatement", children={
+                "expression": node("IntegerConstant", props={"value": 1})})}))
+        """.trimIndent())
+        assertEquals("a bad blueprint exits 3, output: ${shortName.output}", 3, shortName.exitCode)
+        assertTrue(shortName.output, shortName.output.contains("\$.statement[0].expression[0]: concept 'IntegerConstant' is not fully qualified"))
+
+        val list = runPython(script, "-", stdin = "emit([node(\"a.B\"), node(\"a.C\")], single=True)")
+        assertEquals("a list for a single-object tool exits 3, output: ${list.output}", 3, list.exitCode)
+        assertTrue(list.output, list.output.contains("a list of 2 nodes, but single=True"))
+
+        val raised = runPython(script, "-", stdin = "x = 1\nemit(node(\"a.B\", children={\"c\": missing}))")
+        assertEquals("an error in the snippet exits 3, output: ${raised.output}", 3, raised.exitCode)
+        assertTrue("the traceback points at the snippet line: ${raised.output}", raised.output.contains("File \"<stdin>\", line 2"))
+        assertTrue(raised.output, raised.output.contains("NameError"))
+
+        val nothing = runPython(script, "-", stdin = "x = node(\"a.B\")")
+        assertEquals("a snippet that writes nothing exits 3, output: ${nothing.output}", 3, nothing.exitCode)
+        assertTrue(nothing.output, nothing.output.contains("never called emit(blueprint)"))
+    }
+
+    @Test
+    fun `blueprint output is accepted as a temp-file blueprint by insert_root_node_from_json`() {
+        Python3.require()
+        val script = installSkills().resolve("mps-node-editing").resolve("scripts").resolve("blueprint.py").toString()
+
+        // class Probe { int m() { return (1 + 2) * 3; } }, a pure baseLanguage root 8 node levels deep.
+        val result = runPython(script, "-", stdin = """
+            BL = "jetbrains.mps.baseLanguage.structure."
+            def num(value):
+                return node(BL + "IntegerConstant", props={"value": value})
+            product = node(BL + "MulExpression", children={
+                "leftExpression": node(BL + "ParenthesizedExpression", children={"expression": node(BL + "PlusExpression",
+                    children={"leftExpression": num(1), "rightExpression": num(2)})}),
+                "rightExpression": num(3)})
+            method = node(BL + "InstanceMethodDeclaration", props={"name": "m"}, children={
+                "returnType": node(BL + "IntegerType"),
+                "visibility": node(BL + "PublicVisibility"),
+                "body": node(BL + "StatementList", children={"statement": node(BL + "ReturnStatement", children={"expression": product})})})
+            emit(node(BL + "ClassConcept", props={"name": "Probe"}, children={"member": method}), stem="d120-probe")
+        """.trimIndent())
+        assertEquals("script must exit 0, output: ${result.output}", 0, result.exitCode)
+        val file = Path.of(JsonParser.parseString(result.output.trim()).asJsonObject.get("path").asString)
+        generatedFiles.add(file)
+
+        val solution = createSolution()
+        val model = createModel(solution, "${solution.moduleName}.code")
+        val response = runTool(JetBrainsMPSRootNodeMcpToolset()) {
+            it.mps_mcp_insert_root_node_from_json(modelRefOf(model), JsonOrText(file.toString()), dryRun = true)
+        }
+        expectOk(response)
+    }
+
+    @Test
     fun `mps_dump rejects a dump of the wrong kind and names the subcommand that reads it`() {
         Python3.require()
         val scriptDir = installSkills().resolve("mps-mcp-workflow").resolve("scripts")
@@ -547,8 +657,10 @@ class SkillScriptsDriftTest : McpIntegrationTestBase() {
 
     private data class PythonResult(val exitCode: Int, val output: String)
 
-    private fun runPython(vararg args: String): PythonResult {
+    /** Runs python3 with [args]; [stdin] is written to the process, whose stdin is closed either way. */
+    private fun runPython(vararg args: String, stdin: String? = null): PythonResult {
         val process = ProcessBuilder(listOf("python3") + args).redirectErrorStream(true).start()
+        process.outputStream.use { stream -> stdin?.let { stream.write(it.toByteArray(Charsets.UTF_8)) } }
         val output = process.inputStream.bufferedReader().use { it.readText() }
         assertTrue("python3 ${args.joinToString(" ")} did not finish in time", process.waitFor(60, TimeUnit.SECONDS))
         return PythonResult(process.exitValue(), output)
