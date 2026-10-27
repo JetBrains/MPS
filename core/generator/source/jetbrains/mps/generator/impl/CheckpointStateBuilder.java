@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 /**
@@ -172,7 +173,9 @@ class CheckpointStateBuilder {
       });
     }
     //
-    LinkedHashSet<String> conditionalRootLabels = new LinkedHashSet<>();
+//    LinkedHashSet<String> conditionalRootLabels = new LinkedHashSet<>();
+    HashSet<String> conditionalRootLabels = new HashSet<>(); // FIXME would be nice to have it explicitly sorted, but that triggers
+    // reordering in a lot of checkpoint models (250+ diff tests failing), shall do it together with some other change
     stepLabels.forEachNoInput((l, nm) -> conditionalRootLabels.add(l));
     for (String label : conditionalRootLabels) {
       dmb.withoutInput(label, stepLabels.streamNoInput(label).toList());
