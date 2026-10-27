@@ -17,6 +17,7 @@ package jetbrains.mps.generator.impl;
 
 import jetbrains.mps.extapi.model.ResolveInfoUpdater;
 import jetbrains.mps.generator.IGeneratorLogger;
+import jetbrains.mps.generator.IGeneratorLogger.ProblemDescription;
 import jetbrains.mps.generator.impl.cache.MappingsMemento;
 import jetbrains.mps.generator.impl.plan.CheckpointState;
 import jetbrains.mps.generator.impl.plan.CrossModelEnvironment.OriginalModelTag;
@@ -30,8 +31,10 @@ import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeId;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 
 /**
  * Translate information about mapping labels known at checkpoint step to read-only, persisted (even though memory-only now) {@link CheckpointState state}
@@ -113,7 +116,13 @@ class CheckpointStateBuilder {
    *  @param originalInputModel non-null
    * @param stepLabels non-null
    */
-  /*package*/ void addMappings(SModel originalInputModel, final GeneratorMappings stepLabels) {
+  /*package*/ void addMappings(SModel originalInputModel, final LMCollector stepLabels) {
+    // FIXME LMCollector is a mechanism GM uses to export its state, see GeneratorMappings.exposed(), this doesn't mean however that
+    //       we shall use it as API to access LMs. Use of LMCollector here is provisional until I build mapping records from a snapshot state (the one built
+    //       likely from LMCollector) created on each individual transform state, while transient models/nodes of the step are still valid.
+    //       Use of GeneratorMappings is wrong as it represents state at particular transformation step and shall not live beyond the step as its associated
+    //       models/nodes are (generally) not valid once step is over.
+
     // FIXME likely, GeneratorMappings shall care about MappingMemento only (pass TransitionTrace there as well).
     //
     // FIXME stepLabels.export is commented out as we restore MappingsMemento for the CPState through persisted state and MappingLabelExtractor, to get
@@ -145,13 +154,34 @@ class CheckpointStateBuilder {
       }
       return tn;
     });
-    ArrayList<String> availableLabels = new ArrayList<String>(stepLabels.getAvailableLabels());
+    //
+    final ArrayList<String> availableLabels = new ArrayList<>();
+    stepLabels.forEachWithInput((l, nm) -> availableLabels.add(l));
     Collections.sort(availableLabels);
-    myDebugMappingNode = dmb
-        .withInput(availableLabels, stepLabels::getSortedMappingKeys, (l, k) -> stepLabels.getMappingsForLabel(l).get(k).valueStream())
-        .withoutInput(stepLabels.getConditionalRootLabels(), stepLabels::getConditionalRoots)
-        .withComposite(stepLabels.getOrderedRecords())
-        .done();
+    for (String label : availableLabels) {
+      ArrayList<NodeMapRecord> records = new ArrayList<>(stepLabels.allWithInput(label));
+      try {
+        records.sort(NodeMapRecord.comparator());
+      } catch (Exception ex) {
+        ProblemDescription[] dd = records.stream().map(e -> String.format("Key: %s, id: %s. Value: %s", e.key().getPresentation(), e.key().getNodeId(), e.value())).map(ProblemDescription::new).toArray(ProblemDescription[]::new);
+        myLogger.warning(null, String.format("Can't arrange keys for '%s' mappings: %s. Consider overriding getPresentation() to facilitate sorting.", label, ex.getMessage()), dd);
+      }
+      dmb.withInput(label, records.stream().map(NodeMapRecord::key).toList(), k -> {
+        // linear lookup is not effective, but I don't care at the moment
+        return records.stream().filter(r -> r.keyMatch(k)).findFirst().map(NodeMapRecord::valueStream).orElseThrow();
+      });
+    }
+    //
+    LinkedHashSet<String> conditionalRootLabels = new LinkedHashSet<>();
+    stepLabels.forEachNoInput((l, nm) -> conditionalRootLabels.add(l));
+    for (String label : conditionalRootLabels) {
+      dmb.withoutInput(label, stepLabels.streamNoInput(label).toList());
+    }
+    //
+    LabelRecord[] clr = stepLabels.compositeLabelsToArray();
+    Arrays.sort(clr, LabelRecord.comparator());
+    Arrays.stream(clr).forEach(dmb::withComposite);
+    myDebugMappingNode = dmb.done();
     // see MPSSPRT-455
     OriginalModelTag.installTo(myDebugMappingNode, originalInputModel.getReference());
   }

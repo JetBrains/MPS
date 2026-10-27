@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2020 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -118,18 +116,6 @@ public final class NodeMap extends THash {
         c.accept(set[i]);
       }
     }
-  }
-
-  /*package*/ Map<SNode, Object> toLegacyMap() {
-    HashMap<SNode, Object> rv = new HashMap<>(size());
-    forEachRecord(r -> {
-      assert !rv.containsKey(r.key());
-      // by design, there could be no empty NodeMapRecord, we don't create one if supplied output collection is empty
-      // but doesn't hurt to get a heads up if that's not true
-      assert r.count() > 0;
-      rv.put(r.key(), r.value());
-    });
-    return rv;
   }
 
   @Override

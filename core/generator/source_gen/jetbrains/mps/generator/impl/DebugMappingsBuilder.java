@@ -15,7 +15,6 @@ import org.jetbrains.mps.openapi.model.SNodeReference;
 import jetbrains.mps.textgen.trace.TracingUtil;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
-import java.util.Set;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import jetbrains.mps.extapi.model.TransientSModel;
@@ -35,7 +34,6 @@ public class DebugMappingsBuilder {
   private final SNode rv;
   private final BiFunction<String, SNode, SNode> mySubstituteOutputNode;
 
-
   public DebugMappingsBuilder(@NotNull SModel factoryModel, TransitionTrace originTrace, BiFunction<String, SNode, SNode> substituteOutputNode) {
     myFactoryModel = factoryModel;
     myOriginTrace = originTrace;
@@ -43,49 +41,38 @@ public class DebugMappingsBuilder {
     rv = SModelOperations.createNewNode(factoryModel, null, CONCEPTS.GeneratorDebug_Mappings$42);
   }
 
-
-  public DebugMappingsBuilder withInput(List<String> availableLabels, Function<String, List<SNode>> keys, BiFunction<String, SNode, Stream<SNode>> outputNodes) {
-    // labels:list doesn't mean we tolerate duplicates, just lazy to refactor
-    for (String label : availableLabels) {
-      LabelEntryBuilder b = new LabelEntryBuilder(label);
-      for (SNode keyInputNode : keys.apply(label)) {
-        assert keyInputNode != null;
-        SNode in = gdInputNode(keyInputNode);
-        SNodeReference origin = TracingUtil.getInput(keyInputNode);
-        b.newKeyed(in, origin, outputNodes.apply(label, keyInputNode));
-      }
-      ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
+  public void withInput(String label, List<SNode> keys, Function<SNode, Stream<SNode>> outputNodes) {
+    // XXX we don't tolerate duplicate labels, yet I don't want to enforce it with rv.labels check, it's internal class, after all
+    LabelEntryBuilder b = new LabelEntryBuilder(label);
+    for (SNode keyInputNode : keys) {
+      assert keyInputNode != null;
+      SNode in = gdInputNode(keyInputNode);
+      SNodeReference origin = TracingUtil.getInput(keyInputNode);
+      b.newKeyed(in, origin, outputNodes.apply(keyInputNode));
     }
-    return this;
+    ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
   }
 
-  public DebugMappingsBuilder withoutInput(Set<String> labels, Function<String, List<SNode>> outputNodes) {
-    for (String label : labels) {
-      LabelEntryBuilder b = new LabelEntryBuilder(label);
-      outputNodes.apply(label).forEach(b::newRoot);
-      ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
-    }
-    return this;
+  public void withoutInput(String label, List<SNode> outputNodes) {
+    LabelEntryBuilder b = new LabelEntryBuilder(label);
+    outputNodes.forEach(b::newRoot);
+    ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
   }
 
-  public DebugMappingsBuilder withComposite(List<LabelRecord> orderedRecords) {
-    for (final LabelRecord lr : ListSequence.fromList(orderedRecords)) {
-      final SNode rn = SLinkOperations.addNewChild(rv, LINKS.records$1M3v, null);
-      SPropertyOperations.assign(rn, PROPS.label$dc7G, lr.label);
-      if (lr.key1 != null) {
-        SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(lr.key1));
-      }
-      if (lr.key2 != null) {
-        SLinkOperations.setTarget(rn, LINKS.input2$dvP0, cpInputNode(lr.key2));
-      }
-      lr.values.forEach((SNode o) -> {
-        SNode r = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
-        SLinkOperations.setTarget(r, LINKS.node$JBUG, mySubstituteOutputNode.apply(lr.label, o));
-        ListSequence.fromList(SLinkOperations.getChildren(rn, LINKS.output$dhZ5)).addElement(r);
-      });
+  public void withComposite(final LabelRecord lr) {
+    final SNode rn = SLinkOperations.addNewChild(rv, LINKS.records$1M3v, null);
+    SPropertyOperations.assign(rn, PROPS.label$dc7G, lr.label);
+    if (lr.key1 != null) {
+      SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(lr.key1));
     }
-
-    return this;
+    if (lr.key2 != null) {
+      SLinkOperations.setTarget(rn, LINKS.input2$dvP0, cpInputNode(lr.key2));
+    }
+    lr.values.forEach((SNode o) -> {
+      SNode r = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_NodeRef$2a);
+      SLinkOperations.setTarget(r, LINKS.node$JBUG, mySubstituteOutputNode.apply(lr.label, o));
+      ListSequence.fromList(SLinkOperations.getChildren(rn, LINKS.output$dhZ5)).addElement(r);
+    });
   }
 
   public SNode done() {

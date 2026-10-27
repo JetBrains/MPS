@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2021 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,15 @@
  */
 package jetbrains.mps.generator.impl;
 
+import jetbrains.mps.util.CollectConsumer;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.model.SNode;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -109,7 +113,18 @@ import java.util.stream.StreamSupport;
     myMap.forEach(f);
   }
 
+  /*package*/ List<NodeMapRecord> allWithInput(String label) {
+    NodeMap nm = myMap.get(label);
+    if (nm == null) {
+      return Collections.emptyList();
+    }
+    ArrayList<NodeMapRecord> result = new ArrayList<>();
+    nm.forEachRecord(new CollectConsumer<>(result));
+    return result;
+  }
+
   // FIXME provisional, need to review access methods.
+  // FIXME why on earth I stream map to compare its key?!
   /*package*/ Stream<NodeMap> streamWithInput(String label) {
     return myMap.entrySet().stream().filter(e -> Objects.equals(label, e.getKey())).map(Entry::getValue);
   }
@@ -155,6 +170,8 @@ import java.util.stream.StreamSupport;
     return rv == null ? Stream.empty() : rv.valueStream();
   }
 
+  // TODO for the time being, we use LabelRecord for mappings with composite keys only
+  //      Perhaps, shall refactor access API for all MLs to LabelRecords?
   public LabelRecord[] compositeLabelsToArray() {
     LabelRecord[] rv = new LabelRecord[myCompositeLabels.size()];
     int i = 0;

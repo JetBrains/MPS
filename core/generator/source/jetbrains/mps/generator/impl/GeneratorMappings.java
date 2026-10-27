@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2024 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import jetbrains.mps.generator.runtime.TemplateContext;
 import jetbrains.mps.smodel.adapter.structure.concept.SConceptAdapterById;
 import jetbrains.mps.smodel.runtime.StaticScope;
 import jetbrains.mps.textgen.trace.TracingUtil;
-import jetbrains.mps.util.CollectConsumer;
 import jetbrains.mps.util.ToStringComparator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,14 +35,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -165,7 +162,7 @@ public final class GeneratorMappings {
       return null;
     }
     if (o.count() > 1) {
-      final List<SNode> list = o.valueStream().collect(Collectors.toList());
+      final List<SNode> list = o.valueStream().toList();
       ProblemDescription[] descr = new ProblemDescription[list.size() + 1];
       for (int i = 0; i < list.size(); i++) {
         descr[i] = GeneratorUtil.describe(list.get(i), "output");
@@ -271,69 +268,7 @@ public final class GeneratorMappings {
     return myLabeledMappings.streamNoInput(mappingLabel).findFirst().orElse(null);
   }
 
-  // expose internal structure, to build GeneratorDebug_Mappings with MPS-coded DebugMappingsBuilder
-  /*package*/ Collection<String> getAvailableLabels() {
-    HashSet<String> rv = new HashSet<>();
-    myLabeledMappings.forEachWithInput((l, m) -> rv.add(l));
-    return rv;
-  }
-
-  @Nullable
-  /*package*/ NodeMap getMappingsForLabel(String label) {
-    AtomicReference<NodeMap> rv = new AtomicReference<>();
-    myLabeledMappings.forEachWithInput((ml, map) -> {
-      if (ml.equals(label)) {
-        assert rv.get() == null;
-        rv.compareAndSet(null, map);
-      }
-    });
-    return rv.get();
-  }
-
-  /*package*/List<SNode> getSortedMappingKeys(final String label) {
-    ArrayList<NodeMapRecord> l = new ArrayList<>();
-    CollectConsumer<NodeMapRecord> cc = new CollectConsumer<>(l);
-    myLabeledMappings.forEachWithInput((ml, map) -> {
-      if (ml.equals(label)) {
-        map.forEachRecord(cc);
-      }
-    });
-    try {
-      l.sort(new Comparator<>() {
-        private final SNodeComparator myNodeComparator = new SNodeComparator();
-
-        @Override
-        public int compare(NodeMapRecord o1, NodeMapRecord o2) {
-          int v = myNodeComparator.compare(o1.key(), o2.key());
-          if (v == 0) {
-            // input node is the same (or indistinguishable), have to respect values to keep order consistent.
-            // E.g. a pattern in a typesystem rule is copied to to different methods, there are two output classes
-            // Pattern_nn7be_a0a0a0b0d and Pattern_nn7be_a0a0a0c, and label entry order is inconsistent
-            v = String.valueOf(o1.value()).compareTo(String.valueOf(o2.value()));
-            if (v == 0) {
-              // last resort, address scenario when input nodes were copied, and processed individually. Treat the one
-              // that served as a master one 'first', its copies 'subsequent'. Guess the master by node id matching the one
-              // of the original node.
-              final boolean b1 = SNodeComparator.nodeIdSameAsOriginal(o1.key());
-              final boolean b2 = SNodeComparator.nodeIdSameAsOriginal(o2.key());
-              if (b1 ^ b2) {
-                v = b1 ? -1 : 1;
-              }
-              // fall-through
-            }
-          }
-          return v;
-        }
-
-      });
-    } catch (Exception ex) {
-      ProblemDescription[] dd = l.stream().map(e -> String.format("Key: %s, id: %s. Value: %s", e.key().getPresentation(), e.key().getNodeId(), e.value())).map(ProblemDescription::new).toArray(ProblemDescription[]::new);
-      myLog.warning(null, String.format("Can't arrange keys for '%s' mappings: %s. Consider overriding getPresentation() to facilitate sorting.", label, ex.getMessage()), dd);
-    }
-    return l.stream().map(NodeMapRecord::key).collect(Collectors.toList());
-  }
-
-  private static class SNodeComparator implements Comparator<SNode> {
+  /*package*/ static class SNodeComparator implements Comparator<SNode> {
     private final ToStringComparator myToStringComparator = new ToStringComparator();
 
     @Override
@@ -367,38 +302,6 @@ public final class GeneratorMappings {
       final SNodeReference original = TracingUtil.getInput(n);
       return original != null && Objects.equals(original.getNodeId(), n.getNodeId());
     }
-  }
-
-  /*package*/Set<String> getConditionalRootLabels() {
-    HashSet<String> rv = new HashSet<>();
-    myLabeledMappings.forEachNoInput((l, v) -> rv.add(l));
-    return rv;
-  }
-  /*package*/List<SNode> getConditionalRoots(String label) {
-    return myLabeledMappings.streamNoInput(label).collect(Collectors.toList());
-  }
-
-  // for the time being, just mappings with composite keys
-  // TODO transition all MLs to LabelRecord
-  /*package*/ List<LabelRecord> getOrderedRecords() {
-    LabelRecord[] a = myLabeledMappings.compositeLabelsToArray();
-    Arrays.sort(a, new Comparator<LabelRecord>() {
-      private final SNodeComparator myNodeComparator = new SNodeComparator();
-      @Override
-      public int compare(LabelRecord o1, LabelRecord o2) {
-        int v = o1.label.compareTo(o2.label);
-        if (v == 0) {
-          v = myNodeComparator.compare(o1.key1, o2.key1);
-          if (v == 0) {
-            v = myNodeComparator.compare(o1.key2, o2.key2);
-            // I don't care to compare outputs as I do for regular MLs, I'd like to notice
-            // duplicating key pairs ASAP.
-          }
-        }
-        return v;
-      }
-    });
-    return Arrays.asList(a);
   }
 
   /*package*/ LMLookup getCompositeLabelsLookup(final String label) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -361,9 +361,7 @@ class GenerationSession {
             });
             // FIXME what about composite labels here? Why don't we copy them?
           }
-          GeneratorMappings fakeInstance = new GeneratorMappings(Collections.emptyList(), myLogger);
-          fakeInstance.fillFrom(Collections.singletonList(stepLabels));
-          cpBuilder.addMappings(myOriginalInputModel, fakeInstance);
+          cpBuilder.addMappings(myOriginalInputModel, stepLabels);
         }
         CheckpointState cpState = cpBuilder.create(checkpointIdentity);
         xmodelEnv.publishCheckpoint(myOriginalInputModel.getReference(), cpState);
