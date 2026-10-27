@@ -621,7 +621,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(json), dryRun = false)
         }
 
-        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1)
+        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1, diagnosis = "unterminated string", expectTempFileHint = true)
         assertEquals("parse failure must not insert any root", before, structureRoots().size)
     }
 
@@ -710,9 +710,9 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     @Test
-    fun `insert_root_node_from_json resolves a conceptReference declared in an unbuilt language`() {
-        // The concept exists only as a declaration in the never-built fixture language, so it resolves
-        // through the structure model and its language through the Language module, not the registry.
+    fun `insert_root_node_from_json resolves a conceptReference declared in an unbuilt language and refuses it as not built`() {
+        // The concept exists only as a declaration in the never-built fixture language: it resolves
+        // through the structure model, and the refusal names that Language module (D112).
         val conceptName = "UnbuiltRootable${System.nanoTime()}"
         val declaration = createRootableConcept(conceptName)
         val conceptRef = readOnRepo { PersistenceFacade.getInstance().asString(MetaAdapterByDeclaration.getConcept(declaration)) }
@@ -722,14 +722,66 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) {
             it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText("""{ "conceptReference": "$conceptRef" }"""), dryRun = false)
         }
-        expectOk(response)
-        readOnRepo {
-            val root = target.rootNodes.single()
-            assertEquals(conceptName, root.concept.name)
-            val imported = (target as SModelInternal).importedLanguageIds()
-                .single { it.sourceModuleReference.moduleId == language.moduleReference.moduleId }
-            assertEquals(language.moduleName, imported.qualifiedName)
+        expectLanguageNotBuilt(response, language)
+        assertNoTraceOfUnbuiltInsert(target)
+    }
+
+    @Test
+    fun `insert_root_node_from_json refuses a blueprint of an unbuilt language before reading its properties`() {
+        val conceptName = "UnbuiltWithProperty${System.nanoTime()}"
+        createRootableConcept(conceptName, propertiesJson = """[{"name":"initial","type":"string"}]""")
+        val target = createModel(createSolution(), "test.unbuiltprop${System.nanoTime()}")
+        val json = """
+            { "concept": "${language.moduleName}.structure.$conceptName", "name": "probe",
+              "properties": [ { "name": "initial", "value": "x" } ] }
+        """.trimIndent()
+
+        for (dryRun in listOf(true, false)) {
+            val response = runTool(toolset) { it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText(json), dryRun = dryRun) }
+            val error = expectLanguageNotBuilt(response, language).get("error").asString
+            assertTrue("dryRun=$dryRun must name the concept and the build: $error", error.contains(conceptName) && error.contains("MAKE"))
         }
+        assertNoTraceOfUnbuiltInsert(target)
+    }
+
+    @Test
+    fun `create_root_node refuses a concept of an unbuilt language`() {
+        val conceptName = "UnbuiltCreated${System.nanoTime()}"
+        createRootableConcept(conceptName)
+        val target = createModel(createSolution(), "test.unbuiltcreate${System.nanoTime()}")
+
+        val response = runTool(toolset) {
+            it.mps_mcp_create_root_node(modelRefOf(target), "${language.moduleName}.structure.$conceptName", name = "probe")
+        }
+        expectLanguageNotBuilt(response, language)
+        readOnRepo { assertTrue("a refused create must not add a root", target.rootNodes.none()) }
+    }
+
+    @Test
+    fun `insert_root_node_from_json keeps the Unknown property rejection for a built concept`() {
+        // Stale-branch guard: the property is declared nowhere, so a built concept still gets the authoring error.
+        val target = createModel(createSolution(), "test.builtunknown${System.nanoTime()}")
+        val json = """
+            { "concept": "jetbrains.mps.baseLanguage.structure.ClassConcept", "name": "Probe",
+              "properties": [ { "name": "noSuchProperty${System.nanoTime()}", "value": "x" } ] }
+        """.trimIndent()
+
+        for (dryRun in listOf(true, false)) {
+            val obj = JsonParser.parseString(runTool(toolset) {
+                it.mps_mcp_insert_root_node_from_json(modelRefOf(target), JsonOrText(json), dryRun = dryRun)
+            }).asJsonObject
+            assertFalse("dryRun=$dryRun: $obj", obj.get("ok").asBoolean)
+            assertEquals("dryRun=$dryRun: $obj", "INVALID_REQUEST", obj.get("code").asString)
+            assertTrue("dryRun=$dryRun: $obj", obj.get("error").asString.contains("Unknown property 'noSuchProperty"))
+        }
+        readOnRepo { assertTrue(target.rootNodes.none()) }
+    }
+
+    /** A refused insert adds no root and does not import the unbuilt language. */
+    private fun assertNoTraceOfUnbuiltInsert(target: org.jetbrains.mps.openapi.model.SModel) = readOnRepo {
+        assertTrue("a refused insert must not add a root", target.rootNodes.none())
+        val imported = (target as SModelInternal).importedLanguageIds().map { it.sourceModuleReference.moduleId }
+        assertFalse("a refused insert must not import the unbuilt language: $imported", imported.contains(language.moduleReference.moduleId))
     }
 
     @Test
@@ -760,10 +812,11 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
     }
 
     /** Creates a rootable `ConceptDeclaration` named [name] in the fixture's structure model and returns it. */
-    private fun createRootableConcept(name: String): SNode {
+    private fun createRootableConcept(name: String, propertiesJson: String? = null): SNode {
+        val properties = propertiesJson?.let { """, "properties": $it""" } ?: ""
         val params = """
             { "structureModelRef": "$structureModelRef",
-              "conceptsJson": [ { "name": "$name", "rootable": true } ] }
+              "conceptsJson": [ { "name": "$name", "rootable": true$properties } ] }
         """.trimIndent()
         expectOk(runTool { it.mps_mcp_alter_structure(MPSStructureAlterOperation.CREATE_CONCEPTS, params) })
         return readOnRepo { structureModel.rootNodes.single { it.name == name } }
@@ -1022,7 +1075,7 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             it.mps_mcp_update_root_node_from_json(rootRef, JsonOrText(json), dryRun = false)
         }
 
-        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1)
+        assertIncompleteJson(response, json.length, expectedColumn = json.length + 1, diagnosis = "unbalanced", expectTempFileHint = true)
         assertEquals("UnchangedAfterBadArray", readOnRepo {
             PersistenceFacade.getInstance().createNodeReference(rootRef).resolve(structureModel.repository)!!.name
         })
@@ -1064,7 +1117,10 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val malformedFromFile = runTool(toolset) {
                 it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(incompleteFile.absolutePath), dryRun = true)
             }
-            assertIncompleteJson(malformedFromFile, incomplete.length, expectedColumn = incomplete.length + 1)
+            assertIncompleteJson(
+                malformedFromFile, incomplete.length, expectedColumn = incomplete.length + 1,
+                diagnosis = "unterminated string", expectTempFileHint = false,
+            )
         } finally {
             validFile.delete()
             incompleteFile.delete()
@@ -1415,15 +1471,15 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertFalse("scope errors must not return warnings: $errorJson", envelope.has("warnings"))
     }
 
-    private fun assertIncompleteJson(response: String, length: Int, expectedColumn: Int) {
+    private fun assertIncompleteJson(response: String, length: Int, expectedColumn: Int, diagnosis: String, expectTempFileHint: Boolean) {
         val envelope = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
         assertEquals("INVALID_JSON", envelope.get("code").asString)
         val error = envelope.get("error").asString
         assertTrue("expected received length: $error", error.contains("received $length chars (inline limit 4096)"))
         assertTrue("expected Gson location: $error", error.contains("at line 1 column $expectedColumn"))
-        assertTrue("expected brace hint: $error", error.contains("unbalanced"))
-        assertTrue("expected temp-file hint: $error", error.contains("absolute temp-file path"))
+        assertTrue("expected diagnosis '$diagnosis': $error", error.contains(diagnosis))
+        assertEquals("temp-file hint only for input that fits inline: $error", expectTempFileHint, error.contains("absolute temp-file path"))
         assertFalse("syntax diagnosis must not claim the inline guard fired: $error", error.contains("Direct JSON input is too large"))
     }
 
@@ -1494,6 +1550,100 @@ class JetBrainsMPSRootNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val response = runTool(toolset) { it.mps_mcp_get_current_editor_root_node(source = "inspector") }
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope when the inspector is unavailable: $response", obj.get("ok").asBoolean)
+    }
+
+    // ── D116: an unknown blueprint concept names the closest concepts ─────────────────────
+
+    /** A dry-run insert of [blueprint]; the rejection envelope. */
+    private fun rejectedBlueprint(blueprint: String): JsonObject {
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(blueprint), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected an error envelope: $response", obj.get("ok").asBoolean)
+        return obj
+    }
+
+    /**
+     * A concept declaration whose one `propertyDeclaration` child is [child] (a blueprint object):
+     * a root's own concept is checked by the rootable-concept lookup, a child's by the blueprint
+     * instantiation, as in study run r44 S1-sonnet-1.
+     */
+    private fun withChild(child: String): String =
+        """{ "concept": "$conceptDeclarationFqn", "properties": [ { "name": "name", "value": "D116Host" } ],
+             "children": [ { "role": "propertyDeclaration", "nodes": [ $child ] } ] }"""
+
+    private fun suggestedNames(envelope: JsonObject): List<String> =
+        envelope.getAsJsonObject("details")?.getAsJsonArray("suggestions")
+            ?.map { it.asJsonObject.get("qualifiedName").asString }.orEmpty()
+
+    @Test
+    fun `an unknown concept with the name of a concept in another language suggests that concept first`() {
+        val foreach = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.baseLanguage.structure.ForeachVariable" }"""))
+        val error = foreach.get("error").asString
+        assertTrue(error, error.contains("Concept 'jetbrains.mps.baseLanguage.structure.ForeachVariable' not found at $.children[0].nodes[0]"))
+        assertTrue(error, error.contains(". Closest concepts: jetbrains.mps.baseLanguage.collections.structure.ForEachVariable"))
+        assertEquals(foreach.toString(), "jetbrains.mps.baseLanguage.collections.structure.ForEachVariable", suggestedNames(foreach).first())
+        assertTrue("at most three: $foreach", suggestedNames(foreach).size <= 3)
+
+        val thisNode = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.lang.smodel.structure.ThisNodeExpression" }"""))
+        assertEquals(thisNode.toString(), "jetbrains.mps.lang.behavior.structure.ThisNodeExpression", suggestedNames(thisNode).first())
+    }
+
+    @Test
+    fun `an unknown root concept names the closest rootable concept`() {
+        val root = rejectedBlueprint("""{ "concept": "jetbrains.mps.baseLanguage.structure.classConcept" }""")
+        assertEquals(root.toString(), "NOT_FOUND", root.get("code").asString)
+        assertTrue(root.toString(), root.get("error").asString.startsWith(
+            "Concept not found: concept='jetbrains.mps.baseLanguage.structure.classConcept', conceptReference='null'. " +
+                "Closest concepts: jetbrains.mps.baseLanguage.structure.ClassConcept"
+        ))
+    }
+
+    @Test
+    fun `a near miss in the named language keeps a slot beside same-named concepts of other languages`() {
+        // ConceptFunctionParameter_node exists in several other languages; the constraints language's
+        // own parameter is ConstraintsFunctionParameter_node, a token match only.
+        val obj = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.lang.constraints.structure.ConceptFunctionParameter_node" }"""))
+        val names = suggestedNames(obj)
+        assertEquals(obj.toString(), 3, names.size)
+        assertTrue(obj.toString(), names.take(2).all { it.endsWith(".structure.ConceptFunctionParameter_node") })
+        assertEquals(obj.toString(), "jetbrains.mps.lang.constraints.structure.ConstraintsFunctionParameter_node", names.last())
+    }
+
+    @Test
+    fun `an unknown concept with no near match and a bare concept reference get no suggestions`() {
+        val sum = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.baseLanguage.collections.structure.SumOperation" }"""))
+        assertTrue(sum.toString(), sum.get("error").asString.contains("Concept 'jetbrains.mps.baseLanguage.collections.structure.SumOperation' not found"))
+        assertFalse(sum.toString(), sum.get("error").asString.contains("Closest concepts"))
+        assertTrue(sum.toString(), suggestedNames(sum).isEmpty())
+
+        val bare = rejectedBlueprint(withChild("""{ "conceptReference": "c:${UUID.randomUUID()}/123" }"""))
+        assertTrue(bare.toString(), bare.get("error").asString.contains("Concept reference 'c:"))
+        assertFalse(bare.toString(), bare.get("error").asString.contains("Closest concepts"))
+    }
+
+    @Test
+    fun `an interface concept in a blueprint is named as such, not as not found`() {
+        val named = rejectedBlueprint(withChild("""{ "concept": "jetbrains.mps.lang.core.structure.INamedConcept" }"""))
+        val error = named.get("error").asString
+        assertTrue(error, error.contains(
+            "Concept 'jetbrains.mps.lang.core.structure.INamedConcept' at $.children[0].nodes[0] (concept) is an interface concept; a node needs a concrete concept"
+        ))
+        assertFalse(error, error.contains("not found"))
+        assertTrue(named.toString(), suggestedNames(named).isEmpty())
+
+        // A concrete concept beside an interface conceptReference still wins, with the existing warning.
+        val iNamed = MetaAdapterFactory.getInterfaceConcept(
+            0xceab519525ea4f22uL.toLong(), 0x9b92103b95ca8c0cuL.toLong(), 0x110396eaaa4L, "jetbrains.mps.lang.core.structure.INamedConcept"
+        )
+        val child = """{ "concept": "$propertyDeclarationFqn", "conceptReference": "${PersistenceFacade.getInstance().asString(iNamed)}" }"""
+        val response = runTool(toolset) {
+            it.mps_mcp_insert_root_node_from_json(structureModelRef, JsonOrText(withChild(child)), dryRun = true)
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertTrue(response, obj.get("ok").asBoolean)
+        assertTrue(response, obj.getAsJsonArray("warnings").any { it.asString.contains("was ignored; the node was created from concept '$propertyDeclarationFqn'") })
     }
 
     // ── D43: missing-required-parameter rejections through the real bridge ────────────────

@@ -2,7 +2,6 @@ package jetbrains.mps.agents.mcp.tools
 
 import jetbrains.mps.agents.mcp.tools.common.*
 
-import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
@@ -146,8 +145,9 @@ class JetBrainsMPSDataflowMcpToolset : AbstractOps() {
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String = withMpsProject("Querying MPS dataflow: $operation") { mpsProject ->
         val params = try {
-            Gson().fromJson(parameters, JsonObject::class.java)
+            parseParametersBlob(parameters)
         } catch (e: Exception) {
+            rethrowIfCancellation(e)
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
         params.rejectUnknownParameterKeys(operation.name, queryDataflowParameterKeys(operation))

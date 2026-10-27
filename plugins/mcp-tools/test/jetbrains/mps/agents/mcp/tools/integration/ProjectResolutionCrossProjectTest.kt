@@ -259,21 +259,10 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         val response = runTool(rootNodeToolset) {
             it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText("""{ "concept": "$conceptName" }"""), dryRun = false)
         }
-        val createdRef = expectOk(response).get("reference").asString
-
-        // The created root's concept identifies its owning language by module id. We compare the
-        // SLanguage rather than the structure declaration node: these languages are created in
-        // memory and never generated, so the runtime concept has no resolvable `sourceNode`.
-        val createdConceptLanguage = readIn(myProject) { resolveNode(createdRef).concept.language }
-        assertEquals(
-            "created root must use the selected project's same-named concept",
-            readIn(myProject) { MetaAdapterByDeclaration.getLanguage(aLanguage) },
-            createdConceptLanguage,
-        )
-        assertFalse(
-            "created root must not use the sibling project's same-named concept",
-            createdConceptLanguage == readIn(projectB) { MetaAdapterByDeclaration.getLanguage(bLanguage) },
-        )
+        // Neither language is built, so the insert is refused (D112); the refusal names the language
+        // the concept resolved to, which must be the selected project's, not the sibling's.
+        expectLanguageNotBuilt(response, aLanguage)
+        readIn(myProject) { assertTrue("a refused insert must not add a root", model.rootNodes.none()) }
     }
 
     @Test
@@ -442,14 +431,14 @@ class ProjectResolutionCrossProjectTest : McpIntegrationTestBase() {
         val response = runTool(rootNodeToolset) {
             it.mps_mcp_insert_root_node_from_json(modelRef, JsonOrText("""{ "conceptReference": "$bConceptRef" }"""), dryRun = false)
         }
-        val created = expectOk(response)
-        assertForeignProjectMarker(created, projectB, "concept")
-        val createdRef = created.get("reference").asString
+        // The sibling language is not built, so the insert is refused (D112); the refusal naming it
+        // shows the explicit sibling-project reference was accepted and resolved.
+        expectLanguageNotBuilt(response, bLanguage)
 
         readIn(myProject) {
-            assertEquals(bLanguageRef, PersistenceFacade.getInstance().asString(resolveNode(createdRef).concept.language))
-            assertTrue(
-                "inserting a foreign-concept root must import the foreign language into the target model",
+            assertTrue("a refused insert must not add a root", model.rootNodes.none())
+            assertFalse(
+                "a refused insert must not import the foreign language",
                 (model as SModelInternal).importedLanguageIds().any { PersistenceFacade.getInstance().asString(it) == bLanguageRef },
             )
         }

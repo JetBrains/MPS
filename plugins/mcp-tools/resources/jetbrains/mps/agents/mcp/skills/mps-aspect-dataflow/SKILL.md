@@ -24,6 +24,7 @@ The MPS dataflow engine builds a control-flow graph from the emitted instruction
 
 - **`code for` is delegation, not a call.** Never use `jump` for child delegation. Use `EmitCodeForStatement` to inline a child's own builder at this point.
 - **`ifjump` is a two-way branch; by BaseLanguage's convention it jumps when the condition is FALSE.** Emit it after `code for node.condition`, towards the else branch, to model an `if`; a builder may use it the other way (`||` jumps when its left side is true).
+- **An `if`'s else branch is a `BlockStatement` wrapping a `StatementList`.** `IfStatement.ifFalseStatement` rejects a bare `StatementList`; see [references/json-patterns/pattern-4-if-statement.md](references/json-patterns/pattern-4-if-statement.md).
 - **Labels are node references, not string lookups.** `EmitLabelStatement.name` is display-only; jumps reference the label node via `LabelPosition.label`. Two labels with the same string are still distinct targets.
 - **Always null-guard `0..1` children** with BL `if (node.child != null)` before emitting `code for node.child`.
 - **`write node` vs `write node.link`:** use `write node` (just `NodeParameter` as the variable expression) when the concept node **is** the variable being declared. Use `write node.link` (via `SLinkAccess`) when the node merely references the variable being written.

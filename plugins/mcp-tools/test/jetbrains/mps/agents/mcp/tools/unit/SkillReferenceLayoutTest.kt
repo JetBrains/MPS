@@ -233,6 +233,9 @@ class SkillReferenceLayoutTest {
             "mps-mcp-workflow/references/mcp-tools-index.md" to 18_944L,
             // one atomic JSON blueprint fence; cutting it would break copy-paste
             "mps-aspect-constraints/references/referent-constraints/computed-sequences-blueprint.md" to 13_312L,
+            // the type-query entry point (seven SKILL.md files and the tool descriptions route here,
+            // EXPLAIN_TYPE included); a split would add a read to every type question
+            "mps-mcp-workflow/references/analysis-tools/type-queries.md" to 12_800L,
         )
 
         private val LINE_NUMBERS_DRIFT = Regex("line numbers[^.]{0,40}drift")

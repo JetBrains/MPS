@@ -57,7 +57,7 @@ Additional aspects exist (Find Usages, Refactorings, Scopes Provider, Plugin). T
 4. **Behavior** — concept methods/constructors; callable from any aspect.
 5. **Typesystem & checking** — types, subtyping, semantic errors with quick fixes.
 6. **Intentions** — alt-enter refactorings and shortcuts.
-7. **Generator** — transform to a target language (often BaseLanguage).
+7. **Generator** — transform to a target language (often BaseLanguage), declared as a Generation Target of the language.
 8. **TextGen** — only if the target is plain text the language itself emits.
 9. **Accessories / runtime / dependencies** — wire into the `.mpl`, ensure consumers can find everything.
 

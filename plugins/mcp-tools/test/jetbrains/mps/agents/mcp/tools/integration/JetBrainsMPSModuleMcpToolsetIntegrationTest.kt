@@ -2377,6 +2377,11 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertFalse("expected error envelope: $response", envelope.get("ok").asBoolean)
             assertEquals("INVALID_REQUEST", envelope.get("code").asString)
             assertTrue("error must name '$expectedPath': $response", envelope.get("error").asString.contains(expectedPath))
+            if (settings == "{") {
+                val error = envelope.get("error").asString
+                assertTrue("a truncated settingsJson must get the closer diagnosis: $error", error.contains("unbalanced: 1 closer(s) missing"))
+                assertFalse("settingsJson cannot be a file: $error", error.contains("temp-file"))
+            }
             assertEquals("invalid settings must leave the persisted memento unchanged", before, persistedFacetMemento(moduleName))
             assertTrue(
                 "settings validation must not log an action-dispatch failure: $messages",

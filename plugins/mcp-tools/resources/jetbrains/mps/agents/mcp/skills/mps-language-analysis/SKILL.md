@@ -56,6 +56,7 @@ Let the typesystem engine answer instead of reading rule roots: a node's type â†
 
 - Open `references/search-concepts.md` for the `mps_mcp_search_concepts` matching algorithm â€” haystack composition, subtoken splitting, fallback ranking, the three scopes (`modelReference` / `scope`) and the auto-widen, the `detail` projections, the 50-match cap, and the sub-2-char failure mode.
 - Open `references/concept-details.md` for the `mps_mcp_get_concept_details` result schema and the unresolved-ref policy (all-failed vs partial-success envelopes and the suggestion heuristic).
+- Open `references/language-readiness.md` when a language has no built runtime or a concept was created after the last build: declaration-read records, their markers, `details.languageBuild`, and the `LANGUAGE_NOT_BUILT` refusal of the writers.
 
 ## Scripts
 

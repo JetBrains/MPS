@@ -44,6 +44,9 @@ class JetBrainsMPSConsoleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         val obj = JsonParser.parseString(response).asJsonObject
         assertFalse("expected error envelope: $response", obj.get("ok").asBoolean)
         assertEquals("INVALID_JSON", obj.get("code").asString)
+        val error = obj.get("error").asString
+        assertTrue("expected the bracket diagnosis: $error", error.contains("unbalanced"))
+        assertTrue("expected received length: $error", error.contains("received 11 chars (inline limit 4096)"))
     }
 
     @Test

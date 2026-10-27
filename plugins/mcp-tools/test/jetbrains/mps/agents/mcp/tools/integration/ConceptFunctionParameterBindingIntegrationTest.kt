@@ -422,6 +422,7 @@ class ConceptFunctionParameterBindingIntegrationTest : McpIntegrationTestBase() 
         assertTrue("names the syntax error: $response", error.contains("syntax errors"))
         assertTrue("carries ecj's message with a line: $response", error.contains("line 1:"))
         assertTrue("names the opt-in: $response", error.contains("recovery: true"))
+        assertFalse("no D117 header hint without a header: $response", error.contains("featureKind \""))
         assertEquals("nothing may be inserted", 0, readOnRepo { bodyOf(validator).children.count() })
     }
 

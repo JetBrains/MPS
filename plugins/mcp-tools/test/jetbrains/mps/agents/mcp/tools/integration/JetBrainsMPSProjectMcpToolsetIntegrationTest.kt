@@ -6,9 +6,20 @@ import jetbrains.mps.agents.mcp.tools.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
 import com.intellij.openapi.application.PathManager
+import com.intellij.openapi.application.TransactionGuard
+import com.intellij.openapi.application.impl.LaterInvocator
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.project.ProjectManagerListener
+import com.intellij.openapi.util.Disposer
+import com.intellij.testFramework.PlatformTestUtil
+import jetbrains.mps.project.MPSProject
 import jetbrains.mps.project.modules.LanguageProducer
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -20,6 +31,8 @@ import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+import java.util.concurrent.atomic.AtomicReference
+import java.util.logging.Level
 
 /**
  * End-to-end integration tests for [JetBrainsMPSProjectMcpToolset].
@@ -44,6 +57,18 @@ import java.util.UUID
  *    command) need a live Console and are verified manually.
  */
 class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
+
+    private var extraProject: MPSProject? = null
+
+    @After
+    fun cleanUpCloseProjectFixtures() {
+        extraProject?.let { project ->
+            if (!project.project.isDisposed) {
+                mcpEnvironment.closeProject(project)
+            }
+        }
+        extraProject = null
+    }
 
     @Test
     fun `list-open-projects reports the current MPS project and selector paths`() {
@@ -96,6 +121,9 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS")
             fun line(ago: Long, level: String, message: String) =
                 "${LocalDateTime.now().minusMinutes(ago).format(format)} [  12345] ${level.padStart(6)} - jetbrains.mps.Test - $message"
+            // pretend this IDE started 10 minutes ago: the 20- and 30-minute-old records are then a
+            // previous process's, still sitting in the same files (idea.log is not truncated on start)
+            val ideStart = LocalDateTime.now().minusMinutes(10)
             val marker = "mcp-read-ide-log-marker-${UUID.randomUUID()}"
             Files.writeString(directory.resolve("idea.1.log"), line(30, "WARN", "$marker old") + "\n")
             Files.writeString(
@@ -108,12 +136,36 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                     line(0, "INFO", "idle"),
                 ).joinToString("\n", postfix = "\n"),
             )
-            val toolset = JetBrainsMPSProjectMcpToolset(ideLogDirectorySource = { directory })
+            val toolset = JetBrainsMPSProjectMcpToolset(
+                ideLogDirectorySource = { directory },
+                ideStartTimeSource = { ideStart },
+            )
 
             val all = payloadObjectFromOkData(runTool(toolset) { it.mps_mcp_read_ide_log() })
             assertEquals(directory.resolve("idea.log").toAbsolutePath().normalize().toString(), all.get("logFile").asString)
             assertEquals("idea.log alone does not fill the tail, so idea.1.log is read too: $all", 2, all.getAsJsonArray("filesRead").size())
             assertEquals(4, all.getAsJsonArray("records").size())
+            assertEquals(ideStart.format(format), all.get("ideStartTimestamp").asString)
+            assertEquals(2, all.get("previousSessionRecords").asInt)
+            val allRecords = all.getAsJsonArray("records").map { it.asJsonObject }
+            assertEquals(
+                "the two records older than the IDE start must be marked, the recent ones must not: $all",
+                listOf(true, true, false, false),
+                allRecords.map { it.get("previousSession")?.asBoolean ?: false },
+            )
+
+            // the documented way to read the current session only: feed ideStartTimestamp back as since
+            val currentSession = payloadObjectFromOkData(runTool(toolset) {
+                it.mps_mcp_read_ide_log(since = all.get("ideStartTimestamp").asString)
+            })
+            val currentRecords = currentSession.getAsJsonArray("records").map { it.asJsonObject }
+            assertEquals(
+                "since = ideStartTimestamp must keep exactly the unmarked records: $currentSession",
+                listOf(marker, "idle"),
+                currentRecords.map { it.get("message").asString },
+            )
+            assertFalse("no record after the IDE start may be marked: $currentSession", currentRecords.any { it.has("previousSession") })
+            assertFalse("nothing marked means no such count: $currentSession", currentSession.has("previousSessionRecords"))
 
             val found = payloadObjectFromOkData(runTool(toolset) {
                 it.mps_mcp_read_ide_log(grep = marker, minLevel = "WARN", sinceMinutes = 5)
@@ -124,6 +176,8 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertEquals("WARN", record.get("level").asString)
             assertEquals(marker, record.get("message").asString)
             assertEquals("jetbrains.mps.Test", record.get("category").asString)
+            assertFalse("a record of this session must not be marked: $record", record.has("previousSession"))
+            assertFalse("nothing marked means no such count: $found", found.has("previousSessionRecords"))
             assertTrue(record.get("stackTrace").asString.startsWith("java.lang.IllegalStateException: boom\n\tat "))
             assertEquals(1, found.getAsJsonObject("levelCounts").get("WARN").asInt)
             assertEquals(1, found.getAsJsonArray("filesRead").size())
@@ -732,6 +786,89 @@ class JetBrainsMPSProjectMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             "the rejection must name the value and the allowed set: $error",
             error.contains("'shape'") && error.contains("full") && error.contains("names")
         )
+    }
+
+    @Test
+    fun `close-project with force runs projectClosing in a write-safe context under a modal`() {
+        val target = (mcpEnvironment.createEmptyProject() as MPSProject).also { extraProject = it }
+        val targetIdeaProject = target.project
+        val writingAllowed = AtomicReference<Boolean?>(null)
+        val disposable = Disposer.newDisposable("close-project-f5a-test")
+        try {
+            ApplicationManager.getApplication().messageBus.connect(disposable)
+                .subscribe(ProjectManager.TOPIC, object : ProjectManagerListener {
+                    override fun projectClosing(project: Project) {
+                        if (project === targetIdeaProject) {
+                            writingAllowed.set(TransactionGuard.getInstance().isWritingAllowed)
+                        }
+                    }
+                })
+            val modal = Any()
+            ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.enterModal(modal) }, ModalityState.nonModal())
+            val response = try {
+                runToolForProject(target, JetBrainsMPSProjectMcpToolset()) {
+                    it.mps_mcp_close_project(force = true)
+                }
+            } finally {
+                ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
+            }
+            val data = expectOk(response)
+            assertTrue(data.get("closed").asBoolean)
+            assertTrue(data.get("force").asBoolean)
+            assertEquals(
+                "force close must re-dispatch under the modal's modality so projectClosing runs write-safe",
+                true,
+                writingAllowed.get(),
+            )
+            assertTrue("target project must be closed", targetIdeaProject.isDisposed || !targetIdeaProject.isOpen)
+        } finally {
+            Disposer.dispose(disposable)
+        }
+    }
+
+    @Test
+    fun `close-project non-force timeout reports closePending and completes once the modal closes`() {
+        val target = (mcpEnvironment.createEmptyProject() as MPSProject).also { extraProject = it }
+        val targetIdeaProject = target.project
+        val targetName = targetIdeaProject.name
+        val modal = Any()
+        var modalEntered = true
+        ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.enterModal(modal) }, ModalityState.nonModal())
+        try {
+            val toolset = JetBrainsMPSProjectMcpToolset(closeProjectTimeoutMs = 200L)
+            val response = runToolForProject(target, toolset) {
+                it.mps_mcp_close_project(force = false)
+            }
+            val envelope = JsonParser.parseString(response).asJsonObject
+            assertFalse("expected MODAL_BLOCKED envelope: $response", envelope.get("ok").asBoolean)
+            assertEquals("MODAL_BLOCKED", envelope.get("code").asString)
+            val error = envelope.get("error").asString
+            assertTrue("error must say the close is still pending: $error", error.contains("still pending"))
+            assertTrue("error must direct the caller to mps_mcp_list_open_projects: $error", error.contains("mps_mcp_list_open_projects"))
+            val details = envelope.getAsJsonObject("details")
+            assertTrue("MODAL_BLOCKED details must carry closePending=true: $details", details.get("closePending").asBoolean)
+            assertFalse("project must still be open while the modal blocks the EDT", targetIdeaProject.isDisposed)
+
+            val (_, records) = captureLogRecords {
+                ApplicationManager.getApplication().invokeAndWait({
+                    LaterInvocator.leaveModal(modal)
+                    modalEntered = false
+                    PlatformTestUtil.dispatchAllEventsInIdeEventQueue()
+                }, ModalityState.any())
+            }
+            assertTrue("the pending close must complete once the modal is left", targetIdeaProject.isDisposed || !targetIdeaProject.isOpen)
+            assertTrue(
+                "the abandoned close completion must be logged at INFO: ${records.map { "${it.level}: ${it.message}" }}",
+                records.any {
+                    it.level == Level.INFO &&
+                        it.message?.contains("Abandoned close_project for '$targetName' finished after timeout: project closed") == true
+                },
+            )
+        } finally {
+            if (modalEntered) {
+                ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
+            }
+        }
     }
 
     private fun rootNamed(payload: JsonObject, rootName: String): JsonObject =

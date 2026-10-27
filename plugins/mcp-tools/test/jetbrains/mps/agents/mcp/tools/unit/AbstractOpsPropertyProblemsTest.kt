@@ -2,14 +2,24 @@ package jetbrains.mps.agents.mcp.tools.unit
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.java.JavaSyntaxProblems
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSyntaxException
 import jetbrains.mps.errors.MessageStatus
+import jetbrains.mps.errors.item.EditorQuickFix
 import jetbrains.mps.errors.item.FlavouredItem
 import jetbrains.mps.errors.item.IssueKindReportItem
+import jetbrains.mps.errors.item.ModelReportItem
 import jetbrains.mps.errors.item.NodeReportItem
+import jetbrains.mps.errors.item.QuickFixBase
+import jetbrains.mps.errors.item.QuickFixReportItem
+import jetbrains.mps.errors.messageTargets.MessageTarget
+import jetbrains.mps.errors.messageTargets.NodeMessageTarget
+import jetbrains.mps.errors.messageTargets.PropertyMessageTarget
 import jetbrains.mps.java.core.newparser.FeatureKind
 import jetbrains.mps.persistence.PersistenceRegistry
 import jetbrains.mps.project.ModuleId
@@ -17,6 +27,7 @@ import jetbrains.mps.project.structure.modules.ModuleReference
 import jetbrains.mps.smodel.SNodeId
 import jetbrains.mps.smodel.adapter.ids.MetaIdFactory
 import jetbrains.mps.smodel.adapter.ids.SConceptId
+import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
 import jetbrains.mps.smodel.adapter.structure.concept.SConceptAdapter
 import jetbrains.mps.smodel.runtime.ConceptDescriptor
 import org.junit.Assert.assertEquals
@@ -41,6 +52,7 @@ import org.jetbrains.mps.openapi.language.SProperty
 import org.jetbrains.mps.openapi.language.SReferenceLink
 import org.jetbrains.mps.openapi.language.SType
 import org.jetbrains.mps.openapi.model.SModel
+import org.jetbrains.mps.openapi.model.SModelReference
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.model.SNodeAccessUtil
 import org.jetbrains.mps.openapi.model.SReference
@@ -97,6 +109,18 @@ class AbstractOpsPropertyProblemsTest {
 
     private val ops = object : AbstractOps() {
         fun hasLocalProblemsForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) = hasLocalProblems(node, problems)
+        fun hasAnyProblemsForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) = hasAnyProblems(node, problems)
+        fun nodeWithProblemsListForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) =
+            nodeWithProblemsListJsonArray(node, problems)
+
+        /** The `details` that [addInfoMessages] builds from the [infoSummary] of each root, merged via [mergeTallies] in order. */
+        fun infoDetailsForTest(vararg roots: Pair<SNode, Map<SNode, List<NodeReportItem>>>): Map<String, Any?> {
+            val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+            for ((root, problems) in roots) mergeTallies(tallies, infoSummary(root, problems).values)
+            return mutableMapOf<String, Any?>().also { addInfoMessages(it, tallies.values) }
+        }
+
+        fun quickFixIdForTest(fix: QuickFixBase) = quickFixId(fix)
         fun nodeWithProblemsToJsonForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>) =
             nodeWithProblemsToJson(node, problems, deep = false)
 
@@ -108,6 +132,65 @@ class AbstractOpsPropertyProblemsTest {
         fun problemCountsForTest(node: SNode, problems: Map<SNode, List<NodeReportItem>>): Pair<Int, Int> {
             val counts = problemCounts(node, problems)
             return counts.errors to counts.warnings
+        }
+
+        /**
+         * `(errors, warnings, rowJson)` for [node]'s subtree with `messages` and `moreMessages`
+         * rendered onto `rowJson` at [perRow] — exercises [problemSummary] and [addMessagesToRow].
+         */
+        fun problemSummaryForTest(
+            node: SNode,
+            problems: Map<SNode, List<NodeReportItem>>,
+            perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+            nodesPerMessage: Int = MAX_PROBLEM_NODES_PER_MESSAGE,
+        ): Triple<Int, Int, JsonObject> {
+            val summary = problemSummary(node, problems)
+            val row = JsonObject()
+            addMessagesToRow(row, summary.tallies.values, perRow, nodesPerMessage)
+            return Triple(summary.errors, summary.warnings, row)
+        }
+
+        /**
+         * Merges [root]'s tallies into [modelProblems]' via [mergeTallies], renders the merged row, then adds
+         * [extraNode] to every merged tally and re-renders [root]'s own tallies: the second row shows whether
+         * the merge copied the node sets or shared them.
+         */
+        fun mergedAndSourceRowsForTest(
+            modelProblems: List<ModelReportItem>,
+            root: SNode,
+            problems: Map<SNode, List<NodeReportItem>>,
+            extraNode: SNodeReference,
+        ): Pair<JsonObject, JsonObject> {
+            val tallies = modelProblemSummary(modelProblems).tallies
+            val rootTallies = problemSummary(root, problems).tallies
+            mergeTallies(tallies, rootTallies.values)
+            val merged = JsonObject().also { addMessagesToRow(it, tallies.values) }
+            tallies.values.forEach { it.nodes.add(extraNode) }
+            return merged to JsonObject().also { addMessagesToRow(it, rootTallies.values) }
+        }
+
+        /** A module `perRoot` row's `messages`: [modelProblems] tallies with [root]'s merged in via [mergeTallies]. */
+        fun moduleRowMessagesForTest(
+            modelProblems: List<ModelReportItem>,
+            root: SNode,
+            problems: Map<SNode, List<NodeReportItem>>,
+        ): JsonObject {
+            val tallies = modelProblemSummary(modelProblems).tallies
+            mergeTallies(tallies, problemSummary(root, problems).tallies.values)
+            return JsonObject().also { addMessagesToRow(it, tallies.values) }
+        }
+
+        /** `(dataJson, messagesPerRow, nodesPerMessage)` from [choosePerRootForm] for synthetic `(baseRow, (node, problems))` inputs. */
+        fun choosePerRootFormForTest(
+            rows: List<Pair<JsonObject, Pair<SNode, Map<SNode, List<NodeReportItem>>>>>,
+            maxInlineBytes: Int,
+        ): Triple<String, Int?, Int?> {
+            val built = rows.map { (base, pair) ->
+                val summary = problemSummary(pair.first, pair.second)
+                base to summary.tallies.values
+            }
+            val choice = choosePerRootForm(built, maxInlineBytes)
+            return Triple(choice.dataJson, choice.messagesPerRow, choice.nodesPerMessage)
         }
 
         fun resolveNodeReferenceForTest(repository: org.jetbrains.mps.openapi.module.SRepository, nodeRefStr: String) =
@@ -288,6 +371,653 @@ class AbstractOpsPropertyProblemsTest {
 
         assertEquals("one checker error + the empty-enum soft error", 2, errors)
         assertEquals(1, warnings)
+    }
+
+    @Test
+    fun problemSummaryCollapsesIdenticalTextsAcrossNodesAndKeepsFirstNode() {
+        val parent = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(100L)) }
+        val child = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(101L)) }
+        parent.addChild(MetaAdapterFactory.getContainmentLink(0L, 1L, 1L, 1L, "child"), child)
+
+        val (errors, warnings, row) = ops.problemSummaryForTest(
+            parent,
+            mapOf(
+                parent to listOf(stubNodeReportItem(parent, MessageStatus.WARNING, "Step takes no time")),
+                child to listOf(stubNodeReportItem(child, MessageStatus.WARNING, "Step takes no time")),
+            ),
+        )
+
+        assertEquals(0, errors)
+        assertEquals(2, warnings)
+        val messages = row.getAsJsonArray("messages")
+        assertEquals(1, messages.size())
+        val entry = messages[0].asJsonObject
+        assertEquals("warning", entry.get("severity").asString)
+        assertEquals("Step takes no time", entry.get("message").asString)
+        assertEquals(2, entry.get("count").asInt)
+        assertEquals(PersistenceFacade.getInstance().asString(parent.reference), entry.get("node").asString)
+        assertFalse(row.has("moreMessages"))
+    }
+
+    @Test
+    fun problemSummaryListsEveryDistinctNodeOfARepeatedMessage() {
+        val (root, children) = nodeWithChildren(120L, 3)
+        val (_, _, row) = ops.problemSummaryForTest(
+            root,
+            children.associateWith { listOf(stubNodeReportItem(it, MessageStatus.ERROR, "Unreachable command")) },
+        )
+
+        val entry = row.getAsJsonArray("messages").single().asJsonObject
+        assertEquals(3, entry.get("count").asInt)
+        val refs = children.map { PersistenceFacade.getInstance().asString(it.reference) }
+        assertEquals(refs, entry.getAsJsonArray("nodes").map { it.asString })
+        assertEquals(refs[0], entry.get("node").asString)
+        assertFalse(entry.has("moreNodes"))
+    }
+
+    @Test
+    fun problemSummaryDeduplicatesNodesReportingTheSameMessageTwice() {
+        // The round-44 S16 shape: count 3 on two nodes.
+        val (root, children) = nodeWithChildren(124L, 2)
+        val (a, b) = children
+        val (_, _, row) = ops.problemSummaryForTest(
+            root,
+            mapOf(
+                a to listOf(
+                    stubNodeReportItem(a, MessageStatus.ERROR, "Unreachable command"),
+                    stubNodeReportItem(a, MessageStatus.ERROR, "Unreachable command"),
+                ),
+                b to listOf(stubNodeReportItem(b, MessageStatus.ERROR, "Unreachable command")),
+            ),
+        )
+
+        val entry = row.getAsJsonArray("messages").single().asJsonObject
+        assertEquals(3, entry.get("count").asInt)
+        assertEquals(
+            listOf(a, b).map { PersistenceFacade.getInstance().asString(it.reference) },
+            entry.getAsJsonArray("nodes").map { it.asString },
+        )
+    }
+
+    @Test
+    fun problemSummaryOmitsNodesForASingleDistinctNode() {
+        val (root, children) = nodeWithChildren(127L, 1)
+        val child = children.single()
+        val (_, _, row) = ops.problemSummaryForTest(
+            root,
+            mapOf(
+                root to listOf(stubNodeReportItem(root, MessageStatus.ERROR, "once")),
+                child to listOf(
+                    stubNodeReportItem(child, MessageStatus.WARNING, "twice on one node"),
+                    stubNodeReportItem(child, MessageStatus.WARNING, "twice on one node"),
+                ),
+            ),
+        )
+
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        assertEquals(listOf(1, 2), messages.map { it.get("count").asInt })
+        for (entry in messages) {
+            assertTrue(entry.has("node"))
+            assertFalse("one distinct node needs no nodes list: $entry", entry.has("nodes"))
+            assertFalse(entry.has("moreNodes"))
+        }
+    }
+
+    @Test
+    fun problemSummaryCapsNodesAndReportsMoreNodes() {
+        val (root, children) = nodeWithChildren(140L, 7)
+        val problems = children.associateWith { listOf(stubNodeReportItem(it, MessageStatus.WARNING, "Step takes no time")) }
+        val refs = children.map { PersistenceFacade.getInstance().asString(it.reference) }
+
+        val capped = ops.problemSummaryForTest(root, problems).third.getAsJsonArray("messages").single().asJsonObject
+        assertEquals(refs.take(5), capped.getAsJsonArray("nodes").map { it.asString })
+        assertEquals(2, capped.get("moreNodes").asInt)
+
+        val oneNode = ops.problemSummaryForTest(root, problems, nodesPerMessage = 1).third
+            .getAsJsonArray("messages").single().asJsonObject
+        assertFalse("nodes would only repeat node: $oneNode", oneNode.has("nodes"))
+        assertEquals(refs[0], oneNode.get("node").asString)
+        assertEquals(6, oneNode.get("moreNodes").asInt)
+    }
+
+    @Test
+    fun problemSummaryKeepsSameTextWithDifferentSeveritiesSeparateAndOrdersErrorsFirst() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(102L)) }
+        val (errors, warnings, row) = ops.problemSummaryForTest(
+            node,
+            mapOf(
+                node to listOf(
+                    stubNodeReportItem(node, MessageStatus.WARNING, "same text"),
+                    stubNodeReportItem(node, MessageStatus.WARNING, "same text"),
+                    stubNodeReportItem(node, MessageStatus.ERROR, "same text"),
+                ),
+            ),
+        )
+
+        assertEquals(1, errors)
+        assertEquals(2, warnings)
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        assertEquals(2, messages.size)
+        assertEquals("error", messages[0].get("severity").asString)
+        assertEquals(1, messages[0].get("count").asInt)
+        assertEquals("warning", messages[1].get("severity").asString)
+        assertEquals(2, messages[1].get("count").asInt)
+    }
+
+    @Test
+    fun problemSummaryIgnoresInfoAndOkItems() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(103L)) }
+        val (errors, warnings, row) = ops.problemSummaryForTest(
+            node,
+            mapOf(node to listOf(stubNodeReportItem(node, MessageStatus.OK, "info item"))),
+        )
+
+        assertEquals(0, errors)
+        assertEquals(0, warnings)
+        assertFalse("clean row must omit messages: $row", row.has("messages"))
+    }
+
+    @Test
+    fun problemSummaryFormatsSoftEmptyEnumErrorWithPropertyName() {
+        val property = TestEnumProperty()
+        val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(property))).also { it.setId(SNodeId.Regular(104L)) }
+        val (errors, warnings, row) = ops.problemSummaryForTest(node, emptyMap())
+
+        assertEquals(1, errors)
+        assertEquals(0, warnings)
+        val entry = row.getAsJsonArray("messages").single().asJsonObject
+        assertEquals("error", entry.get("severity").asString)
+        assertEquals("Empty enumeration property: 'enumProp'", entry.get("message").asString)
+        assertTrue(entry.get("message").asString.contains("Empty enumeration property"))
+        assertEquals(1, entry.get("count").asInt)
+        assertEquals(PersistenceFacade.getInstance().asString(node.reference), entry.get("node").asString)
+    }
+
+    @Test
+    fun problemSummaryCapsAtFiveMessagesAndReportsMoreMessagesInDeterministicOrder() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(105L)) }
+        val items = listOf(
+            stubNodeReportItem(node, MessageStatus.WARNING, "w-once-first"),
+            stubNodeReportItem(node, MessageStatus.WARNING, "w-twice"),
+            stubNodeReportItem(node, MessageStatus.WARNING, "w-twice"),
+            stubNodeReportItem(node, MessageStatus.ERROR, "e-once-first"),
+            stubNodeReportItem(node, MessageStatus.ERROR, "e-thrice"),
+            stubNodeReportItem(node, MessageStatus.ERROR, "e-thrice"),
+            stubNodeReportItem(node, MessageStatus.ERROR, "e-thrice"),
+            stubNodeReportItem(node, MessageStatus.ERROR, "e-once-second"),
+            stubNodeReportItem(node, MessageStatus.WARNING, "w-once-second"),
+            stubNodeReportItem(node, MessageStatus.WARNING, "w-once-third"),
+        )
+        val (errors, warnings, row) = ops.problemSummaryForTest(node, mapOf(node to items))
+
+        assertEquals(5, errors)
+        assertEquals(5, warnings)
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        assertEquals(5, messages.size)
+        assertEquals(
+            listOf("e-thrice", "e-once-first", "e-once-second", "w-twice", "w-once-first"),
+            messages.map { it.get("message").asString },
+        )
+        assertEquals(2, row.get("moreMessages").asInt)
+    }
+
+    @Test
+    fun problemSummaryTruncatesLongMessagesAtCodePointBoundaryWithoutSplittingSurrogatePairs() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(106L)) }
+        val plain400 = "a".repeat(400)
+        // Surrogate pair U+1F600 (\uD83D\uDE00) spanning indices 298..299 (right at the 299-char cut before '…').
+        val surrogateAtCut = "b".repeat(298) + "\uD83D\uDE00" + "c".repeat(100)
+        val (_, _, row) = ops.problemSummaryForTest(
+            node,
+            mapOf(
+                node to listOf(
+                    stubNodeReportItem(node, MessageStatus.ERROR, plain400),
+                    stubNodeReportItem(node, MessageStatus.WARNING, surrogateAtCut),
+                ),
+            ),
+        )
+
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject.get("message").asString }
+        assertEquals(300, messages[0].length)
+        assertEquals("a".repeat(299) + "…", messages[0])
+        assertEquals("b".repeat(298) + "…", messages[1])
+        assertFalse("surrogate pair must not leave an unpaired surrogate", messages[1].any { it.isSurrogate() })
+    }
+
+    @Test
+    fun problemSummaryGroupsOnFullTextBeforeTruncating() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(107L)) }
+        val prefix = "p".repeat(350)
+        val first = prefix + "A".repeat(50)
+        val second = prefix + "B".repeat(50)
+        val (errors, _, row) = ops.problemSummaryForTest(
+            node,
+            mapOf(
+                node to listOf(
+                    stubNodeReportItem(node, MessageStatus.ERROR, first),
+                    stubNodeReportItem(node, MessageStatus.ERROR, second),
+                ),
+            ),
+        )
+
+        assertEquals(2, errors)
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        assertEquals("distinct suffixes past 300 chars must stay two entries", 2, messages.size)
+        assertEquals(1, messages[0].get("count").asInt)
+        assertEquals(1, messages[1].get("count").asInt)
+    }
+
+    @Test
+    fun problemSummarySuppressesInvalidPropertySoftErrorOnlyForSamePropertyProblem() {
+        // F5: a node-level message mentioning "invalid" must NOT hide an invalid-property soft error
+        // that nodeWithProblemsJsonObject still prints under that property.
+        val prop = TestInvalidProperty("minutes")
+        val node = jetbrains.mps.smodel.SNode(TestConcept(listOf(prop))).also { it.setId(SNodeId.Regular(108L)) }
+        TEST_ACCESS_UTIL.setRawProperty(node, prop, "not-a-number")
+
+        val nodeLevelProblems = mapOf<SNode, List<NodeReportItem>>(
+            node to listOf(stubNodeReportItem(node, MessageStatus.WARNING, "Node name is invalid")),
+        )
+        val (errors, warnings, row) = ops.problemSummaryForTest(node, nodeLevelProblems)
+        val reportJson = ops.nodeWithProblemsToJsonForTest(node, nodeLevelProblems)
+
+        assertTrue("the full report prints the soft property error: $reportJson", reportJson.contains("Property value is invalid"))
+        assertEquals("soft property error must be counted despite unrelated 'invalid' message", 1, errors)
+        assertEquals(1, warnings)
+        assertEquals(1 to 1, ops.problemCountsForTest(node, nodeLevelProblems))
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        assertEquals(2, messages.size)
+        assertEquals("Property value is invalid: 'minutes'", messages[0].get("message").asString)
+
+        // When the "invalid" message targets that exact property, both the report and the summary suppress the soft error.
+        val propLevelProblems = mapOf<SNode, List<NodeReportItem>>(
+            node to listOf(stubNodeReportItem(node, MessageStatus.ERROR, "minutes value is invalid", target = PropertyMessageTarget(prop))),
+        )
+        val (propErrors, _, propRow) = ops.problemSummaryForTest(node, propLevelProblems)
+        val propReportJson = ops.nodeWithProblemsToJsonForTest(node, propLevelProblems)
+        assertFalse("report suppresses the duplicate soft error: $propReportJson", propReportJson.contains("Property value is invalid"))
+        assertEquals(1, propErrors)
+        assertEquals(1, propRow.getAsJsonArray("messages").size())
+    }
+
+    @Test
+    fun problemSummaryUncappedCountsMatchProblemCounts() {
+        val prop = TestEnumProperty()
+        val parent = jetbrains.mps.smodel.SNode(TestConcept(listOf(prop))).also { it.setId(SNodeId.Regular(109L)) }
+        val child = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(110L)) }
+        parent.addChild(MetaAdapterFactory.getContainmentLink(0L, 1L, 1L, 1L, "child"), child)
+        val problems = mapOf<SNode, List<NodeReportItem>>(
+            parent to listOf(
+                stubNodeReportItem(parent, MessageStatus.ERROR, "e1"),
+                stubNodeReportItem(parent, MessageStatus.WARNING, "w1"),
+            ),
+            child to listOf(
+                stubNodeReportItem(child, MessageStatus.ERROR, "e1"),
+                stubNodeReportItem(child, MessageStatus.WARNING, "w2"),
+                stubNodeReportItem(child, MessageStatus.OK, "ignored"),
+            ),
+        )
+
+        val (countErrors, countWarnings) = ops.problemCountsForTest(parent, problems)
+        val (summaryErrors, summaryWarnings, row) = ops.problemSummaryForTest(parent, problems)
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+
+        assertEquals(countErrors, summaryErrors)
+        assertEquals(countWarnings, summaryWarnings)
+        assertEquals(countErrors, messages.filter { it.get("severity").asString == "error" }.sumOf { it.get("count").asInt })
+        assertEquals(countWarnings, messages.filter { it.get("severity").asString == "warning" }.sumOf { it.get("count").asInt })
+    }
+
+    @Test
+    fun problemSummarySetsHasQuickFixesOnlyWhenAnyItemInGroupCarriesAFix() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(111L)) }
+        val fix = object : EditorQuickFix {
+            override fun isExecutedImmediately(): Boolean = false
+            override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+            override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+            override fun getDescription(repository: org.jetbrains.mps.openapi.module.SRepository): String = "fix"
+            override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> = emptySet()
+        }
+        val (_, _, row) = ops.problemSummaryForTest(
+            node,
+            mapOf(
+                node to listOf(
+                    stubNodeReportItem(node, MessageStatus.ERROR, "with fix"),
+                    stubNodeReportItem(node, MessageStatus.ERROR, "with fix", quickFixes = listOf(fix)),
+                    stubNodeReportItem(node, MessageStatus.WARNING, "without fix"),
+                ),
+            ),
+        )
+
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        val withFix = messages.single { it.get("message").asString == "with fix" }
+        val withoutFix = messages.single { it.get("message").asString == "without fix" }
+        assertTrue(withFix.get("hasQuickFixes").asBoolean)
+        assertFalse("hasQuickFixes must be omitted when no item has a fix: $withoutFix", withoutFix.has("hasQuickFixes"))
+    }
+
+    // D118: `info` items never make a node unclean; they are summarized in details.infoMessages.
+
+    @Test
+    fun infoOnlyNodeHasNoLocalProblems() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(170L)) }
+        assertFalse(ops.hasLocalProblemsForTest(node, mapOf(node to listOf(stubNodeReportItem(node, MessageStatus.OK)))))
+        assertTrue(
+            ops.hasLocalProblemsForTest(
+                node,
+                mapOf(node to listOf(stubNodeReportItem(node, MessageStatus.OK), stubNodeReportItem(node, MessageStatus.WARNING))),
+            )
+        )
+    }
+
+    @Test
+    fun infoOnlyChildKeepsItsParentClean() {
+        val (parent, children) = nodeWithChildren(171L, 1)
+        assertFalse(ops.hasAnyProblemsForTest(parent, mapOf(children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK)))))
+    }
+
+    @Test
+    fun problemListOmitsInfoOnlyNodesButKeepsInfoOnListedNodes() {
+        val (root, children) = nodeWithChildren(174L, 2)
+        val (infoOnly, withError) = children
+        val list = ops.nodeWithProblemsListForTest(
+            root,
+            mapOf(
+                infoOnly to listOf(stubNodeReportItem(infoOnly, MessageStatus.OK, "hint on the clean node")),
+                withError to listOf(
+                    stubNodeReportItem(withError, MessageStatus.ERROR, "broken"),
+                    stubNodeReportItem(withError, MessageStatus.OK, "hint on the broken node"),
+                ),
+            ),
+        ).map { it.asJsonObject }
+
+        assertEquals(listOf(PersistenceFacade.getInstance().asString(withError.reference)), list.map { it.get("reference").asString })
+        val severities = list.single().getAsJsonArray("problems").map { it.asJsonObject.get("severity").asString }
+        assertEquals(listOf("error", "info"), severities)
+    }
+
+    @Test
+    fun infoSummaryGroupsInfoTextsAndIgnoresErrorsAndWarnings() {
+        val (root, children) = nodeWithChildren(178L, 3)
+        val ref = { n: SNode -> PersistenceFacade.getInstance().asString(n.reference) }
+        val problems = mapOf(
+            root to listOf(stubNodeReportItem(root, MessageStatus.ERROR, "use string"), stubNodeReportItem(root, MessageStatus.WARNING, "other")),
+            children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK, "use string", quickFixes = listOf(FIX_A))),
+            children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "use string")),
+            children[2] to listOf(
+                stubNodeReportItem(children[2], MessageStatus.OK, "use string"),
+                stubNodeReportItem(children[2], MessageStatus.OK, "superfluous cast"),
+            ),
+        )
+        val infos = ops.infoDetailsForTest(root to problems).getValue("infoMessages") as JsonArray
+
+        assertEquals(listOf("use string", "superfluous cast"), infos.map { it.asJsonObject.get("message").asString })
+        val useString = infos[0].asJsonObject
+        assertEquals("info", useString.get("severity").asString)
+        assertEquals(3, useString.get("count").asInt)
+        assertEquals(ref(children[0]), useString.get("node").asString)
+        assertEquals(2, useString.get("moreNodes").asInt)
+        assertFalse("infoMessages render node + moreNodes only: $useString", useString.has("nodes"))
+        assertFalse("quickFixIds supersede hasQuickFixes: $useString", useString.has("hasQuickFixes"))
+        assertEquals(listOf(ops.quickFixIdForTest(FIX_A)), useString.getAsJsonArray("quickFixIds").map { it.asString })
+        assertFalse("an entry without fixes has no quickFixIds: ${infos[1]}", infos[1].asJsonObject.has("quickFixIds"))
+
+        val (errors, warnings, row) = ops.problemSummaryForTest(root, problems)
+        assertEquals("the info items with the error's text must not leak into the tally", 1 to 1, errors to warnings)
+        assertEquals(
+            listOf("error" to "use string", "warning" to "other"),
+            row.getAsJsonArray("messages").map { it.asJsonObject.get("severity").asString to it.asJsonObject.get("message").asString },
+        )
+        assertEquals(1, row.getAsJsonArray("messages")[0].asJsonObject.get("count").asInt)
+    }
+
+    @Test
+    fun infoSummaryOfAChildExcludesItsSiblings() {
+        val (_, children) = nodeWithChildren(183L, 2)
+        val details = ops.infoDetailsForTest(
+            children[0] to mapOf(
+                children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK, "mine")),
+                children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "sibling's")),
+            ),
+        )
+        assertEquals(listOf("mine"), (details.getValue("infoMessages") as JsonArray).map { it.asJsonObject.get("message").asString })
+    }
+
+    @Test
+    fun infoMessagesCapAtFiveTextsAndThreeFixIds() {
+        assertEquals("the four stub fixes need distinct ids", 4, listOf(FIX_A, FIX_B, FIX_C, FIX_D).map { ops.quickFixIdForTest(it) }.toSet().size)
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(186L)) }
+        val items = listOf(stubNodeReportItem(node, MessageStatus.OK, "hint 0", quickFixes = listOf(FIX_A, FIX_B, FIX_C, FIX_D))) +
+            (1..6).map { stubNodeReportItem(node, MessageStatus.OK, "hint $it") }
+        val details = ops.infoDetailsForTest(node to mapOf(node to items))
+
+        val infos = details.getValue("infoMessages") as JsonArray
+        assertEquals(5, infos.size())
+        assertEquals(2, details["moreInfoMessages"])
+        assertEquals(
+            listOf(FIX_A, FIX_B, FIX_C).map { ops.quickFixIdForTest(it) },
+            infos[0].asJsonObject.getAsJsonArray("quickFixIds").map { it.asString },
+        )
+    }
+
+    @Test
+    fun noInfoItemsLeaveDetailsUntouched() {
+        val node = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(187L)) }
+        assertTrue(ops.infoDetailsForTest(node to mapOf(node to listOf(stubNodeReportItem(node, MessageStatus.ERROR)))).isEmpty())
+    }
+
+    @Test
+    fun infoQuickFixIdsComeFromTheFirstNodeOnlyAcrossNodesAndMerges() {
+        val (root, children) = nodeWithChildren(188L, 2)
+        val (otherRoot, otherChildren) = nodeWithChildren(191L, 1)
+        val firstRootProblems = mapOf(
+            children[0] to listOf(stubNodeReportItem(children[0], MessageStatus.OK, "shared", quickFixes = listOf(FIX_A))),
+            children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "shared", quickFixes = listOf(FIX_B))),
+        )
+        val secondRootProblems = mapOf(
+            otherChildren[0] to listOf(
+                stubNodeReportItem(otherChildren[0], MessageStatus.OK, "shared", quickFixes = listOf(FIX_C)),
+                stubNodeReportItem(otherChildren[0], MessageStatus.OK, "second root only", quickFixes = listOf(FIX_D)),
+            ),
+        )
+        val ids = { details: Map<String, Any?>, text: String ->
+            (details.getValue("infoMessages") as JsonArray).map { it.asJsonObject }
+                .single { it.get("message").asString == text }.getAsJsonArray("quickFixIds").map { it.asString }
+        }
+
+        val merged = ops.infoDetailsForTest(root to firstRootProblems, otherRoot to secondRootProblems)
+        assertEquals("an existing key keeps its first node's ids", listOf(ops.quickFixIdForTest(FIX_A)), ids(merged, "shared"))
+        assertEquals("a new key copies the source's ids", listOf(ops.quickFixIdForTest(FIX_D)), ids(merged, "second root only"))
+        assertEquals(3, (merged.getValue("infoMessages") as JsonArray).map { it.asJsonObject }.single { it.get("message").asString == "shared" }.get("count").asInt)
+    }
+
+    @Test
+    fun infoQuickFixIdsUniteEveryItemOfTheFirstNode() {
+        val (root, children) = nodeWithChildren(193L, 2)
+        val details = ops.infoDetailsForTest(
+            root to mapOf(
+                children[0] to listOf(
+                    stubNodeReportItem(children[0], MessageStatus.OK, "twice", quickFixes = listOf(FIX_A)),
+                    stubNodeReportItem(children[0], MessageStatus.OK, "twice", quickFixes = listOf(FIX_B)),
+                ),
+                children[1] to listOf(stubNodeReportItem(children[1], MessageStatus.OK, "twice", quickFixes = listOf(FIX_C))),
+            ),
+        )
+        val entry = (details.getValue("infoMessages") as JsonArray).single().asJsonObject
+        assertEquals(3, entry.get("count").asInt)
+        assertEquals(listOf(FIX_A, FIX_B).map { ops.quickFixIdForTest(it) }, entry.getAsJsonArray("quickFixIds").map { it.asString })
+    }
+
+    @Test
+    fun quickFixIdOfANonAdapterFixIsItsClassName() {
+        assertEquals(FIX_A.javaClass.name, ops.quickFixIdForTest(FIX_A))
+    }
+
+    @Test
+    fun mergeTalliesKeepsRootSampleNodeWhenModelLevelEntryHasNone() {
+        val root = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(114L)) }
+        val fix = object : EditorQuickFix {
+            override fun isExecutedImmediately(): Boolean = false
+            override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+            override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+            override fun getDescription(repository: org.jetbrains.mps.openapi.module.SRepository): String = "fix"
+            override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> = emptySet()
+        }
+        val row = ops.moduleRowMessagesForTest(
+            listOf(
+                StubModelProblemItem(MessageStatus.ERROR, "model only"),
+                StubModelProblemItem(MessageStatus.ERROR, "shared"),
+            ),
+            root,
+            mapOf(
+                root to listOf(
+                    stubNodeReportItem(root, MessageStatus.ERROR, "root only"),
+                    stubNodeReportItem(root, MessageStatus.ERROR, "shared", quickFixes = listOf(fix)),
+                ),
+            ),
+        )
+
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        assertEquals(listOf("shared", "model only", "root only"), messages.map { it.get("message").asString })
+        val shared = messages[0]
+        assertEquals(2, shared.get("count").asInt)
+        assertEquals(PersistenceFacade.getInstance().asString(root.reference), shared.get("node").asString)
+        assertTrue(shared.get("hasQuickFixes").asBoolean)
+        assertFalse("a model-level-only entry has no node: ${messages[1]}", messages[1].has("node"))
+    }
+
+    @Test
+    fun mergeTalliesUnitesNodeSetsInOrderWithoutSharingThem() {
+        val (root, children) = nodeWithChildren(150L, 2)
+        val (first, second) = children
+        val modelNode = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(160L)) }
+        val extra = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(161L)) }
+        val (merged, source) = ops.mergedAndSourceRowsForTest(
+            listOf(StubNodeModelProblemItem(modelNode, MessageStatus.ERROR, "shared"), StubNodeModelProblemItem(first, MessageStatus.ERROR, "root text")),
+            root,
+            mapOf(
+                first to listOf(stubNodeReportItem(first, MessageStatus.ERROR, "shared"), stubNodeReportItem(first, MessageStatus.ERROR, "root text")),
+                second to listOf(stubNodeReportItem(second, MessageStatus.ERROR, "root only")),
+            ),
+            extra.reference,
+        )
+
+        val byText = merged.getAsJsonArray("messages").associate { it.asJsonObject.get("message").asString to it.asJsonObject }
+        val ref = { n: SNode -> PersistenceFacade.getInstance().asString(n.reference) }
+        assertEquals("model node first, then the root's", listOf(ref(modelNode), ref(first)),
+            byText.getValue("shared").getAsJsonArray("nodes").map { it.asString })
+        assertEquals(ref(modelNode), byText.getValue("shared").get("node").asString)
+        assertFalse("a node on both sides counts once: ${byText["root text"]}", byText.getValue("root text").has("nodes"))
+        assertEquals(2, byText.getValue("root text").get("count").asInt)
+
+        val rootOnly = source.getAsJsonArray("messages").map { it.asJsonObject }.single { it.get("message").asString == "root only" }
+        assertFalse("the merge must copy the root tally's node set: $rootOnly", rootOnly.has("nodes"))
+    }
+
+    @Test
+    fun choosePerRootFormSelectsForm1Form2OrTempFileFallbackByExactLength() {
+        // G4: synthetic rows, one of them with 3 distinct texts, tested at and 1 below each form's length.
+        val cleanNode: SNode = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(112L)) }
+        val problemNode: SNode = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(113L)) }
+        val cleanBase = JsonObject().apply {
+            addProperty("root", "r:test/112")
+            addProperty("name", "Clean")
+            addProperty("concept", "TestConcept")
+            addProperty("errors", 0)
+            addProperty("warnings", 0)
+        }
+        val problemBase = JsonObject().apply {
+            addProperty("root", "r:test/113")
+            addProperty("name", "Broken")
+            addProperty("concept", "TestConcept")
+            addProperty("errors", 3)
+            addProperty("warnings", 0)
+        }
+        val problemMap = mapOf<SNode, List<NodeReportItem>>(
+            problemNode to listOf(
+                stubNodeReportItem(problemNode, MessageStatus.ERROR, "first distinct error message"),
+                stubNodeReportItem(problemNode, MessageStatus.ERROR, "second distinct error message"),
+                stubNodeReportItem(problemNode, MessageStatus.ERROR, "third distinct error message"),
+            ),
+        )
+        val rows = listOf(
+            cleanBase to (cleanNode to emptyMap<SNode, List<NodeReportItem>>()),
+            problemBase to (problemNode to problemMap),
+        )
+
+        val (form1Json, form1PerRow, form1NodesPerMessage) = ops.choosePerRootFormForTest(rows, Int.MAX_VALUE)
+        assertEquals(5, form1PerRow)
+        assertEquals(5, form1NodesPerMessage)
+
+        val atForm1 = ops.choosePerRootFormForTest(rows, form1Json.length)
+        assertEquals(form1Json, atForm1.first)
+        assertEquals(5, atForm1.second)
+
+        val belowForm1 = ops.choosePerRootFormForTest(rows, form1Json.length - 1)
+        val form2Json = belowForm1.first
+        assertEquals("without a multi-node message the one-node form is skipped", 1, belowForm1.second)
+        assertEquals(1, belowForm1.third)
+        assertTrue("form 2 must be shorter than form 1", form2Json.length < form1Json.length)
+        val form2Broken = JsonParser.parseString(form2Json).asJsonArray[1].asJsonObject
+        assertEquals(1, form2Broken.getAsJsonArray("messages").size())
+        assertEquals(2, form2Broken.get("moreMessages").asInt)
+
+        val atForm2 = ops.choosePerRootFormForTest(rows, form2Json.length)
+        assertEquals(form2Json, atForm2.first)
+        assertEquals(1, atForm2.second)
+
+        val belowForm2 = ops.choosePerRootFormForTest(rows, form2Json.length - 1)
+        assertEquals("below form 2's length, form 1 is handed to finalizeResult for the temp file", form1Json, belowForm2.first)
+        assertEquals(5, belowForm2.second)
+        assertEquals(5, belowForm2.third)
+
+        val allClean = ops.choosePerRootFormForTest(listOf(cleanBase to (cleanNode to emptyMap())), Int.MAX_VALUE)
+        assertNull("all-clean rows must omit messagesPerRow", allClean.second)
+        assertNull("all-clean rows must omit nodesPerMessage", allClean.third)
+    }
+
+    @Test
+    fun choosePerRootFormCutsNodesBeforeMessages() {
+        // D119: a row with a text on three nodes and a second text; the one-node form sits between form 1 and form 2.
+        val (root, children) = nodeWithChildren(130L, 3)
+        val base = JsonObject().apply {
+            addProperty("root", "r:test/130")
+            addProperty("name", "Broken")
+            addProperty("concept", "TestConcept")
+            addProperty("errors", 4)
+            addProperty("warnings", 0)
+        }
+        val problems = children.associateWith { listOf(stubNodeReportItem(it, MessageStatus.ERROR, "Unreachable command")) } +
+            (root to listOf(stubNodeReportItem(root, MessageStatus.ERROR, "second distinct error message")))
+        val rows = listOf(base to (root to problems))
+
+        val (form1Json, _, form1NodesPerMessage) = ops.choosePerRootFormForTest(rows, Int.MAX_VALUE)
+        assertEquals(5, form1NodesPerMessage)
+        val form1Repeated = JsonParser.parseString(form1Json).asJsonArray[0].asJsonObject.getAsJsonArray("messages")[0].asJsonObject
+        assertEquals(3, form1Repeated.getAsJsonArray("nodes").size())
+
+        val belowForm1 = ops.choosePerRootFormForTest(rows, form1Json.length - 1)
+        assertEquals(5, belowForm1.second)
+        assertEquals(1, belowForm1.third)
+        val oneNodeRow = JsonParser.parseString(belowForm1.first).asJsonArray[0].asJsonObject
+        assertEquals("the one-node form keeps every message", 2, oneNodeRow.getAsJsonArray("messages").size())
+        val oneNodeRepeated = oneNodeRow.getAsJsonArray("messages")[0].asJsonObject
+        assertFalse("nodes would only repeat node: $oneNodeRepeated", oneNodeRepeated.has("nodes"))
+        assertEquals(2, oneNodeRepeated.get("moreNodes").asInt)
+        assertEquals(form1Repeated.get("node"), oneNodeRepeated.get("node"))
+
+        val belowOneNode = ops.choosePerRootFormForTest(rows, belowForm1.first.length - 1)
+        assertEquals(1, belowOneNode.second)
+        assertEquals(1, belowOneNode.third)
+        val form2Row = JsonParser.parseString(belowOneNode.first).asJsonArray[0].asJsonObject
+        assertEquals(1, form2Row.getAsJsonArray("messages").size())
+        assertEquals(1, form2Row.get("moreMessages").asInt)
+        assertEquals(2, form2Row.getAsJsonArray("messages")[0].asJsonObject.get("moreNodes").asInt)
+
+        val spill = ops.choosePerRootFormForTest(rows, belowOneNode.first.length - 1)
+        assertEquals(form1Json, spill.first)
+        assertEquals(5, spill.second)
+        assertEquals(5, spill.third)
     }
 
     @Test
@@ -640,28 +1370,136 @@ class AbstractOpsPropertyProblemsTest {
         }
     }
 
-    @Test
-    fun parseJsonOnTruncatedInputAppendsBraceImbalanceHint() {
-        val json = """{"a":1"""
+    private fun parseFailure(json: String): String {
         try {
-            // Truncated object (missing closing brace): Gson throws a JsonSyntaxException backed by an
-            // EOFException whose message is "End of input at line N column M ...".
-            ops.parseJson(json)
-            fail("Expected truncated JSON to fail")
+            ops.parseJsonElement(json)
         } catch (e: AbstractOps.McpInvalidRequestException) {
-            // Assert against the REAL Gson message (we fed malformed JSON), so a future Gson reword of
-            // "End of input" fails this test rather than silently disabling the hint.
-            assertTrue(
-                "Expected the EOF Gson message, got: ${e.message}",
-                e.message.orEmpty().contains("End of input")
-            )
-            assertTrue(
-                "Expected the brace-imbalance hint, got: ${e.message}",
-                e.message.orEmpty().contains("unbalanced")
-            )
-            assertTrue(e.message.orEmpty().contains("received ${json.length} chars (inline limit 4096)"))
-            assertTrue(e.message.orEmpty().contains("absolute temp-file path"))
+            return e.message.orEmpty()
         }
+        fail("Expected malformed JSON to fail: $json")
+        return ""
+    }
+
+    private fun bigBlueprint(nodes: Int = 45): String =
+        (0 until nodes).joinToString(",", prefix = """{"concept":"test.C","children":[{"role":"child","nodes":[""", postfix = "]}]}") {
+            """{"concept":"test.D","properties":[{"name":"name","value":"node$it"}]}"""
+        }
+
+    @Test
+    fun parseJsonOnMissingCloserReportsUnbalancedWithGsonLocation() {
+        val json = """{"a":1"""
+        val message = parseFailure(json)
+        assertTrue("Expected the closer diagnosis, got: $message", message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(message.contains("cannot be inferred from counts"))
+        assertTrue("Expected real Gson location: $message", message.contains("at line 1 column ${json.length + 1} path \$.a"))
+        assertFalse("Gson's EOF text must be replaced: $message", message.contains("End of input"))
+        assertTrue(message.contains("received ${json.length} chars (inline limit 4096)"))
+        assertTrue(message.contains("absolute temp-file path"))
+        assertTrue(message.contains("mps-node-editing/references/troubleshooting.md"))
+    }
+
+    @Test
+    fun parseJsonListsMissingClosersInnermostFirst() {
+        val message = parseFailure("""{"a":[{"b":1""")
+        assertTrue(message, message.contains("3 closer(s) missing at the end of input: '}' then ']' then '}'"))
+    }
+
+    @Test
+    fun parseJsonOnUnterminatedStringDoesNotClaimUnbalanced() {
+        val json = "{\"a\":1,\n \"b\": \"cut off"
+        val message = parseFailure(json)
+        assertTrue(message, message.contains("unterminated string opened at line 2 column 7"))
+        assertTrue(message.contains("unescaped"))
+        assertFalse(message, message.contains("unbalanced"))
+        assertTrue(message.contains("received ${json.length} chars (inline limit 4096)"))
+        assertTrue(message.contains("absolute temp-file path"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret must sit under the opening quote", 10 + 6, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonOnMismatchedCloserNamesTheOpener() {
+        val message = parseFailure("""{"a":[1,2},"b":3}""")
+        assertTrue(message, message.contains("unbalanced: '}' at line 1 column 10 closes the '[' opened at line 1 column 6: a ']' is missing before it"))
+        assertTrue(message.contains("absolute temp-file path"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret must sit under the offending closer", 10 + 9, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonOnExtraClosersAfterTopLevelValue() {
+        val message = parseFailure("""{"a":[1]}]}""")
+        assertTrue(message, message.contains("unbalanced: 2 extra closer(s) after the top-level value ended, the first at line 1 column 10"))
+        assertFalse("Gson's lenient-mode text must be dropped: $message", message.contains("setStrictness"))
+        assertFalse(message.contains("Troubleshooting.md"))
+        assertTrue(message.contains("absolute temp-file path"))
+    }
+
+    @Test
+    fun parseJsonOnTrailingContentAfterTopLevelValue() {
+        val json = """{"a":1} x"""
+        val message = parseFailure(json)
+        assertTrue(message, message.contains("unexpected content after the top-level value at line 1 column 9"))
+        assertFalse(message.contains("unbalanced"))
+        assertFalse(message.contains("received ${json.length} chars"))
+        assertFalse(message.contains("absolute temp-file path"))
+        assertFalse(message.contains("setStrictness"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals(10 + 8, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonIgnoresBracketsAndEscapedQuotesInsideStrings() {
+        // Balanced apart from the missing final '}': the ']' '}' '{' and the escaped quote sit inside strings.
+        val message = parseFailure("""{"a":"x]}{ \" [","b":2""")
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertFalse(message.contains("closes the"))
+        assertFalse(message.contains("extra closer"))
+    }
+
+    @Test
+    fun parseJsonReportsScanLineWhenItDiffersFromGsonLine() {
+        // Gson reports the end of input on line 4; the scan points at the line where the string was opened.
+        val message = parseFailure("{\"a\":1,\n \"b\": \"cut\noff\nmore")
+        assertTrue(message, message.contains("unterminated string opened at line 2 column 7"))
+        assertTrue(message, message.contains("at line 4 column"))
+        assertTrue(message.lines().any { it.startsWith("->    2 | ") })
+        assertFalse(message.lines().any { it.startsWith("->    4 | ") })
+    }
+
+    @Test
+    fun parseJsonOmitsTempFileSentenceForInputLongerThanInlineLimit() {
+        val json = """{"a":"""" + "x".repeat(4200)
+        val message = parseFailure(json)
+        assertTrue(message, message.contains("unterminated string"))
+        assertTrue(message.contains("received ${json.length} chars (inline limit 4096)"))
+        assertFalse(message, message.contains("absolute temp-file path"))
+        assertTrue(message.contains("mps-node-editing/references/troubleshooting.md"))
+    }
+
+    @Test
+    fun parseJsonExcerptIsWindowedAndClampedAtEndOfInput() {
+        val json = bigBlueprint()
+        assertTrue(json.length > 3000)
+        val message = parseFailure(json.dropLast(2))
+        val excerptLine = message.lines().first { it.startsWith("->") }
+        assertTrue("excerpt must be windowed: ${excerptLine.length}", excerptLine.length < 200)
+        assertTrue(excerptLine.contains("| ..."))
+        assertFalse("window ends at EOF, no trailing ellipsis", excerptLine.endsWith("..."))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret clamped just past the last character", excerptLine.length, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonErrorForLargeSingleLineBlueprintStaysUnderOneKilobyte() {
+        val json = bigBlueprint()
+        assertTrue(json.length in 3000..4096)
+        val withExtraCloser = parseFailure(json + "}")
+        assertTrue(withExtraCloser, withExtraCloser.contains("1 extra closer(s)"))
+        assertTrue("extra closer: ${withExtraCloser.length} chars", withExtraCloser.length < 1024)
+        val withMissingCloser = parseFailure(json.dropLast(1))
+        assertTrue(withMissingCloser, withMissingCloser.contains("1 closer(s) missing"))
+        assertTrue("missing closer: ${withMissingCloser.length} chars", withMissingCloser.length < 1024)
     }
 
     @Test
@@ -697,7 +1535,111 @@ class AbstractOpsPropertyProblemsTest {
             assertFalse(message.contains("received ${json.length} chars"))
             assertFalse(message.contains("unbalanced"))
             assertFalse(message.contains("absolute temp-file path"))
+            assertFalse(message.contains("Troubleshooting.md"))
+            assertFalse(message.contains("setStrictness"))
+            assertFalse(message.contains("mps-node-editing/references/troubleshooting.md"))
         }
+    }
+
+    @Test
+    fun parseJsonKeepsGsonReasonWhenItStoppedBeforeTheBracketFinding() {
+        // Gson stops at the missing ':' (column 7); the scan only finds the mismatched '}' at column 14.
+        val message = parseFailure("""{"a" 1, "b":[}""")
+        assertTrue(message, message.contains("Parser: Expected ':' at line 1 column 7 path \$.a"))
+        assertTrue(message, message.contains("Further on: unbalanced: '}' at line 1 column 14 closes the '[' opened at line 1 column 13"))
+        assertFalse("the class name prefix must be stripped: $message", message.contains("MalformedJsonException"))
+        assertFalse(message.contains("setStrictness"))
+        val caretLine = message.lines().first { it.trim() == "^" }
+        assertEquals("caret must follow the parser's position, not the later finding", 10 + 6, caretLine.indexOf('^'))
+    }
+
+    @Test
+    fun parseJsonLeadsWithTheMismatchWhenGsonStoppedAtTheSamePosition() {
+        for (json in listOf("""{"n":[{"a":1},}""", """[1,[2,}]]""", "{\"n\":[\n{\"a\":1},}")) {
+            val message = parseFailure(json)
+            assertTrue(json + " -> " + message, message.startsWith("unbalanced: '}'"))
+            assertFalse(json + " -> " + message, message.contains("Further on"))
+            assertFalse(json + " -> " + message, message.contains("Parser: Expected"))
+        }
+    }
+
+    @Test
+    fun parseJsonKeepsGsonReasonWhenItStoppedBeforeTheEndOfInput() {
+        val message = parseFailure("""{"a" 1, "b":[""")
+        assertTrue(message, message.contains("Parser: Expected ':' at line 1 column 7"))
+        assertTrue(message, message.contains("Further on: unbalanced: 2 closer(s) missing at the end of input"))
+    }
+
+    @Test
+    fun parseJsonSummarisesMoreThanEightMissingClosers() {
+        val message = parseFailure("[".repeat(11))
+        assertTrue(message, message.contains("11 closer(s) missing at the end of input: ']' then ']' then ']' then ']' then ']' then ']' then ']' then ']' and 3 more."))
+        assertFalse(message, message.contains(".."))
+        assertFalse("the example path must not read as the actual one: $message", message.contains("children[3]"))
+    }
+
+    @Test
+    fun parseJsonExcerptDropsCarriageReturnsAndKeepsCaretAligned() {
+        val message = parseFailure("{\"a\":1,\r\n\"b\":[1}")
+        assertTrue(message, message.contains("closes the '[' opened at line 2 column 5"))
+        assertFalse("CR must not leak into the excerpt: $message", message.contains('\r'))
+        assertEquals(" ".repeat(10 + 6) + "^", message.lines().first { it.trim() == "^" })
+    }
+
+    @Test
+    fun parseJsonExcerptPreservesTabsInCaretPadding() {
+        val message = parseFailure("{\"a\":1,\n\t\"b\":[1}")
+        assertTrue(message, message.contains("closes the '[' opened at line 2 column 6"))
+        assertEquals(" ".repeat(10) + "\t" + " ".repeat(6) + "^", message.lines().first { it.trim() == "^" })
+    }
+
+    private fun gsonFailure(json: String): String =
+        try {
+            JsonParser.parseString(json)
+            fail("Expected malformed JSON to fail: $json")
+            ""
+        } catch (e: JsonSyntaxException) {
+            e.message.orEmpty()
+        }
+
+    @Test
+    fun parseJsonFileGuidanceNamesNoSkill() {
+        val message = parseFailure("""{"a":1""")
+        assertTrue(message, message.contains("Pass an absolute temp-file path instead of inline JSON. See mps-node-editing/references/troubleshooting.md."))
+        assertFalse(message, message.contains("(see the mps-node-editing skill)"))
+        // Study D120: the recovery points at the script that builds a deep blueprint without hand-typed closers.
+        assertTrue(message, message.endsWith("troubleshooting.md. To build a deep blueprint, run mps-node-editing's scripts/blueprint.py."))
+    }
+
+    @Test
+    fun parseJsonFileGuidanceOverTheInlineLimitStillNamesTheBlueprintScript() {
+        val message = parseFailure("{\"a\":\"" + "x".repeat(5000) + "\"")
+        assertFalse(message, message.contains("Pass an absolute temp-file path instead of inline JSON"))
+        assertTrue(message, message.contains("See mps-node-editing/references/troubleshooting.md. To build a deep blueprint, run mps-node-editing's scripts/blueprint.py."))
+    }
+
+    @Test
+    fun inlineGuidanceGivesOnlyTheTroubleshootingPointer() {
+        val json = """{"a":1"""
+        val message = JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.INLINE)
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(message, message.endsWith("\n\nSee mps-node-editing/references/troubleshooting.md."))
+        assertFalse(message, message.contains("temp-file"))
+        assertFalse(message, message.contains("temp file"))
+        assertFalse(message, message.contains("inline limit"))
+        assertEquals("an empty key list is plain INLINE", message, JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.inlineOnly(emptyList())))
+    }
+
+    @Test
+    fun inlineOnlyGuidanceNamesExactlyTheNestedFileKeys() {
+        val json = """{"conceptsJson":[{"name":"Foo"}"""
+        val concepts = JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.inlineOnly(listOf("conceptsJson")))
+        assertTrue(concepts, concepts.contains("`parameters` itself must be inline; move conceptsJson into a temp file and pass its absolute path instead."))
+        assertTrue(concepts, concepts.contains("mps-node-editing/references/troubleshooting.md"))
+        assertFalse(concepts, concepts.contains("inline limit"))
+        val values = JsonSyntaxErrors.describe(json, gsonFailure(json), JsonInputGuidance.inlineOnly(listOf("valuesJson")))
+        assertTrue(values, values.contains("move valuesJson into a temp file"))
+        assertFalse(values, values.contains("conceptsJson into"))
     }
 
     @Test
@@ -752,6 +1694,116 @@ class AbstractOpsPropertyProblemsTest {
 
         assertEquals("void run() {}", source.code)
         assertEquals(FeatureKind.CLASS_CONTENT, source.featureKind)
+    }
+
+    // ── D117: a leading import/package header in non-CLASS Java ──────────────────────────────
+
+    @Test
+    fun leadingHeaderFindsTheTranscriptsImportsOnOneLine() {
+        val code = "import org.jetbrains.mps.openapi.model.SNode; import java.util.List; " +
+            "import java.util.ArrayList; import jetbrains.mps.scope.ListScope;\nSNode self = null;"
+        val header = JavaSyntaxProblems.leadingHeader(code)!!
+
+        assertEquals(
+            listOf(
+                "import org.jetbrains.mps.openapi.model.SNode;", "import java.util.List;",
+                "import java.util.ArrayList;", "import jetbrains.mps.scope.ListScope;",
+            ),
+            header.declarations,
+        )
+        assertEquals(code.indexOf("ListScope;") + "ListScope;".length, header.end)
+    }
+
+    @Test
+    fun leadingHeaderSkipsCommentsAndAcceptsEveryDeclarationForm() {
+        val code = "\n  // lead\n/* c */ package p.q;\nimport static a.B.c; /* between */ import a.b.*;\nimport/*c*/a.B; x();"
+        val header = JavaSyntaxProblems.leadingHeader(code)!!
+
+        assertEquals(
+            listOf("package p.q;", "import static a.B.c;", "import a.b.*;", "import/*c*/a.B;"),
+            header.declarations,
+        )
+        assertEquals(code.indexOf(" x();"), header.end)
+    }
+
+    @Test
+    fun leadingHeaderIgnoresCodeThatDoesNotStartWithADeclaration() {
+        assertNull(JavaSyntaxProblems.leadingHeader("int x = 1;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("important = 1;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("imports.add(x);"))
+        assertNull(JavaSyntaxProblems.leadingHeader("int x; import a.B;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("  // only a comment\n"))
+        // An import missing its `;` must not swallow the statement after it.
+        assertNull(JavaSyntaxProblems.leadingHeader("import java.util.List\nList<String> xs = null;"))
+        assertNull(JavaSyntaxProblems.leadingHeader("@Deprecated package p;"))
+    }
+
+    @Test
+    fun headerHintNamesTheKindTheFirstDeclarationAndAQualifiedName() {
+        val hint = JavaSyntaxProblems.headerHint(
+            listOf("import java.util.List;", "import java.util.ArrayList;", "import a.B;", "import c.D;"), "STATEMENTS"
+        )!!
+
+        assertTrue(hint, hint.startsWith("The code starts with `import java.util.List;` (and 3 more declarations), "))
+        assertTrue(hint, hint.contains("featureKind \"STATEMENTS\" accepts no `import` or `package` declarations"))
+        assertTrue(hint, hint.contains("fully qualified (`java.util.List`)"))
+        assertTrue(hint, hint.contains("mps_mcp_model_dependency(modelReference: \"console\""))
+        assertFalse(hint, hint.contains("featureKind \"CLASS\""))
+    }
+
+    @Test
+    fun headerHintDerivesTheExampleFromStaticAndWildcardImports() {
+        fun example(declaration: String) = JavaSyntaxProblems.headerHint(listOf(declaration), "METHOD")!!
+            .substringAfter("fully qualified (`").substringBefore("`)")
+
+        assertEquals("a.B", example("import a.B;"))
+        assertEquals("a.B", example("import static a.B.c;"))
+        assertEquals("a.B", example("import static a.B.*;"))
+        assertEquals("a.b.<Class>", example("import a.b.*;"))
+        assertEquals("a.B", example("import/*c*/a.B;"))
+        assertFalse(JavaSyntaxProblems.headerHint(listOf("import a.B;"), "METHOD")!!.contains("(and"))
+        assertTrue(
+            JavaSyntaxProblems.headerHint(listOf("import a.B;", "import c.D;"), "FIELD")!!
+                .contains("`import a.B;` (and 1 more declaration),")
+        )
+    }
+
+    @Test
+    fun headerHintForAPackageOnlyHeaderGivesNoQualifiedNameAdvice() {
+        val hint = JavaSyntaxProblems.headerHint(listOf("package p.q;"), "EXPRESSION")!!
+
+        assertTrue(hint, hint.contains("featureKind \"EXPRESSION\""))
+        assertTrue(hint, hint.endsWith("Remove the `package` declaration."))
+        assertFalse(hint, hint.contains("fully qualified"))
+        assertNull(JavaSyntaxProblems.headerHint(emptyList(), "STATEMENTS"))
+    }
+
+    @Test
+    fun headerHintUsesTheFirstImportAfterAPackageForTheExample() {
+        val hint = JavaSyntaxProblems.headerHint(listOf("package p;", "import java.util.Map;"), "STATEMENTS")!!
+
+        assertTrue(hint, hint.contains("`package p;` (and 1 more declaration)"))
+        assertTrue(hint, hint.contains("fully qualified (`java.util.Map`)"))
+    }
+
+    @Test
+    fun problemsAfterHeaderDropsHeaderErrorsAndKeepsUnlocatedOnes() {
+        val header = JavaSyntaxProblems.Problem(1, "Syntax error on token \"import\", assert expected", 0)
+        val body = JavaSyntaxProblems.Problem(1, "Syntax error on token \"!=\", invalid AssignmentOperator", 25)
+        val unknown = JavaSyntaxProblems.Problem(1, "no offset", null)
+        val negative = JavaSyntaxProblems.Problem(1, "negative offset", -1)
+
+        assertEquals(
+            listOf(body, unknown, negative),
+            JavaSyntaxProblems.problemsAfterHeader(listOf(header, body, unknown, negative), headerEnd = 22, offsetShift = 0),
+        )
+        // EXPRESSION: ecj's offsets include the wrapper prefix, so a body error at caller offset 25 reads 47.
+        val shiftedHeader = header.copy(sourceStart = 22)
+        val shiftedBody = body.copy(sourceStart = 47)
+        assertEquals(
+            listOf(shiftedBody),
+            JavaSyntaxProblems.problemsAfterHeader(listOf(shiftedHeader, shiftedBody), headerEnd = 22, offsetShift = 22),
+        )
     }
 
     @Test
@@ -1305,24 +2357,92 @@ class AbstractOpsPropertyProblemsTest {
         }
     }
 
-    /** Minimal [NodeReportItem]: [problemCounts] reads only `severity` and `message`. */
+    /** Minimal [NodeReportItem]: [problemSummary] keys problems by node, never reading `item.node`. */
     private class StubProblemItem(
         private val status: MessageStatus,
         private val text: String,
-    ) : NodeReportItem {
+        private val target: MessageTarget = NodeMessageTarget(),
+        private val fixes: Collection<QuickFixBase> = emptyList(),
+    ) : NodeReportItem, QuickFixReportItem {
         override fun getNode(): SNodeReference =
             throw UnsupportedOperationException("problemCounts must key problems by node, not read item.node")
+        override fun getMessage(): String = text
+        override fun getSeverity(): MessageStatus = status
+        override fun getMessageTarget(): MessageTarget = target
+        override fun getIssueKind(): IssueKindReportItem.ItemKind? = null
+        override fun getQuickFix(): Collection<QuickFixBase> = fixes
+        override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> =
+            if (fixes.isEmpty()) emptySet() else setOf(QuickFixReportItem.FLAVOUR_QUICKFIX)
+    }
+
+    /** Minimal model-level [ModelReportItem] that is not a [NodeReportItem]. */
+    private class StubModelProblemItem(
+        private val status: MessageStatus,
+        private val text: String,
+    ) : ModelReportItem {
+        override fun getModel(): SModelReference = throw UnsupportedOperationException("modelProblemSummary must not read item.model")
         override fun getMessage(): String = text
         override fun getSeverity(): MessageStatus = status
         override fun getIssueKind(): IssueKindReportItem.ItemKind? = null
         override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> = emptySet()
     }
 
+    /** A model-level item that is also a [NodeReportItem], as a model check reports for a node of the model. */
+    private class StubNodeModelProblemItem(
+        private val node: SNode,
+        private val status: MessageStatus,
+        private val text: String,
+    ) : ModelReportItem, NodeReportItem {
+        override fun getModel(): SModelReference = throw UnsupportedOperationException("modelProblemSummary must not read item.model")
+        override fun getNode(): SNodeReference = node.reference
+        override fun getMessage(): String = text
+        override fun getSeverity(): MessageStatus = status
+        override fun getIssueKind(): IssueKindReportItem.ItemKind? = null
+        override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> = emptySet()
+    }
+
+    /** A detached parent with id [parentId] and [count] children with the following ids, in child order. */
+    private fun nodeWithChildren(parentId: Long, count: Int): Pair<SNode, List<SNode>> {
+        val parent = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(parentId)) }
+        val children = (1..count).map { i ->
+            jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also {
+                it.setId(SNodeId.Regular(parentId + i))
+                parent.addChild(MetaAdapterFactory.getContainmentLink(0L, 1L, 1L, 1L, "child"), it)
+            }
+        }
+        return parent to children
+    }
+
+    // Four separate object expressions, not one factory: a non-adapter fix's id is its class name,
+    // so the D118 cap and first-node tests need four distinct classes.
+    private val FIX_A: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+    }
+    private val FIX_B: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+    }
+    private val FIX_C: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+    }
+    private val FIX_D: QuickFixBase = object : QuickFixBase {
+        override fun isExecutedImmediately(): Boolean = false
+        override fun isAlive(repository: org.jetbrains.mps.openapi.module.SRepository): Boolean = true
+        override fun execute(repository: org.jetbrains.mps.openapi.module.SRepository) {}
+    }
+
     private fun stubNodeReportItem(
         @Suppress("UNUSED_PARAMETER") node: SNode,
         severity: MessageStatus,
         message: String = "stub problem",
-    ): NodeReportItem = StubProblemItem(severity, message)
+        target: MessageTarget = NodeMessageTarget(),
+        quickFixes: Collection<QuickFixBase> = emptyList(),
+    ): NodeReportItem = StubProblemItem(severity, message, target, quickFixes)
 
     private class TestConcept(
         private val properties: Collection<SProperty>,
@@ -1525,6 +2645,22 @@ class AbstractOpsPropertyProblemsTest {
         override fun getType(): SDataType = jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes.STRING
 
         override fun isValid(string: String?): Boolean = true
+
+        override fun getSourceNode(): SNodeReference? = null
+
+        override fun isTransient(): Boolean = false
+    }
+
+    private class TestInvalidProperty(private val propName: String) : SProperty {
+        override fun getName(): String = propName
+
+        override fun getOwner(): SAbstractConcept = TestConcept(emptyList())
+
+        override fun isValid(): Boolean = true
+
+        override fun getType(): SDataType = jetbrains.mps.smodel.adapter.structure.types.SPrimitiveTypes.STRING
+
+        override fun isValid(string: String?): Boolean = false
 
         override fun getSourceNode(): SNodeReference? = null
 

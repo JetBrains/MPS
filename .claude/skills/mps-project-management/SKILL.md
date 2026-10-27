@@ -20,7 +20,7 @@ There is **no MCP tool that can open a project**. The IntelliJ MCP server reject
 - **Do not split process command lines on spaces.** Classpaths often contain `IntelliJ IDEA.app` or `Program Files`. Prefer `jcmd PID VM.command_line` (or `/proc/PID/cmdline` on Linux). When activating an already-running instance, strip `-agentlib:jdwp` and the IntelliJ `idea_rt.jar` javaagent.
 - **`java_command` from `jcmd VM.command_line` is `"<main-class> [args]"`.** Use only the first token as the main class. If MPS was itself started with a project path, the field is `jetbrains.mps.Launcher /path/to/previous/project`; passing it whole dies with `ClassNotFoundException`.
 - **Do not write helper scripts or `jcmd` dumps into the checkout.** Use `$TMPDIR` / `%TEMP%` only.
-- **A `MODAL_BLOCKED` close is not a closed project.** Ask the user to dismiss the MPS dialog, then retry `mps_mcp_close_project`. Use `force=true` only after a timed-out or cancelled close.
+- **A non-force `MODAL_BLOCKED` close is still pending (`details.closePending: true`).** The close is already queued on the EDT and completes as soon as the user answers or closes the blocking dialog. Ask the user to dismiss the dialog, then check `mps_mcp_list_open_projects` before retrying `mps_mcp_close_project`. Use `force=true` only if the project is still open after a timed-out or cancelled close. A timed-out force close is withdrawn (`closePending: false`); check `mps_mcp_list_open_projects`.
 
 ## Workflow
 
@@ -36,15 +36,15 @@ Use `mps_mcp_close_project` to close the project selected by the host's `project
 
 - **Select the target project.** The path must be at or inside that open project, never an ancestor such as the repository root. When several projects are open, call `mps_mcp_list_open_projects` first and pass the intended project's `mpsProjectBaseDirectory` as `projectPath`.
 - **A normal close may show dialogs.** It saves documents and runs can-close checks. Save / confirmation dialogs block the call until they are dismissed.
-- **Do not wait past 20 seconds.** If the tool returns `ok:false` with `code: MODAL_BLOCKED`, a modal dialog is likely open in MPS (Save, confirmation, Find Usages, Search, etc.). Ask the user to close that dialog manually, then retry. Do not assume the project closed.
-- **Prefer `force=false`.** Pass `force=true` only after a previous close timed out or was cancelled on a confirmation dialog. Force-close skips the save/can-close dialogs this close would show (unsaved editor changes are discarded) and does not wait for an already-open unrelated modal.
+- **Do not wait past 20 seconds.** If a non-force close returns `ok:false` with `code: MODAL_BLOCKED` (`details.closePending: true`), a modal dialog is likely open in MPS (Save, confirmation, Find Usages, Search, etc.), and the close is still pending on the EDT. Ask the user to answer or close that dialog, then check `mps_mcp_list_open_projects` before retrying: once the dialog closes, the pending close usually completes on its own.
+- **Prefer `force=false`.** Pass `force=true` only after checking that the project is still open following a timed-out or cancelled close. Force-close skips the save/can-close dialogs this close would show (unsaved editor changes are discarded) and does not wait for an already-open unrelated modal.
 - **Shut down MPS with `shutdownWithLastProject=true`.** When asking MPS to close a project, it can also be instructed in the same MCP call to shut down, if MPS sees no other open projects (it checks for open projects itself, no need to check yourself). When MPS is displaying the welcome screen (no projects are open), it cannot be shut down via MCP. A modal confirmation dialog may (if configured) prevent MPS from shutting down.
 
 1. If several projects are open, list them and pass the intended `mpsProjectBaseDirectory` as `projectPath`.
 2. Call `mps_mcp_close_project` with the default `force=false`.
 3. On `{ok:true, data.closed:true}`, stop. Closing the last project is expected to leave the Welcome screen.
 4. If the close was cancelled (the project remains open): ask the user to complete the dialog, or retry with `force=true`.
-5. If `code: MODAL_BLOCKED`: ask the user to close the blocking dialog, then retry. Use `force=true` only to skip save/confirmation dialogs that this close itself would show.
+5. If a non-force close returns `code: MODAL_BLOCKED` (`details.closePending: true`): the close is still pending and completes once the blocking dialog is answered. Ask the user to answer or close the dialog, then check `mps_mcp_list_open_projects` before retrying. Use `force=true` only if the project is still open and you need to skip save/confirmation dialogs that this close itself would show.
 
 ## Creating a new empty project
 

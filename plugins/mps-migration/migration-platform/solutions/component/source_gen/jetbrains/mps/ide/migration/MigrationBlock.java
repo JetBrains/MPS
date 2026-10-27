@@ -9,6 +9,7 @@ import jetbrains.mps.internal.collections.runtime.SetSequence;
 import java.util.LinkedHashSet;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import java.util.Arrays;
+import java.util.List;
 
 @GeneratedClass(nodeId = "4643949976756745316", model = "a5b1c28d-abeb-49a6-a58c-559039616d64/r:a9597bdf-0806-4a79-8ace-88240c6b9878(jetbrains.mps.migration.component/jetbrains.mps.ide.migration)")
 /*package*/ class MigrationBlock {
@@ -61,6 +62,22 @@ import java.util.Arrays;
 
   public String getMigrationForbiddenMessage() {
     return (SetSequence.fromSet(myBlocks).isEmpty() ? null : SetSequence.fromSet(myBlocks).last().message);
+  }
+
+  /**
+   * Like getMigrationForbiddenMessage(), but ignores the given causes: the message of the latest other block, or null if there is none.
+   */
+  public String getMigrationForbiddenMessageWithout(BlockCause... exceptions) {
+    List<BlockCause> ignored = Arrays.asList(exceptions);
+    String message = null;
+    synchronized (myBlocks) {
+      for (BlockCause cause : myBlocks) {
+        if (!(ignored.contains(cause))) {
+          message = cause.message;
+        }
+      }
+    }
+    return message;
   }
 
   public void checkMigrationIfNecessary() {

@@ -18,6 +18,11 @@ import java.util.regex.PatternSyntaxException
  *
  * A record starts at a line of the form `yyyy-MM-dd HH:mm:ss,SSS [uptime-ms] LEVEL - category - message`;
  * every following line that does not start that way (a stack trace, IDE/JDK details) belongs to it.
+ *
+ * The file outlives the IDE process that wrote its tail: `idea.log` is not truncated on start, so a
+ * fresh process reads back the previous one. The reader cannot know when the current process began —
+ * that is the caller's [Query.ideStart] — so it marks the records predating it instead of dropping
+ * them; reading the earlier session is a legitimate task (why did the IDE die?).
  */
 object IdeLogReader {
 
@@ -54,6 +59,8 @@ object IdeLogReader {
         val category: String,
         val message: String,
         val continuation: List<String>,
+        /** Logged before [Query.ideStart], so by an earlier IDE process; see the object KDoc. */
+        val previousSession: Boolean = false,
     )
 
     class Query(
@@ -61,6 +68,12 @@ object IdeLogReader {
         val since: LocalDateTime? = null,
         val minLevel: Level = Level.INFO,
         val grep: Pattern? = null,
+        /**
+         * The current IDE process's start, when the caller knows it. It never bounds the read —
+         * [since] is the only lower bound — it only marks the records it predates as
+         * [Record.previousSession], because the log file outlives the process that wrote its tail.
+         */
+        val ideStart: LocalDateTime? = null,
     )
 
     class Result(
@@ -74,6 +87,8 @@ object IdeLogReader {
         val readLimitReached: Boolean,
     ) {
         val truncatedByTail: Boolean get() = matchedRecords > records.size
+        /** How many returned records predate [Query.ideStart]; 0 when no bound was given. */
+        val previousSessionRecords: Int get() = records.count { it.previousSession }
     }
 
     private val HEADER = Regex("""^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) \[\s*(\d+)]\s+([A-Z]+) - (.*)$""")
@@ -100,6 +115,9 @@ object IdeLogReader {
                 "form (2026-10-08 14:05:00 or 2026-10-08 14:05:00,123)"
         )
     }
+
+    /** Writes a [LocalDateTime] the way the log stamps it, so it reads like a record `ts`. */
+    fun formatTimestamp(time: LocalDateTime): String = time.format(LOG_TIMESTAMP)
 
     fun parseGrep(text: String): Pattern = try {
         Pattern.compile(text)
@@ -128,6 +146,7 @@ object IdeLogReader {
      * `idea.1.log` when `idea.log` alone does not fill the tail. With one, the walk continues into
      * older files while the tail is not filled and the bound predates the first record of the file
      * just read, up to [MAX_FILES] files and [MAX_BYTES] bytes (the first file is always read).
+     * [Query.ideStart] takes part in none of this: it marks records, it never bounds the walk.
      */
     fun read(directory: Path, query: Query): Result {
         val candidates = logFiles(directory)
@@ -190,12 +209,12 @@ object IdeLogReader {
                     if (header != null) continuation.add(line)
                     continue
                 }
-                header?.let { accept(toRecord(firstLine, it, continuation)) }
+                header?.let { accept(toRecord(firstLine, it, continuation, query.ideStart)) }
                 header = next
                 firstLine = line
                 continuation = mutableListOf()
             }
-            header?.let { accept(toRecord(firstLine, it, continuation)) }
+            header?.let { accept(toRecord(firstLine, it, continuation, query.ideStart)) }
         }
         return FileScan(scanned, matched, kept.toList(), firstTimestamp)
     }
@@ -203,18 +222,25 @@ object IdeLogReader {
     private fun reader(file: Path): BufferedReader =
         BufferedReader(InputStreamReader(Files.newInputStream(file), StandardCharsets.UTF_8))
 
-    private fun toRecord(firstLine: String, header: MatchResult, continuation: List<String>): Record {
+    private fun toRecord(
+        firstLine: String,
+        header: MatchResult,
+        continuation: List<String>,
+        ideStart: LocalDateTime?,
+    ): Record {
         val (timestampText, uptime, level, rest) = header.destructured
         val separator = rest.indexOf(" - ")
+        val timestamp = LocalDateTime.parse(timestampText, LOG_TIMESTAMP)
         return Record(
             firstLine = firstLine,
             timestampText = timestampText,
-            timestamp = LocalDateTime.parse(timestampText, LOG_TIMESTAMP),
+            timestamp = timestamp,
             uptimeMs = uptime.toLongOrNull() ?: -1,
             level = level,
             category = if (separator < 0) "" else rest.substring(0, separator),
             message = if (separator < 0) rest else rest.substring(separator + 3),
             continuation = continuation,
+            previousSession = ideStart != null && timestamp.isBefore(ideStart),
         )
     }
 

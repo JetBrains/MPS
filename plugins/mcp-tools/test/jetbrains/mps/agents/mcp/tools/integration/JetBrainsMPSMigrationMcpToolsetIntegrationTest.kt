@@ -2,9 +2,13 @@ package jetbrains.mps.agents.mcp.tools.integration
 
 import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
+import jetbrains.mps.agents.mcp.tools.migration.HeadlessMigrations
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.application.impl.LaterInvocator
 import jetbrains.mps.make.MakeServiceComponent
 import jetbrains.mps.make.MakeSession
 import jetbrains.mps.messages.IMessageHandler
@@ -12,12 +16,17 @@ import jetbrains.mps.project.Solution
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.language.LanguageRegistry
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
 import org.jetbrains.mps.openapi.language.SLanguage
 import org.jetbrains.mps.openapi.model.SModel
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Assume.assumeTrue
 import org.junit.Test
 
@@ -139,6 +148,53 @@ class JetBrainsMPSMigrationMcpToolsetIntegrationTest : McpIntegrationTestBase() 
             assertTrue(apply.get("error").asString.contains("make session active"))
         } finally {
             makeService.closeSession(session)
+        }
+    }
+
+    @Test
+    fun `APPLY re-checks isSessionActive after waiting for the EDT`() {
+        val makeService = myProject.getComponent(MakeServiceComponent::class.java)?.get()
+        assertNotNull("The integration environment must provide a make service", makeService)
+        val baseLanguage = checkNotNull(LanguageRegistry.getInstance(myProject.repository).getLanguage("jetbrains.mps.baseLanguage")).identity
+        val (solution, _) = solutionUsing(baseLanguage, importVersion = null, recorded = null)
+
+        val modal = Any()
+        var modalEntered = true
+        ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.enterModal(modal) }, ModalityState.nonModal())
+        val session = MakeSession(myProject, IMessageHandler.NULL_HANDLER, false)
+        var sessionOpened = false
+        try {
+            val response = runTool(toolset) { ts ->
+                coroutineScope {
+                    val call = async { ts.mps_mcp_run_migrations("APPLY") }
+                    // Wait until planning finished on the background thread and `apply` is parked in
+                    // `requireResponsiveEdt()` on the non-modal EDT queue.
+                    withTimeout(10_000) {
+                        while (!HeadlessMigrations.applyRunning.get()) {
+                            if (call.isCompleted) fail("APPLY returned before setting applyRunning: ${call.await()}")
+                            delay(5)
+                        }
+                    }
+                    sessionOpened = makeService!!.openNewSession(session)
+                    assumeTrue("the test environment could not open a make session", sessionOpened)
+                    ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
+                    modalEntered = false
+                    call.await()
+                }
+            }
+            val apply = JsonParser.parseString(response).asJsonObject
+            assertFalse("APPLY must refuse when a make session opened while waiting for the EDT: $response", apply.get("ok").asBoolean)
+            assertEquals("INVALID_REQUEST", apply.get("code").asString)
+            assertTrue(apply.get("error").asString.contains("make session active"))
+            assertTrue(strings(apply.getAsJsonObject("details"), "blockers").any { it.startsWith("make session active") })
+            assertEquals("nothing was written", null, readOnRepo { solution.moduleDescriptor.languageVersions[baseLanguage] })
+        } finally {
+            if (modalEntered) {
+                ApplicationManager.getApplication().invokeAndWait({ LaterInvocator.leaveModal(modal) }, ModalityState.any())
+            }
+            if (sessionOpened) {
+                makeService!!.closeSession(session)
+            }
         }
     }
 

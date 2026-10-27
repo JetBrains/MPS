@@ -75,7 +75,9 @@ them per run into `families.tsv` (every column defined in its docstring); C is i
 `C_root_after_clean_model`: a node-scope `check_root_node_problems` after a container check with
 nothing left to read (0 errors, 0 warnings, no model-/module-level messages), no write in between.
 `C_after_summary` is a node-scope check after a container check whose `perRoot` counts are non-zero,
-no write in between: reading the text, D83, not distrust. Both have a `_batches` column (distinct
+no write in between: reading the text, D83, not distrust. `C_after_node_sample` takes out of it the
+re-checks of a row whose `messages` gave every text but only some nodes (a `count > 1` sample before
+D119, `moreNodes` after): finding the nodes, D119. Each has a `_batches` column (distinct
 `message.id`s). Reviewer assigns determinism
 per family from 3 instances: 1.0 next args derivable from previous response; 0.5 partly; 0 judgment.
 `score = occurrences × avg tokens × determinism × (1 + retry_rate)`; ALSO rank by avoidable turns

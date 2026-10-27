@@ -32,6 +32,7 @@ import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.module.SModuleReference
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.jetbrains.mps.openapi.util.ProgressMonitor
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * The headless engine behind `mps_mcp_run_migrations`: the same `MigrationSetup` →
@@ -48,6 +49,26 @@ import org.jetbrains.mps.openapi.util.ProgressMonitor
 internal object HeadlessMigrations {
     /** Caps the problems copied out of a [MigrationError]; the pre-check can report one per node. */
     private const val MAX_REPORTED_PROBLEMS = 200
+
+    /**
+     * Blocker text reported when a make session is open, both during planning ([blockers]) and when
+     * `apply` re-checks after waiting for the EDT.
+     */
+    const val MAKE_SESSION_ACTIVE_BLOCKER = "make session active: wait until the running make finishes, then call again"
+
+    /**
+     * One APPLY at a time in the whole IDE: two runs would force-save and update versions twice,
+     * interleave their steps, and toggle the global fast-find-usages switch `MigrationTask` flips.
+     * Shared with `AbstractOps.performMake` so MCP-started makes and APPLY exclude each other: APPLY
+     * sets the flag before re-checking [isMakeSessionActive], and `performMake` opens its session
+     * before re-checking the flag, so the two can never both proceed.
+     *
+     * Note: a UI-started make does not consult this flag, so against it a small window remains in
+     * `apply` between re-checking `isSessionActive` and the first write. Holding a sticky `MakeSession`
+     * open for the length of APPLY is not an option: its `SESSION_OPENED` listeners suspend
+     * `ReloadManagerComponent`, and migrations depend on those reloads.
+     */
+    val applyRunning = AtomicBoolean(false)
 
     data class PendingScript(
         val script: String,
@@ -139,15 +160,20 @@ internal object HeadlessMigrations {
     }
 
     /**
+     * True when a make session is currently open in [mpsProject]. Safe to call outside model access.
+     */
+    fun isMakeSessionActive(mpsProject: MPSProject): Boolean =
+        mpsProject.getComponent(MakeServiceComponent::class.java)?.get()?.isSessionActive == true
+
+    /**
      * Conditions under which APPLY refuses. Requires model read. A make session would race the run
      * (the trigger blocks its own checks for the same reason), and a project migrated by a newer MPS
      * must not be migrated back.
      */
     private fun blockers(mpsProject: MPSProject): List<String> {
         val result = mutableListOf<String>()
-        val makeService = mpsProject.getComponent(MakeServiceComponent::class.java)?.get()
-        if (makeService != null && makeService.isSessionActive) {
-            result.add("make session active: wait until the running make finishes, then call again")
+        if (isMakeSessionActive(mpsProject)) {
+            result.add(MAKE_SESSION_ACTIVE_BLOCKER)
         }
         val status = ProjectMigrationsRegistry.getInstance().checkMigratedToNewerVersion(mpsProject)
         if (status.isError) {

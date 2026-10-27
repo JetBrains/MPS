@@ -23,6 +23,7 @@ import jetbrains.mps.checkers.TargetConceptChecker2
 import jetbrains.mps.classloading.ClassLoaderManager
 import jetbrains.mps.editor.runtime.HeadlessEditorComponent
 import jetbrains.mps.errors.MessageStatus
+import jetbrains.mps.errors.QuickFix_Runtime
 import jetbrains.mps.errors.item.EditorQuickFix
 import jetbrains.mps.errors.item.IssueKindReportItem
 import jetbrains.mps.errors.item.ModelReportItem
@@ -37,11 +38,12 @@ import jetbrains.mps.errors.messageTargets.ReferenceMessageTarget
 import jetbrains.mps.extapi.model.GeneratableSModel
 import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.generator.GenerationSettingsProvider
-import jetbrains.mps.generator.ModelGenerationStatusManager
 import jetbrains.mps.generator.TransientModelsProvider
 import jetbrains.mps.ide.MPSCoreComponents
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.IAttributeDescriptor
+import jetbrains.mps.make.IMakeNotificationListener
+import jetbrains.mps.make.MakeNotification
 import jetbrains.mps.make.MakeServiceComponent
 import jetbrains.mps.make.MakeSession
 import jetbrains.mps.messages.IMessage
@@ -102,6 +104,8 @@ abstract class AbstractOps : McpToolset {
         NOT_EDITABLE,
         MAKE_INPUT_INVALID,
         MODAL_BLOCKED,
+        /** The concept's language has no usable runtime for it (see [LanguageReadiness]); the response carries `details.languageBuild`. */
+        LANGUAGE_NOT_BUILT,
         INTERNAL_ERROR
     }
 
@@ -132,11 +136,19 @@ abstract class AbstractOps : McpToolset {
     class McpModalBlockedException(message: String, details: Map<String, Any?> = emptyMap()) :
         McpUserException(McpErrorCode.MODAL_BLOCKED, message, details)
 
+    /** Built by [LanguageReadiness.notBuilt]; `details` always holds the `languageBuild` block. */
+    class McpLanguageNotBuiltException(message: String, details: Map<String, Any?>) :
+        McpUserException(McpErrorCode.LANGUAGE_NOT_BUILT, message, details)
+
     companion object {
         private const val TEMP_JSON_PREFIX = "mps-node-"
         private const val TEMP_JSON_SUFFIX = ".json"
         private const val MAX_INPUT_FILE_SIZE_BYTES = 10L * 1024 * 1024
-        private const val MAX_INLINE_JSON_CHARS = 4096
+
+        // Candidates a "concept not found" rejection names (D116): a nudge, kept to one line.
+        private const val MAX_REJECTION_SUGGESTIONS = 3
+        // `c:<language>/<id>:<qualified name>` and `c:<language>/<id>(<qualified name>)`.
+        private val NAMED_CONCEPT_REFERENCE = Regex("""c:[0-9a-fA-F-]+/-?\d+(?::(.+)|\((.+)\))""")
 
         /**
          * Default inline/temp-file cut-off for read tools that expose a `maxInlineBytes`
@@ -152,6 +164,10 @@ abstract class AbstractOps : McpToolset {
          * signatures and descriptions can state the same number the code uses.
          */
         const val SUMMARY_RESPONSE_THRESHOLD: Int = 10
+        protected const val MAX_PROBLEM_MESSAGES_PER_ROW: Int = 5
+        protected const val MAX_PROBLEM_NODES_PER_MESSAGE: Int = 5
+        protected const val MAX_INFO_QUICK_FIX_IDS: Int = 3
+        protected const val MAX_PROBLEM_MESSAGE_CHARS: Int = 300
 
         /**
          * Timeout for model operations; acts as a safety net for unexpected blocking (e.g. a
@@ -186,6 +202,12 @@ abstract class AbstractOps : McpToolset {
         internal const val LANGUAGE_RELOAD_TIMEOUT_SECONDS: Long = 10L
 
         /**
+         * Maximum time `performMake` waits, after the build completes, for the make service to close
+         * its session. On timeout the make still returns, with a warning in `MakeResult.details`.
+         */
+        internal const val SESSION_CLOSE_TIMEOUT_SECONDS: Long = 10L
+
+        /**
          * Recovery hint for the dirty-source-model branch of [checkScaffoldingStaleness] —
          * the structure model has unbuilt edits, so a plain `MAKE` regenerates the descriptors.
          * `rebuild=true` is the heavier hammer reserved for the on-disk corruption case
@@ -195,19 +217,16 @@ abstract class AbstractOps : McpToolset {
             "Run `mps_mcp_alter_nodes` with operation=MAKE on the language's structure model, then retry."
 
         /**
-         * Recovery hint for the hollow-descriptor branch of [checkScaffoldingStaleness] — the
-         * language runtime is loaded but its concept descriptor has no source node and no
-         * properties/links. This shape only appears when an incremental make has left stale
-         * language-aspect descriptor classes on disk; `mps_mcp_reload_all` alone is not
-         * sufficient because the on-disk class files are still stale. Use `rebuild=true` to
-         * force a clean regeneration.
+         * Recovery hint for the not-built branches of [checkScaffoldingStaleness]: the language has
+         * no runtime, or its runtime does not know the concept. `mps_mcp_reload_all` alone is not
+         * sufficient because the descriptor classes on disk are what is missing or stale.
          */
         internal const val DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW: String =
             "Run `mps_mcp_alter_nodes` with operation=MAKE and rebuild=true targeting the " +
-                "language module (a model-scoped make can leave a never-deployed language's " +
-                "runtime hollow), then retry. (`mps_mcp_reload_all` alone is not sufficient — " +
+                "language module (a model-scoped make does not materialise a never-built language's " +
+                "runtime), then retry. (`mps_mcp_reload_all` alone is not sufficient — " +
                 "the language-aspect descriptor classes on disk are still stale until a clean " +
-                "rebuild.)"
+                "rebuild.) " + LanguageReadiness.MAKE_CHANGES_NO_MODEL_NOTE
         private val GSON = Gson()
         // serializeNulls: the inline form keeps `"type": null`, so the temp-file form must too.
         private val PRETTY_GSON = GsonBuilder().setPrettyPrinting().serializeNulls().create()
@@ -906,7 +925,7 @@ abstract class AbstractOps : McpToolset {
      * later project open/close is observed by the next tool call, which builds a fresh cache — there is
      * nothing to invalidate because the cache never outlives the locked window.
      */
-    protected class ProjectMembershipCache(val currentProject: MPSProject?) {
+    protected class ProjectMembershipCache(override val currentProject: MPSProject?) : ConceptSuggestions.Membership {
         // Current project's own modules (+ owned generators), resolved once: membership is then a set
         // lookup instead of rebuilding projectModulesWithGenerators for every element.
         private val currentModuleRefs: Set<SModuleReference>? =
@@ -952,10 +971,10 @@ abstract class AbstractOps : McpToolset {
          * language belonging to a sibling project. Elements owned by no open project (read-only
          * libraries and stubs) are NOT foreign — they are legitimately visible everywhere.
          */
-        fun isFromAnotherOpenProject(concept: SAbstractConcept, repository: SRepository): Boolean =
+        override fun isFromAnotherOpenProject(concept: SAbstractConcept, repository: SRepository): Boolean =
             isForeign(ownerOfConcept(repository, concept))
 
-        fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean =
+        override fun isFromAnotherOpenProject(language: SLanguage, repository: SRepository): Boolean =
             isForeign(ownerOfLanguage(repository, language))
 
         /**
@@ -964,7 +983,7 @@ abstract class AbstractOps : McpToolset {
          * language is neither foreign nor in the current project, so a scope that wants "what
          * this project defines" must ask this rather than negate the foreignness test.
          */
-        fun isInCurrentProject(language: SLanguage, repository: SRepository): Boolean {
+        override fun isInCurrentProject(language: SLanguage, repository: SRepository): Boolean {
             val current = currentProject ?: return false
             val owner = ownerOfLanguage(repository, language) ?: return false
             return sameOpenProject(owner, current)
@@ -974,6 +993,73 @@ abstract class AbstractOps : McpToolset {
             val current = currentProject ?: return false
             return owner != null && !sameOpenProject(owner, current)
         }
+    }
+
+    /** The concept scan and "did you mean" ranker for one tool call, sharing [cache]'s ownership lookups. */
+    protected fun conceptSuggestions(repository: SRepository, cache: ProjectMembershipCache): ConceptSuggestions =
+        ConceptSuggestions(repository, cache, ::getDoc, ::getDeprecationInfo)
+
+    /**
+     * The part of a "concept not found" rejection that names the concepts the caller probably meant:
+     * [messageSuffix] (`. Closest concepts: A, B, C`) to append to the site's own message, and
+     * [details] (`suggestions`, one `{qualifiedName, conceptReference, alias?, isAbstract?}` each).
+     * Both are empty when nothing is close (study defect D116).
+     */
+    protected class ConceptHint(val messageSuffix: String, val details: Map<String, Any?>) {
+        companion object {
+            val NONE = ConceptHint("", emptyMap())
+        }
+    }
+
+    /**
+     * [ConceptHint] for a `concept` / `conceptReference` pair that resolved to no concept a node can
+     * have. Interface concepts are never offered, since no rejecting site accepts one, nor are the
+     * concepts [accept] refuses (a root needs a rootable one). When [concreteRequired], an abstract
+     * candidate is kept but marked, so `Type` tells the caller to name a concrete subconcept rather
+     * than vanishing from the list.
+     *
+     * The name comes from [concept], else from a `c:<language>/<id>:<qualified name>` or
+     * `c:<language>/<id>(<qualified name>)` reference, else from a [conceptReference] that is not a
+     * `c:` reference at all; a bare `c:<language>/<id>` has no name worth matching. A failure while
+     * ranking yields [ConceptHint.NONE]: the hint must never replace the rejection it decorates.
+     */
+    protected fun conceptHint(
+        repository: SRepository,
+        currentProject: MPSProject?,
+        concept: String?,
+        conceptReference: String?,
+        concreteRequired: Boolean = false,
+        accept: (SAbstractConcept) -> Boolean = { true }
+    ): ConceptHint {
+        val name = concept?.takeIf { it.isNotBlank() } ?: conceptReference?.let { nameInConceptReference(it) } ?: return ConceptHint.NONE
+        val candidates = try {
+            conceptSuggestions(repository, ProjectMembershipCache(currentProject))
+                .suggest(name, MAX_REJECTION_SUGGESTIONS, ConceptSuggestions.Mode.REJECTION) { it !is SInterfaceConcept && accept(it) }
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            logger.warn("Could not rank concept suggestions for '$name'", e)
+            return ConceptHint.NONE
+        }
+        if (candidates.isEmpty()) return ConceptHint.NONE
+        val facade = PersistenceFacade.getInstance()
+        val markedAbstract = { c: SAbstractConcept -> concreteRequired && c is SConcept && c.isAbstract }
+        val suggestions = JsonArray()
+        for (c in candidates) {
+            suggestions.add(JsonObject().apply {
+                addProperty("qualifiedName", structureQualifiedName(c))
+                addProperty("conceptReference", facade.asString(c))
+                c.conceptAlias?.takeIf { it.isNotEmpty() }?.let { addProperty("alias", it) }
+                if (markedAbstract(c)) addProperty("isAbstract", true)
+            })
+        }
+        val names = candidates.joinToString(", ") { structureQualifiedName(it) + if (markedAbstract(it)) " (abstract)" else "" }
+        return ConceptHint(". Closest concepts: $names", mapOf("suggestions" to suggestions))
+    }
+
+    private fun nameInConceptReference(ref: String): String? {
+        if (!ref.startsWith("c:")) return ref.takeIf { it.isNotBlank() && !it.contains('/') }
+        val match = NAMED_CONCEPT_REFERENCE.matchEntire(ref) ?: return null
+        return (match.groups[1] ?: match.groups[2])?.value
     }
 
     private fun projectReferenceJsonObject(project: MPSProject): JsonObject {
@@ -1178,7 +1264,13 @@ abstract class AbstractOps : McpToolset {
             crossProjectErr("Concept '${conceptReference ?: conceptName}'")
         }
         else {
-            errJson("Concept not found$label: concept='$conceptName', conceptReference='$conceptReference'", McpErrorCode.NOT_FOUND)
+            val repository = mpsProject.repository
+            val hint = conceptHint(repository, mpsProject, conceptName, conceptReference) { it is SConcept && isRootable(it, repository) }
+            errJson(
+                "Concept not found$label: concept='$conceptName', conceptReference='$conceptReference'" + hint.messageSuffix,
+                McpErrorCode.NOT_FOUND,
+                hint.details
+            )
         }
     }
 
@@ -1331,66 +1423,25 @@ abstract class AbstractOps : McpToolset {
         return parseJson(jsonString, JsonElement::class.java)
     }
 
-    fun <T> parseJson(jsonString: String, type: java.lang.reflect.Type): T {
+    fun <T> parseJson(jsonString: String, type: java.lang.reflect.Type, guidance: JsonInputGuidance = JsonInputGuidance.FILE): T {
         if (jsonString.isBlank()) {
             throw McpInvalidRequestException("JSON string is empty or blank")
         }
         try {
             return GSON.fromJson(jsonString, type)
-                ?: throw McpInvalidRequestException("Failed to parse JSON")
+                ?: throw McpInvalidRequestException("JSON value is null")
         } catch (e: JsonSyntaxException) {
-            val message = e.message ?: "Invalid JSON syntax"
-            // EOF / unterminated input is almost always an unbalanced brace/bracket, not truncation.
-            // NOTE: this keys on Gson's (English) JsonSyntaxException message text ("End of input" /
-            // "Unterminated ..."). Gson messages are not localized today, so this is safe; if a future
-            // Gson reword changes them the hint simply stops appearing (no behavior break). The unit test
-            // parses real malformed JSON so such a reword fails the test rather than silently
-            // disabling the hint.
-            val looksTruncated = message.contains("End of input", ignoreCase = true) ||
-                                 message.contains("Unterminated", ignoreCase = true)
-            val hint = if (looksTruncated) {
-                "\n\nreceived ${jsonString.length} chars (inline limit $MAX_INLINE_JSON_CHARS). " +
-                "This usually means an unbalanced '{'/'[' — verify every brace/bracket is closed. " +
-                "For large blueprints, pass an absolute temp-file path instead of inline JSON " +
-                "(see the mps-node-editing skill)."
-            } else ""
-            val regex = "at line (\\d+) column (\\d+)".toRegex()
-            val matchResult = regex.find(message)
-            if (matchResult != null) {
-                val line = matchResult.groupValues[1].toInt()
-                val column = matchResult.groupValues[2].toInt()
-                val excerpt = getJsonExcerpt(jsonString, line, column)
-                throw McpInvalidRequestException("$message\n\n$excerpt$hint")
-            }
-            throw McpInvalidRequestException("$message$hint")
+            throw McpInvalidRequestException(JsonSyntaxErrors.describe(jsonString, e.message ?: "Invalid JSON syntax", guidance))
         }
     }
 
-    private fun getJsonExcerpt(json: String, line: Int, column: Int): String {
-        val lines = json.lines()
-        val result = StringBuilder()
-        val startLine = (line - 3).coerceAtLeast(0)
-        val endLine = (line + 2).coerceAtMost(lines.size - 1)
-
-        for (i in startLine..endLine) {
-            val currentLine = lines[i]
-            val lineNumber = i + 1
-            val prefix = if (lineNumber == line) "-> " else "   "
-            result.append(String.format("%s%4d | %s\n", prefix, lineNumber, currentLine))
-            if (lineNumber == line) {
-                result.append("          ") // 10 spaces to match "   XXXX | " (3 + 4 + 3)
-                for (j in 0 until (column - 1)) {
-                    if (j < currentLine.length && currentLine[j] == '\t') {
-                        result.append("\t")
-                    } else {
-                        result.append(" ")
-                    }
-                }
-                result.append("^\n")
-            }
+    /** Parses an operation tool's `parameters` object; a blank blob stays null for the key checks to answer (a literal `null` is a syntax error). */
+    protected fun parseParametersBlob(parameters: String, nestedFileKeys: List<String> = emptyList()): JsonObject? =
+        try {
+            GSON.fromJson(parameters, JsonObject::class.java)
+        } catch (e: JsonSyntaxException) {
+            throw McpInvalidRequestException(JsonSyntaxErrors.describe(parameters, e.message ?: "Invalid JSON syntax", JsonInputGuidance.inlineOnly(nestedFileKeys)))
         }
-        return result.toString()
-    }
 
     protected fun namedReferenceJsonObject(name: String, reference: String): JsonObject {
         val obj = JsonObject()
@@ -1466,7 +1517,11 @@ abstract class AbstractOps : McpToolset {
         modelReferenceJsonObject(plan, currentProject)
 
     protected fun nodeInfoJsonObject(n: SNode, currentProject: MPSProject? = null, cache: ProjectMembershipCache? = null): JsonObject {
-        val name = n.name ?: n.presentation
+        // A node of an unbuilt concept has no descriptor; its presentation is the fail-safe
+        // "<Concept> (concept is not found)", which must not pose as a name (D112).
+        val conceptLoaded = n.concept.isValid
+        val name = if (conceptLoaded) n.name ?: n.presentation
+        else n.getProperty(SNodeUtil.property_INamedConcept_name) ?: n.concept.name
         val concept = n.concept.name
         val conceptReference = PersistenceFacade.getInstance().asString(n.concept)
         val declarationNode = n.concept.sourceNode?.resolve(n.model?.repository)
@@ -1483,6 +1538,7 @@ abstract class AbstractOps : McpToolset {
         val obj = JsonObject()
         obj.addProperty("name", name)
         obj.addProperty("concept", concept)
+        if (!conceptLoaded) obj.addProperty("conceptLoaded", false)
         obj.addProperty("conceptDoc", conceptDoc)
         obj.addProperty("conceptDeprecated", conceptDeprecated)
         obj.addProperty("conceptReference", conceptReference)
@@ -2068,8 +2124,16 @@ abstract class AbstractOps : McpToolset {
     }
 
     /**
-     * Returns true if [node] itself has either a checker-reported problem or a "soft" problem
+     * True for the severities that make a check unclean (`ERROR`, `WARNING`). `info` items
+     * ([MessageStatus.OK]) are advice: they are summarized by [infoSummary] instead (D118).
+     */
+    protected fun isProblemSeverity(severity: MessageStatus): Boolean =
+        severity == MessageStatus.ERROR || severity == MessageStatus.WARNING
+
+    /**
+     * Returns true if [node] itself has either a checker-reported error or warning or a "soft" problem
      * detected directly here (empty enum / property value rejected by [SProperty.isValid]).
+     * `info` items are not problems; they are summarized by [infoSummary] (D118).
      * Does NOT recurse into children — use [hasAnyProblems] for the subtree check.
      *
      * Shared between the list formatter and the green/red fast-path in mps_mcp_check_root_node_problems
@@ -2077,7 +2141,7 @@ abstract class AbstractOps : McpToolset {
      * agree it has nothing to print.
      */
     protected fun hasLocalProblems(node: SNode, problems: Map<SNode, List<NodeReportItem>>): Boolean {
-        if (problems[node]?.isNotEmpty() == true) return true
+        if (problems[node]?.any { isProblemSeverity(it.severity) } == true) return true
 
         for (prop in node.concept.properties) {
             val propertyState = getPropertyState(node, prop)
@@ -2101,36 +2165,325 @@ abstract class AbstractOps : McpToolset {
     protected data class ProblemCounts(val errors: Int, val warnings: Int)
 
     /**
-     * Counts the problems [nodeWithProblemsListJsonArray] would print for [node]'s subtree, split by
-     * severity: the checker-reported items plus the two "soft" problems the formatter synthesizes
-     * (empty enumeration property / invalid property value). Counting here rather than over the
-     * rendered JSON keeps the per-root tallies of a model-scope check consistent with the report the
-     * same call would produce for that root. `info` items are not counted, matching
-     * [hasLocalProblems], which ignores them for the green/red decision.
+     * One distinct `(severity, message)` group in a [ProblemSummary], in first-occurrence order.
+     * [count] counts report items; [nodes] holds the distinct reporting nodes in first-occurrence
+     * order, so it can be shorter than [count] (a node reporting the text twice, or model-level
+     * items without a node). [node] is the first of them (D119). [quickFixIds] is filled only by
+     * [infoSummary]: the quick-fix ids found on [node] (D118).
      */
-    protected fun problemCounts(node: SNode, problems: Map<SNode, List<NodeReportItem>>): ProblemCounts {
+    protected class ProblemTally(
+        val severity: MessageStatus,
+        val message: String,
+        var count: Int,
+        val nodes: LinkedHashSet<SNodeReference>,
+        var hasQuickFix: Boolean,
+        val quickFixIds: LinkedHashSet<String> = LinkedHashSet(),
+    ) {
+        constructor(severity: MessageStatus, message: String, count: Int, node: SNodeReference?, hasQuickFix: Boolean) :
+            this(severity, message, count, LinkedHashSet<SNodeReference>().also { if (node != null) it.add(node) }, hasQuickFix)
+
+        val node: SNodeReference?
+            get() = nodes.firstOrNull()
+    }
+
+    /** Error/warning counts plus distinct-message [tallies] (in first-occurrence order) for [problemSummary]. */
+    protected class ProblemSummary(
+        val errors: Int,
+        val warnings: Int,
+        val tallies: LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>,
+    )
+
+    /**
+     * Counts and tallies the problems [nodeWithProblemsListJsonArray] would print for [node]'s subtree,
+     * split by severity: the checker-reported `ERROR`/`WARNING` items plus the two "soft" problems the
+     * formatter synthesizes (empty enumeration property / invalid property value). Counting and listing
+     * in one visitor keeps the per-root counts and `messages` of a model-scope check consistent with
+     * the report the same call would produce for that root. `info` items are ignored. The invalid-value
+     * soft error is suppressed only when a problem on that property mentions `"invalid"`, matching
+     * [nodeWithProblemsJsonObject] (D83 / F5). With [collectMessages] false only the counts are computed
+     * and [ProblemSummary.tallies] stays empty.
+     */
+    protected fun problemSummary(
+        node: SNode,
+        problems: Map<SNode, List<NodeReportItem>>,
+        collectMessages: Boolean = true,
+    ): ProblemSummary {
         var errors = 0
         var warnings = 0
+        val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+
+        fun record(severity: MessageStatus, message: String, nodeRef: SNodeReference?, hasQuickFix: Boolean) {
+            when (severity) {
+                MessageStatus.ERROR -> errors++
+                MessageStatus.WARNING -> warnings++
+                else -> return
+            }
+            if (!collectMessages) return
+            val key = severity to message
+            val existing = tallies[key]
+            if (existing != null) {
+                existing.count++
+                if (nodeRef != null) existing.nodes.add(nodeRef)
+                if (hasQuickFix) existing.hasQuickFix = true
+            } else {
+                tallies[key] = ProblemTally(severity, message, 1, nodeRef, hasQuickFix)
+            }
+        }
 
         fun visit(n: SNode) {
             val nodeProblems = problems[n] ?: emptyList()
+            val nodeRef = n.reference
             for (item in nodeProblems) {
-                when (item.severity) {
-                    MessageStatus.ERROR -> errors++
-                    MessageStatus.WARNING -> warnings++
-                    else -> {}
+                if (isProblemSeverity(item.severity)) {
+                    val hasFix = QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item).isNotEmpty()
+                    record(item.severity, item.message, nodeRef, hasFix)
                 }
             }
             for (prop in n.concept.properties) {
                 val propertyState = getPropertyState(n, prop)
-                if (propertyState.isEmptyEnum) errors++
-                if (propertyState.isInvalid && nodeProblems.none { it.message.contains("invalid", ignoreCase = true) }) errors++
+                if (propertyState.isEmptyEnum) {
+                    record(MessageStatus.ERROR, "Empty enumeration property: '${prop.name}'", nodeRef, false)
+                }
+                val propProblems = nodeProblems.filter { (it.messageTarget as? PropertyMessageTarget)?.role == prop.name }
+                if (propertyState.isInvalid && propProblems.none { it.message.contains("invalid", ignoreCase = true) }) {
+                    record(MessageStatus.ERROR, "Property value is invalid: '${prop.name}'", nodeRef, false)
+                }
             }
             for (child in n.children) visit(child)
         }
 
         visit(node)
-        return ProblemCounts(errors, warnings)
+        return ProblemSummary(errors, warnings, tallies)
+    }
+
+    /** Counts-only thin wrapper over [problemSummary], kept for tests. */
+    protected fun problemCounts(node: SNode, problems: Map<SNode, List<NodeReportItem>>): ProblemCounts {
+        val summary = problemSummary(node, problems, collectMessages = false)
+        return ProblemCounts(summary.errors, summary.warnings)
+    }
+
+    /**
+     * Counts and tallies `ERROR`/`WARNING` model-level problems for a module `perRoot` row (D83 §2).
+     * For a [NodeReportItem], `node` is its node; otherwise `node` is null. `hasQuickFix` is always
+     * false because [modelWithProblemsJsonObject] never lists quick fixes on model-level items (§1).
+     */
+    protected fun modelProblemSummary(modelProblems: List<ModelReportItem>): ProblemSummary {
+        var errors = 0
+        var warnings = 0
+        val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+        for (problem in modelProblems) {
+            when (problem.severity) {
+                MessageStatus.ERROR -> errors++
+                MessageStatus.WARNING -> warnings++
+                else -> continue
+            }
+            val key = problem.severity to problem.message
+            val existing = tallies[key]
+            if (existing != null) {
+                existing.count++
+                (problem as? NodeReportItem)?.node?.let { existing.nodes.add(it) }
+            } else {
+                tallies[key] = ProblemTally(
+                    problem.severity,
+                    problem.message,
+                    1,
+                    (problem as? NodeReportItem)?.node,
+                    false,
+                )
+            }
+        }
+        return ProblemSummary(errors, warnings, tallies)
+    }
+
+    protected fun mergeTallies(
+        into: LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>,
+        from: Iterable<ProblemTally>,
+    ) {
+        for (t in from) {
+            val key = t.severity to t.message
+            val existing = into[key]
+            if (existing != null) {
+                existing.count += t.count
+                existing.nodes.addAll(t.nodes)
+                if (t.hasQuickFix) existing.hasQuickFix = true
+                // An existing key keeps its own quickFixIds: they are its first node's (D118).
+            } else {
+                into[key] = ProblemTally(t.severity, t.message, t.count, LinkedHashSet(t.nodes), t.hasQuickFix, LinkedHashSet(t.quickFixIds))
+            }
+        }
+    }
+
+    /**
+     * Tallies the `info` items ([MessageStatus.OK]) of [node]'s subtree, grouped by text in subtree
+     * order, as [problemSummary] does for errors and warnings — kept separate so the D83 counts and
+     * `messages` cannot pick up info. A group's [ProblemTally.quickFixIds] are the fix ids on its first
+     * node, so `mps_mcp_apply_intention(node, id)` cannot miss; [ProblemTally.hasQuickFix] stays false
+     * (D118).
+     */
+    protected fun infoSummary(
+        node: SNode,
+        problems: Map<SNode, List<NodeReportItem>>,
+    ): LinkedHashMap<Pair<MessageStatus, String>, ProblemTally> {
+        val tallies = LinkedHashMap<Pair<MessageStatus, String>, ProblemTally>()
+        fun visit(n: SNode) {
+            val nodeRef = n.reference
+            problems[n]?.forEach { item ->
+                if (item.severity != MessageStatus.OK) return@forEach
+                val key = item.severity to item.message
+                val tally = tallies[key]?.also {
+                    it.count++
+                    it.nodes.add(nodeRef)
+                } ?: ProblemTally(item.severity, item.message, 1, nodeRef, false).also { tallies[key] = it }
+                if (tally.node == nodeRef) {
+                    QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item).mapTo(tally.quickFixIds) { quickFixId(it) }
+                }
+            }
+            for (child in n.children) visit(child)
+        }
+        visit(node)
+        return tallies
+    }
+
+    /**
+     * Adds `infoMessages` (at most [MAX_PROBLEM_MESSAGES_PER_ROW] groups, `node` and `moreNodes` only,
+     * up to [MAX_INFO_QUICK_FIX_IDS] `quickFixIds` each) and `moreInfoMessages` to [details]. No-op
+     * when [tallies] is empty (D118).
+     */
+    protected fun addInfoMessages(details: MutableMap<String, Any?>, tallies: Collection<ProblemTally>) {
+        if (tallies.isEmpty()) return
+        details["infoMessages"] = messagesJsonArray(
+            tallies,
+            perRow = MAX_PROBLEM_MESSAGES_PER_ROW,
+            nodesPerMessage = 1,
+            quickFixIdsPerMessage = MAX_INFO_QUICK_FIX_IDS,
+        )
+        if (tallies.size > MAX_PROBLEM_MESSAGES_PER_ROW) {
+            details["moreInfoMessages"] = tallies.size - MAX_PROBLEM_MESSAGES_PER_ROW
+        }
+    }
+
+    protected fun truncateProblemMessage(message: String, maxChars: Int = MAX_PROBLEM_MESSAGE_CHARS): String {
+        if (message.length <= maxChars) return message
+        var cut = maxChars - 1
+        if (cut > 0 && message[cut - 1].isHighSurrogate()) {
+            cut--
+        }
+        return message.substring(0, cut) + "…"
+    }
+
+    /**
+     * Sorts [tallies] (errors before warnings, higher `count` first, then first occurrence), takes at
+     * most [perRow] entries, and truncates each message at a code-point boundary to 300 characters.
+     * A tally with more than one distinct node lists up to [nodesPerMessage] of them in `nodes`
+     * (omitted at 1, where it would only repeat `node`) and the distinct nodes not listed in
+     * `node`/`nodes` in `moreNodes` (D119). With [quickFixIdsPerMessage] > 0, a tally's non-empty
+     * [ProblemTally.quickFixIds] are listed (first [quickFixIdsPerMessage]) in `quickFixIds` (D118).
+     */
+    protected fun messagesJsonArray(
+        tallies: Collection<ProblemTally>,
+        perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+        nodesPerMessage: Int = MAX_PROBLEM_NODES_PER_MESSAGE,
+        quickFixIdsPerMessage: Int = 0,
+    ): JsonArray {
+        val sorted = tallies.sortedWith(
+            compareBy<ProblemTally> { if (it.severity == MessageStatus.ERROR) 0 else 1 }
+                .thenByDescending { it.count }
+        )
+        val arr = JsonArray()
+        for (tally in sorted.take(perRow)) {
+            arr.add(jsonObject {
+                addProperty("severity", problemSeverity(tally.severity))
+                addProperty("message", truncateProblemMessage(tally.message))
+                addProperty("count", tally.count)
+                tally.node?.let { addProperty("node", PersistenceFacade.getInstance().asString(it)) }
+                if (tally.nodes.size > 1) {
+                    if (nodesPerMessage > 1) {
+                        add("nodes", JsonArray().also { nodes ->
+                            tally.nodes.take(nodesPerMessage).forEach { nodes.add(PersistenceFacade.getInstance().asString(it)) }
+                        })
+                    }
+                    if (tally.nodes.size > nodesPerMessage) addProperty("moreNodes", tally.nodes.size - nodesPerMessage)
+                }
+                if (tally.hasQuickFix) addProperty("hasQuickFixes", true)
+                if (quickFixIdsPerMessage > 0 && tally.quickFixIds.isNotEmpty()) {
+                    add("quickFixIds", JsonArray().also { ids -> tally.quickFixIds.take(quickFixIdsPerMessage).forEach(ids::add) })
+                }
+            })
+        }
+        return arr
+    }
+
+    /** Attaches `messages` and, when [tallies] exceed [perRow], `moreMessages` to [row]. No-op when [tallies] is empty. */
+    protected fun addMessagesToRow(
+        row: JsonObject,
+        tallies: Collection<ProblemTally>,
+        perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+        nodesPerMessage: Int = MAX_PROBLEM_NODES_PER_MESSAGE,
+    ) {
+        if (tallies.isEmpty()) return
+        row.add("messages", messagesJsonArray(tallies, perRow, nodesPerMessage))
+        if (tallies.size > perRow) {
+            row.addProperty("moreMessages", tallies.size - perRow)
+        }
+    }
+
+    /**
+     * Chosen `perRoot` payload string and the `details.messagesPerRow` / `details.nodesPerMessage`
+     * values (both null when every row is clean).
+     */
+    protected data class PerRootFormChoice(val dataJson: String, val messagesPerRow: Int?, val nodesPerMessage: Int? = null)
+
+    /**
+     * Picks the inline `perRoot` form that fits [maxInlineBytes] (D83 §3, D119):
+     * 1. Up to [MAX_PROBLEM_MESSAGES_PER_ROW] (5) distinct messages per row, each with up to
+     *    [MAX_PROBLEM_NODES_PER_MESSAGE] (5) distinct nodes.
+     * 2. 5 messages per row with 1 node each (no `nodes`, only `moreNodes`) if form 1 exceeds
+     *    [maxInlineBytes] and some message has more than one node — nodes are cut before messages.
+     * 3. Up to 1 message per row (plus `moreMessages`) with 1 node each.
+     * 4. Form 1 again when form 3 also exceeds [maxInlineBytes], so [finalizeResult] writes the full
+     *    payload to the temp file.
+     *
+     * When no row has any messages, `messagesPerRow` and `nodesPerMessage` are `null` (omitted from `details`).
+     */
+    protected fun choosePerRootForm(
+        rows: List<Pair<JsonObject, Collection<ProblemTally>>>,
+        maxInlineBytes: Int,
+    ): PerRootFormChoice {
+        val anyMessages = rows.any { it.second.isNotEmpty() }
+        val form1 = renderPerRootRows(rows, MAX_PROBLEM_MESSAGES_PER_ROW, MAX_PROBLEM_NODES_PER_MESSAGE)
+        if (!anyMessages) {
+            return PerRootFormChoice(form1, null)
+        }
+        if (form1.length <= maxInlineBytes) {
+            return PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW, MAX_PROBLEM_NODES_PER_MESSAGE)
+        }
+        // Without a multi-node message the one-node form equals form 1, which did not fit.
+        if (rows.any { (_, tallies) -> tallies.any { it.nodes.size > 1 } }) {
+            val oneNode = renderPerRootRows(rows, MAX_PROBLEM_MESSAGES_PER_ROW, 1)
+            if (oneNode.length <= maxInlineBytes) {
+                return PerRootFormChoice(oneNode, MAX_PROBLEM_MESSAGES_PER_ROW, 1)
+            }
+        }
+        val form2 = renderPerRootRows(rows, 1, 1)
+        return if (form2.length <= maxInlineBytes) {
+            PerRootFormChoice(form2, 1, 1)
+        } else {
+            PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW, MAX_PROBLEM_NODES_PER_MESSAGE)
+        }
+    }
+
+    private fun renderPerRootRows(
+        rows: List<Pair<JsonObject, Collection<ProblemTally>>>,
+        perRow: Int,
+        nodesPerMessage: Int,
+    ): String {
+        val array = JsonArray()
+        for ((base, tallies) in rows) {
+            val row = base.deepCopy()
+            addMessagesToRow(row, tallies, perRow, nodesPerMessage)
+            array.add(row)
+        }
+        return array.toString()
     }
 
     protected fun nodeWithProblemsListToJson(
@@ -2310,7 +2663,7 @@ abstract class AbstractOps : McpToolset {
         val arr = JsonArray()
         fun traverse(n: SNode) {
             problems[n]?.forEach { item ->
-                if (item.severity == MessageStatus.ERROR || item.severity == MessageStatus.WARNING) {
+                if (isProblemSeverity(item.severity)) {
                     val o = JsonObject()
                     o.addProperty("reference", PersistenceFacade.getInstance().asString(n.reference))
                     o.addProperty("concept", n.concept.name)
@@ -2375,6 +2728,29 @@ abstract class AbstractOps : McpToolset {
         val declarationNode: SNodeReference?,
     )
 
+    private fun quickFixRuntime(fix: QuickFixBase): QuickFix_Runtime? = (fix as? QuickFixRuntimeAdapter)?.let {
+        try {
+            it.fixRuntime
+        } catch (e: Exception) {
+            rethrowIfCancellation(e)
+            null
+        }
+    }
+
+    /**
+     * The id under which [fix] is listed and applied: the runtime QuickFix_Runtime class (the
+     * *_QuickFix FQN a checking rule names) so the id matches what the editor menu / declaration
+     * reveals; the fix's own class for non-adapter fixes so every listed fix stays addressable by
+     * mps_mcp_apply_intention. Degenerate case, kept deliberately: an adapter whose getFixRuntime()
+     * threw (broken language runtime) falls back to the non-unique QuickFixRuntimeAdapter FQN — the
+     * id stays always-present as documented, apply matches the same fallback, and execute then fails
+     * with a contained error.
+     */
+    protected fun quickFixId(fix: QuickFixBase): String = quickFixIdOf(fix, quickFixRuntime(fix))
+
+    private fun quickFixIdOf(fix: QuickFixBase, runtime: QuickFix_Runtime?): String =
+        runtime?.javaClass?.name ?: fix.javaClass.name
+
     /**
      * Extracts the quick-fixes attached to [item] via [QuickFixReportItem.FLAVOUR_QUICKFIX]
      * (empty for items carrying none — safe on any [NodeReportItem]). Fix identity and description
@@ -2386,22 +2762,8 @@ abstract class AbstractOps : McpToolset {
         val fixes = QuickFixReportItem.FLAVOUR_QUICKFIX.getCollection(item)
         val result = ArrayList<QuickFixInfo>(fixes.size)
         for (fix in fixes) {
-            val runtime = (fix as? QuickFixRuntimeAdapter)?.let {
-                try {
-                    it.fixRuntime
-                } catch (e: Exception) {
-                    rethrowIfCancellation(e)
-                    null
-                }
-            }
-            // Prefer the runtime QuickFix_Runtime class (the *_QuickFix FQN a checking rule names) so
-            // the id matches what the editor menu / declaration reveals; fall back to the fix's own
-            // class for non-adapter fixes so every listed fix stays addressable by mps_mcp_apply_intention.
-            // Degenerate case, kept deliberately: an adapter whose getFixRuntime() threw (broken
-            // language runtime) falls back to the non-unique QuickFixRuntimeAdapter FQN — the id stays
-            // always-present as documented, apply matches the same fallback, and execute then fails
-            // with a contained error.
-            val id = runtime?.javaClass?.name ?: fix.javaClass.name
+            val runtime = quickFixRuntime(fix)
+            val id = quickFixIdOf(fix, runtime)
             val declarationNode = runtime?.declarationNode
             val rawDescription = (fix as? EditorQuickFix)?.let {
                 try {
@@ -2560,6 +2922,18 @@ abstract class AbstractOps : McpToolset {
         return modelWithProblemsJsonObject(model, problems, currentProject).toString()
     }
 
+    protected fun modelProblemsJsonArray(problems: List<ModelReportItem>): JsonArray {
+        val problemArray = JsonArray()
+        for (problem in problems) {
+            val problemObj = problemJsonObject(problem.severity, problem.message)
+            if (problem is NodeReportItem) {
+                problemObj.addProperty("node", PersistenceFacade.getInstance().asString(problem.node))
+            }
+            problemArray.add(problemObj)
+        }
+        return problemArray
+    }
+
     protected fun modelWithProblemsJsonObject(
         model: SModel,
         problems: List<ModelReportItem>,
@@ -2570,15 +2944,7 @@ abstract class AbstractOps : McpToolset {
         obj.addProperty("reference", PersistenceFacade.getInstance().asString(model.reference))
         obj.addProperty("module", model.module?.moduleName ?: "")
         addContainingProjectIfForeign(obj, currentProject, model)
-        val problemArray = JsonArray()
-        for (problem in problems) {
-            val problemObj = problemJsonObject(problem.severity, problem.message)
-            if (problem is NodeReportItem) {
-                problemObj.addProperty("node", PersistenceFacade.getInstance().asString(problem.node))
-            }
-            problemArray.add(problemObj)
-        }
-        obj.add("problems", problemArray)
+        obj.add("problems", modelProblemsJsonArray(problems))
         return obj
     }
 
@@ -2975,6 +3341,17 @@ abstract class AbstractOps : McpToolset {
         return null
     }
 
+    /**
+     * [LanguageReadiness.of] for a concept whose declaration the caller has not resolved: the runtime
+     * `sourceNode` when the descriptor is present, otherwise the structure-model lookup by reference.
+     */
+    protected fun readinessOf(concept: SAbstractConcept, mpsProject: MPSProject): ConceptReadiness {
+        val repository = mpsProject.repository
+        val declaration = concept.sourceNode?.resolve(repository)
+            ?: if (concept.isValid) null else resolveConceptNodePreferringProject(mpsProject, PersistenceFacade.getInstance().asString(concept))
+        return LanguageReadiness.of(concept, declaration, mpsProject)
+    }
+
     protected fun resolveConceptPreferringProject(mpsProject: MPSProject, conceptRef: String): SAbstractConcept? {
         refreshRegistries(mpsProject.repository)
         resolveConceptNodePreferringProject(mpsProject, conceptRef)?.let {
@@ -3182,7 +3559,7 @@ abstract class AbstractOps : McpToolset {
     protected fun resolveModel(repository: SRepository, modelReference: String): SModel? {
         // 1. Try as a model reference
         try {
-            val ref = PersistenceFacade.getInstance().createModelReference(modelReference)
+            val ref = withoutInvalidModule(PersistenceFacade.getInstance().createModelReference(modelReference))
             ref.resolve(repository)?.let { return it }
         } catch (e: Exception) {
             rethrowIfCancellation(e)
@@ -3215,7 +3592,7 @@ abstract class AbstractOps : McpToolset {
     protected fun resolveModel(mpsProject: MPSProject, modelReference: String, projectOnly: Boolean = true): SModel? {
         // 1. Try as a model reference
         try {
-            val ref = PersistenceFacade.getInstance().createModelReference(modelReference)
+            val ref = withoutInvalidModule(PersistenceFacade.getInstance().createModelReference(modelReference))
             val resolved = ref.resolve(mpsProject.repository)
             if (resolved != null && (!projectOnly || isModelInSelectedProject(mpsProject, resolved))) {
                 return resolved
@@ -3365,7 +3742,7 @@ abstract class AbstractOps : McpToolset {
         }
         val facade = PersistenceFacade.getInstance()
         try {
-            return facade.createNodeReference(nodeRefStr)
+            return withoutInvalidModule(facade.createNodeReference(nodeRefStr))
         } catch (e: Exception) {
             rethrowIfCancellation(e)
             // Try searching by name (root nodes)
@@ -3405,7 +3782,7 @@ abstract class AbstractOps : McpToolset {
         val repository = mpsProject.repository
         val facade = PersistenceFacade.getInstance()
         try {
-            val ref = facade.createNodeReference(nodeRefStr)
+            val ref = withoutInvalidModule(facade.createNodeReference(nodeRefStr))
             val node = ref.resolve(repository)
             if (node != null && node.model?.let { isModelInSelectedProject(mpsProject, it) } == true) {
                 return node.reference
@@ -3481,7 +3858,8 @@ abstract class AbstractOps : McpToolset {
         concept: SAbstractConcept,
         repository: SRepository,
         currentProject: MPSProject? = null,
-        cache: ProjectMembershipCache? = null
+        cache: ProjectMembershipCache? = null,
+        markReadiness: Boolean = true
     ): JsonObject {
         val facade = PersistenceFacade.getInstance()
         val c = cache ?: ProjectMembershipCache(currentProject)
@@ -3529,44 +3907,18 @@ abstract class AbstractOps : McpToolset {
         obj.addProperty("virtualFolder", virtualFolder)
         obj.addProperty("present", true)
         addContainingProjectIfForeign(obj, currentProject, concept, repository, cache = c)
-        // Surface staleness so downstream callers (get_concept_details, search_concepts, …) do
-        // not silently treat a hollow runtime descriptor as a real one. The check matches the
-        // up-front gate in scaffold_editor: a runtime concept with no sourceNode and empty
-        // properties/references/children is a stale descriptor produced by an incremental
-        // make that did not regenerate the language aspect descriptor. The recovery is a
-        // clean rebuild via `mps_mcp_alter_nodes` MAKE with `rebuild = true`;
-        // `mps_mcp_reload_all` alone is not sufficient because the StructureAspectDescriptor
-        // class files on disk are still stale.
-        addHollowDescriptorMarker(obj, concept)
+        // A concept the runtime cannot serve must not pose as a healthy one (D112); callers that
+        // classified the concept already pass markReadiness = false.
+        if (markReadiness && currentProject != null) addHollowDescriptorMarker(obj, concept, currentProject)
         return obj
     }
 
-    /**
-     * Marks [obj] when [concept] is served from a stale runtime descriptor. Shared so every
-     * record that names a concept carries the same marker and the same recovery action — a
-     * projection that drops it would report a hollow concept as a healthy one.
-     */
-    protected fun addHollowDescriptorMarker(obj: JsonObject, concept: SAbstractConcept) {
-        if (!isHollowDescriptor(concept)) return
-        obj.addProperty("descriptorStatus", "hollow")
-        obj.addProperty(
-            "descriptorRecoveryAction",
-            "Run mps_mcp_alter_nodes with operation=MAKE and rebuild=true targeting the language module (not just the structure model), then retry."
-        )
-    }
-
-    /**
-     * Heuristic used to detect a stale language runtime descriptor produced by an incremental
-     * make that did not regenerate the language aspect descriptor. A real concept has either a
-     * resolvable `sourceNode` or some non-empty properties/links; the all-null/all-empty shape
-     * only appears when the runtime is out of sync with the structure model. See the comment in
-     * [conceptInfoJsonObject] and the gate in `mps_mcp_scaffold_editor` for the recovery path.
-     */
-    protected fun isHollowDescriptor(concept: SAbstractConcept): Boolean {
-        return concept.sourceNode == null &&
-            concept.properties.isEmpty() &&
-            concept.referenceLinks.isEmpty() &&
-            concept.containmentLinks.isEmpty()
+    /** Marks [obj] when the runtime cannot serve [concept] (see [LanguageReadiness.recordMarkers]). */
+    protected fun addHollowDescriptorMarker(obj: JsonObject, concept: SAbstractConcept, currentProject: MPSProject) {
+        val readiness = readinessOf(concept, currentProject)
+        if (readiness is ConceptReadiness.NotBuilt && readiness !is ConceptReadiness.NotBuilt.Stale) {
+            for ((key, value) in LanguageReadiness.recordMarkers(readiness, fromDeclaration = false)) obj.addProperty(key, value as String)
+        }
     }
 
     /**
@@ -3585,16 +3937,16 @@ abstract class AbstractOps : McpToolset {
      *
      * @param conceptDeclRefs node references (`r:...`) of the created concept *declaration*
      *   nodes, as collected in `createdReferences`.
-     * @return the names (or, when a name is unavailable, the refs) of concepts whose runtime
-     *   descriptor is still hollow or entirely absent from the registry. An empty list means
-     *   every created concept is consistently readable. Must be called inside a read action.
+     * @return the names (or, when a name is unavailable, the refs) of concepts the runtime still
+     *   cannot serve ([LanguageReadiness]: no runtime, or the concept is not in it). An empty list
+     *   means every created concept is consistently readable. Must be called inside a read action.
      */
-    protected fun hollowRuntimeConcepts(repository: SRepository, conceptDeclRefs: Collection<String>): List<String> {
+    protected fun hollowRuntimeConcepts(mpsProject: MPSProject, conceptDeclRefs: Collection<String>): List<String> {
         if (conceptDeclRefs.isEmpty()) return emptyList()
+        val repository = mpsProject.repository
         refreshRegistries(repository)
         val facade = PersistenceFacade.getInstance()
-        val registry = LanguageRegistry.getInstance(repository)
-        val hollow = mutableListOf<String>()
+        val notServed = mutableListOf<String>()
         for (ref in conceptDeclRefs) {
             val declNode = try {
                 facade.createNodeReference(ref)?.resolve(repository)
@@ -3604,24 +3956,15 @@ abstract class AbstractOps : McpToolset {
             }
             if (declNode == null) {
                 // The declaration node we just created no longer resolves — treat as not-ready.
-                hollow.add(ref)
+                notServed.add(ref)
                 continue
             }
-            val name = declNode.name ?: ref
-            val declConcept = MetaAdapterByDeclaration.getConcept(declNode)
-            val runtime = registry.getLanguage(declConcept.language)
-            if (runtime == null) {
-                // Language has no loaded runtime at all — the strongest form of "stale".
-                hollow.add(name)
-                continue
-            }
-            val declRef = facade.asString(declConcept)
-            val runtimeConcept = runtime.concepts.find { facade.asString(it) == declRef }
-            if (runtimeConcept == null || isHollowDescriptor(runtimeConcept)) {
-                hollow.add(name)
+            val concept = MetaAdapterByDeclaration.getConcept(declNode)
+            if (concept == null || LanguageReadiness.ofIgnoringStaleness(concept, declNode, mpsProject) !is ConceptReadiness.Ready) {
+                notServed.add(declNode.name ?: ref)
             }
         }
-        return hollow
+        return notServed
     }
 
     /**
@@ -3652,70 +3995,20 @@ abstract class AbstractOps : McpToolset {
     internal fun checkScaffoldingStaleness(
         concept: SAbstractConcept,
         project: MPSProject,
-    ): ScaffoldingStaleness {
-        // 1) Language registry — clearer error than the model-level check when the
-        //    language has not been loaded at all (e.g. missing dependency, never-built).
-        val repository = project.repository
-        if (LanguageRegistry.getInstance(repository).getLanguage(concept.language) == null) {
-            return ScaffoldingStaleness.Stale(
-                reason = "Language '${concept.language.qualifiedName}' has no loaded runtime",
-                recoveryHint = "Build the language module (or check that it is listed in the project's " +
-                    "module dependencies), then retry.",
-            )
-        }
-
-        // 2) Hollow descriptor — null sourceNode plus empty properties/links is the
-        //    sentinel for an on-disk language-aspect descriptor that survived an
-        //    incremental make in a stale shape. `generationRequired` does NOT catch
-        //    this case (the source model can be clean while the on-disk descriptor
-        //    classes are corrupt), so we keep the dedicated check here. Recovery
-        //    requires `MAKE rebuild=true`, not the plain MAKE that the dirty-model
-        //    branch recommends, hence the distinct recovery hint.
-        if (isHollowDescriptor(concept)) {
-            return ScaffoldingStaleness.Stale(
-                reason = "hollow runtime descriptor (null sourceNode and no properties, references, " +
-                    "or children); the language runtime is out of sync with the structure model",
-                recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW,
-            )
-        }
-
-        // 3) Structure-model generation status — true when the source model has been
-        //    edited since the last successful generation (covers both in-memory dirty
-        //    edits and saved-but-not-regenerated states).
-        //
-        // sourceNode can still be null here when the descriptor is *not* hollow (has
-        // properties/links but no resolvable source). This shape only appears in
-        // unusual states (e.g. partial reload after structure-model removal); without
-        // a structure model to probe, we can't run the dirty-model check, so we
-        // degrade open but log so a real regression is observable in idea.log.
-        val sourceNode = concept.sourceNode?.resolve(repository) ?: run {
-            logger.warn(
-                "checkScaffoldingStaleness: concept '${concept.language.qualifiedName}.${concept.name}' " +
-                    "has non-empty descriptor but unresolvable sourceNode; treating as Fresh and " +
-                    "letting scaffolding proceed (cannot probe generation status without a source model)."
-            )
-            return ScaffoldingStaleness.Fresh
-        }
-        val structureModel = sourceNode.model ?: run {
-            logger.warn(
-                "checkScaffoldingStaleness: source node for concept " +
-                    "'${concept.language.qualifiedName}.${concept.name}' resolved but has no enclosing " +
-                    "model; treating as Fresh. This is an anomalous repository state that should not " +
-                    "normally occur — investigate if seen in production."
-            )
-            return ScaffoldingStaleness.Fresh
-        }
-        val mgsm = project.getComponent(ModelGenerationStatusManager::class.java) ?: return ScaffoldingStaleness.Fresh
-        val generationRequired = mgsm.generationRequired(structureModel)
-        if (generationRequired) {
-            return ScaffoldingStaleness.Stale(
-                reason = "structure model '${structureModel.name}' has unbuilt changes; the language " +
-                    "runtime is out of sync with the source model and scaffolding would produce a " +
-                    "stale editor",
-                recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION,
-            )
-        }
-        return ScaffoldingStaleness.Fresh
+    ): ScaffoldingStaleness = when (val readiness = readinessOf(concept, project)) {
+        ConceptReadiness.Ready -> ScaffoldingStaleness.Fresh
+        ConceptReadiness.Undeclared -> ScaffoldingStaleness.Stale(
+            reason = "concept '${structureQualifiedName(concept)}' is unknown to the runtime and not declared in any structure model",
+            recoveryHint = "Check the concept reference. For a concept of an unbuilt language: $DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW",
+        )
+        is ConceptReadiness.NotBuilt.Stale -> ScaffoldingStaleness.Stale(
+            reason = LanguageReadiness.describe(readiness),
+            recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION,
+        )
+        is ConceptReadiness.NotBuilt -> ScaffoldingStaleness.Stale(
+            reason = LanguageReadiness.describe(readiness),
+            recoveryHint = DESCRIPTOR_REBUILD_INSTRUCTION_HOLLOW,
+        )
     }
 
     protected fun saveToTempFile(json: String): File {
@@ -4015,6 +4308,37 @@ abstract class AbstractOps : McpToolset {
         val transientsPresent: Boolean,
     )
 
+    /** Outcome of [ensureLanguageRuntime]: every make that ran (last one is decisive), the extra stage if any, and what is still not served. */
+    data class LanguageRuntimeEnsured(val makes: List<MakeResult>, val recoveryStage: String?, val stillNotBuilt: List<String>) {
+        val make: MakeResult get() = makes.last()
+    }
+
+    /**
+     * The one staged recovery for a language whose runtime cannot serve its concepts (D112 §4.4).
+     * With no runtime at all, a module-scoped clean rebuild at once: a model-scoped make does not
+     * materialise a runtime (`LanguageRegistry.onLoaded` skips an already-present language id).
+     * Otherwise a clean make of the structure model, verified by [verify] (the names still not
+     * served; empty means success), with the module rebuild as the fallback.
+     */
+    protected suspend fun ensureLanguageRuntime(
+        mpsProject: MPSProject,
+        module: Language,
+        structureModel: SModel,
+        readiness: ConceptReadiness,
+        verify: suspend () -> List<String>,
+    ): LanguageRuntimeEnsured {
+        val makes = mutableListOf<MakeResult>()
+        if (readiness !is ConceptReadiness.NotBuilt.NoRuntime) {
+            val modelMake = performMake(mpsProject, listOf(structureModel), emptyList(), true)
+            makes.add(modelMake)
+            val remaining = if (modelMake.success) verify() else emptyList()
+            if (!modelMake.success || remaining.isEmpty()) return LanguageRuntimeEnsured(makes, null, remaining)
+        }
+        val moduleMake = performMake(mpsProject, emptyList(), listOf(module), true)
+        makes.add(moduleMake)
+        return LanguageRuntimeEnsured(makes, "module-rebuild", if (moduleMake.success) verify() else emptyList())
+    }
+
     /**
      * Performs a make operation on the given models.
      * This is a shared utility used by multiple MCP tools.
@@ -4036,6 +4360,9 @@ abstract class AbstractOps : McpToolset {
 
             if (makeService.isSessionActive) {
                 return MakeResult(false, "Another make session is already active", runtimeReady = false)
+            }
+            if (HeadlessMigrations.applyRunning.get()) {
+                return MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
             }
 
             val messages = mutableListOf<MakeMessage>()
@@ -4132,6 +4459,12 @@ abstract class AbstractOps : McpToolset {
             if (!openNewSessionFlag) {
                 return MakeResult(false, "Opening the make session failed", runtimeReady = false)
             }
+            // APPLY sets applyRunning, then checks isSessionActive; we open the session, then check
+            // applyRunning. With both sides publishing before checking the other, at most one proceeds.
+            if (HeadlessMigrations.applyRunning.get()) {
+                makeService.closeSession(session)
+                return MakeResult(false, "a run_migrations APPLY is running", runtimeReady = false)
+            }
             val generationSettings = mpsProject.getComponent(GenerationSettingsProvider::class.java).generationSettings
             val savedTransients = saveTransientModels ?: generationSettings.isSaveTransientModels
 
@@ -4174,6 +4507,25 @@ abstract class AbstractOps : McpToolset {
                 val languageRegistry = LanguageRegistry.getInstance(mpsProject.repository)
                 languageRegistry.addRegistryListener(reloadListener)
 
+                // A guard: WorkbenchMakeTask now runs done(), which closes the session, before it
+                // releases future.get() (MPS-40329), so the latch is normally counted down already when
+                // get() returns. Older MPS builds released get() first, and a tool that refuses to run
+                // during a make (TRACE, TRANSIENT_MODELS, ...) could then still see our session open
+                // right after this make returned. Only one session is open at a time,
+                // so the first SESSION_CLOSED after ours opened is practically always ours (a previous
+                // session's notification still in flight is the rare exception); waiting for it, rather
+                // than for isSessionActive to turn false, does not stall when another make opens right
+                // after. A cancelled make waits for the same latch under NonCancellable before
+                // rethrowing so withSaveTransientModels restores the setting only after the make stops
+                // reading it.
+                val sessionClosedLatch = CountDownLatch(1)
+                val sessionListener = object : IMakeNotificationListener {
+                    override fun sessionClosed(notification: MakeNotification) {
+                        sessionClosedLatch.countDown()
+                    }
+                }
+                makeServiceComponent.addListener(sessionListener)
+
                 // Captured inside the `withContext` block below and read after the make finishes.
                 // Starts true so the "no language modules to track" path (targetLanguageIds empty)
                 // returns the N/A default; flipped to false only when the build succeeded but the
@@ -4185,7 +4537,7 @@ abstract class AbstractOps : McpToolset {
                     // makes from reading it. Restored before the class reload below.
                     val r = withSaveTransientModels(generationSettings, saveTransientModels) {
                         val future = makeService.make(session, resourcesList, null, null, makeMonitor)
-                        try {
+                        val makeResult = try {
                             // runInterruptible bridges Thread.interrupt() to coroutine cancellation so a
                             // structured-cancel actually unblocks future.get() instead of waiting for the
                             // build to finish.
@@ -4195,8 +4547,28 @@ abstract class AbstractOps : McpToolset {
                         } catch (e: CancellationException) {
                             makeMonitor.cancel()
                             future.cancel(true)
+                            withContext(NonCancellable + Dispatchers.IO) {
+                                val sessionClosed = sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                                if (!sessionClosed) {
+                                    logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make was cancelled")
+                                }
+                            }
                             throw e
                         }
+                        val sessionClosed = runInterruptible(Dispatchers.IO) {
+                            sessionClosedLatch.await(SESSION_CLOSE_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                        }
+                        if (!sessionClosed) {
+                            logger.warn("The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished")
+                            messages.add(
+                                MakeMessage(
+                                    "WARNING",
+                                    "The make session was still open $SESSION_CLOSE_TIMEOUT_SECONDS s after the make finished; " +
+                                            "tools refused while a make session is active may need a retry."
+                                )
+                            )
+                        }
+                        makeResult
                     }
                     withContext(Dispatchers.IO) {
                         // isSucessful is a typo in the MPS IResult API (jetbrains.mps.make.script.IResult).
@@ -4265,6 +4637,7 @@ abstract class AbstractOps : McpToolset {
                     }
                 } finally {
                     languageRegistry.removeRegistryListener(reloadListener)
+                    makeServiceComponent.removeListener(sessionListener)
                 }
 
                 val transientModels = transientModelsReport(

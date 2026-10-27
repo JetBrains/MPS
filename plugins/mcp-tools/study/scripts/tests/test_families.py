@@ -207,7 +207,7 @@ class FamiliesTest(unittest.TestCase):
                          "M_makes_save_transient\tGN_plan\tGN_transient_models\tGN_trace\tGN_trace_backward\t"
                          "GN_drop\tGN_trace_before_fix\tGN_transient_reads\tGN_template_prints\t"
                          "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs\tDF_queries\t"
-                         "DF_program_prints\tDF_reaching_queries", header)
+                         "DF_program_prints\tDF_reaching_queries\tC_after_node_sample\tC_after_node_sample_batches", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -510,6 +510,100 @@ def per_model(directory: Path) -> dict:
 def checks(directory: Path) -> dict:
     """run id -> (C_model_checks, C_root_checks)."""
     return {rid: (f["C_model_checks"], f["C_root_checks"]) for _, rid, f in families.rows([str(directory)])}
+
+
+def message(text: str, count: int = 1, node: str | None = None, **extra) -> dict:
+    return {"severity": "error", "message": text, "count": count, "node": node or f"{MODEL}/n-{text}", **extra}
+
+
+def sampled_row(name: str, *messages: dict, **extra) -> dict:
+    """A perRoot row with problems whose `messages` are given."""
+    return {**row(name, errors=sum(m["count"] for m in messages)), "messages": list(messages), **extra}
+
+
+ROOT_A, ROOT_B = f"{MODEL}/a", f"{MODEL}/b"
+UNREACHABLE = message("Error: Unreachable command", count=3, node=f"{MODEL}/a1")  # round 44, S16-opus-1:16
+
+
+class NodeSampleTest(unittest.TestCase):
+    """D119: a node check after a perRoot row that named every text but not every node."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.runs = Path(self._tmp.name) / "runs"
+        self.runs.mkdir()
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def count(self, events: list[dict]) -> collections.Counter:
+        (self.runs / "S16-opus-1-worker.jsonl").write_text("\n".join(json.dumps(e) for e in events) + "\n")
+        return families.rows([str(self.runs)])[0][2]
+
+    def columns(self, answer: dict, ref: str, **extra) -> tuple[int, int]:
+        """(C_after_summary, C_after_node_sample) for one perRoot check answered `answer`, then a check of `ref`."""
+        f = self.count(check("m", MODEL, answer, perRoot=True) + check("a", ref, NODE_CLEAN, **extra))
+        return f["C_after_summary"], f["C_after_node_sample"]
+
+    def test_a1_mps40338_count_above_one_is_sampled(self) -> None:
+        f = self.count(check("m", MODEL, ok([sampled_row("a", UNREACHABLE), row("b")], scope="model"), perRoot=True)
+                       + check("a", ROOT_A, NODE_CLEAN))
+        self.assertEqual((0, 1, 1), (f["C_after_summary"], f["C_after_node_sample"], f["C_after_node_sample_batches"]))
+
+    def test_a2_listed_nodes_are_not_sampled(self) -> None:
+        listed = {**UNREACHABLE, "nodes": [f"{MODEL}/a1", f"{MODEL}/a2"]}
+        self.assertEqual((1, 0), self.columns(ok([sampled_row("a", listed)], scope="model", nodesPerMessage=5), ROOT_A))
+
+    def test_a3_more_nodes_is_sampled(self) -> None:
+        cut = {**UNREACHABLE, "count": 7, "nodes": [f"{MODEL}/a{i}" for i in range(5)], "moreNodes": 2}
+        self.assertEqual((0, 1), self.columns(ok([sampled_row("a", cut)], scope="model", nodesPerMessage=5), ROOT_A))
+
+    def test_a3b_count_above_one_without_more_nodes_is_not_sampled_on_a_listing_server(self) -> None:
+        # one node, or nodeless model-level items mixed in: the server gives only `node`
+        self.assertEqual((1, 0), self.columns(ok([sampled_row("a", UNREACHABLE)], scope="model", nodesPerMessage=5), ROOT_A))
+
+    def test_a4_cut_texts_stay_a_summary(self) -> None:
+        answer = ok([sampled_row("a", UNREACHABLE, moreMessages=2)], scope="model", messagesPerRow=1)
+        self.assertEqual((1, 0), self.columns(answer, ROOT_A))
+
+    def test_a5_counts_only_rows_stay_a_summary(self) -> None:
+        self.assertEqual((1, 0), self.columns(ok([row("a", errors=3)], scope="model"), ROOT_A))
+
+    def test_a6_quick_fix_recheck_stays_a_summary(self) -> None:
+        # round 44, S5-sonnet-1:3 -> :8
+        fixable = message("The reference  Saffron (ingredient) is out of search scope", hasQuickFixes=True)
+        self.assertEqual((1, 0), self.columns(ok([sampled_row("a", fixable)], scope="model"), ROOT_A))
+
+    def test_a7_the_check_is_attributed_to_its_row(self) -> None:
+        answer = ok([sampled_row("a", UNREACHABLE), sampled_row("b", message("once"))], scope="model")
+        self.assertEqual((1, 0), self.columns(answer, ROOT_B))
+        self.assertEqual((0, 1), self.columns(answer, f"{MODEL}/a1"))
+        self.assertEqual((1, 0), self.columns(answer, f"{MODEL}/n-once"))
+        self.assertEqual((1, 0), self.columns(answer, f"{MODEL}/unlisted"))
+
+    def test_a7_a_root_match_wins_over_its_own_message(self) -> None:
+        # the root carries an unsampled message of its own (S5's Salt row), and the row has a sampled one
+        answer = ok([sampled_row("a", message("own", node=ROOT_A), UNREACHABLE)], scope="model")
+        self.assertEqual((0, 1), self.columns(answer, ROOT_A))
+
+    def test_a8_module_rows_match_by_model_and_ignore_the_module_prefix(self) -> None:
+        model_row = {"model": MODEL, "name": "m", "rootsChecked": 2, "errors": 3, "warnings": 0, "messages": [UNREACHABLE]}
+        answer = ok([model_row], scope="module")
+        self.assertEqual((0, 1), self.columns(answer, f"{MODEL}/deep"))
+        self.assertEqual((0, 1), self.columns(answer, "6b0c8e9a-1111-2222-3333-444455556666/" + f"{MODEL}/deep"))
+        prefixed = {**model_row, "model": "6b0c8e9a-1111-2222-3333-444455556666/" + MODEL}
+        self.assertEqual((0, 1), self.columns(ok([prefixed], scope="module"), f"{MODEL}/deep"))
+
+    def test_a9_a_write_between_resets_the_summary(self) -> None:
+        f = self.count(check("m", MODEL, ok([sampled_row("a", UNREACHABLE)], scope="model"), perRoot=True)
+                       + [tool("u", "mcp__mps__mps_mcp_update_node", {}), result("u", ok("updated"))]
+                       + check("a", ROOT_A, NODE_CLEAN))
+        self.assertEqual((0, 0), (f["C_after_summary"], f["C_after_node_sample"]))
+
+    def test_a10_auto_apply_counts_once_then_resets(self) -> None:
+        f = self.count(check("m", MODEL, ok([sampled_row("a", UNREACHABLE)], scope="model"), perRoot=True)
+                       + check("a", ROOT_A, NODE_CLEAN, autoApplyQuickFixes=True) + check("b", ROOT_A, NODE_CLEAN))
+        self.assertEqual((0, 1), (f["C_after_summary"], f["C_after_node_sample"]))
 
 
 class StudyTranscriptsA9Test(unittest.TestCase):

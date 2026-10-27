@@ -21,7 +21,16 @@ import kotlinx.coroutines.CancellationException
 internal object JavaSyntaxProblems {
     private val logger = Logger.getInstance(JavaSyntaxProblems::class.java)
 
-    data class Problem(val line: Int, val message: String)
+    /** [sourceStart] is ecj's character offset in the parsed source; null when ecj did not give one. */
+    data class Problem(val line: Int, val message: String, val sourceStart: Int? = null)
+
+    /** D117: the `import` / `package` declarations a snippet starts with; [end] is the offset past the last `;`. */
+    data class Header(val declarations: List<String>, val end: Int)
+
+    // A declaration never holds these, so an import missing its `;` does not swallow the statement after it.
+    private val HEADER_DECLARATION = Regex("""(?:import|package)\b[^;=(){}<>"]*;""").toPattern()
+    private val BLOCK_COMMENT = Regex("""/\*.*?\*/""", RegexOption.DOT_MATCHES_ALL)
+    private val WHITESPACE = Regex("""\s+""")
 
     /**
      * The syntax *errors* (not warnings) ecj records for [code] parsed as [featureKind] — the
@@ -62,7 +71,10 @@ internal object JavaSyntaxProblems {
             problems.filterNotNull().filter { it.javaClass.getMethod("isError").invoke(it) == true }.map {
                 Problem(
                     line = it.javaClass.getMethod("getSourceLineNumber").invoke(it) as? Int ?: 0,
-                    message = it.javaClass.getMethod("getMessage").invoke(it) as? String ?: "syntax error"
+                    message = it.javaClass.getMethod("getMessage").invoke(it) as? String ?: "syntax error",
+                    // Only D117's header pruning needs it, so a failure must not cost the other fields.
+                    sourceStart = runCatching { it.javaClass.getMethod("getSourceStart").invoke(it) as? Int }
+                        .getOrNull()
                 )
             }
         } catch (e: Throwable) {
@@ -83,5 +95,87 @@ internal object JavaSyntaxProblems {
                 "so token positions refer to that wrapper."
         } else ""
         return "$shown$more.$wrapper"
+    }
+
+    /**
+     * D117: the `import` / `package` declarations [code] starts with, in order, each as written up to and
+     * including its `;` (whitespace runs collapsed), or null when there is none. Whitespace and `//` / `/* */`
+     * comments before and between them are skipped; scanning stops at the first other token. Only featureKind
+     * CLASS accepts these, so a header explains the syntax errors of any other kind.
+     */
+    fun leadingHeader(code: String): Header? {
+        val declarations = mutableListOf<String>()
+        var end = -1
+        val matcher = HEADER_DECLARATION.matcher(code)
+        var pos = skipBlankAndComments(code, 0)
+        while (pos < code.length && matcher.region(pos, code.length).lookingAt()) {
+            declarations.add(matcher.group().replace(WHITESPACE, " "))
+            end = matcher.end()
+            pos = skipBlankAndComments(code, end)
+        }
+        return if (declarations.isEmpty()) null else Header(declarations, end)
+    }
+
+    /**
+     * D117: why [declarations] fail under the requested [featureKindText], and what to write instead; null when
+     * the list is empty. One wording for every insert mode: a child/replace into the console input is recognised
+     * as a console insert only after parsing, so the console's import rule is named unconditionally.
+     */
+    fun headerHint(declarations: List<String>, featureKindText: String): String? {
+        val first = declarations.firstOrNull() ?: return null
+        val more = when (val rest = declarations.size - 1) {
+            0 -> ""
+            1 -> " (and 1 more declaration)"
+            else -> " (and $rest more declarations)"
+        }
+        val cause = "The code starts with `$first`$more, but featureKind \"$featureKindText\" accepts no " +
+            "`import` or `package` declarations."
+        if (declarations.none { it.startsWith("import") }) return "$cause Remove the `package` declaration."
+        val example = declarations.firstNotNullOfOrNull { qualifiedNameExample(it) }?.let { " (`$it`)" }.orEmpty()
+        return "$cause Remove them and write the classes fully qualified$example: they resolve against the " +
+            "target model's imports and module dependencies, and outside the MPS Console the tool imports the " +
+            "models they point to, while console code needs " +
+            "`mps_mcp_model_dependency(modelReference: \"console\", …)` first."
+    }
+
+    /**
+     * D117: [problems] minus those inside the header, which ends at [headerEnd] in the caller's code. [offsetShift]
+     * is how far the parsed source's offsets are ahead of the caller's (the EXPRESSION wrapper's prefix). A
+     * problem without a usable offset is kept.
+     */
+    fun problemsAfterHeader(problems: List<Problem>, headerEnd: Int, offsetShift: Int): List<Problem> =
+        problems.filter { problem ->
+            val start = problem.sourceStart
+            start == null || start < 0 || start - offsetShift >= headerEnd
+        }
+
+    // `import a.B;` -> `a.B`; `import static a.B.c;` / `import static a.B.*;` -> `a.B`; `import a.b.*;` ->
+    // `a.b.<Class>`; a `package` declaration -> null.
+    private fun qualifiedNameExample(declaration: String): String? {
+        val body = declaration.replace(BLOCK_COMMENT, " ").removeSuffix(";").trim()
+        if (!body.startsWith("import")) return null
+        var name = body.removePrefix("import").trim()
+        val isStatic = name.startsWith("static") && (name.length == 6 || !Character.isJavaIdentifierPart(name[6]))
+        if (isStatic) name = name.removePrefix("static")
+        name = name.replace(WHITESPACE, "")
+        if (name.isEmpty()) return null
+        return when {
+            isStatic -> name.substringBeforeLast('.', name)
+            name.endsWith(".*") -> name.removeSuffix("*") + "<Class>"
+            else -> name
+        }
+    }
+
+    private fun skipBlankAndComments(code: String, from: Int): Int {
+        var pos = from
+        while (pos < code.length) {
+            pos = when {
+                code[pos].isWhitespace() -> pos + 1
+                code.startsWith("//", pos) -> code.indexOf('\n', pos).let { if (it < 0) code.length else it + 1 }
+                code.startsWith("/*", pos) -> code.indexOf("*/", pos + 2).let { if (it < 0) code.length else it + 2 }
+                else -> return pos
+            }
+        }
+        return pos
     }
 }

@@ -315,6 +315,21 @@ abstract class McpIntegrationTestBase : ModuleInProjectTest() {
         return obj.get("error").asString
     }
 
+    /**
+     * Asserts the D112 writer refusal: `LANGUAGE_NOT_BUILT` with `details.languageBuild` naming [module]
+     * as never built (`no_runtime`), and no "Unknown property" fallback. Returns the envelope.
+     */
+    protected fun expectLanguageNotBuilt(response: String, module: SModule): com.google.gson.JsonObject {
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse("expected an error envelope: $response", obj.get("ok").asBoolean)
+        assertEquals("unexpected code: $response", "LANGUAGE_NOT_BUILT", obj.get("code").asString)
+        val build = obj.getAsJsonObject("details")?.getAsJsonObject("languageBuild") ?: error("expected details.languageBuild: $response")
+        assertEquals("status: $response", "no_runtime", build.get("status").asString)
+        assertEquals("module: $response", PersistenceFacade.getInstance().asString(module.moduleReference), build.get("module").asString)
+        assertFalse("must not fall back to the authoring error: $response", obj.get("error").asString.contains("Unknown property"))
+        return obj
+    }
+
     /** Normalises a `data` field (object directly or JSON-string-wrapped) into a [com.google.gson.JsonObject]. */
     protected fun parseDataObject(data: JsonElement): com.google.gson.JsonObject = when {
         data.isJsonObject -> data.asJsonObject

@@ -2,7 +2,6 @@ package jetbrains.mps.agents.mcp.tools
 
 import jetbrains.mps.agents.mcp.tools.common.*
 
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
@@ -131,8 +130,9 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
         maxInlineBytes: Int = DEFAULT_MAX_INLINE_BYTES
     ): String = withMpsProject("MPS generation: $operation") { mpsProject ->
         val params = try {
-            Gson().fromJson(parameters, JsonObject::class.java)
+            parseParametersBlob(parameters)
         } catch (e: Exception) {
+            rethrowIfCancellation(e)
             return@withMpsProject invalidJson("Invalid JSON parameters: ${e.message}")
         }
         params.rejectUnknownParameterKeys(operation.name, generationParameterKeys(operation))
