@@ -24,7 +24,7 @@ text, for S16; flow-java = a synthesized project plus one BaseLanguage class, fo
 | S4 | Rename property, change cardinality, migration | recipes-full | H2, H5 validation, H8 |
 | S5 | Fix 12 injected problems (`scenarios/S5/PROBLEMS.md`) + 2 identity-preserving moves (prompt item 4, revised 2026-10-22) | recipes-broken | H5 |
 | S6 | Generator → Java per Recipe; behavior via parser and via JSON AST | recipes-full | H1, H2 |
-| S7 | `@tests` model, 3 NodesTestCases + 1 EditorTestCase, run config | recipes | H2, H7 |
+| S7 | `@tests` model, 3 NodesTestCase roots + 1 EditorTestCase, run config (prompt step 1, revised 2026-10-27) | recipes | H2, H7 |
 | S8 | Onboard unknown project → `statechart-dsl` skill via `mps-dsl-memory` | statechart | H4, H7 |
 | S9 | Console MCP: two read-only `#instances` queries (one filtered), recall, print current | recipes | H1, H7 |
 | S10 | Project lifecycle: create an empty project, close this one, open the new one, add a solution, close it | empty-project | H4, H7 |
