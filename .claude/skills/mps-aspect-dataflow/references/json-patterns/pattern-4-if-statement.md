@@ -57,3 +57,18 @@ Key observed nodes (verified, from nodeReference `r:.../1206454554507`):
   }
 ]
 ```
+
+### Else branch shape (when building an `IfStatement` inside a builder)
+
+`IfStatement.ifFalseStatement` takes a `BlockStatement`, not a `StatementList`. The `StatementList` goes under `BlockStatement.statements`; putting it directly in `ifFalseStatement` is rejected ("assignable: BlockStatement ..."). The `ifTrue` slot takes a `StatementList` directly.
+
+```json
+{"role": "ifFalseStatement", "nodes": [{
+  "concept": "BlockStatement",
+  "children": [{"role": "statements", "nodes": [{"concept": "StatementList", "children": [
+    {"role": "statement", "nodes": [ /* the else-branch statements */ ]}
+  ]}]}]
+}]}
+```
+
+A complete worked example is in [pattern-5-while-loop.md](pattern-5-while-loop.md).
