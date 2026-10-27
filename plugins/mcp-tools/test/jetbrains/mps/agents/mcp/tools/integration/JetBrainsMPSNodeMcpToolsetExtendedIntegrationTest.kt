@@ -2597,6 +2597,7 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         val uncappedEnvelope = okEnvelope(uncappedResponse)
         assertTrue("uncapped call must stay inline: $uncappedEnvelope", uncappedEnvelope.get("data").isJsonArray)
         assertEquals(5, uncappedEnvelope.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(5, uncappedEnvelope.getAsJsonObject("details").get("nodesPerMessage").asInt)
         val uncappedRows = uncappedEnvelope.getAsJsonArray("data").map { it.asJsonObject }
         val multiMessageRow = uncappedRows.firstOrNull {
             it.has("messages") && it.getAsJsonArray("messages").size() >= 2
@@ -2609,11 +2610,70 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
         }
         val fallbackEnvelope = okEnvelope(fallbackResponse)
         assertTrue("form 2 must fit inline at form1Length - 1: $fallbackEnvelope", fallbackEnvelope.get("data").isJsonArray)
+        // One link: no text is on two nodes, so the one-node form is skipped (D119).
         assertEquals(1, fallbackEnvelope.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(1, fallbackEnvelope.getAsJsonObject("details").get("nodesPerMessage").asInt)
         val fallbackBroken = fallbackEnvelope.getAsJsonArray("data").map { it.asJsonObject }
             .single { it.get("root").asString == multiMessageRow!!.get("root").asString }
         assertEquals(1, fallbackBroken.getAsJsonArray("messages").size())
         assertTrue(fallbackBroken.get("moreMessages").asInt >= 1)
+    }
+
+    @Test
+    fun `check_root_node_problems perRoot lists every node of a repeated text and cuts nodes before messages`() {
+        // D119: two empty links under one root report the same text, so one message covers two nodes.
+        val rootRef = createConceptRoot("PerRootNodes")
+        clearConceptId(rootRef)
+        val linkRefs = mutableListOf<String>()
+        executeCommand {
+            val root = resolveNode(rootRef)
+            val linkRole = root.concept.containmentLinks.first { it.name == "linkDeclaration" }
+            repeat(2) {
+                val decl = jetbrains.mps.smodel.SNode(SNodeUtil.concept_LinkDeclaration)
+                root.addChild(linkRole, decl)
+                linkRefs.add(PersistenceFacade.getInstance().asString(decl.reference))
+            }
+        }
+
+        val uncapped = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true) })
+        assertEquals(5, uncapped.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val rootRow = uncapped.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString.endsWith(rootRef.substringAfterLast('/')) }
+        val messages = rootRow.getAsJsonArray("messages").map { it.asJsonObject }
+        val repeated = messages.firstOrNull { it.has("nodes") }
+        assertNotNull("precondition: a text reported on both links: $rootRow", repeated)
+        assertTrue("precondition: the row must have >= 2 distinct messages: $rootRow", messages.size >= 2)
+        assertEquals(linkRefs, repeated!!.getAsJsonArray("nodes").map { it.asString })
+        assertEquals(linkRefs[0], repeated.get("node").asString)
+        assertTrue(repeated.get("count").asInt >= 2)
+        assertFalse(repeated.has("moreNodes"))
+        val form1Length = uncapped.get("data").toString().length
+
+        val oneNode = okEnvelope(runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true, maxInlineBytes = form1Length - 1)
+        })
+        assertTrue("the one-node form must fit inline at form1Length - 1: $oneNode", oneNode.get("data").isJsonArray)
+        assertEquals(5, oneNode.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(1, oneNode.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val oneNodeRow = oneNode.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString == rootRow.get("root").asString }
+        assertEquals("nodes are cut before messages", messages.size, oneNodeRow.getAsJsonArray("messages").size())
+        val oneNodeRepeated = oneNodeRow.getAsJsonArray("messages").map { it.asJsonObject }
+            .single { it.get("message").asString == repeated.get("message").asString }
+        assertFalse(oneNodeRepeated.has("nodes"))
+        assertEquals(linkRefs[0], oneNodeRepeated.get("node").asString)
+        assertEquals(1, oneNodeRepeated.get("moreNodes").asInt)
+
+        val form2 = okEnvelope(runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true, maxInlineBytes = oneNode.get("data").toString().length - 1)
+        })
+        assertTrue("form 2 must fit inline: $form2", form2.get("data").isJsonArray)
+        assertEquals(1, form2.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(1, form2.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val form2Row = form2.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString == rootRow.get("root").asString }
+        assertEquals(1, form2Row.getAsJsonArray("messages").size())
+        assertTrue(form2Row.get("moreMessages").asInt >= 1)
     }
 
     @Test

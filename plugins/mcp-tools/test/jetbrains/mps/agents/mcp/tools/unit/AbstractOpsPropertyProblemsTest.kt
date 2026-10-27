@@ -128,11 +128,31 @@ class AbstractOpsPropertyProblemsTest {
             node: SNode,
             problems: Map<SNode, List<NodeReportItem>>,
             perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+            nodesPerMessage: Int = MAX_PROBLEM_NODES_PER_MESSAGE,
         ): Triple<Int, Int, JsonObject> {
             val summary = problemSummary(node, problems)
             val row = JsonObject()
-            addMessagesToRow(row, summary.tallies.values, perRow)
+            addMessagesToRow(row, summary.tallies.values, perRow, nodesPerMessage)
             return Triple(summary.errors, summary.warnings, row)
+        }
+
+        /**
+         * Merges [root]'s tallies into [modelProblems]' via [mergeTallies], renders the merged row, then adds
+         * [extraNode] to every merged tally and re-renders [root]'s own tallies: the second row shows whether
+         * the merge copied the node sets or shared them.
+         */
+        fun mergedAndSourceRowsForTest(
+            modelProblems: List<ModelReportItem>,
+            root: SNode,
+            problems: Map<SNode, List<NodeReportItem>>,
+            extraNode: SNodeReference,
+        ): Pair<JsonObject, JsonObject> {
+            val tallies = modelProblemSummary(modelProblems).tallies
+            val rootTallies = problemSummary(root, problems).tallies
+            mergeTallies(tallies, rootTallies.values)
+            val merged = JsonObject().also { addMessagesToRow(it, tallies.values) }
+            tallies.values.forEach { it.nodes.add(extraNode) }
+            return merged to JsonObject().also { addMessagesToRow(it, rootTallies.values) }
         }
 
         /** A module `perRoot` row's `messages`: [modelProblems] tallies with [root]'s merged in via [mergeTallies]. */
@@ -146,17 +166,17 @@ class AbstractOpsPropertyProblemsTest {
             return JsonObject().also { addMessagesToRow(it, tallies.values) }
         }
 
-        /** `(dataJson, messagesPerRow)` from [choosePerRootForm] for synthetic `(baseRow, (node, problems))` inputs. */
+        /** `(dataJson, messagesPerRow, nodesPerMessage)` from [choosePerRootForm] for synthetic `(baseRow, (node, problems))` inputs. */
         fun choosePerRootFormForTest(
             rows: List<Pair<JsonObject, Pair<SNode, Map<SNode, List<NodeReportItem>>>>>,
             maxInlineBytes: Int,
-        ): Pair<String, Int?> {
+        ): Triple<String, Int?, Int?> {
             val built = rows.map { (base, pair) ->
                 val summary = problemSummary(pair.first, pair.second)
                 base to summary.tallies.values
             }
             val choice = choosePerRootForm(built, maxInlineBytes)
-            return choice.dataJson to choice.messagesPerRow
+            return Triple(choice.dataJson, choice.messagesPerRow, choice.nodesPerMessage)
         }
 
         fun resolveNodeReferenceForTest(repository: org.jetbrains.mps.openapi.module.SRepository, nodeRefStr: String) =
@@ -363,6 +383,87 @@ class AbstractOpsPropertyProblemsTest {
         assertEquals(2, entry.get("count").asInt)
         assertEquals(PersistenceFacade.getInstance().asString(parent.reference), entry.get("node").asString)
         assertFalse(row.has("moreMessages"))
+    }
+
+    @Test
+    fun problemSummaryListsEveryDistinctNodeOfARepeatedMessage() {
+        val (root, children) = nodeWithChildren(120L, 3)
+        val (_, _, row) = ops.problemSummaryForTest(
+            root,
+            children.associateWith { listOf(stubNodeReportItem(it, MessageStatus.ERROR, "Unreachable command")) },
+        )
+
+        val entry = row.getAsJsonArray("messages").single().asJsonObject
+        assertEquals(3, entry.get("count").asInt)
+        val refs = children.map { PersistenceFacade.getInstance().asString(it.reference) }
+        assertEquals(refs, entry.getAsJsonArray("nodes").map { it.asString })
+        assertEquals(refs[0], entry.get("node").asString)
+        assertFalse(entry.has("moreNodes"))
+    }
+
+    @Test
+    fun problemSummaryDeduplicatesNodesReportingTheSameMessageTwice() {
+        // The round-44 S16 shape: count 3 on two nodes.
+        val (root, children) = nodeWithChildren(124L, 2)
+        val (a, b) = children
+        val (_, _, row) = ops.problemSummaryForTest(
+            root,
+            mapOf(
+                a to listOf(
+                    stubNodeReportItem(a, MessageStatus.ERROR, "Unreachable command"),
+                    stubNodeReportItem(a, MessageStatus.ERROR, "Unreachable command"),
+                ),
+                b to listOf(stubNodeReportItem(b, MessageStatus.ERROR, "Unreachable command")),
+            ),
+        )
+
+        val entry = row.getAsJsonArray("messages").single().asJsonObject
+        assertEquals(3, entry.get("count").asInt)
+        assertEquals(
+            listOf(a, b).map { PersistenceFacade.getInstance().asString(it.reference) },
+            entry.getAsJsonArray("nodes").map { it.asString },
+        )
+    }
+
+    @Test
+    fun problemSummaryOmitsNodesForASingleDistinctNode() {
+        val (root, children) = nodeWithChildren(127L, 1)
+        val child = children.single()
+        val (_, _, row) = ops.problemSummaryForTest(
+            root,
+            mapOf(
+                root to listOf(stubNodeReportItem(root, MessageStatus.ERROR, "once")),
+                child to listOf(
+                    stubNodeReportItem(child, MessageStatus.WARNING, "twice on one node"),
+                    stubNodeReportItem(child, MessageStatus.WARNING, "twice on one node"),
+                ),
+            ),
+        )
+
+        val messages = row.getAsJsonArray("messages").map { it.asJsonObject }
+        assertEquals(listOf(1, 2), messages.map { it.get("count").asInt })
+        for (entry in messages) {
+            assertTrue(entry.has("node"))
+            assertFalse("one distinct node needs no nodes list: $entry", entry.has("nodes"))
+            assertFalse(entry.has("moreNodes"))
+        }
+    }
+
+    @Test
+    fun problemSummaryCapsNodesAndReportsMoreNodes() {
+        val (root, children) = nodeWithChildren(140L, 7)
+        val problems = children.associateWith { listOf(stubNodeReportItem(it, MessageStatus.WARNING, "Step takes no time")) }
+        val refs = children.map { PersistenceFacade.getInstance().asString(it.reference) }
+
+        val capped = ops.problemSummaryForTest(root, problems).third.getAsJsonArray("messages").single().asJsonObject
+        assertEquals(refs.take(5), capped.getAsJsonArray("nodes").map { it.asString })
+        assertEquals(2, capped.get("moreNodes").asInt)
+
+        val oneNode = ops.problemSummaryForTest(root, problems, nodesPerMessage = 1).third
+            .getAsJsonArray("messages").single().asJsonObject
+        assertFalse("nodes would only repeat node: $oneNode", oneNode.has("nodes"))
+        assertEquals(refs[0], oneNode.get("node").asString)
+        assertEquals(6, oneNode.get("moreNodes").asInt)
     }
 
     @Test
@@ -615,6 +716,34 @@ class AbstractOpsPropertyProblemsTest {
     }
 
     @Test
+    fun mergeTalliesUnitesNodeSetsInOrderWithoutSharingThem() {
+        val (root, children) = nodeWithChildren(150L, 2)
+        val (first, second) = children
+        val modelNode = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(160L)) }
+        val extra = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(161L)) }
+        val (merged, source) = ops.mergedAndSourceRowsForTest(
+            listOf(StubNodeModelProblemItem(modelNode, MessageStatus.ERROR, "shared"), StubNodeModelProblemItem(first, MessageStatus.ERROR, "root text")),
+            root,
+            mapOf(
+                first to listOf(stubNodeReportItem(first, MessageStatus.ERROR, "shared"), stubNodeReportItem(first, MessageStatus.ERROR, "root text")),
+                second to listOf(stubNodeReportItem(second, MessageStatus.ERROR, "root only")),
+            ),
+            extra.reference,
+        )
+
+        val byText = merged.getAsJsonArray("messages").associate { it.asJsonObject.get("message").asString to it.asJsonObject }
+        val ref = { n: SNode -> PersistenceFacade.getInstance().asString(n.reference) }
+        assertEquals("model node first, then the root's", listOf(ref(modelNode), ref(first)),
+            byText.getValue("shared").getAsJsonArray("nodes").map { it.asString })
+        assertEquals(ref(modelNode), byText.getValue("shared").get("node").asString)
+        assertFalse("a node on both sides counts once: ${byText["root text"]}", byText.getValue("root text").has("nodes"))
+        assertEquals(2, byText.getValue("root text").get("count").asInt)
+
+        val rootOnly = source.getAsJsonArray("messages").map { it.asJsonObject }.single { it.get("message").asString == "root only" }
+        assertFalse("the merge must copy the root tally's node set: $rootOnly", rootOnly.has("nodes"))
+    }
+
+    @Test
     fun choosePerRootFormSelectsForm1Form2OrTempFileFallbackByExactLength() {
         // G4: synthetic rows, one of them with 3 distinct texts, tested at and 1 below each form's length.
         val cleanNode: SNode = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(112L)) }
@@ -645,8 +774,9 @@ class AbstractOpsPropertyProblemsTest {
             problemBase to (problemNode to problemMap),
         )
 
-        val (form1Json, form1PerRow) = ops.choosePerRootFormForTest(rows, Int.MAX_VALUE)
+        val (form1Json, form1PerRow, form1NodesPerMessage) = ops.choosePerRootFormForTest(rows, Int.MAX_VALUE)
         assertEquals(5, form1PerRow)
+        assertEquals(5, form1NodesPerMessage)
 
         val atForm1 = ops.choosePerRootFormForTest(rows, form1Json.length)
         assertEquals(form1Json, atForm1.first)
@@ -654,7 +784,8 @@ class AbstractOpsPropertyProblemsTest {
 
         val belowForm1 = ops.choosePerRootFormForTest(rows, form1Json.length - 1)
         val form2Json = belowForm1.first
-        assertEquals(1, belowForm1.second)
+        assertEquals("without a multi-node message the one-node form is skipped", 1, belowForm1.second)
+        assertEquals(1, belowForm1.third)
         assertTrue("form 2 must be shorter than form 1", form2Json.length < form1Json.length)
         val form2Broken = JsonParser.parseString(form2Json).asJsonArray[1].asJsonObject
         assertEquals(1, form2Broken.getAsJsonArray("messages").size())
@@ -667,9 +798,55 @@ class AbstractOpsPropertyProblemsTest {
         val belowForm2 = ops.choosePerRootFormForTest(rows, form2Json.length - 1)
         assertEquals("below form 2's length, form 1 is handed to finalizeResult for the temp file", form1Json, belowForm2.first)
         assertEquals(5, belowForm2.second)
+        assertEquals(5, belowForm2.third)
 
         val allClean = ops.choosePerRootFormForTest(listOf(cleanBase to (cleanNode to emptyMap())), Int.MAX_VALUE)
         assertNull("all-clean rows must omit messagesPerRow", allClean.second)
+        assertNull("all-clean rows must omit nodesPerMessage", allClean.third)
+    }
+
+    @Test
+    fun choosePerRootFormCutsNodesBeforeMessages() {
+        // D119: a row with a text on three nodes and a second text; the one-node form sits between form 1 and form 2.
+        val (root, children) = nodeWithChildren(130L, 3)
+        val base = JsonObject().apply {
+            addProperty("root", "r:test/130")
+            addProperty("name", "Broken")
+            addProperty("concept", "TestConcept")
+            addProperty("errors", 4)
+            addProperty("warnings", 0)
+        }
+        val problems = children.associateWith { listOf(stubNodeReportItem(it, MessageStatus.ERROR, "Unreachable command")) } +
+            (root to listOf(stubNodeReportItem(root, MessageStatus.ERROR, "second distinct error message")))
+        val rows = listOf(base to (root to problems))
+
+        val (form1Json, _, form1NodesPerMessage) = ops.choosePerRootFormForTest(rows, Int.MAX_VALUE)
+        assertEquals(5, form1NodesPerMessage)
+        val form1Repeated = JsonParser.parseString(form1Json).asJsonArray[0].asJsonObject.getAsJsonArray("messages")[0].asJsonObject
+        assertEquals(3, form1Repeated.getAsJsonArray("nodes").size())
+
+        val belowForm1 = ops.choosePerRootFormForTest(rows, form1Json.length - 1)
+        assertEquals(5, belowForm1.second)
+        assertEquals(1, belowForm1.third)
+        val oneNodeRow = JsonParser.parseString(belowForm1.first).asJsonArray[0].asJsonObject
+        assertEquals("the one-node form keeps every message", 2, oneNodeRow.getAsJsonArray("messages").size())
+        val oneNodeRepeated = oneNodeRow.getAsJsonArray("messages")[0].asJsonObject
+        assertFalse("nodes would only repeat node: $oneNodeRepeated", oneNodeRepeated.has("nodes"))
+        assertEquals(2, oneNodeRepeated.get("moreNodes").asInt)
+        assertEquals(form1Repeated.get("node"), oneNodeRepeated.get("node"))
+
+        val belowOneNode = ops.choosePerRootFormForTest(rows, belowForm1.first.length - 1)
+        assertEquals(1, belowOneNode.second)
+        assertEquals(1, belowOneNode.third)
+        val form2Row = JsonParser.parseString(belowOneNode.first).asJsonArray[0].asJsonObject
+        assertEquals(1, form2Row.getAsJsonArray("messages").size())
+        assertEquals(1, form2Row.get("moreMessages").asInt)
+        assertEquals(2, form2Row.getAsJsonArray("messages")[0].asJsonObject.get("moreNodes").asInt)
+
+        val spill = ops.choosePerRootFormForTest(rows, belowOneNode.first.length - 1)
+        assertEquals(form1Json, spill.first)
+        assertEquals(5, spill.second)
+        assertEquals(5, spill.third)
     }
 
     @Test
@@ -1927,6 +2104,32 @@ class AbstractOpsPropertyProblemsTest {
         override fun getSeverity(): MessageStatus = status
         override fun getIssueKind(): IssueKindReportItem.ItemKind? = null
         override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> = emptySet()
+    }
+
+    /** A model-level item that is also a [NodeReportItem], as a model check reports for a node of the model. */
+    private class StubNodeModelProblemItem(
+        private val node: SNode,
+        private val status: MessageStatus,
+        private val text: String,
+    ) : ModelReportItem, NodeReportItem {
+        override fun getModel(): SModelReference = throw UnsupportedOperationException("modelProblemSummary must not read item.model")
+        override fun getNode(): SNodeReference = node.reference
+        override fun getMessage(): String = text
+        override fun getSeverity(): MessageStatus = status
+        override fun getIssueKind(): IssueKindReportItem.ItemKind? = null
+        override fun getIdFlavours(): Set<FlavouredItem.ReportItemFlavour<*, *>> = emptySet()
+    }
+
+    /** A detached parent with id [parentId] and [count] children with the following ids, in child order. */
+    private fun nodeWithChildren(parentId: Long, count: Int): Pair<SNode, List<SNode>> {
+        val parent = jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also { it.setId(SNodeId.Regular(parentId)) }
+        val children = (1..count).map { i ->
+            jetbrains.mps.smodel.SNode(TestConcept(emptyList())).also {
+                it.setId(SNodeId.Regular(parentId + i))
+                parent.addChild(MetaAdapterFactory.getContainmentLink(0L, 1L, 1L, 1L, "child"), it)
+            }
+        }
+        return parent to children
     }
 
     private fun stubNodeReportItem(

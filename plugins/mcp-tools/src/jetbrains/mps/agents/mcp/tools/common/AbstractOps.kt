@@ -159,6 +159,7 @@ abstract class AbstractOps : McpToolset {
          */
         const val SUMMARY_RESPONSE_THRESHOLD: Int = 10
         protected const val MAX_PROBLEM_MESSAGES_PER_ROW: Int = 5
+        protected const val MAX_PROBLEM_NODES_PER_MESSAGE: Int = 5
         protected const val MAX_PROBLEM_MESSAGE_CHARS: Int = 300
 
         /**
@@ -2075,14 +2076,25 @@ abstract class AbstractOps : McpToolset {
     /** Error/warning tallies of one subtree, as reported by [problemCounts]. */
     protected data class ProblemCounts(val errors: Int, val warnings: Int)
 
-    /** One distinct `(severity, message)` group in a [ProblemSummary], in first-occurrence order. */
+    /**
+     * One distinct `(severity, message)` group in a [ProblemSummary], in first-occurrence order.
+     * [count] counts report items; [nodes] holds the distinct reporting nodes in first-occurrence
+     * order, so it can be shorter than [count] (a node reporting the text twice, or model-level
+     * items without a node). [node] is the first of them (D119).
+     */
     protected class ProblemTally(
         val severity: MessageStatus,
         val message: String,
         var count: Int,
-        var node: SNodeReference?,
+        val nodes: LinkedHashSet<SNodeReference>,
         var hasQuickFix: Boolean,
-    )
+    ) {
+        constructor(severity: MessageStatus, message: String, count: Int, node: SNodeReference?, hasQuickFix: Boolean) :
+            this(severity, message, count, LinkedHashSet<SNodeReference>().also { if (node != null) it.add(node) }, hasQuickFix)
+
+        val node: SNodeReference?
+            get() = nodes.firstOrNull()
+    }
 
     /** Error/warning counts plus distinct-message [tallies] (in first-occurrence order) for [problemSummary]. */
     protected class ProblemSummary(
@@ -2121,6 +2133,7 @@ abstract class AbstractOps : McpToolset {
             val existing = tallies[key]
             if (existing != null) {
                 existing.count++
+                if (nodeRef != null) existing.nodes.add(nodeRef)
                 if (hasQuickFix) existing.hasQuickFix = true
             } else {
                 tallies[key] = ProblemTally(severity, message, 1, nodeRef, hasQuickFix)
@@ -2178,6 +2191,7 @@ abstract class AbstractOps : McpToolset {
             val existing = tallies[key]
             if (existing != null) {
                 existing.count++
+                (problem as? NodeReportItem)?.node?.let { existing.nodes.add(it) }
             } else {
                 tallies[key] = ProblemTally(
                     problem.severity,
@@ -2200,10 +2214,10 @@ abstract class AbstractOps : McpToolset {
             val existing = into[key]
             if (existing != null) {
                 existing.count += t.count
-                if (existing.node == null) existing.node = t.node
+                existing.nodes.addAll(t.nodes)
                 if (t.hasQuickFix) existing.hasQuickFix = true
             } else {
-                into[key] = ProblemTally(t.severity, t.message, t.count, t.node, t.hasQuickFix)
+                into[key] = ProblemTally(t.severity, t.message, t.count, LinkedHashSet(t.nodes), t.hasQuickFix)
             }
         }
     }
@@ -2220,10 +2234,14 @@ abstract class AbstractOps : McpToolset {
     /**
      * Sorts [tallies] (errors before warnings, higher `count` first, then first occurrence), takes at
      * most [perRow] entries, and truncates each message at a code-point boundary to 300 characters.
+     * A tally with more than one distinct node lists up to [nodesPerMessage] of them in `nodes`
+     * (omitted at 1, where it would only repeat `node`) and the distinct nodes not listed in
+     * `node`/`nodes` in `moreNodes` (D119).
      */
     protected fun messagesJsonArray(
         tallies: Collection<ProblemTally>,
         perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+        nodesPerMessage: Int = MAX_PROBLEM_NODES_PER_MESSAGE,
     ): JsonArray {
         val sorted = tallies.sortedWith(
             compareBy<ProblemTally> { if (it.severity == MessageStatus.ERROR) 0 else 1 }
@@ -2236,6 +2254,14 @@ abstract class AbstractOps : McpToolset {
                 addProperty("message", truncateProblemMessage(tally.message))
                 addProperty("count", tally.count)
                 tally.node?.let { addProperty("node", PersistenceFacade.getInstance().asString(it)) }
+                if (tally.nodes.size > 1) {
+                    if (nodesPerMessage > 1) {
+                        add("nodes", JsonArray().also { nodes ->
+                            tally.nodes.take(nodesPerMessage).forEach { nodes.add(PersistenceFacade.getInstance().asString(it)) }
+                        })
+                    }
+                    if (tally.nodes.size > nodesPerMessage) addProperty("moreNodes", tally.nodes.size - nodesPerMessage)
+                }
                 if (tally.hasQuickFix) addProperty("hasQuickFixes", true)
             })
         }
@@ -2247,54 +2273,69 @@ abstract class AbstractOps : McpToolset {
         row: JsonObject,
         tallies: Collection<ProblemTally>,
         perRow: Int = MAX_PROBLEM_MESSAGES_PER_ROW,
+        nodesPerMessage: Int = MAX_PROBLEM_NODES_PER_MESSAGE,
     ) {
         if (tallies.isEmpty()) return
-        row.add("messages", messagesJsonArray(tallies, perRow))
+        row.add("messages", messagesJsonArray(tallies, perRow, nodesPerMessage))
         if (tallies.size > perRow) {
             row.addProperty("moreMessages", tallies.size - perRow)
         }
     }
 
-    /** Chosen `perRoot` payload string and the `details.messagesPerRow` value (null when every row is clean). */
-    protected data class PerRootFormChoice(val dataJson: String, val messagesPerRow: Int?)
+    /**
+     * Chosen `perRoot` payload string and the `details.messagesPerRow` / `details.nodesPerMessage`
+     * values (both null when every row is clean).
+     */
+    protected data class PerRootFormChoice(val dataJson: String, val messagesPerRow: Int?, val nodesPerMessage: Int? = null)
 
     /**
-     * Picks the inline `perRoot` form that fits [maxInlineBytes] (D83 §3):
-     * 1. Up to [MAX_PROBLEM_MESSAGES_PER_ROW] (5) distinct messages per row.
-     * 2. Up to 1 message per row (plus `moreMessages`) if form 1 exceeds [maxInlineBytes].
-     * 3. Form 1 again when form 2 also exceeds [maxInlineBytes], so [finalizeResult] writes the full
-     *    5-per-row payload to the temp file.
+     * Picks the inline `perRoot` form that fits [maxInlineBytes] (D83 §3, D119):
+     * 1. Up to [MAX_PROBLEM_MESSAGES_PER_ROW] (5) distinct messages per row, each with up to
+     *    [MAX_PROBLEM_NODES_PER_MESSAGE] (5) distinct nodes.
+     * 2. 5 messages per row with 1 node each (no `nodes`, only `moreNodes`) if form 1 exceeds
+     *    [maxInlineBytes] and some message has more than one node — nodes are cut before messages.
+     * 3. Up to 1 message per row (plus `moreMessages`) with 1 node each.
+     * 4. Form 1 again when form 3 also exceeds [maxInlineBytes], so [finalizeResult] writes the full
+     *    payload to the temp file.
      *
-     * When no row has any messages, `messagesPerRow` is `null` (omitted from `details`).
+     * When no row has any messages, `messagesPerRow` and `nodesPerMessage` are `null` (omitted from `details`).
      */
     protected fun choosePerRootForm(
         rows: List<Pair<JsonObject, Collection<ProblemTally>>>,
         maxInlineBytes: Int,
     ): PerRootFormChoice {
         val anyMessages = rows.any { it.second.isNotEmpty() }
-        val form1 = renderPerRootRows(rows, MAX_PROBLEM_MESSAGES_PER_ROW)
+        val form1 = renderPerRootRows(rows, MAX_PROBLEM_MESSAGES_PER_ROW, MAX_PROBLEM_NODES_PER_MESSAGE)
         if (!anyMessages) {
             return PerRootFormChoice(form1, null)
         }
         if (form1.length <= maxInlineBytes) {
-            return PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW)
+            return PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW, MAX_PROBLEM_NODES_PER_MESSAGE)
         }
-        val form2 = renderPerRootRows(rows, 1)
+        // Without a multi-node message the one-node form equals form 1, which did not fit.
+        if (rows.any { (_, tallies) -> tallies.any { it.nodes.size > 1 } }) {
+            val oneNode = renderPerRootRows(rows, MAX_PROBLEM_MESSAGES_PER_ROW, 1)
+            if (oneNode.length <= maxInlineBytes) {
+                return PerRootFormChoice(oneNode, MAX_PROBLEM_MESSAGES_PER_ROW, 1)
+            }
+        }
+        val form2 = renderPerRootRows(rows, 1, 1)
         return if (form2.length <= maxInlineBytes) {
-            PerRootFormChoice(form2, 1)
+            PerRootFormChoice(form2, 1, 1)
         } else {
-            PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW)
+            PerRootFormChoice(form1, MAX_PROBLEM_MESSAGES_PER_ROW, MAX_PROBLEM_NODES_PER_MESSAGE)
         }
     }
 
     private fun renderPerRootRows(
         rows: List<Pair<JsonObject, Collection<ProblemTally>>>,
         perRow: Int,
+        nodesPerMessage: Int,
     ): String {
         val array = JsonArray()
         for ((base, tallies) in rows) {
             val row = base.deepCopy()
-            addMessagesToRow(row, tallies, perRow)
+            addMessagesToRow(row, tallies, perRow, nodesPerMessage)
             array.add(row)
         }
         return array.toString()
