@@ -6,12 +6,16 @@ import jetbrains.mps.agents.mcp.tools.common.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.project.Solution
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.structure.modules.Dependency
 import jetbrains.mps.smodel.Language
+import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SModelStereotype
 import jetbrains.mps.smodel.SNodeUtil
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory
+import java.util.UUID
+import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SModule
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
@@ -607,6 +611,30 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
             it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, "{ not really JSON")
         }
         assertTrue(expectErr(response).contains("Invalid JSON parameters"))
+    }
+
+    @Test
+    fun `query_nodes with truncated JSON parameters reports the missing closer without temp-file advice`() {
+        val response = runTool(toolset) {
+            it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, "{ \"nodeReference\": \"x\"")
+        }
+        val error = expectErr(response)
+        assertTrue(error, error.startsWith("Invalid JSON parameters: "))
+        assertTrue(error, error.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(error, error.contains("mps-node-editing/references/troubleshooting.md"))
+        assertFalse("a parameters blob cannot be a file: $error", error.contains("temp-file"))
+        assertFalse("a parameters blob cannot be a file: $error", error.contains("temp file"))
+    }
+
+    @Test
+    fun `query_nodes with a blank parameters blob still names the accepted keys`() {
+        // The enum overload skips rejectMissingParameters, so blank text reaches the parse and must
+        // decode to null for rejectUnknownParameterKeys, not fail as an empty JSON string.
+        val response = runTool(toolset) { it.mps_mcp_query_nodes(MPSQueryOperation.GET_PARENT, " ") }
+        val envelope = JsonParser.parseString(response).asJsonObject
+        assertEquals(response, "INVALID_REQUEST", envelope.get("code").asString)
+        assertTrue(response, envelope.get("error").asString.contains("must be a JSON object carrying the keys for GET_PARENT"))
+        assertTrue(response, envelope.get("error").asString.contains("Accepted: 'nodeReference'"))
     }
 
     // ── alter_nodes: MOVE_CHILD ─────────────────────────────────────────────────────
@@ -2386,21 +2414,152 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
 
         val entries = payloadArrayFromOkData(response).map { it.asJsonObject }
         assertEquals("perRoot must answer for every root, clean ones included", rootCount, entries.size)
+        val baseKeys = setOf("root", "name", "concept", "errors", "warnings")
         for (entry in entries) {
+            val total = entry.get("errors").asInt + entry.get("warnings").asInt
+            val expectedKeys = if (total == 0) baseKeys else baseKeys + "messages"
             assertEquals(
-                "a perRoot entry must be {root, name, concept, errors, warnings}: $entry",
-                setOf("root", "name", "concept", "errors", "warnings"), entry.keySet(),
+                "clean rows have $baseKeys and rows with problems add messages: $entry",
+                expectedKeys, entry.keySet() - "moreMessages",
             )
         }
         val refs = entries.map { it.get("root").asString }.toSet()
         assertTrue("both roots must be covered: $refs", refs.containsAll(setOf(brokenRef, otherRef)))
         val broken = entries.single { it.get("root").asString == brokenRef }
         assertTrue("the broken root must report at least one error: $broken", broken.get("errors").asInt >= 1)
+        val messages = broken.getAsJsonArray("messages").map { it.asJsonObject }
+        assertTrue("the broken root must carry at least one error entry: $messages", messages.any { it.get("severity").asString == "error" })
+        if (!broken.has("moreMessages")) {
+            assertEquals(
+                "message counts must sum to errors + warnings when uncapped: $broken",
+                broken.get("errors").asInt + broken.get("warnings").asInt,
+                messages.sumOf { it.get("count").asInt },
+            )
+        }
+        for (msg in messages) {
+            val nodeRef = msg.get("node").asString
+            readOnRepo {
+                val resolved = resolveNode(nodeRef)
+                assertEquals(
+                    "message node '$nodeRef' must belong to the broken root: $msg",
+                    brokenRef,
+                    PersistenceFacade.getInstance().asString(resolved.containingRoot.reference),
+                )
+            }
+        }
     }
 
     // ── module scope (D63) ─────────────────────────────────────────────────────────────────
 
     private fun moduleRefOf(module: SModule): String = PersistenceFacade.getInstance().asString(module.moduleReference)
+
+    // D118: an `info` item (BaseLanguage's "It's recommended to use string type" on a java.lang.String
+    // field type) never makes a check unclean; it is summarized in details.infoMessages.
+
+    private class InfoHost(val solution: Solution, val model: SModel, val rootRef: String)
+
+    /**
+     * A fresh solution model (or [host]'s) with `public class <name> { <body> }` parsed in as a root.
+     * Public, with public members, so BaseLanguage's "never used" warnings stay out of the fixture.
+     */
+    private fun createInfoHost(name: String, body: String, host: InfoHost? = null): InfoHost {
+        val solution = host?.solution ?: createSolution()
+        val model = host?.model ?: createModel(solution, "${solution.moduleName}.code")
+        val response = runTool(JetBrainsMPSJavaMcpToolset()) {
+            it.mps_mcp_parse_java_and_insert(
+                """{"code":"public class $name { $body }","featureKind":"CLASS",
+                    "insert":{"mode":"root","modelRef":"${modelRefOf(model)}"}}"""
+            )
+        }
+        okEnvelope(response)
+        val rootRef = readOnRepo { PersistenceFacade.getInstance().asString(model.rootNodes.single { it.name == name }.reference) }
+        return InfoHost(solution, model, rootRef)
+    }
+
+    /** `data` as the clean verdict string, failing with the whole envelope when it is a report. */
+    private fun verdictOf(envelope: JsonObject): String {
+        val data = envelope.get("data")
+        assertTrue("expected a verdict string, got a report: $envelope", data.isJsonPrimitive)
+        return data.asString
+    }
+
+    private fun stringTypeHint(details: JsonObject?): JsonObject {
+        assertNotNull("expected details.infoMessages", details)
+        val infos = details!!.getAsJsonArray("infoMessages")
+        assertNotNull("expected details.infoMessages: $details", infos)
+        val hint = infos.map { it.asJsonObject }.single { it.get("message").asString.contains("string type") }
+        assertEquals("info", hint.get("severity").asString)
+        assertTrue("the hint must name its node: $hint", hint.has("node"))
+        return hint
+    }
+
+    @Test
+    fun `check_root_node_problems answers clean on an info-only root and lists the hint with its fix id`() {
+        val host = createInfoHost("InfoOnly", "public java.lang.String name;")
+
+        val envelope = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) })
+
+        assertEquals("no problems found", verdictOf(envelope))
+        val hint = stringTypeHint(envelope.getAsJsonObject("details"))
+        val fixId = hint.getAsJsonArray("quickFixIds").map { it.asString }.single { it.endsWith("ConvertString_QuickFix") }
+
+        val applied = okEnvelope(runTool(JetBrainsMPSIntentionsMcpToolset()) {
+            it.mps_mcp_apply_intention(nodeReference = hint.get("node").asString, intentionId = fixId)
+        })
+        assertTrue("the hint's fix must apply on its node: $applied", applied.getAsJsonObject("data").get("applied").asBoolean)
+        val after = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) })
+        assertEquals("no problems found", verdictOf(after))
+        assertFalse("the applied fix removes the hint: $after", after.getAsJsonObject("details")?.has("infoMessages") == true)
+    }
+
+    @Test
+    fun `check_root_node_problems answers clean on a model whose only items are info at model and perRoot and module scope`() {
+        val host = createInfoHost("InfoModel", "public java.lang.String name;")
+
+        val clean = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(host.model)) })
+        assertEquals("no problems found", verdictOf(clean))
+        assertEquals(1, clean.getAsJsonObject("details").get("rootsChecked").asInt)
+        stringTypeHint(clean.getAsJsonObject("details"))
+
+        val perRoot = runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(host.model), perRoot = true) }
+        val row = payloadArrayFromOkData(perRoot).single().asJsonObject
+        assertEquals(0, row.get("errors").asInt)
+        assertEquals(0, row.get("warnings").asInt)
+        assertFalse("info stays out of the row's messages: $row", row.has("messages"))
+        stringTypeHint(okEnvelope(perRoot).getAsJsonObject("details"))
+
+        val module = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(moduleRefOf(host.solution)) })
+        assertEquals("no problems found", verdictOf(module))
+        stringTypeHint(module.getAsJsonObject("details"))
+    }
+
+    @Test
+    fun `check_root_node_problems on a model lists only the erroring root and not the info-only one`() {
+        val infoHost = createInfoHost("InfoSibling", "public java.lang.String name;")
+        val broken = createInfoHost("BrokenSibling", "public int n = true;", infoHost)
+
+        val envelope = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(modelRefOf(infoHost.model)) })
+
+        val roots = envelope.getAsJsonObject("data").getAsJsonArray("roots").map { it.asJsonObject.get("root").asString }
+        assertEquals("$envelope", listOf(broken.rootRef), roots)
+        stringTypeHint(envelope.getAsJsonObject("details"))
+    }
+
+    @Test
+    fun `check_root_node_problems on an unclean root drops the info-only node from data but keeps the hint even when spilled`() {
+        val host = createInfoHost("MixedRoot", "public java.lang.String name; public int n = true;")
+
+        val response = runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef) }
+        val envelope = okEnvelope(response)
+        val listed = payloadArrayFromOkData(response).map { it.asJsonObject }
+        assertTrue("the error must be listed: $response", listed.isNotEmpty())
+        val hint = stringTypeHint(envelope.getAsJsonObject("details"))
+        assertFalse("the info-only node must not be listed: $response", listed.any { it.get("reference").asString == hint.get("node").asString })
+
+        val spilled = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(host.rootRef, maxInlineBytes = 1) })
+        assertTrue("maxInlineBytes=1 spills data to a file: $spilled", spilled.get("data").asString.endsWith(".json"))
+        stringTypeHint(spilled.getAsJsonObject("details"))
+    }
 
     private fun freshLanguage(withGenerator: Boolean = false): Language {
         val name = "test.modscope${System.nanoTime()}"
@@ -2476,13 +2635,155 @@ class JetBrainsMPSNodeMcpToolsetExtendedIntegrationTest : McpIntegrationTestBase
 
         val rows = payloadArrayFromOkData(response).map { it.asJsonObject }
         assertEquals("one row per model, clean ones included: $rows", 6, rows.size)
+        val baseKeys = setOf("model", "name", "rootsChecked", "errors", "warnings")
         for (row in rows) {
-            assertEquals(setOf("model", "name", "rootsChecked", "errors", "warnings"), row.keySet())
+            val total = row.get("errors").asInt + row.get("warnings").asInt
+            val expectedKeys = if (total == 0) baseKeys else baseKeys + "messages"
+            assertEquals(expectedKeys, row.keySet() - "moreMessages")
         }
-        assertTrue(rows.single { it.get("model").asString == structureModelRef }.get("errors").asInt >= 1)
+        val structureRow = rows.single { it.get("model").asString == structureModelRef }
+        assertTrue(structureRow.get("errors").asInt >= 1)
+        assertTrue(structureRow.getAsJsonArray("messages").size() >= 1)
         val cleanRow = rows.single { it.get("model").asString == modelRefOf(clean) }
         assertEquals(0, cleanRow.get("errors").asInt)
         assertEquals(0, cleanRow.get("warnings").asInt)
+    }
+
+    @Test
+    fun `check_root_node_problems perRoot reports model-level problems on model and module scopes`() {
+        val lang = freshLanguage()
+        val model = createModel(lang, "${lang.moduleName}.ghostlang")
+        val modelRef = modelRefOf(model)
+        val ghostLangName = "test.ghost.used.language.${System.nanoTime()}"
+        executeCommand {
+            val uuid = UUID.randomUUID()
+            val ghostLang = MetaAdapterFactory.getLanguage(uuid.mostSignificantBits, uuid.leastSignificantBits, ghostLangName)
+            (model as SModelInternal).addLanguage(ghostLang)
+        }
+
+        val modelPerRoot = okEnvelope(runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(modelRef, perRoot = true)
+        })
+        val modelProblems = modelPerRoot.getAsJsonObject("details").getAsJsonArray("modelProblems").map { it.asJsonObject }
+        val modelProblem = modelProblems.singleOrNull { it.get("message").asString.contains(ghostLangName) }
+        assertNotNull("details.modelProblems must list the missing used language: $modelProblems", modelProblem)
+        assertEquals("error", modelProblem!!.get("severity").asString)
+        assertFalse("MissingImportedLanguageError is not a NodeReportItem, so node is omitted: $modelProblem", modelProblem.has("node"))
+        assertTrue(
+            warningsOf(modelPerRoot).toString(),
+            warningsOf(modelPerRoot).any { it.contains("see details.modelProblems") },
+        )
+
+        val modulePerRoot = runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(moduleRefOf(lang), perRoot = true)
+        }
+        val modelRow = payloadArrayFromOkData(modulePerRoot).map { it.asJsonObject }.single { it.get("model").asString == modelRef }
+        val rowMessages = modelRow.getAsJsonArray("messages").map { it.asJsonObject }
+        val rowEntry = rowMessages.singleOrNull { it.get("message").asString.contains(ghostLangName) }
+        assertNotNull("module perRoot row must include the model-level problem in messages: $modelRow", rowEntry)
+        assertFalse("model-level problem must omit node: $rowEntry", rowEntry!!.has("node"))
+        assertFalse("model-level problem must omit hasQuickFixes even when the item carries a fix: $rowEntry", rowEntry.has("hasQuickFixes"))
+        assertEquals(
+            "message counts must sum to errors + warnings on the model row: $modelRow",
+            modelRow.get("errors").asInt + modelRow.get("warnings").asInt,
+            rowMessages.sumOf { it.get("count").asInt },
+        )
+    }
+
+    @Test
+    fun `check_root_node_problems perRoot falls back to 1 message per row when form 1 exceeds maxInlineBytes`() {
+        val brokenRef = createConceptRoot("PerRootFallback")
+        clearConceptId(brokenRef)
+        executeCommand {
+            val root = resolveNode(brokenRef)
+            val linkRole = root.concept.containmentLinks.first { it.name == "linkDeclaration" }
+            val decl = jetbrains.mps.smodel.SNode(SNodeUtil.concept_LinkDeclaration)
+            root.addChild(linkRole, decl)
+        }
+
+        val uncappedResponse = runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true)
+        }
+        val uncappedEnvelope = okEnvelope(uncappedResponse)
+        assertTrue("uncapped call must stay inline: $uncappedEnvelope", uncappedEnvelope.get("data").isJsonArray)
+        assertEquals(5, uncappedEnvelope.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(5, uncappedEnvelope.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val uncappedRows = uncappedEnvelope.getAsJsonArray("data").map { it.asJsonObject }
+        val multiMessageRow = uncappedRows.firstOrNull {
+            it.has("messages") && it.getAsJsonArray("messages").size() >= 2
+        }
+        assertNotNull("precondition: at least one row must have >= 2 distinct messages: $uncappedRows", multiMessageRow)
+        val form1Length = uncappedEnvelope.get("data").toString().length
+
+        val fallbackResponse = runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true, maxInlineBytes = form1Length - 1)
+        }
+        val fallbackEnvelope = okEnvelope(fallbackResponse)
+        assertTrue("form 2 must fit inline at form1Length - 1: $fallbackEnvelope", fallbackEnvelope.get("data").isJsonArray)
+        // One link: no text is on two nodes, so the one-node form is skipped (D119).
+        assertEquals(1, fallbackEnvelope.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(1, fallbackEnvelope.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val fallbackBroken = fallbackEnvelope.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString == multiMessageRow!!.get("root").asString }
+        assertEquals(1, fallbackBroken.getAsJsonArray("messages").size())
+        assertTrue(fallbackBroken.get("moreMessages").asInt >= 1)
+    }
+
+    @Test
+    fun `check_root_node_problems perRoot lists every node of a repeated text and cuts nodes before messages`() {
+        // D119: two empty links under one root report the same text, so one message covers two nodes.
+        val rootRef = createConceptRoot("PerRootNodes")
+        clearConceptId(rootRef)
+        val linkRefs = mutableListOf<String>()
+        executeCommand {
+            val root = resolveNode(rootRef)
+            val linkRole = root.concept.containmentLinks.first { it.name == "linkDeclaration" }
+            repeat(2) {
+                val decl = jetbrains.mps.smodel.SNode(SNodeUtil.concept_LinkDeclaration)
+                root.addChild(linkRole, decl)
+                linkRefs.add(PersistenceFacade.getInstance().asString(decl.reference))
+            }
+        }
+
+        val uncapped = okEnvelope(runTool(toolset) { it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true) })
+        assertEquals(5, uncapped.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val rootRow = uncapped.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString.endsWith(rootRef.substringAfterLast('/')) }
+        val messages = rootRow.getAsJsonArray("messages").map { it.asJsonObject }
+        val repeated = messages.firstOrNull { it.has("nodes") }
+        assertNotNull("precondition: a text reported on both links: $rootRow", repeated)
+        assertTrue("precondition: the row must have >= 2 distinct messages: $rootRow", messages.size >= 2)
+        assertEquals(linkRefs, repeated!!.getAsJsonArray("nodes").map { it.asString })
+        assertEquals(linkRefs[0], repeated.get("node").asString)
+        assertTrue(repeated.get("count").asInt >= 2)
+        assertFalse(repeated.has("moreNodes"))
+        val form1Length = uncapped.get("data").toString().length
+
+        val oneNode = okEnvelope(runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true, maxInlineBytes = form1Length - 1)
+        })
+        assertTrue("the one-node form must fit inline at form1Length - 1: $oneNode", oneNode.get("data").isJsonArray)
+        assertEquals(5, oneNode.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(1, oneNode.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val oneNodeRow = oneNode.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString == rootRow.get("root").asString }
+        assertEquals("nodes are cut before messages", messages.size, oneNodeRow.getAsJsonArray("messages").size())
+        val oneNodeRepeated = oneNodeRow.getAsJsonArray("messages").map { it.asJsonObject }
+            .single { it.get("message").asString == repeated.get("message").asString }
+        assertFalse(oneNodeRepeated.has("nodes"))
+        assertEquals(linkRefs[0], oneNodeRepeated.get("node").asString)
+        assertEquals(1, oneNodeRepeated.get("moreNodes").asInt)
+
+        val form2 = okEnvelope(runTool(toolset) {
+            it.mps_mcp_check_root_node_problems(structureModelRef, perRoot = true, maxInlineBytes = oneNode.get("data").toString().length - 1)
+        })
+        assertTrue("form 2 must fit inline: $form2", form2.get("data").isJsonArray)
+        assertEquals(1, form2.getAsJsonObject("details").get("messagesPerRow").asInt)
+        assertEquals(1, form2.getAsJsonObject("details").get("nodesPerMessage").asInt)
+        val form2Row = form2.getAsJsonArray("data").map { it.asJsonObject }
+            .single { it.get("root").asString == rootRow.get("root").asString }
+        assertEquals(1, form2Row.getAsJsonArray("messages").size())
+        assertTrue(form2Row.get("moreMessages").asInt >= 1)
     }
 
     @Test

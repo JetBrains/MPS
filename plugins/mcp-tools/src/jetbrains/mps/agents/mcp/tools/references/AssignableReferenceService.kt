@@ -2,6 +2,11 @@ package jetbrains.mps.agents.mcp.tools.references
 
 
 import com.intellij.openapi.diagnostic.Logger
+import jetbrains.mps.agents.mcp.tools.common.AbstractOps
+import jetbrains.mps.agents.mcp.tools.common.AbstractOps.McpLanguageNotBuiltException
+import jetbrains.mps.agents.mcp.tools.common.ConceptReadiness
+import jetbrains.mps.agents.mcp.tools.common.LanguageReadiness
+import jetbrains.mps.agents.mcp.tools.common.withoutInvalidModule
 import jetbrains.mps.project.MPSProject
 import jetbrains.mps.scope.ErrorScope
 import jetbrains.mps.scope.FilteringByConceptScope
@@ -14,7 +19,11 @@ import org.jetbrains.mps.openapi.language.SAbstractConcept
 import org.jetbrains.mps.openapi.model.SNode
 import org.jetbrains.mps.openapi.module.SRepository
 
-class AssignableReferenceService(private val mpsProject: MPSProject) {
+class AssignableReferenceService(
+    private val mpsProject: MPSProject,
+    /** The structure-model declaration of a concept the runtime does not know (a lookup the toolsets own). */
+    private val declarationOf: (SAbstractConcept) -> SNode? = { it.sourceNode?.resolve(mpsProject.repository) },
+) {
 
     private val logger = Logger.getInstance(AssignableReferenceService::class.java)
 
@@ -36,6 +45,8 @@ class AssignableReferenceService(private val mpsProject: MPSProject) {
         } catch (e: Throwable) {
             if (e is CancellationException) throw e
             if (e is Error) throw e
+            // Reaches the tool boundary, which keeps its LANGUAGE_NOT_BUILT code and details.
+            if (e is McpLanguageNotBuiltException) throw e
             onFailure(e)
         }
     }
@@ -43,6 +54,15 @@ class AssignableReferenceService(private val mpsProject: MPSProject) {
     /** Specialisation of [guardOrdinaryFailure] for call sites that want a silent null on failure. */
     private inline fun <T : Any> guardOrNull(block: () -> T?): T? =
         guardOrdinaryFailure(block) { null }
+
+    /** The D112 gate: a concept its runtime cannot serve has no reference links and no scopes to answer from. */
+    private fun requireConceptInRuntime(concept: SAbstractConcept, subject: String) {
+        val declaration = concept.sourceNode?.resolve(mpsProject.repository) ?: if (concept.isValid) null else declarationOf(concept)
+        val readiness = LanguageReadiness.ofIgnoringStaleness(concept, declaration, mpsProject)
+        if (readiness is ConceptReadiness.NotBuilt) {
+            throw LanguageReadiness.notBuilt(subject, readiness, "its reference scopes cannot be computed until the language is built")
+        }
+    }
 
     fun getAssignableReferences(request: GetAssignableReferencesRequest): GetAssignableReferencesResponse {
         var response: GetAssignableReferencesResponse? = null
@@ -76,7 +96,7 @@ class AssignableReferenceService(private val mpsProject: MPSProject) {
         val referenceRole = request.referenceRole ?: return helpers.errorResponse("Parameter 'referenceRole' is missing")
 
         val contextNode = guardOrNull {
-            helpers.facade.createNodeReference(contextNodeRef).resolve(repository)
+            withoutInvalidModule(helpers.facade.createNodeReference(contextNodeRef)).resolve(repository)
         } ?: return helpers.errorResponse("Context node '${request.contextNode}' not found")
 
         val owningConcept = if (request.owningConcept != null) {
@@ -92,6 +112,10 @@ class AssignableReferenceService(private val mpsProject: MPSProject) {
         //   - `refLink` lives on the child concept, so it is resolved against `owningConcept`.
         //   - `containmentLink` lives on the parent, so it is resolved against `contextNode.concept`.
         // Overriding `owningConcept` therefore does not change which containment links are valid.
+        requireConceptInRuntime(owningConcept, "Concept '${AbstractOps.structureQualifiedName(owningConcept)}' owning reference role '$referenceRole'")
+        if (contextNode.concept != owningConcept) {
+            requireConceptInRuntime(contextNode.concept, "Concept '${AbstractOps.structureQualifiedName(contextNode.concept)}' of context node '$contextNodeRef'")
+        }
         val refLink = owningConcept.referenceLinks.find { it.name == referenceRole }
             ?: return helpers.errorResponse("Reference role '${referenceRole}' not found in concept '${owningConcept.name}'")
 
@@ -318,7 +342,7 @@ class AssignableReferenceService(private val mpsProject: MPSProject) {
                     if (argTypeRefStr == "unknown" || paramTypeNode == null) continue
 
                     val argTypeNode = guardOrNull {
-                        helpers.facade.createNodeReference(argTypeRefStr).resolve(repository)
+                        withoutInvalidModule(helpers.facade.createNodeReference(argTypeRefStr)).resolve(repository)
                     } ?: continue
 
                     // FIX #6: Compare the classifier each type expression references, not the type

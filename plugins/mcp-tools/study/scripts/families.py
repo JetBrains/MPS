@@ -56,6 +56,10 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   DF_queries                       mps_mcp_query_dataflow calls, rejected ones included
   DF_program_prints                of them, PRINT_PROGRAM calls
   DF_reaching_queries              of them, REACHING_WRITES and REACHING_READS calls
+  C_after_node_sample              node-scope checks that re-check a root or node whose perRoot message
+                                   gave every text but not every node, no write between (D119); they
+                                   are not in C_after_summary
+  C_after_node_sample_batches      distinct batches among the C_after_node_sample calls
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -77,8 +81,9 @@ answer with inline `moduleProblems`. `unknown` is anything else: a temp-file pat
 module sweep (`details.truncated`, with or without perRoot rows), ok:false, unparseable.
 
 State: a container check sets the last verdict. A node check counts as C_root_after_clean_model
-after `clean` or `clean_unchecked` and as C_after_summary after `problem_summary`; with
-autoApplyQuickFixes it writes, so it resets the verdict. Any other mps_mcp_* call except print_node,
+after `clean` or `clean_unchecked` and as C_after_summary or C_after_node_sample after
+`problem_summary`; with autoApplyQuickFixes it counts the same way, then it resets the verdict, since
+it writes. Any other mps_mcp_* call except print_node,
 get_project_structure, query_nodes, list_open_projects, mps_mcp_generation and mps_mcp_query_dataflow resets it too. Batches: calls grouped by
 `message.id`, as in analyze_runs.py (A2); a call without an id is its own batch.
 
@@ -129,6 +134,17 @@ node of the original model) or only empty ones (`includeEmptySteps`) opens and c
 mps_mcp_generation is read-only for the check-verdict state: DROP_TRANSIENT_MODELS frees transient
 models but writes no model.
 
+C_after_node_sample (D119) splits C_after_summary by the perRoot row the node check re-checks. A
+message is node-sampled when the server listed only some of its nodes: with `details.nodesPerMessage`
+(a server that lists `nodes`), when it has `moreNodes`; without it (MPS-40338 rows carry one sample
+`node`), when its `count` is above 1. A row is text-complete when it has `messages` and no
+`moreMessages`. Refs are compared without a leading `<moduleUuid>/`. The checked ref is matched, in
+this order, to a row whose `root` it is, to a row with a message whose `node` or `nodes` holds it, then
+to a module row whose `model` it lies in (`<model>/`); the first match wins. The check counts as
+C_after_node_sample when that row is text-complete and has a node-sampled message (for a match by
+message ref, that message is node-sampled); otherwise, a counts-only row, `moreMessages`, a fully listed
+row (a re-check to list quick fixes) or no matching row, it stays in C_after_summary.
+
 Stdlib only, Python >= 3.9.
 """
 from __future__ import annotations
@@ -150,7 +166,7 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "M_makes_save_transient", "GN_plan", "GN_transient_models", "GN_trace", "GN_trace_backward",
         "GN_drop", "GN_trace_before_fix", "GN_transient_reads", "GN_template_prints",
         "GN_template_prints_before_trace", "DF_builder_prints", "DF_console_runs", "DF_queries",
-        "DF_program_prints", "DF_reaching_queries"]
+        "DF_program_prints", "DF_reaching_queries", "C_after_node_sample", "C_after_node_sample_batches"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
@@ -167,6 +183,7 @@ UUID_MODULE = re.compile(r"^[0-9a-f-]{36}\([^)]+\)$")
 MODEL_REF = re.compile(r"^([0-9a-f-]{36}/)?r:[^/]+\)$")
 NODE_REF = re.compile(r"r:[^()]*\([^)]*\)/")
 BARE_NAME = re.compile(r"^[A-Za-z_][\w.\-]*(@[\w.\-]+)?$")
+MODULE_PREFIX = re.compile(r"^[0-9a-f-]{36}/(?=[ri]:)")
 GENERATION_COLUMNS = {"PLAN": "GN_plan", "TRANSIENT_MODELS": "GN_transient_models", "TRACE": "GN_trace",
                       "DROP_TRANSIENT_MODELS": "GN_drop"}
 GENERATOR_MODEL = re.compile(r"@generator\b")
@@ -309,6 +326,47 @@ def check_verdict(result):
     return "unknown"
 
 
+def per_root_rows(result):
+    """`(rows, node-listing server)` of a perRoot answer: its rows and whether `details.nodesPerMessage` is set."""
+    env = envelope(result) or {}
+    data = env.get("data")
+    rows = [x for x in data if isinstance(x, dict)] if isinstance(data, list) else []
+    return rows, "nodesPerMessage" in (env.get("details") or {})
+
+
+def plain_ref(ref):
+    """A node or model ref without a leading `<moduleUuid>/`."""
+    return MODULE_PREFIX.sub("", ref) if isinstance(ref, str) else ""
+
+
+def node_sampled(message, lists_nodes):
+    """Whether a perRoot message names only some of its nodes (D119)."""
+    if lists_nodes:
+        return bool(message.get("moreNodes"))
+    count = message.get("count")
+    return isinstance(count, int) and count > 1
+
+
+def after_summary_column(inp, rows, lists_nodes):
+    """C_after_node_sample or C_after_summary for a node check after a `problem_summary` with `rows`."""
+    ref = plain_ref(inp.get("nodeReference") or inp.get("reference"))
+    messages = lambda r: [m for m in r.get("messages") or [] if isinstance(m, dict)]
+    complete = lambda r: bool(messages(r)) and not r.get("moreMessages")
+    row_sampled = lambda r: complete(r) and any(node_sampled(m, lists_nodes) for m in messages(r))
+    for r in rows:
+        if ref and plain_ref(r.get("root")) == ref:
+            return "C_after_node_sample" if row_sampled(r) else "C_after_summary"
+    for r in rows:
+        for m in messages(r):
+            if ref and ref in [plain_ref(m.get("node"))] + [plain_ref(n) for n in m.get("nodes") or []]:
+                return "C_after_node_sample" if complete(r) and node_sampled(m, lists_nodes) else "C_after_summary"
+    for r in rows:
+        model = plain_ref(r.get("model"))
+        if ref and model and ref.startswith(model + "/"):
+            return "C_after_node_sample" if row_sampled(r) else "C_after_summary"
+    return "C_after_summary"
+
+
 def printed_concept(result):
     """The short concept name of an inline print_node JSON printout, or None."""
     env = envelope(result)
@@ -345,7 +403,8 @@ def fam(path):
     uses, res = load(path)
     f = collections.Counter()
     last = None
-    after_clean, after_summary = set(), set()
+    last_rows, lists_nodes = [], False
+    after_clean, after_summary, after_sample = set(), set(), set()
     gcd = []
     made = False
     generator_written = traced = False
@@ -366,13 +425,15 @@ def fam(path):
                     f["C_root_after_clean_model"] += 1
                     after_clean.add(batch)
                 elif last == "problem_summary":
-                    f["C_after_summary"] += 1
-                    after_summary.add(batch)
+                    column = after_summary_column(inp, last_rows, lists_nodes)
+                    f[column] += 1
+                    (after_sample if column == "C_after_node_sample" else after_summary).add(batch)
                 if inp.get("autoApplyQuickFixes"):
                     last = None
             else:
                 f["C_model_checks"] += 1
                 last = check_verdict(r)
+                last_rows, lists_nodes = per_root_rows(r)
             if "perRoot" in inp and inp["perRoot"]:
                 f["C_perRoot"] += 1
         elif n.startswith("mps_mcp") and n not in READ_ONLY:
@@ -444,6 +505,7 @@ def fam(path):
     f["tool_uses"] = len(uses)
     f["C_root_after_clean_model_batches"] = len(after_clean)
     f["C_after_summary_batches"] = len(after_summary)
+    f["C_after_node_sample_batches"] = len(after_sample)
     return f
 
 

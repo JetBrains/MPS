@@ -5,7 +5,6 @@ import jetbrains.mps.agents.mcp.tools.logging.*
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.mcpserver.project
@@ -53,7 +52,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
     """
     )
     suspend fun mps_mcp_insert_console_command_from_json(
-        @McpDescription("Required. JSON blueprint (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics.") json: JsonOrText = JsonOrText.EMPTY,
+        @McpDescription("Required. JSON blueprint (max 4KB), sent either as real JSON or as its string form, OR an absolute path to a TEMPORARY file (inside the system temp directory) containing it. Either a single object — a console `Command`, or a baseLanguage `Statement` to wrap — or a JSON array of baseLanguage `Statement`s to wrap together in a `{ … }` block command. See `mps-node-editing` for the format and file-input semantics. If you write a blueprint as JSON rather than through `mps_mcp_parse_java_and_insert`, and it holds a BaseLanguage body or nests more than ~5 node levels, generate it with mps-node-editing's `scripts/blueprint.py` and pass the printed temp-file path.") json: JsonOrText = JsonOrText.EMPTY,
         @McpDescription("Optional: if true, only validate the JSON, the console availability, and the command-concept assignability without inserting anything into the console. Default: false.") dryRun: Boolean = false
     ): String {
         rejectMissingParameters(
@@ -65,7 +64,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 ?: return@withMpsProject invalidJson("JSON input is null or empty")
 
             val jsonElement = try {
-                JsonParser.parseString(actualJson)
+                parseJsonElement(actualJson)
             } catch (e: Exception) {
                 rethrowIfCancellation(e)
                 return@withMpsProject invalidJson("Failed to parse JSON: ${e.message}")
@@ -123,7 +122,7 @@ class JetBrainsMPSConsoleMcpToolset : AbstractNodeOps() {
                 // Collected on both paths so a node-factory failure is reported for a real insert too.
                 val warnings = mutableListOf<String>()
                 val command = try {
-                    instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings)
+                    instantiateNode(blueprint, console.consoleModel, dryRun, warnings = warnings, readinessProject = mpsProject)
                 } catch (e: Exception) {
                     return@executeShortCommandOnEdt instantiationFailed("Failed to instantiate console command from JSON", e, warnings)
                 }

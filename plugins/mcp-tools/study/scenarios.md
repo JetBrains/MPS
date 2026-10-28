@@ -138,6 +138,9 @@ Known gap, not a docs miss by itself: the tool takes one root, so four roots bec
 configurations (D53). The editor-test caret check compares the annotated node, `cellId` and
 `selectionStart`/`selectionEnd`, never `caretPosition`/`isLastPosition`. In `before` the caret alone places it unless the selection is non-empty
 (D71, D93, docs fixed 2026-09-30, re-measure: no `CellReference` failure, no `before`-selection tree diff, no source hunt).
+Prompt step 1 revised 2026-10-27 (after round 45, where `S7-opus-1` grouped the three checks in one
+root) to say "three NodesTestCase roots, one per check". The criterion is unchanged, so earlier
+passes stay comparable; split totals by `promptSha256`.
 Hypotheses: H2, H7.
 
 **S8 — onboard and record.** Fixture: `statechart`. Must not modify any MPS model.
@@ -332,7 +335,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-node-editing` | S1 and S6 (hand-written blueprints), S3 (bulk + aggregate root), S5 (surgical repair, identity-preserving moves), S2 and S4 and S7 (writes) | | S8 and S9 must not write |
 | `mps_mcp_alter_nodes` MOVE_NODE_TO_PARENT | S5 (forced: same-model reparent into a middle index) | | cross-model moves, promotion to root, console-node moves (no cell) |
 | `mps_mcp_alter_nodes` MOVE_CHILD | | S5 (the reorder; a same-parent MOVE_NODE_TO_PARENT also passes) | cross-model moves, promotion to root, console-node moves (no cell) |
-| `mps-node-editing/scripts/table_to_bulk_insert.py` | S3 | | the aggregate cookbook root is outside the spec (D82) |
+| `mps-node-editing/scripts/table_to_bulk_insert.py` | S3 | | the aggregate cookbook root is the spec's `aggregate` key (D82) |
 | `mps-baselanguage` | S6 (parser vs JSON AST), S1 and S2 (function bodies in behavior / constraints) | S7 (test bodies) | S10's one empty class is not a signal |
 | `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print) | | |
 | `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem), S11 (type questions via `mps_mcp_query_types`) | S1, S6, S7 (`get_concept_details` / `shape`) | |

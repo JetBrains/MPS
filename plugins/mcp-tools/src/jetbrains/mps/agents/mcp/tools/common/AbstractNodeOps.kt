@@ -1,6 +1,7 @@
 package jetbrains.mps.agents.mcp.tools.common
 
 import jetbrains.mps.agents.mcp.tools.*
+import jetbrains.mps.agents.mcp.tools.languages.StructureDeclarations
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -38,6 +39,7 @@ import jetbrains.mps.scope.ErrorScope
 import jetbrains.mps.scope.VisibleDepsSearchScope
 import jetbrains.mps.smodel.BaseScope
 import jetbrains.mps.smodel.ConceptDescendantsCache
+import jetbrains.mps.smodel.Language
 import jetbrains.mps.smodel.ModuleRepositoryFacade
 import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.SReference as SRefImpl
@@ -59,6 +61,7 @@ import org.jetbrains.mps.openapi.language.SConcept
 import org.jetbrains.mps.openapi.language.SConceptFeature
 import org.jetbrains.mps.openapi.language.SContainmentLink
 import org.jetbrains.mps.openapi.language.SEnumeration
+import org.jetbrains.mps.openapi.language.SInterfaceConcept
 import org.jetbrains.mps.openapi.language.SProperty
 import org.jetbrains.mps.openapi.language.SReferenceLink
 import org.jetbrains.mps.openapi.model.EditableSModel
@@ -78,6 +81,11 @@ import org.jetbrains.mps.openapi.persistence.PersistenceFacade
 import org.jetbrains.mps.openapi.util.ProgressMonitor
 import java.util.Random
 import java.util.concurrent.atomic.AtomicBoolean
+
+/** The consequence clause of a [LanguageReadiness.notBuilt] refusal, per kind of writer. */
+internal const val BLUEPRINT_NOT_BUILT = "the blueprint cannot be validated or written until the language is built"
+internal const val NODE_EDIT_NOT_BUILT = "the node cannot be edited until the language is built"
+internal const val TYPE_OPERAND_NOT_BUILT = "the type cannot be rebuilt or computed until the language is built"
 
 abstract class AbstractNodeOps : AbstractOps() {
 
@@ -132,6 +140,58 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         else {
             node.setReference(link, target)
+        }
+    }
+
+    /**
+     * The writer gate of one tool call (D112): classifies each concept once, refuses one its runtime
+     * cannot serve, and tells a stale runtime from an authoring error when a feature lookup misses.
+     */
+    protected inner class ConceptGate(private val mpsProject: MPSProject) {
+        private val declarations = HashMap<SAbstractConcept, SNode?>()
+        private val verdicts = HashMap<SAbstractConcept, ConceptReadiness>()
+
+        private fun declarationOf(concept: SAbstractConcept): SNode? {
+            if (concept in declarations) return declarations[concept]
+            val declaration = concept.sourceNode?.resolve(mpsProject.repository)
+                ?: if (concept.isValid) null else resolveConceptNodePreferringProject(mpsProject, PersistenceFacade.getInstance().asString(concept))
+            declarations[concept] = declaration
+            return declaration
+        }
+
+        /** Throws [McpLanguageNotBuiltException] when [concept]'s language has no runtime or its runtime does not know it. */
+        fun require(concept: SAbstractConcept, subject: String, consequence: String = BLUEPRINT_NOT_BUILT) {
+            val readiness = verdicts.getOrPut(concept) { LanguageReadiness.ofIgnoringStaleness(concept, declarationOf(concept), mpsProject) }
+            if (readiness is ConceptReadiness.NotBuilt) throw LanguageReadiness.notBuilt(subject, readiness, consequence)
+        }
+
+        /**
+         * For a [kind] lookup of [name] that missed on a concept [require] passed: the stale-runtime refusal
+         * when the structure model declares the feature, null when it does not (an authoring error).
+         */
+        internal fun staleFeature(
+            concept: SAbstractConcept,
+            kind: StructureDeclarations.FeatureKind,
+            name: String,
+            path: String,
+            consequence: String = BLUEPRINT_NOT_BUILT
+        ): McpLanguageNotBuiltException? {
+            val declaration = declarationOf(concept) ?: return null
+            StructureDeclarations.declaredFeature(declaration, kind, name) ?: return null
+            val structureModel = declaration.model ?: return null
+            val stale = LanguageReadiness.of(concept, declaration, mpsProject) as? ConceptReadiness.NotBuilt.Stale
+                ?: (structureModel.module as? Language).let { module ->
+                    ConceptReadiness.NotBuilt.Stale(module?.moduleName ?: concept.language.qualifiedName, module, structureModel)
+                }
+            val what = when (kind) {
+                StructureDeclarations.FeatureKind.PROPERTY -> "Property"
+                StructureDeclarations.FeatureKind.CHILD -> "Child role"
+                StructureDeclarations.FeatureKind.REFERENCE -> "Reference role"
+            }
+            return LanguageReadiness.notBuilt(
+                "$what '$name' at $path is declared on concept '${structureQualifiedName(concept)}' in the structure model but missing from its built runtime",
+                stale, consequence
+            )
         }
     }
 
@@ -272,6 +332,9 @@ abstract class AbstractNodeOps : AbstractOps() {
      * nested child's factory sees its parent chain up to the result, which is not yet in the model — the
      * same as the editor's New Root. A caller attaching the result under a live node uses [createNode]
      * and [fillChildren] instead, so the nested factories also see the live ancestors.
+     *
+     * [readinessProject] classifies the blueprint's concepts ([ConceptGate]); it defaults to [mpsProject]
+     * and is given alone by a caller that resolves concepts repository-wide. Without either the gate is skipped.
      */
     fun instantiateNode(
         jsonObject: JsonObject,
@@ -279,10 +342,22 @@ abstract class AbstractNodeOps : AbstractOps() {
         dryRun: Boolean = false,
         jsonPath: String = "$",
         warnings: MutableList<String>? = null,
-        mpsProject: MPSProject? = null
+        mpsProject: MPSProject? = null,
+        readinessProject: MPSProject? = mpsProject
+    ): SNode = instantiateNode(jsonObject, model, dryRun, jsonPath, warnings, mpsProject, readinessProject?.let { ConceptGate(it) })
+
+    /** [instantiateNode] with a caller-held [gate], so a batch classifies each concept once. */
+    protected fun instantiateNode(
+        jsonObject: JsonObject,
+        model: SModel,
+        dryRun: Boolean,
+        jsonPath: String,
+        warnings: MutableList<String>?,
+        mpsProject: MPSProject?,
+        gate: ConceptGate?
     ): SNode {
-        val newNode = createNode(jsonObject, model, dryRun, jsonPath, warnings, mpsProject, enclosingNode = null, link = null, index = -1)
-        fillChildren(newNode, jsonObject, model, dryRun, jsonPath, warnings, mpsProject)
+        val newNode = createNode(jsonObject, model, dryRun, jsonPath, warnings, mpsProject, gate, enclosingNode = null, link = null, index = -1)
+        fillChildren(newNode, jsonObject, model, dryRun, jsonPath, warnings, mpsProject, gate)
         return newNode
     }
 
@@ -308,6 +383,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         jsonPath: String,
         warnings: MutableList<String>?,
         mpsProject: MPSProject?,
+        gate: ConceptGate?,
         enclosingNode: SNode?,
         link: SContainmentLink?,
         index: Int
@@ -320,38 +396,53 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         rejectUnloadedConceptRecord(jsonObject, jsonPath, conceptName ?: conceptRef)
 
-        val sConcept = run {
-            // Try conceptReference first (c:... form), fall back to concept name if it fails or is absent.
-            // Name-based resolution is more reliable because agents tend to get names right
-            // but occasionally produce slightly incorrect concept reference IDs.
-            val byRef = if (!conceptRef.isNullOrEmpty()) {
-                (if (mpsProject != null) resolveConceptPreferringProject(mpsProject, conceptRef) else resolveConcept(model.repository, conceptRef)) as? SConcept
+        // Try conceptReference first (c:... form), fall back to concept name if it fails or is absent.
+        // Name-based resolution is more reliable because agents tend to get names right
+        // but occasionally produce slightly incorrect concept reference IDs.
+        val resolve = { ref: String ->
+            if (mpsProject != null) resolveConceptPreferringProject(mpsProject, ref) else resolveConcept(model.repository, ref)
+        }
+        val rawByRef = if (!conceptRef.isNullOrEmpty()) resolve(conceptRef) else null
+        val rawByName = if (!conceptName.isNullOrEmpty()) resolve(conceptName) else null
+        val byRef = rawByRef as? SConcept
+        val byName = rawByName as? SConcept
+        if (!conceptRef.isNullOrEmpty() && byRef == null && byName != null) {
+            warnings?.add(
+                "conceptReference '$conceptRef' at $jsonPath does not resolve to a loaded concrete concept and was ignored; " +
+                    "the node was created from concept '$conceptName'"
+            )
+        }
+        val sConcept = byRef ?: byName ?: run {
+            // An interface concept resolves but no node can have it; saying "not found" would send the
+            // caller looking for a concept it already named (D116).
+            val (interfaceKey, interfaceValue) = when {
+                rawByRef is SInterfaceConcept -> "conceptReference" to conceptRef
+                rawByName is SInterfaceConcept -> "concept" to conceptName
+                else -> null to null
             }
-            else null
-            val byName = if (!conceptName.isNullOrEmpty()) {
-                (if (mpsProject != null) resolveConceptPreferringProject(mpsProject, conceptName) else resolveConcept(model.repository, conceptName)) as? SConcept
-            }
-            else null
-            if (!conceptRef.isNullOrEmpty() && byRef == null && byName != null) {
-                warnings?.add(
-                    "conceptReference '$conceptRef' at $jsonPath does not resolve to a loaded concrete concept and was ignored; " +
-                        "the node was created from concept '$conceptName'"
+            if (interfaceKey != null) {
+                throw McpInvalidRequestException(
+                    "Concept '$interfaceValue' at $jsonPath ($interfaceKey) is an interface concept; a node needs a concrete concept"
                 )
             }
-            byRef ?: byName
-        } ?: throw McpNotFoundException(
-            when {
-                conceptName.isNullOrEmpty() -> "Concept reference '$conceptRef' not found at $jsonPath"
-                conceptRef.isNullOrEmpty() -> "Concept '$conceptName' not found at $jsonPath"
-                else -> "Concept '$conceptName' with reference '$conceptRef' not found at $jsonPath"
-            }
-        )
+            val hint = conceptHint(mpsProject?.repository ?: model.repository, mpsProject, conceptName, conceptRef)
+            throw McpNotFoundException(
+                when {
+                    conceptName.isNullOrEmpty() -> "Concept reference '$conceptRef' not found at $jsonPath"
+                    conceptRef.isNullOrEmpty() -> "Concept '$conceptName' not found at $jsonPath"
+                    else -> "Concept '$conceptName' with reference '$conceptRef' not found at $jsonPath"
+                } + hint.messageSuffix,
+                hint.details
+            )
+        }
 
         // Import the language that owns the concept's id, never the concept's own adapter: a parsed
         // reference can carry a fabricated language id. Checked before the dry-run guard so a dry run
         // reports the same failure.
         val language = languageForId(mpsProject?.repository ?: model.repository, MetaIdHelper.getLanguage(sConcept.language))
             ?: throw McpNotFoundException("Language of concept '${sConcept.name}' at $jsonPath is not a loaded language: ${sConcept.language}")
+        // Before the import, so a refused write leaves the model untouched; a dry run refuses alike.
+        gate?.require(sConcept, "Concept '${structureQualifiedName(sConcept)}' at $jsonPath")
         if (!dryRun && model is SModelInternal) {
             if (!model.importedLanguageIds().contains(language)) {
                 model.addLanguage(language)
@@ -401,7 +492,6 @@ abstract class AbstractNodeOps : AbstractOps() {
             }
         }
 
-        // Set name if present and supported
         val name = jsonObject.get("name")?.asString
         if (name != null) {
             val nameProperty = SNodeUtil.property_INamedConcept_name
@@ -419,6 +509,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val propValue = propObject.get("value")?.asString
                 val sProperty = sConcept.properties.find { it.name == propName }
                     ?: run {
+                        gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, "$jsonPath.properties[$propIndex]")?.let { throw it }
                         if (isMarkedUndeclared(propObject)) {
                             warnings?.add(undeclaredPropertyWarning("$jsonPath.properties[$propIndex]", propName, sConcept, stored = false))
                             return@forEachIndexed
@@ -451,7 +542,8 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val roleName = refObject.get("role")?.asString ?: return@forEachIndexed
                 val targetRefStr = (refObject.get("targetReference") ?: refObject.get("target"))?.asString
                 val link = sConcept.referenceLinks.find { it.name == roleName }
-                    ?: throw if (isMarkedUndeclared(refObject)) {
+                    ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.REFERENCE, roleName, "$jsonPath.references[$index]")
+                        ?: if (isMarkedUndeclared(refObject)) {
                         undeclaredRoleRejection("Reference role", roleName, "$jsonPath.references[$index]", sConcept, "stored reference")
                     } else McpInvalidRequestException(
                         "Unknown reference role '$roleName' at $jsonPath.references[$index]: " +
@@ -497,7 +589,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         dryRun: Boolean,
         jsonPath: String,
         warnings: MutableList<String>?,
-        mpsProject: MPSProject?
+        mpsProject: MPSProject?,
+        gate: ConceptGate?
     ) {
         val sConcept = node.concept
         val children = jsonObject.requireArray("children", jsonPath) ?: return
@@ -508,7 +601,8 @@ abstract class AbstractNodeOps : AbstractOps() {
             val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
             val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
             val link = sConcept.containmentLinks.find { it.name == roleName }
-                ?: throw if (isMarkedUndeclared(childRoleObject)) {
+                ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.CHILD, roleName, "$jsonPath.children[$roleIndex]")
+                    ?: if (isMarkedUndeclared(childRoleObject)) {
                     undeclaredRoleRejection("Child role", roleName, "$jsonPath.children[$roleIndex]", sConcept, "stored children")
                 } else McpInvalidRequestException(
                     "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
@@ -528,14 +622,14 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
                 val childObject = nodeElement.asJsonObject
                 val childNode = createNode(
-                    childObject, model, dryRun, childPath, warnings, mpsProject,
+                    childObject, model, dryRun, childPath, warnings, mpsProject, gate,
                     enclosingNode = node, link = link, index = node.getChildren(link).count()
                 )
                 if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
                     throw childAssignabilityFailure(childPath, childNode.concept, link, sConcept, model)
                 }
                 node.addChild(link, childNode)
-                fillChildren(childNode, childObject, model, dryRun, childPath, warnings, mpsProject)
+                fillChildren(childNode, childObject, model, dryRun, childPath, warnings, mpsProject, gate)
             }
         }
     }
@@ -552,10 +646,11 @@ abstract class AbstractNodeOps : AbstractOps() {
         dryRun: Boolean,
         warnings: MutableList<String>,
         mpsProject: MPSProject,
+        gate: ConceptGate,
         errorPrefix: String
     ): String? {
         try {
-            fillChildren(newNode, jsonObject, model, dryRun, "$", warnings, mpsProject)
+            fillChildren(newNode, jsonObject, model, dryRun, "$", warnings, mpsProject, gate)
             return null
         } catch (t: Throwable) {
             if (!dryRun) runCatching { newNode.delete() }.exceptionOrNull()?.let(t::addSuppressed)
@@ -771,7 +866,7 @@ abstract class AbstractNodeOps : AbstractOps() {
         rethrowIfCancellation(e)
         return errJson(
             "$prefix: ${e.message}",
-            McpErrorCode.INVALID_REQUEST,
+            if (e is McpLanguageNotBuiltException) McpErrorCode.LANGUAGE_NOT_BUILT else McpErrorCode.INVALID_REQUEST,
             (e as? McpUserException)?.errorDetails.orEmpty(),
             warnings
         )
@@ -846,7 +941,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         throw McpInvalidRequestException(
             "Node at $jsonPath is marked conceptLoaded:false: concept '$conceptName' was not loaded when this node was printed " +
                 "(its language was not loaded or no longer declared it), so the node cannot be written from this printout. " +
-                "Run mps_mcp_alter_nodes MAKE with rebuild=true on the language module and print the node again, $alternative"
+                "Run mps_mcp_alter_nodes MAKE with rebuild=true on the language module and print the node again, $alternative " +
+                LanguageReadiness.MAKE_CHANGES_NO_MODEL_NOTE
         )
     }
 
@@ -888,7 +984,12 @@ abstract class AbstractNodeOps : AbstractOps() {
      * stored back, because the engine matches types on stored values: the top-level `name` (a presentation
      * fallback; a real name is also in `properties`) and `isDefault:true` enum entries.
      */
-    protected fun typeOperandNode(blueprint: JsonObject, mpsProject: MPSProject, jsonPath: String): SNode {
+    protected fun typeOperandNode(
+        blueprint: JsonObject,
+        mpsProject: MPSProject,
+        jsonPath: String,
+        gate: ConceptGate = ConceptGate(mpsProject)
+    ): SNode {
         val conceptName = blueprint.optionalBlueprintString("concept", jsonPath)
         val conceptRef = blueprint.optionalBlueprintString("conceptReference", jsonPath)
         if (conceptName.isNullOrEmpty() && conceptRef.isNullOrEmpty()) {
@@ -902,9 +1003,15 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         val concept = listOfNotNull(conceptRef, conceptName).firstNotNullOfOrNull {
             resolveConceptPreferringProject(mpsProject, it) as? SConcept
-        } ?: throw McpInvalidRequestException(
-            "Concept '${conceptName ?: conceptRef}' at $jsonPath is not a loaded concrete concept"
-        )
+        } ?: run {
+            val hint = conceptHint(mpsProject.repository, mpsProject, conceptName, conceptRef, concreteRequired = true)
+            throw McpInvalidRequestException(
+                "Concept '${conceptName ?: conceptRef}' at $jsonPath is not a loaded concrete concept" + hint.messageSuffix,
+                hint.details
+            )
+        }
+        // Before isAbstract: a concept the runtime does not know reads as abstract.
+        gate.require(concept, "Concept '${structureQualifiedName(concept)}' at $jsonPath", TYPE_OPERAND_NOT_BUILT)
         if (concept.isAbstract) {
             throw McpInvalidRequestException("Concept '${concept.name}' at $jsonPath is abstract; a type operand needs a concrete concept")
         }
@@ -978,7 +1085,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             if (clearedRoles.add(link)) node.getChildren(link).toList().forEach { it.delete() }
             entry.requireArray("nodes", rolePath)?.forEachIndexed { nodeIndex, childElement ->
                 val childPath = "$rolePath.nodes[$nodeIndex]"
-                val child = typeOperandNode(childElement.asBlueprintObject(childPath), mpsProject, childPath)
+                val child = typeOperandNode(childElement.asBlueprintObject(childPath), mpsProject, childPath, gate)
                 if (!child.concept.isSubConceptOf(link.targetConcept)) {
                     throw McpInvalidRequestException(
                         "Child at $childPath is a '${child.concept.name}', which role '$roleName' of '${concept.name}' does not accept " +
@@ -1030,6 +1137,8 @@ abstract class AbstractNodeOps : AbstractOps() {
         val model = node.model ?: throw IllegalArgumentException("Node must be in a model")
         val sConcept = node.concept
         rejectUnloadedConceptRecord(jsonObject, jsonPath, sConcept.name, rewritesRoot = true)
+        val gate = mpsProject?.let { ConceptGate(it) }
+        gate?.require(sConcept, "Concept '${structureQualifiedName(sConcept)}' of the root being rewritten")
 
         // Stage-then-apply: validate everything (instantiate new children, resolve references)
         // BEFORE deleting the existing children/references. If any step throws, the staged
@@ -1049,6 +1158,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 val propValue = propObject.get("value")?.asString
                 val sProperty = sConcept.properties.find { it.name == propName }
                     ?: run {
+                        gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.PROPERTY, propName, "$jsonPath.properties[$propIndex]")?.let { throw it }
                         if (isMarkedUndeclared(propObject)) {
                             warnings?.add(undeclaredPropertyWarning("$jsonPath.properties[$propIndex]", propName, sConcept, stored = true))
                             return@forEachIndexed
@@ -1083,7 +1193,8 @@ abstract class AbstractNodeOps : AbstractOps() {
                     val roleName = childRoleObject.get("role")?.asString ?: return@forEachIndexed
                     val childNodes = childRoleObject.requireArray("nodes", "$jsonPath.children[$roleIndex]") ?: return@forEachIndexed
                     val link = sConcept.containmentLinks.find { it.name == roleName }
-                        ?: throw if (isMarkedUndeclared(childRoleObject)) {
+                        ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.CHILD, roleName, "$jsonPath.children[$roleIndex]")
+                            ?: if (isMarkedUndeclared(childRoleObject)) {
                             undeclaredRoleRejection("Child role", roleName, "$jsonPath.children[$roleIndex]", sConcept, "stored children")
                         } else McpInvalidRequestException(
                             "Unknown child role '$roleName' at $jsonPath.children[$roleIndex]: " +
@@ -1093,7 +1204,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                         val childPath = "$jsonPath.children[$roleIndex].nodes[$nodeIndex]"
                         val childObject = nodeElement.asJsonObject
                         val childNode = createNode(
-                            childObject, model, dryRun, childPath, warnings, mpsProject,
+                            childObject, model, dryRun, childPath, warnings, mpsProject, gate,
                             enclosingNode = node, link = link, index = stagedChildren.count { it.first == link }
                         )
                         if (!childNode.concept.isSubConceptOf(link.targetConcept)) {
@@ -1101,7 +1212,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                         }
                         if (!dryRun) node.addChild(link, childNode)
                         stagedChildren += link to childNode
-                        fillChildren(childNode, childObject, model, dryRun, childPath, warnings, mpsProject)
+                        fillChildren(childNode, childObject, model, dryRun, childPath, warnings, mpsProject, gate)
                     }
                 }
             }
@@ -1115,7 +1226,8 @@ abstract class AbstractNodeOps : AbstractOps() {
                     val roleName = refObject.get("role")?.asString ?: return@forEachIndexed
                     val targetRefStr = (refObject.get("targetReference") ?: refObject.get("target"))?.asString
                     val link = sConcept.referenceLinks.find { it.name == roleName }
-                        ?: throw if (isMarkedUndeclared(refObject)) {
+                        ?: throw gate?.staleFeature(sConcept, StructureDeclarations.FeatureKind.REFERENCE, roleName, "$jsonPath.references[$index]")
+                            ?: if (isMarkedUndeclared(refObject)) {
                             undeclaredRoleRejection("Reference role", roleName, "$jsonPath.references[$index]", sConcept, "stored reference")
                         } else McpInvalidRequestException(
                             "Unknown reference role '$roleName' at $jsonPath.references[$index]: " +
@@ -1252,12 +1364,14 @@ abstract class AbstractNodeOps : AbstractOps() {
         }
         val nodeWarnings = mutableListOf<String>()
         val errorPrefix = "Failed to instantiate new child node from JSON"
+        val gate = ConceptGate(mpsProject)
+        gate.require(parent.concept, "Concept '${structureQualifiedName(parent.concept)}' of parent node '${PersistenceFacade.getInstance().asString(parent.reference)}'", NODE_EDIT_NOT_BUILT)
         val newChild = try {
             // The replaced child's slot, which the editor derives from a sampleNode. The replaced child
             // is not passed as the sampleNode: setupNode would copy its subtree into the factories, and
             // the blueprint is authoritative.
             createNode(
-                jsonObject, model, dryRun, "$", nodeWarnings, mpsProject,
+                jsonObject, model, dryRun, "$", nodeWarnings, mpsProject, gate,
                 enclosingNode = parent, link = role, index = parent.getChildren(role).indexOf(childNode)
             )
         } catch (e: Exception) {
@@ -1270,7 +1384,7 @@ abstract class AbstractNodeOps : AbstractOps() {
 
         // Attach, fill, and only then delete the replaced child, as in addNodeChild.
         if (!dryRun) parent.insertChildBefore(role, newChild, childNode)
-        fillChildrenOrDelete(newChild, jsonObject, model, dryRun, nodeWarnings, mpsProject, errorPrefix)?.let { return it }
+        fillChildrenOrDelete(newChild, jsonObject, model, dryRun, nodeWarnings, mpsProject, gate, errorPrefix)?.let { return it }
 
         if (dryRun) {
             return okJson(jsonObject {
@@ -1359,7 +1473,11 @@ abstract class AbstractNodeOps : AbstractOps() {
             is ConsoleAwareResolution.Ok -> Triple(r.node, r.model, r.console)
             is ConsoleAwareResolution.Err -> return r.errJson
         }
-        val role = parent.concept.containmentLinks.find { it.name == childRole } ?: return errJson("Child role '$childRole' not found in concept '${parent.concept.name}'", McpErrorCode.NOT_FOUND)
+        val gate = ConceptGate(mpsProject)
+        gate.require(parent.concept, "Concept '${structureQualifiedName(parent.concept)}' of parent node '$nodeReference'", NODE_EDIT_NOT_BUILT)
+        val role = parent.concept.containmentLinks.find { it.name == childRole }
+            ?: gate.staleFeature(parent.concept, StructureDeclarations.FeatureKind.CHILD, childRole, "parameter childRole", NODE_EDIT_NOT_BUILT)?.let { throw it }
+            ?: return errJson("Child role '$childRole' not found in concept '${parent.concept.name}'", McpErrorCode.NOT_FOUND)
 
         // Snapshot existing children only for multi-cardinality roles; for 0..1 / 1 the
         // count and order are irrelevant — the role either replaces or rejects.
@@ -1393,7 +1511,7 @@ abstract class AbstractNodeOps : AbstractOps() {
             else -> 0
         }
         val newChild = try {
-            createNode(jsonObject, model, dryRun, "$", nodeWarnings, mpsProject, enclosingNode = parent, link = role, index = index)
+            createNode(jsonObject, model, dryRun, "$", nodeWarnings, mpsProject, gate, enclosingNode = parent, link = role, index = index)
         } catch (e: Exception) {
             return instantiationFailed(errorPrefix, e, nodeWarnings)
         }
@@ -1425,7 +1543,7 @@ abstract class AbstractNodeOps : AbstractOps() {
                 else -> parent.addChild(role, newChild)
             }
         }
-        fillChildrenOrDelete(newChild, jsonObject, model, dryRun, nodeWarnings, mpsProject, errorPrefix)?.let { return it }
+        fillChildrenOrDelete(newChild, jsonObject, model, dryRun, nodeWarnings, mpsProject, gate, errorPrefix)?.let { return it }
 
         if (dryRun) {
             return okJson(jsonObject {
@@ -1460,7 +1578,11 @@ abstract class AbstractNodeOps : AbstractOps() {
                 is ConsoleAwareResolution.Err -> return@executeShortCommandOnEdt r.errJson
             }
 
-            val sReferenceLink = node.concept.referenceLinks.find { it.name == referenceRole } ?: return@executeShortCommandOnEdt errJson("Reference link '$referenceRole' not found in concept '${node.concept.name}'", McpErrorCode.NOT_FOUND)
+            val gate = ConceptGate(mpsProject)
+            gate.require(node.concept, "Concept '${structureQualifiedName(node.concept)}' of node '$nodeReference'", NODE_EDIT_NOT_BUILT)
+            val sReferenceLink = node.concept.referenceLinks.find { it.name == referenceRole }
+                ?: gate.staleFeature(node.concept, StructureDeclarations.FeatureKind.REFERENCE, referenceRole, "parameter referenceRole", NODE_EDIT_NOT_BUILT)?.let { throw it }
+                ?: return@executeShortCommandOnEdt errJson("Reference link '$referenceRole' not found in concept '${node.concept.name}'", McpErrorCode.NOT_FOUND)
 
             var fixResult: FixReferencesResult? = null
             if (targetNodeRefStr != null) {

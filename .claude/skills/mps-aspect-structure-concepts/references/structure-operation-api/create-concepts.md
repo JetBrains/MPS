@@ -6,7 +6,7 @@ When the `make` flag is true, `CREATE_CONCEPTS` performs a **clean** make of the
 
 The response reports:
 - `makeStatus`: one of `"success"`, `"runtime_stale"`, `"failed"`, or `"skipped"`, **verified against the live runtime** rather than the build outcome alone. `"success"` means the build succeeded *and* every created concept read back non-hollow, so `mps_mcp_get_concept_details` / `mps_mcp_scaffold_editor` are trustworthy at once. A never-before-deployed language stays hollow after the initial model-scoped make; the tool detects that and automatically runs one module-scoped clean rebuild to materialize the runtime (`recoveryStage: "module-rebuild"`). `"runtime_stale"` means descriptors were *still* hollow after that rebuild (names in `hollowConcepts`); recover by calling `mps_mcp_alter_nodes` `MAKE` with `rebuild = true` on the **language module** — not just the structure model — then retry. `mps_mcp_reload_all` alone is **not** sufficient.
-- `recoveryStage`: present only when the first make left descriptors hollow and an extra module-scoped rebuild was performed (value `"module-rebuild"`).
+- `recoveryStage`: present (value `"module-rebuild"`) when the language module was rebuilt: at once for a language with no runtime, or as the fallback after a model-scoped make left a created concept unserved.
 - `hollowConcepts`: present only with `"runtime_stale"` — the names of concepts whose runtime descriptor is still hollow.
 - `makeMessage`: human-readable summary of the make outcome.
 - `makeDetails`: list of warnings/errors emitted during the build.

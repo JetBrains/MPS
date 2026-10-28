@@ -243,8 +243,9 @@ public class WorkbenchMakeService extends AbstractMakeService implements IMakeSe
 
       @Override
       protected void done() {
-        if (getResult() == null) {
+        if (getResult() == null || isCancelled()) {
           // I work towards not null result, however, still seems to be possible in case MakeTask didn't start
+          // or cancel() stopped it: a deliberate cancel is not reported as a failure
           String info = scrName + " aborted";
           WorkbenchMakeService.this.displayInfo(info);
         } else if (getResult().isSucessful()) {

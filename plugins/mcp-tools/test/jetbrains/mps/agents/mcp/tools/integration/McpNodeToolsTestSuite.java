@@ -13,6 +13,7 @@ import jetbrains.mps.agents.mcp.tools.unit.AbstractOpsAutoApplyQuickFixesTest;
 import jetbrains.mps.agents.mcp.tools.unit.AbstractOpsPropertyProblemsTest;
 import jetbrains.mps.agents.mcp.tools.unit.AssignableReferenceServiceTest;
 import jetbrains.mps.agents.mcp.tools.unit.DataflowBuilderFrameTest;
+import jetbrains.mps.agents.mcp.tools.unit.ModuleLessReferencesTest;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -42,6 +43,7 @@ import org.junit.runners.Suite;
     AbstractOpsPropertyProblemsTest.class,
     AbstractOpsAutoApplyQuickFixesTest.class,
     AssignableReferenceServiceTest.class,
+    ModuleLessReferencesTest.class,
 })
 public class McpNodeToolsTestSuite {
 }

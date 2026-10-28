@@ -4,6 +4,8 @@ Use these blueprints with `mps_mcp_insert_root_node_from_json` (root) and `mps_m
 
 > Verified against MPS via `mps_mcp_get_concept_details`. Re-verify with the MCP before inserting if your MPS version differs.
 
+> A blueprint written as JSON that holds a BaseLanguage body or nests more than ~5 node levels is generated with mps-node-editing's `scripts/blueprint.py`, not typed by hand; load the `mps-node-editing` companion skill from the same origin to run it.
+
 ## `IntentionDeclaration` root
 
 - FQN: `jetbrains.mps.lang.intentions.structure.IntentionDeclaration`

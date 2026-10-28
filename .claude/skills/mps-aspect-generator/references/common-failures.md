@@ -6,7 +6,9 @@ Read this when: a generator doesn't behave as expected — start here to map an 
 |---|---|---|
 | Output contains source nodes unchanged | No rule matched; template missing | Add a reduction rule or template for that concept |
 | Reference to a generated node is null | Mapping label missing or wrong | Define label on the target rule; fetch via `genContext.get output … for (...)` |
-| `cannot resolve` in generated Java | Target language not in generator's module dependencies | Add dependency to the generator module (not the language!) |
+| `cannot resolve` in the generator's own generated Java (a helper class the generator calls) | Module not in the generator's module dependencies | Add dependency to the generator module (not the language!) |
+| `cannot resolve` in a consumer solution's `source_gen` (a runtime class of the output language) | The language does not declare that output language as a Generation Target | `mps_mcp_module_dependency(operation="ADD", moduleName="<language>", targetModule="<output language>", scope="Generation Target")`, then MAKE the consumer with `"rebuild": true` so it is regenerated and its runtime dependencies are recomputed |
+| Module check warns, on the generator, "'<language>' must specify the language 'X' as a generation target …" | The language does not declare X as a Generation Target | `mps_mcp_module_dependency(operation="ADD", moduleName="<language>", targetModule="X", scope="Generation Target")`, then re-run the module check; once the language has been made this should clear it without a rebuild (if it persists, MAKE the language). Before its first MAKE the warning shows regardless |
 | LOOP produces nothing | Loop selector returns empty; or wrong role | Check the `nlist` / selector; ensure macro is on the element node, not its parent |
 | Wrong order of children in output | Templates produce insertion order of rules; mixed with copies | Use an explicit LOOP or script to reorder |
 | "Ambiguous reduction rule" | Two rules match the same node | Make rules mutually exclusive via `applicableConcept` or `condition` |

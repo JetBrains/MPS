@@ -9,7 +9,7 @@ Use when you need to **report problems** but not contribute to type inference. E
 - `body` — imperative BaseLanguage that calls reporters:
   - `error "msg" -> nodeToReport;`
   - `warning "msg" -> nodeToReport;`
-  - `info "msg" -> nodeToReport;`
+  - `info "msg" -> nodeToReport;` — an `info` alone does not make `mps_mcp_check_root_node_problems` unclean; it is listed in `details.infoMessages` on every verdict and report
 
 ## `isStrongSubtype(typeof(expr) :<< expectedType)`
 

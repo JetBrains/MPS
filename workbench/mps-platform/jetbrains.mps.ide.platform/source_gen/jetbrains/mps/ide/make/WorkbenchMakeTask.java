@@ -8,6 +8,7 @@ import java.util.concurrent.Future;
 import jetbrains.mps.make.script.IResult;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.CountDownLatch;
+import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import jetbrains.mps.make.dependencies.MakeSequence;
 import jetbrains.mps.make.script.IScriptController;
 import jetbrains.mps.messages.IMessageHandler;
@@ -15,7 +16,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.jetbrains.mps.openapi.util.ProgressMonitor;
+import com.intellij.openapi.progress.ProgressManager;
 
 /**
  * CoreMakeTask that tracks state changes as it progresses and let you get outcome in non-blocking, IFuture way
@@ -26,7 +27,11 @@ import org.jetbrains.mps.openapi.util.ProgressMonitor;
   private final AtomicReference<TaskState> myState = new AtomicReference<TaskState>(TaskState.NOT_STARTED);
   private final CountDownLatch myLatch = new CountDownLatch(1);
 
-  private boolean isCancelled = false;
+  private volatile boolean isCancelled = false;
+  /**
+   * The monitor the running make reports to and polls for cancellation; null until doRun() starts.
+   */
+  private volatile ProgressMonitor myMonitor;
 
   public WorkbenchMakeTask(MakeSequence makeSeq, IScriptController ctl, IMessageHandler mh) {
     super(makeSeq, ctl, mh);
@@ -48,6 +53,13 @@ import org.jetbrains.mps.openapi.util.ProgressMonitor;
       return false;
     }
     isCancelled = true;
+    // CoreMakeTask polls the monitor, not the flag, so cancel the monitor to stop a running make.
+    // A cancel before the make started finds no monitor yet; doRun() checks the flag then.
+    // The platform task's onCancel() calls cancel() again once the make is over; isDone() makes that a no-op.
+    ProgressMonitor monitor = myMonitor;
+    if (monitor != null) {
+      monitor.cancel();
+    }
     return true;
   }
 
@@ -76,15 +88,27 @@ import org.jetbrains.mps.openapi.util.ProgressMonitor;
         myState.set(TaskState.CANCELLED);
       }
     } finally {
-      myLatch.countDown();
-      done();
+      // done() notifies listeners and closes the make session; get() must not return before that.
+      // countDown stays in finally: a listener that throws must not hang every get().
+      // Non-cancelable: after cancel() the indicator is cancelled, and a read action in a listener would throw instead of waiting.
+      try {
+        ProgressManager.getInstance().executeNonCancelableSection(new Runnable() {
+          public void run() {
+            done();
+          }
+        });
+      } finally {
+        myLatch.countDown();
+      }
     }
   }
 
   @Override
   protected void doRun(ProgressMonitor monitor) {
+    // published before isCancelled is read: a concurrent cancel() either finds the monitor or is seen below
+    myMonitor = monitor;
     try {
-      if (myState.compareAndSet(TaskState.NOT_STARTED, TaskState.RUNNING)) {
+      if (!(isCancelled) && myState.compareAndSet(TaskState.NOT_STARTED, TaskState.RUNNING)) {
         super.doRun(monitor);
         myState.set(TaskState.INDETERMINATE);
       }

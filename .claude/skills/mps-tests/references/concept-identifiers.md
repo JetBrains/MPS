@@ -15,8 +15,14 @@
 | `TestNodeAnnotation` (label decl) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1210673684636` | |
 | `TestNodeReference` (label use) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1210674524691` | |
 | `AnonymousCellAnnotation` (caret marker) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1229194968594` | |
-| `NodeErrorCheckOperation` (`has error/warning/info`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1215507671101` | |
-| `NodeTypeCheckOperation` (`has type / has expected type`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1215526290564` | |
+| `NodeOperationsContainer` (the `smodelAttribute` wrapper that holds check operations in `nodeOperations`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1215603922101` | |
+| `NodeErrorCheckOperation` (`has error`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1215507671101` | |
+| `NodeConstraintsErrorCheckOperation` (`has constraints error`; requires `errorRef`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/8333855927540283103` | |
+| `NodeWarningCheckOperation` (`has warning`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1215511704609` | |
+| `NodeConstraintsWarningCheckOperation` (`has constraints warning`; requires `warningRef`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/8333855927564208813` | |
+| `NodeInfoCheckOperation` (`has info`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/2153278993334166130` | |
+| `UnknownRuleReference` (`errorRef` of an error check) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/7691029917083831655` | `declaration` → the constraint function node; see `references/nodes-test-case.md` |
+| `NodeTypeCheckOperation` (`has type`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1215526290564` | |
 | `NodeTypeSystemErrorCheckOperation` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/428590876651279930` | |
 | `CheckNodeForErrorMessagesOperation` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1215607067978` | |
 | `AssertMatch` (assertNodesMatch) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1211979288880` | |

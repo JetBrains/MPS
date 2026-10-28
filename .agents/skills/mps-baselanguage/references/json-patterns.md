@@ -2,6 +2,8 @@
 
 Paste-able JSON blueprints for the constructs that appear most often when authoring BaseLanguage via JSON AST.
 
+> A blueprint written as JSON that holds a BaseLanguage body or nests more than ~5 node levels is generated with mps-node-editing's `scripts/blueprint.py`, not typed by hand; load the `mps-node-editing` companion skill from the same origin to run it.
+
 ## Local Variable
 
 ```json

@@ -111,7 +111,7 @@ All parses use `mps_mcp_parse_java_and_insert` with
 
 > The parse response's `problems` array lists only **errors and warnings** found inside the
 > inserted subtree. Info-level findings (e.g. "It's recommended to use string type") appear only in
-> `mps_mcp_check_root_node_problems` reports, not here.
+> `mps_mcp_check_root_node_problems` answers, in `details.infoMessages`, not here.
 
 ### F-01 — `IntentionHooks` (must load clean) → `«I_ROOT»`
 ```java
@@ -379,7 +379,7 @@ Record the `reference` of each node entry named below.
 | VariableReference `l` — `«L_REF»` | error `int is expected` | `AddCast_QuickFix` (`Cast the returned expression to int`) and `ChangeMethodReturnType_QuickFix` (`Change return type of hookAddCast(long):int to long`) |
 | IntegerConstant `5` — `«FIVE»` | warning `Variable 'unused' initializer is redundant` | `jetbrains.mps.baseLanguage.typesystem.RemoveUnusedAssignment_QuickFix` (`Remove unused assignment`) |
 | LocalVariableDeclaration `unused` — `«UNUSED_DECL»` | warning `Unused variable` | `RemoveUnusedLocalVariable_QuickFix` |
-| ClassifierType entries (≥1) | **info** `It's recommended to use string type` | `jetbrains.mps.baseLanguage.typesystem.ConvertString_QuickFix` (`Convert java.lang.String to string type`) — record one such node as `«STR_TYPE»` |
+| `details.infoMessages` entry (an info-only node is not a node entry) | **info** `It's recommended to use string type` | `quickFixIds` contains `jetbrains.mps.baseLanguage.typesystem.ConvertString_QuickFix` — record the entry's `node` (a ClassifierType) as `«STR_TYPE»` |
 
 Q-00 is PASS if all rows match. Q-01 is PASS if the `«S_DECL»` row specifically has no
 `quickFixes` array.

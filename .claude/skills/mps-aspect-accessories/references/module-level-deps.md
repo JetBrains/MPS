@@ -2,7 +2,7 @@
 
 A language module declares:
 
-- **`dependencies`** — modules whose code/classes this module compiles against. Scopes: `Default`, `Design`, `Compile`, `Runtime`, `Generation Target`, `Extends`.
+- **`dependencies`** — modules whose code/classes this module compiles against. Scopes: `Default`, `Design`, `Compile`, `Runtime`, `Generation Target`, `Extends`. On a language, `Generation Target` names a language its generator emits (e.g. `jetbrains.mps.baseLanguage`), so that language's runtime modules reach consumers' compile path; the `.mpl` serializes it as `generate-into`.
 - **`usedLanguages`** — languages whose concepts can be used in this module's own models (structure, editor, constraints…). Each entry is a language module.
 - **`usedDevKits`** — convenience bundles that wrap sets of languages.
 - **`extendedLanguages`** — languages whose concepts this language inherits from and can extend.
@@ -29,7 +29,7 @@ Important: **`Extends` is NOT persisted as `<dependency scope="extend">`** — M
 
 ### `Extends` typically needs a `Default` companion
 
-Language extension also typically needs a regular `Default` dependency on the same target so the extended language's classes are on the compile classpath. This tool intentionally does NOT add that automatically (it mirrors what the Module Dependencies dialog persists). Call the tool a **second time** with `scope=Default` if you want both.
+Language extension also typically needs a regular `Default` dependency on the same target so the extended language's classes are on the compile classpath. This tool intentionally does NOT add that automatically (it mirrors what the Module Dependencies dialog persists). Call the tool a **second time** with `scope=Default` if you want both. `Extends` also does not replace `Generation Target`: a language whose generator emits the extended language's nodes still declares it as a Generation Target, because `Extends` brings in only that language's own runtime modules, not those of the languages it generates into.
 
 ### Return values
 

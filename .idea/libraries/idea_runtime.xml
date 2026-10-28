@@ -9,6 +9,7 @@
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.compiler.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.compiler.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.syntax.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java/lib/intellij.java.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/plugins/java-aetherDependencyResolver-plugin/lib/modules/intellij.java.aetherDependencyResolver.jar!/" />
     </CLASSES>

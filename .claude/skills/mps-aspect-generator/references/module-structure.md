@@ -65,7 +65,14 @@ The generator has **two distinct import layers** that often trip up agents.
 | *the owning language itself* | Default | So templates can reference its concepts |
 | *the generator module itself* | Default | Self-reference so template utility classes see each other |
 
-Additionally, the owning language's `.mpl` declares the **target output language** with a `generate-into` scope:
+Additionally, the owning **language** (not the generator) declares each **output language** — a language whose nodes the templates emit — as a **Generation Target**. The common case is a generator that emits Java:
+
+```
+mps_mcp_module_dependency(operation="ADD", moduleName="<language>",
+                          targetModule="jetbrains.mps.baseLanguage", scope="Generation Target")
+```
+
+The `.mpl` serializes it with the `generate-into` scope, here for an XML-emitting language:
 
 ```xml
 <dependency reexport="false" scope="generate-into">
@@ -73,7 +80,9 @@ Additionally, the owning language's `.mpl` declares the **target output language
 </dependency>
 ```
 
-This tells MPS: "the generator of this language produces nodes in `jetbrains.mps.core.xml`." Add with `mps_mcp_module_dependency(..., scope="Generation Target")`.
+This tells MPS: "the generator of this language produces nodes in this language", so the target's runtime modules reach the compile path of every model written in the source language. One BaseLanguage target also covers what BaseLanguage itself generates into, but a BaseLanguage extension the templates emit directly (`collections`, `closures`) is a separate target. Languages used only in macro queries are not targets. `Extends` is no substitute: it contributes only the extended language's own runtime modules, not what that language generates into. A language that extends its output language may therefore get no warning, but declare the Generation Target anyway.
+
+A missing target does not fail MAKE. The module check (`mps_mcp_check_root_node_problems` on the language) reports a warning **on the generator**: `'<language>' must specify the language '<target>' as a generation target to include its runtime modules into compilation`. Before the language's first MAKE the warning shows even when the target is declared; once the language has been made, a re-check after the ADD should clear it (if not, MAKE the language and re-check).
 
 **(B) Generator model used-languages** (inside `template/main@generator.mps`, edit with `mps_mcp_model_used_language`). These govern what concepts the *template bodies* can contain — the target output language plus the generator-authoring toolkit:
 

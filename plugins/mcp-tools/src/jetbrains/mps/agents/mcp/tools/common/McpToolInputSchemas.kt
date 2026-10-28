@@ -1,6 +1,5 @@
 package jetbrains.mps.agents.mcp.tools.common
 
-
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
@@ -8,6 +7,8 @@ import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
 import jetbrains.mps.java.core.newparser.FeatureKind
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 
 class ToolInputJsonException(message: String) : IllegalArgumentException(message)
 
@@ -175,10 +176,13 @@ internal class ParameterKeys private constructor(
  * blob, and the counterpart of the "reject the ignored key" rule [paramString] applies to two
  * spellings of one key.
  */
+@OptIn(ExperimentalContracts::class)
 internal fun JsonObject?.rejectUnknownParameterKeys(context: String, keys: ParameterKeys) {
-  // Gson answers `null` for a blank blob and for the literal `null`, which the dispatchers then
-  // dereferenced into an opaque INTERNAL_ERROR. Reachable from the wire since `parameters` became
-  // a [JsonOrText]: it maps a JSON null to the empty string.
+  // Lets a caller use a blob parsed by AbstractOps.parseParametersBlob as non-null after this check.
+  contract { returns() implies (this@rejectUnknownParameterKeys != null) }
+  // Gson answers `null` for a blank blob (a literal `null` fails the parse instead), which the
+  // dispatchers then dereferenced into an opaque INTERNAL_ERROR. Reachable from the wire since
+  // `parameters` became a [JsonOrText]: it maps a JSON null to the empty string.
   val params = this ?: throw ToolInputSchemaException(
     "'$PARAMETERS_PATH' must be a JSON object carrying the keys for $context, not empty or null. " +
       "Accepted: ${keys.canonical.joinToString(", ") { "'$it'" }}."
@@ -521,6 +525,17 @@ private val JAVA_INSERT_PARAMETER_KEYS = ParameterKeys.of(
   "code", "featureKind", "recovery", "contextNodeRef", "insert", "postProcess",
 )
 
+/**
+ * The `featureKind` values `mps_mcp_parse_java_and_insert` accepts, in the order
+ * `parameters-schema.md` lists them. Not [FeatureKind.entries]: `CLASS_STUB` is rejected, and
+ * `EXPRESSION` is this tool's own kind (parsed as [FeatureKind.STATEMENTS]).
+ */
+internal val JAVA_INSERT_FEATURE_KINDS = listOf(
+  "CLASS", "NESTED_CLASS", "FIELD", "METHOD", "STATEMENTS", "CLASS_CONTENT", "EXPRESSION",
+)
+
+private val ACCEPTED_JAVA_INSERT_FEATURE_KINDS = JAVA_INSERT_FEATURE_KINDS.joinToString(", ") { "'$it'" }
+
 fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
   val obj = parseParametersObject(parameters)
   // Reject unrecognized top-level keys so a misspelled or unsupported field fails loudly
@@ -535,7 +550,11 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
 
   val featureKindText = obj.requiredString("featureKind", "parameters")
   if (featureKindText == "CLASS_STUB") {
-    throw ToolInputSchemaException("featureKind 'CLASS_STUB' is not supported")
+    // Too far from 'CLASS' for suggestParameterName, so name the replacement explicitly.
+    throw ToolInputSchemaException(
+      "featureKind 'CLASS_STUB' is not supported: use 'CLASS' for a top-level class root, " +
+        "or 'NESTED_CLASS' for a member class. Accepted: $ACCEPTED_JAVA_INSERT_FEATURE_KINDS."
+    )
   }
   val isExpression = featureKindText == "EXPRESSION"
   val featureKind = if (isExpression) {
@@ -546,7 +565,11 @@ fun parseJavaParseInsertRequest(parameters: String): JavaParseInsertRequest {
       FeatureKind.valueOf(featureKindText)
     }
     catch (_: IllegalArgumentException) {
-      throw ToolInputSchemaException("Unknown featureKind: '$featureKindText'")
+      val suggestion = suggestParameterName(featureKindText, JAVA_INSERT_FEATURE_KINDS)
+      val didYouMean = if (suggestion != null) " (did you mean '$suggestion'?)" else ""
+      throw ToolInputSchemaException(
+        "Unknown featureKind: '$featureKindText'$didYouMean. Accepted: $ACCEPTED_JAVA_INSERT_FEATURE_KINDS."
+      )
     }
   }
 
@@ -636,7 +659,7 @@ private fun validateInsertTarget(insertTarget: JavaInsertTarget) {
 }
 
 private fun parseArray(json: String, sourceName: String): JsonArray {
-  val element = parseElement(json, sourceName)
+  val element = parseElement(json, sourceName, JsonInputGuidance.FILE)
   if (!element.isJsonArray) {
     throw ToolInputSchemaException("$sourceName must be a JSON array")
   }
@@ -644,14 +667,14 @@ private fun parseArray(json: String, sourceName: String): JsonArray {
 }
 
 private fun parseParametersObject(json: String): JsonObject {
-  val element = parseElement(json, "parameters")
+  val element = parseElement(json, "parameters", JsonInputGuidance.INLINE)
   if (!element.isJsonObject) {
     throw ToolInputSchemaException("parameters must be a JSON object")
   }
   return element.asJsonObject
 }
 
-private fun parseElement(json: String, sourceName: String): JsonElement {
+private fun parseElement(json: String, sourceName: String, guidance: JsonInputGuidance): JsonElement {
   if (json.isBlank()) {
     throw ToolInputSchemaException("$sourceName must not be blank")
   }
@@ -659,7 +682,7 @@ private fun parseElement(json: String, sourceName: String): JsonElement {
     return JsonParser.parseString(json)
   }
   catch (e: JsonParseException) {
-    throw ToolInputJsonException("Invalid JSON for $sourceName: ${e.message ?: "Invalid JSON syntax"}")
+    throw ToolInputJsonException("Invalid JSON for $sourceName: ${JsonSyntaxErrors.describe(json, e.message ?: "Invalid JSON syntax", guidance)}")
   }
 }
 

@@ -41,6 +41,29 @@ import kotlinx.serialization.json.JsonPrimitive as McpJsonPrimitive
 class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
 
     @Test
+    fun `update_node ADD CHILD refuses a blueprint of an unbuilt language before checking assignability`() {
+        // The parent is a built ConceptDeclaration; the child's concept is declared only in the never-built
+        // fixture language, so its fail-safe adapter would otherwise fail the role's assignability check.
+        val parentRef = createConceptRoot("AddChildParent${System.nanoTime()}")
+        val childConcept = "UnbuiltChild${System.nanoTime()}"
+        createConceptRoot(childConcept, propertiesJson = """[{"name":"initial","type":"string"}]""")
+        val childJson = """{ "concept": "${language.moduleName}.structure.$childConcept", "properties": [ { "name": "initial", "value": "x" } ] }"""
+        val childrenBefore = readOnRepo { resolveNodeRef(parentRef).children.count() }
+
+        for (dryRun in listOf(true, false)) {
+            val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+                it.mps_mcp_update_node(
+                    "ADD", "CHILD", nodeReference = parentRef, childRole = "propertyDeclaration",
+                    childJson = JsonOrText(childJson), dryRun = dryRun,
+                )
+            }
+            // The code alone rules out the assignability failure (INVALID_REFERENCE) the fail-safe adapter produced.
+            expectLanguageNotBuilt(response, language)
+        }
+        assertEquals("a refused ADD CHILD must not add a child", childrenBefore, readOnRepo { resolveNodeRef(parentRef).children.count() })
+    }
+
+    @Test
     fun `find-usages with null scope defaults to editable and returns the usage`() {
         val createParams = """
             {
@@ -1223,6 +1246,24 @@ class JetBrainsMPSNodeMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertEquals("model must be unchanged after rejected insertion", before,
                 membersOf(enumRef).mapNotNull { it.name })
         }
+    }
+
+    @Test
+    fun `add-node-child with an unknown concept names the closest concept of the named language`() {
+        // D116, study run r43 S6-sonnet-1: the collections operation is GetSizeOperation.
+        val fooRef = createFooConcept()
+        val response = runTool(JetBrainsMPSNodeMcpToolset()) {
+            it.mps_mcp_update_node(
+                NodeUpdateOperation.ADD, NodeUpdateKind.CHILD, nodeReference = fooRef, childRole = "propertyDeclaration",
+                childJson = """{ "concept": "jetbrains.mps.baseLanguage.collections.structure.SizeOperation" }""", dryRun = true,
+            )
+        }
+        val obj = JsonParser.parseString(response).asJsonObject
+        assertFalse(response, obj.get("ok").asBoolean)
+        assertTrue(response, obj.get("error").asString.contains(". Closest concepts: jetbrains.mps.baseLanguage.collections.structure.GetSizeOperation"))
+        val first = obj.getAsJsonObject("details").getAsJsonArray("suggestions")[0].asJsonObject
+        assertEquals("jetbrains.mps.baseLanguage.collections.structure.GetSizeOperation", first.get("qualifiedName").asString)
+        assertTrue(response, first.get("conceptReference").asString.startsWith("c:"))
     }
 
     @Test

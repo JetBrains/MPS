@@ -53,7 +53,7 @@ MPS distinguishes two dependency layers. Get this right before assuming a concep
 | "Concept not imported" on a freshly written node | Model does not import the language defining that concept | `mps_mcp_model_used_language` with `kind: "language"` |
 | Reference target "cannot be resolved" at generation time | Target model not imported by the source model | `mps_mcp_model_dependency` |
 | Class not found at runtime despite import looking right | Missing module-level classpath dependency | `mps_mcp_module_dependency` with scope `Default` (or `Runtime` for runtime-only jars) |
-| "Generation targets missing" | Language needs a generator dependency declared with scope `Generation Target` | add with that specific scope |
+| "'L' must specify the language 'X' as a generation target …" (warning on L's generator) | Language L does not list its output language X (e.g. `jetbrains.mps.baseLanguage`) with scope `Generation Target` | `mps_mcp_module_dependency(operation="ADD", moduleName=L, targetModule=X, scope="Generation Target")` on the language |
 
 ### When to re-inspect dependencies
 

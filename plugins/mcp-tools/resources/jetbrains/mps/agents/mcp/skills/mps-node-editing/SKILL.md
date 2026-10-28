@@ -21,6 +21,7 @@ The core workflow for mutating MPS nodes through MCP tools. JSON blueprints desc
 - **Cloning an existing node? Use `mps_mcp_alter_nodes` `COPY_NODE`, not a JSON blueprint.** It clones the subtree natively — correct concept, properties, refs, nested structure — as the next sibling (multi-child role) or new root, then tweak with `mps_mcp_update_node`. Reserve JSON blueprints for nodes with no close match to copy from.
 - **Choosing a replacement or filling a typed slot?** Ask `mps_mcp_query_nodes` `GET_EXPECTED_TYPE` on the node you are about to replace, then confirm a candidate with `mps_mcp_query_types` `IS_SUBTYPE` before inserting. An empty slot has no answer, and the bound can depend on the node already there (`byte b = 1`, `return 'c'`); `null` means no usable upper/comparable bound, not “anything goes.” See `mps-mcp-workflow/references/analysis-tools/type-queries.md` for details.
 - **Validate frequently** — call `mps_mcp_check_root_node_problems` immediately after inserting or modifying a complex node. `"ok": true` from insert does not mean the AST is semantically valid; read `warnings` and `details.uncheckedSubtrees`, and open a problem's `rules[].statement` to see which rule reported it.
+- **Generate deep blueprints, do not hand-nest them** — if you write a blueprint as JSON rather than through `mps_mcp_parse_java_and_insert`, and it holds a BaseLanguage body or nests more than ~5 node levels, generate it with `scripts/blueprint.py` and pass the printed temp-file path. A hand-written one ends in a long run of `]}` pairs; one pair too few is rejected as `INVALID_JSON … unbalanced`, or, when it is missing mid-input, puts a later role under the wrong node. Plain Java still goes through the parser first (`mps-baselanguage`).
 - **A blueprint is not the whole node** — the concept's node factory runs first and may add properties, children, and references your JSON never mentions. Do not re-do its work by hand, and do not assume an inserted node contains exactly what you wrote. See "Node factories" below.
 
 ## `mps_mcp_update_node` — Unified Node-Mutation Tool
@@ -60,7 +61,7 @@ Where a documented null means something, how you express it depends on where it 
 
 1. **Identify** the target node (existing) or parent model (new root).
 2. **Choose the right tool**: `mps_mcp_create_root_node` / `mps_mcp_insert_root_node_from_json` for new roots; `mps_mcp_update_node` (`ADD`/`SET` × `CHILD`/`PROPERTY`/`REFERENCE`) for surgical edits; `mps_mcp_update_root_node_from_json` only for full-root rewrites.
-3. **Author the JSON** following the unified blueprint format.
+3. **Author the JSON** following the unified blueprint format. A BaseLanguage body or anything deeper than ~5 node levels: build it with `scripts/blueprint.py` (see "Scripts") instead of typing it inline.
 4. **Insert.** A `dryRun: true` call checks concepts, roles, properties and assignability, but it never looks up a reference target given by name: it warns "is a name, not looked up" for every one, including names that exist. Do not rewrite names or dry-run again because of those warnings. Fix only the "names no node" and "matches no Model.Root" warnings, and after the real write check `fixReferences.stillBroken`. The full rule is under "Dry-run response" in `references/reference-formats/response-envelope.md` in the `mps-mcp-workflow` skill root after loading that companion skill from the same origin.
 5. **Validate** with `mps_mcp_check_root_node_problems`, reading `warnings` and `details.uncheckedSubtrees` as well as `data`: a clean verdict over commented-out or other skipped subtrees proves nothing. Problems may carry `rules: [{rule, ruleReference, statement}]`; open the reporting statement rather than guessing. Problems may also carry a `quickFixes` array; apply one with `mps_mcp_apply_intention`, or pass `autoApplyQuickFixes=true` for one-shot repair of the auto-applicable ones.
 6. **Repair** broken refs with `mps_mcp_alter_nodes FIX_REFERENCES` if validation surfaces resolvable-but-unresolved targets.
@@ -154,15 +155,48 @@ authoring and reading factories.
 
 - Open `references/json-format.md` when you need the unified JSON blueprint shape — concept/properties/children/references layout, optional-section rules, and reference-resolution semantics (`r:...` vs name auto-resolution).
 - Open `references/staged-construction.md` when the subtree is large (>~4 KB) or its child refs are needed for later edits — the skeleton → validate → incremental-fill → targeted-update → cleanup pattern.
-- Open `references/troubleshooting.md` when an insert call fails with `JsonElement.getAsString()` errors or when the JSON shape diverges from the user's textual notation.
+- A blueprint that holds a BaseLanguage body, nests more than ~5 node levels or exceeds ~4 KB is generated with `scripts/blueprint.py` (see "Scripts") and passed as the temp-file path it prints: hand-counted closing brackets in deep inline JSON are the usual cause of `INVALID_JSON` parse errors.
+- Open `references/troubleshooting.md` when any tool rejects a JSON input (a blueprint, `conceptsJson`, `interfaceConceptsJson`, `valuesJson`, a `parameters` object, `settingsJson`) with `INVALID_JSON` / gson parse errors (`unbalanced`, `unterminated string`, `unexpected content`), with `JsonElement.getAsString()` errors, or when the JSON shape diverges from the user's textual notation.
 
 ## Scripts
+
+`scripts/blueprint.py` — builds a deep blueprint from nested `node(...)` calls, so no closing
+bracket is typed by hand, and writes it to a file under the system temp directory. Pass the
+Python on stdin with `-` as the only argument; `node` and `emit` are predefined:
+
+```
+python3 .claude/skills/mps-node-editing/scripts/blueprint.py - <<'EOF'
+BL = "jetbrains.mps.baseLanguage.structure."
+cond = node(BL + "GreaterThanOrEqualsExpression", children={
+    "leftExpression": node("jetbrains.mps.lang.constraints.structure.ConstraintsFunctionParameter_propertyValue"),
+    "rightExpression": node(BL + "IntegerConstant", props={"value": 1})})
+emit(node(BL + "StatementList", children={"statement": [
+    node(BL + "ExpressionStatement", children={"expression": cond})]}), single=True)
+EOF
+{"bytes":600,"depth":4,"nodes":5,"path":"/var/folders/.../T/bp-k1ddjf3n.json"}
+```
+
+`node(concept, props={name: value}, refs={role: target}, children={role: node or [nodes]})`
+returns the node, so a subtree can be bound to a variable and composed into a larger one, as
+`cond` is above. A bool property value becomes `"true"`/`"false"`, a number its text, and
+`None` leaves the property out. `emit(blueprint, stem="bp", single=False)` checks that every
+node has a fully qualified concept, writes the file, and prints `{bytes, depth, nodes, path}`;
+`blueprint` may be a list for a top-level array. Pass `single=True` for
+`mps_mcp_update_node` `childJson` and `mps_mcp_update_root_node_from_json` `json`, which take
+one object. Hand the printed path to the tool. A bad blueprint exits 3 with the JSON path of
+the node at fault (`$.statement[0].expression[0]: concept 'IntegerConstant' is not fully
+qualified`); a run without `-` exits 2 and never waits for input. The script checks the shape
+only; a dry run of the tool checks roles and properties. Adjust the path prefix if your skills
+are installed elsewhere than `.claude/skills`.
 
 `scripts/table_to_bulk_insert.py` — turns a CSV (or JSON rows) plus a small JSON mapping spec
 into the top-level-array blueprint `mps_mcp_insert_root_node_from_json` accepts, written to a
 file under the system temp directory, and prints `{path, roots, children, references}`. Covers
 typed properties (`int`, enum literals), split-column child lists, and reference-wrapper
 children whose targets are written as names for the tool to resolve after the batch lands.
+A cookbook-style root that references every row is the spec's `aggregate` key: the script
+appends it to the same batch (`roots` then counts it, and `aggregateReferences` is printed), and
+the same `--verify` checks it, so there is no second insert and no separate check to write.
 
 ```
 python3 scripts/table_to_bulk_insert.py courses.csv courses.map.json
@@ -186,7 +220,8 @@ row 7 (Conducting): lessons[2].minutes: expected '10', got '12'
 
 It pairs rows with roots by the spec's `nameColumn`, and compares every property, child and
 reference target the spec produces. It exits 0 when every row matches and 1 on any
-difference.
+difference. With an `aggregate`, that includes the aggregate root's wrapper count and each
+wrapper's target.
 
 Run `--help` for the full mapping-spec reference, `--list-tools` for the tools and parameters
 it depends on; `scripts/examples/` holds a 40-row `courses.csv` with its matching
@@ -196,6 +231,7 @@ the script source or the examples first.
 No `python3` (typically Windows): author the array by hand as described in
 `references/json-format.md` — one object per row, `properties` entries omitted for empty cells
 so the MPS default applies, one child role per list column, and one wrapper child per
-reference with `{"role": …, "target": "<name>"}` — write it to a file under `$TMPDIR`
+reference with `{"role": …, "target": "<name>"}` (an aggregate root goes last, one such
+wrapper per row) — write it to a file under `$TMPDIR`
 (or `/tmp` on macOS) and pass that path. Prefer `--limit`-sized batches, or the
 staged construction in `references/staged-construction.md`, over one oversized blueprint.

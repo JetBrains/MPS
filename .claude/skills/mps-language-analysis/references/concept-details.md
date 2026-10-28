@@ -21,11 +21,9 @@ The tool distinguishes three response shapes:
 | Some refs failed, at least one resolved | `ok:true` | `data` as above, plus `warnings` naming each unresolved ref and `details.unresolved` with "did you mean" suggestions |
 | Every `conceptRef` and `languageRef` failed | `ok:false`, code `NOT_FOUND` | `details.unresolved` with up to 5 "did you mean" candidates per unresolved ref (qualified names and persistent references) |
 
-## `languageRefs` needs a deployed runtime
+## Languages without a built runtime
 
-`languageRefs` enumerates concepts from the language *runtime* (`LanguageRegistry`). A language module that exists in the open project but has never been made — or whose runtime has not loaded — therefore fails to resolve, for both the qualified name and the canonical `l:<uuid>:<name>` form. That is not a missing-name problem: `mps_mcp_search_concepts` searches the same deployed-runtime haystack and will not find it (and may return a huge unrelated dump).
-
-`conceptRefs` with a fully qualified concept name still works, because that path reads the structure model. This is distinct from a *hollow* descriptor (`descriptorStatus: "hollow"` below): there the runtime *is* loaded but empty; here `languageRefs` never gets as far as a concept record. The error / `details.unresolved[].route` names the module and the two recoveries: `mps_mcp_alter_nodes` `MAKE` with `rebuild=true` targeting the language module, or address the concepts you need by qualified name via `conceptRefs`.
+A fully qualified `conceptRefs` entry resolves through the structure model even when the language has no built runtime; the record is then read from the concept declaration and marked (`source: "declaration"`, `descriptorStatus: "hollow"`, `runtimeStatus`), and the envelope names the build under `details.languageBuild`. See `references/language-readiness.md`.
 
 ## An enumeration is not a concept
 
@@ -53,13 +51,12 @@ stores nothing.
 
 ## Suggestion heuristic
 
-Suggestions are computed by subtoken-matching the input (the same camelCase- and underscore-aware splitter used by `mps_mcp_search_concepts`).
-
-- If the input is FQN-shaped (e.g. `"jetbrains.mps.lang.smodel.structure.X"`) and the implied language resolves, suggestions are scoped to that language first.
-- Otherwise the search runs project-wide.
+- **Exact name or alias first.** Concepts whose simple name equals the input's, ignoring case, come first, then concepts whose alias equals it (`Int` finds the concept whose editor shows `Int`). They may be in another language than the one you named (`…lang.smodel.structure.ThisNodeExpression` finds `jetbrains.mps.lang.behavior.structure.ThisNodeExpression`). Name matches come before alias matches, an exact-case match before a different-case one, and then matches in the language you named (or the nearest namespace) before the rest.
+- **Then subtoken matches** (the same camelCase- and underscore-aware splitter used by `mps_mcp_search_concepts`). Beside exact matches, a name with all but one of three or more subtokens counts too (`…lang.constraints.structure.ConceptFunctionParameter_node` keeps a slot for `ConstraintsFunctionParameter_node`). If the input is FQN-shaped (e.g. `"jetbrains.mps.lang.smodel.structure.X"`) and the implied language resolves, they are scoped to that language, and one slot is kept for its best match even when exact matches from other languages fill the rest.
+- Only when nothing matched so far does the search run project-wide.
 - Candidates owned by **another open MPS project** are never suggested: the module repository is shared between open projects, so an unfiltered list could answer a plain name with a same-named concept or language you cannot edit. Read-only libraries and stubs (owned by no project) remain candidates.
 
-Treat the suggestion list as a **candidate set**, not a ranked answer. For free-form lookup, use `mps_mcp_search_concepts` (see `references/search-concepts.md` for the matching algorithm).
+Treat the suggestion list as a **candidate set**, not a ranked answer; an exact-name match is almost always the concept you meant. For free-form lookup, use `mps_mcp_search_concepts` (see `references/search-concepts.md` for the matching algorithm).
 
 ## Detail level and inlining
 
@@ -94,6 +91,9 @@ Each entry in the `detail = "full"` result has the shape:
   present: true,
   descriptorStatus,         // only present when "hollow" — see below
   descriptorRecoveryAction, // only present when descriptorStatus == "hollow"
+  source,                   // "declaration" — only present when the record was read from the concept declaration
+  runtimeStatus,            // "no_runtime" | "concept_not_in_runtime" | "stale" — only present with descriptorStatus "hollow"
+  languageModule,           // declaring language's module ref — only present with descriptorStatus "hollow"
   properties: [...],
   references: [...],
   children: [...],
@@ -136,10 +136,4 @@ Each item in these three arrays carries the identifiers needed to reference the 
 
 ## Stale runtime descriptors (`descriptorStatus: "hollow"`)
 
-A concept can have a *hollow* runtime descriptor: the runtime entry exists but reports `sourceNode == null`, no properties, no references, no children, and `isAbstract: true`. This shape is the fingerprint of an MPS language runtime that is out of sync with the structure model — typically after `CREATE_CONCEPTS` where an incremental make did not regenerate the language aspect descriptor classes.
-
-When `mps_mcp_get_concept_details` detects this shape it adds `descriptorStatus: "hollow"` and a `descriptorRecoveryAction` string to the entry. **Treat the entry as untrustworthy: empty `properties`/`references`/`children` here mean "unknown", not "the concept has none".**
-
-Recovery: call `mps_mcp_alter_nodes` with operation `MAKE` and `rebuild = true` targeting the **language module** (not just the structure model), then re-call `mps_mcp_get_concept_details`. `mps_mcp_reload_all` alone is **not** sufficient — it reloads classes from their current on-disk form, but the disk content is stale until a clean rebuild has regenerated the aspect descriptor classes.
-
-Note that `CREATE_CONCEPTS` with `make: true` already clean-rebuilds *and* verifies each created descriptor against the live runtime — auto-recovering a never-deployed language with one module-scoped rebuild — so it returns `makeStatus: "runtime_stale"` only when descriptors are genuinely still hollow. A hollow descriptor after a `"success"` from that path indicates a deeper problem (build failure, language module not in the project scope, …) — inspect `makeStatus`, `hollowConcepts`, and `makeDetails` on the create response first.
+A record marked `descriptorStatus: "hollow"` was read from the concept declaration because the runtime has no descriptor for the concept; `references/language-readiness.md` explains the states and the recovery.

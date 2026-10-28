@@ -6,6 +6,7 @@ import jetbrains.mps.agents.mcp.tools.references.GetAssignableReferencesRequest
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import jetbrains.mps.java.core.newparser.FeatureKind
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -108,6 +109,15 @@ class McpToolInputSchemasTest {
             "Expected message to start with 'Invalid JSON for conceptsJson' but was: $message",
             message.startsWith("Invalid JSON for conceptsJson"),
         )
+    }
+
+    @Test
+    fun structureConceptReportsUnbalancedJsonWithTempFileAdvice() {
+        val message = catchInvalidJson { parseStructureConceptSpecs("""[{"name":"Foo"}""", "conceptsJson") }
+
+        assertTrue(message, message.startsWith("Invalid JSON for conceptsJson: "))
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: ']'"))
+        assertTrue(message, message.contains("Pass an absolute temp-file path instead of inline JSON"))
     }
 
     @Test
@@ -740,6 +750,9 @@ class McpToolInputSchemasTest {
 
     // ---- parseJavaParseInsertRequest ----
 
+    private val acceptedFeatureKinds =
+        "'CLASS', 'NESTED_CLASS', 'FIELD', 'METHOD', 'STATEMENTS', 'CLASS_CONTENT', 'EXPRESSION'"
+
     @Test
     fun javaInsertParsesRootMode() {
         val request = parseJavaParseInsertRequest(
@@ -1004,7 +1017,10 @@ class McpToolInputSchemasTest {
 
     @Test
     fun javaInsertRejectsClassStubFeatureKind() {
-        assertSchemaFailure("featureKind 'CLASS_STUB' is not supported") {
+        assertSchemaFailure(
+            "featureKind 'CLASS_STUB' is not supported: use 'CLASS' for a top-level class root, " +
+                "or 'NESTED_CLASS' for a member class. Accepted: $acceptedFeatureKinds."
+        ) {
             parseJavaParseInsertRequest(
                 """{"code":"class Foo {}","featureKind":"CLASS_STUB","insert":{"mode":"root","modelRef":"r:m"}}"""
             )
@@ -1013,11 +1029,33 @@ class McpToolInputSchemasTest {
 
     @Test
     fun javaInsertRejectsUnknownFeatureKind() {
-        assertSchemaFailure("Unknown featureKind: 'BANANA'") {
+        assertSchemaFailure("Unknown featureKind: 'BANANA'. Accepted: $acceptedFeatureKinds.") {
             parseJavaParseInsertRequest(
                 """{"code":"class Foo {}","featureKind":"BANANA","insert":{"mode":"root","modelRef":"r:m"}}"""
             )
         }
+    }
+
+    @Test
+    fun javaInsertSuggestsTheFeatureKindForWrongCaseOrTypo() {
+        for ((input, expected) in listOf("class" to "CLASS", "STATEMENT" to "STATEMENTS", "NESTEDCLASS" to "NESTED_CLASS")) {
+            assertSchemaFailure(
+                "Unknown featureKind: '$input' (did you mean '$expected'?). Accepted: $acceptedFeatureKinds."
+            ) {
+                parseJavaParseInsertRequest(
+                    """{"code":"class Foo {}","featureKind":"$input","insert":{"mode":"root","modelRef":"r:m"}}"""
+                )
+            }
+        }
+    }
+
+    @Test
+    fun javaInsertFeatureKindsTrackTheParserEnum() {
+        // Fails when MPS adds a FeatureKind the accepted list (and its rejection message) misses.
+        assertEquals(
+            (FeatureKind.entries.map { it.name } - "CLASS_STUB" + "EXPRESSION").toSet(),
+            JAVA_INSERT_FEATURE_KINDS.toSet(),
+        )
     }
 
     @Test
@@ -1243,6 +1281,16 @@ class McpToolInputSchemasTest {
             "Expected message to start with 'Invalid JSON for parameters' but was: $message",
             message.startsWith("Invalid JSON for parameters"),
         )
+    }
+
+    @Test
+    fun javaInsertReportsUnbalancedParametersWithoutTempFileAdvice() {
+        val message = catchInvalidJson { parseJavaParseInsertRequest("""{"code":"class Foo {}","insert":{"mode":"root"}""") }
+
+        assertTrue(message, message.startsWith("Invalid JSON for parameters: "))
+        assertTrue(message, message.contains("unbalanced: 1 closer(s) missing at the end of input: '}'"))
+        assertTrue(message, message.contains("mps-node-editing/references/troubleshooting.md"))
+        assertFalse(message, message.contains("temp-file"))
     }
 
     @Test
@@ -1677,7 +1725,7 @@ class McpToolInputSchemasTest {
 
     @Test
     fun anAbsentParametersBlobIsRejectedNamingTheAcceptedKeys() {
-        // Gson answers null for a blank blob and for the literal `null`; the dispatchers used to
+        // Gson answers null for a blank blob (a literal `null` fails the parse); the dispatchers used to
         // dereference that into an opaque INTERNAL_ERROR.
         val message = catchSchemaFailure {
             (null as JsonObject?).rejectUnknownParameterKeys("IS_SMART_REFERENCE", demoKeys)

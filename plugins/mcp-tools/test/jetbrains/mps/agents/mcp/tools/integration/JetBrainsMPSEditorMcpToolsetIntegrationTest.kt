@@ -570,8 +570,8 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         // Both paths must roll back without leaving an editor declaration behind.
         val msg = obj.get("error").asString
         assertTrue(
-            "error must point at the hollow runtime descriptor (or the not-found fallback); got: $msg",
-            msg.contains("hollow runtime descriptor") || msg.contains("not found") || msg.contains("no source node"),
+            "error must say the concept is unknown to the runtime and undeclared (or the not-found fallback); got: $msg",
+            msg.contains("not declared in any structure model") || msg.contains("not found") || msg.contains("no source node"),
         )
         readOnRepo {
             val polluted = structureModel.rootNodes.any { root ->
@@ -733,7 +733,10 @@ class JetBrainsMPSEditorMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             assertTrue(
                 "BaseConcept-super marker scaffolding must only fall through on make-related wordings; got: $msg",
                 msg.contains("Failed to make the structure model for concept") ||
-                    msg.contains("hollow runtime descriptor") ||
+                    msg.contains("has no built runtime") ||
+                    msg.contains("does not know this concept yet") ||
+                    msg.contains("changed since its runtime was built") ||
+                    msg.contains("not declared in any structure model") ||
                     msg.contains("has no source node") ||
                     msg.contains("has no loaded runtime") ||
                     msg.contains("has unbuilt changes"),

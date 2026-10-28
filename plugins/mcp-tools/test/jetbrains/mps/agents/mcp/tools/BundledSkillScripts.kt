@@ -25,6 +25,7 @@ internal object BundledSkillScripts {
     val SCRIPTS = listOf(
         "mps-mcp-workflow/scripts/mps_dump.py",
         "mps-node-editing/scripts/table_to_bulk_insert.py",
+        "mps-node-editing/scripts/blueprint.py",
         "mps-language-analysis/scripts/concept_shape.py",
         "mps-project-management/scripts/new_project_migration_xml.py",
     )
