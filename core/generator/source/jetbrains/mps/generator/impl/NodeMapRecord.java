@@ -15,11 +15,9 @@
  */
 package jetbrains.mps.generator.impl;
 
-import jetbrains.mps.generator.impl.GeneratorMappings.SNodeComparator;
 import org.jetbrains.mps.openapi.model.SNode;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Stream;
@@ -167,35 +165,5 @@ public final class NodeMapRecord {
       dest.add((SNode) vv[i]);
     }
     return dest;
-  }
-
-  /*package*/ static Comparator<NodeMapRecord> comparator() {
-    return new Comparator<>() {
-      private final SNodeComparator myNodeComparator = new SNodeComparator();
-
-      @Override
-      public int compare(NodeMapRecord o1, NodeMapRecord o2) {
-        int v = myNodeComparator.compare(o1.key(), o2.key());
-        if (v == 0) {
-          // input node is the same (or indistinguishable), have to respect values to keep order consistent.
-          // E.g. a pattern in a typesystem rule is copied to to different methods, there are two output classes
-          // Pattern_nn7be_a0a0a0b0d and Pattern_nn7be_a0a0a0c, and label entry order is inconsistent
-          v = String.valueOf(o1.value()).compareTo(String.valueOf(o2.value()));
-          if (v == 0) {
-            // last resort, address scenario when input nodes were copied, and processed individually. Treat the one
-            // that served as a master one 'first', its copies 'subsequent'. Guess the master by node id matching the one
-            // of the original node.
-            final boolean b1 = SNodeComparator.nodeIdSameAsOriginal(o1.key());
-            final boolean b2 = SNodeComparator.nodeIdSameAsOriginal(o2.key());
-            if (b1 ^ b2) {
-              v = b1 ? -1 : 1;
-            }
-            // fall-through
-          }
-        }
-        return v;
-      }
-
-    };
   }
 }

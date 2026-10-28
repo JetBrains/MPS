@@ -31,9 +31,9 @@ import java.util.stream.Stream;
   final String label;
   final K key1;
   final K key2;
-  // out/values are kept by reference, I assume they don't get modified, just accessed.
   final OneOrMany<V> values;
 
+  // out/values are kept by reference, I assume they don't get modified, just accessed.
   /*package*/ LabelRecordBase(String label, K in1, K in2, OneOrMany<V> out) {
     this.label = label;
     this.key1 = in1;
@@ -47,6 +47,18 @@ import java.util.stream.Stream;
 
   public LabelRecordBase(String label, K in1, K in2, Collection<V> out) {
     this(label, in1, in2, new OneOrMany<>(out));
+  }
+
+  public String label() {
+    return label;
+  }
+
+  public K key1() {
+    return key1;
+  }
+
+  public K key2() {
+    return key2;
   }
 
   public void forEachValue(Consumer<? super V> consumer) {

@@ -17,8 +17,6 @@ package jetbrains.mps.generator.impl;
 
 import jetbrains.mps.extapi.model.ResolveInfoUpdater;
 import jetbrains.mps.generator.IGeneratorLogger;
-import jetbrains.mps.generator.IGeneratorLogger.ProblemDescription;
-import jetbrains.mps.generator.impl.LMCollector.OneOrMany;
 import jetbrains.mps.generator.impl.cache.MappingsMemento;
 import jetbrains.mps.generator.impl.plan.CheckpointState;
 import jetbrains.mps.generator.impl.plan.CrossModelEnvironment.OriginalModelTag;
@@ -34,8 +32,10 @@ import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * Translate information about mapping labels known at checkpoint step to read-only, persisted (even though memory-only now) {@link CheckpointState state}
@@ -156,26 +156,51 @@ class CheckpointStateBuilder {
       return tn;
     });
     //
-    final ArrayList<String> availableLabels = new ArrayList<>();
-    stepLabels.forEachWithInput((l, nm) -> availableLabels.add(l));
-    Collections.sort(availableLabels);
-    ArrayList<SNode> values = new ArrayList<>();
-    for (String label : availableLabels) {
-      ArrayList<NodeMapRecord> records = new ArrayList<>(stepLabels.allWithInput(label));
-      try {
-        records.sort(NodeMapRecord.comparator());
-      } catch (Exception ex) {
-        ProblemDescription[] dd = records.stream().map(e -> String.format("Key: %s, id: %s. Value: %s", e.key().getPresentation(), e.key().getNodeId(), e.value())).map(ProblemDescription::new).toArray(ProblemDescription[]::new);
-        myLogger.warning(null, String.format("Can't arrange keys for '%s' mappings: %s. Consider overriding getPresentation() to facilitate sorting.", label, ex.getMessage()), dd);
-      }
-      for (NodeMapRecord record : records) {
+    final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> records = new ArrayList<>();
+    final ArrayList<SNode> values = new ArrayList<>();
+    stepLabels.forEachWithInput((label, nm) -> {
+      nm.forEachRecord(record -> {
         InputKeyRecord kr = InputKeyRecord.of(record.key(), myTransitionTrace.getActiveTransition());
         record.valuesInto(values);
         LabelRecordBase<InputKeyRecord, SNode> lr = new LabelRecordBase<>(label, kr, null, values);
         values.clear();
-        dmb.withInput(lr);
+        records.add(lr);
+      });
+    });
+    // labels first
+    Comparator<LabelRecordBase<InputKeyRecord, SNode>> c1 = Comparator.comparing(LabelRecordBase::label);
+    // then LM's input node (captured description thereof)
+    Comparator<LabelRecordBase<InputKeyRecord, SNode>> c2 = Comparator.comparing(LabelRecordBase::key1, InputKeyRecord.comparator());
+    // output values
+    Comparator<LabelRecordBase<InputKeyRecord, SNode>> c3 = new Comparator<>() {
+      // using separator that doesn't appear in values
+      private final Collector<CharSequence, ?, String> c = Collectors.joining("\0");
+      @Override
+      public int compare(LabelRecordBase<InputKeyRecord, SNode> r1, LabelRecordBase<InputKeyRecord, SNode> r2) {
+        // input node is the same (or indistinguishable), have to respect values to keep order consistent.
+        // E.g. a pattern in a typesystem rule is copied to different methods, there are two output classes
+        // Pattern_nn7be_a0a0a0b0d and Pattern_nn7be_a0a0a0c, and label entry order is inconsistent
+        String s1 = r1.streamValues().map(String::valueOf).sorted().collect(c);
+        String s2 = r2.streamValues().map(String::valueOf).sorted().collect(c);
+        // XXX String::valueOf, not SNodeUtil::getPresentation to avoid changes in existing models. Generally, SNode.toString is cheaper, never null,
+        //     and we should not care about complete/proper presentation value here, just need a predictable order
+        return s1.compareTo(s2);
       }
-    }
+    };
+    // last resort, input node id vs origin node id
+    Comparator<LabelRecordBase<InputKeyRecord, SNode>> c4 = Comparator.comparing(LabelRecordBase::key1, (r1, r2) -> {
+      // last resort, address scenario when input nodes were copied, and processed individually. Treat the one
+      // that served as a master one 'first', its copies 'subsequent'. Guess the master by node id matching the one
+      // of the original node.
+      final boolean b1 = r1.nodeIdSameAsOriginal();
+      final boolean b2 = r2.nodeIdSameAsOriginal();
+      if (b1 ^ b2) {
+        return b1 ? -1 : 1;
+      }
+      return 0;
+    });
+    records.sort(c1.thenComparing(c2).thenComparing(c3).thenComparing(c4));
+    records.forEach(dmb::withInput);
     //
 //    LinkedHashSet<String> conditionalRootLabels = new LinkedHashSet<>();
     HashSet<String> conditionalRootLabels = new HashSet<>(); // FIXME would be nice to have it explicitly sorted, but that triggers
@@ -186,7 +211,7 @@ class CheckpointStateBuilder {
     }
     //
     LabelRecord[] clr = stepLabels.compositeLabelsToArray();
-    // XXX perhaps, comparator based on InputKeyRecord would be better.
+    // FIXME use comparator based on InputKeyRecord.
     Arrays.sort(clr, LabelRecord.comparator());
     for (LabelRecord lr : clr) {
       InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, myTransitionTrace.getActiveTransition()) : null;

@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -296,11 +295,6 @@ public final class GeneratorMappings {
         }
       }
       return v;
-    }
-
-    /*package*/ static boolean nodeIdSameAsOriginal(SNode n) {
-      final SNodeReference original = TracingUtil.getInput(n);
-      return original != null && Objects.equals(original.getNodeId(), n.getNodeId());
     }
   }
 
