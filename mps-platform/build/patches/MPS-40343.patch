@@ -1,0 +1,43 @@
+diff --git a/build/dependencies/dependencies.properties b/build/dependencies/dependencies.properties
+index 1ac9899..cc08eb1 100644
+--- a/build/dependencies/dependencies.properties
++++ b/build/dependencies/dependencies.properties
+@@ -7,6 +7,6 @@ jdkBuild=17.0.14b1367.22
+ launcherBuild=251.26194
+ nsisBuild=1
+ restarterBuild=243.6005
+-runtimeBuild=21.0.8b895.146
++runtimeBuild=21.0.9b1038.91
+ snapDockerImage=registry.jetbrains.team/p/ij/docker-hub/jetbrains/snapcraft@sha256:0059496b7a941e27937bc523621a336bddc1327de8dcd03f6b0bd0b57892ce43
+ toolboxBuild=2.6.2.41321
+diff --git a/platform/ui.jcef/jcef/SettingsHelper.java b/platform/ui.jcef/jcef/SettingsHelper.java
+index 99c65e4..2d2faf9 100644
+--- a/platform/ui.jcef/jcef/SettingsHelper.java
++++ b/platform/ui.jcef/jcef/SettingsHelper.java
+@@ -198,8 +198,11 @@ final class SettingsHelper {
+       args = ArrayUtil.mergeArrays(args, "--remote-debugging-port=0", "--remote-allow-origins=*");
+     }
+ 
+-    args = ArrayUtil.mergeArrays(args, "--autoplay-policy=no-user-gesture-required", "--disable-component-update");
++    if (Registry.is("ide.browser.jcef.component.update.disable")) {
++      args = ArrayUtil.mergeArrays(args, "--disable-component-update");
++    }
+ 
++    args = ArrayUtil.mergeArrays(args, "--autoplay-policy=no-user-gesture-required");
+     return args;
+   }
+ 
+diff --git a/platform/util/resources/misc/registry.properties b/platform/util/resources/misc/registry.properties
+index 1bc9577..a9d39b3 100644
+--- a/platform/util/resources/misc/registry.properties
++++ b/platform/util/resources/misc/registry.properties
+@@ -379,6 +379,9 @@ ide.browser.jcef.jsQueryPoolSize.description=Define JBCefJSQuery pool size used
+ ide.browser.jcef.gpu.disable=false
+ ide.browser.jcef.gpu.disable.restartRequired=true
+ ide.browser.jcef.gpu.disable.description=Disables GPU hardware acceleration in JCEF. If software renderer is not in place, then the GPU process won't launch.
++ide.browser.jcef.component.update.disable=false
++ide.browser.jcef.component.update.disable.restartRequired=true
++ide.browser.jcef.component.update.disable.description=Disables Chromium component updates in JCEF.
+ ide.browser.jcef.gpu.infinitecrash=true
+ ide.browser.jcef.gpu.infinitecrash.restartRequired=true
+ ide.browser.jcef.gpu.infinitecrash.description=Disables crash limit for a GPU process. If it crashes too often, then there will be shown a notification (which recommends disabling GPU).
