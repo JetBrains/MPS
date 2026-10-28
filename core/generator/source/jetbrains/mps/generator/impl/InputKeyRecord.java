@@ -35,7 +35,7 @@ public final class InputKeyRecord {
   /*
    * original input node is recorded for a top template node only, if a child template node serves as a ML key, we can't
    * find its input here unless traverse to parent.
-   * high-level sample: 'Car' is transformed with map_EditorDeclaration to ConceptEditorDeclaration with child CellModel_Collection, that
+   * 'j.m.samples.highlevel' sample: 'Car' is transformed with map_EditorDeclaration to ConceptEditorDeclaration with child CellModel_Collection, that
    * later serves as a key for 'cellFactory.factoryMethod' ML. Presentation for any CellModel_Collection is 'collection', and as long as it's
    * child template node of map_EditorDeclaration template, it doesn't get original input value (map_EditorDeclaration does).
    *
@@ -92,7 +92,7 @@ public final class InputKeyRecord {
   }
 
   public static Comparator<InputKeyRecord> comparator() {
-    // an attempt to keep same order as GeneratorMappings.SNodeComparator
+    // an attempt to keep same order as former GeneratorMappings.SNodeComparator
     return new Comparator<>() {
       private final Comparator<String> c1 = Comparator.nullsFirst(Comparator.naturalOrder());
       private final ToStringComparator c2 = new ToStringComparator();

@@ -22,8 +22,6 @@ import jetbrains.mps.generator.runtime.LabelDeclaration;
 import jetbrains.mps.generator.runtime.TemplateContext;
 import jetbrains.mps.smodel.adapter.structure.concept.SConceptAdapterById;
 import jetbrains.mps.smodel.runtime.StaticScope;
-import jetbrains.mps.textgen.trace.TracingUtil;
-import jetbrains.mps.util.ToStringComparator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.language.SConcept;
@@ -34,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -265,37 +262,6 @@ public final class GeneratorMappings {
       return null;
     }
     return myLabeledMappings.streamNoInput(mappingLabel).findFirst().orElse(null);
-  }
-
-  /*package*/ static class SNodeComparator implements Comparator<SNode> {
-    private final ToStringComparator myToStringComparator = new ToStringComparator();
-
-    @Override
-    public int compare(SNode n1, SNode n2) {
-      int v = n1.getPresentation().compareTo(n2.getPresentation());
-      if (v == 0) {
-        // just in case presentation is the same (e.g. enumeration literals with the same name in different enums)
-        // Hope, there could be no two nodes with the same presentation and same node id.
-        SNodeReference o1, o2;
-        do {
-          o1 = TracingUtil.getInput(n1);
-          o2 = TracingUtil.getInput(n2);
-          n1 = n1.getParent();
-          n2 = n2.getParent();
-          // original input node is recorded for a top template node only, if a child template node serves as a ML key, we can't
-          // find its input here unless traverse to parent.
-          // highlevel sample: 'Car' is transformed with map_EditorDeclaration to ConceptEditorDeclaration with child CellModel_Collection, that
-          // later serves as a key for 'cellFactory.factoryMethod' ML. Presentation for any CellModel_Collection is 'collection', and as long as it's
-          // child template node of map_EditorDeclaration template, it doesn't get original input value (map_EditorDeclaration does).
-        } while (o1 == null && o2 == null && n1 != null && n2 != null);
-
-        if (o1 != null && o2 != null) {
-          // use original input, if possible - actual input is from transient model
-          v = myToStringComparator.compare(o1.getNodeId(), o2.getNodeId());
-        }
-      }
-      return v;
-    }
   }
 
   /*package*/ LMLookup getCompositeLabelsLookup(final String label) {

@@ -30,7 +30,6 @@ import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeId;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -210,15 +209,19 @@ class CheckpointStateBuilder {
       dmb.withoutInput(label, stepLabels.streamNoInput(label).toList());
     }
     //
-    LabelRecord[] clr = stepLabels.compositeLabelsToArray();
-    // FIXME use comparator based on InputKeyRecord.
-    Arrays.sort(clr, LabelRecord.comparator());
-    for (LabelRecord lr : clr) {
+    final ArrayList<LabelRecordBase<InputKeyRecord, SNode>> composites = new ArrayList<>();
+    stepLabels.forEachComposite(lr -> {
       InputKeyRecord k1 = lr.key1 != null ? InputKeyRecord.of(lr.key1, myTransitionTrace.getActiveTransition()) : null;
       InputKeyRecord k2 = lr.key2 != null ? InputKeyRecord.of(lr.key2, myTransitionTrace.getActiveTransition()) : null;
       // Note, lr.values are accessed by reference. When this code moves to major step end, shall make a copy!
-      dmb.withComposite(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
-    }
+      composites.add(new LabelRecordBase<>(lr.label, k1, k2, lr.values));
+    });
+    // unlike single-key LMs, for composite keys we shall assume one of the keys could be null
+    Comparator<LabelRecordBase<InputKeyRecord, SNode>> c5 = Comparator.comparing(LabelRecordBase::key1, Comparator.nullsFirst(InputKeyRecord.comparator()));
+    Comparator<LabelRecordBase<InputKeyRecord, SNode>> c6 = Comparator.comparing(LabelRecordBase::key2, Comparator.nullsFirst(InputKeyRecord.comparator()));
+    composites.sort(c1.thenComparing(c5).thenComparing(c6));
+    // I don't care to compare outputs as I do for regular MLs, I'd like to notice duplicating key pairs ASAP.
+    composites.forEach(dmb::withComposite);
     myDebugMappingNode = dmb.done();
     // see MPSSPRT-455
     OriginalModelTag.installTo(myDebugMappingNode, originalInputModel.getReference());
