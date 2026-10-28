@@ -17,7 +17,9 @@ package jetbrains.mps.generator.impl;
 
 import jetbrains.mps.generator.impl.LMCollector.OneOrMany;
 
+import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * FIXME Made public just for the sake of MappingsMemento from .cache package, need to re-arrange all the classes
@@ -32,18 +34,26 @@ import java.util.function.Consumer;
   // out/values are kept by reference, I assume they don't get modified, just accessed.
   final OneOrMany<V> values;
 
-  /*package*/ public LabelRecordBase(String label, K in1, K in2, OneOrMany<V> out) {
+  /*package*/ LabelRecordBase(String label, K in1, K in2, OneOrMany<V> out) {
     this.label = label;
     this.key1 = in1;
     this.key2 = in2;
     this.values = out;
   }
 
-  /*package*/ public LabelRecordBase(String label, K in1, K in2, V out) {
+  public LabelRecordBase(String label, K in1, K in2, V out) {
+    this(label, in1, in2, new OneOrMany<>(out));
+  }
+
+  public LabelRecordBase(String label, K in1, K in2, Collection<V> out) {
     this(label, in1, in2, new OneOrMany<>(out));
   }
 
   public void forEachValue(Consumer<? super V> consumer) {
     values.forEach(consumer);
+  }
+
+  public Stream<V> streamValues() {
+    return values.valueStream();
   }
 }

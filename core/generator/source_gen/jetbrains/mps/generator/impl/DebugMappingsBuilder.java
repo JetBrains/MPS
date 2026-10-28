@@ -5,20 +5,20 @@ package jetbrains.mps.generator.impl;
 import jetbrains.mps.annotations.GeneratedClass;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNode;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.function.BiFunction;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Stream;
-import org.jetbrains.mps.openapi.model.SNodeReference;
-import jetbrains.mps.textgen.trace.TracingUtil;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SLinkOperations;
+import java.util.List;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.ArrayList;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.mps.openapi.model.SNodeReference;
+import java.util.stream.Stream;
 import org.jetbrains.mps.openapi.language.SConcept;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
@@ -27,38 +27,38 @@ import org.jetbrains.mps.openapi.language.SProperty;
 
 @GeneratedClass(nodeId = "3864140621130068067", model = "r:ab837574-aa54-4b18-9762-b783ef089263(jetbrains.mps.generator.impl)")
 public class DebugMappingsBuilder {
-  private final TransitionTrace myOriginTrace;
   private final SModel myFactoryModel;
-  private final SNode rv;
+  private final SNode myResult;
+  private final Map<String, SNode> myLabeledEntries = new HashMap<>();
   private final BiFunction<String, SNode, SNode> mySubstituteOutputNode;
 
-  public DebugMappingsBuilder(@NotNull SModel factoryModel, TransitionTrace originTrace, BiFunction<String, SNode, SNode> substituteOutputNode) {
+  public DebugMappingsBuilder(@NotNull SModel factoryModel, BiFunction<String, SNode, SNode> substituteOutputNode) {
     myFactoryModel = factoryModel;
-    myOriginTrace = originTrace;
     mySubstituteOutputNode = substituteOutputNode;
-    rv = SModelOperations.createNewNode(factoryModel, null, CONCEPTS.GeneratorDebug_Mappings$42);
+    myResult = SModelOperations.createNewNode(factoryModel, null, CONCEPTS.GeneratorDebug_Mappings$42);
   }
 
-  public void withInput(String label, List<SNode> keys, Function<SNode, Stream<SNode>> outputNodes) {
-    // XXX we don't tolerate duplicate labels, yet I don't want to enforce it with rv.labels check, it's internal class, after all
-    LabelEntryBuilder b = new LabelEntryBuilder(label);
-    for (SNode keyInputNode : keys) {
-      assert keyInputNode != null;
-      SNode in = gdInputNode(InputKeyRecord.of(keyInputNode, myOriginTrace));
-      SNodeReference origin = TracingUtil.getInput(keyInputNode);
-      b.newKeyed(in, origin, outputNodes.apply(keyInputNode));
+  public void withInput(LabelRecordBase<InputKeyRecord, SNode> lr) {
+    assert lr.key1 != null;
+    final SNode existing = myLabeledEntries.get(lr.label);
+    LabelEntryBuilder b = (existing == null ? new LabelEntryBuilder(lr.label) : new LabelEntryBuilder(existing));
+    SNode in = gdInputNode(lr.key1);
+    b.newKeyed(in, lr.key1.originNode, lr.values.valueStream());
+    SNode le = b.build();
+    if (existing == null) {
+      myLabeledEntries.put(lr.label, le);
+      ListSequence.fromList(SLinkOperations.getChildren(myResult, LINKS.labels$gYNG)).addElement(le);
     }
-    ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
   }
 
   public void withoutInput(String label, List<SNode> outputNodes) {
     LabelEntryBuilder b = new LabelEntryBuilder(label);
     outputNodes.forEach(b::newRoot);
-    ListSequence.fromList(SLinkOperations.getChildren(rv, LINKS.labels$gYNG)).addElement(b.build());
+    ListSequence.fromList(SLinkOperations.getChildren(myResult, LINKS.labels$gYNG)).addElement(b.build());
   }
 
   public void withComposite(final LabelRecordBase<InputKeyRecord, SNode> lr) {
-    final SNode rn = SLinkOperations.addNewChild(rv, LINKS.records$1M3v, null);
+    final SNode rn = SLinkOperations.addNewChild(myResult, LINKS.records$1M3v, null);
     SPropertyOperations.assign(rn, PROPS.label$dc7G, lr.label);
     if (lr.key1 != null) {
       SLinkOperations.setTarget(rn, LINKS.input1$dqcC, cpInputNode(lr.key1));
@@ -74,7 +74,7 @@ public class DebugMappingsBuilder {
   }
 
   public SNode done() {
-    return rv;
+    return myResult;
   }
 
   private SNode cpInputNode(InputKeyRecord key) {
@@ -121,9 +121,15 @@ public class DebugMappingsBuilder {
   private final class LabelEntryBuilder {
     private final String myLabel;
     private final List<SNode> myEntries = ListSequence.fromList(new ArrayList<>());
+    private SNode myLabelEntry;
 
     /*package*/ LabelEntryBuilder(String label) {
       myLabel = label;
+
+    }
+    /*package*/ LabelEntryBuilder(SNode labelEntry) {
+      myLabel = SPropertyOperations.getString(labelEntry, PROPS.label$uXjG);
+      myLabelEntry = labelEntry;
     }
 
     /*package*/ void newRoot(SNode newRoot) {
@@ -150,11 +156,13 @@ public class DebugMappingsBuilder {
     }
 
     /*package*/ SNode build() {
-      SNode labelEntry = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_LabelEntry$B2);
-      SPropertyOperations.assign(labelEntry, PROPS.label$uXjG, myLabel);
-      ListSequence.fromList(SLinkOperations.getChildren(labelEntry, LINKS.entries$uXLI)).addSequence(ListSequence.fromList(myEntries));
+      if (myLabelEntry == null) {
+        myLabelEntry = SModelOperations.createNewNode(myFactoryModel, null, CONCEPTS.GeneratorDebug_LabelEntry$B2);
+        SPropertyOperations.assign(myLabelEntry, PROPS.label$uXjG, myLabel);
+      }
+      ListSequence.fromList(SLinkOperations.getChildren(myLabelEntry, LINKS.entries$uXLI)).addSequence(ListSequence.fromList(myEntries));
       ListSequence.fromList(myEntries).clear();
-      return labelEntry;
+      return myLabelEntry;
     }
   }
 
@@ -193,7 +201,7 @@ public class DebugMappingsBuilder {
     /*package*/ static final SProperty nodeId$2ASg = MetaAdapterFactory.getProperty(0xb401a68083254110L, 0x8fd384331ff25befL, 0x3279d292ec74a708L, 0x3279d292ec74a70dL, "nodeId");
     /*package*/ static final SProperty presentation$FmHa = MetaAdapterFactory.getProperty(0xb401a68083254110L, 0x8fd384331ff25befL, 0x509c00a998897534L, 0x509c00a99889f702L, "presentation");
     /*package*/ static final SProperty modelName$F5oU = MetaAdapterFactory.getProperty(0xb401a68083254110L, 0x8fd384331ff25befL, 0x509c00a998897534L, 0x509c00a9989481dbL, "modelName");
-    /*package*/ static final SProperty isNewRoot$pwOY = MetaAdapterFactory.getProperty(0xb401a68083254110L, 0x8fd384331ff25befL, 0x35a02f6bfc9806c7L, 0x511a0d44c7f45537L, "isNewRoot");
     /*package*/ static final SProperty label$uXjG = MetaAdapterFactory.getProperty(0xb401a68083254110L, 0x8fd384331ff25befL, 0x35a02f6bfc9806c4L, 0x35a02f6bfc9810e9L, "label");
+    /*package*/ static final SProperty isNewRoot$pwOY = MetaAdapterFactory.getProperty(0xb401a68083254110L, 0x8fd384331ff25befL, 0x35a02f6bfc9806c7L, 0x511a0d44c7f45537L, "isNewRoot");
   }
 }

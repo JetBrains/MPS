@@ -18,6 +18,7 @@ package jetbrains.mps.generator.impl;
 import jetbrains.mps.extapi.model.ResolveInfoUpdater;
 import jetbrains.mps.generator.IGeneratorLogger;
 import jetbrains.mps.generator.IGeneratorLogger.ProblemDescription;
+import jetbrains.mps.generator.impl.LMCollector.OneOrMany;
 import jetbrains.mps.generator.impl.cache.MappingsMemento;
 import jetbrains.mps.generator.impl.plan.CheckpointState;
 import jetbrains.mps.generator.impl.plan.CrossModelEnvironment.OriginalModelTag;
@@ -134,7 +135,7 @@ class CheckpointStateBuilder {
     // ^^^ now with explicit function to get output node in CP model (see 3rd arg in DMB cons), and a split "factory" vs "checkpoint" model, I might want to reconsider this.
     cloneTransientToCheckpoint();
     new ModelImports(myCheckpointModel).addModelImport(originalInputModel.getReference());
-    DebugMappingsBuilder dmb = new DebugMappingsBuilder(myCheckpointModel, myTransitionTrace.getActiveTransition(), (label, outputNode) -> {
+    DebugMappingsBuilder dmb = new DebugMappingsBuilder(myCheckpointModel, (label, outputNode) -> {
       /*
        * GeneratorMappings keep nodes from transient models as ML output. They are not necessarily always
        * nodes from the very last step (i.e. if there's a transformation step that records ML and subsequent post-processing
@@ -158,6 +159,7 @@ class CheckpointStateBuilder {
     final ArrayList<String> availableLabels = new ArrayList<>();
     stepLabels.forEachWithInput((l, nm) -> availableLabels.add(l));
     Collections.sort(availableLabels);
+    ArrayList<SNode> values = new ArrayList<>();
     for (String label : availableLabels) {
       ArrayList<NodeMapRecord> records = new ArrayList<>(stepLabels.allWithInput(label));
       try {
@@ -166,10 +168,13 @@ class CheckpointStateBuilder {
         ProblemDescription[] dd = records.stream().map(e -> String.format("Key: %s, id: %s. Value: %s", e.key().getPresentation(), e.key().getNodeId(), e.value())).map(ProblemDescription::new).toArray(ProblemDescription[]::new);
         myLogger.warning(null, String.format("Can't arrange keys for '%s' mappings: %s. Consider overriding getPresentation() to facilitate sorting.", label, ex.getMessage()), dd);
       }
-      dmb.withInput(label, records.stream().map(NodeMapRecord::key).toList(), k -> {
-        // linear lookup is not effective, but I don't care at the moment
-        return records.stream().filter(r -> r.keyMatch(k)).findFirst().map(NodeMapRecord::valueStream).orElseThrow();
-      });
+      for (NodeMapRecord record : records) {
+        InputKeyRecord kr = InputKeyRecord.of(record.key(), myTransitionTrace.getActiveTransition());
+        record.valuesInto(values);
+        LabelRecordBase<InputKeyRecord, SNode> lr = new LabelRecordBase<>(label, kr, null, values);
+        values.clear();
+        dmb.withInput(lr);
+      }
     }
     //
 //    LinkedHashSet<String> conditionalRootLabels = new LinkedHashSet<>();
