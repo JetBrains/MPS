@@ -72,6 +72,21 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
                                    editor-test runtime or MPS's own editor tests (BaseEditorTestBody,
                                    EditorTestUtil, CellAction_*, lang/test/runtime, nodeEditor/, testbench/,
                                    bl.test)
+  GT_generator_test_writes         accepted node writes whose input holds a GeneratorTest or a
+                                   TransformationMatch(Many)Assertion
+  GT_nodes_test_writes             node writes, rejected ones included, whose input holds a NodesTestCase,
+                                   AssertMatch / assertNodesMatch, GenerationFacade or generateAndCompare
+  GT_match_options_writes          accepted node writes whose input holds a ModelMatchOptions (name or concept ref)
+  GT_plan_writes                   accepted node writes whose input holds a generation-plan Plan, Transform,
+                                   LanguageEntry or ApplyGenerators
+  GT_do_not_generate_calls         accepted update_model calls with operation SET_DO_NOT_GENERATE
+  GT_do_not_generate_workarounds   console inputs, .mps file edits and Bash .mps rewrites that name
+                                   doNotGenerate: the routes taken before the update_model operation existed
+  GT_runtime_source_reads          Read / Grep / Glob / Bash / MCP file-tool calls whose path names the
+                                   generator-test runtime, the node matcher or MPS's own generator tests
+  GT_kitchen_source_reads          the same calls on a path under mcp.study.kitchen/source_gen
+  GT_expected_parser_inserts       accepted parse_java_and_insert calls into a model that is not a @tests
+                                   model (expected classes written with the Java parser)
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -171,6 +186,13 @@ writes the envelope did not reject. ET_runtime_source_reads matches paths only: 
 `/`, so a heredoc or a grep pattern naming `EditorTestUtil` (which the skill tells the worker to use)
 does not count. The run project's own `test_gen/` (reading the generated test to debug it) and the
 language's editor `source_gen` (the documented cell-id route) do not match the pattern.
+The GT_* columns are S18's signals (generator tests). The node-write columns search the input as the
+ET_* columns do (temp-file blueprints resolved, COPY_NODE only as its input, so a copied GeneratorTest
+is not counted again). GT_runtime_source_reads and GT_kitchen_source_reads match paths only, as
+ET_runtime_source_reads does; the fixture's own generator (`mcp.study.recipes/generator/`) and the run
+project's `test_gen/` do not match. S18 reads ET_test_runs and ET_run_configs for its test runs and
+run configurations, and M_makes_save_transient / GN_transient_models / GN_transient_reads for the
+golden-master route.
 `execute_run_configuration` has no `mps_mcp_` prefix; tool names are compared after the last `__`.
 
 Stdlib only, Python >= 3.9.
@@ -196,7 +218,10 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "GN_template_prints_before_trace", "DF_builder_prints", "DF_console_runs", "DF_queries",
         "DF_program_prints", "DF_reaching_queries", "C_after_node_sample", "C_after_node_sample_batches",
         "ET_test_runs", "ET_run_configs", "ET_platform_id_writes", "ET_applicability_writes",
-        "ET_ide_service_writes", "ET_runtime_source_reads"]
+        "ET_ide_service_writes", "ET_runtime_source_reads", "GT_generator_test_writes",
+        "GT_nodes_test_writes", "GT_match_options_writes", "GT_plan_writes", "GT_do_not_generate_calls",
+        "GT_do_not_generate_workarounds", "GT_runtime_source_reads", "GT_kitchen_source_reads",
+        "GT_expected_parser_inserts"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
@@ -233,6 +258,21 @@ PLATFORM_ACTION_ID = re.compile(r"BootstrapActionReference|\$(?:Undo|Redo|Copy|C
 IDE_SERVICE = re.compile(r"UndoManager|DataManager|FileEditor|CopyPasteManager")
 RUNTIME_SOURCE = re.compile(r"BaseEditorTestBody|EditorTestUtil|CellAction_|lang/test/runtime|lang\.test\.runtime|"
                             r"nodeEditor/|/testbench/|bl\.test|jetbrains\.mps\.editorTest")
+# Names and `c:` concept refs (the form `concept-identifiers.md` lists for `create_root_node`).
+GENTEST_LANG = "68015e26-cc4d-49db-8715-b643faea1769/"
+GENERATOR_TEST = re.compile(r"\bGeneratorTest\b|TransformationMatch(?:Many)?Assertion|"
+                            + GENTEST_LANG + r"(?:554465258093187774|554465258093203543|6346338635721157081)\b")
+MATCH_OPTIONS = re.compile(r"ModelMatchOptions|" + GENTEST_LANG + r"8945822034016668031\b")
+NODES_TEST_ROUTE = re.compile(r"NodesTestCase|\bAssertMatch\b|assertNodesMatch|GenerationFacade|generateAndCompare|"
+                              r"8585453e-6bfb-4d80-98de-b16074f1d86c/(?:1216913645126|1211979288880)\b")
+GENPLAN_WRITE = re.compile(r"lang\.generator\.plan\.structure\.(?:Plan|Transform|LanguageEntry|ApplyGenerators)\b|"
+                           r"7ab1a6fa-0a11-4b95-9e48-75f363d6cb00/\d+")
+DO_NOT_GENERATE = re.compile(r"(?i)donotgenerate")
+MPS_FILE_REWRITE = re.compile(r"sed\s+-i|perl\s+-\w*[pi]|>\s*\S+\.mps\b|\.write\(|write_text\(")
+CONSOLE_INPUTS = ("mps_mcp_run_console_command", "mps_mcp_insert_console_command_from_json")
+GENTEST_RUNTIME_SOURCE = re.compile(r"languages/gentest|gentest\.rt|lang/test/generator|lang\.test\.generator|test[./]smodel|ModelMatcher|"
+                                    r"SNodeMatcher|NodesMatcher|generator/tests/|generator\.tests|generator-tests/")
+KITCHEN_SOURCE = re.compile(r"mcp\.study\.kitchen/source_gen")
 SOURCE_TOOLS = ("Read", "Grep", "Glob", "Bash", "read_file", "find_files_by_glob", "find_files_by_name_keyword")
 PATH_FIELDS = ("file_path", "path", "glob", "pathInProject", "globPattern")  # Grep's `pattern` is a regex, not a path
 
@@ -459,8 +499,9 @@ def node_write_text(name, inp, written_files):
     return text
 
 
-def runtime_source_read(name, inp):
-    """Whether a file-reading call names the editor-test runtime or MPS's own editor tests by path."""
+def runtime_source_read(name, inp, pattern=RUNTIME_SOURCE):
+    """Whether a file-reading call names a path matching `pattern` (by default the editor-test runtime or
+    MPS's own editor tests)."""
     if name not in SOURCE_TOOLS:
         return False
     if name == "Bash":
@@ -468,7 +509,25 @@ def runtime_source_read(name, inp):
     else:
         fields = PATH_FIELDS + (("pattern",) if name == "Glob" else ())
         paths = [str(inp[k]) for k in fields if inp.get(k)]
-    return any(RUNTIME_SOURCE.search(p) for p in paths)
+    return any(pattern.search(p) for p in paths)
+
+
+def do_not_generate_workaround(name, inp):
+    """Whether a call sets the do-not-generate flag some other way than update_model: a console input,
+    an Edit / Write of a .mps file, or a Bash rewrite of one, that names doNotGenerate."""
+    text = json.dumps(inp)
+    if not DO_NOT_GENERATE.search(text):
+        return False
+    if name in CONSOLE_INPUTS:
+        return True
+    if name == "mps_mcp_parse_java_and_insert":
+        return str((params(inp).get("insert") or {}).get("mode") or "").lower() == "console"
+    if name in ("Edit", "Write", "MultiEdit", "apply_patch", "create_new_file"):
+        return ".mps" in json.dumps(inp)
+    if name == "Bash":
+        command = str(inp.get("command") or "")
+        return bool(re.search(r"\.mps\b", command)) and bool(MPS_FILE_REWRITE.search(command))
+    return False
 
 
 def failed(result, is_error):
@@ -588,8 +647,30 @@ def fam(path):
                     f["ET_platform_id_writes"] += 1
                 if "IsActionApplicableExpression" in written:
                     f["ET_applicability_writes"] += 1
+                if GENERATOR_TEST.search(written):
+                    f["GT_generator_test_writes"] += 1
+                if MATCH_OPTIONS.search(written):
+                    f["GT_match_options_writes"] += 1
+                if GENPLAN_WRITE.search(written):
+                    f["GT_plan_writes"] += 1
+            if NODES_TEST_ROUTE.search(written):
+                f["GT_nodes_test_writes"] += 1
+        if n == "mps_mcp_parse_java_and_insert" and not failed(r, err):
+            target = str((params(inp).get("insert") or {}).get("modelRef") or "")
+            mode = str((params(inp).get("insert") or {}).get("mode") or "").lower()
+            if target and mode != "console" and "@tests" not in target:
+                f["GT_expected_parser_inserts"] += 1
+        if n == "mps_mcp_update_model" and not failed(r, err) and \
+                str(inp.get("operation") or "").strip().upper() == "SET_DO_NOT_GENERATE":
+            f["GT_do_not_generate_calls"] += 1
+        if do_not_generate_workaround(n, inp):
+            f["GT_do_not_generate_workarounds"] += 1
         if runtime_source_read(n, inp):
             f["ET_runtime_source_reads"] += 1
+        if runtime_source_read(n, inp, GENTEST_RUNTIME_SOURCE):
+            f["GT_runtime_source_reads"] += 1
+        if runtime_source_read(n, inp, KITCHEN_SOURCE):
+            f["GT_kitchen_source_reads"] += 1
         if n == "mps_mcp_get_concept_details":
             gcd.append(i)
         if failed(r, err):

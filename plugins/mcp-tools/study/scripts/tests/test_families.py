@@ -209,7 +209,10 @@ class FamiliesTest(unittest.TestCase):
                          "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs\tDF_queries\t"
                          "DF_program_prints\tDF_reaching_queries\tC_after_node_sample\tC_after_node_sample_batches\t"
                          "ET_test_runs\tET_run_configs\tET_platform_id_writes\tET_applicability_writes\t"
-                         "ET_ide_service_writes\tET_runtime_source_reads", header)
+                         "ET_ide_service_writes\tET_runtime_source_reads\tGT_generator_test_writes\t"
+                         "GT_nodes_test_writes\tGT_match_options_writes\tGT_plan_writes\tGT_do_not_generate_calls\t"
+                         "GT_do_not_generate_workarounds\tGT_runtime_source_reads\tGT_kitchen_source_reads\t"
+                         "GT_expected_parser_inserts", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -561,6 +564,83 @@ class FamiliesTest(unittest.TestCase):
         for i, (name, inp) in enumerate(calls):
             events += [tool(f"s{i}", name, inp), result(f"s{i}", "text")]
         self.assertCounts(self.count(events), ET_runtime_source_reads=1)
+
+    def test_t33_generator_test_writes_options_plans_and_the_nodes_test_route(self) -> None:
+        gentest = {"concept": "jetbrains.mps.lang.test.generator.structure.GeneratorTest", "children": [
+            {"role": "arguments", "nodes": [{"concept": "jetbrains.mps.lang.test.generator.structure.ModelMatchOptions"}]}]}
+        plan = {"concept": "jetbrains.mps.lang.generator.plan.structure.Plan", "children": [
+            {"role": "steps", "nodes": [{"concept": "jetbrains.mps.lang.generator.plan.structure.Transform"}]}]}
+        assertion = {"concept": "jetbrains.mps.lang.test.generator.structure.TransformationMatchAssertion"}
+        f = self.count(write("a", "mps_mcp_insert_root_node_from_json", {"json": gentest})
+                       + write("b", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": json.dumps(assertion)})
+                       + write("c", "mps_mcp_insert_root_node_from_json", {"json": plan})
+                       + write("d", "mps_mcp_insert_root_node_from_json", {"json": gentest}, REJECTED)
+                       + write("e", "mps_mcp_create_root_node", {"concept": "jetbrains.mps.lang.test.structure.NodesTestCase"},
+                               REJECTED)
+                       + write("f", "mps_mcp_parse_java_and_insert",
+                               {"parameters": {"code": "new GenerationFacade(repo, opts).process(m, model);"}})
+                       + write("g", "mps_mcp_insert_root_node_from_json",
+                               {"json": {"concept": "x.GeneratorTestSuite"}}))
+        self.assertCounts(f, GT_generator_test_writes=2, GT_match_options_writes=1, GT_plan_writes=1,
+                          GT_nodes_test_writes=2)
+
+    def test_t33_concept_refs_count_like_names(self) -> None:
+        f = self.count(write("a", "mps_mcp_create_root_node",
+                             {"conceptReference": "c:68015e26-cc4d-49db-8715-b643faea1769/554465258093187774"})
+                       + write("b", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": {
+                           "concept": "c:68015e26-cc4d-49db-8715-b643faea1769/8945822034016668031"}})
+                       + write("c", "mps_mcp_create_root_node",
+                               {"conceptReference": "c:7ab1a6fa-0a11-4b95-9e48-75f363d6cb00/1820634577908471803"})
+                       + write("d", "mps_mcp_create_root_node",
+                               {"conceptReference": "c:8585453e-6bfb-4d80-98de-b16074f1d86c/1216913645126"}, REJECTED)
+                       + write("e", "mps_mcp_create_root_node",
+                               {"conceptReference": "c:68015e26-cc4d-49db-8715-b643faea1769/5544652580931877740"}))
+        self.assertCounts(f, GT_generator_test_writes=1, GT_match_options_writes=1, GT_plan_writes=1,
+                          GT_nodes_test_writes=1)
+
+    def test_t34_do_not_generate_tool_calls_and_workarounds(self) -> None:
+        console = "((GeneratableSModel) m).setDoNotGenerate(true);"
+        calls = [("mcp__mps__mps_mcp_update_model", {"modelReference": MODEL, "operation": "SET_DO_NOT_GENERATE"}, ok({})),
+                 ("mcp__mps__mps_mcp_update_model", {"modelReference": MODEL, "operation": "set_do_not_generate"},
+                  {"ok": False, "error": "x"}),
+                 ("mcp__mps__mps_mcp_update_model", {"modelReference": MODEL, "operation": "RENAME"}, ok({})),
+                 ("mcp__mps__mps_mcp_parse_java_and_insert",
+                  {"parameters": {"code": console, "featureKind": "STATEMENTS", "insert": {"mode": "console"}}}, ok({})),
+                 ("mcp__mps__mps_mcp_run_console_command", {"command": console}, ok({})),
+                 ("Edit", {"file_path": "/p/solutions/x/models/x.input.mps", "old_string": "<model",
+                           "new_string": "<model doNotGenerate=\"true\""}, "ok"),
+                 ("Bash", {"command": "sed -i '' 's/<model /<model doNotGenerate=\"true\" /' /p/models/x.mps"}, "ok"),
+                 ("Bash", {"command": "grep -rn doNotGenerate /p/.claude/skills/mps-tests"}, "ok"),
+                 ("Bash", {"command": "python3 -c \"print('doNotGenerate' in open('/p/models/x.mps').read())\""}, "ok"),
+                 ("mcp__mps__apply_patch", {"patch": "--- a/p/models/x.mps\n+<model doNotGenerate=\"true\""}, "ok"),
+                 ("Edit", {"file_path": "/p/notes.md", "old_string": "a", "new_string": "doNotGenerate"}, "ok")]
+        events = []
+        for i, (name, inp, res) in enumerate(calls):
+            events += [tool(f"d{i}", name, inp), result(f"d{i}", res)]
+        self.assertCounts(self.count(events), GT_do_not_generate_calls=1, GT_do_not_generate_workarounds=5)
+
+    def test_t35_generator_runtime_kitchen_reads_and_parser_inserts(self) -> None:
+        hunts = [("Read", {"file_path": "/m/plugins/mps-testing/languages/gentest.rt/source_gen/jetbrains/mps/lang/test/"
+                                       "generator/rt/ModelMatcher.java"}),
+                 ("Grep", {"pattern": "assertMatch", "path": "/m/testbench/testsolutions/generator-tests/smodel"}),
+                 ("Bash", {"command": "cat /m/core/kernel/source/jetbrains/mps/smodel/SNodeMatcher.java"})]
+        kitchen = [("Read", {"file_path": "/p/solutions/mcp.study.kitchen/source_gen/mcp/study/generated/Crepes.java"})]
+        routes = [("Read", {"file_path": "/p/solutions/mcp.study.recipes.gentests/test_gen/mcp/study/recipes/gentests/"
+                                        "RecipeClasses.java"}),
+                  ("Bash", {"command": "ls /p/languages/mcp.study.recipes/generator/source_gen"})]
+        events = []
+        for i, (name, inp) in enumerate(hunts + kitchen + routes):
+            events += [tool(f"s{i}", name, inp), result(f"s{i}", "text")]
+        expected = {"code": "package mcp.study.generated; public class Tea {}", "featureKind": "CLASS",
+                    "insert": {"mode": "root", "modelRef": "r:1(mcp.study.recipes.gentests.expected)"}}
+        into_tests = {"code": "int x;", "featureKind": "STATEMENTS",
+                      "insert": {"mode": "child", "modelRef": "r:2(mcp.study.recipes.gentests@tests)"}}
+        events += (write("p1", "mps_mcp_parse_java_and_insert", {"parameters": expected})
+                   + write("p2", "mps_mcp_parse_java_and_insert", {"parameters": json.dumps(expected)}, REJECTED)
+                   + write("p3", "mps_mcp_parse_java_and_insert", {"parameters": into_tests}))
+        self.assertCounts(self.count(events), GT_runtime_source_reads=len(hunts), GT_kitchen_source_reads=1,
+                          GT_expected_parser_inserts=1, ET_runtime_source_reads=1)
 
     def test_a16_adhoc_python_counts_inline_code_after_switches(self) -> None:
         inline = ["python3 -c 'print(1)'", "python3 -I -c 'import json'", "python3 -I - <<'PY'\nprint(1)\nPY",
