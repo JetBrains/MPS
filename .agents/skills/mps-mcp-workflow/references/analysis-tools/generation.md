@@ -6,7 +6,7 @@
 
 | Operation | `parameters` | Answers |
 |---|---|---|
-| `PLAN` | `model` (reference or full name), `ignoreExternalPlan` (default `false`) | the plan make would use: `planSource` `EXPLICIT`/`DEFAULT`, ordered `steps` (`TRANSFORM` with `transientStereotypePrefix`, `CHECKPOINT`, `FORK` with `branch`), `generators`, `usedLanguages[].coverage` |
+| `PLAN` | `model` (reference or full name), `ignoreExternalPlan` (default `false`), `detail` (`full` default, or `steps`) | the plan make would use: `planSource` `EXPLICIT`/`DEFAULT`, `explicitPlanSources` (attached plans, which one `applied`), ordered `steps` (`TRANSFORM` with `transientStereotypePrefix`, `CHECKPOINT`, `FORK` with `branch`), `generators`, `usedLanguages[].coverage`; `planComputed:false` + `planError` when MPS cannot build the plan. `steps` drops generators, the engagement trace, mapping configurations and notes |
 | `TRANSIENT_MODELS` | `model` (optional: an original by reference or name, a transient by reference) | per original model: `transientModule`, `traceAvailable`, `models:[{name, reference, stereotype, kind, stereotypePrefix, minor, branch, roots}]`; plus `checkpoints` |
 | `TRACE` | `nodeReference`, `direction` `FORWARD`/`BACKWARD`, `groupBy` `CHANGE`/`NODE`, `compactTemplates`, `includeEmptySteps` (these three default to the IDE tracer's settings), `maxChanges` (default 200) | `originalInputNode?`, `changesTotal`, per step `{input, output, inputReference, outputReference, changes}` (`nodes` with `groupBy: NODE`); each change `{input, output, templates:[{reference, concept, presentation, role, templateRoot, templateModel, generatorModule}]}` |
 | `DROP_TRANSIENT_MODELS` | `includeCheckpoints` (default `true`) | `droppedModules`, `droppedModels`, `droppedCheckpointModels` |

@@ -24,3 +24,9 @@ A `properties` object, a `children` array, or a present primitive `text` selects
 - In structured form, a present `properties` must be an object and a present `children` must be an array. Primitive entries inside `properties` are stringified as in flat form.
 - Every child must be an object with a present, non-null primitive `type`. Numeric, boolean, and empty-string types retain their existing stringification. Children follow the same rules recursively.
 - `enabled=false` ignores `settingsJson`, including malformed input, and disables the facet.
+
+## What the facet keeps
+
+Before the descriptor changes, the settings are loaded into a scratch instance of the facet and saved back. Settings it cannot load are refused (`INVALID_REQUEST`, nothing changes). A supplied property or child type the facet does not save back is one it ignores: the call succeeds with a `warnings` entry naming the ignored and the kept settings (a facet may still add defaults or normalize values, which is not reported). A facet type that is not applicable to the module kind is kept with a warning. DevKits save no facets and are refused.
+
+The Custom Generation facet (`generator`) keeps only `planModel`, a generation plan model reference; prefer `mps_mcp_update_module` `SET_GENERATION_PLAN`, which writes it with validation.

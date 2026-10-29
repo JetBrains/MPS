@@ -155,7 +155,7 @@ The `Transform` step also accepts the boolean property `individualStepPerGenerat
 
 Explicitly names one or more generator *modules* to apply, rather than specifying languages. Use when you need to apply a specific generator regardless of what languages are in scope.
 
-Each generator is identified by a `GeneratorModulePointer` child, which wraps a `ModulePointer` (from `jetbrains.mps.lang.modelapi`) carrying `moduleName` and `moduleId`.
+Each generator is identified by a `jetbrains.mps.lang.generator.plan.structure.GeneratorModulePointer` child, which wraps a `ModulePointer` (from `jetbrains.mps.lang.modelapi`) carrying `moduleName` and `moduleId` (the generator module's name and uuid from `mps_mcp_get_project_structure(moduleKind: "Generator")`). Do not use `jetbrains.mps.lang.smodel.structure.GeneratorModulePointer`: it is deprecated since 2025.3. `PLAN` shows an `ApplyGenerators` step as one `TRANSFORM` with that generator's mapping configurations.
 
 Optional boolean properties on `ApplyGenerators`:
 - `withExtended` — also apply all generators that extend the listed generators

@@ -148,7 +148,7 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    drop `PROJECT_SYNTHESIZED=1` if the harness project was not synthesized. The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
-5. **Scenarios** — `study/scenarios/S1..S18/{worker_prompt.md,done_criteria.md}`. Which cells a
+5. **Scenarios** — `study/scenarios/S1..S19/{worker_prompt.md,done_criteria.md}`. Which cells a
    changed skill actually forces is `study/scenarios.md` (brief list, then the directory). Look
    that up before picking the matrix; the gate-4 default (S1 + S3) is a pilot default, not that
    lookup. Add a scenario for whatever skill/tool the directory does not cover. **S10 (project
@@ -156,14 +156,14 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
    scenario whose worker closes and opens projects, and a mistake in it can leave a modal dialog
    that blocks every later `mps_mcp_*` call. Prompts are developer-voice, fixed names, explicit "done", NO reporting
    requirements. Fixtures: `empty-project` (synthesized per run, not a tarball),
-   `statechart` (Projectxx5), `recipes` (a passing S1), `recipes-misgen` (S15), `recipes-gen` (S18), `expressions`
+   `statechart` (Projectxx5), `recipes` (a passing S1), `recipes-misgen` (S15), `recipes-gen` (S18, S19), `expressions`
    (`samples/expressions`, S11, S12), `kaja-dataflow` (`samples/robot_Kaja` with injected builder
    bugs, S13), `kaja-dataflow-2` (S16), `flow-java` (one BaseLanguage class, S14) — regenerated per
    `study/fixtures/README.md`, not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
    projects; S10 honours this by being sequential — it closes one project before opening the next).
    Restart MPS before a cell whose fixture language an earlier cell already loaded in the current
-   process — any two of S3/S4/S5/S6/S7/S9/S15/S17/S18 on `recipes*`, S2/S8 on `statechart` — and always before S11, S12,
+   process — any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19 on `recipes*`, S2/S8 on `statechart` — and always before S11, S12,
    S13 and S16 (`shutdown` → `start` harness → `wait` → SMOKE; launch with `ISOLATION=per-shared-fixture-restart`, recorded per run
    beside `mpsPid`; lessons 40, 42). A read-only cell (S9) may precede a language-changing one in the
    same process; synthesized cells (S1, S10) need no restart.

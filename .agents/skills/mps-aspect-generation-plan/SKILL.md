@@ -1,6 +1,6 @@
 ---
 name: mps-aspect-generation-plan
-description: Use when defining or modifying an MPS generation plan — explicit ordering of generators, checkpoints for cross-model reference resolution, forks for parallel branches, IncludePlan composition, conditional PlanContribution activation, ParameterEquals/ConceptListSelector fork selectors, and InitModelAttributes for targetFacet routing. Apply when working with @genplan models, the jetbrains.mps.lang.generator.plan language, attaching plans via DevKits or the Custom generation facet, or debugging cross-model mapping label resolution.
+description: Use when creating, editing, attaching, verifying or detaching an MPS generation plan — explicit ordering of generators (Transform / ApplyGenerators), checkpoints for cross-model reference resolution, forks with ParameterEquals conditions, IncludePlan composition, PlanContribution, InitModelAttributes for targetFacet routing. Covers attaching a @genplan model to models through a DevKit (exports + associated plan) or a Solution's Custom Generation facet with mps_mcp_update_module SET_GENERATION_PLAN, DevKit exports via mps_mcp_module_dependency, verifying with mps_mcp_generation PLAN, and maintaining plans (reorder, rename, extract, retarget) safely.
 type: reference
 ---
 
@@ -10,57 +10,59 @@ type: reference
 
 Companion names in this skill are lazy dependencies: load only those relevant to the current task. If this skill came from an MCP server, use the host's skill loader to resolve the companion's unique discovered entry URI on the same host-assigned originating server. If the host has no server-backed skill loader, stop and report that limitation; do not silently fall back to a filesystem copy. If this skill came from a filesystem catalog, load the named sibling from that same catalog at `<skills-root>/<skill-name>/SKILL.md`, even if remote skill loaders are also available. Do not invent a tool name or server endpoint.
 
-A **generation plan** (`Plan`) is an ordered script that controls which generators run, in what sequence, and with what synchronization points. Without a plan, MPS determines order from mutual generator priorities and dependencies. A plan lets language designers specify that ordering once, in a single place, without requiring all involved languages to know about each other.
+A **generation plan** (`Plan`) is an ordered script of generation steps: which generators run, in what order, where the transient model is persisted (checkpoints), and where generation branches (forks). Without a plan, MPS orders generators by their mutual priorities. A plan states the order once, in one place, so the languages involved need not know about each other.
 
-**Language:** `jetbrains.mps.lang.generator.plan` (id `7ab1a6fa-0a11-4b95-9e48-75f363d6cb00`, version 3)
-**Also requires:** `jetbrains.mps.lang.smodel` (for `LanguageId` / `LanguageIdentity` nodes)
+**Language:** `jetbrains.mps.lang.generator.plan` (id `7ab1a6fa-0a11-4b95-9e48-75f363d6cb00`), plus `jetbrains.mps.lang.smodel` (`LanguageId`) and `jetbrains.mps.lang.modelapi` (`ModulePointer`). Inserting plan nodes adds the languages of the concepts inserted to the model's used languages by itself.
 
 ## When to use a generation plan
 
-- You need a guaranteed ordering of generators across languages that must not depend on each other.
-- You are doing **cross-model generation** and need mapping labels from one model to be available when generating another (requires checkpoints).
-- You want to **fork** the generation of certain models into a separate branch (e.g., generate both `.java` files and XML descriptors from the same input).
-- You want a **conditional contribution** added to a base plan without modifying it (`PlanContribution`).
+- Generators of independent languages must run in a fixed order.
+- Cross-model generation: one model's mapping labels must be visible while another model generates (needs a shared plan and a `Checkpoint`).
+- A model needs a second output from a copy of it (a `Fork`), optionally only under a condition.
+- A test or tool must run only some generators (a `GeneratorTest` with an explicit plan; see the `mps-tests` skill).
 
 ## Critical Directives
 
-- **Genplan models use the `genplan` stereotype.** File name pattern: `<name>@genplan.mps`. Pass `moduleName: "<hosting module>"` and `modelName: "<name>@genplan"` to `mps_mcp_create_model`. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers. A model `mps_mcp_create_model` creates is generatable whatever its stereotype; generating a plan model is harmless, and `mps_mcp_update_model` `SET_DO_NOT_GENERATE` marks it "Do not generate" when you want make to skip it.
-- **A generator test can run a plan instead of the default one**: a `GeneratorTest` assertion's `transformationPlan` takes the first `Plan` root of a `@genplan` model, e.g. to compare only what one generator writes. Open `references/generator-test/matching-and-plans.md` in the `mps-tests` skill root after loading that companion skill from the same origin.
-- **Only one DevKit per model may carry a genplan.** Assigning multiple genplan-bearing DevKits to the same model is unsupported.
-- **`Plan.steps` is `1..n`.** A plan with no steps is invalid.
-- **`LanguageEntry.language` (`LanguageId`) and `GeneratorModulePointer.module` (`ModulePointer`) are each cardinality 1** — missing them is a validation error.
-- **Checkpoints persist transient state.** Cross-phase reference resolution works only when phases share a plan AND a `Checkpoint` sits between them.
-- **Do not hand-edit serialized `.mps` genplan files.** Use MPS MCP node tools.
+- **A plan is attached as a model, never as a node.** A DevKit's plan and a Solution's Custom Generation facet both hold a *model* reference. MPS runs the model's **first `Plan` root in root order**; other `Plan` roots there serve only as `Fork` / `IncludePlan` targets. Keep one main plan per `@genplan` model; reordering roots changes the plan.
+- **Attach with `mps_mcp_update_module` `operation=SET_GENERATION_PLAN`, `planModel=<model>`** on a DevKit (every model that uses it) or a Solution (every model of it). Do not hand-write the facet memento or the `.devkit` file, and do not use console Java for it. `CLEAR_GENERATION_PLAN` detaches. See `references/attaching-plans.md`.
+- **A DevKit carries the plan only if it also exports the plan's solution and the languages the plan names**: `mps_mcp_module_dependency` ADD from the DevKit files a Language target into its exported languages, a Solution into its exported solutions, a DevKit into its extended devkits.
+- **A facet plan beats every DevKit plan** of the solution's models. Only DevKits a model imports *directly* count; an extended DevKit's plan is not inherited. A model may get at most one main plan; extra DevKits may add `PlanContribution`s only.
+- **`ConceptListSelector` is not supported**: building a plan with it throws, so every model under the plan fails to generate. Condition forks with `ParameterEquals` (`references/fork-selectors.md`).
+- **An explicit plan runs only what it names.** A used language no step covers is `NOT_IN_PLAN` and stays untransformed; generators the default plan pulls in on its own (e.g. `jetbrains.mps.lang.core`) do not run. Name the target languages' generators too (e.g. a step for `jetbrains.mps.baseLanguage`).
+- **Plans and checkpoints are identified by name.** Renaming a plan or a checkpoint renames its persisted checkpoint models; two plans with one name collide.
+- **A plan edit does not make models dirty.** After changing or attaching a plan, make with `rebuild=true`.
+- **`Plan.steps` is `1..n`**, `LanguageEntry.language` and `GeneratorModulePointer.module` are required.
+- **Do not hand-edit serialized `.mps`, `.devkit` or `.msd` files.** Use MPS MCP tools.
 
-## Common-Path Workflow
+## Lifecycle
 
-1. Create a solution; add a model with stereotype `genplan` (file like `MyPlan@genplan.mps`).
-2. Add used languages `jetbrains.mps.lang.generator.plan` and `jetbrains.mps.lang.smodel`.
-3. Create a `Plan` root node with a descriptive `name`.
-4. Add `Transform` steps in order (one per phase); group parallel-safe languages in one `Transform` with multiple `LanguageEntry` children.
-5. Insert `Checkpoint` steps wherever downstream generators must resolve cross-model references.
-6. Add `Fork` steps for any output variant requiring its own branch (e.g. XML alongside Java); or add a separate `PlanContribution` root for conditional activation.
-7. Attach the plan to models via a DevKit (production) or the Custom generation facet (prototyping).
-8. Verify with `mps_mcp_generation` `PLAN` on a model the plan governs (`planSource: EXPLICIT`, the steps in order, no `NOT_IN_PLAN` coverage) and `mps_mcp_check_root_node_problems`; see `references/verification-and-discovery.md`.
+1. **Author.** Create a `@genplan` model in a solution that holds plans (`mps_mcp_create_model`, `modelName: "<name>@genplan"`) and insert a `Plan` root with its steps; mark the model "Do not generate" if that solution's models get a facet plan. → `references/plan-setup.md`, `references/step-catalog.md`, `references/transform-and-applygenerators.md`.
+2. **Compose.** Checkpoints for cross-model references (`references/checkpoints.md`); forks, `IncludePlan`, `PlanContribution` (`references/composition-and-fork.md`); conditions (`references/fork-selectors.md`); branch output routing (`references/model-attributes.md`).
+3. **Attach.** DevKit (what a language ships to its users) or Solution (one project's models). → `references/attaching-plans.md`.
+4. **Verify.** `mps_mcp_generation` `PLAN` with `detail: "steps"` on a governed model: `planSource: EXPLICIT`, `explicitPlanSources` naming your plan with `applied: true`, the steps in order, no `NOT_IN_PLAN`; `mps_mcp_check_root_node_problems` on the plan model, the DevKit and the governed model; then MAKE with `rebuild: true`. → `references/verification-and-discovery.md`.
+5. **Maintain.** Insert, reorder, remove or retarget steps; rename; extract shared steps into an included plan; check who uses a plan before deleting or renaming it. → `references/maintaining-plans.md`.
 
 ## Related Skills
 
-- `mps-aspect-generator` — for the generator rules and templates that the plan orchestrates.
-- `mps-aspect-textgen` — for the text serialization that consumes generated models.
-- `mps-aspect-accessories` — for DevKit setup, used languages, and runtime solutions that ship with a plan.
-- `mps-node-editing` — generic JSON-blueprint node creation workflow.
+- `mps-aspect-generator` — the generator rules and templates a plan orchestrates; debugging what a step produced.
+- `mps-aspect-accessories` — DevKit modules, model-level used devkits, module dependencies.
+- `mps-tests` — `GeneratorTest` with an explicit plan.
+- `mps-node-editing` — JSON blueprints and node edits.
 
 ## Reference Index
 
-**Start here — most common case**: creating a plan and wiring it into a DevKit → read only `references/plan-setup.md`, plus `references/step-catalog.md` for the exact step concepts; cross-phase label resolution → only `references/checkpoints.md`; composing or branching plans → only `references/composition-and-fork.md`.
+**Start here**: a new plan attached to models → `references/plan-setup.md`, then `references/attaching-plans.md`; changing an existing plan → `references/maintaining-plans.md`.
 
-- Plan setup and DevKit attachment — open when creating a new genplan model, wiring it into a DevKit, or switching between DevKit and Custom generation facet attachment. See [references/plan-setup.md](references/plan-setup.md).
-- Step concept catalog — open when you need exact concept names, properties, cardinalities, and the meanings of `Transform`, `ApplyGenerators`, `Checkpoint`, `IncludePlan`, `Fork`, `CheckpointDeclaration`, `CheckpointSynchronization`, `DocumentationStep`. See [references/step-catalog.md](references/step-catalog.md).
-- `Transform` and `ApplyGenerators` — open when wiring languages by identity (`LanguageEntry.kind` = Transform / TargetAt / Extend) or naming specific generator modules. Includes the verified "the plan" and "WithCompiledGenerator" JSON examples. See [references/transform-and-applygenerators.md](references/transform-and-applygenerators.md).
-- Checkpoints and cross-model resolution — open when phases need to share mapping labels, when a downstream plan must read another plan's checkpoint, or when picking among `InPlaceCheckpointSpec`, `DeclaredCheckpointSpec`, `InPlaceCheckpointRefSpec`. See [references/checkpoints.md](references/checkpoints.md).
-- `IncludePlan`, `Fork`, and `PlanContribution` — open when composing plans from smaller pieces, splitting branches, or activating a conditional contribution without modifying the base plan. Includes "GenPlanWithFork", "LangConstraintsPlan", and "DocumentationPlan" JSON examples. See [references/composition-and-fork.md](references/composition-and-fork.md).
-- Fork selectors and parameters — open when conditionally activating forks via `ParameterEquals` or `ConceptListSelector`, or defining a `ParameterDeclaration`. See [references/fork-selectors.md](references/fork-selectors.md).
-- Model attributes (`InitModelAttributes`, `targetFacet`) — open when routing the output of a branch to a specific facet such as documentation generation. Includes the verified `ModelAttributeAssignment` blueprint. See [references/model-attributes.md](references/model-attributes.md).
-- Concept quick reference — open when assembling JSON that requires `conceptReference` strings or qualified concept names. See [references/concept-quick-reference.md](references/concept-quick-reference.md).
-- Verification and discovery — open to find existing plans (`FIND_INSTANCES`, search by name) or to verify a plan with `mps_mcp_generation` `PLAN`. See [references/verification-and-discovery.md](references/verification-and-discovery.md).
-- Authoring checklist — open at the end of an authoring session for a final scan before merging. See [references/authoring-checklist.md](references/authoring-checklist.md).
+- Creating the plan model and the `Plan` root → `references/plan-setup.md`.
+- Step concepts, aliases and properties → `references/step-catalog.md`.
+- `Transform` / `LanguageEntry.kind` / `ApplyGenerators` with verified blueprints → `references/transform-and-applygenerators.md`.
+- Checkpoints, cross-model mapping labels, persisted checkpoint models → `references/checkpoints.md`.
+- `IncludePlan`, `Fork`, `PlanContribution`, blueprints → `references/composition-and-fork.md`.
+- Fork conditions: `ParameterEquals`, the parameters MPS fills, `gentarget` → `references/fork-selectors.md`.
+- `InitModelAttributes` / `targetFacet` → `references/model-attributes.md`.
+- Attaching, replacing and detaching plans (DevKit, Solution), precedence, warnings → `references/attaching-plans.md`.
+- Editing plans safely, impact checks, re-verification → `references/maintaining-plans.md`.
+- Verifying with `PLAN`, finding plans and attachments → `references/verification-and-discovery.md`.
+- Concept names and `conceptReference`s → `references/concept-quick-reference.md`.
+- Model naming (`@genplan` and other stereotypes) → `references/aspect-model-stereotypes.md`.
+- Final scan before finishing → `references/authoring-checklist.md`.

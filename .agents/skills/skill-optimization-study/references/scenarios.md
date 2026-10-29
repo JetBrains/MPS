@@ -12,7 +12,7 @@ with sample Recipe/Cookbook roots deleted, for S3, S7, S9 and S17; recipes-full 
 with those samples kept, for S4 and S6; recipes-broken = recipes-full + `scenarios/S5/PROBLEMS.md`;
 recipes-misgen = recipes-full + an observer-authored generator with one injected defect
 (`scenarios/S15/DEFECT.md`), for S15; recipes-gen = recipes-misgen with that defect
-reverted, for S18; expressions = `samples/expressions` with `classes_gen`, for
+reverted, for S18 and S19; expressions = `samples/expressions` with `classes_gen`, for
 S11 and S12; kaja-dataflow = `samples/robot_Kaja` with two injected dataflow-builder bugs, built,
 for S13; kaja-dataflow-2 = kaja-dataflow with S13's `if` bug replaced by one that reads as correct
 text, for S16; flow-java = a synthesized project plus one BaseLanguage class, for S14).
@@ -37,6 +37,7 @@ text, for S16; flow-java = a synthesized project plus one BaseLanguage class, fo
 | S16 | S13's prompt on a builder bug that reads as correct text (`ifjump after node.trueBranch`), meant to need the emitted program (`PRINT_PROGRAM`) | kaja-dataflow-2 | H2, H5, H7 |
 | S17 | `@tests` model with 6 EditorTestCase roots (typing + caret, undo, redo, copy/paste, two-step-independent delete, action applicability), headless-safe, run config | recipes | H2, H7 |
 | S18 | 3 GeneratorTest roots (exact match, any root order, explicit plan of the recipes generator only), data models "Do not generate", run config | recipes-gen | H1, H2, H7 |
+| S19 | Generation plans: author 2 plans (checkpoint, generator-module step, conditional fork), attach via DevKit exports + plan and via a Solution facet, rename + extract an included plan, make | recipes-gen | H1, H2, H7 |
 
 | SMOKE | Harness check: list open projects and stop (read-only; no `done_criteria.md`; runs against the harness project; never evaluated) | — | — |
 
@@ -55,7 +56,7 @@ first round under `per-shared-fixture-restart` isolation). Later rounds are list
 
 ## Project create / open / close (orchestrator, every scenario)
 
-The observer creates, opens and closes the scratch project for S1–S18 and, when needed, the harness
+The observer creates, opens and closes the scratch project for S1–S19 and, when needed, the harness
 project for SMOKE, and it starts, restarts and shuts MPS down. Do not ask the user to File→Open,
 Close Project or restart the IDE. Before each action, tell the user the absolute path that will
 close (if any) and the absolute path that will open. Synthesize an empty project with
@@ -114,7 +115,7 @@ observer's job, after the left-behind state has been recorded.
 ## Adding a scenario for a changed skill/tool
 Pick the smallest task that forces the changed path (e.g. a new tool parameter), reuse a fixture,
 write done criteria first, run once per selected model, compare its chains with the baseline `chains.json`.
-The observer opens and closes the reused fixture the same way as S1–S9 and S11–S18 (announce paths; CLI open;
+The observer opens and closes the reused fixture the same way as S1–S9 and S11–S19 (announce paths; CLI open;
 `mps_mcp_close_project` close). Do not make the worker or the evaluator perform the swap — unless
 the swap itself is the changed surface, which is S10's declared exception above and should stay the
 only one. A lifecycle scenario also needs `relatedProjects` in its run meta (`run_worker.sh` derives

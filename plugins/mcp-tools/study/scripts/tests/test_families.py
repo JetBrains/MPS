@@ -212,7 +212,10 @@ class FamiliesTest(unittest.TestCase):
                          "ET_ide_service_writes\tET_runtime_source_reads\tGT_generator_test_writes\t"
                          "GT_nodes_test_writes\tGT_match_options_writes\tGT_plan_writes\tGT_do_not_generate_calls\t"
                          "GT_do_not_generate_workarounds\tGT_runtime_source_reads\tGT_kitchen_source_reads\t"
-                         "GT_expected_parser_inserts", header)
+                         "GT_expected_parser_inserts\tGP_genplan_models\tGP_param_equals_writes\tGP_set_plan_calls\t"
+                         "GP_devkit_export_calls\tGP_devkit_used_calls\tGP_plan_facet_writes\tGP_attach_workarounds\t"
+                         "GP_descriptor_reads\tGP_plan_edits\tGP_plan_root_reinserts\tGP_plan_steps_detail\t"
+                         "GP_rebuild_makes\tGP_param_model_reads", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -641,6 +644,72 @@ class FamiliesTest(unittest.TestCase):
                    + write("p3", "mps_mcp_parse_java_and_insert", {"parameters": into_tests}))
         self.assertCounts(self.count(events), GT_runtime_source_reads=len(hunts), GT_kitchen_source_reads=1,
                           GT_expected_parser_inserts=1, ET_runtime_source_reads=1)
+
+    def test_t36_generation_plan_attachment_maintenance_and_workarounds(self) -> None:
+        plans = "r:5f00(mcp.study.plans.kitchen@genplan)"
+        plan = {"concept": "jetbrains.mps.lang.generator.plan.structure.Plan",
+                "properties": [{"name": "name", "value": "P"}]}
+        fork = {"concept": "jetbrains.mps.lang.generator.plan.structure.Fork", "children": [{"role": "filter", "nodes": [
+            {"concept": "jetbrains.mps.lang.generator.plan.structure.ParameterEquals"}]}]}
+        events = (write("g1", "mps_mcp_create_model", {"moduleName": "mcp.study.plans", "modelName": "a@genplan"})
+                  + write("g2", "mps_mcp_create_model", {"moduleName": "mcp.study.plans", "modelName": "a.tests@tests"})
+                  # four plan roots, one of them through a temp-file blueprint holding two
+                  + write("r1", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": plan})
+                  + [tool("w1", "Write", {"file_path": "/tmp/two.json", "content": json.dumps([plan, plan])}), result("w1", "ok")]
+                  + write("r2", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": "/tmp/two.json"})
+                  + write("r3", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": json.dumps(plan)})
+                  # a fifth plan root re-authors instead of editing
+                  + write("r4", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": plan})
+                  + write("r5", "mps_mcp_insert_root_node_from_json", {"modelReference": MODEL, "json": plan})
+                  + write("u1", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "nodeReference": plans + "/1",
+                                                        "childRole": "steps", "childJson": fork})
+                  + write("u2", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                        "properties": [[plans + "/2", "name", "afterRecipes"]]})
+                  + write("u3", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                        "properties": [[NODE, "name", "x"]]})
+                  + call("m1", "mps_mcp_alter_nodes", "MOVE_CHILD", {"childNodeRef": plans + "/3", "position": 0})
+                  + call("m2", "mps_mcp_alter_nodes", "MAKE", {"modules": ["mcp.study.kitchen"], "rebuild": True})
+                  + call("m3", "mps_mcp_alter_nodes", "MAKE", '{"modules": ["mcp.study.pantry"], "rebuild": "true"}', REJECTED)
+                  + call("m4", "mps_mcp_alter_nodes", "MAKE", {"modules": ["mcp.study.pantry"]})
+                  + write("s1", "mps_mcp_update_module", {"moduleName": "dk", "operation": "SET_GENERATION_PLAN",
+                                                          "planModel": plans})
+                  + write("s2", "mps_mcp_update_module", {"moduleName": "mcp.study.recipes", "operation": "SET_GENERATION_PLAN",
+                                                          "planModel": plans}, {"ok": False, "error": "Language"})
+                  + write("e1", "mps_mcp_module_dependency", {"moduleName": "dk", "targetModule": "mcp.study.plans",
+                                                              "operation": "ADD"}, ok({"added": True, "devkitCollection": "exportedSolutions"}))
+                  + write("e2", "mps_mcp_module_dependency", {"moduleName": "dk", "targetModule": "mcp.study.plans",
+                                                              "operation": "DELETE"}, ok({"removed": True, "devkitCollections": ["exportedSolutions"]}))
+                  + write("e3", "mps_mcp_module_dependency", {"moduleName": "s", "targetModule": "t", "operation": "ADD"},
+                          ok({"added": True}))
+                  + write("k1", "mps_mcp_model_used_language", {"modelReference": SAMPLES, "kind": "devkit",
+                                                                "usedLanguage": "dk", "operation": "ADD"})
+                  + write("k2", "mps_mcp_model_used_language", {"modelReference": SAMPLES, "kind": "language",
+                                                                "usedLanguage": "x", "operation": "ADD"})
+                  + write("f1", "mps_mcp_update_module_facet", {"moduleName": "mcp.study.pantry", "facetType": "generator",
+                                                                "settingsJson": {"plan": plans}}, {"ok": False, "error": "x"})
+                  + write("f2", "mps_mcp_update_module_facet", {"moduleName": "s", "facetType": "tests", "enabled": True})
+                  + gen("p1", "PLAN", {"model": SAMPLES, "detail": "steps"}, ok({}))
+                  + gen("p2", "PLAN", '{"model": "x", "detail": "STEPS"}', ok({}))
+                  + gen("p3", "PLAN", {"model": SAMPLES}, ok({}))
+                  + write("q1", "mps_mcp_get_project_structure",
+                          {"startingPoint": "r:342b977c-a485-4fdb-b891-66244eff644a(jetbrains.mps.generator.extensions.common)"}))
+        hacks = [("mcp__mps__mps_mcp_run_console_command", {"command": "dk.getModuleDescriptor().setAssociatedPlan(ref);"}),
+                 ("mcp__mps__mps_mcp_parse_java_and_insert",
+                  {"parameters": {"code": "((DevkitDescriptor) d).getExportedSolutions().add(r);",
+                                  "insert": {"mode": "console"}}}),
+                 ("mcp__mps__mps_mcp_run_console_command", {"command": "println(model.name);"}),
+                 ("Edit", {"file_path": "/p/devkits/dk/dk.devkit", "old_string": "/>", "new_string": "><generation-plan/>"}),
+                 ("Bash", {"command": "sed -i '' 's/x/y/' /p/solutions/s/s.msd"}),
+                 ("Bash", {"command": "cat /p/devkits/dk/dk.devkit"}),
+                 ("Bash", {"command": "cd /p; find . -name '*.msd' -o -name '*.devkit' | grep -v '/\\.claude'; ls"}),
+                 ("Read", {"file_path": "/p/solutions/mcp.study.pantry/mcp.study.pantry.msd"}),
+                 ("Read", {"file_path": "/p/solutions/mcp.study.pantry/source_gen/mcp/study/generated/Porridge.java"})]
+        for i, (name, inp) in enumerate(hacks):
+            events += [tool(f"h{i}", name, inp), result(f"h{i}", "ok")]
+        self.assertCounts(self.count(events), GP_genplan_models=1, GP_param_equals_writes=1, GP_set_plan_calls=1,
+                          GP_devkit_export_calls=1, GP_devkit_used_calls=1, GP_plan_facet_writes=1,
+                          GP_attach_workarounds=4, GP_descriptor_reads=2, GP_plan_edits=3, GP_plan_root_reinserts=1,
+                          GP_plan_steps_detail=2, GP_rebuild_makes=1, GP_param_model_reads=1, GN_plan=3)
 
     def test_a16_adhoc_python_counts_inline_code_after_switches(self) -> None:
         inline = ["python3 -c 'print(1)'", "python3 -I -c 'import json'", "python3 -I - <<'PY'\nprint(1)\nPY",
