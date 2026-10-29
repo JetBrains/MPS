@@ -4,6 +4,8 @@
       <root url="jar://$PROJECT_DIR$/lib/annotations.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/app-backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/app.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/eclipse.lsp4j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/eclipse.lsp4j.jsonrpc.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/external-system-rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/externalProcess-rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/fleet.andel.jar!/" />
@@ -232,6 +234,8 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.langInjection.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.langInjection.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.locking.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lsp.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lsp.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lvcs.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.managed.cache.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.managed.cache.jar!/" />

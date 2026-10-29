@@ -49479,6 +49479,12 @@
     <node concept="26EafG" id="4nX__hM7qzK" role="26Ea7d">
       <property role="26EafJ" value="lib/eclipse.jar" />
     </node>
+    <node concept="26EafG" id="31wlJZGeSqP" role="26Ea7d">
+      <property role="26EafJ" value="lib/eclipse.lsp4j.jar" />
+    </node>
+    <node concept="26EafG" id="31wlJZGeSqQ" role="26Ea7d">
+      <property role="26EafJ" value="lib/eclipse.lsp4j.jsonrpc.jar" />
+    </node>
     <node concept="26EafG" id="4nX__hM7q$5" role="26Ea7d">
       <property role="26EafJ" value="lib/external-system-rt.jar" />
     </node>
@@ -50171,6 +50177,12 @@
     </node>
     <node concept="26EafG" id="KnVildsKDA" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.platform.locking.impl.jar" />
+    </node>
+    <node concept="26EafG" id="31wlJZGeSqR" role="26Ea7d">
+      <property role="26EafJ" value="lib/intellij.platform.lsp.impl.jar" />
+    </node>
+    <node concept="26EafG" id="31wlJZGeSqS" role="26Ea7d">
+      <property role="26EafJ" value="lib/intellij.platform.lsp.jar" />
     </node>
     <node concept="26EafG" id="KnVildsKDB" role="26Ea7d">
       <property role="26EafJ" value="lib/intellij.platform.lvcs.impl.jar" />

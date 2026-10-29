@@ -12,6 +12,8 @@
       <root url="jar://$PROJECT_DIR$/lib/lib.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/platform-loader.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/nio-fs.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/eclipse.lsp4j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/eclipse.lsp4j.jsonrpc.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.emojipicker.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.grid.core.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.grid.csv.core.impl.jar!/" />
@@ -217,6 +219,8 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.langInjection.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.langInjection.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.locking.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lsp.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lsp.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.lvcs.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.managed.cache.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.managed.cache.jar!/" />
