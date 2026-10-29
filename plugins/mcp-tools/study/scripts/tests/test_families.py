@@ -483,6 +483,18 @@ class FamiliesTest(unittest.TestCase):
         self.assertCounts(f, DF_queries=5, DF_program_prints=2, DF_reaching_queries=2, G_errors=1,
                           C_root_after_clean_model=1, DF_builder_prints=0, DF_console_runs=0)
 
+    def test_a16_adhoc_python_counts_inline_code_after_switches(self) -> None:
+        inline = ["python3 -c 'print(1)'", "python3 -I -c 'import json'", "python3 -I - <<'PY'\nprint(1)\nPY",
+                  "cat r.json | python3 -I -", "python3 -IS -c 'x'", "python3 -Ic 'x'", "python -u -X utf8 -c 'x'",
+                  "python3.12 -I -c 'x'", "python3 <<'PY'\nprint(1)\nPY", "python3 -I <<'PY'\nprint(1)\nPY",
+                  "python3 - <<EOF\nEOF", "python3 -I -<<EOF\nEOF", "/usr/bin/python3 -I -c 'x'"]
+        scripts = ["python3 scripts/check.py -c x", "python3 -I scripts/check.py", "python3 -m json.tool r.json",
+                   "python3 -I -m json.tool", "python3 --version", "ipython -c x"]
+        events = []
+        for i, cmd in enumerate(inline + scripts):
+            events += [tool(f"b{i}", "Bash", {"command": cmd}), result(f"b{i}", "ok")]
+        self.assertCounts(self.count(events), Bp_adhoc_python=len(inline))
+
     def test_smoke_runs_are_skipped_and_out_writes_the_tsv(self) -> None:
         self.count(check("m", MODEL, MODEL_CLEAN))
         (self.runs / "SMOKE-opus-1-worker.jsonl").write_text("")

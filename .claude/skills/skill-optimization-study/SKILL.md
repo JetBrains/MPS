@@ -112,13 +112,17 @@ Gate 1 (after the pilot): matrix size. Gate 2 (after the report): which remedies
 2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
    `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Turn it on without a human and
    without touching a tracked file: `mps_control.sh capture` **while MPS is still alive**, then
-   `mps_control.sh calllog $RUNS/server-calllog.jsonl` (writes the option into the capture), then
+   `mps_control.sh calllog $RUNS/server-calllog.jsonl` (writes the option into the capture) and
+   `mps_control.sh idelog` (drops the checkout's `-Didea.log.path`, so `list_open_projects` reports
+   the selector's default log directory instead of the MPS source checkout — A17), then
    `shutdown` (the close of the last project carries the exit), `start <project>`, `wait`, and one
    SMOKE run as the readiness gate. `capture` only preserves VM options the live process already
    carries, which is why `calllog` exists — adding the option to the `MPS` run configuration works
    too but is study-only and must be reverted at wrap-up (lesson 13), so prefer the capture route.
    Confirm the relaunched process actually carries it (`ps -ww -p <pid> -o args= | tr ' ' '\n' |
-   grep calllog`) and that the file grows.
+   grep calllog`) and that the file grows, and that `list_open_projects` reports a `logDirectory`
+   outside the MPS checkout. Re-running `capture` against a developer-launched MPS (also
+   `restart` with no capture) takes the checkout's log path back, so repeat `idelog` after it.
 3. **Template** — the empty fixture is **synthesized, not snapshotted**
    (`scripts/new_study_project.py`): three descriptor files, no doc surface possible, and a
    `migration.xml` derived from the MPS that will open it. Module-bearing fixtures (`statechart`,

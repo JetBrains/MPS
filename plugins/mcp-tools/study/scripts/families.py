@@ -16,7 +16,8 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   C_perRoot                        checks with perRoot true
   D_skill_reads                    Read calls on a file under /skills/
   D_skill_bash_fetch               Bash cat/sed/head/tail/grep/awk on a /skills/ path
-  Bp_adhoc_python                  Bash calls running inline python (-c, heredoc, stdin)
+  Bp_adhoc_python                  Bash calls running inline python (-c, heredoc, stdin), also after
+                                   switches such as -I
   Bp_shipped_script                Bash calls running a skill's scripts/*.py
   B_inserts                        insert_root_node_from_json / update_node / update_root_node_from_json
   B_resp_bytes                     result characters of those calls
@@ -188,6 +189,11 @@ GENERATION_COLUMNS = {"PLAN": "GN_plan", "TRANSIENT_MODELS": "GN_transient_model
                       "DROP_TRANSIENT_MODELS": "GN_drop"}
 GENERATOR_MODEL = re.compile(r"@generator\b")
 TRANSIENT_REF = re.compile(r"(^|/)i:[0-9a-fA-F]+\([^()/]*@transient\d*/")
+# python / python3 / python3.12, any switches without an argument (`-I`, `-u`, `-IS`) or `-W` / `-X`
+# with theirs, then inline code: `-c` (also last in a group, `-Ic`), `-` (stdin), or a heredoc. The
+# worker CLI runs `python3 -I -c` / `python3 -I -` on untrusted data (A16).
+ADHOC_PYTHON = re.compile(r"(?<![\w.-])python(?:3(?:\.\d+)?)?(?:\s+(?:-[bBdEhiIOPqRsSuvVx]+|-[WX]\s*\S+))*"
+                          r"(?:\s+-[bBdEhiIOPqRsSuvVx]*c|\s+-(?=\s|$|[|;&)<])|\s*<<)")
 TRANSIENT_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
                    "mps_mcp_check_root_node_problems")
 GENERATOR_WRITES = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node", "mps_mcp_update_node",
@@ -445,7 +451,7 @@ def fam(path):
             if "/skills/" in cmd and re.search(r'\b(cat|sed|head|tail|grep|awk)\b', cmd) \
                     and ".py" not in cmd.split("|")[0]:
                 f["D_skill_bash_fetch"] += 1
-            if re.search(r"python3?\s+(-c|-\s*<<|<<)", cmd) or re.search(r"python3?\s+-\s", cmd):
+            if ADHOC_PYTHON.search(cmd):
                 f["Bp_adhoc_python"] += 1
             if re.search(r"skills/[^ ]+/scripts/[^ ]+\.py", cmd):
                 f["Bp_shipped_script"] += 1

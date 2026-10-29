@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # MPS process control for the study observer: capture, shutdown, start, wait, restart.
 #
-# usage: mps_control.sh capture|calllog|open|shutdown|start|wait|restart [project-dir]
+# usage: mps_control.sh capture|calllog|idelog|open|shutdown|start|wait|restart [project-dir]
 #        mps_control.sh url [--json] [--timeout SECONDS]
 #
 # [project-dir] is optional everywhere and always the SAME project: the one to close on shutdown,
@@ -10,6 +10,7 @@
 #
 #   capture   record the running MPS's launch command line (idempotent while MPS lives)
 #   calllog   set/clear -Dmps.mcp.calllog=<file> IN THE CAPTURE, for the next `start`
+#   idelog    set/clear -Didea.log.path=<dir> IN THE CAPTURE, for the next `start` (A17)
 #   open      activate the RUNNING MPS with [project-dir] (short-lived second process)
 #   shutdown  close the single open project WITH shutdownWithLastProject=true, then poll the pid
 #   start     relaunch MPS DETACHED from the capture, optionally opening [project-dir]; adds
@@ -144,14 +145,16 @@ drop = re.compile(r"^(-agentlib:jdwp|-javaagent:.*idea_rt\.jar)")
 vm = [t for t in tokens if not drop.match(t) and not t.startswith("-classpath") and t != "-cp"]
 selector = next((t.split("=", 1)[1] for t in vm if t.startswith("-Didea.paths.selector=")), None)
 calllog = next((t for t in vm if t.startswith("-Dmps.mcp.calllog=")), None)
+logpath = next((t for t in vm if t.startswith("-Didea.log.path=")), None)
 main = (java_command.split() or ["jetbrains.mps.Launcher"])[0]
 
 json.dump({"pid": int(os.environ["PID"]), "javaBin": os.environ["JAVA"],
            "cwd": os.environ["CWD"], "vmOptions": vm, "classpath": classpath,
-           "mainClass": main, "selector": selector, "callLogOption": calllog},
+           "mainClass": main, "selector": selector, "callLogOption": calllog,
+           "logPathOption": logpath},
           open(os.environ["OUT"], "w"), indent=1)
 print(json.dumps({"ok": True, "capture": os.environ["OUT"], "pid": int(os.environ["PID"]),
-                  "selector": selector, "callLog": calllog is not None,
+                  "selector": selector, "callLog": calllog is not None, "logPathOption": logpath,
                   "vmOptions": len(vm), "classpathChars": len(classpath)}))
 PY
 }
@@ -182,6 +185,37 @@ json.dump(d, open(cap, "w"), indent=1)
 print(json.dumps({"ok": True, "capture": cap, "callLogOption": opt,
                   "vmOptions": len(d["vmOptions"]),
                   "note": "takes effect on the next start/restart, not on the running MPS"}))
+PY
+}
+
+# --- idelog ----------------------------------------------------------------------------------
+# A from-sources MPS logs into the checkout's log/ (`-Didea.log.path=$PROJECT_DIR$/log` in the `MPS`
+# run configuration), and list_open_projects reports that `logDirectory` to every worker: the MPS
+# source-checkout path, which no standalone user has (A17). This rewrites the option IN THE CAPTURE
+# for the next `start`/`restart`. With a directory (created here) the log goes there; with none the
+# option is dropped and the platform default for the selector applies — on macOS
+# ~/Library/Logs/JetBrains/<selector>, where a standalone install logs too.
+do_idelog() {
+  [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — run 'capture' while MPS is still alive"
+  local dir="${1:-}"
+  [ -n "$dir" ] && { mkdir -p "$dir" || die "cannot create $dir"; }
+  CAPTURE="$CAPTURE" LOGDIR="$dir" python3 - <<'PY'
+import json, os
+cap = os.environ["CAPTURE"]
+logdir = os.environ["LOGDIR"]
+d = json.load(open(cap))
+d["vmOptions"] = [o for o in d["vmOptions"] if not o.startswith("-Didea.log.path=")]
+opt = None
+if logdir:
+    opt = "-Didea.log.path=" + os.path.abspath(os.path.expanduser(logdir))
+    d["vmOptions"].append(opt)
+d["logPathOption"] = opt
+json.dump(d, open(cap, "w"), indent=1)
+print(json.dumps({"ok": True, "capture": cap, "logPathOption": opt,
+                  "vmOptions": len(d["vmOptions"]),
+                  "note": "takes effect on the next start/restart, not on the running MPS; "
+                          + ("the log goes to the given directory" if opt else
+                             "the platform default for the selector applies")}))
 PY
 }
 
@@ -233,7 +267,7 @@ ACTIVATE
     fi
     sleep 3; waited=$((waited + 3))
   done
-  die "activation exited cleanly but $project is not listed after 60s — check log/idea.log"
+  die "activation exited cleanly but $project is not listed after 60s — check idea.log in the logDirectory of list_open_projects"
 }
 
 # --- shutdown --------------------------------------------------------------------------------
@@ -405,6 +439,7 @@ print(json.dumps({"ok": True, "tools": len(d.get("tools", [])),
 case "${1:-}" in
   capture)  do_capture ;;
   calllog)  do_calllog "${2:-}" ;;
+  idelog)   do_idelog "${2:-}" ;;
   open)     do_open "${2:-}" ;;
   shutdown) do_shutdown "${2:-}" ;;
   start)    do_start "${2:-}" ;;
@@ -413,8 +448,9 @@ case "${1:-}" in
   restart)
     [ -f "$CAPTURE" ] || do_capture >/dev/null
     do_shutdown "${2:-}" && do_start "${2:-}" && do_wait "${2:-}" ;;
-  *) echo "usage: $(basename "$0") capture|calllog|open|shutdown|start|wait|restart [project-dir]
+  *) echo "usage: $(basename "$0") capture|calllog|idelog|open|shutdown|start|wait|restart [project-dir]
        $(basename "$0") url [--json] [--timeout SECONDS]
-       calllog takes a call-log FILE (or nothing, to clear it), not a project directory" >&2
+       calllog takes a call-log FILE (or nothing, to clear it), not a project directory
+       idelog takes a log DIRECTORY (or nothing, for the platform default), not a project directory" >&2
      exit 2 ;;
 esac

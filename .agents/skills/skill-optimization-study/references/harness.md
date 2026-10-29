@@ -235,7 +235,7 @@ migrationEntries, files}`. Compare `migrationEntries` semantically, never the ra
 ends the document with a newline, an MPS-written one does not. Exit: 0 ok, 2 usage, 3 bad MPS home,
 4 target not empty.
 
-## mps_control.sh `capture|calllog|open|shutdown|start|wait|restart [project-dir]` / `url [--json] [--timeout S]`
+## mps_control.sh `capture|calllog|idelog|open|shutdown|start|wait|restart [project-dir]` / `url [--json] [--timeout S]`
 MPS process control. Env: `CAPTURE` (default `$TMPDIR/mps-study-cmdline.json`), `SHUTDOWN_WAIT`
 (60 s), `READY_WAIT` (300 s), `MPS_MCP_URL` (a non-empty value at script start is used as given and
 skips detection; `MPS_MCP_URL= mps_control.sh wait` counts as unset). Otherwise `open`, `shutdown`,
@@ -257,6 +257,14 @@ report `url` and `confirmed` in their JSON.
   option. `capture` can only preserve what the live process already carries, so this is how a round
   turns the call log on when MPS was started without it — no tracked run configuration is edited
   and there is no revert step at wrap-up (lesson 33). It does not affect the running MPS.
+- `idelog [dir]` — rewrites `-Didea.log.path` in the **capture** for the next `start`/`restart`.
+  With no argument it drops the option, and the platform default for the selector applies
+  (`~/Library/Logs/JetBrains/<selector>` on macOS, where a standalone install logs too); with a
+  directory (created) the log goes there. A from-sources MPS otherwise logs into the checkout's
+  `log/`, and `list_open_projects` hands that `logDirectory` — the MPS source path — to every
+  worker (A17). Do not point it into `$RUNS`: workers would see the other cells' transcripts next
+  to the log. `capture` reports the current option as `logPathOption`; a new `capture` of a
+  developer-launched MPS (also `restart` with no capture) brings the checkout path back.
 - `open` — activates the **running** MPS with `[project-dir]`: a short-lived second process that
   exits in about a second. Prefer it over hand-writing the recipe from
   `mps-project-management/examples-macos.md`: it reuses the capture, and it confirms the project is
@@ -272,8 +280,9 @@ report `url` and `confirmed` in their JSON.
   (the user dismisses it), or the project closed with the app still up at the Welcome screen, where
   MCP is dead and only `start` recovers.
 - `start` — relaunches **detached** from the capture, optionally opening `[project-dir]`, keeping
-  `-Dmps.mcp.calllog=…`. The ~90 s foreground timeout in `mps-project-management` applies to
-  *activation*, not to a cold start; applying it here would kill MPS.
+  `-Dmps.mcp.calllog=…` and `-Didea.log.path=…` as the capture has them. The ~90 s foreground
+  timeout in `mps-project-management` applies to *activation*, not to a cold start; applying it
+  here would kill MPS.
 - `wait` — readiness handshake (`tools_inventory.py`, then the project listed), never `ps`. It
   re-detects the URL on every iteration (probe timeout 2 s) until `confirmed` is true — right after
   a start MCP does not listen yet, and a URL fixed on the first iteration would poll the wrong port
