@@ -35,6 +35,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S14 | Answer five def-use questions about one BaseLanguage method with a loop, branches and try-finally (which assignments reach which reads). Models must not change. |
 | S15 | Find why the generated Java has the wrong `PORTIONS` from the generation plan and trace (keep transient models, read the step model, trace the node back to its rule), fix the generator, rebuild, re-make, and free the transient models. |
 | S16 | S13's task and prompt on a fixture whose `if` builder bug reads as correct text (`ifjump after node.trueBranch`): the cell that needs the emitted program, `mps_mcp_query_dataflow` `PRINT_PROGRAM`. |
+| S17 | Add six editor tests for the Recipe editor that must not pass vacuously and must run headless (typing with the caret checked, undo, redo, copy and paste, a deletion that ignores the two-step-deletion setting, an action's applicability), create a run configuration, and run them. Draft, not frozen. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -79,7 +80,7 @@ Run to verify: `mps-node-editing` bulk path, `scripts/table_to_bulk_insert.py` (
 just the PASS), `mps-mcp-workflow` `references/bulk-creation.md`, reference wiring after insert.
 Does not author any aspect. A pass says nothing about structure, editor, or constraints docs.
 Hypotheses: H3 bulk, H6 refs, H1.
-Isolation: shares `mcp.study.recipes` with S4–S7, S9 and S15.
+Isolation: shares `mcp.study.recipes` with S4–S7, S9, S15 and S17.
 
 **S4 — refactor and migrate.** Fixture: a passing S1 project **with the sample Recipe and Cookbook
 roots kept** (`recipes-full`, not the stripped `recipes` tarball — the prompt requires existing
@@ -97,7 +98,7 @@ failed "migration applied" is then the tool gap, not a docs regression. `mps_con
 passes `-Dmps.migration.assistant.auto=false`, so the wizard cannot open before the worker's first
 call either.
 Hypotheses: H2, H5, H8.
-Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9 and S15. Restart before this
+Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9, S15 and S17. Restart before this
 cell if any of those already loaded the language in this process (D80 includes S4).
 
 **S5 — repair a broken model.** Fixture: `recipes-broken` (`recipes-full` plus the 12 injections
@@ -133,9 +134,10 @@ not the subject). Mutates the project by adding `mcp.study.recipes.tests`.
 Forces an `@tests` model with three `NodesTestCase` roots (constraint error, typesystem warning,
 `totalMinutes()` == 15) and one `EditorTestCase`, then a JUnit run configuration executed through
 the MCP run-configuration tool. The observer re-runs it: 4 tests, 0 failures.
-Run to verify: `mps-tests` (only cell), `mps-run-configurations` (only cell).
-Known gap, not a docs miss by itself: the tool takes one root, so four roots become four
-configurations (D53). The editor-test caret check compares the annotated node, `cellId` and
+Run to verify: `mps-tests` (NodesTestCase and one typing editor test; editor actions, undo, clipboard and
+applicability are S17's), `mps-run-configurations` (with S17).
+Known gap, not a docs miss by itself, when the cell was written: the tool took one root, so four roots
+became four configurations (D53, fixed and archived 2026-10-07: one live model configuration now). The editor-test caret check compares the annotated node, `cellId` and
 `selectionStart`/`selectionEnd`, never `caretPosition`/`isLastPosition`. In `before` the caret alone places it unless the selection is non-empty
 (D71, D93, docs fixed 2026-09-30, re-measure: no `CellReference` failure, no `before`-selection tree diff, no source hunt).
 Prompt step 1 revised 2026-10-27 (after round 45, where `S7-opus-1` grouped the three checks in one
@@ -168,7 +170,7 @@ Run to verify: `mps-console` (only cell).
 Console history and the current input are session state. Evaluate before the project is closed;
 after a close the evidence is gone.
 Hypotheses: H1, H7.
-Isolation: shares the recipes module id with S3–S7 and S15. May precede a language-changing
+Isolation: shares the recipes module id with S3–S7, S15 and S17. May precede a language-changing
 cell in the same process.
 
 **S10 — project lifecycle.** Fixture: synthesized `empty-project`. The worker creates
@@ -285,7 +287,7 @@ calls, 2 min 18 s) and `S15-sonnet-1` (27 calls, 1 min 51 s) both passed criteri
 path, every P1–P7 signal on target (`GN_trace_before_fix` 1, `GN_template_prints_before_trace` 0,
 `M_makes` 3), 0 error envelopes. D2 stays held back.
 Hypotheses: H2, H5, H7.
-Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7 and S9, so restart MPS before
+Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7, S9 and S17, so restart MPS before
 S15 when one of those ran in the process; the worker rebuilds the language, so restart again before
 any later recipes cell. S13, S14 and S16 (the dataflow cells) do not use `recipes*` and need no restart for it.
 
@@ -305,6 +307,41 @@ Round 41 (opus, medium; with and without the tool): both runs PASS and both foun
 builder text, by its missing `label elseBranch` against the skill's if pattern, so at that model and
 effort S16 measures `PRINT_PROGRAM` no better than S13. A harder variant would keep the label and
 misplace only the position, or put the bug in a builder no skill pattern covers.
+
+**S17 — comprehensive editor tests.** Fixture: `recipes`, as S7. Mutates the project by adding
+`mcp.study.recipes.editortests`. Written 2026-10-29 for MPS-40320; **draft, not frozen** until the
+observer walk and the opus + sonnet rehearsal listed in `scenarios/S17/done_criteria.md`.
+Forces six `EditorTestCase` roots on the Recipe editor:
+- typing with the `result` caret checked (D71's rule);
+- undo and redo, which are platform actions reached by `invoke action by id: $Undo` / `$Redo`;
+- copy and paste of a Step (`$Copy` / `$Paste`, with the paste-placement trap: a whole-node selection
+  is replaced);
+- a caret-started Backspace that must not depend on the two-step-deletion setting
+  (`EditorTestUtil.runWithTwoStepDeletion`);
+- `is action applicable` on two MPS actions.
+
+Then a JUnit run configuration, run through the MCP tool. The prompt names behaviours, never
+mechanisms, and says the tests also run headless on CI. That line makes "no `UndoManager` /
+`DataManager` / `FileEditor` / `CopyPasteManager` in test code" a criterion: such code passes in a
+running MPS and fails headless (the MPS-40320 trigger). Every test must fail if its behaviour broke,
+so the criteria check the non-vacuity guards: an assertion after the typing in the undo test, and
+after the undo in the redo test.
+Run to verify: `mps-tests` `references/editor-test-case/statements-and-actions.md` (platform ids, the
+IDE-services ban, clipboard and undo semantics), `references/editor-test-case/menus-deletion-completion.md`
+(two-step deletion), `references/editor-test-case/editor-expressions.md` (`is action applicable`,
+expressions in parsed Java), `references/editor-test-case/cell-ids.md`, the editor rows of
+`references/common-failures.md`; and `mps-run-configurations`.
+Read the process signals with the `families.py` columns: `ET_platform_id_writes` and
+`ET_applicability_writes` (≥ 1), `ET_ide_service_writes` (0), `ET_runtime_source_reads` (0: hunting
+the test runtime or MPS's own tests), `ET_test_runs` (2–4) and `ET_run_configs` (1).
+Does not cover completion: smart references to Ingredients need roots in scope of the test model,
+which the fixture alone does not give. Intentions and side transforms are not covered either; the
+language has none.
+Hypotheses: H2, H7.
+Isolation: the `mcp.study.recipes` module id of S3–S7, S9 and S15, so restart MPS before S17 when one
+of those ran in the process. The worker builds only the new test solution, but it loads the
+language's editor classes, so a later recipes cell that rebuilds the language needs the restart
+too (the D80 hazard), as after S7.
 
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
@@ -336,14 +373,14 @@ skill whose **Run** column is not S1 or S3.
 | `mps_mcp_alter_nodes` MOVE_NODE_TO_PARENT | S5 (forced: same-model reparent into a middle index) | | cross-model moves, promotion to root, console-node moves (no cell) |
 | `mps_mcp_alter_nodes` MOVE_CHILD | | S5 (the reorder; a same-parent MOVE_NODE_TO_PARENT also passes) | cross-model moves, promotion to root, console-node moves (no cell) |
 | `mps-node-editing/scripts/table_to_bulk_insert.py` | S3 | | the aggregate cookbook root is the spec's `aggregate` key (D82) |
-| `mps-baselanguage` | S6 (parser vs JSON AST), S1 and S2 (function bodies in behavior / constraints) | S7 (test bodies) | S10's one empty class is not a signal |
+| `mps-baselanguage` | S6 (parser vs JSON AST), S1 and S2 (function bodies in behavior / constraints) | S7, S17 (test bodies) | S10's one empty class is not a signal |
 | `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print) | | |
-| `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem), S11 (type questions via `mps_mcp_query_types`) | S1, S6, S7 (`get_concept_details` / `shape`) | |
+| `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem), S11 (type questions via `mps_mcp_query_types`) | S1, S6, S7, S17 (`get_concept_details` / `shape`) | |
 | `mps-dsl-memory` | S8 | | |
-| `mps-tests` | S7 | | |
-| `mps-run-configurations` | S7 | | |
+| `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity) | | completion, intentions, side transforms (no cell) |
+| `mps-run-configurations` | S7, S17 | | |
 | `mps-console` | S9 | | evaluate before close |
-| `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S16 do not measure this skill |
+| `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S17 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
 | make / reload / hollow descriptors | S1, S2, S4, S6, S12 | S15 | a MAKE that returns `runtimeReady: true` is the reload (D84) |
 | `mps_mcp_alter_nodes` MAKE `saveTransientModels`, the `transientModels` block | S15 | | |
@@ -383,7 +420,7 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
 2. Run the **Run** cells only, on the models the user names. One model is enough to see whether
    the changed path is taken; a second model is a variance check, not a requirement.
 3. If several cells share a fixture language, restart MPS between them: S2/S8 on `statechart`,
-   and any two of S3/S4/S5/S6/S7/S9/S15 on `recipes*` (S4 is in that set — it loads the same
+   and any two of S3/S4/S5/S6/S7/S9/S15/S17 on `recipes*` (S4 is in that set — it loads the same
    language; S15's worker rebuilds it). S11 and S12 each need a restart before them, and an MPS
    that has not loaded the Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not

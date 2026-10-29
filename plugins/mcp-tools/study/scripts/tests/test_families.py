@@ -207,7 +207,9 @@ class FamiliesTest(unittest.TestCase):
                          "M_makes_save_transient\tGN_plan\tGN_transient_models\tGN_trace\tGN_trace_backward\t"
                          "GN_drop\tGN_trace_before_fix\tGN_transient_reads\tGN_template_prints\t"
                          "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs\tDF_queries\t"
-                         "DF_program_prints\tDF_reaching_queries\tC_after_node_sample\tC_after_node_sample_batches", header)
+                         "DF_program_prints\tDF_reaching_queries\tC_after_node_sample\tC_after_node_sample_batches\t"
+                         "ET_test_runs\tET_run_configs\tET_platform_id_writes\tET_applicability_writes\t"
+                         "ET_ide_service_writes\tET_runtime_source_reads", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -482,6 +484,83 @@ class FamiliesTest(unittest.TestCase):
                        + check("a", NODE, NODE_CLEAN))
         self.assertCounts(f, DF_queries=5, DF_program_prints=2, DF_reaching_queries=2, G_errors=1,
                           C_root_after_clean_model=1, DF_builder_prints=0, DF_console_runs=0)
+
+    def test_t27_editor_test_runs_and_run_configurations_count_by_bare_name(self) -> None:
+        f = self.count([tool("c", "mcp__mps__mps_mcp_create_run_configuration", {"modelReference": MODEL}),
+                        result("c", ok({"name": "tests"})),
+                        tool("r1", "mcp__mps__execute_run_configuration", {"configurationName": "tests"}),
+                        result("r1", {"exitCode": 1}),
+                        tool("r2", "mcp__mps__execute_run_configuration", {"configurationName": "tests"}),
+                        result("r2", {"exitCode": 0})])
+        self.assertCounts(f, ET_test_runs=2, ET_run_configs=1)
+
+    def test_t28_platform_ids_and_applicability_count_accepted_writes_only(self) -> None:
+        bootstrap = {"concept": "jetbrains.mps.lang.test.structure.InvokeActionStatement", "children": [
+            {"role": "actionReference", "nodes": [{"concept": "jetbrains.mps.lang.test.structure.BootstrapActionReference",
+                                                   "properties": [{"name": "actionId", "value": "$Undo"}]}]}]}
+        applicable = {"concept": "jetbrains.mps.lang.test.structure.IsActionApplicableExpression"}
+        f = self.count(write("a", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": bootstrap})
+                       + write("b", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                            "properties": [[NODE, "actionId", "$Paste"]]})
+                       + write("c", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": json.dumps(applicable)})
+                       + write("d", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": bootstrap},
+                               REJECTED)
+                       + write("e", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                            "properties": [[NODE, "name", "$CopyThisDown"]]})
+                       + call("m", "mps_mcp_alter_nodes", "MAKE", {"models": [MODEL], "note": "$Undo"}))
+        self.assertCounts(f, ET_platform_id_writes=2, ET_applicability_writes=1, ET_ide_service_writes=0)
+
+    def test_t29_ide_service_writes_count_attempts_too(self) -> None:
+        java = "UndoManager.getInstance(project).undo(FileEditorManager.getInstance(project).getSelectedEditor());"
+        f = self.count(write("p", "mps_mcp_parse_java_and_insert", {"parameters": {"code": java}})
+                       + write("q", "mps_mcp_parse_java_and_insert",
+                               {"parameters": json.dumps({"code": "DataManager.getInstance().getDataContext(c);"})},
+                               REJECTED)
+                       + write("r", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": {"concept": "x.EditorComponentExpression"}}))
+        self.assertCounts(f, ET_ide_service_writes=2, ET_platform_id_writes=0)
+
+    def test_t30_runtime_source_reads_skip_the_run_project_and_the_language_editor(self) -> None:
+        hunts = [("Read", {"file_path": "/m/plugins/mps-testing/languages/lang.test/solutions/jetbrains.mps.lang.test.runtime/"
+                                       "source_gen/jetbrains/mps/lang/test/runtime/BaseEditorTestBody.java"}),
+                 ("Grep", {"pattern": "invokeAction", "path": "/m/testbench/testsolutions/bl.test/test_gen"}),
+                 ("Bash", {"command": "grep -rn pasteWithRemove /m/editor/editor-runtime/source/jetbrains/mps/nodeEditor/"}),
+                 ("Glob", {"pattern": "**/EditorTestUtil.java"}),
+                 ("mcp__mps__read_file", {"path": "/m/editor/x/CellAction_PasteNode.java"})]
+        routes = [("Read", {"file_path": "/p/solutions/mcp.study.recipes.editortests/test_gen/mcp/study/recipes/"
+                                        "editortests/UndoStepText_Test.java"}),
+                  ("Bash", {"command": "grep -n setCellId /p/languages/mcp.study.recipes/source_gen/mcp/study/recipes/"
+                                       "editor/Step_EditorBuilder_a.java"}),
+                  ("Read", {"file_path": "/p/.claude/skills/mps-tests/references/editor-test-case/statements-and-actions.md"})]
+        events = []
+        for i, (name, inp) in enumerate(hunts + routes):
+            events += [tool(f"s{i}", name, inp), result(f"s{i}", "text")]
+        self.assertCounts(self.count(events), ET_runtime_source_reads=len(hunts))
+
+    def test_t31_temp_file_blueprints_are_read_from_the_earlier_write_or_the_disk(self) -> None:
+        written = "/tmp/bp-undo.json"
+        on_disk = Path(self.temp_dir.name) / "bp-applicable.json"
+        on_disk.write_text(json.dumps({"concept": "jetbrains.mps.lang.test.structure.IsActionApplicableExpression"}))
+        undo = json.dumps({"concept": "jetbrains.mps.lang.test.structure.BootstrapActionReference",
+                           "properties": [{"name": "actionId", "value": "$Undo"}]})
+        f = self.count([tool("w", "Write", {"file_path": written, "content": undo}), result("w", "ok")]
+                       + write("a", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": written})
+                       + write("b", "mps_mcp_update_root_node_from_json", {"operation": "UPDATE", "json": str(on_disk)})
+                       + write("c", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": "/tmp/gone-since.json"}))
+        self.assertCounts(f, ET_platform_id_writes=1, ET_applicability_writes=1)
+
+    def test_t32_runtime_source_reads_ignore_code_and_patterns_that_are_not_paths(self) -> None:
+        heredoc = "cat > /tmp/t.java <<'EOF'\nEditorTestUtil.runWithTwoStepDeletion(() -> { }, false);\nEOF"
+        calls = [("Bash", {"command": heredoc}),
+                 ("Bash", {"command": "grep -rn EditorTestUtil /p/solutions/mcp.study.recipes.editortests/test_gen"}),
+                 ("Grep", {"pattern": "BaseEditorTestBody", "path": "/p/.claude/skills"}),
+                 ("Bash", {"command": "cat /m/plugins/mps-testing/x/lang/test/runtime/BaseEditorTestBody.java"})]
+        events = []
+        for i, (name, inp) in enumerate(calls):
+            events += [tool(f"s{i}", name, inp), result(f"s{i}", "text")]
+        self.assertCounts(self.count(events), ET_runtime_source_reads=1)
 
     def test_a16_adhoc_python_counts_inline_code_after_switches(self) -> None:
         inline = ["python3 -c 'print(1)'", "python3 -I -c 'import json'", "python3 -I - <<'PY'\nprint(1)\nPY",

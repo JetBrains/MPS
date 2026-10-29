@@ -61,6 +61,17 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
                                    gave every text but not every node, no write between (D119); they
                                    are not in C_after_summary
   C_after_node_sample_batches      distinct batches among the C_after_node_sample calls
+  ET_test_runs                     execute_run_configuration calls (each one past the first is a fix cycle)
+  ET_run_configs                   create_run_configuration calls
+  ET_platform_id_writes            accepted node writes whose input holds a BootstrapActionReference or a
+                                   `$Undo` / `$Redo` / `$Copy` / `$Cut` / `$Paste` id
+  ET_applicability_writes          accepted node writes whose input holds an IsActionApplicableExpression
+  ET_ide_service_writes            node writes, rejected ones included, whose input names UndoManager,
+                                   DataManager, FileEditor(Manager) or CopyPasteManager
+  ET_runtime_source_reads          Read / Grep / Glob / Bash / MCP file-tool calls whose path names the
+                                   editor-test runtime or MPS's own editor tests (BaseEditorTestBody,
+                                   EditorTestUtil, CellAction_*, lang/test/runtime, nodeEditor/, testbench/,
+                                   bl.test)
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -146,6 +157,22 @@ C_after_node_sample when that row is text-complete and has a node-sampled messag
 message ref, that message is node-sampled); otherwise, a counts-only row, `moreMessages`, a fully listed
 row (a re-check to list quick fixes) or no matching row, it stays in C_after_summary.
 
+The ET_* columns are S17's signals (editor tests, MPS-40320). A node write is any call of the
+GENERATOR_WRITES tools except an alter_nodes MAKE; the input, `parameters` included, is searched as
+JSON text, so a blueprint, a parsed Java snippet or a SET PROPERTY value all count. A `childJson` or
+`json` value that is an absolute path (the temp-file form, e.g. from `blueprint.py`) is searched as
+the file's text: the content of the transcript's last earlier Write of that path, else the file if it
+still exists, else nothing (a file written by a Bash heredoc and deleted since is not seen). A
+COPY_NODE copies existing nodes and is searched only as its input. `$Undo` matches as the id itself
+(`"$Undo"` in a property value, or `by id: $Undo` in text). ET_ide_service_writes counts attempts as
+well, because a rejected write still shows the route the worker took; the positive columns count only
+writes the envelope did not reject. ET_runtime_source_reads matches paths only: `file_path` / `path` /
+`glob` of Read, Grep and the MCP file tools, Glob's `pattern` too (Grep's `pattern` is a regex), and for Bash the command's tokens that contain a
+`/`, so a heredoc or a grep pattern naming `EditorTestUtil` (which the skill tells the worker to use)
+does not count. The run project's own `test_gen/` (reading the generated test to debug it) and the
+language's editor `source_gen` (the documented cell-id route) do not match the pattern.
+`execute_run_configuration` has no `mps_mcp_` prefix; tool names are compared after the last `__`.
+
 Stdlib only, Python >= 3.9.
 """
 from __future__ import annotations
@@ -167,7 +194,9 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "M_makes_save_transient", "GN_plan", "GN_transient_models", "GN_trace", "GN_trace_backward",
         "GN_drop", "GN_trace_before_fix", "GN_transient_reads", "GN_template_prints",
         "GN_template_prints_before_trace", "DF_builder_prints", "DF_console_runs", "DF_queries",
-        "DF_program_prints", "DF_reaching_queries", "C_after_node_sample", "C_after_node_sample_batches"]
+        "DF_program_prints", "DF_reaching_queries", "C_after_node_sample", "C_after_node_sample_batches",
+        "ET_test_runs", "ET_run_configs", "ET_platform_id_writes", "ET_applicability_writes",
+        "ET_ide_service_writes", "ET_runtime_source_reads"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
@@ -199,6 +228,13 @@ TRANSIENT_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_m
 GENERATOR_WRITES = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node", "mps_mcp_update_node",
                     "mps_mcp_update_root_node_from_json", "mps_mcp_parse_java_and_insert", "mps_mcp_apply_intention",
                     "mps_mcp_alter_nodes")
+
+PLATFORM_ACTION_ID = re.compile(r"BootstrapActionReference|\$(?:Undo|Redo|Copy|Cut|Paste)\b")
+IDE_SERVICE = re.compile(r"UndoManager|DataManager|FileEditor|CopyPasteManager")
+RUNTIME_SOURCE = re.compile(r"BaseEditorTestBody|EditorTestUtil|CellAction_|lang/test/runtime|lang\.test\.runtime|"
+                            r"nodeEditor/|/testbench/|bl\.test|jetbrains\.mps\.editorTest")
+SOURCE_TOOLS = ("Read", "Grep", "Glob", "Bash", "read_file", "find_files_by_glob", "find_files_by_name_keyword")
+PATH_FIELDS = ("file_path", "path", "glob", "pathInProject", "globPattern")  # Grep's `pattern` is a regex, not a path
 
 
 def load(path):
@@ -400,6 +436,41 @@ def builder_print(inp, result):
     return aspect_print(inp, result, DATAFLOW_BUILDER_CONCEPTS, DATAFLOW_MODEL)
 
 
+def node_write_text(name, inp, written_files):
+    """The input of a node write as JSON text (`parameters` and temp-file blueprints included), or None
+    for any other call. `written_files` maps a path to the content of the transcript's last Write of it."""
+    if name not in GENERATOR_WRITES:
+        return None
+    if name == "mps_mcp_alter_nodes" and str(inp.get("operation") or "").strip().upper() == "MAKE":
+        return None
+    text = json.dumps(inp) + json.dumps(params(inp))
+    for key in ("childJson", "json"):
+        value = inp.get(key)
+        if isinstance(value, str) and value.strip().startswith("/"):
+            path = value.strip()
+            if path in written_files:
+                text += written_files[path]
+            elif os.path.isfile(path):
+                try:
+                    with open(path) as fh:
+                        text += fh.read()
+                except (OSError, UnicodeDecodeError):
+                    pass
+    return text
+
+
+def runtime_source_read(name, inp):
+    """Whether a file-reading call names the editor-test runtime or MPS's own editor tests by path."""
+    if name not in SOURCE_TOOLS:
+        return False
+    if name == "Bash":
+        paths = [t for t in re.split(r"[\s'\"=]+", str(inp.get("command") or "")) if "/" in t]
+    else:
+        fields = PATH_FIELDS + (("pattern",) if name == "Glob" else ())
+        paths = [str(inp[k]) for k in fields if inp.get(k)]
+    return any(RUNTIME_SOURCE.search(p) for p in paths)
+
+
 def failed(result, is_error):
     """Whether a result is an error: is_error, or an ok:false envelope."""
     return is_error or result.strip().startswith('{"ok":false') or result.strip().startswith('{"ok": false')
@@ -414,6 +485,7 @@ def fam(path):
     gcd = []
     made = False
     generator_written = traced = False
+    written_files = {}
     for i, u in enumerate(uses):
         n = u["name"].split("__")[-1]
         inp = u.get("input", {})
@@ -501,6 +573,23 @@ def fam(path):
                 f["GN_template_prints_before_trace"] += 1
         if n == "mps_mcp_reload_all":
             f["M_reload_all"] += 1
+        if n == "execute_run_configuration":
+            f["ET_test_runs"] += 1
+        if n == "mps_mcp_create_run_configuration":
+            f["ET_run_configs"] += 1
+        if n == "Write" and isinstance(inp.get("file_path"), str):
+            written_files[inp["file_path"]] = str(inp.get("content") or "")
+        written = node_write_text(n, inp, written_files)
+        if written is not None:
+            if IDE_SERVICE.search(written):
+                f["ET_ide_service_writes"] += 1
+            if not failed(r, err):
+                if PLATFORM_ACTION_ID.search(written):
+                    f["ET_platform_id_writes"] += 1
+                if "IsActionApplicableExpression" in written:
+                    f["ET_applicability_writes"] += 1
+        if runtime_source_read(n, inp):
+            f["ET_runtime_source_reads"] += 1
         if n == "mps_mcp_get_concept_details":
             gcd.append(i)
         if failed(r, err):
