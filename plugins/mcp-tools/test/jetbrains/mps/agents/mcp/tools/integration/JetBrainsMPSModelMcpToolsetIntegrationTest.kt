@@ -5,6 +5,7 @@ import jetbrains.mps.agents.mcp.tools.common.*
 
 import com.google.gson.JsonParser
 import jetbrains.mps.agents.mcp.tools.languages.BaseLanguageMeta
+import jetbrains.mps.extapi.model.GeneratableSModel
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
@@ -192,6 +193,37 @@ class JetBrainsMPSModelMcpToolsetIntegrationTest : McpIntegrationTestBase() {
             val match = solution.models.firstOrNull { it.reference == target.reference }
             assertNull("deleted model must be gone from its module: $response", match)
         }
+    }
+
+    @Test
+    fun `SET_DO_NOT_GENERATE marks the model, project structure reports it, and false clears it`() {
+        val solution = createSolution()
+        val model = createModel(solution, "test.dng${System.nanoTime()}")
+        val ref = modelRefOf(model)
+
+        val set = expectOk(runTool(toolset) { it.mps_mcp_update_model(ref, operation = ModelOperation.SET_DO_NOT_GENERATE) })
+        assertTrue("response carries the new flag: $set", set.get("doNotGenerate").asBoolean)
+        readOnRepo { assertTrue((model as GeneratableSModel).isDoNotGenerate) }
+        val dumped = payloadObjectFromOkData(runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = ref)
+        })
+        assertTrue("project structure marks a do-not-generate model: $dumped", dumped.get("doNotGenerate").asBoolean)
+
+        val cleared = expectOk(runTool(toolset) {
+            it.mps_mcp_update_model(ref, operation = ModelOperation.SET_DO_NOT_GENERATE, doNotGenerate = false)
+        })
+        assertFalse(cleared.get("doNotGenerate").asBoolean)
+        readOnRepo { assertFalse((model as GeneratableSModel).isDoNotGenerate) }
+        val redumped = payloadObjectFromOkData(runTool(JetBrainsMPSProjectMcpToolset()) {
+            it.mps_mcp_get_project_structure(startingPoint = ref)
+        })
+        assertFalse("the field is omitted for a generated model: $redumped", redumped.has("doNotGenerate"))
+    }
+
+    @Test
+    fun `SET_DO_NOT_GENERATE returns NOT_FOUND for unknown reference`() {
+        val response = runTool(toolset) { it.mps_mcp_update_model("ghost", operation = ModelOperation.SET_DO_NOT_GENERATE) }
+        assertTrue(expectErr(response).contains("not found"))
     }
 
     @Test

@@ -52,6 +52,20 @@ internal object GenPlanTestNodes {
         })
     }
 
+    private val FORK_FILTER = MetaAdapterFactory.getContainmentLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x2bf683196b12a3cbL, 0x1ea8fc1842bbe7efL, "filter")
+    private val CONCEPT_LIST_SELECTOR: SConcept =
+        MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x1ea8fc1842bbe7f2L, "jetbrains.mps.lang.generator.plan.structure.ConceptListSelector")
+    private val PLAN_CONTRIBUTION: SConcept =
+        MetaAdapterFactory.getConcept(PLAN_LANG_HI, PLAN_LANG_LO, 0x1cc6e9754a7aa3f9L, "jetbrains.mps.lang.generator.plan.structure.PlanContribution")
+    private val PLAN_CONTRIBUTION_PLAN = MetaAdapterFactory.getReferenceLink(PLAN_LANG_HI, PLAN_LANG_LO, 0x1cc6e9754a7aa3f9L, 0x1cc6e9754a7aa3fbL, "plan")
+
     /** A Fork step that runs [plan] on a copy of the model. */
     fun forkNode(plan: SNode): SNode = jetbrains.mps.smodel.SNode(FORK).apply { setReferenceTarget(FORK_PLAN, plan) }
+
+    /** A Fork step into [plan] filtered by a ConceptListSelector, which MPS's plan translator cannot build. */
+    fun conceptListForkNode(plan: SNode): SNode = forkNode(plan).apply { addChild(FORK_FILTER, jetbrains.mps.smodel.SNode(CONCEPT_LIST_SELECTOR)) }
+
+    /** A PlanContribution root that forks into [plan]. */
+    fun contributionNode(plan: SNode): SNode =
+        jetbrains.mps.smodel.SNode(PLAN_CONTRIBUTION).apply { setReferenceTarget(PLAN_CONTRIBUTION_PLAN, plan) }
 }

@@ -4,6 +4,7 @@ import jetbrains.mps.agents.mcp.tools.*
 import jetbrains.mps.agents.mcp.tools.common.*
 import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.PLAN_STEPS
 import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.checkpointNode
+import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.conceptListForkNode
 import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.forkNode
 import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.planNode
 import jetbrains.mps.agents.mcp.tools.integration.GenPlanTestNodes.transformNode
@@ -151,6 +152,11 @@ class JetBrainsMPSGenerationMcpToolsetIntegrationTest : McpIntegrationTestBase()
             diagnostics.any { it.get("reference")?.asString == readOnRepo { org.jetbrains.mps.openapi.persistence.PersistenceFacade.getInstance().asString(solution.moduleReference) } },
         )
         assertFalse("priority conflicts come with a default plan only", data.has("conflicts"))
+        val source = data.getAsJsonArray("explicitPlanSources").single().asJsonObject
+        assertEquals(source.toString(), "FACET", source.get("via").asString)
+        assertEquals(solution.moduleName, source.get("by").asString)
+        assertEquals("the plan MPS runs is the model's first Plan root", "MainPlan", source.get("planName").asString)
+        assertTrue(source.get("applied").asBoolean)
 
         val steps = steps(data)
         assertEquals(steps.toString(), listOf("TRANSFORM", "CHECKPOINT", "FORK"), steps.map { it.get("kind").asString })
@@ -223,5 +229,107 @@ class JetBrainsMPSGenerationMcpToolsetIntegrationTest : McpIntegrationTestBase()
 
     private companion object {
         const val BASE_LANGUAGE = "jetbrains.mps.baseLanguage"
+    }
+
+    /** A solution whose Custom Generation facet names a plan model built by [build]; returns a BaseLanguage model of it. */
+    private fun modelUnderFacetPlan(build: (SModel) -> Unit): SModel {
+        val solution = createSolution()
+        val planModel = createModel(solution, "test.gen.plans")
+        executeCommand { build(planModel) }
+        expectOk(runTool(JetBrainsMPSModuleMcpToolset()) {
+            it.mps_mcp_update_module_facet(
+                solution.moduleName!!, CustomGenerationModuleFacet.FACET_TYPE, true,
+                JsonOrText("""{"planModel":"${modelRefOf(planModel)}"}"""),
+            )
+        })
+        return modelWithRoot(solution, "test.gen.input", concept(BASE_LANGUAGE, "ClassConcept"))
+    }
+
+    @Test
+    fun `PLAN detail steps keeps the steps and drops the bulky sections`() {
+        val model = modelUnderFacetPlan { planModel ->
+            planModel.addRootNode(planNode("MainPlan").apply {
+                addChild(PLAN_STEPS, transformNode(languageRuntime(BASE_LANGUAGE).identity))
+                addChild(PLAN_STEPS, checkpointNode("cp1"))
+            })
+        }
+        val full = expectOk(plan("""{"model":"${modelRefOf(model)}"}"""))
+        val compact = expectOk(plan("""{"model":"${modelRefOf(model)}","detail":"steps"}"""))
+        assertEquals(steps(full).map { it.get("kind").asString }, steps(compact).map { it.get("kind").asString })
+        assertEquals("EXPLICIT", compact.get("planSource").asString)
+        assertTrue(compact.has("explicitPlanSources"))
+        assertTrue(compact.has("usedLanguages"))
+        for (key in listOf("engagedGeneratorTrace", "generators", "notes")) {
+            assertTrue("full keeps $key", full.has(key))
+            assertFalse("steps drops $key: $compact", compact.has(key))
+        }
+        val transformation = steps(compact)[0].getAsJsonArray("transformations")[0].asJsonObject
+        assertTrue(transformation.has("generatorModule"))
+        assertFalse(transformation.has("mappingConfigurations"))
+        assertTrue(compact.toString().length < full.toString().length)
+        expectErr(plan("""{"model":"${modelRefOf(model)}","detail":"everything"}"""))
+    }
+
+    @Test
+    fun `PLAN reports a plan MPS cannot build instead of failing`() {
+        // A ConceptListSelector fork filter makes GenPlanTranslator pop an empty condition stack.
+        val model = modelUnderFacetPlan { planModel ->
+            val branch = planNode("BranchPlan").apply { addChild(PLAN_STEPS, checkpointNode("b")) }
+            planModel.addRootNode(planNode("MainPlan").apply {
+                addChild(PLAN_STEPS, transformNode(languageRuntime(BASE_LANGUAGE).identity))
+                addChild(PLAN_STEPS, conceptListForkNode(branch))
+            })
+            planModel.addRootNode(branch)
+        }
+        val response = plan("""{"model":"${modelRefOf(model)}"}""")
+        val data = expectOk(response)
+        assertFalse(response, data.get("planComputed").asBoolean)
+        assertTrue(response, data.has("planError"))
+        assertTrue("the attached plan is still named: $response", data.has("explicitPlanSources"))
+        val problem = data.getAsJsonArray("explicitPlanSources")[0].asJsonObject.get("problem")?.asString
+        assertTrue("the source carries the ConceptListSelector diagnosis: $response", problem?.contains("ConceptListSelector") == true)
+
+        val ignored = plan("""{"model":"${modelRefOf(model)}","ignoreExternalPlan":true}""")
+        val fallback = expectOk(ignored)
+        assertTrue("ignoring the broken plan shows the default one: $ignored", fallback.get("planComputed").asBoolean)
+        assertEquals("DEFAULT", fallback.get("planSource").asString)
+        assertTrue(fallback.has("planError"))
+        assertTrue(steps(fallback).isNotEmpty())
+    }
+
+    @Test
+    fun `PLAN lists a shadowed devkit plan after the facet plan that applies`() {
+        val plans = createSolution()
+        fun planModel(name: String, plan: String): SModel = createModel(plans, name).also { m ->
+            executeCommand {
+                m.addRootNode(planNode(plan).apply { addChild(PLAN_STEPS, transformNode(languageRuntime(BASE_LANGUAGE).identity)) })
+            }
+        }
+        val kitModel = planModel("test.gen.kit", "KitPlan")
+        val facetModel = planModel("test.gen.facet", "FacetPlan")
+        val modules = JetBrainsMPSModuleMcpToolset()
+        val dkName = "test.gen.devkit${System.nanoTime()}"
+        expectOk(runTool(modules) { it.mps_mcp_create_module("devkit", dkName, freshPathInProject(dkName), null, null, false, false, false) })
+        expectOk(runTool(modules) { it.mps_mcp_update_module(dkName, null, "SET_GENERATION_PLAN", false, modelRefOf(kitModel)) })
+        val devkitRef = readOnRepo { myProject.projectModules.single { it.moduleName == dkName }.moduleReference }
+
+        val solution = createSolution()
+        val model = modelWithRoot(solution, "test.gen.input", concept(BASE_LANGUAGE, "ClassConcept"))
+        executeCommand { (model as jetbrains.mps.smodel.SModelInternal).addDevKit(devkitRef) }
+
+        val viaDevkit = expectOk(plan("""{"model":"${modelRefOf(model)}","detail":"steps"}"""))
+        assertEquals("DEVKIT", viaDevkit.get("explicitPlanOrigin").asString)
+        val kit = viaDevkit.getAsJsonArray("explicitPlanSources").single().asJsonObject
+        assertEquals(listOf("DEVKIT", dkName, "KitPlan", "true"), listOf("via", "by", "planName", "applied").map { kit.get(it).asString })
+
+        expectOk(runTool(modules) { it.mps_mcp_update_module(solution.moduleName!!, null, "SET_GENERATION_PLAN", false, modelRefOf(facetModel)) })
+        val both = expectOk(plan("""{"model":"${modelRefOf(model)}","detail":"steps"}"""))
+        val sources = both.getAsJsonArray("explicitPlanSources").map { it.asJsonObject }
+        assertEquals("the facet is consulted first", listOf("FACET", "DEVKIT"), sources.map { it.get("via").asString })
+        assertEquals(listOf(true, false), sources.map { it.get("applied").asBoolean })
+        assertEquals("FACET", both.get("explicitPlanOrigin").asString)
+
+        val ignored = expectOk(plan("""{"model":"${modelRefOf(model)}","ignoreExternalPlan":true,"detail":"steps"}"""))
+        assertTrue("nothing applies when the attached plans are ignored", ignored.getAsJsonArray("explicitPlanSources").all { !it.asJsonObject.get("applied").asBoolean })
     }
 }

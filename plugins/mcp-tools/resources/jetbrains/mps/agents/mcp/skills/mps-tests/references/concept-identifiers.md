@@ -32,8 +32,14 @@
 | `ScopeEntry` (named scope partition; used by `MockScopeProvider` and similar) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/2153278993333648098` | |
 | `TypeKeyStatement` (`type "..."`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1227182079811` | |
 | `PressKeyStatement` (`press ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1228934484974` | |
-| `InvokeActionStatement` (`invoke action ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/7011073693661765739` | |
-| `MPSActionReference` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/4239542196496927193` | |
+| `InvokeActionStatement` (`invoke action ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/7011073693661765739` | child `actionReference` : `ActionReference` [1] |
+| `ActionReference` (abstract) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1101347953350122484` | |
+| `MPSActionReference` (`-> Name`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/4239542196496927193` | reference `action` → `ActionDeclaration` (MPS actions, e.g. `jetbrains.mps.ide.editor.actions`) |
+| `BootstrapActionReference` (`by id: ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1101347953350122758` | property `actionId`, an action id such as `$Undo`, `$Redo`, `$Copy`, `$Cut`, `$Paste` |
+| `IsActionApplicableExpression` (`is action applicable ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/813341629406803928` | child `actionReference`; generates `isActionApplicable(String id)` returning `boolean` |
+| `InvokeSurroundWithIntentionStatement` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1227269295333560277` | reference `intention` → `SurroundWithIntentionDeclaration` |
+| `SwitchToInspector` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/5773579205429617809` | |
+| `PressMouseStatement` / `DragMouseStatement` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/210559400605421433` / `c:8585453e-6bfb-4d80-98de-b16074f1d86c/210559400608047267` | properties `x`, `y`; `PressMouseStatement` also has the child `statementList` : `StatementList` [1] |
 | `InvokeIntentionStatement` (`invoke intention ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1225989773458` | |
 | `ApplyQuickFix` (`invoke quick-fix ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/5266358701722203952` | |
 | `IsIntentionApplicableExpression` (`is intention ... applicable`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/592868908271422361` | check if an intention is applicable; generates `isIntentionApplicable(String id, SNode)` returning `boolean` |
@@ -46,6 +52,22 @@
 | `LogEvent` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/5219531754069546544` | |
 
 Language id: `jetbrains.mps.lang.test` → `8585453e-6bfb-4d80-98de-b16074f1d86c`.
+
+## `jetbrains.mps.lang.test.generator` (generator tests, `references/generator-test.md`)
+
+| Concept | Concept Ref | Notes |
+|---|---|---|
+| `GeneratorTest` (root) | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093187774` | `arguments`, `tests` |
+| `ModelArgument` | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093190254` | `param` = `ModelPointer` |
+| `ModelMatchOptions` | `c:68015e26-cc4d-49db-8715-b643faea1769/8945822034016668031` | set `propertyUserValue` explicitly |
+| `TransformationMatchAssertion` | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093203543` | one JUnit method |
+| `TransformationMatchManyAssertion` | `c:68015e26-cc4d-49db-8715-b643faea1769/6346338635721157081` | several output models (forks) |
+| `ArgumentReference` | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093203547` | `arg` → an argument |
+| `ModelPointer` (`jetbrains.mps.lang.modelapi`) | `c:446c26eb-2b7b-4bf0-9b35-f83fa582753e/361130699826193248` | `modelId` + child `name` |
+| `ModelName` (`jetbrains.mps.lang.modelapi`) | `c:446c26eb-2b7b-4bf0-9b35-f83fa582753e/679099339649053840` | `value` = full model name |
+
+Language ids: `jetbrains.mps.lang.test.generator` → `68015e26-cc4d-49db-8715-b643faea1769`,
+`jetbrains.mps.lang.modelapi` → `446c26eb-2b7b-4bf0-9b35-f83fa582753e`.
 
 ## `jetbrains.mps.baseLanguage.unitTest`
 

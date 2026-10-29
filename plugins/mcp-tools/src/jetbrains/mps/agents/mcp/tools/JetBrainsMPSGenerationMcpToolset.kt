@@ -20,7 +20,7 @@ private val PARAM_MODEL = BlobKey("model", "modelReference", "modelRef")
 
 private val PLAN_KEYS = ParameterKeys.of(
     required(PARAM_MODEL, "the model's reference or full name (stereotype included)"),
-    "ignoreExternalPlan",
+    "ignoreExternalPlan", "detail",
 )
 
 private val TRACE_KEYS = ParameterKeys.of(
@@ -49,12 +49,17 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
 
     @McpTool
     @McpDescription("""
-        Generation debugging, read-only except DROP_TRANSIENT_MODELS. PLAN {model (reference or full name), ignoreExternalPlan (default false)} → the
+        Generation debugging, read-only except DROP_TRANSIENT_MODELS. PLAN {model (reference or full name), ignoreExternalPlan (default false), detail (full|steps, default full)} → the
         generation plan make would use for the model, what the IDE's "Show Generation Plan" prints:
         {model, modelReference, generatable, planComputed, planSource EXPLICIT|DEFAULT, explicitPlanOrigin FACET|DEVKIT (when
-        the model has an external plan from a `generator` module facet or an imported devkit's @genplan), externalPlanIgnored,
+        the model has an external plan from a `generator` module facet or an imported devkit's @genplan), explicitPlanSources?
+        (every attached plan in lookup order: [{via FACET|DEVKIT, by (module or devkit), planModel, planModelReference, planName?,
+        contribution?, problem?, resolved?, applied}]; a facet plan shadows DevKit plans), externalPlanIgnored,
         planDiagnostics:[{kind, text, reference?}], steps, generators, usedLanguages, conflicts?, ignoredPriorityRules?,
-        engagedGeneratorTrace, notes}. `steps` is the ordered plan: TRANSFORM {index, transientStereotypePrefix, prefixShared?,
+        engagedGeneratorTrace, notes}. A plan MPS cannot build gives `planComputed`:false with `planError` (make fails the same
+        way). `detail`:"steps" keeps the plan's identity, steps (transformations without template references and mapping
+        configurations), usedLanguages and conflict counts, and drops generators, engagedGeneratorTrace and notes: use it to
+        check an authored plan. `steps` is the ordered plan: TRANSFORM {index, transientStereotypePrefix, prefixShared?,
         transformations:[{label, templateModel, generatorModule, sourceLanguage, mappingConfigurations}]}, CHECKPOINT {name,
         plan, persisted, checkpointModelName?}, FORK {hasCondition, conditionPrintable?, branchInputStereotypePrefix,
         branch:[steps]}. A step's transient models are named `<model long name>@<transientStereotypePrefix><minor>`;
@@ -149,9 +154,14 @@ class JetBrainsMPSGenerationMcpToolset : AbstractOps() {
     private suspend fun opPlan(mpsProject: MPSProject, params: JsonObject, maxInlineBytes: Int): String {
         val modelReference = params.requiredParamString(PARAM_MODEL)
         val ignoreExternalPlan = params.paramBoolean("ignoreExternalPlan", default = false)
+        val compact = when (val detail = params.paramString("detail")?.lowercase()) {
+            null, "full" -> false
+            "steps" -> true
+            else -> throw McpInvalidRequestException("Unsupported parameters.detail '$detail': use \"full\" (default) or \"steps\"")
+        }
         // Not thrown inside the read action, where ActionDispatcher would log the user error as SEVERE.
         val rendered = executeBackgroundRead(mpsProject) {
-            resolveModelPreferringProject(mpsProject, modelReference)?.let { GenerationOps.planJson(it, mpsProject.repository, ignoreExternalPlan) }
+            resolveModelPreferringProject(mpsProject, modelReference)?.let { GenerationOps.planJson(it, mpsProject.repository, ignoreExternalPlan, compact) }
         } ?: throw McpNotFoundException("Model '$modelReference' at parameters.model not found")
         return finalizeResult(rendered.json.toString(), maxInlineBytes, warnings = rendered.warnings)
     }

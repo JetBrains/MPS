@@ -16,6 +16,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import jetbrains.mps.library.ModulesMiner
 import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.project.Solution
 import jetbrains.mps.project.modules.LanguageProducer
 import jetbrains.mps.project.structure.modules.LanguageDescriptor
 import jetbrains.mps.smodel.Generator
@@ -2470,4 +2471,263 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
         assertEquals("expected INVALID_REQUEST", "INVALID_REQUEST", code)
     }
 
+
+    // ── generation plans: SET/CLEAR_GENERATION_PLAN, DevKit exports ──────────────────────────────────
+
+    /** A model of [solution] whose first root is a one-step plan named [planName]; extra plain plans follow it. */
+    private fun planModel(solution: Solution, modelName: String, planName: String, vararg otherPlans: String): org.jetbrains.mps.openapi.model.SModel {
+        val model = createModel(solution, modelName)
+        executeCommand {
+            for (name in listOf(planName) + otherPlans) {
+                model.addRootNode(GenPlanTestNodes.planNode(name).apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("cp")) })
+            }
+        }
+        return model
+    }
+
+    private fun createDevkit(): jetbrains.mps.project.DevKit {
+        val name = "test.plan.devkit${System.nanoTime()}"
+        expectOk(runTool(toolset) { it.mps_mcp_create_module("devkit", name, freshPathInProject(name), null, null, false, false, false) })
+        return readOnRepo { myProject.projectModules.single { it.moduleName == name } as jetbrains.mps.project.DevKit }
+    }
+
+    private fun setPlan(module: String, planModel: String?, operation: ModuleOperation = ModuleOperation.SET_GENERATION_PLAN, newName: String? = null): String =
+        runTool(toolset) { it.mps_mcp_update_module(module, newName, operation.name, false, planModel) }
+
+    private fun generationPlanOf(response: String): JsonObject = expectOk(response).getAsJsonObject("generationPlan")
+
+    private fun descriptorText(module: AbstractModule): String = File(module.descriptorFile!!.path).readText()
+
+    private fun persistedFacetTypes(moduleName: String): List<String> =
+        expectOk(runTool(toolset) { it.mps_mcp_get_module_facets(moduleName) })
+            .getAsJsonArray("persistedFacets").map { it.asJsonObject.get("type").asString }
+
+    @Test
+    fun `SET_GENERATION_PLAN on a solution writes the Custom Generation facet, replaces and clears it`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val first = planModel(plans, "test.plans.first", "FirstPlan", "BranchPlan")
+        val second = planModel(plans, "test.plans.second", "SecondPlan")
+        val target = createSolution("test.plan.target${System.nanoTime()}")
+        val targetName = target.moduleName!!
+        val facetsBefore = persistedFacetTypes(targetName)
+
+        val set = setPlan(targetName, modelRefOf(first))
+        val attached = generationPlanOf(set)
+        assertEquals(set, "FACET", attached.get("attachedVia").asString)
+        assertEquals("FirstPlan", attached.get("plan").asString)
+        assertTrue(attached.get("changed").asBoolean)
+        assertTrue("several Plan roots are explained: $set", warningsOf(set).contains("first in root order"))
+        assertTrue("the missing dependency on the plan's solution is pointed out: $set", warningsOf(set).contains("does not depend"))
+        assertEquals(facetsBefore + "generator", persistedFacetTypes(targetName))
+        readOnRepo {
+            val facet = target.getFacetOfType("generator") as jetbrains.mps.generator.CustomGenerationModuleFacet
+            assertEquals(first.reference, facet.planModelReference)
+            assertNotNull("adding the facet recreates the others from the descriptor", target.getFacetOfType("java"))
+        }
+        assertTrue("the facet reaches the .msd", descriptorText(target).contains(modelRefOf(first)))
+
+        assertFalse("the same plan again changes nothing", generationPlanOf(setPlan(targetName, modelRefOf(first))).get("changed").asBoolean)
+
+        val replaced = generationPlanOf(setPlan(targetName, "test.plans.second"))
+        assertEquals("SecondPlan", replaced.get("plan").asString)
+        assertEquals(modelRefOf(first), replaced.get("previousModel").asString)
+        readOnRepo {
+            val facet = target.getFacetOfType("generator") as jetbrains.mps.generator.CustomGenerationModuleFacet
+            assertEquals(second.reference, facet.planModelReference)
+            assertNotNull("the other facets survive", target.getFacetOfType("java"))
+        }
+        val replacedOnDisk = descriptorText(target)
+        assertTrue("the in-place update reaches the .msd", replacedOnDisk.contains(modelRefOf(second)) && !replacedOnDisk.contains(modelRefOf(first)))
+
+        val cleared = generationPlanOf(setPlan(targetName, null, ModuleOperation.CLEAR_GENERATION_PLAN))
+        assertTrue(cleared.get("changed").asBoolean)
+        assertEquals(facetsBefore, persistedFacetTypes(targetName))
+        readOnRepo {
+            assertNull(target.getFacetOfType("generator"))
+            assertNotNull("removing the facet keeps the others", target.getFacetOfType("java"))
+        }
+        assertFalse("the facet is gone from the .msd", descriptorText(target).contains("planModel"))
+        assertFalse(generationPlanOf(setPlan(targetName, null, ModuleOperation.CLEAR_GENERATION_PLAN)).get("changed").asBoolean)
+    }
+
+    @Test
+    fun `SET_GENERATION_PLAN on a devkit sets its plan and asks for the plan solution export`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val model = planModel(plans, "test.plans.devkit", "KitPlan")
+        val devkit = createDevkit()
+
+        val set = setPlan(devkit.moduleName!!, modelRefOf(model))
+        assertEquals("DEVKIT", generationPlanOf(set).get("attachedVia").asString)
+        assertTrue("an unexported plan solution is named: $set", warningsOf(set).contains("is not exported"))
+        readOnRepo { assertEquals(model.reference, devkit.moduleDescriptor!!.associatedGenPlan) }
+        assertTrue("the plan is persisted", File(devkit.descriptorFile!!.path).readText().contains("generation-plan"))
+
+        val export = expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(devkit.moduleName!!, plans.moduleName!!, DependencyOperation.ADD, null, false)
+        })
+        assertEquals("exportedSolutions", export.get("devkitCollection").asString)
+        val again = setPlan(devkit.moduleName!!, modelRefOf(model))
+        assertFalse(generationPlanOf(again).get("changed").asBoolean)
+        assertFalse("an exported plan solution is not reported: $again", warningsOf(again).contains("is not exported"))
+
+        assertTrue(generationPlanOf(setPlan(devkit.moduleName!!, null, ModuleOperation.CLEAR_GENERATION_PLAN)).get("changed").asBoolean)
+        readOnRepo { assertNull(devkit.moduleDescriptor!!.associatedGenPlan) }
+    }
+
+    @Test
+    fun `SET_GENERATION_PLAN refuses what MPS cannot use and leaves the module alone`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val planless = createModel(plans, "test.plans.empty")
+        val badFork = createModel(plans, "test.plans.badfork")
+        executeCommand {
+            val branch = GenPlanTestNodes.planNode("Branch").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("b")) }
+            badFork.addRootNode(GenPlanTestNodes.planNode("Main").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.conceptListForkNode(branch)) })
+            badFork.addRootNode(branch)
+        }
+        val mismatch = createModel(plans, "test.plans.mismatch")
+        executeCommand {
+            val other = GenPlanTestNodes.planNode("Other").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("o")) }
+            mismatch.addRootNode(GenPlanTestNodes.planNode("Main").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("m")) })
+            mismatch.addRootNode(other)
+            mismatch.addRootNode(GenPlanTestNodes.contributionNode(other))
+        }
+        val good = planModel(plans, "test.plans.good", "Good")
+        val target = createSolution("test.plan.target${System.nanoTime()}").moduleName!!
+
+        assertTrue(expectErr(setPlan(target, modelRefOf(planless))).contains("no Plan or PlanContribution root"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(badFork))).contains("ConceptListSelector"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(mismatch))).contains("PlanContribution"))
+        assertTrue(expectErr(setPlan(target, "no.such.model@genplan")).contains("not found"))
+        assertTrue(expectErr(setPlan(language.moduleName!!, modelRefOf(good))).contains("DevKits"))
+        assertTrue(expectErr(setPlan(target, null)).contains("needs planModel"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(good), newName = "x")).contains("takes no newName"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(good), ModuleOperation.RENAME)).contains("SET_GENERATION_PLAN"))
+        assertFalse("nothing was attached", persistedFacetTypes(target).contains("generator"))
+    }
+
+    @Test
+    fun `module_dependency files a devkit's targets into its exports and persists them`() {
+        val devkit = createDevkit()
+        val dk = devkit.moduleName!!
+        val solution = createSolution("test.dk.sol${System.nanoTime()}")
+        val other = createDevkit()
+
+        val lang = expectOk(runTool(toolset) { it.mps_mcp_module_dependency(dk, language.moduleName!!, DependencyOperation.ADD, null, false) })
+        assertEquals("exportedLanguages", lang.get("devkitCollection").asString)
+        assertEquals("exportedSolutions", expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.ADD, "Default", false)
+        }).get("devkitCollection").asString)
+        assertEquals("extendedDevkits", expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(dk, other.moduleName!!, DependencyOperation.ADD, null, false)
+        }).get("devkitCollection").asString)
+        assertTrue(expectOk(runTool(toolset) {
+            it.mps_mcp_module_dependency(dk, language.moduleName!!, DependencyOperation.ADD, null, false)
+        }).get("alreadyPresent").asBoolean)
+
+        readOnRepo {
+            val descriptor = devkit.moduleDescriptor!!
+            assertEquals(listOf(language.moduleReference), descriptor.exportedLanguages.toList())
+            assertEquals(listOf(solution.moduleReference), descriptor.exportedSolutions.toList())
+            assertEquals(listOf(other.moduleReference), descriptor.extendedDevkits.toList())
+            assertTrue("no unsaved regular dependency is left", descriptor.dependencies.isEmpty())
+        }
+        val saved = File(devkit.descriptorFile!!.path).readText()
+        assertTrue(saved, saved.contains("exported-language") && saved.contains("exported-solution"))
+
+        assertTrue(expectErr(runTool(toolset) { it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.ADD, null, true) })
+            .contains("reexport"))
+        assertTrue(expectErr(runTool(toolset) { it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.ADD, "Design", false) })
+            .contains("does not apply to a DevKit"))
+
+        val removed = expectOk(runTool(toolset) { it.mps_mcp_module_dependency(dk, solution.moduleName!!, DependencyOperation.DELETE, null, false) })
+        assertEquals("exportedSolutions", removed.getAsJsonArray("devkitCollections").single().asString)
+        readOnRepo { assertTrue(devkit.moduleDescriptor!!.exportedSolutions.isEmpty()) }
+    }
+
+    @Test
+    fun `update_module_facet names the settings a facet ignores and refuses a devkit`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val model = planModel(plans, "test.plans.facet", "FacetPlan")
+        val target = createSolution("test.facet.target${System.nanoTime()}").moduleName!!
+
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(target, "generator", true, JsonOrText("""{"plan":"${modelRefOf(model)}"}"""))
+        }
+        expectOk(response)
+        assertTrue("the ignored key is named: $response", warningsOf(response).contains("ignores the settings plan"))
+        assertTrue("the right key and the dedicated operation are pointed out: $response",
+            warningsOf(response).contains("planModel") && warningsOf(response).contains("SET_GENERATION_PLAN"))
+
+        val kept = runTool(toolset) {
+            it.mps_mcp_update_module_facet(target, "generator", true, JsonOrText("""{"planModel":"${modelRefOf(model)}"}"""))
+        }
+        assertFalse("a kept key is not reported as ignored: $kept", warningsOf(kept).contains("ignores"))
+        assertTrue("the generator facet always points at the validating operation: $kept", warningsOf(kept).contains("SET_GENERATION_PLAN"))
+
+        val devkit = createDevkit()
+        assertTrue(expectErr(runTool(toolset) {
+            it.mps_mcp_update_module_facet(devkit.moduleName!!, "generator", true, JsonOrText("""{"planModel":"${modelRefOf(model)}"}"""))
+        }).contains("SET_GENERATION_PLAN"))
+    }
+
+    @Test
+    fun `SET_GENERATION_PLAN warns about a plan model its own solution generates and explains contributions and cycles`() {
+        val solution = createSolution("test.plan.self${System.nanoTime()}")
+        val own = planModel(solution, "test.plan.self.plans", "OwnPlan")
+        val self = setPlan(solution.moduleName!!, modelRefOf(own))
+        assertTrue("a generatable plan model in the governed solution is pointed out: $self", warningsOf(self).contains("Do not generate"))
+
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val contribution = createModel(plans, "test.plans.contribution")
+        val cyclic = createModel(plans, "test.plans.cyclic")
+        executeCommand {
+            val forked = GenPlanTestNodes.planNode("Forked").apply { addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.checkpointNode("f")) }
+            contribution.addRootNode(forked)
+            contribution.addRootNode(GenPlanTestNodes.contributionNode(forked))
+            val loop = GenPlanTestNodes.planNode("Loop")
+            loop.addChild(GenPlanTestNodes.PLAN_STEPS, GenPlanTestNodes.forkNode(loop))
+            cyclic.addRootNode(loop)
+        }
+        val target = createSolution("test.plan.target${System.nanoTime()}").moduleName!!
+        val contributed = setPlan(target, modelRefOf(contribution))
+        assertTrue(generationPlanOf(contributed).get("contributed").asBoolean)
+        assertTrue("a contributed plan's empty main branch is explained: $contributed", warningsOf(contributed).contains("main branch is empty"))
+        assertTrue(expectErr(setPlan(target, modelRefOf(cyclic))).contains("forks or includes itself"))
+    }
+
+    @Test
+    fun `devkit export removal warns about the plan and ghost dependencies are cleaned up`() {
+        val plans = createSolution("test.plans${System.nanoTime()}")
+        val model = planModel(plans, "test.plans.dk", "KitPlan")
+        val devkit = createDevkit()
+        val dk = devkit.moduleName!!
+        // What earlier server versions left behind for a DevKit "dependency": an unsaved regular entry.
+        executeCommand { devkit.moduleDescriptor!!.dependencies.add(jetbrains.mps.project.structure.modules.Dependency(plans.moduleReference, SDependencyScope.DEFAULT, false)) }
+        expectOk(runTool(toolset) { it.mps_mcp_module_dependency(dk, plans.moduleName!!, DependencyOperation.ADD, null, false) })
+        readOnRepo { assertTrue("the ghost entry is dropped", devkit.moduleDescriptor!!.dependencies.isEmpty()) }
+        expectOk(setPlan(dk, modelRefOf(model)))
+
+        val removal = runTool(toolset) { it.mps_mcp_module_dependency(dk, plans.moduleName!!, DependencyOperation.DELETE, null, false) }
+        assertEquals("exportedSolutions", expectOk(removal).getAsJsonArray("devkitCollections").single().asString)
+        assertTrue("un-exporting the plan's solution is reported: $removal", warningsOf(removal).contains("is not exported"))
+
+        val generator = runTool(toolset) {
+            it.mps_mcp_create_module("generator", "ignored", /* directory = */ "", null, /* parentLanguage = */ language.moduleName, false, false, false)
+        }
+        val generatorName = expectOk(generator).get("name").asString
+        assertTrue(expectErr(runTool(toolset) { it.mps_mcp_module_dependency(dk, generatorName, DependencyOperation.ADD, null, false) })
+            .contains("cannot export a generator"))
+    }
+
+    @Test
+    fun `update_module_facet refuses settings the facet cannot load and changes nothing`() {
+        val target = createSolution("test.facet.bad${System.nanoTime()}")
+        val before = persistedFacetTypes(target.moduleName!!)
+        val response = runTool(toolset) {
+            it.mps_mcp_update_module_facet(target.moduleName!!, "generator", true, JsonOrText("""{"planModel":"not a model reference"}"""))
+        }
+        assertTrue(expectErr(response).contains("cannot load these settings"))
+        assertEquals(before, persistedFacetTypes(target.moduleName!!))
+        readOnRepo { assertNotNull(target.getFacetOfType("java")) }
+    }
 }

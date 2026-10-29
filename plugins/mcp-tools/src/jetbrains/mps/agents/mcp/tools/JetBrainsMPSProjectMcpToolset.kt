@@ -24,6 +24,7 @@ import jetbrains.mps.agents.mcp.tools.common.IdeLogReader
 import jetbrains.mps.agents.mcp.tools.common.TransientModelsOps
 import jetbrains.mps.agents.mcp.tools.config.AgentConfigRootResolver
 import jetbrains.mps.agents.mcp.tools.logging.McpCallOutcomes
+import jetbrains.mps.extapi.model.GeneratableSModel
 import jetbrains.mps.extapi.module.TransientSModule
 import jetbrains.mps.ide.project.ProjectHelper
 import jetbrains.mps.project.AbstractModule
@@ -775,6 +776,7 @@ class JetBrainsMPSProjectMcpToolset(
         obj.addProperty("reference", PersistenceFacade.getInstance().asString(model.reference))
         obj.addProperty("readOnly", model.isReadOnly)
         if (TransientModelsOps.isTransient(model)) obj.addProperty("transient", true)
+        if (model is GeneratableSModel && model.isDoNotGenerate) obj.addProperty("doNotGenerate", true)
         addContainingProjectIfForeign(obj, project, model, cache = c)
 
         if (includeDependencies) {

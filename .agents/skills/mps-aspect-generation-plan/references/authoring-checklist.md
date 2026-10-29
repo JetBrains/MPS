@@ -1,14 +1,13 @@
-# Generation Plan Authoring Checklist
+# Generation Plan Checklist
 
-Open at the end of an authoring session for a final scan before merging.
+Open at the end of a session that created, changed or attached a plan.
 
-1. Identify all languages that participate in the generation and their required order.
-2. Create a solution with a `@genplan` model; add used languages `jetbrains.mps.lang.generator.plan` and `jetbrains.mps.lang.smodel`.
-3. Create a `Plan` root node with a descriptive name.
-4. Add `Transform` steps in order, one per "phase". Group languages that can run in parallel in the same `Transform`. Multiple `LanguageEntry` children within one `Transform` may run together.
-5. Insert `Checkpoint` steps wherever downstream generators need to resolve cross-model references.
-6. Add `Fork` steps for any output variant that needs its own generation branch (e.g., XML alongside Java).
-7. Add a `PlanContribution` root in the same model (or a separate model) if the fork should be conditional and not require modifying the main plan.
-8. Associate the plan with models via a DevKit (production) or the Custom generation facet (prototyping).
-9. Verify with `mps_mcp_generation` `PLAN`: `planSource` is `EXPLICIT` and no `usedLanguages` entry is `NOT_IN_PLAN`.
-10. Run `mps_mcp_check_root_node_problems` to validate the plan node has no errors.
+1. Each main plan is the **first** `Plan` root of its own `@genplan` model; branch / included plans come after it or live in other models. No model pairs a `Plan` with a `PlanContribution` of another plan.
+2. Every language the governed models use is covered by a step (`NOT_IN_PLAN` is empty), including target languages such as `jetbrains.mps.baseLanguage`.
+3. A `Checkpoint` sits between every pair of phases that share mapping labels across models.
+4. Fork conditions use `ParameterEquals` on a parameter MPS fills (`module-facet`, `run-mode`); no `ConceptListSelector`. A branch does not overwrite the main branch's output.
+5. Attached through `mps_mcp_update_module` `SET_GENERATION_PLAN`: a DevKit exports the plan's solution and the plan's languages, and the governed models import the DevKit directly; or a Solution has the facet and its plan model (if in the same solution) is "Do not generate". No `warnings` left unexplained.
+6. `mps_mcp_generation` `PLAN` (`detail: "steps"`) on each governed model: `planSource: EXPLICIT`, your plan `applied: true` in `explicitPlanSources`, steps in the intended order.
+7. `mps_mcp_check_root_node_problems` is clean on the plan models, the DevKit and the governed models.
+8. MAKE of the governed modules with `rebuild: true` succeeds.
+9. Before a rename or delete: `FIND_USAGES` on the plan root and the attachments listed (`references/maintaining-plans.md`).
