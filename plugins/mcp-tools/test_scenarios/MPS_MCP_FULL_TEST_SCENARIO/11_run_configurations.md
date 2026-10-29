@@ -74,7 +74,8 @@ Exercises the optional `configurationName`.
 }
 ```
 - Validation: `ok==false`; error states the node is not runnable through this tool (must be
-  `IMainClass`/`ITestCase` or a `ClassConcept` with a static `main`).
+  `IMainClass`/`ITestCase`, a test root MPS test discovery recognizes, or a `ClassConcept` with a
+  static `main`).
 
 ---
 

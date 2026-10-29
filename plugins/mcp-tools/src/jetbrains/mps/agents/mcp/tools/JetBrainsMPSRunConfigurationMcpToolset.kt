@@ -92,7 +92,7 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Creates or replaces an MPS run configuration. `nodeReference` is a root, or an array of test roots. `modelReference` is a model, or an array of models. Both can be combined into one JUnit config. One model alone stays live; any other set is a snapshot, refreshed by repeating the call. Configs are permanent and written at the next save. A Java Application, and any JUnit config beyond one test root, requires `compileInMPS=true` on the owning modules. Returns `name`, `type` and `uniqueId`; JUnit configs also return `runType`, `testCaseCount` and `live`. See the `mps-run-configurations` skill.
+        Creates or replaces an MPS run configuration. `nodeReference` is a root, or an array of test roots. `modelReference` is a model, or an array of models. Both can be combined into one JUnit config. One model alone stays live; any other set is a snapshot, refreshed by repeating the call. Configs are permanent and written at the next save. A root that only MPS test discovery recognizes, such as a `GeneratorTest`, becomes a one-root JUnit snapshot. A Java Application, and any JUnit config other than one `ITestCase` root, requires `compileInMPS=true` on the owning modules. Returns `name`, `type` and `uniqueId`; JUnit configs also return `runType`, `testCaseCount` and `live`. See the `mps-run-configurations` skill.
         """
     )
     suspend fun mps_mcp_create_run_configuration(
@@ -170,7 +170,11 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
             }
         }
 
-        val needsProbes = models.isNotEmpty() || (several && roots.isNotEmpty())
+        // A lone root none of determineKind's paths claims may still be a test that discovery knows,
+        // such as a lang.test.generator GeneratorTest; like the IDE's node producer, it runs as a
+        // one-root NODE snapshot.
+        val loneDiscoveredRoot = !several && models.isEmpty() && roots.size == 1 && determineKind(roots.single().value) == null
+        val needsProbes = models.isNotEmpty() || (several && roots.isNotEmpty()) || loneDiscoveredRoot
         val probes = if (!needsProbes) null else {
             try {
                 TestProbes(mpsProject)
@@ -196,6 +200,12 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
                     }
                 }
             }
+            if (loneDiscoveredRoot) {
+                val root = roots.single().value
+                if (probes.wrap(root) == null) return errJson(notRunnableSentence(root), McpErrorCode.INVALID_REQUEST)
+                // The IDE's node producer refuses such a root too: the configuration would run nothing.
+                if (!probes.hasTests(root)) return errJson(noTestsSentence(root), McpErrorCode.INVALID_REQUEST)
+            }
             val wrapped = roots.map { it.value }.filter { probes.wrap(it) != null }
             discovered = if (models.size == 1 && roots.isEmpty()) {
                 discover(models.single().value, probes)
@@ -209,7 +219,7 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
 
         // Every non-empty input either resolved to a target or added a failure.
         if (failures.isNotEmpty()) return rejectEntries(failures)
-        if (roots.size == 1 && models.isEmpty()) {
+        if (roots.size == 1 && models.isEmpty() && !loneDiscoveredRoot) {
             return createForSingleRoot(mpsProject, roots.single().value, configurationName)
         }
 
@@ -224,7 +234,11 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
         }
 
         // Every listed root passed the not-a-test check, so the union discovered above is complete.
-        val name = if (models.isNotEmpty()) snapshotModelName(models.first().value) else severalRootsName(discovered.first())
+        val name = when {
+            models.isNotEmpty() -> snapshotModelName(models.first().value)
+            loneDiscoveredRoot -> deriveName(discovered.single(), ConfigKind.TEST_CASE)
+            else -> severalRootsName(discovered.first())
+        }
         return registerJUnit(mpsProject, configurationName, name) { cfg, cl, registeredName, uniqueId ->
             configureAsNodeList(cfg, cl, discovered)
             applyInProcessFlag(cfg, cl, discovered, probe)
@@ -539,7 +553,8 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
 
     private fun notRunnableSentence(node: SNode) =
         "Concept '${node.concept.name}' is not runnable through this tool: " +
-            "the root must implement IMainClass or ITestCase, or be a " +
+            "the root must implement IMainClass or ITestCase, be a test root " +
+            "MPS test discovery recognizes (such as a GeneratorTest), or be a " +
             "ClassConcept whose getMainMethod() resolves a static " +
             "main(<String[]-subtype>) method (visibility is not checked)"
 
@@ -552,6 +567,12 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
     private fun noTestMethodsSentence(node: SNode): String {
         val name = node.name ?: node.nodeId.toString()
         return "Test case '$name' has no test methods; add one, or leave it out of a multi-target configuration."
+    }
+
+    private fun noTestsSentence(node: SNode): String {
+        val name = node.name ?: node.nodeId.toString()
+        val hint = if (node.concept.name == "GeneratorTest") " (a GeneratorTest needs at least one assertion)" else ""
+        return "Test '$name' has no tests$hint; add one before creating its configuration."
     }
 
     private fun modelName(model: SModel): String = model.name.value
@@ -825,8 +846,8 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
     }
 
     // An ITestCase asks its behavior, as the IDE's list producer does. Any other discovered test
-    // (a JUnit3/4 ClassConcept) answers from its descriptor's CAN_RUN_IN_PROCESS, which every
-    // discovery participant sets explicitly.
+    // (a JUnit3/4 ClassConcept, a GeneratorTest) answers from its descriptor's CAN_RUN_IN_PROCESS,
+    // which defaults to true when its discovery participant does not set it (GeneratorTest does not).
     private fun canRunInProcess(node: SNode, cl: ClassLoader, probes: TestProbes): Boolean =
         if (SNodeOperations.isInstanceOf(node, ITEST_CASE)) invokeCanRunInProcess(cl, node) else probes.canRunInProcess(node)
 
@@ -843,6 +864,7 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
         private val useCompatibilityMode: java.lang.reflect.Method
         private val canRunInProcess: java.lang.reflect.Method
         private val getName: java.lang.reflect.Method
+        private val getTestMethods: java.lang.reflect.Method
         private val cache = HashMap<SNode, Any?>()
 
         init {
@@ -870,6 +892,7 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
             useCompatibilityMode = wrapperInterface.getMethod("useCompatibilityMode")
             canRunInProcess = wrapperInterface.getMethod("canRunInProcess")
             getName = wrapperInterface.getMethod("getName")
+            getTestMethods = wrapperInterface.getMethod("getTestMethods")
         }
 
         private fun wrapped(node: SNode): Any =
@@ -880,6 +903,9 @@ class JetBrainsMPSRunConfigurationMcpToolset : AbstractOps() {
         fun canRunInProcess(node: SNode): Boolean = canRunInProcess.invoke(wrapped(node)) as Boolean
 
         fun testName(node: SNode): String? = getName.invoke(wrapped(node)) as? String
+
+        // A container discovery wraps can still hold no test, e.g. a GeneratorTest without assertions.
+        fun hasTests(node: SNode): Boolean = (getTestMethods.invoke(wrapped(node)) as Iterable<*>).any()
 
         fun wrap(node: SNode): Any? {
             if (cache.containsKey(node)) return cache[node]
