@@ -32,8 +32,14 @@
 | `ScopeEntry` (named scope partition; used by `MockScopeProvider` and similar) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/2153278993333648098` | |
 | `TypeKeyStatement` (`type "..."`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1227182079811` | |
 | `PressKeyStatement` (`press ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1228934484974` | |
-| `InvokeActionStatement` (`invoke action ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/7011073693661765739` | |
-| `MPSActionReference` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/4239542196496927193` | |
+| `InvokeActionStatement` (`invoke action ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/7011073693661765739` | child `actionReference` : `ActionReference` [1] |
+| `ActionReference` (abstract) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1101347953350122484` | |
+| `MPSActionReference` (`-> Name`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/4239542196496927193` | reference `action` → `ActionDeclaration` (MPS actions, e.g. `jetbrains.mps.ide.editor.actions`) |
+| `BootstrapActionReference` (`by id: ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1101347953350122758` | property `actionId`, an action id such as `$Undo`, `$Redo`, `$Copy`, `$Cut`, `$Paste` |
+| `IsActionApplicableExpression` (`is action applicable ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/813341629406803928` | child `actionReference`; generates `isActionApplicable(String id)` returning `boolean` |
+| `InvokeSurroundWithIntentionStatement` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1227269295333560277` | reference `intention` → `SurroundWithIntentionDeclaration` |
+| `SwitchToInspector` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/5773579205429617809` | |
+| `PressMouseStatement` / `DragMouseStatement` | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/210559400605421433` / `c:8585453e-6bfb-4d80-98de-b16074f1d86c/210559400608047267` | properties `x`, `y`; `PressMouseStatement` also has the child `statementList` : `StatementList` [1] |
 | `InvokeIntentionStatement` (`invoke intention ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/1225989773458` | |
 | `ApplyQuickFix` (`invoke quick-fix ...`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/5266358701722203952` | |
 | `IsIntentionApplicableExpression` (`is intention ... applicable`) | `c:8585453e-6bfb-4d80-98de-b16074f1d86c/592868908271422361` | check if an intention is applicable; generates `isIntentionApplicable(String id, SNode)` returning `boolean` |
