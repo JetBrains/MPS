@@ -4,7 +4,7 @@ A test model must have:
 
 - **Stereotype**: `tests` (use the `@tests` suffix in the model name, e.g. `mylang.tests@tests`).
 - **Languages used**:
-  - `jetbrains.mps.lang.test` — provides `NodesTestCase`, `EditorTestCase`, `GeneratorTestCase`, `MigrationTestCase`, `TestNode`, etc.
+  - `jetbrains.mps.lang.test` — provides `NodesTestCase`, `EditorTestCase`, `MigrationTestCase`, `TestNode`, etc. Generator tests use `jetbrains.mps.lang.test.generator` and `jetbrains.mps.lang.modelapi` instead, plus plain input and expected models (`references/generator-test/layout.md`).
   - `jetbrains.mps.baseLanguage.unitTest` — provides `BTestCase`, `TestMethod`, assertions, `BeforeTest`.
   - The language(s) under test, so you can write valid sample code in `TestNode` snippets.
   - `jetbrains.mps.baseLanguage`, `jetbrains.mps.baseLanguage.collections`, `jetbrains.mps.lang.smodel`, `jetbrains.mps.lang.text` as needed for assertion code.

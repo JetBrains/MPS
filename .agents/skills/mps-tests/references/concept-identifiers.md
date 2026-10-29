@@ -53,6 +53,22 @@
 
 Language id: `jetbrains.mps.lang.test` → `8585453e-6bfb-4d80-98de-b16074f1d86c`.
 
+## `jetbrains.mps.lang.test.generator` (generator tests, `references/generator-test.md`)
+
+| Concept | Concept Ref | Notes |
+|---|---|---|
+| `GeneratorTest` (root) | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093187774` | `arguments`, `tests` |
+| `ModelArgument` | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093190254` | `param` = `ModelPointer` |
+| `ModelMatchOptions` | `c:68015e26-cc4d-49db-8715-b643faea1769/8945822034016668031` | set `propertyUserValue` explicitly |
+| `TransformationMatchAssertion` | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093203543` | one JUnit method |
+| `TransformationMatchManyAssertion` | `c:68015e26-cc4d-49db-8715-b643faea1769/6346338635721157081` | several output models (forks) |
+| `ArgumentReference` | `c:68015e26-cc4d-49db-8715-b643faea1769/554465258093203547` | `arg` → an argument |
+| `ModelPointer` (`jetbrains.mps.lang.modelapi`) | `c:446c26eb-2b7b-4bf0-9b35-f83fa582753e/361130699826193248` | `modelId` + child `name` |
+| `ModelName` (`jetbrains.mps.lang.modelapi`) | `c:446c26eb-2b7b-4bf0-9b35-f83fa582753e/679099339649053840` | `value` = full model name |
+
+Language ids: `jetbrains.mps.lang.test.generator` → `68015e26-cc4d-49db-8715-b643faea1769`,
+`jetbrains.mps.lang.modelapi` → `446c26eb-2b7b-4bf0-9b35-f83fa582753e`.
+
 ## `jetbrains.mps.baseLanguage.unitTest`
 
 | Concept | Purpose |

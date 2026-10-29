@@ -65,8 +65,13 @@ After a `MAKE`, generators write Java (and TextGen artifacts like `.xml`, `.scxm
 
 **Staleness.** On-disk `source_gen/` reflects the *last* MAKE. Re-run `MAKE` before reading so the output matches the current model, otherwise you may read stale text.
 
+## Testing a generator
+
+A regression test for a generator is a `GeneratorTest` root (`jetbrains.mps.lang.test.generator`) in a `@tests` model: it generates an input model and matches the output against an expected model. Open `references/generator-test.md` in the `mps-tests` skill root after loading that companion skill from the same origin. Not a `NodesTestCase`.
+
 ## Related Skills
 
+- `mps-tests` — generator tests (`GeneratorTest`), see *Testing a generator* above.
 - `mps-aspect-generation-plan` — priorities, checkpoints, plan contributions; pair this with priority-ordering questions.
 - `mps-aspect-textgen` — converting the final model to plain text (last pipeline stage).
 - `mps-aspect-behavior` — put non-trivial per-concept logic in behavior methods called from macros.

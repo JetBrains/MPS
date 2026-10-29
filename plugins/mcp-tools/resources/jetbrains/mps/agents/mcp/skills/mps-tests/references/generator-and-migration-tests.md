@@ -2,18 +2,13 @@
 
 ## Generator tests
 
-Generator tests use `NodesTestCase` plus the `AssertMatch` helper. Pattern:
+Generator output is tested with a `GeneratorTest` root of `jetbrains.mps.lang.test.generator`, not with
+a `NodesTestCase`: see `references/generator-test.md`.
 
-1. Two labelled snippets in the `nodes` section: an `input` root in the source language and an `expected` root in the target language.
-2. A `NodesTestMethod` (concrete `SimpleNodeTest`) that drives generation (or in unit-style cases calls a specific generator utility) and feeds the produced root to `assertNodesMatch(produced, node<expectedLabel>)`.
-
-For end-to-end generation, the helper `GenerationTest.generateAndCompare(...)` from the test runtime is the typical entry point — there is no dedicated `GeneratorTestCase` concept; it is `NodesTestCase` plus convention.
-
-Examples in `testbench/testsolutions/quotation.test/models/generationTest@tests.mps`:
-
-- `QuotationConverterTest` — single test method comparing two snippets.
-- `QuotationConverterPreservesSemantics` — many test methods, one per scenario (test1…test10).
-- `LightQuotationFinal` — one test per property/link kind covered.
+`assertNodesMatch` (`AssertMatch`) in a `NodesTestCase` compares two nodes the test already has. Use it
+for a generator *utility* called directly, e.g. `QuotationConverterTest` in
+`testbench/testsolutions/quotation.test/models/generationTest@tests.mps` (MPS source repository)
+compares `QuotationConverter.convert(input)` with an expected snippet. It does not run a generation.
 
 ## `MigrationTestCase`
 

@@ -5,7 +5,7 @@
 1. Create a model inside a **solution** module. Give it the stereotype `genplan` (convention, not enforced):
    - Right-click solution → New model → set stereotype to `genplan`
    - The model file name will look like `MyPlan@genplan.mps`
-2. Add `doNotGenerate=true` attribute to the model (MPS adds this automatically for genplan stereotype models).
+2. Optionally mark the model "Do not generate": `mps_mcp_update_model(operation="SET_DO_NOT_GENERATE")`. A model created through `mps_mcp_create_model` is generatable whatever its stereotype; generating a plan model is harmless.
 3. Add used languages:
    - `jetbrains.mps.lang.generator.plan`
    - `jetbrains.mps.lang.smodel` (for `LanguageId`)

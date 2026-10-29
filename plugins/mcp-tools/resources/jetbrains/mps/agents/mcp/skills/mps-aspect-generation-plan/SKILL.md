@@ -24,7 +24,8 @@ A **generation plan** (`Plan`) is an ordered script that controls which generato
 
 ## Critical Directives
 
-- **Genplan models use the `genplan` stereotype.** File name pattern: `<name>@genplan.mps`. Pass `moduleName: "<hosting module>"` and `modelName: "<name>@genplan"` to `mps_mcp_create_model`. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers. Set `doNotGenerate=true` (MPS adds this automatically).
+- **Genplan models use the `genplan` stereotype.** File name pattern: `<name>@genplan.mps`. Pass `moduleName: "<hosting module>"` and `modelName: "<name>@genplan"` to `mps_mcp_create_model`. See [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md) for all model identifiers. A model `mps_mcp_create_model` creates is generatable whatever its stereotype; generating a plan model is harmless, and `mps_mcp_update_model` `SET_DO_NOT_GENERATE` marks it "Do not generate" when you want make to skip it.
+- **A generator test can run a plan instead of the default one**: a `GeneratorTest` assertion's `transformationPlan` takes the first `Plan` root of a `@genplan` model, e.g. to compare only what one generator writes. Open `references/generator-test/matching-and-plans.md` in the `mps-tests` skill root after loading that companion skill from the same origin.
 - **Only one DevKit per model may carry a genplan.** Assigning multiple genplan-bearing DevKits to the same model is unsupported.
 - **`Plan.steps` is `1..n`.** A plan with no steps is invalid.
 - **`LanguageEntry.language` (`LanguageId`) and `GeneratorModulePointer.module` (`ModulePointer`) are each cardinality 1** — missing them is a validation error.

@@ -1,6 +1,6 @@
 ---
 name: mps-run-configurations
-description: Create and execute IDE run configurations for MPS root nodes via MPS MCP — Java Application for `IMainClass` / `ClassConcept` with `main`, JUnit Tests for `ITestCase`. Use when launching DSL `main`-like roots, plain BaseLanguage `ClassConcept` mains, or MPS test cases from a node; reusing or replacing an existing run config; diagnosing `ClassNotFoundException`, `compileInMPS=false`, or "not runnable through this tool" failures.
+description: Create and execute IDE run configurations for MPS root nodes via MPS MCP — Java Application for `IMainClass` / `ClassConcept` with `main`, JUnit Tests for `ITestCase` and other discovered test roots such as `GeneratorTest`. Use when launching DSL `main`-like roots, plain BaseLanguage `ClassConcept` mains, or MPS test cases from a node; reusing or replacing an existing run config; diagnosing `ClassNotFoundException`, `compileInMPS=false`, or "not runnable through this tool" failures.
 type: reference
 ---
 
@@ -15,7 +15,7 @@ This skill covers the path from "an MPS root node exists in a model" to "a green
 ## Critical Directives
 
 - `execute_run_configuration` and `get_run_configurations` are provided both by MPS and IDEA. Use the ones provided by MPS for running MPS nodes/tests.
-- **`mps_mcp_create_run_configuration` accepts a root, an array of test roots, a model, or an array of models.** A single root is still one of three shapes: implements `IMainClass`, implements `ITestCase`, or is a `ClassConcept` with a qualifying static `main`. One model alone stays a live JUnit config; any other set is a snapshot of the test roots present at creation. A model reference passed as `nodeReference` is rejected — pass it in `modelReference`. See `references/create-and-execute.md`.
+- **`mps_mcp_create_run_configuration` accepts a root, an array of test roots, a model, or an array of models.** A single root is one of four shapes: implements `IMainClass`, implements `ITestCase`, is another test root MPS test discovery recognizes (a `GeneratorTest`), or is a `ClassConcept` with a qualifying static `main`. One model alone stays a live JUnit config; any other set is a snapshot of the test roots present at creation. A model reference passed as `nodeReference` is rejected — pass it in `modelReference`. See `references/create-and-execute.md`.
 - **MAKE the *module*, not just the model, before running.** Model MAKE regenerates `source_gen` but does not always compile into `classes_gen`; running launches bytecode, so a stale `classes_gen` silently runs old code. See `references/compile-before-run.md`.
 - **Keep `configurationName` stable across iterations.** The tool replaces the existing config of the same `<type>.<name>` rather than creating duplicates — idempotent setup is the goal. Use distinct names only when you actually want parallel configs.
 - **Do not silently flip `compileInMPS=false` to true.** `Compile.None` and JPS-compile settings are usually intentional (sandbox modules, externally-built modules, packaged libraries). Confirm with the user; otherwise take the IDEA MCP file-path fallback.
