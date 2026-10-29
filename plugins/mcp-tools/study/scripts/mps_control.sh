@@ -319,6 +319,10 @@ print("\n".join(found))'
 do_shutdown() {
   [ -f "$CAPTURE" ] || die "no capture at $CAPTURE — run 'capture' while MPS is still alive"
   local pid; pid=$(mps_pid)
+  # A10: one pgrep miss made `restart` skip the shutdown while MPS was alive (cause unproven), so
+  # re-poll a few times before believing "already down".
+  local retry=0
+  while [ -z "$pid" ] && [ "$retry" -lt 3 ]; do sleep 1; retry=$((retry + 1)); pid=$(mps_pid); done
   [ -n "$pid" ] || { echo '{"ok":true,"alreadyDown":true}'; return 0; }
   resolve_url
 
