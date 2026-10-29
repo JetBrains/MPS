@@ -35,7 +35,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S14 | Answer five def-use questions about one BaseLanguage method with a loop, branches and try-finally (which assignments reach which reads). Models must not change. |
 | S15 | Find why the generated Java has the wrong `PORTIONS` from the generation plan and trace (keep transient models, read the step model, trace the node back to its rule), fix the generator, rebuild, re-make, and free the transient models. |
 | S16 | S13's task and prompt on a fixture whose `if` builder bug reads as correct text (`ifjump after node.trueBranch`): the cell that needs the emitted program, `mps_mcp_query_dataflow` `PRINT_PROGRAM`. |
-| S17 | Add six editor tests for the Recipe editor that must not pass vacuously and must run headless (typing with the caret checked, undo, redo, copy and paste, a deletion that ignores the two-step-deletion setting, an action's applicability), create a run configuration, and run them. Draft, not frozen. |
+| S17 | Add six editor tests for the Recipe editor that must not pass vacuously and must run headless (typing with the caret checked, undo, redo, copy and paste, a deletion that ignores the two-step-deletion setting, an action's applicability), create a run configuration, and run them. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -309,8 +309,10 @@ effort S16 measures `PRINT_PROGRAM` no better than S13. A harder variant would k
 misplace only the position, or put the bug in a builder no skill pattern covers.
 
 **S17 — comprehensive editor tests.** Fixture: `recipes`, as S7. Mutates the project by adding
-`mcp.study.recipes.editortests`. Written 2026-10-29 for MPS-40320; **draft, not frozen** until the
-observer walk and the opus + sonnet rehearsal listed in `scenarios/S17/done_criteria.md`.
+`mcp.study.recipes.editortests`. Written 2026-10-29 for MPS-40320; prompt frozen the same day after the
+observer walk and a rehearsal (`runs-s17`: `S17-opus-1` effort `low`, 51 turns / 218 s; `S17-sonnet-1`
+effort `medium`, 54 turns / 197 s; both PASS with one test run, `ET_platform_id_writes` 1,
+`ET_applicability_writes` 2, `ET_ide_service_writes` 0, `ET_runtime_source_reads` 0).
 Forces six `EditorTestCase` roots on the Recipe editor:
 - typing with the `result` caret checked (D71's rule);
 - undo and redo, which are platform actions reached by `invoke action by id: $Undo` / `$Redo`;

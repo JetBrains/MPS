@@ -34,7 +34,7 @@ text, for S16; flow-java = a synthesized project plus one BaseLanguage class, fo
 | S14 | Def-use questions, read-only: which assignments reach which reads in a method with a loop and try-finally | flow-java | H4, H7 |
 | S15 | Debug a misgeneration with the generation trace: keep transient models, read the step model, `TRACE` `BACKWARD` to the rule, fix the template, rebuild, re-make, drop the transients | recipes-misgen | H2, H5, H7 |
 | S16 | S13's prompt on a builder bug that reads as correct text (`ifjump after node.trueBranch`), meant to need the emitted program (`PRINT_PROGRAM`) | kaja-dataflow-2 | H2, H5, H7 |
-| S17 | `@tests` model with 6 EditorTestCase roots (typing + caret, undo, redo, copy/paste, two-step-independent delete, action applicability), headless-safe, run config (draft, not frozen) | recipes | H2, H7 |
+| S17 | `@tests` model with 6 EditorTestCase roots (typing + caret, undo, redo, copy/paste, two-step-independent delete, action applicability), headless-safe, run config | recipes | H2, H7 |
 
 | SMOKE | Harness check: list open projects and stop (read-only; no `done_criteria.md`; runs against the harness project; never evaluated) | — | — |
 

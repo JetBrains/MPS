@@ -1,7 +1,9 @@
 # S17 done criteria (observer, read-only, projectPath = run project dir)
 
-**Draft, not frozen.** Written 2026-10-29 for MPS-40320. The prompt is frozen only after the
-observer walk and the rehearsal below. Until then a result is a rehearsal, not a measurement.
+**Prompt frozen 2026-10-29** (`promptSha256` `87b54ffe3a85…`) after the observer walk and the
+rehearsal in `~/MPSProjects/mcp-study/runs-s17`. `S17-opus-1` (effort `low`) and `S17-sonnet-1`
+(effort `medium`) both passed criteria 1–4 on the intended path, with one test run each and no fix
+cycle (`S17-*.eval.md`). Written for MPS-40320; catalog `skillsSha256` `406cbbb880fd…`.
 
 Fixture: `recipes.tar.gz`, as S7 (`../../fixtures/README.md`): a passing S1 project, with the sample
 Recipe and Cookbook roots deleted and `classes_gen` included. The current tarball (2026-09-16) still
@@ -27,21 +29,26 @@ MPS's own tests. The prompt names behaviours, not mechanisms. "The tests also ru
 the real-world reason that tests coded against IDE services fail (MPS-extensions PR #1942). That
 line makes criterion 3 a fair requirement.
 
-## Observer walk before freezing (pending)
+## Observer walk (done 2026-10-29, `proj/S17-walk`, before the rehearsal)
 
-On a fresh copy of the fixture, write and run the six tests through MCP. Then pin:
-1. The cell ids above.
-2. That one `Backspace` in the empty `property_text` of the second Step removes that Step when
-   two-step deletion is off, and only marks it when it is on. Also check that
-   `EditorTestUtil.runWithTwoStepDeletion({ => … }, false)` makes the test pass either way. If
-   Backspace in an empty text does not route to the Step's delete action, reword item e before
-   freezing.
-3. That `$Copy`, `invoke action -> End`, `$Paste` on the only Step gives two Steps.
-4. That on a Step, `is action applicable -> ShowReflectiveEditor` is true and `-> ShowRegularEditor`
-   is false.
+The walk wrote the six tests through MCP; all passed on the first run. Pinned by runs:
+1. Cell ids: Recipe name `property_name`, Step text `property_text`, whole Step `Collection_t290g_a`
+   (closing `)` `Constant_t290g_g0`, from the generated editor only). The whole Recipe is
+   `Collection_6551nj_a`.
+2. DeleteEmptyStep: the Step list installs `CellAction_DeleteNode(BACKWARD)` for Backspace. One
+   `invoke action -> Backspace` in the empty `property_text` inside
+   `EditorTestUtil.runWithTwoStepDeletion({ => … }, false)` removes the Step. With `true` the same test
+   fails (`Different children count in role: steps [was: 2, expected: 1]`), and two Backspaces pass.
+   So item e is achievable as worded and setting-dependent without the wrapper.
+3. CopyPasteStep: `$Copy` on `Collection_t290g_a`, `-> End`, `$Paste` gives two equal Steps.
+4. On a Step, `is action applicable -> ShowReflectiveEditor` is true and `-> ShowRegularEditor` is
+   false; the swapped assertion fails.
+5. TypeRecipeName: the result annotation that passes is `property_name` with selection 8..8; 0..0
+   fails at `CellReference.java:61` with `expected:<0> but was:<8>`.
 
-Then run one opus and one sonnet rehearsal with the MPS checkout project closed, and freeze the
-prompt here with its `promptSha256`.
+Known weak spots of the criteria on this fixture, seen in the rehearsal: the fixture's Steps have no
+`uses`, so CopyPasteStep's `uses` equality is trivial; and when every test uses the same Step text,
+the stale-clipboard check below cannot discriminate (only CopyPasteStep copies, so it did not matter).
 
 ## Criteria
 
