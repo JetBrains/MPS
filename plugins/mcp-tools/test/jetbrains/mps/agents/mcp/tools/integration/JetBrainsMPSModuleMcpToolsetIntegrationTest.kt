@@ -654,7 +654,13 @@ class JetBrainsMPSModuleMcpToolsetIntegrationTest : McpIntegrationTestBase() {
                 facets.removeFactory(factory)
             }
             try {
-                expectOk(createModule("language", name, dir.toString(), withGenerator = true).toString())
+                val created = createModule("language", name, dir.toString(), withGenerator = true)
+                expectOk(created.toString())
+                // The generator and its template model are named in the answer, no lookup needed.
+                val generator = created.getAsJsonObject("data").getAsJsonArray("generators").single().asJsonObject
+                assertEquals("$name.generator", generator.get("name").asString)
+                assertTrue("the generator's template model must be listed: $generator",
+                    generator.getAsJsonArray("models").any { it.asJsonObject.get("aspect").asString == "generator" })
             } finally {
                 runTool(toolset) { it.mps_mcp_update_module(name, operation = ModuleOperation.DELETE, deleteFiles = true) }
             }

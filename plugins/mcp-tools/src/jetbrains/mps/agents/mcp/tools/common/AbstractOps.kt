@@ -4306,6 +4306,8 @@ abstract class AbstractOps : McpToolset {
         val targetLanguageNamespaces: Set<String>,
         val inputModels: List<SModelReference>,
         val transientsPresent: Boolean,
+        /** Generator modules in this make (requested, or owned by a requested language); reloaded with the languages. */
+        val generatorModuleRefs: Set<SModuleReference>,
     )
 
     /** Outcome of [ensureLanguageRuntime]: every make that ran (last one is decisive), the extra stage if any, and what is still not served. */
@@ -4435,7 +4437,9 @@ abstract class AbstractOps : McpToolset {
                 val inputModels = (models.asSequence() + expandedModules.asSequence().flatMap { it.models.asSequence() })
                     .filter { (it as? GeneratableSModel)?.isGeneratable == true }
                     .map { it.reference }.distinct().toList()
-                MakePreparation(list, s, ids, refs, namespaces, inputModels, nonCheckpointTransientModules(mpsProject).isNotEmpty())
+                val generatorRefs = (expandedModules.asSequence() + models.asSequence().mapNotNull { it.module })
+                    .filterIsInstance<jetbrains.mps.smodel.Generator>().map { it.moduleReference }.toSet()
+                MakePreparation(list, s, ids, refs, namespaces, inputModels, nonCheckpointTransientModules(mpsProject).isNotEmpty(), generatorRefs)
             }
             val resourcesList = preparation.resourcesList
             val session = preparation.session
@@ -4589,10 +4593,18 @@ abstract class AbstractOps : McpToolset {
                             // afterLanguagesLoaded fires synchronously inside CLM.reload, so
                             // by the time it returns the latch is down for the target
                             // languages.
-                            if (targetLanguageModuleRefs.isNotEmpty()) {
+                            //
+                            // The make's generators are reloaded too, like DefaultMakeTask reloads the modules
+                            // its compilation affected: a generator registers with its language's runtime only
+                            // when its module loads with the generator's activator class present, and a rebuild
+                            // that reloads the language alone left a fresh language's runtime without its
+                            // generator (PLAN: NO_GENERATORS until mps_mcp_reload_all; see the test
+                            // `a language made with its generator lists the generator in its runtime`).
+                            val modulesToReload = targetLanguageModuleRefs + preparation.generatorModuleRefs
+                            if (modulesToReload.isNotEmpty()) {
                                 try {
                                     val classLoaderManager = mpsProject.getComponent(ClassLoaderManager::class.java)
-                                    classLoaderManager?.reload(targetLanguageModuleRefs, EmptyProgressMonitor())
+                                    classLoaderManager?.reload(modulesToReload, EmptyProgressMonitor())
                                     languageReloadLatch.countDown() // Treat explicit reload completion as definitive
                                 } catch (e: CancellationException) {
                                     throw e
