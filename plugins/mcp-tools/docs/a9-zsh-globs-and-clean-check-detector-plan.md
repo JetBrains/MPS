@@ -6,7 +6,7 @@ prototyped the detector (`/tmp/a9proto/new2.py`, with every rule below) and ran 
 Validation numbers below are its output. It also ran the F2 snippet fix under zsh and bash, against this checkout and two
 installed MPS builds. Nothing implemented.
 
-Tracked as **A9** in `plugins/mcp-tools/study/docs-defects.md:56` (filed from round 21, `HOTSPOT_REPORT_round21.md` §4
+Tracked as **A9** in `plugins/mcp-tools/study/instructions/defects.md:56` (filed from round 21, `reports/hotspot/round-21.md` §4
 row 8 and §6). A9 has two unrelated halves: one is about the worker environment, the other about the analyzer. They share
 an entry only because both are harness-side. This plan fixes both, in three commits.
 
@@ -80,7 +80,7 @@ therefore does not move the round fingerprint that `SKILL.md` step 6 tells the o
 
 It is **not in the repository**. Each round's reviewer copied it from the previous round's run directory:
 `runs-r17/families.py`, `runs-r19/analysis/`, `runs-r20/analysis/` and `runs-r22/analysis/` are byte-identical
-(66 lines). No skill step names it. The round reports cite its output, `families.tsv`, from `HOTSPOT_REPORT_round18.md:12`
+(66 lines). No skill step names it. The round reports cite its output, `families.tsv`, from `reports/hotspot/round-18.md:12`
 onward. A fix made only in `runs-r22/analysis/families.py` would be unreviewed, untested and lost on the next copy.
 `load()` does not filter on `parent_tool_use_id`. That is harmless so far, because the only subagent events in any round
 are `tool_progress` (r17, r19 `S7-opus-1`).
@@ -260,10 +260,10 @@ From `JetBrainsMPSNodeMcpToolset.kt:729-731, 863-918, 1038-1089`:
 ### Bookkeeping (with commit 3)
 
 15. Re-run the new script over the three directories the round-21 report used, and compare it with
-    `runs-r22/analysis/families.tsv` (see Validation). Do not rewrite `HOTSPOT_REPORT_round21.md` or
+    `runs-r22/analysis/families.tsv` (see Validation). Do not rewrite `reports/hotspot/round-21.md` or
     `review-families.md`; they are records. The archive entry states the corrected C values.
-16. `docs-defects.md`:
-    - Move A9 to `docs-defects-archive.md`, with the three commit ids, the F1 table, and the re-run numbers including the
+16. `instructions/defects.md`:
+    - Move A9 to `instructions/defects-archive.md`, with the three commit ids, the F1 table, and the re-run numbers including the
       changed `C_model_checks` / `C_root_checks` rows. Update the archive sentence at `:8` and at `:58`.
     - Add a recurrence-watch row for half 1. Signature: "a Bash result containing `no matches found:`". Cells: any. First
       seen: baseline `S1-opus-1:27`. Remove the row after one round without an instance.

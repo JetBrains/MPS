@@ -2,7 +2,7 @@
 
 Status: implemented 2026-10-26 (MPS-40338). Two reviewer rounds on the plan, each "approve with changes" (F1–F10, then G1–G5), are folded in below and listed under "Review record".
 
-## The defect (from `study/docs-defects.md`)
+## The defect (from `study/instructions/defects.md`)
 
 `mps_mcp_check_root_node_problems` with `perRoot=true` returns one row per root, `{root, name, concept, errors, warnings}`. A row gives no text, so a worker that sees `warnings: 1` makes a second, single-root check only to read what the warning says. Filed from round 17 as N4, frequency "always" for the cells that exercise it.
 
@@ -167,7 +167,7 @@ The worker reads the tool text, so the rule goes there first, and the skill docs
 
 Once implemented:
 
-- D83 moves to `docs-defects-archive.md` as fixed. Its re-measure (S3): no single-root `check_root_node_problems` after a `perRoot` check whose rows carried `messages`.
+- D83 moves to `instructions/defects-archive.md` as fixed. Its re-measure (S3): no single-root `check_root_node_problems` after a `perRoot` check whose rows carried `messages`.
 - The recurrence-watch row for D83 gets that signature and stays until the defect has been absent for one round.
 - D78's entry gets a note that the tally helper and the entry shape exist.
 - The info-severity question from §6 is filed as a new entry.

@@ -1,7 +1,7 @@
 # D44 — split large skill references into one file per section: implementation task list
 
 YouTrack: [MPS-40191](https://youtrack.jetbrains.com/issue/MPS-40191). Defect record: D44 in
-`plugins/mcp-tools/study/docs-defects.md`.
+`plugins/mcp-tools/study/instructions/defects.md`.
 
 Executed 2026-09-24; the one-off inputs (`split_ref.py`, `manifest.json`, `reach.py`) were deleted
 after use — the splitter lives on as `plugins/mcp-tools/scripts/split_skill_reference.py` and
@@ -301,7 +301,7 @@ Check: `diff -rq .agents/skills .claude/skills` prints nothing; `diff -rq $SRC .
 
 ## 8. Update the defect record
 
-In `plugins/mcp-tools/study/docs-defects.md`, change D44's status cell (last column of the D44 row) from
+In `plugins/mcp-tools/study/instructions/defects.md`, change D44's status cell (last column of the D44 row) from
 the current `open — …` text to:
 
 `**fixed** (<today's date>, MPS-40191) — **T**: 18 lookup references over 12 KB split into `references/<stem>/<slug>.md` (127 section files, largest 8.5 KB), each old path rewritten as a small index table so the ~140 whole-file mentions across the catalog and the 9 Kotlin tool-description citations stay valid; `mps-aspect-constraints` and `mps-aspect-structure-concepts` Section indexes map each job straight to its file(s), and the `grep -n '^## '` / offset-limit instructions and all four `## Contents / when to read what` blocks are gone. Kept whole by design: `dot-expression-basics.md` (the "Minimum reading set" one-file rule; Contents block dropped) and `mcp-tools-index.md`. Section-specific citations (§"…" / → "heading", 9 sites) and cross-file "above/below" prose (12 sites) retargeted to the section file. Guard: `SkillReferenceLayoutTest` — 12 KB budget with a 3-entry allow-list, no heading-index instructions, every reference reachable from its `SKILL.md`, and `validate_skill_catalog.py` now runs in the suite. **Measure in round 10:** zero `grep` against `references/` in S1/S2/S4; S1 skill-navigation calls ≤ 25 (was 45); skill bytes/turn flat or lower.`

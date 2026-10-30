@@ -3,7 +3,7 @@
 Status: implemented and live-checked 2026-10-27, not committed. The live check ran on `~/MPSProjects/mcp-study/proj/d122-live` (a `recipes` copy, closed afterwards), with check 4 using the Kaja language already loaded from the MPS project instead of a second fixture copy. Results: 7/7 as predicted, recorded in the D122 archive entry. Plan draft 3. Docs-only fix (remedy **D**), folds in D91 as the filed remedy asks. Two review
 rounds ("approve with changes" both times, 0 blocking) are folded in; see "Review log".
 
-## The defect (from `study/docs-defects.md:54`, and D91 at `:40`)
+## The defect (from `study/instructions/defects.md:54`, and D91 at `:40`)
 
 `mps-tests/references/nodes-test-case.md` and `concept-identifiers.md` name `NodeErrorCheckOperation` but neither
 `NodeOperationsContainer` (the `smodelAttribute` wrapper every check operation must sit in — D91) nor
@@ -166,14 +166,14 @@ cannot be started, ask the user rather than commit untested JSON.
 
 ### 6. Bookkeeping
 
-- Move D91 and D122 to `docs-defects-archive.md` (append to the header date list and the "Fixed / closed" list; the
+- Move D91 and D122 to `instructions/defects-archive.md` (append to the header date list and the "Fixed / closed" list; the
   archived D122 entry records the corrected root cause — rule-node mismatch, not message match — the ≈ 10 avoidable
-  calls, and the live-check result), and extend the `docs-defects.md` header sentence ("D91 and D122 were fixed (docs)
+  calls, and the live-check result), and extend the `instructions/defects.md` header sentence ("D91 and D122 were fixed (docs)
   and archived on …, re-measure (S7) still outstanding").
 - Re-measure criterion, S7 × 2 next round: no `search_concepts` for check-operation concepts, no wrap-hint rejection,
   no `errorRef` problem, no failing first test run; S7-sonnet ≈ 10 calls fewer (≈ 39 or less). n=1 per model is noisy.
 - One commit: `mcp-tools - D122 mps-tests documents NodeOperationsContainer and constraint-violation assertions`
-  (format per `.agents/git.md`), touching the three skill trees, `docs-defects.md`, the archive and this plan.
+  (format per `.agents/git.md`), touching the three skill trees, `instructions/defects.md`, the archive and this plan.
 
 ## Out of scope
 

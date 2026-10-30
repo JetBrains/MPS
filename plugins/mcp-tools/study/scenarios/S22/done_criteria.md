@@ -7,7 +7,7 @@ switched to `ApplyGenerators` — the skills now say so), `S22-sonnet-1` FAIL on
 
 ## Fixture
 
-`recipes-gen` (existing; S18/S19's tarball, sha256 `e9fd6258…`). Language `mcp.study.recipes`,
+`recipes-gen` (existing; S18/S19's tarball; sha256 in [`../../fixtures/pins.md`](../../fixtures/pins.md)). Language `mcp.study.recipes`,
 generator `mcp.study.recipes.generator` (template model `<T>` = `…templates@generator`, root
 template `RecipeClass`, one `map Recipe` rule, no label, `applyToConceptInheritors` false),
 solution `mcp.study.kitchen` with `mcp.study.kitchen.samples` (`<S>`: Crepes/Pancakes/Omelette,
@@ -29,7 +29,7 @@ helper · explicit three-step plan, `mps_mcp_generation PLAN`. No priorities.
 ## Criteria
 
 Observer, read-only, `projectPath` = run project dir; MPS only through `mcp_call.py` (`mps_mcp_*`).
-Ids from S15 `DEFECT.md`. Java: `cat` on disk (the IDEA file tools are not reachable) of
+Ids from S15 [`../../fixtures/inputs/s15/DEFECT.md`](../../fixtures/inputs/s15/DEFECT.md). Java: `cat` on disk (the IDEA file tools are not reachable) of
 `solutions/mcp.study.kitchen/source_gen/mcp/study/generated/{Crepes,Pancakes,Omelette,Souffle,
 BrunchMenu,WeeknightBasicsMenu}.java`; `find` for `classes_gen/mcp/study/generated/*.class` (six).
 Expected texts are **computed from `<S>`** (`print_node` each Recipe and Cookbook): quick iff

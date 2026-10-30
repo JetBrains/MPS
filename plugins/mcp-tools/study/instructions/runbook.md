@@ -1,4 +1,236 @@
-# Harness
+# How to run a round
+
+This is the observer's procedure. The cell catalog is [`scenarios.md`](scenarios.md). Fixture regeneration is [`fixtures.md`](fixtures.md). Tarball hashes are [`../fixtures/pins.md`](../fixtures/pins.md). Metrics are [`analysis.md`](analysis.md). Lessons are [`lessons.md`](lessons.md). Open defects are [`defects.md`](defects.md). Reports are [`../reports/index.md`](../reports/index.md).
+
+## Conventions
+
+```
+STUDY=<checkout>/plugins/mcp-tools/study
+RUNS=$HOME/MPSProjects/mcp-study/runs
+```
+
+`$RUNS/inventory.json` is load-bearing: `run_worker.sh` records its sha in every run's meta. Scratch projects are `$HOME/MPSProjects/mcp-study/workspace/<run-id>`, one at a time. Current tarballs are `$HOME/MPSProjects/mcp-study/fixtures/`. An empty project is synthesized by `new_study_project.py`, never unpacked.
+
+## Procedure (tick as you go; details in the references)
+
+1. **Preflight** — MPS running with the MCP server enabled. The port belongs to the IDE selector
+   (64343 on the 261 from-sources MPS, 64344 on 262); `mps_control.sh` and `run_worker.sh` detect
+   it from the live launcher themselves (`mps_control.sh url --json` shows what they find). **Do
+   not export `MPS_MCP_URL` during preflight**: MPS may not be up yet, and an exported unconfirmed
+   value pins the whole round to the wrong port. Set it by hand only to override detection (e.g.
+   several MPS processes), or after `mps_control.sh wait` has reported `confirmed: true`. SMOKE
+   targets the harness project, never a developer checkout. Check the toolchain:
+   `claude --version` (≥ 2.1; must accept `--output-format stream-json --strict-mcp-config`)
+   when the detected harness is Claude, or `junie --version` when it is Junie,
+   `python3 -c 'import sys; assert sys.version_info >= (3, 9)'`, `jq --version`.
+   Preflight is self-healing, and every step of it is yours:
+   - MPS not running → `mps_control.sh start` (or, with no capture on file, the IDEA `MPS` run
+     configuration), then `mps_control.sh wait`.
+   - Welcome screen → **synthesize** a *harness project* and open it:
+     `python3 $STUDY/scripts/new_study_project.py --dir ~/MPSProjects/mcp-study/workspace/harness`
+     writes the three descriptor files (`migration.xml` derived from this MPS, so no Migration
+     Assistant), then open it via CLI (`mps-project-management`). Announce the path first. Do not
+     retry MCP until that open has landed — Welcome-screen calls are rejected before dispatch.
+   - `mps_mcp_list_open_projects(projectPath=<harness>)` must then list it. A synthesized project is
+     empty by construction (`mps_mcp_get_project_structure` returns no modules); nothing in the study
+     depends on a hand-maintained one, though an existing empty project may be substituted if
+     synthesis fails. **Every other project must be closed first** — including the developer's own
+     checkout, the common case when MPS was started from the IDEA run configuration. Disjoint
+     module names are not enough: with `confirmOpenNewProject2 = -1` (the default) the second open
+     raises the modal New Window / This Window prompt and blocks the round (lesson 30). Announce
+     the path you close; it is an observer action, not one to ask for.
+   - Is the call log on? Ask the process, not the log:
+   `ps -ww -p $(pgrep -f '[j]etbrains\.mps\.Launcher') -o args= | tr ' ' '\n' | grep calllog`
+   must print the option, and the file must grow after a tool call. If it is off and gate question
+   1 said call-log, step 2 turns it on; if gate 1 said transcript-only,
+   expect 0-line `*-server.jsonl` slices and skip the call-log checks below.
+   Record the tool inventory: `MPS_MCP_URL=$($STUDY/scripts/mps_control.sh url) python3
+   $STUDY/scripts/tools_inventory.py --out $RUNS/inventory.json` (it does not detect the port itself).
+   Run the harness's own unit tests once (`cd $STUDY/scripts && python3 -m unittest discover -s
+   tests -p 'test_*.py'`) — a broken script is cheaper to find here than in the evidence.
+   Then run the contamination guard yourself: `python3 $STUDY/scripts/check_user_agents.py`
+   (exit 0 clean, 3 contaminated). It rejects MPS-related Markdown definitions below
+   `~/.claude/agents` / `~/.junie/agents` — a filename matching `*mps*` or a body containing
+   `mps_mcp`, both case-insensitively — **and** any `mps-*` folder in `~/.claude/skills` or
+   `~/.junie/skills`, which would shadow the per-project catalog and silently replace the thing
+   being measured (lessons 26, 32). `run_worker.sh` runs the same guard before any run side effect.
+   The guard never modifies anything: move an offending user skill out of the skills directory
+   for the round and restore it at wrap-up. Built-in `Explore` and `Task`
+   agents are outside this pin and remain enabled.
+2. **Instrument** — the plugin logs one JSON line per dispatched call when MPS runs with
+   `-Dmps.mcp.calllog=<file>` (`McpCallLogListener`, off by default). Turn it on without a human and
+   without touching a tracked file: `mps_control.sh capture` **while MPS is still alive**, then
+   `mps_control.sh calllog $RUNS/server-calllog.jsonl` (writes the option into the capture) and
+   `mps_control.sh idelog` (drops the checkout's `-Didea.log.path`, so `list_open_projects` reports
+   the selector's default log directory instead of the MPS source checkout — A17), then
+   `shutdown` (the close of the last project carries the exit), `start <project>`, `wait`, and one
+   SMOKE run as the readiness gate. `capture` only preserves VM options the live process already
+   carries, which is why `calllog` exists — adding the option to the `MPS` run configuration works
+   too but is study-only and must be reverted at wrap-up (lesson 13), so prefer the capture route.
+   Confirm the relaunched process actually carries it (`ps -ww -p <pid> -o args= | tr ' ' '\n' |
+   grep calllog`) and that the file grows, and that `list_open_projects` reports a `logDirectory`
+   outside the MPS checkout. Re-running `capture` against a developer-launched MPS (also
+   `restart` with no capture) takes the checkout's log path back, so repeat `idelog` after it.
+3. **Template** — the empty fixture is **synthesized, not snapshotted**
+   (`scripts/new_study_project.py`): three descriptor files, no doc surface possible, and a
+   `migration.xml` derived from the MPS that will open it. Module-bearing fixtures (`statechart`,
+   `recipes*`) are still tarballs, snapshotted **without any agent doc surface**: exclude
+   `.git`, `workspace.xml`, and also `.agents/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`. A tarball is
+   a point-in-time copy, so a catalog inside it is what every later round measures no matter how
+   far the bundled skills have moved (lesson 20). Instead, `run_worker.sh` installs the **live**
+   catalog into each run's project right before launching the worker — `scripts/install_skills.py`
+   purges every `mps-*` folder plus both guides and calls `mps_mcp_initialize_project_for_agents`,
+   then records `skillsSha256` in the meta. Verify every tarball:
+   `tar -tzf <f>.tar.gz | grep -E '(^|/)(\.claude|\.agents|AGENTS\.md|CLAUDE\.md)'` must be empty
+   (a synthesized project has nothing to verify).
+   Do NOT put `.mcp.json` in the template; `run_worker.sh` generates the worker's MCP config per
+   run into `$RUNS/<id>-mcp/` from the detected URL and passes it with `--strict-mcp-config`.
+4. **Smoke** — `SMOKE` is a harness check, not a scenario: a read-only prompt that lists open
+   projects and stops, so it runs against the harness project itself (no template copy, no
+   evaluation, `pass` stays empty). It is also the **readiness gate after every MPS start or
+   restart** — a live process is not readiness. If the harness project is not open, announce its
+   path, synthesize it if needed and open it via CLI; do not close it afterwards unless the next
+   run needs a different project.
+   `RUNS=$RUNS EFFORT=<level for $MODEL> MAX_TURNS=6 PROJECT_SYNTHESIZED=1 $STUDY/scripts/run_worker.sh SMOKE $MODEL <n>
+   <harness-project>` — bump `<n>` on every re-run (the harness refuses an existing run id);
+   drop `PROJECT_SYNTHESIZED=1` if the harness project was not synthesized. The transcript
+   must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
+   the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
+5. **Scenarios** — `study/scenarios/S1..S19/{worker_prompt.md,done_criteria.md}`. Which cells a
+   changed skill actually forces is `study/scenarios.md` (brief list, then the directory). Look
+   that up before picking the matrix; the gate-4 default (S1 + S3) is a pilot default, not that
+   lookup. Add a scenario for whatever skill/tool the directory does not cover. **S10 (project
+   lifecycle) runs last in a round**: it is the only
+   scenario whose worker closes and opens projects, and a mistake in it can leave a modal dialog
+   that blocks every later `mps_mcp_*` call. Prompts are developer-voice, fixed names, explicit "done", NO reporting
+   requirements. Fixtures: `empty-project` (synthesized per run, not a tarball),
+   `statechart` (Projectxx5), `recipes` (a passing S1), `recipes-misgen` (S15), `recipes-gen` (S18, S19, S22), `flows-gen` (S23, S24), `expressions`
+   (`samples/expressions`, S11, S12), `kaja-dataflow` (`samples/robot_Kaja` with injected builder
+   bugs, S13), `kaja-dataflow-2` (S16), `flow-java` (one BaseLanguage class, S14) — regenerated per
+   [`fixtures.md`](fixtures.md), not stored in git.
+6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
+   projects; S10 honours this by being sequential — it closes one project before opening the next).
+   Restart MPS before a cell whose fixture language an earlier cell already loaded in the current
+   process — any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22 on `recipes*`, S23/S24 on `flows-gen`, S2/S8 on `statechart` — and always before S11, S12,
+   S13 and S16 (`shutdown` → `start` harness → `wait` → SMOKE; launch with `ISOLATION=per-shared-fixture-restart`, recorded per run
+   beside `mpsPid`; lessons 40, 42). A read-only cell (S9) may precede a language-changing one in the
+   same process; synthesized cells (S1, S10) need no restart.
+   Per run: **synthesize** the empty project or copy the fixture tarball (`PROJECT_SYNTHESIZED=1`
+   when synthesized) → announce the scratch path (and any path you will close first)
+   → close a previous scratch with `mps_mcp_close_project` if one is still open → open the new copy
+   via CLI (`mps-project-management`) → confirm with `list_open_projects` → launch
+   detached (`run_worker.sh` first rejects MPS-related user agents, then installs the live skills;
+   either guard failure aborts with exit 3) →
+   poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
+   (read-only `mps_mcp_*`, always with `projectPath`) → set `taskPass` (true/false) and
+   `taskEvidence` (the `<id>.eval.md` name) in `<id>.meta.json` — `analyze_runs.py` reads only
+   `taskPass` into the `pass` column
+   → announce the path and close with `mps_mcp_close_project` (`force=false`; on `MODAL_BLOCKED`
+   ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Pass the
+   model's gate-2a level as `EFFORT` on every launch. Check that every meta's `effort` is that
+   level and that every meta's
+   `skillsSha256` and `guidesSha256` are each the same value before comparing runs; a differing one
+   means the catalog or the installed `AGENTS.md` / `CLAUDE.md` moved mid-round. Open/close details: the harness section of this runbook.
+7. **Analyse** — `python3 $STUDY/scripts/analyze_runs.py $RUNS [--out DIR]` (default `$RUNS/analysis`)
+   → `metrics.csv`, `tools.json`, `chains.json`, `errors.json`, `hotspots.md`; `pass` is filled from
+   each run's meta after evaluation. Then
+   `python3 $STUDY/scripts/families.py <baseline runs> <previous round> $RUNS > $RUNS/analysis/families.tsv`
+   (per-run family counters, [`analysis.md`](analysis.md)). Filter chains containing `mps_mcp`, group into families, have an
+   Opus reviewer inspect 3 instances per family with `study/scripts/show_steps.py` and assign
+   determinism {1.0, 0.5, 0}. Rank by avoidable turns (fixed context ≈ 150 K cache-read tokens per
+   turn dominates) as well as by the study formula.
+8. **Classify** each hotspot D → S → P-off → P-on → T (first fit). Write the round file under `reports/hotspot/` (see [`../reports/index.md`](../reports/index.md)):
+   baseline table, ranked hotspots with `run:step` evidence, hypotheses, defects, remedies with
+   owner/contract/saving/risk. Keep open defects in [`defects.md`](defects.md) from day one.
+9. **Treat** — parallel Opus implementers with DISJOINT file sets (skill docs / skill scripts +
+   packaging + drift test / server batch). Never two agents in the same Kotlin toolset; the observer
+   registers new tests in the matching `Mcp*TestSuite` sub-suite (the umbrella
+   `McpToolsIntegrationTestSuite` lists only the sub-suites) and runs the umbrella between batches,
+   or a subset with `MCP_TESTS` (`.agents/quality-gates.md`). A server-side change needs the plugin
+   rebuilt and MPS restarted: `mps_control.sh restart` + SMOKE, no human step.
+10. **A/B** (optional) — restart MPS onto the treated plugin (`mps_control.sh restart`, then
+    SMOKE), then the same runs against the treated tools; success = ≥ 30 % fewer tool calls and
+    ≥ 25 % fewer context tokens on treated scenarios, no drop in pass rate; delete remedies that do
+    not pay.
+11. **Wrap up** — fold conclusions into the study doc; revert the VM option; leave the current tarballs in `~/MPSProjects/mcp-study/fixtures/` (archive a round under `archive/` rather than deleting those tarballs)
+    (keep the SMOKE scenario — step 4 needs it); announce and close any remaining scratch with
+    `mps_mcp_close_project`, **closing the last one with `shutdownWithLastProject=true`** if MPS
+    should go down — the shutdown rides on that last close, because a Welcome-screen MPS cannot be
+    stopped over MCP; delete any `<proj>-target` directory an S10 run left; clean
+    `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
+    `~/.claude/projects/-…-mcp-study-workspace-*/` memory dirs (also any older `mcp-study-proj-` prefix); Junie workers may leave
+    `~/.junie/sessions` — do not auto-delete them; keep the call-log listener. The capture
+    file lives in `$TMPDIR`, outside that cleanup, so a later round can still relaunch.
+
+
+## Project create / open / close (orchestrator, every scenario)
+
+The observer creates, opens and closes the scratch project for S1–S24 and, when needed, the harness
+project for SMOKE, and it starts, restarts and shuts MPS down. Do not ask the user to File→Open,
+Close Project or restart the IDE. Before each action, tell the user the absolute path that will
+close (if any) and the absolute path that will open. Synthesize an empty project with
+`$STUDY/scripts/new_study_project.py`; open via the CLI protocol in `mps-project-management` (there is
+still no MCP open tool); close with `mps_mcp_close_project` (`projectPath` = the scratch dir,
+`force=false`). Details: the harness section below.
+
+Workers already assume "MPS is running … and this project open" — do **not** add open/close
+instructions to `worker_prompt.md` (prompts are frozen, sha in meta). Do **not** put swap steps in
+`done_criteria.md` either: evaluators are read-only and must not close the project mid-check.
+SMOKE may use the harness project in place; still announce if you open or close it.
+
+**S10 is the single exception to both worker rules above**, because the project lifecycle *is* what
+it measures: its prompt tells the worker to create a project, close the current one, open the new
+one and close it again. The `done_criteria.md` half of the rule still holds — the evaluator stays
+read-only, and the observer performs every swap that surrounds the run, including the reopen needed
+to check the result. Two hard constraints come with it:
+- **Sequential, never two projects open.** With the platform default
+  (`confirmOpenNewProject2 = -1`) opening a project while another is open raises the modal
+  *New Window / This Window* prompt, which blocks every `mps_mcp_*` call and whose "This Window"
+  answer closes the project being measured. A Welcome-screen MPS opens without prompting, so the
+  worker closes first and opens second. Do not "improve" this into a two-project scenario, and do
+  not change the IDE preference for the study.
+- **Record the left-behind state first.** The observer calls `list_open_projects` the moment the
+  worker exits — a Welcome-screen rejection is a valid answer — and only then reopens anything.
+  After a reopen that evidence is gone.
+
+**Modal recovery (S10, and any round that hits a dialog).** A wrong `migration.xml` opens the modal
+Migration Assistant, which blocks every `mps_mcp_*` call for the rest of the **round**, not just
+that run. Ask the user to dismiss the dialog — never run the migration — then
+`mps_control.sh restart` if MCP does not recover. Record it as a task FAIL with the dialog as
+evidence: that is exactly the hotspot S10 exists to find. Wrap-up closes and deletes every
+`<proj>-target` directory.
+
+## Writing a prompt
+Developer voice, short, fixed names, numbered steps, explicit "Done when …", closing lines
+"Do not roll back changes. Do not edit .mps/.mpl files as text. Stop and explain if blocked."
+NO reporting/notes requirements (they change behaviour and cost tokens). Freeze the prompt (sha in meta).
+A prompt that touches the project lifecycle adds **"Do not shut MPS down."**: a worker passing
+`shutdownWithLastProject=true` ends the round, not just its run. Freeze such a prompt only after a
+rehearsal run has shown the worker's MCP session surviving the zero-project window — S10's did on
+2026-09-22 (`S10-sonnet-1`: close at step 16, CLI activation at 17-19, `list_open_projects` answers
+normally at 20 on the same session), so its prompt is now **frozen**.
+
+## Writing done criteria
+Observer-checkable with read-only tools only (the one exception: an observer MAKE between two
+evaluator passes, when a check needs a built language — S8 criterion 3, A8); list the exact tool
+per check; accept equivalent modelling explicitly (e.g. 0..n references as smart-reference
+wrapper concepts); say which checker messages count as errors vs warnings. Known quirk: enum
+default literal prints as `""`.
+Where the artefact *is* a file (project descriptors, for instance), an on-disk check is fine — but
+compare generated XML by its parsed content, never byte-wise: `new_project_migration_xml.py` ends
+its document with a newline and an MPS-written file does not. Any reopening a check needs is the
+observer's job, after the left-behind state has been recorded.
+
+## Adding a scenario for a changed skill/tool
+Pick the smallest task that forces the changed path (e.g. a new tool parameter), reuse a fixture,
+write done criteria first, run once per selected model, compare its chains with the baseline `chains.json`.
+The observer opens and closes the reused fixture the same way as S1–S9 and S11–S24 (announce paths; CLI open;
+`mps_mcp_close_project` close). Do not make the worker or the evaluator perform the swap — unless
+the swap itself is the changed surface, which is S10's declared exception above and should stay the
+only one. A lifecycle scenario also needs `relatedProjects` in its run meta (`run_worker.sh` derives
+`<project>-target` for `S10*`), or the analyser filters its server evidence away.
+
+## Harness
 
 All scripts: `plugins/mcp-tools/study/scripts/`, Python ≥ 3.9 stdlib, `--help`. Their unit tests
 run with the stdlib runner — `cd plugins/mcp-tools/study/scripts && python3 -m unittest discover
@@ -409,10 +641,10 @@ line; it does not detect the port itself.
 
 ## Per-run procedure card
 1. **Synthesize** (`python3 $STUDY/scripts/new_study_project.py --dir
-   ~/MPSProjects/mcp-study/proj/<id>`, then launch with `PROJECT_SYNTHESIZED=1`) for an empty
+   ~/MPSProjects/mcp-study/workspace/<id>`, then launch with `PROJECT_SYNTHESIZED=1`) for an empty
    project, **or extract** a module-bearing fixture:
-   `tar -xzf study/fixtures/<fixture>.tar.gz -C ~/MPSProjects/mcp-study/proj/<id> --strip-components=1`
-   (+ scenario inputs such as `recipes.csv`). The extracted tree must have NO `.claude/`, `.agents/`,
+   `tar -xzf ~/MPSProjects/mcp-study/fixtures/<fixture>.tar.gz -C ~/MPSProjects/mcp-study/workspace/<id> --strip-components=1`
+   (+ scenario inputs from `$STUDY/fixtures/inputs/`, such as `recipes.csv`, copied into the project before launch). The extracted tree must have NO `.claude/`, `.agents/`,
    `AGENTS.md` or `CLAUDE.md`. 2. Tell the user the path you will close (if a previous scratch is
    still open) and the path you will open; close the previous scratch with `mps_mcp_close_project`
    if needed; open the new copy via CLI (`mps-project-management`). `mps_mcp_list_open_projects`

@@ -22,12 +22,12 @@ Out of scope for this task:
 
 - Implementing the server read or the wording change.
 - Editing `../../../AGENTS.md`, `CLAUDE.md`, skill blueprints, the template, or Kotlin.
-- Marking D79 fixed, or adding a link from `study/docs-defects.md`.
+- Marking D79 fixed, or adding a link from `study/instructions/defects.md`.
 - Changing the study harness metric in `skill-optimization-study/references/harness.md`, which mentions `MPS_MCP_SKILL_VERSION.txt` only as a grep target.
 
 ### Functional requirements
 
-- Status is plan-only: nothing implemented. Point at D79 in `../study/docs-defects.md` and at round 16 (`HOTSPOT_REPORT_round16.md`, remedy R-g).
+- Status is plan-only: nothing implemented. Point at D79 in `../study/instructions/defects.md` and at round 16 (`reports/hotspot/round-16.md`, remedy R-g).
 - State the measured cost: one `cat` in 9 of 12 runs (examples `S5-sonnet-1:5`, `S6-sonnet-1:4`, `S7-sonnet-1:11`), about one avoidable turn, tier **S** not **D**. The check is right; the transport is wasteful.
 - Explain that MPS does not know the agent's working directory and does not need to. `agentConfigRoot` is recomputed from the open project's `basePath` by `AgentConfigRootResolver.deriveAgentConfigRoot`.
 - Specify the future change: `mps_mcp_list_open_projects` reads the two stamps under that derived root and returns `skillStamps` on each project entry. The template and the skill stop naming the files as something to open.
@@ -172,7 +172,7 @@ After the later wording change: `SkillCatalogReplicationTest` and `../scripts/va
 ###   Step 1: Write the D79 explanation into the plan document
 `d79-skill-stamps-meta-plan.md` exists and records why the stamp check costs a Bash turn and how MPS already knows which directory to read.
 
-- Create the file in the style of `d63-module-scope-problem-check-plan.md`: status line (plan only, nothing implemented), pointer at D79 in `study/docs-defects.md` and at round 16 remedy R-g, and `[M]` / `[C]` marking.
+- Create the file in the style of `d63-module-scope-problem-check-plan.md`: status line (plan only, nothing implemented), pointer at D79 in `study/instructions/defects.md` and at round 16 remedy R-g, and `[M]` / `[C]` marking.
 - Write the summary and the “what the check is” section from `AGENTS_template.md:113-119`: compare stamp `build` with top-level `mpsBuild`; equal / different / missing / disagreeing / no `mpsBuild` rules stay as they are; do not call the initializer to learn the version.
 - Write the “what is wrong” section: the listing returns `mpsBuild` and `agentConfigRoot` but not the stamp contents, so the agent `cat`s; 9 of 12 runs (examples `S5-sonnet-1:5`, `S6-sonnet-1:4`, `S7-sonnet-1:11`); tier **S**, about one turn; the check is right and the transport is wasteful.
 - Write the directory section from `AgentConfigRootResolver.kt` and `JetBrainsMPSProjectMcpToolset.kt:511-533`: `mpsProjectBaseDirectory` is the open project; `agentConfigRoot` is the nearest VCS root walked up from that base path; the agent's CWD is not an input; subdirectory projects (mbeddr `tools/BigProject`) are the reason the two paths differ.

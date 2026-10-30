@@ -2,12 +2,12 @@
 
 **Status: built 2026-10-30** by an opus observer helper through MPS MCP only (77 calls, `FIXTURE.log`),
 interpreted generator, all step-6 checks passed. Tarball: `~/MPSProjects/mcp-study/fixtures/flows-gen.tar.gz`,
-sha256 `af093a666e49b573bbacf1155ea94080349c2f957c9a6eabb5115739995ed8cc`. A rebuild mints new node ids:
-re-pin the section *Pins* below and in `../../fixtures/README.md`.
+sha256 in [`../../pins.md`](../../pins.md). A rebuild mints new node ids:
+re-pin the section *Pins* below and in `../../../instructions/fixtures.md`.
 
 **New: `flows-gen`** — the one observer-built fixture of this set (S23 and S24 share it). Fixed
-names, MCP replay recipe (log every call to `scenarios/S23/FIXTURE.log`, pin ids in `FIXTURE.md`,
-as S15's `DEFECT.log`/`DEFECT.md`). Start from a synthesized empty project opened alone.
+names, MCP replay recipe (log every call to `FIXTURE.log`, pin ids in `FIXTURE.md`,
+as S15's [`../s15/DEFECT.log`](../s15/DEFECT.log) and [`../s15/DEFECT.md`](../s15/DEFECT.md)). Start from a synthesized empty project opened alone.
 
 1. `mps_mcp_create_module` language `mcp.study.flows` (with generator, dir `<proj>/languages`);
    `mps_mcp_module_dependency` add `jetbrains.mps.baseLanguage` as generation target of the

@@ -8,7 +8,7 @@
 ## Fixture
 
 `flows-gen` (the single observer-built fixture; recipe, expected Java text (pins after the build) in
-[`../S23/FIXTURE.md`](../S23/FIXTURE.md)). Same tarball as S23; open one copy at a time. D-ORDER (the
+[`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md)). Same tarball as S23; open one copy at a time. D-ORDER (the
 `"wait:" + 0` defect) is present and **not** this cell's subject — fixing it is allowed, not
 required.
 
@@ -30,8 +30,8 @@ with `print_node`; concepts with `mps_mcp_get_concept_details` (`languageRefs` =
 `mcp.study.flows`; `mps_mcp_query_structure` cannot list concepts or roles); generator messages
 with a Read of the worker's transcript.
 
-Pinned ids from `scenarios/S23/FIXTURE.md`; baseline Java = the tarball's `source_gen`, i.e. the
-generated text quoted in `../S23/FIXTURE.md` *Built details* (short `List`/`ArrayList` with imports).
+Pinned ids from [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md); baseline Java = the tarball's `source_gen`, i.e. the
+generated text quoted in [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md) *Built details* (short `List`/`ArrayList` with imports).
 Comparison: whitespace-normalised, `if` bodies in braces as MPS prints them, redundant
 parentheses accepted, JDK names imported or qualified, folded literals (`"wait:24"`) accepted,
 `approvers()` or `this.approvers()`.

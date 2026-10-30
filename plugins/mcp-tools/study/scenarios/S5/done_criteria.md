@@ -1,12 +1,12 @@
 # S5 done criteria (observer, read-only, projectPath = run project dir)
 
-Fixture: recipes-broken.tar.gz (recipes-full with the 12 injected problems in `PROBLEMS.md` next to this file).
+Fixture: recipes-broken.tar.gz (recipes-full with the 12 injected problems in [`../../fixtures/inputs/s5/PROBLEMS.md`](../../fixtures/inputs/s5/PROBLEMS.md)).
 1. `mps_mcp_check_root_node_problems` on every root of the samples model: 0 errors.
 2. Root count unchanged versus the fixture unless the transcript states a root was unrecoverable.
-3. For each injected problem P1–P12 in PROBLEMS.md, confirm the node still exists (or its removal
+3. For each injected problem P1–P12 in [`../../fixtures/inputs/s5/PROBLEMS.md`](../../fixtures/inputs/s5/PROBLEMS.md), confirm the node still exists (or its removal
    is justified) and the problem is gone (`mps_mcp_print_node` on the node).
 4. Editorial moves (node identity; ids from the "Editorial moves (criterion 4)" table in
-   PROBLEMS.md, repeated here). Read with `mps_mcp_print_node` `format: "JSON"` on the roots
+   [`../../fixtures/inputs/s5/PROBLEMS.md`](../../fixtures/inputs/s5/PROBLEMS.md), repeated here). Read with `mps_mcp_print_node` `format: "JSON"` on the roots
    `Weeknight Basics` (12157282221949781), `Pancakes` (12157282221949763) and `Crepes`
    (12157282221949753); each child's `reference` ends in its node id.
    a. `Weeknight Basics.recipes[0]` is node 12157282221949784 (the fixture's recipes[2]) and

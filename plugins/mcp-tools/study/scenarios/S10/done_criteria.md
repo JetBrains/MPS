@@ -4,7 +4,7 @@ Fixture: a **synthesized** empty project (`scripts/new_study_project.py`), as S1
 the run's project directory; `<proj>-target` is the project the worker was asked to create.
 
 **S10 is the one scenario where the worker itself closes and opens projects** — that is the skill
-being measured (`references/scenarios.md`). Two consequences for evaluation:
+being measured (`../../instructions/runbook.md`). Two consequences for evaluation:
 
 - **Record the left-behind state first.** The moment the worker exits, before opening anything,
   the observer calls `mps_mcp_list_open_projects` (passing `<proj>` and, if that is rejected,

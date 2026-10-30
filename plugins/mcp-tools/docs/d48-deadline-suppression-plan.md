@@ -317,7 +317,7 @@ memory). The MPS MCP server must be running.
    - open a second project, make an agent call in the first, rebuild a language in the second
      within the window: balloon, not wizard;
    - `idea.log` has no new SEVERE for the run window (memory `live-mcp-verification-check-idea-log`).
-4. Study: the D48 row in `study/docs-defects.md` gets the new mechanism; S4 criteria unchanged.
+4. Study: the D48 row in `study/instructions/defects.md` gets the new mechanism; S4 criteria unchanged.
 5. Live results (2026-10-22, MPS 261.25134 started from the branch WITHOUT the JVM override, so the
    deadline was the only suppression; opus worker at low effort; fixture `recipes-full` sha 37d9c83a):
    - `runs-d48-deadline/S4-1`: full S4 run, 18 `mps_mcp_*` calls, 0 `MODAL_BLOCKED`, the wizard never

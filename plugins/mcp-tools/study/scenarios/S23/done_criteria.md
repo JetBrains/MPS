@@ -1,13 +1,13 @@
 # S23 done criteria — Edit the flows generator: rule order, a new switch case, a label rename, an extraction
 
 **Status: drafted 2026-10-30 by a fable subagent, revised after two opus reviews; fixture
-`flows-gen` built (ids and expected Java in [`FIXTURE.md`](FIXTURE.md)); rehearsal round 46:
+`flows-gen` built (ids and expected Java in [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md)); rehearsal round 46:
 `S23-opus-1` PASS (38 calls, 2 min), `S23-sonnet-1` PASS (35 calls, 2 min) after the step-1 hint
 was removed from the prompt. Small by design; frozen after round 46.**
 
 ## Fixture
 
-Observer-built fixture `flows-gen`: replay recipe in [`FIXTURE.md`](FIXTURE.md).
+Observer-built fixture `flows-gen`: replay recipe in [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md).
 
 ## Topics forced
 
@@ -22,8 +22,8 @@ Observer, read-only, `projectPath` = run project dir; MPS only through `mcp_call
 Generated files are read on disk with `find`/`cat` (the IDEA file tools are not reachable); nodes
 with `print_node`; generator messages with a Read of the worker's transcript.
 
-Pinned ids from `FIXTURE.md`; baseline Java = the tarball's `source_gen`, i.e. the generated text
-quoted in `FIXTURE.md` *Built details* (short `List`/`ArrayList` with imports). Comparison:
+Pinned ids from [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md); baseline Java = the tarball's `source_gen`, i.e. the generated text
+quoted in [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md) *Built details* (short `List`/`ArrayList` with imports). Comparison:
 whitespace-normalised, `if` bodies in braces as MPS prints them, redundant parentheses accepted,
 JDK names imported or qualified, a folded literal (`"wait:24"`) accepted.
 
@@ -76,7 +76,7 @@ rebuilds the language; D80). No overlap with `recipes*`, `tariff*`, `shell*`.
 
 ## Risks
 
-- The replay mints new ids per rebuild; re-pin `FIXTURE.md` and this file's pins (S15 precedent).
+- The replay mints new ids per rebuild; re-pin [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md) and this file's pins (S15 precedent).
 - Step 1 is symptom-only; the condition-instead-of-move shortcut is forbidden and recorded.
 - Renaming a label by delete-and-recreate leaves the weaving query dangling until repointed —
   `check_root_node_problems` shows it as an unresolved reference; likely `G_errors` hotspot.

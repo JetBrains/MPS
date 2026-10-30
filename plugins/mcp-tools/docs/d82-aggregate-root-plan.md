@@ -1,8 +1,8 @@
 # D82 — `table_to_bulk_insert.py` cannot emit or verify an aggregate root
 
-Status: implemented and live-checked 2026-10-26 (results in the archive entry), not committed. Plan draft 2. One opus review round ("approve with changes", 2 blocking + 5 should-fix + nits) is folded in below and listed under "Review log". Freshness re-checked against HEAD `1551ef8987b3` (three commits after `789af6ca3551`: D88 JSON diagnosis x2, D97): the script, `mps_dump.py`, `validate_skill_catalog.py`, `SkillScriptsDriftTest`, the suite and `scenarios.md` are unchanged. Only line numbers moved (`SKILL.md` +1 from a new D88 bullet; `docs-defects.md` D82 row now `:40`), and the archive header and "Fixed / closed" lists now end with `D83, D88 and D97 on 2026-10-26`, so D82 is appended there.
+Status: implemented and live-checked 2026-10-26 (results in the archive entry), not committed. Plan draft 2. One opus review round ("approve with changes", 2 blocking + 5 should-fix + nits) is folded in below and listed under "Review log". Freshness re-checked against HEAD `1551ef8987b3` (three commits after `789af6ca3551`: D88 JSON diagnosis x2, D97): the script, `mps_dump.py`, `validate_skill_catalog.py`, `SkillScriptsDriftTest`, the suite and `scenarios.md` are unchanged. Only line numbers moved (`SKILL.md` +1 from a new D88 bullet; `instructions/defects.md` D82 row now `:40`), and the archive header and "Fixed / closed" lists now end with `D83, D88 and D97 on 2026-10-26`, so D82 is appended there.
 
-## The defect (from `study/docs-defects.md`)
+## The defect (from `study/instructions/defects.md`)
 
 An aggregate root over all rows (S3's `Cookbook` → 40 `RecipeRef`) is outside the script's mapping spec and outside `--verify`, so a worker that uses the script hand-writes the root and hand-checks it. Filed from round 17 as N3 (FEATURE, low, often). The filed remedy is **P-off**: a spec key `"aggregate": {concept, name, role, wrapper, reference}` that emits the root in the same batch, and a `--verify` check of it.
 
@@ -84,9 +84,9 @@ All changes are in the one script, its docs, and one test. The script is `mps-no
 
 ### 5. Study docs
 
-- `study/docs-defects.md`: mark D82 **fixed** with this plan, the files and the test names, "re-measure on the next S3 round, only in a cell that runs the script"; move the row to `docs-defects-archive.md` per the file's convention. The archive table has other columns (`id | where | …`), so the row is reshaped, not pasted. Add D82 to the header sentence in `docs-defects.md` and to both lists in the archive (the header list and "Fixed / closed"). Mention that the key is `referenceRole`, not the filed `reference`, for consistency with `referenceLists`.
+- `study/instructions/defects.md`: mark D82 **fixed** with this plan, the files and the test names, "re-measure on the next S3 round, only in a cell that runs the script"; move the row to `instructions/defects-archive.md` per the file's convention. The archive table has other columns (`id | where | …`), so the row is reshaped, not pasted. Add D82 to the header sentence in `instructions/defects.md` and to both lists in the archive (the header list and "Fixed / closed"). Mention that the key is `referenceRole`, not the filed `reference`, for consistency with `referenceLists`.
 - The recurrence-watch row stays until one round passes without an instance. Its "last seen" is stale: set it to round 33 (`S3-sonnet-1:17-18`; the table above shows rounds 17, 18, 21 and 33). Signature: a Python edit or a second insert that adds the `Cookbook`, or a separate check of it. Positive signal that the fix took: the worker's map has an `aggregate` key.
-- `study/scenarios.md:335`: replace "the aggregate cookbook root is outside the spec (D82)" with "the aggregate cookbook root is the spec's `aggregate` (D82)".
+- `study/instructions/scenarios.md:335`: replace "the aggregate cookbook root is outside the spec (D82)" with "the aggregate cookbook root is the spec's `aggregate` (D82)".
 - Add one line to the entry that script **adoption** was 0 of 2 in round 43 (no defect id: model behaviour; the check in S3's review is "script name in the transcript", which `scenarios.md:75` already asks for).
 
 ## Tests (`SkillScriptsDriftTest`, same style as the two `table_to_bulk_insert` tests)

@@ -2,7 +2,7 @@
 
 Status: implemented 2026-10-26 (MPS-40209), docs only. One reviewer round on the plan ("approve with changes", R1–R9) is folded in below and listed under "Review record"; the implementation review is recorded at the end.
 
-## The defect (from `study/docs-defects.md`)
+## The defect (from `study/instructions/defects.md`)
 
 A generator whose templates emit BaseLanguage needs `jetbrains.mps.baseLanguage` declared as a Generation Target of its *language*. The `mps-aspect-generator` skill does not say this in a form workers act on. Since D63 (module-scope `check_root_node_problems`), the module check reports "… must specify the language 'jetbrains.mps.baseLanguage' as a generation target". The worker then pays for a dependency call, another MAKE and another check. Filed from round 21 (N4), PERFORMANCE ISSUE, low.
 
@@ -66,7 +66,7 @@ All edits go to the blueprint tree `plugins/mcp-tools/resources/jetbrains/mps/ag
 
 6. **`mps-language-aspects-overview/SKILL.md:60` (R8, optional).** After the generator mention, add "(declare its output language as a Generation Target; see `mps-aspect-generator` step 8)". Take it only if the line reads naturally with it. The cross-skill wording must follow the boilerplate that `validate_skill_catalog.py` expects.
 
-7. **`study/docs-defects.md`.** Inserting step 8 moves later `SKILL.md` lines down by about a line. Update the citations in the open D73 (`SKILL.md:56`) and D98 (`SKILL.md:59`) entries to the new lines (R8).
+7. **`study/instructions/defects.md`.** Inserting step 8 moves later `SKILL.md` lines down by about a line. Update the citations in the open D73 (`SKILL.md:56`) and D98 (`SKILL.md:59`) entries to the new lines (R8).
 
 No code change and no test change.
 
@@ -80,7 +80,7 @@ No code change and no test change.
 
 ## Re-measure and bookkeeping
 
-- Mark D97 "fixed (docs), re-measure outstanding" and move it to `docs-defects-archive.md` with the commit hash, as with D85 and D71.
+- Mark D97 "fixed (docs), re-measure outstanding" and move it to `instructions/defects-archive.md` with the commit hash, as with D85 and D71.
 - Re-measure on the next S6 round. Success means both cells add the target before their first MAKE (read the `mps_mcp_module_dependency` calls, since round 42 shows the warning can stay invisible), and no cell has a dependency + MAKE + check cycle after the warning.
 - Commit: `mcp-tools - D97 generator skill: declare the output language as a Generation Target before MAKE` (format per `.agents/git.md`).
 

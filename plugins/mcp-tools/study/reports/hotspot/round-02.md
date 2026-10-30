@@ -109,7 +109,7 @@ Two causes, both verified:
    done-criteria have accepted "smart-reference wrapper concepts" as equivalent modelling since
    2026-09.
 2. **Silent-ignore tool behaviour**, confirmed in source:
-   [`JetBrainsMPSLanguageStructureMcpToolset.kt:291-296`](../src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSLanguageStructureMcpToolset.kt) —
+   [`JetBrainsMPSLanguageStructureMcpToolset.kt:291-296`](../../../src/jetbrains/mps/agents/mcp/tools/JetBrainsMPSLanguageStructureMcpToolset.kt) —
    `UPDATE_CONCEPT_CHILD` reads `params.get("multiple")` and honours it; `UPDATE_CONCEPT_REFERENCE`
    never reads it and passes `false`, and reference cardinality is hard-coded to `_0__1` / `_1`
    (l. ~1204). Unknown keys in the `parameters` JSON are dropped silently, so `multiple: true` on a

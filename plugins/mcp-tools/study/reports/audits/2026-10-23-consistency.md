@@ -7,7 +7,7 @@ Audit of `plugins/mcp-tools/study/`, `.agents/skills/skill-optimization-study/`,
 ## Validation (2026-10-23, against `620f655443cb`)
 
 Each finding below was checked against the files at `620f655443cb`. The audit's line numbers for
-`plugins/mcp-tools/study/scenarios.md` are about four lines low. Most of section 1 describes an
+`plugins/mcp-tools/study/instructions/scenarios.md` are about four lines low. Most of section 1 describes an
 earlier state of that file: commits `b730c4b8e6e8` and `bf97e9a95d8a` had already rewritten the S13,
 S14 and By-skill text. The original findings are kept below as written.
 
@@ -49,9 +49,9 @@ isolation lines above; the S5 path; wording of "without the tool") are applied.
 
 ---
 
-## 1. Duplicate & Contradictory Entries in `plugins/mcp-tools/study/scenarios.md`
+## 1. Duplicate & Contradictory Entries in `plugins/mcp-tools/study/instructions/scenarios.md`
 
-- **Duplicate / conflicting dataflow rows in `### By skill` (`plugins/mcp-tools/study/scenarios.md:349-350`)**:
+- **Duplicate / conflicting dataflow rows in `### By skill` (`plugins/mcp-tools/study/instructions/scenarios.md:349-350`)**:
   - Line `349` adds the new post-tool row:
     ```markdown
     | dataflow queries (`mps_mcp_query_dataflow`, `references/analysis-tools/dataflow-queries.md`) | S16 (`PRINT_PROGRAM`), S14 (`REACHING_WRITES` / `REACHING_READS`, read-only) | S13 | builder failures, custom analyzers (no cell) |
@@ -61,7 +61,7 @@ isolation lines above; the S5 path; wording of "without the tool") are applied.
     | dataflow analysis results (reachability, reaching definitions / reads) | S13 (reachability through the checker), S14 (def-use questions; no tool answers them yet) | | |
     ```
     "no tool answers them yet" directly contradicts line `349`.
-- **Stale pre-tool text in `### By scenario` for `S13` and `S14` (`plugins/mcp-tools/study/scenarios.md:233-253`)**:
+- **Stale pre-tool text in `### By scenario` for `S13` and `S14` (`plugins/mcp-tools/study/instructions/scenarios.md:233-253`)**:
   - `S13` (lines `233-237`): still states `Run to verify: mps-aspect-dataflow (only cell)` (whereas `By skill` at line `323` now lists both `S13` and `S16`), calls `S13` `the baseline for a future mps_mcp_query_dataflow PRINT_PROGRAM`, and lists only `DF_builder_prints`, `M_makes`, and `DF_console_runs` (omitting `DF_program_prints` / `DF_queries`).
   - `S13` isolation note (line `241`): states `No other cell uses Kaja.` — no longer true now that `S16` uses `kaja-dataflow-2` (`S16` at line `297` notes `Isolation: as S13 (Kaja module ids; restart MPS before every S16 run; never next to S13's fixture)`).
   - `S14` (lines `250-252`): still states `Run to verify: nothing in today's catalog. This is the tool-free baseline for a future mps_mcp_query_dataflow REACHING_WRITES / REACHING_READS and its skill page.` and only lists `DF_console_runs` under process signals (omitting `DF_reaching_queries` / `DF_queries`), contradicting line `349`.
@@ -78,7 +78,7 @@ Both `.agents/skills/skill-optimization-study/` and `.claude/skills/skill-optimi
 - **Missing `kaja-dataflow-2` / `S16` in fixture list (`references/scenarios.md:8-16`)**: lists `recipes-misgen` (`S15`), `kaja-dataflow` (`S13`), and `flow-java` (`S14`), but omits `kaja-dataflow-2` (`S16`).
 - **Missing `S16` row in the scenario table (`references/scenarios.md:18-36`)**: table ends at `S15`.
 - **Stale range references (`references/scenarios.md:53, :112`)**: still say `for S1–S15` and `S1–S9 and S11–S15` instead of `S1–S16` and `S11–S16`.
-- **`S4` fixture mismatch (`references/scenarios.md:12, :23`)**: line `12` says `recipes-full` is `for S5/S6` and line `23` lists `S4`'s fixture as `recipes`, whereas `plugins/mcp-tools/study/scenarios.md:84-86`, `plugins/mcp-tools/study/fixtures/README.md:22`, and `plugins/mcp-tools/study/scenarios/S4/done_criteria.md:3` specify `recipes-full` for `S4`.
+- **`S4` fixture mismatch (`references/scenarios.md:12, :23`)**: line `12` says `recipes-full` is `for S5/S6` and line `23` lists `S4`'s fixture as `recipes`, whereas `plugins/mcp-tools/study/instructions/scenarios.md:84-86`, `plugins/mcp-tools/study/instructions/fixtures.md:22`, and `plugins/mcp-tools/study/scenarios/S4/done_criteria.md:3` specify `recipes-full` for `S4`.
 
 ---
 
@@ -90,7 +90,7 @@ Both `.agents/skills/skill-optimization-study/` and `.claude/skills/skill-optimi
 - **`plugins/mcp-tools/study/scenarios/S14/done_criteria.md` (`:21-24, :100-110`)**:
   - Lines `22-24` still say: `Today an agent answers them by simulating the method in its head. This is the tool-free baseline for a later mps_mcp_query_dataflow REACHING_WRITES / REACHING_READS.`
   - Its `## Process signals` section (`P1`–`P3`) only mentions `DF_console_runs` and `print_node` / `FIND_USAGES`, without mentioning `DF_reaching_queries` / `DF_queries` (even though round 41 ran `S14` with the tool and recorded `DF_reaching_queries = 2`).
-- **`plugins/mcp-tools/study/dataflow-exposure-assessment.md` (`:28`)**:
+- **`plugins/mcp-tools/study/reports/assessments/dataflow-exposure.md` (`:28`)**:
   - The `## Bottom line` bullet at line `28` still says `The study has no dataflow scenario`, while `## Recommendation` (`:310-436`) in the same file documents `S13`, `S14`, `S16`, and the round 40–41 runs.
 - **`plugins/mcp-tools/study/scripts/families.py` (`:104`)**:
   - The module docstring says `DF_queries, DF_program_prints and DF_reaching_queries count the tool that exposes it (S13: PRINT_PROGRAM, S14: the reaching operations)` without mentioning `S16` alongside `S13`.
@@ -101,9 +101,9 @@ Both `.agents/skills/skill-optimization-study/` and `.claude/skills/skill-optimi
 
 - **65-character SHA-256 in `plugins/mcp-tools/study/scenarios/S15/DEFECT.md:8-9`**:
   - `sha256 ec971bc6005223ae608ae37b30851aabdc2f0eb0710b84a299b3448cc8709199` is **65 hex characters** long (one extra hex digit, likely a doubled trailing `9`) instead of 64.
-- **Tarball path wording in `plugins/mcp-tools/study/fixtures/README.md:24` vs `S15/DEFECT.md:8`**:
+- **Tarball path wording in `plugins/mcp-tools/study/instructions/fixtures.md:24` vs `S15/DEFECT.md:8`**:
   - `fixtures/README.md:24` ends with `Current tarball: fixtures/recipes-misgen.tar.gz (2026-10-23, sha256 in DEFECT.md)`, which looks like a repo-relative path under `study/fixtures/`, whereas `S15/DEFECT.md:8` gives `~/MPSProjects/mcp-study/fixtures/recipes-misgen.tar.gz`.
-- **`D80` recurrence watch in `plugins/mcp-tools/study/docs-defects.md:16`**:
+- **`D80` recurrence watch in `plugins/mcp-tools/study/instructions/defects.md:16`**:
   - Lists shared-fixture cells as `any two of S3–S7/S9 on recipes*, S2/S8 on statechart`, omitting `S15` on `recipes*` (as well as `S11`/`S12` on `expressions` and `S13`/`S16` on `kaja-dataflow*`).
 - **`plugins/mcp-tools/test_scenarios/MPS_MCP_FULL_TEST_SCENARIO/COVERAGE_MATRIX.md:9-14`**:
   - Claims `## A. MPS MCP tools (mps_mcp_*) — all 42` based on `@McpTool` methods in `META-INF/plugin.xml` (adding row `42` for `query_dataflow`), while 3 other registered `@McpTool` methods (`mps_mcp_generation`, `mps_mcp_run_migrations`, `mps_mcp_read_ide_log` — 45 total `@McpTool` methods across the 17 toolsets) are not listed in the table.

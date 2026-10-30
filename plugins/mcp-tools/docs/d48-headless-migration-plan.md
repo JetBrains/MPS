@@ -3,9 +3,9 @@
 Status: implemented (2026-10-12), uncommitted. Parts A, B and C are in, `build.mps` carries the
 dependency, both test suites are green and live S4 ran without `MODAL_BLOCKED`. Section 7 lists what
 was built and where it deviates from this plan; `d48-handoff.md` has the working state. Defect record: D48 in
-`study/docs-defects.md` (S4-sonnet-1, round 9: server calls 52-56 all `MODAL_BLOCKED`, EDT blocked
+`study/instructions/defects.md` (S4-sonnet-1, round 9: server calls 52-56 all `MODAL_BLOCKED`, EDT blocked
 in `Dialog.show` under `MigrationTrigger.runMigration`). Scenario S4 (`study/scenarios/S4/`) is the
-measurement cell; `study/scenarios.md` calls its apply half "blocked for a tool gap".
+measurement cell; `study/instructions/scenarios.md` calls its apply half "blocked for a tool gap".
 
 Marking: **[M]** = measured or observed; **[C]** = read from code; **[I]** = inferred, still to be
 verified.
@@ -255,7 +255,7 @@ language makes.
 - `mps-project-management/SKILL.md` and `study/scenarios/S10/done_criteria.md` keep "never run a
   migration" for the S10 lifecycle cell, which is about an *inherited* Migration Assistant of a
   pasted `migration.xml`, not about a language migration the worker wrote.
-- Study: `scenarios.md` S4 paragraph and `docs-defects.md` D48 status; S4 `done_criteria.md`
+- Study: `scenarios.md` S4 paragraph and `instructions/defects.md` D48 status; S4 `done_criteria.md`
   criterion 3 becomes measurable; the `mps_control.sh` `start` command gets the
   `-Dmps.migration.assistant.auto=false` option.
 - Memory `mps-model-save-pops-migration-dialog`: add the override and the tool as the way out.
@@ -335,7 +335,7 @@ language makes.
   count on a no-op make; the `mcp-tools-index.md` budget in `SkillReferenceLayoutTest` went from
   17 920 to 18 432 bytes.
 - Docs: `mps-aspect-migrations` step 7 and `references/run-migrations.md`, the tool row in
-  `mcp-tools-index.md`, both propagated; study `scenarios.md` (S4), `docs-defects.md` (D48 status),
+  `mcp-tools-index.md`, both propagated; study `scenarios.md` (S4), `instructions/defects.md` (D48 status),
   `mps_control.sh start` (`-Dmps.migration.assistant.auto=false`; `MIGRATION_ASSISTANT_AUTO=true`
   keeps the wizard only until the first `mps_mcp_*` call).
 
@@ -507,7 +507,7 @@ regenerate `build/mpsMcpTools.xml` (`mps-distribution-build` skill).
 
 Nothing from the original list: Part A is in the model, the `TODO(D48 part A)` stubs are restored,
 `build.mps` and `build/mpsMcpTools.xml` carry the dependency, the suites are green and live
-verification is done (D48 row in `study/docs-defects.md`). The open items are in `d48-handoff.md`.
+verification is done (D48 row in `study/instructions/defects.md`). The open items are in `d48-handoff.md`.
 
 ## 8. Superseded: the suppression lease (2026-10-22)
 

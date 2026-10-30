@@ -5,7 +5,7 @@ Status: plan draft 5, approved (round 4), live-probed 2026-10-27 (see "Live prob
 blocking) are folded in. Remedy **S**
 (server message + `details`), plus docs lines. See "Review log".
 
-## The defect (from `study/docs-defects.md:48`)
+## The defect (from `study/instructions/defects.md:48`)
 
 A blueprint whose `concept` does not resolve is rejected with `Concept 'X' not found at $…` and nothing else. Filed
 remedy: append up to 3 closest `qualifiedName`s from the same language (token match, as `search_concepts` does).
@@ -197,7 +197,7 @@ Edit the blueprints in `plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/ski
   one line each — a `Concept 'X' not found` rejection names the closest concepts in the message and
   `details.suggestions`; no closest concept means the name has no near match, so search by intent
   (`search_concepts`) rather than retrying spellings. An interface concept is reported as such.
-- `study/docs-defects.md`: archive D116 with the fix summary; re-measure S1, S6, S11.
+- `study/instructions/defects.md`: archive D116 with the fix summary; re-measure S1, S6, S11.
 
 ## Tests
 

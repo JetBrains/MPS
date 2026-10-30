@@ -93,7 +93,9 @@ asset (judgment per step; `# CUSTOMIZE:` markers).
 Watch for behaviour that documentation cannot fix (e.g. re-validating every root after a clean
 model-level check "to be sure"): shape it with envelope fields (`rootsChecked`) instead.
 
-## Report template (`HOTSPOT_REPORT.md`)
+## Report template (`reports/hotspot/`)
+
+The baseline is [`../reports/hotspot/baseline.md`](../reports/hotspot/baseline.md). A round is `reports/hotspot/round-NN.md`. The index of what was written up is [`../reports/index.md`](../reports/index.md).
 1 Baseline metrics (table + fixed-context floor from `inventory.json` and a SMOKE run) · 2 Ranked
 hotspots (family, occurrences, payload, determinism, retry, avoidable turns, tier, `run:step`
 evidence) · 3 Hypotheses (confirmed / refuted / unmeasured) · 4 Defects (docs vs tool behaviour) ·

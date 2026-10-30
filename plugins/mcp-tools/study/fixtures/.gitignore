@@ -1,2 +1,2 @@
-# Fixture tarballs are regenerated on demand (see README.md) and never kept in git.
+# Fixture tarballs are regenerated on demand (see ../instructions/fixtures.md) and never kept in git.
 *.tar.gz

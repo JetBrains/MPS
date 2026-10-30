@@ -91,7 +91,7 @@ authored once (S21) and introduced once as a refactor (S24).
 | S20 | `empty-project` | no | synthesized |
 | S21 | `empty-project` | no | synthesized |
 | S22 | `recipes-gen` | no | S18/S19's tarball |
-| S23, S24 | `flows-gen` | **yes, the only one** | observer replay recipe in `S23/FIXTURE.md` (MCP calls only, interpreted generator, fixed names, D-ORDER injected, expected Java text; pins after the build, pins in `scenarios/S23/FIXTURE.md`) |
+| S23, S24 | `flows-gen` | **yes, the only one** | observer replay recipe in [`../../fixtures/inputs/s23/FIXTURE.md`](../../fixtures/inputs/s23/FIXTURE.md) (MCP calls only, interpreted generator, fixed names, D-ORDER injected, expected Java text; pins after the build, pins in `../../fixtures/inputs/s23/FIXTURE.md`) |
 
 Restart rules: S22 joins the `recipes*` set (S3–S7, S9, S15, S17–S19). S23 and S24 share module
 ids: restart between them, never open two `flows-gen` copies. S20/S21 mint fresh ids.

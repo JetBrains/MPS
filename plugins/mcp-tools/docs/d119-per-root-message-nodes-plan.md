@@ -2,7 +2,7 @@
 
 Status: implemented 2026-10-27 (MPS-40338). Review round 1 ("approve with changes", F1–F12) and round 2 (G1–G6) are folded in; see "Review record".
 
-## The defect (from `study/docs-defects.md`)
+## The defect (from `study/instructions/defects.md`)
 
 `mps_mcp_check_root_node_problems` with `perRoot=true` gives each row with problems a `messages` array, `[{severity, message, count, node, hasQuickFixes?}]` (MPS-40338, D83). When a message has `count > 1`, only one sample `node` is listed. To act on every occurrence, for example to find which commands are unreachable, the worker re-checks the root to get the other nodes. `families.py` counts that re-check as `C_after_summary`, so the D83 signature reports it as a D83 recurrence. Filed from round 44 as N1: tier S, frequency "sometimes".
 
@@ -202,7 +202,7 @@ Analyser (`test_families.py`):
 
 ## Bookkeeping
 
-- `docs-defects.md`: D119 → fixed. Move it to `docs-defects-archive.md` with the commit hash, and extend line 8's history sentence ("D119 was fixed … re-measure (S13, S16) still outstanding").
+- `instructions/defects.md`: D119 → fixed. Move it to `instructions/defects-archive.md` with the commit hash, and extend line 8's history sentence ("D119 was fixed … re-measure (S13, S16) still outstanding").
 - Commit: `mcp-tools MPS-<id> - D119 perRoot messages list every node of a repeated text`, following `.agents/git.md`. Which YouTrack issue? Either a follow-up on MPS-40338 or a new one, for the user to decide.
 - Re-measure in the next round: S13 and S16 (the Kaja dataflow cells). `C_after_node_sample` and `C_after_summary` should both be 0 for the unreachable-command step.
 

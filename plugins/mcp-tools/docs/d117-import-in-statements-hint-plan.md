@@ -7,7 +7,7 @@ done the same day on a restarted MPS (console mode; recorded in the D117 archive
 (see "Live probes"). Remedy **S** (server message), no docs change. Review rounds 1–3 ("approve
 with changes" each time; 1, 2 and 1 blocking) are folded in; see "Review log".
 
-## The defect (from `study/docs-defects.md:49`)
+## The defect (from `study/instructions/defects.md:49`)
 
 `import …;` lines in `featureKind:"STATEMENTS"` code produce "Syntax error on token import, assert expected …", with
 no hint that imports are not accepted there and that fully qualified names are needed. Filed remedy: **S** — detect
@@ -204,7 +204,7 @@ Existing CLASS-with-imports tests (`:94`, `:120`, `:145`, `:170`) must stay gree
 
 ### 5. Bookkeeping
 
-- Move D117 from `docs-defects.md` to `docs-defects-archive.md` as fixed (S), with this plan linked and re-measure
+- Move D117 from `instructions/defects.md` to `instructions/defects-archive.md` as fixed (S), with this plan linked and re-measure
   S1 outstanding; extend the header paragraph's archive list.
 - Commit as `mcp-tools - D117 parse_java_and_insert names leading import declarations in non-CLASS code`.
 

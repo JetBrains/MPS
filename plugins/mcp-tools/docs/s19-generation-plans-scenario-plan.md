@@ -140,8 +140,8 @@ the parameters model.
   for DevKit exports, leaving **No scenario**; `mps_mcp_update_module` `SET_GENERATION_PLAN`;
   `mps_mcp_generation` PLAN Also S19), restart sets `…/S18/S19`.
 - study skill `SKILL.md` / `references/scenarios.md` (S1..S19, the recipes restart set),
-  `fixtures/README.md` (`recipes-gen` also for S19).
-- `docs-defects.md`: D131 `get_project_structure nodeDepth` ignored with `includeNodes`
+  `instructions/fixtures.md` (`recipes-gen` also for S19).
+- `instructions/defects.md`: D131 `get_project_structure nodeDepth` ignored with `includeNodes`
   (baseline observation); the decision-review findings that stay open (none planned).
 
 ## Isolation

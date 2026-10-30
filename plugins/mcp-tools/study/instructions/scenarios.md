@@ -5,11 +5,10 @@ skill X" (or to a tool, a skill script, or a reference file). The brief list is 
 The directory is the lookup: find the skill, run the cells in its **Run** column, and do not
 substitute a cell that is not listed.
 
-How to run a cell is the `skill-optimization-study` skill (`references/harness.md`,
-`references/scenarios.md`). Prompts live in [`scenarios/`](scenarios/) and are frozen — do not edit
+How to run a cell is [`runbook.md`](runbook.md). Prompts live in [`../scenarios/`](../scenarios/) and are frozen — do not edit
 `worker_prompt.md` to make a cell cover a new topic; add a scenario. Open defects that change how
-to read a result are in [`docs-defects.md`](docs-defects.md). Fixtures are regenerated per
-[`fixtures/README.md`](fixtures/README.md), not stored in git. Exception: S5 was revised on
+to read a result are in [`defects.md`](defects.md). Fixtures are regenerated per
+[`fixtures.md`](fixtures.md), not stored in git. Current tarball hashes are in [`../fixtures/pins.md`](../fixtures/pins.md). Exception: S5 was revised on
 2026-10-22 (round 39) at the user's request to add identity-preserving moves; see S5. S20–S24 were
 rehearsed in rounds 46–47 and are frozen since 2026-10-30.
 
@@ -110,7 +109,7 @@ Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9, S15, S17, S
 cell if any of those already loaded the language in this process (D80 includes S4).
 
 **S5 — repair a broken model.** Fixture: `recipes-broken` (`recipes-full` plus the 12 injections
-in `scenarios/S5/PROBLEMS.md`). Mutates samples only; root count must stay the same unless the
+in `../fixtures/inputs/s5/PROBLEMS.md`). Mutates samples only; root count must stay the same unless the
 transcript says a root was unrecoverable.
 Forces finding problems (`check_root_node_problems`) and the smallest repair: repoint or remove
 a dangling reference, add a missing child, correct a bad property. One injected item is a
@@ -271,7 +270,7 @@ Isolation: `flow.study` is unique to this fixture; no restart is needed before o
 
 **S15 — debug a misgeneration with the generation trace.** Fixture: `recipes-misgen` (`recipes-full`
 plus an observer-authored, interpreted generator `map Recipe` → `RecipeClass` and the injected
-defect D1, `PORTIONS` from `node.steps.size`; `scenarios/S15/DEFECT.md`). Mutates the generator's
+defect D1, `PORTIONS` from `node.steps.size`; `../fixtures/inputs/s15/DEFECT.md`). Mutates the generator's
 template model only; the samples must stay as they are.
 Forces `alter_nodes MAKE` with `saveTransientModels: true`, `mps_mcp_generation` `PLAN` (which step
 runs the recipes generator: index 2, prefix `2_`), `TRANSIENT_MODELS` (which step model first holds
@@ -437,12 +436,12 @@ during the round, so its runs are rehearsals, not a baseline. S23 was frozen the
 stable at `a7ee526d`, one run per model of S20–S22 and S24) passed 8 of 8 (82–143 calls,
 6–10 min); the evaluators' wording notes were folded into the criteria and all five prompts are
 frozen. S23 and S24 share the observer-built `flows-gen`
-([`scenarios/S23/FIXTURE.md`](scenarios/S23/FIXTURE.md)). Fixtures: S20 and S21
+([`../fixtures/inputs/s23/FIXTURE.md`](../fixtures/inputs/s23/FIXTURE.md)). Fixtures: S20 and S21
 `empty-project` (greenfield `mcp.study.tariff*`, `mcp.study.shell*`), S22 `recipes-gen`, S23 and
 S24 `flows-gen`. Each `done_criteria.md` lists the topics it gates, its isolation and its risks;
 the coverage matrix of the set (and what stays uncovered: `MapSrcListMacro`, `$WEAVE$`, `$TRACE$`,
 null-input firing, `RegisterLabel`, node/link pattern variables) is
-[`scenarios/GENERATOR_COVERAGE.md`](scenarios/GENERATOR_COVERAGE.md).
+[`../scenarios/coverage/generator.md`](../scenarios/coverage/generator.md).
 Run to verify: `mps-aspect-generator` (all references), `mps-aspect-generation-plan` (S22: one
 plan step for two generators), `mps-model-manipulation` (query bodies), `mps-baselanguage`
 (templates through the parser), `mps-aspect-structure-concepts` (S24: concept split and renames).
@@ -510,7 +509,7 @@ skill whose **Run** column is not S1 or S3.
 ### No scenario
 
 Do not run S1 as a stand-in. Say that the catalog has no cell, and add one if the change needs
-an eval (skill `references/scenarios.md`, "Adding a scenario").
+an eval ([`runbook.md`](runbook.md), "Adding a scenario").
 
 - `mps-aspect-actions`
 - `mps-aspect-editor-menus-and-keymaps`

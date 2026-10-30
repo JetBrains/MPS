@@ -12,10 +12,9 @@ catalog `skillsSha256` `0fdf8404c8df…`; the catalog committed with the cell ca
 implementation review's wording fixes on top (option fallback, logged generation errors, the skipped
 exit code, quoted diff texts), none on the path either rehearsal took.
 
-Fixture: `recipes-gen.tar.gz` (`../../fixtures/README.md`), sha256
-`e9fd62584d0c0358affd82d729662197c1871d6a5a62618d2c421744092a96f3`, top directory `recipes-gen/`:
+Fixture: `recipes-gen.tar.gz` (`../../instructions/fixtures.md`) (sha256 in [`../../fixtures/pins.md`](../../fixtures/pins.md)), top directory `recipes-gen/`:
 S15's `recipes-misgen` with D1 reverted, so the generator is right. Node ids are S15's
-(`../S15/DEFECT.md`): template model `r:98539ed4-bf63-4715-a114-6d1e7a8ca01d(mcp.study.recipes.generator.templates@generator)`
+([`../../fixtures/inputs/s15/DEFECT.md`](../../fixtures/inputs/s15/DEFECT.md)): template model `r:98539ed4-bf63-4715-a114-6d1e7a8ca01d(mcp.study.recipes.generator.templates@generator)`
 (`<T>`), template root `RecipeClass` `<T>/4956319657762963862`, `PORTIONS` macro query now
 `node.servings` (`<T>/5741524382992129494` in the fixture). Samples model `<S>` =
 `r:38cfdf05-3b6a-4864-b1ba-70dca7ae70da(mcp.study.kitchen.samples)` with seven roots (Flour, Milk,

@@ -48,6 +48,6 @@ Tasks:
    the generator ... although L declares X" in references/common-failures.md (edit the blueprint under
    plugins/mcp-tools/resources/…/skills, then propagate to .agents/skills and .claude/skills as CLAUDE.md
    describes; run plugins/mcp-tools/scripts/validate_skill_catalog.py).
-5. Move D136 in plugins/mcp-tools/study/docs-defects.md to docs-defects-archive.md as fixed, with the commit.
+5. Move D136 in plugins/mcp-tools/study/instructions/defects.md to instructions/defects-archive.md as fixed, with the commit.
 6. Commit per .agents/git.md (ask for a YouTrack issue id first if the format requires one; do not push).
    Report: the root cause as verified, the change, the test evidence (fail before / pass after), and callers checked.

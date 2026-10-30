@@ -8,7 +8,7 @@ the console (see the D118 archive entry). Plan draft 3, approved (plan review ro
 Deviation: the helper is `addInfoMessages`, and `quickFixId(fix)` delegates to a private `quickFixIdOf(fix, runtime)`.
 Remedy **S** (server behaviour) plus the matching tool-description, skill and smoke-scenario lines.
 
-## The defect (from `study/docs-defects.md:49`)
+## The defect (from `study/instructions/defects.md:49`)
 
 `hasLocalProblems` (`common/AbstractOps.kt:2055`; the defect row's 2081/2131/2184 are stale) treats any checker item
 on a node as a problem, `info` (`MessageStatus.OK`) included, whereas `problemSummary` (`:2116`) and `problemCounts`
@@ -150,9 +150,9 @@ green.
 - `study/scenarios/S11/done_criteria.md:49`, `S14/done_criteria.md:9` assert verdict strings: unaffected (the string
   is unchanged), re-read to confirm.
 
-### 4. `study/docs-defects.md`
+### 4. `study/instructions/defects.md`
 
-Move D118 to `study/docs-defects-archive.md` with the decision and commit hash (as the D119 plan did), fixing the
+Move D118 to `study/instructions/defects-archive.md` with the decision and commit hash (as the D119 plan did), fixing the
 stale line references; add a recurrence-watch row: signature before the fix = a `check_root_node_problems` result
 whose only items are `"severity":"info"` but whose `data` is not `no problems found`; after it, `data:"no problems
 found"` + `details.infoMessages`, and an `apply_intention` on a `quickFixIds` entry is the expected follow-up when the

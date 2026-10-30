@@ -10,8 +10,8 @@ Draft 3, 2026-10-01.
 
 **Status: implemented** (Phases 1–3) in the commit "MPS-40209 - D94 mps-dsl-memory sends shipped
 blueprints inline or from the temp directory". Phase 4 was declined by the user on 2026-10-01.
-Tracked as **D94**, which was `plugins/mcp-tools/study/docs-defects.md:51` before it was archived
-(filed from round 21, `HOTSPOT_REPORT_round21.md:253`). Line numbers are pre-fix locations as of
+Tracked as **D94**, which was `plugins/mcp-tools/study/instructions/defects.md:51` before it was archived
+(filed from round 21, `reports/hotspot/round-21.md:253`). Line numbers are pre-fix locations as of
 `87652550a83a`.
 
 ## What is wrong
@@ -167,18 +167,18 @@ files.
   `diff -r` the three trees.
 - Run `python3 plugins/mcp-tools/scripts/validate_skill_catalog.py --self-test plugins/mcp-tools/resources/jetbrains/mps/agents/mcp/skills`.
 - Run `SkillCatalogReplicationTest` and `SkillReferenceLayoutTest` through IDEA.
-- `study/docs-defects.md`:
+- `study/instructions/defects.md`:
   - remove the D94 row;
   - add D94 to the header's "moved … on 2026-10-01" list and to the footer list (`:58`, "…; A9 on
     2026-10-01");
   - add to the narrative: "D94 was fixed (docs) and archived on 2026-10-01, re-measure (S8) still
     outstanding".
-- `study/docs-defects-archive.md`:
+- `study/instructions/defects-archive.md`:
   - add D94 to the "Moved out" and "Fixed / closed" lists;
   - add a D94 row with what was wrong, Findings 3–5, what changed, and the re-measure signature:
     **no "is not inside the system temp directory" rejection on an S8 blueprint dry run, and the
     shipped skill states the rule with `$TMPDIR`, with no resolved temp path anywhere in it.**
-- `study/scenarios.md` S8 paragraph (`:129-141`): add "(D94, docs fixed 2026-10-01, re-measure: no
+- `study/instructions/scenarios.md` S8 paragraph (`:129-141`): add "(D94, docs fixed 2026-10-01, re-measure: no
   temp-directory rejection on the blueprint dry runs, no resolved temp path in the shipped skill)".
 - This plan: set the status line to implemented, with the commit hash.
 - Commit:

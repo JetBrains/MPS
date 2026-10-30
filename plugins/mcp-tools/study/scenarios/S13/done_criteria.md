@@ -4,7 +4,7 @@
 `S13-opus-1` passed and did not misread the prompt. It treated the stock double report on `repeat`
 as a third bug and restructured `Repeat_DataFlow`, which criterion 1 accepts.
 
-Fixture: `kaja-dataflow.tar.gz` (`../../fixtures/README.md`): `samples/robot_Kaja` with two
+Fixture: `kaja-dataflow.tar.gz` (`../../instructions/fixtures.md`): `samples/robot_Kaja` with two
 injected builder bugs and one added sandbox script, built so its `classes_gen` carries the bugs.
 Both bugs, the before state and the after state were checked live on 2026-10-23 (MPS 2026.1, build
 261.25134). The observer rehearsed the fix on the fixture project: two builder edits, one
