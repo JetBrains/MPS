@@ -9,7 +9,7 @@ STUDY=<checkout>/plugins/mcp-tools/study
 RUNS=$HOME/MPSProjects/mcp-study/runs
 ```
 
-`$RUNS/inventory.json` is load-bearing: `run_worker.sh` records its sha in every run's meta. Scratch projects are `$HOME/MPSProjects/mcp-study/workspace/<run-id>`, one at a time. Current tarballs are `$HOME/MPSProjects/mcp-study/fixtures/`. An empty project is synthesized by `new_study_project.py`, never unpacked.
+`$RUNS/inventory.json` is load-bearing: `run_worker.sh` records its sha in every run's meta. Scratch projects are `$HOME/MPSProjects/mcp-study/workspace/<scratch>`, one at a time, where `<scratch>` is the run id plus a UTC stamp (`S3-sonnet-1-20261030T1733`): a new path every time, because the IDE's file cache is keyed by path and can show a previous scratch's models at a reused one (`run_worker.sh` refuses a path an earlier run used). Current tarballs are `$HOME/MPSProjects/mcp-study/fixtures/`. An empty project is synthesized by `new_study_project.py`, never unpacked.
 
 ## Procedure (tick as you go; details in the references)
 
@@ -258,7 +258,9 @@ Run them once at preflight: a harness bug is cheaper to find there than in a rou
 
 ## run_worker.sh `<scenario> <model> <run-no> <project-dir>`
 Env: `RUNS` (default `~/MPSProjects/mcp-study/runs`), `CALLLOG` (default `$RUNS/server-calllog.jsonl`),
-`MAX_TURNS` (400, Claude only), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0), `ISOLATION` (`per-round`),
+`MAX_TURNS` (400, Claude only), `STUDY` (auto), `SKIP_SKILL_INSTALL` (0),
+`ALLOW_REUSED_PROJECT` (0 — set 1 only to rerun deliberately on a path an earlier run used),
+`ARCHIVE_RUNS` (`$(dirname $RUNS)/archive/runs`, searched by the reuse check), `ISOLATION` (`per-round`),
 `PROJECT_SYNTHESIZED` (0 — set 1 when the project came from `new_study_project.py`),
 `EFFORT` (unset — the gate-2a level for this model, passed as `--effort`; Claude accepts
 `low|medium|high|xhigh|max`, Junie `low|medium|high`, anything else exits 2 before any side
@@ -474,6 +476,15 @@ compactions, re-reads, hops, greps, phases, `Skill` loads with their bytes, and 
 `--setting-sources project` remains deferred. Adopting it requires a separate SMOKE proving login,
 the live project catalog, and skills still work; it is not needed for the user-agent guard.
 
+## project_reuse.py `<project-dir> <runs-dir> [<archive-runs-dir>]`
+`run_worker.sh` runs it for every scenario except SMOKE, before any side effect, and exits 2 when
+it reports a hit. It reads every `*.meta.json` directly in `$RUNS` and anywhere below the archive,
+and lists the runs whose `project` or `relatedProjects` names the same path after `realpath`.
+The reason is the IDE's persisted file cache, keyed by path and surviving a restart: a fixture
+extracted at a reused path showed the previous fixture's 7 roots for about a second after the
+open (2026-10-30, `archive/runs/s3-reorg-check-2`). Unparseable metas are skipped with a stderr
+line. stdout `{ok, project, reusedBy: [{id, meta}]}`. Exit: 0 unused, 4 used before, 2 usage.
+
 ## new_study_project.py `--dir <project-dir> [--mps-home <path>] [--force]`
 Synthesizes an empty MPS project: `.mps/modules.xml`, `.mps/.gitignore`, and `.mps/migration.xml`
 **derived** from the MPS that will open it (`--mps-home` defaults to `$MPS_INSTALL` when that is
@@ -556,7 +567,8 @@ report `url` and `confirmed` in their JSON.
 - `wait` — readiness handshake (`tools_inventory.py`, then the project listed), never `ps`. It
   re-detects the URL on every iteration (probe timeout 2 s) until `confirmed` is true — right after
   a start MCP does not listen yet, and a URL fixed on the first iteration would poll the wrong port
-  for `READY_WAIT` — and it measures `READY_WAIT` as wall time, because a port that accepts and
+  for `READY_WAIT` — and it reports ready only once the URL is confirmed, since a guessed port
+  (`mcpServer.xml` or the default) can answer first; it measures `READY_WAIT` as wall time, because a port that accepts and
   never answers costs a full probe timeout per iteration.
 - `restart` — capture (if absent) → shutdown → start → wait.
 With no capture and MPS down, use the IDEA `MPS` run configuration with the project path as a
@@ -679,11 +691,11 @@ line; it does not detect the port itself.
 
 ## Per-run procedure card
 1. **Synthesize** (`python3 $STUDY/scripts/new_study_project.py --dir
-   ~/MPSProjects/mcp-study/workspace/<id>`, then launch with `PROJECT_SYNTHESIZED=1`) for an empty
+   ~/MPSProjects/mcp-study/workspace/<scratch>`, then launch with `PROJECT_SYNTHESIZED=1`) for an empty
    project, **or extract** a module-bearing fixture:
-   `tar -xzf ~/MPSProjects/mcp-study/fixtures/<fixture>.tar.gz -C ~/MPSProjects/mcp-study/workspace/<id> --strip-components=1`
+   `tar -xzf ~/MPSProjects/mcp-study/fixtures/<fixture>.tar.gz -C ~/MPSProjects/mcp-study/workspace/<scratch> --strip-components=1`
    (+ scenario inputs from `$STUDY/fixtures/inputs/`, such as `recipes.csv`, copied into the project before launch).
-   Next to the project, not inside it, write `~/MPSProjects/mcp-study/workspace/<id>.fixture.json`
+   Next to the project, not inside it, write `~/MPSProjects/mcp-study/workspace/<scratch>.fixture.json`
    with `fixture`, `sha256` (from [`../fixtures/pins.md`](../fixtures/pins.md)), or
    `{"synthesized": true}` for an empty project. Cleanup refuses a scratch that has no such stamp.
    The extracted tree must have NO `.claude/`, `.agents/`,

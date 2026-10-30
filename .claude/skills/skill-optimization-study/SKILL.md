@@ -27,7 +27,8 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
 ```
 
 `$RUNS/inventory.json` is a load-bearing name: `run_worker.sh` records its sha in every run's meta.
-Scratch projects go to `$HOME/MPSProjects/mcp-study/workspace/<run-id>/`, one at a time. The map,
+Scratch projects go to `$HOME/MPSProjects/mcp-study/workspace/<run-id>-<UTC stamp>/`, one at a time and
+never at a path an earlier run used. The map,
 including that workspace contract, is `$STUDY/README.md`.
 
 ## Roles

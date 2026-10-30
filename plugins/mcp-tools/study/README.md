@@ -28,7 +28,7 @@ This folder is the git home of the measurement loop. Working data is outside the
 ~/MPSProjects/mcp-study/
   fixtures/     current tarballs only. No empty-project tarball.
   build/        empty except while a tarball is being rebuilt
-  workspace/    one scratch at a time: harness/ and <run-id>/
+  workspace/    one scratch at a time: harness/ and <run-id>-<UTC stamp>/
   runs/         active round evidence
   archive/      closed rounds, old tarballs, old scratches, launch notes
 ```

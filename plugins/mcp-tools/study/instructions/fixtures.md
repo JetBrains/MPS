@@ -16,7 +16,7 @@ TAR_EXCLUDES=(--exclude=.git --exclude='*/.mps/workspace.xml'
 
 | fixture | how to regenerate |
 |---|---|
-| `empty-project` | **not a tarball** — synthesized per run: `python3 ../scripts/new_study_project.py --dir ~/MPSProjects/mcp-study/workspace/<run-id>`. Descriptor files only (`.mps/modules.xml`, `.mps/.gitignore`, `.mps/migration.xml`), the last derived from the MPS that will open it. No `initialize_project_for_agents` step — the catalog is installed per run |
+| `empty-project` | **not a tarball** — synthesized per run: `python3 ../scripts/new_study_project.py --dir ~/MPSProjects/mcp-study/workspace/<scratch>` (`<scratch>` = run id + UTC stamp, never a reused path; see the runbook). Descriptor files only (`.mps/modules.xml`, `.mps/.gitignore`, `.mps/migration.xml`), the last derived from the MPS that will open it. No `initialize_project_for_agents` step — the catalog is installed per run |
 | `statechart` | `~/MPSProjects/Projectxx5` (language `com.example.statechart`, sandbox), same tar command (also exclude `classes_gen`, `source_gen*`) |
 | `recipes` | the project of a **passing** S1 run, tarred with `classes_gen` included so no rebuild is needed, **and with the S1 sample `Recipe` and `Cookbook` roots deleted** from `mcp.study.kitchen.samples` (delete them through MPS MCP, never by editing `.mps` as text). **This deletion is for S3 only**: S3's prompt asks for "exactly 40 Recipe roots plus the Cookbook"; leaving the S1 samples in place makes that literally unsatisfiable (round-2 §5.2). Keep the 3 `Ingredient` roots — the CSV has no ingredient data, so they are inert |
 | `recipes-full` | the same passing-S1 project **with the S1 sample Recipe and Cookbook roots kept** (3 Ingredients, 3 Recipes, 1 Cookbook). Required for S4, S5 and S6: all three need Recipe roots: on the stripped `recipes` fixture S4's "every Recipe has a Summary" and S6's criterion 2 ("one Java file per Recipe root") would be vacuous |
@@ -40,6 +40,6 @@ non-frozen side of the scenario (study lesson 25), but it is still a changed inp
 If synthesis fails, an existing empty MPS project may be substituted — nothing in the study depends
 on one existing.
 
-Scratch copies go to `~/MPSProjects/mcp-study/workspace/<run-id>/` (`tar -xzf … --strip-components=1`).
+Scratch copies go to `~/MPSProjects/mcp-study/workspace/<scratch>/`, a new directory per run (`tar -xzf … --strip-components=1`).
 The study observer opens that copy via CLI (`mps-project-management`) and closes it with
 `mps_mcp_close_project` — announce the absolute paths to the user; do not ask them to open or close.

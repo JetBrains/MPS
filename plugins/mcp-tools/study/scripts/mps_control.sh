@@ -498,7 +498,9 @@ do_wait() {
   URL_CONFIRMED=false
   while [ "$waited" -lt "$READY_WAIT" ]; do
     [ "$URL_CONFIRMED" = true ] || resolve_url 2
-    if python3 "$STUDY/scripts/tools_inventory.py" --out "${TMPDIR:-/tmp}/mps-study-ready.json" >/dev/null 2>&1; then
+    # A guessed URL (mcpServer.xml or the default) can answer before detection confirms it; keep
+    # polling, or `wait` reports ready on a port nothing has proven belongs to this MPS.
+    if [ "$URL_CONFIRMED" = true ] && python3 "$STUDY/scripts/tools_inventory.py" --out "${TMPDIR:-/tmp}/mps-study-ready.json" >/dev/null 2>&1; then
       listed=$(open_projects "$want")
       waited=$((SECONDS - start))
       if [ -n "$want" ]; then

@@ -106,6 +106,20 @@ if [ -e "$RUNS/$ID.meta.json" ] || [ -e "$RUNS/$ID-worker.jsonl" ] || [ -e "$RUN
   exit 2
 fi
 
+# A scratch path an earlier run used can show that run's models right after the open: the IDE's
+# persisted file cache is keyed by path and outlives an MPS restart. SMOKE reuses the harness
+# project on purpose, and nothing replaces its content, so it is exempt.
+if [ "$SCENARIO" != SMOKE ] && [ "${ALLOW_REUSED_PROJECT:-0}" != 1 ]; then
+  ARCHIVE_RUNS="${ARCHIVE_RUNS:-$(dirname "$RUNS")/archive/runs}"
+  REUSE_RC=0
+  python3 "$STUDY/scripts/project_reuse.py" "$PROJECT" "$RUNS" "$ARCHIVE_RUNS" >/dev/null || REUSE_RC=$?
+  case $REUSE_RC in
+    0) ;;
+    4) echo "project dir already used by an earlier run: $PROJECT — extract into a new directory (project_reuse.py lists the runs)" >&2; exit 2 ;;
+    *) echo "project_reuse.py failed for $PROJECT" >&2; exit 2 ;;
+  esac
+fi
+
 # User-level MPS agents can delegate calls that are missing from the parent transcript. Prove the
 # catalog is clean before installation, call-log offsets, metadata, or any other run side effect.
 # This remains mandatory when skill installation is skipped.
