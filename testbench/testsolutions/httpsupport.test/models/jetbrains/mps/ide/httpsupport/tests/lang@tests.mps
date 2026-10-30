@@ -19,6 +19,7 @@
     <import index="e5vs" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.ide(MPS.IDEA/)" />
     <import index="tpeh" ref="r:00000000-0000-4000-0000-011c895902c5(jetbrains.mps.baseLanguage.typesystem)" />
     <import index="l13q" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.builtInWebServer(MPS.IDEA/)" />
+    <import index="l13r" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.builtInWebServer(MPS.IDEA.Modules/)" />
   </imports>
   <registry>
     <language id="8585453e-6bfb-4d80-98de-b16074f1d86c" name="jetbrains.mps.lang.test">
@@ -1580,11 +1581,11 @@
             </node>
             <node concept="2OqwBi" id="7XG5B_GRZUd" role="37vLTJ">
               <node concept="2YIFZM" id="7XG5B_GRZHJ" role="2Oq$k0">
-                <ref role="37wK5l" to="l13q:~BuiltInServerOptions.getInstance()" resolve="getInstance" />
-                <ref role="1Pybhc" to="l13q:~BuiltInServerOptions" resolve="BuiltInServerOptions" />
+                <ref role="37wK5l" to="l13r:~BuiltInServerOptions.getInstance()" resolve="getInstance" />
+                <ref role="1Pybhc" to="l13r:~BuiltInServerOptions" resolve="BuiltInServerOptions" />
               </node>
               <node concept="2OwXpG" id="7XG5B_GS0fV" role="2OqNvi">
-                <ref role="2Oxat5" to="l13q:~BuiltInServerOptions.allowUnsignedRequests" resolve="allowUnsignedRequests" />
+                <ref role="2Oxat5" to="l13r:~BuiltInServerOptions.allowUnsignedRequests" resolve="allowUnsignedRequests" />
               </node>
             </node>
           </node>
