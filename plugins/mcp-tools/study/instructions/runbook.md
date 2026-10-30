@@ -140,8 +140,10 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    detached (`run_worker.sh` first rejects MPS-related user agents, then installs the live skills;
    either guard failure aborts with exit 3) →
    poll the PID in bounded loops → evaluate with an Opus subagent using the `done_criteria.md`
+   and the "Evaluating a run" section of [`analysis.md`](analysis.md)
    (read-only `mps_mcp_*`, always with `projectPath`) → set `taskPass` (true/false) and
-   `taskEvidence` (the `<id>.eval.md` name) in `<id>.meta.json` — `analyze_runs.py` reads only
+   `taskEvidence` (the `<id>.eval.md` name) in `<id>.meta.json`, plus `observerNote` when the
+   criteria and the prompt disagree (same section) — `analyze_runs.py` reads only
    `taskPass` into the `pass` column
    → announce the path and close with `mps_mcp_close_project` (`force=false`; on `MODAL_BLOCKED`
    ask the user only to dismiss the dialog). Sequential, never two workers against one MPS. Pass the
@@ -710,7 +712,7 @@ line; it does not detect the port itself.
    the left-behind `list_open_projects` state **the moment the worker exits** (a Welcome-screen
    rejection counts), then open `<proj>-target` for the checks. 5. Evaluate via an Opus subagent
    (read-only — `dryRun: true` calls included —, `projectPath` on every call, temp-file `data` is a
-   path to read). **S8 is evaluated
+   path to read; brief it with the "Evaluating a run" section of [`analysis.md`](analysis.md)). **S8 is evaluated
    in two passes** (its criterion 3 dry-runs blueprints, which the hollow fixture language rejects;
    A8): the evaluator checks criteria 1, 2 and 4 and returns; the observer runs `mps_mcp_alter_nodes
    MAKE` on the language module and records the result; then the **same** evaluator is resumed

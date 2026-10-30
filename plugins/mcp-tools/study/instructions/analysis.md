@@ -93,6 +93,29 @@ asset (judgment per step; `# CUSTOMIZE:` markers).
 Watch for behaviour that documentation cannot fix (e.g. re-validating every root after a clean
 model-level check "to be sure"): shape it with envelope fields (`rootsChecked`) instead.
 
+## Evaluating a run
+Give every evaluator this section with the scenario's `done_criteria.md`, so two evaluators reach a
+verdict by the same route. Calls go through `scripts/mcp_call.py`, read-only, `projectPath` on each.
+- **Aspects** (editor, constraints, typesystem, behavior, intentions): `get_concept_details` returns
+  structure only, at every `detail` level. List the aspect model's roots with
+  `get_project_structure(startingPoint=<lang>.<aspect>, includeRootNodes=true)`, then read each
+  root with `print_node(format="PLAIN TEXT")`. A JSON `print_node` is one level deep.
+- **Call shapes**: `query_structure` takes `operation` plus a `parameters` object, e.g.
+  `{"operation": "GET_ENUMERATION_LITERALS", "parameters": {"enumerationRef": "<qualified name>"}}`.
+  Criteria may abbreviate a call as `OP(arg=…)`; send the real shape.
+- **References**: identify a target by the root its `targetReference` resolves to. A smart-reference
+  wrapper's displayed name can be stale or ambiguous.
+- **Descriptors**: `get_concept_details(languageRefs=<lang>)`; an entry carries `descriptorStatus`
+  only when hollow, so pass = no entry has it (S1 criterion 6).
+- **Problems**: a model-scope `check_root_node_problems` lists only the roots that have problems.
+- **Names**: pass a qualified name or a node reference, never a bare short name. A short name
+  resolves by name across the whole repository, java stubs included (`x` hit a jsvg class `x`).
+
+**Verdict.** `taskPass` follows the written criteria. When the criteria pass but the prompt's intent
+is plainly unmet, or the reverse, keep `taskPass` as the criteria give it and add `observerNote` to
+the meta: one sentence naming the gap and the eval report section. Then fix the criteria for the
+next round; never re-score a past run silently.
+
 ## Report template (`reports/hotspot/`)
 
 The baseline is [`../reports/hotspot/baseline.md`](../reports/hotspot/baseline.md). A round is `reports/hotspot/round-NN.md`. The index of what was written up is [`../reports/index.md`](../reports/index.md).

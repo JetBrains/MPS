@@ -50,7 +50,8 @@ including that workspace contract, is `$STUDY/README.md`.
 
 Before question 2, run `python3 $STUDY/scripts/list_worker_models.py` and present `models` as a
 multi-select. The orchestrator model is first and marked; list it first with "(Recommended)" (the
-picker cannot preselect). Extra ids the user types are allowed. Ask question 2a after question 2, as
+picker cannot preselect). On Claude it is the running session's model (`orchestratorSource:
+"session"`); `"config"` means only the configured default was found, so confirm it against `/model`. Extra ids the user types are allowed. Ask question 2a after question 2, as
 one single-select question per selected model (batch them, at most 4 per AskUserQuestion call). The
 recommended level is the one the user-level settings give that model today: its
 `settingsEffort.perModel` entry for the full model id, else `settingsEffort.default`. List it first

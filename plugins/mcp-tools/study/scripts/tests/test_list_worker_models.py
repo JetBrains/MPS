@@ -158,6 +158,66 @@ class ListWorkerModelsTest(unittest.TestCase):
         self.assertEqual({"default": "xhigh", "perModel": {"claude-opus-5-5": "medium"}},
                          result["settingsEffort"])
 
+    def write_transcript(self, session_id: str, *models: str) -> None:
+        path = self.home / ".claude" / "projects" / "-some-checkout" / f"{session_id}.jsonl"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        events = [{"type": "user", "message": {"role": "user", "content": "hi"}}]
+        events += [{"type": "assistant", "message": {"model": model}} for model in models]
+        path.write_text("\n".join(json.dumps(event) for event in events) + "\n", encoding="utf-8")
+
+    def test_claude_session_model_wins_over_settings(self) -> None:
+        self.write_json(".claude/settings.json", {"model": "fable"})
+        self.write_transcript("s-1", "claude-sonnet-5-5", "claude-opus-5-5", "<synthetic>")
+        result = lwm.list_models(self.home, {"CLAUDE_CODE": "1", "CLAUDE_CODE_SESSION_ID": "s-1"})
+        self.assertEqual("opus", result["orchestratorModel"])
+        self.assertEqual("session", result["orchestratorSource"])
+        self.assertEqual("fable", result["configuredModel"])
+        self.assertEqual("claude-opus-5-5", result["orchestratorModelId"])
+        self.assertEqual({"id": "opus", "orchestrator": True, "source": "session", "modelId": "claude-opus-5-5"},
+                         result["models"][0])
+        self.assertEqual(CLAUDE_CATALOG, self.ids(result))
+
+    def test_session_scan_skips_sidechains_and_odd_lines(self) -> None:
+        self.write_transcript("s-4", "claude-opus-5-5")
+        path = next((self.home / ".claude" / "projects").glob("*/s-4.jsonl"))
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write('["assistant"]\n{"type": "assistant", broken\n')
+            handle.write(json.dumps({"type": "assistant", "isSidechain": True,
+                                     "message": {"model": "claude-haiku-5-5"}}) + "\n")
+        result = lwm.list_models(self.home, {"CLAUDE_CODE": "1", "CLAUDE_CODE_SESSION_ID": "s-4"})
+        self.assertEqual("claude-opus-5-5", result["orchestratorModelId"])
+
+    def test_long_transcript_is_read_from_the_end(self) -> None:
+        self.write_transcript("s-5", *(["claude-sonnet-5-5"] * 5000), "claude-fable-5-1")
+        lines = list(lwm.tail_lines(next((self.home / ".claude" / "projects").glob("*/s-5.jsonl")), chunk=97))
+        self.assertEqual(5003, len(lines))
+        self.assertIn("claude-fable-5-1", lines[1])
+        self.assertEqual("fable", lwm.list_models(self.home, {"CLAUDE_CODE": "1", "CLAUDE_CODE_SESSION_ID": "s-5"})["orchestratorModel"])
+
+    def test_glob_metacharacters_in_session_id_are_ignored(self) -> None:
+        self.write_transcript("s-6", "claude-opus-5-5")
+        result = lwm.list_models(self.home, {"CLAUDE_CODE": "1", "CLAUDE_CODE_SESSION_ID": "s-*"})
+        self.assertIsNone(result["orchestratorModel"])
+
+    def test_claude_without_transcript_falls_back_to_settings(self) -> None:
+        self.write_json(".claude/settings.json", {"model": "fable"})
+        result = lwm.list_models(self.home, {"CLAUDE_CODE": "1", "CLAUDE_CODE_SESSION_ID": "missing"})
+        self.assertEqual("fable", result["orchestratorModel"])
+        self.assertEqual("config", result["orchestratorSource"])
+
+    def test_unknown_session_model_keeps_its_id(self) -> None:
+        self.write_transcript("s-2", "grok-4.6[1m]")
+        result = lwm.list_models(self.home, {"CLAUDE_CODE": "1", "CLAUDE_CODE_SESSION_ID": "s-2"})
+        self.assertEqual(["grok-4.6", *CLAUDE_CATALOG], self.ids(result))
+        self.assertIsNone(result["configuredModel"])
+
+    def test_junie_ignores_a_claude_session_id(self) -> None:
+        self.write_json(".junie/config.json", {"model": "claude-opus-5"})
+        self.write_transcript("s-3", "claude-sonnet-5-5")
+        result = lwm.list_models(self.home, {"JUNIE_TMPDIR": "/tmp/j", "CLAUDE_CODE_SESSION_ID": "s-3"})
+        self.assertEqual("claude-opus-5", result["orchestratorModel"])
+        self.assertEqual("config", result["orchestratorSource"])
+
     def test_junie_lists_its_effort_levels_only(self) -> None:
         result = lwm.list_models(self.home, {"JUNIE_TMPDIR": "/tmp/junie"})
         self.assertEqual(["low", "medium", "high"], result["effortLevels"])
