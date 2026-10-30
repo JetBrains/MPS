@@ -115,7 +115,7 @@ MPS is a projectional editor and a language workbench. Unlike text-based IDEs, M
 
 1. **Check generated DSL skills** under `.agents/skills/*-dsl/` before starting unfamiliar DSL work. Use the relevant project-local DSL skill when it exists; if it is missing or stale, load `mps-dsl-memory` to create or refresh it.
 2. **Anchor on the user's focus** — call `mps_mcp_get_current_editor_root_node` so you know which root the user is looking at.
-3. **Identify the task family**: defining a language → load `mps-language-aspects-overview`. Editing user code → load `mps-node-editing` and (often) `mps-baselanguage`. Investigating an unfamiliar language → load `mps-language-analysis`. Asking a type question (fit, expected type, or why a node has its type) → open `references/analysis-tools/type-queries.md`; no aspect skill is needed. Authoring or changing typesystem rules (inference, subtyping, replacement, checking) → load `mps-aspect-typesystem`; its Common-Path step 9 live-checks the rules on a scratch sandbox model.
+3. **Identify the task family**: defining a language → load `mps-language-aspects-overview`. Editing user code → load `mps-node-editing` and (often) `mps-baselanguage`. Creating many roots from a table (CSV or JSON rows) → load `mps-node-editing` and run its `scripts/table_to_bulk_insert.py`; do not write your own converter. Investigating an unfamiliar language → load `mps-language-analysis`. Asking a type question (fit, expected type, or why a node has its type) → open `references/analysis-tools/type-queries.md`; no aspect skill is needed. Authoring or changing typesystem rules (inference, subtyping, replacement, checking) → load `mps-aspect-typesystem`; its Common-Path step 9 live-checks the rules on a scratch sandbox model.
 4. **Follow the matching aspect skill** for the specific aspect you're touching.
 5. **Validate frequently** with `mps_mcp_check_root_node_problems`. Rebuild (`MAKE`) after compiled-aspect changes.
 
@@ -127,7 +127,7 @@ Open `references/node-editing-rules.md` for the full rulebook on adding/updating
 
 Open `references/reference-formats.md` for the reference-format protocol: node refs (`r:`/`i:`), concept refs (`c:`), the critical "never use a concept ref where a node ref is expected" rule, and how to pass a list to a top-level parameter (a real JSON array and the array written as a string are equivalent).
 
-Open `references/bulk-creation.md` for the print-shallow-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
+Open `references/bulk-creation.md` for bulk inserts: roots from a table (CSV or JSON rows) through `mps-node-editing`'s `scripts/table_to_bulk_insert.py`, name-based references inside one batch, and the print-shallow-then-add-children staged construction workflow used when subtrees exceed the JSON size limit.
 
 Open `references/analysis-tools.md` for the inventory of analysis operations: `mps_mcp_query_types`, `mps_mcp_query_nodes` `GET_TYPE` / `GET_EXPECTED_TYPE`, `mps_mcp_query_dataflow`, `mps_mcp_print_node`, and `mps_mcp_check_root_node_problems` with its `rules`, `uncheckedSubtrees`, `quickFixes` / `autoApplyQuickFixes`, plus `mps_mcp_list_node_intentions` / `mps_mcp_apply_intention` and `mps_mcp_alter_nodes FIX_REFERENCES`.
 
