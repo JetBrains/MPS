@@ -99,8 +99,13 @@ verdict by the same route. Calls go through `scripts/mcp_call.py`, read-only, `p
 - **Aspects** (editor, constraints, typesystem, behavior, intentions): `get_concept_details` returns
   structure only, at every `detail` level. List the aspect model's roots with
   `get_project_structure(startingPoint=<lang>.<aspect>, includeRootNodes=true)`, then read each
-  root with `print_node(format="PLAIN TEXT")`. A JSON `print_node` is one level deep.
-- **Call shapes**: `query_structure` takes `operation` plus a `parameters` object, e.g.
+  root with `print_node(format="PLAIN TEXT")`.
+- **Reading nodes**: a JSON `print_node` shows one level, so each child (a Step, a reference
+  wrapper) needs its own call. PLAIN TEXT shows the whole subtree as the editor renders it, but no
+  `targetReference`; use it for text and layout and JSON for reference targets.
+- **Call shapes**: `print_node` and `check_root_node_problems` take the node, root or model as
+  `nodeReference` (`nodeRef` and `modelReference` are rejected). `query_structure` takes
+  `operation` plus a `parameters` object, e.g.
   `{"operation": "GET_ENUMERATION_LITERALS", "parameters": {"enumerationRef": "<qualified name>"}}`.
   Criteria may abbreviate a call as `OP(arg=…)`; send the real shape.
 - **References**: identify a target by the root its `targetReference` resolves to. A smart-reference
@@ -108,6 +113,10 @@ verdict by the same route. Calls go through `scripts/mcp_call.py`, read-only, `p
 - **Descriptors**: `get_concept_details(languageRefs=<lang>)`; an entry carries `descriptorStatus`
   only when hollow, so pass = no entry has it (S1 criterion 6).
 - **Problems**: a model-scope `check_root_node_problems` lists only the roots that have problems.
+  "0 errors" counts errors only; warnings do not fail a criterion unless it names them. Name a model
+  by its model reference when a module has the same name (`…sandbox` is both).
+- **"Builds cleanly"**: a read-only evaluator cannot run make. The criteria test it as "every
+  aspect model has 0 errors and no descriptor is hollow"; report that, not a build result.
 - **Names**: pass a qualified name or a node reference, never a bare short name. A short name
   resolves by name across the whole repository, java stubs included (`x` hit a jsvg class `x`).
 

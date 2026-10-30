@@ -18,12 +18,15 @@ How to read aspects, call shapes and the descriptor check: [`../../instructions/
    dump are the fallback if a name does not resolve: Difficulty {EASY, MEDIUM, HARD}, Unit {G, ML, PIECE}.
 3. Aspects, read from the aspect models (not `get_concept_details`, which has no aspect data):
    - Editor: each of Recipe, Step, Ingredient and Cookbook has a `ConceptEditorDeclaration` that is
-     **not scaffold output**. `mps_mcp_scaffold_editor` emits the concept alias, `Name:`, then one
-     `<role>:` constant per property, then per reference, then per child, each label on a new line;
+     **not scaffold output**. `mps_mcp_scaffold_editor` emits the concept alias and `Name:`, each
+     only when the concept has one (Step has no name; its alias is whatever the run declared, the
+     `alias` in `get_concept_details`), then one `<role>:` constant per property, then per
+     reference, then per child, each label on a new line;
      its include filters and detected components can drop rows, so a missing label proves nothing.
      An editor passes when it has a constant the scaffolder never emits (a word such as `serves` or
-     `min`, punctuation such as `->`), or puts two label/value rows on one line. Smart-reference
-     wrapper concepts are exempt.
+     `min`, punctuation such as `->`), or puts two label/value rows on one line. A value placed on
+     the alias line with its label dropped also passes as a non-scaffold layout (`cookbook { name }`).
+     Smart-reference wrapper concepts are exempt.
    - Constraints: the two behaviours the prompt asks for exist, wherever they live: `servings` ≥ 1
      (a property validator or a checking rule), and a Recipe cannot list itself in seeAlso (a
      referent scope on the wrapper's reference that excludes the containing Recipe, or a check).
@@ -35,9 +38,10 @@ How to read aspects, call shapes and the descriptor check: [`../../instructions/
    3 Ingredient roots, 3 Recipe roots, 1 Cookbook root. Print one Recipe (`format="PLAIN TEXT"`):
    servings, difficulty (a value left at the default is valid), 2–4 steps, ≥1 seeAlso.
 5. `mps_mcp_check_root_node_problems` on every root of the samples model: 0 errors.
-6. The language builds cleanly: `mps_mcp_check_root_node_problems` on each aspect model of
-   `mcp.study.recipes` (structure, editor, constraints, typesystem, behavior): 0 errors. Then the
-   descriptors are not hollow: `mps_mcp_get_concept_details(languageRefs=mcp.study.recipes)`.
+6. The language builds cleanly, tested as (a read-only evaluator cannot run make):
+   `mps_mcp_check_root_node_problems` on each aspect model of `mcp.study.recipes` (structure,
+   editor, constraints, typesystem, behavior): 0 errors. Then the descriptors are
+   not hollow: `mps_mcp_get_concept_details(languageRefs=mcp.study.recipes)`.
    An entry carries `descriptorStatus` **only** when its descriptor is hollow (then always
    `"hollow"`, with a `descriptorRecoveryAction`); a healthy concept has no such field. Pass = no
    entry has `descriptorStatus`. Its absence is direct evidence, not an inference.
