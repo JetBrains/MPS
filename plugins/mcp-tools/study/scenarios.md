@@ -10,7 +10,8 @@ How to run a cell is the `skill-optimization-study` skill (`references/harness.m
 `worker_prompt.md` to make a cell cover a new topic; add a scenario. Open defects that change how
 to read a result are in [`docs-defects.md`](docs-defects.md). Fixtures are regenerated per
 [`fixtures/README.md`](fixtures/README.md), not stored in git. Exception: S5 was revised on
-2026-10-22 (round 39) at the user's request to add identity-preserving moves; see S5.
+2026-10-22 (round 39) at the user's request to add identity-preserving moves; see S5. S20–S24 were
+rehearsed in round 46 and revised; each `done_criteria.md` says whether its prompt is frozen.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -38,6 +39,11 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S17 | Add six editor tests for the Recipe editor that must not pass vacuously and must run headless (typing with the caret checked, undo, redo, copy and paste, a deletion that ignores the two-step-deletion setting, an action's applicability), create a run configuration, and run them. |
 | S18 | Add three generator tests for the recipes generator (the exact output, the output in any root order, the output of an explicit plan that runs only that generator), keep the test data out of make, create a run configuration, and run them. |
 | S19 | Give the recipes models explicit generation plans: two plans with a checkpoint, a generator-module step and a conditional fork, one shipped through a DevKit and one attached to a solution; then rename the checkpoint, extract a shared plan both include, and make both modules. |
+| S20 | Greenfield tariff DSL whose generator emits an interface with one implementation class per plan: conditional and unconditional no-input roots read by label, `$COPY_SRC(L)$`, in-line templates with and without context, a pattern rule with a property variable, a labelled `$LOOP$` read by `$REF$`, `$MAP_SRC$` (null source; mapper + post-mapper), `$INSERT$`, a post-processing script. Rehearsed (round 46): opus FAIL before the revision, sonnet PASS. |
+| S21 | Greenfield shell DSL whose generator emits fluent-API classes: weaving with a stable anchor found through a shared fragment label (`get output list`), a weave template that loops and calls with unique names, `$CALL$` with arguments, `pick output`, `$VAR$`, an in-line switch, a generator warning. Rehearsed (round 46): opus PASS on the third revision. |
+| S22 | Edit the recipes generator: a template switch with a parameter, an error default and a null-input message; a case for a sub-concept added by an extending language's switch (one plan step); `keepSourceRoot`; a generator-only language; a two-key label; a pre-processing script that modifies the model; a three-step plan. Rehearsed (round 46): opus PASS; sonnet FAIL on a gate since relaxed. |
+| S23 | Edit an observer-built flows generator (`flows-gen`): fix a wrong rule order from its symptom, add an in-line switch case, rename a label with every use, extract an in-line template into a template declaration. Rehearsed (round 46): opus and sonnet PASS; frozen. |
+| S24 | Keep the flows generator working after a language change (split a concept, rename properties, migrate samples), turn per-item weaving into weave-each with a stable anchor, add a template parameter, resolve one call by name. Rehearsed (round 46): opus FAIL before the revision, sonnet PASS. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -82,7 +88,7 @@ Run to verify: `mps-node-editing` bulk path, `scripts/table_to_bulk_insert.py` (
 just the PASS), `mps-mcp-workflow` `references/bulk-creation.md`, reference wiring after insert.
 Does not author any aspect. A pass says nothing about structure, editor, or constraints docs.
 Hypotheses: H3 bulk, H6 refs, H1.
-Isolation: shares `mcp.study.recipes` with S4–S7, S9, S15, S17, S18 and S19.
+Isolation: shares `mcp.study.recipes` with S4–S7, S9, S15, S17, S18, S19 and S22.
 
 **S4 — refactor and migrate.** Fixture: a passing S1 project **with the sample Recipe and Cookbook
 roots kept** (`recipes-full`, not the stripped `recipes` tarball — the prompt requires existing
@@ -100,7 +106,7 @@ failed "migration applied" is then the tool gap, not a docs regression. `mps_con
 passes `-Dmps.migration.assistant.auto=false`, so the wizard cannot open before the worker's first
 call either.
 Hypotheses: H2, H5, H8.
-Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9, S15, S17, S18 and S19. Restart before this
+Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9, S15, S17, S18, S19 and S22. Restart before this
 cell if any of those already loaded the language in this process (D80 includes S4).
 
 **S5 — repair a broken model.** Fixture: `recipes-broken` (`recipes-full` plus the 12 injections
@@ -172,7 +178,7 @@ Run to verify: `mps-console` (only cell).
 Console history and the current input are session state. Evaluate before the project is closed;
 after a close the evidence is gone.
 Hypotheses: H1, H7.
-Isolation: shares the recipes module id with S3–S7, S15, S17, S18 and S19. May precede a language-changing
+Isolation: shares the recipes module id with S3–S7, S15, S17, S18, S19 and S22. May precede a language-changing
 cell in the same process.
 
 **S10 — project lifecycle.** Fixture: synthesized `empty-project`. The worker creates
@@ -289,7 +295,7 @@ calls, 2 min 18 s) and `S15-sonnet-1` (27 calls, 1 min 51 s) both passed criteri
 path, every P1–P7 signal on target (`GN_trace_before_fix` 1, `GN_template_prints_before_trace` 0,
 `M_makes` 3), 0 error envelopes. D2 stays held back.
 Hypotheses: H2, H5, H7.
-Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7, S9, S17, S18 and S19, so restart MPS before
+Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7, S9, S17, S18, S19 and S22, so restart MPS before
 S15 when one of those ran in the process; the worker rebuilds the language, so restart again before
 any later recipes cell. S13, S14 and S16 (the dataflow cells) do not use `recipes*` and need no restart for it.
 
@@ -342,7 +348,7 @@ Does not cover completion: smart references to Ingredients need roots in scope o
 which the fixture alone does not give. Intentions and side transforms are not covered either; the
 language has none.
 Hypotheses: H2, H7.
-Isolation: the `mcp.study.recipes` module id of S3–S7, S9, S15, S18 and S19, so restart MPS before S17 when one
+Isolation: the `mcp.study.recipes` module id of S3–S7, S9, S15, S18, S19 and S22, so restart MPS before S17 when one
 of those ran in the process. The worker builds only the new test solution, but it loads the
 language's editor classes, so a later recipes cell that rebuilds the language needs the restart
 too (the D80 hazard), as after S7.
@@ -420,6 +426,29 @@ Isolation: the `mcp.study.recipes` module ids of S3–S7, S9, S15, S17 and S18, 
 S19 when one of those ran in the process, and after it before a cell that rebuilds the language
 (make loads the generator, D80). Never open next to another `recipes*` copy.
 
+**S20–S24 — generator authoring and editing.** Written 2026-10-30 after the generator-skill
+experiments (D132–D134): a fable subagent proposed them from the MPS generator documentation, the
+`generator_demo` languages and the ad-hoc exercises A1–A5 used to tune the skill, and an opus reviewer
+reviewed them twice for coverage, feasibility, checkability and isolation; they differ in domain and
+output shape from both the demos and the exercises. Rehearsal round 46 (2026-10-30, opus and sonnet at medium effort, one run each, S21 opus twice)
+found mostly criteria defects (gates the prompt did not state, one gate the engine cannot meet:
+weave-each evaluates its template arguments once) and fixed them; the skill catalog changed
+during the round, so its runs are rehearsals, not a baseline. S23 is frozen; S20–S22 and S24
+freeze after one more pass by the model that has not yet passed the revision (each
+`done_criteria.md` status line). S23 and S24 share the observer-built `flows-gen`
+([`scenarios/S23/FIXTURE.md`](scenarios/S23/FIXTURE.md)). Fixtures: S20 and S21
+`empty-project` (greenfield `mcp.study.tariff*`, `mcp.study.shell*`), S22 `recipes-gen`, S23 and
+S24 `flows-gen`. Each `done_criteria.md` lists the topics it gates, its isolation and its risks;
+the coverage matrix of the set (and what stays uncovered: `MapSrcListMacro`, `$WEAVE$`, `$TRACE$`,
+null-input firing, `RegisterLabel`, node/link pattern variables) is
+[`scenarios/GENERATOR_COVERAGE.md`](scenarios/GENERATOR_COVERAGE.md).
+Run to verify: `mps-aspect-generator` (all references), `mps-aspect-generation-plan` (S22: one
+plan step for two generators), `mps-model-manipulation` (query bodies), `mps-baselanguage`
+(templates through the parser), `mps-aspect-structure-concepts` (S24: concept split and renames).
+Isolation: S22 has the `mcp.study.recipes` module ids of S3–S7, S9, S15, S17–S19, so restart MPS
+before and after it as for those; S23 and S24 share `flows-gen` ids, so never open two copies
+together and restart between them; S20 and S21 mint fresh ids.
+
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
 after a start or restart.
@@ -445,8 +474,8 @@ skill whose **Run** column is not S1 or S3.
 | `mps-aspect-intentions` | S2 | | |
 | `mps-aspect-migrations` | S4 | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
 | `mps-aspect-accessories` | S19 (DevKit exports and the DevKit's plan through `module-level-deps.md`; a used devkit on a model) | | accessory models, runtime solutions, extended languages — no cell |
-| `mps-aspect-generator` | S6 (authoring a root mapping rule and macros), S15 (debugging a misgeneration, `references/debugging-misgeneration.md`) | S18 (the *Testing a generator* pointer; routing only) | compiled-generator tracing (integration test only) |
-| `mps-aspect-generation-plan` | S19 (author, attach through a DevKit and a Solution, verify, maintain), S18 (a one-step plan for a generator test) | S15 (reads a DEFAULT plan's steps and prefixes; no plan authoring) | cross-model checkpoints with label lookups, `PlanContribution`, `InitModelAttributes` — no cell |
+| `mps-aspect-generator` | S6 (authoring a root mapping rule and macros), S15 (debugging a misgeneration, `references/debugging-misgeneration.md`), S20–S24 (rules of every kind, switches incl. override, labels in every form, weaving, scripts, `$MAP_SRC$`/`$VAR$`/`$INSERT$`/`$CALL$`, editing and maintenance; rehearsed in round 46, S23 frozen; S23/S24 run on `flows-gen`) | S18 (the *Testing a generator* pointer; routing only) | compiled-generator tracing (integration test only); `MapSrcListMacro`, `$WEAVE$`, `$TRACE$` |
+| `mps-aspect-generation-plan` | S19 (author, attach through a DevKit and a Solution, verify, maintain), S18 (a one-step plan for a generator test), S22 draft (two generators in one `Transform` step, a generator-only language) | S15 (reads a DEFAULT plan's steps and prefixes; no plan authoring) | cross-model checkpoints with label lookups, `PlanContribution`, `InitModelAttributes` — no cell |
 | `mps-node-editing` | S1 and S6 (hand-written blueprints), S3 (bulk + aggregate root), S5 (surgical repair, identity-preserving moves), S2 and S4 and S7 (writes) | S18 (the `GeneratorTest` blueprint) | S8 and S9 must not write |
 | `mps_mcp_alter_nodes` MOVE_NODE_TO_PARENT | S5 (forced: same-model reparent into a middle index) | | cross-model moves, promotion to root, console-node moves (no cell) |
 | `mps_mcp_alter_nodes` MOVE_CHILD | | S5 (the reorder; a same-parent MOVE_NODE_TO_PARENT also passes) | cross-model moves, promotion to root, console-node moves (no cell) |
@@ -458,7 +487,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap) | | completion, intentions, side transforms (no cell) |
 | `mps-run-configurations` | S7, S17, S18 | | |
 | `mps-console` | S9 | | evaluate before close |
-| `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S19 do not measure this skill |
+| `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S24 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
 | make / reload / hollow descriptors | S1, S2, S4, S6, S12 | S15 | a MAKE that returns `runtimeReady: true` is the reload (D84) |
 | `mps_mcp_alter_nodes` MAKE `saveTransientModels`, the `transientModels` block | S15 | | |
@@ -500,7 +529,7 @@ an eval (skill `references/scenarios.md`, "Adding a scenario").
 2. Run the **Run** cells only, on the models the user names. One model is enough to see whether
    the changed path is taken; a second model is a variance check, not a requirement.
 3. If several cells share a fixture language, restart MPS between them: S2/S8 on `statechart`,
-   and any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19 on `recipes*` (S4 is in that set — it loads the same
+   and any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22 on `recipes*`, S23/S24 on `flows-gen` (S4 is in that set — it loads the same
    language; S15's worker rebuilds it). S11 and S12 each need a restart before them, and an MPS
    that has not loaded the Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
