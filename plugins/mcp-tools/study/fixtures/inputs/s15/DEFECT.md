@@ -2,7 +2,7 @@
 
 Built 2026-10-23 by the observer from `fixtures-r12/recipes-full.tar.gz` (the passing S1 project with
 3 Ingredients, 3 Recipes and 1 Cookbook), opened in MPS 2026.1 (build 261.25134, `myMPS-fix`
-sources) as `~/MPSProjects/mcp-study/proj/fixture-recipes-misgen`, edited only through
+sources) as `~/MPSProjects/mcp-study/proj/fixture-recipes-misgen` (now `archive/workspace/unclosed/fixture-recipes-misgen`), edited only through
 `../../../scripts/mcp_call.py` → MPS MCP. Every model change, as sent, is in `DEFECT.log` next to this file;
 a rebuild replays it and then re-pins node ids in this file and [`../../../scenarios/S15/done_criteria.md`](../../../scenarios/S15/done_criteria.md); the tarball sha256 is recorded only in [`../../pins.md`](../../pins.md), because new node ids are
 minted per call. Tarball: `~/MPSProjects/mcp-study/fixtures/recipes-misgen.tar.gz` (sha256 and date in [`../../pins.md`](../../pins.md)), `classes_gen` and `source_gen`

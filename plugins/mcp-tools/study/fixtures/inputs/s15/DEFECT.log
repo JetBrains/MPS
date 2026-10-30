@@ -2,7 +2,7 @@
 
 Every model change made to `fixtures-r12/recipes-full.tar.gz`, in order, as sent through
 `scripts/mcp_call.py` (one JSON object per call: `tool` and its `args`; `projectPath` =
-`~/MPSProjects/mcp-study/proj/fixture-recipes-misgen` is omitted). MPS 2026.1, build 261.25134, from
+`~/MPSProjects/mcp-study/proj/fixture-recipes-misgen` (now `archive/workspace/unclosed/fixture-recipes-misgen`) is omitted). MPS 2026.1, build 261.25134, from
 `myMPS-fix` sources. Read-only calls (prints, checks, the pin walk in `DEFECT.md`) are left out, and
 so are two calls that changed nothing: an `update_node SET PROPERTY` in the `propertyName` form the
 tool rejects (`properties` triplets required), and the `NOT_EDITABLE` probe on a transient node.

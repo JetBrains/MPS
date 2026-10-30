@@ -28,6 +28,22 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
      file, a from-sources MPS still uses the IDEA `MPS` run configuration. A standalone install
      does not: `MPS_INSTALL="/path/to/MPS.app" mps_control.sh install` once (or the install root,
      or `bin/mps.sh`), then `start`. Do not reconstruct that install's JVM command.
+   - A capture from another MPS → `restart` keeps an existing capture: it shuts down the live MPS
+     and starts the captured one, so the two can be different MPS builds (`start` refuses while
+     any MPS runs). Compare `jq '{selector, cwd}' "${CAPTURE:-$TMPDIR/mps-study-cmdline.json}"`
+     (an `install` capture has `launcher` and `install` instead) with
+     `$STUDY/scripts/mps_control.sh url --json | jq .selector`. When they differ, decide which MPS
+     the round measures. To keep the live one, run `capture` again, then repeat `calllog` and
+     `idelog`, because a new capture brings back the checkout's log path. To keep the captured
+     one, `shutdown` the live MPS, then `start`. A per-checkout `CAPTURE` file avoids the clash
+     on the next round.
+   - `$RUNS` left over from a closed round → a round starts on an empty `$RUNS`. If it holds any
+     `*.meta.json` of a round that is already written up (or abandoned), move the whole directory
+     to `~/MPSProjects/mcp-study/archive/runs/<round>/` and create an empty `$RUNS`. Old
+     `*.meta.json` and `*-worker.jsonl` make `run_worker.sh` refuse reused run ids and make
+     `analyze_runs.py` mix the rounds, and a stale `inventory.json` puts the wrong
+     `inventorySha256` in new metas. Moving stragglers out of the active round's `runs/` is the
+     separate step in [`cleanup.md`](cleanup.md), not this one.
    - Welcome screen → **synthesize** a *harness project* and open it:
      `python3 $STUDY/scripts/new_study_project.py --dir ~/MPSProjects/mcp-study/workspace/harness`
      writes the three descriptor files (`migration.xml` derived from this MPS, so no Migration
@@ -98,8 +114,8 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    drop `PROJECT_SYNTHESIZED=1` if the harness project was not synthesized. The transcript
    must contain `tool_use`, `tool_result`, per-message `usage`; exactly one MCP server; and, when
    the call log is on, a `SMOKE-…-server.jsonl` slice of ≥ 1 line.
-5. **Scenarios** — `study/scenarios/S1..S19/{worker_prompt.md,done_criteria.md}`. Which cells a
-   changed skill actually forces is `study/scenarios.md` (brief list, then the directory). Look
+5. **Scenarios** — `scenarios/S1..S24/{worker_prompt.md,done_criteria.md}`. Which cells a
+   changed skill actually forces is [`scenarios.md`](scenarios.md) (brief list, then the directory). Look
    that up before picking the matrix; the gate-4 default (S1 + S3) is a pilot default, not that
    lookup. Add a scenario for whatever skill/tool the directory does not cover. **S10 (project
    lifecycle) runs last in a round**: it is the only
@@ -155,11 +171,12 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
     ≥ 25 % fewer context tokens on treated scenarios, no drop in pass rate; delete remedies that do
     not pay.
 11. **Wrap up** — fold conclusions into the study doc; revert the VM option; leave the current tarballs in `~/MPSProjects/mcp-study/fixtures/` (archive a round under `archive/` rather than deleting those tarballs)
-    (keep the SMOKE scenario — step 4 needs it); announce and close any remaining scratch with
+    (keep the SMOKE scenario — step 4 needs it); once the report is written, move `$RUNS` to
+    `~/MPSProjects/mcp-study/archive/runs/<round>/` so the next round starts empty; announce and close any remaining scratch with
     `mps_mcp_close_project`, **closing the last one with `shutdownWithLastProject=true`** if MPS
     should go down — the shutdown rides on that last close, because a Welcome-screen MPS cannot be
     stopped over MCP; delete any `<proj>-target` directory an S10 run left; clean
-    `~/MPSProjects/mcp-study/`, `~/.claude.json` project entries, and
+    `~/MPSProjects/mcp-study/workspace/`, `~/.claude.json` project entries, and
     `~/.claude/projects/-…-mcp-study-workspace-*/` memory dirs (also any older `mcp-study-proj-` prefix); Junie workers may leave
     `~/.junie/sessions` — do not auto-delete them; keep the call-log listener. The capture
     file lives in `$TMPDIR`, outside that cleanup, so a later round can still relaunch.

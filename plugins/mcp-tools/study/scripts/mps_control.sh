@@ -27,7 +27,7 @@
 # selector uses 64344, not 64343). `wait` re-detects on every iteration until the URL is confirmed.
 #
 # The capture lives in $TMPDIR (CAPTURE=$TMPDIR/mps-study-cmdline.json), NOT in $RUNS: wrap-up
-# deletes ~/MPSProjects/mcp-study/, and mps-project-management restricts helper dumps to $TMPDIR.
+# cleans ~/MPSProjects/mcp-study/workspace/, and mps-project-management restricts helper dumps to $TMPDIR.
 # It must be taken while MPS is alive — after the application exits there is nothing left to
 # inspect (study lesson 27). `shutdown` therefore refuses without it.
 #

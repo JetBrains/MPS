@@ -77,7 +77,7 @@ Isolation: shares the statechart module id with S8. Restart MPS before this cell
 cell in the same process already loaded that language.
 
 **S3 — bulk authoring.** Fixture: `recipes` (a passing S1 project with the sample Recipe and
-Cookbook roots deleted; 3 Ingredients remain) plus `scenarios/S3/recipes.csv` copied into the
+Cookbook roots deleted; 3 Ingredients remain) plus `../fixtures/inputs/recipes.csv` copied into the
 project dir. Mutates the samples model only.
 Forces a file-backed bulk insert, name-based cross-references inside the batch, and one
 aggregate root (`Cookbook` → 40 recipe refs). The catalog's intended tool is
