@@ -39,7 +39,7 @@ One default options node + optional per-module overrides.
 
 ## `BuildSource_JavaModule`
 
-A plain Java module. Children: `content` (sources + resources), `dependencies` (cp / jars / modules / libs).
+A plain Java module. Children: `sources` (0..n `BuildSource_JavaSources`, usually a `BuildSource_JavaContentRoot` with a `basePath` and `BuildSource_JavaContentFolder`s of `kind` `source` / `test` / `excluded`; resources go in a `BuildSource_JavaResources` sibling), `dependencies` (jars / modules / libraries), optional `options` and `outputFolder`.
 
 ```json
 {
@@ -47,14 +47,17 @@ A plain Java module. Children: `content` (sources + resources), `dependencies` (
   "properties": [{ "name": "name", "value": "module-A" }],
   "children": [
     {
-      "role": "content",
+      "role": "sources",
       "nodes": [{
         "concept": "jetbrains.mps.build.structure.BuildSource_JavaContentRoot",
         "children": [
-          { "role": "location", "nodes": [ /* path */ ] },
+          { "role": "basePath", "nodes": [ /* BuildSourcePath, e.g. BuildSourceMacroRelativePath */ ] },
           { "role": "folders",  "nodes": [{
-              "concept": "jetbrains.mps.build.structure.BuildSource_JavaSourceFolder",
-              "properties": [{ "name": "path", "value": "src" }]
+              "concept": "jetbrains.mps.build.structure.BuildSource_JavaContentFolder",
+              "properties": [
+                { "name": "kind",         "value": "source" },
+                { "name": "relativePath", "value": "src" }
+              ]
           }]}
         ]
       }]
@@ -68,7 +71,7 @@ A plain Java module. Children: `content` (sources + resources), `dependencies` (
           "children": [{ "role": "jar", "nodes": [ /* BuildSource_JavaJar path */ ] }]
         },
         {
-          "concept": "jetbrains.mps.build.structure.BuildSource_JavaDependencyOnModule",
+          "concept": "jetbrains.mps.build.structure.BuildSource_JavaDependencyModule",
           "references": [{ "role": "module", "target": "module-B" }]
         }
       ]
@@ -79,4 +82,4 @@ A plain Java module. Children: `content` (sources + resources), `dependencies` (
 
 ## `BuildSource_JavaLibrary` (Grouping)
 
-A `BuildSource_JavaLibrary` part lets you define a named bag of jars / class folders referenced by name from multiple modules. Has a `classpath` child that is one of `BuildSource_JavaLibraryCP`, `BuildSource_JavaJars`, `BuildSource_JavaClassesFolder`. Referenced from modules via `BuildSource_JavaDependencyOnLibrary`.
+A `BuildSource_JavaLibrary` part lets you define a named bag of jars / class folders referenced by name from multiple modules. Its `elements` child (0..n) usually holds `BuildSource_JavaLibraryCP` nodes whose `classpath` child is a `BuildSource_JavaCP`: `BuildSource_JavaJars`, `BuildSource_JavaClassFolder` or `BuildSource_JavaLibraryExternalJar`. Referenced from modules via `BuildSource_JavaDependencyLibrary` (reference `library`).

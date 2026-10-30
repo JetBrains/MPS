@@ -2,23 +2,33 @@
 
 ## Module Tests (`BuildModuleTestsPlugin`)
 
-Runs `NodeTestCase`s and `EditorTestCase`s in an MPS-like environment. The actual concepts in `jetbrains.mps.build.mps.tests.structure` are `BuildAspect_MpsTestModules` (an aspect added to `BuildProject.parts`), `BuildMps_TestModules_Content`, `BuildMps_TestModuleGroup`, and `BuildMps_TestModule`.
+Runs `NodeTestCase`s and `EditorTestCase`s in an MPS-like environment. The actual concepts in `jetbrains.mps.build.mps.tests.structure` are `BuildAspect_MpsTestModules` (an aspect added to `BuildProject.aspects`), its optional `options` child `BuildMps_TestModules_Options`, `BuildMps_TestModules_Content`, `BuildMps_TestModuleGroup`, and `BuildMps_TestModule`. The run settings live on the options node, each as a child rather than a property: `haltonfailure`, `compressArgs`, `openTestReport` and `jvmArgs` (each a `BuildString`), `reportsDir` and `projectPath` (`BuildSourcePath`), and `requiredPlugins` (`RequiredPlugin`, reference `plugin` → a `BuildMps_IdeaPlugin`, for IDEA plugins auto-detection misses).
 
 ```json
 {
   "concept": "jetbrains.mps.build.mps.tests.structure.BuildAspect_MpsTestModules",
   "properties": [
-    { "name": "name",          "value": "MyLangTests" },
-    { "name": "haltOnFailure", "value": "true" },
-    { "name": "compressArgs",  "value": "true" }
+    { "name": "name", "value": "MyLangTests" }
   ],
   "children": [
+    { "role": "options", "nodes": [{
+      "concept": "jetbrains.mps.build.mps.tests.structure.BuildMps_TestModules_Options",
+      "children": [
+        { "role": "haltonfailure", "nodes": [{
+          "concept": "jetbrains.mps.build.structure.BuildString",
+          "children": [{ "role": "parts", "nodes": [{
+            "concept": "jetbrains.mps.build.structure.BuildTextStringPart",
+            "properties": [{ "name": "text", "value": "true" }]
+          }]}]
+        }]},
+        { "role": "requiredPlugins", "nodes": [ /* RequiredPlugin, only if auto-detection fails */ ] },
+        { "role": "jvmArgs",         "nodes": [ /* BuildString */ ] }
+      ]
+    }]},
     { "role": "modules", "nodes": [{
       "concept": "jetbrains.mps.build.mps.tests.structure.BuildMps_TestModuleGroup",
       "references": [{ "role": "group", "target": "MyLang" }]
-    }]},
-    { "role": "additionalPlugins", "nodes": [ /* IDEA plugin refs if auto-detection fails */ ] },
-    { "role": "jvmArguments",      "nodes": [ /* BuildString parts */ ] }
+    }]}
   ]
 }
 ```
@@ -38,15 +48,22 @@ For one-off Ant commands or named targets, use the workflow language. Typically 
   "concept": "jetbrains.mps.build.workflow.structure.BwfTask",
   "properties": [{ "name": "name", "value": "customCopy" }],
   "children": [{
-    "role": "statements",
+    "role": "subTasks",
     "nodes": [{
-      "concept": "jetbrains.mps.build.workflow.structure.BwfAntStatement",
+      "concept": "jetbrains.mps.build.workflow.structure.BwfSubTask",
+      "properties": [{ "name": "name", "value": "copyFiles" }],
       "children": [{
-        "role": "element",
+        "role": "statements",
         "nodes": [{
-          "concept": "jetbrains.mps.core.xml.structure.XmlElement",
-          "properties": [{ "name": "tagName", "value": "copy" }]
-          /* ... XML attributes and children ... */
+          "concept": "jetbrains.mps.build.workflow.structure.BwfAntStatement",
+          "children": [{
+            "role": "element",
+            "nodes": [{
+              "concept": "jetbrains.mps.core.xml.structure.XmlElement",
+              "properties": [{ "name": "tagName", "value": "copy" }]
+              /* ... XML attributes and children ... */
+            }]
+          }]
         }]
       }]
     }]
@@ -54,4 +71,4 @@ For one-off Ant commands or named targets, use the workflow language. Typically 
 }
 ```
 
-`BwfSubTask` lets you compose sub-targets. `BwfTaskPart` (inside `parts`) registers a task to be inserted into the generated build.
+A `BwfTask` holds no statements itself: its `subTasks` (`BwfSubTask`, each with `statements` and optional `before` / `after` ordering) carry them. `BwfTaskPart` (in the `parts` of a `BuildCustomWorkflow` aspect in `BuildProject.aspects`, reference `task`) registers a task to be inserted into the generated build, optionally contributing more `subTasks`.

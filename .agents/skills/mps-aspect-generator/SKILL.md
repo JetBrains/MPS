@@ -30,7 +30,7 @@ Idiomatic generators keep the stable part **out** of the templates and emit thin
 - **Module dependencies vs. model used-languages are two distinct layers** (see `references/module-structure.md`). Adding a class to the wrong one yields "cannot resolve" in generated Java or unusable concepts in templates.
 - **Macros attach via the `smodelAttribute` child role, and co-located macros are chained in child order — order is semantics.** `$IF$` before `$LOOP$` gates the whole loop in the outer context; `$LOOP$` before `$IF$` evaluates the condition per iteration. The `$LOOP$` + `$COPY_SRC$` pair is order-insensitive only because `$COPY_SRC$` is terminal — don't generalize. See `references/macro-catalog.md`.
 - **Reductions can self-loop** when they produce their own concept — break out with `DismissTopMappingRule`, a marker subconcept, or `$COPY_SRC$`.
-- **Cross-rule/cross-template references go through mapping labels.** Direct references survive only within a single fragment.
+- **Cross-rule/cross-template references go through mapping labels** (read by a `$REF$`). A plain template reference is redirected to the output of its target when the same template application produced it; otherwise, if the target has a name, MPS resolves it by that name through the output reference's scope — enough for a name visible there (a local of the method the fragment lands in); anything else needs a label.
 
 ## Common-path workflow
 
@@ -72,7 +72,7 @@ A regression test for a generator is a `GeneratorTest` root (`jetbrains.mps.lang
 ## Related Skills
 
 - `mps-tests` — generator tests (`GeneratorTest`), see *Testing a generator* above.
-- `mps-aspect-generation-plan` — priorities, checkpoints, plan contributions; pair this with priority-ordering questions.
+- `mps-aspect-generation-plan` — explicit step order, two generators in one step, checkpoints, plan contributions; use it whenever generators must run in a given order or together.
 - `mps-aspect-textgen` — converting the final model to plain text (last pipeline stage).
 - `mps-aspect-behavior` — put non-trivial per-concept logic in behavior methods called from macros.
 - `mps-model-manipulation` — smodel-access idioms (`SPropertyAccess`, `SLinkAccess`, `Node_GetChildrenOperation`) inside query bodies; for a macro query body open only `references/dot-expression-basics.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
@@ -92,12 +92,12 @@ A regression test for a generator is a `GeneratorTest` root (`jetbrains.mps.lang
 - Query-body subconcepts and their implicit parameters (`IfMacro_Condition`, `SourceSubstituteMacro_*`, etc.): `references/query-bodies.md`.
 - Mapping labels — declare/write/read pattern, `get` vs `pick` vs `get list`: `references/mapping-labels.md`.
 - Weaving rules — `contextNodeQuery`, when to use vs. reductions: `references/weaving-rules.md`.
-- Template switches — when to switch, `extends` across generator modules: `references/template-switches.md`.
+- Template switches — roles, error default, overriding a case from another generator: `references/template-switches.md`.
 - Pattern reduction rules — structural-pattern matching with typed holes: `references/pattern-rules.md`.
 - Mapping scripts (pre / post) — bulk passes and `modifiesModel`: `references/mapping-scripts.md`.
 - Utility models, template functions, fragments — where to place non-trivial generator-time helpers: `references/utility-models.md`.
 - `genContext` operations catalog (every `GenerationContextOp_*` with editor alias and purpose): `references/generation-context.md`.
-- Generation algorithm — pipeline stages (selection → implicit grouping/ordering → explicit priorities → step-by-step transformation → TextGen), micro-steps, weaving vs. reduction ordering: `references/algorithm.md`.
+- Generation algorithm — pipeline stages (selection → implicit grouping/ordering → step-by-step transformation → TextGen), micro-steps, which rule wins, weaving vs. reduction ordering: `references/algorithm.md`.
 - Cookbook recipes — multi-root, cross-ref, unique IDs, extensible generators, loop-extraction refactor: `references/cookbook.md`.
 - Debugging misgeneration — keep transient models, read a step's output, trace a node back to the rule that produced it (`mps_mcp_generation`): `references/debugging-misgeneration.md`.
 - Common failures — symptom-to-cause-to-fix table: `references/common-failures.md`.

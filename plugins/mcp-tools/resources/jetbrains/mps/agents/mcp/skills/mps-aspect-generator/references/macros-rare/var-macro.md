@@ -35,6 +35,6 @@ FQNs:
 }
 ```
 
-Readers inside the wrapped subtree use a `VarMacro_VariableReference` (or `1psM6Z` reader) hanging off `genContext` — e.g. `genContext.myNode` — whose ref `variable` points back at the `VarDeclaration`.
+Readers inside the wrapped subtree are `genContext.myNode`: a `DotExpression` over `TemplateFunctionParameter_generationContext` whose operation is `jetbrains.mps.lang.generator.generationContext.structure.GenerationContextOp_VarRef2` with ref `vardecl` → the `VarDeclaration`.
 
 **Example.** `samples/xmlLiterals/languages/xmlLiterals/generator/template/main@generator.mps` line 491 — a `VarMacro2` with a single `VarDeclaration` named `myNode`, typed `XmlElement`, whose `value` body returns the current input `node`. Later in the same template the stored value is read as `genContext.myNode` and fed to `genContext.get output "contentToVariable" for (…)`.

@@ -16,7 +16,7 @@
 - `CollectionAppendPart` — properties `withSeparator` (boolean), `separator` (string when inline); child `list` (Expression yielding list<node<>>), optional child `separator` (Expression)
 - `NewLineAppendPart` — no children
 - `IndentBufferOperation` — no children
-- `WithIndentOperation` — child `body` (`StatementList`)
+- `WithIndentOperation` — child `list` (`StatementList`)
 - `IncreaseDepthOperation` — no children; unconditional `depth++`
 - `DecreaseDepthOperation` — no children; unconditional `depth--`
 - `BinaryWriteOperation` — child `value` (Expression of type `byte[]`); alias `write`; exclusive with text appends in the same rule
@@ -27,4 +27,4 @@
 - `LanguageTextGenDeclaration` — the base text gen component; holds `UnitContextDeclaration`s, `OperationDeclaration`s, `UtilityMethodDeclaration`s; one per textgen model; conventionally named `<LanguageName>TextGen`
 - `UnitContextDeclaration` — context-object type (lives in `LanguageTextGenDeclaration`); constructor either no-arg or one-arg taking the root concept instance
 - `UnitContextObject` — per-concept binding of a context object (child of `ConceptTextGenDeclaration.contextObjects`); assigns a local name and a `UnitContextDeclaration` type
-- `TextUnitLayout` — composes the output file from named regions; children declare areas (e.g. `HEADER`, `IMPORTS`, `SEPARATOR`, `BODY`); areas may have a separator joining appended pieces
+- `TextUnitLayout` — composes the output file from named regions; child `parts` (1..n `LayoutPart`, property `name`) declares the areas (e.g. `HEADER`, `IMPORTS`, `SEPARATOR`, `BODY`); reference `active` names the initial area; areas have no separator

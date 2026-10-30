@@ -10,10 +10,10 @@ Read this when: choosing what plugs into a rule's `ruleConsequence` role, replac
 |---|---|---|
 | `TemplateDeclarationReference` | Delegate to a standalone `TemplateDeclaration` | ref `template` → TemplateDeclaration |
 | `InlineTemplate_RuleConsequence` | Inline target subtree is the replacement | child `templateNode` — a target-language node |
-| `InlineTemplateWithContext_RuleConsequence` | Like inline, but provides `context` for macros | children `templateNode`, `contextNode` |
+| `InlineTemplateWithContext_RuleConsequence` | Like inline, but the template is a context subtree in which `TemplateFragment`s mark the output (e.g. a whole class as context, so a fragment on one method can reference the class's fields) | child `contentNode` — parse the context class straight into it with `mps_mcp_parse_java_and_insert` (child mode, `featureKind` `CLASS`), the same way as into a `TemplateDeclaration.contentNode` |
 | `InlineSwitch_RuleConsequence` | Pick one of several consequences by condition, inline (no separate `TemplateSwitch`) | children `case` (0..n), `defaultConsequence` (1) |
 | `AbandonInput_RuleConsequence` | **Drop the input node entirely**; produce nothing | (none) |
-| `DismissTopMappingRule` | Fail over to the next matching rule | optional message property |
+| `DismissTopMappingRule` | Fail over to the next matching rule; with none left the input is copied as is | optional child `generatorMessage` (`GeneratorMessage`: `messageType` info/warning/error, `messageText`) |
 
 These are exactly the options offered in the `ruleConsequence` completion menu (`<in-line template>`, `<in-line template with context>`, `<in-line switch>`, `<abandon input>`, `<dismiss top rule>`), plus the plain `TemplateDeclarationReference` you get by referencing a named template.
 

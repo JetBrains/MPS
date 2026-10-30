@@ -22,7 +22,7 @@ The producers register a module before they save it. When a producer fails, or a
 
 For `type=language`, three optional flags decide which companion modules are created alongside the language:
 
-- `withGenerator` — also create a generator (default `false`).
+- `withGenerator` — also create a generator (default `false`); the answer's `data.generators` names it with its `templates@generator` model.
 - `withSandbox` — also create a sandbox solution (default `false`).
 - `withRuntime` — also create a runtime solution (default `false`).
 

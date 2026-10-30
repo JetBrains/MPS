@@ -51,6 +51,7 @@ import org.junit.runners.Suite;
     SkillScriptsDriftTest.class,
     SkillCatalogReplicationTest.class,
     SkillReferenceLayoutTest.class,
+    SkillBlueprintShapesTest.class,
     SkillTypeQueryRoutingTest.class,
     SkillDataflowQueryRoutingTest.class,
     MigrationXmlExampleTest.class,

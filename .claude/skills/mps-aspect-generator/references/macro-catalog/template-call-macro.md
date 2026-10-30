@@ -19,3 +19,5 @@ Invokes another `TemplateDeclaration` with the current `node` (or an explicit so
   ]
 }
 ```
+
+**Parameters.** A `TemplateDeclaration` declares parameters as `parameter` children (`TemplateParameterDeclaration`: property `name`, child `type`, e.g. `StringType`); the caller passes one `actualArgument` expression per parameter, in order — a literal, or a `TemplateArgumentQueryExpression` whose `query` (`TemplateArgumentQuery`) computes the value from `node`. Inside the template, a macro query reads a parameter as `genContext.<name>` (`references/generation-context.md`). `TemplateDeclarationReference` (a rule consequence) and `$SWITCH$` take `actualArgument` the same way.

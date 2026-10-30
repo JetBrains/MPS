@@ -11,3 +11,5 @@ Parameters:
   "dryRun": "Optional: if true, only validate input without mutating the model. Default: false."
 }
 ```
+
+To add a literal to an existing enumeration, `mps_mcp_update_node` `ADD` `CHILD` into the `EnumerationDeclaration`'s `members` role an `EnumerationMemberDeclaration` with `name` and `presentation`; `memberId` is assigned on insert. Rebuild the language before models use the literal.

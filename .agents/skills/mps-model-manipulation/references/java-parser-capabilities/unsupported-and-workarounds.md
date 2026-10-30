@@ -77,6 +77,14 @@ The `target` of the `concept` reference must be the persistent node ref of the c
 (obtainable via `mps_mcp_search_concepts` or from the type of an existing `sequence<node<X>>`
 variable — print it with `mps_mcp_print_node` to get the exact ref).
 
+### Static methods of Java interfaces
+
+A call of a static method declared on an interface — `List.of(...)`, `Path.of(...)` — parses to an
+`UnknownDotCall`, even with `java.util` imported. Insert a `StaticMethodCall` blueprint instead
+(references `classConcept` → the stub interface, `baseMethodDeclaration` → the stub method; children
+`actualArgument`), taking both targets from an existing call or from `mps_mcp_query_nodes`
+FIND_INSTANCES of `StaticMethodDeclaration` in the stub model.
+
 ### smodel language expressions
 
 These concepts live in `jetbrains.mps.lang.smodel` and are not parseable from Java:

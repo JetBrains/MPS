@@ -55,7 +55,7 @@ Full `body` (`StatementList`) blueprint — the scope factory's body. The target
                         }
                       ]},
                       { "role": "operation", "nodes": [
-                        { "concept": "jetbrains.mps.baseLanguage.collections.structure.SelectManyOperation",
+                        { "concept": "jetbrains.mps.baseLanguage.collections.structure.TranslateOperation",
                           "children": [
                             { "role": "closure", "nodes": [
                               { "concept": "jetbrains.mps.baseLanguage.closures.structure.ClosureLiteral",

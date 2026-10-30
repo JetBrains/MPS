@@ -39,7 +39,7 @@ Important: **`Extends` is NOT persisted as `<dependency scope="extend">`** — M
 
 ### `Extends` typically needs a `Default` companion
 
-Language extension also typically needs a regular `Default` dependency on the same target so the extended language's classes are on the compile classpath. This tool intentionally does NOT add that automatically (it mirrors what the Module Dependencies dialog persists). Call the tool a **second time** with `scope=Default` if you want both. `Extends` also does not replace `Generation Target`: a language whose generator emits the extended language's nodes still declares it as a Generation Target, because `Extends` brings in only that language's own runtime modules, not those of the languages it generates into.
+Language extension also typically needs a regular `Default` dependency on the same target so the extended language's classes are on the compile classpath. This tool intentionally does NOT add that automatically (it mirrors what the Module Dependencies dialog persists). Call the tool a **second time** with `scope=Default` if you want both; `mps_mcp_model_dependency` does not add it either once the module extends the target. `Extends` also does not replace `Generation Target`: a language whose generator emits the extended language's nodes still declares it as a Generation Target, because `Extends` brings in only that language's own runtime modules, not those of the languages it generates into.
 
 ### Return values
 

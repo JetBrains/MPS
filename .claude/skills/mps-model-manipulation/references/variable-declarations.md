@@ -64,11 +64,11 @@ Use `node-ptr<C>` when you need to remember a node across operations that might 
 ```json
 {
   "concept": "jetbrains.mps.lang.smodel.structure.SConceptType",
-  "references": [{ "role": "conceptDeclaration", "target": "<ConceptDeclaration-noderef>" }]
+  "references": [{ "role": "conceptDeclaraton", "target": "<ConceptDeclaration-noderef>" }]
 }
 ```
 
-Populate with a `concept/C/` literal (`SConceptTypeLiteral`, id `5472444609684539882`) or the `.concept` operation on a node.
+The role really is spelled `conceptDeclaraton` (sic). Populate with a `concept/C/` literal (`SConceptTypeLiteral`, id `5472444609684539882`) or the `.concept` operation on a node.
 
 ### `search scope` and `enummember<E>`
 
@@ -77,7 +77,7 @@ Populate with a `concept/C/` literal (`SConceptTypeLiteral`, id `547244460968453
 
 {
   "concept": "jetbrains.mps.lang.smodel.structure.SEnumerationMemberType",
-  "references": [{ "role": "enumerationDeclaration", "target": "<EnumerationDeclaration-noderef>" }]
+  "references": [{ "role": "enum", "target": "<EnumerationDeclaration-noderef>" }]
 }
 ```
 

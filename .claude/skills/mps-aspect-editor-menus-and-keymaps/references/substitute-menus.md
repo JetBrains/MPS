@@ -29,7 +29,7 @@ If you **define** a default substitute menu for `C` and leave it empty, `C` itse
 |---|---|
 | `SubstituteMenuPart_AddConcept` | Add one concept as a completion option |
 | `SubstituteMenuPart_Concepts` | Add a list of concepts computed by a query |
-| `SubstituteMenuPart_Subconcepts` | Include the default substitute menus of sub-concepts of a concept |
+| `SubstituteMenuPart_Subconcepts` | Include the default substitute menus of the sub-concepts of the menu's own concept — no concept reference; optional `filter` query (`QueryFunction_SubstituteMenu_FilterConcepts`) |
 | `SubstituteMenuPart_Group` | Grouping + condition (same shape as the transformation-menu group) |
 | `SubstituteMenuPart_IncludeMenu` | Include another substitute menu (named or default), via a `menuReference` of `ISubstituteMenuReference` |
 | `SubstituteMenuPart_Parameterized` | One item per query result — roles `parameterQuery` + inner `part` |
@@ -57,10 +57,7 @@ If you **define** a default substitute menu for `C` and leave it empty, `C` itse
         ]
       },
       {
-        "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_Subconcepts",
-        "references": [
-          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.Statement" }
-        ]
+        "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_Subconcepts"
       }
     ]
   }]
@@ -71,15 +68,21 @@ Use `SubstituteMenuPart_Action` when you need a non-trivial handler (post-creati
 
 ## `SubstituteMenuPart_Wrapper` (wrap-substitute-menu)
 
-Takes an inner menu and wraps the nodes it produces. Useful when the surrounding context requires the produced node to be further wrapped — for example, wrapping an `Expression` into an `ExpressionStatement` when the surrounding concept expects a `Statement`.
+Takes an inner menu (the `reference` child: `SubstituteMenuReference_Default` with a `concept` reference, or `SubstituteMenuReference_Named` with a `menu` reference) and wraps the nodes it produces. Useful when the surrounding context requires the produced node to be further wrapped — for example, wrapping an `Expression` into an `ExpressionStatement` when the surrounding concept expects a `Statement`.
 
 ```json
 {
   "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_Wrapper",
-  "references": [
-    { "role": "wrappedConcept", "target": "jetbrains.mps.baseLanguage.structure.Expression" }
-  ],
   "children": [
+    {
+      "role": "reference",
+      "nodes": [{
+        "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuReference_Default",
+        "references": [
+          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.Expression" }
+        ]
+      }]
+    },
     {
       "role": "handler",
       "nodes": [{

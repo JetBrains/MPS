@@ -33,8 +33,7 @@ Always pass a stable `contextNode` to `unique name from …` — the default (no
 
 To let other generators inject behaviour into yours:
 
-- make the behaviour dispatchable via a `TemplateSwitch`. Extending generators add `Reduction_MappingRule` cases to the same switch (by subclassing with `extends`) or ship a companion mapping configuration with the right priority.
-- put the extension point high in priority so extension rules fire before defaults.
+- make the behaviour dispatchable via a `TemplateSwitch`. An extending generator overrides cases with a switch whose `modifiedSwitch` points at yours; its cases are tried first (`references/template-switches.md`).
 
 ## Avoid hand-editing generated Java
 

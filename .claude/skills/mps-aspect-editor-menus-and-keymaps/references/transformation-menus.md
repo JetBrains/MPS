@@ -55,7 +55,7 @@ Expose existing MPS infrastructure as transformation-menu items:
 
 ## `TransformationMenuPart_Action` Structure
 
-`TransformationMenuPart_Action` extends `AbstractOutputConceptContainerTransformationMenuPart` (so it has an `outputConceptReference` for completion filtering) and implements `IParameterizableMenuPart` and `IExtensibleTransformationMenuPart` (so it can carry `features`). Its roles:
+`TransformationMenuPart_Action` extends `AbstractOutputConceptContainerTransformationMenuPart` (so it has an `outputConceptReference` child (0..1) — an `OptionalConceptReference` whose `concept` reference names the produced concept, for completion filtering) and implements `IParameterizableMenuPart` and `IExtensibleTransformationMenuPart` (so it can carry `features`). Its roles:
 
 - `textFunction` (child, 1) of `QueryFunction_TransformationMenu_ActionLabelText` — returns the label/matching text (string).
 - `canExecuteFunction` (child, 0..1) of `QueryFunction_TransformationMenu_Condition` — boolean guard.
@@ -65,10 +65,16 @@ Expose existing MPS infrastructure as transformation-menu items:
 ```json
 {
   "concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Action",
-  "references": [
-    { "role": "outputConceptReference", "target": "jetbrains.mps.baseLanguage.structure.PlusExpression" }
-  ],
   "children": [
+    {
+      "role": "outputConceptReference",
+      "nodes": [{
+        "concept": "jetbrains.mps.lang.editor.structure.OptionalConceptReference",
+        "references": [
+          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.PlusExpression" }
+        ]
+      }]
+    },
     {
       "role": "textFunction",
       "nodes": [{
@@ -118,17 +124,23 @@ Implicit parameters in action-part function bodies: `node`, `editorContext`, `mo
 
 `TransformationMenuPart_Parameterized` generates one item per element returned by a query. Fields:
 
-1. the parameter object type (as a concept reference).
+1. `parameterType` (child, 1) — the parameter object's BaseLanguage `Type` (e.g. `StringType`, or an smodel `SNodeType` with a `concept` reference for nodes).
 2. `parameterQuery` returning `list<ParamType>` given `(node, editorContext, ...)`.
 3. an inner part (usually a `TransformationMenuPart_Action`) whose functions additionally see `parameterObject` bound to the current element.
 
 ```json
 {
   "concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Parameterized",
-  "references": [
-    { "role": "parameterConcept", "target": "jetbrains.mps.baseLanguage.structure.VariableDeclaration" }
-  ],
   "children": [
+    {
+      "role": "parameterType",
+      "nodes": [{
+        "concept": "jetbrains.mps.lang.smodel.structure.SNodeType",
+        "references": [
+          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.VariableDeclaration" }
+        ]
+      }]
+    },
     {
       "role": "parameterQuery",
       "nodes": [{

@@ -10,13 +10,13 @@ with indent { append ${node.ifTrue} ; }
 append \n {}} ...
 ```
 
-`WithIndentOperation` holds a single `body` child of type `StatementList`:
+`WithIndentOperation` holds a single `list` child of type `StatementList`:
 
 ```json
 {
   "concept": "jetbrains.mps.lang.textGen.structure.WithIndentOperation",
   "children": [
-    { "role": "body", "nodes": [
+    { "role": "list", "nodes": [
       { "concept": "jetbrains.mps.baseLanguage.structure.StatementList",
         "children": [
           { "role": "statement", "nodes": [

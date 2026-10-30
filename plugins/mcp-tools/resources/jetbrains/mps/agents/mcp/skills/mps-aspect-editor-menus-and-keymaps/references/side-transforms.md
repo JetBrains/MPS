@@ -23,10 +23,10 @@ Typical pattern (from `jetbrains.mps.baseLanguage`): you have `1` in the editor;
           "nodes": [{
             "concept": "jetbrains.mps.lang.editor.structure.TransformationLocation_SideTransform",
             "children": [{
-              "role": "place",
+              "role": "placeInCell",
               "nodes": [{
-                "concept": "jetbrains.mps.lang.editor.structure.TransformationLocation_SideTransform_PlaceInCell",
-                "properties": [{ "name": "side", "value": "RIGHT" }]
+                "concept": "jetbrains.mps.lang.editor.structure.TransformationLocation_SideTransform_PlaceInCellHolder",
+                "properties": [{ "name": "placeInCell", "value": "RIGHT" }]
               }]
             }]
           }]

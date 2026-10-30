@@ -11,12 +11,12 @@
 | `commandOnCreate` *(deprecated)* | prop (bool) | Legacy — whether the "create tab contents" block runs under a command. Prefer leaving default. |
 | `baseNodeConcept` | ref, 1 | The concept that owns this tab — only root nodes of this concept (or a subconcept) will show the tab. |
 | `icon` | child, 0..1 | `jetbrains.mps.lang.resources.structure.Icon` on the tab header. |
-| `order` | child, 0..1 | Legacy per-tab ordering hint. Prefer a dedicated `Order` root. |
+| `order` | child, 0..1 | `OrderConstraints`: an inline `Order` (the way every tab in `jetbrains.mps.ide.devkit.editor` except `Structure` does it) or an `OrderReference` (reference `order`) to a shared `Order` root. See *`Order`* below. |
 | `listenBlock` | child, 0..1 | Body that installs listeners on the tab's node set (optional). |
-| `baseNodeBlock` | child, 1 | Body taking the editor's current root and returning the node whose editor appears on the tab (often the root itself, sometimes a sibling/descendant). |
+| `baseNodeBlock` | child, 0..1 | Body taking the editor's current root and returning the node whose editor appears on the tab (often the root itself, sometimes a sibling/descendant). |
 | `isApplicableBlock` | child, 0..1 | Returns `boolean` — whether the tab should be shown for a given root. |
-| `nodesBlock` | child, 0..1 | Returns the collection of nodes the tab displays (for multi-node tabs). |
-| `createTabBlock` | child, 0..1 | Body that creates a new node when the user clicks the "+" on the tab strip. |
+| `nodesBlock` | child, 0..1 | Abstract `NodesBlock`: a `GetNodesBlock` returns the collection of nodes the tab displays (multi-node tabs), a `GetNodeBlock` returns a single node. Each has a `body`. |
+| `createTabBlock` | child, 0..1 | `CreateTabBlock` for the "+" on the tab strip: `conceptsBlock` (`ConceptsBlock`, the concepts offered) and `createBlock` (`CreateBlock`, creates the node), each with a `body`; property `commandOnCreate`. |
 
 ## `EditorTab` — JSON Blueprint
 
@@ -50,7 +50,7 @@
     ]},
     { "role": "nodesBlock", "nodes": [
       {
-        "concept": "jetbrains.mps.lang.plugin.structure.NodesBlock",
+        "concept": "jetbrains.mps.lang.plugin.structure.GetNodesBlock",
         "children": [ { "role": "body", "nodes": [
           { "concept": "jetbrains.mps.baseLanguage.structure.StatementList" }
         ]}]
@@ -59,9 +59,16 @@
     { "role": "createTabBlock", "nodes": [
       {
         "concept": "jetbrains.mps.lang.plugin.structure.CreateTabBlock",
-        "children": [ { "role": "body", "nodes": [
-          { "concept": "jetbrains.mps.baseLanguage.structure.StatementList" }
-        ]}]
+        "children": [
+          { "role": "conceptsBlock", "nodes": [
+            { "concept": "jetbrains.mps.lang.plugin.structure.ConceptsBlock",
+              "children": [ { "role": "body", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.StatementList" } ]} ] }
+          ]},
+          { "role": "createBlock", "nodes": [
+            { "concept": "jetbrains.mps.lang.plugin.structure.CreateBlock",
+              "children": [ { "role": "body", "nodes": [ { "concept": "jetbrains.mps.baseLanguage.structure.StatementList" } ]} ] }
+          ]}
+        ]
       }
     ]}
   ]
@@ -72,7 +79,7 @@ Real sources to inspect with `mps_mcp_print_node`: the `Actions`, `Behavior`, `C
 
 ## `Order` — Sequence Tabs Across the Strip
 
-Because every `EditorTab` is declared independently, MPS needs a way to order the resulting tab strip. Drop a single `Order` root that lists the tabs in the desired left-to-right order:
+Because every `EditorTab` is declared independently, MPS needs a way to order the resulting tab strip. An `Order` lists `EditorTabReference`s (reference `editorTab`) in the desired left-to-right order. It goes either inline in a tab's `order` child — in `jetbrains.mps.ide.devkit.editor` each tab except `Structure` (the first) carries its own inline `Order` of the tabs up to and including itself (the `Constraints` tab lists `Structure`, `Editor`, `Constraints`) — or into a shared `Order` root that each tab's `order` child points at through an `OrderReference`:
 
 ```json
 {
@@ -82,15 +89,15 @@ Because every `EditorTab` is declared independently, MPS needs a way to order th
       "role": "tab",
       "nodes": [
         { "concept": "jetbrains.mps.lang.plugin.structure.EditorTabReference",
-          "references": [ { "role": "tab", "target": "Structure"    } ] },
+          "references": [ { "role": "editorTab", "target": "Structure"    } ] },
         { "concept": "jetbrains.mps.lang.plugin.structure.EditorTabReference",
-          "references": [ { "role": "tab", "target": "Behavior"     } ] },
+          "references": [ { "role": "editorTab", "target": "Behavior"     } ] },
         { "concept": "jetbrains.mps.lang.plugin.structure.EditorTabReference",
-          "references": [ { "role": "tab", "target": "Constraints"  } ] }
+          "references": [ { "role": "editorTab", "target": "Constraints"  } ] }
       ]
     }
   ]
 }
 ```
 
-One `Order` root per editor tab set — typically one per plugin model. Real source: the `Order` root in `jetbrains.mps.ide.devkit.editor`.
+Real source: the inline `order` child of any `EditorTab` in `jetbrains.mps.ide.devkit.editor` (no `Order` root exists there).

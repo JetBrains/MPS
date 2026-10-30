@@ -9,7 +9,7 @@ These concepts live in `jetbrains.mps.lang.actions.structure`, in `<lang>/langua
 Each `PasteWrapper` item holds:
 
 - `sourceConcept` / `targetConcept` references (concept to convert from and to).
-- a wrap function receiving `node` (the source) and returning the wrapped node.
+- a `wrapperFunction` child (`QueryFunction_PasteWrapper`) receiving `sourceNode` (the pasted node, concept `ConceptFunctionParameter_nodeToPasteWrap`) and returning the wrapped node.
 
 ### JSON Template
 
@@ -26,13 +26,13 @@ Each `PasteWrapper` item holds:
         { "role": "targetConcept", "target": "jetbrains.mps.baseLanguage.structure.Statement" }
       ],
       "children": [{
-        "role": "wrap",
+        "role": "wrapperFunction",
         "nodes": [{
-          "concept": "jetbrains.mps.lang.actions.structure.PasteWrapperFunction",
+          "concept": "jetbrains.mps.lang.actions.structure.QueryFunction_PasteWrapper",
           "children": [{ "role": "body", "nodes": [
-            /* BaseLanguage:
+            /* StatementList — BaseLanguage:
                node<ExpressionStatement> result = new node<ExpressionStatement>();
-               result.expression.set(node);
+               result.expression.set(sourceNode);
                return result; */
           ]}]
         }]
@@ -50,8 +50,8 @@ Paste wrappers run **after** copy-paste handlers and **before** the node is graf
 
 Copy-paste handlers all live in one root: `jetbrains.mps.lang.actions.structure.CopyPasteHandlers`. The root has two child roles:
 
-- `preProcessor` (0..n) — `CopyPreProcessor` items, each with `applicableConcept` and a body.
-- `postProcessor` (0..n) — `PastePostProcessor` items, each with `applicableConcept` and a body.
+- `preProcessor` (0..n) — `CopyPreProcessor` items, each with a `concept` reference and a `preProcessFunction` child (`CopyPreProcessFunction`, whose `body` is a `StatementList`).
+- `postProcessor` (0..n) — `PastePostProcessor` items, each with a `concept` reference and a `postProcessFunction` child (`PastePostProcessFunction`, same `body`).
 
 ### Copy Pre-Processors
 
@@ -64,7 +64,7 @@ Common uses: strip information that should not travel with the clipboard, anonym
 
 ### Paste Post-Processors
 
-Run after the node has been inserted at the target. Typical use: **re-resolve references** that now point into a different scope.
+Run after the node has been inserted at the target. Body receives `pastedNode` (`ConceptFunctionParameter_nodeToPastePostProcess`). Typical use: **re-resolve references** that now point into a different scope.
 
 ### JSON Template
 
@@ -78,11 +78,14 @@ Run after the node has been inserted at the target. Typical use: **re-resolve re
       "nodes": [{
         "concept": "jetbrains.mps.lang.actions.structure.CopyPreProcessor",
         "references": [
-          { "role": "applicableConcept", "target": "jetbrains.mps.baseLanguage.structure.LocalVariableReference" }
+          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.LocalVariableReference" }
         ],
         "children": [{
-          "role": "body",
-          "nodes": [ /* BaseLanguage: mutate `copy`, not `original` */ ]
+          "role": "preProcessFunction",
+          "nodes": [{
+            "concept": "jetbrains.mps.lang.actions.structure.CopyPreProcessFunction",
+            "children": [{ "role": "body", "nodes": [ /* StatementList — BaseLanguage: mutate `copy`, not `original` */ ] }]
+          }]
         }]
       }]
     },
@@ -91,16 +94,19 @@ Run after the node has been inserted at the target. Typical use: **re-resolve re
       "nodes": [{
         "concept": "jetbrains.mps.lang.actions.structure.PastePostProcessor",
         "references": [
-          { "role": "applicableConcept", "target": "jetbrains.mps.baseLanguage.structure.LocalVariableReference" }
+          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.LocalVariableReference" }
         ],
         "children": [{
-          "role": "body",
-          "nodes": [
-            /* BaseLanguage:
-               node<LocalVariableDeclaration> decl = node.ancestor<ClassifierMember>
-                 .descendants<LocalVariableDeclaration>.findFirst({~d => d.name :eq: node.variable.name; });
-               if (decl != null) { node.variable.set(decl); } */
-          ]
+          "role": "postProcessFunction",
+          "nodes": [{
+            "concept": "jetbrains.mps.lang.actions.structure.PastePostProcessFunction",
+            "children": [{ "role": "body", "nodes": [
+              /* StatementList — BaseLanguage:
+                 node<LocalVariableDeclaration> decl = pastedNode.ancestor<ClassifierMember>
+                   .descendants<LocalVariableDeclaration>.findFirst({~d => d.name :eq: pastedNode.variable.name; });
+                 if (decl != null) { pastedNode.variable.set(decl); } */
+            ]}]
+          }]
         }]
       }]
     }

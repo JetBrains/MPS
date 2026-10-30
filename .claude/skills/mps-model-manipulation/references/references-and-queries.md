@@ -19,7 +19,10 @@ References on a node are distinct from the nodes they point to. These four are t
         "role": "linkQualifier",
         "nodes": [{
           "concept": "jetbrains.mps.lang.smodel.structure.OperationParm_LinkQualifier",
-          "references": [{ "role": "link", "target": "<LinkDeclaration-noderef>" }]
+          "children": [{ "role": "linkQualifier", "nodes": [{
+            "concept": "jetbrains.mps.lang.smodel.structure.LinkRefQualifier",
+            "references": [{ "role": "link", "target": "<LinkDeclaration-noderef>" }]
+          }]}]
         }]
       }]
     }]}
@@ -130,7 +133,10 @@ Search the concept for its parameter role before use.
 ```text
 {
   "concept": "jetbrains.mps.lang.smodel.structure.EnumMember_IsOperation",
-  "references": [{ "role": "member", "target": "<EnumerationMember-noderef>" }]
+  "children": [{ "role": "member", "nodes": [
+    { "concept": "jetbrains.mps.lang.smodel.structure.EnumMemberReference",
+      "references": [{ "role": "decl", "target": "<EnumerationMember-noderef>" }] }
+  ]}]
 }
 { "concept": "jetbrains.mps.lang.smodel.structure.EnumMember_NameOperation" }
 { "concept": "jetbrains.mps.lang.smodel.structure.EnumMember_PresentationOperation" }
@@ -141,6 +147,6 @@ A direct reference to an enum member value (for assignment or comparison) uses:
 ```json
 {
   "concept": "jetbrains.mps.lang.smodel.structure.EnumMemberReference",
-  "references": [{ "role": "member", "target": "<EnumerationMember-noderef>" }]
+  "references": [{ "role": "decl", "target": "<EnumerationMember-noderef>" }]
 }
 ```

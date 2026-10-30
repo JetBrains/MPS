@@ -46,7 +46,7 @@ Runs generators for one or more languages. Each language is listed as a `Languag
 | `TargetAt` | Run all generators whose *target language* is the named language |
 | `Extend` | Run all generators whose *extended language* is the named language |
 
-The `Transform` step also accepts the boolean property `individualStepPerGenerator` (default false). When `true`, each generator for the listed languages runs as its own step instead of in one batch.
+The `Transform` step also has the boolean property `individualStepPerGenerator`. When `true`, each generator for the listed languages runs as its own step instead of in one batch. **A new `Transform` gets `true` from its constructor** (also when inserted through MCP), so set it to `false` explicitly when the listed languages' generators must share one step — or use `ApplyGenerators`, which puts the named generator modules in one step.
 
 ## Real example — "the plan" (from `samples/crossModelGeneration`)
 
