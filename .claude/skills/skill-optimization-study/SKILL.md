@@ -81,4 +81,5 @@ Read `$STUDY/instructions/runbook.md` and follow it. Do not keep a second copy o
 - `instructions/analysis.md` — metrics and rubric
 - `instructions/lessons.md` — rules that came out of earlier rounds
 - `instructions/defects.md` — open defects and the recurrence watch
+- `instructions/cleanup.md` — old scratch projects; the `study-run-cleanup` skill. Not part of a round
 - `reports/index.md` — which round was written up

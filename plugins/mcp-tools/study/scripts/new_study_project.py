@@ -12,7 +12,8 @@ risks (study lesson 24/29). The live skill catalog arrives per run from `install
 `migration.xml` is NOT written here. It is release-specific, and the wrong file opens the modal
 Migration Assistant on first open, which blocks every `mps_mcp_*` call for the rest of a round.
 It is derived by the bundled `mps-project-management` script from the MPS that will open the
-project (`--mps-home`, default: this checkout, which is the from-sources MPS home).
+project (`--mps-home`, default: `$MPS_INSTALL` when that names a standalone install, otherwise
+this checkout, the from-sources MPS home).
 
 Open the result with the CLI activation protocol in `mps-project-management`; there is still no
 MCP tool that opens a project.
@@ -28,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import xml.etree.ElementTree as ET
@@ -67,9 +69,10 @@ def main(argv=None) -> int:
     )
     parser.add_argument("--dir", required=True, metavar="PROJECT_DIR",
                         help="project directory to create (must be empty or absent)")
-    parser.add_argument("--mps-home", metavar="PATH", default=str(CHECKOUT),
+    parser.add_argument("--mps-home", metavar="PATH",
+                        default=os.environ.get("MPS_INSTALL") or str(CHECKOUT),
                         help="the MPS that will open it: install dir, macOS .app, or source "
-                             "checkout (default: this checkout)")
+                             "checkout (default: $MPS_INSTALL if set, otherwise this checkout)")
     parser.add_argument("--force", action="store_true",
                         help="write into a non-empty directory instead of refusing")
     args = parser.parse_args(argv)

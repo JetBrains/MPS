@@ -24,8 +24,10 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    when the detected harness is Claude, or `junie --version` when it is Junie,
    `python3 -c 'import sys; assert sys.version_info >= (3, 9)'`, `jq --version`.
    Preflight is self-healing, and every step of it is yours:
-   - MPS not running → `mps_control.sh start` (or, with no capture on file, the IDEA `MPS` run
-     configuration), then `mps_control.sh wait`.
+   - MPS not running → `mps_control.sh start`, then `mps_control.sh wait`. With no capture on
+     file, a from-sources MPS still uses the IDEA `MPS` run configuration. A standalone install
+     does not: `MPS_INSTALL="/path/to/MPS.app" mps_control.sh install` once (or the install root,
+     or `bin/mps.sh`), then `start`. Do not reconstruct that install's JVM command.
    - Welcome screen → **synthesize** a *harness project* and open it:
      `python3 $STUDY/scripts/new_study_project.py --dir ~/MPSProjects/mcp-study/workspace/harness`
      writes the three descriptor files (`migration.xml` derived from this MPS, so no Migration
@@ -457,8 +459,10 @@ the live project catalog, and skills still work; it is not needed for the user-a
 
 ## new_study_project.py `--dir <project-dir> [--mps-home <path>] [--force]`
 Synthesizes an empty MPS project: `.mps/modules.xml`, `.mps/.gitignore`, and `.mps/migration.xml`
-**derived** from the MPS that will open it (`--mps-home` defaults to this checkout, the from-sources
-MPS home) by delegating to the bundled `mps-project-management` script. Replaces the `empty-project`
+**derived** from the MPS that will open it (`--mps-home` defaults to `$MPS_INSTALL` when that is
+set, otherwise this checkout) by delegating to the bundled `mps-project-management` script. A
+standalone round must pass the install, or export `MPS_INSTALL` first; a checkout migration file
+opened by an installed MPS raises the Migration Assistant. Replaces the `empty-project`
 fixture: a synthesized tree cannot carry an agent doc surface, and its migration file cannot go
 stale against a branch bump — a wrong one opens the modal Migration Assistant and blocks the round.
 Refuses a non-empty directory without `--force`; writes no `workspace.xml` and no guides (the live
@@ -467,8 +471,8 @@ migrationEntries, files}`. Compare `migrationEntries` semantically, never the ra
 ends the document with a newline, an MPS-written one does not. Exit: 0 ok, 2 usage, 3 bad MPS home,
 4 target not empty.
 
-## mps_control.sh `capture|calllog|idelog|open|shutdown|start|wait|restart [project-dir]` / `url [--json] [--timeout S]`
-MPS process control. Env: `CAPTURE` (default `$TMPDIR/mps-study-cmdline.json`), `SHUTDOWN_WAIT`
+## mps_control.sh `capture|calllog|idelog|install|open|shutdown|start|wait|restart` / `url [--json] [--timeout S]`
+MPS process control, for a from-sources MPS and for a standalone install. Env: `CAPTURE` (default `$TMPDIR/mps-study-cmdline.json`), `MPS_INSTALL` (standalone .app, install root, or launcher; used by `start` when no capture exists), `SHUTDOWN_WAIT`
 (60 s), `READY_WAIT` (300 s), `MPS_MCP_URL` (a non-empty value at script start is used as given and
 skips detection; `MPS_MCP_URL= mps_control.sh wait` counts as unset). Otherwise `open`, `shutdown`,
 `wait` and `restart` detect the URL with `mps_mcp_url.py` and **export** it, so the `mcp_call.py`
@@ -482,8 +486,16 @@ report `url` and `confirmed` in their JSON.
   result (`mps_mcp_url.py`, below). It always detects, whatever `MPS_MCP_URL` says.
 - `capture` — records the live launch command line (java binary + cwd from `ps`/`lsof`, VM options
   and classpath from `jcmd VM.command_line`, spaced tokens rejoined, jdwp and `idea_rt.jar`
-  stripped). **Must run while MPS is alive**; `shutdown` refuses without it, because after the exit
-  there is nothing left to inspect.
+  stripped), then classifies it. A selector containing `SRC` is from sources and later `start`/`open`
+  replay java. Any other selector whose `idea.home.path` (or parent process) is an `.app` / `mps.sh`
+  launcher is standalone: later `start`/`open` invoke that launcher and do not replay java.
+  **Must run while MPS is alive**; `shutdown` refuses without it, because after the exit
+  there is nothing left to inspect. A capture taken before this classification has no `kind` and
+  stays on the java path until you capture again.
+- `install <path>` — records a standalone launcher without MPS running. `<path>` is the `.app`,
+  the install root (`bin/mps.sh` or `bin/mps64.exe` inside it), or the launcher file itself.
+  It does not start MPS. `MPS_INSTALL` is the same path, and `start` calls `install` when no
+  capture exists and that variable is set.
 - `calllog <file>` — writes `-Dmps.mcp.calllog=<file>` into the **capture** (creating the
   directory), so the next `start`/`restart` brings the call log up; with no argument it clears the
   option. `capture` can only preserve what the live process already carries, so this is how a round
@@ -497,8 +509,17 @@ report `url` and `confirmed` in their JSON.
   worker (A17). Do not point it into `$RUNS`: workers would see the other cells' transcripts next
   to the log. `capture` reports the current option as `logPathOption`; a new `capture` of a
   developer-launched MPS (also `restart` with no capture) brings the checkout path back.
+- `start` — relaunches from the capture. From sources, that is the captured java command (no
+  debugger, migration assistant off unless `MIGRATION_ASSISTANT_AUTO=true`). Standalone, that is
+  the recorded launcher plus the project path. Study `-D` flags (call log, migration assistant,
+  idea log) are appended to a copy of the install's `mps.vmoptions` and passed as
+  `MPS_VM_OPTIONS` and `IDEA_VM_OPTIONS` for that process only, so the install's heap settings
+  stay. This replaces the user vmoptions file for that launch; do not point it at a different
+  install than the one you captured.
 - `open` — activates the **running** MPS with `[project-dir]`: a short-lived second process that
-  exits in about a second. Prefer it over hand-writing the recipe from
+  exits in about a second. From sources it replays the captured java command; standalone it
+  invokes the same launcher and does **not** set `MPS_VM_OPTIONS`, so the second process shares
+  the running selector. Prefer it over hand-writing the recipe from
   `mps-project-management/examples-macos.md`: it reuses the capture, and it confirms the project is
   listed afterwards, which the recipe does not — a clean exit means only that the request was handed
   over. Open from the Welcome screen unless you know `confirmOpenNewProject2` is not "ask"
@@ -644,7 +665,11 @@ line; it does not detect the port itself.
    ~/MPSProjects/mcp-study/workspace/<id>`, then launch with `PROJECT_SYNTHESIZED=1`) for an empty
    project, **or extract** a module-bearing fixture:
    `tar -xzf ~/MPSProjects/mcp-study/fixtures/<fixture>.tar.gz -C ~/MPSProjects/mcp-study/workspace/<id> --strip-components=1`
-   (+ scenario inputs from `$STUDY/fixtures/inputs/`, such as `recipes.csv`, copied into the project before launch). The extracted tree must have NO `.claude/`, `.agents/`,
+   (+ scenario inputs from `$STUDY/fixtures/inputs/`, such as `recipes.csv`, copied into the project before launch).
+   Next to the project, not inside it, write `~/MPSProjects/mcp-study/workspace/<id>.fixture.json`
+   with `fixture`, `sha256` (from [`../fixtures/pins.md`](../fixtures/pins.md)), or
+   `{"synthesized": true}` for an empty project. Cleanup refuses a scratch that has no such stamp.
+   The extracted tree must have NO `.claude/`, `.agents/`,
    `AGENTS.md` or `CLAUDE.md`. 2. Tell the user the path you will close (if a previous scratch is
    still open) and the path you will open; close the previous scratch with `mps_mcp_close_project`
    if needed; open the new copy via CLI (`mps-project-management`). `mps_mcp_list_open_projects`

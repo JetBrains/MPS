@@ -39,7 +39,8 @@ Per-round `rNN-*.sh` launchers are notes under `archive/runs/<id>/launch/`. They
 
 ## Where to read
 
-- Run a round: [`instructions/runbook.md`](instructions/runbook.md)
+- Run a round, including from-sources and standalone MPS startup: [`instructions/runbook.md`](instructions/runbook.md)
+- Clean old scratch projects (do not run it as part of a round): [`instructions/cleanup.md`](instructions/cleanup.md)
 - Which cell covers which skill: [`instructions/scenarios.md`](instructions/scenarios.md)
 - Regenerate a tarball: [`instructions/fixtures.md`](instructions/fixtures.md)
 - Current tarball hashes: [`fixtures/pins.md`](fixtures/pins.md)
