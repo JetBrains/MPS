@@ -39,11 +39,11 @@ text, for S16; flow-java = a synthesized project plus one BaseLanguage class, fo
 | S17 | `@tests` model with 6 EditorTestCase roots (typing + caret, undo, redo, copy/paste, two-step-independent delete, action applicability), headless-safe, run config | recipes | H2, H7 |
 | S18 | 3 GeneratorTest roots (exact match, any root order, explicit plan of the recipes generator only), data models "Do not generate", run config | recipes-gen | H1, H2, H7 |
 | S19 | Generation plans: author 2 plans (checkpoint, generator-module step, conditional fork), attach via DevKit exports + plan and via a Solution facet, rename + extract an included plan, make | recipes-gen | H1, H2, H7 |
-| S20 | Greenfield tariff DSL → interface + classes: no-input roots read by label, COPY_SRC(L), in-line templates, pattern rule with a variable, labelled LOOP, MAP_SRC null / mapper / post-mapper, INSERT, post-script (rehearsed, round 46) | empty-project | H1, H2, H7 |
-| S21 | Greenfield shell DSL → fluent classes: weaving with a label-found anchor, weave template with LOOP + CALL, CALL with arguments, pick output, VAR, in-line switch (rehearsed, round 46) | empty-project | H1, H2, H7 |
-| S22 | Edit the recipes generator: parameterised switch with error default and null-input message, override from an extending language in one plan step, keepSourceRoot, two-key label, pre-script, 3-step plan (rehearsed, round 46) | recipes-gen | H2, H4, H7 |
-| S23 | Edit `flows-gen`: rule order from a symptom, switch case, label rename, template extraction (rehearsed, round 46) | flows-gen | H2, H5, H7 |
-| S24 | Maintain `flows-gen` after a language change; weaving → weave-each with a stable anchor; string `$REF$` (rehearsed, round 46) | flows-gen | H2, H5, H7 |
+| S20 | Greenfield tariff DSL → interface + classes: no-input roots read by label, COPY_SRC(L), in-line templates, pattern rule with a variable, labelled LOOP, MAP_SRC null / mapper / post-mapper, INSERT, post-script (frozen) | empty-project | H1, H2, H7 |
+| S21 | Greenfield shell DSL → fluent classes: weaving with a label-found anchor, weave template with LOOP + CALL, CALL with arguments, pick output, VAR, in-line switch (frozen) | empty-project | H1, H2, H7 |
+| S22 | Edit the recipes generator: parameterised switch with error default and null-input message, override from an extending language in one plan step, keepSourceRoot, two-key label, pre-script, 3-step plan (frozen) | recipes-gen | H2, H4, H7 |
+| S23 | Edit `flows-gen`: rule order from a symptom, switch case, label rename, template extraction (frozen) | flows-gen | H2, H5, H7 |
+| S24 | Maintain `flows-gen` after a language change; weaving → weave-each with a stable anchor; string `$REF$` (frozen) | flows-gen | H2, H5, H7 |
 
 | SMOKE | Harness check: list open projects and stop (read-only; no `done_criteria.md`; runs against the harness project; never evaluated) | — | — |
 

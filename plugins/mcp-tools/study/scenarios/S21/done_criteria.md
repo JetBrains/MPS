@@ -4,8 +4,7 @@
 46: `S21-opus-1` FAIL only on the weave-each gate, which the engine cannot satisfy (prompt and
 criteria now ask for a weave template with `$LOOP$` + `$CALL$`), `S21-sonnet-1` FAIL on two gates
 stricter than the prompt (the warning's location, the fragment label; relaxed), `S21-opus-2` PASS
-on the revision (107 calls, 10 min; three wording fixes to criteria 1 and 6 after it). Freeze
-after one more sonnet pass.**
+on the revision (107 calls, 10 min; three wording fixes to criteria 1 and 6 after it). Round 47 (stable catalog `a7ee526d`, medium effort): `S21-sonnet-1` PASS (124 calls, 8 min), `S21-opus-1` PASS (113, 10); criteria wording fixed after the evaluators' notes. Prompt frozen 2026-10-30.**
 
 ## Fixture
 
@@ -54,7 +53,7 @@ braces as MPS prints them, redundant parentheses accepted, JDK names imported (`
 4. **Tail**: `commands()` returns `{"help", "quit"}`; `usage()` returns `"help topic; quit"`.
 5. **Warning**: a MAKE response that generated the solution (transcript; an up-to-date later
    MAKE may print nothing) contains
-   `hidden command prune skipped in Dev` (warning level); the warning comes from a `GenerationContextOp_ShowWarningMessage` in any generator query or
+   `hidden command prune skipped in Dev` (warning level: the message's `kind` is `WARNING`); the warning comes from a `GenerationContextOp_ShowWarningMessage` in any generator query or
    mapping script (record where).
 6. **Mechanisms** (`print_node`):
    - `Root_MappingRule` on Shell with `labelDeclaration`; one `TemplateDeclaration` with exactly

@@ -3,8 +3,7 @@
 **Status: drafted 2026-10-30 by a fable subagent, revised after two opus reviews; rehearsal round
 46: `S20-opus-1` FAIL on gates the prompt did not state (the `$COPY_SRCL$` loop index, the
 `limits()` insertion, braces and parentheses; prompt and criteria revised), `S20-sonnet-1` PASS on
-the revision (116 calls, 8 min). The revised prompt has one passing run; freeze it after one more
-opus pass.**
+the revision (116 calls, 8 min). Round 47 (stable catalog `a7ee526d`, medium effort): `S20-opus-1` PASS (101 calls, 8 min), `S20-sonnet-1` PASS (132, 10); criteria wording fixed after the evaluators' notes. Prompt frozen 2026-10-30.**
 
 ## Fixture
 
@@ -80,7 +79,7 @@ member order matters where listed. `print_node` PLAIN TEXT for structure, JSON f
      the literal from `node.currency`) and `postMapperFunction` (upper-cases the output node's
      value); `toUpperCase` (or equivalent) appears only in the post-mapper — in the mapper or in
      a `$PROPERTY$` fails this item;
-   - `limits()`'s return expression carries an `InsertMacro` whose query builds the
+   - `limits()`'s return expression, or the creator inside its `new`, carries an `InsertMacro` whose query builds the
      `ArrayCreatorWithInitializer` (bare, or wrapped in the `GenericNewExpression` MPS uses for `new`) with
      one `IntegerConstant` per tier; a
      `$LOOP$` or `$COPY_SRCL$` on a template literal fails this item;
@@ -102,8 +101,8 @@ engine-source reads 0; console Java 0; makes before the first green one.
 ## Isolation
 
 Greenfield ids; no name overlap with any other cell (`mcp.study.tariff*`). No restart needed before
-it. The archived `Old` root is copied through to the output (no `DropRootRule` asked here — S22 and
-`flows-gen` have one).
+it. The archived `Old` root is copied through to the output unless the worker adds a `DropRootRule`
+for it (not asked, accepted and recorded; both round-47 workers added one).
 
 ## Risks
 

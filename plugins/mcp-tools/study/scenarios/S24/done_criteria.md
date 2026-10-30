@@ -3,8 +3,7 @@
 **Status: drafted 2026-10-30 by a fable subagent, revised after two opus reviews; rehearsal round
 46: `S24-opus-1` FAIL (98 calls, 7 min) only because it typed a plain reference instead of the
 `$REF$` the prompt did not name (the prompt now names it), `S24-sonnet-1` PASS on the revision
-(114 calls, 7 min; criteria clarified on the accepted query forms). Freeze after one more opus
-pass.**
+(114 calls, 7 min; criteria clarified on the accepted query forms).  Round 47 (stable catalog `a7ee526d`, medium effort): `S24-opus-1` PASS (82 calls, 6 min), `S24-sonnet-1` PASS (115, 8); criteria wording fixed after the evaluators' notes. Prompt frozen 2026-10-30.**
 
 ## Fixture
 
@@ -75,7 +74,7 @@ parentheses accepted, JDK names imported or qualified, folded literals (`"wait:2
    method = `public void escalate_releaseStuck(List<String> trail) { trail.add("escalate:cto:48:qa");
    trail.addAll(approvers()); }` (Hotfix: `escalate_hotfixStuck`, `"escalate:lead:2:oncall"`).
 4. **Clean.** `check_root_node_problems`: structure, template and samples models 0 errors;
-   `source_gen/mcp/study/flows/out/` holds exactly the two `.java` files (`trace.info` is not output); both `.class` files exist.
+   `source_gen/mcp/study/flows/out/` holds exactly the two `.java` files (`trace.info` is not output); both `.class` files are newer than the run's start (the tarball ships older ones).
 
 Pass = 1–4. Accepted: Slack/Mail rules as in-line-with-context or `TemplateDeclaration`s (R4
 retargeted to one of them counts); the D-ORDER defect fixed or not (record); the weave-each

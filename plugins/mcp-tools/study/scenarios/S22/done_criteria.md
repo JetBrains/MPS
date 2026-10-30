@@ -3,8 +3,7 @@
 **Status: drafted 2026-10-30 by a fable subagent, revised after two opus reviews; rehearsal round
 46: `S22-opus-1` PASS (143 calls, 11 min; it found that a new `Transform` splits generators and
 switched to `ApplyGenerators` — the skills now say so), `S22-sonnet-1` FAIL only on the label's
-`sourceConcept`, which the prompt does not ask for (criterion 5 relaxed to optional typing).
-The prompt did not change; freeze after one more sonnet pass.**
+`sourceConcept`, which the prompt does not ask for (criterion 5 relaxed to optional typing). Round 47 (stable catalog `a7ee526d`, medium effort): `S22-sonnet-1` PASS (143 calls, 9 min), `S22-opus-1` PASS (127, 10); criteria wording fixed after the evaluators' notes. Prompt frozen 2026-10-30.**
 
 ## Fixture
 
@@ -44,10 +43,9 @@ plain or class-qualified (`PANCAKES` or `BrunchMenu.PANCAKES`).
 2. **Plan.** `mps_mcp_generation PLAN` (`detail: "steps"`) on `<S>`: explicit plan; step 1 lists
    the generators of `mcp.study.recipes` **and** `mcp.study.recipes.pro` (PLAN `detail:"steps"` shows both in
    step 1 — `ApplyGenerators` naming both, or a `Transform` with both entries and
-   `individualStepPerGenerator` false; a new `Transform` defaults to `true` and splits them); step 2 the menu generator; step 3
+   `individualStepPerGenerator` false; a new `Transform` defaults to `true` and splits them; `false` is not stored, so an absent value is `false`); step 2 the menu generator; step 3
    `jetbrains.mps.baseLanguage`. Plan root in a model of `mcp.study.kitchen`; attached to the
-   solution (`get_module_facets`) or through a DevKit (record). Any `MappingPriorityRule` fails (no read-only tool lists them: check the transcript for a priority
-   edit).
+   solution (`get_module_facets`) or through a DevKit (record). Any `MappingPriorityRule` fails (`print_node` of each `MappingConfiguration` shows its `mappingPriorities`).
 3. **Recipe classes.** Crepes/Pancakes/Omelette/Souffle: `PORTIONS` 4/2/1/2; `steps()` = the model
    texts with ` (quick)` iff quick (exactly: Crepes step 4, Omelette steps 1 and 3, Souffle step 2; none in Pancakes); `level()`
    as in step 7. `Souffle.java` must exist (criterion 5 gates how).
@@ -63,7 +61,7 @@ plain or class-qualified (`PANCAKES` or `BrunchMenu.PANCAKES`).
      `defaultConsequence` = `DismissTopMappingRule` whose `GeneratorMessage` is `error` and
      contains `unknown difficulty`, `nullInputMessage` containing `no recipe`; `level()`'s literal
      carries a `TemplateSwitchMacro` with one `actualArgument`; the case literals' `$PROPERTY$`
-     reads the parameter (`GenerationContextOp_ParameterRef`);
+     reads the parameter (`GenerationContextOp_ParameterRef` or `TemplateArgumentParameterExpression`);
    - the `map Recipe` rule has `keepSourceRoot` = `true_` **and** `applyToConceptInheritors` true
      (or `pro` adds its own `Root_MappingRule` for `ChefRecipe` reusing `RecipeClass` — record
      which); without either, `Souffle.java` does not exist and criterion 3 fails;
