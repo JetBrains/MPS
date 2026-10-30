@@ -23,6 +23,7 @@
       <root url="jar://$PROJECT_DIR$/lib/fleet.util.logging.api.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/fleet.util.serialization.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/forms_rt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/idea_rt.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.emojipicker.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.ide.startup.importSettings.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.idea.community.customization.jar!/" />
@@ -89,6 +90,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.java.websocket.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.javax.activation.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.javax.annotation.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jaxb.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jaxen.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jbr.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jcip.jar!/" />
@@ -106,8 +108,13 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jspecify.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jsvg.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit6.jupiter.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit6.launcher.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.junit6.vintage.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jvm.native.trusted.roots.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.jzlib.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlin.metadata.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlin.reflect.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlinx.collections.immutable.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.libraries.kotlinx.coroutines.core.jar!/" />
@@ -200,6 +207,8 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.compose.swing.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.concurrency.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.configurationStore.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.consoleView.impl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.consoleView.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.core.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.core.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.core.ui.jar!/" />
@@ -208,6 +217,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.credentialStore.ui.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.customization.min.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.debugger.impl.backend.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.debugger.impl.dashboard.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.debugger.impl.frontend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.debugger.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.debugger.impl.rpc.jar!/" />
@@ -238,6 +248,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.execution.impl.frontend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.execution.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.execution.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.execution.rpc.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.experiment.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.externalProcessAuthHelper.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.externalSystem.dependencyUpdater.jar!/" />
@@ -257,6 +268,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.bootstrap.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.bootstrap.kernel.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.codeinsight.inline.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.colorPicker.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.concurrency.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.core.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.core.jar!/" />
@@ -272,20 +284,19 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.nonModalWelcomeScreen.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.nonModalWelcomeScreen.frontend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.nonModalWelcomeScreen.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.nonModalWelcomeScreen.terminal.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.observable.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.osCertificates.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.pluginSignatureVerifier.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.presentationAssistant.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.progress.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.recentProjects.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.remote.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.rpc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.socketConnection.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.ui.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.updateChecker.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.util.io.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.util.io.native.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/pty4j-plugin/lib/modules/intellij.libraries.pty4j.jar!/" />
-      <root url="jar://$PROJECT_DIR$/plugins/jna-plugin/lib/modules/intellij.libraries.jna.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ide.util.netty.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ijent.community.buildConstants.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ijent.community.impl.jar!/" />
@@ -332,6 +343,7 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.polySymbols.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.polySymbols.web.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.pratt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.productMode.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.progress.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.project.backend.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.project.jar!/" />
@@ -382,6 +394,8 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.testIntegration.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.testIntegration.ui.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.threadDumpParser.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.ui.tree.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.undo.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.usageView.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.usageView.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.util.annotations.jar!/" />
@@ -397,6 +411,8 @@
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.dvcs.impl.shared.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.impl.shared.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vcs.shared.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.versionDownloadManager.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/intellij.platform.vfs.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.warmup.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.welcomeScreen.impl.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/intellij.platform.welcomeScreen.jar!/" />
@@ -415,6 +431,7 @@
       <root url="jar://$PROJECT_DIR$/lib/jps-model.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/lib.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/maven-resolver-provider.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mps-resources.zip!/" />
       <root url="jar://$PROJECT_DIR$/lib/platform-loader.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/trove.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/util_rt.jar!/" />
