@@ -78,7 +78,7 @@ The MPS catalog contains companion skills for focused task families. Load whiche
 | `mps-aspect-generator`              | Generator templates — root mapping rules, reduction rules, macros, mapping labels. |
 | `mps-aspect-generation-plan`        | Generation plans — explicit ordering of generation steps, checkpoints, forks, plan contributions. |
 | `mps-aspect-intentions`             | Intentions — Alt+Enter context actions, parameterized/surround/quick-fix variants. |
-| `mps-aspect-migrations`             | Migration scripts — upgrading user models when language definitions change. |
+| `mps-aspect-migrations`             | Changing a language that is already in use (deprecate and replace instead of delete), and migration scripts that upgrade user models when language definitions change. |
 | `mps-aspect-textgen`                | TextGen — concept-to-plain-text serialization rules. |
 | `mps-aspect-typesystem`             | Typesystem — authoring inference, subtyping, replacement, comparison, and checking rules; use `references/analysis-tools/type-queries.md` to ask the compiled typesystem questions. |
 | `mps-aspect-editor`                 | Overall workflow for creating and changing MPS editor definitions — scaffolding, componentizing, cell models, layouts, styles, validation. |

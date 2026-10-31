@@ -4,8 +4,10 @@ Substitute menus control **what nodes may be created at a given AST position**. 
 
 ## Default vs Named
 
-- **Default substitute menu** for a concept `C`: `SubstituteMenu_Default` with `conceptDeclaration = C`. Applies to any position whose declared target concept is `C`. Conventionally named `<C>_SubstituteMenu`.
-- **Named substitute menu** (`SubstituteMenu`, a concrete rootable type implementing `IMenu_Concept + ISubstituteMenu`): must be referenced explicitly — from a `CellModel_RefCell` as its `substituteMenu`, or from another menu via `include substitute menu`.
+Both kinds are the rootable concept `SubstituteMenu` (implementing `IMenu_Concept + ISubstituteMenu`). Its `type` child decides which kind it is. The older `SubstituteMenu_Default` is deprecated. A menu's `name` is computed and read-only, so a blueprint does not set it.
+
+- **Default substitute menu** for a concept `C`: `conceptDeclaration = C` and `type` = `MenuTypeDefault`. Applies to any position whose declared target concept is `C`. Its name is derived: `<C>_SubstituteMenu`.
+- **Named substitute menu**: `type` = `MenuTypeNamed`. The menu's name goes in that `MenuTypeNamed`'s `name` property. It must be referenced explicitly, from a `CellModel_RefCell` as its `substituteMenu` or from another menu via `include substitute menu`.
 
 Both carry (via `ISubstituteMenu`): `parts` (child, 0..n) of `SubstituteMenuPart`, and `methodDeclaration` (0..n).
 
@@ -21,7 +23,13 @@ If you do **not** define a default substitute menu for concept `C`, MPS synthesi
 
 ## "Empty Default" Suppresses the Concept
 
-If you **define** a default substitute menu for `C` and leave it empty, `C` itself (and its sub-concepts, unless they redeclare their own menu) will **not appear** in the completion menu at all. This is a deliberate way to hide abstract or internal concepts from users.
+If you **define** a default substitute menu for `C` and leave it empty, `C` itself (and its sub-concepts, unless they redeclare their own menu) will **not appear** in the completion menu at all. This is a deliberate way to hide abstract, internal or deprecated concepts from users. MPS hides its own deprecated concepts this way (`r:00000000-0000-4000-0000-011c895902fd(jetbrains.mps.lang.smodel.editor)/7400021826775325053`). To hide `C` but keep offering its sub-concepts, give the menu a single `SubstituteMenuPart_Subconcepts` part (`r:00000000-0000-4000-0000-011c89590350(jetbrains.mps.lang.intentions.editor)/3982593663455826323`).
+
+```json
+{"concept":"jetbrains.mps.lang.editor.structure.SubstituteMenu",
+ "references":[{"role":"conceptDeclaration","target":"<Coupon concept declaration ref>"}],
+ "children":[{"role":"type","nodes":[{"concept":"jetbrains.mps.lang.editor.structure.MenuTypeDefault"}]}]}
+```
 
 ## Menu Parts for Substitute Menus
 
@@ -42,12 +50,11 @@ If you **define** a default substitute menu for `C` and leave it empty, `C` itse
 
 ```json
 {
-  "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenu_Default",
-  "properties": [{ "name": "name", "value": "Statement_SubstituteMenu" }],
+  "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenu",
   "references": [
     { "role": "conceptDeclaration", "target": "jetbrains.mps.baseLanguage.structure.Statement" }
   ],
-  "children": [{
+  "children": [{ "role": "type", "nodes": [{ "concept": "jetbrains.mps.lang.editor.structure.MenuTypeDefault" }] }, {
     "role": "parts",
     "nodes": [
       {

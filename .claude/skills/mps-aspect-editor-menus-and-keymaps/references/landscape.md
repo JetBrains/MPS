@@ -11,15 +11,15 @@
 | Default transformation menu | `jetbrains.mps.lang.editor.structure.TransformationMenu_Default` | `editor.mps` | Items for side-transform, context-assistant, context-actions-tool, completion (attached to a concept by `conceptDeclaration`) |
 | Named transformation menu | `jetbrains.mps.lang.editor.structure.TransformationMenu_Named` | `editor.mps` | A menu that must be referenced explicitly by name |
 | Transformation menu contribution | `jetbrains.mps.lang.editor.structure.TransformationMenuContribution` | `editor.mps` | Extra menu parts contributed from a different language |
-| Default substitute menu | `jetbrains.mps.lang.editor.structure.SubstituteMenu_Default` | `editor.mps` | Default completion items for a concept |
-| Named substitute menu | `jetbrains.mps.lang.editor.structure.SubstituteMenu` | `editor.mps` | Named completion items — referenced explicitly from a cell |
+| Default substitute menu | `jetbrains.mps.lang.editor.structure.SubstituteMenu` with `type` = `MenuTypeDefault` | `editor.mps` | Default completion items for a concept |
+| Named substitute menu | `jetbrains.mps.lang.editor.structure.SubstituteMenu` with `type` = `MenuTypeNamed` (carries the name) | `editor.mps` | Named completion items — referenced explicitly from a cell |
 | Substitute menu contribution | `jetbrains.mps.lang.editor.structure.SubstituteMenu_Contribution` | `editor.mps` | Extra substitute items contributed from another language |
 | Node factory *(actions language)* | `jetbrains.mps.lang.actions.structure.NodeFactories` | `actions.mps` | Initialise new nodes (see `mps-aspect-actions`) |
 | Paste wrappers *(actions language)* | `jetbrains.mps.lang.actions.structure.PasteWrappers` | `actions.mps` | Transform pasted nodes to fit the context |
 | Copy-paste handlers *(actions language)* | `jetbrains.mps.lang.actions.structure.CopyPasteHandlers` | `actions.mps` | Pre/post processors on copy and paste |
 | Completion styling | `jetbrains.mps.lang.editor.structure.CompletionStyling` | `editor.mps` | Visual style / priority of completion items |
 
-> **Deprecation note.** `TransformationMenu_Default` and `TransformationMenu_Named` are currently the two concrete kinds of transformation menu; the MPS roadmap will merge them into a single `TransformationMenuImpl` (the structure file carries the deprecation marker). For the time being, author **Default** menus when attaching to a concept and **Named** menus when the menu needs to be referenced by name. The same applies to `SubstituteMenu_Default` / `SubstituteMenu` (named).
+> **Deprecation note.** `TransformationMenu_Default` and `TransformationMenu_Named` are currently the two concrete kinds of transformation menu; the MPS roadmap will merge them into a single `TransformationMenuImpl` (the structure file carries the deprecation marker). For the time being, author **Default** menus when attaching to a concept and **Named** menus when the menu needs to be referenced by name. Substitute menus are already merged: author `SubstituteMenu` with a `MenuTypeDefault` or `MenuTypeNamed` `type` child, never the deprecated `SubstituteMenu_Default`. A menu's `name` is computed; a named menu's name goes on its `MenuTypeNamed`.
 
 ## Convention: Which Concepts Go Into Which Root
 
