@@ -10,7 +10,8 @@ How to run a cell is [`runbook.md`](runbook.md). Prompts live in [`../scenarios/
 to read a result are in [`defects.md`](defects.md). Fixtures are regenerated per
 [`fixtures.md`](fixtures.md), not stored in git. Current tarball hashes are in [`../fixtures/pins.md`](../fixtures/pins.md). Exception: S5 was revised on
 2026-10-22 (round 39) at the user's request to add identity-preserving moves; see S5. S20–S24 were
-rehearsed in rounds 46–47 and are frozen since 2026-10-30.
+rehearsed in rounds 46–47 and are frozen since 2026-10-30. S25–S29 (language evolution) were written,
+reviewed, built and rehearsed on 2026-10-31 and are frozen since then.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -43,6 +44,11 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S22 | Edit the recipes generator: a template switch with a parameter, an error default and a null-input message; a case for a sub-concept added by an extending language's switch (one plan step); `keepSourceRoot`; a generator-only language; a two-key label; a pre-processing script that modifies the model; a three-step plan. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
 | S23 | Edit an observer-built flows generator (`flows-gen`): fix a wrong rule order from its symptom, add an in-line switch case, rename a label with every use, extract an in-line template into a template declaration. Frozen after round 46 (opus and sonnet PASS). |
 | S24 | Keep the flows generator working after a language change (split a concept, rename properties, migrate samples), turn per-item weaving into weave-each with a stable anchor, add a template parameter, resolve one call by name. Frozen after rounds 46–47 (round 47: opus and sonnet PASS). |
+| S25 | Published loans language: rename and loosen in place (no migration), make `copies` and `borrower` mandatory by deprecating the old roles and adding replacements, switch the editor, move the values with a migration, rebuild and apply; a loan with nothing to move stays an error. |
+| S26 | Published tickets language: replace `EarlyBird` by `TimedDiscount` with a code-free migration (a concept move plus one move per own property) that keeps node ids and the highlight reference; deprecate the old concept and hide it from completion. |
+| S27 | Published fleet language: free-text `mileage` becomes an integer through a migration whose code converts the values and whose result check names every vehicle and text it could not convert; APPLY ends with that report. |
+| S28 | Local shifts language, Console only: a single worker becomes a worker list (assignments kept, old slot gone), `lead` tightened in place with a default from the crew, a rename, `covered` removed; no migration script, no version bump. |
+| S29 | The loans language with no publication status and nobody to ask: rename a property and make `borrower` mandatory; only the published route passes. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -449,6 +455,45 @@ Isolation: S22 has the `mcp.study.recipes` module ids of S3–S7, S9, S15, S17�
 before and after it as for those; S23 and S24 share `flows-gen` ids, so never open two copies
 together and restart between them; S20 and S21 mint fresh ids.
 
+**S25–S29 — language evolution.** Drafted 2026-10-31 from six Agent-tool exercises (opus, every one
+passed after the skill changes; evidence in `~/MPSProjects/migration-lab/EXERCISES.md`), proposed by a
+fable helper and reviewed by an opus helper. Fixtures `loans` (S25, S29), `tickets` (S26), `fleet` (S27) and `shifts` (S28) were built
+through MPS MCP on 2026-10-31 (recipes, call logs and pins in `../fixtures/inputs/s25`–`s28/`). Prompts
+frozen the same day after a rehearsal (`runs-s25-s29`, opus effort `high`, transcript-only, one MPS
+restart between S25 and S29): every cell PASSED its criteria on the first run, with 43–67 tool calls,
+2.5–4.7 min and 1 tool error in all (S25 45 calls / 147 s, S26 45 / 161 s, S27 67 / 283 s, S28 56 / 204 s,
+S29 43 / 150 s). S26 took the code-free concept move, S27's only APPLY ended `FINISHED_WITH_ERRORS` with
+the one `MigrateManually` report, S28 used two Console commands and no node writes, S29 took the
+published route and said why. The evaluators' wording fixes (pinned sandbox module refs, the scoped
+CHECK call, `deprecated: "false"` on own features, ids over names) went into the criteria; no prompt
+changed. Still open: the `MG_*` columns are not in `families.py` yet ([`analysis.md`](analysis.md)); one
+model only, so a sonnet run is the next comparison.
+Each fixture is a fresh domain, so the skill's worked examples are not the answers (lesson 19).
+Every prompt states the publication status except S29, which tests the unknown case and says that
+nobody can answer questions.
+- S25 forces the published rules on a child and a reference (keep, deprecate, replace, declarative
+  move, bump, CHECK/APPLY) next to two controls (a rename and a loosening that must not get a migration).
+- S26 forces concept replacement through `MoveConcept` plus `MoveProperty` (verified by the observer
+  on 2026-10-31), id and reference survival, and hiding with an empty default `SubstituteMenu`.
+- S27 forces a `MigrationScript` that converts values and a real `check()` naming the unconvertible
+  value (`MigrateManually`); APPLY must end `FINISHED_WITH_ERRORS` with that report (criterion 5 reads
+  the transcript).
+- S28 forces the local rules: in-place tightening with a Console default, Console copy-and-clear of a
+  reference into a wrapper list, deletion only after the values are gone, no migration machinery. Its
+  criterion 6 gates the Console route from the transcript.
+- S29 forces the rule "unknown and cannot ask → published".
+Run to verify: `mps-aspect-migrations` `references/language-evolution.md` and `references/check-method.md`;
+`mps-aspect-structure-concepts` (the published/local directive); `mps-console` (S28 writes);
+`mps-aspect-editor-menus-and-keymaps` `references/substitute-menus.md` (S26, hiding only).
+Not covered: removing a deprecated element from a published language later; a property moved to a
+superconcept; enum literal removal; superconcept or interface changes; `OrderDependency`; Enhancement
+Scripts; `MigrationTestCase`; a local concept replacement through the Console.
+Isolation: `loans` is shared by S25 and S29, so restart MPS between them and never open two copies.
+`tickets`, `fleet` and `shifts` mint fresh ids. Every worker runs `mps_mcp_run_migrations` APPLY or
+deletes features, so open each run project alone (APPLY force-saves the whole selected project) and
+start MPS with the migration assistant disabled, as for S4. Suggested order: S26, S27, S28, then S25,
+restart, S29.
+
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
 after a start or restart.
@@ -465,14 +510,14 @@ skill whose **Run** column is not S1 or S3.
 | Skill or topic | Run | Also seen | Not this |
 |---|---|---|---|
 | `mps-language-aspects-overview` | S1 | | |
-| `mps-aspect-structure-concepts` | S1 (create concepts, enums, children, refs), S2 (add a child to an existing concept), S4 (rename, cardinality, new concept) | | S3 only consumes the language |
-| `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model) | | menus, keymaps, action maps, substitute menus — no cell |
+| `mps-aspect-structure-concepts` | S1 (create concepts, enums, children, refs), S2 (add a child to an existing concept), S4 (rename, cardinality, new concept), S25 and S29 (the published directive: never tighten or delete in place), S28 (local: tighten in place, delete once empty) | | S3 only consumes the language |
+| `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model) | S25–S28 (editor switched to the replacement) | menus, keymaps, action maps — no cell |
 | `mps-aspect-constraints` | S1 (property validator + a scope that excludes the referrer), S2 (non-blank property rule) | | S5 repairs instances; it does not author a rule |
 | `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
 | `mps-aspect-dataflow` | S13 (fixing two builders: a label position and a guard), S16 (the same with a position bug that reads as correct) | | no cell authors a builder for a new concept, a custom analyzer, or a builder mode |
 | `mps-aspect-behavior` | S1 (one method), S6 (parser body and JSON AST of the same method) | | |
 | `mps-aspect-intentions` | S2 | | |
-| `mps-aspect-migrations` | S4 | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
+| `mps-aspect-migrations` | S4 (a required child filled by a migration), S25–S29 (`language-evolution.md`: classification, published vs local, deprecation, declarative moves, conversion with `check()`, Console route, unknown status) | | apply half needs the D48 `MigrationTrigger` change; see S4 above |
 | `mps-aspect-accessories` | S19 (DevKit exports and the DevKit's plan through `module-level-deps.md`; a used devkit on a model) | | accessory models, runtime solutions, extended languages — no cell |
 | `mps-aspect-generator` | S6 (authoring a root mapping rule and macros), S15 (debugging a misgeneration, `references/debugging-misgeneration.md`), S20–S24 (rules of every kind, switches incl. override, labels in every form, weaving, scripts, `$MAP_SRC$`/`$VAR$`/`$INSERT$`/`$CALL$`, editing and maintenance; frozen after rounds 46–47; S23/S24 run on `flows-gen`) | S18 (the *Testing a generator* pointer; routing only) | compiled-generator tracing (integration test only); `MapSrcListMacro`, `$WEAVE$`, `$TRACE$` |
 | `mps-aspect-generation-plan` | S19 (author, attach through a DevKit and a Solution, verify, maintain), S18 (a one-step plan for a generator test), S22 draft (two generators in one `Transform` step, a generator-only language) | S15 (reads a DEFAULT plan's steps and prefixes; no plan authoring) | cross-model checkpoints with label lookups, `PlanContribution`, `InitModelAttributes` — no cell |
@@ -486,7 +531,7 @@ skill whose **Run** column is not S1 or S3.
 | `mps-dsl-memory` | S8 | | |
 | `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap) | | completion, intentions, side transforms (no cell) |
 | `mps-run-configurations` | S7, S17, S18 | | |
-| `mps-console` | S9 | | evaluate before close |
+| `mps-console` | S9 (read-only), S28 (writing commands that migrate values) | | evaluate before close |
 | `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S24 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
 | make / reload / hollow descriptors | S1, S2, S4, S6, S12 | S15 | a MAKE that returns `runtimeReady: true` is the reload (D84) |
@@ -512,7 +557,7 @@ Do not run S1 as a stand-in. Say that the catalog has no cell, and add one if th
 an eval ([`runbook.md`](runbook.md), "Adding a scenario").
 
 - `mps-aspect-actions`
-- `mps-aspect-editor-menus-and-keymaps`
+- `mps-aspect-editor-menus-and-keymaps` (except hiding a concept with an empty default `SubstituteMenu`: S26)
 - `mps-aspect-textgen`
 - `mps-language-modularity`
 - `mps-language-inheritance` (S6 and S7 sometimes walk superconcepts because `shape` omits them; that is not a cell for this skill)
