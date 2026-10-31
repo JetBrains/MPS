@@ -17,12 +17,13 @@ it is local (seeing every instance in the project is no such statement). Pins: t
    - `console`: the pinned link deleted or kept while the values were moved by Console commands;
    - `asked`: no structural change and a final message asking who uses the language.
 3. **Migration.** `mcp.study.loans.migration` with one migration root whose part moves from the pinned
-   `borrower` declaration to the new link with a reference-link specialization (a class-based script
-   doing the same is accepted, recorded); `languageVersion` = pin + number of scripts; the sandbox
+   `borrower` declaration to the new link with a reference-link specialization (empty id children print as
+   `<no sourceId> -> <no targetId>`, the expected form; a class-based script doing the same is accepted, recorded); `languageVersion` = pin + number of scripts; the sandbox
    module's recorded version (`get_project_structure` with the pinned sandbox module reference, `includeDependencies: true`) equals it; `mps_mcp_run_migrations(operation: "CHECK", modules: [<pinned sandbox module reference>])` (the key is `modules`; an unknown key is ignored and the answer comes back unscoped): nothing pending
    owned by the language. Migration model 0 errors (deprecated-usage warnings expected).
 4. **Editor.** Loan editor (`print_node` PLAIN TEXT): a cell for the new link, none for the old one.
-5. **Values and checks** (scored only when criterion 2 passes; an `in-place` run fails once, at 2). `print_node` JSON: L-1's new link resolves to Ada's pinned id, L-2's to Bo's,
+5. **Values and checks** (scored only when criterion 2 passes; an `in-place` run fails once, at 2). `print_node` JSON
+   (the old link prints under its role name, typically `borrower_old`, the new one as `borrower`): L-1's new link resolves to Ada's pinned id, L-2's to Bo's,
    nothing under the pinned old link; L-3-hold has no borrower anywhere; loan ids unchanged; no Member
    node outside the pins. `check_root_node_problems(S)`: L-1, L-2, Ada, Bo 0 errors; L-3-hold exactly
    one error, `No reference in the obligatory role`. Structure and editor models 0 errors; no hollow
