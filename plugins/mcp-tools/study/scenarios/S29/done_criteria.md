@@ -2,8 +2,8 @@
 
 Fixture: `loans`, S25's tarball unchanged (`../../fixtures/inputs/s25/FIXTURE.md`); it carries no
 publication sign. The prompt says nothing about who uses the language and that nobody can answer
-questions, so the skill's rule applies: the status is unknown, and an agent that cannot ask follows
-the published rules. Pins: the fixture file's *Pins* section (built 2026-10-31). Rehearsed and frozen 2026-10-31 (`runs-s25-s29`).
+questions, so the skill's default applies: a language is published unless the user or the task says
+it is local (seeing every instance in the project is no such statement). Pins: the fixture file's *Pins* section (built 2026-10-31). Rehearsed and frozen 2026-10-31 (`runs-s25-s29`).
 
 1. **Control.** `get_concept_details(Copy, detail: "full")`: property `loanDays` with the pinned
    `featureId` of `days`; no `days`, no deprecated property; the three pinned copies keep 14, 7, 21 and
@@ -22,7 +22,7 @@ the published rules. Pins: the fixture file's *Pins* section (built 2026-10-31).
    module's recorded version (`get_project_structure` with the pinned sandbox module reference, `includeDependencies: true`) equals it; `mps_mcp_run_migrations(operation: "CHECK", modules: [<pinned sandbox module reference>])` (the key is `modules`; an unknown key is ignored and the answer comes back unscoped): nothing pending
    owned by the language. Migration model 0 errors (deprecated-usage warnings expected).
 4. **Editor.** Loan editor (`print_node` PLAIN TEXT): a cell for the new link, none for the old one.
-5. **Values and checks.** `print_node` JSON: L-1's new link resolves to Ada's pinned id, L-2's to Bo's,
+5. **Values and checks** (scored only when criterion 2 passes; an `in-place` run fails once, at 2). `print_node` JSON: L-1's new link resolves to Ada's pinned id, L-2's to Bo's,
    nothing under the pinned old link; L-3-hold has no borrower anywhere; loan ids unchanged; no Member
    node outside the pins. `check_root_node_problems(S)`: L-1, L-2, Ada, Bo 0 errors; L-3-hold exactly
    one error, `No reference in the obligatory role`. Structure and editor models 0 errors; no hollow

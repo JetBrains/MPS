@@ -26,7 +26,7 @@ Calls through `mcp_call.py`. Pins: the fixture file's *Pins* section (built 2026
    includeRootNodes: true)`: one or two migration roots. `print_node` JSON `deep: true` on each: every
    part moves from a deprecated declaration (pinned id) to its replacement; the child move carries a
    containment-link specialization, the reference move a reference-link one. One script or one each
-   (record). A class-based script that moves the same values is accepted and recorded; criterion 7
+   (record); empty id children print as `<no sourceId> -> <no targetId>`, the expected id-free form. A class-based script that moves the same values is accepted and recorded; criterion 7
    decides. The migration model checks with 0 errors; deprecated-usage warnings are expected.
 6. **Version and apply.** `get_project_structure(startingPoint: L)`: `languageVersion` = pin + number
    of scripts. `get_project_structure(startingPoint: <sandbox module>, includeDependencies: true)`: the
