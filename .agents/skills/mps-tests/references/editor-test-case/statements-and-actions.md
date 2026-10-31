@@ -2,7 +2,7 @@
 
 | Concept | Editor syntax | Effect |
 |---|---|---|
-| `TypeKeyStatement` (`2TK7Tu`) | `type "abc"` | Type the literal text at the caret |
+| `TypeKeyStatement` (`2TK7Tu`) | `type "abc"` | Type the literal text at the caret. The text is the string property **`keys`** (not `text`): `{"concept": "jetbrains.mps.lang.test.structure.TypeKeyStatement", "properties": [{"name": "keys", "value": "abc"}]}` |
 | `PressKeyStatement` (`yd1bK`) | `press <chord>` | Simulate a key chord (Enter, Tab, Ctrl+Space, Alt+Enter…). Each `KeyMapKeystroke` reports "Empty enumeration property: 'change'" in the checker; MPS's own tests carry it too, so ignore it |
 | `InvokeActionStatement` (`2HxZob`) with `MPSActionReference` (`1iFQzN`) | `invoke action -> <Name>` | Invoke an MPS action (`ActionDeclaration`) |
 | `InvokeActionStatement` with `BootstrapActionReference` | `invoke action by id: <actionId>` | Invoke an action by its id string, e.g. the platform's `$Undo` |
