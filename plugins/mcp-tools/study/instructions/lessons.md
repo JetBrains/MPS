@@ -279,3 +279,31 @@
     `high`, 71 % / 811 at `xhigh`). → Before attributing a per-model delta to the surface, compare that signature with
     the other model's on the same surface. Keep the effort level fixed across the rounds you intend to compare, and
     make it the same level the user runs day to day.
+
+## From the 2026-10-30 S1–S3 rounds (after the reorganisation; opus low, sonnet medium, n=1–2)
+
+45. **A lenient criterion hides a worker gap for as long as it stands, and tightening it looks like
+    a regression.** S1's criterion 3 read "editor present (not scaffold-only: at least one
+    constant/label cell per concept)". `mps_mcp_scaffold_editor` emits `Name:` and one `<role>:`
+    label per feature, so a scaffold always satisfied it. Every sonnet-medium S1 run from round 43
+    (2026-10-24) to the first 2026-10-30 round left all four editors exactly as scaffolded and
+    passed; the one sonnet run that refined them (round 34) ran at effort `high`. Commit 4c738060
+    made the criterion match the prompt's "readable, not just scaffolds", and both sonnet cells of
+    the next round failed on it while nothing in the harness or the skills had changed. The worker
+    printed its scaffold and wrote "That's readable, so I'm moving on". → When a criterion is
+    tightened, re-read the earlier passes of that cell under the new wording before calling a new
+    failure a regression; name the round from which the gap was present. Keep the bar where the
+    prompt put it and fix the worker-facing docs (D137: the editor skill's "Scaffold first" step
+    now says a scaffold is a starting point and names the minimum refinement). Do not compare a
+    sonnet `high` round with a sonnet `medium` round for this cell (lesson 44).
+
+## From round 48 (2026-10-31; S1–S3, opus low, sonnet medium, n=1)
+
+46. **A skill edit is measured only once the plugin is built, and `skillsSha256` does not tell you
+    it was not.** `install_skills.py` installs what the running plugin serves, not the source tree,
+    so the D137 remedy sat uncommitted in `resources/` while both first-pass S1 cells ran on the
+    old editor skill and failed on exactly what it fixes; the fingerprint simply recorded the old
+    catalog. → Before a round that re-measures a docs remedy, `diff -r` the plugin's built
+    `classes/…/skills` against `resources/…/skills`, and after the first install `grep` the
+    remedy's text in the scenario project's installed copy. Build the whole project, then restart
+    MPS through `mps_control.sh` so the capture's call log and log path survive (round 48 §4).
