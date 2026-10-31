@@ -32,8 +32,8 @@ Pass = 1–5. Errors vs warnings as in S25. Record: the outcome class even on a 
 `build` string, the migration form, and whether the final message says it assumed the language is
 published (intended, not gated).
 
-Process signals (`MG_*` columns of `families.py`): `MG_status_outcome` `published` (derived from criterion 2),
-`MG_deprecate_calls` 1, `MG_tighten_in_place` 0, `MG_structure_deletes` 0, `MG_console_runs` 0,
+Evaluator label `MG_status_outcome`: `published` (criterion 2's outcome class). Process signals (`MG_*` columns of
+`families.py`): `MG_deprecate_calls` 1, `MG_tighten_in_place` 0, `MG_structure_deletes` 0, `MG_console_runs` 0,
 `MG_pure_scripts` + `MG_class_scripts` 1, `MG_move_ref` 1, `MG_sync_version` ≥ 1, `MG_run_check` ≥ 1,
 `MG_run_apply` 1, `MG_publication_probe` recorded, `M_makes` 2–3. Run it in the same round as S25 and
 compare the outcome only; its call totals are not a skill-cost measure.

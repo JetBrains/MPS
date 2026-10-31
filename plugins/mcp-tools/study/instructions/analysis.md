@@ -57,7 +57,6 @@ transcript shows (unlisted project path, MPS restart mid-run, call log off for p
 evidence gap. Lifecycle scenarios (`S10*`) are exempt both ways: they span several projects by
 design, and their server slice is kept only because the run meta lists `relatedProjects`.
 
-### Planned: language-evolution columns (`MG_*`, S25–S29)
 ### Language-evolution columns (`MG_*`, S25–S29)
 
 In `families.py` since 2026-10-31 (unit tests `test_t37_*`, pinned on the `runs-s25-s29` transcripts by
@@ -85,7 +84,7 @@ when present (copy them there before archiving a round: `$TMPDIR` is purged), el
 | `MG_sandbox_node_writes` | accepted node writes (any node-write tool except a root insert) naming a node of a `.sandbox` model |
 | `MG_find_instances` | `query_nodes` FIND_INSTANCES calls |
 | `MG_mps_migration_dumps` | node reads (`print_node`, `get_project_structure`, `search_root_node_by_name`, `query_nodes` except FIND_INSTANCES) naming a `jetbrains.mps.lang.migration*` model: hunting ids the skill should supply |
-| `MG_publication_probe` | before the first accepted structure write (`alter_structure`, or an intention or node write on a `.structure` model): whole-project `get_project_structure` calls, and `mps_mcp` / Grep / Glob / Bash calls naming `BuildProject` / `BuildMps_Language` |
+| `MG_publication_probe` | before the first accepted structure write (`alter_structure`, or an intention or node write on a `.structure` model): `mps_mcp` / Grep / Glob / Bash calls naming `BuildProject` / `BuildMps_Language`. A whole-project `get_project_structure` is every worker's orientation step and does not count |
 | `MG_status_outcome` | S29 only: the outcome class of its criterion 2 (`published`, `in-place`, `console`, `asked`); the evaluator's label, not a `families.py` column |
 
 ## Chains and scoring

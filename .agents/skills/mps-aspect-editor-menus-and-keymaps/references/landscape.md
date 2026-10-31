@@ -19,7 +19,7 @@
 | Copy-paste handlers *(actions language)* | `jetbrains.mps.lang.actions.structure.CopyPasteHandlers` | `actions.mps` | Pre/post processors on copy and paste |
 | Completion styling | `jetbrains.mps.lang.editor.structure.CompletionStyling` | `editor.mps` | Visual style / priority of completion items |
 
-> **Deprecation note.** `TransformationMenu_Default` and `TransformationMenu_Named` are currently the two concrete kinds of transformation menu; the MPS roadmap will merge them into a single `TransformationMenuImpl` (the structure file carries the deprecation marker). For the time being, author **Default** menus when attaching to a concept and **Named** menus when the menu needs to be referenced by name. Substitute menus are already merged: author `SubstituteMenu` with a `MenuTypeDefault` or `MenuTypeNamed` `type` child, never the deprecated `SubstituteMenu_Default`. A menu's `name` is computed; a named menu's name goes on its `MenuTypeNamed`.
+> **Deprecation note.** `TransformationMenu_Default` and `TransformationMenu_Named` are currently the two concrete kinds of transformation menu; the MPS roadmap will merge them into a single `TransformationMenuImpl` (the structure file carries the deprecation marker). For the time being, author **Default** menus when attaching to a concept and **Named** menus when the menu needs to be referenced by name. Substitute menus are already merged: author `SubstituteMenu` with a `MenuTypeDefault` or `MenuTypeNamed` `type` child, never the deprecated `SubstituteMenu_Default`.
 
 ## Convention: Which Concepts Go Into Which Root
 

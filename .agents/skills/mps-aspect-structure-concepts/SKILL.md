@@ -18,7 +18,7 @@ Concepts (`ConceptDeclaration`), interface concepts (`InterfaceConceptDeclaratio
 - **Smart reference check (CRITICAL)**: before setting a `conceptAlias`, determine whether the concept is an "Implicit Smart Reference". If it has exactly one mandatory reference and no properties or children of its own, **do NOT set a `conceptAlias`** — the concept should be transparent in the editor and completion menu so the user types the target's name directly. Examples: variable references, method calls, routine calls.
 - **Leave alias empty on transparent collections too** (e.g. `StatementList`).
 - **Set alias on concepts that can be root** — that's how the user reaches them through the new-root menu.
-- **On a published language, never delete a feature or make one stricter; on a local language with instances, do it only together with a Console migration of the existing values.** Such a change breaks existing models, and the tools still answer `ok:true`. See `references/language-evolution.md` in the `mps-aspect-migrations` skill root after loading that companion skill from the same origin.
+- **On a published language, never delete a feature or make one stricter unless the owner explicitly asks (see the reference below for how); on a local language with instances, do it only together with a Console migration of the existing values.** Such a change breaks existing models, and the tools still answer `ok:true`. See `references/language-evolution.md` in the `mps-aspect-migrations` skill root after loading that companion skill from the same origin.
 - **Always rebuild the language** with `mps_mcp_alter_nodes MAKE` and `rebuild="true"` after structural changes, so the new concepts are discoverable by runtime tools.
 
 ## Section index — one row, one read

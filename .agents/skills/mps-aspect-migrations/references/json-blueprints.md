@@ -65,7 +65,7 @@ This example has no ordering or data-exchange declarations (all placeholders are
 
 ## `PureMigrationScript` — `SNodeTypeCastExpression_completelyRemoved`
 
-A script with no `part` children. It changes no model by itself, so instances of a deleted concept stay broken; retire a concept as in [language-evolution.md](language-evolution.md).
+A script with no `part` children (see [form-selection.md](form-selection.md): it changes no model by itself).
 
 Source: `r:18ddb7a1-bae8-47e8-a653-f672ff99522d(jetbrains.mps.lang.smodel.migration)`.
 

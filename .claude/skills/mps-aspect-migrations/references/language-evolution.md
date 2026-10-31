@@ -20,11 +20,11 @@ The structure tools answer `ok:true` for a breaking change too. The damage only 
 
 ## 2. Who uses the language?
 
-- **Published**: shipped as a plugin or library, or used by projects you cannot open. A `BuildProject` that packages it (a `BuildMps_Language` node), a read-only module, or the user saying so are the signs. Never delete a language element and never make one stricter. Deprecate it, add a replacement, and write a migration (section 4a). Delete a deprecated element only when the language owner explicitly asks, in a later version than the one that shipped its migration, and delete the migration scripts that refer to it at the same time.
+- **Published**: shipped as a plugin or library, or used by projects you cannot open. A `BuildProject` that packages it (a `BuildMps_Language` node), a read-only module, or the user saying so are the signs. Never delete a language element and never make one stricter, unless the owner explicitly asks (below). Deprecate it, add a replacement, and write a migration (section 4a).
 - **Local**: the user or the task says that every model using it is in the open project and nothing is published. Finding no build script and no outside usage is not enough. Make a stricter cardinality in place, then give every instance that lacks a value a default with a Console command (section 4b). For any other breaking change, deprecate and replace as for a published language, then move the values yourself with a Console command (section 4b). Once a query finds no value left in the deprecated element, you may delete it; this applies only to a local language.
 - **Unknown**: ask the user. Do not guess "local"; if you cannot ask, follow the published rules.
 
-An explicit instruction to delete an element, or to change it in place, is the owner's decision: follow it, and migrate the existing values in the same task. A requirement such as "every order must name its customer" is not such an instruction; meet it with the route for the language's status.
+An explicit instruction to delete an element or to change it in place is the owner's decision, whatever the status: move the values you can reach first (typed code cannot reach a deleted feature), then do it. For a published language, or an unknown one you cannot ask about, also tell the owner the cost: customers' models can no longer be migrated off the element, so the safe route is to ship the deprecation and its migration now and delete in a later version, together with the scripts that refer to it. A requirement ("reject documents without a title") is not such an instruction; meet it with the route for the language's status.
 
 ## 3. Deprecate and replace
 
@@ -74,7 +74,7 @@ Then follow the skill's workflow: `SYNC_VERSION`, `MAKE`, then `mps_mcp_run_migr
 
 ## 4b. Local language: a Console command
 
-**A stricter cardinality** needs no deprecation. Change the role in place, MAKE, and fill every instance that now lacks a value with a default: `#instances(Order).where({~it => it.customer == null; }).forEach({~it => it.customer = <default>; })`. Ask the user for the default. Ask also before dropping values when `0..n` becomes `0..1`.
+**A stricter cardinality** needs no deprecation. Change the role in place, MAKE, and fill every instance that now lacks a value with a default: `#instances(Doc).where({~it => it.owner == null; }).forEach({~it => it.owner = <default>; })`. Ask the user for the default. Ask also before dropping values when `0..n` becomes `0..1`.
 
 **Every other breaking change:** do the deprecate-and-replace of section 3 and MAKE. Then insert a Console command that moves the values and run it (build the blueprint with the closure script in `references/mcp-insertion.md` in the `mps-console` skill root after loading that companion skill from the same origin, using `VisitAllOperation` for `.forEach`). Use `.forEach`, not `.refactor`, because you run it yourself:
 

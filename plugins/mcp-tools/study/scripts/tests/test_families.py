@@ -822,7 +822,7 @@ class FamiliesTest(unittest.TestCase):
             + write("q3", "mps_mcp_get_project_structure", {"startingPoint": "jetbrains.mps.lang.migration.methods"}))
         path = self.runs / "S25-opus-1-worker.jsonl"
         path.write_text("".join(json.dumps(e) + "\n" for e in events))
-        self.assertCounts(families.fam(str(path)), MG_publication_probe=2, MG_old_renames=1, MG_tighten_in_place=2,
+        self.assertCounts(families.fam(str(path)), MG_publication_probe=1, MG_old_renames=1, MG_tighten_in_place=2,
                           MG_deprecate_calls=2, MG_structure_deletes=4, MG_virtual_package_writes=1,
                           MG_substitute_menu_writes=1, MG_substitute_menu_legacy=1, MG_migration_models=1,
                           MG_pure_scripts=2, MG_class_scripts=1, MG_move_child=1, MG_move_ref=1, MG_move_prop=2,
@@ -892,7 +892,7 @@ class FamiliesTest(unittest.TestCase):
             + write("ka", "mps_mcp_run_console_command", {})
             + write("kb", "mps_mcp_parse_java_and_insert", {"parameters": {"code": "it.lead = it.crew.first;", "insert": {"mode": "console"}}})
             + write("kc", "mps_mcp_run_console_command", {}))
-        self.assertCounts(self.count(events), MG_publication_probe=2, MG_substitute_menu_writes=1,
+        self.assertCounts(self.count(events), MG_publication_probe=1, MG_substitute_menu_writes=1,
                           MG_substitute_menu_legacy=1, MG_virtual_package_writes=2, MG_pure_scripts=1, MG_class_scripts=0,
                           MG_move_concept=0, MG_move_prop=1, MG_structure_deletes=0, MG_set_id_writes=0,
                           MG_console_runs=5, MG_console_write_cmds=3, MG_deprecate_calls=1)
@@ -1099,6 +1099,8 @@ class StudyTranscriptsS25S29Test(unittest.TestCase):
         f = self.rows["S29-opus-1"]
         self.assertEqual((1, 0, 1, 1), (f["MG_deprecate_calls"], f["MG_tighten_in_place"], f["MG_move_ref"],
                                         f["MG_run_apply"]))
+        # its first step was a plain project dump, which is orientation, not a search for a build script
+        self.assertEqual([0] * 5, [self.rows[r]["MG_publication_probe"] for r in sorted(self.rows)])
 
 
 if __name__ == "__main__":

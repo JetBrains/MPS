@@ -142,8 +142,8 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   MG_mps_migration_dumps           node reads (print_node, get_project_structure, search_root_node_by_name,
                                    query_nodes but FIND_INSTANCES) naming a jetbrains.mps.lang.migration* model
   MG_publication_probe             before the first accepted structure write (alter_structure, or an intention or
-                                   node write on a .structure model): whole-project get_project_structure calls,
-                                   and mps_mcp / Grep / Glob / Bash calls naming BuildProject / BuildMps_Language
+                                   node write on a .structure model): mps_mcp / Grep / Glob / Bash calls naming
+                                   BuildProject / BuildMps_Language (a plain project dump is orientation, not a probe)
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -941,10 +941,9 @@ def fam(path):
         structure_write = not failed(r, err) and (n == "mps_mcp_alter_structure" or (
             n in ("mps_mcp_apply_intention", "mps_mcp_update_node", "mps_mcp_update_root_node_from_json")
             and STRUCTURE_MODEL.search(json.dumps(inp))))
-        if not structure_touched and not structure_write and (
-                (n == "mps_mcp_get_project_structure" and not inp.get("startingPoint") and not inp.get("moduleKind"))
-                or (n.startswith("mps_mcp") or n in ("Grep", "Bash", "Glob"))
-                and PUBLICATION_SIGN.search(json.dumps(inp) + json.dumps(params(inp)))):
+        # a whole-project dump is every worker's first step, so only a search for a build script counts
+        if not structure_touched and not structure_write and (n.startswith("mps_mcp") or n in ("Grep", "Bash", "Glob")) \
+                and PUBLICATION_SIGN.search(json.dumps(inp) + json.dumps(params(inp))):
             f["MG_publication_probe"] += 1
         structure_touched = structure_touched or structure_write
         if n == "mps_mcp_get_concept_details":

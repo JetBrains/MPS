@@ -47,5 +47,5 @@ another value-naming problem; record), `MG_structure_deletes` 0, `MG_sync_versio
 `MG_run_check` ≥ 1, `MG_run_apply` 1–2, `MG_apply_with_errors` ≥ 1, `MG_mps_migration_dumps` low
 (hunting the `check` ids the skill supplies), `MG_console_runs` 0, `M_makes` 2–4.
 
-Rehearsal must confirm: the sandbox's version stamp moves although APPLY ends `FINISHED_WITH_ERRORS`;
-the problem's `path` is the node (`pathKind` node); the fixture's ` 8500 ` kept its spaces (verified at the 2026-10-31 build).
+Confirmed by `runs-s25-s29`: the sandbox's version stamp moves although APPLY ends `FINISHED_WITH_ERRORS`, and the
+problem's `path` is the node (`pathKind` node). That ` 8500 ` keeps its spaces is a fixture-build fact (`FIXTURE.md` pins).
