@@ -41,7 +41,7 @@ Pass = 1–7. Record: the `build` string, the problem kind used in `check`, whet
 the migration on a copy first. A worker that converts `twelve thousand` by a word parser fails 5 and 6
 (step 1 defines convertibility).
 
-Process signals (planned `MG_*` columns): `MG_deprecate_calls` 1, `MG_class_scripts` ≥ 1,
+Process signals (`MG_*` columns of `families.py`): `MG_deprecate_calls` 1, `MG_class_scripts` ≥ 1,
 `MG_pure_scripts` 0, `MG_check_method_writes` ≥ 1, `MG_migrate_manually_writes` ≥ 1 (0 on a pass means
 another value-naming problem; record), `MG_structure_deletes` 0, `MG_sync_version` ≥ 1,
 `MG_run_check` ≥ 1, `MG_run_apply` 1–2, `MG_apply_with_errors` ≥ 1, `MG_mps_migration_dumps` low

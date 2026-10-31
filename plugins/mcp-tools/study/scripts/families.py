@@ -102,6 +102,48 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   GP_plan_steps_detail             mps_mcp_generation PLAN calls with detail "steps"
   GP_rebuild_makes                 accepted MAKE calls with rebuild true
   GP_param_model_reads             read-tool calls naming jetbrains.mps.generator.extensions.common
+  MG_deprecate_calls               accepted apply_intention AddDeprecatedAnnotation_Intention calls, plus accepted
+                                   node writes whose input holds a DeprecatedNodeAnnotation
+  MG_old_renames                   accepted alter_structure RENAME_* calls whose new name ends in _old
+  MG_structure_deletes             alter_structure UPDATE_CONCEPT_PROPERTY without a dataType and UPDATE_CONCEPT_CHILD /
+                                   _REFERENCE without a targetConcept, plus node deletions in a .structure model
+                                   (any node, an annotation included; dry runs excluded); rejected ones included
+  MG_tighten_in_place              accepted UPDATE_CONCEPT_CHILD / _REFERENCE calls that make one of the scenario's
+                                   fixture roles stricter, after following the run's RENAME_* calls (FIXTURE_ROLES)
+  MG_virtual_package_writes        accepted writes of a virtualPackage value on a .structure node (SET PROPERTY,
+                                   a blueprint aimed at a .structure model, CREATE_CONCEPTS)
+  MG_substitute_menu_writes        accepted node writes holding a SubstituteMenu (qualified or short name) with a
+                                   MenuTypeDefault type
+  MG_substitute_menu_legacy        node writes naming SubstituteMenu_Default, rejected ones included
+  MG_migration_models              accepted create_model calls whose name ends in .migration
+  MG_pure_scripts                  PureMigrationScript roots created by accepted root inserts
+  MG_class_scripts                 lang.migration MigrationScript roots created by accepted root inserts
+  MG_move_child                    MoveContainmentLink nodes in accepted node writes
+  MG_move_ref                      MoveReferenceLink nodes in accepted node writes
+  MG_move_prop                     MoveProperty nodes in accepted node writes
+  MG_move_concept                  MoveConcept nodes in accepted node writes (all MG_move_*: per write, so a
+                                   rewritten or re-inserted script counts again)
+  MG_check_method_writes           accepted node writes holding the check() MethodInstance (its decl, the
+                                   check MethodDescriptor id 2016543223706277481)
+  MG_migrate_manually_writes       accepted node writes (parser inputs included) naming MigrateManually
+  MG_set_id_writes                 accepted node writes (parser inputs included) calling setId
+  MG_sync_version                  update_module SYNC_VERSION calls
+  MG_runtime_stale_hits            results carrying runtimeStale true
+  MG_run_check                     run_migrations CHECK calls (an absent operation is CHECK)
+  MG_run_apply                     run_migrations APPLY calls
+  MG_apply_with_errors             APPLY results with status FINISHED_WITH_ERRORS
+  MG_console_runs                  run_console_command calls, dry runs excluded
+  MG_console_write_cmds            of them, runs whose command (the last accepted console blueprint insert or
+                                   console-mode parse; a recall resets it to unknown) writes: CONSOLE_WRITE on a
+                                   blueprint, CONSOLE_CODE_WRITE on parsed Java
+  MG_sandbox_node_writes           accepted node writes (any GENERATOR_WRITES tool but a root insert) naming a
+                                   node of a .sandbox model
+  MG_find_instances                query_nodes FIND_INSTANCES calls
+  MG_mps_migration_dumps           node reads (print_node, get_project_structure, search_root_node_by_name,
+                                   query_nodes but FIND_INSTANCES) naming a jetbrains.mps.lang.migration* model
+  MG_publication_probe             before the first accepted structure write (alter_structure, or an intention or
+                                   node write on a .structure model): whole-project get_project_structure calls,
+                                   and mps_mcp / Grep / Glob / Bash calls naming BuildProject / BuildMps_Language
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -214,6 +256,11 @@ part of a node reference) or a `@genplan` model name; GP_plan_root_reinserts cou
 top-level blueprint objects, or the one object) inserted into a `@genplan` model past the fourth of the
 transcript, so re-authoring a plan instead of editing it shows. S19 reads GN_plan for its PLAN calls and
 GT_plan_writes for plan node writes.
+The MG_* columns are the S25-S29 signals (language evolution; expected values in each cell's
+done_criteria.md). MG_tighten_in_place needs the fixture's roles: FIXTURE_ROLES maps the scenario of the
+run id to them, and a RENAME_* moves a role's identity to its new name, so `copies` renamed to
+`copies_old` and a new mandatory `copies` added next to it is a replacement, not a tightening. S29's
+outcome class (`MG_status_outcome` in analysis.md) is the evaluator's label, not a counter.
 `execute_run_configuration` has no `mps_mcp_` prefix; tool names are compared after the last `__`.
 
 Stdlib only, Python >= 3.9.
@@ -245,7 +292,13 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "GT_expected_parser_inserts", "GP_genplan_models", "GP_param_equals_writes", "GP_set_plan_calls",
         "GP_devkit_export_calls", "GP_devkit_used_calls", "GP_plan_facet_writes", "GP_attach_workarounds",
         "GP_descriptor_reads", "GP_plan_edits", "GP_plan_root_reinserts", "GP_plan_steps_detail", "GP_rebuild_makes",
-        "GP_param_model_reads"]
+        "GP_param_model_reads", "MG_deprecate_calls", "MG_old_renames", "MG_structure_deletes",
+        "MG_tighten_in_place", "MG_virtual_package_writes", "MG_substitute_menu_writes", "MG_substitute_menu_legacy",
+        "MG_migration_models", "MG_pure_scripts", "MG_class_scripts", "MG_move_child", "MG_move_ref", "MG_move_prop",
+        "MG_move_concept", "MG_check_method_writes", "MG_migrate_manually_writes", "MG_set_id_writes",
+        "MG_sync_version", "MG_runtime_stale_hits", "MG_run_check", "MG_run_apply", "MG_apply_with_errors",
+        "MG_console_runs", "MG_console_write_cmds", "MG_sandbox_node_writes", "MG_find_instances",
+        "MG_mps_migration_dumps", "MG_publication_probe"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
@@ -307,6 +360,42 @@ PARAM_MODEL = re.compile(r"342b977c-a485-4fdb-b891-66244eff644a|generator\.exten
 PARAM_MODEL_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
                      "mps_mcp_search_root_node_by_name", "mps_mcp_check_root_node_problems")
 ROOT_INSERTS = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node")
+MIGRATION_LANG = "90746344-04fd-4286-97d5-b46ae6a81709/"
+PURE_SCRIPT = re.compile(r"(?:^|\.)PureMigrationScript$|" + MIGRATION_LANG + r"7431903976166443707\b")
+CLASS_SCRIPT = re.compile(r"lang\.migration\.structure\.MigrationScript$|^MigrationScript$|" + MIGRATION_LANG +
+                          r"8352104482584315555\b")
+MOVE_PARTS = {"MG_move_child": re.compile(r"\bMoveContainmentLink\b"), "MG_move_ref": re.compile(r"\bMoveReferenceLink\b"),
+              "MG_move_prop": re.compile(r"\bMoveProperty\b"), "MG_move_concept": re.compile(r"\bMoveConcept\b")}
+CHECK_METHOD = re.compile(r"2016543223706277481\b")  # the check() MethodDescriptor in jetbrains.mps.lang.migration.methods
+DEPRECATED_ANNOTATION = re.compile(r"\bDeprecatedNodeAnnotation\b")
+SUBSTITUTE_MENU = re.compile(r"(?:\.|\\?\")SubstituteMenu(?![\w_])")
+STRUCTURE_NODE = re.compile(r"\.structure\)/")
+SANDBOX_NODE = re.compile(r"\.sandbox\)/")
+MIGRATION_MODELS = re.compile(r"jetbrains\.mps\.lang\.migration\b|r:52a3d974-bd4f-4651-ba6e-a2de5e336d95|"
+                              r"r:f69c3fa1-0e30-4980-84e2-190ae44e4c3d")
+PUBLICATION_SIGN = re.compile(r"BuildProject|BuildMps_Language")
+CONSOLE_WRITE = re.compile(r"\bVisitAllOperation\b|\bAssignmentExpression\b|\b\w*Add\w*Operation\b|\b\w*SetNew\w*Operation\b|"
+                           r"\bNode_DeleteOperation\b|\bNode_DetachOperation\b|\bNode_ReplaceWith\w*\b|\bNode_Insert\w*\b|"
+                           r"\b\w*SetTarget\w*Operation\b")
+# console Java: a member assignment (`it.x = …`, not `int n = …`), forEach, list mutation or an SNode API write
+CONSOLE_CODE_WRITE = re.compile(r"\.\w+\s*=[^=]|\.forEach\s*\(|\.(?:add|addAll|clear|delete|detach)\b|"
+                                r"\b(?:setProperty|addChild|insertChildBefore|removeChild|setReference|setReferenceTarget|"
+                                r"deleteNode|replace with)\b")
+SET_ID = re.compile(r"\bsetId\b")
+VIRTUAL_PACKAGE = re.compile(r'\\?"virtualPackage\\?"')
+STRUCTURE_MODEL = re.compile(r"\.structure\)")
+MG_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_search_root_node_by_name")
+# scenario -> {(concept, role): (multiple, optional, isReference)} for the roles the fixture ships (FIXTURE.md pins)
+FIXTURE_ROLES = {
+    "S25": {("Loan", "copies"): (True, True, False), ("Loan", "borrower"): (False, True, True),
+            ("Loan", "desk"): (False, False, False)},
+    "S26": {("Event", "perks"): (True, True, False), ("Event", "highlight"): (False, True, False),
+            ("PerkRef", "perk"): (False, False, True)},
+    "S27": {("Vehicle", "services"): (True, True, False)},
+    "S28": {("Roster", "lead"): (False, True, True), ("Roster", "crew"): (True, True, False),
+            ("Roster", "shifts"): (True, True, False), ("Shift", "worker"): (False, True, True)},
+}
+FIXTURE_ROLES["S29"] = FIXTURE_ROLES["S25"]
 SOURCE_TOOLS = ("Read", "Grep", "Glob", "Bash", "read_file", "find_files_by_glob", "find_files_by_name_keyword")
 PATH_FIELDS = ("file_path", "path", "glob", "pathInProject", "globPattern")  # Grep's `pattern` is a regex, not a path
 
@@ -616,6 +705,29 @@ def plan_roots_inserted(text):
                re.search(r"(?:^|\.)Plan$|" + PLAN_LANG + r"1820634577908471803\b", str(r.get("concept") or "")))
 
 
+def roots_of_concept(text, pattern):
+    """The number of top-level objects of a root-insert blueprint whose concept matches `pattern`."""
+    try:
+        blueprint = json.loads(text)
+    except (ValueError, TypeError):
+        return 0
+    roots = blueprint if isinstance(blueprint, list) else [blueprint]
+    return sum(1 for r in roots if isinstance(r, dict) and pattern.search(str(r.get("concept") or "")))
+
+
+def short_concept(ref):
+    """The short concept name of a `conceptRef`: the text after the last `.` or `:` of a qualified name or a
+    `c:<lang>/<id>:<qualified name>` ref. A ref without a name (a bare `c:` id, a node ref) yields text that matches
+    no FIXTURE_ROLES key, so a tightening addressed that way is not counted."""
+    return re.split(r"[.:]", str(ref or ""))[-1]
+
+
+def stricter(fixture, multiple, optional):
+    """Whether (multiple, optional) is stricter than the fixture role's (multiple, optional, isReference)."""
+    was_multiple, was_optional, _ = fixture
+    return (was_multiple and not multiple) or (was_optional and not optional)
+
+
 def failed(result, is_error):
     """Whether a result is an error: is_error, or an ok:false envelope."""
     return is_error or result.strip().startswith('{"ok":false') or result.strip().startswith('{"ok": false')
@@ -632,6 +744,18 @@ def fam(path):
     made = False
     generator_written = traced = False
     written_files = {}
+    scenario = os.path.basename(path).split("-")[0]
+    roles = {key: key for key in FIXTURE_ROLES.get(scenario, {})}  # (concept, live name) -> fixture key, or None
+    console_text, structure_touched = "", False
+    snapshots = os.path.splitext(path)[0][:-len("-worker")] + "-blueprints"
+    if os.path.isdir(snapshots):  # temp-file blueprints the observer copied next to the transcript (TMPDIR is purged)
+        for u in uses:
+            for key in ("json", "childJson"):
+                value = (u.get("input") or {}).get(key)
+                snap = os.path.join(snapshots, os.path.basename(value.strip())) if isinstance(value, str) else ""
+                if value and value.strip().startswith("/") and os.path.isfile(snap):
+                    with open(snap) as fh:
+                        written_files.setdefault(value.strip(), fh.read())
     for i, u in enumerate(uses):
         n = u["name"].split("__")[-1]
         inp = u.get("input", {})
@@ -797,6 +921,32 @@ def fam(path):
             f["GP_rebuild_makes"] += 1
         if n in PARAM_MODEL_READS and PARAM_MODEL.search(json.dumps(inp) + json.dumps(params(inp))):
             f["GP_param_model_reads"] += 1
+        migration_columns(f, n, inp, r, err, operation, written, written_files, roles, scenario)
+        accepted = not failed(r, err) and not is_true(inp.get("dryRun")) and not is_true(params(inp).get("dryRun"))
+        if n == "mps_mcp_insert_console_command_from_json" and accepted:
+            command = inp.get("json")
+            if isinstance(command, str) and command.strip().startswith("/"):
+                command = read_blueprint_file(command.strip(), written_files)
+            console_text = json.dumps(command) if not isinstance(command, str) else command
+        if n == "mps_mcp_recall_console_command" and accepted:
+            console_text = ""  # a history command: its text is not in the call, so the run is not counted as writing
+        if n == "mps_mcp_parse_java_and_insert" and accepted and \
+                str((params(inp).get("insert") or {}).get("mode") or "").lower() == "console":
+            console_text = "code:" + str(params(inp).get("code") or "")
+        if n == "mps_mcp_run_console_command" and not is_true(inp.get("dryRun")):
+            f["MG_console_runs"] += 1
+            code = console_text.startswith("code:")
+            if (CONSOLE_CODE_WRITE if code else CONSOLE_WRITE).search(console_text[5:] if code else console_text):
+                f["MG_console_write_cmds"] += 1
+        structure_write = not failed(r, err) and (n == "mps_mcp_alter_structure" or (
+            n in ("mps_mcp_apply_intention", "mps_mcp_update_node", "mps_mcp_update_root_node_from_json")
+            and STRUCTURE_MODEL.search(json.dumps(inp))))
+        if not structure_touched and not structure_write and (
+                (n == "mps_mcp_get_project_structure" and not inp.get("startingPoint") and not inp.get("moduleKind"))
+                or (n.startswith("mps_mcp") or n in ("Grep", "Bash", "Glob"))
+                and PUBLICATION_SIGN.search(json.dumps(inp) + json.dumps(params(inp)))):
+            f["MG_publication_probe"] += 1
+        structure_touched = structure_touched or structure_write
         if n == "mps_mcp_get_concept_details":
             gcd.append(i)
         if failed(r, err):
@@ -809,6 +959,130 @@ def fam(path):
     f["C_after_summary_batches"] = len(after_summary)
     f["C_after_node_sample_batches"] = len(after_sample)
     return f
+
+
+def migration_columns(f, n, inp, r, err, operation, written, written_files, roles, scenario):
+    """The MG_* counters of one call (all but the console and publication-probe ones, which need order)."""
+    ok_call = not failed(r, err)
+    p = params(inp)
+    if n == "mps_mcp_apply_intention" and ok_call and str(inp.get("intentionId") or "").endswith("AddDeprecatedAnnotation_Intention"):
+        f["MG_deprecate_calls"] += 1
+    if written is not None:
+        if ok_call:
+            if DEPRECATED_ANNOTATION.search(written):
+                f["MG_deprecate_calls"] += 1
+            if SUBSTITUTE_MENU.search(written) and "MenuTypeDefault" in written:
+                f["MG_substitute_menu_writes"] += 1
+            for column, pattern in MOVE_PARTS.items():
+                f[column] += len(pattern.findall(_once(n, inp, written)))
+            if CHECK_METHOD.search(written):
+                f["MG_check_method_writes"] += 1
+            if "MigrateManually" in written:
+                f["MG_migrate_manually_writes"] += 1
+            if SET_ID.search(written):
+                f["MG_set_id_writes"] += 1
+            if virtual_package_write(n, inp, written):
+                f["MG_virtual_package_writes"] += 1
+            if n != "mps_mcp_insert_root_node_from_json" and SANDBOX_NODE.search(json.dumps(inp) + json.dumps(p)):
+                f["MG_sandbox_node_writes"] += 1
+        if "SubstituteMenu_Default" in written:
+            f["MG_substitute_menu_legacy"] += 1
+    if ok_call and n in ROOT_INSERTS:
+        if n == "mps_mcp_create_root_node":
+            concept = str(inp.get("conceptReference") or inp.get("concept") or "")
+            f["MG_pure_scripts"] += 1 if PURE_SCRIPT.search(concept) else 0
+            f["MG_class_scripts"] += 1 if CLASS_SCRIPT.search(concept) else 0
+        else:
+            blueprint = inp.get("json")
+            if isinstance(blueprint, str) and blueprint.strip().startswith("/"):
+                blueprint = read_blueprint_file(blueprint.strip(), written_files)
+            elif not isinstance(blueprint, str):
+                blueprint = json.dumps(blueprint)
+            f["MG_pure_scripts"] += roots_of_concept(blueprint, PURE_SCRIPT)
+            f["MG_class_scripts"] += roots_of_concept(blueprint, CLASS_SCRIPT)
+    if n == "mps_mcp_update_root_node_from_json" and operation == "DELETE" and STRUCTURE_NODE.search(str(inp.get("nodeReference") or "")):
+        f["MG_structure_deletes"] += 1
+    if n == "mps_mcp_update_node" and operation == "SET" and str(inp.get("kind") or "").upper() == "CHILD" and \
+            inp.get("childJson") is None and not is_true(inp.get("dryRun")) and \
+            STRUCTURE_NODE.search(str(inp.get("childNodeRef") or "")):
+        f["MG_structure_deletes"] += 1
+    if n == "mps_mcp_alter_structure":
+        structure_call(f, operation, p, ok_call, roles, scenario)
+        if ok_call and operation == "CREATE_CONCEPTS" and VIRTUAL_PACKAGE.search(json.dumps(inp)):
+            f["MG_virtual_package_writes"] += 1
+    if n == "mps_mcp_create_model" and ok_call and str(inp.get("modelName") or "").endswith(".migration"):
+        f["MG_migration_models"] += 1
+    if n == "mps_mcp_update_module" and operation == "SYNC_VERSION":
+        f["MG_sync_version"] += 1
+    if re.search(r'"runtimeStale"\s*:\s*true', r or ""):
+        f["MG_runtime_stale_hits"] += 1
+    if n == "mps_mcp_run_migrations":
+        if operation == "APPLY":
+            f["MG_run_apply"] += 1
+            if "FINISHED_WITH_ERRORS" in (r or ""):
+                f["MG_apply_with_errors"] += 1
+        elif operation in ("", "CHECK"):
+            f["MG_run_check"] += 1
+    if n == "mps_mcp_query_nodes" and operation == "FIND_INSTANCES":
+        f["MG_find_instances"] += 1
+    if (n in MG_READS or (n == "mps_mcp_query_nodes" and operation != "FIND_INSTANCES")) and \
+            MIGRATION_MODELS.search(json.dumps(inp) + json.dumps(p)):
+        f["MG_mps_migration_dumps"] += 1
+
+
+def virtual_package_write(n, inp, written):
+    """Whether an accepted write sets a virtualPackage on a structure-model node: a SET PROPERTY triplet, a child or
+    root blueprint aimed at a .structure model (CREATE_CONCEPTS is counted by the caller)."""
+    if n == "mps_mcp_update_node" and str(inp.get("kind") or "").upper() == "PROPERTY":
+        return any(isinstance(t, list) and len(t) == 3 and t[1] == "virtualPackage" and STRUCTURE_NODE.search(str(t[0]))
+                   for t in inp.get("properties") or [])
+    if not VIRTUAL_PACKAGE.search(written):
+        return False
+    target = " ".join(str(inp.get(k) or "") for k in ("nodeReference", "childNodeRef", "modelReference"))
+    return bool(STRUCTURE_MODEL.search(target))
+
+
+def _once(n, inp, written):
+    """`written` without the parsed copy of `parameters` that node_write_text appends after the input."""
+    if "parameters" not in inp:
+        return written
+    head = len(json.dumps(inp))
+    return written[:head] + written[head + len(json.dumps(params(inp))):]
+
+
+def structure_call(f, operation, p, ok_call, roles, scenario):
+    """MG_old_renames, MG_structure_deletes and MG_tighten_in_place of one alter_structure call."""
+    concept = short_concept(p.get("conceptRef"))
+    if operation.startswith("RENAME_CONCEPT_"):
+        old, new = (p.get("oldName"), p.get("newName")) if operation.endswith("PROPERTY") else (p.get("oldRole"), p.get("newRole"))
+        if ok_call:
+            if str(new or "").endswith("_old"):
+                f["MG_old_renames"] += 1
+            if (concept, old) in roles:
+                roles[(concept, new)] = roles.pop((concept, old))
+        return
+    if operation == "UPDATE_CONCEPT_PROPERTY":
+        if not str(p.get("dataType") or "").strip():
+            f["MG_structure_deletes"] += 1
+        return
+    if operation not in ("UPDATE_CONCEPT_CHILD", "UPDATE_CONCEPT_REFERENCE"):
+        return
+    role = p.get("role")
+    if not str(p.get("targetConcept") or "").strip():
+        f["MG_structure_deletes"] += 1
+        if ok_call:
+            roles.pop((concept, role), None)
+        return
+    if not ok_call:
+        return
+    fixture = roles.get((concept, role))
+    if fixture is None:
+        roles.setdefault((concept, role), None)
+        return
+    multiple = is_true(p.get("multiple")) if operation == "UPDATE_CONCEPT_CHILD" else False
+    optional = p.get("optional") is None or is_true(p.get("optional"))
+    if stricter(FIXTURE_ROLES[scenario][fixture], multiple, optional):
+        f["MG_tighten_in_place"] += 1
 
 
 def rows(dirs):

@@ -466,8 +466,8 @@ S29 43 / 150 s). S26 took the code-free concept move, S27's only APPLY ended `FI
 the one `MigrateManually` report, S28 used two Console commands and no node writes, S29 took the
 published route and said why. The evaluators' wording fixes (pinned sandbox module refs, the scoped
 CHECK call, `deprecated: "false"` on own features, ids over names) went into the criteria; no prompt
-changed. Still open: the `MG_*` columns are not in `families.py` yet ([`analysis.md`](analysis.md)); one
-model only, so a sonnet run is the next comparison.
+changed. The `MG_*` columns of `families.py` read their signals ([`analysis.md`](analysis.md)). One model only, so a
+sonnet run is the next comparison.
 Each fixture is a fresh domain, so the skill's worked examples are not the answers (lesson 19).
 Every prompt states the publication status except S29, which tests the unknown case and says that
 nobody can answer questions.

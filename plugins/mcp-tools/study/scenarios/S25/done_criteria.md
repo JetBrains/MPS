@@ -46,7 +46,7 @@ Pass = 1–8. Errors: the two obligatory-role messages. Warnings, not failures: 
 `Raw use of parameterized class` on the migration script. Record: the migration form, the naming
 choice, the `build` string, whether the worker counted instances before deciding.
 
-Process signals (planned `MG_*` columns, `../../instructions/analysis.md`): `MG_deprecate_calls` 2,
+Process signals (`MG_*` columns of `families.py`, `../../instructions/analysis.md`): `MG_deprecate_calls` 2,
 `MG_structure_deletes` 0, `MG_tighten_in_place` 0, `MG_pure_scripts` 1–2 and `MG_class_scripts` 0
 (recorded), `MG_move_child` 1, `MG_move_ref` 1, `MG_sync_version` ≥ 1, `MG_run_check` ≥ 1,
 `MG_run_apply` 1, `MG_runtime_stale_hits` ≤ 1 (a SYNC_VERSION before the MAKE reports it by design), `MG_console_runs` 0, `M_makes` 2–4; `G_errors` around the

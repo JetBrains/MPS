@@ -43,7 +43,7 @@ Pass = 1–8. `is an instance of deprecated concept` is a warning (it would only
 deprecated-usage warnings on the migration are not errors. Record: the `build` string, part order, the
 virtual package, extra deprecations (of `Perk`, `PerkRef`, `Backstage`: over-application).
 
-Process signals (planned `MG_*` columns): `MG_deprecate_calls` 1, `MG_virtual_package_writes` 1
+Process signals (`MG_*` columns of `families.py`): `MG_deprecate_calls` 1, `MG_virtual_package_writes` 1
 (recorded), `MG_substitute_menu_writes` 1, `MG_substitute_menu_legacy` 0, `MG_pure_scripts` 1,
 `MG_class_scripts` 0, `MG_move_concept` 1, `MG_move_prop` 2, `MG_set_id_writes` 0,
 `MG_structure_deletes` 0, `MG_sync_version` ≥ 1, `MG_run_check` ≥ 1, `MG_run_apply` 1,

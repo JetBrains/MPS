@@ -58,35 +58,35 @@ evidence gap. Lifecycle scenarios (`S10*`) are exempt both ways: they span sever
 design, and their server slice is kept only because the run meta lists `relatedProjects`.
 
 ### Planned: language-evolution columns (`MG_*`, S25–S29)
+### Language-evolution columns (`MG_*`, S25–S29)
 
-Not in `families.py` yet; implement them against the first rehearsal transcripts, with unit tests like
-the `GP_*` ones. Each S25–S29 `done_criteria.md` states the expected values. Definitions, revised
-after the 2026-10-31 review:
+In `families.py` since 2026-10-31 (unit tests `test_t37_*`, pinned on the `runs-s25-s29` transcripts by
+`StudyTranscriptsS25S29Test`). Temp-file blueprints are read from `<run-id>-blueprints/` next to the transcript
+when present (copy them there before archiving a round: `$TMPDIR` is purged), else from the path. Each S25–S29 `done_criteria.md` states the expected values. Definitions:
 
 | Column | Counts |
 |---|---|
-| `MG_deprecate_calls` | accepted `apply_intention` whose `intentionId` ends in `AddDeprecatedAnnotation_Intention`, plus accepted node writes whose input holds a `DeprecatedNodeAnnotation` |
+| `MG_deprecate_calls` | accepted `apply_intention` calls of `AddDeprecatedAnnotation_Intention`, plus accepted node writes holding a `DeprecatedNodeAnnotation` |
 | `MG_old_renames` | accepted `alter_structure` RENAME_* calls whose new name ends in `_old` |
-| `MG_structure_deletes` | `alter_structure` UPDATE_CONCEPT_PROPERTY with a blank or missing `dataType` and UPDATE_CONCEPT_CHILD / UPDATE_CONCEPT_REFERENCE with a blank or missing `targetConcept` (the delete forms), plus node deletions of declarations in a `.structure` model; rejected ones included |
-| `MG_tighten_in_place` | accepted UPDATE_CONCEPT_CHILD / UPDATE_CONCEPT_REFERENCE that make a role stricter (`optional: false`, or `multiple: false` on a multiple role) when the role, after following the run's earlier RENAME_* calls back to its fixture name, is a pinned fixture role |
-| `MG_virtual_package_writes` | accepted writes setting `virtualPackage` on a concept declaration (SET PROPERTY, or a blueprint property) |
-| `MG_substitute_menu_writes` / `MG_substitute_menu_legacy` | accepted node writes whose input holds a `SubstituteMenu` with a `MenuTypeDefault` child / node writes, rejected ones included, naming `SubstituteMenu_Default` |
+| `MG_structure_deletes` | `alter_structure` UPDATE_CONCEPT_PROPERTY without a `dataType` and UPDATE_CONCEPT_CHILD / UPDATE_CONCEPT_REFERENCE without a `targetConcept` (the delete forms), plus node deletions under a `.structure` model (any node, an annotation included; dry runs excluded); rejected ones included |
+| `MG_tighten_in_place` | accepted UPDATE_CONCEPT_CHILD / UPDATE_CONCEPT_REFERENCE calls that make one of the scenario's fixture roles (`FIXTURE_ROLES` in `families.py`) stricter: `optional: false`, or a single child where the fixture had a list (the tool's defaults are optional and single). A RENAME_* moves the role's identity, so a new mandatory role under the old name next to a renamed `_old` role is a replacement, not a tightening. Roles addressed by a nameless ref (a bare `c:` id) are not recognised |
+| `MG_virtual_package_writes` | accepted writes of a `virtualPackage` on a `.structure` node: a SET PROPERTY triplet, a blueprint aimed at a `.structure` model, or a CREATE_CONCEPTS concept |
+| `MG_substitute_menu_writes` / `MG_substitute_menu_legacy` | accepted node writes holding a `SubstituteMenu` (qualified or short name) with a `MenuTypeDefault` / node writes, rejected ones included, naming `SubstituteMenu_Default` |
 | `MG_migration_models` | accepted `create_model` calls whose name ends in `.migration` |
-| `MG_pure_scripts` / `MG_class_scripts` | accepted root inserts whose input holds `PureMigrationScript` / the `lang.migration` `MigrationScript` |
-| `MG_move_child` / `MG_move_ref` / `MG_move_prop` / `MG_move_concept` | accepted node writes holding `MoveContainmentLink` / `MoveReferenceLink` / `MoveProperty` / `MoveConcept` |
-| `MG_check_method_writes` | accepted writes replacing a `MemberPlaceholder` named `check`, or inserting a `MethodInstance` named `check` |
-| `MG_migrate_manually_writes` | accepted node writes or parser inputs naming `MigrateManually` |
-| `MG_set_id_writes` | parser inputs containing `setId(` and node writes whose input holds an `InstanceMethodCallOperation` to `setId` |
+| `MG_pure_scripts` / `MG_class_scripts` | `PureMigrationScript` / `lang.migration` `MigrationScript` roots created by accepted root inserts (blueprint top-level objects, or `create_root_node`'s `conceptReference`) |
+| `MG_move_child` / `MG_move_ref` / `MG_move_prop` / `MG_move_concept` | `MoveContainmentLink` / `MoveReferenceLink` / `MoveProperty` / `MoveConcept` nodes in accepted node writes, per write (a rewritten or re-inserted script counts again) |
+| `MG_check_method_writes` | accepted node writes holding the `check()` MethodInstance (its `decl`, the check MethodDescriptor id) |
+| `MG_migrate_manually_writes` / `MG_set_id_writes` | accepted node writes, parser inputs included, naming `MigrateManually` / calling `setId` |
 | `MG_sync_version` | `update_module` SYNC_VERSION calls |
 | `MG_runtime_stale_hits` | results carrying `runtimeStale: true` (one is expected: a SYNC_VERSION before the MAKE reports it by design; more mean a migration attempted on an unbuilt language) |
-| `MG_run_check` / `MG_run_apply` / `MG_apply_with_errors` | `run_migrations` CHECK calls / APPLY calls / APPLY answers with `status: FINISHED_WITH_ERRORS` |
-| `MG_console_runs` | `run_console_command` calls |
-| `MG_console_write_cmds` | console runs whose command (the preceding `insert_console_command_from_json` blueprint or recall) holds a `VisitAllOperation`, an `AssignmentExpression`, or a list add operation; the run call itself carries no command text |
-| `MG_sandbox_node_writes` | accepted `update_node` / `update_root_node_from_json` / non-MAKE `alter_nodes` calls on a node of the cell's sandbox model |
+| `MG_run_check` / `MG_run_apply` / `MG_apply_with_errors` | `run_migrations` CHECK calls (an absent operation is CHECK) / APPLY calls / APPLY answers with `FINISHED_WITH_ERRORS` |
+| `MG_console_runs` | `run_console_command` calls, dry runs excluded |
+| `MG_console_write_cmds` | console runs whose command writes. The command is the last accepted `insert_console_command_from_json` blueprint (a `VisitAllOperation`, an `AssignmentExpression`, an add / set-new / set-target / delete / detach / replace / insert operation) or console-mode parsed Java (a member assignment, `forEach`, list mutation or an SNode API write); a recall resets it to unknown, because the run call itself carries no command text |
+| `MG_sandbox_node_writes` | accepted node writes (any node-write tool except a root insert) naming a node of a `.sandbox` model |
 | `MG_find_instances` | `query_nodes` FIND_INSTANCES calls |
-| `MG_mps_migration_dumps` | reads of nodes of `jetbrains.mps.lang.migration*` models (hunting ids the skill should supply) |
-| `MG_publication_probe` | before the first structure write: whole-project `get_project_structure` calls, or searches naming `BuildProject` / `BuildMps_Language` / read-only |
-| `MG_status_outcome` | S29 only: the outcome class of its criterion 2 (`published`, `in-place`, `console`, `asked`) |
+| `MG_mps_migration_dumps` | node reads (`print_node`, `get_project_structure`, `search_root_node_by_name`, `query_nodes` except FIND_INSTANCES) naming a `jetbrains.mps.lang.migration*` model: hunting ids the skill should supply |
+| `MG_publication_probe` | before the first accepted structure write (`alter_structure`, or an intention or node write on a `.structure` model): whole-project `get_project_structure` calls, and `mps_mcp` / Grep / Glob / Bash calls naming `BuildProject` / `BuildMps_Language` |
+| `MG_status_outcome` | S29 only: the outcome class of its criterion 2 (`published`, `in-place`, `console`, `asked`); the evaluator's label, not a `families.py` column |
 
 ## Chains and scoring
 `chains.json` ranks n-grams of `tool[:op]` by total chars. Since A2 they are taken per session over

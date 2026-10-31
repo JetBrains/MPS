@@ -34,7 +34,7 @@ the replaced reference was deprecated before its deletion (the skill's local rou
 state cannot tell), whether the reference value was cleared in the copy command, whether `covered` was
 cleared before deleting it, and the query that showed the old slot empty.
 
-Process signals (planned `MG_*` columns): `MG_console_runs` 2–5, `MG_console_write_cmds` ≥ 2,
+Process signals (`MG_*` columns of `families.py`): `MG_console_runs` 2–5, `MG_console_write_cmds` ≥ 2,
 `MG_sandbox_node_writes` ≤ 2, `MG_structure_deletes` 2 (the only cell where > 0 is right),
 `MG_tighten_in_place` 1 (`lead`), `MG_deprecate_calls` 0–1 (recorded), `MG_pure_scripts` 0,
 `MG_class_scripts` 0, `MG_migration_models` 0, `MG_sync_version` 0, `MG_run_apply` 0, `M_makes` 2–4.
