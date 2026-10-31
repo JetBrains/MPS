@@ -714,8 +714,9 @@ line; it does not detect the port itself.
    (read-only — `dryRun: true` calls included —, `projectPath` on every call, temp-file `data` is a
    path to read; brief it with the "Evaluating a run" section of [`analysis.md`](analysis.md)). **S8 is evaluated
    in two passes** (its criterion 3 dry-runs blueprints, which the hollow fixture language rejects;
-   A8): the evaluator checks criteria 1, 2 and 4 and returns; the observer runs `mps_mcp_alter_nodes
-   MAKE` on the language module and records the result; then the **same** evaluator is resumed
+   A8): the evaluator checks criteria 1, 2 and 4 and returns; the observer runs
+   `mcp_call.py mps_mcp_alter_nodes '{"projectPath":"<proj>","operation":"MAKE","parameters":{"modules":["com.example.statechart"],"rebuild":true}}'`
+   (arguments inside `parameters`; the exact line is in S8's criterion 3) and records the result; then the **same** evaluator is resumed
    (SendMessage to its id, so it keeps its context) for criterion 3 and the verdict. It first
    confirms `get_concept_details` no longer says `descriptorStatus: hollow`; still hollow →
    criterion 3 not evaluable, not a FAIL. If the runtime cannot resume a finished subagent,
