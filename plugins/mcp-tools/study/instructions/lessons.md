@@ -307,3 +307,10 @@
     `classes/…/skills` against `resources/…/skills`, and after the first install `grep` the
     remedy's text in the scenario project's installed copy. Build the whole project, then restart
     MPS through `mps_control.sh` so the capture's call log and log path survive (round 48 §4).
+47. **A worker that reads the MPS sources is telling you where the docs are silent.** In the
+    2026-11-01 editor-dynamics probe (`../reports/assessments/editor-dynamics.md`) opus workers on a
+    from-sources MPS read the checkout's runtime and generated code 22–37 times per run before the
+    skill correction and 0–9 times after it, while passing either way. A pass therefore hides the gap;
+    the reads show it. → Count reads into the MPS checkout outside the skill catalog per run (the
+    probe's `~/MPSProjects/mcp-study/adhoc-study/metrics.py` does) and treat each cluster as a doc defect to classify, not as diligence.
+    A standalone-install worker has no sources and would have failed instead.

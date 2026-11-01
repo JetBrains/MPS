@@ -11,7 +11,10 @@ to read a result are in [`defects.md`](defects.md). Fixtures are regenerated per
 [`fixtures.md`](fixtures.md), not stored in git. Current tarball hashes are in [`../fixtures/pins.md`](../fixtures/pins.md). Exception: S5 was revised on
 2026-10-22 (round 39) at the user's request to add identity-preserving moves; see S5. S20–S24 were
 rehearsed in rounds 46–47 and are frozen since 2026-10-30. S25–S29 (language evolution) were written,
-reviewed, built and rehearsed on 2026-10-31 and are frozen since then.
+reviewed, built and rehearsed on 2026-10-31 and are frozen since then. S30–S35 (editor authoring and
+editing) were written and reviewed on 2026-11-01 and rehearsed with opus the same day: S31, S34 and S35 passed on the
+first run; S30 and S32 passed on rev 4 after one revision; S33 failed only on a criterion's letter and passed on
+rev 5. They are not frozen: a sonnet rehearsal is pending.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -49,6 +52,12 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S27 | Published fleet language: free-text `mileage` becomes an integer through a migration whose code converts the values and whose result check names every vehicle and text it could not convert; APPLY ends with that report. |
 | S28 | Local shifts language, Console only: a single worker becomes a worker list (assignments kept, old slot gone), `lead` tightened in place with a default from the crew, a rename, `covered` removed; no migration script, no version bump. |
 | S29 | The loans language with no publication status and nobody to ask: rename a property and make `borrower` mandatory; only the published route passes. |
+| S30 | Greenfield survey DSL: static editors (shared component, alias cell, style sheet, show-if, separator, placeholder, read-only count, inspector), a substitute action, a keyword menu with Super, node factories, a wrap transform after `?`, a paste wrapper, seven editor tests. Draft, not frozen. |
+| S31 | Edit the alerts editors you did not write: a model-access window cell, matching parentheses, a shared name component, a query style, a Ctrl+Alt+Shift+K keymap, a "new channel" reference action, postfix hints, select-all, a paste post-processor; six shipped tests kept. Draft, not frozen. |
+| S32 | Recipes: difficulty to the Inspector, `then` typed after a step's `)` and offered in Ctrl+Space with the step's own items, a parameterized `scale` menu over one factor list on the name, a `+`/`-` keymap on minutes; four shipped tests kept. Draft, not frozen. |
+| S33 | An on-call language extending alerts: a substitute-menu contribution, a transformation-menu contribution with a cross-concept factory and Undo, an editor-component override, an everyModel Ctrl+Alt+Shift+G keymap; the base untouched. Draft, not frozen. |
+| S34 | Write editor tests for eight specified alerts behaviours, run them red against six planted editor defects, then fix the language, not the tests. Draft, not frozen. |
+| S35 | Kaja sample: a named movement substitute menu on `step`/`turnLeft`, a LEFT `comment` transform on `trace` also in Ctrl+Space, a `Trace` context-assistant item, a red count; corpus menus kept. Draft, not frozen. |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -499,6 +508,78 @@ deletes features, so open each run project alone (APPLY force-saves the whole se
 start MPS with the migration assistant disabled, as for S4. Suggested order: S26, S27, S28, then S25,
 restart, S29.
 
+**S30–S35 — editor authoring and editing.** Written 2026-11-01 (re-exposing findings of the ad-hoc exercises E1–E4), proposed
+in three revisions and reviewed three times; not rehearsed, prompts not frozen. The coverage matrix
+(legend F / F\* / r / X / GP, what stays out of scope, chords, analysis columns, the observer walk before
+freezing) is [`../scenarios/coverage/editor.md`](../scenarios/coverage/editor.md); the criteria every cell
+shares (Clean, Green, Deprecated, Same-root, Shipped, completion and prefix tests) are
+[`../scenarios/coverage/editor-shared-criteria.md`](../scenarios/coverage/editor-shared-criteria.md). Fixture
+recipes are in `../fixtures/inputs/s31`, `s32`, `s34`, `s35/FIXTURE.md` (pins: to be recorded at build). The
+GP rows of the matrix are undocumented in the catalog today: document them before freezing, or they score doc
+gaps. Sizes (opus min, E1 = 21) and the drop order are per cell below.
+
+**S30 — greenfield survey DSL.** Fixture: `empty-project` (synthesized). Forces static editors (shared
+component with the alias cell, style sheet, show-if, `separatorText`, `nullText` placeholder, read-only
+accessor, inspector, smart reference), a default substitute menu with an Action, a default transformation menu
+with Super reached from a keyword cell carrying a `transformationMenu`, `NodeFactory` with `sampleNode` and
+`index`, a RIGHT wrap of the substitute menu after a constant, a `PasteWrapper`, seven non-vacuous tests.
+Run to verify: `mps-aspect-editor` (static refs), `mps-aspect-editor-menus-and-keymaps` (Action, wrap and
+typing, Super/M1, the leaf-cell rule, `paste-and-copy.md`), `mps-aspect-actions`, `mps-tests`
+`editor-test-case/*`, `mps-run-configurations`, `mps-aspect-structure-concepts`. Re-exposes E1#1/#3/#7/#8,
+E2#5/#7, E3 2–3. Size 45–60; drop 3e, then 3c. Isolation: fresh ids.
+
+**S31 — edit the alerts editors.** Fixture: `alerts2` ([`../fixtures/inputs/s31/FIXTURE.md`](../fixtures/inputs/s31/FIXTURE.md)).
+Forces `CellModel_ModelAccess`, punctuation and `MatchingLabelStyleClassItem`, an interface-bound component,
+query-driven style, a keymap (exact `modifiers`, cell attachment; Ctrl+Alt+Shift+K), `ReferenceScope` plus a
+`pattern` Action guarded by `strictly`, postfix hints (F\*), `select_all_action_id` with a node range, a
+`PastePostProcessor`, six shipped tests maintained. Run to verify: `mps-aspect-editor` `cell-models.md` (model
+access, punctuation, matching label, query style) and `editor-components.md`; the menus skill `keymaps.md`,
+`substitute-menus.md` (ReferenceScope, "typing a new name"), `legacy-cell-menus.md`, `select-all.md`,
+`paste-and-copy.md`; `mps-tests` `root-and-caret.md`. Re-exposes E2#4/#5, E1#7, F0, E3#4. Size 40–55 (the
+fullest cell, R16); drop item 7, then 6. Isolation: `mcp.study.alerts` ids, shared with S33 and S34: restart
+between them, one `alerts2*` copy open.
+
+**S32 — recipes menus around an existing editor.** Fixture: `recipes-editor`
+([`../fixtures/inputs/s32/FIXTURE.md`](../fixtures/inputs/s32/FIXTURE.md)). Forces the inspector with a
+`SwitchToInspector` test, a RIGHT transform on a constant carrying a `transformationMenu`,
+`include menu` with `location` (M2), the `)` menu keeping the step's items, a named menu on a property cell with `Parameterized` and a guard, a keymap
+on the minutes cell, four shipped tests. Run to verify: the menus skill `transformation-menus.md` (include +
+`location`, Parameterized, property-cell attachment, leaf-cell rule), `side-transforms.md`, `keymaps.md`;
+`mps-aspect-editor` (inspector, separators); `mps-tests` (completion, `SwitchToInspector`). Re-exposes E1#3/#8,
+E2#7. Size 30–40; drop item 5. Isolation: joins the `recipes*` set (S3–S7, S9, S15, S17–S19, S22): restart
+before and after, as S17.
+
+**S33 — an extending language contributes menus, an override and a shortcut.** Fixture: `alerts2`, as S31, no
+additions (its `alert` constant's `_Default{Alert}` menu enables item 3). Forces an extending language, a
+`SubstituteMenu_Contribution`, a `TransformationMenuContribution` (Completion, from a keyword cell carrying
+the default menu), `overridenEditorComponent` (a cross-concept `NodeFactory` is recorded only), an `everyModel` keymap
+(Ctrl+Alt+Shift+G), a `$Undo` test; the base is read-only. Run to verify: the menus skill (contributions, the
+used-language rule GP, `everyModel`, exact `modifiers`, leaf-cell rule), `mps-aspect-editor`
+`editor-components.md` (override GP), `mps-aspect-actions` (cross-concept `sampleNode`),
+`mps-aspect-accessories`, `mps-language-inheritance`, `mps-tests` (`$Undo`). Re-exposes E1#1/#8, E2#1, M5.
+Size 35–45. Isolation: `alerts2` ids; restart before and after, never next to another `alerts2*` copy.
+
+**S34 — editor tests that find planted defects.** Fixture: `alerts2-broken`
+([`../fixtures/inputs/s34/FIXTURE.md`](../fixtures/inputs/s34/FIXTURE.md)): a missing `AddConcept`, a missing
+early return, a named cell menu hiding the defaults, a Completion section without Super, a keymap on the wrong
+cell (Ctrl+Alt+Shift+Y, checker-silent), an inverted `canExecute` falling through; H is a green control. Forces
+non-vacuous tests (items before typing, two-step deletion both ways with the approved cell asserted), a red run
+before any language write, and only the right fixes. Run to verify: `mps-tests` editor-test references (items
+asserted, two-step both ways, approved cells); the menus skill `common-failures.md`, `selection-and-deletion.md`,
+`landscape.md` (Super, action-map walk, leaf-cell rule), `transformation-menus.md` §Attaching, `keymaps.md`
+(attachment). Re-exposes E1#5/#6, E3#3 on purpose. Size 30–40. Isolation: `alerts2` ids; restart before and
+after, never next to another `alerts2*` copy.
+
+**S35 — Kaja: extend corpus menus without breaking them.** Fixture: `kaja-editor`
+([`../fixtures/inputs/s35/FIXTURE.md`](../fixtures/inputs/s35/FIXTURE.md)). Forces a named `SubstituteMenu`
+reached through `IncludeSubstituteMenu` on an alias cell, `SubstituteMenuPart_IncludeMenu`, a named cell menu
+keeping the node's items, a LEFT transform also in Ctrl+Space, a context-assistant item with its test API, a
+query-driven colour, corpus editors unchanged. Run to verify: the menus skill `substitute-menus.md` (named menu
+via `include substitute menu`, `_IncludeMenu`), `transformation-menus.md` §Attaching, `side-transforms.md`
+(LEFT, M2), the context-assistant rows, `real-examples.md`; `mps-aspect-editor` `cell-models.md` (style query
+GP); `mps-tests` (assistant API); `mps-language-analysis`. Re-exposes E2#1, E1#3. Size 30–45; drop item 4.
+Isolation: Kaja ids of `kaja-dataflow*` (S13, S16): restart before and after, never together.
+
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
 after a start or restart.
@@ -516,7 +597,9 @@ skill whose **Run** column is not S1 or S3.
 |---|---|---|---|
 | `mps-language-aspects-overview` | S1 | | |
 | `mps-aspect-structure-concepts` | S1 (create concepts, enums, children, refs), S2 (add a child to an existing concept), S4 (rename, cardinality, new concept), S25 and S29 (the published directive: never tighten or delete in place), S28 (local: tighten in place, delete once empty) | | S3 only consumes the language |
-| `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model) | S25–S28 (editor switched to the replacement) | menus, keymaps, action maps — no cell |
+| `mps-aspect-editor` | S1 (an editor per concept, not a scaffold), S2 (change an existing cell model); drafts, not frozen: S30 (components, style sheet, show-if, separator, placeholder, accessor, inspector), S31 (model access, punctuation, matching label, query style), S32 (inspector), S33 (component override), S35 (query style on a corpus editor) | S25–S28 (editor switched to the replacement) | menus, keymaps, action maps: see the next row |
+| `mps-aspect-editor-menus-and-keymaps` | drafts, not frozen: S30 (substitute Action, keyword menu with Super, RIGHT wrap, paste), S31 (keymap, ReferenceScope + pattern Action, postfix hints, select-all), S32 (side transform, include + `location`, Parameterized on a property cell, keymap), S33 (contributions, `everyModel` keymap), S34 (diagnosing six planted traps), S35 (named substitute menu via an alias cell, LEFT transform, context assistant) | S26 (hiding with an empty default `SubstituteMenu`) | `CompletionStyling`, menu adapters, `CellActionMapImport` (see `../scenarios/coverage/editor.md`) |
+| `mps-aspect-actions` | drafts, not frozen: S30 (`NodeFactory` with `sampleNode` and `index`, `PasteWrapper`), S31 (`PastePostProcessor`), S33 records a cross-concept `NodeFactory` (a hand copy also passes) | | `CopyPreProcessor` (recorded only) |
 | `mps-aspect-constraints` | S1 (property validator + a scope that excludes the referrer), S2 (non-blank property rule) | | S5 repairs instances; it does not author a rule |
 | `mps-aspect-typesystem` | S1 (warning on a property value; non-typesystem checking), S11 (querying the compiled typesystem, its Common-Path step 0), S12 (authoring a subtyping rule and checking it on a scratch sandbox, steps 4 and 9) | | no cell authors inference or replacement rules; S12 authors one subtyping rule |
 | `mps-aspect-dataflow` | S13 (fixing two builders: a label position and a guard), S16 (the same with a position bug that reads as correct) | | no cell authors a builder for a new concept, a custom analyzer, or a builder mode |
@@ -534,8 +617,8 @@ skill whose **Run** column is not S1 or S3.
 | `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print) | | |
 | `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem), S11 (type questions via `mps_mcp_query_types`) | S1, S6, S7, S17 (`get_concept_details` / `shape`) | |
 | `mps-dsl-memory` | S8 | | |
-| `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap) | | completion, intentions, side transforms (no cell) |
-| `mps-run-configurations` | S7, S17, S18 | | |
+| `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap); drafts, not frozen: S30–S35 (completion items before typing, prefix via `Complete`, keystrokes, inspector, two-step both ways, Undo, context assistant, red run first in S34) | | intentions (no cell) |
+| `mps-run-configurations` | S7, S17, S18; drafts S30, S35 | | |
 | `mps-console` | S9 (read-only), S28 (writing commands that migrate values) | | evaluate before close |
 | `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S24 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
@@ -561,8 +644,7 @@ skill whose **Run** column is not S1 or S3.
 Do not run S1 as a stand-in. Say that the catalog has no cell, and add one if the change needs
 an eval ([`runbook.md`](runbook.md), "Adding a scenario").
 
-- `mps-aspect-actions`
-- `mps-aspect-editor-menus-and-keymaps` (except hiding a concept with an empty default `SubstituteMenu`: S26)
+- `mps-aspect-actions` and `mps-aspect-editor-menus-and-keymaps` have only the drafts S30–S35 (not frozen; **By skill**) and S26 (hiding a concept with an empty default `SubstituteMenu`)
 - `mps-aspect-textgen`
 - `mps-language-modularity`
 - `mps-language-inheritance` (S6 and S7 sometimes walk superconcepts because `shape` omits them; that is not a cell for this skill)
@@ -579,7 +661,7 @@ an eval ([`runbook.md`](runbook.md), "Adding a scenario").
 2. Run the **Run** cells only, on the models the user names. One model is enough to see whether
    the changed path is taken; a second model is a variance check, not a requirement.
 3. If several cells share a fixture language, restart MPS between them: S2/S8 on `statechart`,
-   and any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22 on `recipes*`, S23/S24 on `flows-gen` (S4 is in that set — it loads the same
+   and any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22 on `recipes*`, S23/S24 on `flows-gen`, S31/S33/S34 on `alerts2*`, S35 with S13/S16 on Kaja (S32 joins `recipes*`; S4 is in that set — it loads the same
    language; S15's worker rebuilds it). S11 and S12 each need a restart before them, and an MPS
    that has not loaded the Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
