@@ -25,11 +25,12 @@ The **actions** aspect customizes how new nodes of a concept are constructed by 
 
 ## Common-Path Workflow
 
+0. If the factory backs editor behaviour (completion, replacement, a menu's `add new initialized`), decide before writing it whether its `EditorTestCase` comes first: the first Critical Directive of `mps-aspect-editor-menus-and-keymaps`.
 1. Ensure an actions model exists (`<lang>/models/<lang>.actions.mps`; create with `mps_mcp_create_model`, passing `moduleName: "<lang>"` and `modelName: "<lang>.actions"` — aspect ID `actions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.actions`, `jetbrains.mps.baseLanguage`, `jetbrains.mps.lang.smodel`. Add `jetbrains.mps.lang.core` as the base. Import the structure model of your language.
 2. Create the `NodeFactories` root via `mps_mcp_insert_root_node_from_json` (blueprint in `references/json-blueprints.md`). Set `name`.
 3. For each concept that needs custom initialization, add a `NodeFactory` child via `mps_mcp_update_node`. Set `applicableConcept`; attach a `NodeSetupFunction` with a `StatementList` body.
 4. Fill the body. Typical pattern: `ifInstanceOf (sampleNode is <Concept> original) { newNode.<prop> = original.<prop>; ... }`. Cross-type narrowing is allowed — see `references/setup-function-bodies.md`.
-5. Validate with `mps_mcp_check_root_node_problems`, rebuild the language, exercise in a sandbox.
+5. Validate with `mps_mcp_check_root_node_problems`, rebuild the language, and exercise the factory through the editor: run the `EditorTestCase` from step 0 (creating the node by completion or replacement), or use a sandbox model.
 
 ## Implicit Parameters of `NodeSetupFunction`
 

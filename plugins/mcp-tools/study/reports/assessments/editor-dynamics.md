@@ -86,3 +86,14 @@ A code review of T1 found that lang.test's `has error` container is itself an `I
 ignores test-annotation suppressors (as lang.test's `TestsErrorsChecker` does) and keeps problems in stub models
 and on detached nodes (as `SuppressErrorsChecker` does). Gate: `McpToolsIntegrationTestSuite` 1447 passed plus the
 skills suite re-run green after propagation.
+
+## Test-first decision rule (follow-up)
+
+An analysis of all runs (`~/MPSProjects/mcp-study/adhoc-study/notes/editor-test-usage.md`) found that workers used
+editor tests as validation only when the prompt demanded test-first work; unprompted (E2N-1) they wrote tests after
+the implementation that never ran red, and the archived S1/S2 runs wrote none. The menus skill now opens with a
+decision directive (test-first when the behaviour is non-trivial or loosely described; skip for trivial changes or
+when the project or the user forbids editor tests, then check otherwise and say so). Confirmation: as a workflow
+step it was read but ignored twice (E2N-2, E2N-3: tests after the code, still catching bugs); as the first Critical
+Directive the worker stated "write EditorTestCases first — the behaviours are non-trivial", ran 12 tests red for
+the right reason, then implemented (E2N-4, 129 calls, $7.72). A trivial wording change (TRIV-1) wrote no tests.

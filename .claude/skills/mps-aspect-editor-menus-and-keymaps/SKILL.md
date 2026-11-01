@@ -15,6 +15,7 @@ This skill covers how the editor reacts to typing, keystrokes, completion, paste
 
 ## Critical Directives
 
+- **Decide whether to write the `EditorTestCase`s first** (`mps-tests`), and state the decision and its reason in one line before your first edit (it applies to every behaviour in this skill). It pays off when the behaviour is non-trivial (menus, side transforms, keys, deletion, paste, several interacting items) or only loosely described: a test fixes the description as an exact `before`/`result` tree and caret, and a run that fails before the change, for the reason you expect, is what makes the later green run evidence. Skip it for a trivial change (a label, a style, one obvious item) or when the project setup or the user forbids editor tests; then print the changed roots as PLAIN TEXT, run `mps_mcp_check_root_node_problems`, and say in your report that the behaviour was not exercised in an editor.
 - **Pick the artefact by the behaviour.** Change what `Delete` does → action map. A new shortcut → keymap. Text typed next to a cell → side transform. What Ctrl+Space offers for a slot → substitute menu. A pasted node must change concept → paste wrapper. Table: `references/landscape.md`.
 - **Nothing is found by name.** A `TransformationMenu` / `SubstituteMenu` whose `type` is `MenuTypeDefault` is the default for its `conceptDeclaration`. Named menus, action maps and keymaps act only where a cell references them (`transformationMenu` child, `actionMap` / `keyMap` references) or a menu includes them. The one exception is `everyModel=true` keymaps.
 - **Author menus as `TransformationMenu` / `SubstituteMenu` with a `type` child**: `MenuTypeDefault`, or `MenuTypeNamed` whose `name` property holds the menu name (a root `name` is dropped). `TransformationMenu_Default`/`_Named`, `SubstituteMenu_Default`/`_Named` and `IMenu_Default`/`_Named` are deprecated: never author them.
@@ -31,11 +32,12 @@ This skill covers how the editor reacts to typing, keystrokes, completion, paste
 
 ## Common-Path Workflow
 
+0. Make the test-first decision of the first Critical Directive and state it.
 1. Pick the artefact and the cell it hangs on (`references/landscape.md`).
 2. Copy the blueprint (`references/json-blueprints.md`), or the shape of a corpus root, and insert it with `mps_mcp_insert_root_node_from_json`.
 3. Wire it: set the cell's `transformationMenu` / `actionMap` / `keyMap`, and give the cells you select or approve an `id`.
 4. Write the bodies; end them with a `select` (`references/selection-and-deletion.md`).
-5. Check, make, and drive it with an `EditorTestCase` (`mps-tests`): typing, Ctrl+Space, Delete, paste.
+5. Check, make, and run the tests you decided on (or the check you chose instead); when a test fails, decide whether the editor or the test is wrong before changing either.
 
 ## Which Menu Fires Where
 
