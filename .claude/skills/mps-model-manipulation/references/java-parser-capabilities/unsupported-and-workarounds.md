@@ -31,7 +31,7 @@ The Java parser produces correct MPS types in most positions, but fails for
 |---|---|---|---|
 | Method **return type** | `sequence<node<Type>>` | `ClassifierType(List<SNode>)` — **wrong** | Replace `returnType` child after parsing |
 | Method **return type** | `list<node<Type>>` | `ClassifierType(List<SNode>)` — **wrong** | Same |
-| Method parameter type | `node<CatchClause>` | `ClassifierType(SNode)` — Java type | Fine for most purposes; replace if MPS type checking fails |
+| Method parameter type | `node<CatchClause>` | `ClassifierType(SNode)` — Java type | Any smodel operation on it (`isInstanceOf`, `.name`, `.ancestor`, …) fails with `operation is not applicable to SNode`; the same holds for parsed locals and loop variables (`for (SNode n : …)`). Replace the `type` child with `SNodeType` (`node<>`) or `SNodeType{concept}` via `SET CHILD` |
 
 For local variable types and `new` expressions, don't use the Java parser —
 construct nodes directly using the blueprints in this file and `references/variable-declarations.md`.

@@ -1,172 +1,98 @@
 # Transformation Menus
 
-A transformation menu is a single declarative structure that feeds **four editor surfaces** at once:
+One menu feeds several editor surfaces, one per section location:
 
 | Section location concept | Surface |
 |---|---|
-| `TransformationLocation_Completion` | Completion popup (Ctrl+Space, typing a substring) |
-| `TransformationLocation_ContextAssistant` | Context Assistant (the floating action strip) |
-| `TransformationLocation_ContextActionsTool` | Context Actions Tool window |
-| `TransformationLocation_SideTransform` | Left/Right side transforms — characters typed adjacent to a cell |
+| `TransformationLocation_Completion` | Ctrl+Space / typing on an existing node's cell (runtime location `SUBSTITUTE`) |
+| `TransformationLocation_SideTransform` | Text typed at the LEFT/RIGHT edge of a cell (`references/side-transforms.md`) |
+| `TransformationLocation_ContextAssistant` | Context Assistant. Shown only if the editor of the selected node or an ancestor contains a `CellModel_ContextAssistant` cell (Kaja `EmptyLine`, MPS sources only) |
+| `jetbrains.mps.editor.contextActionsTool.lang.menus.structure.TransformationLocation_ContextActionsTool` | Context Actions tool window |
 
-The abstract root is `TransformationMenu`; the two concrete subtypes currently in use are `TransformationMenu_Default` and `TransformationMenu_Named` (deprecation note: they will be unified into `TransformationMenuImpl`). Default menus follow `<Concept>_TransformationMenu` naming. MPS discovers a default menu by walking the super-concept chain up to `BaseConcept_TransformationMenu`, which contains an `include substitute menu` for the current link — that is why defining just a **substitute menu** is usually enough to get completion.
+Which menu a cell consults, and how default menus inherit per location: `references/landscape.md`.
 
-## Root-Level Fields (Inherited from Interfaces)
+## Root
 
-`TransformationMenu` implements two interfaces that contribute its roles:
+`TransformationMenu` is concrete and rootable. `conceptDeclaration` (ref, 1) names the concept. `type` (child) is `MenuTypeDefault` or `MenuTypeNamed` with property `name`, which is where a named menu's name goes (a root-level `name` is computed and dropped on insert). Other roles: `sections` (0..n `TransformationMenuSection`) and `methodDeclaration` (helper methods).
 
-- `IMenu_Concept` contributes `conceptDeclaration` (ref, 1) → the attached concept (older docs sometimes call this `applicableConcept`; the actual role name is `conceptDeclaration`) — plus an optional `type` child of `MenuType`.
-- `ITransformationMenu` contributes `sections` (child, 0..n) → `TransformationMenuSection` and `methodDeclaration` (child, 0..n) — private helper methods callable from menu parts.
+```json
+{"concept": "jetbrains.mps.lang.editor.structure.TransformationMenu",
+ "references": [{"role": "conceptDeclaration", "target": "<concept ref>"}],
+ "children": [
+  {"role": "type", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.MenuTypeDefault"}]},
+  {"role": "sections", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.TransformationMenuSection",
+    "children": [
+     {"role": "locations", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.TransformationLocation_Completion"}]},
+     {"role": "parts", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Super"}]}]}]}]}
+```
 
-`TransformationMenu_Default` adds `IMenu_Default`; `TransformationMenu_Named` adds `IMenu_Named` (which supplies the explicit `name` used to reference it).
+Named variant: `{"concept": "jetbrains.mps.lang.editor.structure.MenuTypeNamed", "properties": [{"name": "name", "value": "myMenu"}]}` as the `type`.
 
 ## Sections
 
-Each `TransformationMenuSection` has:
+`TransformationMenuSection`: `locations` (1..n) and `parts` (0..n). A section with several locations serves all of them. The side-transform location holds `placeInCell` (1..n) of `TransformationLocation_SideTransform_PlaceInCellHolder` with property `placeInCell` = `LEFT` | `RIGHT`, so one location can cover both edges (`{ side transform : left, right }`).
 
-- `locations` (child, 1..n) — one or more of `TransformationLocation_Completion`, `TransformationLocation_ContextActionsTool`, `TransformationLocation_ContextAssistant`, `TransformationLocation_SideTransform` (the side-transform location additionally has a `place` property holding a `TransformationLocation_SideTransform_PlaceInCell`).
-- `parts` (child, 0..n) — the menu parts that run in this section.
+## Parts (`jetbrains.mps.lang.editor.structure`)
 
-A section with multiple locations applies its parts in every listed location — handy for contributing the same items to completion **and** the context assistant.
+| Part | Printed as | Purpose |
+|---|---|---|
+| `TransformationMenuPart_Action` | `action` | One item: text, optional guard, execute |
+| `TransformationMenuPart_Group` | `group` | `variables`, `condition`, `parts` |
+| `TransformationMenuPart_Super` | `superconcepts menu` | The default menus of the direct super-concepts for this location |
+| `TransformationMenuPart_IncludeMenu` | `include named menu X for current node` | Another transformation menu, see below |
+| `TransformationMenuPart_IncludeSubstituteMenu` | `include substitute menu` | A substitute menu (`menuReference` `ISubstituteMenuReference`, optional `link` ref) |
+| `TransformationMenuPart_WrapSubstituteMenu` | `wrap substitute menu` | Substitute items plus a handler on the created node (`references/side-transforms.md`) |
+| `TransformationMenuPart_SubMenu` | | Nested menu: `textFunction` + `items` |
+| `TransformationMenuPart_Parameterized` | | One item per query result |
+| `TransformationMenuPart_PropertyMenu` / `_ReferenceMenu` | | Property values / reference scope of a named feature |
+| `TransformationMenuPart_Placeholder` | | Extension point for contributions |
 
-## Menu Parts (all under `jetbrains.mps.lang.editor.structure`)
+Adapters from `jetbrains.mps.lang.editor.menus.extras`: `intention`, `refactoring`, `plugin Action`.
 
-| Part concept | Purpose |
-|---|---|
-| `TransformationMenuPart_Action` | A single action — text, optional description, optional can-execute guard, execute function |
-| `TransformationMenuPart_Group` | A named group of parts with shared variables and an optional condition |
-| `TransformationMenuPart_Super` | Include the default menus of all super-concepts (not included by default) |
-| `TransformationMenuPart_IncludeMenu` | Include another (default or named) transformation menu |
-| `TransformationMenuPart_IncludeSubstituteMenu` | Include a default or named substitute menu as part of this menu |
-| `TransformationMenuPart_SubMenu` | Nested menu |
-| `TransformationMenuPart_Parameterized` | One action generated per element of a query result |
-| `TransformationMenuPart_WrapSubstituteMenu` | Wrap items from a substitute menu with a handler (e.g. to mutate the inserted node) |
-| `TransformationMenuPart_PropertyMenu` | Delegate to the property-value menu of a named property |
-| `TransformationMenuPart_ReferenceMenu` | Delegate to a reference-scope menu for a named link |
-| `TransformationMenuPart_Placeholder` | Named extension point — contributions from other languages attach here |
+### `include menu`
 
-## Adapter Parts (from `jetbrains.mps.lang.editor.menus.extras`)
+`TransformationMenuPart_IncludeMenu` roles: `menuReference` (0..1, `TransformationMenuReference_Named{menu}` or `TransformationMenuReference_Default{concept}`), `nodeFunction` (0..1, `QueryFunction_TransformationMenu_TargetNode`, the node the included menu works on, default the current node), `location` (0..1, a `TransformationLocation`). Without `location` the included menu is queried at the current location, so including a side-transform menu from a Completion section adds nothing. Set `location` to the side-transform location to reuse those items in completion.
 
-Expose existing MPS infrastructure as transformation-menu items:
+## `TransformationMenuPart_Action`
 
-- `intention` — wrap a `BaseIntentionDeclaration` subconcept so the intention appears in the menu.
-- `refactoring` — wrap a `Refactoring` from `jetbrains.mps.lang.refactoring`.
-- `plugin Action` — wrap an `ActionDeclaration` from `jetbrains.mps.lang.plugin`.
-
-## `TransformationMenuPart_Action` Structure
-
-`TransformationMenuPart_Action` extends `AbstractOutputConceptContainerTransformationMenuPart` (so it has an `outputConceptReference` child (0..1) — an `OptionalConceptReference` whose `concept` reference names the produced concept, for completion filtering) and implements `IParameterizableMenuPart` and `IExtensibleTransformationMenuPart` (so it can carry `features`). Its roles:
-
-- `textFunction` (child, 1) of `QueryFunction_TransformationMenu_ActionLabelText` — returns the label/matching text (string).
-- `canExecuteFunction` (child, 0..1) of `QueryFunction_TransformationMenu_Condition` — boolean guard.
-- `executeFunction` (child, 1) of `QueryFunction_TransformationMenu_Execute` — the void action body.
-- `features` (child, 0..n) of `TransformationFeature` (from `IExtensibleTransformationMenuPart`) — e.g. `TransformationFeature_DescriptionText`, `TransformationFeature_Icon`, `TransformationFeature_ActionType`. **This is how description text is attached — not via a direct role.**
+Roles: `textFunction` (1, `QueryFunction_TransformationMenu_ActionLabelText`, returns the label and matching text), `canExecuteFunction` (0..1, `QueryFunction_TransformationMenu_Condition`), `executeFunction` (1, `QueryFunction_TransformationMenu_Execute`), `outputConceptReference` (0..1, `OptionalConceptReference{concept}`), `features` (0..n: `TransformationFeature_DescriptionText` / `_Icon` / `_ActionType`). It has no pattern guard: matching is on the text alone (`references/side-transforms.md` §"When typing applies an item").
 
 ```json
-{
-  "concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Action",
-  "children": [
-    {
-      "role": "outputConceptReference",
-      "nodes": [{
-        "concept": "jetbrains.mps.lang.editor.structure.OptionalConceptReference",
-        "references": [
-          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.PlusExpression" }
-        ]
-      }]
-    },
-    {
-      "role": "textFunction",
-      "nodes": [{
-        "concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_ActionLabelText",
-        "children": [{ "role": "body", "nodes": [ /* BaseLanguage: return "+"; */ ] }]
-      }]
-    },
-    {
-      "role": "executeFunction",
-      "nodes": [{
-        "concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_Execute",
-        "children": [{ "role": "body", "nodes": [ /* node.replace with(...); */ ] }]
-      }]
-    },
-    {
-      "role": "features",
-      "nodes": [
-        {
-          "concept": "jetbrains.mps.lang.editor.structure.TransformationFeature_DescriptionText",
-          "children": [{
-            "role": "query",
-            "nodes": [{
-              "concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_DescriptionText",
-              "children": [{ "role": "body", "nodes": [ /* return "plus expression"; */ ] }]
-            }]
-          }]
-        }
-      ]
-    }
-  ]
-}
+{"concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Action",
+ "children": [
+  {"role": "textFunction", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_ActionLabelText",
+    "children": [{"role": "body", "nodes": [ /* return "final"; */ ]}]}]},
+  {"role": "canExecuteFunction", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_Condition",
+    "children": [{"role": "body", "nodes": [ /* return !node.isFinal; */ ]}]}]},
+  {"role": "executeFunction", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_Execute",
+    "children": [{"role": "body", "nodes": [ /* node.isFinal.set(true); node.select[...]; */ ]}]}]},
+  {"role": "features", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.TransformationFeature_DescriptionText",
+    "children": [{"role": "query", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_DescriptionText",
+      "children": [{"role": "body", "nodes": [ /* return "make final"; */ ]}]}]}]}]}]}
 ```
 
-Implicit parameters in action-part function bodies: `node`, `editorContext`, `model`, `scope`, `operationContext` (availability depends on the function kind and the enclosing group's variables).
+Function parameters: `node` is `QueryFunctionParameter_TransformationMenu_node`, `editorContext` is `jetbrains.mps.lang.editor.structure.ConceptFunctionParameter_editorContext`; `pattern` is `QueryFunctionParameter_pattern`; also `model`, and in wrap handlers `createdNode` (`QueryFunctionParameter_TransformationMenu_CreatedNode`) and `targetNode` (`QueryFunctionParameter_TransformationMenu_targetNode`). Use `new initialized` / `replace with new initialized` when node factories must run (`mps-aspect-actions`); it also fills empty required children, so use plain `new` when the slots should stay empty.
 
-## Groups and Variables
+## Groups and variables
 
-`TransformationMenuPart_Group` defines:
+`TransformationMenuPart_Group`: `variables` are computed **before** `condition` is evaluated. If a variable may fail when the condition is false, nest a second group: the outer group's condition guards the inner group's variables.
 
-- `variables` (child, 0..n) — computed **eagerly before** the condition is evaluated.
-- `condition` (child, 0..1) — boolean function gating all parts.
-- `parts` (child, 0..n) — grouped parts; each sees the group's variables.
+## Parameterized parts
 
-> If you want the condition to **gate variable computation** (because a variable might be null), wrap the group in another group whose condition guards evaluation. The inner group's variables will only be computed when the outer group's condition is true.
-
-## Parameterised Parts
-
-`TransformationMenuPart_Parameterized` generates one item per element returned by a query. Fields:
-
-1. `parameterType` (child, 1) — the parameter object's BaseLanguage `Type` (e.g. `StringType`, or an smodel `SNodeType` with a `concept` reference for nodes).
-2. `parameterQuery` returning `list<ParamType>` given `(node, editorContext, ...)`.
-3. an inner part (usually a `TransformationMenuPart_Action`) whose functions additionally see `parameterObject` bound to the current element.
+`TransformationMenuPart_Parameterized`: `parameterType` (BaseLanguage type, e.g. `SNodeType{concept}`), `parameterQuery` (`QueryFunction_TransformationMenu_Parameter`, returns a list), `part` (usually an `Action`, whose functions also see `parameterObject`).
 
 ```json
-{
-  "concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Parameterized",
-  "children": [
-    {
-      "role": "parameterType",
-      "nodes": [{
-        "concept": "jetbrains.mps.lang.smodel.structure.SNodeType",
-        "references": [
-          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.VariableDeclaration" }
-        ]
-      }]
-    },
-    {
-      "role": "parameterQuery",
-      "nodes": [{
-        "concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_Parameter",
-        "children": [{ "role": "body", "nodes": [ /* return node.ancestor<...>.descendants<VariableDeclaration>; */ ] }]
-      }]
-    },
-    {
-      "role": "part",
-      "nodes": [{
-        "concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Action",
-        "children": [ /* textFunction / executeFunction reference parameterObject */ ]
-      }]
-    }
-  ]
-}
+{"concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Parameterized", "children": [
+  {"role": "parameterType", "nodes": [{"concept": "jetbrains.mps.lang.smodel.structure.SNodeType", "references": [{"role": "concept", "target": "<C>"}]}]},
+  {"role": "parameterQuery", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.QueryFunction_TransformationMenu_Parameter",
+    "children": [{"role": "body", "nodes": [ /* return list */ ]}]}]},
+  {"role": "part", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.TransformationMenuPart_Action", "children": [ /* text/execute use parameterObject */ ]}]}]}
 ```
 
 ## Contributions
 
-`TransformationMenuContribution` must be defined **in a language different from the one that owns the menu being contributed to** — this is how one language extends another's menu without editing it. Fields:
+`TransformationMenuContribution` (in another language than the menu, as the MPS help prescribes; the checker itself only enforces that a default menu lives in its concept's language): `menuReference` (1) to the extended menu (`TransformationMenuReference_Default{concept}` or `_Named{menu}`), plus `sections`.
 
-- `name` — contribution name.
-- `menuReference` (child, 1) of `ITransformationMenuReference` — points at the menu being extended. Use `TransformationMenuReference_Named` (role `menu` → the named menu) or `TransformationMenuReference_Default` (role `concept` → the concept whose default menu you target).
-- plus `sections` and `methodDeclaration` (inherited from `ITransformationMenu`) — the sections added to the target menu.
+## Attaching to a cell
 
-## Cell-Level Attachment
-
-A cell may reference its own `menu` (legacy) and `transformationMenu`. When both are specified MPS **combines** the applicable entries — it does not override. Some legacy cell-menu parts still have no transformation-menu equivalent, so combining is intentional.
+On any cell model, set `transformationMenu` to `{"concept": "jetbrains.mps.lang.editor.structure.TransformationMenuReference_Named", "references": [{"role": "menu", "target": "<TransformationMenu ref>"}]}`. The cell then uses that menu for the locations it covers and the default menu for the rest. For the covered locations the node's default menu is gone on that cell (a `superconcepts menu` does not bring it back), so add `include menu` with `TransformationMenuReference_Default{<concept>}` to keep it: BL's named `SwitchStatement_ApplySideTransforms` starts with `include default menu for current node`. A legacy `menuDescriptor` on the same cell is combined with it.

@@ -4,14 +4,14 @@
 
 ## Root Fields
 
-- `applicableConcept` (ref, 1) — concept the keymap attaches to.
-- `everyModel` (property, boolean) — `true` means the keymap applies to cells in **every** model of every language that has the applicable concept on its classpath (used by `BaseLanguage` for universal shortcuts). Default `false`.
+- `applicableConcept` (ref, 0..1) — concept the keymap attaches to.
+- `everyModel` (property, boolean) — `true` makes the keymap active in every editor of a model that uses this language (or a language extending it), without any cell referencing it. Default `false`.
 - `item` (child, 0..n) — the keymap items.
 
 ## `CellKeyMapItem`
 
 - `keystroke` (child, 1..n) of concept `CellKeyMapKeystroke` — properties `keycode` (string, e.g. `VK_DELETE`, `VK_ENTER`, `VK_SPACE`, `VK_A`) and `modifiers` (string).
-- `executeFunction` (child, 1) of concept `CellKeyMap_ExecuteFunction` — the void function to run. Implicit params: `node`, `editorContext` (and the key event via `keyEvent` in the body helpers).
+- `executeFunction` (child, 1) of concept `CellKeyMap_ExecuteFunction` — the void function to run. Implicit params: `node` (`CellKeyMap_FunctionParm_selectedNode`; `selectedNodes` for a multi-selection) and `editorContext`.
 - `isApplicableFunction` (child, 0..1) of concept `CellKeyMap_IsApplicableFunction` — optional boolean gate.
 - `description` (property, string) — surfaced in the action editor / help.
 - `caretPolicy` (property, enum `CellKeyMapCaretPolicy`): `FIRST_POSITION`, `LAST_POSITION`, `INTERMEDIATE_POSITION`, `ANY_POSITION` (default).
@@ -46,7 +46,7 @@
             "concept": "jetbrains.mps.lang.editor.structure.CellKeyMapKeystroke",
             "properties": [
               { "name": "keycode",   "value": "VK_T" },
-              { "name": "modifiers", "value": "ctrl alt" }
+              { "name": "modifiers", "value": "ctrl+alt" }
             ]
           }]
         },
@@ -68,12 +68,15 @@
 
 ## `modifiers` String
 
-Space-separated tokens: `ctrl`, `alt`, `shift`, `meta`. Order does not matter; empty string = no modifier.
+`CellKeyMapKeystroke.modifiers` is exactly one of `none`, `any`, `ctrl`, `alt`, `shift`, `ctrl+alt`, `ctrl+shift`, `ctrl+alt+shift`, `alt+shift`, compared verbatim with the event (no `meta`, no spaces, fixed order; anything else is the check error `Invalide keymap modifiers`). `ctrl` is the Control key on macOS too. The lang.plugin `KeyMapKeystroke` (test `press`, IDE keymaps) is a different concept that accepts `ctrl shift` or `ctrl+shift`.
+
+## IDE shortcuts win
+
+IntelliJ actions see a key before the editor component. An enabled IDE action on the same chord (MPS `$default`: `ENTER` Insert, `ctrl shift UP/DOWN` Move Elements, …) consumes it and the cell keymap never runs, although an editor test's `press` passes. Pick a free chord or change the IDE binding (`KeymapChangesDeclaration`, `mps-ide-plugin`). On macOS the `$default` chords use Cmd, so a `ctrl` keymap item may clash only on Windows/Linux: test there, or pick a chord that is free in both.
 
 ## Keymap Placement
 
-- Root-level `CellKeyMapDeclaration` named `<Concept>_KeyMap` attaches to the concept editor automatically.
-- For a keymap that should apply only at one cell, reference it from that cell's `keyMap` link rather than naming it after a concept.
+A keymap fires only from a cell whose `keyMap` reference names it (or from any descendant cell of that cell), or everywhere when `everyModel=true`. The root name is free. An `everyModel=true` keymap that no cell references still gets the warning "Unused key map": `check_CellKeyMapDeclarationUsed` only looks for a referencing cell in the same model and ignores `everyModel`. That warning is a false positive; leave it. Lookup: `references/landscape.md`.
 
 ## `caretPolicy` Semantics
 

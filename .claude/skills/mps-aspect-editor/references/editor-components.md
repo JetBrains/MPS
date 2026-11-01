@@ -15,6 +15,8 @@ A component bound (via `conceptDeclaration`) to a concept `C` can be reused from
 
 > Example: a component bound to `AbstractCommand` (the super-concept) is reusable in the editors of `Step` and `LeftTurn` (its sub-concepts).
 
+**Overriding an inherited component.** To change what an inherited component shows for a sub-concept, possibly from an extending language, declare a component for that sub-concept with `overridenEditorComponent` (sic) → `EditorComponentDeclarationReference{editorComponent}` naming the original. Every `CellModel_Component` that uses the original then renders the override on nodes of the sub-concept. BL `ClassifierMembersAdvanced_Component` (concept `ClassConcept`) overrides `ClassifierMembers_Component`.
+
 ## Manual Path (JSON blueprints)
 
 ### 1. Create the component (root node)

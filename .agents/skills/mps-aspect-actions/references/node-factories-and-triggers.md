@@ -23,6 +23,8 @@ One `NodeFactories` root holds every `NodeFactory` in the language. You do not c
 
 Multiple `NodeFactory` children for the *same* `applicableConcept` are not merged — keep one per concept.
 
+**Placeholders after the factories.** Right after the factories run, `NodeFactoryManager.createNodeStructure` fills every required child that is *still empty* with its `defaultConcreteConcept`, or else with the (possibly abstract) target concept. So a factory that sets the child itself prevents the placeholder, but a factory cannot leave a required child empty, and it cannot change the concept of the node being created (Enter in a list creates `defaultConcreteConcept`, else the link target). BL keeps such abstract placeholders (`Expression` shows `<role>`): treat them as normal, do not strip them with wrapper menus, and write them into expected test trees.
+
 ## `NodeSetupFunction` — the body
 
 - FQN: `jetbrains.mps.lang.actions.structure.NodeSetupFunction`
@@ -40,7 +42,7 @@ The setup function fires *before* `newNode` is inserted into the model. This mea
 
 | Trigger | Notes |
 |---|---|
-| Code completion menu — substitution / replacement | User selects a concept from the completion menu; the factory for that concept fires |
+| Code completion menu — substitution / replacement | User selects a concept from the completion menu (or a wrapped substitute menu); the factory fires with the replaced node as `sampleNode`, e.g. to keep the operands when `+` becomes `-` (recipe: `references/substitute-menus.md` in the `mps-aspect-editor-menus-and-keymaps` skill root after loading that companion skill from the same origin) |
 | `add new initialized(...)` | From `jetbrains.mps.lang.smodel` / `jetbrains.mps.lang.actions`; fires the factory then inserts |
 | `set new initialized(...)` | Replaces an existing child with a new instance; factory fires first |
 | `replace new initialized(...)` | Variant for in-place replacement in a list; factory fires first |

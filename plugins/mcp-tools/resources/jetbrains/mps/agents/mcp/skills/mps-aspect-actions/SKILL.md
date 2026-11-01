@@ -38,8 +38,8 @@ The **actions** aspect customizes how new nodes of a concept are constructed by 
 | `newNode` | `jetbrains.mps.lang.actions.structure.NodeSetupFunction_NewNode` | `node<applicableConcept>` | no | The freshly created empty node. Populate it. |
 | `sampleNode` | `jetbrains.mps.lang.actions.structure.NodeSetupFunction_SampleNode` | `node<BaseConcept>` | yes | Node being replaced, if any. Narrow with `ifInstanceOf`. |
 | `enclosingNode` | `jetbrains.mps.lang.actions.structure.NodeSetupFunction_EnclosingNode` | `node<BaseConcept>` | yes | Prospective parent container; null during root-node creation or programmatic creation outside the editor. |
-| `index` | `jetbrains.mps.lang.actions.structure.NodeSetupFunction_Index` | `int` | — | 0-based position in the parent collection, or 0 if not in a collection. |
-| `model` | (plain VariableReference in generated Java) | `SModel` | yes | The `SModel` `newNode` will be inserted into. Most factories don't use this. |
+| `index` | `jetbrains.mps.lang.editor.structure.ConceptFunctionParameter_index` (lang.actions' own `NodeSetupFunction_Index` is rejected as "not applicable in this context") | `int` | — | 0-based position in the parent collection, or 0 if not in a collection. |
+| `model` | `jetbrains.mps.lang.sharedConcepts.structure.ConceptFunctionParameter_model` | `SModel` | yes | The `SModel` `newNode` will be inserted into. Most factories don't use this. |
 
 Signature surfaced in the editor: `(newNode, sampleNode, enclosingNode, index, model) -> void`.
 
