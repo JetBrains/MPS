@@ -10,7 +10,7 @@
 
 ## `CellKeyMapItem`
 
-- `keystroke` (child, 1..n) of concept `CellKeyMapKeystroke` — properties `keycode` (string, e.g. `VK_DELETE`, `VK_ENTER`, `VK_SPACE`, `VK_A`) and `modifiers` (string).
+- `keystroke` (child, 1..n) of concept `CellKeyMapKeystroke` — properties `keycode` (string) and `modifiers` (string). `keycode` is a `VK_` constant (`VK_DELETE`, `VK_ENTER`, `VK_A`: the key press, which a test drives with `press`), one character such as `+` (the typed character, driven with `type "+"`), or a class (`digit`, `letter`, `letter or digit`, `space char`, `non-space char`). Bind a printable symbol as a character, which does not depend on the keyboard layout; a character binding fires only without ctrl/alt (shift is fine), so a ctrl/alt chord needs a `VK_` code.
 - `executeFunction` (child, 1) of concept `CellKeyMap_ExecuteFunction` — the void function to run. Implicit params: `node` (`CellKeyMap_FunctionParm_selectedNode`; `selectedNodes` for a multi-selection) and `editorContext`.
 - `isApplicableFunction` (child, 0..1) of concept `CellKeyMap_IsApplicableFunction` — optional boolean gate.
 - `description` (property, string) — surfaced in the action editor / help.

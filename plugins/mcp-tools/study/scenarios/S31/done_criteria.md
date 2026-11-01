@@ -1,5 +1,5 @@
 # S31 done criteria — Alerts: model access, matching parens, shared name component, shortcut, channel menus, paste rename
-Status: drafted 2026-11-01 (rev. 3); rev 4, pre-rehearsal audit (idiom gates matched to the prompt, caret/pattern wording, ET_test_runs band); rehearsal 1 (opus) PASS → rev 5 wording (C1, C5, C6, C7, C9); prompt not frozen. Shared definitions: ../coverage/editor-shared-criteria.md.
+Status: drafted 2026-11-01 (rev. 3); rev 4, pre-rehearsal audit (idiom gates matched to the prompt, caret/pattern wording, ET_test_runs band); rehearsal 1 (opus) PASS → rev 5 wording (C1, C5, C6, C7, C9); sonnet rehearsal 1 FAIL on C6's untested channel case → prompt item 9 asks for it (rev 6); sonnet rehearsal 2 FAIL on C6's apply step → prompt item 9 asks for it, C5 cell name, C8 `<name>2` (rev 7); sonnet rehearsal 3 PASS on rev 7, item 3 left untested to fit sixteen → prompt item 9 lists the eleven new tests, seventeen in all, C3 test clause, C2 pair test accepted, C6 Enter on the open list (rev 8); sonnet rehearsal 4 PASS on rev 8; frozen 2026-11-01; prompt frozen 2026-11-01. Shared definitions: ../coverage/editor-shared-criteria.md.
 Fixture: alerts2 (pins in ../../fixtures/inputs/s31/FIXTURE.md). The worker edits mcp.study.alerts and its test model.
 Topics forced: ModelAccess; Punctuation + MatchingLabel; interface-bound component; query-driven style; keymap
 (exact modifiers, attachment); ReferenceScope + pattern Action (strictly); postfix hints (F*); select_all with a
@@ -9,12 +9,13 @@ node range; PastePostProcessor; shipped tests maintained.
    CellModel_Property fails (an integer property cannot show "2h"). Tests over a before
    selection: "3h" -> 180; "3x" -> unchanged. T2 (pinned) updated, not deleted.
 2. Parens: "(" PunctuationRight, ")" PunctuationLeft (flag true; another spacing style item that removes the gap is
-   accepted, recorded), both MatchingLabelStyleClassItem with one labelName (the only pair-highlight mechanism); T3 updated to "(disk < 10)"; a text test exists (the highlight is untestable).
+   accepted, recorded), both MatchingLabelStyleClassItem with one labelName (the only pair-highlight mechanism); T3 updated to "(disk < 10)"; item 2 has its own new test besides T3: a text test, or a pair test via `BracesFinder.findBracesToHighlight` (editor runtime, headless; accepted, recorded).
 3. Names and red: one EditorComponentDeclaration bound to INamedConcept (an added language interface or abstract
    superconcept accepted; record) with the name cell styled Keyword; Channel_Editor, Threshold_Editor,
    AlertHeader embed it, no own name cell; ids mutedKeyword, alertKeyword, severityClose, notifyKeyword survive.
    Severity: a colour item with a query or ApplyStyleClass + ApplyStyleClassCondition on critical (F*: two severity cells
-   under renderingConditions, one red, are accepted, recorded); red on every severity fails.
+   under renderingConditions, one red, are accepted, recorded); red on every severity fails. Test: the severity cell's
+   `StyleAttributes.TEXT_COLOR` is red for a `critical` alert (e.g. `MPSColors.red`) and not red for another severity.
 4. Shortcut (F*): CellKeyMapDeclaration on Alert, VK_K, modifiers exactly "ctrl+alt+shift", keyMap on the alert's outer
    or header cell (or everyModel + isApplicableFunction limited to alerts), any passing caretPolicy; a plugin
    ActionDeclaration bound by KeymapChanges is accepted if its press test passes (record); inserts a copy
@@ -26,15 +27,15 @@ node range; PastePostProcessor; shipped tests maintained.
    channel's address; handler appends a Channel named pattern, returns a ChannelRef. Recorded, not gated:
    whether _CanSubstitute is also false for an empty pattern (at Complete time on an empty slot the pattern is
    empty, and an empty pattern matches any text, so without the guard the menu shows an empty item). Test:
-   Complete on empty_notify (empty pattern: the list opens), items asserted (or asserted through getSubstituteInfo()
+   Complete on the unset reference's empty cell (`empty_channel`; empty pattern: the list opens), items asserted (or asserted through getSubstituteInfo()
    without a prior Complete, optionally with a test-side prefix filter on getMatchingActions), type a new name that no channel
-   prefix-matches, Complete (the single match applies; + Enter if a menu opens), result a new
+   prefix-matches, Complete (the single match applies; + Enter if a menu opens; or type into the open menu, then Enter), result a new
    last channel and a resolved reference, caret on its address. A fixed matching text fails (it vanishes once a
    name is typed).
 6. Postfix hints: CellMenuPart_PropertyPostfixHints in the name cell's menuDescriptor returning Limit/Warn for
    Threshold and empty for Channel/Alert when the cell is shared (accepted), OR a transformation-menu action with
    the same items (F*, recorded). Test: the before holds or types "cpu", caret at the end (pattern "cpu"), Complete, items
-   contain cpuLimit and cpuWarn, a prefix of either ending typed, Enter -> cpuLimit (the model's postfixes may be lower
+   contain cpuLimit and cpuWarn, then a prefix typed + Enter, or Enter on the open list, -> cpuLimit (menu order is not gated, so the prefix form is the robust one) (the model's postfixes may be lower
    case, "limit"; the items read cpuLimit); on a channel name the postfixes are not offered.
 7. Select-all: select_all_action_id in a map reached from the reference cell (actionMap or elementActionMap)
    selecting node.parent.notify as a node range; a Ctrl+A keymap fails (the prompt asks for the user's Select All key); test: invoke action -> SelectAll, result with
@@ -42,9 +43,10 @@ node range; PastePostProcessor; shipped tests maintained.
    dependency on MPS.Editor and the editor model's jetbrains.mps.openapi.editor stub import (no lang.editor DSL for a
    node range).
 8. Paste rename (F*): a PastePostProcessor on Threshold (exact concept), or another paste-time hook that sees the
-   target book (record); a CopyPreProcessor cannot see the target book and fails. Test (Same-root): $Copy of a whole threshold, End, $Paste, result second threshold "cpuLimit2".
+   target book (record); a CopyPreProcessor cannot see the target book and fails. Test (Same-root): $Copy of a whole threshold, End, $Paste, result second threshold "<name>2" (e.g. "cpuLimit2").
 9. Shipped: T1, T4, T5, T6 unchanged in content (except a caret `cellId` that the shared name component legitimately renames, e.g. T1's `property_name`); T2, T3 as above (T2's caret cellId, its selection and its typed text may change with the window cell; a
-   validator that requires the unit is the robust design, since the cell commits per keystroke). Clean / Green (16) / Deprecated / Same-root.
+   validator that requires the unit is the robust design, since the cell commits per keystroke). Clean / Green (17) / Deprecated / Same-root. Recorded, not gated: deprecated Java API in the worker's code
+   (string-keyed `SNode.getProperty`/`setProperty`), what an unset window shows, leftover scratch run configurations.
 Pass = 1–9. Accepted: the window validator as an ignoring setter; everyModel for item 4. Signals:
 ED_cell_id_writes, ET_chooser_asserts >= 2, ET_test_runs 1–5 (a correct first run may be green).
 Isolation: mcp.study.alerts ids (restart between S31/S33/S34; one alerts2* copy open).

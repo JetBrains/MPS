@@ -1,5 +1,7 @@
 # JSON Blueprint Index
 
+> A blueprint written as JSON that holds a BaseLanguage body or nests more than ~5 node levels is generated with mps-node-editing's `scripts/blueprint.py`, not typed by hand; load the `mps-node-editing` companion skill from the same origin to run it.
+
 Where each blueprint lives. Every blueprint shows the required roles; inject BaseLanguage statement lists where marked.
 
 - **Transformation menu root** (default / named `type`, one section), **Action part**, **Parameterized part** — `references/transformation-menus.md`.

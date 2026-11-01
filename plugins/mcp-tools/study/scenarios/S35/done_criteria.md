@@ -1,8 +1,9 @@
 # S35 done criteria — Kaja: named substitute menu through a cell menu, LEFT transform with completion, context assistant, style query
-Status: drafted 2026-11-01 (rev. 3); rev 4, pre-rehearsal audit (movement menu and count style F*, assistant contribution accepted, caret/pattern wording); rehearsal 1 (opus) PASS → rev 5 wording (routines, accepted shapes, Green ≥ 5, helper-class signals, headless wording); prompt not frozen. Shared definitions: ../coverage/editor-shared-criteria.md.
+Status: drafted 2026-11-01 (rev. 3); rev 4, pre-rehearsal audit (movement menu and count style F*, assistant contribution accepted, caret/pattern wording); rehearsal 1 (opus) PASS → rev 5 wording (routines, accepted shapes, Green ≥ 5, helper-class signals, headless wording); sonnet rehearsal 1 PASS → rev 6 (the named SubstituteMenu shape recorded, not forced: 0 of 2 runs; item 4 label assertion); frozen 2026-11-01; prompt frozen 2026-11-01. Shared definitions: ../coverage/editor-shared-criteria.md.
 Fixture: kaja-editor (samples/robot_Kaja + Patrol; pins in ../../fixtures/inputs/s35/FIXTURE.md). Corpus menus are the base.
-Topics forced: named SubstituteMenu via IncludeSubstituteMenu on an alias cell; SubstituteMenuPart_IncludeMenu; a
-named cell menu keeping the node's items; LEFT transform also in Ctrl+Space; context-assistant item + test API;
+Topics forced: a menu on an alias cell narrowing completion (a named SubstituteMenu via IncludeSubstituteMenu with
+SubstituteMenuPart_IncludeMenu is recorded, not forced: both rehearsals built a TransformationMenu); a named cell
+menu keeping the node's items; LEFT transform also in Ctrl+Space; context-assistant item + test API;
 query-driven colour; editing a corpus editor without regressions.
 1. Corpus intact: NegateAndAlter, IfElse, IfElse_ext_1, While_to_if, Direction_TransformationMenu,
    EmptyLine_SubstituteMenu, RemoveNot, Repeat_Editor (apart from the count cell) equal the pins;
@@ -30,7 +31,7 @@ query-driven colour; editing a corpus editor without regressions.
    Complete on "trace" (caret at 0 or the keyword selected), items contain "comment" AND "repeat".
 4. Trace in the assistant: EmptyLine_TransformationMenu's CONTEXT_ASSISTANT section, or a TransformationMenuContribution
    to it (record), gains a top-level Action "Trace" (OtherCommands sits in the "Other actions" submenu, so an item there is not on the assistant's top level) (insert a TraceMessage before node, select its message); existing parts stay. Test in code inside
-   invokeAndWait: getContextAssistantManager().updateImmediately(), getActiveAssistant() not null, labels contain
+   invokeAndWait: getContextAssistantManager().updateImmediately(), getActiveAssistant() not null (or implied by an exact, non-empty label assertion; record), labels contain
    "Trace" and "Step forward", execute "Trace" in a command; result has the trace before the empty line, caret on
    property_message. Querying SelectionMenuProviderByCellAndConcept directly fails.
 5. Red count (F*): the count cell has a colour style item with a query on node.count <= 0, or ApplyStyleClass +

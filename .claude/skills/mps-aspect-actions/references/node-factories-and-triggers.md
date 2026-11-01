@@ -43,6 +43,7 @@ The setup function fires *before* `newNode` is inserted into the model. This mea
 | Trigger | Notes |
 |---|---|
 | Code completion menu — substitution / replacement | User selects a concept from the completion menu (or a wrapped substitute menu); the factory fires with the replaced node as `sampleNode`, e.g. to keep the operands when `+` becomes `-` (recipe: `references/substitute-menus.md` in the `mps-aspect-editor-menus-and-keymaps` skill root after loading that companion skill from the same origin) |
+| Enter / Insert adding a list element | Passes the insert position as `index`; a trigger that replaces a node passes the replaced node's position, every other trigger `-1` (SKILL.md, `index`) |
 | `add new initialized(...)` | From `jetbrains.mps.lang.smodel` / `jetbrains.mps.lang.actions`; fires the factory then inserts |
 | `set new initialized(...)` | Replaces an existing child with a new instance; factory fires first |
 | `replace new initialized(...)` | Variant for in-place replacement in a list; factory fires first |

@@ -1,5 +1,5 @@
 # S32 done criteria — Recipes: side transform on a constant, a cell menu keeping the step's items, parameterized menu on a property cell, keymap, inspector
-Status: drafted 2026-11-01 (rev. 3); rehearsal 1 (opus) FAIL on 2,3 → rev 4 (prompt items 1–3 and 6, criteria 1–3 revised: the prompt now forces the re-include and the factor list; the separator sub-task, which the fixture already met, is dropped); rehearsal 2 (opus) PASS → rev 5 wording (criteria 1–3 wording); prompt not frozen. Shared definitions: ../coverage/editor-shared-criteria.md.
+Status: drafted 2026-11-01 (rev. 3); rehearsal 1 (opus) FAIL on 2,3 → rev 4 (prompt items 1–3 and 6, criteria 1–3 revised: the prompt now forces the re-include and the factor list; the separator sub-task, which the fixture already met, is dropped); rehearsal 2 (opus) PASS → rev 5 wording (criteria 1–3 wording); sonnet rehearsal 1 FAIL on 2 (no check between `the` and Complete; the `)` items read with an empty pattern at the end caret) → prompt items 2 and 6 name the caret and the in-between check, criterion 4 records shift+= (rev 6); sonnet rehearsal 2 PASS on rev 6; frozen 2026-11-01; prompt frozen 2026-11-01. Shared definitions: ../coverage/editor-shared-criteria.md.
 Fixture: recipes-editor (recipes-full + four shipped tests; pins in ../../fixtures/inputs/s32/FIXTURE.md).
 Topics forced: inspector + SwitchToInspector; RIGHT transform on a constant with a transformationMenu; include menu +
 location (M2); a cell menu keeping the node's items; named menu on a property cell with Parameterized + guard; keymap;
@@ -30,7 +30,8 @@ shipped tests.
    servings 0 -> no item text contains or starts with "scale" (either assertion).
 4. +/-: CellKeyMapDeclaration on Step, keyMap on the minutes cell, typed characters or VK constants (record),
    caretPolicy ANY_POSITION or LAST_POSITION + isApplicableFunction (record; LAST_POSITION alone cannot fire:
-   minutes is not the last leaf of the big cell), clamp at 0. Test: press "+" at the end of 10 -> 15.
+   minutes is not the last leaf of the big cell), clamp at 0. Test: type "+" or press "+" (VK_ADD, VK_PLUS, or <shift>+VK_EQUALS, which depends on the keyboard
+   layout; record) at the end of 10 -> 15.
 5. Inspector: a test with SwitchToInspector (or an isInInspector annotation) that types into the difficulty cell;
    result carries the new value.
 6. Shipped R1–R4; Clean / Green (11) / Deprecated / Same-root.

@@ -314,3 +314,12 @@
     the reads show it. → Count reads into the MPS checkout outside the skill catalog per run (the
     probe's `~/MPSProjects/mcp-study/adhoc-study/metrics.py` does) and treat each cluster as a doc defect to classify, not as diligence.
     A standalone-install worker has no sources and would have failed instead.
+
+## From the sonnet rehearsal of S30–S35 (2026-11-01)
+
+48. **Sonnet writes exactly the tests a prompt lists, so every case a criterion gates must be in that list.** Opus
+    added in-between and negative checks unasked; sonnet failed S30, S31 (twice), S32 and S34 on cases the criterion
+    named and the prompt did not, while its editors were right. → When a criterion's Test clause names a case (a
+    negative, an apply step, a check between two keys), the prompt's test list names it too, and the test count adds up.
+    An evaluator's claim about MPS internals is a hypothesis: check it in the sources before it becomes doc text (one
+    such claim, a bypassed menu on smart references, was wrong).

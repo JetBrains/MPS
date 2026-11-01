@@ -26,13 +26,13 @@ prefix tests): [`editor-shared-criteria.md`](editor-shared-criteria.md).
 | `TransformationMenuPart_Super` per location (A3); completion on an existing node (M1) | | | | r (Super optional; rehearsal 1) | F M1 | F | F M1 | X→F (planted) | F M1 |
 | Side transform RIGHT / LEFT; items in Ctrl+Space (`location`, M2) | | | | F RIGHT | | F RIGHT, M2 | | X RIGHT | F LEFT, M2 |
 | Strict match vs prefix (B2; tests: prefix via `Complete`); `TransformationMenuPart_WrapSubstituteMenu` | | | | F (prefix via `Complete`); F wrap | F | F (prefix via `Complete`) | | X→F | F; X |
-| `TransformationMenuPart_IncludeSubstituteMenu` → named `SubstituteMenu`; `SubstituteMenuPart_IncludeMenu` | | | | | | | r | | F*; F* |
+| `TransformationMenuPart_IncludeSubstituteMenu` → named `SubstituteMenu`; `SubstituteMenuPart_IncludeMenu` | | | | | | | r | | r; r (0 of 2 rehearsals) |
 | `TransformationMenuPart_Parameterized`; `_Group` / `canExecute`; context assistant (location + cell + test API) | | | | | | F; F* | | | X; F (cell X) |
 | `TransformationMenuContribution` / `SubstituteMenu_Contribution`; used-language rule | | | | | | | F; r GP | | X (KajaAndOr) |
 | Default `SubstituteMenu` + `_AddConcept` / `_Subconcepts` | | | | F* | | | X | X→F (planted) | X |
 | `SubstituteMenuPart_Action` + `_MatchingText` / `_CanSubstitute` (`strictly`) / `_Selection` / `_DescriptionText`; `_ReferenceScope` | | | | F fixed text | F* `pattern`, `!strictly`; F | | | | X scope |
 | Empty default `SubstituteMenu` hides a concept | | | | | | | | | X (`CommandList`); S26 |
-| `NodeFactory` with `sampleNode`; `index` on Enter or list `nodeFactory` | | | | F same hierarchy; F* GP (Enter trigger) | | | r cross-concept (hand copy passes; rehearsal 1) | | X |
+| `NodeFactory` with `sampleNode`; `index` on Enter, `-1` from completion | | | | F same hierarchy; F* index + `-1` case (Enter and completion; an Enter action map fails, sonnet rehearsal 1; a substitute Action label recorded) | | | r cross-concept (hand copy passes; rehearsal 1) | | X |
 | `PasteWrapper`; `PastePostProcessor` (needs the target context); `CopyPreProcessor` r | | | | F wrapper | F* post | | | X→F (planted on an abstract concept) | |
 | Action map DELETE/BACKSPACE; two-step `approveDelete[cell:]`; `canExecute` fall-through; `select_all_action_id` | | | | | F select-all (R6) | | | X→F (early return; fall-through planted) | X (`RemoveNot`) |
 | `CellKeyMapDeclaration`: free chord, exact `modifiers`, cell attachment, `isApplicableFunction`, `everyModel`, `caretPolicy` | | | | | F* | F* policy | F* everyModel | X→F (attached to the wrong cell, hidden) | |

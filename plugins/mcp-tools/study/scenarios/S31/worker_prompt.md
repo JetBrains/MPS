@@ -27,10 +27,12 @@ Task: readability and channels. Read the existing editors and tests before chang
    channel reference inside a `notify` list selects all references of that list.
 8. Within one book, pasting a copied threshold gives the copy the name `<name>2` when a
    threshold of that name already exists in the book, otherwise the same name.
-9. One editor test per item (item 1: `3h` and `3x`; item 4: the duplicate, and a channel left
-   unchanged; completion tests check the offered items before typing). Keep the six existing
+9. Editor tests: two for item 1 (`3h`; `3x`), two for item 4 (the duplicate; a channel left
+   unchanged), two for item 6 (a threshold name offers both postfixes and choosing one gives `cpuLimit`; a channel
+   name offers none), one for item 3 (a `critical` severity is red and another severity is not), and one for every other item: eleven new tests (updating T3 does not count as item 2's test).
+   Completion tests check the offered items before typing. Keep the six existing
    tests passing, updating only what your change legitimately alters. Tests must run headless on CI, so they must not need IDE-only services (no CI build to set up).
-10. Rebuild, create a run configuration for the test model, and run it. Done when: the language makes without errors, all sixteen tests
+10. Rebuild, create a run configuration for the test model, and run it. Done when: the language makes without errors, all seventeen tests
     pass in one run, and `mps_mcp_check_root_node_problems` reports no errors on the editor,
     actions and test models.
 

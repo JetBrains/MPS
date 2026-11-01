@@ -14,8 +14,10 @@ Inside the `code` block (written as BaseLanguage/Java snippet), five expressions
 - `getEditorContext()` — access the `EditorContext` for repository, selection, and node operations.
 - `getSelectedNode()` — the currently selected `SNode`.
 - `getEditedNode()` — the node being displayed in the editor.
-- `getNodeSubstituteChooser()` — access the substitute menu state (e.g., `isVisible()`).
+- `getNodeSubstituteChooser()` — access the substitute menu state (e.g., `isVisible()`); its type `NodeSubstituteChooser` is in `jetbrains.mps.nodeEditor.cellMenu`; a helper class that declares or casts to that type must import the model `jetbrains.mps.nodeEditor.cellMenu@java_stub`.
 - `getData(String key)` — retrieve platform data keys from the editor context.
+
+A cell's text colour is `cell.getStyle().get(StyleAttributes.TEXT_COLOR)` (`jetbrains.mps.editor.runtime.style`). A style's `red` is `jetbrains.mps.nodeEditor.MPSColors.red` (0xB20000), not `java.awt.Color.RED`: compare with `MPSColors`.
 
 Example from `TestEditorMenuTraceCellMenuReplaceNode_Test`:
 ```java

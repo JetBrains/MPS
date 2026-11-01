@@ -9,7 +9,7 @@ Task: make the recipe editor quicker to use. Read the editors and the tests firs
 
 1. The difficulty moves out of the document into the Inspector.
 2. With the caret right after the closing `)` of a step, typing `then` adds an empty step right
-   after it and puts the caret into the new text. Ctrl+Space on that `)` offers the same item as
+   after it and puts the caret into the new text. Ctrl+Space with that `)` selected (or the caret before it) offers the same item as
    `then`, together with everything Ctrl+Space offers on a selected step (today `step`; whatever
    a step offers later must show up there too). `then` is not offered on the recipe.
 3. Ctrl+Space on a recipe's name offers one `scale xN` item for each factor N of a list of scale
@@ -18,7 +18,7 @@ Task: make the recipe editor quicker to use. Read the editors and the tests firs
 4. With the caret in a step's minutes, pressing `+` adds 5 minutes and `-` removes 5 (never
    below 0). Elsewhere in the editor `+` and `-` behave as before.
 5. Editing the difficulty in the Inspector changes the recipe.
-6. Editor tests: `then` typed whole; `the` completed with Ctrl+Space; Ctrl+Space on `)` lists
+6. Editor tests: `then` typed whole; `the` completed with Ctrl+Space (typing `the` alone applied nothing); Ctrl+Space on `)` lists
    `then` and `step`; `scale x2` with servings 3 (result 6); no scale items with servings 0; `+` after
    minutes 10 (15); the Inspector edit. Completion tests check the offered items before they
    type. Each must fail if its behaviour broke; they must run headless on CI, so they must not need IDE-only services (no CI build to set up). Keep the four existing

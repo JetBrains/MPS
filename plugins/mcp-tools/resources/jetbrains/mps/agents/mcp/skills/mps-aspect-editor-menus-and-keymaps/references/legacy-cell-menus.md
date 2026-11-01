@@ -8,7 +8,7 @@ Property cells only. Function returns `list<String>` for completion.
 
 ## Property Postfix Hints Menu Part
 
-Property cells only; returns `list<String>` of good postfixes, in lower camel case (`limit`, not `Limit`): the runtime matches them against the decapitalised tail of the typed text and capitalises them when appending (`cpu` → `cpuLimit`). Example verbatim from MPS help:
+Put it on the `CellModel_Property` itself. If the property cell sits in an editor component, that is the cell inside the component, not the `CellModel_Component` that embeds it; on any other cell it checks and makes clean, then throws on every keystroke. It returns `list<String>` of good postfixes, in lower camel case (`limit`, not `Limit`): the runtime matches them against the decapitalised tail of the typed text and capitalises them when appending (`cpu` → `cpuLimit`). Example verbatim from MPS help (its parameter list is old; see below the block):
 
 ```
 property postfix hints postfixes :
@@ -23,6 +23,8 @@ property postfix hints postfixes :
     return result;
   }
 ```
+
+The `node` parameter is `CellMenuPart_Abstract_editedNode`, shown as `node` (`ConceptFunctionParameter_node` is rejected as not applicable). In a component shared by several concepts, return an empty list unless `node` is an instance of the concept the hints are for.
 
 ## Primary Replace Child Menu / Primary Choose Referent Menu
 

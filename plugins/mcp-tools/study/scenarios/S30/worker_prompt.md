@@ -37,7 +37,8 @@ Task: a small DSL for survey forms, editors that behave like a text editor, and 
    b. Ctrl+Space on the keyword of an existing question offers `toggle required`, which flips
       the `*`, and still offers the other question kinds; switching the kind keeps the text and
       the required flag.
-   c. Enter after an option adds a new option labelled `Option <n>`, n its 1-based position.
+   c. A new option is labelled `Option <n>`, n its 1-based position, however it is created:
+      Enter after an option, or picking it from Ctrl+Space in a question's empty option list.
    d. With the caret right after a question's `?`, typing the keyword of any question kind (also
       of kinds a later extension of the language adds) inserts a new empty question of that kind
       right after it, caret in its text. Typing the whole keyword applies it; a prefix alone
@@ -46,7 +47,7 @@ Task: a small DSL for survey forms, editors that behave like a text editor, and 
       creates a choice question holding that option.
 4. Solution `mcp.study.survey.tests`, `@tests` model `mcp.study.survey.tests@tests`, editor tests:
    `yes/no`; `toggle required` and `rate` both offered on an `ask` keyword; switching kind keeps
-   text and `*`; Enter numbering; the whole keyword after `?`; a prefix completed with Ctrl+Space;
+   text and `*`; numbering by Enter and by Ctrl+Space in an empty option list; the whole keyword after `?`; a prefix completed with Ctrl+Space;
    the paste. Each test must fail if its behaviour broke; a completion test checks what the menu
    offers before it types. Tests must run headless on CI, so they must not need IDE-only services (no CI build to set up). Create a run configuration and run it.
 5. Done when: the language makes without errors, every test passes in one run, and

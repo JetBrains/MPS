@@ -97,3 +97,41 @@ when the project or the user forbids editor tests, then check otherwise and say 
 step it was read but ignored twice (E2N-2, E2N-3: tests after the code, still catching bugs); as the first Critical
 Directive the worker stated "write EditorTestCases first — the behaviours are non-trivial", ran 12 tests red for
 the right reason, then implemented (E2N-4, 129 calls, $7.72). A trivial wording change (TRIV-1) wrote no tests.
+
+## Sonnet rehearsal of S30–S35 (follow-up)
+
+Sonnet at `high`, harness install of the built catalog, one cell at a time, each scored by an opus evaluator
+(`~/MPSProjects/mcp-study/runs-editor-rehearsal/S3*-sonnet-*.eval.md`). Failed cells were rerun after the docs,
+prompts and criteria were fixed and reviewed (three opus review rounds,
+`~/MPSProjects/mcp-study/adhoc-study/notes/sonnet-rehearsal-review-*.md`).
+
+| Cell | Run | Calls / MPS-source reads / min / $ | Verdict |
+|---|---|---|---|
+| S30 | 1 | 156 / 0 / 15.9 / 5.64 | FAIL 3c: Enter action map instead of a factory (the factory's `index` was -1 from code); 3b/3d on the letter (named Subconcepts menu) |
+| S30 | 2 | 165 / 0 / 18.7 / 6.01 | PASS on rev 6 (prompt forces creation by completion too) |
+| S31 | 1 | 274 / 0 / 24.8 / 9.06 | FAIL C6: no channel-name negative test (the prompt did not ask) |
+| S31 | 2 | 258 / 8 / 24.6 / 9.27 | FAIL C6: no apply step (the prompt did not ask) |
+| S31 | 3 | 171 / 0 / 19.8 / 6.04 | PASS on rev 7; item 3 untested to fit "sixteen" → rev 8 lists eleven new tests |
+| S31 | 4 | 168 / 0 / 18.0 / 5.91 | PASS on rev 8 (17/17, each new test maps to a prompt item) |
+| S32 | 1 | 104 / 0 / 9.9 / 3.09 | FAIL 2: no check between `the` and Complete; `)` items read with an empty pattern |
+| S32 | 2 | 142 / 0 / 11.0 / 3.55 | PASS on rev 6 |
+| S33 | 1 | 160 / 0 / 12.2 / 4.19 | PASS |
+| S34 | 1 | 164 / 1 / 14.4 / 4.10 | FAIL 1 (B-on without the muted check between keys), 2 on the letter |
+| S34 | 2 | 111 / 0 / 10.5 / 2.79 | PASS on rev 7 (G-on with Backspace, which reaches the DELETE action) |
+| S35 | 1 | 189 / 0 / 15.2 / 5.34 | PASS |
+
+Sonnet built correct editors in every run; it failed on test rigour (missing in-between and negative checks, a
+pattern-less item read) and on criteria that gated what the prompt did not ask. Doc fixes, each checked against the
+MPS sources: the factory `index` (insert position only for Enter/Insert, the replaced node's position for a
+replacement, otherwise -1), one-character keymap keycodes (typed, layout-independent, not with ctrl/alt), the
+completion pattern for item reads, what to assert between two-step keys, `include menu` for a hidden default, the
+chooser's stub, `MPSColors.red`, postfix hints on the property cell with `editedNode`, prefixed component cell ids,
+the blueprint.py pointer and `$TMPDIR` for helper scripts, the abstract placeholder example, and string-keyed
+`getProperty`. A claimed gap (a menu on an unset smart reference's cell is never consulted) contradicted the sources
+and was not documented.
+
+Test-first decision line: sonnet printed it once in twelve runs (S34-2, `Test-first: yes — …` before every edit), 0
+of 6 while the rule said "state it", 1 of 6 after it asked for the literal line. The decision itself was usually made
+in hidden reasoning: test-first in S32-1, S32-2, S35-1 (and S34, which forces it), implementation-first ("skipping
+test-first") in S30-2, S31-2, S31-3, S31-4. Opus followed the line in its one probe (E2N-4). The rule's choice works; its
+visible statement does not reliably reach sonnet.
