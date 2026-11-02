@@ -1,6 +1,7 @@
 # S36 done criteria (observer, read-only, projectPath = run project dir)
 
-**Not frozen** (written 2026-11-02). Rehearsal `S36-opus-1` (opus, effort `medium`, 44 tool calls,
+**Prompt frozen 2026-11-02** (`promptSha256` `27408274827e…`) after the observer walk in
+[`../../fixtures/inputs/s36/FIXTURE.md`](../../fixtures/inputs/s36/FIXTURE.md) and three rehearsals, all on that prompt. Rehearsal `S36-opus-1` (opus, effort `medium`, 44 tool calls,
 2 min 37 s, `~/MPSProjects/mcp-study/runs-s36`, `promptSha256` `27408274…`, `skillsSha256` `7ad51ce9…`) PASSED
 criteria 1–6 on the intended order: the red run (step 29) before the first template write (step 30), its
 text exactly the walk's, `GT_red_runs_before_fix` 1, `GT_runs_after_generator_write` 1, `ET_test_runs` 2,
@@ -16,9 +17,14 @@ the test before the fix. It had loaded `mps-aspect-generator` with Critical Dire
 `mps-tests` with the generator-test references before the first write (not `running-and-failures.md`),
 so the miss is a skill wording finding, not a prompt problem: the directive reads as "write a test when
 asked" rather than "write and run it before the change". Do not harden the prompt; fix the skill and
-re-run. Freeze after the observer walk in
-[`../../fixtures/inputs/s36/FIXTURE.md`](../../fixtures/inputs/s36/FIXTURE.md) and a rehearsal, re-pinning the quoted
-mismatch lines). Written for the first Critical Directive of `mps-aspect-generator` (commit
+re-run. After the
+directive was reworded to lead with the order ("Test first, then change the generator … even if reading the
+templates has already shown you the bug"), `S36-sonnet-2` (sonnet, `medium`, same prompt, catalog
+`skillsSha256` `092fe42e…`, 37 tool calls, 1 min 52 s) PASSED criteria 1–6: test built (steps 14–23), MAKE, red
+run (26) identical to the walk's, template writes (28, 32), MAKE, green (35), samples made (36); it said
+"I'll write the generator test before touching the generator" (step 9) and "see it fail" (step 23). Two
+tool errors (a singular `conceptRef`, an inline `childJson` with two missing closers), no PLAIN TEXT
+preview, open choices not named. The quoted mismatch lines are the walk's and every red run's. Written for the first Critical Directive of `mps-aspect-generator` (commit
 141f4a1d09ac: write a `GeneratorTest` first when the user asks for one or describes the output
 informally and asks or allows formalizing it; it must fail before the change with a mismatch naming
 the change) and the matching fail-first rule in `mps-tests`. No cell made that directive fire: S6 and

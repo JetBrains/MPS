@@ -17,6 +17,9 @@ first run; S30 and S32 passed on rev 4 after one revision; S33 failed only on a 
 rev 5. The sonnet rehearsal the same evening passed S33 and S35 on the first run and S30, S32, S34 (run 2) and
 S31 (run 4, rev 8) after prompt and criteria revisions (results in
 [`../reports/assessments/editor-dynamics.md`](../reports/assessments/editor-dynamics.md)); they are frozen since then.
+S36 (a generator test from an informal description) was written, built and reviewed on 2026-11-02 and is frozen since
+then: opus passed; sonnet missed the test-first order until the `mps-aspect-generator` directive was reworded
+(`ad638540c771`), then passed.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -583,7 +586,7 @@ via `include substitute menu`, `_IncludeMenu`), `transformation-menus.md` §Atta
 GP); `mps-tests` (assistant API); `mps-language-analysis`. Re-exposes E2#1, E1#3. Size 30–45; drop item 4.
 Isolation: Kaja ids of `kaja-dataflow*` (S13, S16): restart before and after, never together.
 
-**S36 — a generator test from an informal description, red before the fix.** Not frozen (written 2026-11-02; rehearsal `S36-opus-1`, opus `medium`, PASSED with the red run before the first template write; `S36-sonnet-1`, sonnet `medium`, FAIL (directive miss, generator fixed): it fixed the template before writing the test, having loaded Critical Directive 1 — a skill-wording finding, see `done_criteria.md`). Fixture:
+**S36 — a generator test from an informal description, red before the fix.** Frozen 2026-11-02 (rehearsal `S36-opus-1`, opus `medium`, PASSED with the red run before the first template write; `S36-sonnet-1`, sonnet `medium`, FAIL (directive miss, generator fixed): it fixed the template before writing the test, having loaded Critical Directive 1 — a skill-wording finding; after the directive was reworded to lead with the order, `S36-sonnet-2` PASSED, see `done_criteria.md`). Fixture:
 `recipes-gen-broken` ([`../fixtures/inputs/s36/FIXTURE.md`](../fixtures/inputs/s36/FIXTURE.md)): `recipes-gen` with the
 `PORTIONS` `$PROPERTY$` deleted (every class says `1`) and the `$LOOP$` query `node.steps.skip(1)` (every class
 loses its first step); both compile and check clean. The prompt describes the wanted classes in prose and a Java
