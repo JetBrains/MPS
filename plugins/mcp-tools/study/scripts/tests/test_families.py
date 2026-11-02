@@ -222,7 +222,7 @@ class FamiliesTest(unittest.TestCase):
                          "MG_check_method_writes\tMG_migrate_manually_writes\tMG_set_id_writes\tMG_sync_version\t"
                          "MG_runtime_stale_hits\tMG_run_check\tMG_run_apply\tMG_apply_with_errors\tMG_console_runs\t"
                          "MG_console_write_cmds\tMG_sandbox_node_writes\tMG_find_instances\tMG_mps_migration_dumps\t"
-                         "MG_publication_probe", header)
+                         "MG_publication_probe\tGT_red_runs_before_fix\tGT_runs_after_generator_write", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -651,6 +651,28 @@ class FamiliesTest(unittest.TestCase):
                    + write("p3", "mps_mcp_parse_java_and_insert", {"parameters": into_tests}))
         self.assertCounts(self.count(events), GT_runtime_source_reads=len(hunts), GT_kitchen_source_reads=1,
                           GT_expected_parser_inserts=1, ET_runtime_source_reads=1)
+
+    def test_t38_generator_test_runs_before_and_after_the_fix(self) -> None:
+        def run(tool_id: str, text: str) -> list[dict]:
+            return [tool(tool_id, "mcp__mps__execute_run_configuration", {"projectPath": "/p", "configurationName": "T"}),
+                    result(tool_id, text)]
+        head = ("<TEST_FAILURE_BEGIN>RecipeClasses:testTransformAndMatch0()\\n"
+                "java.lang.AssertionError: Transformation output model doesn't match reference one:")
+        # The S36 red: fail-fast per root, A under Porridge, B as a nested missing child under Lemonade.
+        red = (head + "\\nNode: Porridge vs Porridge\\n  Node: PORTIONS vs PORTIONS\\n"
+               "    Node: integer constant vs integer constant\\n      Different property: value = 1, expected: 3\\n"
+               "Node: Lemonade vs Lemonade\\n  Node: steps():String[] vs steps():String[]\\n"
+               "          Node: array with initializer vs array with initializer\\n"
+               "            Node: null vs StringLiteral='Squeeze the lemons'\\n"
+               "            Excessive node, no counterpart to match to")
+        no_generator = head + "\\nNode: null vs Porridge\\nNode: null vs Lemonade"
+        f = self.count(run("a", no_generator) + run("b", red) + run("c", red.replace("\\n", "\n"))
+                       + run("d", "Tests passed: 1")
+                       + write("r", "mps_mcp_update_node", {"nodeReference": TEMPLATE_NODE}, {"ok": False, "error": "bad"})
+                       + run("e", red)
+                       + write("w", "mps_mcp_update_node", {"nodeReference": TEMPLATE_NODE})
+                       + run("f", "Tests passed: 1") + run("g", red))
+        self.assertCounts(f, ET_test_runs=7, GT_red_runs_before_fix=3, GT_runs_after_generator_write=2, G_errors=1)
 
     def test_t36_generation_plan_attachment_maintenance_and_workarounds(self) -> None:
         plans = "r:5f00(mcp.study.plans.kitchen@genplan)"

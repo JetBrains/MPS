@@ -87,6 +87,11 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   GT_kitchen_source_reads          the same calls on a path under mcp.study.kitchen/source_gen
   GT_expected_parser_inserts       accepted parse_java_and_insert calls into a model that is not a @tests
                                    model (expected classes written with the Java parser)
+  GT_red_runs_before_fix           execute_run_configuration calls before the first accepted write to a
+                                   `@generator` model whose result has `doesn't match reference one` and a
+                                   root-level `Node:` line that is not `Node: null vs` (null vs <root> = no
+                                   generator ran; a nested null vs "<child>" is a missing child): red first (S36)
+  GT_runs_after_generator_write    execute_run_configuration calls after that write (the confirming run)
   GP_genplan_models                accepted create_model calls whose modelName has the @genplan stereotype
   GP_param_equals_writes           accepted node writes whose input holds a ParameterEquals (name or concept ref)
   GP_set_plan_calls                accepted update_module calls with operation SET_GENERATION_PLAN
@@ -243,7 +248,7 @@ writes the envelope did not reject. ET_runtime_source_reads matches paths only: 
 `/`, so a heredoc or a grep pattern naming `EditorTestUtil` (which the skill tells the worker to use)
 does not count. The run project's own `test_gen/` (reading the generated test to debug it) and the
 language's editor `source_gen` (the documented cell-id route) do not match the pattern.
-The GT_* columns are S18's signals (generator tests). The node-write columns search the input as the
+The GT_* columns are S18's and S36's signals (generator tests). The node-write columns search the input as the
 ET_* columns do (temp-file blueprints resolved, COPY_NODE only as its input, so a copied GeneratorTest
 is not counted again). GT_runtime_source_reads and GT_kitchen_source_reads match paths only, as
 ET_runtime_source_reads does; the fixture's own generator (`mcp.study.recipes/generator/`) and the run
@@ -298,7 +303,8 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "MG_move_concept", "MG_check_method_writes", "MG_migrate_manually_writes", "MG_set_id_writes",
         "MG_sync_version", "MG_runtime_stale_hits", "MG_run_check", "MG_run_apply", "MG_apply_with_errors",
         "MG_console_runs", "MG_console_write_cmds", "MG_sandbox_node_writes", "MG_find_instances",
-        "MG_mps_migration_dumps", "MG_publication_probe"]
+        "MG_mps_migration_dumps", "MG_publication_probe", "GT_red_runs_before_fix",
+        "GT_runs_after_generator_write"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
@@ -332,6 +338,7 @@ GENERATOR_WRITES = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_n
                     "mps_mcp_alter_nodes")
 
 PLATFORM_ACTION_ID = re.compile(r"BootstrapActionReference|\$(?:Undo|Redo|Copy|Cut|Paste)\b")
+ROOT_MISMATCH = re.compile(r"(?:\\n|\n)Node: (?!null vs)")  # a root-level line; nested ones are indented
 IDE_SERVICE = re.compile(r"UndoManager|DataManager|FileEditor|CopyPasteManager")
 RUNTIME_SOURCE = re.compile(r"BaseEditorTestBody|EditorTestUtil|CellAction_|lang/test/runtime|lang\.test\.runtime|"
                             r"nodeEditor/|/testbench/|bl\.test|jetbrains\.mps\.editorTest")
@@ -845,6 +852,10 @@ def fam(path):
             f["M_reload_all"] += 1
         if n == "execute_run_configuration":
             f["ET_test_runs"] += 1
+            if generator_written:
+                f["GT_runs_after_generator_write"] += 1
+            elif "doesn't match reference one" in r and ROOT_MISMATCH.search(r):
+                f["GT_red_runs_before_fix"] += 1
         if n == "mps_mcp_create_run_configuration":
             f["ET_run_configs"] += 1
         if n == "Write" and isinstance(inp.get("file_path"), str):

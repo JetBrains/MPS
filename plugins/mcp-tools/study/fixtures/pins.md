@@ -22,6 +22,7 @@ Files live in `~/MPSProjects/mcp-study/fixtures/`, not in git. An empty project 
 | `recipes-broken` | `0dc4878ee65187a3cf227730e79aa0827f5a2d55660e5c035e02e4d774893bf1` | file date not separately documented |
 | `recipes-full` | `37d9c83af98f27514534086edff4181b9faaa3e0156dc98dd0e27f91a7df5953` | file date not separately documented |
 | `recipes-gen` | `e9fd62584d0c0358affd82d729662197c1871d6a5a62618d2c421744092a96f3` | 2026-10-29 |
+| `recipes-gen-broken` | `a0370dbd8445e098dd7fdad6988c0d5c66e2a4d63363e64aea1ecef3b303c6ce` | 2026-11-02 (S36) |
 | `recipes-misgen` | `ec971bc6005223ae608ae37b30851aabdc2f0eb0710b84a299b3448cc8709199` | 2026-10-23 |
 | `shifts` | `f5e15bf37f5c80301c80c824327419ff1d641db3614b8a02f2a5bde8bba3bc35` | 2026-10-31 |
 | `statechart` | `d9dd23be9843b99d2487caae16601648290062c2b042eebc545a83fe21c7820e` | file date not separately documented |
