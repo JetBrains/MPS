@@ -55,8 +55,6 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 The MPS catalog contains companion skills for focused task families. Load whichever ones apply to your current task, following the origin rules above.
 
-> **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed by the `mps_mcp_initialize_project_for_agents` MCP tool. Open `references/catalog-install-and-refresh.md` before running it, and for the version stamps and the refresh procedure; the installed `AGENTS.md` states the staleness rules.
-
 | Skill | What it covers |
 |-------|---------------|
 | `mps-language-aspects-overview`     | Entry point for defining an MPS language — lists the aspects, what each owns, and the typical authoring order. Start here. |

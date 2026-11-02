@@ -4,6 +4,8 @@ This is a JetBrains MPS language project: its source of truth lives in MPS model
 
 **Load the `mps-mcp-workflow` skill at the start of every MPS session.** If your agent runtime does not explicitly confirm that project skills are auto-loaded, read `.agents/skills/mps-mcp-workflow/SKILL.md` before changing MPS artifacts. It holds the critical directives, the tool workflow, and the index of companion skills.
 
+If that skill is missing — no `mps-*` skill folders under `.agents/skills/` or `.claude/skills/` — this project is not initialized for agents. Before any MPS work, even a read-only question, tell the user and offer to run the `mps_mcp_initialize_project_for_agents` MCP tool; do not run it without their approval.
+
 ## ⚠️ WARNING: Never Read Raw MPS Model Files
 
 Do not open, parse, or edit `.mps`, `.mpl`, or other MPS XML files as text: the serialized format is opaque, gives no semantic insight, and hand-edits corrupt models. Use the MPS MCP tools (`mps_mcp_*`) instead. If the MPS MCP server is not connected, ask the user to start MPS and enable it; a connected server whose tools were filtered or deferred is not this case — restore the full toolset as described below.
@@ -39,7 +41,7 @@ If MCP calls fail session-wide with `java.net.URISyntaxException: Illegal charac
 
 ## Skills
 
-Skills live in `.agents/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`; start with `mps-mcp-workflow` for the overview and a directory of every other skill. The `mps-*` skills and this guide were installed by the `mps_mcp_initialize_project_for_agents` MCP tool; `.agents/skills/mps-mcp-workflow/references/catalog-install-and-refresh.md` covers re-installing and refreshing them.
+Skills live in `.agents/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`; start with `mps-mcp-workflow` for the overview and a directory of every other skill. The `mps-*` skills and this guide were installed by the `mps_mcp_initialize_project_for_agents` MCP tool; for details on re-installing and refreshing them — the install arguments (`targetDirectory` vs `projectPath`), the version stamps, and the refresh procedure — see `.agents/skills/mps-mcp-workflow/references/catalog-install-and-refresh.md`.
 
 Before substantial MPS work, compare the `build` line in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` from `mps_mcp_list_open_projects`. Do not call the initializer to learn the version — it writes files.
 
