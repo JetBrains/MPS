@@ -17,7 +17,7 @@ After three rounds of remedies, skill-documentation reading is **the only measur
 worse than the original baseline**, and it is now the largest single consumer of context in the
 greenfield cell.
 
-From `study/HOTSPOT_REPORT_round3.md` §1 (sonnet cells, the two cells measured in all three rounds):
+From `study/reports/hotspot/round-03.md` §1 (sonnet cells, the two cells measured in all three rounds):
 
 | metric | baseline | round 2 | round 3 | r3 vs baseline |
 |---|---|---|---|---|
@@ -228,11 +228,11 @@ Process only; deliberately free of remedy design.
 
 ## Cross-references
 
-- `study/HOTSPOT_REPORT_round3.md` — §1 (metrics), §2.3 (hotspot 3), §2.9 (fan-out), §3 (H7, H10,
+- `study/reports/hotspot/round-03.md` — §1 (metrics), §2.3 (hotspot 3), §2.9 (fan-out), §3 (H7, H10,
   H11), §6 (M2), §7 (artefacts).
-- `study/HOTSPOT_REPORT_round2.md` — §2.7 (the sonnet regression and its knowledge-gap reading), §4
+- `study/reports/hotspot/round-02.md` — §2.7 (the sonnet regression and its knowledge-gap reading), §4
   (D16), R6's effect.
-- `study/HOTSPOT_REPORT.md` — the remedies table, row R6 (line 105: R6 as originally specified,
+- `study/reports/hotspot/baseline.md` — the remedies table, row R6 (line 105: R6 as originally specified,
   including its "~100–150 KB context per greenfield run" estimate).
 - `docs/skill-script-automation-study.md` — H7 as originally stated; the S1–S8 cell definitions.
 - `docs/round3-remedies-implementation-plan.md` — M2, the one targeted reading fix, and its explicit

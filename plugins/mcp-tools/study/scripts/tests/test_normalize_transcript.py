@@ -11,7 +11,7 @@ from pathlib import Path
 
 SCRIPTS = Path(__file__).resolve().parents[1]
 SCRIPT = SCRIPTS / "normalize_transcript.py"
-FIXTURE = Path(__file__).resolve().parent / "fixtures" / "junie-json-stream.jsonl"
+FIXTURE = Path(__file__).resolve().parent / "testdata" / "junie-json-stream.jsonl"
 ANALYZER = SCRIPTS / "analyze_runs.py"
 
 _SPEC = importlib.util.spec_from_file_location("normalize_transcript", SCRIPT)

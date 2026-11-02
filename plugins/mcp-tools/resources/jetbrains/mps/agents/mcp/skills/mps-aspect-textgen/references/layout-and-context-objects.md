@@ -6,43 +6,44 @@ Everything in the per-concept body is enough for a single-stream textgen. Large-
 
 A single output file can be composed of several named regions. The file-generating concept declares them in its `layout` child (a `TextUnitLayout`), and any `append` statement can be retargeted to a specific area. This lets a deeply-nested rule (e.g. a method call) add an import line to the header area even though its own rule runs while traversing the body.
 
-Verbatim from `ClassConcept_TextGen` in baseLanguage:
+The layout of `ClassConcept_TextGen` in baseLanguage, as the editor shows it:
 
 ```
-text layout:
-  Initial text area         BODY
-    <default area>
-  named text area           HEADER
-    HEADER
-  named text area           IMPORTS
-    IMPORTS    separator: \n
-  named text area           SEPARATOR
-    SEPARATOR
-  named text area           BODY
-    BODY
+Initial text area BODY
+HEADER
+  << ... >>
+IMPORTS
+  << ... >>
+SEPARATOR
+  << ... >>
+BODY
+  << ... >>
 ```
 
 Authoring notes:
-- The **initial area** is where `append ...` writes by default.
-- `append to AREA { ... }` (or equivalent per-part targeting in the Inspector) retargets a block to a named area.
-- An area can be declared with a **separator** (e.g. `\n`). Every append into that area is joined with the separator, so you don't need to emit newlines between each import.
-- Final file content is the concatenation of areas in declaration order: `HEADER ⟨SEPARATOR⟩ IMPORTS ⟨SEPARATOR⟩ BODY` is the `ClassConcept` pattern (the `SEPARATOR` area holds the blank line, `IMPORTS` auto-joins with `\n`).
+- Each area is a `LayoutPart` (property `name`, optional `nested` `LayoutPart` children) in the layout's `parts` child (1..n); the layout's `active` reference names the **initial area**, where `append ...` writes by default.
+- `append to AREA { ... }` (the `AppendOperation` `textArea` reference, or equivalent per-part targeting in the Inspector) retargets a block to a named area.
+- A `LayoutPart` has no separator property: whatever is appended to an area must emit its own newlines.
+- Final file content is the concatenation of areas in declaration order: `HEADER`, `IMPORTS`, `SEPARATOR`, `BODY` is the `ClassConcept` pattern (the `SEPARATOR` area holds the blank line between the imports and the class).
 
-Skeleton for a `TextUnitLayout` with one named area (substitute your own parts per the live concept details via `mps_mcp_get_concept_details jetbrains.mps.lang.textGen.structure.TextUnitLayout`):
+Skeleton for a `TextUnitLayout` with two areas, `BODY` initial (the `active` reference must name a `LayoutPart` of the same layout, so insert the parts first and set it afterwards, or point it at the inserted node's reference):
 
 ```json
 {
   "concept": "jetbrains.mps.lang.textGen.structure.TextUnitLayout",
+  "references": [
+    { "role": "active", "target": "<ref of the BODY LayoutPart>" }
+  ],
   "children": [
-    { "role": "part", "nodes": [
+    { "role": "parts", "nodes": [
       { "concept": "jetbrains.mps.lang.textGen.structure.LayoutPart",
-        "properties": [{ "name": "name", "value": "IMPORTS" }] }
+        "properties": [{ "name": "name", "value": "IMPORTS" }] },
+      { "concept": "jetbrains.mps.lang.textGen.structure.LayoutPart",
+        "properties": [{ "name": "name", "value": "BODY" }] }
     ]}
   ]
 }
 ```
-
-Verify the exact child role names (`part` vs. `layoutPart`) and the separator property before writing the final JSON — the internal concept shape has varied between MPS versions.
 
 ## Context objects (`UnitContextDeclaration` / `UnitContextObject`)
 

@@ -24,7 +24,8 @@ A `Weaving_MappingRule` has:
 - `conditionFunction` — optional, filters by input;
 - `contextNodeQuery` — returns the *output* parent node to weave into (commonly a `genContext.get output for` call on a mapping label);
 - `ruleConsequence` — a `TemplateDeclarationReference` (or inline template) giving the template to apply; the template's fragment root is inserted under `contextNode`;
-- optional `anchor` — controls where among existing children the new content lands (concept `jetbrains.mps.lang.generator.structure.WeavingAnchorNodeQuery` / similar).
+- optional `anchorQuery` (`WeavingAnchorQuery`) — returns the existing child of the context node in front of which the woven nodes are inserted; returning `null` (or no anchor) appends them at the end of the role. Implicit params `mainContextNode` (the context node) and `outputNode` (the woven node). The query runs once per woven node, so returning the role's current first child (`(mainContextNode : Classifier).member.first`) puts each woven node in front of the previous one and reverses several woven nodes; to insert a group ahead of the existing members in order, return a node that was there before weaving (e.g. the class's first field, or a member found through a mapping label);
+- optional `labelDeclaration` — labels the woven output, keyed by the rule's input.
 
 ## JSON blueprint
 
@@ -57,4 +58,25 @@ A `Weaving_MappingRule` has:
 }
 ```
 
-Reference implementation: `samples/generator_demo/languages/demoLang7/.../demoLang3a/generator/template/main@generator.mps` — the weaving rule there targets the main generated `ClassConcept` via the `main-class` label and weaves a button/label template into it.
+## Weave each
+
+To weave one template per element of a sequence into the same context (e.g. one method per section of a report), make the rule's `ruleConsequence` a `WeaveEach_RuleConsequence` instead of a `TemplateDeclarationReference`: its `sourceNodesQuery` (`SourceSubstituteMacro_SourceNodesQuery`, `node` = the rule's input) returns the elements, and its `templateCall` (`TemplateCall`, ref `template`, optional `actualArgument`s) names the weaving template, which is applied with each element as `node`. The rule's `contextNodeQuery` still runs once, for the rule's input, and so do the `templateCall`'s `actualArgument` queries: they are evaluated before the loop, so an argument cannot vary per element (compute a per-element value inside the template, or weave one template that `$LOOP$`s and `$CALL$`s with per-element arguments).
+
+```json
+{ "role": "ruleConsequence", "nodes": [
+  { "concept": "jetbrains.mps.lang.generator.structure.WeaveEach_RuleConsequence",
+    "children": [
+      { "role": "sourceNodesQuery", "nodes": [
+        { "concept": "jetbrains.mps.lang.generator.structure.SourceSubstituteMacro_SourceNodesQuery",
+          "children": [ { "role": "body", "nodes": [ /* node.sections.where({~it => !it.hidden}) */ ]} ] }
+      ]},
+      { "role": "templateCall", "nodes": [
+        { "concept": "jetbrains.mps.lang.generator.structure.TemplateCall",
+          "references": [ { "role": "template", "target": "<weave_Section ref>" } ] }
+      ]}
+    ]
+  }
+]}
+```
+
+Reference implementation: the `main` mapping configuration of `jetbrains.mps.samples.generator_demo.demoLang7` — two weaving rules target the generated `ClassConcept` via the `main-class` label and weave a factory method into it; a third weaves a call statement into the body of the `addContent` method found through the `addContentMethod` label (the context node can be any output node, not only a root).

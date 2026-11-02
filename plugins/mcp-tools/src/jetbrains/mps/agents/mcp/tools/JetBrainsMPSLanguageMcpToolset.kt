@@ -92,7 +92,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription(
         """
-        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept and cardinality) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). To learn the shapes of the concepts a concept's child/reference roles target, pass `languageRefs`: one call returns every concept of the language, which is cheaper than a refinement call per target. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple a `PROPERTY`/`REF` macro stores as `propertyId`/`linkId`; not a node ref, so never a blueprint reference `target`) and `sourceNode` (the feature declaration's persistent ref, e.g. `r:...(...structure)/<id>` — the `target` of smodel `SPropertyAccess.property` / `SLinkAccess.link` / `SLinkListAccess.link`; an inherited feature's ref is in the declaring concept's model; `applicableConcept` takes the concept's own `sourceNode`, not a feature's) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup of unknown names. `languageRefs` on a project language returns the union of its built runtime's concepts and its structure model's concept declarations, so concepts added since the last build are included and a language that was never built is answered from its declarations. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. A concept whose language has no built runtime, or that was created after the last build, is read from its structure-model declaration: the record is correct and marked `source: "declaration"`, `descriptorStatus: "hollow"`, `runtimeStatus` and `descriptorRecoveryAction`, and the envelope carries a warning plus `details.languageBuild` with the exact `mps_mcp_alter_nodes` MAKE call (`rebuild = true` on the language module; `mps_mcp_reload_all` alone is not sufficient). See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
+        Returns detailed info for the listed concepts and/or for every concept of the listed languages. `data` is inline when the serialized result is <= `maxInlineBytes` (default 20000), otherwise a temp-file path. `detail = "shape"` returns only the structural projection of each concept (`qualifiedName`, `conceptReference`, `sourceNode`, `isAbstract`, `isRootable`, plus `properties`/`references`/`children` with type, enum literals, target concept, cardinality, `featureId` and `sourceNode`) — no docs, no `sampleNode`, no aspect details; `detail = "full"` (default) returns everything described below. `cardinality` is identical at both levels — never escalate to `"full"` for it; a `references` entry always reads `0..1` or `1` (MPS references are single-valued). To learn the shapes of the concepts a concept's child/reference roles target, pass `languageRefs`: one call returns every concept of the language, which is cheaper than a refinement call per target. Each entry in `properties`, `references`, and `children` carries `featureId` (the encoded `<langUUID>/<conceptId>/<featureId>` triple a `PROPERTY`/`REF` macro stores as `propertyId`/`linkId`; not a node ref, so never a blueprint reference `target`) and `sourceNode` (the feature declaration's persistent ref, e.g. `r:...(...structure)/<id>` — the `target` of smodel `SPropertyAccess.property` / `SLinkAccess.link` / `SLinkListAccess.link`; an inherited feature's ref is in the declaring concept's model; `applicableConcept` takes the concept's own `sourceNode`, not a feature's) — so the ids no longer need harvesting via deep `print_node` calls. Unresolved refs are surfaced in `warnings` (partial success) or in an error envelope with `details.unresolved` suggestions (everything failed); use `mps_mcp_search_concepts` for free-form lookup of unknown names. `languageRefs` on a project language returns the union of its built runtime's concepts and its structure model's concept declarations, so concepts added since the last build are included and a language that was never built is answered from its declarations. The `qualifiedName` field is the unambiguous form to use as `concept` in JSON blueprints. A concept whose language has no built runtime, or that was created after the last build, is read from its structure-model declaration: the record is correct and marked `source: "declaration"`, `descriptorStatus: "hollow"`, `runtimeStatus` and `descriptorRecoveryAction`, and the envelope carries a warning plus `details.languageBuild` with the exact `mps_mcp_alter_nodes` MAKE call (`rebuild = true` on the language module; `mps_mcp_reload_all` alone is not sufficient). See `mps-language-analysis/references/concept-details.md` for the result schema and the unresolved-ref policy. For details on the canonical structure-to-aspect editing and compilation prerequisite chain, see the Critical Directives in the `mps-mcp-workflow` skill.
     """
     )
     suspend fun mps_mcp_get_concept_details(
@@ -634,13 +634,15 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
 
     /**
      * `detail = "shape"` projection: everything needed to author a node of the concept
-     * (features, their types/targets and cardinalities) and nothing else. Agents were
+     * (features, their types/targets and cardinalities, and the ids a blueprint stores: the concept's
+     * and each feature's `sourceNode`, each feature's `featureId`) and nothing else. Agents were
      * re-implementing exactly this reduction over the full record in ad-hoc scripts.
      */
     private fun conceptShapeJsonObject(concept: SAbstractConcept, repository: SRepository): JsonObject {
         val obj = JsonObject()
         obj.addProperty("qualifiedName", structureQualifiedName(concept))
         obj.addProperty("conceptReference", PersistenceFacade.getInstance().asString(concept))
+        addSourceNodeAndResolve(obj, concept.sourceNode, repository)
         obj.addProperty("isAbstract", concept.isAbstract)
         obj.addProperty("isRootable", isRootable(concept, repository))
         val properties = JsonArray()
@@ -655,11 +657,13 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
                 propObj.add("enumerationValues", values)
                 addEnumerationDefault(propObj, type)
             }
+            propObj.addProperty("featureId", MetaIdHelper.getProperty(prop).serialize())
+            addSourceNodeAndResolve(propObj, prop.sourceNode, repository)
             properties.add(propObj)
         }
         obj.add("properties", properties)
-        obj.add("references", linkShapeJsonArray(concept.referenceLinks))
-        obj.add("children", linkShapeJsonArray(concept.containmentLinks))
+        obj.add("references", linkShapeJsonArray(concept.referenceLinks, repository))
+        obj.add("children", linkShapeJsonArray(concept.containmentLinks, repository))
         return obj
     }
 
@@ -676,16 +680,24 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         target.addProperty("enumerationDefault", default.name ?: default.presentation)
     }
 
-    private fun linkShapeJsonArray(links: Collection<SAbstractLink>): JsonArray {
+    private fun linkShapeJsonArray(links: Collection<SAbstractLink>, repository: SRepository): JsonArray {
         val result = JsonArray()
         for (link in links) {
             val obj = JsonObject()
             obj.addProperty("name", link.name)
             obj.addProperty("targetConcept", structureQualifiedName(link.targetConcept))
             obj.addProperty("cardinality", linkCardinality(link))
+            linkFeatureId(link)?.let { obj.addProperty("featureId", it) }
+            addSourceNodeAndResolve(obj, link.sourceNode, repository)
             result.add(obj)
         }
         return result
+    }
+
+    private fun linkFeatureId(link: SAbstractLink): String? = when (link) {
+        is SReferenceLink -> MetaIdHelper.getAssociation(link).serialize()
+        is SContainmentLink -> MetaIdHelper.getAggregation(link).serialize()
+        else -> null
     }
 
     private fun linkCardinality(link: SAbstractLink): String = when (link) {
@@ -743,12 +755,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             obj.addProperty("name", ref.name)
             obj.addProperty("targetConcept", structureQualifiedName(ref.targetConcept))
             obj.addProperty("cardinality", linkCardinality(ref))
-            val featureId = when (ref) {
-                is SReferenceLink -> MetaIdHelper.getAssociation(ref).serialize()
-                is SContainmentLink -> MetaIdHelper.getAggregation(ref).serialize()
-                else -> null
-            }
-            featureId?.let { obj.addProperty("featureId", it) }
+            linkFeatureId(ref)?.let { obj.addProperty("featureId", it) }
             val declarationNode = addSourceNodeAndResolve(obj, ref.sourceNode, repository)
             addDocAndDeprecated(obj, getDoc(declarationNode), getDeprecationInfo(declarationNode))
             addContainingProjectIfForeign(obj, mpsProject, ref.targetConcept, repository, "targetConcept", cache)
@@ -823,6 +830,7 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
         val obj = JsonObject()
         obj.addProperty("qualifiedName", view.qualifiedName)
         obj.addProperty("conceptReference", view.conceptReference())
+        obj.addProperty("sourceNode", view.sourceNodeReference())
         obj.addProperty("isAbstract", view.isAbstract)
         obj.addProperty("isRootable", view.isRootable)
         val properties = JsonArray()
@@ -831,6 +839,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             o.addProperty("name", p.name)
             o.addProperty("type", p.typeName)
             addDeclaredEnumeration(o, p)
+            o.addProperty("featureId", p.featureId)
+            o.addProperty("sourceNode", PersistenceFacade.getInstance().asString(p.declaration.reference))
             properties.add(o)
         }
         obj.add("properties", properties)
@@ -846,6 +856,8 @@ class JetBrainsMPSLanguageMcpToolset : AbstractOps() {
             o.addProperty("name", link.role)
             o.addProperty("targetConcept", declaredTargetName(link.target))
             o.addProperty("cardinality", link.cardinality)
+            o.addProperty("featureId", link.featureId)
+            o.addProperty("sourceNode", PersistenceFacade.getInstance().asString(link.declaration.reference))
             result.add(o)
         }
         return result

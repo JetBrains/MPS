@@ -17,4 +17,4 @@ Repeats the owning target subtree once per element. Most typically used to gener
 }
 ```
 
-Inside the looped subtree, the implicit `node` variable rebinds to the *current element* of the sequence, not the outer source.
+Inside the looped subtree, the implicit `node` variable rebinds to the *current element* of the sequence, not the outer source. The 0-based iteration index is `LOOP.index` (`references/generation-context.md`).

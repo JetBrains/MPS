@@ -16,9 +16,9 @@ Most generators do not need scripts — prefer rules when possible. Scripts are 
 ## Anatomy
 
 - `name` (property)
-- `scriptKind` property — enum pointing at `pre_processing` or `post_processing` literals in `jetbrains.mps.lang.generator.structure.MappingScriptKind`
-- `modifiesModel` (property, boolean) — relevant only for pre-processing
-- `codeBlock` (role) — `MappingScriptCodeBlock`, body is a `StatementList` with implicit params `model` (the `SModel`) and `genContext`
+- `scriptKind` property — enum `MappingScriptKind`, literals `pre_processing` / `post_processing`; **the default is `post_processing`**, so a pre-processing script must set it explicitly
+- `modifiesModel` (property, boolean) — pre-processing only: set it `true` when the script changes the input model, so MPS works on a transient copy instead of the original and later phases see the changes
+- `codeBlock` (role) — `MappingScript_CodeBlock`, body is a `StatementList` with implicit params `model` (the `SModel`; concept `jetbrains.mps.lang.sharedConcepts.structure.ConceptFunctionParameter_model`) and `genContext`
 
 ## JSON blueprint
 
@@ -32,7 +32,7 @@ Most generators do not need scripts — prefer rules when possible. Scripts are 
   ],
   "children": [
     { "role": "codeBlock", "nodes": [
-      { "concept": "jetbrains.mps.lang.generator.structure.MappingScriptCodeBlock",
+      { "concept": "jetbrains.mps.lang.generator.structure.MappingScript_CodeBlock",
         "children": [ { "role": "body", "nodes": [ /* StatementList, uses `model` and `genContext` */ ]} ]
       }
     ]}

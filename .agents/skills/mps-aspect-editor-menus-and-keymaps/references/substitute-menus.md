@@ -1,99 +1,106 @@
 # Substitute Menus
 
-Substitute menus control **what nodes may be created at a given AST position**. They power the concept-completion popup; side transforms and transformation menus delegate to them via `include substitute menu`.
+Substitute menus decide **which nodes completion offers for a slot** (how a slot reaches them: `references/landscape.md`).
 
-## Default vs Named
+## Default vs named
 
-- **Default substitute menu** for a concept `C`: `SubstituteMenu_Default` with `conceptDeclaration = C`. Applies to any position whose declared target concept is `C`. Conventionally named `<C>_SubstituteMenu`.
-- **Named substitute menu** (`SubstituteMenu`, a concrete rootable type implementing `IMenu_Concept + ISubstituteMenu`): must be referenced explicitly — from a `CellModel_RefCell` as its `substituteMenu`, or from another menu via `include substitute menu`.
+Both are the rootable `SubstituteMenu`: `conceptDeclaration` (ref, 1), `type` (child), `parts` (0..n `SubstituteMenuPart`), `methodDeclaration`. The root `name` is computed; do not set it.
 
-Both carry (via `ISubstituteMenu`): `parts` (child, 0..n) of `SubstituteMenuPart`, and `methodDeclaration` (0..n).
+- **Default**: `type` = `MenuTypeDefault`. Used for every slot whose target concept is `conceptDeclaration`.
+- **Named**: `type` = `MenuTypeNamed` with property `name`. Used only where included: `SubstituteMenuPart_IncludeMenu` / `SubstituteMenuPart_Wrapper` in another substitute menu, or `include substitute menu` / `wrap substitute menu` in a transformation menu. Cells have no `substituteMenu` role. To give one cell a named substitute menu, set its `transformationMenu` to a named transformation menu whose Completion section holds `TransformationMenuPart_IncludeSubstituteMenu` with `menuReference` `SubstituteMenuReference_Named{menu}` (optional `link` reference).
 
-## Default Behaviour When No Default Substitute Menu Is Defined
+## When no default substitute menu exists
 
-If you do **not** define a default substitute menu for concept `C`, MPS synthesises one:
+MPS synthesises one: all non-abstract sub-concepts of `C` that pass the `can be child` / `can be parent` constraints, plus, for a smart-reference concept, one item per scope target.
 
-1. All enabled sub-concepts of `C` are included.
-2. Abstract concepts are excluded.
-3. Concepts whose **`can be a child`** constraint fails are excluded.
-4. Concepts whose **parent's `can be a parent`** constraint fails are excluded.
-5. For a **1:1 reference** that happens to be in place of the parent concept, a **smart-reference** completion item is added (lets the user type a name that creates-and-references in one step).
+## An empty default hides the concept
 
-## "Empty Default" Suppresses the Concept
+A default substitute menu with no parts hides `C` (and sub-concepts without their own menu) from completion. MPS hides its deprecated concepts this way (`r:00000000-0000-4000-0000-011c895902fd(jetbrains.mps.lang.smodel.editor)/7400021826775325053`). To hide `C` but keep its sub-concepts, give it one `SubstituteMenuPart_Subconcepts` part (`r:00000000-0000-4000-0000-011c89590350(jetbrains.mps.lang.intentions.editor)/3982593663455826323`).
 
-If you **define** a default substitute menu for `C` and leave it empty, `C` itself (and its sub-concepts, unless they redeclare their own menu) will **not appear** in the completion menu at all. This is a deliberate way to hide abstract or internal concepts from users.
+```json
+{"concept":"jetbrains.mps.lang.editor.structure.SubstituteMenu",
+ "references":[{"role":"conceptDeclaration","target":"<concept ref>"}],
+ "children":[{"role":"type","nodes":[{"concept":"jetbrains.mps.lang.editor.structure.MenuTypeDefault"}]}]}
+```
 
-## Menu Parts for Substitute Menus
+## Parts
 
-| Part concept | Purpose |
+| Part | Purpose |
 |---|---|
-| `SubstituteMenuPart_AddConcept` | Add one concept as a completion option |
-| `SubstituteMenuPart_Concepts` | Add a list of concepts computed by a query |
-| `SubstituteMenuPart_Subconcepts` | Include the default substitute menus of sub-concepts of a concept |
-| `SubstituteMenuPart_Group` | Grouping + condition (same shape as the transformation-menu group) |
-| `SubstituteMenuPart_IncludeMenu` | Include another substitute menu (named or default), via a `menuReference` of `ISubstituteMenuReference` |
-| `SubstituteMenuPart_Parameterized` | One item per query result — roles `parameterQuery` + inner `part` |
-| `SubstituteMenuPart_Action` | Arbitrary substitute action (custom matching text + creation handler) |
-| `SubstituteMenuPart_Wrapper` | Wrap another substitute menu, mutating each produced node — what older docs called "WrapSubstituteMenu" |
-| `SubstituteMenuPart_ReferenceScope` | Produce smart-reference items from a scope |
-| `SubstituteMenuPart_Placeholder` | Named extension point for cross-language contributions |
+| `SubstituteMenuPart_AddConcept` | One concept (`concept` reference) |
+| `SubstituteMenuPart_Concepts` | Concepts computed by a query |
+| `SubstituteMenuPart_Subconcepts` | Default menus of the sub-concepts of the menu's concept; optional `filter` |
+| `SubstituteMenuPart_Group` | `variables`, `condition`, `parts` |
+| `SubstituteMenuPart_IncludeMenu` | Another substitute menu (`menuReference`) |
+| `SubstituteMenuPart_Parameterized` | One item per query result (`parameterQuery`, `part`) |
+| `SubstituteMenuPart_Action` | Custom item: handler creates the node; matching text and guard as features |
+| `SubstituteMenuPart_Wrapper` | Wrap the nodes of another menu (`reference`, `handler`) |
+| `SubstituteMenuPart_ReferenceScope` | Smart-reference items from a scope |
+| `SubstituteMenuPart_Placeholder` | Extension point for contributions |
 
-## JSON Template — Offer a Concept
-
-```json
-{
-  "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenu_Default",
-  "properties": [{ "name": "name", "value": "Statement_SubstituteMenu" }],
-  "references": [
-    { "role": "conceptDeclaration", "target": "jetbrains.mps.baseLanguage.structure.Statement" }
-  ],
-  "children": [{
-    "role": "parts",
-    "nodes": [
-      {
-        "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_AddConcept",
-        "references": [
-          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.IfStatement" }
-        ]
-      },
-      {
-        "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_Subconcepts",
-        "references": [
-          { "role": "concept", "target": "jetbrains.mps.baseLanguage.structure.Statement" }
-        ]
-      }
-    ]
-  }]
-}
-```
-
-Use `SubstituteMenuPart_Action` when you need a non-trivial handler (post-creation wiring, dialog, scope query). The action carries `createOutputNode` (returns the new node) and optional `matchingText`, `descriptionText`, `postProcess` functions.
-
-## `SubstituteMenuPart_Wrapper` (wrap-substitute-menu)
-
-Takes an inner menu and wraps the nodes it produces. Useful when the surrounding context requires the produced node to be further wrapped — for example, wrapping an `Expression` into an `ExpressionStatement` when the surrounding concept expects a `Statement`.
+## Blueprint: offer concepts
 
 ```json
-{
-  "concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_Wrapper",
-  "references": [
-    { "role": "wrappedConcept", "target": "jetbrains.mps.baseLanguage.structure.Expression" }
-  ],
-  "children": [
-    {
-      "role": "handler",
-      "nodes": [{
-        "concept": "jetbrains.mps.lang.editor.structure.QueryFunction_SubstituteMenu_WrapperHandler",
-        "children": [{ "role": "body", "nodes": [
-          /* BaseLanguage:
-             node<ExpressionStatement> result = new node<ExpressionStatement>();
-             result.expression.set(nodeToWrap);
-             return result; */
-        ]}]
-      }]
-    }
-  ]
-}
+{"concept": "jetbrains.mps.lang.editor.structure.SubstituteMenu",
+ "references": [{"role": "conceptDeclaration", "target": "jetbrains.mps.baseLanguage.structure.Statement"}],
+ "children": [
+  {"role": "type", "nodes": [{"concept": "jetbrains.mps.lang.editor.structure.MenuTypeDefault"}]},
+  {"role": "parts", "nodes": [
+    {"concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_AddConcept",
+     "references": [{"role": "concept", "target": "jetbrains.mps.baseLanguage.structure.IfStatement"}]},
+    {"concept": "jetbrains.mps.lang.editor.structure.SubstituteMenuPart_Subconcepts"}]}]}
 ```
 
-The inner function sees `nodeToWrap` bound to the node produced by the wrapped substitute action.
+## `SubstituteMenuPart_Action`
+
+Roles: `outputConcept` (ref 0..1), `substituteHandler` (1, `QueryFunction_SubstituteMenu_Substitute`, returns the new node), `features` (0..n):
+
+| Feature | `query` child | Use |
+|---|---|---|
+| `SubstituteFeature_MatchingText` | `SubstituteMenu_SimpleString{text}` or `QueryFunction_SubstituteMenu_SubstituteString` | Text matched against what is typed |
+| `SubstituteFeature_CanSubstitute` | `QueryFunction_SubstituteMenu_CanSubstitute` (sees `pattern`, `strictly`) | Guard, called twice. With `strictly` = false it decides whether the item is offered at all. With `strictly` = true it replaces the text comparison of the typing rule (`references/side-transforms.md`): true makes the item an exact match, which fires on typing as soon as no other item matches. Without this feature, exact = matching text equals the typed text |
+| `SubstituteFeature_Selection` | `QueryFunction_SubstituteMenu_Select` (sees `createdNode`) | Where the caret goes after creation |
+| `SubstituteFeature_DescriptionText`, `_Icon`, `_ActionType` | | Presentation |
+
+Functions also see `parentNode`, `currentTargetNode`, `link`, `editorContext`, `model`. Pattern-dependent item, BL named menu `ParensAroundEmptyExpression`:
+
+```
+substitute action(output concept: ParenthesizedExpression)
+  create node { node<ParenthesizedExpression> parens = new initialized node<ParenthesizedExpression>(); …; parens; }
+  matching text { pattern; }
+  can substitute { pattern.startsWith("(") && pattern.length() == 2; }
+```
+
+That guard ignores `strictly`, so `(5` fires at once. BL `constants` (`IntegerConstant` item) accepts `strictly` only for a parsable number (`result == null ? !strictly : result != NOT_A_VALUE`), so `5` fires at once, and it refuses `strictly` otherwise. That is the corpus form of the `!strictly` recipe below.
+
+**Typing a new name creates a node.** Same shape, but refuse the strict call:
+
+```
+substitute action(output concept: C)
+  create node { node<C> n = new initialized node<C>(); n.name = pattern; n; }
+  matching text { pattern; }
+  can substitute { isValidName(pattern) && !strictly; }
+```
+
+`isValidName` stands for your own check, and it must also return false for every text another item of the slot offers (keywords, names already in scope). Otherwise this item matches those texts too, so they stop applying on typing (the rule needs no second match) and appear twice in completion. Every valid name is then offered and Enter applies it; Ctrl+Space with the name typed and this the only match applies it at once. Accepting `strictly` would fire on the first letter that no other item matches. To put the caret at the end afterwards, add a `SubstituteFeature_Selection` like `constants`: `SelectionUtil.selectLabelCellAnSetCaret(editorContext, createdNode, SelectionManager.LAST_EDITABLE_CELL, -1)`.
+
+Shape: `{"concept": "…SubstituteMenuPart_Action", "references": [{"role": "outputConcept", …}], "children": [{"role": "substituteHandler", …}, {"role": "features", "nodes": [{"concept": "…SubstituteFeature_MatchingText", "children": [{"role": "query", …}]}, {"concept": "…SubstituteFeature_CanSubstitute", "children": [{"role": "query", …}]}]}]}`.
+
+## Keeping data when one concept replaces another
+
+A concept item picked from completion (or from a wrapped substitute menu) creates its node through the node factory, with the replaced node as `sampleNode`. Custom handlers and execute bodies get the same only with `new initialized` / `replace with new initialized`.
+
+Recipe "replace an operator, keep the operands":
+
+1. A `NodeFactory` on the abstract operator concept copies the operands: `if (sampleNode.isInstanceOf(BinaryOperation)) { newNode.leftExpression = sampleNode:BinaryOperation.leftExpression; … }`. BL has exactly this for `BinaryOperation`. The factory itself is in `mps-aspect-actions`. With it, plain Ctrl+Space on the operator already replaces it and keeps both sides.
+2. Only to restrict the choices (e.g. only operators of the same kind), set the operator cell's `transformationMenu` to a named menu. In BL that cell is the lang.core `alias` `CellModel_Component`. The menu has one Completion section with `include substitute menu` → a named substitute menu. BL: `BinaryOperation_Alias_TransformationMenu` → `BinaryOperation_Alias_SubstituteMenu`, a `SubstituteMenuPart_Wrapper` over the default substitute menu of `BinaryOperation`. Its handler copies `leftExpression`/`rightExpression` from `currentTargetNode`, and its selection runs `createdNode.select[in: editorContext, cell: ALIAS_EDITOR_COMPONENT, selectionStart: -1]`. To narrow further, wrap a narrower menu, e.g. `SubstituteMenuReference_Default` of the abstract sub-kind, or a `SubstituteMenuPart_Subconcepts` with a `filter`.
+
+## `SubstituteMenuPart_Wrapper`
+
+`reference` (1, `SubstituteMenuReference_Default{concept}` or `SubstituteMenuReference_Named{menu}`) supplies the items. `handler` (1, `QueryFunction_SubstituteMenu_WrapperHandler`) receives each produced node as `nodeToWrap` and returns the node to insert, e.g. `Expression` items in a `Statement` slot:
+
+```
+node<ExpressionStatement> result = new node<ExpressionStatement>();
+result.expression.set(nodeToWrap);
+return result;
+```

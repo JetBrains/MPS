@@ -5,7 +5,7 @@ rehearsal in `~/MPSProjects/mcp-study/runs-s17`. `S17-opus-1` (effort `low`) and
 (effort `medium`) both passed criteria 1–4 on the intended path, with one test run each and no fix
 cycle (`S17-*.eval.md`). Written for MPS-40320; catalog `skillsSha256` `406cbbb880fd…`.
 
-Fixture: `recipes.tar.gz`, as S7 (`../../fixtures/README.md`): a passing S1 project, with the sample
+Fixture: `recipes.tar.gz`, as S7 (`../../instructions/fixtures.md`): a passing S1 project, with the sample
 Recipe and Cookbook roots deleted and `classes_gen` included. The current tarball (2026-09-16) still
 carries a doc surface (`.agents/`, `.claude/`, `AGENTS.md`, `CLAUDE.md`). `run_worker.sh` purges it
 and installs the live catalog per run (`install_skills.py`), so this is not a measured input. Re-tar

@@ -7,10 +7,10 @@ value below matched by both left-behind states and every P1–P7 signal on targe
 criterion 5 checks it anyway, and both workers freed them. Moving it into "Done when" would change
 the frozen prompt, so it was left as rehearsed.
 
-Fixture: `recipes-misgen.tar.gz` (`../../fixtures/README.md`): `recipes-full` plus an
+Fixture: `recipes-misgen.tar.gz` (`../../instructions/fixtures.md`): `recipes-full` plus an
 observer-authored, interpreted generator for `mcp.study.recipes` and one injected defect, D1: the
 `PORTIONS` property macro reads `node.steps.size` instead of `node.servings`. Authoring, ids and the
-tool walk the pins come from: `DEFECT.md` (calls: `DEFECT.log`), run live on 2026-10-23 (MPS
+tool walk the pins come from: [`../../fixtures/inputs/s15/DEFECT.md`](../../fixtures/inputs/s15/DEFECT.md) (calls: [`DEFECT.log`](../../fixtures/inputs/s15/DEFECT.log)), run live on 2026-10-23 (MPS
 2026.1, build 261.25134).
 
 The gap this cell measures: no cell made a worker keep transient models, read a generation step's
@@ -45,7 +45,7 @@ step-2 model. The observer does not MAKE: the worker's last build is what is mea
 2. **Generated Java right.** `grep` in `<project>/solutions/mcp.study.kitchen/source_gen/mcp/study/generated/`:
    exactly `Crepes.java`, `Pancakes.java`, `Omelette.java`, with `PORTIONS = 4`, `= 2` and `= 1`, and
    `steps()` returning, in order, Crepes' four step texts and the three of each other recipe (table
-   in `DEFECT.md`). `Crepes` with 4 was already right with the defect; a `Pancakes` 2 and `Omelette` 1
+   in [`../../fixtures/inputs/s15/DEFECT.md`](../../fixtures/inputs/s15/DEFECT.md)). `Crepes` with 4 was already right with the defect; a `Pancakes` 2 and `Omelette` 1
    prove the fix.
 3. **`EVIDENCE.md`** names, in any form:
    - the plan step: index `2` and prefix `2_` (from `PLAN`; "step 2" alone, without the prefix, is

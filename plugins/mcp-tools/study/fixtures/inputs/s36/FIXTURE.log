@@ -1,0 +1,14 @@
+# S36 fixture build log — `recipes-gen-broken.tar.gz` (2026-11-02)
+
+Every model change made to `recipes-gen.tar.gz` (sha256 `e9fd6258…`, `../../pins.md`), in order, as sent
+through `scripts/mcp_call.py` (one JSON object per call; `projectPath` =
+`~/MPSProjects/mcp-study/build/s36/recipes-gen-broken` is omitted). MPS 2026.1, build 261.25134, from
+`myMPS-fix` sources. Read-only calls (prints, checks), the two MAKEs (`FIXTURE.md` step 6) and
+`DROP_TRANSIENT_MODELS` are left out. Defect B's subtree gets new node ids on every replay.
+
+## Defect A — delete the PORTIONS $PROPERTY$, then pin the literal to 1
+{"tool": "mps_mcp_update_node", "args": {"operation":"SET","kind":"CHILD","childNodeRef":"r:98539ed4-bf63-4715-a114-6d1e7a8ca01d(mcp.study.recipes.generator.templates@generator)/4956319657762978650"}}
+{"tool": "mps_mcp_update_node", "args": {"operation":"SET","kind":"PROPERTY","properties":[["r:98539ed4-bf63-4715-a114-6d1e7a8ca01d(mcp.study.recipes.generator.templates@generator)/4956319657762963866","value","1"]]}}
+
+## Defect B — the $LOOP$ query becomes node.steps.skip(1) (replaces the expression of <LQ>)
+{"tool": "mps_mcp_update_node", "args": {"operation":"ADD","kind":"CHILD","nodeReference":"r:98539ed4-bf63-4715-a114-6d1e7a8ca01d(mcp.study.recipes.generator.templates@generator)/4956319657762978668","childRole":"expression","childJson":"{\"concept\":\"jetbrains.mps.baseLanguage.structure.DotExpression\",\"children\":[{\"role\":\"operand\",\"nodes\":[{\"concept\":\"jetbrains.mps.baseLanguage.structure.DotExpression\",\"children\":[{\"role\":\"operand\",\"nodes\":[{\"concept\":\"jetbrains.mps.lang.generator.structure.TemplateFunctionParameter_sourceNode\"}]},{\"role\":\"operation\",\"nodes\":[{\"concept\":\"jetbrains.mps.lang.smodel.structure.SLinkListAccess\",\"references\":[{\"role\":\"link\",\"target\":\"r:1cb60491-97cd-473a-a80d-bee19374c6a4(mcp.study.recipes.structure)/12157282221657570\"}]}]}]}]},{\"role\":\"operation\",\"nodes\":[{\"concept\":\"jetbrains.mps.baseLanguage.collections.structure.SkipOperation\",\"children\":[{\"role\":\"elementsToSkip\",\"nodes\":[{\"concept\":\"jetbrains.mps.baseLanguage.structure.IntegerConstant\",\"properties\":[{\"name\":\"value\",\"value\":\"1\"}]}]}]}]}]}"}}

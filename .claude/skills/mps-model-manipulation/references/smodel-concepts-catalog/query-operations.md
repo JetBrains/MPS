@@ -12,6 +12,8 @@ All in `operation` role of a `DotExpression`.
 | `OperationParm_Concept` | `1144101972840` | `<C>` parameter wrapper for ancestor/descendants |
 | `OperationParm_Inclusion` | leaf — sibling of `OperationParm_Concept` | `+` include-self flag (`.ancestor<C, +>` / `.descendants<C, +>`) |
 | `Node_GetContainingRootOperation` | `1171310072040` | `.containingRoot` |
+| `Model_RootsOperation` | `1171315804604` | `model.roots(C)` on a model operand (`genContext.inputModel`, a mapping script's `model`); `C` is child `conceptArgument` = `RefConcept_Reference` (ref `conceptDeclaration`) |
+| `Model_NodesOperation` | `1171323947159` | `model.nodes(C)` — every node of `C` in the model; `C` as for `.roots` |
 | `Node_ContainingLinkOperation` | `7504436213544206332` | `.containingLink` (alias `containingLink`) — `link<C : role>` of the containment edge to parent |
 | `Node_GetContainingRoleOperation` | `1960721196051541146` | `.role` — **DEPRECATED since MPS 3.3**; prefer `.containingLink` |
 | `Node_GetModelOperation` | `1143234257716` | `.model` |

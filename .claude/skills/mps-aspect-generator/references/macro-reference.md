@@ -8,7 +8,7 @@ Read this when: wiring a generated reference to a cross-template / cross-rule ta
 
 ## Fully qualified concept names
 
-- `jetbrains.mps.lang.generator.structure.ReferenceMacro` — the macro itself, attached via the standard `smodelAttribute` role on the template reference-holder node. Properties: `linkRole` (string — the role name of the reference being rewired, e.g. `"baseMethodDeclaration"`) and `linkDeclaration` (string — the stable id of the link declaration in `concept-id/declaring-concept-id/link-id` form).
+- `jetbrains.mps.lang.generator.structure.ReferenceMacro` — the macro itself, attached via the standard `smodelAttribute` role on the template reference-holder node. Properties: `linkId` (string — which reference of the owning template node is rewired, encoded `<language-uuid>/<declaring-concept-id>/<link-id>`; copy it from `references[].featureId` of `mps_mcp_get_concept_details` on the owning node's concept — an inherited link carries its declaring concept's id) and the optional `role_DebugInfo` (the link name, for display). Like `PropertyMacro.propertyId`, a wrong `linkId` is accepted on write; `mps_mcp_check_root_node_problems` reports it.
 - `jetbrains.mps.lang.generator.structure.ReferenceMacro_GetReferent` — the function body, child of `ReferenceMacro` under role `referentFunction`.
 
 ## When it runs
@@ -23,16 +23,16 @@ The function's return type depends on the reference link declaration:
 |---|---|
 | `node<>` (typed per link declaration) | Direct pointer to the target node — the common case for "re-target this reference at *that* generated node". |
 | `SNodeReference` | Symbolic pointer; useful when the template has no handle on the target's model at application time (lazy/unresolved references). |
-| `string` | Name-based identifier of the target — MPS resolves by name in the expected scope. Use when the referent is easier to name than to look up (e.g. method parameters resolved by name). |
+| `string` | Name-based identifier of the target — MPS resolves it by name through the scope of the output reference (any language) and turns it into a plain reference at the end of the step. Use when the referent is easier to name than to look up (e.g. a generated method or parameter with a known name). The string is the reference's resolve info, e.g. `[package.name]ClassName` for a BaseLanguage class outside the output model. |
 
 **Implicit parameters** in the body: the standard set (`node`, `genContext`) **plus `outputNode`** — the already-placed node in the output model that owns the reference link being computed. Use `outputNode` when the target must be resolved relative to the output tree rather than the input.
 
 ## Example 1 — with a mapping label (Kaja `reduce_RoutineCall`)
 
-From `samples/robot_Kaja/languages/Kajak/generator/template/Kajak/generator/template/main@generator.mps`. The generator declares a `routines` label at the MappingConfiguration. The root rule that expands each Kajak routine into a BaseLanguage method is the **writer** (attaches `routines` to its output method). Inside the template body, a method call is used as a placeholder (here `bar()`), and a `$REF$` on that `MethodCall` **reads** the label to point the call at the method that will be generated for `node.definition`:
+From the template `reduce_RoutineCall` in `jetbrains.mps.samples.Kaja.generator.template.main@generator`. The generator declares a `routines` label at the MappingConfiguration. The root rule that expands each Kajak routine into a BaseLanguage method is the **writer** (attaches `routines` to its output method). Inside the template body, a method call is used as a placeholder (here `bar()`), and a `$REF$` on that `LocalMethodCall` **reads** the label to point the call at the method that will be generated for `node.definition`:
 
 ```json
-{ "concept": "jetbrains.mps.baseLanguage.structure.MethodCall",
+{ "concept": "jetbrains.mps.baseLanguage.structure.LocalMethodCall",
   "references": [
     { "role": "baseMethodDeclaration", "target": "<placeholder-method-in-template>" }
   ],
@@ -40,8 +40,8 @@ From `samples/robot_Kaja/languages/Kajak/generator/template/Kajak/generator/temp
     { "role": "smodelAttribute", "nodes": [
       { "concept": "jetbrains.mps.lang.generator.structure.ReferenceMacro",
         "properties": [
-          { "name": "linkRole",        "value": "baseMethodDeclaration" },
-          { "name": "linkDeclaration", "value": "f3061a53-9226-4cc5-a443-f952ceaf5816/1204053956946/1068499141037" }
+          { "name": "role_DebugInfo",  "value": "baseMethodDeclaration" },
+          { "name": "linkId",          "value": "f3061a53-9226-4cc5-a443-f952ceaf5816/1204053956946/1068499141037" }
         ],
         "children": [
           { "role": "referentFunction", "nodes": [
@@ -63,7 +63,7 @@ Inside the `referentFunction` body the relevant expression is:
 genContext  →  get output <routines-label-ref> for (node.definition)
 ```
 
-…encoded as a `DotExpression` whose operand is `TemplateFunctionParameter_generationContext` and whose operation is a `GenerationContextOp_GetOutputByLabelAndInput` with a `mappingLabel` ref and an `inputNode` child expression (see `references/mapping-labels.md`). The placeholder target (`bar`) is irrelevant at runtime — the reference macro overrides it.
+…encoded as a `DotExpression` whose operand is `TemplateFunctionParameter_generationContext` and whose operation is a `GenerationContextOp_GetOutputByLabelAndInput` with a `label` ref and an `inputNode` child expression (see `references/mapping-labels.md`). The placeholder target (`bar`) is irrelevant at runtime — the reference macro overrides it, but it must be a node the template itself can see, or the check reports it out of scope: an `InlineTemplate_RuleConsequence` has no surroundings, so a placeholder `VariableReference` needs `InlineTemplateWithContext_RuleConsequence` (the declaration in the context, the fragment on the reference).
 
 ## Example 2 — without a mapping label (lambda-calculus name lookup)
 
@@ -78,8 +78,8 @@ From `samples/lambda/languages/lambdaCalculus/generator/template/main@generator.
     { "role": "smodelAttribute", "nodes": [
       { "concept": "jetbrains.mps.lang.generator.structure.ReferenceMacro",
         "properties": [
-          { "name": "linkRole",        "value": "variableDeclaration" },
-          { "name": "linkDeclaration", "value": "f3061a53-9226-4cc5-a443-f952ceaf5816/1068498886296/1068581517664" }
+          { "name": "role_DebugInfo",  "value": "variableDeclaration" },
+          { "name": "linkId",          "value": "f3061a53-9226-4cc5-a443-f952ceaf5816/1068498886296/1068581517664" }
         ],
         "children": [
           { "role": "referentFunction", "nodes": [

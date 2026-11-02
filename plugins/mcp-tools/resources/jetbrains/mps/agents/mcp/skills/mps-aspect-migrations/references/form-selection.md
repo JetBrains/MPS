@@ -45,9 +45,9 @@ Enhancement scripts (`lang.script`) live in models named `<language>.scripts` an
 
 | Use case | Recommended form |
 |---|---|
-| Concept completely removed (no replacement) | `PureMigrationScript` with no `part` children |
-| Concept renamed/moved to another language | `PureMigrationScript` + `MoveNodeMigrationPart` + `MoveConcept` specialization |
-| Child/reference/property renamed | `PureMigrationScript` + `MoveNodeMigrationPart` + `MoveContainmentLink`/`MoveReferenceLink`/`MoveProperty` specialization |
+| A concept, property or link is retired | Do not delete it. Deprecate it, add the replacement and migrate the values: [language-evolution.md](language-evolution.md). A `PureMigrationScript` with no `part` children changes no model by itself. |
+| Concept moved to another language, or values of a deprecated element move unchanged to its replacement | `PureMigrationScript` + `MoveNodeMigrationPart` + `MoveConcept` / `MoveContainmentLink` / `MoveReferenceLink` / `MoveProperty` specialization (blueprint in [language-evolution.md](language-evolution.md)) |
+| Child/reference/property renamed in place | No migration: models store features by id, so a rename is safe |
 | Composition of multiple migrations | `PureMigrationScript` + `IncludeMigrationPart` children |
 | Complex programmatic transformation (compute new values, conditional logic) | `MigrationScript` with BL `execute()` body |
 | Data must flow between scripts (one computes, another uses) | `MigrationScript` with `ProducedAnnotationDataDeclaration`/`AnnotationDataDependency` + `putData`/`getData` |

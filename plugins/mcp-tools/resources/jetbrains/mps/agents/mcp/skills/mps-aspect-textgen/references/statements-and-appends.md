@@ -38,7 +38,7 @@ A `\n` emission is simply `{ "concept": "jetbrains.mps.lang.textGen.structure.Ne
 | Concept | Surface | Effect on indentation buffer | Effect on output |
 |---|---|---|---|
 | `IndentBufferOperation` | `indent buffer ;` | reads | emits the current depth's whitespace into the output stream |
-| `WithIndentOperation` (child `body`) | `with indent { ... }` | `depth++` for the scope of `body`, then `depth--` | none by itself |
+| `WithIndentOperation` (child `list`) | `with indent { ... }` | `depth++` for the scope of `list`, then `depth--` | none by itself |
 | `IncreaseDepthOperation` | `increase depth ;` | `depth++` unconditionally | none |
 | `DecreaseDepthOperation` | `decrease depth ;` | `depth--` unconditionally | none |
 | `NodeAppendPart` with `withIndent = true` | `append <part> with indent` | transiently `depth++` while evaluating this part | emits child text with the extra level |

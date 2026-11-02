@@ -3,14 +3,14 @@
 **Prompt frozen 2026-10-23** (`promptSha256` `9c33cf5b4cae…`) after the round-40 baseline:
 `S14-opus-1` passed with all five answers read from its own console probe of the engine.
 
-Fixture: `flow-java.tar.gz` (`../../fixtures/README.md`): a synthesized empty project plus
+Fixture: `flow-java.tar.gz` (`../../instructions/fixtures.md`): a synthesized empty project plus
 solution `flow.study` with model `flow.study.code`, which holds one class, `Ledger`. The worker
 must not change any model, so every answer below is fixed by the fixture.
 `check_root_node_problems` on the model answers "no problems found": no "Unused assignment" or
 other dataflow warning hands the worker an answer.
 
 The answers were read from the engine on 2026-10-23 (MPS 2026.1, build 261.25134), not derived by
-hand. A console probe, `engine_probe.txt` next to this file (Java statements), built the program with
+hand. A console probe, [`../../fixtures/inputs/s14/engine_probe.txt`](../../fixtures/inputs/s14/engine_probe.txt) (Java statements), built the program with
 `DataFlow.buildProgram(<settle>)`, the same builder the shipped checks use, and printed
 `program.analyze(new ReachingDefinitionsAnalyzer())` and `ReachingReadsAnalyzer` per instruction.
 To re-pin after a fixture or runtime change, insert its text with

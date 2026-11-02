@@ -12,7 +12,7 @@ These commits introduce:
 - `mps_mcp_query_dataflow` (`PRINT_PROGRAM`, `REACHING_WRITES`, `REACHING_READS`) in `JetBrainsMPSDataflowMcpToolset.kt`, backed by the reflective runtime façade `DataflowRuntime.kt` and additional metamodel handles in `BaseLanguageMeta.kt`.
 - Unit and integration tests (`JetBrainsMPSDataflowMcpToolsetIntegrationTest.kt`, `DataflowBuilderFrameTest.kt`, `SkillDataflowQueryRoutingTest.kt`) and manual test scenario steps (`10.25`–`10.27`).
 - Skill documentation (`dataflow-queries.md`, `mps-aspect-dataflow/SKILL.md`, and routing/index updates replicated cleanly across all three skill catalogs).
-- Study scenarios `S13`, `S14`, and `S16`, `families.py` counters (`DF_*`), `DISALLOWED_TOOLS` support in `run_worker.sh`, and Round 40/41 evaluation notes in `dataflow-exposure-assessment.md`.
+- Study scenarios `S13`, `S14`, and `S16`, `families.py` counters (`DF_*`), `DISALLOWED_TOOLS` support in `run_worker.sh`, and Round 40/41 evaluation notes in `reports/assessments/dataflow-exposure.md`.
 
 Overall, the implementation is clean, well-structured, and closely aligned with `JetBrainsMPSTypesMcpToolset.kt`. Below are the findings across **Correctness**, **Consistency**, and **Duplication**.
 
@@ -69,13 +69,13 @@ Tests: the new tests in `JetBrainsMPSDataflowMcpToolsetIntegrationTest` (`an ini
 
 ## 2. Consistency
 
-1. **Contradictory bullet left in `plugins/mcp-tools/study/dataflow-exposure-assessment.md` (`lines 386-389` vs `lines 425-429`):**
+1. **Contradictory bullet left in `plugins/mcp-tools/study/reports/assessments/dataflow-exposure.md` (`lines 386-389` vs `lines 425-429`):**
    - Commit `a4123fb6fc67` changed `unreachable()` so it no longer filters out `mayBeUnreachable` or source-less instructions, and `bf97e9a95d8a` documented that fix under Step 3 (`lines 425-429`: *"The tool now lists every unreachable instruction with the flag per instruction"*).
    - However, the Step 2 status note at `lines 386-389` still describes the pre-`a4123fb6fc67` behavior as current:
      > *"The shipped reachability check skips instructions marked `mayBeUnreachable` … and those without a source. `unreachable` filters the same way, or a builder author chases a phantom."*
 
    **Verdict: confirmed. Fixed:** the bullet now says the first tool filtered this way, that round 41 showed Kaja's check does not, and that since `a4123fb6fc67` `unreachable` lists every unreachable instruction with the flag on each one. The same section's "not covered by a test" bullet no longer lists the initializer and closure defaults, which are now tested. Only the `ClosureLiteral` default is still untested.
-2. **Pre-tool descriptions left in `plugins/mcp-tools/study/scenarios.md` (`lines 234-235, 250-252, 349-350, 385`):**
+2. **Pre-tool descriptions left in `plugins/mcp-tools/study/instructions/scenarios.md` (`lines 234-235, 250-252, 349-350, 385`):**
    - `lines 234-235` (`S13`): still says *"Also the baseline for a future `mps_mcp_query_dataflow` `PRINT_PROGRAM`"*.
    - `lines 250-252` (`S14`): still says *"Run to verify: nothing in today's catalog. This is the tool-free baseline for a future `mps_mcp_query_dataflow` `REACHING_WRITES` / `REACHING_READS` and its skill page. Read the process signals together with `DF_console_runs`"*, omitting `DF_reaching_queries` and contradicting the table at `line 349`.
    - `lines 349-350`: the "By skill" table has both the new row added in `b730c4b8e6e8` (`line 349`: `dataflow queries (mps_mcp_query_dataflow, ...)`) and the obsolete pre-tool row from `337b86b161e8` (`line 350`: `dataflow analysis results (...) | S13 (...), S14 (def-use questions; no tool answers them yet)`).

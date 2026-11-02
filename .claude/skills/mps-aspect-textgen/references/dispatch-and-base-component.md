@@ -23,7 +23,7 @@ A language that extends another can reuse the parent's base component by declari
   "concept": "jetbrains.mps.lang.textGen.structure.LanguageTextGenDeclaration",
   "properties": [{ "name": "name", "value": "MyLanguageTextGen" }],
   "children": [
-    { "role": "unitContext", "nodes": [
+    { "role": "contextObjects", "nodes": [
       { "concept": "jetbrains.mps.lang.textGen.structure.UnitContextDeclaration",
         "properties": [{ "name": "name", "value": "MyUnitContext" }]
       }
@@ -32,7 +32,7 @@ A language that extends another can reuse the parent's base component by declari
 }
 ```
 
-Verify the exact child roles (`unitContext` / `operations` / `utilityMethods` — versions have varied) against `mps_mcp_get_concept_details jetbrains.mps.lang.textGen.structure.LanguageTextGenDeclaration` before inserting.
+The child roles are `contextObjects` (`UnitContextDeclaration`, 0..n), `operation` (`OperationDeclaration`, 0..n) and `function` (`UtilityMethodDeclaration`, 0..n); the `extends` link to a parent component is the `baseTextGen` reference. Confirm with `mps_mcp_get_concept_details jetbrains.mps.lang.textGen.structure.LanguageTextGenDeclaration` (`detail="shape"`) if in doubt.
 
 ## Utility classes in the textGen model
 

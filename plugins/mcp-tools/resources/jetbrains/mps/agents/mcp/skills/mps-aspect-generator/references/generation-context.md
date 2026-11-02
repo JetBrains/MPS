@@ -7,10 +7,13 @@ Read this when: building a `genContext.*` expression, looking up the right conce
 Inside every macro/query body the following are implicit:
 
 - `node` — the matched source node (or the element inside a `$LOOP$`), typed to the enclosing rule/macro `applicableConcept`. AST concept: `jetbrains.mps.lang.generator.structure.TemplateFunctionParameter_sourceNode`.
-- `genContext` — the generator context. AST concept: `jetbrains.mps.lang.generator.structure.TemplateFunctionParameter_generationContext`.
+- `genContext` — the generator context. AST concept: `jetbrains.mps.lang.generator.generationContext.structure.TemplateFunctionParameter_generationContext`.
 - `operationContext` — rarely needed; access to the IDE/project API. Concept: `TemplateFunctionParameter_operationContext`.
-- In `MapSrcNodeMacro.mapperFunction`: also `outputNode` — the node produced by the template into which the mapper plugs.
-- In `MappingScript`: `model` (the `SModel`) and `genContext`.
+- In `$MAP_SRC$`: `parentOutputNode` in `mapperFunction` (the output parent the mapped node is added to), `outputNode` in `postMapperFunction` (the produced node). In a `$REF$` referent: `outputNode` (the output node that owns the reference).
+- In a template with `parameter`s: each parameter is read as `genContext.<name>` — a `DotExpression` over `genContext` whose operation is `GenerationContextOp_ParameterRef` (ref `parameter` → the `TemplateParameterDeclaration`).
+- Inside a `$LOOP$`: `LOOP.index` (0-based) and `LOOP.inputNode` are the standalone expression `jetbrains.mps.lang.generator.structure.LoopMacroNamespaceAccessor` with property `variable` = `index` / `inputNode`.
+- Inside a `$VAR$`: `genContext.<var>` — operation `GenerationContextOp_VarRef2` (ref `vardecl`).
+- In `MappingScript` and `CreateRootRule_Condition`: `model` and `genContext`, but no `node`.
 
 ## genContext operations catalog
 
@@ -47,7 +50,7 @@ All accessors listed here are concepts in language `jetbrains.mps.lang.generator
   "concept": "jetbrains.mps.baseLanguage.structure.DotExpression",
   "children": [
     { "role": "operand", "nodes": [
-      { "concept": "jetbrains.mps.lang.generator.structure.TemplateFunctionParameter_generationContext" }
+      { "concept": "jetbrains.mps.lang.generator.generationContext.structure.TemplateFunctionParameter_generationContext" }
     ]},
     { "role": "operation", "nodes": [
       { "concept": "jetbrains.mps.lang.generator.generationContext.structure.GenerationContextOp_CreateUniqueName",

@@ -14,9 +14,10 @@ A **pattern reduction rule** (`PatternReduction_MappingRule`) matches an input s
 
 ## Anatomy
 
-- `pattern` — concept `jetbrains.mps.lang.pattern.structure.Pattern` (or a language-specific pattern wrapper); the pattern tree contains normal concept nodes plus pattern variables (`2DMOqr`, role `lGtFl`) that bind subtrees for reuse.
+- `pattern` — a `jetbrains.mps.lang.pattern.structure.PatternExpression` whose child `pattern` is the pattern tree: ordinary concept nodes, with a `PatternVariableDeclaration` (property `varName`) attached as `smodelAttribute` on each hole that binds a subtree for reuse (`#xx`).
 - `ruleConsequence` — usually a `TemplateDeclarationReference` whose template declares parameters matching the pattern variables; the consequence carries `templateArgument` children that bind pattern vars to template parameters.
 - `conditionFunction` — optional additional predicate.
+- reading a pattern variable inside a query of the consequence (a `$PROPERTY$` value, a `$REF$` referent): `genContext.#var` — `GenerationContextOp_NodePatternRef` (ref `patternVarDecl`) for a node variable, `GenerationContextOp_PropertyPatternRef` (ref `propertyPatternVar` → a `PropertyPatternVariableDeclaration` on the pattern's property) for a property variable. The `TemplateArgument*PatternRef*Expression` concepts are only `actualArgument`s of a template call; inside a query they have no TextGen and the generator's make fails.
 
 ## JSON sketch
 
@@ -25,8 +26,8 @@ A **pattern reduction rule** (`PatternReduction_MappingRule`) matches an input s
   "concept": "jetbrains.mps.lang.generator.structure.PatternReduction_MappingRule",
   "children": [
     { "role": "pattern", "nodes": [
-      { "concept": "jetbrains.mps.lang.pattern.structure.Pattern",
-        "children": [ { "role": "patternNode", "nodes": [
+      { "concept": "jetbrains.mps.lang.pattern.structure.PatternExpression",
+        "children": [ { "role": "pattern", "nodes": [
           /* the pattern tree — ordinary concept nodes;
              attach `PatternVariableDeclaration` on the hole nodes via `smodelAttribute`
              to bind them as `#xx`, `#yy`, etc. */
@@ -37,8 +38,8 @@ A **pattern reduction rule** (`PatternReduction_MappingRule`) matches an input s
       { "concept": "jetbrains.mps.lang.generator.structure.TemplateDeclarationReference",
         "references": [ { "role": "template", "target": "<convertMult-ref>" } ],
         "children": [
-          { "role": "templateArgument", "nodes": [ /* ref to pattern var #yy */ ]},
-          { "role": "templateArgument", "nodes": [ /* ref to pattern var #right */ ]}
+          { "role": "actualArgument", "nodes": [ /* TemplateArgumentPatternVarRefExpression, ref patternVarDecl → #yy */ ]},
+          { "role": "actualArgument", "nodes": [ /* TemplateArgumentPatternVarRefExpression, ref patternVarDecl → #right */ ]}
         ]
       }
     ]}

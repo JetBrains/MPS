@@ -1,3 +1,5 @@
+A rename keeps the feature's id, so existing values, editor cells and code that use the feature follow it. Only literal label text, such as an editor's `title:` constant, still shows the old name. No migration is needed.
+
 #### `RENAME_CONCEPT_PROPERTY`
 Renames a property definition in a concept.
 

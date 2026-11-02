@@ -1,6 +1,6 @@
 # Stylesheet Enumeration Values
 
-The enum literals accepted by `ForegroundColorStyleClassItem.color`, `BackgroundColorStyleClassItem.color`, `BracketColorStyleClassItem.color`, `TextBackgroundColorStyleClassItem.color`, `FontStyleStyleClassItem.style`, the underline-style item, and the focus-policy item. These come from enumerations in `jetbrains.mps.lang.editor.structure` — values are case-sensitive and must be referenced as enum members (not free strings).
+The enum literals accepted by `ForegroundColorStyleClassItem.color`, `BackgroundColorStyleClassItem.color`, `BracketColorStyleClassItem.color`, `TextBackgroundColorStyleClassItem.color`, `FontStyleStyleClassItem.style`, the underline-style item, and the focus-policy item. These come from enumerations in `jetbrains.mps.lang.editor.structure`. In JSON they are plain, case-sensitive property values, e.g. `{"name": "style", "value": "BOLD"}` on `FontStyleStyleClassItem`, `{"name": "color", "value": "darkBlue"}` on `ForegroundColorStyleClassItem`.
 
 ## Colors — `_Colors_Enum`
 
@@ -65,9 +65,13 @@ Used by `FocusPolicyStyleClassItem`. Default literal: `noAttraction`.
 | `attractsFocus` | caret lands here when navigating into the containing collection |
 | `firstEditableCell` | caret lands on the first editable descendant |
 
+## Dynamic values
+
+Most style items (all flag and color items, font style, font size, matching label, …; not padding, gap, layout constraint or show-boundaries) have an optional `query` child that replaces the static value (`mps_mcp_get_concept_details` tells): `QueryFunction_Boolean` on flag items, `IQueryFunction_Color` on color items, `QueryFunction_FontStyle` with `style` = `QUERY`. BL `BinaryOperation_Editor`: `indent-layout-on-new-line : (editorContext, node)->boolean { node.isMultiline; }`.
+
 ## Authoring guidance
 
-- Reference enum members from a JSON blueprint as `node.references[...].target` to the matching `EnumerationMemberDeclaration` in `jetbrains.mps.lang.editor.structure` (see `references/cell-models.md` for the general enum-reference pattern). Do not write the literal as a free string property.
+- Write the literal as the property value (`style`, `color`, …). It is not a reference.
 - Compare against existing stylesheets in the model's used languages before introducing a new style class — `mps-aspect-editor` SKILL.md ("Stylesheets" directive).
 - `FontStyleStyleClassItem`, `*ColorStyleClassItem`, and the underline item all carry an aggregated `query` child (`QueryFunction_*`). When the static enum literal does not fit, switch the item's `style` / `color` to `QUERY` (or the equivalent query mode) and fill the query body — do not invent new enum literals.
 

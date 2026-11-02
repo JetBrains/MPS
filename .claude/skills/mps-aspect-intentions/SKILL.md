@@ -24,6 +24,7 @@ Intentions are user-invoked transformations shown in the Alt+Enter popup on a no
 
 ## Common-Path Workflow
 
+0. Decide whether to write the `EditorTestCase` (`invoke intention`) first: the first Critical Directive of `mps-aspect-editor-menus-and-keymaps`. Without one, the headless check in step 6 is the alternative.
 1. Ensure an `intentions` model exists in the language (create with `mps_mcp_create_model`, passing `moduleName: "<lang>"` and `modelName: "<lang>.intentions"` — aspect ID `intentions`, case-sensitive, no `@` suffix; see [aspect-model-stereotypes.md](references/aspect-model-stereotypes.md)). Used languages: `jetbrains.mps.lang.intentions`; add `jetbrains.mps.lang.actions` if you will use factory-initialized splicing.
 2. Insert an `IntentionDeclaration` root with `mps_mcp_insert_root_node_from_json` (see blueprint in `references/json-blueprints.md`). Set `name`, `forConcept`, and `isAvailableInChildNodes` if the popup should bubble from descendants.
 3. Fill `descriptionFunction` (returns a short label String), `executeFunction` (the transformation), and optionally `isApplicableFunction` (gate predicate) and `childFilterFunction` (per-descendant filter when `isAvailableInChildNodes=true`).
