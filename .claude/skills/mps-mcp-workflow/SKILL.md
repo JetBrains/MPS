@@ -55,11 +55,7 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 The MPS catalog contains companion skills for focused task families. Load whichever ones apply to your current task, following the origin rules above.
 
-> **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed and refreshed by the `mps_mcp_initialize_project_for_agents` MCP tool. It installs into a `targetDirectory` — normally your **repository / workspace root** (the folder containing `.git`), which may be an *ancestor* of the MPS project directory when the project sits in a subdirectory; leave `targetDirectory` empty to let the tool derive that root from the open project's enclosing VCS folder, while still passing the project's base directory as `projectPath` like every other `mps_mcp_*` call (`targetDirectory` and `projectPath` are different arguments — an ancestor is valid for the first and rejected for the second). If no `mps-*` skills exist yet, the project has not been initialized for agents — tell the user and offer to run it.
->
-> A successful install writes `MPS_MCP_SKILL_VERSION.txt` into both `.agents/skills/` and `.claude/skills/`; compare its `build` with top-level `mpsBuild` from `mps_mcp_list_open_projects` (never call the initializer to learn the version). The installed `AGENTS.md` states the staleness rules.
->
-> If the catalog looks stale or incomplete, offer to refresh it (with approval): delete every `mps-*` skill folder from `.agents/skills/` and `.claude/skills/` — keeping repository-local skills (such as `bugfix-workflow` and `*-dsl` skills) — re-run the tool, then carefully merge its returned `agentsFileText` into `AGENTS.md`/`CLAUDE.md`, preserving project-specific sections. See that tool's description for the exact refresh contract.
+> **Installing / refreshing the catalog.** These `mps-*` skills and the project's `AGENTS.md`/`CLAUDE.md` are installed by the `mps_mcp_initialize_project_for_agents` MCP tool. Open `references/catalog-install-and-refresh.md` before running it, and for the version stamps and the refresh procedure; the installed `AGENTS.md` states the staleness rules.
 
 | Skill | What it covers |
 |-------|---------------|
@@ -134,6 +130,8 @@ Open `references/analysis-tools.md` for the inventory of analysis operations: `m
 Open `references/editor-workflow.md` for the MPS Concept Editor workflow (scaffold → componentize → refine → validate) and the editor procedural guidelines.
 
 Open `references/ide-log.md` to read the IDE log (`idea.log`): `mps_mcp_read_ide_log` first, `logDirectory` / `logFile` from `mps_mcp_list_open_projects` and fallbacks for older servers, rotation into `idea.N.log`, and the recipe for verifying a write tool call against the log.
+
+Open `references/mcp-server-troubleshooting.md` when MCP calls fail session-wide (e.g. `URISyntaxException: Illegal character in path` from a project path that contains a space).
 
 Open `references/mcp-tools-index.md` for the complete inventory of MPS MCP tools grouped by Project/Structure, Modules and Models, Root Nodes and Nodes, Console, and Language Definition.
 

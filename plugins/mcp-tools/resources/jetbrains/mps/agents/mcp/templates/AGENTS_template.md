@@ -1,31 +1,12 @@
 # Agents Guide for This MPS Project
 
-This is a JetBrains MPS language project. All source of truth lives in MPS models, language definitions, and generators. Use this file as the entry point.
+This is a JetBrains MPS language project: its source of truth lives in MPS models, language definitions, and generators. MCP integration with MPS is experimental — expect surprises and report issues to the JetBrains MPS team.
 
-For detailed MPS node, model, language, generator, validation, and MCP workflows, load the `mps-mcp-workflow` skill. If your agent runtime does not explicitly confirm that project skills are auto-loaded, read `.agents/skills/mps-mcp-workflow/SKILL.md` before changing MPS artifacts.
-
-MCP integration with MPS is an experimental feature. Use it with caution, expect surprises as well as future changes, and report any issues to the JetBrains MPS team.
-
-## ⚠️ Known Limitation: MCP Tools Fail on Paths Containing Spaces
-
-Every JetBrains MCP server (`mps-mcp`, `idea-mcp`, and equivalents in other JetBrains IDEs) shares a platform bug: an MCP tool call throws `java.net.URISyntaxException: Illegal character in path` if **any currently open project's absolute path contains a space** — not only the project a call targets. This is not fixable from the agent or client side: percent-encoding the path argument does not reliably help, because the same crash also occurs while the server internally scans its own list of open projects for a match, a code path the client cannot influence. Tracked upstream as IJPL-236112 (and duplicates); fixed on the platform's newer line but, as of 2026.1.x, not yet backported to the release line MPS/IDEA ships on.
-
-If MCP tool calls start failing session-wide with this error:
-- Do not retry with an encoded/escaped path — it will not help.
-- Check whether any open project — including phantom or harness-created ones — lives at a path containing a space.
-- Ask the user to move/rename the affected project to a space-free path and reopen it in the IDE.
-- Until then, fall back to manual source reading and ask the user to build/test via the IDE UI.
+**Load the `mps-mcp-workflow` skill at the start of every MPS session.** If your agent runtime does not explicitly confirm that project skills are auto-loaded, read `.agents/skills/mps-mcp-workflow/SKILL.md` before changing MPS artifacts. It holds the critical directives, the tool workflow, and the index of companion skills.
 
 ## ⚠️ WARNING: Never Read Raw MPS Model Files
 
-**If you are opening or reading `.mps`, `.mpl`, or other MPS XML files directly, you are way off track and must stop immediately.**
-
-MPS model files are binary-like serialized XML that cannot be safely understood or edited as plain text. Reading them gives you opaque node IDs and no semantic insight — you will misinterpret the content and likely corrupt the model if you try to edit it.
-
-**What to do instead:**
-- Use MPS MCP tools (`mps_mcp_*`) to inspect, navigate, and edit MPS models.
-- If the MPS MCP server is not connected, ask the user to start MPS and enable it before continuing with any MPS work. A connected server whose tools were filtered or deferred is not this case — restore the full toolset as described below.
-- Do not attempt to parse, edit, or reason from raw `.mps` XML.
+Do not open, parse, or edit `.mps`, `.mpl`, or other MPS XML files as text: the serialized format is opaque, gives no semantic insight, and hand-edits corrupt models. Use the MPS MCP tools (`mps_mcp_*`) instead. If the MPS MCP server is not connected, ask the user to start MPS and enable it; a connected server whose tools were filtered or deferred is not this case — restore the full toolset as described below.
 
 ## ⚠️ Keep the Full MPS MCP Toolset
 
@@ -35,103 +16,40 @@ The `mps_mcp_*` tools are how this project's code is read and edited, not an opt
 - If the host has already filtered that server (Junie: `[partially available]`, `[installed, but unavailable]`, or listed under servers that can be enabled), restore the entire server immediately, before any other work. In Junie, call `enable_mcp` on the MPS MCP server — the one that exposes `mps_mcp_*`, or, if it was fully filtered, the server named like `mps-mcp` rather than an IDE server. If that call is not available, ask the user to enable the full server. Do not guess among unrelated servers.
 - A filtered tool is not unavailable. Do not continue on a reduced subset, and do not fall back to file tools or raw `.mps` XML in its place. Only when the server is not connected at all, ask the user to start MPS and enable it.
 
-## Project Nature
-
-This repository is primarily an MPS project. Generated Java, Kotlin, and XML artifacts are produced by MPS generators and must not be edited directly. By default, all meaningful source lives in MPS models, but some projects also include hand-authored JVM or build code (e.g. custom runtime libraries, Gradle build scripts, or test harnesses). If this project contains such code, the user should document it in the Project-Specific Notes section below and note which tools are appropriate for it.
-
-Use MPS MCP tools as the primary toolset for all model-related work.
-
 ## Tool Selection
 
-Use MPS MCP tools for everything model-related:
-- modules, models, and root nodes
-- language structure, editors, constraints, typesystem, behavior, and generator aspects
-- model navigation, node editing, and validation
-- generation and build
-
-File-based tools (Read, Grep, Glob, or their shell equivalents such as `cat` and `grep` when your runtime has no such tools) are acceptable for:
-- inspecting generated output to understand runtime behavior or diagnose a problem
-- reading project configuration files that are not driven by MPS models
-- reading plain text documentation
+Use MPS MCP tools for everything model-related: modules, models, nodes, every language aspect, navigation, editing, validation, generation, and build. File-based tools (Read, Grep, Glob, or `cat` and `grep` when your runtime has no such tools) are fine for reading generated output, configuration that is not driven by MPS models, and plain-text documentation.
 
 In zsh (the macOS default) an unquoted glob that matches no file is an error. That command does not run and prints only `no matches found: …` (a `for` over such a glob skips the rest of its block), while the rest of a combined command still prints, so the miss is easy to overlook. Quote patterns meant for the command (`grep -rn PATTERN --include='*.md' DIR`, `find DIR -name '*.jar'`), and list files that may not exist with `find`, not with a bare `DIR/*.jar`.
 
-Do not use file-based tools to modify `.mps` model files directly. MPS serializes models as XML, but the format is opaque and fragile — always use MPS MCP tools instead.
+If the MPS MCP server is not connected (not merely filtered or deferred — restore that first) and the task needs model-aware editing, do not hand-edit `.mps` files as plain XML unless the user explicitly asks for that; explain the limitation and ask whether to proceed with a workaround or wait for MPS-aware tooling.
 
-If the MPS MCP server is not connected and the task requires model-aware editing (a connected server whose tools were filtered or deferred is not this case — restore the full toolset first):
-- do not hand-edit `.mps` model files as plain XML unless the user explicitly asks for that
-- explain the limitation and ask whether to proceed with a workaround or wait for MPS-aware tooling
+If MCP calls fail session-wide with `java.net.URISyntaxException: Illegal character in path`, an open project's absolute path contains a space — a platform bug in every JetBrains MCP server. Do not retry with an encoded or escaped path; it cannot help. Ask the user to move that project to a space-free path and reopen it; until then, read sources with file tools and ask the user to build and test in the IDE. `.agents/skills/mps-mcp-workflow/references/mcp-server-troubleshooting.md` has the details.
 
 ## Generated Code Is Read-Only
 
-Generated artifacts are recreated on every Make/Rebuild. Do not edit them. If a problem appears in generated code, find and fix the root cause in the MPS model, language, or generator.
-
-Typical generated locations in MPS projects:
-- `source_gen/` — Java/Kotlin sources generated by MPS generators
-- `source_gen_append/` — additional generated sources appended to the main output
-- `classes_gen/` — compiled class files produced from generated sources
-
-Inspect the project structure if you are unsure which directories apply to this project.
-
-Inspection of generated code is allowed when:
-- reading a generated file to understand what a generator is producing
-- tracing a runtime error back to a generator
-- confirming that a model change had the expected effect
+`source_gen/`, `source_gen_append/`, and `classes_gen/` are recreated on every Make/Rebuild — never edit them. Reading them is fine to see what a generator produces, to trace a runtime error back to its generator, or to confirm that a model change took effect. Fix problems in the MPS model, language, or generator.
 
 ## Rules for MPS Work
 
-- Load the `mps-mcp-workflow` skill at the start of an MPS session. If the MPS MCP server is not connected, apply the fallback described in the Tool Selection section above. If it is connected but its tools were filtered or deferred, restore the full toolset first — do not take that fallback.
 - Before editing a language aspect (typesystem, constraints, behavior, editor, generator, structure), also load its `mps-aspect-*` skill; `mps-mcp-workflow` names each one.
-- Use MPS MCP tools whenever available; do not hand-edit `.mps` files as plain XML.
-- Resolve nodes, concepts, models, and modules precisely before editing.
-- Validate after structural changes using `mps_mcp_check_root_node_problems`.
-- Rebuild or regenerate after significant changes to keep generated artifacts consistent.
-
-Some failures (swallowed factory or initializer exceptions, migration errors, tool-side regressions) reach only the IDE log, not the tool response. When a tool reports success but the effect is missing, call `mps_mcp_read_ide_log` with `sinceMinutes` covering the call window and `minLevel="WARN"`: it reads `idea.log` and its rotated `idea.1.log`, `idea.2.log`, … without a path, also for a standalone MPS. `mps_mcp_list_open_projects` reports the log location as top-level `logDirectory` / `logFile`; `references/ide-log.md` in the `mps-mcp-workflow` skill root covers reading the log on older servers that lack the tool.
-
-Use the `mps-mcp-workflow` skill for complete guidance on MPS workflows, skills, available tools, and best practices.
-
-## Project-Local DSL Skills
-
-When the user asks to initialize this MPS DSL project for agents, first complete
-the bundled MPS skills setup and create or update the root agent guide files.
-After that initialization work is done, check whether generated DSL skills
-already exist under `.agents/skills/<dsl-name>-dsl/` or `.claude/skills/<dsl-name>-dsl/`.
-
-If one or more generated DSL skills are missing or stale, ask for explicit
-permission before ending the initialization turn. Use wording like:
-
-> I can also create project-local DSL skill(s) for `<language-name-or-scope>`
-> under `.agents/skills/<dsl-name>-dsl/` so future agents can use the language(s)
-> without re-exploring them. This will add generated skill/reference files.
-> Should I create them?
-
-Only after the user agrees, use the `mps-dsl-memory` skill to create or refresh
-the DSL skill(s). If the user declines, finish initialization by noting that the
-bundled MPS skills are installed and no project-local DSL skills were created.
-
-Before creating or editing models in a language, use the relevant generated DSL
-skill. It contains the language reference, sandbox refs, JSON blueprint locations,
-and known gotchas for this project.
-
-Refresh generated DSL skills with `mps-dsl-memory` after discovering new concept
-details, sandbox examples, JSON blueprints, or non-obvious constraints.
+- Before creating or editing models in a language that has a project-local DSL skill (`.agents/skills/<dsl-name>-dsl/` or `.claude/skills/<dsl-name>-dsl/`), load it. Refresh it with `mps-dsl-memory` after discovering new concept details, sandbox examples, JSON blueprints, or non-obvious constraints.
+- Pass `projectPath` on **every** `mps_mcp_*` call, starting with the first one: the open MPS project's base directory — a path at or inside it, never an ancestor such as the repository root, which matters when the MPS project lives in a subdirectory (e.g. `tools/BigProject`). If you do not know it yet, pass the session's current working directory on the first call; if that is rejected, take the path from the rejection message, which lists the open projects, and reuse it for the session.
+- When several MPS projects are open and it is not obvious from the request or the current editor focus which one a query or change targets, ask the user rather than guessing — all open projects share one module repository, so the wrong choice silently returns the wrong nodes or gets a cross-project write refused.
 
 ## Skills
 
-A skill is a set of local instructions stored in a `SKILL.md` file under `.agents/skills/<skill-name>/` or `.claude/skills/<skill-name>/`. Start with `mps-mcp-workflow` for the overview and a directory of every other skill.
+Skills live in `.agents/skills/<skill-name>/SKILL.md` or `.claude/skills/<skill-name>/SKILL.md`; start with `mps-mcp-workflow` for the overview and a directory of every other skill. The `mps-*` skills and this guide were installed by the `mps_mcp_initialize_project_for_agents` MCP tool; `.agents/skills/mps-mcp-workflow/references/catalog-install-and-refresh.md` covers re-installing and refreshing them.
 
-These `mps-*` skills and this guide were installed by the `mps_mcp_initialize_project_for_agents` MCP tool into the repository / workspace root — which may be an ancestor of the MPS project directory when the MPS project lives in a subdirectory (e.g. `tools/BigProject`). The `mps_mcp_*` tools themselves act on whichever MPS project is open in MPS. All of them — including `mps_mcp_initialize_project_for_agents` — are routed by the framework's `projectPath` selector, so pass the open project's base directory (never an ancestor such as this root) as `projectPath` on **every** call, starting with the first one; if you do not know that path yet, pass the session's current working directory on the first call, and if that is rejected take it from the rejection message, which lists the open projects, then reuse it for the session (see the `projectPath` Critical Directive in `mps-mcp-workflow/SKILL.md`). `mps_mcp_initialize_project_for_agents` additionally takes a separate `targetDirectory` (where config is written), which you normally leave empty so it derives the repo / VCS root. When several MPS projects are open under one repository / VCS root and it is not obvious from the request or the current editor focus which one a query or change targets, ask the user which project to use rather than guessing — all open projects share one module repository, so the wrong choice silently returns the wrong nodes or gets a cross-project write refused.
-
-Before substantial MPS work, compare the `build` line in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` from `mps_mcp_list_open_projects`. That listing is the running IDE; do not call the initializer to learn the version — it writes files and aborts when skill folders already exist, and a colliding re-run does not move the stamp. A successful refresh overwrites both stamps.
+Before substantial MPS work, compare the `build` line in `.agents/skills/MPS_MCP_SKILL_VERSION.txt` and `.claude/skills/MPS_MCP_SKILL_VERSION.txt` with top-level `mpsBuild` from `mps_mcp_list_open_projects`. Do not call the initializer to learn the version — it writes files.
 
 - Equal `build` → continue. Mention `version` only when talking to the user.
-- Different `build` → say the skills were installed from version/build X and this MPS is version/build Y, then ask before the existing refresh. Do not refresh silently, and do not block ordinary MPS work.
+- Different `build` → say the skills were installed from version/build X and this MPS is version/build Y, then ask before refreshing. Do not refresh silently, and do not block ordinary MPS work.
 - Missing file → legacy install. Say so once. Absence is not proven staleness.
 - The two stamps disagree, or only one exists → inconsistent. Offer one refresh of both trees.
 - `mpsBuild` absent → the running IDE is too old to report its identity. Do not judge staleness.
 
-If the skills or this guide become stale or incomplete, ask the user for approval to refresh: delete every `mps-*` skill folder (keeping any project-local `*-dsl` skills), re-run the tool, then carefully merge its returned `agentsFileText` back into this file while preserving the Project-Specific Notes below. See the tool's description for the full refresh contract.
+A refresh needs the user's approval, deletes only `mps-*` skill folders (project-local `*-dsl` and other skills stay), and preserves the Project-Specific Notes below when the new guide text is merged into this file.
 
 ---
 
@@ -142,5 +60,6 @@ If the skills or this guide become stale or incomplete, ask the user for approva
   - entry-point models or root nodes an agent should know about
   - domain or business context useful for understanding the models
   - project conventions (naming, structure, generator pipeline)
+  - hand-authored JVM or build code (runtime libraries, Gradle scripts, test harnesses) and which tools to use for it
   - anything else that helps an agent orient itself quickly in this codebase
 -->
