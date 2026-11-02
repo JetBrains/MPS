@@ -207,7 +207,15 @@ class FamiliesTest(unittest.TestCase):
                          "M_makes_save_transient\tGN_plan\tGN_transient_models\tGN_trace\tGN_trace_backward\t"
                          "GN_drop\tGN_trace_before_fix\tGN_transient_reads\tGN_template_prints\t"
                          "GN_template_prints_before_trace\tDF_builder_prints\tDF_console_runs\tDF_queries\t"
-                         "DF_program_prints\tDF_reaching_queries\tC_after_node_sample\tC_after_node_sample_batches", header)
+                         "DF_program_prints\tDF_reaching_queries\tC_after_node_sample\tC_after_node_sample_batches\t"
+                         "ET_test_runs\tET_run_configs\tET_platform_id_writes\tET_applicability_writes\t"
+                         "ET_ide_service_writes\tET_runtime_source_reads\tGT_generator_test_writes\t"
+                         "GT_nodes_test_writes\tGT_match_options_writes\tGT_plan_writes\tGT_do_not_generate_calls\t"
+                         "GT_do_not_generate_workarounds\tGT_runtime_source_reads\tGT_kitchen_source_reads\t"
+                         "GT_expected_parser_inserts\tGP_genplan_models\tGP_param_equals_writes\tGP_set_plan_calls\t"
+                         "GP_devkit_export_calls\tGP_devkit_used_calls\tGP_plan_facet_writes\tGP_attach_workarounds\t"
+                         "GP_descriptor_reads\tGP_plan_edits\tGP_plan_root_reinserts\tGP_plan_steps_detail\t"
+                         "GP_rebuild_makes\tGP_param_model_reads", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -482,6 +490,238 @@ class FamiliesTest(unittest.TestCase):
                        + check("a", NODE, NODE_CLEAN))
         self.assertCounts(f, DF_queries=5, DF_program_prints=2, DF_reaching_queries=2, G_errors=1,
                           C_root_after_clean_model=1, DF_builder_prints=0, DF_console_runs=0)
+
+    def test_t27_editor_test_runs_and_run_configurations_count_by_bare_name(self) -> None:
+        f = self.count([tool("c", "mcp__mps__mps_mcp_create_run_configuration", {"modelReference": MODEL}),
+                        result("c", ok({"name": "tests"})),
+                        tool("r1", "mcp__mps__execute_run_configuration", {"configurationName": "tests"}),
+                        result("r1", {"exitCode": 1}),
+                        tool("r2", "mcp__mps__execute_run_configuration", {"configurationName": "tests"}),
+                        result("r2", {"exitCode": 0})])
+        self.assertCounts(f, ET_test_runs=2, ET_run_configs=1)
+
+    def test_t28_platform_ids_and_applicability_count_accepted_writes_only(self) -> None:
+        bootstrap = {"concept": "jetbrains.mps.lang.test.structure.InvokeActionStatement", "children": [
+            {"role": "actionReference", "nodes": [{"concept": "jetbrains.mps.lang.test.structure.BootstrapActionReference",
+                                                   "properties": [{"name": "actionId", "value": "$Undo"}]}]}]}
+        applicable = {"concept": "jetbrains.mps.lang.test.structure.IsActionApplicableExpression"}
+        f = self.count(write("a", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": bootstrap})
+                       + write("b", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                            "properties": [[NODE, "actionId", "$Paste"]]})
+                       + write("c", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": json.dumps(applicable)})
+                       + write("d", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": bootstrap},
+                               REJECTED)
+                       + write("e", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                            "properties": [[NODE, "name", "$CopyThisDown"]]})
+                       + call("m", "mps_mcp_alter_nodes", "MAKE", {"models": [MODEL], "note": "$Undo"}))
+        self.assertCounts(f, ET_platform_id_writes=2, ET_applicability_writes=1, ET_ide_service_writes=0)
+
+    def test_t29_ide_service_writes_count_attempts_too(self) -> None:
+        java = "UndoManager.getInstance(project).undo(FileEditorManager.getInstance(project).getSelectedEditor());"
+        f = self.count(write("p", "mps_mcp_parse_java_and_insert", {"parameters": {"code": java}})
+                       + write("q", "mps_mcp_parse_java_and_insert",
+                               {"parameters": json.dumps({"code": "DataManager.getInstance().getDataContext(c);"})},
+                               REJECTED)
+                       + write("r", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": {"concept": "x.EditorComponentExpression"}}))
+        self.assertCounts(f, ET_ide_service_writes=2, ET_platform_id_writes=0)
+
+    def test_t30_runtime_source_reads_skip_the_run_project_and_the_language_editor(self) -> None:
+        hunts = [("Read", {"file_path": "/m/plugins/mps-testing/languages/lang.test/solutions/jetbrains.mps.lang.test.runtime/"
+                                       "source_gen/jetbrains/mps/lang/test/runtime/BaseEditorTestBody.java"}),
+                 ("Grep", {"pattern": "invokeAction", "path": "/m/testbench/testsolutions/bl.test/test_gen"}),
+                 ("Bash", {"command": "grep -rn pasteWithRemove /m/editor/editor-runtime/source/jetbrains/mps/nodeEditor/"}),
+                 ("Glob", {"pattern": "**/EditorTestUtil.java"}),
+                 ("mcp__mps__read_file", {"path": "/m/editor/x/CellAction_PasteNode.java"})]
+        routes = [("Read", {"file_path": "/p/solutions/mcp.study.recipes.editortests/test_gen/mcp/study/recipes/"
+                                        "editortests/UndoStepText_Test.java"}),
+                  ("Bash", {"command": "grep -n setCellId /p/languages/mcp.study.recipes/source_gen/mcp/study/recipes/"
+                                       "editor/Step_EditorBuilder_a.java"}),
+                  ("Read", {"file_path": "/p/.claude/skills/mps-tests/references/editor-test-case/statements-and-actions.md"})]
+        events = []
+        for i, (name, inp) in enumerate(hunts + routes):
+            events += [tool(f"s{i}", name, inp), result(f"s{i}", "text")]
+        self.assertCounts(self.count(events), ET_runtime_source_reads=len(hunts))
+
+    def test_t31_temp_file_blueprints_are_read_from_the_earlier_write_or_the_disk(self) -> None:
+        written = "/tmp/bp-undo.json"
+        on_disk = Path(self.temp_dir.name) / "bp-applicable.json"
+        on_disk.write_text(json.dumps({"concept": "jetbrains.mps.lang.test.structure.IsActionApplicableExpression"}))
+        undo = json.dumps({"concept": "jetbrains.mps.lang.test.structure.BootstrapActionReference",
+                           "properties": [{"name": "actionId", "value": "$Undo"}]})
+        f = self.count([tool("w", "Write", {"file_path": written, "content": undo}), result("w", "ok")]
+                       + write("a", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": written})
+                       + write("b", "mps_mcp_update_root_node_from_json", {"operation": "UPDATE", "json": str(on_disk)})
+                       + write("c", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": "/tmp/gone-since.json"}))
+        self.assertCounts(f, ET_platform_id_writes=1, ET_applicability_writes=1)
+
+    def test_t32_runtime_source_reads_ignore_code_and_patterns_that_are_not_paths(self) -> None:
+        heredoc = "cat > /tmp/t.java <<'EOF'\nEditorTestUtil.runWithTwoStepDeletion(() -> { }, false);\nEOF"
+        calls = [("Bash", {"command": heredoc}),
+                 ("Bash", {"command": "grep -rn EditorTestUtil /p/solutions/mcp.study.recipes.editortests/test_gen"}),
+                 ("Grep", {"pattern": "BaseEditorTestBody", "path": "/p/.claude/skills"}),
+                 ("Bash", {"command": "cat /m/plugins/mps-testing/x/lang/test/runtime/BaseEditorTestBody.java"})]
+        events = []
+        for i, (name, inp) in enumerate(calls):
+            events += [tool(f"s{i}", name, inp), result(f"s{i}", "text")]
+        self.assertCounts(self.count(events), ET_runtime_source_reads=1)
+
+    def test_t33_generator_test_writes_options_plans_and_the_nodes_test_route(self) -> None:
+        gentest = {"concept": "jetbrains.mps.lang.test.generator.structure.GeneratorTest", "children": [
+            {"role": "arguments", "nodes": [{"concept": "jetbrains.mps.lang.test.generator.structure.ModelMatchOptions"}]}]}
+        plan = {"concept": "jetbrains.mps.lang.generator.plan.structure.Plan", "children": [
+            {"role": "steps", "nodes": [{"concept": "jetbrains.mps.lang.generator.plan.structure.Transform"}]}]}
+        assertion = {"concept": "jetbrains.mps.lang.test.generator.structure.TransformationMatchAssertion"}
+        f = self.count(write("a", "mps_mcp_insert_root_node_from_json", {"json": gentest})
+                       + write("b", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": json.dumps(assertion)})
+                       + write("c", "mps_mcp_insert_root_node_from_json", {"json": plan})
+                       + write("d", "mps_mcp_insert_root_node_from_json", {"json": gentest}, REJECTED)
+                       + write("e", "mps_mcp_create_root_node", {"concept": "jetbrains.mps.lang.test.structure.NodesTestCase"},
+                               REJECTED)
+                       + write("f", "mps_mcp_parse_java_and_insert",
+                               {"parameters": {"code": "new GenerationFacade(repo, opts).process(m, model);"}})
+                       + write("g", "mps_mcp_insert_root_node_from_json",
+                               {"json": {"concept": "x.GeneratorTestSuite"}}))
+        self.assertCounts(f, GT_generator_test_writes=2, GT_match_options_writes=1, GT_plan_writes=1,
+                          GT_nodes_test_writes=2)
+
+    def test_t33_concept_refs_count_like_names(self) -> None:
+        f = self.count(write("a", "mps_mcp_create_root_node",
+                             {"conceptReference": "c:68015e26-cc4d-49db-8715-b643faea1769/554465258093187774"})
+                       + write("b", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": {
+                           "concept": "c:68015e26-cc4d-49db-8715-b643faea1769/8945822034016668031"}})
+                       + write("c", "mps_mcp_create_root_node",
+                               {"conceptReference": "c:7ab1a6fa-0a11-4b95-9e48-75f363d6cb00/1820634577908471803"})
+                       + write("d", "mps_mcp_create_root_node",
+                               {"conceptReference": "c:8585453e-6bfb-4d80-98de-b16074f1d86c/1216913645126"}, REJECTED)
+                       + write("e", "mps_mcp_create_root_node",
+                               {"conceptReference": "c:68015e26-cc4d-49db-8715-b643faea1769/5544652580931877740"}))
+        self.assertCounts(f, GT_generator_test_writes=1, GT_match_options_writes=1, GT_plan_writes=1,
+                          GT_nodes_test_writes=1)
+
+    def test_t34_do_not_generate_tool_calls_and_workarounds(self) -> None:
+        console = "((GeneratableSModel) m).setDoNotGenerate(true);"
+        calls = [("mcp__mps__mps_mcp_update_model", {"modelReference": MODEL, "operation": "SET_DO_NOT_GENERATE"}, ok({})),
+                 ("mcp__mps__mps_mcp_update_model", {"modelReference": MODEL, "operation": "set_do_not_generate"},
+                  {"ok": False, "error": "x"}),
+                 ("mcp__mps__mps_mcp_update_model", {"modelReference": MODEL, "operation": "RENAME"}, ok({})),
+                 ("mcp__mps__mps_mcp_parse_java_and_insert",
+                  {"parameters": {"code": console, "featureKind": "STATEMENTS", "insert": {"mode": "console"}}}, ok({})),
+                 ("mcp__mps__mps_mcp_run_console_command", {"command": console}, ok({})),
+                 ("Edit", {"file_path": "/p/solutions/x/models/x.input.mps", "old_string": "<model",
+                           "new_string": "<model doNotGenerate=\"true\""}, "ok"),
+                 ("Bash", {"command": "sed -i '' 's/<model /<model doNotGenerate=\"true\" /' /p/models/x.mps"}, "ok"),
+                 ("Bash", {"command": "grep -rn doNotGenerate /p/.claude/skills/mps-tests"}, "ok"),
+                 ("Bash", {"command": "python3 -c \"print('doNotGenerate' in open('/p/models/x.mps').read())\""}, "ok"),
+                 ("mcp__mps__apply_patch", {"patch": "--- a/p/models/x.mps\n+<model doNotGenerate=\"true\""}, "ok"),
+                 ("Edit", {"file_path": "/p/notes.md", "old_string": "a", "new_string": "doNotGenerate"}, "ok")]
+        events = []
+        for i, (name, inp, res) in enumerate(calls):
+            events += [tool(f"d{i}", name, inp), result(f"d{i}", res)]
+        self.assertCounts(self.count(events), GT_do_not_generate_calls=1, GT_do_not_generate_workarounds=5)
+
+    def test_t35_generator_runtime_kitchen_reads_and_parser_inserts(self) -> None:
+        hunts = [("Read", {"file_path": "/m/plugins/mps-testing/languages/gentest.rt/source_gen/jetbrains/mps/lang/test/"
+                                       "generator/rt/ModelMatcher.java"}),
+                 ("Grep", {"pattern": "assertMatch", "path": "/m/testbench/testsolutions/generator-tests/smodel"}),
+                 ("Bash", {"command": "cat /m/core/kernel/source/jetbrains/mps/smodel/SNodeMatcher.java"})]
+        kitchen = [("Read", {"file_path": "/p/solutions/mcp.study.kitchen/source_gen/mcp/study/generated/Crepes.java"})]
+        routes = [("Read", {"file_path": "/p/solutions/mcp.study.recipes.gentests/test_gen/mcp/study/recipes/gentests/"
+                                        "RecipeClasses.java"}),
+                  ("Bash", {"command": "ls /p/languages/mcp.study.recipes/generator/source_gen"})]
+        events = []
+        for i, (name, inp) in enumerate(hunts + kitchen + routes):
+            events += [tool(f"s{i}", name, inp), result(f"s{i}", "text")]
+        expected = {"code": "package mcp.study.generated; public class Tea {}", "featureKind": "CLASS",
+                    "insert": {"mode": "root", "modelRef": "r:1(mcp.study.recipes.gentests.expected)"}}
+        into_tests = {"code": "int x;", "featureKind": "STATEMENTS",
+                      "insert": {"mode": "child", "modelRef": "r:2(mcp.study.recipes.gentests@tests)"}}
+        events += (write("p1", "mps_mcp_parse_java_and_insert", {"parameters": expected})
+                   + write("p2", "mps_mcp_parse_java_and_insert", {"parameters": json.dumps(expected)}, REJECTED)
+                   + write("p3", "mps_mcp_parse_java_and_insert", {"parameters": into_tests}))
+        self.assertCounts(self.count(events), GT_runtime_source_reads=len(hunts), GT_kitchen_source_reads=1,
+                          GT_expected_parser_inserts=1, ET_runtime_source_reads=1)
+
+    def test_t36_generation_plan_attachment_maintenance_and_workarounds(self) -> None:
+        plans = "r:5f00(mcp.study.plans.kitchen@genplan)"
+        plan = {"concept": "jetbrains.mps.lang.generator.plan.structure.Plan",
+                "properties": [{"name": "name", "value": "P"}]}
+        fork = {"concept": "jetbrains.mps.lang.generator.plan.structure.Fork", "children": [{"role": "filter", "nodes": [
+            {"concept": "jetbrains.mps.lang.generator.plan.structure.ParameterEquals"}]}]}
+        events = (write("g1", "mps_mcp_create_model", {"moduleName": "mcp.study.plans", "modelName": "a@genplan"})
+                  + write("g2", "mps_mcp_create_model", {"moduleName": "mcp.study.plans", "modelName": "a.tests@tests"})
+                  # four plan roots, one of them through a temp-file blueprint holding two
+                  + write("r1", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": plan})
+                  + [tool("w1", "Write", {"file_path": "/tmp/two.json", "content": json.dumps([plan, plan])}), result("w1", "ok")]
+                  + write("r2", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": "/tmp/two.json"})
+                  + write("r3", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": json.dumps(plan)})
+                  # a fifth plan root re-authors instead of editing
+                  + write("r4", "mps_mcp_insert_root_node_from_json", {"modelReference": plans, "json": plan})
+                  + write("r5", "mps_mcp_insert_root_node_from_json", {"modelReference": MODEL, "json": plan})
+                  + write("u1", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "nodeReference": plans + "/1",
+                                                        "childRole": "steps", "childJson": fork})
+                  + write("u2", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                        "properties": [[plans + "/2", "name", "afterRecipes"]]})
+                  + write("u3", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                        "properties": [[NODE, "name", "x"]]})
+                  + call("m1", "mps_mcp_alter_nodes", "MOVE_CHILD", {"childNodeRef": plans + "/3", "position": 0})
+                  + call("m2", "mps_mcp_alter_nodes", "MAKE", {"modules": ["mcp.study.kitchen"], "rebuild": True})
+                  + call("m3", "mps_mcp_alter_nodes", "MAKE", '{"modules": ["mcp.study.pantry"], "rebuild": "true"}', REJECTED)
+                  + call("m4", "mps_mcp_alter_nodes", "MAKE", {"modules": ["mcp.study.pantry"]})
+                  + write("s1", "mps_mcp_update_module", {"moduleName": "dk", "operation": "SET_GENERATION_PLAN",
+                                                          "planModel": plans})
+                  + write("s2", "mps_mcp_update_module", {"moduleName": "mcp.study.recipes", "operation": "SET_GENERATION_PLAN",
+                                                          "planModel": plans}, {"ok": False, "error": "Language"})
+                  + write("e1", "mps_mcp_module_dependency", {"moduleName": "dk", "targetModule": "mcp.study.plans",
+                                                              "operation": "ADD"}, ok({"added": True, "devkitCollection": "exportedSolutions"}))
+                  + write("e2", "mps_mcp_module_dependency", {"moduleName": "dk", "targetModule": "mcp.study.plans",
+                                                              "operation": "DELETE"}, ok({"removed": True, "devkitCollections": ["exportedSolutions"]}))
+                  + write("e3", "mps_mcp_module_dependency", {"moduleName": "s", "targetModule": "t", "operation": "ADD"},
+                          ok({"added": True}))
+                  + write("k1", "mps_mcp_model_used_language", {"modelReference": SAMPLES, "kind": "devkit",
+                                                                "usedLanguage": "dk", "operation": "ADD"})
+                  + write("k2", "mps_mcp_model_used_language", {"modelReference": SAMPLES, "kind": "language",
+                                                                "usedLanguage": "x", "operation": "ADD"})
+                  + write("f1", "mps_mcp_update_module_facet", {"moduleName": "mcp.study.pantry", "facetType": "generator",
+                                                                "settingsJson": {"plan": plans}}, {"ok": False, "error": "x"})
+                  + write("f2", "mps_mcp_update_module_facet", {"moduleName": "s", "facetType": "tests", "enabled": True})
+                  + gen("p1", "PLAN", {"model": SAMPLES, "detail": "steps"}, ok({}))
+                  + gen("p2", "PLAN", '{"model": "x", "detail": "STEPS"}', ok({}))
+                  + gen("p3", "PLAN", {"model": SAMPLES}, ok({}))
+                  + write("q1", "mps_mcp_get_project_structure",
+                          {"startingPoint": "r:342b977c-a485-4fdb-b891-66244eff644a(jetbrains.mps.generator.extensions.common)"}))
+        hacks = [("mcp__mps__mps_mcp_run_console_command", {"command": "dk.getModuleDescriptor().setAssociatedPlan(ref);"}),
+                 ("mcp__mps__mps_mcp_parse_java_and_insert",
+                  {"parameters": {"code": "((DevkitDescriptor) d).getExportedSolutions().add(r);",
+                                  "insert": {"mode": "console"}}}),
+                 ("mcp__mps__mps_mcp_run_console_command", {"command": "println(model.name);"}),
+                 ("Edit", {"file_path": "/p/devkits/dk/dk.devkit", "old_string": "/>", "new_string": "><generation-plan/>"}),
+                 ("Bash", {"command": "sed -i '' 's/x/y/' /p/solutions/s/s.msd"}),
+                 ("Bash", {"command": "cat /p/devkits/dk/dk.devkit"}),
+                 ("Bash", {"command": "cd /p; find . -name '*.msd' -o -name '*.devkit' | grep -v '/\\.claude'; ls"}),
+                 ("Read", {"file_path": "/p/solutions/mcp.study.pantry/mcp.study.pantry.msd"}),
+                 ("Read", {"file_path": "/p/solutions/mcp.study.pantry/source_gen/mcp/study/generated/Porridge.java"})]
+        for i, (name, inp) in enumerate(hacks):
+            events += [tool(f"h{i}", name, inp), result(f"h{i}", "ok")]
+        self.assertCounts(self.count(events), GP_genplan_models=1, GP_param_equals_writes=1, GP_set_plan_calls=1,
+                          GP_devkit_export_calls=1, GP_devkit_used_calls=1, GP_plan_facet_writes=1,
+                          GP_attach_workarounds=4, GP_descriptor_reads=2, GP_plan_edits=3, GP_plan_root_reinserts=1,
+                          GP_plan_steps_detail=2, GP_rebuild_makes=1, GP_param_model_reads=1, GN_plan=3)
+
+    def test_a16_adhoc_python_counts_inline_code_after_switches(self) -> None:
+        inline = ["python3 -c 'print(1)'", "python3 -I -c 'import json'", "python3 -I - <<'PY'\nprint(1)\nPY",
+                  "cat r.json | python3 -I -", "python3 -IS -c 'x'", "python3 -Ic 'x'", "python -u -X utf8 -c 'x'",
+                  "python3.12 -I -c 'x'", "python3 <<'PY'\nprint(1)\nPY", "python3 -I <<'PY'\nprint(1)\nPY",
+                  "python3 - <<EOF\nEOF", "python3 -I -<<EOF\nEOF", "/usr/bin/python3 -I -c 'x'"]
+        scripts = ["python3 scripts/check.py -c x", "python3 -I scripts/check.py", "python3 -m json.tool r.json",
+                   "python3 -I -m json.tool", "python3 --version", "ipython -c x"]
+        events = []
+        for i, cmd in enumerate(inline + scripts):
+            events += [tool(f"b{i}", "Bash", {"command": cmd}), result(f"b{i}", "ok")]
+        self.assertCounts(self.count(events), Bp_adhoc_python=len(inline))
 
     def test_smoke_runs_are_skipped_and_out_writes_the_tsv(self) -> None:
         self.count(check("m", MODEL, MODEL_CLEAN))

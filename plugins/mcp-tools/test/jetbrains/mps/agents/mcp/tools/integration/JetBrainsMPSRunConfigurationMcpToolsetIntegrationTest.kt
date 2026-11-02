@@ -542,6 +542,36 @@ class JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest : McpIntegrationTest
     }
 
     @Test
+    fun `a lone GeneratorTest root becomes a one-root NODE configuration`() {
+        val model = newModel("gentest")
+        val ref = createRootIn(model, "jetbrains.mps.lang.test.generator.structure.GeneratorTest", "GenCheck")
+        executeCommand {
+            val node = PersistenceFacade.getInstance().createNodeReference(ref).resolve(myProject.repository)
+                ?: error("created generator test did not resolve: $ref")
+            SNodeFactoryOperations.addNewChild(node, GENERATOR_TESTS, TRANSFORMATION_MATCH_ASSERTION)
+        }
+        val response = runTool(JetBrainsMPSRunConfigurationMcpToolset()) { it.create(nodeReference = ref) }
+        val data = assertOkData(response)
+        assertEquals("JUnit Tests", data.get("type").asString)
+        assertEquals("GenCheck", data.get("name").asString)
+        assertEquals("NODE", data.get("runType").asString)
+        assertEquals(1, data.get("testCaseCount").asInt)
+        assertFalse(data.get("live").asBoolean)
+        assertEquals(1, testCaseCount(findSettings(data.get("uniqueId").asString)))
+    }
+
+    @Test
+    fun `a lone GeneratorTest root without assertions is rejected and leaves no configuration`() {
+        val model = newModel("gentestEmpty")
+        val ref = createRootIn(model, "jetbrains.mps.lang.test.generator.structure.GeneratorTest", "NoChecks")
+        val before = currentConfigurationCount()
+        val response = runTool(JetBrainsMPSRunConfigurationMcpToolset()) { it.create(nodeReference = ref) }
+        val message = errorEnvelope(response, "INVALID_REQUEST").get("error").asString
+        assertTrue(message, message.contains("has no tests"))
+        assertEquals(before, currentConfigurationCount())
+    }
+
+    @Test
     fun `a one-element array of a main class is still a Java Application`() {
         val rootRef = createRoot("jetbrains.mps.execution.demo.structure.SomeConcept", "SoloMain")
         val response = runTool(JetBrainsMPSRunConfigurationMcpToolset()) {
@@ -1227,6 +1257,13 @@ class JetBrainsMPSRunConfigurationMcpToolsetIntegrationTest : McpIntegrationTest
         )
         private val TEST_METHODS = MetaAdapterFactory.getContainmentLink(
             0x8585453e6bfb4d80uL.toLong(), 0x98deb16074f1d86cuL.toLong(), 0x11b55b49e46L, 0x11b78c499b5L, "testMethods",
+        )
+        private val GENERATOR_TESTS = MetaAdapterFactory.getContainmentLink(
+            0x68015e26cc4d49dbuL.toLong(), 0x8715b643faea1769uL.toLong(), 0x7b1db36ecf092beL, 0x7b1db36ecf0d067L, "tests",
+        )
+        private val TRANSFORMATION_MATCH_ASSERTION = MetaAdapterFactory.getConcept(
+            0x68015e26cc4d49dbuL.toLong(), 0x8715b643faea1769uL.toLong(), 0x7b1db36ecf0d057L,
+            "jetbrains.mps.lang.test.generator.structure.TransformationMatchAssertion",
         )
         private val SUPERCLASS = MetaAdapterFactory.getContainmentLink(
             0xf3061a5392264cc5uL.toLong(), 0xa443f952ceaf5816uL.toLong(), 0xf8c108ca66L, 0x10f6353296dL, "superclass",

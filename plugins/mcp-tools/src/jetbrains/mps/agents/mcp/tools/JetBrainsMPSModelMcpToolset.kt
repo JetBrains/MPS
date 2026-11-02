@@ -7,6 +7,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
+import jetbrains.mps.extapi.model.GeneratableSModel
 import jetbrains.mps.model.ModelDeleteHelper
 import jetbrains.mps.project.AbstractModule
 import jetbrains.mps.project.DevKit
@@ -513,17 +514,22 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
     @McpTool
     @McpDescription(
         """
-        Updates an MPS model. Currently supports renaming. Returns the updated model info envelope.
-        Deletes an MPS model, including its underlying data source (e.g. the .mps file on disk).
+        Updates an MPS model. RENAME renames it and returns the updated model info envelope.
+        DELETE deletes it, including its underlying data source (e.g. the .mps file on disk).
+        SET_DO_NOT_GENERATE sets the model's "Do not generate" flag to `doNotGenerate` (default true), so make
+        skips the model; returns the model info envelope with `doNotGenerate`. Use it for models that are only
+        data, such as the input and expected-output models of a generator test.
     """
     )
     suspend fun mps_mcp_update_model(
         @McpDescription("Required. Target model: a persistent model reference (preferred), or the model's long/short name resolved in the project selected by projectPath.")
         modelReference: String = "",
-        @McpDescription("New model name")
+        @McpDescription("New model name (RENAME)")
         newModelName: String = "",
-        @McpDescription("Operation to perform: RENAME or DELETE")
-        operation: String = "RENAME"
+        @McpDescription("Operation to perform: RENAME, DELETE or SET_DO_NOT_GENERATE")
+        operation: String = "RENAME",
+        @McpDescription("SET_DO_NOT_GENERATE only: true (default) makes make skip the model, false lets it generate again")
+        doNotGenerate: Boolean = true,
     ): String {
         rejectMissingParameters(
             "mps_mcp_update_model",
@@ -531,7 +537,7 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<ModelOperation>(operation)
             ?: return unknownOperation<ModelOperation>(operation)
-        return mps_mcp_update_model(modelReference, newModelName, op)
+        return mps_mcp_update_model(modelReference, newModelName, op, doNotGenerate)
     }
 
     /** Internal enum-typed entry point for [mps_mcp_update_model]; see [resolveOperationOrNull]. */
@@ -539,6 +545,7 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
         modelReference: String,
         newModelName: String = "",
         operation: ModelOperation,
+        doNotGenerate: Boolean = true,
     ): String = when (operation) {
         ModelOperation.RENAME -> withMpsProject("Update MPS model") { mpsProject ->
             executeShortCommandOnEdt(mpsProject) {
@@ -555,6 +562,30 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
             }
         }
         ModelOperation.DELETE -> deleteModel(modelReference)
+        ModelOperation.SET_DO_NOT_GENERATE -> setDoNotGenerate(modelReference, doNotGenerate)
+    }
+
+    private suspend fun setDoNotGenerate(
+        modelReference: String,
+        doNotGenerate: Boolean,
+    ): String = withMpsProject("Set Do not generate on MPS model") { mpsProject ->
+        executeShortCommandOnEdt(mpsProject) {
+            val model = when (val r = resolveEditableModel(mpsProject, modelReference)) {
+                is EditableModelResolution.Ok -> r.model
+                is EditableModelResolution.Err -> return@executeShortCommandOnEdt r.errJson
+            }
+            if (model !is GeneratableSModel) {
+                return@executeShortCommandOnEdt errJson(
+                    "Model '${model.name.value}' has no \"Do not generate\" flag (it is not a generatable model kind)",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
+            model.setDoNotGenerate(doNotGenerate)
+            model.save()
+            okJson(modelInfoJsonObject(model, mpsProject).apply {
+                addProperty("doNotGenerate", model.isDoNotGenerate)
+            }.toString())
+        }
     }
 
     private suspend fun deleteModel(
@@ -657,5 +688,6 @@ class JetBrainsMPSModelMcpToolset : AbstractNodeOps() {
 
 enum class ModelOperation {
     RENAME,
-    DELETE
+    DELETE,
+    SET_DO_NOT_GENERATE
 }

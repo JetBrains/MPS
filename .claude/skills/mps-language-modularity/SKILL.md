@@ -74,7 +74,7 @@ Wiring the dependencies any strategy needs (used/extended languages, runtime sol
 
 - `mps-language-aspects-overview` — authoring order and which aspect to edit once a strategy is chosen.
 - `mps-language-inheritance` — module `extends` and concept super/sub mechanics used by extension and embedding.
-- `mps-tests` — `NodesTestCase` / `EditorTestCase` patterns the validation checklist relies on.
+- `mps-tests` — `NodesTestCase` / `GeneratorTest` / `EditorTestCase` patterns the validation checklist relies on.
 
 ## Validation
 

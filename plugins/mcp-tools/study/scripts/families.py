@@ -16,7 +16,8 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
   C_perRoot                        checks with perRoot true
   D_skill_reads                    Read calls on a file under /skills/
   D_skill_bash_fetch               Bash cat/sed/head/tail/grep/awk on a /skills/ path
-  Bp_adhoc_python                  Bash calls running inline python (-c, heredoc, stdin)
+  Bp_adhoc_python                  Bash calls running inline python (-c, heredoc, stdin), also after
+                                   switches such as -I
   Bp_shipped_script                Bash calls running a skill's scripts/*.py
   B_inserts                        insert_root_node_from_json / update_node / update_root_node_from_json
   B_resp_bytes                     result characters of those calls
@@ -60,6 +61,47 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
                                    gave every text but not every node, no write between (D119); they
                                    are not in C_after_summary
   C_after_node_sample_batches      distinct batches among the C_after_node_sample calls
+  ET_test_runs                     execute_run_configuration calls (each one past the first is a fix cycle)
+  ET_run_configs                   create_run_configuration calls
+  ET_platform_id_writes            accepted node writes whose input holds a BootstrapActionReference or a
+                                   `$Undo` / `$Redo` / `$Copy` / `$Cut` / `$Paste` id
+  ET_applicability_writes          accepted node writes whose input holds an IsActionApplicableExpression
+  ET_ide_service_writes            node writes, rejected ones included, whose input names UndoManager,
+                                   DataManager, FileEditor(Manager) or CopyPasteManager
+  ET_runtime_source_reads          Read / Grep / Glob / Bash / MCP file-tool calls whose path names the
+                                   editor-test runtime or MPS's own editor tests (BaseEditorTestBody,
+                                   EditorTestUtil, CellAction_*, lang/test/runtime, nodeEditor/, testbench/,
+                                   bl.test)
+  GT_generator_test_writes         accepted node writes whose input holds a GeneratorTest or a
+                                   TransformationMatch(Many)Assertion
+  GT_nodes_test_writes             node writes, rejected ones included, whose input holds a NodesTestCase,
+                                   AssertMatch / assertNodesMatch, GenerationFacade or generateAndCompare
+  GT_match_options_writes          accepted node writes whose input holds a ModelMatchOptions (name or concept ref)
+  GT_plan_writes                   accepted node writes whose input holds a generation-plan Plan, Transform,
+                                   LanguageEntry or ApplyGenerators
+  GT_do_not_generate_calls         accepted update_model calls with operation SET_DO_NOT_GENERATE
+  GT_do_not_generate_workarounds   console inputs, .mps file edits and Bash .mps rewrites that name
+                                   doNotGenerate: the routes taken before the update_model operation existed
+  GT_runtime_source_reads          Read / Grep / Glob / Bash / MCP file-tool calls whose path names the
+                                   generator-test runtime, the node matcher or MPS's own generator tests
+  GT_kitchen_source_reads          the same calls on a path under mcp.study.kitchen/source_gen
+  GT_expected_parser_inserts       accepted parse_java_and_insert calls into a model that is not a @tests
+                                   model (expected classes written with the Java parser)
+  GP_genplan_models                accepted create_model calls whose modelName has the @genplan stereotype
+  GP_param_equals_writes           accepted node writes whose input holds a ParameterEquals (name or concept ref)
+  GP_set_plan_calls                accepted update_module calls with operation SET_GENERATION_PLAN
+  GP_devkit_export_calls           accepted module_dependency calls whose answer names a devkitCollection
+  GP_devkit_used_calls             accepted model_used_language ADD calls with kind devkit
+  GP_plan_facet_writes             update_module_facet calls with facetType generator, rejected ones included
+  GP_attach_workarounds            console inputs naming the DevKit / Custom Generation facet API, and edits or
+                                   Bash rewrites of .devkit / .msd files
+  GP_descriptor_reads              Read / Grep / Bash reads of .devkit / .msd files (not rewrites)
+  GP_plan_edits                    accepted update_node / non-MAKE alter_nodes calls naming a @genplan model
+  GP_plan_root_reinserts           Plan roots inserted into @genplan models after the fourth, and
+                                   update_root_node_from_json calls on a @genplan model
+  GP_plan_steps_detail             mps_mcp_generation PLAN calls with detail "steps"
+  GP_rebuild_makes                 accepted MAKE calls with rebuild true
+  GP_param_model_reads             read-tool calls naming jetbrains.mps.generator.extensions.common
 
 Check scope (A9): the result's `details.scope` (`model` / `module`) when present; otherwise the
 input (`nodeReference`, or a legacy `reference`): a `modelReference` or a `r:…(…)` model ref is a
@@ -145,6 +187,35 @@ C_after_node_sample when that row is text-complete and has a node-sampled messag
 message ref, that message is node-sampled); otherwise, a counts-only row, `moreMessages`, a fully listed
 row (a re-check to list quick fixes) or no matching row, it stays in C_after_summary.
 
+The ET_* columns are S17's signals (editor tests, MPS-40320). A node write is any call of the
+GENERATOR_WRITES tools except an alter_nodes MAKE; the input, `parameters` included, is searched as
+JSON text, so a blueprint, a parsed Java snippet or a SET PROPERTY value all count. A `childJson` or
+`json` value that is an absolute path (the temp-file form, e.g. from `blueprint.py`) is searched as
+the file's text: the content of the transcript's last earlier Write of that path, else the file if it
+still exists, else nothing (a file written by a Bash heredoc and deleted since is not seen). A
+COPY_NODE copies existing nodes and is searched only as its input. `$Undo` matches as the id itself
+(`"$Undo"` in a property value, or `by id: $Undo` in text). ET_ide_service_writes counts attempts as
+well, because a rejected write still shows the route the worker took; the positive columns count only
+writes the envelope did not reject. ET_runtime_source_reads matches paths only: `file_path` / `path` /
+`glob` of Read, Grep and the MCP file tools, Glob's `pattern` too (Grep's `pattern` is a regex), and for Bash the command's tokens that contain a
+`/`, so a heredoc or a grep pattern naming `EditorTestUtil` (which the skill tells the worker to use)
+does not count. The run project's own `test_gen/` (reading the generated test to debug it) and the
+language's editor `source_gen` (the documented cell-id route) do not match the pattern.
+The GT_* columns are S18's signals (generator tests). The node-write columns search the input as the
+ET_* columns do (temp-file blueprints resolved, COPY_NODE only as its input, so a copied GeneratorTest
+is not counted again). GT_runtime_source_reads and GT_kitchen_source_reads match paths only, as
+ET_runtime_source_reads does; the fixture's own generator (`mcp.study.recipes/generator/`) and the run
+project's `test_gen/` do not match. S18 reads ET_test_runs and ET_run_configs for its test runs and
+run configurations, and M_makes_save_transient / GN_transient_models / GN_transient_reads for the
+golden-master route.
+The GP_* columns are S19's signals (generation plans). GP_param_equals_writes searches node writes as the
+GT_* columns do. GP_plan_edits counts edits whose input names a `@genplan)` model reference (the model
+part of a node reference) or a `@genplan` model name; GP_plan_root_reinserts counts `Plan` roots (the
+top-level blueprint objects, or the one object) inserted into a `@genplan` model past the fourth of the
+transcript, so re-authoring a plan instead of editing it shows. S19 reads GN_plan for its PLAN calls and
+GT_plan_writes for plan node writes.
+`execute_run_configuration` has no `mps_mcp_` prefix; tool names are compared after the last `__`.
+
 Stdlib only, Python >= 3.9.
 """
 from __future__ import annotations
@@ -166,7 +237,15 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "M_makes_save_transient", "GN_plan", "GN_transient_models", "GN_trace", "GN_trace_backward",
         "GN_drop", "GN_trace_before_fix", "GN_transient_reads", "GN_template_prints",
         "GN_template_prints_before_trace", "DF_builder_prints", "DF_console_runs", "DF_queries",
-        "DF_program_prints", "DF_reaching_queries", "C_after_node_sample", "C_after_node_sample_batches"]
+        "DF_program_prints", "DF_reaching_queries", "C_after_node_sample", "C_after_node_sample_batches",
+        "ET_test_runs", "ET_run_configs", "ET_platform_id_writes", "ET_applicability_writes",
+        "ET_ide_service_writes", "ET_runtime_source_reads", "GT_generator_test_writes",
+        "GT_nodes_test_writes", "GT_match_options_writes", "GT_plan_writes", "GT_do_not_generate_calls",
+        "GT_do_not_generate_workarounds", "GT_runtime_source_reads", "GT_kitchen_source_reads",
+        "GT_expected_parser_inserts", "GP_genplan_models", "GP_param_equals_writes", "GP_set_plan_calls",
+        "GP_devkit_export_calls", "GP_devkit_used_calls", "GP_plan_facet_writes", "GP_attach_workarounds",
+        "GP_descriptor_reads", "GP_plan_edits", "GP_plan_root_reinserts", "GP_plan_steps_detail", "GP_rebuild_makes",
+        "GP_param_model_reads"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
@@ -188,11 +267,48 @@ GENERATION_COLUMNS = {"PLAN": "GN_plan", "TRANSIENT_MODELS": "GN_transient_model
                       "DROP_TRANSIENT_MODELS": "GN_drop"}
 GENERATOR_MODEL = re.compile(r"@generator\b")
 TRANSIENT_REF = re.compile(r"(^|/)i:[0-9a-fA-F]+\([^()/]*@transient\d*/")
+# python / python3 / python3.12, any switches without an argument (`-I`, `-u`, `-IS`) or `-W` / `-X`
+# with theirs, then inline code: `-c` (also last in a group, `-Ic`), `-` (stdin), or a heredoc. The
+# worker CLI runs `python3 -I -c` / `python3 -I -` on untrusted data (A16).
+ADHOC_PYTHON = re.compile(r"(?<![\w.-])python(?:3(?:\.\d+)?)?(?:\s+(?:-[bBdEhiIOPqRsSuvVx]+|-[WX]\s*\S+))*"
+                          r"(?:\s+-[bBdEhiIOPqRsSuvVx]*c|\s+-(?=\s|$|[|;&)<])|\s*<<)")
 TRANSIENT_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
                    "mps_mcp_check_root_node_problems")
 GENERATOR_WRITES = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node", "mps_mcp_update_node",
                     "mps_mcp_update_root_node_from_json", "mps_mcp_parse_java_and_insert", "mps_mcp_apply_intention",
                     "mps_mcp_alter_nodes")
+
+PLATFORM_ACTION_ID = re.compile(r"BootstrapActionReference|\$(?:Undo|Redo|Copy|Cut|Paste)\b")
+IDE_SERVICE = re.compile(r"UndoManager|DataManager|FileEditor|CopyPasteManager")
+RUNTIME_SOURCE = re.compile(r"BaseEditorTestBody|EditorTestUtil|CellAction_|lang/test/runtime|lang\.test\.runtime|"
+                            r"nodeEditor/|/testbench/|bl\.test|jetbrains\.mps\.editorTest")
+# Names and `c:` concept refs (the form `concept-identifiers.md` lists for `create_root_node`).
+GENTEST_LANG = "68015e26-cc4d-49db-8715-b643faea1769/"
+GENERATOR_TEST = re.compile(r"\bGeneratorTest\b|TransformationMatch(?:Many)?Assertion|"
+                            + GENTEST_LANG + r"(?:554465258093187774|554465258093203543|6346338635721157081)\b")
+MATCH_OPTIONS = re.compile(r"ModelMatchOptions|" + GENTEST_LANG + r"8945822034016668031\b")
+NODES_TEST_ROUTE = re.compile(r"NodesTestCase|\bAssertMatch\b|assertNodesMatch|GenerationFacade|generateAndCompare|"
+                              r"8585453e-6bfb-4d80-98de-b16074f1d86c/(?:1216913645126|1211979288880)\b")
+GENPLAN_WRITE = re.compile(r"lang\.generator\.plan\.structure\.(?:Plan|Transform|LanguageEntry|ApplyGenerators)\b|"
+                           r"7ab1a6fa-0a11-4b95-9e48-75f363d6cb00/\d+")
+DO_NOT_GENERATE = re.compile(r"(?i)donotgenerate")
+MPS_FILE_REWRITE = re.compile(r"sed\s+-i|perl\s+-\w*[pi]|>\s*\S+\.mps\b|\.write\(|write_text\(")
+CONSOLE_INPUTS = ("mps_mcp_run_console_command", "mps_mcp_insert_console_command_from_json")
+GENTEST_RUNTIME_SOURCE = re.compile(r"languages/gentest|gentest\.rt|lang/test/generator|lang\.test\.generator|test[./]smodel|ModelMatcher|"
+                                    r"SNodeMatcher|NodesMatcher|generator/tests/|generator\.tests|generator-tests/")
+KITCHEN_SOURCE = re.compile(r"mcp\.study\.kitchen/source_gen")
+PLAN_LANG = "7ab1a6fa-0a11-4b95-9e48-75f363d6cb00/"
+PARAM_EQUALS = re.compile(r"\bParameterEquals\b|" + PLAN_LANG + r"3751925928559474178\b")
+ATTACH_API = re.compile(r"DevkitDescriptor|setAssociatedPlan|associatedGenPlan|getAssociatedGenPlan|CustomGenerationModuleFacet|"
+                        r"setPlanModelReference|\bplanModel\b")
+DESCRIPTOR_FILE = re.compile(r"\.(?:devkit|msd)\b")
+GENPLAN_MODEL = re.compile(r"@genplan\b")
+PARAM_MODEL = re.compile(r"342b977c-a485-4fdb-b891-66244eff644a|generator\.extensions\.common")
+PARAM_MODEL_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
+                     "mps_mcp_search_root_node_by_name", "mps_mcp_check_root_node_problems")
+ROOT_INSERTS = ("mps_mcp_insert_root_node_from_json", "mps_mcp_create_root_node")
+SOURCE_TOOLS = ("Read", "Grep", "Glob", "Bash", "read_file", "find_files_by_glob", "find_files_by_name_keyword")
+PATH_FIELDS = ("file_path", "path", "glob", "pathInProject", "globPattern")  # Grep's `pattern` is a regex, not a path
 
 
 def load(path):
@@ -394,6 +510,112 @@ def builder_print(inp, result):
     return aspect_print(inp, result, DATAFLOW_BUILDER_CONCEPTS, DATAFLOW_MODEL)
 
 
+def node_write_text(name, inp, written_files):
+    """The input of a node write as JSON text (`parameters` and temp-file blueprints included), or None
+    for any other call. `written_files` maps a path to the content of the transcript's last Write of it."""
+    if name not in GENERATOR_WRITES:
+        return None
+    if name == "mps_mcp_alter_nodes" and str(inp.get("operation") or "").strip().upper() == "MAKE":
+        return None
+    text = json.dumps(inp) + json.dumps(params(inp))
+    for key in ("childJson", "json"):
+        value = inp.get(key)
+        if isinstance(value, str) and value.strip().startswith("/"):
+            path = value.strip()
+            if path in written_files:
+                text += written_files[path]
+            elif os.path.isfile(path):
+                try:
+                    with open(path) as fh:
+                        text += fh.read()
+                except (OSError, UnicodeDecodeError):
+                    pass
+    return text
+
+
+def runtime_source_read(name, inp, pattern=RUNTIME_SOURCE):
+    """Whether a file-reading call names a path matching `pattern` (by default the editor-test runtime or
+    MPS's own editor tests)."""
+    if name not in SOURCE_TOOLS:
+        return False
+    if name == "Bash":
+        paths = [t for t in re.split(r"[\s'\"=]+", str(inp.get("command") or "")) if "/" in t]
+    else:
+        fields = PATH_FIELDS + (("pattern",) if name == "Glob" else ())
+        paths = [str(inp[k]) for k in fields if inp.get(k)]
+    return any(pattern.search(p) for p in paths)
+
+
+def do_not_generate_workaround(name, inp):
+    """Whether a call sets the do-not-generate flag some other way than update_model: a console input,
+    an Edit / Write of a .mps file, or a Bash rewrite of one, that names doNotGenerate."""
+    text = json.dumps(inp)
+    if not DO_NOT_GENERATE.search(text):
+        return False
+    if name in CONSOLE_INPUTS:
+        return True
+    if name == "mps_mcp_parse_java_and_insert":
+        return str((params(inp).get("insert") or {}).get("mode") or "").lower() == "console"
+    if name in ("Edit", "Write", "MultiEdit", "apply_patch", "create_new_file"):
+        return ".mps" in json.dumps(inp)
+    if name == "Bash":
+        command = str(inp.get("command") or "")
+        return bool(re.search(r"\.mps\b", command)) and bool(MPS_FILE_REWRITE.search(command))
+    return False
+
+
+def attach_workaround(name, inp):
+    """Whether a call attaches a plan or writes DevKit exports some other way than the tools: a console input
+    naming the DevKit descriptor or Custom Generation facet API, or an edit / Bash rewrite of a .devkit or .msd file."""
+    text = json.dumps(inp)
+    if name in CONSOLE_INPUTS:
+        return bool(ATTACH_API.search(text))
+    if name == "mps_mcp_parse_java_and_insert":
+        return str((params(inp).get("insert") or {}).get("mode") or "").lower() == "console" and bool(ATTACH_API.search(text))
+    if name in ("Edit", "Write", "MultiEdit", "apply_patch", "create_new_file"):
+        return bool(DESCRIPTOR_FILE.search(text))
+    if name == "Bash":
+        command = str(inp.get("command") or "")
+        return bool(DESCRIPTOR_FILE.search(command)) and bool(MPS_FILE_REWRITE.search(command))
+    return False
+
+
+def descriptor_read(name, inp):
+    """Whether a file-reading call reads a .devkit or .msd file (a rewrite counts as a workaround instead)."""
+    if name == "Bash":
+        command = str(inp.get("command") or "")
+        if MPS_FILE_REWRITE.search(command):
+            return False
+        # A read verb and a descriptor path in the same pipeline segment: `find . -name '*.msd' | grep -v x` lists files.
+        return any(re.match(r"\s*(cat|head|tail|grep|sed|less|awk|xmllint)\b", seg) and DESCRIPTOR_FILE.search(seg)
+                   for seg in re.split(r"\||;|&&", command))
+    if name in SOURCE_TOOLS:
+        return any(DESCRIPTOR_FILE.search(str(inp[k])) for k in PATH_FIELDS if inp.get(k))
+    return False
+
+
+def read_blueprint_file(path, written_files):
+    """A temp-file blueprint: the transcript's last Write of `path`, else the file on disk, else empty."""
+    if path in written_files:
+        return written_files[path]
+    try:
+        with open(path) as fh:
+            return fh.read()
+    except (OSError, UnicodeDecodeError):
+        return ""
+
+
+def plan_roots_inserted(text):
+    """The number of `Plan` roots a root-insert blueprint creates: its top-level objects of concept Plan."""
+    try:
+        blueprint = json.loads(text)
+    except (ValueError, TypeError):
+        return 0
+    roots = blueprint if isinstance(blueprint, list) else [blueprint]
+    return sum(1 for r in roots if isinstance(r, dict) and
+               re.search(r"(?:^|\.)Plan$|" + PLAN_LANG + r"1820634577908471803\b", str(r.get("concept") or "")))
+
+
 def failed(result, is_error):
     """Whether a result is an error: is_error, or an ok:false envelope."""
     return is_error or result.strip().startswith('{"ok":false') or result.strip().startswith('{"ok": false')
@@ -406,8 +628,10 @@ def fam(path):
     last_rows, lists_nodes = [], False
     after_clean, after_summary, after_sample = set(), set(), set()
     gcd = []
+    plan_roots = 0
     made = False
     generator_written = traced = False
+    written_files = {}
     for i, u in enumerate(uses):
         n = u["name"].split("__")[-1]
         inp = u.get("input", {})
@@ -445,7 +669,7 @@ def fam(path):
             if "/skills/" in cmd and re.search(r'\b(cat|sed|head|tail|grep|awk)\b', cmd) \
                     and ".py" not in cmd.split("|")[0]:
                 f["D_skill_bash_fetch"] += 1
-            if re.search(r"python3?\s+(-c|-\s*<<|<<)", cmd) or re.search(r"python3?\s+-\s", cmd):
+            if ADHOC_PYTHON.search(cmd):
                 f["Bp_adhoc_python"] += 1
             if re.search(r"skills/[^ ]+/scripts/[^ ]+\.py", cmd):
                 f["Bp_shipped_script"] += 1
@@ -495,6 +719,84 @@ def fam(path):
                 f["GN_template_prints_before_trace"] += 1
         if n == "mps_mcp_reload_all":
             f["M_reload_all"] += 1
+        if n == "execute_run_configuration":
+            f["ET_test_runs"] += 1
+        if n == "mps_mcp_create_run_configuration":
+            f["ET_run_configs"] += 1
+        if n == "Write" and isinstance(inp.get("file_path"), str):
+            written_files[inp["file_path"]] = str(inp.get("content") or "")
+        written = node_write_text(n, inp, written_files)
+        if written is not None:
+            if IDE_SERVICE.search(written):
+                f["ET_ide_service_writes"] += 1
+            if not failed(r, err):
+                if PLATFORM_ACTION_ID.search(written):
+                    f["ET_platform_id_writes"] += 1
+                if "IsActionApplicableExpression" in written:
+                    f["ET_applicability_writes"] += 1
+                if GENERATOR_TEST.search(written):
+                    f["GT_generator_test_writes"] += 1
+                if MATCH_OPTIONS.search(written):
+                    f["GT_match_options_writes"] += 1
+                if GENPLAN_WRITE.search(written):
+                    f["GT_plan_writes"] += 1
+            if NODES_TEST_ROUTE.search(written):
+                f["GT_nodes_test_writes"] += 1
+        if n == "mps_mcp_parse_java_and_insert" and not failed(r, err):
+            target = str((params(inp).get("insert") or {}).get("modelRef") or "")
+            mode = str((params(inp).get("insert") or {}).get("mode") or "").lower()
+            if target and mode != "console" and "@tests" not in target:
+                f["GT_expected_parser_inserts"] += 1
+        if n == "mps_mcp_update_model" and not failed(r, err) and \
+                str(inp.get("operation") or "").strip().upper() == "SET_DO_NOT_GENERATE":
+            f["GT_do_not_generate_calls"] += 1
+        if do_not_generate_workaround(n, inp):
+            f["GT_do_not_generate_workarounds"] += 1
+        if runtime_source_read(n, inp):
+            f["ET_runtime_source_reads"] += 1
+        if runtime_source_read(n, inp, GENTEST_RUNTIME_SOURCE):
+            f["GT_runtime_source_reads"] += 1
+        if runtime_source_read(n, inp, KITCHEN_SOURCE):
+            f["GT_kitchen_source_reads"] += 1
+        ok_call = not failed(r, err)
+        if n == "mps_mcp_create_model" and ok_call and GENPLAN_MODEL.search(str(inp.get("modelName") or "")):
+            f["GP_genplan_models"] += 1
+        if written is not None and ok_call and PARAM_EQUALS.search(written):
+            f["GP_param_equals_writes"] += 1
+        if n == "mps_mcp_update_module" and ok_call and operation == "SET_GENERATION_PLAN":
+            f["GP_set_plan_calls"] += 1
+        if n == "mps_mcp_module_dependency" and ok_call and '"devkitCollection"' in r:
+            f["GP_devkit_export_calls"] += 1
+        if n == "mps_mcp_model_used_language" and ok_call and str(inp.get("kind") or "").lower() == "devkit" and \
+                (inp.get("operation") is None or operation == "ADD"):
+            f["GP_devkit_used_calls"] += 1
+        if n == "mps_mcp_update_module_facet" and str(inp.get("facetType") or "").strip() == "generator":
+            f["GP_plan_facet_writes"] += 1
+        if attach_workaround(n, inp):
+            f["GP_attach_workarounds"] += 1
+        if descriptor_read(n, inp):
+            f["GP_descriptor_reads"] += 1
+        if ok_call and (n == "mps_mcp_update_node" or (n == "mps_mcp_alter_nodes" and operation != "MAKE")) and \
+                GENPLAN_MODEL.search(json.dumps(inp) + json.dumps(params(inp))):
+            f["GP_plan_edits"] += 1
+        if ok_call and n in ROOT_INSERTS and GENPLAN_MODEL.search(str(inp.get("modelReference") or "")):
+            blueprint = inp.get("json")
+            if isinstance(blueprint, str) and blueprint.strip().startswith("/"):
+                blueprint = read_blueprint_file(blueprint.strip(), written_files)
+            elif not isinstance(blueprint, str):
+                blueprint = json.dumps(blueprint)
+            before = plan_roots
+            plan_roots += plan_roots_inserted(blueprint)
+            f["GP_plan_root_reinserts"] += max(0, plan_roots - max(before, 4))
+        if n == "mps_mcp_update_root_node_from_json" and ok_call and GENPLAN_MODEL.search(json.dumps(inp)):
+            f["GP_plan_root_reinserts"] += 1
+        if n == "mps_mcp_generation" and operation == "PLAN" and \
+                str(params(inp).get("detail") or "").strip().lower() == "steps":
+            f["GP_plan_steps_detail"] += 1
+        if n == "mps_mcp_alter_nodes" and operation == "MAKE" and ok_call and is_true(params(inp).get("rebuild")):
+            f["GP_rebuild_makes"] += 1
+        if n in PARAM_MODEL_READS and PARAM_MODEL.search(json.dumps(inp) + json.dumps(params(inp))):
+            f["GP_param_model_reads"] += 1
         if n == "mps_mcp_get_concept_details":
             gcd.append(i)
         if failed(r, err):

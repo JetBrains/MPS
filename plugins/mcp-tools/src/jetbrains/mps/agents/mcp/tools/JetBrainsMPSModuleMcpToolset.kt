@@ -11,11 +11,14 @@ import com.google.gson.JsonPrimitive
 import com.intellij.mcpserver.annotations.McpDescription
 import com.intellij.mcpserver.annotations.McpTool
 import com.intellij.openapi.application.WriteAction
+import jetbrains.mps.generator.CustomGenerationModuleFacet
 import jetbrains.mps.persistence.MementoImpl
 import jetbrains.mps.module.ModuleDeleteHelper
 import jetbrains.mps.module.PersistenceContextImpl
 import jetbrains.mps.project.AbstractModule
+import jetbrains.mps.project.DevKit
 import jetbrains.mps.project.MPSProject
+import jetbrains.mps.project.Solution
 import jetbrains.mps.project.modules.DevkitProducer
 import jetbrains.mps.project.modules.LanguageAndSolutionsProducer
 import jetbrains.mps.project.modules.LanguageProducer
@@ -24,6 +27,7 @@ import jetbrains.mps.project.structure.modules.Dependency
 import jetbrains.mps.project.structure.modules.DevkitDescriptor
 import jetbrains.mps.project.structure.modules.GeneratorDescriptor
 import jetbrains.mps.project.structure.modules.LanguageDescriptor
+import jetbrains.mps.project.structure.modules.ModuleDescriptor
 import jetbrains.mps.project.structure.modules.ModuleFacetDescriptor
 import jetbrains.mps.refactoring.Renamer
 import jetbrains.mps.smodel.Generator
@@ -33,6 +37,7 @@ import jetbrains.mps.smodel.adapter.MetaAdapterByDeclaration
 import jetbrains.mps.smodel.language.LanguageRegistry
 import jetbrains.mps.vfs.IFile
 import org.jetbrains.annotations.Nullable
+import org.jetbrains.mps.openapi.model.SModelReference
 import org.jetbrains.mps.openapi.module.FacetsFacade
 import org.jetbrains.mps.openapi.module.SDependencyScope
 import org.jetbrains.mps.openapi.module.SModule
@@ -53,8 +58,8 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     @McpTool
     @McpDescription("""
         Adds or deletes a dependency of an MPS module based on the operation parameter. Supported operations: ADD or DELETE. 
-        For ADD: Supported scopes: Default, Design, Compile, Runtime, Provided, Generation Target, Extends. `Extends` is routed per source kind (Language→extendedLanguages, Generator→depGenerators, DevKit→extendedDevkits; Solution and cross-kind combinations are rejected). Returns `{ "added":true }` on change, or `{ "added":false, "reason":"providedByDevKit" }` when the dependency is already supplied by a used DevKit. ADD is an upsert on a single edge: a module holds at most one dependency per source→target pair, so re-adding an existing edge updates its `scope`/`reexport` in place (no duplicate is created) — `added:true` is returned for both a fresh insert and an in-place update. See `mps-aspect-accessories/references/module-level-deps.md` for the scope-dispatch table and the "Extends typically needs a Default companion" note.
-        For DELETE: Both the regular `<dependencies>` list and the per-kind `Extends` collection are probed; any removal counts as success. See `mps-aspect-accessories/references/module-level-deps.md` for the dispatch details.
+        For ADD: Supported scopes: Default, Design, Compile, Runtime, Provided, Generation Target, Extends. `Extends` is routed per source kind (Language→extendedLanguages, Generator→depGenerators; Solution and cross-kind combinations are rejected). A **DevKit** source has no dependencies of its own: the target's kind decides where it goes (Language→exportedLanguages, Solution→exportedSolutions, DevKit→extendedDevkits, Generator rejected), only scope Default/Extends and no reexport are accepted, and the answer is `{added, devkitCollection, alreadyPresent?}` (`added:false, alreadyPresent:true` when the DevKit already lists the target); a DevKit that ships a generation plan exports the plan's solution and languages this way. Returns `{ "added":true }` on change, or `{ "added":false, "reason":"providedByDevKit" }` when the dependency is already supplied by a used DevKit. ADD is an upsert on a single edge: a module holds at most one dependency per source→target pair, so re-adding an existing edge updates its `scope`/`reexport` in place (no duplicate is created) — `added:true` is returned for both a fresh insert and an in-place update. See `mps-aspect-accessories/references/module-level-deps.md` for the scope-dispatch table and the "Extends typically needs a Default companion" note.
+        For DELETE: Both the regular `<dependencies>` list and the per-kind `Extends` collection (for a DevKit also its exports) are probed; any removal counts as success. A DevKit answers `{removed:true, devkitCollections:[...]}` and warns when the removal leaves its generation plan without an export it needs; other modules answer `true`. See `mps-aspect-accessories/references/module-level-deps.md` for the dispatch details.
     """)
     suspend fun mps_mcp_module_dependency(
         @McpDescription("Required. Source module name or reference")
@@ -112,6 +117,10 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                 SDependencyScope.entries.find { it.toString().equals(s, ignoreCase = true) || it.name.equals(s, ignoreCase = true) }
             } ?: SDependencyScope.DEFAULT
 
+            if (descriptor is DevkitDescriptor) {
+                return@executeShortCommandOnEdt addDevkitContent(abstractModule, descriptor, target, scope, reexport)
+            }
+
             if (depScope == SDependencyScope.EXTENDS) {
                 // EXTENDS is NOT persisted as a `<dependency scope="extend">` entry. MPS keeps the extension
                 // target in a separate descriptor field per module kind, and the regular `<dependencies>`
@@ -164,6 +173,69 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
     private fun targetIsDevkit(target: SModule): Boolean =
         target is jetbrains.mps.project.DevKit
+
+    /**
+     * ADD for a DevKit source. A DevKit has no `<dependencies>`: its descriptor persists only exported languages,
+     * exported solutions and extended devkits (`DevkitDescriptorPersistence`), so a regular dependency added to it
+     * would live in memory until the next reload and never be written. The IDE's DevKit properties dialog files
+     * every listed module into one of those three sets by kind (`ModulePropertiesConfigurable`); so does this.
+     */
+    private fun addDevkitContent(
+        devkit: AbstractModule,
+        descriptor: DevkitDescriptor,
+        target: SModule,
+        scope: String?,
+        reexport: Boolean,
+    ): String {
+        if (reexport) {
+            return errJson(
+                "A DevKit has no re-exported dependencies: every language and solution it lists is exported to the models " +
+                    "that use it. Omit reexport.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        // An unrecognized scope string falls back to DEFAULT for the other module kinds; here it is named instead.
+        val scopeAccepted = scope == null || listOf(SDependencyScope.DEFAULT, SDependencyScope.EXTENDS).any {
+            scope.equals(it.toString(), ignoreCase = true) || scope.equals(it.name, ignoreCase = true)
+        }
+        if (!scopeAccepted) {
+            return errJson(
+                "Scope '$scope' does not apply to a DevKit source: a DevKit exports languages and solutions and extends " +
+                    "devkits. Use scope Default (or Extends); the target's kind decides which list it joins.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        val (collection, collectionName) = when {
+            target is Language -> descriptor.exportedLanguages to DEVKIT_EXPORTED_LANGUAGES
+            target is Generator -> return errJson(
+                "A DevKit cannot export a generator module (${target.moduleName}); export its language " +
+                    "${target.sourceLanguage().qualifiedName} instead, whose generators come with it.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+            targetIsDevkit(target) -> descriptor.extendedDevkits to DEVKIT_EXTENDED_DEVKITS
+            else -> descriptor.exportedSolutions to DEVKIT_EXPORTED_SOLUTIONS
+        }
+        val targetRef = target.moduleReference
+        val added = collection.add(targetRef)
+        // Earlier server versions answered such a request with an in-memory `dependencies` entry; drop that ghost.
+        val ghostRemoved = descriptor.dependencies.removeIf { it.moduleRef == targetRef }
+        if (added || ghostRemoved) {
+            devkit.setModuleDescriptor(descriptor)
+            devkit.save()
+        }
+        return okJson(jsonObject {
+            addProperty("added", added)
+            addProperty("devkitCollection", collectionName)
+            if (!added) addProperty("alreadyPresent", true)
+        })
+    }
+
+    /** The DevKit descriptor sets [targetRef] is listed in, by the names [addDevkitContent] reports. */
+    private fun devkitCollectionsHolding(descriptor: DevkitDescriptor, targetRef: SModuleReference): List<String> = listOfNotNull(
+        DEVKIT_EXPORTED_LANGUAGES.takeIf { targetRef in descriptor.exportedLanguages },
+        DEVKIT_EXPORTED_SOLUTIONS.takeIf { targetRef in descriptor.exportedSolutions },
+        DEVKIT_EXTENDED_DEVKITS.takeIf { targetRef in descriptor.extendedDevkits },
+    )
 
     private fun extendsRejectMessage(
         descriptor: jetbrains.mps.project.structure.modules.ModuleDescriptor,
@@ -219,6 +291,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                     McpErrorCode.NOT_FOUND,
                 )
 
+            val removedFromDevkit = (descriptor as? DevkitDescriptor)?.let { devkitCollectionsHolding(it, targetRef) }.orEmpty()
             val removedFromDeps = descriptor.dependencies.removeIf { it.moduleRef == targetRef }
             val removedFromExtends = extendsCollections(descriptor)
                 .map { it.remove(targetRef) }
@@ -228,6 +301,16 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                     "Dependency to $targetModule not found in $moduleName",
                     McpErrorCode.NOT_FOUND,
                 )
+            }
+            if (descriptor is DevkitDescriptor) {
+                // A DevKit is only re-read from its live descriptor; setModuleDescriptor fires the module change as the IDE dialog does.
+                abstractModule.setModuleDescriptor(descriptor)
+                abstractModule.save()
+                val warnings = (abstractModule as? DevKit)?.let { GenerationPlanAttachment.devkitWarnings(it, mpsProject.repository) }.orEmpty()
+                return@executeShortCommandOnEdt okJson(jsonObject {
+                    addProperty("removed", true)
+                    add("devkitCollections", JsonArray().apply { removedFromDevkit.forEach(::add) })
+                }, warnings)
             }
             abstractModule.setChanged()
             abstractModule.save()
@@ -245,7 +328,8 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
     ): List<MutableSet<org.jetbrains.mps.openapi.module.SModuleReference>> = when (descriptor) {
         is LanguageDescriptor -> listOf(descriptor.extendedLanguages)
         is GeneratorDescriptor -> listOf(descriptor.depGenerators)
-        is DevkitDescriptor -> listOf(descriptor.extendedDevkits)
+        // A DevKit's exports are the other sets a DevKit "dependency" can live in (see addDevkitContent).
+        is DevkitDescriptor -> listOf(descriptor.extendedDevkits, descriptor.exportedLanguages, descriptor.exportedSolutions)
         else -> emptyList()
     }
 
@@ -711,13 +795,16 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         - CHANGE_VIRTUAL_FOLDER: changes the Project View virtual folder of the module. `newName` is the new folder path (e.g. "Group/Subgroup").
         - SYNC_VERSION: derives the **language module's own** version from its migration scripts and writes it — the headless equivalent of MPS's "Correct Language Version" action (Language modules only; every other module kind is rejected). Whenever a versioned script exists, the version becomes `max(fromVersion) + 1` over the `migration` aspect's scripts (`MigrationScript` / `PureMigrationScript` roots that have a `fromVersion`), which is the only value the migration checker and generator accept; it is never set directly, so `newName` must be omitted. Idempotent: repeating it is a no-op (`changed:false`). Both `MigrationScript` and `PureMigrationScript` created through a factory-running MCP write tool already bump the version themselves via their node factory; use this operation after editing, deleting, or copying a script (a copy duplicates its source's `fromVersion`), and whenever the checker or the generator reports a language-version mismatch — that mismatch's "Set correct language version" quick fix (`FixLanguageVersion`) is an explicit, non-auto-applicable alternative via `mps_mcp_apply_intention`. Without a `migration` aspect or without versioned scripts nothing is derived and the version is left alone (`note` says why). Lowering happens when a trailing script was deleted and is reported in `warnings`, naming any module whose recorded used-language version is now ahead of the language. Consumer-side `usedLanguages[].version` stamps are never touched (refreshing them would mark pending migrations as already applied). Returns the module info envelope plus `languageVersion`, `previousLanguageVersion`, `changed`, `maxFromVersion` (absent when no script has a version), `migrationUnitCount`, `migrationProblems` (`[{unit, reference, concept, problem}]` — scripts without a version, several scripts for one version, a missing version in the sequence; SYNC_VERSION does not fix these: correct the script's `fromVersion`, then sync again), and — when the compiled language runtime disagrees with the descriptor — `runtimeLanguageVersion`, `runtimeStale:true` and `runtimeRecoveryAction`: the migration executor reads the version off the *generated* `LanguageRuntime`, so a new version only takes effect for migrations after the language module is rebuilt (`mps_mcp_alter_nodes` MAKE with `rebuild=true`). No make is performed here. See `mps-aspect-migrations/references/form-selection.md`.
         - DELETE: removes the module from the project. Set `deleteFiles=true` to also remove module files from disk. Only modules of the selected project are accepted; anything else is NOT_FOUND. A generator declared in its language's `.mpl` (every generator that is not a standalone module) is also removed from that language's descriptor, which rewrites the `.mpl` even without `deleteFiles`. Without `deleteFiles` its folder stays on disk, no longer declared. With `deleteFiles` only its models, its generated files and its folders once they are empty are removed, never the language's folder or anything it shares with the language; what stays is listed in `fileDeletionWarning`. The response adds `parentLanguage`.
+        - SET_GENERATION_PLAN: attaches the generation plan model `planModel` (a `@genplan` model's reference or name) the way MPS stores it. A **DevKit** gets it as its associated plan, so every model that uses the DevKit is generated with it (export the plan's solution and the languages it names from the DevKit with `mps_mcp_module_dependency` ADD: make finds the plan without them, but DevKit validation, the IDE and build scripts need them); a **Solution** gets it through its Custom Generation module facet (type `generator`, key `planModel`), so every model of the solution is generated with it, ahead of any DevKit plan. Languages and generators take no plan. A plan is a model, not a node: MPS uses the model's first `Plan` root (root order) and its first `PlanContribution`; other `Plan` roots there serve only as Fork / IncludePlan targets. Refused before anything changes: a model that does not resolve, has neither root, has a PlanContribution pointing at no plan, pairs a Plan with a PlanContribution of another plan, uses a ConceptListSelector, or forks into or includes itself (building such a plan throws). Returns the module info envelope plus `generationPlan` `{model, reference, plan, contributed, attachedVia: DEVKIT|FACET, previousModel?, changed}` and advisory `warnings` (unexported plan solution or languages, a facet plan shadowing DevKit plans, a plan model governed by its own plan, several Plan roots, a contributed plan whose main branch is empty). Verify on a governed model with `mps_mcp_generation` PLAN; a plan change does not mark models dirty, so re-make with `rebuild=true`. See `mps-aspect-generation-plan/references/attaching-plans.md`.
+        - CLEAR_GENERATION_PLAN: removes a DevKit's associated plan or a Solution's Custom Generation facet; `generationPlan.changed:false` when there was none.
     """
     )
     suspend fun mps_mcp_update_module(
         @McpDescription("Required. Existing module name or reference") moduleName: String = "",
         @McpDescription("New name or value for the operation: new qualified name for RENAME, new folder path for CHANGE_VIRTUAL_FOLDER, or ignored for DELETE. Must be omitted for SYNC_VERSION, which derives the version from the migration scripts.") @Nullable newName: String? = null,
-        @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, SYNC_VERSION, or DELETE. Default is RENAME.") operation: String = "RENAME",
+        @McpDescription("Operation to perform: RENAME, CHANGE_VIRTUAL_FOLDER, SYNC_VERSION, DELETE, SET_GENERATION_PLAN or CLEAR_GENERATION_PLAN. Default is RENAME.") operation: String = "RENAME",
         @McpDescription("For DELETE only: whether to also delete module files from disk.") deleteFiles: Boolean = false,
+        @McpDescription("For SET_GENERATION_PLAN only: the generation plan model to attach, as a model reference or name (e.g. `my.plans@genplan`).") @Nullable planModel: String? = null,
     ): String {
         rejectMissingParameters(
             "mps_mcp_update_module",
@@ -725,7 +812,15 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         )?.let { return it }
         val op = resolveOperationOrNull<ModuleOperation>(operation)
             ?: return unknownOperation<ModuleOperation>(operation)
-        return mps_mcp_update_module(moduleName, newName, op, deleteFiles)
+        val givenPlanModel = planModel?.trim()?.takeIf { it.isNotEmpty() }
+        if (givenPlanModel != null && op != ModuleOperation.SET_GENERATION_PLAN) {
+            return errJson(
+                "planModel applies to operation SET_GENERATION_PLAN only (got operation $op); pass operation=SET_GENERATION_PLAN to " +
+                    "attach '$givenPlanModel'.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        return mps_mcp_update_module(moduleName, newName, op, deleteFiles, givenPlanModel)
     }
 
     /** Internal enum-typed entry point for [mps_mcp_update_module]; see [resolveOperationOrNull]. */
@@ -734,6 +829,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         newName: String? = null,
         operation: ModuleOperation,
         deleteFiles: Boolean = false,
+        planModel: String? = null,
     ): String = when (operation) {
         ModuleOperation.RENAME -> withMpsProject("Update MPS module") { mpsProject ->
             val trimmedNewName = newName?.trim()?.takeIf { it.isNotEmpty() }
@@ -947,6 +1043,8 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         }
 
         ModuleOperation.DELETE -> deleteModule(moduleName, deleteFiles)
+        ModuleOperation.SET_GENERATION_PLAN, ModuleOperation.CLEAR_GENERATION_PLAN ->
+            updateGenerationPlan(moduleName, newName, operation, planModel)
     }
 
     /**
@@ -968,6 +1066,125 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
             return "Module name should be a valid Java package qualified name"
         }
         return null
+    }
+
+    /**
+     * SET_GENERATION_PLAN / CLEAR_GENERATION_PLAN. MPS keeps a plan in one of two places, both a model reference: a
+     * DevKit's associated plan, or a Solution's Custom Generation facet (`FacetsRegistry` makes that facet applicable to
+     * Solutions only). The plan model is checked before anything changes, so a refused call leaves the module as it was.
+     */
+    private suspend fun updateGenerationPlan(
+        moduleName: String,
+        newName: String?,
+        operation: ModuleOperation,
+        planModel: String?,
+    ): String = withMpsProject("Update MPS module generation plan") { mpsProject ->
+        newName?.trim()?.takeIf { it.isNotEmpty() }?.let { given ->
+            return@withMpsProject errJson(
+                "$operation takes no newName (got '$given'); pass the plan model as planModel.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        val set = operation == ModuleOperation.SET_GENERATION_PLAN
+        if (set && planModel == null) {
+            return@withMpsProject errJson(
+                "SET_GENERATION_PLAN needs planModel: the reference or name of the @genplan model to attach. To detach, use " +
+                    "CLEAR_GENERATION_PLAN.",
+                McpErrorCode.INVALID_REQUEST,
+            )
+        }
+        executeShortCommandOnEdt(mpsProject) {
+            val resolved = resolveAbstractModuleWithDescriptor(mpsProject, moduleName, requireWritable = true)
+            if (resolved is AbstractModuleResolution.Err) {
+                return@executeShortCommandOnEdt errJson(resolved.message, resolved.code, resolved.details)
+            }
+            val (module, descriptor) = (resolved as AbstractModuleResolution.Ok)
+            if (module !is DevKit && module !is Solution) {
+                return@executeShortCommandOnEdt errJson(
+                    "Module '${module.moduleName}' is a ${moduleKindLabel(module, descriptor)}; MPS attaches generation plans to DevKits (for every " +
+                        "model that uses the DevKit) and to Solutions (for every model of the solution, through the Custom Generation " +
+                        "facet) only.",
+                    McpErrorCode.INVALID_REQUEST,
+                )
+            }
+
+            val plan = if (set) {
+                resolveModelPreferringProject(mpsProject, planModel!!)
+                    ?: return@executeShortCommandOnEdt errJson("Plan model '$planModel' not found", McpErrorCode.NOT_FOUND)
+            } else null
+            val info = plan?.let { GenerationPlanAttachment.inspect(it) }
+            info?.rejection?.let { return@executeShortCommandOnEdt errJson(it, McpErrorCode.INVALID_REQUEST) }
+            val planRef = plan?.reference
+
+            val previous = if (descriptor is DevkitDescriptor) descriptor.associatedGenPlan else GenerationPlanAttachment.facetPlanOf(module)
+            val hasFacetDescriptor = descriptor.moduleFacetDescriptors.any { it.type == GenerationPlanAttachment.FACET_TYPE }
+            val changed = previous != planRef || (module is Solution && !set && hasFacetDescriptor)
+            if (changed) {
+                if (descriptor is DevkitDescriptor) {
+                    descriptor.setAssociatedPlan(planRef)
+                    module.setModuleDescriptor(descriptor)
+                } else {
+                    updatePlanFacet(module as Solution, descriptor, planRef)
+                }
+                module.save()
+            }
+
+            val warnings = mutableListOf<String>()
+            if (plan != null) {
+                warnings.addAll(info!!.notes)
+                if (module is DevKit) {
+                    warnings.addAll(GenerationPlanAttachment.devkitWarnings(module, mpsProject.repository))
+                    GenerationPlanAttachment.modelsShadowingDevkit(module, mpsProject.projectModules).takeIf { it.isNotEmpty() }?.let {
+                        warnings.add(
+                            "These models use the DevKit but their solution's Custom Generation facet plan takes precedence: " +
+                                it.joinToString(", ") + "."
+                        )
+                    }
+                } else {
+                    warnings.addAll(GenerationPlanAttachment.solutionWarnings(module as Solution, plan, mpsProject.repository))
+                }
+            }
+            val result = moduleInfoJsonObject(mpsProject, module)
+            result.add("generationPlan", jsonObject {
+                if (plan != null) {
+                    addProperty("model", plan.name.value)
+                    addProperty("reference", PersistenceFacade.getInstance().asString(plan.reference))
+                    info!!.planName?.let { addProperty("plan", it) }
+                    addProperty("contributed", info.contributed)
+                }
+                addProperty("attachedVia", if (module is DevKit) "DEVKIT" else "FACET")
+                previous?.takeIf { it != planRef }?.let { addProperty("previousModel", PersistenceFacade.getInstance().asString(it)) }
+                addProperty("changed", changed)
+            })
+            okJson(result, warnings)
+        }
+    }
+
+    /**
+     * Points [solution]'s Custom Generation facet at [planRef], or removes the facet when it is null. An existing facet is
+     * updated in place. Adding or removing one goes through `setModuleDescriptor`, which recreates every facet from the
+     * descriptor, so the live facets are written back into it first — the order `ModulePropertiesConfigurable.save` uses.
+     */
+    private fun updatePlanFacet(solution: Solution, descriptor: ModuleDescriptor, planRef: SModelReference?) {
+        val context = PersistenceContextImpl.forModule(solution)
+        val facet = solution.getFacetOfType(GenerationPlanAttachment.FACET_TYPE) as? CustomGenerationModuleFacet
+        val hasDescriptor = descriptor.moduleFacetDescriptors.any { it.type == GenerationPlanAttachment.FACET_TYPE }
+        if (planRef != null && facet != null && hasDescriptor) {
+            facet.setPlanModelReference(planRef)
+            descriptor.updateFacetDescriptor(facet, context)
+            solution.setChanged()
+            return
+        }
+        for (live in solution.facets) {
+            descriptor.updateFacetDescriptor(live, context)
+        }
+        descriptor.moduleFacetDescriptors.removeIf { it.type == GenerationPlanAttachment.FACET_TYPE }
+        if (planRef != null) {
+            val memento = MementoImpl()
+            memento.put("planModel", PersistenceFacade.getInstance().asString(planRef))
+            descriptor.moduleFacetDescriptors.add(ModuleFacetDescriptor(GenerationPlanAttachment.FACET_TYPE, memento))
+        }
+        solution.setModuleDescriptor(descriptor)
     }
 
     private suspend fun deleteModule(
@@ -1254,7 +1471,9 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
 
         `settingsJson` accepts a flat object of primitive properties, or a structured memento object with optional `properties`, primitive `text`, and `children`. Structured `properties` must be an object; `children` must be an array of objects whose primitive `type` is present. Invalid settings return INVALID_REQUEST without changing the existing facet configuration. When `enabled=false`, settings are ignored and the facet is disabled.
 
-        Returns a JSON object with 'ok':true and 'data':{"updated":true, "facetType":"..."} on success, or 'ok':false and 'error':"..." on failure.
+        Before anything changes, the settings are loaded into a scratch instance of the facet and saved back: settings the facet cannot load are refused (INVALID_REQUEST), and supplied keys or child types it does not keep are named in `warnings` (with the ones it keeps). A facet not applicable to the module kind is kept with a warning. DevKits are refused: a DevKit saves no facets (use `mps_mcp_update_module` SET_GENERATION_PLAN to give its models a plan). For the `generator` (Custom Generation) facet, prefer `mps_mcp_update_module` SET_GENERATION_PLAN, which validates the plan.
+
+        Returns a JSON object with 'ok':true and 'data':{"updated":true, "facetType":"..."} (plus `warnings`) on success, or 'ok':false and 'error':"..." on failure.
     """)
     // See note above mps_mcp_list_facet_types regarding deprecated FacetsFacade.getInstance().
     @Suppress("DEPRECATION")
@@ -1269,6 +1488,7 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         RequiredParameter("facetType", facetType, "the facet type to update"),
     ) ?: withMpsProject("Updating module facet") { mpsProject ->
         val settings = settingsJson?.text
+        val warnings = mutableListOf<String>()
         val validationError = withModalTimeoutOnEdt {
             var commandError: String? = null
             mpsProject.repository.modelAccess.executeCommand {
@@ -1277,6 +1497,15 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                     is AbstractModuleResolution.Err -> throw McpUserException(resolved.code, resolved.message, resolved.details)
                     is AbstractModuleResolution.Ok -> {
                         val (abstractModule, descriptor) = resolved
+                        if (abstractModule is DevKit) {
+                            // DevkitDescriptorPersistence writes no facets, so the change would be lost on the next reload.
+                            commandError = errJson(
+                                "A DevKit has no module facets that MPS saves. To give the models that use a DevKit a generation plan, " +
+                                    "use mps_mcp_update_module operation=SET_GENERATION_PLAN on the DevKit.",
+                                McpErrorCode.INVALID_REQUEST,
+                            )
+                            return@executeCommand
+                        }
 
                         if (enabled == false) {
                             descriptor.moduleFacetDescriptors.removeIf { it.type == facetType }
@@ -1294,8 +1523,30 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
                                         return@executeCommand
                                     }
                                 }
+                                // Rehearse the settings on a scratch facet before the descriptor changes: setModuleDescriptor
+                                // recreates every facet from the descriptor, and a facet whose load throws there takes the
+                                // module's other facets down with it.
+                                when (val rehearsal = rehearseFacetSettings(abstractModule, facetType, memento)) {
+                                    is FacetRehearsal.Refused -> {
+                                        commandError = errJson(rehearsal.message, McpErrorCode.INVALID_REQUEST)
+                                        return@executeCommand
+                                    }
+                                    is FacetRehearsal.Loaded -> warnings.addAll(rehearsal.warnings)
+                                }
                             } else if (descriptor.moduleFacetDescriptors.any { it.type == facetType }) {
                                 return@executeCommand
+                            }
+                            if (facetType == GenerationPlanAttachment.FACET_TYPE && warnings.none { it.contains("SET_GENERATION_PLAN") }) {
+                                warnings.add(
+                                    "The Custom Generation facet keeps only `planModel` and checks nothing; mps_mcp_update_module " +
+                                        "operation=SET_GENERATION_PLAN attaches a plan model with validation."
+                                )
+                            }
+                            if (FacetsFacade.getInstance().getFacetFactory(facetType)?.isApplicable(abstractModule) == false) {
+                                warnings.add(
+                                    "Facet '$facetType' is not applicable to module '${abstractModule.moduleName}' " +
+                                        "(${moduleKindLabel(abstractModule, descriptor)}); MPS keeps it but may ignore it."
+                                )
                             }
 
                             descriptor.moduleFacetDescriptors.removeIf { it.type == facetType }
@@ -1317,7 +1568,50 @@ class JetBrainsMPSModuleMcpToolset : AbstractOps() {
         okJson(jsonObject {
             addProperty("updated", true)
             addProperty("facetType", facetType)
-        })
+        }, warnings)
+    }
+
+    private sealed class FacetRehearsal {
+        class Refused(val message: String) : FacetRehearsal()
+        class Loaded(val warnings: List<String>) : FacetRehearsal()
+    }
+
+    /**
+     * Loads [settings] into a scratch instance of the [facetType] facet and saves it back. A load that throws refuses the
+     * settings; a supplied property key or child type the facet does not save back is one it ignores. Only those are
+     * compared: a facet may add defaults or normalize values (the Java facet rewrites paths), which is not a loss.
+     */
+    @Suppress("DEPRECATION")
+    private fun rehearseFacetSettings(module: AbstractModule, facetType: String, settings: Memento): FacetRehearsal {
+        val factory = FacetsFacade.getInstance().getFacetFactory(facetType) ?: return FacetRehearsal.Loaded(emptyList())
+        val context = PersistenceContextImpl.forModule(module)
+        val saved = MementoImpl()
+        try {
+            val scratch = factory.create(module) ?: return FacetRehearsal.Loaded(emptyList())
+            scratch.load(settings, context)
+            scratch.save(saved, context)
+        } catch (e: Exception) {
+            return FacetRehearsal.Refused(
+                "Facet '$facetType' cannot load these settings (${e.javaClass.simpleName}: ${e.message}); the module was not changed."
+            )
+        }
+        val ignoredKeys = getEffectiveKeys(settings, facetType).filter { saved.get(it) == null }.sorted()
+        val savedChildTypes = saved.children.map { it.type }.toSet()
+        val ignoredChildren = settings.children.map { it.type }.filter { it !in savedChildTypes }.distinct().sorted()
+        if (ignoredKeys.isEmpty() && ignoredChildren.isEmpty()) return FacetRehearsal.Loaded(emptyList())
+        val kept = getEffectiveKeys(saved, facetType).sorted()
+        val hint = if (facetType == GenerationPlanAttachment.FACET_TYPE) {
+            " The Custom Generation facet keeps only `planModel` (a generation plan model reference); " +
+                "mps_mcp_update_module operation=SET_GENERATION_PLAN attaches a plan with validation."
+        } else ""
+        return FacetRehearsal.Loaded(listOf(
+            "Facet '$facetType' ignores " +
+                listOfNotNull(
+                    ignoredKeys.takeIf { it.isNotEmpty() }?.let { "the settings ${it.joinToString(", ")}" },
+                    ignoredChildren.takeIf { it.isNotEmpty() }?.let { "the child types ${it.joinToString(", ")}" },
+                ).joinToString(" and ") +
+                "; it keeps ${if (kept.isEmpty()) "no settings" else kept.joinToString(", ")}.$hint"
+        ))
     }
 
     /**
@@ -1704,5 +1998,12 @@ enum class ModuleOperation {
     RENAME,
     CHANGE_VIRTUAL_FOLDER,
     SYNC_VERSION,
-    DELETE
+    DELETE,
+    SET_GENERATION_PLAN,
+    CLEAR_GENERATION_PLAN,
 }
+
+private const val DEVKIT_EXPORTED_LANGUAGES = "exportedLanguages"
+private const val DEVKIT_EXPORTED_SOLUTIONS = "exportedSolutions"
+private const val DEVKIT_EXTENDED_DEVKITS = "extendedDevkits"
+

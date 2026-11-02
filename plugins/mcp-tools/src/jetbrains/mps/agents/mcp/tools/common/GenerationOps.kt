@@ -2,6 +2,7 @@ package jetbrains.mps.agents.mcp.tools.common
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.intellij.openapi.progress.ProcessCanceledException
 import jetbrains.mps.generator.GenPlanExtractor
 import jetbrains.mps.generator.GenerationFacade
 import jetbrains.mps.generator.ModelGenerationPlan
@@ -13,6 +14,8 @@ import jetbrains.mps.generator.runtime.TemplateModule
 import jetbrains.mps.messages.IMessage
 import jetbrains.mps.messages.IMessageHandler
 import jetbrains.mps.messages.MessageKind
+import jetbrains.mps.project.DevKit
+import jetbrains.mps.smodel.SModelInternal
 import jetbrains.mps.smodel.language.LanguageRegistry
 import org.jetbrains.mps.openapi.model.SModel
 import org.jetbrains.mps.openapi.model.SModelReference
@@ -20,6 +23,7 @@ import org.jetbrains.mps.openapi.model.SNodeReference
 import org.jetbrains.mps.openapi.module.SModuleReference
 import org.jetbrains.mps.openapi.module.SRepository
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade
+import kotlin.coroutines.cancellation.CancellationException
 
 /** Where the plan [GenerationOps.planJson] renders came from: the model's external plan, or the one computed from its languages. */
 internal enum class PlanSource { EXPLICIT, DEFAULT }
@@ -57,7 +61,7 @@ internal object GenerationOps {
      * devkit when there is one and [ignoreExternalPlan] is false, otherwise the default plan computed from the model's
      * languages. Mirrors the console's `#showGenPlan` (`ShowGenPlan__BehaviorDescriptor`, `PartitioningHelper`).
      */
-    fun planJson(model: SModel, repository: SRepository, ignoreExternalPlan: Boolean): Rendered {
+    fun planJson(model: SModel, repository: SRepository, ignoreExternalPlan: Boolean, compact: Boolean = false): Rendered {
         val warnings = mutableListOf<String>()
         val result = JsonObject()
         result.addProperty("model", model.name.value)
@@ -83,7 +87,23 @@ internal object GenerationOps {
             return Rendered(result, warnings)
         }
         result.addProperty("planComputed", true)
+        val sources = explicitPlanSources(model, repository, ignoreExternalPlan, warnings)
+        if (sources.size() > 0) result.add("explicitPlanSources", sources)
 
+        renderPlan(model, repository, ignoreExternalPlan, compact, collector, languageRegistry, result, warnings)
+        return Rendered(result, warnings)
+    }
+
+    private fun renderPlan(
+        model: SModel,
+        repository: SRepository,
+        ignoreExternalPlan: Boolean,
+        compact: Boolean,
+        collector: EngagedGeneratorCollector,
+        languageRegistry: LanguageRegistry,
+        result: JsonObject,
+        warnings: MutableList<String>,
+    ) {
         val diagnostics = JsonArray()
         val seen = HashSet<String>()
         val extractor = GenPlanExtractor(repository, object : IMessageHandler {
@@ -95,9 +115,32 @@ internal object GenerationOps {
                 }
             }
         })
-        val hasExternalPlan = extractor.hasPlan(model)
-        // Asked for even when ignored, as the console does, for the diagnostics it reports.
-        val externalPlan = if (hasExternalPlan) extractor.getPlan(model) else null
+        var hasExternalPlan: Boolean
+        var externalPlan: ModelGenerationPlan?
+        try {
+            hasExternalPlan = extractor.hasPlan(model)
+            // Asked for even when ignored, as the console does, for the diagnostics it reports.
+            externalPlan = if (hasExternalPlan) extractor.getPlan(model) else null
+        } catch (e: Throwable) {
+            // A plan MPS cannot build (a ConceptListSelector fork filter, a Plan next to a PlanContribution of another plan,
+            // DevKit plans that are all contributions, a plan that includes itself) throws while the extractor builds it, an
+            // AssertionError when assertions are on and a StackOverflowError for the cycle; make fails the same way.
+            if (e is CancellationException || e is ProcessCanceledException || (e is VirtualMachineError && e !is StackOverflowError)) throw e
+            val reason = e.javaClass.simpleName + (e.message?.let { ": $it" } ?: "")
+            result.addProperty("planError", reason)
+            warnings.add(
+                "Building the attached generation plan failed ($reason); make fails the same way. Check the plan models in " +
+                    "explicitPlanSources (see the mps-aspect-generation-plan skill)" +
+                    (if (ignoreExternalPlan) "; the default plan below ignores it." else "; ignoreExternalPlan:true shows the default plan.")
+            )
+            if (!ignoreExternalPlan) {
+                result.addProperty("planComputed", false)
+                result.add("planDiagnostics", diagnostics)
+                return
+            }
+            hasExternalPlan = true
+            externalPlan = null
+        }
         val useExternalPlan = externalPlan != null && !ignoreExternalPlan
         val plan: ModelGenerationPlan = if (useExternalPlan) externalPlan!! else GenerationPlan(model)
 
@@ -107,15 +150,17 @@ internal object GenerationOps {
         collector.dump { trace.add(it.trim()) }
 
         result.addProperty("planSource", (if (useExternalPlan) PlanSource.EXPLICIT else PlanSource.DEFAULT).name)
-        if (hasExternalPlan) {
+        if (hasExternalPlan && !result.has("planError")) {
             result.addProperty("explicitPlanOrigin", explicitPlanOrigin(model).name)
         }
         result.addProperty("externalPlanIgnored", hasExternalPlan && ignoreExternalPlan)
         result.add("planDiagnostics", diagnostics)
 
-        val steps = stepsJson(plan.steps, model.name.longName)
+        val steps = stepsJson(plan.steps, model.name.longName, compact)
         result.add("steps", steps.array)
-        result.add("generators", JsonArray().apply { plan.generators.sortedBy { it.moduleReference.moduleName }.forEach { add(generatorJson(it)) } })
+        if (!compact) {
+            result.add("generators", JsonArray().apply { plan.generators.sortedBy { it.moduleReference.moduleName }.forEach { add(generatorJson(it)) } })
+        }
 
         val covered = plan.generators.map { it.sourceLanguage.identity }.toSet()
         val usedLanguages = JsonArray()
@@ -135,17 +180,72 @@ internal object GenerationOps {
         result.add("usedLanguages", usedLanguages)
 
         if (plan is GenerationPlan) {
-            result.add("conflicts", conflictsJson(plan.conflicts))
-            result.add("ignoredPriorityRules", conflictsJson(plan.ignoredPriorityRules))
+            if (compact) {
+                result.addProperty("conflictCount", plan.conflicts.size)
+                result.addProperty("ignoredPriorityRuleCount", plan.ignoredPriorityRules.size)
+            } else {
+                result.add("conflicts", conflictsJson(plan.conflicts))
+                result.add("ignoredPriorityRules", conflictsJson(plan.ignoredPriorityRules))
+            }
         }
+        if (compact) return
         result.add("engagedGeneratorTrace", stringArray(trace))
 
         val notes = PLAN_NOTES.toMutableList()
         if (steps.hasEmptyTransform) notes.add(EMPTY_TRANSFORM_NOTE)
         if (steps.hasForkCondition) notes.add(FORK_CONDITION_NOTE)
         result.add("notes", stringArray(notes))
-        return Rendered(result, warnings)
     }
+
+    /**
+     * Every plan attached to [model], in the order [GenPlanExtractor] consults them: its module's Custom Generation facet,
+     * then the plans of the devkits the model imports directly (a plan of an extended devkit is not inherited). A facet
+     * plan whose model resolves to a model with roots shadows every DevKit plan; otherwise MPS falls back silently, which
+     * is reported in [warnings].
+     */
+    private fun explicitPlanSources(model: SModel, repository: SRepository, ignoreExternalPlan: Boolean, warnings: MutableList<String>): JsonArray {
+        val array = JsonArray()
+        val module = model.module
+        val facetRef = module?.let { GenerationPlanAttachment.facetPlanOf(it) }
+        val facetModel = facetRef?.resolve(repository)
+        val facetInfo = facetModel?.let { GenerationPlanAttachment.inspect(it) }
+        // CustomGenerationModuleFacet.getPlan gives null, so MPS goes on to the devkits, unless the model has a plan root.
+        val facetApplies = facetInfo?.hasPlanRoot == true
+        if (facetRef != null) {
+            array.add(planSourceJson("FACET", module.moduleName ?: "", facetRef, facetInfo, facetApplies && !ignoreExternalPlan))
+            if (!facetApplies) {
+                warnings.add(
+                    "The Custom Generation facet of '${module.moduleName}' names plan model '${facetRef.modelName}', which " +
+                        (if (facetModel == null) "does not resolve" else "has no Plan or PlanContribution root") + "; MPS ignores it " +
+                        "silently and falls back to DevKit plans or the default plan."
+                )
+            }
+        }
+        for (dkRef in (model as? SModelInternal)?.importedDevkits().orEmpty()) {
+            val planRef = (dkRef.resolve(repository) as? DevKit)?.moduleDescriptor?.associatedGenPlan ?: continue
+            val info = planRef.resolve(repository)?.let { GenerationPlanAttachment.inspect(it) }
+            val applied = !facetApplies && info?.hasPlanRoot == true && !ignoreExternalPlan
+            array.add(planSourceJson("DEVKIT", dkRef.moduleName ?: "", planRef, info, applied))
+        }
+        return array
+    }
+
+    /** One attached plan; [info] is null when the plan model does not resolve. `applied` is false when ignored or shadowed. */
+    private fun planSourceJson(via: String, by: String, planRef: SModelReference, info: GenerationPlanAttachment.PlanModelInfo?, applied: Boolean) =
+        JsonObject().apply {
+            addProperty("via", via)
+            addProperty("by", by)
+            addProperty("planModel", planRef.modelName)
+            addProperty("planModelReference", PersistenceFacade.getInstance().asString(planRef))
+            if (info == null) {
+                addProperty("resolved", false)
+            } else {
+                info.planName?.let { addProperty("planName", it) }
+                if (info.contributed) addProperty("contribution", true)
+                info.rejection?.let { addProperty("problem", it) }
+            }
+            addProperty("applied", applied)
+        }
 
     /**
      * `FACET` when the first plan-providing facet of the model's module gives it a plan, which is the precedence
@@ -177,15 +277,15 @@ internal object GenerationOps {
      * main branch's majorStep is the step's position and a fork branch starts counting at its fork's majorStep.
      * [modelLongName] names the checkpoint models.
      */
-    fun stepsJson(steps: List<ModelGenerationPlan.Step>, modelLongName: String): RenderedSteps {
+    fun stepsJson(steps: List<ModelGenerationPlan.Step>, modelLongName: String, compact: Boolean = false): RenderedSteps {
         val prefixCounts = HashMap<String, Int>()
         countTransformPrefixes(steps, 0, prefixCounts)
-        val flags = Flags()
+        val flags = Flags(compact)
         val array = branchJson(steps, 0, modelLongName, flags) { (prefixCounts[it] ?: 0) > 1 }
         return RenderedSteps(array, flags.emptyTransform, flags.forkCondition)
     }
 
-    private class Flags {
+    private class Flags(val compact: Boolean) {
         var emptyTransform = false
         var forkCondition = false
     }
@@ -221,7 +321,7 @@ internal object GenerationOps {
                     obj.addProperty("transientStereotypePrefix", prefix)
                     if (shared(prefix)) obj.addProperty("prefixShared", true)
                     if (step.transformations.isEmpty()) flags.emptyTransform = true
-                    obj.add("transformations", transformationsJson(step))
+                    obj.add("transformations", transformationsJson(step, flags.compact))
                 }
                 is ModelGenerationPlan.Checkpoint -> {
                     obj.addProperty("kind", "CHECKPOINT")
@@ -255,7 +355,7 @@ internal object GenerationOps {
      * One entry per label `GenerationPartitioningUtil` gives the step, as the console prints it: `<templateModel>.*`
      * when the step applies every mapping configuration of that template model, `<templateModel>.<mc>` otherwise.
      */
-    private fun transformationsJson(step: ModelGenerationPlan.Transform): JsonArray {
+    private fun transformationsJson(step: ModelGenerationPlan.Transform, compact: Boolean): JsonArray {
         val array = JsonArray()
         val persistence = PersistenceFacade.getInstance()
         for (labelled in GenerationPartitioningUtil.toStrings(step.transformations)) {
@@ -266,9 +366,10 @@ internal object GenerationOps {
             array.add(JsonObject().apply {
                 addProperty("label", label)
                 addProperty("templateModel", templateModel.longName)
-                addProperty("templateModelReference", persistence.asString(templateModel.sModelReference))
                 addProperty("generatorModule", module.moduleReference.moduleName)
                 addProperty("sourceLanguage", module.sourceLanguage.namespace)
+                if (compact) return@apply
+                addProperty("templateModelReference", persistence.asString(templateModel.sModelReference))
                 add("mappingConfigurations", JsonArray().apply {
                     configurations.sortedBy { it.name }.forEach { mc ->
                         add(JsonObject().apply {

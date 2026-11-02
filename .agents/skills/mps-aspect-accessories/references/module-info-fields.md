@@ -56,6 +56,6 @@ When the module is a DevKit, the response also includes:
 - `extendedDevkits` — list of devkits this devkit extends.
 - `exportedLanguages` — languages re-exported by the devkit.
 - `exportedSolutions` — solutions re-exported by the devkit.
-- `associatedGenPlan?` — generation plan, when associated.
+- `associatedGenPlan?` — the generation plan model every model using the DevKit is generated with; set and cleared with `mps_mcp_update_module` `SET_GENERATION_PLAN` / `CLEAR_GENERATION_PLAN`. `exportedLanguages` / `exportedSolutions` / `extendedDevkits` are written with `mps_mcp_module_dependency` from the DevKit.
 
 Dependency and export entries can also carry prefixed foreign-project markers such as `containingProject` / `editableFromCurrentProject` on module references and `targetContainingProject` / `targetEditableFromCurrentProject` on nested targets.

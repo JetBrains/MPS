@@ -3,7 +3,7 @@
 > **Captured-value contract** — _Inputs:_ `{{SERVER_PREFIX}}`, `{{PROJECT_DIR}}`. _Produces (cross-part):_ `{{SANDBOX_MODEL_REF}}` (+ informational `{{SANDBOX_OTHER_MODEL_REF}}`).
 
 Tools: `mps_mcp_create_model` (the three `modelName` mechanisms: plain / language-aspect-id /
-`name@stereotype`), `mps_mcp_update_model` (enum `operation`: `RENAME`, `DELETE`).
+`name@stereotype`), `mps_mcp_update_model` (enum `operation`: `RENAME`, `DELETE`, `SET_DO_NOT_GENERATE`).
 
 > `create_model` success returns `data` = `{ name, module, reference, readOnly, present }`.
 > Model `reference` format is `r:<uuid>(<modelName>)`. You may address a model later by this

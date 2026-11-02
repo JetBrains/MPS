@@ -1,12 +1,13 @@
 # Runnable Shapes — What `mps_mcp_create_run_configuration` Accepts
 
-The tool dispatches to one of **three** producer paths, matching the three `ProducerPart_*` entries the MPS `Java_Producer` and `JUnitTests_Producer` register:
+The tool dispatches to one of **three** producer paths, matching the three `ProducerPart_*` entries the MPS `Java_Producer` and `JUnitTests_Producer` register, plus a fourth for test roots only MPS test discovery knows:
 
 | Source node | Run config type created | Default name | Typical examples |
 |---|---|---|---|
 | Concept implements `jetbrains.mps.execution.util.structure.IMainClass` | **Java Application** | `Node <name>` | DSL roots with a `main`-equivalent — Kaja `Script`, `samples.shapes.Canvas` |
 | `jetbrains.mps.baseLanguage.structure.ClassConcept` with a `static main(<String[]-subtype>)` method | **Java Application** | `Class <name>` | Plain BaseLanguage classes — the same target as MPS Project View → right-click → Run |
 | Concept implements `jetbrains.mps.baseLanguage.unitTest.structure.ITestCase` | **JUnit Tests** | `<testCaseName>` | `lang.test` `NodesTestCase` / `EditorTestCase` / `MigrationTestCase` / `BTestCase`, and BaseLanguage `unitTest.TestCase` |
+| Any other root MPS test discovery recognizes and that holds at least one test | **JUnit Tests** (a one-root NODE snapshot, `compileInMPS=true` required) | `<rootName>` | `jetbrains.mps.lang.test.generator` `GeneratorTest` (one test per assertion; one without assertions is refused with `Test '<name>' has no tests …`), a JUnit3/4 BaseLanguage test class without `main` |
 
 ## ClassConcept `main` predicate
 
@@ -26,10 +27,10 @@ Module '<moduleName>' (owner of node '<nodeName>') has compileInMPS=false; the s
 
 ## Refusal: no shape matched
 
-If the node matches none of the three shapes, the tool **refuses with an error**:
+If the node matches none of the four shapes, the tool **refuses with an error**:
 
 ```
-Concept '<X>' is not runnable through this tool: the root must implement IMainClass or ITestCase, or be a ClassConcept whose getMainMethod() resolves a static main(<String[]-subtype>) method (visibility is not checked)
+Concept '<X>' is not runnable through this tool: the root must implement IMainClass or ITestCase, be a test root MPS test discovery recognizes (such as a GeneratorTest), or be a ClassConcept whose getMainMethod() resolves a static main(<String[]-subtype>) method (visibility is not checked)
 ```
 
 ## Producer precedence
