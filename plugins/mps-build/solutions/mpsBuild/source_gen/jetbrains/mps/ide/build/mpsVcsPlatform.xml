@@ -100,7 +100,7 @@
       <module namespace="jetbrains.mps.git4idea.stubs" type="solution" uuid="f57286e3-4e19-4d8d-8045-3900761f6530">
         <dependencies>
           <module ref="3f233e7f-b8a6-46d2-a57f-795d56775243(Annotations)" kind="cl" />
-          <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
+          <module ref="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="cl" />
           <module ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b(jetbrains.mps.vcs.idea.stubs)" kind="cl" />
         </dependencies>
         <uses />
@@ -119,7 +119,7 @@
     <echoxml file="${build.tmp}/default/jetbrains.mps.vcs.idea.stubs.jar/META-INF/module.xml">
       <module namespace="jetbrains.mps.vcs.idea.stubs" type="solution" uuid="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b">
         <dependencies>
-          <module ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="cl" />
+          <module ref="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="cl" />
         </dependencies>
         <uses />
         <library jar="/plugins/platform-vcs-plugin/lib/modules/intellij.platform.vcs.dvcs.impl.jar" />

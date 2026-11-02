@@ -1700,7 +1700,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
@@ -1729,8 +1728,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -1738,7 +1735,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -1760,7 +1756,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -1831,7 +1826,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -1840,34 +1834,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -1901,7 +1887,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -1930,8 +1915,13 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />
@@ -2042,7 +2032,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -2059,8 +2048,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -2068,7 +2055,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -2090,7 +2076,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -2163,7 +2148,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -2172,34 +2156,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -2233,7 +2209,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -2262,12 +2237,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2378,7 +2358,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
@@ -2494,7 +2473,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
@@ -2610,7 +2588,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
@@ -2728,7 +2705,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
@@ -2844,7 +2820,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
@@ -2960,7 +2935,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
@@ -3071,7 +3045,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -3089,8 +3062,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -3098,7 +3069,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -3120,7 +3090,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -3193,7 +3162,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -3202,34 +3170,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -3263,7 +3223,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -3292,12 +3251,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3402,7 +3366,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -3513,7 +3476,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -3531,8 +3493,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -3540,7 +3500,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -3562,7 +3521,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -3635,7 +3593,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -3644,34 +3601,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -3705,7 +3654,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -3734,12 +3682,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3843,7 +3796,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -3954,7 +3906,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -3972,8 +3923,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -3981,7 +3930,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -4003,7 +3951,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -4076,7 +4023,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -4085,34 +4031,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -4146,7 +4084,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -4175,12 +4112,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -4284,7 +4226,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -4397,7 +4338,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.mps}/languages/runtimes/jetbrains.mps.analyzers.runtime.jar" />
@@ -4411,8 +4351,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -4420,7 +4358,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -4442,7 +4379,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -4515,7 +4451,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -4524,34 +4459,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -4585,7 +4512,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -4614,12 +4540,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.jupiter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -4725,7 +4656,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -4918,7 +4848,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -5068,7 +4997,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -5094,8 +5022,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -5103,7 +5029,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -5125,7 +5050,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -5196,7 +5120,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -5205,34 +5128,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -5266,7 +5181,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -5295,8 +5209,13 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />
@@ -5405,7 +5324,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
-        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
@@ -5423,8 +5341,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.java.compatibility.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.codeStyle.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.configurationStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.credentialStore.ui.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.concurrency.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.core.plugins.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.initialConfigImport.jar" />
@@ -5432,7 +5348,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.kernel.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.starter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.diff.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.shared.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.jar" />
         <fileset file="${artifacts.IDEA}/lib/external-system-rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/externalProcess-rt.jar" />
@@ -5454,7 +5369,6 @@
         <fileset file="${artifacts.IDEA}/lib/fleet.util.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.logging.api.jar" />
         <fileset file="${artifacts.IDEA}/lib/fleet.util.serialization.jar" />
-        <fileset file="${artifacts.IDEA}/lib/idea_rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.idea.community.customization.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.java.ide.resources.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.json.syntax.jar" />
@@ -5525,7 +5439,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.rd.text.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.engine.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.snakeyaml.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.libraries.stream.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.velocity.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.winp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.xtext.xbase.jar" />
@@ -5534,34 +5447,26 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.buildData.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.startUpPerformanceReporter.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.diagnostic.telemetry.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.discoverability.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.duplicates.analysis.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.eel.nioFs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.experiment.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.icons.impl.intellij.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.codeinsight.inline.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.designer.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.favoritesTreeView.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.remote.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.jps.build.javac.rt.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.lsp.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.macro.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.markdown.utils.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.polySymbols.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.rd.community.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.remote.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.en.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.resources.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.rpc.topics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.runtime.product.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.config.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.uploader.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.syntax.psi.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.testIntegration.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.threadDumpParser.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.coroutines.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.welcomeScreen.impl.jar" />
@@ -5595,7 +5500,6 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.rpc.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.ui.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.updateChecker.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ide.util.io.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.buildConstants.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.ijent.community.impl.jar" />
@@ -5624,8 +5528,13 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.progress.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.jps.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.workspace.storage.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.wsl.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-platform-reporting-6.1.3.jar" />
         <fileset dir="${artifacts.mps}/plugins/mps-junit5/lib" includes="junit-jupiter-params-6.1.3.jar" />
         <path refid="path.jdk.classpath" />

@@ -8096,6 +8096,7 @@
         </node>
         <node concept="1SiIV0" id="uqqfP8JYaA" role="3bR37C">
           <node concept="3bR9La" id="uqqfP8JYaB" role="1SiIV1">
+            <property role="3bR36h" value="true" />
             <ref role="3bR37D" node="1ia2VB5guYy" resolve="MPS.IDEA" />
           </node>
         </node>
@@ -64242,12 +64243,6 @@
           </node>
         </node>
       </node>
-      <node concept="1SiIV0" id="4wxeloVufXG" role="3bR37C">
-        <node concept="3bR9La" id="4wxeloVufXH" role="1SiIV1">
-          <property role="3bR36h" value="true" />
-          <ref role="3bR37D" node="1ia2VB5guYy" resolve="MPS.IDEA" />
-        </node>
-      </node>
       <node concept="1SiIV0" id="4wxeloVufXI" role="3bR37C">
         <node concept="3bR9La" id="4wxeloVufXJ" role="1SiIV1">
           <ref role="3bR37D" node="44LXwdzyvTi" resolve="Annotations" />
@@ -64325,6 +64320,12 @@
           </node>
         </node>
       </node>
+      <node concept="1SiIV0" id="1ag_b5O2wWv" role="3bR37C">
+        <node concept="3bR9La" id="1ag_b5O2wWw" role="1SiIV1">
+          <property role="3bR36h" value="true" />
+          <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
+        </node>
+      </node>
     </node>
     <node concept="1E1JtA" id="6IrEpWwbD4R" role="3989C9">
       <property role="BnDLt" value="true" />
@@ -64349,11 +64350,6 @@
               </node>
             </node>
           </node>
-        </node>
-      </node>
-      <node concept="1SiIV0" id="6IrEpWwbDJx" role="3bR37C">
-        <node concept="3bR9La" id="6IrEpWwbDJy" role="1SiIV1">
-          <ref role="3bR37D" node="1ia2VB5guYy" resolve="MPS.IDEA" />
         </node>
       </node>
       <node concept="1SiIV0" id="1phLyFZs2fX" role="3bR37C">
@@ -64596,6 +64592,11 @@
               </node>
             </node>
           </node>
+        </node>
+      </node>
+      <node concept="1SiIV0" id="1ag_b5O2wWL" role="3bR37C">
+        <node concept="3bR9La" id="1ag_b5O2wWM" role="1SiIV1">
+          <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
         </node>
       </node>
     </node>
@@ -66343,6 +66344,11 @@
         <node concept="1SiIV0" id="7oVDYnczb4w" role="3bR37C">
           <node concept="3bR9La" id="7oVDYnczb4x" role="1SiIV1">
             <ref role="3bR37D" node="7oVDYnclR8f" resolve="io.netty" />
+          </node>
+        </node>
+        <node concept="1SiIV0" id="7Rrv7$AUgSX" role="3bR37C">
+          <node concept="3bR9La" id="7Rrv7$AUgSY" role="1SiIV1">
+            <ref role="3bR37D" node="uqqfP8JWSl" resolve="MPS.IDEA.Modules" />
           </node>
         </node>
       </node>
