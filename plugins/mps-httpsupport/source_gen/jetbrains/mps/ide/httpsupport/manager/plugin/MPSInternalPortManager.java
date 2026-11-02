@@ -9,6 +9,7 @@ import com.intellij.openapi.util.registry.RegistryManager;
 import com.intellij.openapi.util.registry.RegistryValueListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.ide.BuiltInServerManager;
+import org.jetbrains.ide.CustomPortServerManager;
 import com.intellij.openapi.application.ApplicationManager;
 
 @GeneratedClass(nodeId = "4427830474126321388", model = "r:05ff02e5-9836-4ae9-a454-eab43fa58c8f(jetbrains.mps.ide.httpsupport.manager.plugin)")
@@ -49,7 +50,7 @@ public class MPSInternalPortManager extends CustomPortServerManagerBase {
    */
   @Deprecated
   public static boolean isEnabled() {
-    MPSInternalPortManager ext = EP_NAME.findExtension(MPSInternalPortManager.class);
+    MPSInternalPortManager ext = CustomPortServerManager.EP_NAME.findExtension(MPSInternalPortManager.class);
     return ext != null && ext.isBound();
   }
 

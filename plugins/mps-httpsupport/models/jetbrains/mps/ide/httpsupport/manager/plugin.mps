@@ -11,27 +11,30 @@
   </languages>
   <imports>
     <import index="guwi" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.io(JDK/)" />
-    <import index="iwnc" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.io(MPS.IDEA/)" />
     <import index="mhfm" ref="3f233e7f-b8a6-46d2-a57f-795d56775243/java:org.jetbrains.annotations(Annotations/)" />
-    <import index="e5vs" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:org.jetbrains.ide(MPS.IDEA/)" />
     <import index="je40" ref="r:120d1a1b-e2af-479c-bc61-72f0ecc88047(jetbrains.mps.ide.httpsupport.plugin)" />
     <import index="33ny" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util(JDK/)" />
     <import index="zf81" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.net(JDK/)" />
-    <import index="zdap" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util.text(MPS.IDEA/)" />
     <import index="wyt6" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang(JDK/)" />
-    <import index="9w4s" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.util(MPS.IDEA/)" />
-    <import index="g1go" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.util.io(MPS.IDEA/)" />
-    <import index="fnpx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.notification(MPS.IDEA/)" />
-    <import index="rfhd" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util.registry(MPS.IDEA/)" />
-    <import index="zrh2" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.application.options(MPS.IDEA/)" />
-    <import index="9ti4" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.extensions(MPS.IDEA/)" />
-    <import index="bd8o" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.application(MPS.IDEA/)" />
-    <import index="9xw8" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.handler.codec.http(MPS.IDEA/)" />
-    <import index="lqgf" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.channel(MPS.IDEA/)" />
-    <import index="zn9m" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util(MPS.IDEA/)" />
+    <import index="g1go" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.util.io(MPS.IDEA.Modules/)" />
+    <import index="fnpx" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.notification(MPS.IDEA.Modules/)" />
+    <import index="rfhd" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.util.registry(MPS.IDEA.Modules/)" />
+    <import index="zrh2" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.application.options(MPS.IDEA.Modules/)" />
+    <import index="9ti4" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.extensions(MPS.IDEA.Modules/)" />
+    <import index="bd8o" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.application(MPS.IDEA.Modules/)" />
+    <import index="9xw8" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:io.netty.handler.codec.http(MPS.IDEA.Modules/)" />
+    <import index="lqgf" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:io.netty.channel(MPS.IDEA.Modules/)" />
+    <import index="zn9m" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.util(MPS.IDEA.Modules/)" />
     <import index="t6h5" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.lang.reflect(JDK/)" />
-    <import index="iil0" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.buffer(MPS.IDEA/)" />
-    <import index="ap92" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:io.netty.util(MPS.IDEA/)" />
+    <import index="iil0" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:io.netty.buffer(MPS.IDEA.Modules/)" />
+    <import index="ap92" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:io.netty.util(MPS.IDEA.Modules/)" />
+    <import index="iwnc" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.io(MPS.IDEA.Modules/)" />
+    <import index="e5vs" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:org.jetbrains.ide(MPS.IDEA.Modules/)" />
+    <import index="9w4t" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.util(MPS.IDEA/)" />
+    <import index="zdaq" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util.text(MPS.IDEA/)" />
+    <import index="rfhe" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util.registry(MPS.IDEA/)" />
+    <import index="zn9n" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.util(MPS.IDEA/)" />
+    <import index="9ti5" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.extensions(MPS.IDEA/)" implicit="true" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -343,7 +346,7 @@
       <property role="TrG5h" value="getServiceName" />
       <node concept="3Tmbuc" id="7Zu713oNzET" role="1B3o_S" />
       <node concept="2AHcQZ" id="7Zu713oNzEV" role="2AJF6D">
-        <ref role="2AI5Lk" to="zn9m:~NlsSafe" resolve="NlsSafe" />
+        <ref role="2AI5Lk" to="zn9n:~NlsSafe" resolve="NlsSafe" />
       </node>
       <node concept="2AHcQZ" id="7Zu713oNzEW" role="2AJF6D">
         <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
@@ -1092,7 +1095,7 @@
       </node>
     </node>
     <node concept="3Tm1VV" id="3xqp3A6t$Ps" role="1B3o_S" />
-    <node concept="3uibUv" id="7Zu713oNv7U" role="1zkMxy">
+    <node concept="3uibUv" id="7YrvjqwavaP" role="1zkMxy">
       <ref role="3uigEE" to="e5vs:~RestService" resolve="RestService" />
     </node>
   </node>
@@ -1720,8 +1723,8 @@
                   </node>
                 </node>
                 <node concept="2YIFZM" id="5YhakczIl4L" role="3uHU7w">
-                  <ref role="37wK5l" to="9w4s:~ExceptionUtil.getThrowableText(java.lang.Throwable)" resolve="getThrowableText" />
-                  <ref role="1Pybhc" to="9w4s:~ExceptionUtil" resolve="ExceptionUtil" />
+                  <ref role="37wK5l" to="9w4t:~ExceptionUtil.getThrowableText(java.lang.Throwable)" resolve="getThrowableText" />
+                  <ref role="1Pybhc" to="9w4t:~ExceptionUtil" resolve="ExceptionUtil" />
                   <node concept="37vLTw" id="5YhakczIqj1" role="37wK5m">
                     <ref role="3cqZAo" node="5YhakczIjaj" resolve="error" />
                   </node>
@@ -1866,8 +1869,8 @@
         <node concept="3clFbH" id="5FAyHK_FskM" role="3cqZAp" />
         <node concept="3clFbF" id="5FAyHK_FG6J" role="3cqZAp">
           <node concept="2YIFZM" id="5FAyHK_FWVI" role="3clFbG">
-            <ref role="37wK5l" to="zdap:~StringUtil.nullize(java.lang.String)" resolve="nullize" />
-            <ref role="1Pybhc" to="zdap:~StringUtil" resolve="StringUtil" />
+            <ref role="37wK5l" to="zdaq:~StringUtil.nullize(java.lang.String)" resolve="nullize" />
+            <ref role="1Pybhc" to="zdaq:~StringUtil" resolve="StringUtil" />
             <node concept="3K4zz7" id="5yeCBqdORJ2" role="37wK5m">
               <node concept="3clFbC" id="5yeCBqdOSEJ" role="3K4Cdx">
                 <node concept="10Nm6u" id="5yeCBqdOSFX" role="3uHU7w" />
@@ -2216,7 +2219,7 @@
           <node concept="2OqwBi" id="3ApdfsumtJ" role="3clFbG">
             <node concept="2OqwBi" id="3ApdfsulCp" role="2Oq$k0">
               <node concept="liA8E" id="3ApdfsulTQ" role="2OqNvi">
-                <ref role="37wK5l" to="9ti4:~ExtensionPointName.findExtension(java.lang.Class)" resolve="findExtension" />
+                <ref role="37wK5l" to="9ti5:~ExtensionPointName.findExtension(java.lang.Class)" resolve="findExtension" />
                 <node concept="3VsKOn" id="3ApdfsumbI" role="37wK5m">
                   <ref role="3VsUkX" node="G$0uqqC2Yz" resolve="MPSIntegrationPortManager" />
                 </node>
@@ -2236,7 +2239,7 @@
       <node concept="10Oyi0" id="3Apdfsuk7Y" role="3clF45" />
     </node>
     <node concept="3Tm1VV" id="G$0uqqC2Y$" role="1B3o_S" />
-    <node concept="3uibUv" id="G$0uqqC9TU" role="1zkMxy">
+    <node concept="3uibUv" id="7Yrvjqwa1wc" role="1zkMxy">
       <ref role="3uigEE" to="iwnc:~CustomPortServerManagerBase" resolve="CustomPortServerManagerBase" />
     </node>
   </node>
@@ -2373,7 +2376,7 @@
           <node concept="3cpWsn" id="3BwRxVwWbzE" role="3cpWs9">
             <property role="TrG5h" value="value" />
             <node concept="3uibUv" id="3BwRxVwWbzF" role="1tU5fm">
-              <ref role="3uigEE" to="rfhd:~RegistryValue" resolve="RegistryValue" />
+              <ref role="3uigEE" to="rfhe:~RegistryValue" resolve="RegistryValue" />
             </node>
             <node concept="2OqwBi" id="15Pz4SXRxYW" role="33vP2m">
               <node concept="2YIFZM" id="15Pz4SXRyyQ" role="2Oq$k0">
@@ -2395,13 +2398,13 @@
               <ref role="3cqZAo" node="3BwRxVwWbzE" resolve="value" />
             </node>
             <node concept="liA8E" id="3BwRxVwWjBx" role="2OqNvi">
-              <ref role="37wK5l" to="rfhd:~RegistryValue.addListener(com.intellij.openapi.util.registry.RegistryValueListener,com.intellij.openapi.Disposable)" resolve="addListener" />
+              <ref role="37wK5l" to="rfhe:~RegistryValue.addListener(com.intellij.openapi.util.registry.RegistryValueListener,com.intellij.openapi.Disposable)" resolve="addListener" />
               <node concept="2ShNRf" id="3BwRxVwWkBj" role="37wK5m">
                 <node concept="YeOm9" id="3BwRxVwWy85" role="2ShVmc">
                   <node concept="1Y3b0j" id="3BwRxVwWy88" role="YeSDq">
                     <property role="2bfB8j" value="true" />
                     <ref role="37wK5l" to="wyt6:~Object.&lt;init&gt;()" resolve="Object" />
-                    <ref role="1Y3XeK" to="rfhd:~RegistryValueListener" resolve="RegistryValueListener" />
+                    <ref role="1Y3XeK" to="rfhe:~RegistryValueListener" resolve="RegistryValueListener" />
                     <node concept="3Tm1VV" id="3BwRxVwWy89" role="1B3o_S" />
                     <node concept="2tJIrI" id="3BwRxVwWya0" role="jymVt" />
                     <node concept="3clFb_" id="3BwRxVwWydi" role="jymVt">
@@ -2411,7 +2414,7 @@
                       <node concept="37vLTG" id="3BwRxVwWydm" role="3clF46">
                         <property role="TrG5h" value="value" />
                         <node concept="3uibUv" id="3BwRxVwWydn" role="1tU5fm">
-                          <ref role="3uigEE" to="rfhd:~RegistryValue" resolve="RegistryValue" />
+                          <ref role="3uigEE" to="rfhe:~RegistryValue" resolve="RegistryValue" />
                         </node>
                         <node concept="2AHcQZ" id="3BwRxVwWydo" role="2AJF6D">
                           <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
@@ -2546,11 +2549,12 @@
               <ref role="3uigEE" node="3PMO5H7WIrG" resolve="MPSInternalPortManager" />
             </node>
             <node concept="2OqwBi" id="15Pz4SXRNDO" role="33vP2m">
-              <node concept="37vLTw" id="15Pz4SXRNDP" role="2Oq$k0">
+              <node concept="10M0yZ" id="7YrvjqwafI$" role="2Oq$k0">
+                <ref role="1PxDUh" to="e5vs:~CustomPortServerManager" resolve="CustomPortServerManager" />
                 <ref role="3cqZAo" to="e5vs:~CustomPortServerManager.EP_NAME" resolve="EP_NAME" />
               </node>
               <node concept="liA8E" id="15Pz4SXRNDQ" role="2OqNvi">
-                <ref role="37wK5l" to="9ti4:~ExtensionPointName.findExtension(java.lang.Class)" resolve="findExtension" />
+                <ref role="37wK5l" to="9ti5:~ExtensionPointName.findExtension(java.lang.Class)" resolve="findExtension" />
                 <node concept="3VsKOn" id="15Pz4SXRNDR" role="37wK5m">
                   <ref role="3VsUkX" node="3PMO5H7WIrG" resolve="MPSInternalPortManager" />
                 </node>

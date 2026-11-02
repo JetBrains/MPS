@@ -69,6 +69,7 @@
     <import index="18nx" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.checkin(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="4zvo" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.ui(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="1038" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
     <import index="r791" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:javax.swing.text(JDK/)" implicit="true" />
   </imports>
   <registry>
@@ -3401,7 +3402,7 @@
             <node concept="3cpWs6" id="3etVqSRKzCk" role="3cqZAp">
               <node concept="Rm8GO" id="2fqk0uNAeIT" role="3cqZAk">
                 <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
               </node>
             </node>
           </node>
@@ -3736,7 +3737,7 @@
                             <node concept="2ShNRf" id="B5MI4_pOnW" role="2Oq$k0">
                               <node concept="1pGfFk" id="B5MI4_pUr5" role="2ShVmc">
                                 <property role="373rjd" value="true" />
-                                <ref role="37wK5l" to="ospv:2o_iqz0pKS9" />
+                                <ref role="37wK5l" to="ospv:2o_iqz0pKS9" resolve="ModelImportLookup" />
                                 <node concept="37vLTw" id="B5MI4_qxc6" role="37wK5m">
                                   <ref role="3cqZAo" node="B5MI4_qqwp" resolve="mrl" />
                                 </node>
@@ -3859,7 +3860,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="3etVqSRKzC$" role="3clF45">
-        <ref role="3uigEE" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+        <ref role="3uigEE" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
       </node>
       <node concept="3Tm1VV" id="3etVqSRKzC_" role="1B3o_S" />
       <node concept="2AHcQZ" id="3etVqSRKzCA" role="2AJF6D">
@@ -4000,7 +4001,7 @@
           <node concept="3cpWs6" id="3etVqSRKzDr" role="3cqZAp">
             <node concept="2ShNRf" id="3etVqSRKzDs" role="3cqZAk">
               <node concept="1pGfFk" id="3etVqSRKzDt" role="2ShVmc">
-                <ref role="37wK5l" node="3etVqSRKzAT" />
+                <ref role="37wK5l" node="3etVqSRKzAT" resolve="ModelCheckerCheckinHandler" />
                 <node concept="2OqwBi" id="3etVqSRKzDu" role="37wK5m">
                   <node concept="liA8E" id="3etVqSRKzDv" role="2OqNvi">
                     <ref role="37wK5l" to="jlcv:~CheckinProjectPanel.getProject()" resolve="getProject" />
@@ -4032,7 +4033,7 @@
         <node concept="37vLTG" id="3etVqSRKzDB" role="3clF46">
           <property role="TrG5h" value="commitContext" />
           <node concept="3uibUv" id="3etVqSRKzDC" role="1tU5fm">
-            <ref role="3uigEE" to="1037:~CommitContext" resolve="CommitContext" />
+            <ref role="3uigEE" to="1038:~CommitContext" resolve="CommitContext" />
           </node>
         </node>
         <node concept="2AHcQZ" id="3etVqSRKzDD" role="2AJF6D">
@@ -5512,7 +5513,7 @@
               <node concept="37vLTI" id="3pNk_u$aj47" role="3clFbG">
                 <node concept="2ShNRf" id="3pNk_u$ajbi" role="37vLTx">
                   <node concept="1pGfFk" id="3pNk_u$akgZ" role="2ShVmc">
-                    <ref role="37wK5l" node="2$qlEUM_SoB" />
+                    <ref role="37wK5l" node="2$qlEUM_SoB" resolve="ModelCheckerIssueFinder" />
                     <node concept="37vLTw" id="kXqcYjTBC_" role="37wK5m">
                       <ref role="3cqZAo" node="4UunP0YhVMV" resolve="myProject" />
                     </node>
@@ -5561,7 +5562,7 @@
                 <node concept="37vLTI" id="3pNk_u$azrk" role="3clFbG">
                   <node concept="2ShNRf" id="3pNk_u$azvx" role="37vLTx">
                     <node concept="1pGfFk" id="3pNk_u$a_Eb" role="2ShVmc">
-                      <ref role="37wK5l" node="2$qlEUM_SoB" />
+                      <ref role="37wK5l" node="2$qlEUM_SoB" resolve="ModelCheckerIssueFinder" />
                       <node concept="37vLTw" id="kXqcYjTA2x" role="37wK5m">
                         <ref role="3cqZAo" node="4UunP0YhVMV" resolve="myProject" />
                       </node>
@@ -5876,7 +5877,7 @@
               </node>
               <node concept="10M0yZ" id="4VE3_mvPxuF" role="3K4GZi">
                 <ref role="3cqZAo" to="z2i8:~AllIcons$Nodes.ModuleGroup" resolve="ModuleGroup" />
-                <ref role="1PxDUh" to="z2i8:~AllIcons$Nodes" resolve="Nodes" />
+                <ref role="1PxDUh" to="z2i8:~AllIcons$Nodes" resolve="AllIcons.Nodes" />
               </node>
             </node>
           </node>
@@ -6121,7 +6122,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="3etVqSRK$h2" role="3clF45">
-        <ref role="3uigEE" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+        <ref role="3uigEE" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
       </node>
       <node concept="3clFbS" id="3etVqSRK$h3" role="3clF47">
         <node concept="3clFbJ" id="2$eUmpEr_DK" role="3cqZAp">
@@ -6129,7 +6130,7 @@
             <node concept="3cpWs6" id="2$eUmpErELr" role="3cqZAp">
               <node concept="Rm8GO" id="2fqk0uNC2sR" role="3cqZAk">
                 <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
               </node>
             </node>
           </node>
@@ -6193,7 +6194,7 @@
             <node concept="3cpWs6" id="2cahkxOqL2q" role="3cqZAp">
               <node concept="Rm8GO" id="40nX38jkcIF" role="3cqZAk">
                 <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.CANCEL" resolve="CANCEL" />
-                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
               </node>
             </node>
           </node>
@@ -6358,7 +6359,7 @@
                 <node concept="3cpWs6" id="3etVqSRK$ib" role="3cqZAp">
                   <node concept="Rm8GO" id="2fqk0uNC2sr" role="3cqZAk">
                     <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.CLOSE_WINDOW" resolve="CLOSE_WINDOW" />
-                    <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                    <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
                   </node>
                 </node>
               </node>
@@ -6399,7 +6400,7 @@
                   <node concept="3cpWs6" id="3etVqSRK$in" role="3cqZAp">
                     <node concept="Rm8GO" id="3etVqSRK$io" role="3cqZAk">
                       <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-                      <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                      <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
                     </node>
                   </node>
                 </node>
@@ -6433,7 +6434,7 @@
                   </node>
                   <node concept="3cpWs6" id="3etVqSRK$i$" role="3cqZAp">
                     <node concept="Rm8GO" id="3etVqSRK$i_" role="3cqZAk">
-                      <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+                      <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
                       <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.CANCEL" resolve="CANCEL" />
                     </node>
                   </node>
@@ -6453,7 +6454,7 @@
         <node concept="3cpWs6" id="3etVqSRK$iD" role="3cqZAp">
           <node concept="Rm8GO" id="40nX38jkcJ7" role="3cqZAk">
             <ref role="Rm8GQ" to="18nx:~CheckinHandler$ReturnResult.COMMIT" resolve="COMMIT" />
-            <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="ReturnResult" />
+            <ref role="1Px2BO" to="18nx:~CheckinHandler$ReturnResult" resolve="CheckinHandler.ReturnResult" />
           </node>
         </node>
       </node>
@@ -6597,7 +6598,7 @@
             <node concept="2ShNRf" id="4UunP0YhgHF" role="3K4GZi">
               <node concept="1pGfFk" id="4UunP0YhER7" role="2ShVmc">
                 <property role="373rjd" value="true" />
-                <ref role="37wK5l" node="3etVqSRK$aw" />
+                <ref role="37wK5l" node="3etVqSRK$aw" resolve="ModelCheckerTool" />
                 <node concept="37vLTw" id="4UunP0YhSdG" role="37wK5m">
                   <ref role="3cqZAo" node="4UunP0YhKHP" resolve="mpsProject" />
                 </node>
