@@ -1221,6 +1221,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -1255,13 +1257,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -1331,6 +1337,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -1365,13 +1373,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.analyzers.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
@@ -1587,12 +1599,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -1663,6 +1670,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -1697,13 +1706,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.collections.jar" />
@@ -1916,12 +1929,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -1993,6 +2001,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -2027,13 +2037,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.collections.jar" />
@@ -2245,12 +2259,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2321,6 +2330,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -2355,13 +2366,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.analyzers.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
@@ -2577,12 +2592,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2654,6 +2664,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -2688,13 +2700,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.collections.jar" />
@@ -2905,12 +2921,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -2986,6 +2997,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -3020,13 +3033,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.collections.jar" />
@@ -3239,12 +3256,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3308,6 +3320,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -3342,13 +3356,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jetbrains.annotations.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.classifiers.jar" />
@@ -3558,12 +3576,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3638,6 +3651,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -3672,13 +3687,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.analyzers.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.classifiers.jar" />
@@ -3897,12 +3916,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -3978,6 +3992,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -4012,13 +4028,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.classifiers.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
@@ -4233,12 +4253,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -4346,6 +4361,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -4380,13 +4397,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/runtimes/jetbrains.mps.analyzers.runtime.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
@@ -4602,12 +4623,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
@@ -4680,6 +4696,8 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.builtInServer.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.concurrency.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.core.ui.jar" />
@@ -4714,13 +4732,17 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.serviceContainer.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.statistics.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.usageView.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ex.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.text.matching.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.util.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.vcs.core.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.whatsNew.jar" />
         <fileset file="${artifacts.IDEA}/plugins/xml-plugin/lib/modules/intellij.xml.parser.jar" />
         <fileset file="${artifacts.IDEA}/plugins/platform-problemView-plugin/lib/modules/intellij.platform.problemView.ui.jar" />
+        <fileset file="${artifacts.IDEA}/lib/testFramework.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.closures.jar" />
         <fileset file="${artifacts.mpsBootstrapCore}/languages/baseLanguage/jetbrains.mps.baseLanguage.collections.jar" />
@@ -4932,12 +4954,7 @@
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.launcher.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.junit6.vintage.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.libraries.jaxb.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.impl.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.consoleView.jar" />
         <fileset file="${artifacts.IDEA}/lib/intellij.platform.productMode.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.ui.tree.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.undo.jar" />
-        <fileset file="${artifacts.IDEA}/lib/intellij.platform.vfs.impl.jar" />
         <path refid="path.jdk.classpath" />
       </classpath>
     </javac2>
