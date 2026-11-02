@@ -55,6 +55,8 @@ Read this together with `AGENTS.md` whenever the task involves MPS artifacts or 
 
 The MPS catalog contains companion skills for focused task families. Load whichever ones apply to your current task, following the origin rules above.
 
+Installing or refreshing this catalog: `references/catalog-install-and-refresh.md`. Not relevant when working on the MPS sources themselves.
+
 | Skill | What it covers |
 |-------|---------------|
 | `mps-language-aspects-overview`     | Entry point for defining an MPS language — lists the aspects, what each owns, and the typical authoring order. Start here. |
