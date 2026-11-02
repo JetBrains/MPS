@@ -537,13 +537,13 @@
       <property role="TrG5h" value="getSettings" />
       <node concept="3Tmbuc" id="4CjKsJms81l" role="1B3o_S" />
       <node concept="3uibUv" id="4CjKsJms81m" role="3clF45">
-        <ref role="3uigEE" to="jlcu:~VcsConfiguration" resolve="VcsConfiguration" />
+        <ref role="3uigEE" to="jlcw:~VcsConfiguration" resolve="VcsConfiguration" />
       </node>
       <node concept="3clFbS" id="4CjKsJms81n" role="3clF47">
         <node concept="3cpWs6" id="4CjKsJms81o" role="3cqZAp">
           <node concept="2YIFZM" id="4CjKsJms81p" role="3cqZAk">
-            <ref role="1Pybhc" to="jlcu:~VcsConfiguration" resolve="VcsConfiguration" />
-            <ref role="37wK5l" to="jlcu:~VcsConfiguration.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
+            <ref role="1Pybhc" to="jlcw:~VcsConfiguration" resolve="VcsConfiguration" />
+            <ref role="37wK5l" to="jlcw:~VcsConfiguration.getInstance(com.intellij.openapi.project.Project)" resolve="getInstance" />
             <node concept="37vLTw" id="2BHiRxeuW1t" role="37wK5m">
               <ref role="3cqZAo" node="4CjKsJms80U" resolve="myProject" />
             </node>
@@ -613,7 +613,7 @@
                           <ref role="37wK5l" to="dxuu:~AbstractButton.setSelected(boolean)" resolve="setSelected" />
                           <node concept="2OqwBi" id="4CjKsJms825" role="37wK5m">
                             <node concept="2OwXpG" id="4CjKsJms826" role="2OqNvi">
-                              <ref role="2Oxat5" to="jlcu:~VcsConfiguration.OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" resolve="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" />
+                              <ref role="2Oxat5" to="jlcw:~VcsConfiguration.OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" resolve="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" />
                             </node>
                             <node concept="1rXfSq" id="4hiugqyyZvL" role="2Oq$k0">
                               <ref role="37wK5l" node="4CjKsJms81k" resolve="getSettings" />
@@ -647,7 +647,7 @@
                             <ref role="37wK5l" node="4CjKsJms81k" resolve="getSettings" />
                           </node>
                           <node concept="2OwXpG" id="4CjKsJms82f" role="2OqNvi">
-                            <ref role="2Oxat5" to="jlcu:~VcsConfiguration.OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" resolve="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" />
+                            <ref role="2Oxat5" to="jlcw:~VcsConfiguration.OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" resolve="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" />
                           </node>
                         </node>
                       </node>
@@ -711,7 +711,7 @@
                 <ref role="37wK5l" node="4CjKsJms81k" resolve="getSettings" />
               </node>
               <node concept="2OwXpG" id="4CjKsJms82v" role="2OqNvi">
-                <ref role="2Oxat5" to="jlcu:~VcsConfiguration.OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" resolve="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" />
+                <ref role="2Oxat5" to="jlcw:~VcsConfiguration.OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" resolve="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" />
               </node>
             </node>
           </node>
@@ -1285,7 +1285,7 @@
         <node concept="37vLTG" id="4CjKsJms80E" role="3clF46">
           <property role="TrG5h" value="context" />
           <node concept="3uibUv" id="4CjKsJms80F" role="1tU5fm">
-            <ref role="3uigEE" to="1037:~CommitContext" resolve="CommitContext" />
+            <ref role="3uigEE" to="1039:~CommitContext" resolve="CommitContext" />
           </node>
         </node>
         <node concept="3clFbS" id="4CjKsJms80H" role="3clF47">
@@ -1925,14 +1925,14 @@
                   <node concept="3cpWsn" id="68MS4n2Ifby" role="3cpWs9">
                     <property role="TrG5h" value="before" />
                     <node concept="3uibUv" id="68MS4n2Ifbz" role="1tU5fm">
-                      <ref role="3uigEE" to="1037:~ContentRevision" resolve="ContentRevision" />
+                      <ref role="3uigEE" to="1039:~ContentRevision" resolve="ContentRevision" />
                     </node>
                     <node concept="2OqwBi" id="68MS4n2Ifb$" role="33vP2m">
                       <node concept="2GrUjf" id="68MS4n2Ifb_" role="2Oq$k0">
                         <ref role="2Gs0qQ" node="68MS4n2Ifbt" resolve="change" />
                       </node>
                       <node concept="liA8E" id="68MS4n2IfbA" role="2OqNvi">
-                        <ref role="37wK5l" to="1037:~Change.getBeforeRevision()" resolve="getBeforeRevision" />
+                        <ref role="37wK5l" to="1039:~Change.getBeforeRevision()" resolve="getBeforeRevision" />
                       </node>
                     </node>
                   </node>
@@ -1941,14 +1941,14 @@
                   <node concept="3cpWsn" id="68MS4n2IfbC" role="3cpWs9">
                     <property role="TrG5h" value="after" />
                     <node concept="3uibUv" id="68MS4n2IfbD" role="1tU5fm">
-                      <ref role="3uigEE" to="1037:~ContentRevision" resolve="ContentRevision" />
+                      <ref role="3uigEE" to="1039:~ContentRevision" resolve="ContentRevision" />
                     </node>
                     <node concept="2OqwBi" id="68MS4n2IfbE" role="33vP2m">
                       <node concept="2GrUjf" id="68MS4n2IfbF" role="2Oq$k0">
                         <ref role="2Gs0qQ" node="68MS4n2Ifbt" resolve="change" />
                       </node>
                       <node concept="liA8E" id="68MS4n2IfbG" role="2OqNvi">
-                        <ref role="37wK5l" to="1037:~Change.getAfterRevision()" resolve="getAfterRevision" />
+                        <ref role="37wK5l" to="1039:~Change.getAfterRevision()" resolve="getAfterRevision" />
                       </node>
                     </node>
                   </node>
@@ -1967,11 +1967,11 @@
                               <ref role="3cqZAo" node="68MS4n2Ifby" resolve="before" />
                             </node>
                             <node concept="liA8E" id="68MS4n2IfbP" role="2OqNvi">
-                              <ref role="37wK5l" to="1037:~ContentRevision.getFile()" resolve="getFile" />
+                              <ref role="37wK5l" to="1039:~ContentRevision.getFile()" resolve="getFile" />
                             </node>
                           </node>
                           <node concept="liA8E" id="68MS4n2IfbQ" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
+                            <ref role="37wK5l" to="jlcw:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
                           </node>
                         </node>
                       </node>
@@ -2022,11 +2022,11 @@
                               <ref role="3cqZAo" node="68MS4n2IfbC" resolve="after" />
                             </node>
                             <node concept="liA8E" id="68MS4n2Ifcc" role="2OqNvi">
-                              <ref role="37wK5l" to="1037:~ContentRevision.getFile()" resolve="getFile" />
+                              <ref role="37wK5l" to="1039:~ContentRevision.getFile()" resolve="getFile" />
                             </node>
                           </node>
                           <node concept="liA8E" id="68MS4n2Ifcd" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
+                            <ref role="37wK5l" to="jlcw:~FilePath.getVirtualFile()" resolve="getVirtualFile" />
                           </node>
                         </node>
                       </node>
@@ -2074,7 +2074,7 @@
                     <ref role="2Gs0qQ" node="68MS4n2Ifbt" resolve="change" />
                   </node>
                   <node concept="liA8E" id="68MS4n2Ifcv" role="2OqNvi">
-                    <ref role="37wK5l" to="1037:~Change.getFileStatus()" resolve="getFileStatus" />
+                    <ref role="37wK5l" to="1039:~Change.getFileStatus()" resolve="getFileStatus" />
                   </node>
                 </node>
               </node>
@@ -2315,7 +2315,7 @@
                                   <property role="TrG5h" value="e" />
                                   <node concept="nSUau" id="2VIcG4oqSik" role="1tU5fm">
                                     <node concept="3uibUv" id="2VIcG4oqSil" role="nSUat">
-                                      <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                                      <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                                     </node>
                                   </node>
                                 </node>
@@ -2743,7 +2743,7 @@
       <node concept="37vLTG" id="68MS4n2MMkj" role="3clF46">
         <property role="TrG5h" value="session" />
         <node concept="3uibUv" id="68MS4n2MMkI" role="1tU5fm">
-          <ref role="3uigEE" to="hlwo:~MergeSession" />
+          <ref role="3uigEE" to="hlwo:~MergeSession" resolve="MergeSession" />
         </node>
       </node>
       <node concept="37vLTG" id="68MS4n2MMls" role="3clF46">
@@ -2815,7 +2815,7 @@
         <property role="3TUv4t" value="false" />
         <node concept="3Tm6S6" id="68MS4n2IGM4" role="1B3o_S" />
         <node concept="3uibUv" id="68MS4n2IGOB" role="1tU5fm">
-          <ref role="3uigEE" to="hlwo:~MergeSession" />
+          <ref role="3uigEE" to="hlwo:~MergeSession" resolve="MergeSession" />
         </node>
       </node>
       <node concept="312cEg" id="68MS4n2ITjE" role="jymVt">
@@ -2943,7 +2943,7 @@
         <node concept="37vLTG" id="68MS4n2IH5b" role="3clF46">
           <property role="TrG5h" value="session" />
           <node concept="3uibUv" id="68MS4n2IH70" role="1tU5fm">
-            <ref role="3uigEE" to="hlwo:~MergeSession" />
+            <ref role="3uigEE" to="hlwo:~MergeSession" resolve="MergeSession" />
           </node>
         </node>
         <node concept="37vLTG" id="68MS4n2J8Ma" role="3clF46">
@@ -3207,7 +3207,7 @@
                         <property role="TrG5h" value="e" />
                         <node concept="nSUau" id="2VIcG4omF$c" role="1tU5fm">
                           <node concept="3uibUv" id="2VIcG4omITs" role="nSUat">
-                            <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                            <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                           </node>
                         </node>
                       </node>
@@ -3963,7 +3963,7 @@
                                     <ref role="3cqZAo" node="68MS4n2IGQd" resolve="mySession" />
                                   </node>
                                   <node concept="liA8E" id="7yFo2Ea4cEF" role="2OqNvi">
-                                    <ref role="37wK5l" to="hlwo:~MergeSession.conflictResolvedForFile(com.intellij.openapi.vfs.VirtualFile,com.intellij.openapi.vcs.merge.MergeSession$Resolution)" />
+                                    <ref role="37wK5l" to="hlwo:~MergeSession.conflictResolvedForFile(com.intellij.openapi.vfs.VirtualFile,com.intellij.openapi.vcs.merge.MergeSession$Resolution)" resolve="conflictResolvedForFile" />
                                     <node concept="2GrUjf" id="7yFo2Ea4d1D" role="37wK5m">
                                       <ref role="2Gs0qQ" node="7yFo2Ea1tdf" resolve="file" />
                                     </node>
@@ -4392,7 +4392,7 @@
                   <node concept="3cpWsn" id="7yFo2Ea1kAk" role="3cpWs9">
                     <property role="TrG5h" value="session" />
                     <node concept="3uibUv" id="7yFo2Ea1kAl" role="1tU5fm">
-                      <ref role="3uigEE" to="hlwo:~MergeSession" />
+                      <ref role="3uigEE" to="hlwo:~MergeSession" resolve="MergeSession" />
                     </node>
                     <node concept="3K4zz7" id="7yFo2Ea1mpT" role="33vP2m">
                       <node concept="10Nm6u" id="7yFo2Ea1rb1" role="3K4GZi" />

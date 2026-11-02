@@ -46,6 +46,7 @@
     <import index="hr4p" ref="f57286e3-4e19-4d8d-8045-3900761f6530/java:git4idea(jetbrains.mps.git4idea.stubs/)" />
     <import index="qv1t" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.impl.projectlevelman(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
+    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -3008,7 +3009,7 @@
               <property role="TrG5h" value="e" />
               <node concept="nSUau" id="xvs04dIfM8" role="1tU5fm">
                 <node concept="3uibUv" id="7Qh4dIZrS07" role="nSUat">
-                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                 </node>
               </node>
             </node>
@@ -3042,7 +3043,7 @@
                             <ref role="3cqZAo" node="7Qh4dIZrS06" resolve="e" />
                           </node>
                           <node concept="liA8E" id="7Qh4dIZrS01" role="2OqNvi">
-                            <ref role="37wK5l" to="jlcu:~VcsException.getMessage()" resolve="getMessage" />
+                            <ref role="37wK5l" to="jlcw:~VcsException.getMessage()" resolve="getMessage" />
                           </node>
                         </node>
                         <node concept="Xl_RD" id="7Qh4dIZrS02" role="3uHU7B">
@@ -3180,7 +3181,7 @@
               <property role="TrG5h" value="e" />
               <node concept="nSUau" id="xvs04dIfMa" role="1tU5fm">
                 <node concept="3uibUv" id="7Qh4dIZrS1t" role="nSUat">
-                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                 </node>
               </node>
             </node>
@@ -3207,7 +3208,7 @@
                         <ref role="3cqZAo" node="7Qh4dIZrS1s" resolve="e" />
                       </node>
                       <node concept="liA8E" id="7Qh4dIZrS1n" role="2OqNvi">
-                        <ref role="37wK5l" to="jlcu:~VcsException.getMessage()" resolve="getMessage" />
+                        <ref role="37wK5l" to="jlcw:~VcsException.getMessage()" resolve="getMessage" />
                       </node>
                     </node>
                     <node concept="Xl_RD" id="7Qh4dIZrS1o" role="3uHU7B">
@@ -4990,7 +4991,7 @@
               <property role="TrG5h" value="e" />
               <node concept="nSUau" id="xvs04dIfMg" role="1tU5fm">
                 <node concept="3uibUv" id="71_7HOKW74N" role="nSUat">
-                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                 </node>
               </node>
             </node>
@@ -5080,7 +5081,7 @@
               <property role="TrG5h" value="e" />
               <node concept="nSUau" id="xvs04dIfMi" role="1tU5fm">
                 <node concept="3uibUv" id="71_7HOKW75L" role="nSUat">
-                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                 </node>
               </node>
             </node>
@@ -5107,7 +5108,7 @@
                         <ref role="3cqZAo" node="71_7HOKW75K" resolve="e" />
                       </node>
                       <node concept="liA8E" id="71_7HOKWg8U" role="2OqNvi">
-                        <ref role="37wK5l" to="jlcu:~VcsException.getMessage()" resolve="getMessage" />
+                        <ref role="37wK5l" to="jlcw:~VcsException.getMessage()" resolve="getMessage" />
                       </node>
                     </node>
                     <node concept="Xl_RD" id="71_7HOKWcO_" role="3uHU7B">
@@ -7071,14 +7072,14 @@
                   <node concept="1pGfFk" id="1v1P0T12_Mr" role="2ShVmc">
                     <ref role="37wK5l" to="18ew:~Reference.&lt;init&gt;()" resolve="Reference" />
                     <node concept="3uibUv" id="1v1P0T12_Ms" role="1pMfVU">
-                      <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                      <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                     </node>
                   </node>
                 </node>
                 <node concept="3uibUv" id="1v1P0T12$UU" role="1tU5fm">
                   <ref role="3uigEE" to="18ew:~Reference" resolve="Reference" />
                   <node concept="3uibUv" id="1v1P0T12_kX" role="11_B2D">
-                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                    <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                   </node>
                 </node>
               </node>
@@ -7149,7 +7150,7 @@
                                 <property role="TrG5h" value="e" />
                                 <node concept="nSUau" id="xvs04dIfLw" role="1tU5fm">
                                   <node concept="3uibUv" id="5NwFio4S_CW" role="nSUat">
-                                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                                    <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                                   </node>
                                 </node>
                               </node>
@@ -7300,7 +7301,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="5NwFio4S_DH" role="Sfmx6">
-        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
       </node>
     </node>
     <node concept="2tJIrI" id="5NwFio4SBDh" role="jymVt" />
@@ -7328,14 +7329,14 @@
                 <node concept="3uibUv" id="1v1P0T11D09" role="1tU5fm">
                   <ref role="3uigEE" to="18ew:~Reference" resolve="Reference" />
                   <node concept="3uibUv" id="1v1P0T11D0c" role="11_B2D">
-                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                    <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                   </node>
                 </node>
                 <node concept="2ShNRf" id="1v1P0T11D1W" role="33vP2m">
                   <node concept="1pGfFk" id="1v1P0T11D1X" role="2ShVmc">
                     <ref role="37wK5l" to="18ew:~Reference.&lt;init&gt;()" resolve="Reference" />
                     <node concept="3uibUv" id="1v1P0T11D1Y" role="1pMfVU">
-                      <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                      <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                     </node>
                   </node>
                 </node>
@@ -7405,7 +7406,7 @@
                                 <property role="TrG5h" value="e" />
                                 <node concept="nSUau" id="xvs04dIfLy" role="1tU5fm">
                                   <node concept="3uibUv" id="5NwFio4S_Ev" role="nSUat">
-                                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                                    <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                                   </node>
                                 </node>
                               </node>
@@ -7570,7 +7571,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="5NwFio4S_Fj" role="Sfmx6">
-        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
       </node>
     </node>
     <node concept="3Tm1VV" id="5NwFio4S_lB" role="1B3o_S" />

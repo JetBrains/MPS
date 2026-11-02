@@ -85,15 +85,12 @@
     <import index="de5p" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.actions(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="e0ho" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcs.log.impl(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="jlcu" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs(MPS.IDEA/)" />
-    <import index="yah1" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.history(MPS.IDEA/)" />
-    <import index="7g4e" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.vcsUtil(MPS.IDEA/)" />
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
     <import index="8voc" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.annotate(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="yah2" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
-    <import index="7g4f" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcsUtil(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="7g4g" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.vcsUtil(MPS.IDEA.Modules/)" />
+    <import index="7g4e" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.vcsUtil(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="z1c4" ref="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.project(MPS.Core/)" />
+    <import index="yah1" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
+    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -768,7 +765,7 @@
             <node concept="TSZUe" id="3Tz6OiQtcDz" role="2OqNvi">
               <node concept="2ShNRf" id="3Tz6OiQtcD$" role="25WWJ7">
                 <node concept="1pGfFk" id="3Tz6OiQtcD_" role="2ShVmc">
-                  <ref role="37wK5l" node="7OXN7mb$5q9" />
+                  <ref role="37wK5l" node="7OXN7mb$5q9" resolve="RevisionAspectSubcolumn" />
                   <node concept="37vLTw" id="1jG3ZCaXDUY" role="37wK5m">
                     <ref role="3cqZAo" node="1jG3ZCatsRC" resolve="myEditorAnnotation" />
                   </node>
@@ -782,7 +779,7 @@
             <node concept="TSZUe" id="3Tz6OiQtcDD" role="2OqNvi">
               <node concept="2ShNRf" id="3Tz6OiQtcDE" role="25WWJ7">
                 <node concept="1pGfFk" id="3Tz6OiQtcDF" role="2ShVmc">
-                  <ref role="37wK5l" node="7OXN7mb$8zA" />
+                  <ref role="37wK5l" node="7OXN7mb$8zA" resolve="DateAspectSubcolumn" />
                   <node concept="37vLTw" id="1jG3ZCaXED9" role="37wK5m">
                     <ref role="3cqZAo" node="1jG3ZCatsRC" resolve="myEditorAnnotation" />
                   </node>
@@ -802,7 +799,7 @@
             <node concept="TSZUe" id="3Tz6OiQtcDQ" role="2OqNvi">
               <node concept="2ShNRf" id="6pvJusabt00" role="25WWJ7">
                 <node concept="1pGfFk" id="6pvJusabt01" role="2ShVmc">
-                  <ref role="37wK5l" node="7OXN7mbz6ad" />
+                  <ref role="37wK5l" node="7OXN7mbz6ad" resolve="AuthorAspectSubcolumn" />
                   <node concept="37vLTw" id="6pvJusabt02" role="37wK5m">
                     <ref role="3cqZAo" node="1jG3ZCatsRC" resolve="myEditorAnnotation" />
                   </node>
@@ -816,7 +813,7 @@
             <node concept="TSZUe" id="3Tz6OiQtcDV" role="2OqNvi">
               <node concept="2ShNRf" id="3Tz6OiQtcDW" role="25WWJ7">
                 <node concept="1pGfFk" id="3Tz6OiQtcDX" role="2ShVmc">
-                  <ref role="37wK5l" node="5Gymoc4pyuE" />
+                  <ref role="37wK5l" node="5Gymoc4pyuE" resolve="CommitNumberSubcolumn" />
                   <node concept="37vLTw" id="1jG3ZCaXFWr" role="37wK5m">
                     <ref role="3cqZAo" node="1jG3ZCatsRC" resolve="myEditorAnnotation" />
                   </node>
@@ -832,7 +829,7 @@
           <node concept="37vLTI" id="71EUsumoGVz" role="3clFbG">
             <node concept="2ShNRf" id="71EUsumoI5K" role="37vLTx">
               <node concept="1pGfFk" id="71EUsumpBLF" role="2ShVmc">
-                <ref role="37wK5l" node="3Q6SG0_AyCR" />
+                <ref role="37wK5l" node="3Q6SG0_AyCR" resolve="ViewActionGroup" />
                 <node concept="Xjq3P" id="71EUsumpBQb" role="37wK5m" />
                 <node concept="37vLTw" id="71EUsumpC1G" role="37wK5m">
                   <ref role="3cqZAo" node="lIjSl53CW3" resolve="myAspectSubcolumns" />
@@ -849,7 +846,7 @@
             <node concept="TSZUe" id="3Tz6OiQtcEk" role="2OqNvi">
               <node concept="2ShNRf" id="3Tz6OiQtcEl" role="25WWJ7">
                 <node concept="1pGfFk" id="3Tz6OiQtcEm" role="2ShVmc">
-                  <ref role="37wK5l" node="2nQsgiLQdjw" />
+                  <ref role="37wK5l" node="2nQsgiLQdjw" resolve="HighlightRevisionSubcolumn" />
                   <node concept="37vLTw" id="1jG3ZCaXGDc" role="37wK5m">
                     <ref role="3cqZAo" node="1jG3ZCatsRC" resolve="myEditorAnnotation" />
                   </node>
@@ -891,7 +888,7 @@
               </node>
               <node concept="2ShNRf" id="7i97z0YtvS4" role="37wK5m">
                 <node concept="HV5vD" id="7i97z0YtvS5" role="2ShVmc">
-                  <ref role="HV5vE" node="7i97z0YsDj2" resolve="MyEditorComponentCreateListener" />
+                  <ref role="HV5vE" node="7i97z0YsDj2" resolve="AnnotationColumn.MyEditorComponentCreateListener" />
                 </node>
               </node>
             </node>
@@ -1252,7 +1249,7 @@
                           <node concept="37vLTI" id="24CQeTtwuQF" role="3clFbG">
                             <node concept="2ShNRf" id="24CQeTtwuQG" role="37vLTx">
                               <node concept="1pGfFk" id="24CQeTtwuQH" role="2ShVmc">
-                                <ref role="37wK5l" node="hapR_kTy$3" />
+                                <ref role="37wK5l" node="hapR_kTy$3" resolve="AnnotationColumn" />
                                 <node concept="2OqwBi" id="24CQeTtwuQI" role="37wK5m">
                                   <node concept="37vLTw" id="24CQeTtwuQJ" role="2Oq$k0">
                                     <ref role="3cqZAo" node="1jG3ZCatsRC" resolve="myEditorAnnotation" />
@@ -3750,7 +3747,7 @@
                         </node>
                         <node concept="10M0yZ" id="3B$mVVFXsZh" role="37wK5m">
                           <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Rollback" resolve="Rollback" />
-                          <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
+                          <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
                         </node>
                         <node concept="3Tm1VV" id="us9ldBFaaN" role="1B3o_S" />
                         <node concept="3clFb_" id="us9ldBFaaO" role="jymVt">
@@ -3984,7 +3981,7 @@
                           <ref role="3cqZAo" node="59VhT$BgZDL" resolve="HIDE_REVISION" />
                         </node>
                         <node concept="10M0yZ" id="5tfq$cL$Qu5" role="37wK5m">
-                          <ref role="1PxDUh" to="z2i8:~AllIcons$Vcs" resolve="Vcs" />
+                          <ref role="1PxDUh" to="z2i8:~AllIcons$Vcs" resolve="AllIcons.Vcs" />
                           <ref role="3cqZAo" to="z2i8:~AllIcons$Vcs.Remove" resolve="Remove" />
                         </node>
                       </node>
@@ -4092,8 +4089,8 @@
               <node concept="17QB3L" id="24kMFp6F3VG" role="11_B2D" />
             </node>
             <node concept="2YIFZM" id="54exbsqibTw" role="33vP2m">
-              <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
-              <ref role="37wK5l" to="jlcu:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
+              <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
+              <ref role="37wK5l" to="jlcw:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
               <node concept="Xl_RD" id="54exbsqiccU" role="37wK5m">
                 <property role="Xl_RC" value="copy.revision.number.action" />
               </node>
@@ -4184,7 +4181,7 @@
                 </node>
                 <node concept="10M0yZ" id="24kMFp6Ev8J" role="37wK5m">
                   <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Copy" resolve="Copy" />
-                  <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
+                  <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
                 </node>
               </node>
             </node>
@@ -4942,7 +4939,7 @@
                   <property role="Xl_RC" value="Show diff" />
                 </node>
                 <node concept="10M0yZ" id="1HYau0f7Y8U" role="37wK5m">
-                  <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
+                  <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
                   <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Diff" resolve="Diff" />
                 </node>
               </node>
@@ -5053,21 +5050,21 @@
                 <ref role="37wK5l" to="7bx7:~BaseAction.&lt;init&gt;(java.util.function.Supplier,java.util.function.Supplier,javax.swing.Icon)" resolve="BaseAction" />
                 <ref role="1Y3XeK" to="7bx7:~BaseAction" resolve="BaseAction" />
                 <node concept="2YIFZM" id="7GdQgoXGqyp" role="37wK5m">
-                  <ref role="37wK5l" to="jlcu:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
-                  <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
+                  <ref role="37wK5l" to="jlcw:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
+                  <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
                   <node concept="37vLTw" id="1HYau0f4tXD" role="37wK5m">
                     <ref role="3cqZAo" node="1HYau0f3g0X" resolve="ANNOTATE_REVISION_TEXT_KEY" />
                   </node>
                 </node>
                 <node concept="2YIFZM" id="3d1o$V9E5gk" role="37wK5m">
-                  <ref role="37wK5l" to="jlcu:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
-                  <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
+                  <ref role="37wK5l" to="jlcw:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
+                  <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
                   <node concept="37vLTw" id="1HYau0f4IB2" role="37wK5m">
                     <ref role="3cqZAo" node="1HYau0f4yLZ" resolve="ANNOTATE_REVISION_DESC_KEY" />
                   </node>
                 </node>
                 <node concept="10M0yZ" id="3d1o$V9Emyk" role="37wK5m">
-                  <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
+                  <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
                   <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Annotate" resolve="Annotate" />
                 </node>
                 <node concept="3Tm1VV" id="7GdQgoXGj9G" role="1B3o_S" />
@@ -5148,8 +5145,8 @@
               </node>
             </node>
             <node concept="2YIFZM" id="1HYau0f18WC" role="33vP2m">
-              <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
-              <ref role="37wK5l" to="jlcu:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
+              <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
+              <ref role="37wK5l" to="jlcw:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
               <node concept="37vLTw" id="1HYau0f2Eyh" role="37wK5m">
                 <ref role="3cqZAo" node="1HYau0f2sxV" resolve="ANNOTATE_PREVIOUS_REVISION_TEXT_KEY" />
               </node>
@@ -5166,8 +5163,8 @@
               </node>
             </node>
             <node concept="2YIFZM" id="1HYau0f1Hvt" role="33vP2m">
-              <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
-              <ref role="37wK5l" to="jlcu:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
+              <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
+              <ref role="37wK5l" to="jlcw:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
               <node concept="37vLTw" id="1HYau0f2Ymz" role="37wK5m">
                 <ref role="3cqZAo" node="1HYau0f2Nz2" resolve="ANNOTATE_PREVIOUS_REVISION_DESC_KEY" />
               </node>
@@ -5213,7 +5210,7 @@
                       <property role="Xl_RC" value="" />
                     </node>
                     <node concept="10M0yZ" id="1HYau0f01sm" role="37wK5m">
-                      <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
+                      <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
                       <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Annotate" resolve="Annotate" />
                     </node>
                     <node concept="3clFbT" id="1HYau0f01sn" role="37wK5m">
@@ -5460,7 +5457,7 @@
                         <ref role="3cqZAo" node="1HYau0f1Hvq" resolve="description" />
                       </node>
                       <node concept="10M0yZ" id="7udW2_gY_Dg" role="37wK5m">
-                        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="Actions" />
+                        <ref role="1PxDUh" to="z2i8:~AllIcons$Actions" resolve="AllIcons.Actions" />
                         <ref role="3cqZAo" to="z2i8:~AllIcons$Actions.Annotate" resolve="Annotate" />
                       </node>
                       <node concept="3Tm1VV" id="7udW2_gSc_k" role="1B3o_S" />
@@ -5657,7 +5654,7 @@
                 <node concept="37vLTI" id="7GIi_kAm8vG" role="3clFbG">
                   <node concept="2ShNRf" id="33lt24yKeg0" role="37vLTx">
                     <node concept="1pGfFk" id="33lt24yKeg1" role="2ShVmc">
-                      <ref role="37wK5l" node="hapR_kTy$3" />
+                      <ref role="37wK5l" node="hapR_kTy$3" resolve="AnnotationColumn" />
                       <node concept="2OqwBi" id="33lt24yKmvX" role="37wK5m">
                         <node concept="37vLTw" id="33lt24yKeg2" role="2Oq$k0">
                           <ref role="3cqZAo" node="1jG3ZCatsRC" resolve="myEditorAnnotation" />
@@ -6045,7 +6042,7 @@
       <node concept="3cqZAl" id="5Gymoc4pyuF" role="3clF45" />
       <node concept="3clFbS" id="5Gymoc4pyuH" role="3clF47">
         <node concept="XkiVB" id="5Gymoc4p$yZ" role="3cqZAp">
-          <ref role="37wK5l" node="lIjSl53fqh" />
+          <ref role="37wK5l" node="lIjSl53fqh" resolve="AnnotationAspectSubcolumn" />
           <node concept="37vLTw" id="2BHiRxgm$9q" role="37wK5m">
             <ref role="3cqZAo" node="3VlLT5ndsaO" resolve="editorAnnotation" />
           </node>
@@ -6501,8 +6498,8 @@
           <node concept="XkiVB" id="2WlSe_e7jOv" role="3cqZAp">
             <ref role="37wK5l" to="7bx7:~BaseGroup.&lt;init&gt;(java.util.function.Supplier,java.lang.String,boolean)" resolve="BaseGroup" />
             <node concept="2YIFZM" id="2WlSe_e7l4Q" role="37wK5m">
-              <ref role="37wK5l" to="jlcu:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
-              <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
+              <ref role="37wK5l" to="jlcw:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
+              <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
               <node concept="Xl_RD" id="6SK4YW9Qyx2" role="37wK5m">
                 <property role="Xl_RC" value="annotations.color.mode.group.colors" />
               </node>
@@ -6559,8 +6556,8 @@
           <node concept="XkiVB" id="6pvJusa8FQ_" role="3cqZAp">
             <ref role="37wK5l" to="7bx7:~BaseGroup.&lt;init&gt;(java.util.function.Supplier,java.lang.String,boolean)" resolve="BaseGroup" />
             <node concept="2YIFZM" id="6pvJusa8FQA" role="37wK5m">
-              <ref role="37wK5l" to="jlcu:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
-              <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
+              <ref role="37wK5l" to="jlcw:~VcsBundle.messagePointer(java.lang.String,java.lang.Object...)" resolve="messagePointer" />
+              <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
               <node concept="Xl_RD" id="6pvJusa8FQB" role="37wK5m">
                 <property role="Xl_RC" value="annotations.short.name.type.group.names" />
               </node>
@@ -7981,7 +7978,7 @@
       <node concept="3Tm1VV" id="7OXN7mbz6aj" role="1B3o_S" />
       <node concept="3clFbS" id="7OXN7mbz6ak" role="3clF47">
         <node concept="XkiVB" id="7OXN7mbz6ay" role="3cqZAp">
-          <ref role="37wK5l" node="lIjSl53fqh" />
+          <ref role="37wK5l" node="lIjSl53fqh" resolve="AnnotationAspectSubcolumn" />
           <node concept="37vLTw" id="7OXN7mbz6az" role="37wK5m">
             <ref role="3cqZAo" node="7OXN7mbz6ae" resolve="editorAnnotation" />
           </node>
@@ -8026,7 +8023,7 @@
         <node concept="3cpWs6" id="6pvJusaadt8" role="3cqZAp">
           <node concept="2YIFZM" id="6pvJusaae4b" role="3cqZAk">
             <ref role="37wK5l" node="6pvJusa9N5g" resolve="shorten" />
-            <ref role="1Pybhc" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+            <ref role="1Pybhc" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
             <node concept="37vLTw" id="6pvJusaaejz" role="37wK5m">
               <ref role="3cqZAo" node="7OXN7mb$1i3" resolve="value" />
             </node>
@@ -8057,13 +8054,13 @@
       <node concept="3Tm6S6" id="6rAHSK3yn$m" role="1B3o_S" />
       <node concept="_YKpA" id="6rAHSK3yooA" role="1tU5fm">
         <node concept="3uibUv" id="5vQ$xCp4RzJ" role="_ZDj9">
-          <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotationUpdateListener" />
+          <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotation.RootAnnotationUpdateListener" />
         </node>
       </node>
       <node concept="2ShNRf" id="6rAHSK3yoFA" role="33vP2m">
         <node concept="Tc6Ow" id="6rAHSK3ytNM" role="2ShVmc">
           <node concept="3uibUv" id="5vQ$xCp4SDV" role="HW$YZ">
-            <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotationUpdateListener" />
+            <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotation.RootAnnotationUpdateListener" />
           </node>
         </node>
       </node>
@@ -8311,7 +8308,7 @@
                 </node>
                 <node concept="2ShNRf" id="ypNelyPuTY" role="37vLTx">
                   <node concept="1pGfFk" id="ypNelyPuTZ" role="2ShVmc">
-                    <ref role="37wK5l" to="5p6x:6STmDFF9sb3" />
+                    <ref role="37wK5l" to="5p6x:6STmDFF9sb3" resolve="CommitsGraphNode" />
                     <node concept="37vLTw" id="ypNelyPuU0" role="37wK5m">
                       <ref role="3cqZAo" node="6STmDFFdzD9" resolve="currentRevision" />
                     </node>
@@ -8367,7 +8364,7 @@
             </node>
             <node concept="2ShNRf" id="41u046V732h" role="37vLTx">
               <node concept="1pGfFk" id="41u046V732i" role="2ShVmc">
-                <ref role="37wK5l" to="5p6x:5Lno_XH9J50" />
+                <ref role="37wK5l" to="5p6x:5Lno_XH9J50" resolve="RootCommitsGraphTraverser" />
                 <node concept="37vLTw" id="7Kf$fJTnm36" role="37wK5m">
                   <ref role="3cqZAo" node="5Y_dPLMoWFD" resolve="myCommitsGraph" />
                 </node>
@@ -8425,7 +8422,7 @@
         </node>
       </node>
       <node concept="3uibUv" id="ppWmVbpCMS" role="Sfmx6">
-        <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="ModelReadException" />
+        <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="RootCommitsGraphTraverser.ModelReadException" />
       </node>
       <node concept="37vLTG" id="6STmDFFcjAI" role="3clF46">
         <property role="TrG5h" value="currentModel" />
@@ -8518,7 +8515,7 @@
       <node concept="37vLTG" id="6rAHSK3yykQ" role="3clF46">
         <property role="TrG5h" value="r" />
         <node concept="3uibUv" id="5vQ$xCp4Tw_" role="1tU5fm">
-          <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotationUpdateListener" />
+          <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotation.RootAnnotationUpdateListener" />
         </node>
         <node concept="2AHcQZ" id="4rNEqb8ZGWi" role="2AJF6D">
           <ref role="2AI5Lk" to="mhfm:~NotNull" resolve="NotNull" />
@@ -8553,7 +8550,7 @@
       <node concept="37vLTG" id="6rAHSK3yC4T" role="3clF46">
         <property role="TrG5h" value="r" />
         <node concept="3uibUv" id="5vQ$xCp4TDQ" role="1tU5fm">
-          <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotationUpdateListener" />
+          <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotation.RootAnnotationUpdateListener" />
         </node>
       </node>
     </node>
@@ -9379,10 +9376,10 @@
               <ref role="37wK5l" to="33ny:~Arrays.asList(java.lang.Object...)" resolve="asList" />
               <node concept="2ShNRf" id="4rhoNE7Qycf" role="37wK5m">
                 <node concept="1pGfFk" id="4rhoNE7Qycg" role="2ShVmc">
-                  <ref role="37wK5l" to="btf5:5x0q8wkvS4_" />
+                  <ref role="37wK5l" to="btf5:5x0q8wkvS4_" resolve="AddRootChange" />
                   <node concept="2ShNRf" id="4rhoNE7Q$WK" role="37wK5m">
                     <node concept="1pGfFk" id="4rhoNE7Q$WL" role="2ShVmc">
-                      <ref role="37wK5l" to="bfxj:69abr3Go1lq" />
+                      <ref role="37wK5l" to="bfxj:69abr3Go1lq" resolve="ChangeSetImpl" />
                       <node concept="37vLTw" id="5rnGBol_B1W" role="37wK5m">
                         <ref role="3cqZAo" node="5rnGBol_wKM" resolve="model" />
                       </node>
@@ -9773,7 +9770,7 @@
                 </node>
                 <node concept="2ShNRf" id="62miEsW1we8" role="37vLTx">
                   <node concept="1pGfFk" id="62miEsW1we9" role="2ShVmc">
-                    <ref role="37wK5l" node="3mP1wh_xZ0B" />
+                    <ref role="37wK5l" node="3mP1wh_xZ0B" resolve="RevisionChanges" />
                     <node concept="37vLTw" id="62miEsW1wea" role="37wK5m">
                       <ref role="3cqZAo" node="4rhoNE7PvBC" resolve="graphNode" />
                     </node>
@@ -10174,7 +10171,7 @@
       <node concept="3Tm1VV" id="7OXN7mb$5qf" role="1B3o_S" />
       <node concept="3clFbS" id="7OXN7mb$5qg" role="3clF47">
         <node concept="XkiVB" id="7OXN7mb$5qu" role="3cqZAp">
-          <ref role="37wK5l" node="lIjSl53fqh" />
+          <ref role="37wK5l" node="lIjSl53fqh" resolve="AnnotationAspectSubcolumn" />
           <node concept="37vLTw" id="7OXN7mb$5qv" role="37wK5m">
             <ref role="3cqZAo" node="7OXN7mb$5qa" resolve="editorAnnotation" />
           </node>
@@ -10239,7 +10236,7 @@
     <property role="1EXbeo" value="true" />
     <node concept="3Tm1VV" id="55zwzn2E6W9" role="1B3o_S" />
     <node concept="3uibUv" id="55zwzn2B7on" role="1zkMxy">
-      <ref role="3uigEE" to="xygl:~Task$Backgroundable" resolve="Backgroundable" />
+      <ref role="3uigEE" to="xygl:~Task$Backgroundable" resolve="Task.Backgroundable" />
     </node>
     <node concept="2tJIrI" id="55zwzn2BkAJ" role="jymVt" />
     <node concept="312cEg" id="55zwzn2Bp0v" role="jymVt">
@@ -10681,7 +10678,7 @@
               <property role="TrG5h" value="e" />
               <node concept="nSUau" id="5uC3ja$8KNL" role="1tU5fm">
                 <node concept="3uibUv" id="5uC3ja$8KNH" role="nSUat">
-                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                 </node>
               </node>
             </node>
@@ -10723,7 +10720,7 @@
               <node concept="37vLTI" id="5Y_dPLMotFY" role="3clFbG">
                 <node concept="2ShNRf" id="5Y_dPLMoq93" role="37vLTx">
                   <node concept="1pGfFk" id="5Y_dPLMoq94" role="2ShVmc">
-                    <ref role="37wK5l" to="5p6x:4aYE7KddtLQ" />
+                    <ref role="37wK5l" to="5p6x:4aYE7KddtLQ" resolve="CommitsGraph" />
                     <node concept="37vLTw" id="5Y_dPLMoq95" role="37wK5m">
                       <ref role="3cqZAo" node="TvXi8kPG95" resolve="myMpsProject" />
                     </node>
@@ -10759,7 +10756,7 @@
               <property role="TrG5h" value="e" />
               <node concept="nSUau" id="5Y_dPLMovVQ" role="1tU5fm">
                 <node concept="3uibUv" id="5Y_dPLMovVM" role="nSUat">
-                  <ref role="3uigEE" to="5p6x:2dNLIDd2q60" resolve="BuildException" />
+                  <ref role="3uigEE" to="5p6x:2dNLIDd2q60" resolve="CommitsGraph.BuildException" />
                 </node>
               </node>
             </node>
@@ -10821,7 +10818,7 @@
             </node>
             <node concept="2ShNRf" id="2oUJhLUduQo" role="33vP2m">
               <node concept="1pGfFk" id="2oUJhLUduQp" role="2ShVmc">
-                <ref role="37wK5l" node="4rhoNE7MGG$" />
+                <ref role="37wK5l" node="4rhoNE7MGG$" resolve="RootAnnotation" />
                 <node concept="37vLTw" id="2oUJhLUduQr" role="37wK5m">
                   <ref role="3cqZAo" node="41u046VhXYa" resolve="rootId" />
                 </node>
@@ -10843,7 +10840,7 @@
             </node>
             <node concept="2ShNRf" id="41u046VhXYB" role="33vP2m">
               <node concept="1pGfFk" id="41u046VhXYC" role="2ShVmc">
-                <ref role="37wK5l" node="1jG3ZCanvua" />
+                <ref role="37wK5l" node="1jG3ZCanvua" resolve="EditorAnnotation" />
                 <node concept="37vLTw" id="41u046VhXYD" role="37wK5m">
                   <ref role="3cqZAo" node="55zwzn2Bp0v" resolve="myEditor" />
                 </node>
@@ -10875,7 +10872,7 @@
             </node>
             <node concept="2ShNRf" id="41u046Vi8J0" role="33vP2m">
               <node concept="1pGfFk" id="41u046Vi8J1" role="2ShVmc">
-                <ref role="37wK5l" node="hapR_kTy$3" />
+                <ref role="37wK5l" node="hapR_kTy$3" resolve="AnnotationColumn" />
                 <node concept="37vLTw" id="41u046ViasY" role="37wK5m">
                   <ref role="3cqZAo" to="xygl:~Task.myProject" resolve="myProject" />
                 </node>
@@ -11097,7 +11094,7 @@
               <property role="TrG5h" value="e" />
               <node concept="nSUau" id="5uC3ja$bYBL" role="1tU5fm">
                 <node concept="3uibUv" id="4Fz4D9NMk8D" role="nSUat">
-                  <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="ModelReadException" />
+                  <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="RootCommitsGraphTraverser.ModelReadException" />
                 </node>
               </node>
             </node>
@@ -11173,11 +11170,11 @@
               <node concept="3cpWsn" id="2dNLIDd6oB8" role="3cpWs9">
                 <property role="TrG5h" value="e" />
                 <node concept="3uibUv" id="2dNLIDd6oB9" role="1tU5fm">
-                  <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="ModelReadException" />
+                  <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="RootCommitsGraphTraverser.ModelReadException" />
                 </node>
                 <node concept="0kSF2" id="2dNLIDd6tDC" role="33vP2m">
                   <node concept="3uibUv" id="2dNLIDd6tDF" role="0kSFW">
-                    <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="ModelReadException" />
+                    <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="RootCommitsGraphTraverser.ModelReadException" />
                   </node>
                   <node concept="37vLTw" id="2dNLIDd6rDx" role="0kSFX">
                     <ref role="3cqZAo" node="ppWmVbr$TQ" resolve="myException" />
@@ -11251,7 +11248,7 @@
           </node>
           <node concept="2ZW3vV" id="2dNLIDd64Fu" role="3clFbw">
             <node concept="3uibUv" id="2dNLIDd66s0" role="2ZW6by">
-              <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="ModelReadException" />
+              <ref role="3uigEE" to="5p6x:ppWmVbn2sc" resolve="RootCommitsGraphTraverser.ModelReadException" />
             </node>
             <node concept="37vLTw" id="2dNLIDd62D8" role="2ZW6bz">
               <ref role="3cqZAo" node="ppWmVbr$TQ" resolve="myException" />
@@ -11273,7 +11270,7 @@
           </node>
           <node concept="2ZW3vV" id="2dNLIDd6MVK" role="3clFbw">
             <node concept="3uibUv" id="2dNLIDd6OHU" role="2ZW6by">
-              <ref role="3uigEE" to="5p6x:2dNLIDd2q60" resolve="BuildException" />
+              <ref role="3uigEE" to="5p6x:2dNLIDd2q60" resolve="CommitsGraph.BuildException" />
             </node>
             <node concept="37vLTw" id="2dNLIDd6KP8" role="2ZW6bz">
               <ref role="3cqZAo" node="ppWmVbr$TQ" resolve="myException" />
@@ -11493,8 +11490,8 @@
               <ref role="3cqZAo" node="55zwzn2DFX5" resolve="myActiveVcs" />
             </node>
             <node concept="2YIFZM" id="7H$wjRQN4LQ" role="37wK5m">
-              <ref role="37wK5l" to="7g4f:~VcsUtil.getFilePath(com.intellij.openapi.vfs.VirtualFile)" resolve="getFilePath" />
-              <ref role="1Pybhc" to="7g4f:~VcsUtil" resolve="VcsUtil" />
+              <ref role="37wK5l" to="7g4e:~VcsUtil.getFilePath(com.intellij.openapi.vfs.VirtualFile)" resolve="getFilePath" />
+              <ref role="1Pybhc" to="7g4e:~VcsUtil" resolve="VcsUtil" />
               <node concept="37vLTw" id="7H$wjRQN4LR" role="37wK5m">
                 <ref role="3cqZAo" node="55zwzn2DFX2" resolve="myActualFile" />
               </node>
@@ -11509,8 +11506,8 @@
           <ref role="3uigEE" to="yah0:~VcsFileRevision" resolve="VcsFileRevision" />
         </node>
       </node>
-      <node concept="3uibUv" id="7H$wjRQN54_" role="Sfmx6">
-        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+      <node concept="3uibUv" id="12IlA1BLRhA" role="Sfmx6">
+        <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
       </node>
     </node>
     <node concept="2tJIrI" id="41u046V5HYu" role="jymVt" />
@@ -11612,7 +11609,7 @@
       <node concept="3Tm1VV" id="7OXN7mb$8zG" role="1B3o_S" />
       <node concept="3clFbS" id="7OXN7mb$8zH" role="3clF47">
         <node concept="XkiVB" id="7OXN7mb$8zV" role="3cqZAp">
-          <ref role="37wK5l" node="lIjSl53fqh" />
+          <ref role="37wK5l" node="lIjSl53fqh" resolve="AnnotationAspectSubcolumn" />
           <node concept="37vLTw" id="7OXN7mb$8zW" role="37wK5m">
             <ref role="3cqZAo" node="7OXN7mb$8zB" resolve="editorAnnotation" />
           </node>
@@ -13468,13 +13465,13 @@
       <node concept="3Tm6S6" id="2WlSe_e5ijR" role="1B3o_S" />
       <node concept="2hMVRd" id="6SK4YW9SxdF" role="1tU5fm">
         <node concept="3uibUv" id="6SK4YW9SxdH" role="2hN53Y">
-          <ref role="3uigEE" node="2WlSe_e5is3" resolve="UpdateListener" />
+          <ref role="3uigEE" node="2WlSe_e5is3" resolve="AnnotationOptions.UpdateListener" />
         </node>
       </node>
       <node concept="2ShNRf" id="2WlSe_e5jxu" role="33vP2m">
         <node concept="2i4dXS" id="6SK4YW9SxH1" role="2ShVmc">
           <node concept="3uibUv" id="6SK4YW9SxH3" role="HW$YZ">
-            <ref role="3uigEE" node="2WlSe_e5is3" resolve="UpdateListener" />
+            <ref role="3uigEE" node="2WlSe_e5is3" resolve="AnnotationOptions.UpdateListener" />
           </node>
         </node>
       </node>
@@ -13755,8 +13752,8 @@
       <node concept="3clFbS" id="2WlSe_e5g8x" role="3clF47">
         <node concept="3clFbF" id="2WlSe_e5gFF" role="3cqZAp">
           <node concept="2YIFZM" id="2WlSe_e5gG6" role="3clFbG">
-            <ref role="37wK5l" to="7g4f:~VcsUtil.setAspectAvailability(java.lang.String,boolean)" resolve="setAspectAvailability" />
-            <ref role="1Pybhc" to="7g4f:~VcsUtil" resolve="VcsUtil" />
+            <ref role="37wK5l" to="7g4e:~VcsUtil.setAspectAvailability(java.lang.String,boolean)" resolve="setAspectAvailability" />
+            <ref role="1Pybhc" to="7g4e:~VcsUtil" resolve="VcsUtil" />
             <node concept="37vLTw" id="2WlSe_e5gNL" role="37wK5m">
               <ref role="3cqZAo" node="2WlSe_e5gnz" resolve="aspectId" />
             </node>
@@ -13788,8 +13785,8 @@
       <node concept="3clFbS" id="2WlSe_e5h6F" role="3clF47">
         <node concept="3clFbF" id="2WlSe_e5hml" role="3cqZAp">
           <node concept="2YIFZM" id="2WlSe_e5i07" role="3clFbG">
-            <ref role="37wK5l" to="7g4f:~VcsUtil.isAspectAvailableByDefault(java.lang.String)" resolve="isAspectAvailableByDefault" />
-            <ref role="1Pybhc" to="7g4f:~VcsUtil" resolve="VcsUtil" />
+            <ref role="37wK5l" to="7g4e:~VcsUtil.isAspectAvailableByDefault(java.lang.String)" resolve="isAspectAvailableByDefault" />
+            <ref role="1Pybhc" to="7g4e:~VcsUtil" resolve="VcsUtil" />
             <node concept="37vLTw" id="2WlSe_e5ibm" role="37wK5m">
               <ref role="3cqZAo" node="2WlSe_e5i2R" resolve="aspectId" />
             </node>
@@ -13811,11 +13808,11 @@
           <node concept="3cpWsn" id="4zPruQLpW5q" role="1Duv9x">
             <property role="TrG5h" value="colorMode" />
             <node concept="3uibUv" id="4zPruQLpW5r" role="1tU5fm">
-              <ref role="3uigEE" node="2WlSe_e6zGB" resolve="ColorMode" />
+              <ref role="3uigEE" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
             </node>
           </node>
           <node concept="uiWXb" id="4zPruQLpW5s" role="1DdaDG">
-            <ref role="uiZuM" node="2WlSe_e6zGB" resolve="ColorMode" />
+            <ref role="uiZuM" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
           </node>
           <node concept="3clFbS" id="4zPruQLpW5t" role="2LFqv$">
             <node concept="3clFbJ" id="4zPruQLpW5u" role="3cqZAp">
@@ -13840,13 +13837,13 @@
         <node concept="3cpWs6" id="4zPruQLq1Fb" role="3cqZAp">
           <node concept="Rm8GO" id="4zPruQLq2T0" role="3cqZAk">
             <ref role="Rm8GQ" node="2WlSe_e6zGF" resolve="ORDER" />
-            <ref role="1Px2BO" node="2WlSe_e6zGB" resolve="ColorMode" />
+            <ref role="1Px2BO" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
           </node>
         </node>
       </node>
       <node concept="3Tm1VV" id="2WlSe_e6kGV" role="1B3o_S" />
       <node concept="3uibUv" id="2WlSe_e75DM" role="3clF45">
-        <ref role="3uigEE" node="2WlSe_e6zGB" resolve="ColorMode" />
+        <ref role="3uigEE" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
       </node>
     </node>
     <node concept="2tJIrI" id="2WlSe_e6lyS" role="jymVt" />
@@ -13874,7 +13871,7 @@
       <node concept="37vLTG" id="2WlSe_e6mHi" role="3clF46">
         <property role="TrG5h" value="colorMode" />
         <node concept="3uibUv" id="2WlSe_e77AF" role="1tU5fm">
-          <ref role="3uigEE" node="2WlSe_e6zGB" resolve="ColorMode" />
+          <ref role="3uigEE" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
         </node>
       </node>
     </node>
@@ -13886,11 +13883,11 @@
           <node concept="3cpWsn" id="4zPruQLq99a" role="1Duv9x">
             <property role="TrG5h" value="shortNameType" />
             <node concept="3uibUv" id="4zPruQLq99b" role="1tU5fm">
-              <ref role="3uigEE" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+              <ref role="3uigEE" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
             </node>
           </node>
           <node concept="uiWXb" id="4zPruQLq99c" role="1DdaDG">
-            <ref role="uiZuM" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+            <ref role="uiZuM" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
           </node>
           <node concept="3clFbS" id="4zPruQLq99d" role="2LFqv$">
             <node concept="3clFbJ" id="4zPruQLq99e" role="3cqZAp">
@@ -13915,13 +13912,13 @@
         <node concept="3cpWs6" id="4zPruQLqc91" role="3cqZAp">
           <node concept="Rm8GO" id="4zPruQLqdfE" role="3cqZAk">
             <ref role="Rm8GQ" node="6pvJusa8caF" resolve="LASTNAME" />
-            <ref role="1Px2BO" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+            <ref role="1Px2BO" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
           </node>
         </node>
       </node>
       <node concept="3Tm1VV" id="6pvJusa8iK5" role="1B3o_S" />
       <node concept="3uibUv" id="6pvJusa8ktz" role="3clF45">
-        <ref role="3uigEE" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+        <ref role="3uigEE" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
       </node>
     </node>
     <node concept="2tJIrI" id="6pvJusa8mry" role="jymVt" />
@@ -13949,7 +13946,7 @@
       <node concept="37vLTG" id="6pvJusa8sHd" role="3clF46">
         <property role="TrG5h" value="shortNameType" />
         <node concept="3uibUv" id="6pvJusa8sHc" role="1tU5fm">
-          <ref role="3uigEE" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+          <ref role="3uigEE" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
         </node>
       </node>
     </node>
@@ -13975,7 +13972,7 @@
       <node concept="37vLTG" id="6SK4YW9SutV" role="3clF46">
         <property role="TrG5h" value="listener" />
         <node concept="3uibUv" id="6SK4YW9SutU" role="1tU5fm">
-          <ref role="3uigEE" node="2WlSe_e5is3" resolve="UpdateListener" />
+          <ref role="3uigEE" node="2WlSe_e5is3" resolve="AnnotationOptions.UpdateListener" />
         </node>
       </node>
     </node>
@@ -14001,7 +13998,7 @@
       <node concept="37vLTG" id="6SK4YW9S$hs" role="3clF46">
         <property role="TrG5h" value="listener" />
         <node concept="3uibUv" id="6SK4YW9S$hr" role="1tU5fm">
-          <ref role="3uigEE" node="2WlSe_e5is3" resolve="UpdateListener" />
+          <ref role="3uigEE" node="2WlSe_e5is3" resolve="AnnotationOptions.UpdateListener" />
         </node>
       </node>
     </node>
@@ -14144,7 +14141,7 @@
       <node concept="3Tm1VV" id="2WlSe_e6zGC" role="1B3o_S" />
       <node concept="QsSxf" id="2WlSe_e6zGD" role="Qtgdg">
         <property role="TrG5h" value="AUTHOR" />
-        <ref role="37wK5l" node="2WlSe_e6zGJ" />
+        <ref role="37wK5l" node="2WlSe_e6zGJ" resolve="AnnotationOptions.ColorMode" />
         <node concept="Xl_RD" id="2WlSe_e6zGE" role="37wK5m">
           <property role="Xl_RC" value="author" />
         </node>
@@ -14154,7 +14151,7 @@
       </node>
       <node concept="QsSxf" id="2WlSe_e6zGF" role="Qtgdg">
         <property role="TrG5h" value="ORDER" />
-        <ref role="37wK5l" node="2WlSe_e6zGJ" />
+        <ref role="37wK5l" node="2WlSe_e6zGJ" resolve="AnnotationOptions.ColorMode" />
         <node concept="Xl_RD" id="2WlSe_e6zGG" role="37wK5m">
           <property role="Xl_RC" value="order" />
         </node>
@@ -14164,7 +14161,7 @@
       </node>
       <node concept="QsSxf" id="2WlSe_e6zGH" role="Qtgdg">
         <property role="TrG5h" value="NONE" />
-        <ref role="37wK5l" node="2WlSe_e6zGJ" />
+        <ref role="37wK5l" node="2WlSe_e6zGJ" resolve="AnnotationOptions.ColorMode" />
         <node concept="Xl_RD" id="2WlSe_e6zGI" role="37wK5m">
           <property role="Xl_RC" value="none" />
         </node>
@@ -14239,8 +14236,8 @@
         <node concept="3clFbS" id="2WlSe_e6JUS" role="3clF47">
           <node concept="3cpWs6" id="2WlSe_e6KMG" role="3cqZAp">
             <node concept="2YIFZM" id="2WlSe_e6MV2" role="3cqZAk">
-              <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
-              <ref role="37wK5l" to="jlcu:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
+              <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
+              <ref role="37wK5l" to="jlcw:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
               <node concept="37vLTw" id="2WlSe_e6OBT" role="37wK5m">
                 <ref role="3cqZAo" node="2WlSe_e6BIo" resolve="myDescriptionKey" />
               </node>
@@ -14415,7 +14412,7 @@
       <node concept="3Tm1VV" id="6pvJusa7ZRP" role="1B3o_S" />
       <node concept="QsSxf" id="6pvJusa82ng" role="Qtgdg">
         <property role="TrG5h" value="INITIALS" />
-        <ref role="37wK5l" node="6pvJusa8anc" />
+        <ref role="37wK5l" node="6pvJusa8anc" resolve="AnnotationOptions.MpsShortNameType" />
         <node concept="Xl_RD" id="6pvJusa8bjB" role="37wK5m">
           <property role="Xl_RC" value="initials" />
         </node>
@@ -14425,7 +14422,7 @@
       </node>
       <node concept="QsSxf" id="6pvJusa8caF" role="Qtgdg">
         <property role="TrG5h" value="LASTNAME" />
-        <ref role="37wK5l" node="6pvJusa8anc" />
+        <ref role="37wK5l" node="6pvJusa8anc" resolve="AnnotationOptions.MpsShortNameType" />
         <node concept="Xl_RD" id="6pvJusa8dou" role="37wK5m">
           <property role="Xl_RC" value="lastname" />
         </node>
@@ -14435,7 +14432,7 @@
       </node>
       <node concept="QsSxf" id="6pvJusa8cjS" role="Qtgdg">
         <property role="TrG5h" value="FIRSTNAME" />
-        <ref role="37wK5l" node="6pvJusa8anc" />
+        <ref role="37wK5l" node="6pvJusa8anc" resolve="AnnotationOptions.MpsShortNameType" />
         <node concept="Xl_RD" id="6pvJusa8ekV" role="37wK5m">
           <property role="Xl_RC" value="firstname" />
         </node>
@@ -14445,7 +14442,7 @@
       </node>
       <node concept="QsSxf" id="6pvJusa8ctc" role="Qtgdg">
         <property role="TrG5h" value="NONE" />
-        <ref role="37wK5l" node="6pvJusa8anc" />
+        <ref role="37wK5l" node="6pvJusa8anc" resolve="AnnotationOptions.MpsShortNameType" />
         <node concept="Xl_RD" id="6pvJusa8eo8" role="37wK5m">
           <property role="Xl_RC" value="full" />
         </node>
@@ -14520,8 +14517,8 @@
         <node concept="3clFbS" id="6pvJusa8BfS" role="3clF47">
           <node concept="3cpWs6" id="6pvJusa8BfT" role="3cqZAp">
             <node concept="2YIFZM" id="6pvJusa8BfU" role="3cqZAk">
-              <ref role="37wK5l" to="jlcu:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
-              <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
+              <ref role="37wK5l" to="jlcw:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
+              <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
               <node concept="37vLTw" id="6pvJusa8BfV" role="37wK5m">
                 <ref role="3cqZAo" node="6pvJusa8es3" resolve="myDescriptionKey" />
               </node>
@@ -14595,7 +14592,7 @@
             <node concept="3KbdKl" id="6pvJusa9TPr" role="3KbHQx">
               <node concept="Rm8GO" id="6pvJusa9YJw" role="3Kbmr1">
                 <ref role="Rm8GQ" node="6pvJusa82ng" resolve="INITIALS" />
-                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
               </node>
               <node concept="3clFbS" id="6pvJusa9TPt" role="3Kbo56">
                 <node concept="3cpWs6" id="6pvJusaa5u1" role="3cqZAp">
@@ -14616,7 +14613,7 @@
             <node concept="3KbdKl" id="6pvJusaa6NH" role="3KbHQx">
               <node concept="Rm8GO" id="6pvJusaa6Wi" role="3Kbmr1">
                 <ref role="Rm8GQ" node="6pvJusa8caF" resolve="LASTNAME" />
-                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
               </node>
               <node concept="3clFbS" id="6pvJusaa6NJ" role="3Kbo56">
                 <node concept="3cpWs6" id="6pvJusaa6NK" role="3cqZAp">
@@ -14637,7 +14634,7 @@
             <node concept="3KbdKl" id="6pvJusaa7ry" role="3KbHQx">
               <node concept="Rm8GO" id="6pvJusaa8hT" role="3Kbmr1">
                 <ref role="Rm8GQ" node="6pvJusa8cjS" resolve="FIRSTNAME" />
-                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
               </node>
               <node concept="3clFbS" id="6pvJusaa7r$" role="3Kbo56">
                 <node concept="3cpWs6" id="6pvJusaa7r_" role="3cqZAp">
@@ -14658,7 +14655,7 @@
             <node concept="3KbdKl" id="6pvJusaa8KH" role="3KbHQx">
               <node concept="Rm8GO" id="6pvJusaaaST" role="3Kbmr1">
                 <ref role="Rm8GQ" node="6pvJusa8ctc" resolve="NONE" />
-                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+                <ref role="1Px2BO" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
               </node>
               <node concept="3clFbS" id="6pvJusaa8KJ" role="3Kbo56">
                 <node concept="3cpWs6" id="6pvJusaa8KK" role="3cqZAp">
@@ -14692,7 +14689,7 @@
         <node concept="37vLTG" id="6pvJusa9N_l" role="3clF46">
           <property role="TrG5h" value="type" />
           <node concept="3uibUv" id="6pvJusa9OtN" role="1tU5fm">
-            <ref role="3uigEE" node="6pvJusa81qZ" resolve="MpsShortNameType" />
+            <ref role="3uigEE" node="6pvJusa81qZ" resolve="AnnotationOptions.MpsShortNameType" />
           </node>
         </node>
       </node>
@@ -14964,7 +14961,7 @@
       <property role="TrG5h" value="myLineAnnotationsUpdateListener" />
       <node concept="3Tm6S6" id="4FpwSCZnbcX" role="1B3o_S" />
       <node concept="3uibUv" id="4FpwSCZr99A" role="1tU5fm">
-        <ref role="3uigEE" node="4FpwSCZq_ea" resolve="LineAnnotationsUpdateListener" />
+        <ref role="3uigEE" node="4FpwSCZq_ea" resolve="EditorAnnotation.LineAnnotationsUpdateListener" />
       </node>
     </node>
     <node concept="312cEg" id="21oyeVMM_qE" role="jymVt">
@@ -15234,7 +15231,7 @@
       <node concept="37vLTG" id="4FpwSCZof4E" role="3clF46">
         <property role="TrG5h" value="lineAnnotationsUpdateListener" />
         <node concept="3uibUv" id="4FpwSCZrd5S" role="1tU5fm">
-          <ref role="3uigEE" node="4FpwSCZq_ea" resolve="LineAnnotationsUpdateListener" />
+          <ref role="3uigEE" node="4FpwSCZq_ea" resolve="EditorAnnotation.LineAnnotationsUpdateListener" />
         </node>
       </node>
     </node>
@@ -16736,7 +16733,7 @@
                 <node concept="TSZUe" id="62miEsW52M3" role="2OqNvi">
                   <node concept="2ShNRf" id="62miEsW52M4" role="25WWJ7">
                     <node concept="1pGfFk" id="62miEsW52M5" role="2ShVmc">
-                      <ref role="37wK5l" node="3mP1wh_xZ0B" />
+                      <ref role="37wK5l" node="3mP1wh_xZ0B" resolve="RevisionChanges" />
                       <node concept="2OqwBi" id="62miEsW52M6" role="37wK5m">
                         <node concept="37vLTw" id="62miEsW52M7" role="2Oq$k0">
                           <ref role="3cqZAo" node="62miEsW52Kr" resolve="revisionChanges" />
@@ -17322,7 +17319,7 @@
             </node>
             <node concept="2ShNRf" id="4XOiVS0z3g0" role="33vP2m">
               <node concept="1pGfFk" id="4XOiVS0z3g1" role="2ShVmc">
-                <ref role="37wK5l" node="5vQ$xCoPSCO" />
+                <ref role="37wK5l" node="5vQ$xCoPSCO" resolve="CellAnnotation" />
                 <node concept="37vLTw" id="4XOiVS0z3g3" role="37wK5m">
                   <ref role="3cqZAo" node="60fONoLc9WD" resolve="cell" />
                 </node>
@@ -18157,7 +18154,7 @@
             </node>
             <node concept="2ShNRf" id="2tJWVCuLOua" role="33vP2m">
               <node concept="1pGfFk" id="2tJWVCuLOub" role="2ShVmc">
-                <ref role="37wK5l" node="3WD3WEj27j8" resolve="EditorMessageWithTarget" />
+                <ref role="37wK5l" node="3WD3WEj27j8" resolve="AnnotatedCellMessage" />
                 <node concept="2OqwBi" id="7GdQgoXANCK" role="37wK5m">
                   <node concept="37vLTw" id="4Zqbdud8Jft" role="2Oq$k0">
                     <ref role="3cqZAo" node="1jG3ZCaUNa3" resolve="myMpsProject" />
@@ -18257,7 +18254,7 @@
                       </node>
                       <node concept="2ShNRf" id="3W5qyJL$bjn" role="33vP2m">
                         <node concept="1pGfFk" id="3W5qyJL$bjo" role="2ShVmc">
-                          <ref role="37wK5l" node="3W5qyJLvOd7" />
+                          <ref role="37wK5l" node="3W5qyJLvOd7" resolve="LineAnnotation" />
                           <node concept="37vLTw" id="3W5qyJL$bjp" role="37wK5m">
                             <ref role="3cqZAo" node="5W7E4fV0XKe" resolve="message" />
                           </node>
@@ -18680,7 +18677,7 @@
           <node concept="2ShNRf" id="33lt24yFz0J" role="3cqZAk">
             <node concept="1pGfFk" id="33lt24yGGYT" role="2ShVmc">
               <property role="373rjd" value="true" />
-              <ref role="37wK5l" node="1jG3ZCanvua" />
+              <ref role="37wK5l" node="1jG3ZCanvua" resolve="EditorAnnotation" />
               <node concept="37vLTw" id="33lt24yGWwm" role="37wK5m">
                 <ref role="3cqZAo" node="33lt24yEVM$" resolve="inspector" />
               </node>
@@ -19868,7 +19865,7 @@
           <node concept="3cpWsn" id="6SK4YW9ULU3" role="3cpWs9">
             <property role="TrG5h" value="colorMode" />
             <node concept="3uibUv" id="6SK4YW9ULU4" role="1tU5fm">
-              <ref role="3uigEE" node="2WlSe_e6zGB" resolve="ColorMode" />
+              <ref role="3uigEE" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
             </node>
             <node concept="2OqwBi" id="6SK4YW9V3u6" role="33vP2m">
               <node concept="2YIFZM" id="6SK4YW9V3kZ" role="2Oq$k0">
@@ -19885,7 +19882,7 @@
           <node concept="3KbdKl" id="76VnjLDpdgX" role="3KbHQx">
             <node concept="Rm8GO" id="76VnjLDpFEP" role="3Kbmr1">
               <ref role="Rm8GQ" node="2WlSe_e6zGF" resolve="ORDER" />
-              <ref role="1Px2BO" node="2WlSe_e6zGB" resolve="ColorMode" />
+              <ref role="1Px2BO" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
             </node>
             <node concept="3clFbS" id="76VnjLDpQ69" role="3Kbo56">
               <node concept="3cpWs6" id="76VnjLDpZEF" role="3cqZAp">
@@ -19901,7 +19898,7 @@
           <node concept="3KbdKl" id="76VnjLDrGdz" role="3KbHQx">
             <node concept="Rm8GO" id="76VnjLDs2sO" role="3Kbmr1">
               <ref role="Rm8GQ" node="2WlSe_e6zGD" resolve="AUTHOR" />
-              <ref role="1Px2BO" node="2WlSe_e6zGB" resolve="ColorMode" />
+              <ref role="1Px2BO" node="2WlSe_e6zGB" resolve="AnnotationOptions.ColorMode" />
             </node>
             <node concept="3clFbS" id="76VnjLDscNX" role="3Kbo56">
               <node concept="3cpWs6" id="76VnjLDsnBg" role="3cqZAp">
@@ -20322,7 +20319,7 @@
       <ref role="3uigEE" to="kpve:~EditorMessageOwner" resolve="EditorMessageOwner" />
     </node>
     <node concept="3uibUv" id="2OqlsWkhPEw" role="EKbjA">
-      <ref role="3uigEE" node="2WlSe_e5is3" resolve="UpdateListener" />
+      <ref role="3uigEE" node="2WlSe_e5is3" resolve="AnnotationOptions.UpdateListener" />
     </node>
     <node concept="3clFb_" id="jTLJ_ak$$y" role="jymVt">
       <property role="TrG5h" value="showDiff" />
@@ -20335,14 +20332,14 @@
             <node concept="3uibUv" id="1zVp7pQYB54" role="1tU5fm">
               <ref role="3uigEE" to="18ew:~Reference" resolve="Reference" />
               <node concept="3uibUv" id="1zVp7pQYBPu" role="11_B2D">
-                <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
               </node>
             </node>
             <node concept="2ShNRf" id="1zVp7pQYCr7" role="33vP2m">
               <node concept="1pGfFk" id="1zVp7pQYCpw" role="2ShVmc">
                 <ref role="37wK5l" to="18ew:~Reference.&lt;init&gt;()" resolve="Reference" />
                 <node concept="3uibUv" id="1zVp7pQYCpx" role="1pMfVU">
-                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                 </node>
               </node>
             </node>
@@ -20548,7 +20545,7 @@
                   <node concept="1Y3b0j" id="54iJvNQZOjX" role="YeSDq">
                     <property role="2bfB8j" value="true" />
                     <ref role="37wK5l" to="xygl:~Task$Backgroundable.&lt;init&gt;(com.intellij.openapi.project.Project,java.lang.String,boolean)" resolve="Task.Backgroundable" />
-                    <ref role="1Y3XeK" to="xygl:~Task$Backgroundable" resolve="Backgroundable" />
+                    <ref role="1Y3XeK" to="xygl:~Task$Backgroundable" resolve="Task.Backgroundable" />
                     <node concept="3clFb_" id="54iJvNQZOjZ" role="jymVt">
                       <property role="1EzhhJ" value="false" />
                       <property role="TrG5h" value="run" />
@@ -20714,7 +20711,7 @@
                               <property role="TrG5h" value="e" />
                               <node concept="nSUau" id="xvs04dIfLA" role="1tU5fm">
                                 <node concept="3uibUv" id="78RbNhWi9NA" role="nSUat">
-                                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                                 </node>
                               </node>
                             </node>
@@ -20756,8 +20753,8 @@
                       <ref role="37wK5l" node="10YBiB1aNa4" resolve="getProject" />
                     </node>
                     <node concept="2YIFZM" id="3r0tX$Xf5$$" role="37wK5m">
-                      <ref role="1Pybhc" to="jlcu:~VcsBundle" resolve="VcsBundle" />
-                      <ref role="37wK5l" to="jlcu:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
+                      <ref role="1Pybhc" to="jlcw:~VcsBundle" resolve="VcsBundle" />
+                      <ref role="37wK5l" to="jlcw:~VcsBundle.message(java.lang.String,java.lang.Object...)" resolve="message" />
                       <node concept="Xl_RD" id="3r0tX$Xf5$_" role="37wK5m">
                         <property role="Xl_RC" value="show.diff.progress.title.detailed" />
                       </node>
@@ -20816,7 +20813,7 @@
                                 <node concept="3cpWs3" id="78RbNhWi9NI" role="37wK5m">
                                   <node concept="2OqwBi" id="78RbNhWi9NK" role="3uHU7w">
                                     <node concept="liA8E" id="78RbNhWi9NM" role="2OqNvi">
-                                      <ref role="37wK5l" to="jlcu:~VcsException.getMessage()" resolve="getMessage" />
+                                      <ref role="37wK5l" to="jlcw:~VcsException.getMessage()" resolve="getMessage" />
                                     </node>
                                     <node concept="2OqwBi" id="1zVp7pQYJ7t" role="2Oq$k0">
                                       <node concept="37vLTw" id="1Hxk2C1iWnO" role="2Oq$k0">
@@ -21233,7 +21230,7 @@
                                       </node>
                                       <node concept="2ShNRf" id="6HqUq9m5yYL" role="33vP2m">
                                         <node concept="1pGfFk" id="6HqUq9m5yYM" role="2ShVmc">
-                                          <ref role="37wK5l" node="1jG3ZCanvua" />
+                                          <ref role="37wK5l" node="1jG3ZCanvua" resolve="EditorAnnotation" />
                                           <node concept="37vLTw" id="6HqUq9m5yYN" role="37wK5m">
                                             <ref role="3cqZAo" node="6PVY$JZguR5" resolve="newEditorComponent" />
                                           </node>
@@ -21319,7 +21316,7 @@
                                       </node>
                                       <node concept="2ShNRf" id="6HqUq9m5yYX" role="33vP2m">
                                         <node concept="1pGfFk" id="6HqUq9m5yYY" role="2ShVmc">
-                                          <ref role="37wK5l" node="hapR_kTy$3" />
+                                          <ref role="37wK5l" node="hapR_kTy$3" resolve="AnnotationColumn" />
                                           <node concept="2OqwBi" id="6HqUq9m5yYZ" role="37wK5m">
                                             <node concept="37vLTw" id="6HqUq9m5yZ0" role="2Oq$k0">
                                               <ref role="3cqZAo" node="1jG3ZCaUNa3" resolve="myMpsProject" />
@@ -21405,7 +21402,7 @@
                   <ref role="3uigEE" to="guwi:~IOException" resolve="IOException" />
                 </node>
                 <node concept="3uibUv" id="5Lno_XGD67Q" role="nSUat">
-                  <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                  <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                 </node>
                 <node concept="3uibUv" id="5Lno_XGC9I8" role="nSUat">
                   <ref role="3uigEE" to="dush:~ModelLoadException" resolve="ModelLoadException" />
@@ -21618,7 +21615,7 @@
       <node concept="3Tm6S6" id="7GdQgoXzACr" role="1B3o_S" />
     </node>
     <node concept="3uibUv" id="12fr1kKTDU0" role="EKbjA">
-      <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotationUpdateListener" />
+      <ref role="3uigEE" node="5vQ$xCp39hk" resolve="RootAnnotation.RootAnnotationUpdateListener" />
     </node>
   </node>
   <node concept="312cEu" id="5vQ$xCoOPkB">
@@ -22339,7 +22336,7 @@
         <node concept="3cpWs6" id="3W5qyJLrmHH" role="3cqZAp">
           <node concept="2ShNRf" id="3W5qyJLs5Px" role="3cqZAk">
             <node concept="1pGfFk" id="3W5qyJLsIui" role="2ShVmc">
-              <ref role="37wK5l" node="5vQ$xCpgP_v" />
+              <ref role="37wK5l" node="5vQ$xCpgP_v" resolve="LineAnnotation" />
               <node concept="37vLTw" id="3W5qyJLsJBa" role="37wK5m">
                 <ref role="3cqZAo" node="3W5qyJLriHK" resolve="revisionsGraphNode" />
               </node>

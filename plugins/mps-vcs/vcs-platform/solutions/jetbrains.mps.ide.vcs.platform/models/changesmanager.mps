@@ -577,7 +577,7 @@
       <node concept="3uibUv" id="4DPIwUs89HV" role="1tU5fm">
         <ref role="3uigEE" to="33ny:~LinkedList" resolve="LinkedList" />
         <node concept="3uibUv" id="4DPIwUs89HW" role="11_B2D">
-          <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
+          <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
         </node>
       </node>
       <node concept="3Tm6S6" id="3eE6dTgTzLl" role="1B3o_S" />
@@ -585,7 +585,7 @@
         <node concept="1pGfFk" id="3eE6dTgTRk1" role="2ShVmc">
           <ref role="37wK5l" to="33ny:~LinkedList.&lt;init&gt;()" resolve="LinkedList" />
           <node concept="3uibUv" id="4DPIwUs8a4l" role="1pMfVU">
-            <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
+            <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
           </node>
         </node>
       </node>
@@ -599,7 +599,7 @@
           <node concept="37vLTI" id="3eE6dTgTGw4" role="3clFbG">
             <node concept="2ShNRf" id="3eE6dTgTGw7" role="37vLTx">
               <node concept="1pGfFk" id="3eE6dTgTGw9" role="2ShVmc">
-                <ref role="37wK5l" node="3eE6dTgTGvL" />
+                <ref role="37wK5l" node="3eE6dTgTGvL" resolve="SimpleCommandQueue.MyExecutorThread" />
                 <node concept="37vLTw" id="2BHiRxgmv5f" role="37wK5m">
                   <ref role="3cqZAo" node="3eE6dTgTGvY" resolve="threadName" />
                 </node>
@@ -773,11 +773,11 @@
               <node concept="3cpWsn" id="4DPIwUs8hwZ" role="3cpWs9">
                 <property role="TrG5h" value="elem" />
                 <node concept="3uibUv" id="4DPIwUs8hx0" role="1tU5fm">
-                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
+                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
                 </node>
                 <node concept="2ShNRf" id="4DPIwUs8hIY" role="33vP2m">
                   <node concept="1pGfFk" id="4DPIwUs8hI0" role="2ShVmc">
-                    <ref role="37wK5l" node="4DPIwUs72V1" />
+                    <ref role="37wK5l" node="4DPIwUs72V1" resolve="SimpleCommandQueue.QueueElem" />
                     <node concept="37vLTw" id="4DPIwUs8hMo" role="37wK5m">
                       <ref role="3cqZAo" node="4DPIwUs8cjO" resolve="task" />
                     </node>
@@ -1201,7 +1201,7 @@
                 <node concept="3cpWsn" id="7znbqLiw1l0" role="3cpWs9">
                   <property role="TrG5h" value="flushingRunnable" />
                   <node concept="3uibUv" id="7znbqLiw1l1" role="1tU5fm">
-                    <ref role="3uigEE" to="ouht:~Function0" />
+                    <ref role="3uigEE" to="ouht:~Function0" resolve="Function0" />
                     <node concept="3uibUv" id="5AyPW_20XWs" role="11_B2D">
                       <ref role="3uigEE" to="v18h:~Unit" resolve="Unit" />
                     </node>
@@ -1210,7 +1210,7 @@
                     <node concept="YeOm9" id="7znbqLiwO1g" role="2ShVmc">
                       <node concept="1Y3b0j" id="7znbqLiwO1j" role="YeSDq">
                         <property role="2bfB8j" value="true" />
-                        <ref role="1Y3XeK" to="ouht:~Function0" />
+                        <ref role="1Y3XeK" to="ouht:~Function0" resolve="Function0" />
                         <ref role="37wK5l" to="wyt6:~Object.&lt;init&gt;()" resolve="Object" />
                         <node concept="3Tm1VV" id="7znbqLiwO1k" role="1B3o_S" />
                         <node concept="3clFb_" id="7znbqLiwO1p" role="jymVt">
@@ -1567,7 +1567,7 @@
               </node>
               <node concept="2ZW3vV" id="4DPIwUs7Xjc" role="3uHU7B">
                 <node concept="3uibUv" id="4DPIwUs7Y4c" role="2ZW6by">
-                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
+                  <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
                 </node>
                 <node concept="37vLTw" id="4DPIwUs7X5A" role="2ZW6bz">
                   <ref role="3cqZAo" node="4DPIwUs73_t" resolve="o" />
@@ -1586,7 +1586,7 @@
                       <node concept="1eOMI4" id="4DPIwUs85iY" role="2Oq$k0">
                         <node concept="10QFUN" id="4DPIwUs85iZ" role="1eOMHV">
                           <node concept="3uibUv" id="4DPIwUs85j0" role="10QFUM">
-                            <ref role="3uigEE" node="4DPIwUs72iR" resolve="QueueElem" />
+                            <ref role="3uigEE" node="4DPIwUs72iR" resolve="SimpleCommandQueue.QueueElem" />
                           </node>
                           <node concept="37vLTw" id="4DPIwUs85j1" role="10QFUP">
                             <ref role="3cqZAo" node="4DPIwUs73_t" resolve="o" />
@@ -1817,11 +1817,11 @@
           <node concept="3cpWsn" id="7nu2Tk19E$3" role="3cpWs9">
             <property role="TrG5h" value="source" />
             <node concept="3uibUv" id="7nu2Tk19Ezk" role="1tU5fm">
-              <ref role="3uigEE" node="6ww30ZnlvGw" resolve="RedirectingDataSource" />
+              <ref role="3uigEE" node="6ww30ZnlvGw" resolve="BaseVersionModelLoader.RedirectingDataSource" />
             </node>
             <node concept="2ShNRf" id="7nu2Tk19E$4" role="33vP2m">
               <node concept="1pGfFk" id="7nu2Tk19E$5" role="2ShVmc">
-                <ref role="37wK5l" node="7vnZ8Y08YxF" />
+                <ref role="37wK5l" node="7vnZ8Y08YxF" resolve="BaseVersionModelLoader.RedirectingDataSource" />
                 <node concept="10QFUN" id="7nu2Tk19E$6" role="37wK5m">
                   <node concept="3uibUv" id="7nu2Tk19E$7" role="10QFUM">
                     <ref role="3uigEE" to="dush:~MultiStreamDataSource" resolve="MultiStreamDataSource" />
@@ -2467,7 +2467,7 @@
                                                 <node concept="3cpWs6" id="2KujyEVJdZ2" role="3cqZAp">
                                                   <node concept="2ShNRf" id="2KujyEVJdZ3" role="3cqZAk">
                                                     <node concept="1pGfFk" id="2KujyEVJdZ4" role="2ShVmc">
-                                                      <ref role="37wK5l" node="7HnJnLuDwor" />
+                                                      <ref role="37wK5l" node="7HnJnLuDwor" resolve="BaseVersionModelLoader.RedirectingDataSource.StreamRelay" />
                                                       <node concept="2OqwBi" id="FrvtFCewIO" role="37wK5m">
                                                         <node concept="37vLTw" id="FrvtFCew9X" role="2Oq$k0">
                                                           <ref role="3cqZAo" node="2KujyEVJdY8" resolve="dataSource" />
@@ -2946,7 +2946,7 @@
             <node concept="3cpWsn" id="3o_pIpUd68a" role="3cpWs9">
               <property role="TrG5h" value="change" />
               <node concept="3uibUv" id="3o_pIpUd68c" role="1tU5fm">
-                <ref role="3uigEE" to="1037:~Change" resolve="Change" />
+                <ref role="3uigEE" to="1039:~Change" resolve="Change" />
               </node>
               <node concept="2OqwBi" id="3o_pIpUd6Fb" role="33vP2m">
                 <node concept="37vLTw" id="3o_pIpUd6p9" role="2Oq$k0">
@@ -2975,7 +2975,7 @@
                     <ref role="3cqZAo" node="3o_pIpUd68a" resolve="change" />
                   </node>
                   <node concept="liA8E" id="3o_pIpUd6Em" role="2OqNvi">
-                    <ref role="37wK5l" to="1037:~Change.getBeforeRevision()" resolve="getBeforeRevision" />
+                    <ref role="37wK5l" to="1039:~Change.getBeforeRevision()" resolve="getBeforeRevision" />
                   </node>
                 </node>
                 <node concept="10Nm6u" id="3o_pIpUd68m" role="3uHU7w" />
@@ -3034,7 +3034,7 @@
                 <property role="TrG5h" value="ex" />
                 <node concept="nSUau" id="xvs04dIfLU" role="1tU5fm">
                   <node concept="3uibUv" id="6E4VEGZQxD_" role="nSUat">
-                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                    <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                   </node>
                 </node>
               </node>
@@ -3073,7 +3073,7 @@
                 <node concept="3cpWsn" id="2bNoq9f5JjL" role="3cpWs9">
                   <property role="TrG5h" value="change" />
                   <node concept="3uibUv" id="2bNoq9f5JjE" role="1tU5fm">
-                    <ref role="3uigEE" to="1037:~Change" resolve="Change" />
+                    <ref role="3uigEE" to="1039:~Change" resolve="Change" />
                   </node>
                   <node concept="2OqwBi" id="2bNoq9f5JjM" role="33vP2m">
                     <node concept="37vLTw" id="Jpw4evHRYX" role="2Oq$k0">
@@ -3134,14 +3134,14 @@
                 <node concept="3cpWsn" id="2bNoq9f5K4l" role="3cpWs9">
                   <property role="TrG5h" value="beforeRevision" />
                   <node concept="3uibUv" id="2bNoq9f5K4g" role="1tU5fm">
-                    <ref role="3uigEE" to="1037:~ContentRevision" resolve="ContentRevision" />
+                    <ref role="3uigEE" to="1039:~ContentRevision" resolve="ContentRevision" />
                   </node>
                   <node concept="2OqwBi" id="2bNoq9f5K4m" role="33vP2m">
                     <node concept="37vLTw" id="2bNoq9f5K4n" role="2Oq$k0">
                       <ref role="3cqZAo" node="2bNoq9f5JjL" resolve="change" />
                     </node>
                     <node concept="liA8E" id="2bNoq9f5K4o" role="2OqNvi">
-                      <ref role="37wK5l" to="1037:~Change.getBeforeRevision()" resolve="getBeforeRevision" />
+                      <ref role="37wK5l" to="1039:~Change.getBeforeRevision()" resolve="getBeforeRevision" />
                     </node>
                   </node>
                 </node>
@@ -3178,7 +3178,7 @@
               <node concept="3clFbJ" id="tOur21PBVT" role="3cqZAp">
                 <node concept="2ZW3vV" id="tOur21PJK3" role="3clFbw">
                   <node concept="3uibUv" id="tOur21PLh7" role="2ZW6by">
-                    <ref role="3uigEE" to="1037:~ByteBackedContentRevision" resolve="ByteBackedContentRevision" />
+                    <ref role="3uigEE" to="1039:~ByteBackedContentRevision" resolve="ByteBackedContentRevision" />
                   </node>
                   <node concept="37vLTw" id="2bNoq9f5L9y" role="2ZW6bz">
                     <ref role="3cqZAo" node="2bNoq9f5K4l" resolve="beforeRevision" />
@@ -3188,12 +3188,12 @@
                   <node concept="3cpWs6" id="tOur21PMM3" role="3cqZAp">
                     <node concept="2OqwBi" id="tOur21PTAw" role="3cqZAk">
                       <node concept="liA8E" id="tOur21PWIe" role="2OqNvi">
-                        <ref role="37wK5l" to="1037:~ByteBackedContentRevision.getContentAsBytes()" resolve="getContentAsBytes" />
+                        <ref role="37wK5l" to="1039:~ByteBackedContentRevision.getContentAsBytes()" resolve="getContentAsBytes" />
                       </node>
                       <node concept="1eOMI4" id="tOur21PRH5" role="2Oq$k0">
                         <node concept="10QFUN" id="tOur21PRH2" role="1eOMHV">
                           <node concept="3uibUv" id="tOur21PRH7" role="10QFUM">
-                            <ref role="3uigEE" to="1037:~ByteBackedContentRevision" resolve="ByteBackedContentRevision" />
+                            <ref role="3uigEE" to="1039:~ByteBackedContentRevision" resolve="ByteBackedContentRevision" />
                           </node>
                           <node concept="37vLTw" id="2bNoq9f5LgD" role="10QFUP">
                             <ref role="3cqZAo" node="2bNoq9f5K4l" resolve="beforeRevision" />
@@ -3214,7 +3214,7 @@
                             <ref role="3cqZAo" node="2bNoq9f5K4l" resolve="beforeRevision" />
                           </node>
                           <node concept="liA8E" id="6ww30Znl2t$" role="2OqNvi">
-                            <ref role="37wK5l" to="1037:~ContentRevision.getContent()" resolve="getContent" />
+                            <ref role="37wK5l" to="1039:~ContentRevision.getContent()" resolve="getContent" />
                           </node>
                         </node>
                       </node>

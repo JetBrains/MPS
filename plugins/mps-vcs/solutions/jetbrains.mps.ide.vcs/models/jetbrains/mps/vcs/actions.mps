@@ -18,9 +18,7 @@
     <import index="rvbb" ref="86441d7a-e194-42da-81a5-2161ec62a379/java:jetbrains.mps.ide.projectPane(MPS.Workbench/)" />
     <import index="ddhc" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.ide(MPS.IDEA/)" />
     <import index="de5p" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.actions(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="s4aq" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.changes.actions(jetbrains.mps.vcs.idea.stubs/)" />
-    <import index="de5q" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vcs.actions(MPS.IDEA/)" />
-    <import index="s4ar" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes.actions(MPS.IDEA.Modules/)" />
+    <import index="s4aq" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes.actions(MPS.IDEA.Modules/)" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -1229,7 +1227,7 @@
     <property role="TrG5h" value="SetExtensionChangesGroupingAction" />
     <node concept="3Tm1VV" id="7pVeK7_8ojR" role="1B3o_S" />
     <node concept="3uibUv" id="2vCsXJ2NKHg" role="1zkMxy">
-      <ref role="3uigEE" to="s4ar:~SetChangesGroupingAction" resolve="SetChangesGroupingAction" />
+      <ref role="3uigEE" to="s4aq:~SetChangesGroupingAction" resolve="SetChangesGroupingAction" />
     </node>
     <node concept="3clFb_" id="7pVeK7_8pgj" role="jymVt">
       <property role="TrG5h" value="getGroupingKey" />
@@ -1267,7 +1265,7 @@
       <node concept="3clFbS" id="7pVeK7_8qyA" role="3clF47">
         <node concept="3clFbF" id="7pVeK7_8qyE" role="3cqZAp">
           <node concept="3nyPlj" id="7pVeK7_8qyD" role="3clFbG">
-            <ref role="37wK5l" to="s4ar:~SetChangesGroupingAction.update(com.intellij.openapi.actionSystem.AnActionEvent)" resolve="update" />
+            <ref role="37wK5l" to="s4aq:~SetChangesGroupingAction.update(com.intellij.openapi.actionSystem.AnActionEvent)" resolve="update" />
             <node concept="37vLTw" id="7pVeK7_8qyC" role="37wK5m">
               <ref role="3cqZAo" node="7pVeK7_8qyz" resolve="e" />
             </node>

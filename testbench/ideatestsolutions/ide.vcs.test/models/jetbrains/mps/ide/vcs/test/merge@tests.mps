@@ -77,8 +77,9 @@
     <import index="jlcv" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="epdg" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.rollback(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="o8e1" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.diff.merge(MPS.IDEA/)" />
-    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" implicit="true" />
-    <import index="18nx" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.checkin(MPS.IDEA.Modules/)" implicit="true" />
+    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
+    <import index="1039" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
+    <import index="18nx" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.checkin(jetbrains.mps.vcs.idea.stubs/)" implicit="true" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -1491,8 +1492,8 @@
           <node concept="1rXfSq" id="4hiugqyz9v_" role="3clFbG">
             <ref role="37wK5l" node="xjl$fQR0hX" resolve="setAutoaddPolicy" />
             <node concept="Rm8GO" id="xjl$fQR0im" role="37wK5m">
-              <ref role="1Px2BO" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
-              <ref role="Rm8GQ" to="jlcu:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
+              <ref role="1Px2BO" to="jlcw:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
+              <ref role="Rm8GQ" to="jlcw:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
             </node>
           </node>
         </node>
@@ -1838,7 +1839,7 @@
       <node concept="37vLTG" id="xjl$fQR0hW" role="3clF46">
         <property role="TrG5h" value="value" />
         <node concept="3uibUv" id="xjl$fQR0i0" role="1tU5fm">
-          <ref role="3uigEE" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
+          <ref role="3uigEE" to="jlcw:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
         </node>
       </node>
       <node concept="3clFbS" id="xjl$fQR0i1" role="3clF47">
@@ -1866,8 +1867,8 @@
               <node concept="liA8E" id="xjl$fQR0ia" role="2OqNvi">
                 <ref role="37wK5l" to="jlcv:~ProjectLevelVcsManager.getStandardConfirmation(com.intellij.openapi.vcs.VcsConfiguration$StandardConfirmation,com.intellij.openapi.vcs.AbstractVcs)" resolve="getStandardConfirmation" />
                 <node concept="Rm8GO" id="7ua3Cx2EWn$" role="37wK5m">
-                  <ref role="Rm8GQ" to="jlcu:~VcsConfiguration$StandardConfirmation.ADD" resolve="ADD" />
-                  <ref role="1Px2BO" to="jlcu:~VcsConfiguration$StandardConfirmation" resolve="VcsConfiguration.StandardConfirmation" />
+                  <ref role="Rm8GQ" to="jlcw:~VcsConfiguration$StandardConfirmation.ADD" resolve="ADD" />
+                  <ref role="1Px2BO" to="jlcw:~VcsConfiguration$StandardConfirmation" resolve="VcsConfiguration.StandardConfirmation" />
                 </node>
                 <node concept="37vLTw" id="2BHiRxeut4Z" role="37wK5m">
                   <ref role="3cqZAo" node="3oUomEoMJtn" resolve="myGitVcs" />
@@ -1875,7 +1876,7 @@
               </node>
             </node>
             <node concept="liA8E" id="xjl$fQR0id" role="2OqNvi">
-              <ref role="37wK5l" to="jlcu:~VcsShowConfirmationOption.setValue(com.intellij.openapi.vcs.VcsShowConfirmationOption$Value)" resolve="setValue" />
+              <ref role="37wK5l" to="jlcw:~VcsShowConfirmationOption.setValue(com.intellij.openapi.vcs.VcsShowConfirmationOption$Value)" resolve="setValue" />
               <node concept="37vLTw" id="2BHiRxgm84k" role="37wK5m">
                 <ref role="3cqZAo" node="xjl$fQR0hW" resolve="value" />
               </node>
@@ -2437,7 +2438,7 @@
           <node concept="3cpWsn" id="7HgS$VjMeL1" role="3cpWs9">
             <property role="TrG5h" value="modelFileChange" />
             <node concept="3uibUv" id="7HgS$VjMeL2" role="1tU5fm">
-              <ref role="3uigEE" to="1038:~Change" resolve="Change" />
+              <ref role="3uigEE" to="1039:~Change" resolve="Change" />
             </node>
             <node concept="2OqwBi" id="7HgS$VjMeL3" role="33vP2m">
               <node concept="37vLTw" id="7HgS$VjMeL4" role="2Oq$k0">
@@ -2475,13 +2476,13 @@
                 <property role="TrG5h" value="exceptions" />
                 <node concept="_YKpA" id="7HgS$VjMeLa" role="1tU5fm">
                   <node concept="3uibUv" id="7HgS$VjMeLb" role="_ZDj9">
-                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                    <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                   </node>
                 </node>
                 <node concept="2ShNRf" id="7HgS$VjMeLc" role="33vP2m">
                   <node concept="Tc6Ow" id="7HgS$VjMeLd" role="2ShVmc">
                     <node concept="3uibUv" id="7HgS$VjMeLe" role="HW$YZ">
-                      <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                      <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                     </node>
                   </node>
                 </node>
@@ -12255,7 +12256,7 @@
             <node concept="3cpWsn" id="3oUomEoMJvM" role="3cpWs9">
               <property role="TrG5h" value="change" />
               <node concept="3uibUv" id="3oUomEoMJvN" role="1tU5fm">
-                <ref role="3uigEE" to="1038:~Change" resolve="Change" />
+                <ref role="3uigEE" to="1039:~Change" resolve="Change" />
               </node>
               <node concept="2OqwBi" id="3oUomEoMJvO" role="33vP2m">
                 <node concept="37vLTw" id="2BHiRxeun40" role="2Oq$k0">
@@ -12297,7 +12298,7 @@
                   <ref role="3cqZAo" node="3oUomEoMJtn" resolve="myGitVcs" />
                 </node>
                 <node concept="liA8E" id="3oUomEoMJw0" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcw:~AbstractVcs.getCheckinEnvironment()" resolve="getCheckinEnvironment" />
+                  <ref role="37wK5l" to="jlcv:~AbstractVcs.getCheckinEnvironment()" resolve="getCheckinEnvironment" />
                 </node>
               </node>
               <node concept="liA8E" id="3oUomEoMJw1" role="2OqNvi">
@@ -12427,7 +12428,7 @@
                 <property role="TrG5h" value="e" />
                 <node concept="nSUau" id="xvs04dIv04" role="1tU5fm">
                   <node concept="3uibUv" id="4DNDPQS2LQ0" role="nSUat">
-                    <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+                    <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
                   </node>
                 </node>
               </node>
@@ -12507,7 +12508,7 @@
           </node>
         </node>
         <node concept="3uibUv" id="6hwF4wZOzAN" role="Sfmx6">
-          <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+          <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
         </node>
         <node concept="2AHcQZ" id="6hwF4wZOzAU" role="2AJF6D">
           <ref role="2AI5Lk" to="rjhg:~Test" resolve="Test" />
@@ -12524,8 +12525,8 @@
           <node concept="1rXfSq" id="4hiugqyzeUO" role="3clFbG">
             <ref role="37wK5l" node="xjl$fQR0hX" resolve="setAutoaddPolicy" />
             <node concept="Rm8GO" id="xjl$fQR0AW" role="37wK5m">
-              <ref role="1Px2BO" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
-              <ref role="Rm8GQ" to="jlcu:~VcsShowConfirmationOption$Value.DO_ACTION_SILENTLY" resolve="DO_ACTION_SILENTLY" />
+              <ref role="1Px2BO" to="jlcw:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
+              <ref role="Rm8GQ" to="jlcw:~VcsShowConfirmationOption$Value.DO_ACTION_SILENTLY" resolve="DO_ACTION_SILENTLY" />
             </node>
           </node>
         </node>
@@ -12708,9 +12709,9 @@
         <node concept="3clFbF" id="xjl$fQR0iL" role="3cqZAp">
           <node concept="1rXfSq" id="4hiugqyz7Es" role="3clFbG">
             <ref role="37wK5l" node="xjl$fQR0hX" resolve="setAutoaddPolicy" />
-            <node concept="Rm8GO" id="xjl$fQR0AX" role="37wK5m">
-              <ref role="1Px2BO" to="jlcu:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
-              <ref role="Rm8GQ" to="jlcu:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
+            <node concept="Rm8GO" id="12IlA1D_fqO" role="37wK5m">
+              <ref role="Rm8GQ" to="jlcw:~VcsShowConfirmationOption$Value.DO_NOTHING_SILENTLY" resolve="DO_NOTHING_SILENTLY" />
+              <ref role="1Px2BO" to="jlcw:~VcsShowConfirmationOption$Value" resolve="VcsShowConfirmationOption.Value" />
             </node>
           </node>
         </node>
@@ -13608,7 +13609,7 @@
         <ref role="3uigEE" to="guwi:~IOException" resolve="IOException" />
       </node>
       <node concept="3uibUv" id="6hwF4wZOzB8" role="Sfmx6">
-        <ref role="3uigEE" to="jlcu:~VcsException" resolve="VcsException" />
+        <ref role="3uigEE" to="jlcw:~VcsException" resolve="VcsException" />
       </node>
       <node concept="2AHcQZ" id="6hwF4wZOzBh" role="2AJF6D">
         <ref role="2AI5Lk" to="rjhg:~Test" resolve="Test" />

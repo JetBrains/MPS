@@ -44,6 +44,10 @@
     <import index="2eq1" ref="r:383be79d-d39d-4dc4-9df3-57e57bcac2b5(jetbrains.mps.ide.platform.watching)" />
     <import index="cyi8" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes.ui(MPS.IDEA.Modules/)" />
     <import index="lzb3" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.ui(MPS.IDEA.Modules/)" />
+    <import index="1039" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
+    <import index="j86q" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.impl(MPS.IDEA.Modules/)" />
+    <import index="jlfg" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vfs(MPS.IDEA.Modules/)" implicit="true" />
+    <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" implicit="true" />
   </imports>
   <registry>
     <language id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage">
@@ -438,8 +442,8 @@
   <node concept="312cEu" id="33vUo2uvKbY">
     <property role="TrG5h" value="ModuleVcsPathPresenter" />
     <node concept="3Tm1VV" id="33vUo2uvKbZ" role="1B3o_S" />
-    <node concept="3uibUv" id="5xb3lU7dn_I" role="1zkMxy">
-      <ref role="3uigEE" to="j86p:~VcsPathPresenter" resolve="VcsPathPresenter" />
+    <node concept="3uibUv" id="12IlA1CxmcZ" role="1zkMxy">
+      <ref role="3uigEE" to="j86q:~VcsPathPresenter" resolve="VcsPathPresenter" />
     </node>
     <node concept="312cEg" id="33vUo2uvKc1" role="jymVt">
       <property role="TrG5h" value="myProject" />
@@ -655,7 +659,7 @@
                                               </node>
                                             </node>
                                             <node concept="liA8E" id="33vUo2uvKdC" role="2OqNvi">
-                                              <ref role="37wK5l" to="jlff:~VirtualFile.getName()" resolve="getName" />
+                                              <ref role="37wK5l" to="jlfg:~VirtualFile.getName()" resolve="getName" />
                                             </node>
                                           </node>
                                         </node>
@@ -730,14 +734,14 @@
         <property role="TrG5h" value="fromRevision" />
         <property role="3TUv4t" value="true" />
         <node concept="3uibUv" id="33vUo2uvKdU" role="1tU5fm">
-          <ref role="3uigEE" to="1037:~ContentRevision" resolve="ContentRevision" />
+          <ref role="3uigEE" to="1039:~ContentRevision" resolve="ContentRevision" />
         </node>
       </node>
       <node concept="37vLTG" id="33vUo2uvKdV" role="3clF46">
         <property role="TrG5h" value="toRevision" />
         <property role="3TUv4t" value="true" />
         <node concept="3uibUv" id="33vUo2uvKdW" role="1tU5fm">
-          <ref role="3uigEE" to="1037:~ContentRevision" resolve="ContentRevision" />
+          <ref role="3uigEE" to="1039:~ContentRevision" resolve="ContentRevision" />
         </node>
       </node>
       <node concept="3clFbS" id="33vUo2uvKdX" role="3clF47">
@@ -754,11 +758,11 @@
                     <ref role="3cqZAo" node="33vUo2uvKdV" resolve="toRevision" />
                   </node>
                   <node concept="liA8E" id="7WyXo5rEH4A" role="2OqNvi">
-                    <ref role="37wK5l" to="1037:~ContentRevision.getFile()" resolve="getFile" />
+                    <ref role="37wK5l" to="1039:~ContentRevision.getFile()" resolve="getFile" />
                   </node>
                 </node>
                 <node concept="liA8E" id="7WyXo5rEH4B" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcu:~FilePath.getIOFile()" resolve="getIOFile" />
+                  <ref role="37wK5l" to="jlcw:~FilePath.getIOFile()" resolve="getIOFile" />
                 </node>
               </node>
               <node concept="2OqwBi" id="7WyXo5rEH4C" role="37wK5m">
@@ -767,11 +771,11 @@
                     <ref role="3cqZAo" node="33vUo2uvKdT" resolve="fromRevision" />
                   </node>
                   <node concept="liA8E" id="7WyXo5rEH4F" role="2OqNvi">
-                    <ref role="37wK5l" to="1037:~ContentRevision.getFile()" resolve="getFile" />
+                    <ref role="37wK5l" to="1039:~ContentRevision.getFile()" resolve="getFile" />
                   </node>
                 </node>
                 <node concept="liA8E" id="7WyXo5rEH4G" role="2OqNvi">
-                  <ref role="37wK5l" to="jlcu:~FilePath.getIOFile()" resolve="getIOFile" />
+                  <ref role="37wK5l" to="jlcw:~FilePath.getIOFile()" resolve="getIOFile" />
                 </node>
               </node>
             </node>
@@ -1511,7 +1515,7 @@
                   <node concept="2ShNRf" id="1ysYxhdn9_G" role="37vLTx">
                     <node concept="1pGfFk" id="1ysYxhdnKpl" role="2ShVmc">
                       <property role="373rjd" value="true" />
-                      <ref role="37wK5l" node="5ooWrzQBcSS" />
+                      <ref role="37wK5l" node="5ooWrzQBcSS" resolve="GeneratedFileConflictResolving" />
                       <node concept="2YIFZM" id="1ysYxhdnL2s" role="37wK5m">
                         <ref role="37wK5l" to="alof:~ProjectHelper.fromIdeaProjectOrFail(com.intellij.openapi.project.Project)" resolve="fromIdeaProjectOrFail" />
                         <ref role="1Pybhc" to="alof:~ProjectHelper" resolve="ProjectHelper" />
@@ -2097,7 +2101,7 @@
             <node concept="2ShNRf" id="4pDKQeglI0Y" role="33vP2m">
               <node concept="1pGfFk" id="4pDKQeglI0Z" role="2ShVmc">
                 <property role="373rjd" value="true" />
-                <ref role="37wK5l" node="7pVeK7_3_1f" />
+                <ref role="37wK5l" node="7pVeK7_3_1f" resolve="ExtensionChangesBrowserNode" />
                 <node concept="37vLTw" id="4pDKQeglI10" role="37wK5m">
                   <ref role="3cqZAo" node="4pDKQegjc$e" resolve="ext" />
                 </node>
@@ -2193,7 +2197,7 @@
             <node concept="2ShNRf" id="7pVeK7_6EhO" role="3clFbG">
               <node concept="1pGfFk" id="7pVeK7_6KNL" role="2ShVmc">
                 <property role="373rjd" value="true" />
-                <ref role="37wK5l" node="7pVeK7_429H" />
+                <ref role="37wK5l" node="7pVeK7_429H" resolve="ExtensionChangesGroupingPolicy" />
                 <node concept="37vLTw" id="7pVeK7_6Lga" role="37wK5m">
                   <ref role="3cqZAo" node="7pVeK7_6DiK" resolve="model" />
                 </node>
