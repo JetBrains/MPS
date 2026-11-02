@@ -39,9 +39,9 @@ To let other generators inject behaviour into yours:
 
 If the bug is in `source_gen/`, the fix is almost always upstream — in the template, macro body, or concept behavior. Edit there, regenerate, and re-verify. Only patch generated code when explicitly instructed or when the generator is absent (e.g. you are reading legacy bundled output).
 
-## Debugging misgeneration
+## Seeing what a rule produced
 
-To find the rule that produced a wrong node: MAKE with `saveTransientModels: true` → `mps_mcp_generation` `TRANSIENT_MODELS` → `mps_mcp_print_node` on the step model → `TRACE` `BACKWARD` on the wrong node → open the rule. The full recipe and the lifecycle rules of transient models are in `references/debugging-misgeneration.md`.
+To see what your rules produced, or find the rule behind a node: MAKE a sandbox model with `saveTransientModels: true` → `mps_mcp_generation` `TRANSIENT_MODELS` → `mps_mcp_print_node` on the step model → `TRACE` `FORWARD` from an input node or `BACKWARD` from an output node → open the rule. The full recipe and the lifecycle rules of transient models are in `references/debugging-misgeneration.md`.
 
 ## When a reduction loops
 

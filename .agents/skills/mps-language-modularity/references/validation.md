@@ -9,7 +9,7 @@ Use `NodesTestCase` (typesystem, constraints, scopes), `GeneratorTest` (generato
 - [ ] A suite of representative example models exists and is checked after every structural/generator change.
 - [ ] Cross-language references resolve and **scope** is neither too broad nor too narrow (test both visible and invisible targets).
 - [ ] Types at every language seam are in the **intended** type space (no accidental duplicate-primitive mismatch).
-- [ ] Generators lower everything to the base language before text generation (no leftover high-level or placeholder nodes).
+- [ ] Generators lower everything to the base language before text generation (no leftover high-level or placeholder nodes): check the last step model of a make with `saveTransientModels: true` (`references/debugging-misgeneration.md` in the `mps-aspect-generator` skill root after loading that companion skill from the same origin).
 - [ ] Migrations/intentions keep existing example models valid after a language change.
 
 ## Referencing

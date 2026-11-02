@@ -1,6 +1,6 @@
 ---
 name: mps-aspect-generator
-description: Use when defining or modifying MPS generators — author a generator module, add or edit root/reduction/weaving/pattern mapping rules, attach template macros ($COPY_SRC, $LOOP, $IF, $PROPERTY, $REF, $SWITCH, $MAP_SRC, $WEAVE, $INSERT, $LABEL, $TRACE, $VAR), wire mapping labels, build template switches, write pre/post mapping scripts, navigate `genContext`, or debug "rule didn't fire", missing references, empty output, infinite reduction loops, and generated-Java compile failures.
+description: Use when defining or modifying MPS generators — author a generator module, add or edit root/reduction/weaving/pattern mapping rules, attach template macros ($COPY_SRC, $LOOP, $IF, $PROPERTY, $REF, $SWITCH, $MAP_SRC, $WEAVE, $INSERT, $LABEL, $TRACE, $VAR), wire mapping labels, build template switches, write pre/post mapping scripts, navigate `genContext`, formalize the expected output as a `GeneratorTest`, inspect transient step models and trace nodes forward or back to see what a generator does, or debug "rule didn't fire", missing references, empty output, infinite reduction loops, and generated-Java compile failures.
 type: reference
 ---
 
@@ -24,6 +24,8 @@ Idiomatic generators keep the stable part **out** of the templates and emit thin
 
 ## Critical Directives
 
+- **Write a `GeneratorTest` first only when the user asks for generator tests, or describes the output informally (prose, a sketch of the wanted Java) and asks or allows you to formalize it** (`references/generator-test.md` in the `mps-tests` skill root after loading that companion skill from the same origin). Write the expected model from the description, show its roots as PLAIN TEXT and name the choices an ambiguous description left you. With the generator and a `MappingConfiguration` made, run it before the change: it must fail with a mismatch naming the change (`Node: null vs <root>`: no generator ran, or generation failed). Otherwise write none and offer one in your report. Run existing `GeneratorTest`s after the change, once you have read the transient models: the run's make drops them.
+- **Observe generation instead of inferring it from templates.** After making the language and its generator, MAKE a small sandbox model (not a test input: make skips those "Do not generate" models) with `saveTransientModels: true`, read the model of the step your generator runs in (`mps_mcp_generation` `PLAN` gives its prefix; the highest minor under it is the step's final output), and `TRACE` a node `FORWARD` (what it became) or `BACKWARD` (which rule made it). `source_gen/` can differ from what your templates wrote, because later generators reduce it. Do this whenever you change a rule you did not write, the output surprises you, or a first fix failed; it is the standard way to see a generator work, not a last resort: `references/debugging-misgeneration.md`.
 - **Edit the generator, not `source_gen/`.** If a bug appears in generated Java, the fix almost always belongs in a template, macro body, or concept behavior. Patch generated output only when explicitly told to.
 - **`applicableConcept` must be a structure-model node ref** (`r:<modelUUID>(<lang>.structure)/<nodeId>`), never the `c:<langUUID>/<conceptId>` form. Wrong form → silent `Unresolved reference: c:...`. See `references/rule-consequences.md`.
 - **A `TemplateDeclaration` used as a reduction target requires at least one `TemplateFragment`** on the produced subtree, or the rule fires and emits nothing.
@@ -48,7 +50,7 @@ Idiomatic generators keep the stable part **out** of the templates and emit thin
 8. **Declare each output language as a Generation Target of the *language* (not the generator) before the MAKE.** For Java output: `mps_mcp_module_dependency(operation="ADD", moduleName="<language>", targetModule="jetbrains.mps.baseLanguage", scope="Generation Target")`; add one more per BaseLanguage extension or other language whose nodes the templates emit directly (e.g. `jetbrains.mps.baseLanguage.collections`), not for languages used only in macro queries. The `.mpl` serializes it as `scope="generate-into"`.
 
    Without it MAKE still succeeds, but consumers of the language miss the target's runtime modules, and the module check warns on the generator: "'<language>' must specify the language '…' as a generation target to include its runtime modules into compilation". A check before the language's first MAKE shows this warning even when the target is declared — ignore it until then. See `references/module-structure.md`.
-9. `mps_mcp_alter_nodes MAKE` over the generator and a sample model; **read the generated text** (see *Reading generator output* below). To find the rule behind a misgenerated node, MAKE the sample model with `saveTransientModels: true`, read the step models from `mps_mcp_generation` `TRANSIENT_MODELS` and walk `TRACE` `BACKWARD` from the wrong node (`references/debugging-misgeneration.md`).
+9. `mps_mcp_alter_nodes MAKE` over the language and its generator, then observe a sandbox sample model (Critical Directive *Observe generation*): read your step's model and **the generated text** (see *Reading generator output* below), and `TRACE` whatever differs from what you expect (`references/debugging-misgeneration.md`). Then run the `GeneratorTest`s, if any exist.
 
 If MPS MCP tools are unavailable, do not hand-edit serialized `.mps` files unless explicitly asked — inspect only and report.
 
@@ -67,7 +69,7 @@ After a `MAKE`, generators write Java (and TextGen artifacts like `.xml`, `.scxm
 
 ## Testing a generator
 
-A regression test for a generator is a `GeneratorTest` root (`jetbrains.mps.lang.test.generator`) in a `@tests` model: it generates an input model and matches the output against an expected model. Open `references/generator-test.md` in the `mps-tests` skill root after loading that companion skill from the same origin. Not a `NodesTestCase`.
+A `GeneratorTest` root (`jetbrains.mps.lang.test.generator`) in a `@tests` model generates an input model and matches the output against an expected model: it states the intended output formally and then guards it. When to write one is the first Critical Directive. Open `references/generator-test.md` in the `mps-tests` skill root after loading that companion skill from the same origin. Not a `NodesTestCase`.
 
 ## Related Skills
 
@@ -99,7 +101,7 @@ A regression test for a generator is a `GeneratorTest` root (`jetbrains.mps.lang
 - `genContext` operations catalog (every `GenerationContextOp_*` with editor alias and purpose): `references/generation-context.md`.
 - Generation algorithm — pipeline stages (selection → implicit grouping/ordering → step-by-step transformation → TextGen), micro-steps, which rule wins, weaving vs. reduction ordering: `references/algorithm.md`.
 - Cookbook recipes — multi-root, cross-ref, unique IDs, extensible generators, loop-extraction refactor: `references/cookbook.md`.
-- Debugging misgeneration — keep transient models, read a step's output, trace a node back to the rule that produced it (`mps_mcp_generation`): `references/debugging-misgeneration.md`.
+- Observing and debugging generation — keep transient models, read a step's output, trace a node forward to what it became or back to the rule that produced it, learn an unfamiliar generator (`mps_mcp_generation`): `references/debugging-misgeneration.md`.
 - Common failures — symptom-to-cause-to-fix table: `references/common-failures.md`.
 - Validated concept FQNs and minimal `MappingConfiguration` blueprint: `references/concept-fqns.md`.
 - Calling from/into the generator — behaviors, `RulesFunctions_*`, utility models: `references/calling-into-generator.md`.

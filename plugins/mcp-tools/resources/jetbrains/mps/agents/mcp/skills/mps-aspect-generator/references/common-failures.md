@@ -1,16 +1,16 @@
 # Common pitfalls and symptom-to-fix table
 
-Read this when: a generator doesn't behave as expected — start here to map an observed symptom to the most likely cause and fix.
+Read this when: a generator doesn't behave as expected — start here to map an observed symptom to the most likely cause and fix. Look before you guess: one step model and one `TRACE` usually show which row applies (`references/debugging-misgeneration.md`).
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| Output contains source nodes unchanged | No rule matched; template missing | Add a reduction rule or template for that concept |
-| Reference to a generated node is null | Mapping label missing or wrong | Define label on the target rule; fetch via `genContext.get output … for (...)` |
+| Output contains source nodes unchanged | No rule matched; template missing | Add a reduction rule or template for that concept. `TRACE` `FORWARD` from the source node confirms it: no step lists a change for the node itself (an entry may name an enclosing node) |
+| Reference to a generated node is null | Mapping label missing or wrong | Define label on the target rule; fetch via `genContext.get output … for (...)`. `TRACE` `BACKWARD` from the node names the template that holds the `$REF$` (reference macros are not recorded themselves; read that template) |
 | `cannot resolve` in the generator's own generated Java (a helper class the generator calls) | Module not in the generator's module dependencies | Add dependency to the generator module (not the language!) |
 | `cannot resolve` in a consumer solution's `source_gen` (a runtime class of the output language) | The language does not declare that output language as a Generation Target | `mps_mcp_module_dependency(operation="ADD", moduleName="<language>", targetModule="<output language>", scope="Generation Target")`, then MAKE the consumer with `"rebuild": true` so it is regenerated and its runtime dependencies are recomputed |
 | Module check warns, on the generator, "'<language>' must specify the language 'X' as a generation target …" | The language does not declare X as a Generation Target | `mps_mcp_module_dependency(operation="ADD", moduleName="<language>", targetModule="X", scope="Generation Target")`, then re-run the module check; once the language has been made this should clear it without a rebuild (if it persists, MAKE the language). Before its first MAKE the warning shows regardless |
-| LOOP produces nothing | Loop selector returns empty; or wrong role | Check the `nlist` / selector; ensure macro is on the element node, not its parent |
-| Wrong order of children in output | Templates produce insertion order of rules; mixed with copies | Use an explicit LOOP or script to reorder |
+| LOOP produces nothing | Loop selector returns empty; or wrong role | Check the `nlist` / selector; ensure macro is on the element node, not its parent. Print the container in your step's model: no children means the selector returned nothing; children under another role mean the macro sits on the wrong node |
+| Wrong order of children in output | Templates produce insertion order of rules; mixed with copies | Use an explicit LOOP or script to reorder. The step models show in which step the order changes |
 | Module check warns on the generator "'L' must specify the language 'X' as a generation target" although L declares X | L also *extends* X (core quirk, `references/module-structure.md`) | Also declare X's target languages (e.g. `jetbrains.mps.baseLanguage`) as Generation Targets of L |
 | Stale code after language edit | Generator module not rebuilt | Rebuild generator module; regenerate consumer model |
 | `RulesFunctions_…` method typed wrong | Java parser return-type issue | See `references/variable-declarations.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin — replace return type child |
