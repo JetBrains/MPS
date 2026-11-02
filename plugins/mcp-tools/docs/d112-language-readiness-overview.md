@@ -1,6 +1,6 @@
 # How mcp-tools handles built and unbuilt languages (overview)
 
-Companion to `d112-language-readiness-plan.md` (the design) and `d112-review-tour.md` (the diff tour).
+Companion to `d112-review-tour.md` (the diff tour).
 
 ## The problem in one paragraph
 
