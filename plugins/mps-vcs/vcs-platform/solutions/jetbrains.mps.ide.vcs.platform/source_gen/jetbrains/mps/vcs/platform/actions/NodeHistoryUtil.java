@@ -22,7 +22,6 @@ import jetbrains.mps.vfs.IFile;
 import com.intellij.openapi.vcs.history.VcsCachingHistory;
 import com.intellij.vcsUtil.VcsUtil;
 import com.intellij.openapi.vcs.impl.VcsBackgroundableActions;
-import jetbrains.mps.baseLanguage.closures.runtime._FunctionTypes;
 import com.intellij.openapi.vcs.history.VcsHistorySession;
 import jetbrains.mps.vcs.diff.ui.RootHistoryDialog;
 import java.util.Collections;
@@ -81,13 +80,13 @@ public final class NodeHistoryUtil {
     }
     // see RootHistoryDialog.show for explanation why I resort to roots. The reason I do it here, not in show(), as I don't want to care about model read access there (it's likely in background).
     // copied from IDEA's SelectedBlockHistoryAction
-    VcsCachingHistory.collectInBackground(myActiveVcs, VcsUtil.getFilePath(myIdeaFile), VcsBackgroundableActions.HISTORY_FOR_SELECTION, ((_FunctionTypes._void_P1_E0<VcsHistorySession>) (VcsHistorySession vcsSession) -> {
+    VcsCachingHistory.collectInBackground(myActiveVcs, VcsUtil.getFilePath(myIdeaFile), VcsBackgroundableActions.HISTORY_FOR_SELECTION, (VcsHistorySession vcsSession) -> {
       if (vcsSession != null) {
         RootHistoryDialog dlg = new RootHistoryDialog(myProject, myIdeaFile, myActiveVcs, vcsSession, compareModels);
         dlg.setTitle(dialogTitle);
         dlg.show(Collections.singleton(nodeId));
       }
-    }));
+    });
   }
 
   public void runAnnotate(EditorComponent editor, BackgroundableActionLock actionLock) {

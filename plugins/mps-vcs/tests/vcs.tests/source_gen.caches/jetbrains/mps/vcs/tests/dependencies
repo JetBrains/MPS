@@ -6,6 +6,7 @@
   <uses module="6354ebe7-c22a-4a0f-ac54-50b52ab9b065(JDK)" kind="rt+dp" />
   <uses module="6ed54515-acc8-4d1e-a16c-9fd6cfe951ea(MPS.Core)" kind="dp" />
   <uses module="498d89d2-c2e9-11e2-ad49-6cf049e62fe5(MPS.IDEA)" kind="dp" />
+  <uses module="b00f36f0-49b7-456c-8405-740447ebb192(MPS.IDEA.Modules)" kind="dp" />
   <uses module="8865b7a8-5271-43d3-884c-6fd1d9cfdd34(MPS.OpenAPI)" kind="dp" />
   <uses module="52b81ac7-93fd-4e9e-b972-4995882da6d4(jetbrains.mps.baseLanguage.references.runtime)" kind="rt" />
   <uses module="f57286e3-4e19-4d8d-8045-3900761f6530(jetbrains.mps.git4idea.stubs)" kind="dp" />
