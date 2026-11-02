@@ -24,8 +24,16 @@ MPS model files are binary-like serialized XML that cannot be safely understood 
 
 **What to do instead:**
 - Use MPS MCP tools (`mps_mcp_*`) to inspect, navigate, and edit MPS models.
-- If MPS MCP tools are not available in your session, ask the user to start MPS and enable the MPS MCP server before continuing with any MPS work.
+- If the MPS MCP server is not connected, ask the user to start MPS and enable it before continuing with any MPS work. A connected server whose tools were filtered or deferred is not this case — restore the full toolset as described below.
 - Do not attempt to parse, edit, or reason from raw `.mps` XML.
+
+## ⚠️ Keep the Full MPS MCP Toolset
+
+The `mps_mcp_*` tools are how this project's code is read and edited, not an optional add-on the way MCP tools are for plain-text code. Which of them a session will need cannot be guessed from the opening request — inspection, validation, generation, and editing tools get pulled in as the work unfolds — so a relevance filter that keeps only an opening subset will strand the session.
+
+- Do not reduce, defer, hide, or capability-filter the MPS MCP catalog. Keep every `mps_mcp_*` tool available for the whole session, from the first turn, including tools that do not look relevant yet. Pruning unrelated servers is fine; this rule is only about the MPS MCP server.
+- If the host has already filtered that server (Junie: `[partially available]`, `[installed, but unavailable]`, or listed under servers that can be enabled), restore the entire server immediately, before any other work. In Junie, call `enable_mcp` on the MPS MCP server — the one that exposes `mps_mcp_*`, or, if it was fully filtered, the server named like `mps-mcp` rather than an IDE server. If that call is not available, ask the user to enable the full server. Do not guess among unrelated servers.
+- A filtered tool is not unavailable. Do not continue on a reduced subset, and do not fall back to file tools or raw `.mps` XML in its place. Only when the server is not connected at all, ask the user to start MPS and enable it.
 
 ## Project Nature
 
@@ -50,7 +58,7 @@ In zsh (the macOS default) an unquoted glob that matches no file is an error. Th
 
 Do not use file-based tools to modify `.mps` model files directly. MPS serializes models as XML, but the format is opaque and fragile — always use MPS MCP tools instead.
 
-If MPS MCP tools are unavailable and the task requires model-aware editing:
+If the MPS MCP server is not connected and the task requires model-aware editing (a connected server whose tools were filtered or deferred is not this case — restore the full toolset first):
 - do not hand-edit `.mps` model files as plain XML unless the user explicitly asks for that
 - explain the limitation and ask whether to proceed with a workaround or wait for MPS-aware tooling
 
@@ -72,7 +80,7 @@ Inspection of generated code is allowed when:
 
 ## Rules for MPS Work
 
-- Load the `mps-mcp-workflow` skill at the start of an MPS session. If MPS MCP tools are unavailable, apply the fallback described in the Tool Selection section above.
+- Load the `mps-mcp-workflow` skill at the start of an MPS session. If the MPS MCP server is not connected, apply the fallback described in the Tool Selection section above. If it is connected but its tools were filtered or deferred, restore the full toolset first — do not take that fallback.
 - Before editing a language aspect (typesystem, constraints, behavior, editor, generator, structure), also load its `mps-aspect-*` skill; `mps-mcp-workflow` names each one.
 - Use MPS MCP tools whenever available; do not hand-edit `.mps` files as plain XML.
 - Resolve nodes, concepts, models, and modules precisely before editing.
