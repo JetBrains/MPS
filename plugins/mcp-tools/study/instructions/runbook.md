@@ -122,14 +122,14 @@ RUNS=$HOME/MPSProjects/mcp-study/runs
    scenario whose worker closes and opens projects, and a mistake in it can leave a modal dialog
    that blocks every later `mps_mcp_*` call. Prompts are developer-voice, fixed names, explicit "done", NO reporting
    requirements. Fixtures: `empty-project` (synthesized per run, not a tarball),
-   `statechart` (Projectxx5), `recipes` (a passing S1), `recipes-misgen` (S15), `recipes-gen` (S18, S19, S22), `recipes-gen-broken` (S36), `flows-gen` (S23, S24), `expressions`
+   `statechart` (Projectxx5), `recipes` (a passing S1), `recipes-misgen` (S15), `recipes-gen` (S18, S19, S22), `recipes-gen-broken` (S36), `recipes-full` (S4, S5, S6, S37), `flows-gen` (S23, S24), `expressions`
    (`samples/expressions`, S11, S12), `kaja-dataflow` (`samples/robot_Kaja` with injected builder
    bugs, S13), `kaja-dataflow-2` (S16), `flow-java` (one BaseLanguage class, S14) — regenerated per
    [`fixtures.md`](fixtures.md), not stored in git.
 6. **Runs** — ONE scratch project open at a time (see lessons: shared module repository leaks across
    projects; S10 honours this by being sequential — it closes one project before opening the next).
    Restart MPS before a cell whose fixture language an earlier cell already loaded in the current
-   process — any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22/S32/S36 on `recipes*`, S23/S24 on `flows-gen`, S2/S8 on `statechart` — and always before S11, S12,
+   process — any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22/S32/S36/S37 on `recipes*`, S23/S24 on `flows-gen`, S2/S8 on `statechart` — and always before S11, S12,
    S13 and S16 (`shutdown` → `start` harness → `wait` → SMOKE; launch with `ISOLATION=per-shared-fixture-restart`, recorded per run
    beside `mpsPid`; lessons 40, 42). A read-only cell (S9) may precede a language-changing one in the
    same process; synthesized cells (S1, S10) need no restart.

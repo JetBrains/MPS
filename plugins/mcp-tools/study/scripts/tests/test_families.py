@@ -222,7 +222,8 @@ class FamiliesTest(unittest.TestCase):
                          "MG_check_method_writes\tMG_migrate_manually_writes\tMG_set_id_writes\tMG_sync_version\t"
                          "MG_runtime_stale_hits\tMG_run_check\tMG_run_apply\tMG_apply_with_errors\tMG_console_runs\t"
                          "MG_console_write_cmds\tMG_sandbox_node_writes\tMG_find_instances\tMG_mps_migration_dumps\t"
-                         "MG_publication_probe\tGT_red_runs_before_fix\tGT_runs_after_generator_write", header)
+                         "MG_publication_probe\tGT_red_runs_before_fix\tGT_runs_after_generator_write\t"
+                         "NP_node_ptr_writes\tNP_hand_pointer_writes", header)
 
     def test_t12_inline_module_problems_count_nowhere(self) -> None:
         answer = ok("no problems found", scope="module", moduleProblems=["generation target is not set"])
@@ -523,6 +524,35 @@ class FamiliesTest(unittest.TestCase):
                                                             "properties": [[NODE, "name", "$CopyThisDown"]]})
                        + call("m", "mps_mcp_alter_nodes", "MAKE", {"models": [MODEL], "note": "$Undo"}))
         self.assertCounts(f, ET_platform_id_writes=2, ET_applicability_writes=1, ET_ide_service_writes=0)
+
+    def test_t28b_node_pointer_literal_and_hand_built_pointers(self) -> None:
+        literal = {"concept": "jetbrains.mps.lang.smodel.structure.NodePointerExpression", "children": [
+            {"role": "ref", "nodes": [{"concept": "jetbrains.mps.lang.modelapi.structure.NamedNodeReference",
+                                       "references": [{"role": "target", "target": "Pancakes"}]}]}]}
+        old = {"concept": "jetbrains.mps.lang.smodel.structure.NodePointerExpression_Old"}
+        creator = {"concept": "jetbrains.mps.baseLanguage.structure.ClassCreator", "references": [
+            {"role": "baseMethodDeclaration",
+             "target": "6ed54515-acc8-4d1e-a16c-9fd6cfe951ea/java:jetbrains.mps.smodel(MPS.Core/)/~SNodePointer.<init>"}]}
+        java = 'SNode p = new jetbrains.mps.smodel.SNodePointer("r:38cfdf05(m)", "1").resolve(repo);'
+        f = self.count(write("a", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": literal})
+                       + write("b", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": literal},
+                               REJECTED)
+                       + write("c", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": old})
+                       + write("d", "mps_mcp_parse_java_and_insert", {"parameters": {"code": java}}, REJECTED)
+                       + write("e", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD",
+                                                            "childJson": json.dumps(creator)})
+                       + write("f", "mps_mcp_parse_java_and_insert",
+                               {"parameters": {"code": "PersistenceFacade.getInstance().createNodeReference(s);"}})
+                       + write("g", "mps_mcp_update_node", {"operation": "SET", "kind": "PROPERTY",
+                                                            "properties": [[NODE, "name", "SNodePointerHelper"]]})
+                       + write("h", "mps_mcp_parse_java_and_insert",
+                               {"parameters": {"code": "SNodeReference r = SNodePointer.deserialize(s);"}})
+                       + write("i", "mps_mcp_update_node", {"operation": "ADD", "kind": "CHILD", "childJson": {
+                           "concept": "jetbrains.mps.baseLanguage.structure.InstanceMethodCallOperation", "references": [
+                               {"role": "baseMethodDeclaration", "target": "8865b7a8-5271-43d3-884c-6fd1d9cfdd34/java:"
+                                "org.jetbrains.mps.openapi.persistence(MPS.OpenAPI/)/~PersistenceFacade.createNodeReference"
+                                "%28java.lang.String%29"}]}}))
+        self.assertCounts(f, NP_node_ptr_writes=1, NP_hand_pointer_writes=5)
 
     def test_t29_ide_service_writes_count_attempts_too(self) -> None:
         java = "UndoManager.getInstance(project).undo(FileEditorManager.getInstance(project).getSelectedEditor());"

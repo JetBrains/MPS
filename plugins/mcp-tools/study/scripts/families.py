@@ -92,6 +92,11 @@ Output (stdout, or --out FILE): a TSV with a header line, then `round` (the dire
                                    root-level `Node:` line that is not `Node: null vs` (null vs <root> = no
                                    generator ran; a nested null vs "<child>" is a missing child): red first (S36)
   GT_runs_after_generator_write    execute_run_configuration calls after that write (the confirming run)
+  NP_node_ptr_writes               accepted node writes whose input holds a NodePointerExpression (`node-ptr/…/`,
+                                   name or concept id; the deprecated NodePointerExpression_Old does not count)
+  NP_hand_pointer_writes           node writes, rejected ones included, whose input builds a node pointer by hand:
+                                   `new SNodePointer(…)`, a ClassCreator of the SNodePointer constructor,
+                                   SNodePointer.deserialize, or PersistenceFacade's createNodeReference (S37)
   GP_genplan_models                accepted create_model calls whose modelName has the @genplan stereotype
   GP_param_equals_writes           accepted node writes whose input holds a ParameterEquals (name or concept ref)
   GP_set_plan_calls                accepted update_module calls with operation SET_GENERATION_PLAN
@@ -261,6 +266,9 @@ part of a node reference) or a `@genplan` model name; GP_plan_root_reinserts cou
 top-level blueprint objects, or the one object) inserted into a `@genplan` model past the fourth of the
 transcript, so re-authoring a plan instead of editing it shows. S19 reads GN_plan for its PLAN calls and
 GT_plan_writes for plan node writes.
+The NP_* columns are S37's signals (a node known at design time). They search node writes as the
+GT_* columns do; NP_hand_pointer_writes counts attempts, as ET_ide_service_writes does, because a
+rejected hand-built pointer still shows the route the worker took.
 The MG_* columns are the S25-S29 signals (language evolution; expected values in each cell's
 done_criteria.md). MG_tighten_in_place needs the fixture's roles: FIXTURE_ROLES maps the scenario of the
 run id to them, and a RENAME_* moves a role's identity to its new name, so `copies` renamed to
@@ -304,7 +312,7 @@ KEYS = ["tool_uses", "A_tempfile_env", "C_checks", "C_model_checks", "C_root_che
         "MG_sync_version", "MG_runtime_stale_hits", "MG_run_check", "MG_run_apply", "MG_apply_with_errors",
         "MG_console_runs", "MG_console_write_cmds", "MG_sandbox_node_writes", "MG_find_instances",
         "MG_mps_migration_dumps", "MG_publication_probe", "GT_red_runs_before_fix",
-        "GT_runs_after_generator_write"]
+        "GT_runs_after_generator_write", "NP_node_ptr_writes", "NP_hand_pointer_writes"]
 READ_ONLY = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_query_nodes",
              "mps_mcp_list_open_projects", "mps_mcp_generation", "mps_mcp_query_dataflow")
 CLEAN = "no problems found"
@@ -389,6 +397,9 @@ CONSOLE_CODE_WRITE = re.compile(r"\.\w+\s*=[^=]|\.forEach\s*\(|\.(?:add|addAll|c
                                 r"\b(?:setProperty|addChild|insertChildBefore|removeChild|setReference|setReferenceTarget|"
                                 r"deleteNode|replace with)\b")
 SET_ID = re.compile(r"\bsetId\b")
+NODE_PTR = re.compile(r"\bNodePointerExpression\b(?!_Old)|7866978e-a0f0-4cc7-81bc-4d213d9375e1/7400021826774799413\b")
+HAND_POINTER = re.compile(r"\bnew\s+(?:[\w.]+\.)?SNodePointer\s*\(|~SNodePointer\.(?:<init>|%3Cinit)|\bSNodePointer\.deserialize\b|"
+                          r"\bcreateNodeReference(?:\s*\(|%28)")
 VIRTUAL_PACKAGE = re.compile(r'\\?"virtualPackage\\?"')
 STRUCTURE_MODEL = re.compile(r"\.structure\)")
 MG_READS = ("mps_mcp_print_node", "mps_mcp_get_project_structure", "mps_mcp_search_root_node_by_name")
@@ -877,6 +888,10 @@ def fam(path):
                     f["GT_plan_writes"] += 1
             if NODES_TEST_ROUTE.search(written):
                 f["GT_nodes_test_writes"] += 1
+            if HAND_POINTER.search(written):
+                f["NP_hand_pointer_writes"] += 1
+            if not failed(r, err) and NODE_PTR.search(written):
+                f["NP_node_ptr_writes"] += 1
         if n == "mps_mcp_parse_java_and_insert" and not failed(r, err):
             target = str((params(inp).get("insert") or {}).get("modelRef") or "")
             mode = str((params(inp).get("insert") or {}).get("mode") or "").lower()

@@ -19,7 +19,8 @@ S31 (run 4, rev 8) after prompt and criteria revisions (results in
 [`../reports/assessments/editor-dynamics.md`](../reports/assessments/editor-dynamics.md)); they are frozen since then.
 S36 (a generator test from an informal description) was written, built and reviewed on 2026-11-02 and is frozen since
 then: opus passed; sonnet missed the test-first order until the `mps-aspect-generator` directive was reworded
-(`ad638540c771`), then passed.
+(`ad638540c771`), then passed. S37 (a node known at design time, MPS-40408) was written, walked and rehearsed on 2026-11-02: opus and
+sonnet both passed on the intended route on the first run; frozen since then.
 
 A pass means the worker met `done_criteria.md`. It is evidence about the skills that cell
 **forces**. It is weak evidence about skills it only happens to read.
@@ -64,6 +65,7 @@ A pass means the worker met `done_criteria.md`. It is evidence about the skills 
 | S34 | Write editor tests for eight specified alerts behaviours, run them red against six planted editor defects, then fix the language, not the tests. Frozen 2026-11-01. |
 | S35 | Kaja sample: a movement menu on `step`/`turnLeft`, a LEFT `comment` transform on `trace` also in Ctrl+Space, a `Trace` context-assistant item, a red count; corpus menus kept. Frozen 2026-11-01. |
 | S36 | Correct an almost-right recipes generator from an informal description of the wanted Java and capture the description as a generator test: on the intended path the test is written first, fails naming a leaked literal and a dropped step, the template is fixed, the test goes green and the samples' Java is right. |
+| S37 | Test the stored `Pancakes` sample (servings 2, `totalMinutes()` 13) from a new test solution so that the test survives a rename of the recipe and shows in Find Usages: the `node-ptr/Pancakes/` literal resolved through the project's repository, after importing the samples model; no lookup by name, no hand-built `SNodePointer`. Frozen 2026-11-02 (opus and sonnet PASS). |
 | SMOKE | Not an eval. Lists open projects and stops. Readiness check after every MPS start. |
 
 ## Directory
@@ -108,7 +110,7 @@ Run to verify: `mps-node-editing` bulk path, `scripts/table_to_bulk_insert.py` (
 just the PASS), `mps-mcp-workflow` `references/bulk-creation.md`, reference wiring after insert.
 Does not author any aspect. A pass says nothing about structure, editor, or constraints docs.
 Hypotheses: H3 bulk, H6 refs, H1.
-Isolation: shares `mcp.study.recipes` with S4–S7, S9, S15, S17, S18, S19, S22 and S36.
+Isolation: shares `mcp.study.recipes` with S4–S7, S9, S15, S17, S18, S19, S22, S36 and S37.
 
 **S4 — refactor and migrate.** Fixture: a passing S1 project **with the sample Recipe and Cookbook
 roots kept** (`recipes-full`, not the stripped `recipes` tarball — the prompt requires existing
@@ -126,7 +128,7 @@ failed "migration applied" is then the tool gap, not a docs regression. `mps_con
 passes `-Dmps.migration.assistant.auto=false`, so the wizard cannot open before the worker's first
 call either.
 Hypotheses: H2, H5, H8.
-Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9, S15, S17, S18, S19, S22 and S36. Restart before this
+Isolation: same `mcp.study.recipes` module id as S3, S5, S6, S7, S9, S15, S17, S18, S19, S22, S36 and S37. Restart before this
 cell if any of those already loaded the language in this process (D80 includes S4).
 
 **S5 — repair a broken model.** Fixture: `recipes-broken` (`recipes-full` plus the 12 injections
@@ -198,7 +200,7 @@ Run to verify: `mps-console` (only cell).
 Console history and the current input are session state. Evaluate before the project is closed;
 after a close the evidence is gone.
 Hypotheses: H1, H7.
-Isolation: shares the recipes module id with S3–S7, S15, S17, S18, S19, S22 and S36. May precede a language-changing
+Isolation: shares the recipes module id with S3–S7, S15, S17, S18, S19, S22, S36 and S37. May precede a language-changing
 cell in the same process.
 
 **S10 — project lifecycle.** Fixture: synthesized `empty-project`. The worker creates
@@ -315,7 +317,7 @@ calls, 2 min 18 s) and `S15-sonnet-1` (27 calls, 1 min 51 s) both passed criteri
 path, every P1–P7 signal on target (`GN_trace_before_fix` 1, `GN_template_prints_before_trace` 0,
 `M_makes` 3), 0 error envelopes. D2 stays held back.
 Hypotheses: H2, H5, H7.
-Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7, S9, S17, S18, S19, S22 and S36, so restart MPS before
+Isolation: the fixture has the `mcp.study.recipes` module id of S3–S7, S9, S17, S18, S19, S22, S36 and S37, so restart MPS before
 S15 when one of those ran in the process; the worker rebuilds the language, so restart again before
 any later recipes cell. S13, S14 and S16 (the dataflow cells) do not use `recipes*` and need no restart for it.
 
@@ -368,7 +370,7 @@ Does not cover completion: smart references to Ingredients need roots in scope o
 which the fixture alone does not give. Intentions and side transforms are not covered either; the
 language has none.
 Hypotheses: H2, H7.
-Isolation: the `mcp.study.recipes` module id of S3–S7, S9, S15, S18, S19, S22 and S36, so restart MPS before S17 when one
+Isolation: the `mcp.study.recipes` module id of S3–S7, S9, S15, S18, S19, S22, S36 and S37, so restart MPS before S17 when one
 of those ran in the process. The worker builds only the new test solution, but it loads the
 language's editor classes, so a later recipes cell that rebuilds the language needs the restart
 too (the D80 hazard), as after S7.
@@ -552,7 +554,7 @@ between them, one `alerts2*` copy open.
 on the minutes cell, four shipped tests. Run to verify: the menus skill `transformation-menus.md` (include +
 `location`, Parameterized, property-cell attachment, leaf-cell rule), `side-transforms.md`, `keymaps.md`;
 `mps-aspect-editor` (inspector, separators); `mps-tests` (completion, `SwitchToInspector`). Re-exposes E1#3/#8,
-E2#7. Size 30–40; drop item 5. Isolation: joins the `recipes*` set (S3–S7, S9, S15, S17–S19, S22, S36): restart
+E2#7. Size 30–40; drop item 5. Isolation: joins the `recipes*` set (S3–S7, S9, S15, S17–S19, S22, S36, S37): restart
 before and after, as S17.
 
 **S33 — an extending language contributes menus, an override and a shortcut.** Fixture: `alerts2`, as S31, no
@@ -602,10 +604,27 @@ SKILL.md "A test written first must fail first" for generator tests and `referen
 Read `GT_red_runs_before_fix` (≥ 1), `GT_runs_after_generator_write` (≥ 1), `ET_test_runs` (2–4), `GT_generator_test_writes` (≥ 1), `GT_do_not_generate_calls` (≥ 2), `M_makes` (2–3); the
 `GN_*` columns show whether the *Observe generation* directive was also taken on the samples. A run that fixes the
 generator before its first test run is "FAIL (directive miss, generator fixed)", not a pass. Size 30–50. Hypotheses: H1,
-H2, H7. Isolation: joins the `recipes*` set (S3–S7, S9, S15, S17–S19, S22, S32): restart before (D80: the red run
+H2, H7. Isolation: joins the `recipes*` set (S3–S7, S9, S15, S17–S19, S22, S32, S37): restart before (D80: the red run
 reads the fixture's deployed generator) and after (the worker rebuilds the language); never open next to another
 `recipes*` copy — `recipes-gen` differs from it by two template edits. The skill's generator-test references show defect A's
 mismatch shape and this generator's class shape for other recipes (lesson 19), so a quick diagnosis of A is not credit to the cell.
+
+**S37 — a node known at design time (`node-ptr/…/`).** Written, walked and rehearsed 2026-11-02 for MPS-40408
+(`S37-opus-1` PASS in 27 calls; `S37-sonnet-1` PASS in 24 calls, both `medium`, both on the intended route; details in
+`done_criteria.md`); frozen 2026-11-02. Fixture: `recipes-full`, unchanged. The prompt asks for a `NodesTestCase` that checks the stored
+`Pancakes` recipe (not a copy), and requires that the test keep checking it after a rename and that Find Usages on
+the recipe list the test, which a lookup by name cannot meet; it never names the construct. Forces the
+`mps-model-manipulation` Critical Directive on design-time nodes and `references/link-and-concept-literals.md`
+(the `NodePointerExpression` + `NamedNodeReference` blueprint, importing the target's model so the name is in
+scope), and the matching pointer in `mps-tests` SKILL.md. Distinguishes the literal from a search by name, a
+hand-built `SNodePointer` (right at run time, no reference), the id form `NodePointer` and a copy in the test; a
+reference held by a recipes-language node inside the test is "PASS (other reference)", a task pass and a
+directive miss. Run to verify: `mps-model-manipulation` (that directive, the literals reference, the Java-parser
+row), `mps-tests` ("A test that checks a stored node"). Also seen: `mps-tests` NodesTestCase basics (S7's),
+`mps-run-configurations`. Read `NP_node_ptr_writes` (≥ 1), `NP_hand_pointer_writes` (0), `ET_test_runs` (1–3).
+Size 15–35. Hypotheses: H1, H7. Isolation: joins the `recipes*` set (S3–S7, S9, S15, S17–S19, S22, S32, S36): restart
+before it when an earlier cell in the process rebuilt the recipes language (D80); it does not rebuild the language
+itself.
 
 **SMOKE — not a scenario.** No `done_criteria.md`, no evaluation, `pass` stays empty. One
 `mps_mcp_list_open_projects` against the harness project. Use it only as the readiness gate
@@ -641,11 +660,11 @@ skill whose **Run** column is not S1 or S3.
 | `mps_mcp_alter_nodes` MOVE_CHILD | | S5 (the reorder; a same-parent MOVE_NODE_TO_PARENT also passes) | cross-model moves, promotion to root, console-node moves (no cell) |
 | `mps-node-editing/scripts/table_to_bulk_insert.py` | S3 | | the aggregate cookbook root is the spec's `aggregate` key (D82) |
 | `mps-baselanguage` | S6 (parser vs JSON AST), S1 and S2 (function bodies in behavior / constraints) | S7, S17 (test bodies), S18 (expected classes through the parser) | S10's one empty class is not a signal |
-| `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print) | | |
+| `mps-model-manipulation` | S1 (checking rule, behavior, constraint code), S6 (behavior bodies; a whole method is one deep print), S37 (a node known at design time: `node-ptr/…/`, `references/link-and-concept-literals.md`) | | |
 | `mps-language-analysis` | S2 (find the concept to extend), S8 (explore a project you have not seen), S5 (find every problem), S11 (type questions via `mps_mcp_query_types`) | S1, S6, S7, S17 (`get_concept_details` / `shape`) | |
 | `mps-dsl-memory` | S8 | | |
-| `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap), S36 (the fail-first rule for generator tests: a red mismatch before the fix, not `null vs <root>`); frozen 2026-11-01: S30–S35 (completion items before typing, prefix via `Complete`, keystrokes, inspector, two-step both ways, Undo, context assistant, red run first in S34) | | intentions (no cell) |
-| `mps-run-configurations` | S7, S17, S18, S36; drafts S30, S35 | | |
+| `mps-tests` | S7 (NodesTestCase, one typing editor test), S17 (editor tests: MPS actions and platform action ids, undo and clipboard, `is action applicable`, two-step deletion, non-vacuity), S18 (`GeneratorTest`: arguments, match options, an explicit plan, "Do not generate", the skipped trap), S36 (the fail-first rule for generator tests: a red mismatch before the fix, not `null vs <root>`), S37 (a test of a stored node through `node-ptr/…/`); frozen 2026-11-01: S30–S35 (completion items before typing, prefix via `Complete`, keystrokes, inspector, two-step both ways, Undo, context assistant, red run first in S34) | | intentions (no cell) |
+| `mps-run-configurations` | S7, S17, S18, S36; drafts S30, S35 | S37 | |
 | `mps-console` | S9 (read-only), S28 (writing commands that migrate values) | | evaluate before close |
 | `mps-project-management` | S10 | | observer opens for S1–S9 and S11–S24 do not measure this skill |
 | `mps-mcp-workflow` (the skill as a whole) | pick the row below; do not run all of them | | |
@@ -688,7 +707,7 @@ an eval ([`runbook.md`](runbook.md), "Adding a scenario").
 2. Run the **Run** cells only, on the models the user names. One model is enough to see whether
    the changed path is taken; a second model is a variance check, not a requirement.
 3. If several cells share a fixture language, restart MPS between them: S2/S8 on `statechart`,
-   and any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22/S36 on `recipes*`, S23/S24 on `flows-gen`, S31/S33/S34 on `alerts2*`, S35 with S13/S16 on Kaja (S32 joins `recipes*`; S4 is in that set — it loads the same
+   and any two of S3/S4/S5/S6/S7/S9/S15/S17/S18/S19/S22/S36/S37 on `recipes*`, S23/S24 on `flows-gen`, S31/S33/S34 on `alerts2*`, S35 with S13/S16 on Kaja (S32 joins `recipes*`; S4 is in that set — it loads the same
    language; S15's worker rebuilds it). S11 and S12 each need a restart before them, and an MPS
    that has not loaded the Expressions sample. A read-only cell (S9) may precede a language-changing one in the same process; S8
    may not, because its evaluation MAKEs the language (A8). S1 and S10 are synthesized and do not
