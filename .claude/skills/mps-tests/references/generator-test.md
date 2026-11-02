@@ -7,6 +7,9 @@ A generator test runs the generator on an **input model** and compares the resul
 comparing two snippets you already have (e.g. the result of a generator utility), not for running a
 generation.
 
+A test written for a generator change is written and run **before** the change and must fail first
+(the first Critical Directive of `mps-aspect-generator`; reading a red: `references/generator-test/running-and-failures.md`).
+
 One file per section, each self-contained. Read only the files for your job, and when you need more
 than one, Read them all in one parallel batch.
 
