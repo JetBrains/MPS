@@ -57,7 +57,7 @@ CollectionType
 }
 ```
 
-Use `node-ptr<C>` when you need to remember a node across operations that might detach it, or to store a reference outside the current model/session. Dereference with `.resolve(repo)` (behavior method).
+Use `node-ptr<C>` when you need to remember a node across operations that might detach it, or to store a reference outside the current model/session. Dereference with `.resolve(repo)`, the smodel operation `NodePointer_ResolveOperation` (child `repositoryArg`). For a node that exists when you write the code, the value is the literal `node-ptr/<name>/` (`NodePointerExpression`), not a lookup by name: see `references/link-and-concept-literals.md`.
 
 ### `concept<C>` — typed concept handle
 

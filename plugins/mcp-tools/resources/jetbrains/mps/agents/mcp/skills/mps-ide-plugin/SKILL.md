@@ -24,6 +24,7 @@ Official documentation: <https://www.jetbrains.com/help/mps/plugin.html>
 - **`ModificationStatement.modifiedGroup` is a node reference (`r:...`), not a concept reference (`c:...`).** Look up the target group via `mps_mcp_search_root_node_by_name` to obtain the node ref.
 - **Add a model dependency on `jetbrains.mps.ide.actions`** before referencing built-in groups (`MainMenu`, `EditorPopup`, `NodeActions`, `ModelActions`, `ModuleActions`, `MainToolbar`, `ProjectViewPopupMenu`).
 - **Pick `requiredAccess` deliberately:** `none` (no model touch), `read` (safe traversal), `command` (mutates with undo + write lock — **never open modal dialogs from here**), `editorCommand` (correct undo scope for editor-driven edits).
+- **A node known at design time** (one sample or library root that an action opens or edits) is `node-ptr/<name>/.resolve(<the MPS project's repository>)` inside the action's `read` or `command` access, never a search for its name. Blueprint and the model import it needs: `references/link-and-concept-literals.md` in the `mps-model-manipulation` skill root after loading that companion skill from the same origin.
 - **Don't call `project.tool<…>` from `dispose`.** The lookup can fail during teardown.
 - **Mac keymap trap:** with `Keymap = Default`, MPS translates `ctrl` → `cmd` on macOS. If you specifically want `ctrl` on Mac, add a separate `Mac_OS_X` `KeymapChangesDeclaration`.
 - After edits, rebuild the module (`mps_mcp_alter_nodes` MAKE) so generated Java is current, then **Reload All** in MPS for hot-load.
