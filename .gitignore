@@ -101,6 +101,7 @@ teamcity-info.xml
 /plugins/platform-structureView-plugin/lib
 /plugins/platform-testRunner-plugin/lib
 /plugins/platform-todo-plugin/lib
+/plugins/platform-compose-plugin/lib
 # some default plugins (not mentioned in MPSProperties.groovy)
 /plugins/platform-images
 /plugins/mps-devkit/lib
