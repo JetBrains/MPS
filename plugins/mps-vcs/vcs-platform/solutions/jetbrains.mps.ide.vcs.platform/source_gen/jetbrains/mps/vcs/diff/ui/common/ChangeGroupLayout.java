@@ -15,11 +15,11 @@ import java.util.Map;
 import jetbrains.mps.internal.collections.runtime.MapSequence;
 import java.util.HashMap;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
-import java.util.Set;
-import jetbrains.mps.util.DisjointSets;
-import jetbrains.mps.internal.collections.runtime.SetSequence;
 import java.util.ArrayList;
+import jetbrains.mps.util.DisjointSets;
+import java.util.Set;
 import jetbrains.mps.internal.collections.runtime.Sequence;
+import jetbrains.mps.internal.collections.runtime.SetSequence;
 import jetbrains.mps.nodeEditor.cells.EditorCell;
 
 @GeneratedClass(nodeId = "4652592318748337213", model = "r:07568eb8-30c0-4bb3-9dcb-50ee4b8de59a(jetbrains.mps.vcs.diff.ui.common)")
@@ -66,7 +66,8 @@ public abstract class ChangeGroupLayout {
   private List<ChangeGroup> calculateChangeGroups() {
     final Map<ModelChange, Bounds> left = MapSequence.fromMap(new HashMap<ModelChange, Bounds>());
     final Map<ModelChange, Bounds> right = MapSequence.fromMap(new HashMap<ModelChange, Bounds>());
-    for (ModelChange change : ListSequence.fromList(check_cuq72k_a2a62(getChangeSet(), this))) {
+    List<ModelChange> changes = ListSequence.fromList(new ArrayList<ModelChange>());
+    for (ModelChange change : ListSequence.fromList(check_cuq72k_a3a62(getChangeSet(), this))) {
       Bounds leftBounds = findBounds(getLeftMessages(change), getLeftComponent());
       Bounds rightBounds = findBounds(getRightMessages(change), getRightComponent());
 
@@ -74,20 +75,14 @@ public abstract class ChangeGroupLayout {
         continue;
       }
 
+      ListSequence.fromList(changes).addElement(change);
       MapSequence.fromMap(left).put(change, leftBounds);
       MapSequence.fromMap(right).put(change, rightBounds);
     }
-    Set<ModelChange> changes = MapSequence.fromMap(left).keySet();
     DisjointSets<ModelChange> ds = new DisjointSets<ModelChange>(changes);
     boolean trackMovedNodes = (myIsMerge ? DiffSettingsUtil.getTrackMovedNodesMergeOption() : DiffSettingsUtil.getTrackMovedNodesDiffOption());
-    for (ModelChange a : SetSequence.fromSet(changes)) {
-      for (ModelChange b : SetSequence.fromSet(changes)) {
-
-        if (((!(areBoundsSeparate(MapSequence.fromMap(left).get(a), MapSequence.fromMap(left).get(b), myMergeAdjacent, trackMovedNodes))) && (!(trackMovedNodes) || MapSequence.fromMap(right).get(a).containsPart(MapSequence.fromMap(right).get(b)))) || (!(areBoundsSeparate(MapSequence.fromMap(right).get(a), MapSequence.fromMap(right).get(b), myMergeAdjacent, trackMovedNodes)) && (!(trackMovedNodes) || MapSequence.fromMap(left).get(a).containsPart(MapSequence.fromMap(left).get(b))))) {
-          ds.unite(a, b);
-        }
-      }
-    }
+    uniteOverlapping(ds, changes, left, right, trackMovedNodes);
+    uniteOverlapping(ds, changes, right, left, trackMovedNodes);
     List<ChangeGroup> list = ListSequence.fromList(new ArrayList<ChangeGroup>());
     for (Set<ModelChange> s : Sequence.fromIterable(ds.getSets())) {
       Bounds lb = SetSequence.fromSet(s).select((ch) -> MapSequence.fromMap(left).get(ch)).reduceLeft((a, b) -> a.merge(b));
@@ -96,6 +91,28 @@ public abstract class ChangeGroupLayout {
       ListSequence.fromList(list).addElement(new ChangeGroup(lb, rb, sortedChanges, myConflictChecker));
     }
     return ListSequence.fromList(list).sort((g) -> (int) g.getLeftBounds().start(), true).toList();
+  }
+  private void uniteOverlapping(DisjointSets<ModelChange> ds, List<ModelChange> changes, final Map<ModelChange, Bounds> primary, Map<ModelChange, Bounds> secondary, boolean trackMovedNodes) {
+    List<ModelChange> sorted = ListSequence.fromList(changes).sort((ch) -> (int) MapSequence.fromMap(primary).get(ch).start(), true).toList();
+    int size = ListSequence.fromList(sorted).count();
+    for (int a = 0; a < size; a++) {
+      ModelChange changeA = ListSequence.fromList(sorted).getElement(a);
+      Bounds boundsA = MapSequence.fromMap(primary).get(changeA);
+      if (!(trackMovedNodes) && areBoundsSeparate(boundsA, boundsA, myMergeAdjacent, trackMovedNodes)) {
+        continue;
+      }
+      int endA = (int) boundsA.end();
+      for (int b = a + 1; b < size; b++) {
+        ModelChange changeB = ListSequence.fromList(sorted).getElement(b);
+        Bounds boundsB = MapSequence.fromMap(primary).get(changeB);
+        if ((int) boundsB.start() > endA) {
+          break;
+        }
+        if (!(areBoundsSeparate(boundsA, boundsB, myMergeAdjacent, trackMovedNodes)) && (!(trackMovedNodes) || MapSequence.fromMap(secondary).get(changeA).containsPart(MapSequence.fromMap(secondary).get(changeB)) || MapSequence.fromMap(secondary).get(changeB).containsPart(MapSequence.fromMap(secondary).get(changeA)))) {
+          ds.unite(changeA, changeB);
+        }
+      }
+    }
   }
 
   public void addInvalidateListener(@NotNull ChangeGroupInvalidateListener listener) {
@@ -139,7 +156,7 @@ public abstract class ChangeGroupLayout {
       bounds = Sequence.fromIterable(messages).select((m) -> m.getBounds(editorComponent)).where((b) -> b.length() > 0).reduceLeft((a, b) -> a.merge(b));
     }
     if (bounds == null || bounds.length() <= 0) {
-      int y = check_cuq72k_a0a0c0mb(check_cuq72k_a0a0a2a83(editorComponent));
+      int y = check_cuq72k_a0a0c0nb(check_cuq72k_a0a0a2a93(editorComponent));
       return new Bounds(y, y);
     } else {
       return bounds;
@@ -158,19 +175,19 @@ public abstract class ChangeGroupLayout {
     int tolerance = (canBeAdjacent ? 0 : 1);
     return (int) a.end() - tolerance < (int) b.start() || (int) b.end() - tolerance < (int) a.start();
   }
-  private static List<ModelChange> check_cuq72k_a2a62(ChangeSet checkedDotOperand, ChangeGroupLayout checkedDotThisExpression) {
+  private static List<ModelChange> check_cuq72k_a3a62(ChangeSet checkedDotOperand, ChangeGroupLayout checkedDotThisExpression) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModelChanges();
     }
     return null;
   }
-  private static int check_cuq72k_a0a0c0mb(EditorCell checkedDotOperand) {
+  private static int check_cuq72k_a0a0c0nb(EditorCell checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getY();
     }
     return 0;
   }
-  private static EditorCell check_cuq72k_a0a0a2a83(EditorComponent checkedDotOperand) {
+  private static EditorCell check_cuq72k_a0a0a2a93(EditorComponent checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getRootCell();
     }
