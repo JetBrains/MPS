@@ -437,6 +437,16 @@ public abstract class RootDifferencePaneBase implements RootDifferencePane, Prop
     myActionGroup = null;
     myMainLayout.dispose();
     myInspectorLayout.dispose();
+    for (ChangeGroupLayout layout : myMainChangeGroupLayouts) {
+      if (layout != null) {
+        layout.dispose();
+      }
+    }
+    for (ChangeGroupLayout layout : myInspectorChangeGroupLayouts) {
+      if (layout != null) {
+        layout.dispose();
+      }
+    }
     myDiffEditorsGroup.dispose();
   }
 

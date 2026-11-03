@@ -5,8 +5,11 @@ package jetbrains.mps.vcs.diff.ui.common;
 import jetbrains.mps.annotations.GeneratedClass;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.CopyOnWriteArrayList;
+import com.intellij.util.ui.update.MergingUpdateQueue;
 import org.jetbrains.annotations.Nullable;
+import javax.swing.JComponent;
 import org.jetbrains.annotations.NotNull;
 import jetbrains.mps.nodeEditor.EditorComponent;
 import jetbrains.mps.vcs.diff.changes.ModelChange;
@@ -20,6 +23,9 @@ import jetbrains.mps.util.DisjointSets;
 import java.util.Set;
 import jetbrains.mps.internal.collections.runtime.Sequence;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
+import com.intellij.util.ui.update.Update;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.Disposer;
 import jetbrains.mps.nodeEditor.cells.EditorCell;
 
 @GeneratedClass(nodeId = "4652592318748337213", model = "r:07568eb8-30c0-4bb3-9dcb-50ee4b8de59a(jetbrains.mps.vcs.diff.ui.common)")
@@ -27,15 +33,21 @@ public abstract class ChangeGroupLayout {
   private ChangeEditorMessage.ConflictChecker myConflictChecker;
   protected boolean myInspector = false;
   private boolean myMergeAdjacent;
-  private final AtomicReference<List<ChangeGroup>> myChangeGroups = new AtomicReference<>();
+  private final AtomicReference<List<ChangeGroup>> myChangeGroups = new AtomicReference<List<ChangeGroup>>(Collections.<ChangeGroup>emptyList());
   private final List<ChangeGroupInvalidateListener> myInvalidateListeners = new CopyOnWriteArrayList<ChangeGroupInvalidateListener>();
   private boolean myIsMerge;
+  private final MergingUpdateQueue myUpdateQueue;
+  private boolean myDisposed;
 
 
-  protected ChangeGroupLayout(@Nullable ChangeEditorMessage.ConflictChecker conflictChecker, boolean inspector, boolean mergeAdjacent) {
+  protected ChangeGroupLayout(@Nullable ChangeEditorMessage.ConflictChecker conflictChecker, boolean inspector, boolean mergeAdjacent, @Nullable JComponent activationComponent) {
     myConflictChecker = conflictChecker;
     myInspector = inspector;
     myMergeAdjacent = mergeAdjacent;
+    myUpdateQueue = new MergingUpdateQueue("ChangeGroupLayout", 0, true, MergingUpdateQueue.ANY_COMPONENT, null, activationComponent, true);
+  }
+  protected ChangeGroupLayout(@Nullable ChangeEditorMessage.ConflictChecker conflictChecker, boolean inspector, boolean mergeAdjacent) {
+    this(conflictChecker, inspector, mergeAdjacent, null);
   }
 
   @NotNull
@@ -67,7 +79,7 @@ public abstract class ChangeGroupLayout {
     final Map<ModelChange, Bounds> left = MapSequence.fromMap(new HashMap<ModelChange, Bounds>());
     final Map<ModelChange, Bounds> right = MapSequence.fromMap(new HashMap<ModelChange, Bounds>());
     List<ModelChange> changes = ListSequence.fromList(new ArrayList<ModelChange>());
-    for (ModelChange change : ListSequence.fromList(check_cuq72k_a3a62(getChangeSet(), this))) {
+    for (ModelChange change : ListSequence.fromList(check_cuq72k_a3a92(getChangeSet(), this))) {
       Bounds leftBounds = findBounds(getLeftMessages(change), getLeftComponent());
       Bounds rightBounds = findBounds(getRightMessages(change), getRightComponent());
 
@@ -125,20 +137,12 @@ public abstract class ChangeGroupLayout {
 
   @NotNull
   public List<ChangeGroup> getChangeGroups() {
-    List<ChangeGroup> result = myChangeGroups.get();
-    if (result == null) {
-      result = calculateChangeGroups();
-      boolean success = myChangeGroups.compareAndSet(null, result);
-      if (!(success)) {
-        return myChangeGroups.get();
-      }
-    }
-    return result;
+    // Painting and background readers only consume the last published snapshot.
+    return myChangeGroups.get();
   }
 
   public void invalidate() {
-    myChangeGroups.set(null);
-    ListSequence.fromList(myInvalidateListeners).visitAll((it) -> it.changeGroupsInvalidated());
+    myUpdateQueue.queue(Update.create(this, () -> updateChangeGroups()));
   }
 
   public int getEditorVerticalOffset() {
@@ -156,7 +160,7 @@ public abstract class ChangeGroupLayout {
       bounds = Sequence.fromIterable(messages).select((m) -> m.getBounds(editorComponent)).where((b) -> b.length() > 0).reduceLeft((a, b) -> a.merge(b));
     }
     if (bounds == null || bounds.length() <= 0) {
-      int y = check_cuq72k_a0a0c0nb(check_cuq72k_a0a0a2a93(editorComponent));
+      int y = check_cuq72k_a0a0c0qb(check_cuq72k_a0a0a2a24(editorComponent));
       return new Bounds(y, y);
     } else {
       return bounds;
@@ -175,19 +179,40 @@ public abstract class ChangeGroupLayout {
     int tolerance = (canBeAdjacent ? 0 : 1);
     return (int) a.end() - tolerance < (int) b.start() || (int) b.end() - tolerance < (int) a.start();
   }
-  private static List<ModelChange> check_cuq72k_a3a62(ChangeSet checkedDotOperand, ChangeGroupLayout checkedDotThisExpression) {
+  private void updateChangeGroups() {
+    ApplicationManager.getApplication().assertIsDispatchThread();
+    if (myDisposed || !(isValid())) {
+      return;
+    }
+    getLeftComponent().getEditorContext().getRepository().getModelAccess().runReadAction(() -> myChangeGroups.set(calculateChangeGroups()));
+    ListSequence.fromList(myInvalidateListeners).visitAll((it) -> it.changeGroupsInvalidated());
+    getLeftComponent().getLeftEditorHighlighter().repaint();
+    if (getLeftComponent() != getRightComponent()) {
+      getRightComponent().getLeftEditorHighlighter().repaint();
+    }
+  }
+  public void dispose() {
+    ApplicationManager.getApplication().assertIsDispatchThread();
+    myDisposed = true;
+    Disposer.dispose(myUpdateQueue);
+  }
+  /*package*/ void flushPendingUpdates() {
+    ApplicationManager.getApplication().assertIsDispatchThread();
+    myUpdateQueue.flush();
+  }
+  private static List<ModelChange> check_cuq72k_a3a92(ChangeSet checkedDotOperand, ChangeGroupLayout checkedDotThisExpression) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getModelChanges();
     }
     return null;
   }
-  private static int check_cuq72k_a0a0c0nb(EditorCell checkedDotOperand) {
+  private static int check_cuq72k_a0a0c0qb(EditorCell checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getY();
     }
     return 0;
   }
-  private static EditorCell check_cuq72k_a0a0a2a93(EditorComponent checkedDotOperand) {
+  private static EditorCell check_cuq72k_a0a0a2a24(EditorComponent checkedDotOperand) {
     if (null != checkedDotOperand) {
       return checkedDotOperand.getRootCell();
     }

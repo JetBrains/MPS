@@ -4,9 +4,9 @@ package jetbrains.mps.vcs.diff.ui.common;
 
 import jetbrains.mps.annotations.GeneratedClass;
 import jetbrains.mps.vcs.diff.ChangeSet;
+import jetbrains.mps.openapi.editor.update.UpdaterListener;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.NotNull;
-import jetbrains.mps.openapi.editor.update.UpdaterListener;
 import jetbrains.mps.openapi.editor.update.UpdaterListenerAdapter;
 import jetbrains.mps.openapi.editor.EditorComponent;
 import java.util.List;
@@ -19,22 +19,24 @@ public class DiffChangeGroupLayout extends ChangeGroupLayout {
   private ChangeSet myChangeSet;
   private SplitterRepainter mySplitterRepainter;
 
+  private UpdaterListener myInspectorUpdaterListener;
 
   public DiffChangeGroupLayout(@Nullable ChangeEditorMessage.ConflictChecker conflictChecker, @NotNull ChangeSet changeSet, @NotNull DiffEditor leftEditor, @NotNull DiffEditor rightEditor, SplitterRepainter splitterRepainter, boolean inspector) {
-    super(conflictChecker, inspector, false);
+    // Both editors share a panel, so their visibility changes together.
+    super(conflictChecker, inspector, false, leftEditor.getEditorComponent(inspector));
     myLeftEditor = leftEditor;
     myRightEditor = rightEditor;
     myChangeSet = changeSet;
     mySplitterRepainter = splitterRepainter;
     if (inspector) {
-      UpdaterListener updaterListener = new UpdaterListenerAdapter() {
+      myInspectorUpdaterListener = new UpdaterListenerAdapter() {
         @Override
         public void editorUpdated(EditorComponent editorComponent) {
           invalidate();
         }
       };
-      myLeftEditor.getInspector().getUpdater().addListener(updaterListener);
-      myRightEditor.getInspector().getUpdater().addListener(updaterListener);
+      myLeftEditor.getInspector().getUpdater().addListener(myInspectorUpdaterListener);
+      myRightEditor.getInspector().getUpdater().addListener(myInspectorUpdaterListener);
     }
   }
 
@@ -77,5 +79,14 @@ public class DiffChangeGroupLayout extends ChangeGroupLayout {
 
   public DiffEditor getDiffEditor(boolean left) {
     return (left ? myLeftEditor : myRightEditor);
+  }
+  @Override
+  public void dispose() {
+    super.dispose();
+    if (myInspectorUpdaterListener != null) {
+      myLeftEditor.getInspector().getUpdater().removeListener(myInspectorUpdaterListener);
+      myRightEditor.getInspector().getUpdater().removeListener(myInspectorUpdaterListener);
+      myInspectorUpdaterListener = null;
+    }
   }
 }

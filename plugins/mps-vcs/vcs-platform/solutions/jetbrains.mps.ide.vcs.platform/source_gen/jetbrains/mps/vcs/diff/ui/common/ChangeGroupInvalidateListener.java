@@ -6,5 +6,8 @@ import jetbrains.mps.annotations.GeneratedClass;
 
 @GeneratedClass(nodeId = "4652592318748337772", model = "r:07568eb8-30c0-4bb3-9dcb-50ee4b8de59a(jetbrains.mps.vcs.diff.ui.common)")
 public interface ChangeGroupInvalidateListener {
+  /**
+   * Called on EDT after recalculated groups have been published.
+   */
   void changeGroupsInvalidated();
 }

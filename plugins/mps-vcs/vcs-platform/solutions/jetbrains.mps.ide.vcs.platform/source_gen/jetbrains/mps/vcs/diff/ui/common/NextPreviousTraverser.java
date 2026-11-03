@@ -131,11 +131,21 @@ public class NextPreviousTraverser {
   }
 
   public void goToFirstChangeLater() {
-    Bounds firstGroup = getNeighbourGroupBounds(false);
-    EditorCell rc = myLastEditor.getRootCell();
-    final int minY = (firstGroup == null ? rc.getY() + 1 : (int) firstGroup.start());
-    final int maxY = rc.getY() + rc.getHeight() - 2;
-    ApplicationManager.getApplication().invokeLater(() -> goToBounds(new Bounds(minY, maxY)));
+    ApplicationManager.getApplication().invokeLater(() -> {
+      if (myLastEditor.isDisposed()) {
+        return;
+      }
+      for (ChangeGroupLayout layout : myChangeGroupLayouts) {
+        if (layout.getLeftComponent() == myLastEditor || layout.getRightComponent() == myLastEditor) {
+          layout.flushPendingUpdates();
+        }
+      }
+      Bounds firstGroup = getNeighbourGroupBounds(false);
+      EditorCell rc = myLastEditor.getRootCell();
+      int minY = (firstGroup == null ? rc.getY() + 1 : (int) firstGroup.start());
+      int maxY = rc.getY() + rc.getHeight() - 2;
+      goToBounds(new Bounds(minY, maxY));
+    });
   }
 
   public void goToBounds(Bounds bounds) {

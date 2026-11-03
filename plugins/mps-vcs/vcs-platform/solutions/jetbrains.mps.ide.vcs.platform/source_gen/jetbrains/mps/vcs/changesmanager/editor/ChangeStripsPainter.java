@@ -217,6 +217,7 @@ public class ChangeStripsPainter extends AbstractFoldingAreaPainter {
   @Override
   public void dispose() {
     myGroupMessages.dispose();
+    myChangeGroupLayout.dispose();
     super.dispose();
   }
   private static void check_h84zmo_a1a91(PopupPanel checkedDotOperand) {

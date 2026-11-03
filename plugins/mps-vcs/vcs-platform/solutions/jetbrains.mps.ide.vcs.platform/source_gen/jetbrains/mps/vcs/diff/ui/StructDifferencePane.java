@@ -339,6 +339,9 @@ public class StructDifferencePane implements PropertyChangeListener {
     myActionGroup = null;
     myMainLayout.dispose();
     myInspectorLayout.dispose();
+    for (ChangeGroupLayout layout : myChangeGroupLayouts) {
+      layout.dispose();
+    }
     myDiffEditorsGroup.dispose();
     myOldEditor = null;
     myNewEditor = null;

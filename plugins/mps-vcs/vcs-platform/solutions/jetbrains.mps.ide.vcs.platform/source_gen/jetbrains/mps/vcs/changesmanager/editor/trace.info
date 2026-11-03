@@ -928,13 +928,14 @@
       <node id="2052504288806111912" at="211,67,212,39" concept="5" />
       <node id="2052504288806112919" at="213,24,214,68" concept="5" />
       <node id="8183734928029126197" at="218,25,219,30" concept="5" />
-      <node id="8183734928029126139" at="219,30,220,20" concept="5" />
-      <node id="2881457021876860826" at="223,36,224,34" concept="5" />
-      <node id="2881457021876860826" at="225,5,226,0" concept="14" />
-      <node id="5059587158025327413" at="229,36,230,48" concept="12" />
-      <node id="5059587158025327413" at="231,5,232,16" concept="12" />
-      <node id="2052504288806114084" at="235,36,236,34" concept="5" />
-      <node id="2052504288806114084" at="237,5,238,0" concept="14" />
+      <node id="7757766130156451210" at="219,30,220,34" concept="5" />
+      <node id="8183734928029126139" at="220,34,221,20" concept="5" />
+      <node id="2881457021876860826" at="224,36,225,34" concept="5" />
+      <node id="2881457021876860826" at="226,5,227,0" concept="14" />
+      <node id="5059587158025327413" at="230,36,231,48" concept="12" />
+      <node id="5059587158025327413" at="232,5,233,16" concept="12" />
+      <node id="2052504288806114084" at="236,36,237,34" concept="5" />
+      <node id="2052504288806114084" at="238,5,239,0" concept="14" />
       <node id="7429456937243135894" at="126,10,128,5" concept="1" />
       <node id="1216620237029569878" at="157,10,159,5" concept="1" />
       <node id="867367425399189485" at="59,45,62,5" concept="9" />
@@ -950,9 +951,9 @@
       <node id="6551560157631774979" at="195,99,198,5" concept="9" />
       <node id="6551560157631775249" at="202,10,205,5" concept="1" />
       <node id="5059587158025367350" at="212,39,215,5" concept="9" />
-      <node id="2881457021876860826" at="222,72,225,5" concept="9" />
-      <node id="5059587158025327413" at="228,79,231,5" concept="9" />
-      <node id="2052504288806114084" at="234,72,237,5" concept="9" />
+      <node id="2881457021876860826" at="223,72,226,5" concept="9" />
+      <node id="5059587158025327413" at="229,79,232,5" concept="9" />
+      <node id="2052504288806114084" at="235,72,238,5" concept="9" />
       <node id="867367425399189460" at="53,0,57,0" concept="10" trace="getWeight#()I" />
       <node id="867367425399189685" at="87,0,91,0" concept="10" trace="getLeftAreaWidth#()I" />
       <node id="867367425399189692" at="91,0,95,0" concept="10" trace="relayout#()V" />
@@ -963,12 +964,12 @@
       <node id="1216620237029569852" at="154,36,159,5" concept="9" />
       <node id="1216620237029569548" at="161,0,166,0" concept="10" trace="mouseExited#(Ljava/awt/event/MouseEvent;)V" />
       <node id="2881457021876857936" at="174,72,179,7" concept="9" />
-      <node id="8183734928029126134" at="217,0,222,0" concept="10" trace="dispose#()V" />
       <node id="867367425399189701" at="42,0,48,0" concept="3" trace="ChangeStripsPainter#(Ljetbrains/mps/vcs/changesmanager/editor/EditorHighlighter;)V" />
       <node id="2052504288806111908" at="211,0,217,0" concept="10" trace="showPopupForGroup#(Ljetbrains/mps/vcs/diff/ui/common/ChangeGroup;)V" />
-      <node id="2881457021876860826" at="222,0,228,0" concept="16" trace="check_h84zmo_a1a91#(Ljetbrains/mps/vcs/changesmanager/editor/PopupPanel;)V" />
-      <node id="5059587158025327413" at="228,0,234,0" concept="16" trace="check_h84zmo_a0a32#(Ljetbrains/mps/vcs/changesmanager/editor/PopupPanel;)Ljetbrains/mps/vcs/diff/ui/common/ChangeGroup;" />
-      <node id="2052504288806114084" at="234,0,240,0" concept="16" trace="check_h84zmo_a0a42#(Ljetbrains/mps/vcs/changesmanager/editor/PopupPanel;)V" />
+      <node id="8183734928029126134" at="217,0,223,0" concept="10" trace="dispose#()V" />
+      <node id="2881457021876860826" at="223,0,229,0" concept="16" trace="check_h84zmo_a1a91#(Ljetbrains/mps/vcs/changesmanager/editor/PopupPanel;)V" />
+      <node id="5059587158025327413" at="229,0,235,0" concept="16" trace="check_h84zmo_a0a32#(Ljetbrains/mps/vcs/changesmanager/editor/PopupPanel;)Ljetbrains/mps/vcs/diff/ui/common/ChangeGroup;" />
+      <node id="2052504288806114084" at="235,0,241,0" concept="16" trace="check_h84zmo_a0a42#(Ljetbrains/mps/vcs/changesmanager/editor/PopupPanel;)V" />
       <node id="6551560157631774974" at="198,5,205,5" concept="9" />
       <node id="7429456937243135882" at="120,70,128,5" concept="9" />
       <node id="2881457021876857897" at="172,40,180,5" concept="9" />
@@ -1012,9 +1013,9 @@
       <scope id="6551560157631774980" at="196,30,197,18" />
       <scope id="5059587158025327334" at="208,51,209,46" />
       <scope id="5059587158025367351" at="213,24,214,68" />
-      <scope id="2881457021876860826" at="223,36,224,34" />
-      <scope id="5059587158025327413" at="229,36,230,48" />
-      <scope id="2052504288806114084" at="235,36,236,34" />
+      <scope id="2881457021876860826" at="224,36,225,34" />
+      <scope id="5059587158025327413" at="230,36,231,48" />
+      <scope id="2052504288806114084" at="236,36,237,34" />
       <scope id="2472608513402197574" at="122,93,124,189">
         <var name="b" id="9188249195346106827" />
       </scope>
@@ -1025,10 +1026,10 @@
       <scope id="6551560157631775250" at="202,12,204,128">
         <var name="topY" id="6551560157631775221" />
       </scope>
-      <scope id="8183734928029126137" at="218,25,220,20" />
       <scope id="2472608513402197683" at="130,96,133,5" />
       <scope id="2881457021876857937" at="175,32,178,24" />
       <scope id="2249966985595625958" at="191,0,194,0" />
+      <scope id="8183734928029126137" at="218,25,221,20" />
       <scope id="867367425399189704" at="42,76,46,73" />
       <scope id="867367425399189460" at="53,0,57,0" />
       <scope id="867367425399189685" at="87,0,91,0" />
@@ -1036,9 +1037,9 @@
       <scope id="7429456937243135883" at="121,46,125,9" />
       <scope id="5059587158025327332" at="207,0,211,0" />
       <scope id="2052504288806111911" at="211,67,215,5" />
-      <scope id="2881457021876860826" at="222,72,226,0" />
-      <scope id="5059587158025327413" at="228,79,232,16" />
-      <scope id="2052504288806114084" at="234,72,238,0" />
+      <scope id="2881457021876860826" at="223,72,227,0" />
+      <scope id="5059587158025327413" at="229,79,233,16" />
+      <scope id="2052504288806114084" at="235,72,239,0" />
       <scope id="2881457021876857858" at="48,0,53,0" />
       <scope id="2472608513402197680" at="130,0,135,0">
         <var name="group" id="2472608513402197685" />
@@ -1047,7 +1048,6 @@
       <scope id="1216620237029569548" at="161,0,166,0">
         <var name="event" id="1216620237029569551" />
       </scope>
-      <scope id="8183734928029126134" at="217,0,222,0" />
       <scope id="867367425399189701" at="42,0,48,0">
         <var name="editorHighlighter" id="867367425399189715" />
       </scope>
@@ -1057,13 +1057,14 @@
       <scope id="2052504288806111908" at="211,0,217,0">
         <var name="group" id="2052504288806112910" />
       </scope>
-      <scope id="2881457021876860826" at="222,0,228,0">
+      <scope id="8183734928029126134" at="217,0,223,0" />
+      <scope id="2881457021876860826" at="223,0,229,0">
         <var name="checkedDotOperand" id="2881457021876860826" />
       </scope>
-      <scope id="5059587158025327413" at="228,0,234,0">
+      <scope id="5059587158025327413" at="229,0,235,0">
         <var name="checkedDotOperand" id="5059587158025327413" />
       </scope>
-      <scope id="2052504288806114084" at="234,0,240,0">
+      <scope id="2052504288806114084" at="235,0,241,0">
         <var name="checkedDotOperand" id="2052504288806114084" />
       </scope>
       <scope id="2052504288806111927" at="182,75,189,30">
@@ -1127,14 +1128,14 @@
       <scope id="867367425399189466" at="57,0,87,0">
         <var name="g" id="867367425399189469" />
       </scope>
-      <unit id="867367425399189430" at="33,0,241,0" name="jetbrains.mps.vcs.changesmanager.editor.ChangeStripsPainter" />
+      <unit id="867367425399189430" at="33,0,242,0" name="jetbrains.mps.vcs.changesmanager.editor.ChangeStripsPainter" />
     </file>
   </root>
   <root nodeRef="r:06e50ed3-c893-4772-ba4a-878fc9de01d0(jetbrains.mps.vcs.changesmanager.editor)/867367425399245463">
     <file name="StripsChangeGroupLayout.java">
       <node id="867367425399245502" at="18,0,19,0" concept="6" trace="myEditorHighlighter" />
-      <node id="867367425399296040" at="19,71,20,98" concept="17" />
-      <node id="867367425399296055" at="20,98,21,44" concept="5" />
+      <node id="867367425399296040" at="19,71,20,138" concept="17" />
+      <node id="867367425399296055" at="20,138,21,44" concept="5" />
       <node id="867367425399245507" at="25,45,26,52" concept="12" />
       <node id="867367425399245523" at="30,46,31,52" concept="12" />
       <node id="867367425399245527" at="34,75,35,51" concept="12" />

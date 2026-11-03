@@ -11,6 +11,7 @@
     <use id="ceab5195-25ea-4f22-9b92-103b95ca8c0c" name="jetbrains.mps.lang.core" version="2" />
     <use id="7866978e-a0f0-4cc7-81bc-4d213d9375e1" name="jetbrains.mps.lang.smodel" version="19" />
     <use id="f3061a53-9226-4cc5-a443-f952ceaf5816" name="jetbrains.mps.baseLanguage" version="12" />
+    <use id="c7fb639f-be78-4307-89b0-b5959c3fa8c8" name="jetbrains.mps.lang.text" version="0" />
   </languages>
   <imports>
     <import index="lcr" ref="r:d634c129-ecb4-4acd-bd8c-5f057c144ffa(jetbrains.mps.vcs.changesmanager)" />
@@ -4566,6 +4567,16 @@
             </node>
           </node>
         </node>
+        <node concept="3clFbF" id="6ID7N5Ay3ma" role="3cqZAp">
+          <node concept="2OqwBi" id="6ID7N5Ay3mM" role="3clFbG">
+            <node concept="37vLTw" id="6ID7N5Ay3mk" role="2Oq$k0">
+              <ref role="3cqZAo" node="K9wxfKEF8A" resolve="myChangeGroupLayout" />
+            </node>
+            <node concept="liA8E" id="6ID7N5Ay3mN" role="2OqNvi">
+              <ref role="37wK5l" to="hdhb:6ID7N5AwtJR" resolve="dispose" />
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="76itSV98wRV" role="3cqZAp">
           <node concept="3nyPlj" id="76itSV98wRW" role="3clFbG">
             <ref role="37wK5l" to="px75:~AbstractHighlighterPainter.dispose()" resolve="dispose" />
@@ -4594,7 +4605,7 @@
       <node concept="3Tm1VV" id="K9wxfKET0_" role="1B3o_S" />
       <node concept="3clFbS" id="K9wxfKET0B" role="3clF47">
         <node concept="XkiVB" id="K9wxfKET0C" role="3cqZAp">
-          <ref role="37wK5l" to="hdhb:42hl10VHao8" resolve="ChangeGroupLayout" />
+          <ref role="37wK5l" to="hdhb:6ID7N5Baw1y" resolve="ChangeGroupLayout" />
           <node concept="10Nm6u" id="K9wxfKET1F" role="37wK5m" />
           <node concept="2ZW3vV" id="K9wxfKET1N" role="37wK5m">
             <node concept="3uibUv" id="K9wxfKET1Q" role="2ZW6by">
@@ -4611,6 +4622,14 @@
           </node>
           <node concept="3clFbT" id="6Xy5Ur26Gac" role="37wK5m">
             <property role="3clFbU" value="true" />
+          </node>
+          <node concept="2OqwBi" id="6ID7N5AZSL_" role="37wK5m">
+            <node concept="37vLTw" id="6ID7N5AZSLq" role="2Oq$k0">
+              <ref role="3cqZAo" node="K9wxfKET0P" resolve="editorHighlighter" />
+            </node>
+            <node concept="liA8E" id="6ID7N5AZSLA" role="2OqNvi">
+              <ref role="37wK5l" node="K9wxfKEGFa" resolve="getEditorComponent" />
+            </node>
           </node>
         </node>
         <node concept="3clFbF" id="K9wxfKET0R" role="3cqZAp">

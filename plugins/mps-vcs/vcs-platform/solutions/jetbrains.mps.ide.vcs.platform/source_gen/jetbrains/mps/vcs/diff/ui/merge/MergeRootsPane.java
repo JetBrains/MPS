@@ -560,6 +560,9 @@ public class MergeRootsPane implements PropertyChangeListener {
       myActionGroup = null;
       myMainLayout.dispose();
       myInspectorLayout.dispose();
+      for (ChangeGroupLayout layout : myChangeGroupLayouts) {
+        layout.dispose();
+      }
       myDiffEditorsGroup.dispose();
       myMineEditor = null;
       myResultEditor = null;

@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -65,50 +65,16 @@ public class TripleChangeGroupLayoutTest {
     }
 
     @Test
-    public void invalidationUsesListenerSnapshot() throws Exception {
-      createLayout(true, false, () -> {});
-      CountDownLatch entered = new CountDownLatch(1);
-      CountDownLatch release = new CountDownLatch(1);
-      AtomicInteger removedCalls = new AtomicInteger();
-      AtomicInteger addedCalls = new AtomicInteger();
-      ChangeGroupInvalidateListener blocker = () -> {
-        entered.countDown();
-        try {
-          assertTrue("Invalidation listener was not released", release.await(15, TimeUnit.SECONDS));
-        }
-        catch (InterruptedException e) {
-          Thread.currentThread().interrupt();
-          throw new AssertionError("Invalidation listener was interrupted", e);
-        }
-      };
-      ChangeGroupInvalidateListener removed = removedCalls::incrementAndGet;
-      onEdt(() -> {
-        mySource.addInvalidateListener(blocker);
-        mySource.addInvalidateListener(removed);
-        return null;
-      });
-      Future<?> invalidation = ApplicationManager.getApplication().executeOnPooledThread(mySource::invalidate);
+    public void disposingTripleLeavesSourceLayoutToItsOwner() throws Exception {
+      createLayout(true, false, () -> { });
       try {
-        assertTrue("Background invalidation did not start", entered.await(10, TimeUnit.SECONDS));
         onEdt(() -> {
-          mySource.removeInvalidateListener(removed);
-          mySource.addInvalidateListener(addedCalls::incrementAndGet);
+          disposeLayout();
+          assertEquals("Triple disposed a layout it does not own", 0, mySource.myDisposeCalls);
           return null;
         });
-        release.countDown();
-        invalidation.get(10, TimeUnit.SECONDS);
-        assertEquals("In-progress invalidation lost its listener", 1, removedCalls.get());
-        assertEquals("In-progress invalidation picked up a new listener", 0, addedCalls.get());
-        onEdt(() -> {
-          mySource.removeInvalidateListener(blocker);
-          mySource.invalidate();
-          return null;
-        });
-        assertEquals("Removed listener was called again", 1, removedCalls.get());
-        assertEquals("New listener was not called", 1, addedCalls.get());
       }
       finally {
-        release.countDown();
         closeEditors();
       }
     }
@@ -307,6 +273,7 @@ public class TripleChangeGroupLayoutTest {
     private void closeEditors() throws Exception {
       onEdt(() -> {
         disposeLayout();
+        mySource.dispose();
         myLeftEditor.dispose();
         myRightEditor.dispose();
         return null;
@@ -321,6 +288,8 @@ public class TripleChangeGroupLayoutTest {
   }
 
   private static class BlockingLayout extends DiffChangeGroupLayout {
+    private int myDisposeCalls;
+    private final List<ChangeGroupInvalidateListener> myListeners = new CopyOnWriteArrayList<>();
     private volatile boolean myValid;
     private final AtomicInteger myCalculationCount = new AtomicInteger();
     private final CountDownLatch myStarted = new CountDownLatch(1);
@@ -331,6 +300,30 @@ public class TripleChangeGroupLayoutTest {
 
     private BlockingLayout(ChangeSet changes, DiffEditor left, DiffEditor right, SplitterRepainter repainter) {
       super(null, changes, left, right, repainter, false);
+    }
+
+    @Override
+    public void dispose() {
+      myDisposeCalls++;
+      super.dispose();
+    }
+
+    // Simulate a ready group snapshot; these tests exercise background layer construction and publication.
+    @Override
+    public void invalidate() {
+      for (ChangeGroupInvalidateListener listener : myListeners) {
+        listener.changeGroupsInvalidated();
+      }
+    }
+
+    @Override
+    public void addInvalidateListener(ChangeGroupInvalidateListener listener) {
+      myListeners.add(listener);
+    }
+
+    @Override
+    public void removeInvalidateListener(ChangeGroupInvalidateListener listener) {
+      myListeners.remove(listener);
     }
 
     @Override
