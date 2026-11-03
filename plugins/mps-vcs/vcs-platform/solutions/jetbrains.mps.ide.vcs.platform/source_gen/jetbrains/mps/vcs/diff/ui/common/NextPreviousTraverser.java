@@ -16,10 +16,10 @@ import jetbrains.mps.internal.collections.runtime.ListSequence;
 import jetbrains.mps.internal.collections.runtime.NotNullWhereFilter;
 import jetbrains.mps.openapi.editor.selection.SelectionListener;
 import jetbrains.mps.openapi.editor.selection.Selection;
+import com.intellij.openapi.application.ApplicationManager;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
 import java.util.HashSet;
 import java.util.Arrays;
-import com.intellij.openapi.application.ApplicationManager;
 import org.jetbrains.annotations.Nullable;
 import jetbrains.mps.openapi.editor.cells.EditorCell;
 import jetbrains.mps.workbench.action.BaseAction;
@@ -53,6 +53,8 @@ public class NextPreviousTraverser {
       if (oldSelection == newSelection) {
         return;
       }
+      // SelectionManager notifies listeners on the caller's thread.
+      ApplicationManager.getApplication().assertIsDispatchThread();
       setLastEditor(editorComponent);
       updateToolbar();
     };
@@ -66,7 +68,7 @@ public class NextPreviousTraverser {
 
   private void updateToolbar() {
     if (myActionToolbar != null) {
-      ApplicationManager.getApplication().invokeLater(() -> myActionToolbar.updateActionsImmediately());
+      myActionToolbar.updateActionsAsync();
     }
   }
 
@@ -80,7 +82,7 @@ public class NextPreviousTraverser {
     return ListSequence.fromList(myChangeGroupLayouts).findFirst((b) -> b.getRightComponent() == myLastEditor);
   }
 
-  private synchronized void setLastEditor(EditorComponent editor) {
+  private void setLastEditor(EditorComponent editor) {
     myLastEditor = editor;
     if (!(ListSequence.fromList(myChangeGroupLayouts).any((b) -> b.getLeftComponent() == myLastEditor || b.getRightComponent() == myLastEditor))) {
       if (LOG.isErrorLevel()) {
@@ -104,9 +106,8 @@ public class NextPreviousTraverser {
     return check_mf966z_a5a42(changeGroup, left);
   }
 
-  private synchronized Bounds getNeighbourGroupBounds(boolean previous) {
-    // -1 means that group is not available
-
+  private Bounds getNeighbourGroupBounds(boolean previous) {
+    ApplicationManager.getApplication().assertIsDispatchThread();
     int currentY = ((jetbrains.mps.nodeEditor.EditorComponent) myLastEditor).getViewport().getViewPosition().y;
     EditorCell selectedCell = ((jetbrains.mps.nodeEditor.EditorComponent) myLastEditor).getSelectedCell();
     if (selectedCell != null) {
@@ -153,13 +154,14 @@ public class NextPreviousTraverser {
   }
 
   public void goToBounds(Bounds bounds) {
+    ApplicationManager.getApplication().assertIsDispatchThread();
     if (!(myLastEditor.isDisposed())) {
       goToY((int) bounds.end());
       goToY((int) bounds.start());
     }
   }
 
-  private synchronized void goToY(int y) {
+  private void goToY(int y) {
     EditorCell editorCell = ((jetbrains.mps.nodeEditor.EditorComponent) myLastEditor).findCellWeak(1, y + 1);
     if (editorCell != null) {
       myLastEditor.changeSelection(editorCell);

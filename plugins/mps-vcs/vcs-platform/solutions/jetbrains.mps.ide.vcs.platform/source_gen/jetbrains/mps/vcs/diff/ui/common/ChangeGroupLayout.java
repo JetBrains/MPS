@@ -180,6 +180,7 @@ public abstract class ChangeGroupLayout {
     return (int) a.end() - tolerance < (int) b.start() || (int) b.end() - tolerance < (int) a.start();
   }
   private void updateChangeGroups() {
+    // Calculating groups reads live editor cell geometry.
     ApplicationManager.getApplication().assertIsDispatchThread();
     if (myDisposed || !(isValid())) {
       return;
@@ -192,12 +193,12 @@ public abstract class ChangeGroupLayout {
     }
   }
   public void dispose() {
+    // myDisposed is confined to EDT together with queued updates.
     ApplicationManager.getApplication().assertIsDispatchThread();
     myDisposed = true;
     Disposer.dispose(myUpdateQueue);
   }
   /*package*/ void flushPendingUpdates() {
-    ApplicationManager.getApplication().assertIsDispatchThread();
     myUpdateQueue.flush();
   }
   private static List<ModelChange> check_cuq72k_a3a92(ChangeSet checkedDotOperand, ChangeGroupLayout checkedDotThisExpression) {

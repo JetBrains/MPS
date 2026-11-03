@@ -9254,6 +9254,31 @@
     <node concept="3clFb_" id="6ID7N5AwtJd" role="jymVt">
       <property role="TrG5h" value="updateChangeGroups" />
       <node concept="3clFbS" id="6ID7N5AwtJe" role="3clF47">
+        <node concept="3SKdUt" id="5K5qAIqgwmY" role="3cqZAp">
+          <node concept="1PaTwC" id="5K5qAIqgwmZ" role="1aUNEU">
+            <node concept="3oM_SD" id="5K5qAIqgwn1" role="1PaTwD">
+              <property role="3oM_SC" value="Calculating" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgwn2" role="1PaTwD">
+              <property role="3oM_SC" value="groups" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgwn3" role="1PaTwD">
+              <property role="3oM_SC" value="reads" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgwn4" role="1PaTwD">
+              <property role="3oM_SC" value="live" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgwn5" role="1PaTwD">
+              <property role="3oM_SC" value="editor" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgwn6" role="1PaTwD">
+              <property role="3oM_SC" value="cell" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgwn7" role="1PaTwD">
+              <property role="3oM_SC" value="geometry." />
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="6ID7N5AwtJf" role="3cqZAp">
           <node concept="2OqwBi" id="6ID7N5Ax0mk" role="3clFbG">
             <node concept="2YIFZM" id="6ID7N5Ax0jq" role="2Oq$k0">
@@ -9388,6 +9413,37 @@
     <node concept="3clFb_" id="6ID7N5AwtJR" role="jymVt">
       <property role="TrG5h" value="dispose" />
       <node concept="3clFbS" id="6ID7N5AwtJS" role="3clF47">
+        <node concept="3SKdUt" id="5K5qAIqgHG3" role="3cqZAp">
+          <node concept="1PaTwC" id="5K5qAIqgHG4" role="1aUNEU">
+            <node concept="3oM_SD" id="5K5qAIqgHG6" role="1PaTwD">
+              <property role="3oM_SC" value="myDisposed" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHG7" role="1PaTwD">
+              <property role="3oM_SC" value="is" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHG8" role="1PaTwD">
+              <property role="3oM_SC" value="confined" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHG9" role="1PaTwD">
+              <property role="3oM_SC" value="to" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHGa" role="1PaTwD">
+              <property role="3oM_SC" value="EDT" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHGb" role="1PaTwD">
+              <property role="3oM_SC" value="together" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHGc" role="1PaTwD">
+              <property role="3oM_SC" value="with" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHGd" role="1PaTwD">
+              <property role="3oM_SC" value="queued" />
+            </node>
+            <node concept="3oM_SD" id="5K5qAIqgHGe" role="1PaTwD">
+              <property role="3oM_SC" value="updates." />
+            </node>
+          </node>
+        </node>
         <node concept="3clFbF" id="6ID7N5AwtJT" role="3cqZAp">
           <node concept="2OqwBi" id="6ID7N5Ax0u4" role="3clFbG">
             <node concept="2YIFZM" id="6ID7N5Ax0lK" role="2Oq$k0">
@@ -9425,17 +9481,6 @@
     <node concept="3clFb_" id="6ID7N5AWQcr" role="jymVt">
       <property role="TrG5h" value="flushPendingUpdates" />
       <node concept="3clFbS" id="6ID7N5AWQcs" role="3clF47">
-        <node concept="3clFbF" id="6ID7N5AWQct" role="3cqZAp">
-          <node concept="2OqwBi" id="6ID7N5AWQde" role="3clFbG">
-            <node concept="2YIFZM" id="6ID7N5AWQcT" role="2Oq$k0">
-              <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
-              <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
-            </node>
-            <node concept="liA8E" id="6ID7N5AWQdf" role="2OqNvi">
-              <ref role="37wK5l" to="bd8o:~Application.assertIsDispatchThread()" resolve="assertIsDispatchThread" />
-            </node>
-          </node>
-        </node>
         <node concept="3clFbF" id="6ID7N5AWQcw" role="3cqZAp">
           <node concept="2OqwBi" id="6ID7N5AWQdC" role="3clFbG">
             <node concept="37vLTw" id="6ID7N5AWQd0" role="2Oq$k0">
@@ -19205,6 +19250,42 @@
                     </node>
                   </node>
                 </node>
+                <node concept="3SKdUt" id="5K5qAIqfMf0" role="3cqZAp">
+                  <node concept="1PaTwC" id="5K5qAIqfMf1" role="1aUNEU">
+                    <node concept="3oM_SD" id="5K5qAIqfMf3" role="1PaTwD">
+                      <property role="3oM_SC" value="SelectionManager" />
+                    </node>
+                    <node concept="3oM_SD" id="5K5qAIqfMf4" role="1PaTwD">
+                      <property role="3oM_SC" value="notifies" />
+                    </node>
+                    <node concept="3oM_SD" id="5K5qAIqfMf5" role="1PaTwD">
+                      <property role="3oM_SC" value="listeners" />
+                    </node>
+                    <node concept="3oM_SD" id="5K5qAIqfMf6" role="1PaTwD">
+                      <property role="3oM_SC" value="on" />
+                    </node>
+                    <node concept="3oM_SD" id="5K5qAIqfMf7" role="1PaTwD">
+                      <property role="3oM_SC" value="the" />
+                    </node>
+                    <node concept="3oM_SD" id="5K5qAIqfMf8" role="1PaTwD">
+                      <property role="3oM_SC" value="caller's" />
+                    </node>
+                    <node concept="3oM_SD" id="5K5qAIqfMf9" role="1PaTwD">
+                      <property role="3oM_SC" value="thread." />
+                    </node>
+                  </node>
+                </node>
+                <node concept="3clFbF" id="5K5qAIqfMeX" role="3cqZAp">
+                  <node concept="2OqwBi" id="5K5qAIqfMfD" role="3clFbG">
+                    <node concept="2YIFZM" id="5K5qAIqfMfs" role="2Oq$k0">
+                      <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
+                      <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
+                    </node>
+                    <node concept="liA8E" id="5K5qAIqfMfE" role="2OqNvi">
+                      <ref role="37wK5l" to="bd8o:~Application.assertIsDispatchThread()" resolve="assertIsDispatchThread" />
+                    </node>
+                  </node>
+                </node>
                 <node concept="3clFbF" id="42hl10VHb5Y" role="3cqZAp">
                   <node concept="1rXfSq" id="4hiugqyzc7b" role="3clFbG">
                     <ref role="37wK5l" node="42hl10VHb7X" resolve="setLastEditor" />
@@ -19394,28 +19475,13 @@
       <node concept="3clFbS" id="42hl10VHb77" role="3clF47">
         <node concept="3clFbJ" id="42hl10VHb78" role="3cqZAp">
           <node concept="3clFbS" id="42hl10VHb79" role="3clFbx">
-            <node concept="3clFbF" id="42hl10VHb7a" role="3cqZAp">
-              <node concept="2OqwBi" id="42hl10VHb7b" role="3clFbG">
-                <node concept="2YIFZM" id="42hl10VHb7c" role="2Oq$k0">
-                  <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
-                  <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
+            <node concept="3clFbF" id="42hl10VHb7g" role="3cqZAp">
+              <node concept="2OqwBi" id="42hl10VHb7h" role="3clFbG">
+                <node concept="liA8E" id="42hl10VHb7j" role="2OqNvi">
+                  <ref role="37wK5l" to="qkt:~ActionToolbar.updateActionsAsync()" resolve="updateActionsAsync" />
                 </node>
-                <node concept="liA8E" id="42hl10VHb7d" role="2OqNvi">
-                  <ref role="37wK5l" to="bd8o:~Application.invokeLater(java.lang.Runnable)" resolve="invokeLater" />
-                  <node concept="1bVj0M" id="42hl10VHb7e" role="37wK5m">
-                    <node concept="3clFbS" id="42hl10VHb7f" role="1bW5cS">
-                      <node concept="3clFbF" id="42hl10VHb7g" role="3cqZAp">
-                        <node concept="2OqwBi" id="42hl10VHb7h" role="3clFbG">
-                          <node concept="liA8E" id="42hl10VHb7j" role="2OqNvi">
-                            <ref role="37wK5l" to="qkt:~ActionToolbar.updateActionsImmediately()" resolve="updateActionsImmediately" />
-                          </node>
-                          <node concept="37vLTw" id="2BHiRxeuNWJ" role="2Oq$k0">
-                            <ref role="3cqZAo" node="42hl10VHbeZ" resolve="myActionToolbar" />
-                          </node>
-                        </node>
-                      </node>
-                    </node>
-                  </node>
+                <node concept="37vLTw" id="2BHiRxeuNWJ" role="2Oq$k0">
+                  <ref role="3cqZAo" node="42hl10VHbeZ" resolve="myActionToolbar" />
                 </node>
               </node>
             </node>
@@ -19524,7 +19590,7 @@
     <node concept="2tJIrI" id="1vgGWM1q73I" role="jymVt" />
     <node concept="3clFb_" id="42hl10VHb7X" role="jymVt">
       <property role="TrG5h" value="setLastEditor" />
-      <property role="od$2w" value="true" />
+      <property role="od$2w" value="false" />
       <node concept="3clFbS" id="42hl10VHb82" role="3clF47">
         <node concept="3clFbF" id="42hl10VHb83" role="3cqZAp">
           <node concept="37vLTI" id="42hl10VHb84" role="3clFbG">
@@ -19811,35 +19877,20 @@
     <node concept="2tJIrI" id="1vgGWM1qatb" role="jymVt" />
     <node concept="3clFb_" id="42hl10VHb9P" role="jymVt">
       <property role="TrG5h" value="getNeighbourGroupBounds" />
-      <property role="od$2w" value="true" />
+      <property role="od$2w" value="false" />
       <node concept="3Tm6S6" id="42hl10VHb9T" role="1B3o_S" />
       <node concept="3clFbS" id="42hl10VHb9U" role="3clF47">
-        <node concept="3SKdUt" id="42hl10VHb9V" role="3cqZAp">
-          <node concept="1PaTwC" id="ATZLwXomix" role="1aUNEU">
-            <node concept="3oM_SD" id="ATZLwXomiy" role="1PaTwD">
-              <property role="3oM_SC" value="-1" />
+        <node concept="3clFbF" id="5K5qAIqalv7" role="3cqZAp">
+          <node concept="2OqwBi" id="5K5qAIqalvD" role="3clFbG">
+            <node concept="2YIFZM" id="5K5qAIqalvs" role="2Oq$k0">
+              <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
+              <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
             </node>
-            <node concept="3oM_SD" id="ATZLwXomiz" role="1PaTwD">
-              <property role="3oM_SC" value="means" />
-            </node>
-            <node concept="3oM_SD" id="ATZLwXomi$" role="1PaTwD">
-              <property role="3oM_SC" value="that" />
-            </node>
-            <node concept="3oM_SD" id="ATZLwXomi_" role="1PaTwD">
-              <property role="3oM_SC" value="group" />
-            </node>
-            <node concept="3oM_SD" id="ATZLwXomiA" role="1PaTwD">
-              <property role="3oM_SC" value="is" />
-            </node>
-            <node concept="3oM_SD" id="ATZLwXomiB" role="1PaTwD">
-              <property role="3oM_SC" value="not" />
-            </node>
-            <node concept="3oM_SD" id="ATZLwXomiC" role="1PaTwD">
-              <property role="3oM_SC" value="available" />
+            <node concept="liA8E" id="5K5qAIqalvE" role="2OqNvi">
+              <ref role="37wK5l" to="bd8o:~Application.assertIsDispatchThread()" resolve="assertIsDispatchThread" />
             </node>
           </node>
         </node>
-        <node concept="3clFbH" id="42hl10VHb9X" role="3cqZAp" />
         <node concept="3cpWs8" id="42hl10VHb9Y" role="3cqZAp">
           <node concept="3cpWsn" id="42hl10VHb9Z" role="3cpWs9">
             <property role="TrG5h" value="currentY" />
@@ -20300,6 +20351,17 @@
       <property role="TrG5h" value="goToBounds" />
       <node concept="3cqZAl" id="42hl10VHbcF" role="3clF45" />
       <node concept="3clFbS" id="42hl10VHbcH" role="3clF47">
+        <node concept="3clFbF" id="5K5qAIqaxDI" role="3cqZAp">
+          <node concept="2OqwBi" id="5K5qAIqaxEg" role="3clFbG">
+            <node concept="2YIFZM" id="5K5qAIqaxE3" role="2Oq$k0">
+              <ref role="1Pybhc" to="bd8o:~ApplicationManager" resolve="ApplicationManager" />
+              <ref role="37wK5l" to="bd8o:~ApplicationManager.getApplication()" resolve="getApplication" />
+            </node>
+            <node concept="liA8E" id="5K5qAIqaxEh" role="2OqNvi">
+              <ref role="37wK5l" to="bd8o:~Application.assertIsDispatchThread()" resolve="assertIsDispatchThread" />
+            </node>
+          </node>
+        </node>
         <node concept="3clFbJ" id="Gsi3_vx8Ec" role="3cqZAp">
           <node concept="3clFbS" id="Gsi3_vx8Ed" role="3clFbx">
             <node concept="3clFbF" id="42hl10VHbcI" role="3cqZAp">
@@ -20352,7 +20414,7 @@
     <node concept="2tJIrI" id="1vgGWM1qlGo" role="jymVt" />
     <node concept="3clFb_" id="42hl10VHbcU" role="jymVt">
       <property role="TrG5h" value="goToY" />
-      <property role="od$2w" value="true" />
+      <property role="od$2w" value="false" />
       <node concept="3cqZAl" id="42hl10VHbcV" role="3clF45" />
       <node concept="3Tm6S6" id="42hl10VHbcW" role="1B3o_S" />
       <node concept="3clFbS" id="42hl10VHbcX" role="3clF47">
