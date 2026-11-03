@@ -1,0 +1,26 @@
+From ca385b950d2b828c729378f6dc40281bcdc4cac5 Mon Sep 17 00:00:00 2001
+From: Fedor Isakov <fedor.isakov@jetbrains.com>
+Date: Tue, 3 Nov 2026 10:29:34 +0100
+Subject: [PATCH 3/3] MPS-40414 Update layout to include idea_rt in lib/
+
+To satisfy classloading dependencies of testFramework, this jar has to be located in lib/.
+---
+ .../build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+index 6ee06feb1ecab..585f49badd7a2 100644
+--- a/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
++++ b/community/mps/build/src/org/jetbrains/intellij/build/mps/MPSProperties.kt
+@@ -109,6 +109,8 @@ class MPSProperties : JetBrainsProductProperties() {
+             for (moduleName in listOf("intellij.platform.testFramework", "intellij.platform.testFramework.common", "intellij.java.testFramework", "intellij.platform.testFramework.core", "intellij.platform.testFramework.teamCity")) {
+               layout.withModule(moduleName, "testFramework.jar")
+             }
++            // To be used in the app classpath
++            layout.withModule("intellij.java.rt", "idea_rt.jar")
+ 
+             // Contains the expanded plugin.xml inside
+             layout.withModule("intellij.mps.resources", "mps-resources.zip")
+-- 
+2.56.0
+
