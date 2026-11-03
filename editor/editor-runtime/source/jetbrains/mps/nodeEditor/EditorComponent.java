@@ -1922,7 +1922,20 @@ public abstract class EditorComponent extends JComponent implements Scrollable, 
     repaintExternalComponent();
   }
 
+  /**
+   * Flushes lazily invalidated style caches before layout/paint, so that StyleListeners (e.g. TextLine)
+   * observe one coalesced change event per actual change instead of one per detach/re-attach performed
+   * by the incremental editor update.
+   */
+  private void validateStyles() {
+    jetbrains.mps.openapi.editor.style.Style rootStyle = myRootCell.getStyle();
+    if (rootStyle instanceof StyleImpl) {
+      ((StyleImpl) rootStyle).validateSubtree();
+    }
+  }
+
   private void doRelayout() {
+    validateStyles();
     myRootCell.setX(myShiftX);
     myRootCell.setY(myShiftY);
     myRootCell.relayout();
@@ -2418,6 +2431,7 @@ public abstract class EditorComponent extends JComponent implements Scrollable, 
     if (isDisposed()) {
       return;
     }
+    validateStyles();
     myRootCell.relayout();
 
     if (myRootCell.isInClipRegion(g)) {
