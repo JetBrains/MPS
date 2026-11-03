@@ -52,6 +52,7 @@ import org.junit.runners.model.RunnerBuilder;
     jetbrains.mps.vfs.VfsTest.class,
     jetbrains.mps.vfs.FSListeningTest.class,
     jetbrains.mps.generator.impl.plan.CheckpointModelTest.class,
+    jetbrains.mps.generator.TransientModelsProviderTest.class,
     jetbrains.mps.workbench.ProjectOpenCloseTest.class,
     jetbrains.mps.ide.ModuleIDETests1.class,
     jetbrains.mps.ide.ModuleIDETests2.class,

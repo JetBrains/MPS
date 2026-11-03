@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2025 JetBrains s.r.o.
+ * Copyright 2003-2026 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,13 @@ public class TransientModelsProvider {
       Collection<TransientModelsModule> toRemove = getModuleMapValues();
       myModuleMap.clear();
       for (TransientModelsModule m : toRemove) {
-        myRepository.unregisterModule(m, myOwner);
+        if (m.getRepository() != null) {
+          myRepository.unregisterModule(m, myOwner);
+        } else {
+          // Associated, but never published: a generation that failed or was cancelled before #publishAll()
+          // leaves the module unregistered, and unregistering it would throw.
+          m.discard();
+        }
       }
       if (dropCheckpoint && myCheckpointsModule != null) {
         myRepository.unregisterModule(myCheckpointsModule, myOwner);
