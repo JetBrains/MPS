@@ -21,7 +21,6 @@
     <import index="tpck" ref="r:00000000-0000-4000-0000-011c89590288(jetbrains.mps.lang.core.structure)" />
     <import index="bfxj" ref="r:5744ed46-c83f-47cd-94ce-f24d1f92d6a1(jetbrains.mps.vcs.diff)" />
     <import index="i8bi" ref="r:c3548bac-30eb-4a2a-937c-0111d5697309(jetbrains.mps.lang.smodel.generator.smodelAdapter)" />
-    <import index="iwwu" ref="r:2c4d9270-b6d6-44af-aecd-e01a223680db(jetbrains.mps.kernel.model)" />
     <import index="lwvz" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.openapi.editor.selection(MPS.Editor/)" />
     <import index="67qc" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.nodeEditor.messageTargets(MPS.Editor/)" />
     <import index="iwsx" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.fileEditor(MPS.IDEA/)" />
@@ -99,8 +98,8 @@
     <import index="8m69" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.editor.markup(MPS.IDEA/)" />
     <import index="jlff" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.vfs(MPS.IDEA/)" />
     <import index="1m72" ref="498d89d2-c2e9-11e2-ad49-6cf049e62fe5/java:com.intellij.openapi.components(MPS.IDEA/)" />
-    <import index="rlg8" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.nodeEditor.highlighter(MPS.Editor/)" />
     <import index="5zyv" ref="6354ebe7-c22a-4a0f-ac54-50b52ab9b065/java:java.util.concurrent(JDK/)" />
+    <import index="rlg8" ref="1ed103c3-3aa6-49b7-9c21-6765ee11f224/java:jetbrains.mps.nodeEditor.highlighter(MPS.Editor/)" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -7408,15 +7407,15 @@
         <node concept="1pGfFk" id="6I8tQNTCm0P" role="2ShVmc">
           <property role="373rjd" value="true" />
           <ref role="37wK5l" to="i5cy:~AtomicReference.&lt;init&gt;(java.lang.Object)" resolve="AtomicReference" />
+          <node concept="_YKpA" id="5K5qAIpJF5l" role="1pMfVU">
+            <node concept="3uibUv" id="5K5qAIpJF5n" role="_ZDj9">
+              <ref role="3uigEE" node="42hl10VHaeV" resolve="ChangeGroup" />
+            </node>
+          </node>
           <node concept="2YIFZM" id="6ID7N5AxJm0" role="37wK5m">
             <ref role="1Pybhc" to="33ny:~Collections" resolve="Collections" />
             <ref role="37wK5l" to="33ny:~Collections.emptyList()" resolve="emptyList" />
             <node concept="3uibUv" id="6ID7N5AxJm1" role="3PaCim">
-              <ref role="3uigEE" node="42hl10VHaeV" resolve="ChangeGroup" />
-            </node>
-          </node>
-          <node concept="_YKpA" id="5K5qAIpJF5l" role="1pMfVU">
-            <node concept="3uibUv" id="5K5qAIpJF5n" role="_ZDj9">
               <ref role="3uigEE" node="42hl10VHaeV" resolve="ChangeGroup" />
             </node>
           </node>
@@ -7585,7 +7584,6 @@
         <property role="TrG5h" value="mergeAdjacent" />
         <node concept="10P_77" id="6Xy5Ur26A$v" role="1tU5fm" />
       </node>
-      <node concept="3cqZAl" id="42hl10VHao9" role="3clF45" />
       <node concept="3clFbS" id="42hl10VHaob" role="3clF47">
         <node concept="1VxSAg" id="6ID7N5Bb8IT" role="3cqZAp">
           <ref role="37wK5l" node="6ID7N5Baw1y" resolve="ChangeGroupLayout" />
@@ -7601,6 +7599,7 @@
           <node concept="10Nm6u" id="5K5qAIpTDdE" role="37wK5m" />
         </node>
       </node>
+      <node concept="3cqZAl" id="42hl10VHao9" role="3clF45" />
     </node>
     <node concept="2tJIrI" id="4aW1AG82dtw" role="jymVt" />
     <node concept="3clFb_" id="42hl10VHail" role="jymVt">

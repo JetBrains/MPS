@@ -38,6 +38,7 @@ public final class ModelLot {
   }
 
   public MergeTemporaryModel addCloneOf(SModel original, String stereotype, final boolean readOnly) {
+    // FIXME this seems to be flawed - doesn't _clone_ model, creates an empty one
     return deriveModel(original, stereotype, (SModelReference mp, SModel o) -> new MergeTemporaryModel(mp, readOnly));
   }
 

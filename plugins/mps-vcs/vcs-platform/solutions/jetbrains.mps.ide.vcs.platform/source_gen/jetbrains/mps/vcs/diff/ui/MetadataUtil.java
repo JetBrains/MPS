@@ -5,7 +5,6 @@ package jetbrains.mps.vcs.diff.ui;
 import jetbrains.mps.annotations.GeneratedClass;
 import org.jetbrains.mps.openapi.model.SModel;
 import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
-import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
 import jetbrains.mps.vcs.diff.ui.common.DiffModelUtil;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import org.jetbrains.mps.openapi.persistence.PersistenceFacade;
@@ -13,6 +12,7 @@ import jetbrains.mps.smodel.ModelImports;
 import jetbrains.mps.smodel.adapter.structure.MetaAdapterFactory;
 import jetbrains.mps.extapi.model.SModelBase;
 import org.jetbrains.mps.openapi.model.SNode;
+import jetbrains.mps.lang.smodel.generator.smodelAdapter.SModelOperations;
 import jetbrains.mps.lang.smodel.generator.smodelAdapter.SPropertyOperations;
 import jetbrains.mps.extapi.model.ModelWithAttributes;
 import jetbrains.mps.extapi.model.GeneratableSModel;
@@ -39,18 +39,6 @@ public class MetadataUtil {
 
   private MetadataUtil(SModel metadataModel) {
     myMetadataModel = metadataModel;
-  }
-
-  public static SModel createMetadataModel(SModel model, String version, boolean editable) {
-    MergeTemporaryModel metadataModel = new MergeTemporaryModel(SModelOperations.getPointer(model), !(editable));
-    MetadataUtil util = new MetadataUtil(metadataModel);
-    util.addUsedLanguages();
-    util.createModelRoot(model);
-    DiffModelUtil.renameModelAndRegister(metadataModel, version);
-    // XXX it looks isChanged used as indication whether there's anything in the model to apply.
-    // If yes, why not use dedicated flag in MergeTemporaryModel, and cease being EditableSModel?
-    metadataModel.setChanged(false);
-    return metadataModel;
   }
 
   public static void populate(MergeTemporaryModel mm, SModel origin) {

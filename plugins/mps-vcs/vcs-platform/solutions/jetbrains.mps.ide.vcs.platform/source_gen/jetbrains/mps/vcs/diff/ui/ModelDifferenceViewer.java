@@ -9,6 +9,8 @@ import com.intellij.diff.FrameDiffTool;
 import jetbrains.mps.project.MPSProject;
 import java.util.List;
 import org.jetbrains.mps.openapi.model.SModel;
+import jetbrains.mps.vcs.diff.merge.ModelLot;
+import jetbrains.mps.nodefs.FileSystemRepoBridge;
 import jetbrains.mps.vcs.diff.ModelChangeSet;
 import org.jetbrains.mps.openapi.model.SNodeId;
 import java.util.Map;
@@ -31,6 +33,10 @@ import org.jetbrains.annotations.NotNull;
 import com.intellij.diff.DiffContext;
 import jetbrains.mps.ide.project.ProjectHelper;
 import jetbrains.mps.internal.collections.runtime.ListSequence;
+import jetbrains.mps.smodel.RepositoryFacade;
+import java.util.function.BiFunction;
+import org.jetbrains.mps.openapi.model.SModelReference;
+import jetbrains.mps.vcs.diff.merge.MergeTemporaryModel;
 import jetbrains.mps.vcs.diff.ui.common.DiffSettingsUtil;
 import javax.swing.JScrollPane;
 import com.intellij.ui.ScrollPaneFactory;
@@ -72,7 +78,10 @@ public class ModelDifferenceViewer implements DataProvider {
   private final FrameDiffTool.DiffViewer myDiffViewer;
   private final MPSProject myProject;
   private final List<SModel> myModels;
-  private List<SModel> myMetadataModels;
+  private final ModelLot myMetadataModels;
+  private final List<SModel> myMetadataModelsCompat;
+  private final FileSystemRepoBridge myCustomRepoFiles;
+
   private List<ModelChangeSet> myChangeSets;
   private List<ModelChangeSet> myMetadataChangeSets;
   private SNodeId myRootId;
@@ -89,21 +98,42 @@ public class ModelDifferenceViewer implements DataProvider {
 
   private GoToNeighbourRootActions myGoToNeighbourRootActions;
 
-  private boolean myEditable;
+  private final boolean myEditable;
   private final Collection<SModel> myRegisteredModels = CollectionSequence.fromCollection(new ArrayList<SModel>());
 
 
-  public ModelDifferenceViewer(@NotNull DiffContext context, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer, @NotNull List<SModel> models, boolean showTree, final boolean perRootPersistence) {
+  public ModelDifferenceViewer(@NotNull DiffContext context, @NotNull ContentDiffRequest request, @NotNull FrameDiffTool.DiffViewer diffViewer, @NotNull final List<SModel> models, boolean showTree, final boolean perRootPersistence) {
     myDiffRequest = request;
     myDiffViewer = diffViewer;
     myProject = ProjectHelper.fromIdeaProject(context.getProject());
     myModels = models;
     myEditable = isModelEditable(ListSequence.fromList(myModels).getElement(1));
+
+    RepositoryFacade repo = RepositoryFacade.createPlainRegistrationRepo();
+    myCustomRepoFiles = new FileSystemRepoBridge(repo.get());
+    myMetadataModels = new ModelLot(repo);
+    final BiFunction<SModelReference, SModel, MergeTemporaryModel> mmFactory = (mp, m) -> {
+      MergeTemporaryModel mm = new MergeTemporaryModel(mp, !(isModelEditable(m)));
+      MetadataUtil.populate(mm, m);
+      return mm;
+    };
+
+    myMetadataModelsCompat = ListSequence.fromList(new ArrayList<>());
     // register models in repository and create changeset
     myProject.getRepository().getModelAccess().runWriteAction(() -> {
       // create metamodels before renaming the models in order to avoid problems
       // with stereotypes like in MPS-32651 and MPS-33991
-      myMetadataModels = ListSequence.fromList(myModels).select((it) -> createRegisteredMetaModel(it)).toList();
+      //  FWIW, ModelLot + deriveModel need read access only (repo we use here doesn't care about write to register a model)
+      for (SModel m : ListSequence.fromList(models)) {
+        if (m == null) {
+          ListSequence.fromList(myMetadataModelsCompat).addElement(null);
+          continue;
+        }
+        // XXX no reason for custom stereotype, need another round of refactoring 
+        String version = "diff_meta_model_" + ListSequence.fromList(myModels).indexOf(m);
+        ListSequence.fromList(myMetadataModelsCompat).addElement(myMetadataModels.deriveModel(m, version, mmFactory));
+      }
+      myMetadataModels.registerModels();
       // fix references and add languages to unregistered model for per-root persistence
       ListSequence.fromList(myModels).visitAll((it) -> registerModelIfNeeded(it, perRootPersistence, perRootPersistence));
     });
@@ -111,10 +141,10 @@ public class ModelDifferenceViewer implements DataProvider {
     // TODO changesets should be probably built in a separate thread
     myProject.getRepository().getModelAccess().runReadAction(() -> {
       myChangeSets = buildChangeSets(myModels, trackMovedNodes);
-      myMetadataChangeSets = buildChangeSets(myMetadataModels, trackMovedNodes);
+      myMetadataChangeSets = buildChangeSets(myMetadataModelsCompat, trackMovedNodes);
     });
     myDiffRegistry = CurrentDifferenceRegistry.getInstance(myProject.getProject());
-    addModelDiffListeners(ListSequence.fromList(myModels).concat(ListSequence.fromList(myMetadataModels)));
+    addModelDiffListeners(ListSequence.fromList(myModels).concat(ListSequence.fromList(myMetadataModelsCompat)));
 
     // create panels
     myPanel.setSplitterProportionKey(getClass().getName() + "ModelTreeSplitter");
@@ -134,7 +164,7 @@ public class ModelDifferenceViewer implements DataProvider {
 
     myComponent.add(myPanel, BorderLayout.CENTER);
 
-    Dimension size = DimensionService.getInstance().getSize(getDimensionServiceKey());
+    Dimension size = DimensionService.getInstance().getSize(getDimensionServiceKey(), context.getProject());
     if (size == null) {
       myComponent.setPreferredSize(new Dimension(500, 700));
     }
@@ -147,7 +177,7 @@ public class ModelDifferenceViewer implements DataProvider {
     return ListSequence.fromList(myModels).count() == 3;
   }
 
-  private List<ModelChangeSet> buildChangeSets(List<SModel> models, boolean trackMovedNodes) {
+  private static List<ModelChangeSet> buildChangeSets(List<SModel> models, boolean trackMovedNodes) {
     List<ModelChangeSet> changeSets = ListSequence.fromList(new ArrayList<ModelChangeSet>());
     ListSequence.fromList(changeSets).addElement((ListSequence.fromList(models).getElement(0) != null && ListSequence.fromList(models).getElement(1) != null ? ChangeSetBuilder.buildChangeSet(ListSequence.fromList(models).getElement(0), ListSequence.fromList(models).getElement(1), true, trackMovedNodes) : null));
     if (ListSequence.fromList(models).count() == 3) {
@@ -188,21 +218,11 @@ public class ModelDifferenceViewer implements DataProvider {
     CollectionSequence.fromCollection(myRegisteredModels).addElement(model);
   }
 
-  private SModel createRegisteredMetaModel(SModel model) {
-    if (model == null) {
-      return null;
-    }
-    String version = "diff_meta_model_" + ListSequence.fromList(myModels).indexOf(model);
-    SModel metaModel = MetadataUtil.createMetadataModel(model, version, isModelEditable(model));
-    CollectionSequence.fromCollection(myRegisteredModels).addElement(metaModel);
-    return metaModel;
-  }
-
   private void addModelDiffListeners(Iterable<SModel> models) {
     Sequence.fromIterable(models).where((it) -> isModelEditable(it)).visitAll((it) -> addDifferenceListener(((EditableSModel) it)));
   }
 
-  public String getDimensionServiceKey() {
+  public final String getDimensionServiceKey() {
     return getClass().getName();
   }
   @Nullable
@@ -224,6 +244,8 @@ public class ModelDifferenceViewer implements DataProvider {
       syncMetadataChanges();
       unregisterModels();
     });
+
+    myCustomRepoFiles.close();
 
     if (myRootDifferencePane != null) {
       myRootDifferencePane.dispose();
@@ -247,9 +269,8 @@ public class ModelDifferenceViewer implements DataProvider {
   }
 
   private void unregisterModels() {
-    if (myRegisteredModels != null) {
-      CollectionSequence.fromCollection(myRegisteredModels).visitAll((it) -> DiffModelUtil.unregisterModel(it));
-    }
+    CollectionSequence.fromCollection(myRegisteredModels).visitAll((it) -> DiffModelUtil.unregisterModel(it));
+    myMetadataModels.discard();
   }
 
   /*package*/ void rebuildChangeSets() {
@@ -266,7 +287,7 @@ public class ModelDifferenceViewer implements DataProvider {
 
   private void syncMetadataChanges() {
     if (myEditable) {
-      myProject.getModelAccess().executeCommand(() -> MetadataUtil.applyMetadataChanges(ListSequence.fromList(myModels).getElement(1), ListSequence.fromList(myMetadataModels).getElement(1)));
+      myProject.getModelAccess().executeCommand(() -> MetadataUtil.applyMetadataChanges(ListSequence.fromList(myModels).getElement(1), ListSequence.fromList(myMetadataModelsCompat).getElement(1)));
     }
   }
 
@@ -294,7 +315,7 @@ public class ModelDifferenceViewer implements DataProvider {
       boolean isMetadataView = rootId == null;
       SNodeId nodeId = (isMetadataView ? ListSequence.fromList(SModelOperations.roots(ListSequence.fromList(myMetadataChangeSets).getElement(0).getOldModel(), null)).first().getNodeId() : rootId);
       if (myRootDifferencePane == null) {
-        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, isMetadataView, myModels, myMetadataModels, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, isMetadataView, myModels, myMetadataModels, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer));
+        myRootDifferencePane = (isThreePanelDiff() ? new ThreeSideRootDifferencePane(myProject, nodeId, isMetadataView, myModels, myMetadataModelsCompat, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer) : new TwoSideRootDifferencePane(myProject, nodeId, isMetadataView, myModels, myMetadataModelsCompat, myChangeSets, myMetadataChangeSets, myDiffRequest, myDiffViewer));
         attachRootDifferencePane(myRootDifferencePane);
         myRootDifferencePane.navigateInitial(null);
       } else {
@@ -461,10 +482,10 @@ public class ModelDifferenceViewer implements DataProvider {
     }
     private void rehighlight() {
       ApplicationManager.getApplication().invokeLater(() -> syncMetadataChanges());
-      check_b117w_a1a4ed(myRootDifferencePane);
+      check_b117w_a1a4fd(myRootDifferencePane);
     }
   }
-  private static void check_b117w_a1a4ed(RootDifferencePane checkedDotOperand) {
+  private static void check_b117w_a1a4fd(RootDifferencePane checkedDotOperand) {
     if (null != checkedDotOperand) {
       checkedDotOperand.rehighlightInReadAction(true);
     }
