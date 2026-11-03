@@ -88,8 +88,6 @@
     <import index="8voc" ref="f35cbfcb-ea50-4f20-9d5c-c765fbd8fd3b/java:com.intellij.openapi.vcs.annotate(jetbrains.mps.vcs.idea.stubs/)" />
     <import index="yah1" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.history(MPS.IDEA.Modules/)" />
     <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" />
-    <import index="fczh" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes.issueLinks(MPS.IDEA.Modules/)" implicit="true" />
-    <import index="qku" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.actionSystem(MPS.IDEA.Modules/)" implicit="true" />
   </imports>
   <registry>
     <language id="a247e09e-2435-45ba-b8d2-07e93feba96a" name="jetbrains.mps.baseLanguage.tuples">
@@ -17754,7 +17752,7 @@
               </node>
             </node>
             <node concept="liA8E" id="2cnBllv78sk" role="2OqNvi">
-              <ref role="37wK5l" to="fczh:~LinkMouseListenerBase.installOn(java.awt.Component)" resolve="installOn" />
+              <ref role="37wK5l" to="fczf:~LinkMouseListenerBase.installOn(java.awt.Component)" resolve="installOn" />
               <node concept="37vLTw" id="2cnBllv78sl" role="37wK5m">
                 <ref role="3cqZAo" node="2cnBllv6gwG" resolve="myList" />
               </node>
@@ -20399,7 +20397,7 @@
                 <ref role="1PxDUh" to="jlcv:~VcsDataKeys" resolve="VcsDataKeys" />
               </node>
               <node concept="liA8E" id="2cnBllvcss2" role="2OqNvi">
-                <ref role="37wK5l" to="qku:~DataKey.is(java.lang.String)" resolve="is" />
+                <ref role="37wK5l" to="qkt:~DataKey.is(java.lang.String)" resolve="is" />
                 <node concept="37vLTw" id="2cnBllvcss3" role="37wK5m">
                   <ref role="3cqZAo" node="2cnBllvclNB" resolve="dataId" />
                 </node>
@@ -20412,7 +20410,7 @@
                   <ref role="1PxDUh" to="jlcv:~VcsDataKeys" resolve="VcsDataKeys" />
                 </node>
                 <node concept="liA8E" id="2cnBllvcuo0" role="2OqNvi">
-                  <ref role="37wK5l" to="qku:~DataKey.is(java.lang.String)" resolve="is" />
+                  <ref role="37wK5l" to="qkt:~DataKey.is(java.lang.String)" resolve="is" />
                   <node concept="37vLTw" id="2cnBllvcuo1" role="37wK5m">
                     <ref role="3cqZAo" node="2cnBllvclNB" resolve="dataId" />
                   </node>
@@ -20425,7 +20423,7 @@
                     <ref role="1PxDUh" to="jlcv:~VcsDataKeys" resolve="VcsDataKeys" />
                   </node>
                   <node concept="liA8E" id="2cnBllvcrgt" role="2OqNvi">
-                    <ref role="37wK5l" to="qku:~DataKey.is(java.lang.String)" resolve="is" />
+                    <ref role="37wK5l" to="qkt:~DataKey.is(java.lang.String)" resolve="is" />
                     <node concept="37vLTw" id="2cnBllvcrgu" role="37wK5m">
                       <ref role="3cqZAo" node="2cnBllvclNB" resolve="dataId" />
                     </node>
@@ -20569,7 +20567,7 @@
                 <ref role="1PxDUh" to="jlcv:~VcsDataKeys" resolve="VcsDataKeys" />
               </node>
               <node concept="liA8E" id="3bEtkqd50Qx" role="2OqNvi">
-                <ref role="37wK5l" to="qku:~DataKey.is(java.lang.String)" resolve="is" />
+                <ref role="37wK5l" to="qkt:~DataKey.is(java.lang.String)" resolve="is" />
                 <node concept="37vLTw" id="3bEtkqd50Qy" role="37wK5m">
                   <ref role="3cqZAo" node="2cnBllvclNB" resolve="dataId" />
                 </node>

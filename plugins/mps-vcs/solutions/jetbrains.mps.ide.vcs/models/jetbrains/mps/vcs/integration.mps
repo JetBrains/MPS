@@ -46,7 +46,6 @@
     <import index="lzb3" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.ui(MPS.IDEA.Modules/)" />
     <import index="1039" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.changes(MPS.IDEA.Modules/)" />
     <import index="j86q" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs.impl(MPS.IDEA.Modules/)" />
-    <import index="jlfg" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vfs(MPS.IDEA.Modules/)" implicit="true" />
     <import index="jlcw" ref="b00f36f0-49b7-456c-8405-740447ebb192/java:com.intellij.openapi.vcs(MPS.IDEA.Modules/)" implicit="true" />
   </imports>
   <registry>
@@ -659,7 +658,7 @@
                                               </node>
                                             </node>
                                             <node concept="liA8E" id="33vUo2uvKdC" role="2OqNvi">
-                                              <ref role="37wK5l" to="jlfg:~VirtualFile.getName()" resolve="getName" />
+                                              <ref role="37wK5l" to="jlff:~VirtualFile.getName()" resolve="getName" />
                                             </node>
                                           </node>
                                         </node>
